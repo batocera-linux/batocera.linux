@@ -1,0 +1,20 @@
+config BR2_PACKAGE_PIRONMAN
+	bool "pironman"
+	depends on BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_GETENT
+	select BR2_PACKAGE_I2C_TOOLS
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LIBXCB
+	select BR2_PACKAGE_LIRC_TOOLS
+	select BR2_PACKAGE_NET_TOOLS
+	select BR2_PACKAGE_OPENJPEG
+	select BR2_PACKAGE_PYTHON_RPI_GPIO
+	select BR2_PACKAGE_PYTHON_RPI_WS281X
+	select BR2_PACKAGE_PYTHON_SMBUS_CFFI
+	select BR2_PACKAGE_TIFF
+	select BR2_PACKAGE_ZLIB
+	help
+	  Enable OLED, fan, RGB & infrared for the Pironman case.
+      
+	  https://github.com/sunfounder/pironman

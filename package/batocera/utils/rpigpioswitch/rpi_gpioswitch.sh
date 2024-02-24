@@ -24,6 +24,7 @@
 #v2.2 - add PISTATION_LCD support - @dmanlfc
 #v2.3 - add ELEMENT14_PI_DESKTOP support - @dmanlfc
 #v2.4 - removed code duplicates @lala
+#v2.5 - add PIRONMAN case support (RPi4) - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -45,7 +46,8 @@ powerdevices=(
               DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case" \
               PIBOY "Fan & power & pads for Piboy DMG" \
               PISTATION_LCD "Config.txt tweaks to get the display to work" \
-              ELEMENT14_PI_DESKTOP "Adds on/off button support"
+              ELEMENT14_PI_DESKTOP "Adds on/off button support" \
+              PIRONMAN "Fan, OLED, RGB case support for the Pironman case with RPi4 devices"
              )
 
 #dialog for selecting your switch or power device
@@ -637,6 +639,59 @@ function element14_config()
     true
 }
 
+#https://github.com/sunfounder/pironman
+function pironman_start()
+{
+    # Ensure we have the Pironman config file
+    if [ ! -d "/userdata/system/.config/pironman" ]; then
+        mkdir -p "/userdata/system/.config/pironman"
+    fi
+    if [ ! -f "/userdata/system/.config/pironman/config.txt" ]; then
+        cp "/opt/pironman/config.txt" "/userdata/system/.config/pironman/config.txt"
+    fi
+    #------ CONFIG SECTION ------
+    # Check config.txt for i2c
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+        echo "*** Adding Pironman i2c config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtparam=i2c_arm type configs to avoid conflicts
+        sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[Pironman]" >> "/boot/config.txt"
+        echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    # Check config.txt for power button
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpio_pin=26,active_low=0" "/boot/config.txt"; then
+        echo "*** Adding Pironman power off config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtoverlay=gpio-poweroff type configs to avoid conflicts
+        sed -i '/dtoverlay=gpio-poweroff*/d' /boot/config.txt
+        echo "dtoverlay=gpio-poweroff,gpio_pin=26,active_low=0" >> "/boot/config.txt"
+    fi
+    # Check config.txt for Infrared
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+        echo "*** Adding Pironman infrared config.txt parameter ***"
+        mount -o remount, rw /boot
+        #Pironman uses gpio 13 not 17
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=13/g' /boot/config.txt
+    fi
+    [ $CONF -eq 1 ] && return
+    #------ CONFIG SECTION ------
+    echo "*** Starting Pironman services ***"
+    /usr/bin/pironman start
+}
+
+function pironman_stop()
+{
+    echo "*** Stopping Pironman services ***"
+    /usr/bin/pironman stop
+}
+
+function pironman_config()
+{
+    pironman_start $@
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -708,6 +763,9 @@ case "$CONFVALUE" in
     ;;
     "ELEMENT14_PI_DESKTOP")
         element14_$1
+    ;;
+    "PIRONMAN")
+        pironman_$1
     ;;
     "--DIALOG")
         # Go to selection dialog
