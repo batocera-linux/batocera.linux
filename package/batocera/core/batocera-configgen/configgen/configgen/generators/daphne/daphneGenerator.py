@@ -26,7 +26,7 @@ class DaphneGenerator(Generator):
         # create a custom ini
         if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
             shutil.copyfile(batoceraFiles.daphneConfig, batoceraFiles.daphneDatadir + "/custom.ini")
-            
+
         # copy required resources to userdata config folder as needed
         def copy_resources(source_dir, destination_dir):
             if not os.path.exists(destination_dir):
@@ -40,7 +40,7 @@ class DaphneGenerator(Generator):
                             shutil.copy2(source_item, destination_dir)
                         elif os.path.isdir(source_item):
                             copy_resources(source_item, destination_item)
-        
+
         directories = [
             {"source": "/usr/share/daphne/pics", "destination": batoceraFiles.daphneDatadir + "/pics"},
             {"source": "/usr/share/daphne/sound", "destination": batoceraFiles.daphneDatadir + "/sound"},
@@ -50,7 +50,7 @@ class DaphneGenerator(Generator):
         # Copy/update directories
         for directory in directories:
             copy_resources(directory["source"], directory["destination"])
-        
+
         # create symbolic link for singe
         if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
             if not os.path.exists(batoceraFiles.daphneHomedir + "/roms"):
@@ -58,7 +58,7 @@ class DaphneGenerator(Generator):
             os.symlink(batoceraFiles.daphneHomedir + "/roms", batoceraFiles.daphneDatadir + "/singe")
         if not os.path.islink(batoceraFiles.daphneDatadir + "/singe"):
             eslog.error("Your {} directory isn't a symlink, that's not good.".format(batoceraFiles.daphneDatadir + "/singe"))
-                
+
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
@@ -73,7 +73,7 @@ class DaphneGenerator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
                             "-fastboot", "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
-        
+
         # controller config file
         if system.isOptSet('daphne_joy')  and system.getOptBoolean('daphne_joy'):
             commandArray.extend(['-keymapfile', 'custom.ini'])
@@ -131,14 +131,6 @@ class DaphneGenerator(Generator):
                     if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
-            # crosshair
-            if system.isOptSet('daphne_crosshair'):
-                if not system.getOptBoolean("daphne_crosshair"):
-                    commandArray.append("-nocrosshair")
-                else:
-                    if not controllersConfig.gunsNeedCrosses(guns):
-                        commandArray.append("-nocrosshair")
-
         # Invert HAT Axis
         if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
             commandArray.append("-tiphat")
@@ -162,13 +154,13 @@ class DaphneGenerator(Generator):
             commandArray.append("-scanlines")
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
-        if system.isOptSet('singe_crosshair') and system.getOptBoolean("singe_crosshair"):
+        if system.isOptSet('singe_crosshair') and system.config['singe_crosshair'] == "1" and len(guns) > 0:
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
         if system.isOptSet('daphne_texturestream') and system.getOptBoolean("daphne_texturestream"):
-            commandArray.append("-texturestream") 
-            
+            commandArray.append("-texturestream")
+
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
         if os.path.isfile(commandsFile):
             commandArray.extend(open(commandsFile,'r').read().split())
@@ -181,9 +173,9 @@ class DaphneGenerator(Generator):
                 'SDL_JOYSTICK_HIDAPI': '0'
             }
         )
-    
+
     def getInGameRatio(self, config, gameResolution, rom):
-        romName = os.path.splitext(os.path.basename(rom))[0]        
+        romName = os.path.splitext(os.path.basename(rom))[0]
         singeFile = rom + "/" + romName + ".singe"
         if "daphne_ratio" in config:
             if config['daphne_ratio'] == "stretch":

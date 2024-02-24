@@ -1045,7 +1045,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             f.write("video_driver = \"glcore\"\n")
             f.close()
 
-    # Nintendo 64   
+    # Nintendo 64
     if (system.config['core'] == 'mupen64plus-next'):
         # Threaded Rendering
         coreSettings.save('mupen64plus-ThreadedRenderer', '"True"')
@@ -1088,7 +1088,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
-        
+
         # Check if any controller packs are set to auto rumble
         auto_rumble_pak = None
         for pak in range(1, 5):
@@ -1096,19 +1096,19 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
                 auto_rumble_pak = pak_value
                 break
-                
+
         if auto_rumble_pak:
-            metadata = controllersConfig.getGamesMetaData(system.name, rom)  
-        
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+
         # Controller Pak 1
         if system.isOptSet('mupen64plus-pak1'):
             if system.config['mupen64plus-pak1'] == 'auto_rumble':
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('mupen64plus-pak1', '"rumble"')
                 else:
-                    coreSettings.save('mupen64plus-pak1', '"memory"')     
+                    coreSettings.save('mupen64plus-pak1', '"memory"')
             else:
-                coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')                
+                coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')
         else:
             coreSettings.save('mupen64plus-pak1', '"memory"')
         # Controller Pak 2
@@ -1117,9 +1117,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('mupen64plus-pak2', '"rumble"')
                 else:
-                    coreSettings.save('mupen64plus-pak2', '"none"')     
+                    coreSettings.save('mupen64plus-pak2', '"none"')
             else:
-                coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')                
+                coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')
         else:
             coreSettings.save('mupen64plus-pak2', '"none"')
         # Controller Pak 3
@@ -1128,9 +1128,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('mupen64plus-pak3', '"rumble"')
                 else:
-                    coreSettings.save('mupen64plus-pak3', '"none"')     
+                    coreSettings.save('mupen64plus-pak3', '"none"')
             else:
-                coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')                
+                coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')
         else:
             coreSettings.save('mupen64plus-pak3', '"none"')
         # Controller Pak 4
@@ -1139,9 +1139,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('mupen64plus-pak4', '"rumble"')
                 else:
-                    coreSettings.save('mupen64plus-pak4', '"none"')     
+                    coreSettings.save('mupen64plus-pak4', '"none"')
             else:
-                coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')                
+                coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
         # RDP Plugin
@@ -1177,13 +1177,13 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 coreSettings.save('mupen64plus-astick-deadzone', '"0"')
             else:
                 coreSettings.save('mupen64plus-astick-deadzone', '"15"')
-            
+
         # Joystick sensitivity
         if system.isOptSet('mupen64plus-sensitivity'):
             coreSettings.save('mupen64plus-astick-sensitivity', '"' + system.config['mupen64plus-sensitivity'] + '"')
         else:
             coreSettings.save('mupen64plus-astick-sensitivity', '"100"')
-        
+
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
         coreSettings.save('parallel-n64-boot-device',   '"Default"')
@@ -1218,7 +1218,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('parallel-n64-framerate', '"' + system.config['parallel-n64-framerate'] + '"')
         else:
             coreSettings.save('parallel-n64-framerate', '"automatic"')
-        
+
         # Check if any controller packs are set to auto rumble
         auto_rumble_pak = None
         for pak in range(1, 5):
@@ -1226,19 +1226,19 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
                 auto_rumble_pak = pak_value
                 break
-                
+
         if auto_rumble_pak:
-            metadata = controllersConfig.getGamesMetaData(system.name, rom) 
-        
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+
         # Controller Pak 1
         if system.isOptSet('parallel-n64-pak1'):
             if system.config['parallel-n64-pak1'] == 'auto_rumble':
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('parallel-n64-pak1', '"rumble"')
                 else:
-                    coreSettings.save('parallel-n64-pak1', '"memory"')     
+                    coreSettings.save('parallel-n64-pak1', '"memory"')
             else:
-                coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')                
+                coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')
         else:
             coreSettings.save('parallel-n64-pak1', '"memory"')
         # Controller Pak 2
@@ -1247,9 +1247,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('parallel-n64-pak2', '"rumble"')
                 else:
-                    coreSettings.save('parallel-n64-pak2', '"none"')     
+                    coreSettings.save('parallel-n64-pak2', '"none"')
             else:
-                coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')                
+                coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')
         else:
             coreSettings.save('parallel-n64-pak2', '"none"')
         # Controller Pak 3
@@ -1258,9 +1258,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('parallel-n64-pak3', '"rumble"')
                 else:
-                    coreSettings.save('parallel-n64-pak3', '"none"')     
+                    coreSettings.save('parallel-n64-pak3', '"none"')
             else:
-                coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')                
+                coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')
         else:
             coreSettings.save('parallel-n64-pak3', '"none"')
         # Controller Pak 4
@@ -1269,9 +1269,9 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 if metadata.get("controller_rumble") == "true":
                     coreSettings.save('parallel-n64-pak4', '"rumble"')
                 else:
-                    coreSettings.save('parallel-n64-pak4', '"none"')     
+                    coreSettings.save('parallel-n64-pak4', '"none"')
             else:
-                coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')                
+                coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
         else:
             coreSettings.save('parallel-n64-pak4', '"none"')
         # Joystick deadzone
@@ -1282,13 +1282,13 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 coreSettings.save('parallel-n64-astick-deadzone', '"0"')
             else:
                 coreSettings.save('parallel-n64-astick-deadzone', '"15"')
-            
+
         # Joystick sensitivity
         if system.isOptSet('parallel-n64-sensitivity'):
             coreSettings.save('parallel-n64-astick-sensitivity', '"' + system.config['parallel-n64-sensitivity'] + '"')
         else:
             coreSettings.save('parallel-n64-astick-sensitivity', '"100"')
-        
+
         # Nintendo 64-DD
         if (system.name == 'n64dd'):
             # 64DD Hardware
@@ -1384,7 +1384,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
         else:
             coreSettings.save('melonds_console_mode', '"DS"')
-        
+
         # Video Settings
         if system.isOptSet('melondsds_render_mode'):
             coreSettings.save('melonds_render_mode', '"' + system.config['melondsds_render_mode'] + '"')
@@ -1402,7 +1402,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('melonds_opengl_filtering', '"' + system.config['melondsds_filtering'] + '"')
         else:
             coreSettings.save('melonds_opengl_filtering', '"nearest"')
-        
+
         # Screen Settings
         if system.isOptSet('melondsds_cursor'):
             coreSettings.save('melonds_show_cursor', '"' + system.config['melondsds_cursor'] + '"')
@@ -1420,7 +1420,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         coreSettings.save('melonds_number_of_screen_layouts', '"1"')
         coreSettings.save('melonds_screen_gap', '"0"')
         coreSettings.save('melonds_screen_layout1', '"top-bottom"')
-        
+
         # Firmware Settings
         if system.isOptSet('melondsds_dns'):
             coreSettings.save('melonds_firmware_wfc_dns', '"' + system.config['melondsds_dns'] + '"')
@@ -1442,7 +1442,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('melonds_firmware_birth_day', '"' + system.config['melondsds_day'] + '"')
         else:
             coreSettings.save('melonds_firmware_birth_day', '"default"')
-        
+
         # Onscreen Display
         if system.isOptSet('melondsds_show_unsupported'):
             coreSettings.save('melonds_show_unsupported_features', '"' + system.config['melondsds_show_unsupported'] + '"')
@@ -1532,13 +1532,13 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mgba_skip_bios', '"ON"')
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
-        
+
         # Rumble
         if system.isOptSet('rumble_gain') and system.config['rumble_gain'] != "1":
             coreSettings.save('mgba_force_gbp', '"ON"')
         else:
             coreSettings.save('mgba_force_gbp', '"OFF"')
-        
+
         if (system.name != 'gba'):
             # GB / GBC: Use Super Game Boy borders
             if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
@@ -1856,17 +1856,21 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         else:
             coreSettings.save('snes9x_blargg', '"disabled"')
         # Crosshair
+        # Superscope
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
+            coreSettings.save('snes9x_justifier1_crosshair', '"' + system.config['superscope_crosshair'] + '"')
+            coreSettings.save('snes9x_justifier2_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"2"'
             else:
                 status = '"0"'
             coreSettings.save('snes9x_superscope_crosshair', status)
+            coreSettings.save('snes9x_justifier1_crosshair', status)
+            coreSettings.save('snes9x_justifier2_crosshair', status)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save('snes9x_superscope_reverse_buttons', '"disabled"')
-
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
         if system.isOptSet('2010_reduce_sprite_flicker'):
@@ -2193,8 +2197,8 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         if system.isOptSet('gpgx_fm'):
             coreSettings.save('genesis_plus_gx_ym2612', '"' + system.config['gpgx_fm'] + '"')
         else:
-            coreSettings.save('genesis_plus_gx_ym2612', '"mame (ym2612)"')       
-        
+            coreSettings.save('genesis_plus_gx_ym2612', '"mame (ym2612)"')
+
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
         if system.isOptSet('ym2413') and system.config['ym2413'] != "automatic":
@@ -2294,7 +2298,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('yabasanshiro_system_language', '"' + system.config['yabasanshiro_language'] + '"')
         else:
             coreSettings.save('yabasanshiro_system_language', '"english"')
-    
+
     if (system.config['core'] == 'kronos'):
         # Set best OpenGL renderer
         coreSettings.save('kronos_videocoretype', '"opengl_cs"')
@@ -2312,7 +2316,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         if system.isOptSet('kronos_bandingmode'):
             coreSettings.save('kronos_bandingmode', '"' + system.config['kronos_bandingmode'] + '"')
         else:
-            coreSettings.save('kronos_bandingmode', '"disabled"')        
+            coreSettings.save('kronos_bandingmode', '"disabled"')
         # Share saves with Beetle
         if system.isOptSet('kronos_use_beetle_saves') and system.config['kronos_use_beetle_saves'] == 'disabled':
             coreSettings.save('kronos_use_beetle_saves', '"disabled"')
@@ -2336,7 +2340,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         if system.isOptSet('kronos_language_id'):
             coreSettings.save('kronos_language_id', '"' + system.config['kronos_language_id'] + '"')
         else:
-            coreSettings.save('kronos_language_id', '"English"')  
+            coreSettings.save('kronos_language_id', '"English"')
 
     # gun cross / wheel
     if (system.config['core'] == 'beetle-saturn'):
@@ -2504,7 +2508,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('neocd_per_content_saves', '"Off"')
         else:
             coreSettings.save('neocd_per_content_saves', '"On"')
-    
+
     # Sony PSP
     if (system.config['core'] == 'ppsspp'):
         if system.isOptSet('ppsspp_resolution'):
@@ -2608,11 +2612,21 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         else:
             coreSettings.save('swanstation_GPU_WidescreenHack',  '"false"')
             coreSettings.save('swanstation_Display_AspectRatio', '"4:3"')
-         # Crop Mode
+        # Crop Mode
         if system.isOptSet('swanstation_CropMode'):
             coreSettings.save('swanstation_Display_CropMode', '"' + system.config['swanstation_CropMode'] + '"')
         else:
             coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
+
+        # Gun crosshairs
+        if system.isOptSet('swanstation_Controller_ShowCrosshair'):
+            coreSettings.save('swanstation_Controller_ShowCrosshair', '"' + system.config['swanstation_Controller_ShowCrosshair'] + '"')
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"true"'
+            else:
+                status = '"false"'
+            coreSettings.save('swanstation_Controller_ShowCrosshair', status)
 
     if (system.config['core'] == 'pcsx2'):
         # Fast Boot
@@ -2744,7 +2758,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mrboom-nomonster', '"' + system.config['mrboom-nomonster'] + '"')
         else:
             coreSettings.save('mrboom-nomonster', '"ON"')
-    
+
     # OpenLara
     if (system.config['core'] == 'openlara'):
         # Internal resolution
@@ -2752,13 +2766,13 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('openlara_resolution', '"' + system.config['lara-resolution'] + '"')
         else:
             coreSettings.save('openlara_resolution', '"1280x720"')
-                
+
         # Framerate
         if system.isOptSet('lara-framerate'):
             coreSettings.save('openlara_framerate', '"' + system.config['lara-framerate'] + '"')
         else:
             coreSettings.save('openlara_framerate', '"60fps"')
-    
+
     # HatariB
     if (system.config['core'] == 'hatarib'):
         # Defaults
@@ -2800,7 +2814,7 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('hatarib_borders', '"' + system.config['hatarib_borders'] + '"')
         else:
             coreSettings.save('hatarib_borders', '"0"')
-    
+
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
