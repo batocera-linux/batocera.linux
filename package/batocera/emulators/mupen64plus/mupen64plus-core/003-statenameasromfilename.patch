@@ -1,5 +1,5 @@
 diff --git a/src/api/frontend.c b/src/api/frontend.c
-index f2f8c04..ee3cc4f 100644
+index 6f2d267..2ec0538 100644
 --- a/src/api/frontend.c
 +++ b/src/api/frontend.c
 @@ -177,6 +177,9 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
@@ -13,10 +13,10 @@ index f2f8c04..ee3cc4f 100644
              if (g_EmulatorRunning || l_DiskOpen || l_ROMOpen)
                  return M64ERR_INVALID_STATE;
 diff --git a/src/api/m64p_types.h b/src/api/m64p_types.h
-index dd95107..88970e7 100644
+index 088f011..e68c92d 100644
 --- a/src/api/m64p_types.h
 +++ b/src/api/m64p_types.h
-@@ -169,6 +169,7 @@ typedef enum {
+@@ -170,6 +170,7 @@ typedef enum {
    M64CMD_NETPLAY_CLOSE,
    M64CMD_PIF_OPEN,
    M64CMD_ROM_SET_SETTINGS,
@@ -25,7 +25,7 @@ index dd95107..88970e7 100644
    M64CMD_DISK_CLOSE
  } m64p_command;
 diff --git a/src/main/main.c b/src/main/main.c
-index c1cccd5..d77cd2d 100644
+index 7612875..954a9d7 100644
 --- a/src/main/main.c
 +++ b/src/main/main.c
 @@ -114,6 +114,7 @@ uint32_t g_start_address = UINT32_C(0xa4000040);
@@ -49,7 +49,7 @@ index 3aacca3..e03574b 100644
  extern m64p_frame_callback g_FrameCallback;
  
 diff --git a/src/main/savestates.c b/src/main/savestates.c
-index 56e307d..b2ca7f6 100644
+index bf3926d..5a957c3 100644
 --- a/src/main/savestates.c
 +++ b/src/main/savestates.c
 @@ -86,6 +86,12 @@ static char *savestates_generate_path(savestates_type type)
@@ -87,7 +87,7 @@ index 56e307d..b2ca7f6 100644
                  break;
              default:
                  filepath = NULL;
-@@ -2145,6 +2151,7 @@ int savestates_save(void)
+@@ -2156,6 +2162,7 @@ int savestates_save(void)
      char *filepath;
      int ret = 0;
      const struct device* dev = &g_dev;
@@ -95,7 +95,7 @@ index 56e307d..b2ca7f6 100644
  
      /* Can only save PJ64 savestates on VI / COMPARE interrupt.
         Otherwise try again in a little while. */
-@@ -2168,9 +2175,13 @@ int savestates_save(void)
+@@ -2179,9 +2186,13 @@ int savestates_save(void)
              case savestates_type_pj64_unc: ret = savestates_save_pj64_unc(dev, filepath); break;
              default: ret = 0; break;
          }
@@ -105,17 +105,17 @@ index 56e307d..b2ca7f6 100644
      }
  
 +    TakeScreenshotToFile(ScreenshotFileName, 0);
-+
++    
      // deliver callback to indicate completion of state saving operation
      StateChanged(M64CORE_STATE_SAVECOMPLETE, ret);
  
 diff --git a/src/main/screenshot.c b/src/main/screenshot.c
-index 7f2260e..4866bf5 100644
+index a831571..12a184b 100644
 --- a/src/main/screenshot.c
 +++ b/src/main/screenshot.c
-@@ -224,6 +224,12 @@ void TakeScreenshot(int iFrameNumber)
-     if (filename == NULL)
+@@ -227,6 +227,12 @@ void TakeScreenshot(int iFrameNumber)
          return;
+     }
  
 +    TakeScreenshotToFile(filename, iFrameNumber);
 +    free(filename);
@@ -126,22 +126,22 @@ index 7f2260e..4866bf5 100644
      // get the width and height
      int width = 640;
      int height = 480;
-@@ -233,7 +239,6 @@ void TakeScreenshot(int iFrameNumber)
-     unsigned char *pucFrame = (unsigned char *) malloc(width * height * 3);
+@@ -237,7 +243,6 @@ void TakeScreenshot(int iFrameNumber)
      if (pucFrame == NULL)
      {
+         StateChanged(M64CORE_SCREENSHOT_CAPTURED, 0);
 -        free(filename);
          return;
      }
  
-@@ -244,7 +249,6 @@ void TakeScreenshot(int iFrameNumber)
-     SaveRGBBufferToFile(filename, pucFrame, width, height, width * 3);
+@@ -248,7 +253,6 @@ void TakeScreenshot(int iFrameNumber)
+     int rval = SaveRGBBufferToFile(filename, pucFrame, width, height, width * 3);
      // free the memory
      free(pucFrame);
 -    free(filename);
      // print message -- this allows developers to capture frames and use them in the regression test
-     main_message(M64MSG_INFO, OSD_BOTTOM_LEFT, "Captured screenshot for frame %i.", iFrameNumber);
- }
+     if (rval != 0)
+     {
 diff --git a/src/main/screenshot.h b/src/main/screenshot.h
 index c7f6bad..fdc3e36 100644
 --- a/src/main/screenshot.h
