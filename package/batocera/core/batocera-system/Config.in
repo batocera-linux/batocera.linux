@@ -281,6 +281,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                   BR2_PACKAGE_BATOCERA_TARGET_BCM2837  || \
                                                   BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # piboy rpi3/rpi4
     select BR2_PACKAGE_PICADE                  if BR2_PACKAGE_BATOCERA_RPI_ANY # picade arcade case
+    select BR2_PACKAGE_PIRONMAN                if BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # pironman case is rpi4 only
 
     # screens
     select BR2_PACKAGE_PIXELCADE		if !BR2_riscv

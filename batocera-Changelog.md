@@ -2,6 +2,7 @@
 ### Special Notes
 
 ### Hardware
+Add support for the Pironman case with RPI4 devices.
 
 ### Added
 

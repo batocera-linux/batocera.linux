@@ -1,0 +1,45 @@
+diff --git a/bin/pironman b/bin/pironman
+index 02e1c837fe..0fdedf5cfb 100644
+--- a/bin/pironman
++++ b/bin/pironman
+@@ -50,7 +50,7 @@ help() {
+ }
+ 
+ start() {
+-    sudo python3 $main 1>/dev/null 2>>/opt/pironman/log &
++    python3 $main 1>/dev/null 2>>/opt/pironman/log &
+     # sudo python3 $main 1>/dev/null 2>&1 &
+     if [ $? == '0' ];then
+         echo "pironman start succeed"
+@@ -62,7 +62,7 @@ start() {
+ 
+ stop() {
+     echo "stopping pironman"
+-    sudo kill $(ps aux | grep $main | awk '{ print $2 }') >/dev/null 2>&1
++    kill $(ps aux | grep $main | awk '{ print $2 }') >/dev/null 2>&1
+ }
+ 
+ 
+@@ -93,22 +93,6 @@ case "$1" in
+         echo 'config file:'$CONF
+         grep -E '*=.*' $CONF
+         ;;
+-    -a|--auto)
+-        case "$2" in
+-            on)
+-                echo "enable auto-start at boot"
+-                sudo systemctl enable pironman.service
+-                restart
+-            ;;
+-            off)
+-                echo "disable auto-start at boot"
+-                sudo systemctl disable pironman.service
+-                restart
+-            ;;
+-            *)
+-                echo "usage: pironman -a|--auto [on/off]"
+-        esac
+-        ;;
+     -u|--unit)
+         if [ $# -lt 2 ] ;then
+             echo "usage: pironman -c|--check [C/F]"
