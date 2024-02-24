@@ -24,6 +24,8 @@ Add support for the Pironman case with RPI4 devices.
 - mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
 - mupen64plus-video-rice bump to Jun 11, 2023 build
 - mupen64plus-gliden64 bump to Feb 18, 2024 build
+- ppsspp: bump to 1.17.1
+- libretro-ppsspp: bump to 1.17.1
 
 ### System
 - Nvidia Production driver to 550.54.14
