@@ -25,6 +25,7 @@ Add support for the Pironman case with RPI4 devices.
 - mupen64plus-video-rice bump to Jun 11, 2023 build
 - mupen64plus-gliden64 bump to Feb 18, 2024 build
 - ppsspp: bump to 1.17.1
+- duckstation: bump to Feb 06, 2024 build
 - libretro-ppsspp: bump to 1.17.1
 
 ### System
