@@ -15,6 +15,14 @@
 
 ### Updated
 - Retroarch to 1.17.0
+- mupen64plus-core bump to Jan 25, 2024 build
+- mupen64plus-audio-sdl bump to Jun 11, 2023 build
+- mupen64plus-input-sdl bump to Nov 4, 2023 build
+- mupen64plus-ui-console bump to Jun 11, 2023 build
+- mupen64plus-rsp-hle bump to Jan 13, 2024 build
+- mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
+- mupen64plus-video-rice bump to Jun 11, 2023 build
+- mupen64plus-gliden64 bump to Feb 18, 2024 build
 
 ### System
 - Nvidia Production driver to 550.54.14
