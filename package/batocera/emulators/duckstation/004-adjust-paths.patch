@@ -1,24 +1,23 @@
 diff --git a/src/core/settings.cpp b/src/core/settings.cpp
-index bd9c676483..c340c157fc 100644
+index 82e660d..3240c10 100644
 --- a/src/core/settings.cpp
 +++ b/src/core/settings.cpp
-@@ -1307,19 +1307,19 @@ std::string EmuFolders::Textures;
+@@ -1540,18 +1540,18 @@ static std::string LoadPathFromSettings(SettingsInterface& si, const std::string
  
- void EmuFolders::SetDefaults()
+ void EmuFolders::LoadConfig(SettingsInterface& si)
  {
--  Bios = Path::Combine(DataRoot, "bios");
--  Cache = Path::Combine(DataRoot, "cache");
--  Cheats = Path::Combine(DataRoot, "cheats");
--  Covers = Path::Combine(DataRoot, "covers");
--  Dumps = Path::Combine(DataRoot, "dump");
--  GameSettings = Path::Combine(DataRoot, "gamesettings");
--  InputProfiles = Path::Combine(DataRoot, "inputprofiles");
--  MemoryCards = Path::Combine(DataRoot, "memcards");
--  SaveStates = Path::Combine(DataRoot, "savestates");
--  Screenshots = Path::Combine(DataRoot, "screenshots");
--  Shaders = Path::Combine(DataRoot, "shaders");
--  Textures = Path::Combine(DataRoot, "textures");
--  UserResources = Path::Combine(DataRoot, "resources");
+-  Bios = LoadPathFromSettings(si, DataRoot, "BIOS", "SearchDirectory", "bios");
+-  Cache = LoadPathFromSettings(si, DataRoot, "Folders", "Cache", "cache");
+-  Cheats = LoadPathFromSettings(si, DataRoot, "Folders", "Cheats", "cheats");
+-  Covers = LoadPathFromSettings(si, DataRoot, "Folders", "Covers", "covers");
+-  Dumps = LoadPathFromSettings(si, DataRoot, "Folders", "Dumps", "dump");
+-  GameSettings = LoadPathFromSettings(si, DataRoot, "Folders", "GameSettings", "gamesettings");
+-  InputProfiles = LoadPathFromSettings(si, DataRoot, "Folders", "InputProfiles", "inputprofiles");
+-  MemoryCards = LoadPathFromSettings(si, DataRoot, "MemoryCards", "Directory", "memcards");
+-  SaveStates = LoadPathFromSettings(si, DataRoot, "Folders", "SaveStates", "savestates");
+-  Screenshots = LoadPathFromSettings(si, DataRoot, "Folders", "Screenshots", "screenshots");
+-  Shaders = LoadPathFromSettings(si, DataRoot, "Folders", "Shaders", "shaders");
+-  Textures = LoadPathFromSettings(si, DataRoot, "Folders", "Textures", "textures");
 +  Bios = "/userdata/bios";
 +  Cache = "/userdata/system/cache/duckstation";
 +  Cheats = "/userdata/cheats";
@@ -31,7 +30,6 @@ index bd9c676483..c340c157fc 100644
 +  Screenshots = "/userdata/screenshots";
 +  Shaders = "/userdata/system/configs/duckstation/shaders";
 +  Textures = "/userdata/system/configs/duckstation/textures";
-+  UserResources = "/userdata/system/configs/duckstation/resources";
- }
  
- static std::string LoadPathFromSettings(SettingsInterface& si, const std::string& root, const char* section,
+   Log_DevPrintf("BIOS Directory: %s", Bios.c_str());
+   Log_DevPrintf("Cache Directory: %s", Cache.c_str());
