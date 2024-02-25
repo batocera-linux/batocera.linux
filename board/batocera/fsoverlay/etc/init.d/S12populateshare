@@ -108,14 +108,14 @@ do
         if [ ! -e "${OUT}/${FILE}" ]; then
             mkdir -p "$(dirname "${OUT}/${FILE}")"
             echo "Creating $OUT/$FILE"
-            cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
+            cp -rf "${IN}/${FILE}" "$(dirname "${OUT}/${FILE}")"/
         fi
     else
         # Update if newer
         if [ -e "${IN}/${FILE}" ] && { [ ! -e "${OUT}/${FILE}" ] || [ "${IN}/${FILE}" -nt "${OUT}/${FILE}" ]; }; then
             mkdir -p "$(dirname "${OUT}/${FILE}")"
             echo "Updating $OUT/$FILE"
-            cp -rf "${IN}/${FILE}" "${OUT}/${FILE}"
+            cp -rf "${IN}/${FILE}" "$(dirname "${OUT}/${FILE}")"/
         fi
     fi
 done
