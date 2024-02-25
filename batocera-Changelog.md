@@ -37,7 +37,7 @@ Add support for the Pironman case with RPI4 devices.
 - libretro-stella: bump to Jan 2, 2024 build
 - libretro-swanstation: bump to Jan 25, 2024 build
 - libretro-pcsx: bump to Feb 14, 2024 build
-
+- Redream to 1.5.0-1103-g47bc2b7
 ### System
 - Nvidia Production driver to 550.54.14
 - Nvidia Legacy driver to 470.239.06
