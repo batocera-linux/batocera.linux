@@ -1,16 +1,23 @@
+---
+ src/joystick/linux/SDL_sysjoystick.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index 9f82452..af9d10c 100644
+index 39ddb75..1902564 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -255,10 +255,7 @@
+@@ -301,10 +301,7 @@ static int IsJoystick(const char *path, int fd, char **name_return, Uint16 *vend
          }
      }
- 
+
 -    name = SDL_CreateJoystickName(inpid.vendor, inpid.product, NULL, product_string);
--    if (name == NULL) {
+-    if (!name) {
 -        return 0;
 -    }
 +    name = SDL_strdup(product_string);
- 
+
  #ifdef SDL_JOYSTICK_HIDAPI
      if (!IsVirtualJoystick(inpid.vendor, inpid.product, inpid.version, name) &&
+--
+2.44.0
+
