@@ -25,7 +25,7 @@ Add support for the Pironman case with RPI4 devices.
 - mupen64plus-video-rice bump to Jun 11, 2023 build
 - mupen64plus-gliden64 bump to Feb 18, 2024 build
 - ppsspp: bump to 1.17.1
-- duckstation: bump to Feb 06, 2024 build
+- duckstation: bump to Feb 25, 2024 build
 - libretro-ppsspp: bump to 1.17.1
 - libretro-81: bump to Nov 1, 2023 build
 - libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
@@ -38,6 +38,7 @@ Add support for the Pironman case with RPI4 devices.
 - libretro-swanstation: bump to Jan 25, 2024 build
 - libretro-pcsx: bump to Feb 14, 2024 build
 - Redream to 1.5.0-1103-g47bc2b7
+
 ### System
 - Nvidia Production driver to 550.54.14
 - Nvidia Legacy driver to 470.239.06
