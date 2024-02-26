@@ -1,8 +1,12 @@
+---
+ src/core/settings.cpp | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
 diff --git a/src/core/settings.cpp b/src/core/settings.cpp
-index 82e660d..3240c10 100644
+index e34d783..bcf2ebe 100644
 --- a/src/core/settings.cpp
 +++ b/src/core/settings.cpp
-@@ -1540,18 +1540,18 @@ static std::string LoadPathFromSettings(SettingsInterface& si, const std::string
+@@ -1547,19 +1547,19 @@ static std::string LoadPathFromSettings(SettingsInterface& si, const std::string
  
  void EmuFolders::LoadConfig(SettingsInterface& si)
  {
@@ -18,6 +22,7 @@ index 82e660d..3240c10 100644
 -  Screenshots = LoadPathFromSettings(si, DataRoot, "Folders", "Screenshots", "screenshots");
 -  Shaders = LoadPathFromSettings(si, DataRoot, "Folders", "Shaders", "shaders");
 -  Textures = LoadPathFromSettings(si, DataRoot, "Folders", "Textures", "textures");
+-  UserResources = LoadPathFromSettings(si, DataRoot, "Folders", "UserResources", "resources");
 +  Bios = "/userdata/bios";
 +  Cache = "/userdata/system/cache/duckstation";
 +  Cheats = "/userdata/cheats";
@@ -30,6 +35,10 @@ index 82e660d..3240c10 100644
 +  Screenshots = "/userdata/screenshots";
 +  Shaders = "/userdata/system/configs/duckstation/shaders";
 +  Textures = "/userdata/system/configs/duckstation/textures";
++  UserResources = "/userdata/system/configs/duckstation/resources";
  
-   Log_DevPrintf("BIOS Directory: %s", Bios.c_str());
-   Log_DevPrintf("Cache Directory: %s", Cache.c_str());
+   Log_DevFmt("BIOS Directory: {}", Bios);
+   Log_DevFmt("Cache Directory: {}", Cache);
+-- 
+2.44.0
+
