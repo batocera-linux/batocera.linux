@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBOOT_ANBERNIC_RG351
+        bool "uboot files for anbernic-rg351"
+	select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+        help
+          uboot files for anbernic-rg351

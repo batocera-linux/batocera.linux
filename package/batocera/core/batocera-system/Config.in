@@ -337,8 +337,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     select BR2_PACKAGE_RTL8822CS        if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
-    select BR2_PACKAGE_ESP8089          if BR2_PACKAGE_BATOCERA_TARGET_RK3326
-
     # ethernet
     select BR2_PACKAGE_R8125                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_R8168                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -449,7 +447,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "broadcom/bcm2837"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     default "broadcom/bcm2711"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
     default "broadcom/bcm2712"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
-    default "rockchip/rk3326/gameforce rockchip/rk3326/rk3326"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+    default "rockchip/rk3326/gameforce rockchip/rk3326/odroidgo rockchip/rk3326/anbernic"   if BR2_PACKAGE_BATOCERA_TARGET_RK3326
     default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"                                 if BR2_PACKAGE_BATOCERA_TARGET_RK3328
     default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3288
     default "rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2"	if BR2_PACKAGE_BATOCERA_TARGET_RK3568

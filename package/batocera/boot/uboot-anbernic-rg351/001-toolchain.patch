@@ -1,0 +1,12 @@
+diff --git a/make.sh b/make.sh
+index e204e94..ab52bc7 100755
+--- a/make.sh
++++ b/make.sh
+@@ -45,6 +45,7 @@ TOOLCHAIN_ARM32=../prebuilts/gcc/linux-x86/arm/gcc-linaro-6.3.1-2017.05-x86_64_a
+ TOOLCHAIN_ARM64=../prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin
+ TOOLCHAIN_ARM32_OPT=/opt/toolchains/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin
+ TOOLCHAIN_ARM64_OPT=/opt/toolchains/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin
++TOOLCHAIN_ARM64=../host-toolchain-optional-linaro-aarch64-7.5-2019.12/bin
+ 
+ ########################################### User not touch #############################################
+ BIN_PATH_FIXUP="--replace tools/rk_tools/ ./"
