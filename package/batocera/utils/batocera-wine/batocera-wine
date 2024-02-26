@@ -340,8 +340,9 @@ dxvk_install() {
             ln -sf "/usr/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
         fi
     else
-	    echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
-	    ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
+	ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "${DIR}/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
@@ -702,7 +703,7 @@ wine2squashfs() {
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
     GAMEDIR="${GAMENAME}"
-    SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.squashfs" | sed -e s+"\.wine\.squashfs$"+".wsquashfs"+)
+    SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.wsquashfs" | sed -e s+"\.wine\.squashfs$"+".wsquashfs"+)
     
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" -comp zstd || return 1
     return 0
