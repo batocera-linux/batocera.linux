@@ -21,15 +21,17 @@ fi
 
 # Wine Folder
 wine_folder() {
-if test -e "/userdata/system/wine/ge-custom"; then
+if test -e "/userdata/system/wine/${WINE_VERSION}"; then
     echo "/userdata/system/wine"
-    else
+elif test -e "/usr/wine/${WINE_VERSION}"; then
     echo "/usr/wine"
+else
+    exit 1
 fi
 }
 
 ## Wine executables
-DIR="$(wine_folder)"
+DIR="$(wine_folder)" || { echo "can't find wine version ${WINE_VERSION} directory"; exit 1; }
 USER_DIR="/userdata/system/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
