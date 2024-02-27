@@ -1406,7 +1406,7 @@ msgid ""
 "scaling 3D graphics."
 msgstr ""
 "La modalita' software e' piu' veloce e accurata, mentre OpenGL supporta "
-"scaling della grafica 3D."
+"scaling della grafica 3D." 
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
@@ -1431,8 +1431,7 @@ msgstr "OpenGL (Sovrascrive le impostaioni API Libretro)"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Degree in which 3D graphics are scaled up. OpenGL renderer only."
-msgstr ""
-"Livello a cui la grafica 3D viene ingrandita. Solo per renderer OpenGL."
+msgstr "Livello a cui la grafica 3D viene ingrandita. Solo per renderer OpenGL."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1480,8 +1479,8 @@ msgid ""
 "Enable this if your game's 3D modles are not rendered correctly. OpenGL "
 "renderer only."
 msgstr ""
-"Abilitalo se i modles 3D del gioco non sono visualizzati correttamente.Solo "
-"per renderer OpenGL."
+"Abilitalo se i modles 3D del gioco non sono visualizzati correttamente."
+"Solo per renderer OpenGL."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1516,7 +1515,7 @@ msgstr "Lineare"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Determines how the cursor should apprear on the botton screen."
-msgstr ""
+msgstr "Stabilisce come il cursore appare nella parte bassa dello schermo."
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
@@ -1551,8 +1550,7 @@ msgstr "Sempre"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Cursor timeout in seconds when using Cursor Mode - Until Timeout."
-msgstr ""
-"Timeout cursore in secondi quando in modalita' Currose - Fino al timeout."
+msgstr "Timeout cursore in secondi quando in modalita' Currose - Fino al timeout."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1630,8 +1628,8 @@ msgid ""
 "Use this to play online with custom servers that reimplement the "
 "discontinued Nintendo Wi-Fi."
 msgstr ""
-"Usa questo per giocare online con servers personalizzati che reimplementano "
-"il protocollo Nintendo Wi-Fi abbandonato."
+"Usa questo per giocare online con servers personalizzati che reimplementano il "
+"protocollo Nintendo Wi-Fi abbandonato."
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
@@ -2013,7 +2011,7 @@ msgctxt "game_options"
 msgid ""
 "Enable to display an on-screen message if trying to use unsupported features."
 msgstr ""
-"Mostra un messaggio a schermo se provi a usare funzionalita' non supportate."
+"Mostra un messaggio a schermo se provi a usare funzionalita' non supportate." 
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, ...
 msgctxt "game_options"
@@ -9547,7 +9545,7 @@ msgctxt "game_options"
 msgid "Force the game to render in this aspect ratio."
 msgstr "Forza il rendering gioco in queste proporzioni."
 
-#. TRANSLATION: flycast, cgenius
+#. TRANSLATION: flycast, rpcs3, cgenius
 msgctxt "game_options"
 msgid "RENDER RESOLUTION"
 msgstr "RISOLUZIONE RENDER"
@@ -11128,11 +11126,6 @@ msgstr "Alta (Default)"
 msgctxt "game_options"
 msgid "Choose your preferred render resolution."
 msgstr "Seleziona la tua risoluzione di rendering preferita."
-
-#. TRANSLATION: rpcs3
-msgctxt "game_options"
-msgid "RENDER RESOLUTION (SCALING)"
-msgstr ""
 
 #. TRANSLATION: rpcs3, xenia-canary
 msgctxt "game_options"
@@ -13482,9 +13475,8 @@ msgid ""
 "Refresh state of memory pages to enable gpu written data. (Use for 'Team "
 "Ninja' Games to fix missing character models)."
 msgstr ""
-"Aggiorna lo stato delle pagine di memoria per avilitare i dati scritti dalla "
-"gpu.(Utilizzalo nei giochi 'Team Ninja' per sistemare i modelli carattere "
-"mancanti)."
+"Aggiorna lo stato delle pagine di memoria per avilitare i dati scritti dalla gpu."
+"(Utilizzalo nei giochi 'Team Ninja' per sistemare i modelli carattere mancanti)."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13497,8 +13489,8 @@ msgid ""
 "Render target emulation path to use on Direct3D 12. Try changing if you have "
 "render issues."
 msgstr ""
-"Renderizza utilizzando Direct3D 12. Prova a cambiarlo se hai problemi "
-"relativi al rendering."
+"Renderizza utilizzando Direct3D 12. Prova a cambiarlo se hai problemi relativi "
+"al rendering."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13526,9 +13518,8 @@ msgid ""
 "The sample count of every tile will be incremented on every EVENT_WRITE_ZPD "
 "by this number. Setting this to 0 means everything is reported as occluded."
 msgstr ""
-"Il conto dei campioni di ogni titolo verra' incrementato per ogni "
-"EVENT_WRITE_ZPD di questo numero. Impostato a 0 significa che tutto risulta "
-"occluso."
+"Il conto dei campioni di ogni titolo verra' incrementato per ogni EVENT_WRITE_ZPD "
+"di questo numero. Impostato a 0 significa che tutto risulta occluso." 
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13546,9 +13537,8 @@ msgid ""
 "D3D12, read render-to-texture results on the CPU. Needed in some games, but "
 "causes mid-frame synchronization, so it has a huge performance impact."
 msgstr ""
-"D3D12, carica i risultati di render-to-texture sulla CPU. Necessario per "
-"alcuni giochi, ma causa sincronizzazione mid-frame, che ha un grosso impatto "
-"sulla performance."
+"D3D12, carica i risultati di render-to-texture sulla CPU. Necessario per alcuni giochi, ma "
+"causa sincronizzazione mid-frame, che ha un grosso impatto sulla performance."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13668,9 +13658,8 @@ msgid ""
 "Seconds a texture should be unused to be considered old enough to be deleted "
 "if texture memory usage exceeds Soft Texture Cache limit."
 msgstr ""
-"Secondi entro cui una texture deve non essere utilizzate per considerarla "
-"vecchia a sufficienza per cancellarla se utilizza piu' del limite soft cache "
-"texture."
+"Secondi entro cui una texture deve non essere utilizzate per considerarla vecchia "
+"a sufficienza per cancellarla se utilizza piu' del limite soft cache texture."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13697,8 +13686,7 @@ msgctxt "game_options"
 msgid ""
 "Enable cache mount. Can improve performance and compatibility in some games."
 msgstr ""
-"Abilita montaggio cache. Puo' migliorare le performance e compatibilita' "
-"giochi."
+"Abilita montaggio cache. Puo' migliorare le performance e compatibilita' giochi."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -13900,9 +13888,8 @@ msgid ""
 "Turn on to configure settings from this GUI (Recommended). If disabled, you "
 "have to manually edit the Config File (Experts only - not recommended)."
 msgstr ""
-"Abilitalo per configurare le impostazioni con questa GUI (Raccomandato). Se "
-"disabilitato, dovrai modificare manualmente il file Config (Solo per esperti "
-"- discoraggiato)."
+"Abilitalo per configurare le impostazioni con questa GUI (Raccomandato). Se disabilitato, "
+"dovrai modificare manualmente il file Config (Solo per esperti - discoraggiato)."
 
 #. TRANSLATION: vpinball, vpinball
 msgctxt "game_options"
@@ -14044,8 +14031,8 @@ msgid ""
 "pinmame rom. By default, settings come from the VPinballX.ini configuration "
 "file."
 msgstr ""
-"Finestra Extra DMD (Dot Matrix Display) per mostrare i punteggi delle tavole "
-"con pinmame rom. Di default, le impostazioni sono nel file di configurazione "
+"Finestra Extra DMD (Dot Matrix Display) per mostrare i punteggi delle tavole con "
+"pinmame rom. Di default, le impostazioni sono nel file di configurazione "
 "VPinballX.ini"
 
 #. TRANSLATION: vpinball
@@ -14095,9 +14082,9 @@ msgid ""
 "without a rom. By default, settings come from the VPinballX.ini "
 "configuration file."
 msgstr ""
-"Finestra Extra DMD (Dot Matrix Display) per visualizzare il punteggio delle "
-"tavole senza una rom. Di default, le impostazioni sono nel file di "
-"configurazione VPinballX.ini"
+"Finestra Extra DMD (Dot Matrix Display) per visualizzare il punteggio delle tavole "
+"senza una rom. Di default, le impostazioni sono nel file di configurazione "
+"VPinballX.ini"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -14115,8 +14102,8 @@ msgid ""
 "Upright glass panel displaying some illuminated artwork. By default, "
 "settings come from the VPinballX.ini configuration file."
 msgstr ""
-"Il pannello vetro verticale che mostra alcune illustrazioni. Di default, le "
-"impostazioni sono nel file di configurazione VPinballX.ini"
+"Il pannello vetro verticale che mostra alcune illustrazioni. Di default, "
+"le impostazioni sono nel file di configurazione VPinballX.ini" 
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
