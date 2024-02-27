@@ -44,8 +44,8 @@ G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
 export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine/i386-unix:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix"
-export GST_PLUGIN_SYSTEM_PATH_1_0="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
-export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry..bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/i386-windows:${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows"
 # hum pw 0.2 and 0.3 are hardcoded, not nice
@@ -341,8 +341,8 @@ dxvk_install() {
         fi
     else
         mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
-	ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
+        ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "${DIR}/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
@@ -403,6 +403,9 @@ createWineDirectory() {
     BSODPID=$!
 
     mkdir -p "${WINEPREFIX}" || return 1
+
+    # Workaround wine bottle creation issue with debug enabled
+    export WINEDLLOVERRIDES="winegstreamer="
 
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
     then
