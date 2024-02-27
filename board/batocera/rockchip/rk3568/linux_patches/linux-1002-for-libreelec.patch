@@ -115,13 +115,13 @@ Subject: [PATCH] ARM: dts: RK3288 miqi add hdmi sound nodes
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288-miqi.dts | 20 ++++++++++++++++++++
+ arch/arm/boot/dts/rockchip/rk3288-miqi.dts | 20 ++++++++++++++++++++
  1 file changed, 20 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
+diff --git a/arch/arm/boot/dts/rockchip/rk3288-miqi.dts b/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
 index 713f55e143c6..8d30c49f406e 100644
---- a/arch/arm/boot/dts/rk3288-miqi.dts
-+++ b/arch/arm/boot/dts/rk3288-miqi.dts
+--- a/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
++++ b/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
 @@ -78,6 +78,21 @@ vcc_sys: vsys-regulator {
  		regulator-always-on;
  		regulator-boot-on;
@@ -164,14 +164,14 @@ Subject: [PATCH] ARM/arm64: dts: rockchip: align sound card names
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288-tinker.dtsi     | 2 +-
+ arch/arm/boot/dts/rockchip/rk3288-tinker.dtsi     | 2 +-
  arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288-tinker.dtsi b/arch/arm/boot/dts/rk3288-tinker.dtsi
+diff --git a/arch/arm/boot/dts/rockchip/rk3288-tinker.dtsi b/arch/arm/boot/dts/rockchip/rk3288-tinker.dtsi
 index 09618bb7d872..db9106a3dd22 100644
---- a/arch/arm/boot/dts/rk3288-tinker.dtsi
-+++ b/arch/arm/boot/dts/rk3288-tinker.dtsi
+--- a/arch/arm/boot/dts/rockchip/rk3288-tinker.dtsi
++++ b/arch/arm/boot/dts/rockchip/rk3288-tinker.dtsi
 @@ -73,7 +73,7 @@ sdio_pwrseq: sdio-pwrseq {
  	sound {
  		compatible = "simple-audio-card";
@@ -441,13 +441,13 @@ Date: Mon, 1 Mar 2021 21:24:15 +0100
 Subject: [PATCH] ARM: dts: add cec pinctrl for RK3288 miqi board
 
 ---
- arch/arm/boot/dts/rk3288-miqi.dts | 2 ++
+ arch/arm/boot/dts/rockchip/rk3288-miqi.dts | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
+diff --git a/arch/arm/boot/dts/rockchip/rk3288-miqi.dts b/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
 index 8d30c49f406e..6d90db5a3b75 100644
---- a/arch/arm/boot/dts/rk3288-miqi.dts
-+++ b/arch/arm/boot/dts/rk3288-miqi.dts
+--- a/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
++++ b/arch/arm/boot/dts/rockchip/rk3288-miqi.dts
 @@ -145,6 +145,8 @@ &gpu {
  
  &hdmi {

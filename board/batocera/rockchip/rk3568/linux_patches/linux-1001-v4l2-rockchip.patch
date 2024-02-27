@@ -40,16 +40,16 @@ Signed-off-by: Caesar Wang <wxt@rock-chips.com>
 Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
 Signed-off-by: Randy Li <ayaka@soulik.info>
 ---
- drivers/soc/rockchip/pm_domains.c | 23 +++++++++++++++++++++++
+ drivers/pmdomain/rockchip/pm-domains.c | 23 +++++++++++++++++++++++
  include/linux/rockchip_pmu.h      | 15 +++++++++++++++
  include/soc/rockchip/pm_domains.h |  6 ++++++
  3 files changed, 44 insertions(+)
  create mode 100644 include/linux/rockchip_pmu.h
 
-diff --git a/drivers/soc/rockchip/pm_domains.c b/drivers/soc/rockchip/pm_domains.c
+diff --git a/drivers/pmdomain/rockchip/pm-domains.c b/drivers/pmdomain/rockchip/pm-domains.c
 index 89795abac951..ffb5d62c9d52 100644
---- a/drivers/soc/rockchip/pm_domains.c
-+++ b/drivers/soc/rockchip/pm_domains.c
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
 @@ -309,6 +309,29 @@ static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
  	return 0;
  }
@@ -349,25 +349,13 @@ Date: Tue, 18 Aug 2020 11:38:04 +0200
 Subject: [PATCH] WIP: arm64: dts: add resets to vdec for RK3399
 
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 index 980b12cb0a49..6e3149e587c5 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1062,7 +1062,10 @@ power-domain@RK3399_PD_VCODEC {
- 			power-domain@RK3399_PD_VDU {
- 				reg = <RK3399_PD_VDU>;
- 				clocks = <&cru ACLK_VDU>,
--					 <&cru HCLK_VDU>;
-+					 <&cru HCLK_VDU>,
-+					 <&cru SCLK_VDU_CA>,
-+					 <&cru SCLK_VDU_CORE>;
-+
- 				pm_qos = <&qos_video_m1_r>,
- 					 <&qos_video_m1_w>;
- 				#power-domain-cells = <0>;
 @@ -1345,6 +1348,11 @@ vdec: video-codec@ff660000 {
  		clock-names = "axi", "ahb", "cabac", "core";
  		iommus = <&vdec_mmu>;
@@ -380,30 +368,6 @@ index 980b12cb0a49..6e3149e587c5 100644
  	};
  
  	vdec_mmu: iommu@ff660480 {
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
-Date: Fri, 1 Jan 2021 12:11:12 +0200
-Subject: [PATCH] arm64: dts: rockchip: fix RK3399 vdec register witdh
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 6e3149e587c5..093ebe070775 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1341,7 +1341,7 @@ vpu_mmu: iommu@ff650800 {
- 
- 	vdec: video-codec@ff660000 {
- 		compatible = "rockchip,rk3399-vdec";
--		reg = <0x0 0xff660000 0x0 0x400>;
-+		reg = <0x0 0xff660000 0x0 0x480>;
- 		interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH 0>;
- 		clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>,
- 			 <&cru SCLK_VDU_CA>, <&cru SCLK_VDU_CORE>;
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
@@ -428,9 +392,9 @@ index 8de6fd2e8eef..002b1a600f93 100644
 -#define RK3288_ACLK_MAX_FREQ (400 * 1000 * 1000)
 +#define RK3288_ACLK_MAX_FREQ (600 * 1000 * 1000)
 +#define RK3399_ACLK_MAX_FREQ (400 * 1000 * 1000)
+ #define RK3588_ACLK_MAX_FREQ (300 * 1000 * 1000)
  
- /*
-  * Supported formats.
+ #define ROCKCHIP_VPU981_MIN_SIZE 64
 @@ -346,13 +347,20 @@ static int rk3066_vpu_hw_init(struct hantro_dev *vpu)
  	return 0;
  }
