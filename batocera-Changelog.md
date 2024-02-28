@@ -16,6 +16,7 @@ Add support for the Pironman case with RPI4 devices.
 
 ### Updated
 - Retroarch to 1.17.0
+- libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
 - mupen64plus-core bump to Jan 25, 2024 build
 - mupen64plus-audio-sdl bump to Jun 11, 2023 build
 - mupen64plus-input-sdl bump to Nov 4, 2023 build
