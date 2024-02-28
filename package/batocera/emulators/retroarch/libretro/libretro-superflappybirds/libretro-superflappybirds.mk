@@ -3,8 +3,8 @@
 # libretro-superflappybirds
 #
 ################################################################################
-# Version.: Commits on Feb 18, 2019
-LIBRETRO_SUPERFLAPPYBIRDS_VERSION = 0ba0e188cae44c8900a2f5a04577de85dc8c4410
+# Version.: Commits on Apr 13, 2023
+LIBRETRO_SUPERFLAPPYBIRDS_VERSION = 4b798ecc6948017ca79aad1ea20fe57e680228c8
 LIBRETRO_SUPERFLAPPYBIRDS_SITE = $(call github,IgniparousTempest,libretro-superflappybirds,$(LIBRETRO_SUPERFLAPPYBIRDS_VERSION))
 
 LIBRETRO_SUPERFLAPPYBIRDS_LICENSE = GPL-3.0

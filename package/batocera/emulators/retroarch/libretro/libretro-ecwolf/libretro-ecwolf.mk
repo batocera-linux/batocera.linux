@@ -3,8 +3,8 @@
 # libretro-ecwolf
 #
 ################################################################################
-# Version: Commits on Jul 18, 2023
-LIBRETRO_ECWOLF_VERSION = 18eca17c2d634b154824e0782c6cbbe0a2c9ea76
+# Version: Commits on Dec 29, 2023
+LIBRETRO_ECWOLF_VERSION = 71ec64cf98ba0a2a94e2fede560f1b435761b36d
 LIBRETRO_ECWOLF_SITE = https://github.com/libretro/ecwolf
 LIBRETRO_ECWOLF_LICENSE = Non-commercial
 LIBRETRO_ECWOLF_SITE_METHOD=git
