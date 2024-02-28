@@ -43,13 +43,22 @@ WINETRICKS="${DIR}/winetricks"
 WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
 G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 
+if test -e "${DIR}/${WINE_VERSION}/lib64/wine"; then
+    WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
+else
+    WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+fi
+
+WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+
+
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
-export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine/i386-unix:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix"
+export LD_LIBRARY_PATH="/lib32:${WINE_LIB32_DIR}/i386-unix:/lib:/usr/lib:${WINE_LIB64_DIR}/x86_64-unix"
 export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
 export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry..bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
-export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/i386-windows:${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows"
+export WINEDLLPATH="${WINE_LIB32_DIR}/i386-windows:${WINE_LIB64_DIR}/x86_64-windows"
 # hum pw 0.2 and 0.3 are hardcoded, not nice
 export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
 export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
@@ -344,8 +353,8 @@ dxvk_install() {
     else
         mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
         echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
-        ln -sf "${DIR}/${WINE_VERSION}/lib/wine/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "${DIR}/${WINE_VERSION}/lib/wine/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        ln -sf "${WINE_LIB64_DIR}/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "${WINE_LIB32_DIR}/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1; then
