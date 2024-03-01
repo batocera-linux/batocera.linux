@@ -41,26 +41,6 @@
 		};
 	};
 
-	gpio-homekeys {
-		status = "okay";
-		compatible = "gpio-homekeys";
-		menu {
-			label = "GPIO Key MENU";
-			debounce-interval = <0x0a>;
-			gpios = <&gpio1 RK_PA0 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_ESC>;
-		};
-
-		home-key {
-			label = "GPIO Key HOME";
-			debounce-interval = <0x0a>;
-			gpios = <&gpio1 RK_PB0 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_HOMEPAGE>;
-		};
-	};
-
 	gpio-keys {
 		status = "okay";
 		compatible = "gpio-keys";
@@ -70,6 +50,22 @@
 		keyup-threshold-microvolt = <1800000>;
 		// autorepeat;
 		poll-interval = <35>;
+
+		menu {
+			label = "GPIO Key MENU";
+			debounce-interval = <0x0a>;
+			gpios = <&gpio1 RK_PA0 0x01>;
+			linux,input-type = <EV_KEY>;
+			linux,code = <BTN_MODE>;
+		};
+
+		home-key {
+			label = "GPIO Key HOME";
+			debounce-interval = <0x0a>;
+			gpios = <&gpio1 RK_PB0 0x01>;
+			linux,input-type = <EV_KEY>;
+			linux,code = <BTN_BACK>;
+		};
 
 		start {
 			label = "GPIO Key START";
@@ -125,7 +121,7 @@
 			debounce-interval = <0x0a>;
 			gpios = <&gpio1 RK_PB4 0x01>;
 			linux,input-type = <0x01>;
-			linux,code = <BTN_X>;
+			linux,code = <BTN_NORTH>;
 		};
 
 		keyY {
@@ -133,7 +129,7 @@
 			debounce-interval = <0x0a>;
 			gpios = <&gpio1 RK_PB3 0x01>;
 			linux,input-type = <0x01>;
-			linux,code = <BTN_Y>;
+			linux,code = <BTN_WEST>;
 		};
 
 		keyA {
@@ -141,7 +137,7 @@
 			debounce-interval = <0x0a>;
 			gpios = <&gpio1 RK_PC6 0x01>;
 			linux,input-type = <0x01>;
-			linux,code = <BTN_A>;
+			linux,code = <BTN_EAST>;
 		};
 
 		keyB {
@@ -149,7 +145,7 @@
 			debounce-interval = <0x0a>;
 			gpios = <&gpio1 RK_PA5 0x01>;
 			linux,input-type = <0x01>;
-			linux,code = <BTN_B>;
+			linux,code = <BTN_SOUTH>;
 		};
 
 		keyTHUMBL {
@@ -1295,11 +1291,11 @@
 &rknpu {
 	rknpu-supply = <&vdd_npu_s0>;
 	mem-supply = <&vdd_npu_mem_s0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &rknpu_mmu {
-	status = "okay";
+	status = "disabled";
 };
 
 &rkvdec_ccu {
