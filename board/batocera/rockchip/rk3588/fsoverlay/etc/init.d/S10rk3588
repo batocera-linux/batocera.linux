@@ -6,7 +6,7 @@ set_gpu_performance() {
     echo performance > /sys/devices/platform/fb000000.gpu/devfreq/fb000000.gpu/governor
 }
 
-# function to enable BT from ap6275p
+# function to enable BT from ap6275p or ap6256
 enable_bt() {
     bt_status=$(cat /proc/device-tree/wireless-bluetooth/status | tr -d '\0')
     wifi_chip=$(cat /proc/device-tree/wireless-wlan/wifi_chip_type | tr -d '\0')
@@ -15,6 +15,13 @@ enable_bt() {
         rfkill unblock all
         brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
             --baudrate 1500000 --patchram /lib/firmware/ap6275p/BCM4362A2.hcd /dev/ttyS9 &
+        echo $! > /var/run/brcm_patchram_plus.pid
+    fi
+    if [[ ${wifi_chip} == "ap6256" && ${bt_status} == "okay" ]]; then
+        echo "Enabling BT from ap6256..."
+        rfkill unblock all
+        brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
+            --baudrate 1500000 --patchram /lib/firmware/brcm/BCM4345C5.hcd /dev/ttyS9 &
         echo $! > /var/run/brcm_patchram_plus.pid
     fi
 }
