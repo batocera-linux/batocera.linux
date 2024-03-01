@@ -1,0 +1,39 @@
+From 3c5bbd567ecaafcf4f2294f0eb5ed84c728a24e1 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 1 Jan 2024 07:13:19 +0000
+Subject: [PATCH 56/64] WIP: dt-bindings: arm: amlogic: add S905L and p261/p271
+ boards
+
+Add bindings for the Amlogic S905L SoC and P261/P271 reference design boards. Similar
+to P281/S905W the boards are derived from P212 (S905X) but with silicon differences:
+
+- P271 omits VP9 support and uses Mali 450-MP3
+- P261 omits VP9 support and uses Mali 450-MP2
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 40cb96161f9d..77e41410a966 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -81,6 +81,14 @@ properties:
+           - const: amlogic,s805x
+           - const: amlogic,meson-gxl
+ 
++      - description: Boards with the Amlogic Meson GXL S905L SoC
++        items:
++          - enum:
++              - amlogic,p261
++              - amlogic,p271
++          - const: amlogic,s905l
++          - const: amlogic,meson-gxl
++
+       - description: Boards with the Amlogic Meson GXL S905W SoC
+         items:
+           - enum:
+-- 
+2.34.1
+

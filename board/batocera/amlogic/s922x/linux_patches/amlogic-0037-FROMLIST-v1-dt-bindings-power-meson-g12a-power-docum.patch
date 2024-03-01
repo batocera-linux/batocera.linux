@@ -1,0 +1,27 @@
+From 71004ec4f352989cddfc3e119d100b74cbc79a58 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Tue, 14 Nov 2023 11:19:50 +0100
+Subject: [PATCH 37/64] FROMLIST(v1): dt-bindings: power: meson-g12a-power:
+ document ISP power domain
+
+Add MIPI ISP power domain ID to the G12A Power domains bindings header
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ include/dt-bindings/power/meson-g12a-power.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/power/meson-g12a-power.h b/include/dt-bindings/power/meson-g12a-power.h
+index 44ec0c50e340..01fd0ac4dd08 100644
+--- a/include/dt-bindings/power/meson-g12a-power.h
++++ b/include/dt-bindings/power/meson-g12a-power.h
+@@ -10,5 +10,6 @@
+ #define PWRC_G12A_VPU_ID		0
+ #define PWRC_G12A_ETH_ID		1
+ #define PWRC_G12A_NNA_ID		2
++#define PWRC_G12A_ISP_ID		3
+ 
+ #endif
+-- 
+2.34.1
+

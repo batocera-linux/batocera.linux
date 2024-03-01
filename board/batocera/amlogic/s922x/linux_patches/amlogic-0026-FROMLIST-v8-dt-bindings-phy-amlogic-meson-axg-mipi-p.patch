@@ -1,0 +1,51 @@
+From afe3f7c46d20a132f0d7b31df9cb0956232ae49d Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Thu, 9 Nov 2023 10:00:04 +0100
+Subject: [PATCH 26/64] FROMLIST(v8): dt-bindings: phy:
+ amlogic,meson-axg-mipi-pcie-analog: drop text about parent syscon and drop
+ example
+
+Since this bindings is referred from amlogic,meson-gx-hhi-sysctrl.yaml, drop the now
+useless description about the parent node and also drop the unnecessary example.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../phy/amlogic,meson-axg-mipi-pcie-analog.yaml | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml b/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
+index 009a39808318..70def36e5688 100644
+--- a/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
++++ b/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
+@@ -9,16 +9,6 @@ title: Amlogic AXG shared MIPI/PCIE analog PHY
+ maintainers:
+   - Remi Pommarel <repk@triplefau.lt>
+ 
+-description: |+
+-  The Everything-Else Power Domains node should be the child of a syscon
+-  node with the required property:
+-
+-  - compatible: Should be the following:
+-                "amlogic,meson-gx-hhi-sysctrl", "simple-mfd", "syscon"
+-
+-  Refer to the bindings described in
+-  Documentation/devicetree/bindings/mfd/syscon.yaml
+-
+ properties:
+   compatible:
+     const: amlogic,axg-mipi-pcie-analog-phy
+@@ -31,10 +21,3 @@ required:
+   - "#phy-cells"
+ 
+ additionalProperties: false
+-
+-examples:
+-  - |
+-    mpphy: phy {
+-          compatible = "amlogic,axg-mipi-pcie-analog-phy";
+-          #phy-cells = <0>;
+-    };
+-- 
+2.34.1
+

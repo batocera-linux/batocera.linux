@@ -1,0 +1,72 @@
+From 87bdbd2b503d662cdb4c4a1caa00460500fc0bcd Mon Sep 17 00:00:00 2001
+From: Anand Moon <linux.amoon@gmail.com>
+Date: Tue, 10 Oct 2023 08:54:43 +0530
+Subject: [PATCH 21/64] FROMLIST(v4): arm64: dts: amlogic: Used onboard usb hub
+ reset on odroid n2
+
+On Odroid n2/n2+ previously use gpio-hog to reset the usb hub,
+switch to used on-board usb hub reset to enable the usb hub
+and enable power to hub.
+
+Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+---
+ .../dts/amlogic/meson-g12b-odroid-n2.dtsi     | 36 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index 91c9769fda20..9e671444eca6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -31,6 +31,30 @@ hub_5v: regulator-hub_5v {
+ 		enable-active-high;
+ 	};
+ 
++	/* USB hub supports both USB 2.0 and USB 3.0 root hub */
++	usb-hub {
++		dr_mode = "host";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* 2.0 hub on port 1 */
++		hub_2_0: hub@1 {
++			compatible = "usb5e3,610";
++			reg = <1>;
++			peer-hub = <&hub_3_0>;
++			vdd-supply = <&usb_pwr_en>;
++		};
++
++		/* 3.0 hub on port 4 */
++		hub_3_0: hub@2 {
++			compatible = "usb5e3,620";
++			reg = <2>;
++			peer-hub = <&hub_2_0>;
++			reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>;
++			vdd-supply = <&vcc_5v>;
++		};
++	};
++
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+ 		model = "ODROID-N2";
+@@ -234,18 +258,6 @@ &gpio {
+ 		"PIN_3",  /* GPIOX_17 */
+ 		"PIN_5",  /* GPIOX_18 */
+ 		"PIN_36"; /* GPIOX_19 */
+-	/*
+-	 * WARNING: The USB Hub on the Odroid-N2 needs a reset signal
+-	 * to be turned high in order to be detected by the USB Controller
+-	 * This signal should be handled by a USB specific power sequence
+-	 * in order to reset the Hub when USB bus is powered down.
+-	 */
+-	usb-hub-hog {
+-		gpio-hog;
+-		gpios = <GPIOH_4 GPIO_ACTIVE_HIGH>;
+-		output-high;
+-		line-name = "usb-hub-reset";
+-	};
+ };
+ 
+ &i2c3 {
+-- 
+2.34.1
+

@@ -1,0 +1,31 @@
+From da6fb6205863869aa1edc27169a085a08630c086 Mon Sep 17 00:00:00 2001
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Sun, 20 Feb 2022 08:26:27 +0000
+Subject: [PATCH 12/64] FROMLIST(v5): docs: ABI: document tm1628 attribute
+ display-text
+
+Document the attribute for reading / writing the text to be displayed on
+the 7 segment display.
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-devices-auxdisplay-tm1628 | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-devices-auxdisplay-tm1628
+
+diff --git a/Documentation/ABI/testing/sysfs-devices-auxdisplay-tm1628 b/Documentation/ABI/testing/sysfs-devices-auxdisplay-tm1628
+new file mode 100644
+index 000000000000..382757e721af
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-devices-auxdisplay-tm1628
+@@ -0,0 +1,7 @@
++What:		/sys/devices/.../display-text
++Date:		February 2022
++Contact:	Heiner Kallweit <hkallweit1@gmail.com>
++Description:
++		The text to be displayed on the 7 segment display.
++		Any printable character is allowed as input, but some
++		can not be displayed in a readable way with 7 segments.
+-- 
+2.34.1
+
