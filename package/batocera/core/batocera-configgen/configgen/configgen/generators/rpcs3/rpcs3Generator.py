@@ -153,16 +153,19 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Video"]["Stretch To Display Area"] = False
         # Frame Limit
+        # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60")
+        # Second Frame Limit can be any float/integer. 0 = disabled.
         if system.isOptSet("rpcs3_framelimit"):
-            if system.config["rpcs3_framelimit"] in ["30", "50", "59.94", "60"]:
+            # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
+            if system.config["rpcs3_framelimit"] in ["Off", "30", "50", "59.94", "60"]:
                 rpcs3ymlconfig["Video"]["Frame limit"] = system.config["rpcs3_framelimit"]
-                rpcs3ymlconfig["Video"]["Second Frame Limit"] = False
+                rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
             else:
                 rpcs3ymlconfig["Video"]["Second Frame Limit"] = system.config["rpcs3_framelimit"]
-                rpcs3ymlconfig["Video"]["Frame limit"] = False
+                rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
         else:
             rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
-            rpcs3ymlconfig["Video"]["Second Frame Limit"] = False
+            rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
         # Write Color Buffers
         if system.isOptSet("rpcs3_colorbuffers"):
             rpcs3ymlconfig["Video"]["Write Color Buffers"] = system.config["rpcs3_colorbuffers"]
