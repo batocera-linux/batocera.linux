@@ -1,8 +1,8 @@
-From 41b8f0f7c1271da5075790c32567356ade6354a1 Mon Sep 17 00:00:00 2001
+From a947da42547598dc8c44569cd55eda49c1c7f064 Mon Sep 17 00:00:00 2001
 From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Fri, 24 Nov 2023 09:41:19 +0100
-Subject: [PATCH 04/52] clk: meson: g12a: make VCLK2 and ENCL clock path
- configurable by CCF
+Date: Thu, 9 Nov 2023 10:00:09 +0100
+Subject: [PATCH 31/64] FROMLIST(v8): clk: meson: g12a: make VCLK2 and ENCL
+ clock path configurable by CCF
 
 In order to setup the DSI clock, let's make the unused VCLK2 clock path
 configuration via CCF.
