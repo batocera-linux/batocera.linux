@@ -46,7 +46,7 @@ Add support for the Pironman case with RPI4 devices.
 - wayland-protocols to 1.33
 - wlroots to 0.17.1
 - sway to 1.9
-- mesa3d to 24.0.1
+- mesa3d to 24.0.2
 - RPI kernel to 6.1.77
 - RK3326 kernel to 6.7.5
 - RK3399 kernel to 6.1.78
