@@ -1,0 +1,20 @@
+--- a/hid-lg4ff.h	2024-03-03 18:08:23.699501602 +0100
++++ b/hid-lg4ff.h	2024-03-03 18:08:44.223929500 +0100
+@@ -2,6 +2,7 @@
+ #ifndef __HID_LG4FF_H
+ #define __HID_LG4FF_H
+ 
++#define CONFIG_LOGIWHEELS_FF
+ #ifdef CONFIG_LOGIWHEELS_FF
+ extern int lg4ff_no_autoswitch; /* From hid-lg.c */
+ 
+--- a/hid-lg.c	2024-03-03 18:08:31.743669302 +0100
++++ b/hid-lg.c	2024-03-03 18:09:01.104281475 +0100
+@@ -943,6 +943,7 @@
+ };
+ module_hid_driver(lg_driver);
+ 
++#define CONFIG_LOGIWHEELS_FF
+ #ifdef CONFIG_LOGIWHEELS_FF
+ int lg4ff_no_autoswitch = 0;
+ module_param_named(lg4ff_no_autoswitch, lg4ff_no_autoswitch, int, S_IRUGO);
