@@ -19,14 +19,14 @@ index 61b6711..90622b5 100755
  enable_video_dummy
  enable_video_offscreen
 @@ -25649,6 +25650,10 @@ fi
- 
+
          video_kmsdrm=no
- 
+
 +    if  test x$enable_video_mali = xyes; then
 +      $as_echo "#define SDL_VIDEO_DRIVER_MALI 1" >>confdefs.h
 +      SUMMARY_video="${SUMMARY_video} mali"
 +    fi
- 
+
  pkg_failed=no
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libdrm >= 1.4.82" >&5
 diff --git a/configure.ac b/configure.ac
@@ -36,9 +36,9 @@ index 56087fb..3c06385 100644
 @@ -2445,6 +2445,15 @@ CheckKMSDRM()
              video_kmsdrm=yes
          fi
- 
+
 +        AC_ARG_ENABLE(video-mali,
-+        [AS_HELP_STRING([--enable-video-mali], 
++        [AS_HELP_STRING([--enable-video-mali],
 +	       [use Mali video driver [default=no]])],
 +	      , enable_video_mali=yes)
 +        if test x$enable_video = xyes && x$enable_video_mali = xyes; then
@@ -97,7 +97,7 @@ index a89c0e8..2d8179f 100644
 +	}
 +#else
          SDL_EGL_GetVersion(_this);
- 
+
          if (_this->egl_data->egl_version_major == 1 && _this->egl_data->egl_version_minor == 5) {
 @@ -532,6 +548,7 @@ int SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_di
                  }
@@ -116,10 +116,10 @@ index 9b34d68..f40232c 100644
      /* if SDL was _also_ built with the Raspberry Pi driver (so we're
         definitely a Pi device), default to GLES2. */
 -#ifdef SDL_VIDEO_DRIVER_RPI
-+#ifdef defined(SDL_VIDEO_DRIVER_RPI) || defined(SDL_VIDEO_DRIVER_MALI)
++#if defined(SDL_VIDEO_DRIVER_RPI) || defined(SDL_VIDEO_DRIVER_MALI)
      *mask = SDL_GL_CONTEXT_PROFILE_ES;
      *major = 2;
      *minor = 0;
--- 
+--
 2.44.0
 
