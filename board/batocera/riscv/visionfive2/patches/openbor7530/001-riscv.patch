@@ -1,0 +1,23 @@
+--- a/engine/Makefile	2024-03-03 19:45:55.335442534 +0100
++++ b/engine/Makefile	2024-03-03 19:46:37.120349846 +0100
+@@ -84,18 +84,8 @@
+ CC  	        = $(LNXDEV)/$(PREFIX)gcc
+ OBJTYPE         = elf
+ INCLUDES        = $(STAGING_DIR)/include
+-ifeq ($(findstring 64, $(GCC_TARGET)), 64)
+-TARGET_ARCH     = amd64
+-BUILD_AMD64     = 1
+-ARCHFLAGS       = -m64
+-LIBRARIES       = $(STAGING_DIR)/lib/$(GCC_TARGET)
+-CFLAGS          += -DAMD64
+-else
+-TARGET_ARCH     = x86
+-ARCHFLAGS       = -m32
+-LIBRARIES       = $(STAGING_DIR)/lib32
+-BUILD_MMX       = 1
+-endif
++TARGET_ARCH     = riscv64
++ARCHFLAGS       = 
+ ifeq ($(BUILD_LINUX), 0)
+ BUILD_DEBUG     = 1
+ endif
