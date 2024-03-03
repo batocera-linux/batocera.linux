@@ -49,7 +49,7 @@ Add support for the Pironman case with RPI4 devices.
 - mesa3d to 24.0.2
 - RPI kernel to 6.1.77
 - RK3326 kernel to 6.7.5
-- RK3399 kernel to 6.1.78
+- RK3399 kernel to 6.6.19
 - S922X kernel to 6.7.5
 - Odroid-XU4 kernel to 6.6.16
 - sdl2 to 2.30.0
