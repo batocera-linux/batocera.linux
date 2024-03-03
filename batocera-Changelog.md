@@ -51,7 +51,7 @@ Add support for the Pironman case with RPI4 devices.
 - RK3326 kernel to 6.7.8
 - RK3399 kernel to 6.6.20
 - S922X kernel to 6.7.8
-- Odroid-XU4 kernel to 6.6.16
+- Odroid-XU4 kernel to 6.6.20
 - sdl2 to 2.30.0
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
