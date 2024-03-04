@@ -18,3 +18,23 @@
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
        set (LIBZA libz.a )
     else()
+--- a/CPCCore/AmstradCore/CMakeLists.txt	2024-03-04 12:48:31.829479684 +0100
++++ b/CPCCore/AmstradCore/CMakeLists.txt	2024-03-04 12:49:41.227197343 +0100
+@@ -48,5 +48,5 @@
+ endif()
+ 
+ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+-	set ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++1z )
++  set_property(TARGET AmstradCore PROPERTY CXX_STANDARD 17)
+ endif()
+--- a/CPCCore/AmstradCoreTests/CMakeLists.txt	2024-03-04 12:50:48.936852893 +0100
++++ b/CPCCore/AmstradCoreTests/CMakeLists.txt	2024-03-04 12:51:41.838134002 +0100
+@@ -42,7 +42,7 @@
+ ENDIF(MSVC)
+ 
+ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+-	set ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++1z)
++   set_property(TARGET AmstradCoreTests PROPERTY CXX_STANDARD 17)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+       set (LIBZA libz.a )
+    else()
