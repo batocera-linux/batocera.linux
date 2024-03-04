@@ -157,10 +157,12 @@ case "${ACTION}" in
                 # in case of reboot of es
                 swaymsg output "${OUTPUT}" transform normal
         esac
-
+    ;;
+    "mapTouchScreen")
         # Mapping touch screen
         TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
         if [ ! -z "${TOUCHSCREEN}" ]; then
+            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
             swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
         fi
     ;;
