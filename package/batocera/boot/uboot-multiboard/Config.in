@@ -23,7 +23,7 @@ config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
   default "libretech_all_h3_cc_h3 orangepi_one orangepi_pc orangepi_pc_plus orangepi_plus2e bananapi_m2_zero" if BR2_PACKAGE_BATOCERA_TARGET_H3
   default "libretech_all_h3_cc_h5 orangepi_pc2"                              if BR2_PACKAGE_BATOCERA_TARGET_H5
   default "orangepi_3 orangepi_3_lts orangepi_one_plus"                      if BR2_PACKAGE_BATOCERA_TARGET_H6
-  default "orangepi_zero2"						if BR2_PACKAGE_BATOCERA_TARGET_H616
+  default "orangepi_zero2 orangepi_zero3 x96_mate"			     if BR2_PACKAGE_BATOCERA_TARGET_H616
   default ""
   help
     Names of U-Boot defconfigs to build without the _defconfig part.
