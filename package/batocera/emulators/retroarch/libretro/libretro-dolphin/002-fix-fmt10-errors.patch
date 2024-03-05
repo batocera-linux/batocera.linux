@@ -1,0 +1,44 @@
+diff --git a/Source/Core/Core/IOS/FS/seek_mode_formatter.h b/Source/Core/Core/IOS/FS/seek_mode_formatter.h
+new file mode 100644
+index 0000000000..e338049b7c
+--- /dev/null
++++ b/Source/Core/Core/IOS/FS/seek_mode_formatter.h
+@@ -0,0 +1,25 @@
++#ifndef SEEK_MODE_FORMATTER_H
++#define SEEK_MODE_FORMATTER_H
++
++#include <fmt/format.h>
++
++namespace fmt {
++
++template <>
++struct formatter<IOS::HLE::SeekMode> {
++    template <typename ParseContext>
++    constexpr auto parse(ParseContext& ctx) {
++        // Implement parse if necessary, it can be left empty if not needed
++        return ctx.begin();
++    }
++    
++    template <typename FormatContext>
++    auto format(const IOS::HLE::SeekMode& mode, FormatContext& ctx) {
++        return format_to(ctx.out(), "{}", static_cast<int>(mode)); // Format mode as an integer
++    }
++};
++
++} // namespace fmt
++
++#endif // SEEK_MODE_FORMATTER_H
++
+diff --git a/Source/Core/Core/IOS/FS/FileSystemProxy.cpp b/Source/Core/Core/IOS/FS/FileSystemProxy.cpp
+index 181a739748..84b72bc3c6 100644
+--- a/Source/Core/Core/IOS/FS/FileSystemProxy.cpp
++++ b/Source/Core/Core/IOS/FS/FileSystemProxy.cpp
+@@ -18,6 +18,8 @@
+ #include "Core/IOS/FS/FileSystem.h"
+ #include "Core/IOS/Uids.h"
+ 
++#include "seek_mode_formatter.h"
++
+ namespace IOS::HLE::Device
+ {
+ using namespace IOS::HLE::FS;

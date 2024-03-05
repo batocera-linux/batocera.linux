@@ -1,0 +1,10 @@
+config BR2_PACKAGE_VULKANINFO
+  bool "vulkaninfo"
+  depends on BR2_PACKAGE_WAYLAND || BR2_PACKAGE_XORG7
+  select BR2_PACKAGE_VULKAN_HEADERS
+  select BR2_PACKAGE_VULKAN_LOADER
+  select BR2_PACKAGE_HOST_PYTHON3
+  select BR2_PACKAGE_HOST_PYTHON3_SSL
+  select BR2_PACKAGE_GLSLANG
+  help
+    Small script to get Vulkan Information
