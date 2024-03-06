@@ -1,7 +1,7 @@
-From 5e1dd25b818aa19a2b38485724a173cd7ef2d139 Mon Sep 17 00:00:00 2001
-From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+From 8ba55ed10c13f40ac110e55db1619a1f63f89dff Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
 Date: Wed, 24 Jan 2024 22:12:01 +0000
-Subject: [PATCH 18/52] gpiolib: of: revert api changes needed for joypad
+Subject: [PATCH 18/49] gpiolib: of: revert api changes needed for joypad
  driver
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH 18/52] gpiolib: of: revert api changes needed for joypad
  create mode 100644 include/linux/of_gpio_legacy.h
 
 diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 402f7d99b0c1..c3b5a3aecfc7 100644
+index d9525d95e818..6291ef324a06 100644
 --- a/drivers/gpio/gpiolib-of.c
 +++ b/drivers/gpio/gpiolib-of.c
-@@ -408,6 +408,20 @@ static struct gpio_desc *of_get_named_gpiod_flags(const struct device_node *np,
+@@ -398,6 +398,20 @@ static struct gpio_desc *of_get_named_gpiod_flags(const struct device_node *np,
  	return desc;
  }
  

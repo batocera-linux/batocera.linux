@@ -1,7 +1,7 @@
-From a24b1cbc49eaf8bce3429f3a8a0fe7fc059bd9c2 Mon Sep 17 00:00:00 2001
+From 4fb0701649967cdeabd55fe7dfd05dba4d6c4cb6 Mon Sep 17 00:00:00 2001
 From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
 Date: Wed, 31 Jan 2024 18:36:49 +0000
-Subject: [PATCH 43/52] arm64: meson: odroid-go-ultra: add battery and charger
+Subject: [PATCH 43/49] arm64: meson: odroid-go-ultra: add battery and charger
  nodes
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 43/52] arm64: meson: odroid-go-ultra: add battery and charger
  1 file changed, 52 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-index 05b3f3fe3867..fd87e386a160 100644
+index 071f07e9e883..00a46e830ab3 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 @@ -25,6 +25,26 @@ chosen {
@@ -39,7 +39,7 @@ index 05b3f3fe3867..fd87e386a160 100644
  	codec_clk: codec-clk {
  		compatible = "fixed-clock";
  		clock-frequency = <12288000>;
-@@ -412,6 +432,38 @@ rk818: pmic@1c {
+@@ -415,6 +435,38 @@ rk818: pmic@1c {
  		vcc9-supply = <&vddao_3v3>;
  		boost-supply = <&vdd_sys>;
  

@@ -1,7 +1,7 @@
-From fb0952f671f00432047d411c0102f7ef56727f8d Mon Sep 17 00:00:00 2001
+From a34fda226977aaa2d4d5e775607756469c390536 Mon Sep 17 00:00:00 2001
 From: ckkim <changkon12@gmail.com>
 Date: Thu, 20 Apr 2023 16:21:09 +0900
-Subject: [PATCH 47/52] arm64: dts: amlogic: odroid-go ultra: Improve sound
+Subject: [PATCH 47/49] arm64: dts: amlogic: odroid-go ultra: Improve sound
  output quality
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 47/52] arm64: dts: amlogic: odroid-go ultra: Improve sound
  1 file changed, 11 insertions(+), 38 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-index 228bc042d284..2a791145057c 100644
+index 1cfe91b67df4..90e5961aca68 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 @@ -237,22 +237,9 @@ vdd_sys: regulator-vdd-sys {
@@ -66,7 +66,7 @@ index 228bc042d284..2a791145057c 100644
  };
  
  &arb {
-@@ -763,29 +741,24 @@ &sd_emmc_c {
+@@ -766,29 +744,24 @@ &sd_emmc_c {
  
  
  &tdmif_b {

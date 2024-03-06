@@ -1,7 +1,7 @@
-From f7433096a986015e4df1325b5cfbefc15f9c3a9a Mon Sep 17 00:00:00 2001
+From 2476f8cdccfd9e5429b3a1beef5825164619c65a Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sat, 4 Nov 2023 18:25:03 +0100
-Subject: [PATCH 32/52] power: supply: rk818-charger: Unify rk818-charger and
+Subject: [PATCH 32/49] power: supply: rk818-charger: Unify rk818-charger and
  rk818-battery
 
 The BSP driver is still used, but there is now a one device handling
@@ -17,10 +17,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  4 files changed, 95 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index a8f03555188f..b058d033fbf4 100644
+index 69d1b897a771..04d6ab28b44f 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
-@@ -993,14 +993,6 @@ config FUEL_GAUGE_MM8013
+@@ -961,14 +961,6 @@ config FUEL_GAUGE_MM8013
  	  the state of charge, temperature, cycle count, actual and design
  	  capacity, etc.
  
@@ -36,10 +36,10 @@ index a8f03555188f..b058d033fbf4 100644
  	bool "RK818 Charger driver"
  	depends on MFD_RK8XX
 diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index 5a2480aca754..873d0cc4cbeb 100644
+index 867ca396bc5a..e25b09cca4ca 100644
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
-@@ -114,5 +114,4 @@ obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
+@@ -112,5 +112,4 @@ obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
  obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
  obj-$(CONFIG_CHARGER_QCOM_SMB2)	+= qcom_pmi8998_charger.o
  obj-$(CONFIG_FUEL_GAUGE_MM8013)	+= mm8013.o

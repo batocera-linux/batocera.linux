@@ -1,7 +1,7 @@
-From c633784ce32dbef40ed6dabe3a8180e5b6306416 Mon Sep 17 00:00:00 2001
+From 96b26c76769f6adf339b41926afe656fc30446d0 Mon Sep 17 00:00:00 2001
 From: ckkim <changkon12@gmail.com>
 Date: Thu, 20 Apr 2023 16:18:40 +0900
-Subject: [PATCH 44/52] ASoC: meson: axg-card: limit the volume to prevent
+Subject: [PATCH 44/49] ASoC: meson: axg-card: limit the volume to prevent
  clipping of output signal
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 44/52] ASoC: meson: axg-card: limit the volume to prevent
  1 file changed, 7 insertions(+)
 
 diff --git a/sound/soc/meson/axg-card.c b/sound/soc/meson/axg-card.c
-index 3180aa4d3a15..e17a9418bde4 100644
+index f10c0c17863e..ba9bd1255075 100644
 --- a/sound/soc/meson/axg-card.c
 +++ b/sound/soc/meson/axg-card.c
 @@ -59,6 +59,13 @@ static int axg_card_tdm_dai_init(struct snd_soc_pcm_runtime *rtd)
