@@ -1,7 +1,7 @@
-From 4abd6be283d7ef66a50f2fd79484dc844bc8c9b6 Mon Sep 17 00:00:00 2001
+From f30d17b19e6ffcf86b833097d560030c80571d0f Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sun, 11 Dec 2022 10:39:22 +0100
-Subject: [PATCH 37/52] power: supply: rk818-battery: Don't reset dsoc to 0 on
+Subject: [PATCH 37/49] power: supply: rk818-battery: Don't reset dsoc to 0 on
  rk818_vb_low_irq
 
 The interrupt fires at 3.4V vbat which is not equivalent to 0% charge.

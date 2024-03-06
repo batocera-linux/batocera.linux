@@ -50,7 +50,7 @@ Add support for the Pironman case with RPI4 devices.
 - RPI kernel to 6.6.20
 - RK3326 kernel to 6.7.8
 - RK3399 kernel to 6.6.20
-- S922X kernel to 6.7.8
+- S922X kernel to 6.6.20
 - Odroid-XU4 kernel to 6.6.20
 - sdl2 to 2.30.0
 

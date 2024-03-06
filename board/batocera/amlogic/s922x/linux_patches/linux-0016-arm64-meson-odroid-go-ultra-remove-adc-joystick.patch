@@ -1,14 +1,14 @@
-From e1e577d500d4c7b900bcd8540ec1b78b8e0180a9 Mon Sep 17 00:00:00 2001
+From 38fa893698684ad22da9e7c82c5b4edac57bb5d8 Mon Sep 17 00:00:00 2001
 From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
 Date: Wed, 24 Jan 2024 12:08:19 +0000
-Subject: [PATCH 16/52] arm64: meson: odroid-go-ultra: remove adc joystick
+Subject: [PATCH 16/49] arm64: meson: odroid-go-ultra: remove adc joystick
 
 ---
  .../amlogic/meson-g12b-odroid-go-ultra.dts    | 46 -------------------
  1 file changed, 46 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-index 74e1a315bfb1..30c48311f165 100644
+index d13ac7f6c2ff..01d433769da8 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 @@ -21,52 +21,6 @@ aliases {
