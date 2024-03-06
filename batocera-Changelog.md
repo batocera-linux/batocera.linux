@@ -47,7 +47,7 @@ Add support for the Pironman case with RPI4 devices.
 - wlroots to 0.17.1
 - sway to 1.9
 - mesa3d to 24.0.2
-- RPI kernel to 6.1.77
+- RPI kernel to 6.6.20
 - RK3326 kernel to 6.7.8
 - RK3399 kernel to 6.6.20
 - S922X kernel to 6.7.8
