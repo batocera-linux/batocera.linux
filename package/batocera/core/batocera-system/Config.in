@@ -1427,9 +1427,6 @@ config BR2_PACKAGE_BATOCERA_KODI20
     select BR2_PACKAGE_KODI_VFS_RAR
     select BR2_PACKAGE_KODI_VFS_LIBARCHIVE
 
-    # packages for kodi
-    select BR2_PACKAGE_MYSQL
-
     # default kodi packages for batocera
     select BR2_PACKAGE_KODI_MYSQL
     select BR2_PACKAGE_KODI_ALSA_LIB
