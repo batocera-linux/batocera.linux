@@ -2,7 +2,7 @@ config BR2_PACKAGE_LIBRETRO_TIC80
     bool "libretro-tic80"
     depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
-    select BR2_PACKAGE_LIBJANET
+    select BR2_PACKAGE_JANET
 
       help
         A libretro TIC-80 engine
