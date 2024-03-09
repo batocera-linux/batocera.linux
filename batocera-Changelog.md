@@ -41,6 +41,7 @@ Add support for the Pironman case with RPI4 devices.
 - Redream to 1.5.0-1103-g47bc2b7
 
 ### System
+- Mainline Kernel 6.6.y bump to 6.6.21
 - Nvidia Production driver to 550.54.14
 - Nvidia Legacy driver to 470.239.06
 - wayland-protocols to 1.33
@@ -49,9 +50,6 @@ Add support for the Pironman case with RPI4 devices.
 - mesa3d to 24.0.2
 - RPI kernel to 6.6.20
 - RK3326 kernel to 6.7.8
-- RK3399 kernel to 6.6.20
-- S922X kernel to 6.6.20
-- Odroid-XU4 kernel to 6.6.20
 - sdl2 to 2.30.0
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
