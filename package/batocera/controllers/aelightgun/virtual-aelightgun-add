@@ -50,8 +50,7 @@ then
 # Second button rear left  : KEY_2
 # Third button rear left   : KEY_3
 # Fourth button rear left  : KEY_4
-# Top back                 : KEY_UP
-# Bottom back              : KEY_DOWN
+# Back top, bottom         : KEY_UP, KEY_DOWN
 	
     nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:3 btn:3 --map key:4 btn:4 --map key:up btn:5 --map key:down btn:6 --output name="AE lightgun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"

@@ -38,6 +38,10 @@ checkRunningPIDAndExit1
 CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
+# Trigger                  : BTN_LEFT
+# L. side button           : BTN_MIDDLE
+# R. side button/offscreen : BTN_RIGHT
+
 if test "${NDEVS}" = 3
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)

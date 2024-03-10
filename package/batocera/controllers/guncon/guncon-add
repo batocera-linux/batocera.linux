@@ -3,17 +3,16 @@
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
-    # left     /
-    # right    /
-    # middle   /
-    # button_1 / select
-    # button_2 / a
-    # button_3 / b
-    # button_4 / c
-    # button_5 / up
-    # button_6 / down
-    # button_7 / left
-    # button_8 / right
+############
+# Based on GunCon2 GUN4IR model, Redemp's work
+############
+# Trigger           : BTN_LEFT
+# A                 : BTN_MIDDLE
+# B                 : BTN_RIGHT
+# C                 : BTN_4
+# Start             : BTN_3
+# Select            : BTN_2
+# Thumb pad         : BTN_5, BTN_6, BTN_7, BTN_8
 
 DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
-evsieve --input "${DEVNAME}" persist=exit --map btn:middle btn:1 --map btn:right btn:middle --map key:1 btn:3 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --map btn:c btn:right --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
+evsieve --input "${DEVNAME}" persist=exit --map yield btn:middle btn:1 --map yield btn:right btn:middle --map yield key:1 btn:3 --map yield key:5 btn:2 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --map yield btn:c btn:right --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
