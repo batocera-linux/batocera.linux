@@ -5,6 +5,7 @@
 Add support for the Pironman case with RPI4 devices.
 
 ### Added
+- Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 
 ### Fixed
 - RG552 Splash-screen rotation
