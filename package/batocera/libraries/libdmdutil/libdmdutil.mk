@@ -3,12 +3,12 @@
 # libdmdutil
 #
 ################################################################################
-# Version: Commits on Feb 28, 2024
-LIBDMDUTIL_VERSION = aa9891badb82ced609460f914e85966ce75df7a6
+# Version: Commits on Mar 11, 2024
+LIBDMDUTIL_VERSION = ba8ed0c1f8d8abef89f109e35a1f3556903bd1f8
 LIBDMDUTIL_SITE = $(call github,vpinball,libdmdutil,$(LIBDMDUTIL_VERSION))
 LIBDMDUTIL_LICENSE = BSD-3-Clause
 LIBDMDUTIL_LICENSE_FILES = LICENSE
-LIBDMDUTIL_DEPENDENCIES = libserialport libzedmd libserum
+LIBDMDUTIL_DEPENDENCIES = libserialport sockpp cargs libzedmd libserum
 LIBDMDUTIL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 LIBDMDUTIL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -41,5 +41,11 @@ endef
 LIBDMDUTIL_INSTALL_STAGING = YES
 
 LIBDMDUTIL_PRE_CONFIGURE_HOOKS += LIBDMDUTIL_CMAKE_HACKS
+
+define LIBDMDUTIL_INSTALL_SERVER
+   $(INSTALL) -D -m 0755 $(LIBDMDUTIL_BUILDDIR)/dmdserver $(TARGET_DIR)/usr/bin/dmdserver
+endef
+
+LIBDMDUTIL_POST_INSTALL_TARGET_HOOKS += LIBDMDUTIL_INSTALL_SERVER
 
 $(eval $(cmake-package))
