@@ -40,6 +40,7 @@ Add support for the Pironman case with RPI4 devices.
 - libretro-swanstation: bump to Jan 25, 2024 build
 - libretro-pcsx: bump to Feb 14, 2024 build
 - Redream to 1.5.0-1103-g47bc2b7
+- Ikemen Go to 0.99
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
