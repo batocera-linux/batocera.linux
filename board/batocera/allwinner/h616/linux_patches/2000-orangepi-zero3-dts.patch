@@ -1,6 +1,6 @@
 --- a/dev/null	2024-03-01 19:05:30.940000115 +0100
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts	2024-03-03 12:58:56.462328972 +0100
-@@ -0,0 +1,377 @@
+@@ -0,0 +1,378 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +/*
 + * Copyright (C) 2020 Arm Ltd.
@@ -121,6 +121,7 @@
 +};
 +
 +&gpu {
++       operating-points-v2 = <&gpu_opp_table>;
 +	mali-supply = <&reg_dcdc1>;
 +	status = "okay";
 +};

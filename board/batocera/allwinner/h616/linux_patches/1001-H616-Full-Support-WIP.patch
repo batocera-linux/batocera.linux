@@ -137,7 +137,7 @@ index 02893f3ac..2d5cf39b7 100644
  		};
  	};
  
-@@ -49,6 +61,65 @@ reg_vcc5v: vcc5v {
+@@ -49,6 +61,66 @@ reg_vcc5v: vcc5v {
  		regulator-max-microvolt = <5000000>;
  		regulator-always-on;
  	};
@@ -198,6 +198,7 @@ index 02893f3ac..2d5cf39b7 100644
 +};
 +
 +&gpu {
++       operating-points-v2 = <&gpu_opp_table>;
 +	mali-supply = <&reg_dcdcc>;
 +	status = "okay";
  };
