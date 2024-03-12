@@ -53,6 +53,7 @@ Add support for the Pironman case with RPI4 devices.
 - RPI kernel to 6.6.20
 - RK3326 kernel to 6.7.8
 - sdl2 to 2.30.0
+- X86_64 kernel to 6.8
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
