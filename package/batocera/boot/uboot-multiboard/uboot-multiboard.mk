@@ -3,7 +3,7 @@
 # uboot multiboard
 #
 ################################################################################
-UBOOT_MULTIBOARD_VERSION = 2024.01
+UBOOT_MULTIBOARD_VERSION = 2023.01
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
@@ -41,10 +41,6 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
 UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
 UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
 UBOOT_MULTIBOARD_SOC_DIR = common-h6
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
-UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
-UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
-UBOOT_MULTIBOARD_SOC_DIR = common-h616
 else
 # Dummy SoC dir prevents adding common level patches twice
 # in case a new target SoC starts using this package and
