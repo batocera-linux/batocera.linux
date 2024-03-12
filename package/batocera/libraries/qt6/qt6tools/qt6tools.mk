@@ -9,6 +9,8 @@ QT6TOOLS_SITE = $(QT6_SITE)
 QT6TOOLS_SOURCE = qttools-$(QT6_SOURCE_TARBALL_PREFIX)-$(QT6TOOLS_VERSION).tar.xz
 QT6TOOLS_SUPPORTS_IN_SOURCE_BUILD = NO
 
+QT6TOOLS_CMAKE_BACKEND = ninja
+
 QT6TOOLS_DEPENDENCIES = \
 	double-conversion \
 	host-ninja \
@@ -19,7 +21,6 @@ QT6TOOLS_DEPENDENCIES = \
 	zlib
 
 QT6TOOLS_CONF_OPTS = \
-	-GNinja \
 	-DQT_HOST_PATH=$(HOST_DIR) \
 	-DQT_FEATURE_linguist=ON \
     -DQT_FEATURE_qdbus=ON \
@@ -51,7 +52,6 @@ HOST_QT6TOOLS_DEPENDENCIES = \
     host-zlib
 
 HOST_QT6TOOLS_CONF_OPTS = \
-    -GNinja \
     -DQT_FEATURE_linguist=ON \
     -DQT_FEATURE_qdbus=OFF \
     -DQT_FEATURE_qtattributionsscanner=ON \

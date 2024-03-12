@@ -1,9 +1,0 @@
-config BR2_PACKAGE_KODI20_AUDIOENCODER_LAME
-	bool "kodi20-audioencoder-lame"
-	select BR2_PACKAGE_KODI20_OPTICALDRIVE
-	select BR2_PACKAGE_LAME
-	select BR2_PACKAGE_LIBICONV if !BR2_ENABLE_LOCALE
-	help
-	  An audioencoder addon for Kodi
-
-	  https://github.com/xbmc/audioencoder.lame

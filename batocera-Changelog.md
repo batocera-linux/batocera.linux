@@ -1,10 +1,11 @@
-# 2024/xx/xx - batocera.linux 40 - 
+# 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
 
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 
 ### Added
+- Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 
 ### Fixed
 - RG552 Splash-screen rotation
@@ -39,20 +40,20 @@ Add support for the Pironman case with RPI4 devices.
 - libretro-swanstation: bump to Jan 25, 2024 build
 - libretro-pcsx: bump to Feb 14, 2024 build
 - Redream to 1.5.0-1103-g47bc2b7
+- Ikemen Go to 0.99
 
 ### System
+- Mainline Kernel 6.6.y bump to 6.6.21
 - Nvidia Production driver to 550.54.14
 - Nvidia Legacy driver to 470.239.06
 - wayland-protocols to 1.33
 - wlroots to 0.17.1
 - sway to 1.9
 - mesa3d to 24.0.2
-- RPI kernel to 6.1.77
-- RK3326 kernel to 6.7.8
-- RK3399 kernel to 6.6.20
-- S922X kernel to 6.7.8
-- Odroid-XU4 kernel to 6.6.20
+- RPI kernel to 6.6.20
+- RK3326 kernel to 6.8
 - sdl2 to 2.30.0
+- X86_64 kernel to 6.8
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes

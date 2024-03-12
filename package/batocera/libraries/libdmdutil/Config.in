@@ -1,8 +1,10 @@
 config BR2_PACKAGE_LIBDMDUTIL
     bool "libdmdutil"
+    select BR2_PACKAGE_LIBSERIALPORT
+    select BR2_PACKAGE_SOCKPP
+    select BR2_PACKAGE_CARGS
     select BR2_PACKAGE_LIBZEDMD
     select BR2_PACKAGE_LIBSERUM
-    select BR2_PACKAGE_LIBSERIALPORT
     help
       libdmdutil - A cross platform library for performing DMD tasks.
       

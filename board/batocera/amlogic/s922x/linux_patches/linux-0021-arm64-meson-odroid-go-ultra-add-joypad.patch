@@ -1,14 +1,14 @@
-From ccaded3e8dc6b07825ebcb3b84b3c1dfd2fb1826 Mon Sep 17 00:00:00 2001
-From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+From 74abcbd59fda168ba65c6f106322012c84c151a0 Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
 Date: Wed, 24 Jan 2024 21:57:34 +0000
-Subject: [PATCH 21/52] arm64: meson: odroid-go-ultra: add joypad
+Subject: [PATCH 21/49] arm64: meson: odroid-go-ultra: add joypad
 
 ---
  .../amlogic/meson-g12b-odroid-go-ultra.dts    | 156 +++++++++++-------
  1 file changed, 93 insertions(+), 63 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
-index 30c48311f165..595b2a76157e 100644
+index 01d433769da8..11bd4939f283 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
 @@ -34,9 +34,8 @@ codec_clk: codec-clk {

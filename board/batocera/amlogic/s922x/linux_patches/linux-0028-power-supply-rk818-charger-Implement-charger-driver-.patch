@@ -1,7 +1,7 @@
-From 1b0be551552be3502a58811b474ab17535000d63 Mon Sep 17 00:00:00 2001
+From c5c7a79edd726f7408a3ef1ba118c8fe2869eda8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>
 Date: Sun, 7 Nov 2021 20:09:02 +0100
-Subject: [PATCH 28/52] power: supply: rk818-charger: Implement charger driver
+Subject: [PATCH 28/49] power: supply: rk818-charger: Implement charger driver
  for RK818 PMIC
 
 For now this driver is just meant to watch Type-C power supply
@@ -17,10 +17,10 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
  create mode 100644 drivers/power/supply/rk818_charger.c
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index 1722fc1ee7ec..a8f03555188f 100644
+index 2c0317b38ba5..69d1b897a771 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
-@@ -1001,4 +1001,12 @@ config BATTERY_RK818
+@@ -969,4 +969,12 @@ config BATTERY_RK818
  	  If you say yes here you will get support for the battery of RK818 PMIC.
  	  This driver can give support for Rk818 Battery Charge Interface.
  
@@ -34,10 +34,10 @@ index 1722fc1ee7ec..a8f03555188f 100644
 +
  endif # POWER_SUPPLY
 diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index aa3de47be2c5..5a2480aca754 100644
+index 8e1aba33e0a2..867ca396bc5a 100644
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
-@@ -115,3 +115,4 @@ obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
+@@ -113,3 +113,4 @@ obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
  obj-$(CONFIG_CHARGER_QCOM_SMB2)	+= qcom_pmi8998_charger.o
  obj-$(CONFIG_FUEL_GAUGE_MM8013)	+= mm8013.o
  obj-$(CONFIG_BATTERY_RK818)	+= rk818_battery.o

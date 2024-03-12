@@ -66,21 +66,18 @@ NDEVSINPUTS=$(echo "${CHILDRENINPUTS}" | wc -l)
 CHILDRENVIDEOS=$(evsieve-helper children "${PARENTVIDEOSHASH}" video usb)
 NDEVSVIDEOS=$(echo "${CHILDRENVIDEOS}" | wc -l)
 
+# Trigger                  : BTN_LEFT
+# Pump, front left         : BTN_RIGHT
+# Rear left                : BTN_MIDDLE
+# Front right              : KEY_2
+# Rear right               : KEY_1
+# D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+
 if test "${NDEVSINPUTS}" = 2 -a "${NDEVSVIDEOS}" -ge 1
 then
     DEV1=$(echo "${CHILDRENINPUTS}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDRENINPUTS}" | head -2 | tail -1 | cut -f 1)
-    # 1:     left     / b
-    # 2:     right    / a
-    # 3:     middle   / home
-    # -:     button_1 / select
-    # 1:     button_2 / a
-    # 2:     button_3 / b
-    # +:     button_4 / c
-    # up:    button_5 / up
-    # down:  button_6 / down
-    # left:  button_7 / left
-    # right: button_8 / right
+
     nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Sinden lightgun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 

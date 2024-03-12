@@ -1,8 +1,0 @@
-config BR2_PACKAGE_KODI20_PVR_STALKER
-	bool "kodi20-pvr-stalker"
-	select BR2_PACKAGE_JSONCPP
-	select BR2_PACKAGE_LIBXML2
-	help
-	  A PVR Client that connects Kodi to Stalker Middleware
-
-	  https://github.com/kodi20-pvr/pvr.stalker

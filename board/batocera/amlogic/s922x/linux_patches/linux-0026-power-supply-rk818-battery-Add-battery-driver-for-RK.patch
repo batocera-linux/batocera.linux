@@ -1,7 +1,7 @@
-From 4374ab3cae9a5a6f046ddce7e37c2a179f59094e Mon Sep 17 00:00:00 2001
+From 6bc5a3d8fb3c742f53afa6d8a0c39bfeb93c0835 Mon Sep 17 00:00:00 2001
 From: Ondrej Jirman <megi@xff.cz>
 Date: Sun, 11 Jun 2023 18:29:24 +0200
-Subject: [PATCH 26/52] power: supply: rk818-battery: Add battery driver for
+Subject: [PATCH 26/49] power: supply: rk818-battery: Add battery driver for
  RK818
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -12,18 +12,18 @@ This is forward ported driver from Rockchip BSP.
 Signed-of-by: Kamil Trzciński <ayufan@ayufan.eu>
 ---
  drivers/mfd/rk8xx-core.c             |    6 +-
- drivers/mfd/rk8xx-i2c.c              |   38 +-
+ drivers/mfd/rk8xx-i2c.c              |   40 +-
  drivers/power/supply/Kconfig         |   17 +
- drivers/power/supply/Makefile        |    1 +
+ drivers/power/supply/Makefile        |    2 +
  drivers/power/supply/rk818_battery.c | 3568 ++++++++++++++++++++++++++
  drivers/power/supply/rk818_battery.h |  168 ++
  include/linux/mfd/rk808.h            |   81 +-
- 7 files changed, 3874 insertions(+), 5 deletions(-)
+ 7 files changed, 3876 insertions(+), 6 deletions(-)
  create mode 100644 drivers/power/supply/rk818_battery.c
  create mode 100644 drivers/power/supply/rk818_battery.h
 
 diff --git a/drivers/mfd/rk8xx-core.c b/drivers/mfd/rk8xx-core.c
-index b1ffc3b9e2be..05175284079e 100644
+index a577f950c632..301583865673 100644
 --- a/drivers/mfd/rk8xx-core.c
 +++ b/drivers/mfd/rk8xx-core.c
 @@ -109,8 +109,10 @@ static const struct mfd_cell rk817s[] = {
@@ -40,7 +40,7 @@ index b1ffc3b9e2be..05175284079e 100644
  		.name = "rk808-rtc",
  		.num_resources = ARRAY_SIZE(rtc_resources),
 diff --git a/drivers/mfd/rk8xx-i2c.c b/drivers/mfd/rk8xx-i2c.c
-index 75b5cf09d5a0..3d9632fb3554 100644
+index 1a98feea97e2..fdb472b570cc 100644
 --- a/drivers/mfd/rk8xx-i2c.c
 +++ b/drivers/mfd/rk8xx-i2c.c
 @@ -75,13 +75,47 @@ static bool rk817_is_volatile_reg(struct device *dev, unsigned int reg)
@@ -86,20 +86,21 @@ index 75b5cf09d5a0..3d9632fb3554 100644
  	.reg_bits = 8,
  	.val_bits = 8,
 -	.max_register = RK818_USB_CTRL_REG,
-+	.max_register = RK818_SAVE_DATA19,
- 	.cache_type = REGCACHE_MAPLE,
+-	.cache_type = REGCACHE_RBTREE,
 -	.volatile_reg = rk808_is_volatile_reg,
++	.max_register = RK818_SAVE_DATA19,
++	.cache_type = REGCACHE_MAPLE,
 +	.volatile_reg = rk818_is_volatile_reg,
  };
  
  static const struct regmap_config rk805_regmap_config = {
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index f21cb05815ec..1722fc1ee7ec 100644
+index a61bb1283e19..2c0317b38ba5 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
-@@ -984,4 +984,21 @@ config FUEL_GAUGE_MM8013
- 	  the state of charge, temperature, cycle count, actual and design
- 	  capacity, etc.
+@@ -952,4 +952,21 @@ config CHARGER_QCOM_SMB2
+ 	  adds support for the SMB2 switch mode battery charger found
+ 	  in PMI8998 and related PMICs.
  
 +config FUEL_GAUGE_MM8013
 +	tristate "Mitsumi MM8013 fuel gauge driver"
@@ -120,13 +121,14 @@ index f21cb05815ec..1722fc1ee7ec 100644
 +
  endif # POWER_SUPPLY
 diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index 58b567278034..aa3de47be2c5 100644
+index a8a9fa6de1e9..8e1aba33e0a2 100644
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
-@@ -114,3 +114,4 @@ obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
+@@ -111,3 +111,5 @@ obj-$(CONFIG_BATTERY_SURFACE)	+= surface_battery.o
+ obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
  obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
  obj-$(CONFIG_CHARGER_QCOM_SMB2)	+= qcom_pmi8998_charger.o
- obj-$(CONFIG_FUEL_GAUGE_MM8013)	+= mm8013.o
++obj-$(CONFIG_FUEL_GAUGE_MM8013)	+= mm8013.o
 +obj-$(CONFIG_BATTERY_RK818)	+= rk818_battery.o
 diff --git a/drivers/power/supply/rk818_battery.c b/drivers/power/supply/rk818_battery.c
 new file mode 100644
