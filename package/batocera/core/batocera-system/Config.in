@@ -1664,7 +1664,6 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
                                                    BR2_PACKAGE_BATOCERA_TARGET_H6   || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_H616
 
-
 config BR2_PACKAGE_BATOCERA_SDL2
     bool "BATOCERA SDL2"
 
@@ -1684,21 +1683,27 @@ config BR2_PACKAGE_BATOCERA_SDL2
     select BR2_PACKAGE_LIBVORBIS        # ogg
 
 config BR2_PACKAGE_BATOCERA_WAYLAND
-    bool "batocera.linux wayland packages selection"
+    	bool "batocera.linux wayland packages selection"
 
-     # Wayland Protocol
-    select BR2_PACKAGE_WAYLAND
-    select BR2_PACKAGE_WAYLANDPP
-    select BR2_PACKAGE_WAYLAND_UTILS
-    select BR2_PACKAGE_WAYLAND_PROTOCOLS
+	# Wayland Protocol
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_WAYLANDPP
+	select BR2_PACKAGE_WAYLAND_UTILS
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS
 
-    # Seat management daemon
-    select BR2_PACKAGE_SEATD
-    select BR2_PACKAGE_SEATD_DAEMON
+config BR2_PACKAGE_BATOCERA_WAYLAND_SWAY
+    	bool "batocera.linux wayland sway packages selection"
 
-    # Compositor for wayland
-    select BR2_PACKAGE_SWAY
-    select BR2_PACKAGE_SWAYBG
+	# Wayland Protocol
+	select BR2_PACKAGE_BATOCERA_WAYLAND
+
+	# Seat management daemon
+	select BR2_PACKAGE_SEATD
+	select BR2_PACKAGE_SEATD_DAEMON
+
+	# Compositor for wayland
+	select BR2_PACKAGE_SWAY
+	select BR2_PACKAGE_SWAYBG
 
 config BR2_PACKAGE_BATOCERA_XWAYLAND
     bool "batocera.linux xwayland packages selection"
