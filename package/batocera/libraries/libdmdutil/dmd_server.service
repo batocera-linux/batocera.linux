@@ -23,6 +23,9 @@ start() {
 stop() {
         echo -n "Stopping dmd-server: "
 
+	# clear the screen
+	/usr/bin/dmd-play --clear
+
         # remove hooks
         for EVT in ${EVENTS}
         do
