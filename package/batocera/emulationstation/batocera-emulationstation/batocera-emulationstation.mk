@@ -145,20 +145,20 @@ BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION
 endif
 
 ## on Wayland sway runs ES
-ifeq ($(BR2_PACKAGE_SWAY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
 BATOCERA_EMULATIONSTATION_CMD = sway-launch
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += sway
-BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
 endif
 
 define BATOCERA_EMULATIONSTATION_XORG
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xorg/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
 endef
 
-define BATOCERA_EMULATIONSTATION_WAYLAND
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/04-sway.sh  $(TARGET_DIR)/etc/profile.d/04-sway.sh
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/config      $(TARGET_DIR)/etc/sway/config
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway-launch $(TARGET_DIR)/usr/bin/sway-launch
+define BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/04-sway.sh  $(TARGET_DIR)/etc/profile.d/04-sway.sh
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/config      $(TARGET_DIR)/etc/sway/config
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/sway-launch $(TARGET_DIR)/usr/bin/sway-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
