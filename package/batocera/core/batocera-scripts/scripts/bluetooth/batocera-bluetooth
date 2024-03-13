@@ -11,6 +11,8 @@ do_help() {
     echo "${1} restore" >&2
     echo "${1} start_live_devices" >&2
     echo "${1} stop_live_devices" >&2
+    echo "${1} enable" >&2
+    echo "${1} disable" >&2
 }
 
 do_save() {
@@ -148,6 +150,21 @@ do_trust() {
     do_save # save
 }
 
+do_enable() {
+  /etc/init.d/S32bluetooth stop
+  /etc/init.d/S31sixad stop
+  sleep 1
+  /usr/bin/batocera-settings-set controllers.bluetooth.enabled 1
+  /etc/init.d/S31sixad start
+  /etc/init.d/S32bluetooth start
+}
+
+do_disable() {
+  /usr/bin/batocera-settings-set controllers.bluetooth.enabled 0
+  /etc/init.d/S32bluetooth stop
+  /etc/init.d/S31sixad stop
+}
+
 case "${ACTION}" in
     "list")
 	do_list
@@ -176,6 +193,12 @@ case "${ACTION}" in
 	;;
     "stop_live_devices")
 	do_stopdevlist
+	;;
+    "enable")
+	do_enable
+	;;
+    "disable")
+	do_disable
 	;;
     *)
 	do_help "${0}"
