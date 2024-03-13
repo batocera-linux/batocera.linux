@@ -285,7 +285,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PIRONMAN                if BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # pironman case is rpi4 only
 
     # screens
-    select BR2_PACKAGE_PIXELCADE		if !BR2_riscv
+    select BR2_PACKAGE_DMD_SIMULATOR
+    select BR2_PACKAGE_DMD_SIMULATOR_PLAYER
 
     # swap
     select BR2_PACKAGE_SWAPIT                  if BR2_PACKAGE_BATOCERA_TARGET_RK3128  || \
