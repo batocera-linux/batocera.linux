@@ -137,7 +137,7 @@ index 02893f3ac..2d5cf39b7 100644
  		};
  	};
  
-@@ -49,6 +61,65 @@ reg_vcc5v: vcc5v {
+@@ -49,6 +61,66 @@ reg_vcc5v: vcc5v {
  		regulator-max-microvolt = <5000000>;
  		regulator-always-on;
  	};
@@ -198,6 +198,7 @@ index 02893f3ac..2d5cf39b7 100644
 +};
 +
 +&gpu {
++       operating-points-v2 = <&gpu_opp_table>;
 +	mali-supply = <&reg_dcdcc>;
 +	status = "okay";
  };
@@ -1398,7 +1399,7 @@ index 622a1f7d1..bf2365c58 100644
  
  			/omit-if-no-ref/
  			r_i2c_pins: r-i2c-pins {
-@@ -587,5 +1208,147 @@ r_rsb: rsb@7083000 {
+@@ -587,5 +1208,155 @@ r_rsb: rsb@7083000 {
  			#address-cells = <1>;
  			#size-cells = <0>;
  		};
@@ -1524,24 +1525,32 @@ index 622a1f7d1..bf2365c58 100644
 +
 +	gpu_opp_table: gpu-opp-table {
 +		compatible = "operating-points-v2";
-+		opp-125000000 {
-+			opp-hz = /bits/ 64 <125000000>;
++		opp-124999998 {
++			opp-hz = /bits/ 64 <124999998>;
++			opp-microvolt = <800000>;
++		};
++		opp-249999996 {
++			opp-hz = /bits/ 64 <249999996>;
++			opp-microvolt = <800000>;
++		};
++		opp-285714281 {
++			opp-hz = /bits/ 64 <285714281>;
++			opp-microvolt = <800000>;
++		};
++		opp-399999994 {
++			opp-hz = /bits/ 64 <399999994>;
++			opp-microvolt = <800000>;
++		};
++		opp-499999992 {
++			opp-hz = /bits/ 64 <499999992>;
 +			opp-microvolt = <810000>;
 +		};
-+		opp-250000000 {
-+			opp-hz = /bits/ 64 <250000000>;
-+			opp-microvolt = <810000>;
-+		};
-+		opp-432000000 {
-+			opp-hz = /bits/ 64 <432000000>;
-+			opp-microvolt = <810000>;
-+		};
-+		opp-600000000 {
-+			opp-hz = /bits/ 64 <600000000>;
++		opp-666666656 {
++			opp-hz = /bits/ 64 <666666656>;
 +			opp-microvolt = <960000>;
 +		};
-+		opp-800000000 {
-+			opp-hz = /bits/ 64 <800000000>;
++		opp-799999987 {
++			opp-hz = /bits/ 64 <799999987>;
 +			opp-microvolt = <1080000>;
 +		};
  	};

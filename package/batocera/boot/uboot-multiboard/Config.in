@@ -8,7 +8,7 @@ config BR2_PACKAGE_UBOOT_MULTIBOARD
     !BR2_PACKAGE_BATOCERA_TARGET_RK3288 && !BR2_PACKAGE_BATOCERA_TARGET_H3
   select BR2_TARGET_ARM_TRUSTED_FIRMWARE_NEEDS_ARM32_TOOLCHAIN \
     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-  select BR2_TARGET_UBOOT_NO_SCP if BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_H6 || BR2_PACKAGE_BATOCERA_TARGET_H616
+  select BR2_TARGET_UBOOT_NO_SCP if BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_H6
   help
     U-Boot for multiple boards. NOTE: some related configs, like
     BR2_TARGET_ARM_TRUSTED_FIRMWARE_PLATFORM have to be set in
@@ -23,7 +23,6 @@ config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
   default "libretech_all_h3_cc_h3 orangepi_one orangepi_pc orangepi_pc_plus orangepi_plus2e bananapi_m2_zero" if BR2_PACKAGE_BATOCERA_TARGET_H3
   default "libretech_all_h3_cc_h5 orangepi_pc2"                              if BR2_PACKAGE_BATOCERA_TARGET_H5
   default "orangepi_3 orangepi_3_lts orangepi_one_plus"                      if BR2_PACKAGE_BATOCERA_TARGET_H6
-  default "orangepi_zero2"						if BR2_PACKAGE_BATOCERA_TARGET_H616
   default ""
   help
     Names of U-Boot defconfigs to build without the _defconfig part.
@@ -33,7 +32,7 @@ config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
 
 config BR2_PACKAGE_UBOOT_MULTIBOARD_BINARIES
   string "U-Boot binaries"
-  default "u-boot-sunxi-with-spl.bin" if BR2_PACKAGE_BATOCERA_TARGET_H3 || BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_H6 || BR2_PACKAGE_BATOCERA_TARGET_H616
+  default "u-boot-sunxi-with-spl.bin" if BR2_PACKAGE_BATOCERA_TARGET_H3 || BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_H6
   default "idbloader.img u-boot.img"  if BR2_PACKAGE_BATOCERA_TARGET_RK3288
   default "idbloader.img u-boot.itb"  if BR2_PACKAGE_BATOCERA_TARGET_RK3399
   default ""
