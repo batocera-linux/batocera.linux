@@ -56,7 +56,7 @@ Add support for OrangePi Zero 3 (all variants)
 - wayland-protocols to 1.33
 - wlroots to 0.17.1
 - sway to 1.9
-- mesa3d to 24.0.2
+- mesa3d to 24.0.3
 - RPI kernel to 6.6.20
 - RK3326 kernel to 6.8
 - sdl2 to 2.30.0
