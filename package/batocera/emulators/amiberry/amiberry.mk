@@ -9,13 +9,14 @@ AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng libserialport libportmidi libzlib
 
-AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DWITH_LTO=ON
 
 define AMIBERRY_INSTALL_TARGET_CMDS
+	$(TARGET_STRIP) $(@D)/amiberry
 	$(INSTALL) -D $(@D)/amiberry $(TARGET_DIR)/usr/bin/amiberry
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry
 	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
-	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
+	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
 
 define AMIBERRY_EVMAP
