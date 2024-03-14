@@ -1709,9 +1709,6 @@ config BR2_PACKAGE_BATOCERA_WAYLAND_SWAY
 config BR2_PACKAGE_BATOCERA_XWAYLAND
     bool "batocera.linux xwayland packages selection"
 
-    # wayland packages
-    select BR2_PACKAGE_BATOCERA_WAYLAND
-
     # Xorg emulation layer of Wayland
     select BR2_PACKAGE_XORG7
     select BR2_PACKAGE_XWAYLAND
