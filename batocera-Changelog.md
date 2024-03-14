@@ -59,6 +59,7 @@ Add support for OrangePi Zero 3 (all variants)
 - X86_64 kernel to 6.8
 - switchres 0.220
 - btop to 1.3.2
+- Linux firmware to 20240312
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
