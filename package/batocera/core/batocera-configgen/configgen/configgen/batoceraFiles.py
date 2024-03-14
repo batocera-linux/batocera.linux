@@ -94,7 +94,7 @@ dosboxStagingConfig = dosboxStagingCustom + '/dosbox.conf'
 dosboxxCustom = CONF + '/dosbox'
 dosboxxConfig = dosboxxCustom + '/dosboxx.conf'
 
-fsuaeBios = BIOS
+fsuaeBios = BIOS + "/amiga"
 fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 

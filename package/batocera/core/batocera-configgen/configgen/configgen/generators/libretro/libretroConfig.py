@@ -230,6 +230,10 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
+    ## AMIGA BIOS files are in /userdata/bios/amiga
+    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021') or (system.config['core'] == 'uae4arm'):
+        retroarchConfig['system_directory'] = '"/userdata/bios/amiga/"'
+
     ## AMIGA OCS-ECS/AGA/CD32
     if system.config['core'] == 'puae' or system.config['core'] == 'puae2021':
         if system.name != 'amigacd32':

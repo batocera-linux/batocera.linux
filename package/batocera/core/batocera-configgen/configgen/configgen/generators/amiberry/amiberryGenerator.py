@@ -169,6 +169,7 @@ class AmiberryGenerator(Generator):
             # fix sound buffer and frequency
             commandArray.append("-s")
             commandArray.append("sound_max_buff=4096")
+            commandArray.append("-s")
             commandArray.append("sound_frequency=48000")
 
             os.chdir("/usr/share/amiberry")
