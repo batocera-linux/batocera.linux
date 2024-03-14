@@ -53,9 +53,9 @@
 -                return 0;
 -                }
 -            '''
-+    zlib_ng_options += 'sse2'
-+    extra_flags += sse2_cflags
-+    simd_instruction_sets += 'SSE2'
++    #zlib_ng_options += 'sse2'
++    #extra_flags += sse2_cflags
++    #simd_instruction_sets += 'SSE2'
      sse2_cflags = '-msse2'
 -    sse2_test = cc.run(
 -        sse2_test_code,
@@ -90,7 +90,7 @@
 -        simd_instruction_sets += 'SSSE3'
 -        message('Enabling the SSSE3 instruction set')
 -    endif
-+    message('Enabling the SSE2 instruction set')
++    #message('Enabling the SSE2 instruction set')
  endif
  
  if simd_instruction_sets.length() == 0
