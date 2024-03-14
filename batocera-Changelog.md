@@ -33,6 +33,7 @@ Add support for OrangePi Zero 3 (all variants)
 - libretro-81: bump to Nov 1, 2023 build
 - libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - libretro-genesisplusgx: bump to Feb 23, 2024 build
+- libretro-mame: bump to 0.263
 - libretro-mame2003-plus: bump to Feb 21, 2024 build
 - libretro-mupen64plus-next: bump to Feb 6, 2024 build
 - libretro-neocd: bump to Feb 1, 2024 build
