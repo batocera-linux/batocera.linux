@@ -15,6 +15,7 @@ Add support for OrangePi Zero 3 (all variants)
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
+- Amiga BIOS files now go into the bios/amiga/ subfolder
 
 ### Updated
 - Retroarch to 1.17.0
