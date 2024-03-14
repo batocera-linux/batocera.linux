@@ -219,41 +219,41 @@ systems = {
     # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
     # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
     # https://fs-uae.net/docs/kickstarts
-    "amiga500": { "name": "Amiga 500",     "biosFiles": [  { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
-                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
+    "amiga500": { "name": "Amiga 500",     "biosFiles": [  { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga/kick33180.A500"      },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga/kick37175.A500"      },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/kick34005.A500"      },
                                                            # Amiga 600 kickstart. Not really needed but maybe someone out there will want to switch their model to Amiga 600.
-                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/kick37350.A600"      },
-                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga/kick37350.A600"      },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga/kick40063.A600"      },
                                                            # The Amiga Forever equivalents. Really are these actually needed? Just so people don't have to rename their stuff?
-                                                           { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"    },
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"    },
-                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"    },
-                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"    },
-                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga-os-310-a600.rom" }] },
+                                                           { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga/amiga-os-120.rom"    },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/amiga-os-130.rom"    },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga/amiga-os-204.rom"    },
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga/amiga-os-205.rom"    },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga/amiga-os-310-a600.rom" }] },
 
-    "amigacdtv": { "name": "Amiga CDTV",   "biosFiles": [  { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"          },
-                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/kick34005.CDTV"          },
+    "amigacdtv": { "name": "Amiga CDTV",   "biosFiles": [  { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/kick34005.A500"          },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga/kick34005.CDTV"          },
                                                            # CDTV requires both the Amiga 500 kickstart and its own extended kickstart.
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
-                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/amiga-os-130.rom"        },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga/amiga-ext-130-cdtv.rom"  }] },
 
-    "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"         },
-                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"         },
-                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"         },
+    "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga/kick39106.A1200"         },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga/kick40068.A1200"         },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga/kick40068.A4000"         },
                                                            # The Amiga Forever equivalents. a3000 seems to not have a kickstart equivalent. amiga-os-310.rom doesn't match libretro's docs.
-                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga-os-300-a1200.rom"  },
-                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
-                                                           { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
-                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga-os-310-a4000.rom"  },
-                                                           { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        }] },
+                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga/amiga-os-300-a1200.rom"  },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga/amiga-os-310-a1200.rom"  },
+                                                           { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga/amiga-os-310-a3000.rom"  },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga/amiga-os-310-a4000.rom"  },
+                                                           { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga/amiga-os-310.rom"        }] },
 
-    "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"          },
-                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"      },
+    "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga/kick40060.CD32"          },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/kick40060.CD32.ext"      },
                                                            # Unlike the CDTV, CD32 does not need the Amiga 1200 kickstart.
                                                            # But, it has its own unique "base" anyway, which is required in addition to its extended.
-                                                           { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
-                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  }] },
+                                                           { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga/amiga-os-310-cd32.rom"   },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/amiga-ext-310-cd32.rom"  }] },
 
     # ---------- NEC PC-8800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
