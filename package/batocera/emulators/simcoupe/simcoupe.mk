@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SIMCOUPE_VERSION = v1.2.12
+SIMCOUPE_VERSION = v1.2.13
 SIMCOUPE_SITE = $(call github,simonowen,simcoupe,$(SIMCOUPE_VERSION))
 
 SIMCOUPE_LICENSE = GPL-3.0

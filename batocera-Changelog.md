@@ -47,6 +47,7 @@ Add support for OrangePi Zero 3 (all variants)
 - GroovyMAME to 0.263 SR 0.220a
 - DOSBox-Staging to 0.81.0
 - DOSBox-X to 2024.03.01
+- SimCoupe to 1.2.13
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
