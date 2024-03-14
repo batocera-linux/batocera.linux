@@ -24,8 +24,8 @@ DOSBOX_STAGING_CXXFLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 endif
 
 ifeq ($(BR2_cortex_a7),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
+DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 endif
 
 ifeq ($(BR2_cortex_a9),y)
