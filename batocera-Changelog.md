@@ -3,6 +3,7 @@
 
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
+Add support for OrangePi Zero 3 (all variants)
 
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
@@ -41,6 +42,7 @@ Add support for the Pironman case with RPI4 devices.
 - libretro-pcsx: bump to Feb 14, 2024 build
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
+- Amiberry to 5.6.8
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
