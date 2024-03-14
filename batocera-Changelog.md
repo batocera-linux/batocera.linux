@@ -43,6 +43,7 @@ Add support for OrangePi Zero 3 (all variants)
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
+- GroovyMAME to 0.263 SR 0.220a
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
@@ -56,6 +57,7 @@ Add support for OrangePi Zero 3 (all variants)
 - RK3326 kernel to 6.8
 - sdl2 to 2.30.0
 - X86_64 kernel to 6.8
+- switchres 0.220
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
