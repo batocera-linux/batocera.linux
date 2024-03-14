@@ -125,7 +125,7 @@ index f6f7c98..6017fac 100644
 -	snprintf(whdboot_path, MAX_DPATH, "%s/whdboot/", start_path_data);
 -	snprintf(logfile_path, MAX_DPATH, "%s/amiberry.log", start_path_data);
 -	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
-+	snprintf(rom_path, MAX_DPATH, "/userdata/bios/");
++	snprintf(rom_path, MAX_DPATH, "/userdata/bios/amiga/");
  	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
 -	snprintf(saveimage_dir, MAX_DPATH, "%s/savestates/", start_path_data);
 -	snprintf(savestate_dir, MAX_DPATH, "%s/savestates/", start_path_data);
