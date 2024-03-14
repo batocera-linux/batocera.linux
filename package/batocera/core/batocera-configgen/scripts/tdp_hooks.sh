@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # this configgen script leverages the S93amdtdp init.d and
-# the batcoera-amd-tdp scripts to allow adjustments to TDP
+# the batocera-amd-tdp scripts to allow adjustments to TDP
 # of supported AMD CPUs. this can improve performance
 # but also improve battery life.
 #
