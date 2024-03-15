@@ -10,16 +10,8 @@ SIMCOUPE_LICENSE = GPL-3.0
 
 SIMCOUPE_SUPPORTS_IN_SOURCE_BUILD = YES
 
-SIMCOUPE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 SIMCOUPE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-
-SIMCOUPE_BIOS_AND_RESOURCES = /usr/share/simcoupe
-
-define SIMCOUPE_SETUP_CMAKE
-	sed -i -E -e \
-	    "s|set\(RESOURCE_DIR \\$$\{CMAKE_INSTALL_PREFIX\}/share/\\$$\{PROJECT_NAME\}\)|set(RESOURCE_DIR $(SIMCOUPE_BIOS_AND_RESOURCES))|g" \
-		$(@D)/CMakeLists.txt
-endef
+SIMCOUPE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 
 define SIMCOUPE_INSTALL_TARGET_CMDS
 		$(INSTALL) -D $(@D)/simcoupe $(TARGET_DIR)/usr/bin/simcoupe
@@ -29,7 +21,5 @@ define SIMCOUPE_INSTALL_TARGET_CMDS
 		cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/simcoupe/samcoupe.keys \
 		    $(TARGET_DIR)/usr/share/evmapy
 endef
-
-SIMCOUPE_PRE_CONFIGURE_HOOKS += SIMCOUPE_SETUP_CMAKE
 
 $(eval $(cmake-package))
