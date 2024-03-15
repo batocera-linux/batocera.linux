@@ -52,6 +52,7 @@ Add support for Radxa Rock 3C
 - SimCoupe to 1.2.13
 - Tsugaru to 20240223
 - Redream (x86_64) to Mar 10, 2024 build
+- Fallout 1 CE to v1.1.0 (March 2024 release)
 - Kodi to 20.5-Nexus
 
 ### System
