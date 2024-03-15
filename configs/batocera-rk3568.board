@@ -28,10 +28,11 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3568-rock-3a rockchip/rk3568-odroid-m1 rockchip/rk3566-roc-pc rockchip/rk3566-anbernic-rg353p rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg353v rockchip/rk3566-anbernic-rg353vs rockchip/rk3566-anbernic-rg503"
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3568-firefly-roc-pc.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-anbernic-rg353v-v2.dts"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-rock-3c.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3568-firefly-roc-pc.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-anbernic-rg353v-v2.dts"
 
 # Bootloader
 BR2_PACKAGE_UBOOT_ROCK_3A=y
+BR2_PACKAGE_UBOOT_ROCK_3C=y
 BR2_PACKAGE_UBOOT_ANBERNIC_RGXX3=y
 BR2_PACKAGE_UBOOT_FIREFLY_STATION_M2=y
 BR2_PACKAGE_UBOOT_FIREFLY_STATION_P2=y
