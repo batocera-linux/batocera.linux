@@ -102,31 +102,31 @@ echo
 cp -prv "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/vdpau/"* "${TMPOUT}/lib32/vdpau" || exit 1
 
 # libglvnd
 echo
 echo "libglvnd..."
 echo
-cp -pv "${G_TARGETDIR}/usr/lib/libEGL.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLESv1_CM.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLESv2.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libOpenGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libEGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLESv1_CM.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLESv2.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libOpenGL.so"* "${TMPOUT}/lib32" || exit 1
 
 # mesa
 echo
 echo "mesa..."
 echo
-cp -pv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 
 for BIN in \
 "${G_TARGETDIR}/usr/wine/ge-custom/bin/wine" \
