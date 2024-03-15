@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CGENIUS_VERSION = v3.4.9
+CGENIUS_VERSION = v3.5.0
 CGENIUS_SITE = $(call github,gerstrong,Commander-Genius,$(CGENIUS_VERSION))
 CGENIUS_CONF_LICENSE = GPL-2.0
 CGENIUS_CONF_LICENSE_FILES = LICENSE
@@ -32,7 +32,7 @@ endef
 
 define CGENIUS_POST_PROCESS
         mkdir -p $(TARGET_DIR)/usr/share/evmapy
-        cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cgenius/cgenius.cgenius.keys \
+        cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cgenius/cgenius.cgenius.keys \
         $(TARGET_DIR)/usr/share/evmapy
 endef
 
