@@ -56,6 +56,7 @@ Add support for Radxa Rock 3C
 - DevilutionX to 1.5.2
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
+- RPCS3 to 0.0.31
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
