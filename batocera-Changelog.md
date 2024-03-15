@@ -4,6 +4,7 @@
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
+Add support for Radxa Rock 3C
 
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
