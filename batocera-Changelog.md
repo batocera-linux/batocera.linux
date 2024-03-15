@@ -50,6 +50,7 @@ Add support for Radxa Rock 3C
 - DOSBox-Staging to 0.81.0
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
+- Tsugaru to 20240223
 - Kodi to 20.5-Nexus
 
 ### System
