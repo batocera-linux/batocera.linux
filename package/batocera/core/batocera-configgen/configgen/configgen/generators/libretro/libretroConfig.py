@@ -993,6 +993,13 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
         retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
         retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
 
+    if core == "mame":
+        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+        retroarchConfig['input_player{}_a_mbtn'                 .format(n)] = 1
+        retroarchConfig['input_player{}_b_mbtn'                 .format(n)] = 2
+        retroarchConfig['input_player{}_start_mbtn'             .format(n)] = 3
+        retroarchConfig['input_player{}_select_mbtn'            .format(n)] = 4
+
     if core == "mame078plus":
         retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
         retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
