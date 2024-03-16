@@ -12,7 +12,7 @@
 #include "rockchip/rk3399-opp.dtsi"
 
 / {
-	model = "Orange Pi 800 Keyboard";
+	model = "OrangePi 800";
 	compatible = "rockchip,rk3399-orangepi-800", "rockchip,rk3399";
 
 	aliases {
@@ -796,7 +796,8 @@
 	num-slots = <1>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
-	sd-uhs-sdr104;
+	// rtissera hack (UHS sdcards throw I/O errors)
+	// sd-uhs-sdr104;
 	status = "okay";
 };
 
@@ -809,7 +810,8 @@
 	max-frequency = <150000000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd>;
-	// rtissera hack sd-uhs-sdr104;
+	// rtissera hack (follow vendor DTS)
+	// sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v0_sd>;
 	vqmmc-supply = <&vcc_sdio>;
 	status = "okay";
