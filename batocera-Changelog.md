@@ -13,6 +13,7 @@ Add support for Radxa Rock 3C
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
 - GameForce Vibrator enabled
+- Vita3k moving saves
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
