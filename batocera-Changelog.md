@@ -74,6 +74,7 @@ Add support for Radxa Rock 3C
 - switchres 0.220
 - btop to 1.3.2
 - Linux firmware to 20240312
+- buildroot to 2024.02
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
