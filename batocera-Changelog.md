@@ -14,6 +14,7 @@ Add support for Radxa Rock 3C
 - RG552 Vibrator enabled
 - GameForce Vibrator enabled
 - Vita3k moving saves
+- Steam flatpak issue after forced runtime update.
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
