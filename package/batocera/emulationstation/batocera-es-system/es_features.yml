@@ -7825,7 +7825,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_Controller2:
@@ -7837,7 +7837,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_pgxp:
@@ -7907,6 +7907,13 @@ duckstation:
                 "8x SSAA":            "8-ssaa"
                 "16x SSAA":           "16-ssaa"
                 "32x SSAA":           "32-ssaa"
+        duckstation_crosshair:
+            group: LIGHT GUN
+            prompt: CROSSHAIR
+            description: 
+            choices:
+                "Disabled (Default)": "0"
+                "Enabled":            "100"
 
 flycast:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
