@@ -1,0 +1,27 @@
+From 40413e0820a09bdd4530f7dc22fb1b50af7d60fa Mon Sep 17 00:00:00 2001
+From: baiywt <baiywt_gj@163.com>
+Date: Fri, 27 May 2022 17:42:11 +0800
+Subject: [PATCH 6021/6021] drm/bridge: synopsys: dw_hdmi: Filter bad
+ resolution
+
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 115d610c5..0e3638dbb 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2856,6 +2856,9 @@ dw_hdmi_bridge_mode_valid(struct drm_bridge *bridge,
+ 	if (mode->flags & DRM_MODE_FLAG_DBLCLK)
+ 		return MODE_BAD;
+ 
++	if (mode->hdisplay == 832 && mode->vdisplay == 624)
++		return MODE_BAD;
++
+ 	if (pdata->ycbcr_420_allowed && drm_mode_is_420(info, mode) &&
+ 	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR420))
+ 		clock /= 2;
+-- 
+2.30.2
+
