@@ -6098,6 +6098,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6191,6 +6205,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6367,6 +6395,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
