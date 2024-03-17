@@ -7,6 +7,7 @@ Add support for OrangePi Zero 3 (all variants)
 
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
+- C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
 
 ### Fixed
 - RG552 Splash-screen rotation
