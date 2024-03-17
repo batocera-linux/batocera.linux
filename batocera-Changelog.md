@@ -9,6 +9,8 @@ Add support for Radxa Rock 3C
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
+- Light gun support in libretro-MAME
+- Light gun support in DuckStation (single light gun only)
 
 ### Fixed
 - RG552 Splash-screen rotation
@@ -16,10 +18,14 @@ Add support for Radxa Rock 3C
 - GameForce Vibrator enabled
 - Vita3k moving saves
 - Steam flatpak issue after forced runtime update.
+- GunCon2 A and B buttons now separate
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
+- RPCS3 upscaling now outputs properly
+- GunCon3 default mapping (visit light gun page on official wiki)
+  - Calibration now on C2 (press and hold it few seconds)
 
 ### Updated
 - Retroarch to 1.17.0
