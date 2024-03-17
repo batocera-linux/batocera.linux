@@ -60,6 +60,7 @@ Add support for Radxa Rock 3C
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
 - RPCS3 to 0.0.31
+- solarus-engine: bump to Mar 10, 2024 build
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
