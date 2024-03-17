@@ -8,11 +8,14 @@ Add support for Radxa Rock 3C
 
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
+- C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
 
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
 - GameForce Vibrator enabled
+- Vita3k moving saves
+- Steam flatpak issue after forced runtime update.
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
@@ -56,6 +59,7 @@ Add support for Radxa Rock 3C
 - DevilutionX to 1.5.2
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
+- RPCS3 to 0.0.31
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
@@ -72,6 +76,7 @@ Add support for Radxa Rock 3C
 - switchres 0.220
 - btop to 1.3.2
 - Linux firmware to 20240312
+- buildroot to 2024.02
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes

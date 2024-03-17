@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_GE_CUSTOM_WOW64_32_VERSION = GE-Proton8-25
+WINE_GE_CUSTOM_WOW64_32_VERSION = GE-Proton8-26
 WINE_GE_CUSTOM_WOW64_32_SITE = https://github.com/GloriousEggroll/wine-ge-custom
 WINE_GE_CUSTOM_WOW64_32_SITE_METHOD = git
 WINE_GE_CUSTOM_WOW64_32_LICENSE = LGPL-2.1+

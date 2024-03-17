@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log="/userdata/system/logs/steam.log"
+
 GAME=$1
 
 batocera-mouse show
@@ -8,18 +10,53 @@ batocera-mouse show
 chown -R root:audio /var/run/pulse
 chmod -R g+rwX /var/run/pulse
 
+# remove steam root restriction
+file_path=$(find /userdata -name "bin_steam.sh" 2>/dev/null)
+if [ -n "$file_path" ]; then
+    echo "File bin_steam.sh found at: $file_path" > $log
+    # Check if the line "# Don't allow running as root" exists in the file
+    if grep -q "# Don't allow running as root" "$file_path"; then
+        # Create a temporary file
+        temp_file=$(mktemp)
+        # Search for the line "# Don't allow running as root" and remove it along with the next four lines
+        awk "/# Don't allow running as root/{n=5} !/# Don't allow running as root/{if(n>0){n--}else{print}}" "$file_path" > "$temp_file"
+        # Replace the original file with the modified version
+        mv "$temp_file" "$file_path"
+        # Ensure it's executable
+        chmod +x $file_path
+        echo "File modified successfully." >> $log
+    else
+        echo "Root check already removed in the file." >> $log
+    fi
+else
+    echo "File bin_steam.sh not found." >> $log
+fi
+
+# check the flatpak save owner
+target_dir="/userdata/saves/flatpak/data"
+
+# Get the current owner and group of the target directory
+current_owner=$(stat -c "%U" "$target_dir")
+current_group=$(stat -c "%G" "$target_dir")
+
+# Check if the owner is not root:root
+if [ "$current_owner:$current_group" != "root:root" ]; then
+    # Change the owner and group to root:root
+    chown -R root:root "$target_dir"
+fi
+
 if test -z "${GAME}"
 then
-    su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -bigpicture"
+    DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -bigpicture
 else
-    su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -silent ${GAME}" 2>&1 |
+    DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -silent ${GAME} 2>&1 |
 	while read LINE
 	do
 	    echo "${LINE}"
 	    # steam has no option to exit when quitting a game.
 	    if echo "${LINE}" | grep -E '^Exiting app |^Game process removed'
 	    then
-		su - batocera -c "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -shutdown"
+		DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -shutdown
 	    fi
 	done
 fi

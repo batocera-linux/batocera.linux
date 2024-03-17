@@ -6098,6 +6098,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6191,6 +6205,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6367,6 +6395,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -7825,7 +7867,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_Controller2:
@@ -7837,7 +7879,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_pgxp:
@@ -7907,6 +7949,13 @@ duckstation:
                 "8x SSAA":            "8-ssaa"
                 "16x SSAA":           "16-ssaa"
                 "32x SSAA":           "32-ssaa"
+        duckstation_crosshair:
+            group: LIGHT GUN
+            prompt: CROSSHAIR
+            description: 
+            choices:
+                "Disabled (Default)": "0"
+                "Enabled":            "100"
 
 flycast:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
