@@ -1,0 +1,61 @@
+diff --git a/Oxygen/oxygenserver/build/_cmake/CMakeLists.txt b/Oxygen/oxygenserver/build/_cmake/CMakeLists.txt
+index e5a614ca..36decde9 100644
+--- a/Oxygen/oxygenserver/build/_cmake/CMakeLists.txt
++++ b/Oxygen/oxygenserver/build/_cmake/CMakeLists.txt
+@@ -46,9 +46,9 @@ endif()
+ #set(SDL_SHARED OFF)
+ #add_subdirectory(${WORKSPACE_DIR}/framework/external/sdl/SDL2 SDL)
+ 
+-# zlib sources as virtual subdirectory "zlib"
+-include_directories(${WORKSPACE_DIR}/framework/external/zlib/zlib)		# Included before add_subdirectory so that the examples will build
+-add_subdirectory(${WORKSPACE_DIR}/framework/external/zlib/zlib zlib)
++# batocera - use system zlib
++find_package(ZLIB REQUIRED)
++include_directories(${ZLIB_INCLUDE_DIRS})
+ 
+ 
+ 
+@@ -103,7 +103,7 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.16.0")
+ endif()
+ 
+ target_link_libraries(rmxbase stdc++fs)
+-target_link_libraries(rmxbase zlibstatic)
++target_link_libraries(rmxbase ${ZLIB_LIBRARIES})
+ 
+ 
+ 
+diff --git a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
+index 2a43f7db..b74d131f 100644
+--- a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
++++ b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
+@@ -61,9 +61,9 @@ set(SDL_STATIC ON)
+ set(SDL_SHARED OFF)
+ add_subdirectory(${WORKSPACE_DIR}/framework/external/sdl/SDL2 SDL)
+ 
+-# zlib sources as virtual subdirectory "zlib"
+-include_directories(${WORKSPACE_DIR}/framework/external/zlib/zlib)		# Included before add_subdirectory so that the examples will build
+-add_subdirectory(${WORKSPACE_DIR}/framework/external/zlib/zlib zlib)
++# batocera - use system zlib
++find_package(ZLIB REQUIRED)
++include_directories(${ZLIB_INCLUDE_DIRS})
+ 
+ 
+ 
+@@ -102,7 +102,7 @@ file(GLOB MINIZIP_SOURCES ${WORKSPACE_DIR}/framework/external/zlib/zlib/contrib/
+ 
+ add_library(minizip ${MINIZIP_SOURCES})
+ 
+-target_link_libraries(minizip zlibstatic)
++target_link_libraries(minizip ${ZLIB_LIBRARIES})
+ 
+ 
+ 
+@@ -117,7 +117,7 @@ if (NOT CMAKE_VERSION VERSION_LESS "3.16.0")
+ endif()
+ 
+ target_link_libraries(rmxbase stdc++fs)
+-target_link_libraries(rmxbase zlibstatic)
++target_link_libraries(rmxbase ${ZLIB_LIBRARIES})
+ 
+ 
+ 
