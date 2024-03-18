@@ -52,6 +52,8 @@ Add support for Radxa Rock 3C
 - libretro-stella: bump to Jan 2, 2024 build
 - libretro-swanstation: bump to Jan 25, 2024 build
 - libretro-pcsx: bump to Feb 14, 2024 build
+- libretro-flycast: bump to v2.3
+- Flycast: bump to v2.3
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
@@ -80,7 +82,8 @@ Add support for Radxa Rock 3C
 - mesa3d to 24.0.3
 - RPI kernel to 6.6.20
 - RK3326 kernel to 6.8
-- sdl2 to 2.30.0
+- sdl2 to 2.30.1
+- Pipewire to 1.0.4
 - X86_64 kernel to 6.8
 - switchres 0.220
 - btop to 1.3.2
