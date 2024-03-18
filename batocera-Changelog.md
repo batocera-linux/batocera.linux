@@ -67,6 +67,7 @@ Add support for Radxa Rock 3C
 - Kodi to 20.5-Nexus
 - RPCS3 to 0.0.31
 - solarus-engine: bump to Mar 10, 2024 build
+- Cemu to v2.0-72
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
