@@ -39,11 +39,10 @@ diff --speed-large-files --no-dereference --minimal -Naur linux-6.5.8/drivers/ne
 diff --speed-large-files --no-dereference --minimal -Naur linux-6.5.8/drivers/net/wireless/uwe5622/Kconfig linux-6.5.8/drivers/net/wireless/uwe5622/Kconfig
 --- linux-6.5.8/drivers/net/wireless/uwe5622/Kconfig	1970-01-01 01:00:00.000000000 +0100
 +++ linux-6.5.8/drivers/net/wireless/uwe5622/Kconfig	2023-10-23 13:14:40.246667500 +0200
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,12 @@
 +config SPARD_WLAN_SUPPORT
 +	bool "Unisoc wireless Support"
-+	select AW_WIFI_DEVICE_UWE5622  if SPARD_WLAN_SUPPORT
-+	select AW_BIND_VERIFY  if SPARD_WLAN_SUPPORT
++	select RK_WIFI_DEVICE_UWE5622  if SPARD_WLAN_SUPPORT
 +	default n
 +	help
 +	  This is support for spreadtrum wireless chip.
@@ -57,7 +56,7 @@ diff --speed-large-files --no-dereference --minimal -Naur linux-6.5.8/drivers/ne
 --- linux-6.5.8/drivers/net/wireless/uwe5622/Makefile	1970-01-01 01:00:00.000000000 +0100
 +++ linux-6.5.8/drivers/net/wireless/uwe5622/Makefile	2023-10-23 13:14:40.246667500 +0200
 @@ -0,0 +1,10 @@
-+obj-$(CONFIG_AW_WIFI_DEVICE_UWE5622) += unisocwcn/
++obj-$(CONFIG_RK_WIFI_DEVICE_UWE5622) += unisocwcn/
 +obj-$(CONFIG_WLAN_UWE5622)    += unisocwifi/
 +obj-$(CONFIG_TTY_OVERY_SDIO)  += tty-sdio/
 +
