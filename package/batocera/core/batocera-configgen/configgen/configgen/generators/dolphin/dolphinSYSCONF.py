@@ -109,13 +109,27 @@ def getWiiLangFromEnvironment():
 def getRatioFromConfig(config, gameResolution):
     # Sets the setting available to the Wii's internal NAND. Only has two values:
     # 0: 4:3 ; 1: 16:9
-    if config["tv_mode"] == "1":
-        return 1
+    if "tv_mode" in config:   
+        if config["tv_mode"] == "1":
+            return 1
+        else:
+            return 0
+    else:
+        return 0
+
+def getSensorBarPosition(config):
+    # Sets the setting available to the Wii's internal NAND. Only has two values:
+    # 0: BOTTOM ; 1: TOP
+    if "sensorbar_position" in config:        
+        if config["sensorbar_position"] == "1":
+            return 1
+        else:
+            return 0
     else:
         return 0
 
 def update(config, filepath, gameResolution):
-    arg_setval = { "IPL.LNG": getWiiLangFromEnvironment(), "IPL.AR": getRatioFromConfig(config, gameResolution) }
+    arg_setval = { "IPL.LNG": getWiiLangFromEnvironment(), "IPL.AR": getRatioFromConfig(config, gameResolution), "BT.BAR": getSensorBarPosition(config)} }
     readWriteFile(filepath, arg_setval)
 
 if __name__ == '__main__':

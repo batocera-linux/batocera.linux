@@ -7500,6 +7500,13 @@ dolphin:
                     "Wiimote Sideway + Swing":   is
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
+            sensorbar_position:
+                submenu: CONTROLLERS
+                prompt: SENSOR BAR POSITION
+                description: Position of wii sensor bar relative to the disaply for real wiimotes.
+                choices:
+                    "Bottom (Default)": 0
+                    "Top":  1
             dsmotion:
                 submenu: CONTROLLERS
                 prompt: DUALSHOCK MOTION CONTROL
