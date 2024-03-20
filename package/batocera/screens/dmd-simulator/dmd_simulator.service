@@ -13,7 +13,14 @@ start() {
             ln -sf /usr/share/dmd-simulator/scripts/${EVT}.sh /var/run/emulationstation/scripts/${EVT}/dmd-simulator.sh || exit 1
         done
 
-        start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/dmd-simulator >/dev/null &
+	DMDFORMAT=$(batocera-settings-get dmd.format)
+	DMDARGS=
+	if test "${DMDFORMAT}" = "hd"
+	then
+	    DMDARGS="--width 256 --height 64"
+	fi
+
+        start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/dmd-simulator -- ${DMDARGS} >/dev/null &
         RETVAL=$?
 
 	echo "done"
