@@ -7959,7 +7959,7 @@ duckstation:
         duckstation_crosshair:
             group: LIGHT GUN
             prompt: CROSSHAIR
-            description: 
+            description:
             choices:
                 "Disabled (Default)": "0"
                 "Enabled":            "100"
@@ -8014,6 +8014,13 @@ flycast:
         "Per Strip":              2
         "Per Triangle (Default)": 1
         "Per Pixel":              3
+    flycast_offscreen_reload:
+      group:       LIGHT GUN
+      prompt:      OFF-SCREEN RELOAD BUTTON
+      description: Set gun button 2 to reload.
+      choices:
+        "Off":     0
+        "On":      1
   systems:
     dreamcast:
       cfeatures:
@@ -9034,13 +9041,13 @@ rpcs3:
             choices:
                 "Off (faster, unstable)": Off
                 "20":                     20
-                "25":                     25    
+                "25":                     25
                 "30":                     30
                 "35":                     35
                 "40":                     40
                 "45":                     45
                 "50":                     50
-                "55":                     55 
+                "55":                     55
                 "59.94":                  59.94
                 "60":                     60
         rpcs3_anisotropic:

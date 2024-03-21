@@ -11,6 +11,7 @@ Add support for Radxa Rock 3C
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
 - Light gun support in libretro-MAME
 - Light gun support in DuckStation (single light gun only)
+- libretro-Flycast setting for offscreen reload as button 2 on the light gun
 
 ### Fixed
 - RG552 Splash-screen rotation
