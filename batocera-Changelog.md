@@ -20,7 +20,7 @@ Add support for Radxa Rock 3C
 - Steam flatpak issue after forced runtime update.
 - GunCon2 A and B buttons now separate
 - Sinden Lightgun now has limited bandwidth per camera to avoid timeout
-- Kodi settings were lost upon reboot
+- Some Kodi settings were lost upon Batocera upgrades
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
