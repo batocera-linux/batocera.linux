@@ -76,7 +76,7 @@ Add support for Radxa Rock 3C
 
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.21
-- Nvidia Production driver to 550.54.14
+- Nvidia Production driver to 550.67
 - Nvidia Legacy driver to 470.239.06
 - wayland-protocols to 1.33
 - wlroots to 0.17.1
