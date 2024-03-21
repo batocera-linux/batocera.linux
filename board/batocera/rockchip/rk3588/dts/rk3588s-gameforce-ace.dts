@@ -21,6 +21,9 @@
 
 
 / {
+	model = "Gameforce ACE";
+	compatible = "gameforce,ace", "rockchip,rk3588";
+
 	adc_keys: adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
@@ -81,7 +84,7 @@
 			debounce-interval = <10>;
 			gpios = <&gpio1 RK_PA3 0x01>;
 			linux,input-type = <EV_KEY>;
-			linux,code = <BTN_SELECT>;	
+			linux,code = <BTN_SELECT>;
 		};
 
 		up {
@@ -287,7 +290,7 @@
 		enable-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&lcd_bl_en>;
-		
+
 	};
 
 	charge-animation {
@@ -315,8 +318,6 @@
 		status = "okay";
 	};
 
-
-
 	es8388_sound: es8388-sound {
 		status = "okay";
 		compatible = "rockchip,multicodecs-card","everest,es8388";
@@ -333,8 +334,8 @@
 		rockchip,cpu = <&i2s0_8ch>;
 		rockchip,codec = <&es8388>;
 		spk-volume = <50>;
-		spk-volume-l = <50>;	
-		spk-volume-r = <50>;	
+		spk-volume-l = <50>;
+		spk-volume-r = <50>;
         use-ext-amplifier;
 		hp-volume = <20>;
 		out-l2spk-r2hp;
@@ -377,7 +378,6 @@
 		post-power-on-delay-ms = <200>;
 		reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
 	};
-
 
 	vcc5v0_sys: vcc5v0-sys {
 		compatible = "regulator-fixed";
@@ -533,26 +533,24 @@
 // gsy HDMI
 &hdmi0 {
     enable-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-	// pinctrl-names = "default";
-	// pinctrl-0 = <&hdmi0_en>;
-    status = "okay";
+	status = "disable";
 };
 
 &hdmi0_in_vp0 {
-    status = "okay";
+    status = "disable";
 };
 
 &hdmi0_sound {
-    status = "okay";
+    status = "disable";
 };
 
 &hdptxphy_hdmi0 {
-    status = "okay";
+    status = "disable";
 };
 
 &route_hdmi0 {
-    status = "okay";
-	// connect = <&vp0_out_hdmi0>;
+    status = "disable";
+	connect = <&vp0_out_hdmi0>;
 };
 
 // gsy DP
@@ -561,7 +559,7 @@
 };
 
 &dp0_sound{
-    status = "okay";
+    status = "disabled";
 };
 
 &dp0 {
@@ -581,7 +579,7 @@
 	status = "okay";
 };
 
-&route_dsi0 {	
+&route_dsi0 {
 	status = "okay";
 };
 
@@ -866,7 +864,7 @@
 
 
 &i2c5 {
-	status = "okay";	
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c5m3_xfer>;
 };
@@ -971,7 +969,7 @@
 		cellwise,dual-cell = <1>;
 		cellwise,monitor-interval-ms = <5000>;
 		power-supplies = <&bq25703>;
-	}; 
+	};
 
 	bq25703: bq25703@6b {
 		status = "okay";
@@ -981,7 +979,7 @@
 
 		interrupt-parent = <&gpio0>;
 		//interrupts = <RK_PB7 IRQ_TYPE_LEVEL_LOW>;
-		interrupts = <RK_PD5 IRQ_TYPE_EDGE_FALLING>;	
+		interrupts = <RK_PD5 IRQ_TYPE_EDGE_FALLING>;
 		otg-mode-en-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&charger_ok>;
@@ -1029,7 +1027,7 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c8m2_xfer>;
-	
+
 };
 &i2s0_8ch {
 	status = "okay";
@@ -1123,13 +1121,6 @@
 
 
 &pinctrl {
-
-	// cam {
-	// 	mipidcphy_pwr: mipidcphy-pwr {
-	// 		rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;	/* camera power en */
-	// 	};
-
-	// };
 
 	leds_gpio {
 		leds_rgb: leds-rgb {
@@ -1423,8 +1414,6 @@
 	status = "okay";
 };
 
-
-
 &u2phy2_host {
 	status = "okay";
 	phy-supply = <&vcc5v0_host>;
@@ -1529,10 +1518,4 @@
 &vp3 {
 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
 	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART3>;
-};
-
-
-/ {
-	model = "Gameforce ACE";
-	compatible = "rockchip,rk3588s-tablet-v11", "rockchip,rk3588";
 };
