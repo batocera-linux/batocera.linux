@@ -15,13 +15,12 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "rockchip/rk3588s.dtsi"
-#include "rockchip/rk3588-android.dtsi"
+#include "rockchip/rk3588-linux.dtsi"
 #include "rockchip/rk3588-rk806-single.dtsi"
 #include "rockchip/lcd-hx8399c_mipi.dtsi"
 
-
 / {
-	model = "Gameforce ACE";
+	model = "GameForce ACE";
 	compatible = "gameforce,ace", "rockchip,rk3588";
 
 	adc_keys: adc-keys {
@@ -533,24 +532,24 @@
 // gsy HDMI
 &hdmi0 {
     enable-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-	status = "disable";
+    status = "disabled";
 };
 
 &hdmi0_in_vp0 {
-    status = "disable";
+    status = "disabled";
 };
 
 &hdmi0_sound {
-    status = "disable";
+    status = "disabled";
 };
 
 &hdptxphy_hdmi0 {
-    status = "disable";
+    status = "disabled";
 };
 
 &route_hdmi0 {
-    status = "disable";
-	connect = <&vp0_out_hdmi0>;
+    status = "disabled";
+    connect = <&vp0_out_hdmi0>;
 };
 
 // gsy DP
