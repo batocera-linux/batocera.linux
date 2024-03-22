@@ -470,6 +470,19 @@ atomiswave:
     demul:
       demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
 
+systemsp:
+  name:       Sega System SP
+  manufacturer: Sega
+  release: 2004
+  hardware: arcade
+  extensions: [lst, bin, dat, zip, 7z]
+  platform:   systemsp, arcade
+  emulators:
+    libretro:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+    flycast:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
+
 megadrive:
   name:       Mega Drive
   manufacturer: Sega
@@ -799,7 +812,7 @@ dos:
      MIDI:
 
      Os arquivos SoundFonts (.sf2) precisam ser colocados na pasta /userdata/bios.
-     O arquivo MT32_CONTROL.ROM precisa estar presente em /userdata/bios/scummvm/extra.     
+     O arquivo MT32_CONTROL.ROM precisa estar presente em /userdata/bios/scummvm/extra.
 
      Para mais informações: https://wiki.batocera.org/systems:dos
 
@@ -1939,7 +1952,7 @@ gamecube:
   comment_en: |
     To initiate the boot animation and access the BIOS settings.
     Please ensure that you have the necessary BIOS file (IPL.bin) available in one of the designated locations:
-    
+
     - /userdata/bios/GC/EUR/IPL.bin
     - /userdata/bios/GC/USA/IPL.bin
     - /userdata/bios/GC/JAP/IPL.bin
@@ -4762,45 +4775,45 @@ quake3:
       ioquake3: { requireAnyOf: [ BR2_PACKAGE_IOQUAKE3 ] }
   comment_en: |
     Quake III is optimized to be played with a mouse and keyboard, but here it is also pre-configured to be played with a gamepad.
-    
+
     For the basic configuration you must have the "baseq3" and "missionpack" folders in the "/userdata/roms/quake3" directory.
-    
+
     To start a game, create a file with the extension .quake3, for example "Quake III Arena.quake3".
     Inside this file, add the following line: "+set fs_game "baseq3" for the game "Quake III Arena.
     For Quake III: Team Arena mode create another file with: "+set fs_game "missionpack".
-    
+
     Repeat this step for each mod you wish to play, giving the file a logical name to help you navigate through artwork etc.
-    
+
     Please note that menu options in Team Arena and other mods can only be selected using a mouse, once the game is started the controller will function normally.
 
     For more info: https://wiki.batocera.org/systems:ioquake3
   comment_fr: |
     Quake III est optimisé pour être joué avec une souris et un clavier, mais il est ici également pré-configuré pour y jouer avec une manette.
-    
+
     Pour la configuration de base vous devez avoir les dossiers "baseq3" et "missionpack" dans le répertoire "/userdata/roms/quake3".
-    
+
     Pour lancer une partie, créez un fichier avec l'extension .quake3, par exemple "Quake III Arena.quake3".
     À l'intérieur de ce fichier, ajoutez la ligne suivante : "+set fs_game "baseq3" pour le jeu "Quake III Arena.
     Pour le mode Quake III: Team Arena creez un autre fichier avec : "+set fs_game "missionpack".
-    
+
     Répétez cette étape pour chaque mod auquel vous souhaitez jouer, en donnant un nom logique au fichier pour vous aider à vous y retrouver avec les illustrations, etc.
-    
+
     Veuillez noter que les options de menu de Team Arena et d'autres mods peuvent être sélectionnées uniquement à l'aide d'une souris, une fois la partie lancée, la manette fonctionnera normalement.
 
     Pour plus d'informations : https://wiki.batocera.org/systems:ioquake3
   comment_br: |
     O Quake III é otimizado para ser jogado com mouse e teclado, mas aqui também é pré-configurado para ser jogado com um gamepad.
-    
+
     Para a configuração básica você deve ter as pastas "baseq3" e "missionpack" no diretório "/userdata/roms/quake3".
-    
+
     Para iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo "Quake III Arena.quake3".
     Dentro deste arquivo, adicione a seguinte linha: "+set fs_game "baseq3" para o jogo "Quake III Arena.
     Para o modo Quake III: Team Arena, crie outro arquivo com: "+set fs_game "missionpack".
-    
+
     Repita esta etapa para cada mod que deseja reproduzir, dando ao arquivo um nome lógico para ajudá-lo a navegar pela arte, etc.
-    
+
     Observe que as opções de menu no Team Arena e outros mods só podem ser selecionadas usando um mouse, uma vez que o jogo é iniciado, o controlador funcionará normalmente.
-    
+
     Para mais informações: https://wiki.batocera.org/systems:ioquake3
 
 namco2x6:
@@ -4817,14 +4830,14 @@ namco2x6:
     The Play! emulator provides `work in progress` support for Namco 246 & 256 systems.
     Currently you will need a high performance system to be able to emulate supported games.
     We recommend using the OpenGL API for now.
-    
+
     This rom directory should include a zip file based on the arcade id and a supporting folder with associated .chd file.
     i.e. Tekken 4 - tekken4.zip
                     |
                     tekken4
                     |
                     ---tef1dvd0.chd
-    
+
     For more info: https://wiki.batocera.org/systems:namco2x6
 
 vis:
@@ -4849,20 +4862,20 @@ vpinball:
   comment_en: |
     Visual Pinball X - Standalone
     -----------------------------
-    
+
     The current version of Visual Pinball supports version 10 (.vpx extension) tables.
     Community based tables for can be downloaded from https://www.vpforums.org
 
     PinMAME
     -------
-    
+
     To use PinMAME roms, you need to add roms and / or nvram files into their respective folders at:
     /userdata/system/configs/vpinball/pinmame. Note: If a PinMAME folder exists in the same directory as your vpx
     file, it will be used instead.
 
     All Paths
     ---------
-    
+
     Your .vpx & and any associated .directb2s, .vbs, or .ini files should be in the: /userdata/roms/vpinball folder.
     Any associated .UltraDMD folders should also be in the vpinball roms folders.
     Note: .directb2s files should match the .vpx file name.
@@ -4888,7 +4901,7 @@ vpinball:
 
     La version actuelle de Visual Pinball prend en charge les tables de la version 10 (extension .vpx).
     Les tables basées sur la communauté peuvent être téléchargées depuis https://www.vpforums.org.
-    
+
     PinMAME
     --------
 
@@ -4898,7 +4911,7 @@ vpinball:
 
     Tous les Chemins
     ----------------
-    
+
     Vos fichiers .vpx & et tous les fichiers associés, comme .directb2s, .vbs, ou .ini, doivent se trouver dans le dossier :
     /userdata/roms/vpinball. Tous les dossiers .UltraDMD associés doivent également se trouver dans les dossiers vpinball
     roms. Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
@@ -4951,7 +4964,7 @@ theforceengine:
     4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
 
     Mods:
-    
+
     Mods have to be installed into the /userdata/system/configs/theforceengine/Mods folder.
     The mod files should be in zip format only.
     To launch directly into your mod, create a file in the roms/theforceengine folder with the .tfe extension.
@@ -4964,9 +4977,9 @@ theforceengine:
     Update the games list and Batocera can now launch the mod directly.
 
     A good source of missions to try are available here: https://df-21.net/downloads/levels/
-    
+
     Notes:
-    
+
     It is important to use the exact directory name above.
     A keyboard and mouse / touchscreen is required to create the initial user profile & game start.
 
@@ -4994,7 +5007,7 @@ iortcw:
     1. Install Return to Castle Wolfenstein in Windows or Linux (Steam or GOG receommended)
     2. Copy the .pk3 files only from your installation locations `Main` folder to /userdata/roms/iortcw in it's own `main` folder.
     3. Create an initial file with a rtcw extension, like so: `Return to Castle Wolfenstein.rtcw`.
-    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.    
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
 
     Notes:
 
@@ -5120,7 +5133,7 @@ etlegacy:
     You need the orginal game .pk3 data files from your copy purchased from GOG or Steam.
     Alternatively, you can get the game files from :
     https://www.splashdamage.com/games/wolfenstein-enemy-territory/
-    
+
     Copy the .pk3 files from the folder `etmain` from your installation into this rom folder ensuring they're added to their own `etmain` folder.
     i.e. /userdata/roms/etlegacy/etmain
 
@@ -5131,7 +5144,7 @@ etlegacy:
            The set language only applies on initial boot. Any previous profiles will need to be changed manually.
            You may have to create a user profile twice for it to save.
            Batocera only provides the client with mods & NOT the server to host matches.
-    
+
     For more info: https://wiki.batocera.org/systems:etlegacy
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:etlegacy
@@ -5179,7 +5192,7 @@ sonic-mania:
 
     Once completed, it is **highly recommended** that you grab the Shaders folder in RSDKv5 and turn it into a mod.
     Otherwise, movies will not display properly and the filters from video settings won't work.
-    
+
     To do this, create the following directory structure inside your mods directory:
     ```
     GLShaders/
@@ -5187,7 +5200,7 @@ sonic-mania:
     | | ...
     | mod.ini
     ```
-    
+
     Inside `mods/GLShaders/Data/` copy the `RSDKv5/Shaders` directory, and inside the mod.ini, paste this:
     ```
     Name=GLShaders

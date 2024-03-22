@@ -26,7 +26,7 @@ class VPinballGenerator(Generator):
         if not os.path.exists(vpinballPinmameIniPath):
             os.makedirs(vpinballPinmameIniPath)            
         if not os.path.exists(vpinballConfigFileSource):
-            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFileSource)
+            shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFileSource)
         # all the modifications will be applied to the VPinballX-configgen.ini which is a copy of the VPinballX.ini
         # this way VPinballX.ini is never touched, so advanced users (who edit VPinballX.ini) will never loose their settings
         shutil.copy(vpinballConfigFileSource, vpinballConfigFile)            

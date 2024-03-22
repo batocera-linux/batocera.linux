@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ * Copyright (c) 2024 Romain Tisserand (https://github.com/rtissera)
+ * Copyright (c) 2024 r3claimer (https://github.com/r3claimer)
+ * Copyright (c) 2024 Juliano Dorigão (https://github.com/jdorigao)
  *
  */
 
@@ -15,12 +18,14 @@
 #include <dt-bindings/display/rockchip_vop.h>
 #include <dt-bindings/sensor-dev.h>
 #include "rockchip/rk3588s.dtsi"
-#include "rockchip/rk3588-android.dtsi"
+#include "rockchip/rk3588-linux.dtsi"
 #include "rockchip/rk3588-rk806-single.dtsi"
 #include "rockchip/lcd-hx8399c_mipi.dtsi"
 
-
 / {
+	model = "GameForce ACE";
+	compatible = "gameforce,ace", "rockchip,rk3588";
+
 	adc_keys: adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
@@ -81,7 +86,7 @@
 			debounce-interval = <10>;
 			gpios = <&gpio1 RK_PA3 0x01>;
 			linux,input-type = <EV_KEY>;
-			linux,code = <BTN_SELECT>;	
+			linux,code = <BTN_SELECT>;
 		};
 
 		up {
@@ -181,8 +186,6 @@
 		};
 	};
 
-	// gsy add ： 添加充电LED灯
-
 	leds: gpio-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
@@ -204,7 +207,6 @@
 		};
 	};
 
-	// gsy add : 添加PWM风扇
 	fan: pwm-fan {
 		compatible = "pwm-fan";
 		#cooling-cells = <2>;
@@ -219,10 +221,9 @@
 		status = "okay";
 	};
 
-	// gsy add : 添加马达，右马达写在驱动中
 	vibrator {
 		compatible = "rk-vibrator-gpio";
-		vibrator-gpio = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;// gsy add : 左马达gpio,右马达写在驱动中
+		vibrator-gpio = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 
@@ -250,19 +251,19 @@
 		compatible = "pwm-backlight";
 		pwms = <&pwm13 0 25000 1>;
 		brightness-levels = <
-			  0  20  20  21  21  22  22  23
-			 23  24  24  25  25  26  26  27
-			 27  28  28  29  29  30  30  31
-			 31  32  32  33  33  34  34  35
-			 35  36  36  37  37  38  38  39
-			 40  41  42  43  44  45  46  47
-			 48  49  50  51  52  53  54  55
-			 56  57  58  59  60  61  62  63
-			 64  65  66  67  68  69  70  71
-			 72  73  74  75  76  77  78  79
-			 80  81  82  83  84  85  86  87
-			 88  89  90  91  92  93  94  95
-			 96  97  98  99 100 101 102 103
+			 0   1   2   3   4   5   6   7
+			 8   9  10  11  12  13  14  15
+			16  17  18  19  20  21  22  23
+			24  25  26  27  28  29  30  31
+			32  33  34  35  36  37  38  39
+			40  41  42  43  44  45  46  47
+			48  49  50  51  52  53  54  55
+			56  57  58  59  60  61  62  63
+			64  65  66  67  68  69  70  71
+			72  73  74  75  76  77  78  79
+			80  81  82  83  84  85  86  87
+			88  89  90  91  92  93  94  95
+			96  97  98  99 100 101 102 103
 			104 105 106 107 108 109 110 111
 			112 113 114 115 116 117 118 119
 			120 121 122 123 124 125 126 127
@@ -273,21 +274,20 @@
 			160 161 162 163 164 165 166 167
 			168 169 170 171 172 173 174 175
 			176 177 178 179 180 181 182 183
-			192 193 194 195 196 197 198 199
 			184 185 186 187 188 189 190 191
+			192 193 194 195 196 197 198 199
 			200 201 202 203 204 205 206 207
 			208 209 210 211 212 213 214 215
 			216 217 218 219 220 221 222 223
 			224 225 226 227 228 229 230 231
 			232 233 234 235 236 237 238 239
 			240 241 242 243 244 245 246 247
-			248 249 250 251 252 253 254 255
-		>;
-		default-brightness-level = <25>;
+			248 249 250 251 252 253 254 255>;
+		default-brightness-level = <200>;
 		enable-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&lcd_bl_en>;
-		
+
 	};
 
 	charge-animation {
@@ -315,26 +315,24 @@
 		status = "okay";
 	};
 
-
-
 	es8388_sound: es8388-sound {
 		status = "okay";
 		compatible = "rockchip,multicodecs-card","everest,es8388";
 		rockchip,card-name = "rockchip,es8388-codec";
-		hp-det-gpio = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;  //耳机检测脚
-		io-channels = <&saradc 3>;  //耳机adc检测通道
+		hp-det-gpio = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
+		io-channels = <&saradc 3>;
 		io-channel-names = "adc-detect";
-		keyup-threshold-microvolt = <1800000>; //耳机检测参考电压
+		keyup-threshold-microvolt = <1800000>;
 		poll-interval = <100>;
-		spk-con-gpio = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;//喇叭控制GPIO
-		hp-con-gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>; //耳机控制GPIO
+		spk-con-gpio = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
+		hp-con-gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
 		rockchip,format = "i2s";
 		rockchip,mclk-fs = <256>;
 		rockchip,cpu = <&i2s0_8ch>;
 		rockchip,codec = <&es8388>;
 		spk-volume = <50>;
-		spk-volume-l = <50>;	
-		spk-volume-r = <50>;	
+		spk-volume-l = <50>;
+		spk-volume-r = <50>;
         use-ext-amplifier;
 		hp-volume = <20>;
 		out-l2spk-r2hp;
@@ -355,7 +353,7 @@
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&hp_det>;
-		play-pause-key {    //配置耳机按键
+		play-pause-key {
 			label = "playpause";
 			linux,code = <KEY_PLAYPAUSE>;
 			press-threshold-microvolt = <2000>;
@@ -374,10 +372,8 @@
 		 * - SDIO_RESET_L_WL_REG_ON
 		 * - PDN (power down when low)
 		 */
-		post-power-on-delay-ms = <200>;
 		reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
 	};
-
 
 	vcc5v0_sys: vcc5v0-sys {
 		compatible = "regulator-fixed";
@@ -530,38 +526,34 @@
 	mem-supply = <&vdd_cpu_big1_mem_s0>;
 };
 
-// gsy HDMI
 &hdmi0 {
     enable-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-	// pinctrl-names = "default";
-	// pinctrl-0 = <&hdmi0_en>;
-    status = "okay";
+    status = "disabled";
 };
 
 &hdmi0_in_vp0 {
-    status = "okay";
+    status = "disabled";
 };
 
 &hdmi0_sound {
-    status = "okay";
+    status = "disabled";
 };
 
 &hdptxphy_hdmi0 {
-    status = "okay";
+    status = "disabled";
 };
 
 &route_hdmi0 {
-    status = "okay";
-	// connect = <&vp0_out_hdmi0>;
+    status = "disabled";
+    connect = <&vp0_out_hdmi0>;
 };
 
-// gsy DP
 &spdif_tx2{
     status = "okay";
 };
 
 &dp0_sound{
-    status = "okay";
+    status = "disabled";
 };
 
 &dp0 {
@@ -572,7 +564,6 @@
     status = "okay";
 };
 
-// gsy mipi
 &dsi0 {
 	status = "okay";
 };
@@ -581,7 +572,7 @@
 	status = "okay";
 };
 
-&route_dsi0 {	
+&route_dsi0 {
 	status = "okay";
 };
 
@@ -592,7 +583,6 @@
 	pinctrl-0 = <&lcd_rst_gpio>;
 };
 
-// gsy add : M.2 PCIE
 &pcie2x1l1 {
 	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
 	status = "okay";
@@ -866,7 +856,7 @@
 
 
 &i2c5 {
-	status = "okay";	
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c5m3_xfer>;
 };
@@ -971,7 +961,7 @@
 		cellwise,dual-cell = <1>;
 		cellwise,monitor-interval-ms = <5000>;
 		power-supplies = <&bq25703>;
-	}; 
+	};
 
 	bq25703: bq25703@6b {
 		status = "okay";
@@ -981,7 +971,7 @@
 
 		interrupt-parent = <&gpio0>;
 		//interrupts = <RK_PB7 IRQ_TYPE_LEVEL_LOW>;
-		interrupts = <RK_PD5 IRQ_TYPE_EDGE_FALLING>;	
+		interrupts = <RK_PD5 IRQ_TYPE_EDGE_FALLING>;
 		otg-mode-en-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&charger_ok>;
@@ -1029,7 +1019,7 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c8m2_xfer>;
-	
+
 };
 &i2s0_8ch {
 	status = "okay";
@@ -1123,13 +1113,6 @@
 
 
 &pinctrl {
-
-	// cam {
-	// 	mipidcphy_pwr: mipidcphy-pwr {
-	// 		rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;	/* camera power en */
-	// 	};
-
-	// };
 
 	leds_gpio {
 		leds_rgb: leds-rgb {
@@ -1423,8 +1406,6 @@
 	status = "okay";
 };
 
-
-
 &u2phy2_host {
 	status = "okay";
 	phy-supply = <&vcc5v0_host>;
@@ -1529,10 +1510,4 @@
 &vp3 {
 	rockchip,plane-mask = <(1 << ROCKCHIP_VOP2_CLUSTER3 | 1 << ROCKCHIP_VOP2_ESMART3)>;
 	rockchip,primary-plane = <ROCKCHIP_VOP2_ESMART3>;
-};
-
-
-/ {
-	model = "Gameforce ACE";
-	compatible = "rockchip,rk3588s-tablet-v11", "rockchip,rk3588";
 };

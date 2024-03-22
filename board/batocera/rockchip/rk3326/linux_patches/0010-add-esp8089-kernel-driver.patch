@@ -83,7 +83,7 @@ index cb1c15012dd0..de5e37846397 100644
  source "drivers/net/wireless/zydas/Kconfig"
  source "drivers/net/wireless/quantenna/Kconfig"
 +source "drivers/net/wireless/esp8089/Kconfig"
- 
+
  config PCMCIA_RAYCS
  	tristate "Aviator/Raytheon 2.4GHz wireless support"
 diff --git a/drivers/net/wireless/Makefile b/drivers/net/wireless/Makefile
@@ -95,7 +95,7 @@ index a61cf6c90343..92ffd2cef51c 100644
  obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
  obj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/
 +obj-$(CONFIG_ESP8089) += esp8089/
- 
+
  # 16-bit wireless PCMCIA client drivers
  obj-$(CONFIG_PCMCIA_RAYCS)	+= ray_cs.o
 diff --git a/drivers/net/wireless/esp8089/.gitignore b/drivers/net/wireless/esp8089/.gitignore
@@ -551,7 +551,7 @@ index 000000000000..b7b1a47b159c
 +
 +OBJS = esp_debug.o sdio_sif_esp.o esp_io.o \
 +    esp_file.o esp_main.o esp_sip.o esp_ext.o esp_ctrl.o \
-+    esp_mac80211.o esp_debug.o esp_utils.o esp_pm.o 
++    esp_mac80211.o esp_debug.o esp_utils.o esp_pm.o
 +
 +all: config_check modules
 +
@@ -2900,7 +2900,7 @@ index 000000000000..6c5c01aad4e5
 @@ -0,0 +1,639 @@
 +/*
 + * Copyright (c) 2009 - 2014 Espressif System.
-+ *   IO interface 
++ *   IO interface
 + *    - sdio/spi common i/f driver
 + *    - target sdio hal
 + *
@@ -4734,7 +4734,7 @@ index 000000000000..14186365fdd4
 +	ESP_IEEE80211_DBG(ESP_DBG_OP, "%s enter, state = %d is_ok = %d\n",
 +			  __func__, report->state, report->is_ok);
 +
-+	//roc process begin 
++	//roc process begin
 +	if ((report->state == 1) && (report->is_ok == 1)) {
 +		epub->roc_flags = 1;	//flags in roc state, to fix channel, not change
 +		ieee80211_ready_on_channel(hw);
@@ -4988,7 +4988,7 @@ index 000000000000..14186365fdd4
 +
 +	INIT_WORK(&epub->tx_work, esp_tx_work);
 +
-+	//epub->esp_wkq = create_freezable_workqueue("esp_wkq"); 
++	//epub->esp_wkq = create_freezable_workqueue("esp_wkq");
 +	epub->esp_wkq = create_singlethread_workqueue("esp_wkq");
 +
 +	if (epub->esp_wkq == NULL) {
@@ -5138,7 +5138,7 @@ index 000000000000..14186365fdd4
 +	ieee80211_hw_set(hw, SUPPORTS_PS);
 +	ieee80211_hw_set(hw, AMPDU_AGGREGATION);
 +	ieee80211_hw_set(hw, HOST_BROADCAST_PS_BUFFERING);
-+	//IEEE80211_HW_PS_NULLFUNC_STACK |   
++	//IEEE80211_HW_PS_NULLFUNC_STACK |
 +	//IEEE80211_HW_CONNECTION_MONITOR |
 +	//IEEE80211_HW_BEACON_FILTER |
 +	//IEEE80211_HW_AMPDU_AGGREGATION |
@@ -7428,7 +7428,7 @@ index 000000000000..6602a1e22ab1
 +		}
 +	}
 +      _exit:
-+	ieee80211_tx_status_skb(sip->epub->hw, skb);
++	ieee80211_tx_status_ni(sip->epub->hw, skb);
 +}
 +
 +/*
@@ -10926,5 +10926,5 @@ index 000000000000..2cdb2c856d15
 +
 +
 +#endif				// SLC_HOST_REGISTER_H_INCLUDED
--- 
+--
 2.34.1

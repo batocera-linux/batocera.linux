@@ -14,7 +14,7 @@ GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 
 ##### find images to build #####
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_ANY=" | grep -vE "_GLES[0-9]*=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
-BATOCERA_LOWER_TARGET=$(echo "${BATOCERA_TARGET}" | tr [A-Z] [a-z])
+BATOCERA_LOWER_TARGET=$(echo "${BATOCERA_TARGET}" | tr '[:upper:]' '[:lower:]')
 BATOCERA_IMAGES_TARGETS=$(grep -E "^BR2_TARGET_BATOCERA_IMAGES[ ]*=[ ]*\".*\"[ ]*$" "${BR2_CONFIG}" | sed -e s+"^BR2_TARGET_BATOCERA_IMAGES[ ]*=[ ]*\"\(.*\)\"[ ]*$"+"\1"+)
 if test -z "${BATOCERA_IMAGES_TARGETS}"
 then
@@ -68,7 +68,11 @@ do
     mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
     # create *.img
-    BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+    if [ "${BATOCERA_LOWER_TARGET}" = "${BATOCERA_SUBTARGET}" ]; then
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/batocera-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+    else
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+    fi
     echo "creating images/${BATOCERA_SUBTARGET}/"$(basename "${BATOCERAIMG}")"..." >&2
     rm -rf "${GENIMAGE_TMP}" || exit 1
     GENIMAGEDIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${BATOCERA_PATHSUBTARGET}"
