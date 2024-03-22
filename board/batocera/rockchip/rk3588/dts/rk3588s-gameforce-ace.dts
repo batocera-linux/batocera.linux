@@ -1191,19 +1191,19 @@
 		};
 	};
 
-	// touch {
-	// 	touch_gpio: touch-gpio {
-	// 		rockchip,pins =
-	// 			<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
-	// 			<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
-	// 	};
-	// };
+	touch {
+		touch_gpio: touch-gpio {
+			rockchip,pins =
+				<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+				<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-	// usb {
-	// 	vcc5v0_host_en: vcc5v0-host-en {
-	// 		rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
-	// 	};
-	// };
+	usb {
+		vcc5v0_host_en: vcc5v0-host-en {
+			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
 	usb-typec {
 		usbc0_int: usbc0-int {
