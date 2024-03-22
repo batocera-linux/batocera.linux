@@ -46,142 +46,114 @@
 		};
 	};
 
-	gpio-keys {
+	joypad: gameforce-ace-joypad {
+		compatible = "gameforce-joypad";
+		poll-interval = <10>;
 		status = "okay";
-		compatible = "gpio-keys";
-		autorepeat;
-		io-channels = <&saradc 2>, <&saradc 3>,<&saradc 4>, <&saradc 5>;
-		io-channel-names = "joystick_rz", "joystick_z","joystick_x", "joystick_y";
-		keyup-threshold-microvolt = <1800000>;
-		// autorepeat;
-		poll-interval = <35>;
 
-		menu {
-			label = "GPIO Key MENU";
-			debounce-interval = <0x0a>;
+		joypad-name = "GameForce ACE Gamepad";
+		joypad-product = <0x1000>;
+		joypad-revision = <0x0100>;
+
+		/* Analog sticks */
+		io-channels = <&saradc 2>, <&saradc 3>, <&saradc 4>, <&saradc 5>, <&ti_adc 6>, <&ti_adc 7>;
+		io-channel-names = "key-RY", "key-RX", "key-X", "key-Y", "key-Z", "key-RZ";
+		button-adc-scale = <4>;
+		button-adc-deadzone = <125>;
+		button-adc-fuzz = <32>;
+		button-adc-flat = <32>;
+		abs_x-p-tuning = <350>;
+		abs_x-n-tuning = <350>;
+		abs_y-p-tuning = <350>;
+		abs_y-n-tuning = <350>;
+		abs_z-p-tuning = <350>;
+		abs_z-n-tuning = <350>;
+		abs_rx-p-tuning = <350>;
+		abs_rx-n-tuning = <350>;
+		abs_ry-p-tuning = <350>;
+		abs_ry-n-tuning = <350>;
+		abs_rz-p-tuning = <350>;
+		abs_rz-n-tuning = <350>;
+
+		/* Buttons */
+		sw1 {
 			gpios = <&gpio1 RK_PA0 0x01>;
-			linux,input-type = <EV_KEY>;
+			label = "GPIO Key MODE";
 			linux,code = <BTN_MODE>;
 		};
-
-		home-key {
-			label = "GPIO Key HOME";
-			debounce-interval = <0x0a>;
+		sw2 {
 			gpios = <&gpio1 RK_PB0 0x01>;
-			linux,input-type = <EV_KEY>;
-			linux,code = <BTN_BACK>;
+			label = "GPIO Key HOME";
+			linux,code = <BTN_C>;
 		};
-
-		start {
-			label = "GPIO Key START";
-			debounce-interval = <10>;
-			//gpios = <&gpio1 RK_PB3 0x01>;
+		sw3 {
 			gpios = <&gpio1 RK_PB6 0x01>;
-			linux,input-type = <EV_KEY>;
+			label = "GPIO Key START";
 			linux,code = <BTN_START>;
 		};
-
-		select {
-			label = "GPIO Key SELECT";
-			debounce-interval = <10>;
+		sw4 {
 			gpios = <&gpio1 RK_PA3 0x01>;
-			linux,input-type = <EV_KEY>;
+			label = "GPIO Key SELECT";
 			linux,code = <BTN_SELECT>;
 		};
-
-		up {
-			label = "GPIO Key Up";
-			debounce-interval = <0x0a>;
+		sw5 {
 			gpios = <&gpio1 RK_PA2 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_UP>;
+			label = "GPIO Key Up";
+			linux,code = <BTN_DPAD_UP>;
 		};
-
-		down {
+		sw6 {
+			gpios =  <&gpio1 RK_PB1 0x01>;
 			label = "GPIO Key Down";
-			debounce-interval = <0x0a>;
-			gpios = <&gpio1 RK_PB1 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_DOWN>;
+			linux,code = <BTN_DPAD_DOWN>;
 		};
-
-		left {
-			label = "GPIO Key Left";
-			debounce-interval = <0x0a>;
+		sw7 {
 			gpios = <&gpio1 RK_PD7 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_LEFT>;
+			label = "GPIO Key Left";
+			linux,code = <BTN_DPAD_LEFT>;
 		};
-
-		right {
-			label = "GPIO Key Right";
-			debounce-interval = <0x0a>;
+		sw8 {
 			gpios = <&gpio1 RK_PB7 0x01>;
-			linux,input-type = <0x01>;
-			linux,code = <KEY_RIGHT>;
+			label = "GPIO Key Right";
+			linux,code = <BTN_DPAD_RIGHT>;
 		};
-
-		keyX {
-			label = "GPIO Key X";
-			debounce-interval = <0x0a>;
+		sw9 {
 			gpios = <&gpio1 RK_PB4 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key X";
 			linux,code = <BTN_NORTH>;
 		};
-
-		keyY {
-			label = "GPIO Key Y";
-			debounce-interval = <0x0a>;
+		sw10 {
 			gpios = <&gpio1 RK_PB3 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key Y";
 			linux,code = <BTN_WEST>;
 		};
-
-		keyA {
-			label = "GPIO Key A";
-			debounce-interval = <0x0a>;
+		sw11 {
 			gpios = <&gpio1 RK_PC6 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key B";
 			linux,code = <BTN_EAST>;
 		};
-
-		keyB {
-			label = "GPIO Key B";
-			debounce-interval = <0x0a>;
+		sw12 {
 			gpios = <&gpio1 RK_PA5 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key A";
 			linux,code = <BTN_SOUTH>;
 		};
-
-		keyTHUMBL {
-			label = "GPIO Key THU";
-			debounce-interval = <0x0a>;
+		sw13 {
 			gpios = <&gpio1 RK_PA4 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key THU";
 			linux,code = <BTN_THUMBL>;
 		};
-
-		keyTL {
-			label = "GPIO Key TL";
-			debounce-interval = <0x0a>;
+		sw14 {
 			gpios = <&gpio1 RK_PB5 0x01>;
-			linux,input-type = <0x01>;
+			label = "GPIO Key TL";
 			linux,code = <BTN_TL>;
 		};
-
-		keyTR {
-			label = "GPIO Key TR";
-			debounce-interval = <0x0a>;
+		sw15 {
 			gpios = <&gpio1 RK_PB2 0x01>;
-			linux,input-type = <EV_KEY>;
+			label = "GPIO Key TR";
 			linux,code = <BTN_TR>;
 		};
-
-		keyTHUMBR {
-			label = "GPIO Key THUMBR";
-			debounce-interval = <10>;
+		sw16 {
 			gpios = <&gpio1 RK_PD6 0x01>;
-			linux,input-type = <EV_KEY>;
+			label = "GPIO Key THUMBR";
 			linux,code = <BTN_THUMBR>;
 		};
 	};
@@ -801,35 +773,32 @@
 };
 
 &i2c4 {
+	pinctrl-0 = <&i2c4m2_xfer>;
 	status = "okay";
 
-	pinctrl-names = "default";
-	pinctrl-0 = <&i2c4m2_xfer>;
+	ti_adc: adc@48 {
+		compatible = "ti,ads1015";
+		reg = <0x48>;
+		#address-cells = <1>;
+		#io-channel-cells = <1>;
+		#size-cells = <0>;
 
-	adc@48 {
-        compatible = "ti,ads1015";
-        reg = <0x48>;
-		status = "okay";
+		channel@4 {
+			reg = <4>;
+		};
 
-        #address-cells = <1>;
-        #size-cells = <0>;
-		poll-interval = <50>;
-
-        channel@4 {
-        	reg = <4>;
-           	ti,gain = <2>;
-           	ti,datarate = <4>;
-        };
 		channel@5 {
-        	reg = <5>;
-        };
+			reg = <5>;
+		};
+
 		channel@6 {
-        	reg = <6>;
-        };
+			reg = <6>;
+		};
+
 		channel@7 {
-            reg = <7>;
-        };
-    };
+			reg = <7>;
+		};
+	};
 
 	mpu6500_acc: mpu_acc@68 {
 		status = "okay";
@@ -1191,19 +1160,19 @@
 		};
 	};
 
-	// touch {
-	// 	touch_gpio: touch-gpio {
-	// 		rockchip,pins =
-	// 			<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
-	// 			<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
-	// 	};
-	// };
+	touch {
+		touch_gpio: touch-gpio {
+			rockchip,pins =
+				<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+				<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-	// usb {
-	// 	vcc5v0_host_en: vcc5v0-host-en {
-	// 		rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
-	// 	};
-	// };
+	usb {
+		vcc5v0_host_en: vcc5v0-host-en {
+			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
 	usb-typec {
 		usbc0_int: usbc0-int {
