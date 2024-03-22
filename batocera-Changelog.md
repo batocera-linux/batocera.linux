@@ -31,7 +31,7 @@ Add support for Radxa Rock 3C
 - Sinden Lightgun firmware updated to 1.9
 
 ### Updated
-- Retroarch to 1.17.0
+- Retroarch to 1.18.0
 - libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
 - mupen64plus-core bump to Jan 25, 2024 build
 - mupen64plus-audio-sdl bump to Jun 11, 2023 build
