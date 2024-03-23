@@ -1363,7 +1363,7 @@ new file mode 100644
 index 00000000000..1784aaae4f8
 --- /dev/null
 +++ b/Source/Core/DolphinNoGUI/PlatformDRM.cpp
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,84 @@
 +// Copyright 2020 Dolphin Emulator Project
 +// Licensed under GPLv2+
 +// Refer to the license.txt file included.
@@ -1376,6 +1376,7 @@ index 00000000000..1784aaae4f8
 +#include "Core/ConfigManager.h"
 +#include "Core/Core.h"
 +#include "Core/State.h"
++#include "Core/System.h"
 +
 +#include <climits>
 +#include <cstdio>
@@ -1425,7 +1426,7 @@ index 00000000000..1784aaae4f8
 +  while (IsRunning())
 +  {
 +    UpdateRunningFlag();
-+    Core::HostDispatchJobs();
++    Core::HostDispatchJobs(Core::System::GetInstance());
 +
 +    // TODO: Is this sleep appropriate?
 +    std::this_thread::sleep_for(std::chrono::milliseconds(1));
