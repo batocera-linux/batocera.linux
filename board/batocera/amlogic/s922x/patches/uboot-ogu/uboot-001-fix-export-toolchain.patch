@@ -1,0 +1,34 @@
+---
+ Makefile                                           | 2 +-
+ arch/arm/cpu/armv8/g12b/firmware/scp_task/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 71a7cc3c73..aa120f838e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -246,7 +246,7 @@ ifeq ($(HOSTARCH),$(ARCH))
+ CROSS_COMPILE ?=
+ endif
+ 
+-export CROSS_COMPILE=aarch64-none-elf-
++export CROSS_COMPILE=aarch64-linux-gnu-
+ 
+ KCONFIG_CONFIG	?= .config
+ export KCONFIG_CONFIG
+diff --git a/arch/arm/cpu/armv8/g12b/firmware/scp_task/Makefile b/arch/arm/cpu/armv8/g12b/firmware/scp_task/Makefile
+index 82f31b88bb..7b227f6b8a 100644
+--- a/arch/arm/cpu/armv8/g12b/firmware/scp_task/Makefile
++++ b/arch/arm/cpu/armv8/g12b/firmware/scp_task/Makefile
+@@ -6,7 +6,7 @@ include $(buildtree)/include/autoconf.mk
+ include $(buildtree)/.config
+ 
+ # Select ARMv7-m bare-metal toolchain
+-CROSS_COMPILE=arm-none-eabi-
++CROSS_COMPILE=arm-eabi-
+ ASM=$(CROSS_COMPILE)as
+ CC=$(CROSS_COMPILE)gcc
+ CPP=$(CROSS_COMPILE)cpp
+-- 
+2.44.0
+

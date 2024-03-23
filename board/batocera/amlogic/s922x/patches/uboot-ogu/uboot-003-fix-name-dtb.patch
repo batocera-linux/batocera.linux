@@ -1,0 +1,20 @@
+---
+ board/hardkernel/odroidgou/odroidgou.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/hardkernel/odroidgou/odroidgou.c b/board/hardkernel/odroidgou/odroidgou.c
+index d08f0aa..645929b 100755
+--- a/board/hardkernel/odroidgou/odroidgou.c
++++ b/board/hardkernel/odroidgou/odroidgou.c
+@@ -312,7 +312,7 @@ int board_late_init(void)
+ #endif
+ 
+ 	setenv("variant", "gou");
+-	board_set_dtbfile("meson64_odroid%s.dtb");
++	board_set_dtbfile("meson-g12b-odroid-go-ultra.dtb");
+ 
+ 	if (board_check_recovery() < 0) {
+ 		gou_bmp_display(DISP_SYS_ERR);
+-- 
+2.44.0
+
