@@ -1,16 +1,18 @@
 ################################################################################
 #
-# LEDSpicer
+# ledspicer
 #
 ################################################################################
 
-LEDSPICER_VERSION = 0.6.0
+LEDSPICER_VERSION = 7e8957edebe9fd6e209ac824dfe109edb3de36d9
 LEDSPICER_SITE = $(call github,meduzapat,LEDSpicer,$(LEDSPICER_VERSION))
 LEDSPICER_LICENSE = GPLv3
 LEDSPICER_DEPENDENCIES = tinyxml2 libusb libtool udev
 LEDSPICER_AUTORECONF = YES
-LEDSPICER_CONF_OPTS = CXXFLAGS='-g0 -O3' --enable-nanoled --enable-pacdrive --enable-pacled64 --enable-ultimateio --enable-ledwiz32 --enable-howler --enable-adalight
-LEDSPICER_CONF_OPTS += --sysconfdir=/userdata/system/configs/ledspicer --docdir=/usr/share/ledspicer/doc
+LEDSPICER_CONF_OPTS = CXXFLAGS='-g0 -O3' --enable-nanoled --enable-pacdrive --enable-pacled64
+LEDSPICER_CONF_OPTS += --enable-ultimateio --enable-ledwiz32 --enable-howler --enable-adalight
+LEDSPICER_CONF_OPTS += --sysconfdir=/userdata/system/configs/ledspicer
+LEDSPICER_CONF_OPTS += --docdir=/usr/share/ledspicer/doc
 
 ifeq ($(BR2_PACKAGE_PIGPIO),y)
     LEDSPICER_DEPENDENCIES += pigpio
@@ -43,7 +45,8 @@ endef
 
 define LEDSPICER_SERVICE_INSTALL
     mkdir -p $(TARGET_DIR)/usr/share/batocera/services
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/ledspicer/ledspicer $(TARGET_DIR)/usr/share/batocera/services/
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/ledspicer/ledspicer \
+        $(TARGET_DIR)/usr/share/batocera/services/
 endef
 
 LEDSPICER_POST_INSTALL_TARGET_HOOKS += LEDSPICER_UDEV_RULE
