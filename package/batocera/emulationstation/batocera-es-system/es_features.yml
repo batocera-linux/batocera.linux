@@ -4837,6 +4837,24 @@ libretro:
                     "Hyper Blaster/Justifier":       516
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
+            pcsx_rearmed_crosshair1:
+                group:       LIGHT GUN
+                prompt:      PLAYER 1 CROSSHAIR COLOR
+                choices:
+                    Red:        red
+                    Blue:       blue
+                    Green:      green
+                    White:      white
+                    Disabled:   disabled
+            pcsx_rearmed_crosshair2:
+                group:       LIGHT GUN
+                prompt:      PLAYER 2 CROSSHAIR COLOR
+                choices:
+                    Red:        red
+                    Blue:       blue
+                    Green:      green
+                    White:      white
+                    Disabled:   disabled
     picodrive:
       features: [netplay, cheevos]
       shared: [autosave]
