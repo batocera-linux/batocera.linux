@@ -1,0 +1,26 @@
+From 62eb9727e404d2a441615fd26bcf0c1a17529fe0 Mon Sep 17 00:00:00 2001
+From: Zhang Ning <832666+zhangn1985@users.noreply.github.com>
+Date: Thu, 1 Feb 2024 17:24:29 +0800
+Subject: [PATCH] opi-800 fix dts style check
+
+Signed-off-by: Zhang Ning <832666+zhangn1985@users.noreply.github.com>
+---
+ .../devicetree/bindings/arm/rockchip.yaml     |   5 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
+index 5cacc8e4fdac..54927290cf5e 100644
+--- a/Documentation/devicetree/bindings/arm/rockchip.yaml
++++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
+@@ -230,6 +230,11 @@ properties:
+               - friendlyarm,nanopi-r4s-enterprise
+           - const: rockchip,rk3399
+ 
++      - description: Orangepi 800 keyboard
++        items:
++          - const: rockchip,rk3399-orangepi-800
++          - const: rockchip,rk3399
++
+       - description: FriendlyElec NanoPi R5 series boards
+         items:
+           - enum:

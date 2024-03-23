@@ -36,7 +36,7 @@ case "$1" in
                 bcm150)
                     # Bluetooth on the OrangePi 4-LTS board is handled by a Spreadtrum (sprd) chip
                     # and requires a custom hciattach_opi binary
-                    if test "${BOARD}" = "orangepi4-lts"
+                    if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-800" ]
                     then
                         /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
                     else
@@ -91,7 +91,7 @@ case "$1" in
             start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
         fi
         # for OrangePi LTS devices we need to power on the controller & put in pairable mode
-        if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-3-lts" ] || [ ${BOARD} = "orangepi-zero2" ]
+        if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-3-lts" ] || [ ${BOARD} = "orangepi-zero2" ] || [ ${BOARD} = "orangepi-800" ]
         then
             bluetoothctl power on
             bluetoothctl pairable on

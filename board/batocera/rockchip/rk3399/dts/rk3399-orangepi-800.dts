@@ -18,6 +18,7 @@
 	aliases {
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
+		spi2 = &spi2;
 	};
 
 	cpuinfo {
@@ -28,10 +29,6 @@
 
 	chosen {
 		stdout-path = "serial2:1500000n8";
-	};
-
-	aliases {
-		spi2 = &spi2;
 	};
 
 	clkin_gmac: external-gmac-clock {
@@ -155,6 +152,8 @@
 	/* Audio components */
 	es8316-sound {
 		compatible = "simple-audio-card";
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&hp_det_pin>;
 		simple-audio-card,name = "rockchip,es8316-codec";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,mclk-fs = <256>;
@@ -162,17 +161,24 @@
 		simple-audio-card,widgets =
 			"Microphone", "Mic Jack",
 			"Headphone", "Headphones";
+			//"Speaker", "Speaker";
 		simple-audio-card,routing =
 			"MIC1", "Mic Jack",
 			"Headphones", "HPOL",
 			"Headphones", "HPOR";
+			//"Speaker Amplifier INR", "HPOR",
+			//"Speaker", "Speaker Amplifier OUTR";
+
+		//simple-audio-card,hp-det-gpio = <&gpio4 RK_PD4 GPIO_ACTIVE_HIGH>;
+		//simple-audio-card,aux-devs = <&speaker_amp>;
+		//simple-audio-card,pin-switches = "Speaker";
 
 		simple-audio-card,cpu {
-		        sound-dai = <&i2s0>;
+			sound-dai = <&i2s0>;
 		};
 
 		simple-audio-card,codec {
-		        sound-dai = <&es8316>;
+			sound-dai = <&es8316>;
 		};
 	};
 
@@ -305,16 +311,35 @@
 	assigned-clocks = <&cru SCLK_RMII_SRC>;
 	assigned-clock-parents = <&clkin_gmac>;
 	clock_in_out = "input";
-	phy-supply = <&vcc3v3_s3>;
-	phy-mode = "rgmii";
 	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii_pins>;
-	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+	pinctrl-0 = <&rgmii_pins>, <&phy_rstb>;
+	phy-mode = "rgmii";
+	phy-supply = <&vcc3v3_s3>;
+	phy-handle = <&yt8531c>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 10000 50000>;
+	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
 	tx_delay = <0x28>;
 	rx_delay = <0x11>;
 	status = "okay";
+
+	mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		yt8531c: ethernet-phy@0 {
+			compatible = "ethernet-phy-id4f51.e91b",
+					"ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&phy_intb>;
+			motorcomm,clk-out-frequency-hz = <125000000>;
+			motorcomm,keep-pll-enabled;
+			motorcomm,auto-sleep-disabled;
+			interrupt-parent = <&gpio3>;
+			interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
+		};
+	};
 };
 
 &gpu {
@@ -564,19 +589,20 @@
 };
 
 &i2c1 {
+	clock-frequency = <100000>;
+	i2c-scl-falling-time-ns = <4>;
+	i2c-scl-rising-time-ns = <168>;
 	status = "okay";
-	i2c-scl-rising-time-ns = <450>;
-	i2c-scl-falling-time-ns = <15>;
 
-	es8316: codec@11 {
+	es8316: audio-codec@11 {
 		compatible = "everest,es8316";
 		reg = <0x11>;
 		clocks = <&cru SCLK_I2S_8CH_OUT>;
 		clock-names = "mclk";
 		//pinctrl-names = "default";
 		//pinctrl-0 = <&i2s_8ch_mclk>;
-		hp-gpios = <&gpio4 RK_PD4 GPIO_ACTIVE_HIGH>;
-		spk-gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
+		//hp-gpios = <&gpio4 RK_PD4 GPIO_ACTIVE_HIGH>;
+		//spk-gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
 	};
 
@@ -584,26 +610,6 @@
 		compatible = "ricoh,rs5c372a";
 		reg = <0x32>;
 	};
-};
-
-&i2c2 {
-	status = "okay";
-};
-
-&i2c3 {
-	status = "disabled";
-};
-
-&i2c4 {
-	status = "okay";
-};
-
-&uart4 {
-	status = "okay";
-};
-
-&spdif {
-	status = "disabled";
 };
 
 &i2c7 {
@@ -615,8 +621,8 @@
 &i2s0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2s0_2ch_bus>;
-	assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
-	assigned-clock-parents = <&cru SCLK_I2S0_8CH>;
+	//assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
+	//assigned-clock-parents = <&cru SCLK_I2S0_8CH>;
 	rockchip,capture-channels = <2>;
 	rockchip,playback-channels = <2>;
 	#sound-dai-cells = <0>;
@@ -624,9 +630,9 @@
 };
 
 &i2s1 {
-	assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
-	assigned-clock-parents = <&cru SCLK_I2S1_8CH>;
-	pinctrl-names = "default";
+	//assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
+	//assigned-clock-parents = <&cru SCLK_I2S1_8CH>;
+	//pinctrl-names = "default";
 	pinctrl-0 = <&i2s1_2ch_bus>;
 	rockchip,playback-channels = <2>;
 	rockchip,capture-channels = <2>;
@@ -654,6 +660,11 @@
 };
 
 &pinctrl {
+	es8316 {
+		hp_det_pin: hp-det-pin {
+			rockchip,pins = <4 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
 	gmac {
 		phy_intb: phy-intb {
 			rockchip,pins = <3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>;
@@ -754,16 +765,8 @@
 	};
 };
 
-&pwm0 {
-	status = "disabled";
-};
-
 &pwm1 {
 	status = "okay";
-};
-
-&pwm2 {
-	status = "disabled";
 };
 
 &saradc {
@@ -815,6 +818,19 @@
 	vmmc-supply = <&vcc3v0_sd>;
 	vqmmc-supply = <&vcc_sdio>;
 	status = "okay";
+};
+
+&spi2 {
+	status = "okay";
+	pinctrl-names = "default", "sleep";
+	pinctrl-1 = <&spi2_gpio>;
+
+	spidev0: spidev@0 {
+		compatible = "rohm,dh2228fv";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+		status = "okay";
+	};
 };
 
 &tsadc {
@@ -930,36 +946,5 @@
 
 &vopl_mmu {
 	status = "okay";
-};
-
-&spi2 {
-	status = "okay";
-	pinctrl-names = "default", "sleep";
-	pinctrl-1 = <&spi2_gpio>;
-
-	spidev0: spidev@0 {
-		compatible = "rohm,dh2228fv";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
-		status = "okay";
-	};
-};
-
-&edp {
-        status = "okay";
-        hpd-gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_HIGH>;
-        enable-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
-};
-
-&edp_hpd {
-	rockchip,pins = <4 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-};
-
-&edp_in_vopb {
-	status = "disabled";
-};
-
-&hdmi_in_vopb {
-        status = "okay";
 };
 
