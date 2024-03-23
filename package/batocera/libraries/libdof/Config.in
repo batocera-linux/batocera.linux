@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBDOF
+    bool "libdof"
+    select BR2_PACKAGE_LIBSERIALPORT
+    select BR2_PACKAGE_SOCKPP
+    select BR2_PACKAGE_CARGS
+    help
+      libdof - A cross platform library for performing Direct Output Framework tasks.
+      
+      https://github.com/jsm174/libdof

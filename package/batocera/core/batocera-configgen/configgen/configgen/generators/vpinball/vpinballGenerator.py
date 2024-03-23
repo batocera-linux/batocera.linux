@@ -8,6 +8,7 @@ import batoceraFiles
 import shutil
 from utils.logger import get_logger
 import controllersConfig
+from utils.batoceraServices import batoceraServices
 
 eslog = get_logger(__name__)
 
@@ -270,6 +271,11 @@ class VPinballGenerator(Generator):
             else:
                 vpinballSettings.set("Standalone", "AltSound","1")
 
+            # DMDServer
+            if batoceraServices.isServiceEnabled("dmd_real"):
+                vpinballSettings.set("Standalone", "DMDServer","1")
+            else:
+                vpinballSettings.set("Standalone", "DMDServer","0")
 
             # Save VPinballX.ini
             with open(vpinballConfigFile, 'w') as configfile:

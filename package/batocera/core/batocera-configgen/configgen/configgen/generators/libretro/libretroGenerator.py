@@ -321,6 +321,8 @@ class LibretroGenerator(Generator):
                 commandArray.extend(["--connect", system.config['netplay.server.ip']])
             if 'netplay.server.port' in system.config:
                 commandArray.extend(["--port", system.config['netplay.server.port']])
+            if 'netplay.server.session' in system.config:
+                commandArray.extend(["--mitm-session", system.config['netplay.server.session']])
             if 'netplay.nickname' in system.config:
                 commandArray.extend(["--nick", system.config['netplay.nickname']])
 

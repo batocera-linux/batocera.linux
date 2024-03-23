@@ -2,7 +2,7 @@
 
 DAEMON="/usr/bin/ledspicerd"
 CONFIG_DIR="/userdata/system/configs/ledspicer"
-DAEMON_ARGS="--config $CONFIG_DIR/ledspicer.conf"
+DAEMON_ARGS=""
 
 start() {
         echo -n "Starting LEDSpicer: "
