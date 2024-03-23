@@ -230,6 +230,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
+        if args.netplaysession is not None:
+            system.config["netplay.server.session"] = args.netplaysession
 
         # autosave arguments
         if args.state_slot is not None:
