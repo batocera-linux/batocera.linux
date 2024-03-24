@@ -210,16 +210,12 @@ class DaphneGenerator(Generator):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
             # crosshair
-            if system.isOptSet('singe_crosshair') and len(guns) > 0:
-                if not system.getOptBoolean("singe_crosshair") and system.config['singe_crosshair'] == "0":
+            if system.isOptSet('daphne_crosshair'):
+                if not system.getOptBoolean("daphne_crosshair"):
                     commandArray.append("-nocrosshair")
                 else:
                     if not controllersConfig.gunsNeedCrosses(guns):
                         commandArray.append("-nocrosshair")
-
-        # Hide crosshair in supported games (e.g. ActionMax, ALG)
-        if system.isOptSet('singe_crosshair') and system.getOptBoolean("singe_crosshair"):
-            commandArray.append("-nocrosshair")
 
         # bezels
         if bezelRequired:
@@ -256,6 +252,10 @@ class DaphneGenerator(Generator):
         # Scanlines
         if system.isOptSet('daphne_scanlines') and system.getOptBoolean("daphne_scanlines"):
             commandArray.append("-scanlines")
+
+        # Hide crosshair in supported games (e.g. ActionMax, ALG)
+        if system.isOptSet('singe_crosshair') and system.getOptBoolean("singe_crosshair"):
+            commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
         if system.isOptSet('daphne_texturestream') and system.getOptBoolean("daphne_texturestream"):
