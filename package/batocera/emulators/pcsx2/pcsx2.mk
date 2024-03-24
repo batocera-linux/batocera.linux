@@ -82,4 +82,12 @@ endef
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_TEXTURES
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_PATCHES
 
+define PCSX2_CROSSHAIRS
+	mkdir -p $(TARGET_DIR)/usr/pcsx2/bin/resources/crosshairs
+	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/pcsx2/crosshairs/ \
+        $(TARGET_DIR)/usr/pcsx2/bin/resources/
+endef
+
+PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_CROSSHAIRS
+
 $(eval $(cmake-package))
