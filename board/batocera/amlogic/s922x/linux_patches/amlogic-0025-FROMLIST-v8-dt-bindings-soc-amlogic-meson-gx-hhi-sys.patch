@@ -1,0 +1,67 @@
+From 54d0c47551759eccf5d75a107c168f69d9e4bad7 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Thu, 9 Nov 2023 10:00:03 +0100
+Subject: [PATCH 25/64] FROMLIST(v8): dt-bindings: soc:
+ amlogic,meson-gx-hhi-sysctrl: add example covering meson-axg-hhi-sysctrl
+
+Add a thirst example covering the meson-axg-hhi-sysctrl variant and more
+importantly the phy subnode.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../amlogic/amlogic,meson-gx-hhi-sysctrl.yaml | 41 +++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/soc/amlogic/amlogic,meson-gx-hhi-sysctrl.yaml b/Documentation/devicetree/bindings/soc/amlogic/amlogic,meson-gx-hhi-sysctrl.yaml
+index 16977e4e4357..2edf4ccea845 100644
+--- a/Documentation/devicetree/bindings/soc/amlogic/amlogic,meson-gx-hhi-sysctrl.yaml
++++ b/Documentation/devicetree/bindings/soc/amlogic/amlogic,meson-gx-hhi-sysctrl.yaml
+@@ -158,3 +158,44 @@ examples:
+             };
+         };
+     };
++
++    bus@ff63c000 {
++        compatible = "simple-bus";
++        reg = <0xff63c000 0x1c00>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0xff63c000 0x1c00>;
++
++        system-controller@0 {
++            compatible = "amlogic,meson-axg-hhi-sysctrl", "simple-mfd", "syscon";
++            reg = <0 0x400>;
++
++            clock-controller {
++                compatible = "amlogic,axg-clkc";
++                #clock-cells = <1>;
++                clocks = <&xtal>;
++                clock-names = "xtal";
++            };
++
++            power-controller {
++                compatible = "amlogic,meson-axg-pwrc";
++                #power-domain-cells = <1>;
++                amlogic,ao-sysctrl = <&sysctrl_AO>;
++
++                resets = <&reset_viu>,
++                         <&reset_venc>,
++                         <&reset_vcbus>,
++                         <&reset_vencl>,
++                         <&reset_vid_lock>;
++                reset-names = "viu", "venc", "vcbus", "vencl", "vid_lock";
++                clocks = <&clk_vpu>, <&clk_vapb>;
++                clock-names = "vpu", "vapb";
++            };
++
++            phy {
++                compatible = "amlogic,axg-mipi-pcie-analog-phy";
++                #phy-cells = <0>;
++                status = "disabled";
++            };
++        };
++    };
+-- 
+2.34.1
+

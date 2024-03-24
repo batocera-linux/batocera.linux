@@ -31,7 +31,6 @@ class Vita3kGenerator(Generator):
         
         # Move saves if necessary
         if os.path.isdir(os.path.join(vitaConfig, 'ux0')):
-            merge_directories(source_dir, dest_dir)
             # Move all folders from vitaConfig to vitaSaves except "data", "lang", and "shaders-builtin"
             for item in os.listdir(vitaConfig):
                 if item not in ['data', 'lang', 'shaders-builtin']:

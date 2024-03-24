@@ -1,0 +1,10 @@
+--- a/Makefile	2024-03-04 13:01:13.035511722 +0100
++++ b/Makefile	2024-03-04 13:01:24.307770176 +0100
+@@ -6,6 +6,7 @@
+ CXXFLAGS ?= -g -Wall -O2
+ DEFINES = -DSCALE -DPORTABLE
+ CPPFLAGS = $(DEFINES) -Isrc -Iext/scale2x -Iext/psmplug -Iext/miniz -Iext/argparse
++CPPFLAGS += -DFULLSCREEN_ONLY -DDATAPATH="\"/userdata/roms/openjazz\""
+ 
+ # Network support
+ CXXFLAGS += -DUSE_SOCKETS

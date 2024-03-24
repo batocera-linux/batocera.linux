@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DEVILUTIONX_VERSION = 1.5.1
+DEVILUTIONX_VERSION = 1.5.2
 DEVILUTIONX_SITE = https://github.com/diasurgical/devilutionX/releases/download/$(DEVILUTIONX_VERSION)
 DEVILUTIONX_SOURCE = devilutionx-src.tar.xz
 DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_image fmt libsodium libpng bzip2

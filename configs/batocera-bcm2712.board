@@ -1,7 +1,6 @@
 include batocera-board.common
 
 # Target definition
-BR2_GCC_VERSION_12_X=y
 BR2_aarch64=y
 BR2_cortex_a76=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
@@ -13,14 +12,14 @@ BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2712/fsoverlay"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
-# Linux headers same as kernel, a 6.1 series
+# Linux headers same as kernel, a 6.6 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_6=y
 
-# Kernel - Version: 6.1.77
+# Kernel - Version: 6.6.20
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,77fc1fbcb5c013329af9583307dd1ff3cd4752aa)/77fc1fbcb5c013329af9583307dd1ff3cd4752aa.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,5f674bf905525050052752646fa905adf3f60bc7)/5f674bf905525050052752646fa905adf3f60bc7.tar.gz"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2712/linux-defconfig.config"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/linux_patches"
@@ -37,6 +36,7 @@ BR2_PACKAGE_RPI_FIRMWARE_VARIANT_PI=y
 
 # gpu
 BR2_PACKAGE_BATOCERA_RPI_MESA3D=y
+BR2_PACKAGE_BATOCERA_WAYLAND_SWAY=y
 BR2_PACKAGE_BATOCERA_XWAYLAND=y
 
 # batocera splash screen

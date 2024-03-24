@@ -1,6 +1,0 @@
-# http://pixelcade.org ; naming devices to recognize them easierly among other devices
-ACTION=="add",    SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="0008", SYMLINK+="pixelcade%n", MODE="666", RUN+="/usr/bin/pixelcade-add"
-ACTION=="add",    SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="1050", SYMLINK+="pixelcade%n", MODE="666", RUN+="/usr/bin/pixelcade-add"
-
-ACTION=="remove", SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="0008", RUN+="/usr/bin/pixelcade-tools disable"
-ACTION=="remove", SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="1050", RUN+="/usr/bin/pixelcade-tools disable"

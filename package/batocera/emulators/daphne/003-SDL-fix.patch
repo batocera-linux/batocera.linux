@@ -1,0 +1,34 @@
+diff --git a/src/video/video.cpp b/src/video/video.cpp
+index 9bcabdef5d..db05cc438e 100644
+--- a/src/video/video.cpp
++++ b/src/video/video.cpp
+@@ -406,9 +406,7 @@ bool init_display()
+                                (sdl_flags & SDL_WINDOW_MAXIMIZED) != 0) {
+ 
+                     if ((sdl_flags & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+-                        SDL_RenderSetViewport(g_renderer, NULL);
+-                        SDL_RenderGetViewport(g_renderer, &g_logical_rect);
+-
++                        SDL_GetDisplayBounds(0, &g_logical_rect);
+                     } else {
+ 
+                         if (SDL_GetDesktopDisplayMode(0, &g_displaymode) != 0) {
+@@ -1304,8 +1302,7 @@ void vid_toggle_fullscreen()
+          (flags & SDL_WINDOW_MAXIMIZED) != 0) {
+ 
+         if ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+-            SDL_RenderSetViewport(g_renderer, NULL);
+-            SDL_RenderGetViewport(g_renderer, &g_logical_rect);
++            SDL_GetDisplayBounds(0, &g_logical_rect);
+         } else {
+             g_logical_rect.w = g_displaymode.w;
+             g_logical_rect.h = g_displaymode.h;
+@@ -1671,7 +1668,7 @@ void take_screenshot()
+ 
+     SDL_Surface *screenshot = NULL;
+ 
+-    SDL_GetRendererOutputSize(g_renderer, &g_logical_rect.w, &g_logical_rect.h);
++    SDL_GetDisplayBounds(0, &g_logical_rect);
+ 
+     screenshot = SDL_CreateRGBSurface(0, g_logical_rect.w, g_logical_rect.h, 32, 0, 0, 0, 0);
+ 

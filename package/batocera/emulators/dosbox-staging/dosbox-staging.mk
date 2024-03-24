@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DOSBOX_STAGING_VERSION = v0.80.1
+DOSBOX_STAGING_VERSION = v0.81.0
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
 DOSBOX_STAGING_DEPENDENCIES = alsa-lib sdl2 sdl2_net sdl2_image fluidsynth zlib libpng libogg libvorbis opus opusfile slirp iir speexdsp
 DOSBOX_STAGING_LICENSE = GPLv2
@@ -24,8 +24,8 @@ DOSBOX_STAGING_CXXFLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 endif
 
 ifeq ($(BR2_cortex_a7),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
+DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
 endif
 
 ifeq ($(BR2_cortex_a9),y)

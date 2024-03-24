@@ -1,7 +1,7 @@
-Index: linux-6.4/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+Index: linux-6.8/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
 ===================================================================
---- linux-6.4.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
-+++ linux-6.4/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+--- linux-6.8.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
++++ linux-6.8/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
 @@ -89,9 +89,9 @@ static void amdgpu_pll_get_fb_ref_div(st
  
  	/* limit reference * post divider to a maximum */

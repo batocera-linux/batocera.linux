@@ -153,12 +153,7 @@ if [ "$MODE" = "production" ]; then
     ln -sf /var/run/nvidia/lib/libnvidia-cfg.so.1 /usr/lib/libnvidia-cfg.so.1    
     # libnvidia-eglcore.so
     ln -sf /usr/lib/libnvidia-eglcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
-	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so
-    # libnvidia-egl-gbm.so
-    ln -sf /usr/lib/libnvidia-egl-gbm.so.1.1.1 /var/run/nvidia/lib/libnvidia-egl-gbm.so
-	ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so /usr/lib/libnvidia-egl-gbm.so
-    ln -sf /usr/lib/libnvidia-egl-gbm.so.1.1.1 /var/run/nvidia/lib/libnvidia-egl-gbm.so.1
-    ln -sf /var/run/nvidia/lib/libnvidia-egl-gbm.so.1 /usr/lib/libnvidia-egl-gbm.so.1    
+	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so   
     # libnvidia-glcore.so
     ln -sf /usr/lib/libnvidia-glcore.so.$BATOCERA_NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glcore.so /usr/lib/libnvidia-glcore.so

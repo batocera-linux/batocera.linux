@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SONIC3_AIR_VERSION = v23.11.12.1-test
+SONIC3_AIR_VERSION = v24.02.02.0-stable
 SONIC3_AIR_SITE = https://github.com/Eukaryot/sonic3air.git
 SONIC3_AIR_SITE_METHOD = git
 SONIC3_AIR_GIT_SUBMODULES = YES
@@ -13,8 +13,8 @@ SONIC3_AIR_LICENSE_FILE = COPYING.txt
 # CMakeLists.txt in subfolder
 SONIC3_AIR_SUBDIR = Oxygen/sonic3air/build/_cmake
 
-SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu
-SONIC3_AIR_DEPENDENCIES += mesa3d xlib_libXxf86vm xlib_libXcomposite
+SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu mesa3d 
+SONIC3_AIR_DEPENDENCIES += xlib_libXxf86vm xlib_libXcomposite zlib
 
 SONIC3_AIR_SUPPORTS_IN_SOURCE_BUILD = NO
 

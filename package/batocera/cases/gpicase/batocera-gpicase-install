@@ -1,0 +1,105 @@
+#!/bin/sh
+
+CONFIGRULES=/etc/udev/rules.d/99-gpicase.rules
+CONFIGFILE=/boot/config.txt
+CMDLINE=/boot/cmdline.txt
+SWAYLAUNCH=/usr/bin/sway-launch
+RPIMODEL="/proc/device-tree/model"
+CMDMODIFIED=0
+CONFIGMODIFIED=0
+
+if grep -q "^Raspberry Pi Zero 2" ${RPIMODEL}
+then
+    video="dtoverlay=vc4-fkms-v3d
+    dtoverlay=dpi24_gpicase
+    overscan_left=0
+    overscan_right=0
+    overscan_top=0
+    overscan_bottom=0
+    framebuffer_width=640
+    framebuffer_height=480
+    extra_transpose_buffer=2
+    enable_dpi_lcd=1
+    display_default_lcd=1
+    dpi_group=2
+    dpi_mode=87
+    dpi_output_format=0x00016
+    hdmi_timings=640 0 1 1 20 480 0 1 1 2 0 0 0 60 0 19200000 1"
+
+    # Enable audio in GPI Case
+    if ! grep -qE "snd_bcm2835.enable_headphones" "${CMDLINE}"
+    then
+        mount -o remount,rw /boot
+        sed -i s/$/" snd_bcm2835.enable_headphones=1"/ "${CMDLINE}"
+        CMDMODIFIED=1
+    fi
+
+    # Forcing the use of fkms
+    if grep -qE "^dtoverlay=vc4-kms-v3d" "${CONFIGFILE}"
+    then
+        mount -o remount,rw /boot
+        sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' "${CONFIGFILE}"
+        CONFIGMODIFIED=1
+    fi
+
+    # GPICase: needs the parameter to start the sway
+    if grep -qE '^/usr/bin/sway' "${SWAYLAUNCH}"
+    then
+        sed -i 's|/usr/bin/sway|WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway|g' "${SWAYLAUNCH}"
+    fi
+else
+    video="display_lcd_rotate=1
+    extra_transpose_buffer=2
+    dtoverlay=dpi24_gpicase
+    overscan_left=0
+    overscan_right=0
+    overscan_top=0
+    overscan_bottom=0
+    framebuffer_width=320
+    framebuffer_height=240
+    enable_dpi_lcd=1
+    display_default_lcd=1
+    dpi_group=2
+    dpi_mode=87
+    dpi_output_format=0x6016
+    dpi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1"
+fi
+
+setup="# ====== GPi Case setup section =====
+${video}
+dtoverlay=pwm-2chan,pin=18,func=2,pin2=19,func2=2
+disable_pvt=1
+disable_audio_dither=1
+dtoverlay=pwm-audio-pi-zero_gpicase
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=on
+# ====== GPi Case setup section end =====
+# This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
+
+echo "${setup}" | (
+while read LINE
+do
+    if ! grep -qE "^${LINE}$" "${CONFIGFILE}"
+    then
+        test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
+        echo "${LINE}" >> "${CONFIGFILE}"
+        CONFIGMODIFIED=1
+    fi
+done
+
+# We don't want install to be called on every boot
+if [ -e "${CONFIGRULES}" ];
+then
+    rm -rf "${CONFIGRULES}"
+    batocera-save-overlay
+fi
+
+#Reboot if there was a change in line
+if test "${CONFIGMODIFIED}" = 1 || test "${CMDMODIFIED}" = 1
+then
+        echo "Rebooting now..."
+        shutdown -r now
+fi
+)
+
+exit 0

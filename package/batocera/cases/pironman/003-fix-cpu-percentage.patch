@@ -1,0 +1,29 @@
+diff --git a/pironman/system_status.py b/pironman/system_status.py
+index 5eca65e3da..46ac14f58f 100644
+--- a/pironman/system_status.py
++++ b/pironman/system_status.py
+@@ -1,6 +1,7 @@
+ import os
+ import subprocess
+ import shutil
++import psutil
+ 
+ '''
+ Use subprocess.popen instead of os.popen to avoid some errors
+@@ -37,14 +38,12 @@ def getRAMinfo():
+ 
+ # Return % of CPU used as a character string
+ def getCPUuse():
+-    cmd = "top -bn1 |awk 'NR==3 {print $8}'"
+     try:
+-        CPU_usage = subprocess.check_output(cmd,shell=True).decode().replace(',', '.')
+-        CPU_usage = round(100 - float(CPU_usage),1)
++        cpu_percent = psutil.cpu_percent(interval=1)
++        return cpu_percent
+     except Exception as e:
+         print('getCPUuse: %s' %e)
+         return 0.0
+-    return CPU_usage
+ 
+ # Return information about disk space as a list (unit included)
+ # Index 0: total disk space

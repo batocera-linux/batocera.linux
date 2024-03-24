@@ -1,0 +1,115 @@
+From b619319aa02b96b8a7271885066da15b5d3b6578 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Thu, 9 Nov 2023 10:00:11 +0100
+Subject: [PATCH 33/64] FROMLIST(v8): arm64: meson: g12-common: add the MIPI
+ DSI nodes
+
+Add the MIPI DSI Analog & Digital PHY nodes and the DSI control
+nodes with proper port endpoint to the VPU.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ .../boot/dts/amlogic/meson-g12-common.dtsi    | 70 +++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index a960d07f9af3..ad0bfc8f1db6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -1663,9 +1663,28 @@ pwrc: power-controller {
+ 								       <250000000>,
+ 								       <0>; /* Do Nothing */
+ 					};
++
++					mipi_analog_dphy: phy {
++						compatible = "amlogic,g12a-mipi-dphy-analog";
++						#phy-cells = <0>;
++						status = "disabled";
++					};
+ 				};
+ 			};
+ 
++			mipi_dphy: phy@44000 {
++				compatible = "amlogic,axg-mipi-dphy";
++				reg = <0x0 0x44000 0x0 0x2000>;
++				clocks = <&clkc CLKID_MIPI_DSI_PHY>;
++				clock-names = "pclk";
++				resets = <&reset RESET_MIPI_DSI_PHY>;
++				reset-names = "phy";
++				phys = <&mipi_analog_dphy>;
++				phy-names = "analog";
++				#phy-cells = <0>;
++				status = "disabled";
++			};
++
+ 			usb3_pcie_phy: phy@46000 {
+ 				compatible = "amlogic,g12a-usb3-pcie-phy";
+ 				reg = <0x0 0x46000 0x0 0x2000>;
+@@ -2152,6 +2171,15 @@ hdmi_tx_out: endpoint {
+ 					remote-endpoint = <&hdmi_tx_in>;
+ 				};
+ 			};
++
++			/* DPI output port */
++			dpi_port: port@2 {
++				reg = <2>;
++
++				dpi_out: endpoint {
++					remote-endpoint = <&mipi_dsi_in>;
++				};
++			};
+ 		};
+ 
+ 		gic: interrupt-controller@ffc01000 {
+@@ -2189,6 +2217,48 @@ gpio_intc: interrupt-controller@f080 {
+ 				amlogic,channel-interrupts = <64 65 66 67 68 69 70 71>;
+ 			};
+ 
++			mipi_dsi: dsi@7000 {
++				compatible = "amlogic,meson-g12a-dw-mipi-dsi";
++				reg = <0x0 0x7000 0x0 0x1000>;
++				resets = <&reset RESET_MIPI_DSI_HOST>;
++				reset-names = "top";
++				clocks = <&clkc CLKID_MIPI_DSI_HOST>,
++					 <&clkc CLKID_MIPI_DSI_PXCLK>,
++					 <&clkc CLKID_CTS_ENCL>;
++				clock-names = "pclk", "bit", "px";
++				phys = <&mipi_dphy>;
++				phy-names = "dphy";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++
++				assigned-clocks = <&clkc CLKID_MIPI_DSI_PXCLK_SEL>,
++					 <&clkc CLKID_CTS_ENCL_SEL>,
++					 <&clkc CLKID_VCLK2_SEL>;
++				assigned-clock-parents = <&clkc CLKID_GP0_PLL>,
++					 <&clkc CLKID_VCLK2_DIV1>,
++					 <&clkc CLKID_GP0_PLL>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					/* VPU VENC Input */
++					mipi_dsi_venc_port: port@0 {
++						reg = <0>;
++
++						mipi_dsi_in: endpoint {
++							remote-endpoint = <&dpi_out>;
++						};
++					};
++
++					/* DSI Output */
++					mipi_dsi_panel_port: port@1 {
++						reg = <1>;
++					};
++				};
++			};
++
+ 			watchdog: watchdog@f0d0 {
+ 				compatible = "amlogic,meson-gxbb-wdt";
+ 				reg = <0x0 0xf0d0 0x0 0x10>;
+-- 
+2.34.1
+

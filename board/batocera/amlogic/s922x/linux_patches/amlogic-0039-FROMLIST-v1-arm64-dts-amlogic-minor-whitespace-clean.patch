@@ -1,0 +1,59 @@
+From 97012c291c705261fa0931a2ed1590d5aa1c60b0 Mon Sep 17 00:00:00 2001
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Date: Fri, 24 Nov 2023 10:47:00 +0100
+Subject: [PATCH 39/64] FROMLIST(v1): arm64: dts: amlogic: minor whitespace
+ cleanup around '='
+
+The DTS code coding style expects exactly one space before and after '='
+sign.
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Viacheslav Bocharov<adeep@lexina.in>
+---
+ .../boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts    | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4.dtsi        | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi            | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
+index 0062667c4f65..c9e84db0831a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j110-rev-2.dts
+@@ -30,7 +30,7 @@ &sd_emmc_b {
+ &uart_B {
+ 	bluetooth {
+ 		compatible = "realtek,rtl8822cs-bt";
+-		enable-gpios  = <&gpio GPIOZ_7 GPIO_ACTIVE_HIGH>;
++		enable-gpios = <&gpio GPIOZ_7 GPIO_ACTIVE_HIGH>;
+ 		host-wake-gpios = <&gpio GPIOZ_8 GPIO_ACTIVE_HIGH>;
+ 		device-wake-gpios = <&gpio GPIOZ_6 GPIO_ACTIVE_HIGH>;
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4.dtsi
+index 995ce10d5c81..08c33ec7e9f1 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4.dtsi
+@@ -369,7 +369,7 @@ &uart_A {
+ 
+ 	bluetooth {
+ 		compatible = "realtek,rtl8822cs-bt";
+-		enable-gpios  = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
+ 		host-wake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
+ 		device-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+index 0a6a12808568..4b8db872bbf3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+@@ -487,7 +487,7 @@ &uart_A {
+ 
+ 	bluetooth {
+ 		compatible = "realtek,rtl8822cs-bt";
+-		enable-gpios  = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
+ 		host-wake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
+ 		device-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
+ 	};
+-- 
+2.34.1
+

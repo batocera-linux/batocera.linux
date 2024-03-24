@@ -16,6 +16,10 @@ ifeq ($(BR2_x86_64),y)
     OPENBOR7530_EXTRAOPTS=BUILD_LINUX_LE_x86_64=1
 endif
 
+ifeq ($(BR2_riscv),y)
+    OPENBOR7530_EXTRAOPTS=BUILD_LINUX=1
+endif
+
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
     OPENBOR7530_EXTRAOPTS=BUILD_LINUX_LE_arm=1
 endif

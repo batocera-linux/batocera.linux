@@ -34,5 +34,11 @@ mkdir -p /run/udev/
 # xorg
 mkdir -p /var/log
 
-# flatpak and probably more
+# ensure some holders are available
 mkdir -p /var/tmp
+mkdir -p /var/opt
+
+# populate the ld cache
+mkdir -p /etc
+echo -e "/usr/lib\n/lib\n/lib32" | tee /etc/ld.so.conf
+ldconfig

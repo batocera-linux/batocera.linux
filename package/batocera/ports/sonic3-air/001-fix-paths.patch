@@ -1,18 +1,18 @@
 diff --git a/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp b/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp
-index 735558e1..1ec7073e 100644
+index ed423975..ce65be59 100644
 --- a/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp
 +++ b/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp
-@@ -438,7 +438,7 @@ bool EngineMain::initConfigAndSettings(const std::wstring& argumentProjectPath)
+@@ -444,7 +444,7 @@ bool EngineMain::initConfigAndSettings(const std::wstring& argumentProjectPath)
  #if (defined(PLATFORM_MAC) || defined(PLATFORM_IOS)) && defined(ENDUSER)
- 	config.loadConfiguration(config.mGameDataPath + L"/config.json");
+ 		config.loadConfiguration(config.mGameDataPath + L"/config.json");
  #else
--	config.loadConfiguration(L"config.json");
-+	config.loadConfiguration(config.mAppDataPath + L"config.json");
+-		config.loadConfiguration(L"config.json");
++		config.loadConfiguration(config.mAppDataPath + L"config.json");
  #endif
+ 	}
  
- 	// Setup a custom game profile (like S3AIR does) or load the "oxygenproject.json"
 diff --git a/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp b/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp
-index a755b1ea..712e1957 100644
+index ad0383c1..ff645326 100644
 --- a/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp
 +++ b/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp
 @@ -63,7 +63,7 @@ bool ResourcesCache::loadRom()
@@ -25,7 +25,7 @@ index a755b1ea..712e1957 100644
  			if (loaded)
  				break;
 diff --git a/Oxygen/oxygenserver/source/oxygenserver/main_server.cpp b/Oxygen/oxygenserver/source/oxygenserver/main_server.cpp
-index 45d8967c..ec872fe3 100644
+index 0d0f4bbe..7bfed082 100644
 --- a/Oxygen/oxygenserver/source/oxygenserver/main_server.cpp
 +++ b/Oxygen/oxygenserver/source/oxygenserver/main_server.cpp
 @@ -77,7 +77,7 @@ int main(int argc, char** argv)

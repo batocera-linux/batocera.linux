@@ -1,8 +1,0 @@
-config BR2_PACKAGE_KODI20_AUDIODECODER_OPENMPT
-	bool "kodi20-audiodecoder-openmpt"
-	select BR2_PACKAGE_LIBOPENMPT
-	select BR2_PACKAGE_ZLIB
-	help
-	  This is a Kodi audio decoder addon for tracker module files.
-
-	  https://github.com/xbmc/audiodecoder.openmpt

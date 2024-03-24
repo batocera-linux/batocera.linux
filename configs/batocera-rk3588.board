@@ -1,7 +1,6 @@
 include batocera-board.common
 
 # Target definition
-BR2_GCC_VERSION_12_X=y
 BR2_aarch64=y
 BR2_cortex_a76_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
@@ -21,7 +20,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/armbian/linux-rockchip.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="64df218de95ba41ad42c1fe7b310d874a1950eb7"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="494c0a303537c55971421b5552d98eb55e652cf3"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
@@ -31,7 +30,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-rock-5b rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-khadas-edge2 rockchip/rk3588s-roc-pc"
-
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
@@ -39,15 +38,10 @@ BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Enable Wayland
-BR2_PACKAGE_BATOCERA_WAYLAND=y
+BR2_PACKAGE_BATOCERA_WAYLAND_SWAY=y
 
 # Include Kodi Media Center
-# Broken on Panfork
-BR2_PACKAGE_BATOCERA_KODI20=n
-
-# Mali G610 GPU Drivers
-#BR2_PACKAGE_MALI_G610=y
-#BR2_PACKAGE_ROCKCHIP_MPP=y
+BR2_PACKAGE_BATOCERA_KODI20=y
 
 # Mesa Panfork
 BR2_PACKAGE_MESA_PANFORK=y

@@ -1,0 +1,53 @@
+From a3fac2d6602af61a6647a89e4edd1b60c7ae0884 Mon Sep 17 00:00:00 2001
+From: Haoran Liu <liuhaoran14@163.com>
+Date: Wed, 29 Nov 2023 03:34:05 -0800
+Subject: [PATCH 40/64] FROMLIST(v2): meson_plane: Add error handling
+
+This patch adds robust error handling to the meson_plane_create
+function in drivers/gpu/drm/meson/meson_plane.c. The function
+previously lacked proper handling for potential failure scenarios
+of the drm_universal_plane_init call.
+
+Signed-off-by: Haoran Liu <liuhaoran14@163.com>
+---
+ drivers/gpu/drm/meson/meson_plane.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_plane.c b/drivers/gpu/drm/meson/meson_plane.c
+index 815dfe30492b..b43ac61201f3 100644
+--- a/drivers/gpu/drm/meson/meson_plane.c
++++ b/drivers/gpu/drm/meson/meson_plane.c
+@@ -534,6 +534,7 @@ int meson_plane_create(struct meson_drm *priv)
+ 	struct meson_plane *meson_plane;
+ 	struct drm_plane *plane;
+ 	const uint64_t *format_modifiers = format_modifiers_default;
++	int ret;
+ 
+ 	meson_plane = devm_kzalloc(priv->drm->dev, sizeof(*meson_plane),
+ 				   GFP_KERNEL);
+@@ -548,12 +549,16 @@ int meson_plane_create(struct meson_drm *priv)
+ 	else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
+ 		format_modifiers = format_modifiers_afbc_g12a;
+ 
+-	drm_universal_plane_init(priv->drm, plane, 0xFF,
+-				 &meson_plane_funcs,
+-				 supported_drm_formats,
+-				 ARRAY_SIZE(supported_drm_formats),
+-				 format_modifiers,
+-				 DRM_PLANE_TYPE_PRIMARY, "meson_primary_plane");
++	ret = drm_universal_plane_init(priv->drm, plane, 0xFF,
++					&meson_plane_funcs,
++					supported_drm_formats,
++					ARRAY_SIZE(supported_drm_formats),
++					format_modifiers,
++					DRM_PLANE_TYPE_PRIMARY, "meson_primary_plane");
++	if (ret) {
++		devm_kfree(priv->drm->dev, meson_plane);
++		return ret;
++	}
+ 
+ 	drm_plane_helper_add(plane, &meson_plane_helper_funcs);
+ 
+-- 
+2.34.1
+

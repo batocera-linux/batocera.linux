@@ -1,0 +1,39 @@
+From 3529aa1aaa05b20c217e5bf088bf6e097ad52310 Mon Sep 17 00:00:00 2001
+From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
+Date: Wed, 31 Jan 2024 11:59:50 -0300
+Subject: [PATCH 42/49] power: supply: rk818-battery/charger: clear unused
+ variables
+
+---
+ drivers/power/supply/rk818_battery.c | 2 +-
+ drivers/power/supply/rk818_charger.c | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/power/supply/rk818_battery.c b/drivers/power/supply/rk818_battery.c
+index b62d59a4b228..ac8369f09d3e 100644
+--- a/drivers/power/supply/rk818_battery.c
++++ b/drivers/power/supply/rk818_battery.c
+@@ -3400,7 +3400,7 @@ static int rk818_battery_resume(struct platform_device *dev)
+ {
+ 	struct rk818_battery *di = platform_get_drvdata(dev);
+ 	int interval_sec, time_step, pwroff_vol;
+-	u8 val, st;
++	u8 st;
+ 
+ 	di->s2r = true;
+ 	di->current_avg = rk818_bat_get_avg_current(di);
+diff --git a/drivers/power/supply/rk818_charger.c b/drivers/power/supply/rk818_charger.c
+index cdef0dcd1f8c..a081fdfee31d 100644
+--- a/drivers/power/supply/rk818_charger.c
++++ b/drivers/power/supply/rk818_charger.c
+@@ -538,7 +538,6 @@ static int rk818_charger_set_property(struct power_supply *psy,
+ 				      const union power_supply_propval *val)
+ {
+ 	struct rk818_charger *cg = power_supply_get_drvdata(psy);
+-	int ret;
+ 
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR:
+-- 
+2.34.1
+

@@ -1,0 +1,61 @@
+#!/bin/sh
+
+EVENTS="game-selected system-selected game-start game-end screensaver-start screensaver-stop achievements"
+PIDFILE=/var/run/dmd_server.pid
+
+start() {
+        echo -n "Starting dmd-server: "
+
+	# add hooks
+        for EVT in ${EVENTS}
+        do
+            mkdir -p /var/run/emulationstation/scripts/${EVT} || exit 1
+            ln -sf /usr/share/dmd-simulator/scripts/${EVT}.sh /var/run/emulationstation/scripts/${EVT}/dmd-server.sh || exit 1
+        done
+
+        ARGS=
+        DMDMATRIX=$(batocera-settings-get dmd.matrix)
+        test -z "${DMDMATRIX}" && DMDMATRIX=auto
+        DMDBRIGHTNESS=$(batocera-settings-get dmd.brightness)
+        test -z "${DMDBRIGHTNESS}" && DMDBRIGHTNESS=-1
+        dmdserver-config --matrix "${DMDMATRIX}" --brightness "${DMDBRIGHTNESS}" || return 1 # configure the dmd server
+        test -e /userdata/system/configs/dmdserver/config.ini && ARGS="-c /userdata/system/configs/dmdserver/config.ini"
+        start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/dmdserver -- ${ARGS} >/dev/null &
+        RETVAL=$?
+
+	echo "done"
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Stopping dmd-server: "
+
+	# clear the screen
+	/usr/bin/dmd-play --clear
+
+        # remove hooks
+        for EVT in ${EVENTS}
+        do
+            unlink /var/run/emulationstation/scripts/${EVT}/dmd-server.sh
+        done
+
+        start-stop-daemon -K -q -p $PIDFILE
+	RETVAL=$?
+	
+        echo "done"
+        return $RETVAL
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        *)
+                echo "Usage: $0 {start|stop}"
+                exit 1
+esac
+
+exit $?

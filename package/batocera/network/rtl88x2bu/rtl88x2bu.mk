@@ -3,8 +3,8 @@
 # rtl88x2bu
 #
 ################################################################################
-
-RTL88X2BU_VERSION = f632e68c921787e466583914da48593ad701a53e
+# Version: Commits on Feb 23, 2024
+RTL88X2BU_VERSION = bb6e514230791010a34daf0d6ccf55ef97309dbf
 RTL88X2BU_SITE = $(call github,morrownr,88x2bu-20210702,$(RTL88X2BU_VERSION))
 RTL88X2BU_LICENSE = GPL-2.0
 RTL88X2BU_LICENSE_FILES = LICENSE

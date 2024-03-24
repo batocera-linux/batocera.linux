@@ -1,0 +1,35 @@
+From 584e456bf9eeed588317bb073a8d326219fef8bd Mon Sep 17 00:00:00 2001
+From: Ondrej Jirman <megi@xff.cz>
+Date: Thu, 7 Sep 2023 17:43:00 +0200
+Subject: [PATCH 41/49] power: supply: rk817-charger: Propagate proper errors
+
+Without propagating the correct error code, defered probe doesn't work.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+---
+ drivers/power/supply/rk817_charger.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/supply/rk817_charger.c b/drivers/power/supply/rk817_charger.c
+index ee5c8419ac42..1e0900e5b450 100644
+--- a/drivers/power/supply/rk817_charger.c
++++ b/drivers/power/supply/rk817_charger.c
+@@ -1250,13 +1250,13 @@ static int rk817_charger_probe(struct platform_device *pdev)
+ 	charger->bat_ps = devm_power_supply_register(&pdev->dev,
+ 						     &rk817_bat_desc, &pscfg);
+ 	if (IS_ERR(charger->bat_ps))
+-		return dev_err_probe(dev, -EINVAL,
++		return dev_err_probe(dev, PTR_ERR(charger->bat_ps),
+ 				     "Battery failed to probe\n");
+ 
+ 	charger->chg_ps = devm_power_supply_register(&pdev->dev,
+ 						     &rk817_chg_desc, &pscfg);
+ 	if (IS_ERR(charger->chg_ps))
+-		return dev_err_probe(dev, -EINVAL,
++		return dev_err_probe(dev, PTR_ERR(charger->chg_ps),
+ 				     "Charger failed to probe\n");
+ 
+ 	ret = power_supply_get_battery_info(charger->bat_ps,
+-- 
+2.34.1
+

@@ -1,0 +1,143 @@
+diff --git a/arch/arm64/boot/dts/rockchip/lcd-hx8399c_mipi.dtsi b/arch/arm64/boot/dts/rockchip/lcd-hx8399c_mipi.dtsi
+new file mode 100755
+index 0000000..957855f
+--- a/dev/null
++++ b/arch/arm64/boot/dts/rockchip/lcd-hx8399c_mipi.dtsi
+@@ -0,0 +1,137 @@
++/*
++ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++&dsi0 {
++	status = "okay";
++	//rockchip,lane-rate = <1000>;
++	dsi0_panel: panel@0 {
++		status = "okay";
++		compatible = "simple-panel-dsi";
++		reg = <0>;
++		backlight = <&backlight>;
++		reset-delay-ms = <120>;
++		enable-delay-ms = <120>;
++		init-delay-ms = <120>;
++		stbyb-delay-ms = <120>;
++		prepare-delay-ms = <120>;
++		unprepare-delay-ms = <120>;
++		disable-delay-ms = <120>;
++		dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
++			MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET)>;
++		dsi,format = <MIPI_DSI_FMT_RGB888>;
++		dsi,lanes  = <4>;
++		width-mm = <68>;
++		height-mm = <120>;
++		rotation = <90>;
++		panel-init-sequence = [
++			39 00 04 B9 FF 83 99
++			15 00 02 D2 77
++			39 00 10 B1 02 04 74 94 01 32 33 11 11 AB 4D 56 73 02 02
++			39 00 10 B2 00 80 80 AE 05 07 5A 11 00 00 10 1E 70 03 D4
++			39 00 2d B4 00 FF 02 C0 02 C0 00 00 08 00 04 06 00 32 04 0A 08 21 03 01 00 0F B8 8B 02 C0 02 C0 00 00 08 00 04 06 00 32 04 0A 08 01 00 0F B8 01
++			39 00 22 D3 00 00 00 00 00 00 06 00 00 10 04 00 04 00 00 00 00 00 00 00 00 00 00 01 00 05 05 07 00 00 00 05 40
++			39 00 21 D5 18 18 19 19 18 18 21 20 01 00 07 06 05 04 03 02 18 18 18 18 18 18 2F 2F 30 30 31 31 18 18 18 18
++			39 00 21 D6 18 18 19 19 40 40 20 21 02 03 04 05 06 07 00 01 40 40 40 40 40 40 2F 2F 30 30 31 31 40 40 40 40
++			39 00 11 D8 A2 AA 02 A0 A2 A8 02 A0 B0 00 00 00 B0 00 00 00
++			15 00 02 BD 01
++			39 00 11 D8 B0 00 00 00 B0 00 00 00 E2 AA 03 F0 E2 AA 03 F0
++			15 00 02 BD 02
++			39 00 09 D8 E2 AA 03 F0 E2 AA 03 F0
++			15 00 02 BD 00
++			39 00 03 B6 7A 7A
++			39 00 37 E0 00 18 27 24 5A 68 79 78 81 8A 92 99 9E A7 AF B4 B9 C3 C7 D1 C6 D4 D5 6C 67 71 77 00 00 18 27 24 5A 68 79 78 81 8A 92 99 9E A7 AF B4 B9 C3 C7 D1 C6 D4 D5 6C 67 77
++			39 00 03 C6 FF F9
++			15 00 02 CC 08
++			05 78 01 11
++			05 14 01 29
++		];
++
++		panel-exit-sequence = [
++			05 00 01 28
++			05 00 01 10
++		];
++
++		disp_timings0: display-timings {
++			native-mode = <&dsi0_timing0>;
++			dsi0_timing0: timing0 {
++				clock-frequency = <136000000>;
++				hactive = <1080>;
++				vactive = <1920>;
++				hfront-porch = <32>;
++				hsync-len = <8>;
++				hback-porch = <32>;
++				vfront-porch = <22>;
++				vsync-len = <2>;
++				vback-porch = <23>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <0>;
++				pixelclk-active = <1>;
++			};
++		};
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				panel_in_dsi: endpoint {
++					remote-endpoint = <&dsi_out_panel>;
++				};
++			};
++		};
++	};
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@1 {
++			reg = <1>;
++			dsi_out_panel: endpoint {
++				remote-endpoint = <&panel_in_dsi>;
++			};
++		};
++	};
++
++};

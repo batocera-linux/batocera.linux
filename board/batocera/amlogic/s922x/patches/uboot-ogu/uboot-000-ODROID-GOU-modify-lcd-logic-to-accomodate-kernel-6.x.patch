@@ -1,0 +1,200 @@
+From 3e239031788947f44e40f1987e33c03851fe541d Mon Sep 17 00:00:00 2001
+From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
+Date: Tue, 5 Sep 2023 15:03:17 -0300
+Subject: [PATCH] ODROID-GOU: modify lcd logic to accomodate kernel 6.x drivers
+
+Change-Id: I7b6827e2996a4d1f4b0a1c95997bdfbf1693f3bf
+---
+ board/hardkernel/odroidgou/display.c     | 10 +++++++
+ board/hardkernel/odroidgou/display.h     |  2 +-
+ board/hardkernel/odroidgou/odroid_pmic.c | 10 ++++++-
+ board/hardkernel/odroidgou/odroidgou.c   | 11 ++++----
+ board/hardkernel/odroidgou/recovery.c    | 34 +++++++++++-------------
+ board/hardkernel/odroidgou/recovery.h    |  1 +
+ 6 files changed, 42 insertions(+), 26 deletions(-)
+
+diff --git a/board/hardkernel/odroidgou/display.c b/board/hardkernel/odroidgou/display.c
+index 859cfc766d..6f73ec1126 100755
+--- a/board/hardkernel/odroidgou/display.c
++++ b/board/hardkernel/odroidgou/display.c
+@@ -14,6 +14,9 @@
+ #include <vsprintf.h>
+ #include <linux/kernel.h>
+ #include <version.h>
++#ifdef CONFIG_AML_LCD
++#include <amlogic/aml_lcd.h>
++#endif
+ 
+ #include <../odroid-common/odroid-common.h>
+ #include "display.h"
+@@ -30,6 +33,13 @@ static int boot_partition(void)
+ 	return -1;
+ }
+ 
++void gou_init_lcd(void)
++{
++		lcd_probe();
++		gou_display_env_init();
++		gou_bmp_display(DISP_LOGO);
++}
++
+ int gou_display_env_init(void)
+ {
+ 	char str[64];
+diff --git a/board/hardkernel/odroidgou/display.h b/board/hardkernel/odroidgou/display.h
+index 1fb25c4521..05aeaab0e6 100755
+--- a/board/hardkernel/odroidgou/display.h
++++ b/board/hardkernel/odroidgou/display.h
+@@ -32,6 +32,6 @@ enum disp_index_e {
+ 
+ extern int gou_display_env_init(void);
+ extern int gou_bmp_display(unsigned idx);
+-
++extern void gou_init_lcd(void);
+ #endif
+ 
+diff --git a/board/hardkernel/odroidgou/odroid_pmic.c b/board/hardkernel/odroidgou/odroid_pmic.c
+index b39b7c566b..5f243ce7ec 100755
+--- a/board/hardkernel/odroidgou/odroid_pmic.c
++++ b/board/hardkernel/odroidgou/odroid_pmic.c
+@@ -199,6 +199,11 @@ int board_check_power(void)
+ 	printf("PWRON source : %d\n",pwron_src);
+ 
+ 	if ((pwron_src != PWRON_KEY) && (bootmode == BOOTMODE_NORMAL)) {
++		if((pwron_src == PWRON_USB) && (get_battery_cap() > 0))
++			return 0;
++		else
++			gou_init_lcd();
++		
+ 		/* RK817 BOOST, OTG_POWER(USB A-type VBUS) disable */
+ 		rk817_i2c_write(RK817_POWER_EN3, 0xf0);
+ 		printf("battery charge state\n");
+@@ -219,12 +224,15 @@ int board_check_power(void)
+ 			charger_led_bilnk(0);
+ 			if ( offset < DISP_BATT_3)
+ 				gou_bmp_display(offset+1);
+-			else gou_bmp_display(offset);
++			else 
++				gou_bmp_display(offset);
++
+ 			mdelay(750);
+ 			charger_led_bilnk(0);
+ 
+ 			if(check_charge_exit_key())
+ 				break;
++
+ 			if(!is_charging())
+ 				run_command("poweroff", 0);
+ 		}
+diff --git a/board/hardkernel/odroidgou/odroidgou.c b/board/hardkernel/odroidgou/odroidgou.c
+index d08f0aac00..4e7c7ef0d0 100755
+--- a/board/hardkernel/odroidgou/odroidgou.c
++++ b/board/hardkernel/odroidgou/odroidgou.c
+@@ -302,14 +302,13 @@ int board_late_init(void)
+ #endif
+ 	vpp_init();
+ 
++	check_hotkey();
++
++	if((get_bootmode() != BOOTMODE_NORMAL) || (board_check_power() < 0)) {
+ #ifdef CONFIG_AML_LCD
+-	lcd_probe();
+-#endif
+-	/* boot logo display - 1080p60hz */
+-#ifdef CONFIG_AML_LCD
+-	gou_display_env_init();
+-	gou_bmp_display(DISP_LOGO);
++		gou_init_lcd();
+ #endif
++	}
+ 
+ 	setenv("variant", "gou");
+ 	board_set_dtbfile("meson64_odroid%s.dtb");
+diff --git a/board/hardkernel/odroidgou/recovery.c b/board/hardkernel/odroidgou/recovery.c
+index a9d72663aa..cbd5c8c68d 100755
+--- a/board/hardkernel/odroidgou/recovery.c
++++ b/board/hardkernel/odroidgou/recovery.c
+@@ -30,7 +30,7 @@ int boot_device(void)
+ 	return -1;
+ }
+ 
+-int check_hotkey(void)
++void check_hotkey(void)
+ {
+ 	int left1,left2,right1,right2;
+ 	int boot_mode = 0;
+@@ -61,7 +61,19 @@ int check_hotkey(void)
+ 		boot_mode = BOOTMODE_NORMAL;
+ 		printf("bootmode : Nomal boot. \n");
+ 	}
+-	return boot_mode;
++
++	switch (boot_mode) {
++		case BOOTMODE_RECOVERY :
++			setenv("bootmode", "recovery");
++		break;
++		case BOOTMODE_TEST :
++			setenv("bootmode", "test");
++		break;
++		case BOOTMODE_NORMAL :
++		default :
++			setenv("bootmode", "normal");
++		break;
++	}
+ }
+ 
+ 
+@@ -78,7 +90,7 @@ int board_check_recovery(void)
+ 			goto recovery;
+ 		}
+ 	}
+-	boot_mode = check_hotkey();
++	boot_mode = get_bootmode();
+ 	
+ 	if (boot_mode != BOOTMODE_NORMAL) {
+ 		if (board_check_odroidbios(dev) == 0) {
+@@ -89,20 +101,6 @@ int board_check_recovery(void)
+ 			run_command("mmc dev 0", 0);
+ 		} else return -1;
+ 	}
+-	
+-	switch (boot_mode) {
+-		case BOOTMODE_RECOVERY :
+-			setenv("bootmode", "recovery");
+-		break;
+-		case BOOTMODE_TEST :
+-			setenv("bootmode", "test");
+-		break;
+-		case BOOTMODE_NORMAL :
+-		default :
+-			setenv("bootmode", "normal");
+-		break;
+-	}
+-
+ recovery:
+ 	return 0;
+ }
+@@ -116,7 +114,7 @@ int get_bootmode(void)
+ 	else if (!strcmp("test", pmode)) ret = BOOTMODE_TEST;
+ 	else if (!strcmp("recovery", pmode)) ret = BOOTMODE_RECOVERY;
+ 	else ret = BOOTMODE_NORMAL;
+-		
++
+ 	return ret;
+ }
+ 
+diff --git a/board/hardkernel/odroidgou/recovery.h b/board/hardkernel/odroidgou/recovery.h
+index 3fa0933c41..15d961d8ef 100755
+--- a/board/hardkernel/odroidgou/recovery.h
++++ b/board/hardkernel/odroidgou/recovery.h
+@@ -30,6 +30,7 @@
+ 
+ int board_check_recovery(void);
+ int get_bootmode(void);
++void check_hotkey(void);
+ 
+ #endif
+ 
+-- 
+2.44.0
+

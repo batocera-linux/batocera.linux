@@ -1,0 +1,16 @@
+Index: linux-6.8/drivers/gpu/drm/drm_edid.c
+===================================================================
+--- linux-6.8.orig/drivers/gpu/drm/drm_edid.c
++++ linux-6.8/drivers/gpu/drm/drm_edid.c
+@@ -2176,7 +2176,10 @@ drm_do_probe_ddc_edid(void *data, u8 *bu
+ 		 * Avoid sending the segment addr to not upset non-compliant
+ 		 * DDC monitors.
+ 		 */
+-		ret = i2c_transfer(adapter, &msgs[3 - xfers], xfers);
++		if (!adapter)
++			ret = -ENXIO;
++		else
++			ret = i2c_transfer(adapter, &msgs[3 - xfers], xfers);
+ 
+ 		if (ret == -ENXIO) {
+ 			DRM_DEBUG_KMS("drm: skipping non-existent adapter %s\n",

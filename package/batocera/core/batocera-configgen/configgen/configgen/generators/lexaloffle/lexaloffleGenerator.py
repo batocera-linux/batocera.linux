@@ -7,14 +7,30 @@ import controllersConfig
 import os
 
 eslog = get_logger(__name__)
-BIN_PATH="/userdata/bios/pico-8/pico8"
-CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
+PICO8_BIN_PATH="/userdata/bios/pico-8/pico8"
+PICO8_ROOT_PATH="/userdata/roms/pico8/"
+PICO8_CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
+VOX_BIN_PATH="/userdata/bios/voxatron/vox"
+VOX_ROOT_PATH="/userdata/roms/voxatron/"
+VOX_CONTROLLERS="/userdata/system/.lexaloffle/Voxatron/sdl_controllers.txt"
+
 
 # Generator for the official pico8 binary from Lexaloffle
 class LexaloffleGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        if (system.name == "pico8"):
+            BIN_PATH=PICO8_BIN_PATH
+            CONTROLLERS=PICO8_CONTROLLERS
+            ROOT_PATH=PICO8_ROOT_PATH
+        elif (system.name == "voxatron"):
+            BIN_PATH=VOX_BIN_PATH
+            CONTROLLERS=VOX_CONTROLLERS
+            ROOT_PATH=VOX_ROOT_PATH
+        else:
+            eslog.error(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
+            return -1
         if not os.path.exists(BIN_PATH):
-            eslog.error(f"Lexaloffle official pico-8 binary not found at {BIN_PATH}")
+            eslog.error(f"Lexaloffle official binary not found at {BIN_PATH}")
             return -1
         if not os.access(BIN_PATH, os.X_OK):
             eslog.error(f"File {BIN_PATH} is not set as executable")
@@ -42,7 +58,7 @@ class LexaloffleGenerator(Generator):
             commandArray.extend(["-root_path", localpath])
             rom = fullpath
         else:
-            commandArray.extend(["-root_path", "/userdata/roms/pico8"]) # store carts from splore
+            commandArray.extend(["-root_path", ROOT_PATH]) # store carts from splore
 
         if (rombase.lower() == "splore" or rombase.lower() == "console"):
             commandArray.extend(["-splore"])

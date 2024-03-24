@@ -38,22 +38,22 @@ checkRunningPIDAndExit1
 CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
+############
+# Based on GunCon2 model
+############
+# Trigger                  : BTN_LEFT
+# Offscreen, A, C          : BTN_RIGHT
+# B                        : BTN_MIDDLE
+# Start                    : KEY_1
+# Select                   : KEY_5
+# Thumb pad                : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+
 if test "${NDEVS}" = 3
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
     DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
-    # 1:     left     / b
-    # 2:     right    / a
-    # 3:     middle   / home
-    # -:     button_1 / select
-    # 1:     button_2 / a
-    # 2:     button_3 / b
-    # +:     button_4 / c
-    # up:    button_5 / up
-    # down:  button_6 / down
-    # left:  button_7 / left
-    # right: button_8 / right
+
     nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else

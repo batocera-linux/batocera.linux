@@ -1,0 +1,118 @@
+From 02e0d943c1581ca1a1462c73b8f2340e7dfe7d7e Mon Sep 17 00:00:00 2001
+From: Anand Moon <linux.amoon@gmail.com>
+Date: Wed, 22 Nov 2023 23:53:46 +0530
+Subject: [PATCH 20/64] FROMLIST(v4): dt-bindings: usb: Add the binding example
+ for the Genesys Logic GL3523 hub
+
+Add the binding example for the USB3.1 Genesys Logic GL3523
+integrates with USB 3.1 Gen 1 Super Speed and USB 2.0 High-Speed
+hub.
+
+Onboard USB hub supports USB 3.x and USB 2.0 peer controllers.
+which has a common reset pin and power supply.
+peer-hub phandle each peer controller with proper gpio reset
+and help each peer power on during initialization
+and power off during suspend.
+
+Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+---
+ .../bindings/usb/genesys,gl850g.yaml          | 67 +++++++++++++++++--
+ 1 file changed, 63 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/usb/genesys,gl850g.yaml b/Documentation/devicetree/bindings/usb/genesys,gl850g.yaml
+index ee08b9c3721f..bc3b3f4c8473 100644
+--- a/Documentation/devicetree/bindings/usb/genesys,gl850g.yaml
++++ b/Documentation/devicetree/bindings/usb/genesys,gl850g.yaml
+@@ -9,9 +9,6 @@ title: Genesys Logic USB hub controller
+ maintainers:
+   - Icenowy Zheng <uwu@icenowy.me>
+ 
+-allOf:
+-  - $ref: usb-device.yaml#
+-
+ properties:
+   compatible:
+     enum:
+@@ -27,12 +24,48 @@ properties:
+ 
+   vdd-supply:
+     description:
+-      the regulator that provides 3.3V core power to the hub.
++      phandle to the regulator that provides power to the hub.
++
++  peer-hub:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      onboard USB hub supports USB 3.x and USB 2.0 peer controllers.
++      which has a common reset pin and power supply.
++      peer-hub phandle each peer controller with proper gpio reset
++      and help each peer power on during initialization
++      and power off during suspend.
+ 
+ required:
+   - compatible
+   - reg
+ 
++allOf:
++  - $ref: usb-device.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - usb5e3,608
++    then:
++      properties:
++        peer-hub: false
++        vdd-supply: false
++        reset-gpios: true
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - usb5e3,610
++              - usb5e3,620
++    then:
++      properties:
++        peer-hub: true
++        vdd-supply: true
++        reset-gpios: true
++
+ additionalProperties: false
+ 
+ examples:
+@@ -49,3 +82,29 @@ examples:
+             reset-gpios = <&pio 7 2 GPIO_ACTIVE_LOW>;
+         };
+     };
++
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    usb {
++        dr_mode = "host";
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        /* 2.0 hub on port 1 */
++        hub_2_0: hub@1 {
++            compatible = "usb5e3,610";
++            reg = <1>;
++            peer-hub = <&hub_3_0>;
++            reset-gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
++            vdd-supply = <&vcc_5v>;
++        };
++
++        /* 3.1 hub on port 4 */
++        hub_3_0: hub@2 {
++            compatible = "usb5e3,620";
++            reg = <2>;
++            peer-hub = <&hub_2_0>;
++            reset-gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
++            vdd-supply = <&vcc_5v>;
++        };
++    };
+-- 
+2.34.1
+

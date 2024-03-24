@@ -3,31 +3,33 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Jan 28, 2024
+# Version: Commits on Mar 23, 2024
 # uses standalone tree for now
-VPINBALL_VERSION = 0d0dcff884f71eecab96111b63db6b5586ae4b2c
+VPINBALL_VERSION = 768ee0de2ed69ccaadf0302346ae910466620690 
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
-VPINBALL_DEPENDENCIES = host-libcurl libfreeimage libpinmame libaltsound libserialport libzedmd libserum libdmdutil sdl2 sdl2_image sdl2_ttf
+VPINBALL_DEPENDENCIES = host-libcurl libfreeimage libpinmame libaltsound libdmdutil libdof sdl2 sdl2_image sdl2_ttf
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # handle supported target platforms
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
-    SOURCE = CMakeLists_gl-rk3588-aarch64.txt
-    SOURCE_DIR = rk3588
+    SOURCE = CMakeLists_gl-linux-aarch64.txt
+    SOURCE_DIR = linux-aarch64
     ARCH = aarch64
+    VPINBALL_CONF_OPTS += "-DBUILD_RK3588=ON"
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
-    SOURCE = CMakeLists_gl-rpi-aarch64.txt
-    SOURCE_DIR = rpi
+    SOURCE = CMakeLists_gl-linux-aarch64.txt
+    SOURCE_DIR = linux-aarch64
     ARCH = aarch64
+    VPINBALL_CONF_OPTS += "-DBUILD_RPI=ON"
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     SOURCE = CMakeLists_gl-linux-x64.txt
-    SOURCE_DIR = linux
+    SOURCE_DIR = linux-x64
     ARCH = x86_64
 endif
 

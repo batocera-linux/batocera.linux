@@ -30,10 +30,10 @@
  #else
      auto hwnd = winId();
      auto wgl_context = new WGLContext();
-@@ -312,8 +316,10 @@
+@@ -316,8 +316,10 @@
  #ifndef _WIN32
      if (QGuiApplication::platformName() == "wayland")
-         ((WaylandEGLContext *)context.get())->resize({ g.x(), g.y(), g.width(), g.height(), s });
+         ((WaylandEGLContext *)context.get())->resize({ g.x() - main_window->x(), g.y() - main_window->y(), g.width(), g.height(), s });
 +#ifdef USE_X11
      else if (platform == "xcb")
          ((GTKGLXContext *)context.get())->resize();

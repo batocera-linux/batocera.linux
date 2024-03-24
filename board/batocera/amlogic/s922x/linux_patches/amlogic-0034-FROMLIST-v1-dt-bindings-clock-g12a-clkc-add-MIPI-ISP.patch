@@ -1,0 +1,32 @@
+From 61521f25f94a41ca43a822838ba006f3cf98a22b Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Tue, 14 Nov 2023 11:14:43 +0100
+Subject: [PATCH 34/64] FROMLIST(v1): dt-bindings: clock: g12a-clkc: add MIPI
+ ISP & CSI PHY clock ids
+
+Add MIPI ISP & CSI PHY clock ids to G12A clock bindings header
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ include/dt-bindings/clock/g12a-clkc.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/dt-bindings/clock/g12a-clkc.h b/include/dt-bindings/clock/g12a-clkc.h
+index 636d713f95ff..fd09819da2ec 100644
+--- a/include/dt-bindings/clock/g12a-clkc.h
++++ b/include/dt-bindings/clock/g12a-clkc.h
+@@ -281,5 +281,11 @@
+ #define CLKID_MIPI_DSI_PXCLK			270
+ #define CLKID_CTS_ENCL				271
+ #define CLKID_CTS_ENCL_SEL			272
++#define CLKID_MIPI_ISP_DIV			273
++#define CLKID_MIPI_ISP_SEL			274
++#define CLKID_MIPI_ISP				275
++#define CLKID_MIPI_ISP_GATE			276
++#define CLKID_MIPI_ISP_CSI_PHY0			277
++#define CLKID_MIPI_ISP_CSI_PHY1			278
+ 
+ #endif /* __G12A_CLKC_H */
+-- 
+2.34.1
+

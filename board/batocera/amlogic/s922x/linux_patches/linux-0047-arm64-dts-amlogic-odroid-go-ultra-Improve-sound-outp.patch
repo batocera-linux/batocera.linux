@@ -1,0 +1,108 @@
+From a34fda226977aaa2d4d5e775607756469c390536 Mon Sep 17 00:00:00 2001
+From: ckkim <changkon12@gmail.com>
+Date: Thu, 20 Apr 2023 16:21:09 +0900
+Subject: [PATCH 47/49] arm64: dts: amlogic: odroid-go ultra: Improve sound
+ output quality
+
+---
+ .../amlogic/meson-g12b-odroid-go-ultra.dts    | 49 +++++--------------
+ 1 file changed, 11 insertions(+), 38 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index 1cfe91b67df4..90e5961aca68 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -237,22 +237,9 @@ vdd_sys: regulator-vdd-sys {
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+ 		model = "Odroid GO Ultra";
+-		audio-widgets = "Microphone", "Mic Jack",
+-				"Headphone", "Headphones",
+-				"Speaker", "Internal Speakers";
+-		audio-aux-devs = <&tdmout_b>, <&tdmin_b>, <&speaker_amp>;
+-		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT",
+-				"TDMIN_B IN 1", "TDM_B Capture",
+-				"TDMIN_B IN 4", "TDM_B Loopback",
+-				"TODDR_A IN 1", "TDMIN_B OUT",
+-				"MICL", "Mic Jack",
+-				"Headphones", "HPOL",
+-				"Headphones", "HPOR",
+-				"Speaker Amplifier INL", "HPOL",
+-				"Speaker Amplifier INR", "HPOR",
+-				"Internal Speakers", "Speaker Amplifier OUTL",
+-				"Internal Speakers", "Speaker Amplifier OUTR";
++		audio-aux-devs = <&tdmout_b>;
++		audio-routing =	"TDMOUT_B IN 0", "FRDDR_A OUT 1",
++				"TDM_B Playback", "TDMOUT_B OUT";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -267,13 +254,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
+-			sound-dai = <&toddr_a>;
+-		};
+-
+-		dai-link-2 {
+ 			sound-dai = <&tdmif_b>;
+ 			dai-format = "i2s";
+ 			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
+ 			mclk-fs = <256>;
+ 
+ 			codec-0 {
+@@ -281,12 +265,6 @@ codec-0 {
+ 			};
+ 		};
+ 	};
+-
+-	speaker_amp: speaker-amplifier {
+-		compatible = "simple-audio-amplifier";
+-		sound-name-prefix = "Speaker Amplifier";
+-		VCC-supply = <&hp_5v>;
+-	};
+ };
+ 
+ &arb {
+@@ -766,29 +744,24 @@ &sd_emmc_c {
+ 
+ 
+ &tdmif_b {
+-	pinctrl-0 = <&tdm_b_dout0_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>, <&tdm_b_din1_pins>;
++	pinctrl-0 = <&mclk0_a_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>,
++		    <&tdm_b_dout0_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ 
+-	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
++	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_MCLK_PAD0>,
++			  <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
+ 			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD1>;
+-	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_SCLK>,
++	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_MCLK>,
++				 <&clkc_audio AUD_CLKID_MST_B_SCLK>,
+ 				 <&clkc_audio AUD_CLKID_MST_B_LRCLK>;
+-	assigned-clock-rates = <0>, <0>;
+-};
+-
+-&tdmin_b {
+-	status = "okay";
++	assigned-clock-rates = <0>, <0>, <0>;
+ };
+ 
+ &tdmout_b {
+ 	status = "okay";
+ };
+ 
+-&toddr_a {
+-	status = "okay";
+-};
+-
+ &uart_AO {
+ 	status = "okay";
+ 	pinctrl-0 = <&uart_ao_a_pins>;
+-- 
+2.34.1
+

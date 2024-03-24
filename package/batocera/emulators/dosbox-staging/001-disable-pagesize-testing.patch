@@ -1,0 +1,23 @@
+--- a/meson.build	2024-03-14 12:40:25.810313508 +0100
++++ b/meson.build	2024-03-14 12:44:05.752853108 +0100
+@@ -548,19 +548,6 @@
+ if pagesize_option > 0
+     # User has provided the page size
+     pagesize = pagesize_option
+-else
+-    # Detect the page size using a syscall via the cross compiler
+-    pagesize_api = os_family_name == 'WIN32' ? 'windows' : 'posix'
+-    pagesize_src = files('contrib/pagesize' / pagesize_api + '_pagesize.c')
+-    pagesize_cmd = cc.run(
+-        pagesize_src,
+-        name: 'Query host page size',
+-    )
+-    if pagesize_cmd.returncode() == 0
+-        pagesize = pagesize_cmd.stdout().strip().to_int()
+-    else
+-        error('''Unable to detect the host's page size''')
+-    endif
+ endif
+ conf_data.set('PAGESIZE', pagesize)
+ summary(
+

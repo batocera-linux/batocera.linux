@@ -328,7 +328,7 @@ libretro:
   shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+      archs_include: [x86, x86_64, bcm2711, bcm2712]
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan may not work for every core.
       choices:
@@ -6125,6 +6125,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6218,6 +6232,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -6394,6 +6422,20 @@ libretro:
                     #"Mouse (SmartMouse)":       8
                     #"Mouse (Micromys)":         9
                     "Koalapad":                 10
+            vice_ram_expansion_unit:
+                group: ADVANCED OPTIONS
+                prompt:      RAM EXPANSION UNIT
+                description: Some games and homebrews require more RAM
+                choices:
+                    "Disabled":                 none
+                    "128kB (1700)":             128kB
+                    "256kB (1764)":             256kB
+                    "512kB (1750)":             512kB
+                    "1024kB":                   1024kB
+                    "2048kB":                   2048kB
+                    "4096kB":                   4096kB
+                    "8192kB":                   8192kB
+                    "16384kB":                  16384kB
             vice_keyboard_pass_through:
                 group: ADVANCED OPTIONS
                 prompt:      KEYBOARD PASSTHROUGH
@@ -7010,10 +7052,10 @@ citra:
 
 daphne:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+  shared: [powermode, tdp, videomode, use_guns]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712]
             prompt:      GRAPHICS API
             description: Choose which graphics API library to use. Vulkan may not work on all hardware.
             choices:
@@ -7112,7 +7154,7 @@ dolphin:
                 "Force 4:3":         2
                 "Stretch to window": 3
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712]
             submenu: RENDERING
             prompt:  GRAPHICS API
             description: Choose which graphics API library to use.
@@ -7485,6 +7527,13 @@ dolphin:
                     "Wiimote Sideway + Swing":   is
                     "Wiimote Sideway + Tilt":    it
                     "Wiimote Sideway + Nunchuk": in
+            sensorbar_position:
+                submenu: CONTROLLERS
+                prompt: SENSOR BAR POSITION
+                description: Position of wii sensor bar relative to the disaply for real wiimotes.
+                choices:
+                    "Bottom (Default)": 0
+                    "Top":  1
             dsmotion:
                 submenu: CONTROLLERS
                 prompt: DUALSHOCK MOTION CONTROL
@@ -7685,7 +7734,7 @@ duckstation:
                 "Enabled":            "true"
         duckstation_gfxbackend:
             submenu: DISPLAY
-            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
@@ -7852,7 +7901,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_Controller2:
@@ -7864,7 +7913,7 @@ duckstation:
                 "PS1 Digital Controller": DigitalController
                 "PS1 Analog Joystick":    AnalogJoystick
                 "DualShock / Xbox Type":  AnalogController
-                "Namco GunCon (Rumble)":  NamcoGunCon
+                "Namco GunCon":  GunCon
                 "PlayStation Mouse":      PlayStationMouse
                 "NeGcon (Rumble)":        NeGcon
         duckstation_pgxp:
@@ -7934,6 +7983,13 @@ duckstation:
                 "8x SSAA":            "8-ssaa"
                 "16x SSAA":           "16-ssaa"
                 "32x SSAA":           "32-ssaa"
+        duckstation_crosshair:
+            group: LIGHT GUN
+            prompt: CROSSHAIR
+            description: 
+            choices:
+                "Disabled (Default)": "0"
+                "Enabled":            "100"
 
 flycast:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
@@ -8853,7 +8909,7 @@ ppsspp:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
@@ -9047,8 +9103,14 @@ rpcs3:
             description: Most games already have an internal framelimit. Minor performance cost.
             choices:
                 "Off (faster, unstable)": Off
+                "20":                     20
+                "25":                     25    
                 "30":                     30
+                "35":                     35
+                "40":                     40
+                "45":                     45
                 "50":                     50
+                "55":                     55 
                 "59.94":                  59.94
                 "60":                     60
         rpcs3_anisotropic:
@@ -9643,7 +9705,7 @@ mame:
                 "Off (Default)": 0
                 "On":            1
         bgfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, rk3326]
+            archs_include: [x86, x86_64, bcm2711, bcm2712]
             prompt:      BGFX GRAPHICS API
             description: Depends on video mode being set to BGFX.
             choices:
@@ -10829,6 +10891,12 @@ wine:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode]
   cfeatures:
+        wine-runner:
+            prompt: WINE RUNNER
+            description: Runners simplify compatibility of running Windows games. If choosing Custom, you must have a runner in /userdata/system/wine/custom.
+            choices:
+                "Glorius Eggroll Proton (Default)": "ge-custom"
+                "User Provided Runner":             "custom"
         dxvk:
             prompt: DXVK FEATURE
             description: Converts DirectX 8/9/10/11/12 calls to Vulkan.
@@ -11879,7 +11947,7 @@ xenia:
                 "15s":           15
                 "30s (Default)": 30
                 "45s":           45
-                "15s":           60
+                "60s":           60
         xenia_cache:
             group: ADVANCED OPTIONS
             prompt: MOUNT CACHE
@@ -12044,10 +12112,17 @@ xenia-canary:
             prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
             description: Seconds a texture should be unused to be considered old enough to be deleted if texture memory usage exceeds Soft Texture Cache limit.
             choices:
-                "15s":           15
-                "30s (Default)": 30
-                "45s":           45
-                "15s":           60
+                "Off (faster, unstable)": Off
+                "20":                     20
+                "25":                     25    
+                "30":                     30
+                "35":                     35
+                "40":                     40
+                "45":                     45
+                "50":                     50
+                "55":                     55 
+                "59.94":                  59.94
+                "60":                     60
         xenia_cache:
             group: ADVANCED OPTIONS
             prompt: MOUNT CACHE

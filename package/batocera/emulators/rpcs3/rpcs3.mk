@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RPCS3_VERSION = v0.0.30
+RPCS3_VERSION = v0.0.31
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES

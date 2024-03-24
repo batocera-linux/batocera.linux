@@ -1,0 +1,20 @@
+diff --git a/core/rend/gles/gltex.cpp b/core/rend/gles/gltex.cpp
+index 2c00bd7..ded4e34 100644
+--- a/core/rend/gles/gltex.cpp
++++ b/core/rend/gles/gltex.cpp
+@@ -30,13 +30,13 @@ static void getOpenGLTexParams(TextureType texType, u32& bytesPerPixel, GLuint&
+ 	case TextureType::_8888:
+ 		bytesPerPixel = 4;
+ 		gltype = GL_UNSIGNED_BYTE;
+-		internalFormat = GL_RGBA8;
++		//internalFormat = GL_RGBA8;
+ 		break;
+ 	case TextureType::_8:
+ 		bytesPerPixel = 1;
+ 		gltype = GL_UNSIGNED_BYTE;
+ 		comps = gl.single_channel_format;
+-		internalFormat = GL_R8;
++		//internalFormat = GL_R8;
+ 		break;
+ 	default:
+ 		die("Unsupported texture type");

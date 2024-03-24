@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RETROARCH_VERSION = v1.17.0
+RETROARCH_VERSION = v1.18.0
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-fonts

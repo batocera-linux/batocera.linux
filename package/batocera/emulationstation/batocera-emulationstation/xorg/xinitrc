@@ -21,8 +21,11 @@ xset s off
 # nvidia
 if [ -f "/var/tmp/nvidia.prime" ]; then
     echo "Xrandr Providers:" >> "$nvidia_log"
-    xrandr --listproviders >> "$nvidia_log"
+    xrandr --listproviders >> "$nvidia_log" || { echo "Failed xrandr --listproviders" >> "$nvidia_log"; }
     provider_count=$(xrandr --listproviders | grep 'Providers:' | awk '{print $4}')
+    if [ -z "$provider_count" ]; then
+        echo "Failed to get provider count" >> "$nvidia_log"
+    fi
     # ensure we have 2 or more providers
     if [ "$provider_count" -ge 2 ]; then
         echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"

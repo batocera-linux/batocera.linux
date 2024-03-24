@@ -1,0 +1,33 @@
+diff --git a/meson.build b/meson.build
+index 12512d115e..93535136f3 100644
+--- a/meson.build
++++ b/meson.build
+@@ -369,28 +369,6 @@ if x11_dep.found() and xext_dep.found()
+     ['X11/extensions/shmstr.h', {'extra-headers': extra_headers}],
+   ]
+   deps += [x11_dep, xext_dep]
+-
+-  # Can skip the run check by providing the result in a cross file or
+-  # native file as bool property value.
+-  prop = meson.get_external_property('ipc_rmid_deferred_release', 'auto')
+-  # We don't know the type of prop (bool, string) but need to differentiate
+-  # between a set value (bool) or the fallback value (string), so convert to
+-  # a string and check the string value.
+-  prop_str = '@0@'.format(prop)
+-  if prop_str in ['true', 'false']
+-    ipc_rmid_deferred_release = (prop_str == 'true')
+-    message('IPC_RMID_DEFERRED_RELEASE:', ipc_rmid_deferred_release)
+-  elif prop_str == 'auto'
+-    res = cc.run(files('meson-cc-tests/ipc_rmid_deferred_release.c'),
+-      dependencies: [x11_dep, xext_dep],
+-      name: 'shmctl IPC_RMID allowes subsequent attaches')
+-
+-    ipc_rmid_deferred_release = (res.returncode() == 0)
+-  else
+-    error('Unexpected value for external property ipc_rmid_deferred_release: @0@'.format(prop_str))
+-  endif
+-
+-  conf.set10('IPC_RMID_DEFERRED_RELEASE', ipc_rmid_deferred_release)
+ endif
+ 
+ if feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1

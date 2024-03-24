@@ -1,0 +1,42 @@
+diff --git a/pironman/main.py b/pironman/main.py
+index ee3820a7bd..6ee63a43b3 100644
+--- a/pironman/main.py
++++ b/pironman/main.py
+@@ -59,13 +59,13 @@ if not os.path.exists(config_file):
+     # check $user_home/.config
+     if not os.path.exists('%s/.config'%user_home):
+         os.mkdir('%s/.config'%user_home)
+-        os.popen('sudo chmod 774 %s/.config'%user_home)
+-        run_command('sudo  chown %s %s/.config'%(username, user_home))
++        os.popen('chmod 774 %s/.config'%user_home)
++        run_command('chown %s %s/.config'%(username, user_home))
+     # create config_file
+-    status, result = run_command(cmd='sudo mkdir -p  %s/.config/%s'%(user_home, __app_name__)
+-        +' && sudo touch %s'%config_file
+-        +' && sudo chmod -R 774 %s/.config/%s'%(user_home, __app_name__)
+-        +' && sudo chown -R %s %s/.config/%s'%(username, user_home, __app_name__)
++    status, result = run_command(cmd='mkdir -p  %s/.config/%s'%(user_home, __app_name__)
++        +' && touch %s'%config_file
++        +' && chmod -R 774 %s/.config/%s'%(user_home, __app_name__)
++        +' && chown -R %s %s/.config/%s'%(username, user_home, __app_name__)
+     )
+     if status != 0:
+         log('create config_file failed:\n%s'%result)
+@@ -126,7 +126,7 @@ oled_stat = False
+ 
+ 
+ try:
+-    run_command("sudo modprobe i2c-dev")
++    run_command("modprobe i2c-dev")
+     oled = SSD1306_128_64()
+     width = oled.width
+     height = oled.height
+@@ -333,7 +333,7 @@ def main():
+                     log("POWER OFF")
+                     oled_stat = False
+                     oled.off()
+-                    os.system('sudo poweroff')
++                    os.system('poweroff')
+                     sys.exit(1)
+             else:
+                 power_key_flag = False

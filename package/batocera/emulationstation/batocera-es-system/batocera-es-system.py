@@ -295,10 +295,15 @@ class EsSystemConf:
     # generate the fake translations from external options
     @staticmethod
     def createEsTranslations(esTranslationFile, toTranslate):
+        if toTranslate is None or not toTranslate:
+            return
         fd = open(esTranslationFile, 'w')
         n = 1
         fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
         for tr in toTranslate:
+              # skip if tr is None
+            if tr is None:
+                continue
             # skip empty string
             if tr == "":
                 continue

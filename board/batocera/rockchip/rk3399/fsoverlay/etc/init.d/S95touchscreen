@@ -6,30 +6,31 @@
 
 case "$1" in
      start)
-	 export WAYLAND_DISPLAY=wayland-1
-	 export SWAYSOCK=/var/run/sway-ipc.0.sock
-         info_output=$(batocera-info)
-         if [[ $info_output == *"Model: Anbernic_RG552"* ]]; then
-             # pause so set-prop applies after ES starts otherwise it fails
-             while [[ ! -f /var/run/switch_screen_current ]]; do
-                 sleep 2
-                 date >> /var/run/tscr
-             done
-             sleep 4
-             # Re-attach touchscreen to the rotated display
-             /usr/bin/batocera-resolution setRotation 3
-         fi
-         ;;
+        export WAYLAND_DISPLAY=wayland-1
+        export SWAYSOCK=/var/run/sway-ipc.0.sock
+
+        info_output=$(batocera-info)
+        if [[ $info_output == *"Model: Anbernic_RG552"* ]]; then
+            TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+            # pause so set-prop applies after ES starts otherwise it fails
+            while [[ -z "${TOUCHSCREEN}" ]]; do
+                sleep 1
+                TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+            done
+            # Re-attach touchscreen to the rotated display
+            /usr/bin/batocera-resolution mapTouchScreen
+        fi
+        ;;
      stop)
-         ;;
+        ;;
      restart)
  		stop
  		start
-         ;;
+        ;;
      *)
-         echo "Usage: $0 {start|stop|restart}"
-         exit 1
-         ;;
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
 esac
 
 exit 0

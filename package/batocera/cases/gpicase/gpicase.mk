@@ -3,29 +3,15 @@
 # gpicase
 #
 ################################################################################
-GPICASE_VERSION = 2.0
-GPICASE_SOURCE = GPi_Case_patch.zip
-GPICASE_SITE = https://support.retroflag.com/Products/GPi_Case
-
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-BATOCERA_RPI_VIDEO = vcore
-else ifeq ($(BR2_PACKAGE_MESA3D),y)
-BATOCERA_RPI_VIDEO = mesa3d
-endif
+GPICASE_VERSION = 2.1
+GPICASE_SOURCE =
 
 define GPICASE_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
-	cp $(@D)/GPi_Case_patch/patch_files/overlays/dpi24.dtbo                                                 $(BINARIES_DIR)/rpi-firmware/overlays/dpi24_gpicase.dtbo
-	cp $(@D)/GPi_Case_patch/patch_files/overlays/pwm-audio-pi-zero.dtbo                                     $(BINARIES_DIR)/rpi-firmware/overlays/pwm-audio-pi-zero_gpicase.dtbo
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/99-gpicase.rules                        $(TARGET_DIR)/etc/udev/rules.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/batocera-$(BATOCERA_RPI_VIDEO)-install  $(TARGET_DIR)/usr/bin/batocera-gpicase-install
-endef
+	cp -rf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/overlays/*			$(BINARIES_DIR)/rpi-firmware/overlays/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/99-gpicase.rules		$(TARGET_DIR)/etc/udev/rules.d/
 
-define GPICASE_EXTRACT_CMDS
-	$(UNZIP) -d $(@D) $(GPICASE_DL_DIR)/$(GPICASE_SOURCE)
-        mv $(@D)/GPi_Case_patch $(@D)/GPi_Case_patch_parent
-	mv $(@D)/GPi_Case_patch_parent/* $(@D)/
-	rmdir $(@D)/GPi_Case_patch_parent
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/batocera-gpicase-install	$(TARGET_DIR)/usr/bin/batocera-gpicase-install
 endef
 
 $(eval $(generic-package))

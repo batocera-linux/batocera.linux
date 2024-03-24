@@ -198,6 +198,11 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
                 coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
             else:
                 coreSettings.save('vice_joyport_type', '"1"')
+        # RAM Expansion Unit (REU)
+        if system.isOptSet('vice_ram_expansion_unit'):
+            coreSettings.save('vice_ram_expansion_unit', '"' + system.config['vice_ram_expansion_unit'] + '"')
+        else:
+            coreSettings.save('vice_ram_expansion_unit', '"none"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['vice_keyboard_pass_through'] + '"')

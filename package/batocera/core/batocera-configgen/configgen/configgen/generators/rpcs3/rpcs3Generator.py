@@ -13,6 +13,10 @@ import json
 import re
 import controllersConfig
 from . import rpcs3Controllers
+import subprocess
+
+from utils.logger import get_logger
+eslog = get_logger(__name__)
 
 class Rpcs3Generator(Generator):
 
@@ -127,10 +131,38 @@ class Rpcs3Generator(Generator):
             
         # -= [Video] =-
         # gfx backend - default to Vulkan
-        if system.isOptSet("rpcs3_gfxbackend"):
-            rpcs3ymlconfig["Video"]["Renderer"] = system.config["rpcs3_gfxbackend"]
-        else:
-            rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
+        # Check Vulkan first to be sure
+        try:
+            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+            if have_vulkan == "true":
+                eslog.debug("Vulkan driver is available on the system.")
+                if system.isOptSet("rpcs3_gfxbackend") and system.config["rpcs3_gfxbackend"] == "OpenGL":
+                    eslog.debug("User selected OpenGL")
+                    rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
+                else:
+                    rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
+                try:
+                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
+                    if have_discrete == "true":
+                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                        try:
+                            discrete_name = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteName"], text=True).strip()
+                            if discrete_name != "":
+                                eslog.debug("Using Discrete GPU Name: {} for RPCS3".format(discrete_name))
+                                rpcs3ymlconfig["Video"]["Vulkan"]["Adapter"] = discrete_name
+                            else:
+                                eslog.debug("Couldn't get discrete GPU Name")
+                        except subprocess.CalledProcessError:
+                            eslog.debug("Error getting discrete GPU Name")
+                    else:
+                        eslog.debug("Discrete GPU is not available on the system. Using default.")
+                except subprocess.CalledProcessError:
+                    eslog.debug("Error checking for discrete GPU.")
+            else:
+                eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+                rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
+        except subprocess.CalledProcessError:
+            eslog.debug("Error checking for discrete GPU.")
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
         if system.isOptSet("rpcs3_ratio"):
             rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config["rpcs3_ratio"]
@@ -153,16 +185,19 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Video"]["Stretch To Display Area"] = False
         # Frame Limit
+        # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60")
+        # Second Frame Limit can be any float/integer. 0 = disabled.
         if system.isOptSet("rpcs3_framelimit"):
-            if system.config["rpcs3_framelimit"] in ["30", "50", "59.94", "60"]:
+            # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
+            if system.config["rpcs3_framelimit"] in ["Off", "30", "50", "59.94", "60"]:
                 rpcs3ymlconfig["Video"]["Frame limit"] = system.config["rpcs3_framelimit"]
-                rpcs3ymlconfig["Video"]["Second Frame Limit"] = False
+                rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
             else:
                 rpcs3ymlconfig["Video"]["Second Frame Limit"] = system.config["rpcs3_framelimit"]
-                rpcs3ymlconfig["Video"]["Frame limit"] = False
+                rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
         else:
             rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
-            rpcs3ymlconfig["Video"]["Second Frame Limit"] = False
+            rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
         # Write Color Buffers
         if system.isOptSet("rpcs3_colorbuffers"):
             rpcs3ymlconfig["Video"]["Write Color Buffers"] = system.config["rpcs3_colorbuffers"]

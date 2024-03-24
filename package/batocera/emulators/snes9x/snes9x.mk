@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SNES9X_VERSION = 01e408e4c8f5816d969a1af1c38bb264678417fa
+SNES9X_VERSION = 1e1c45be07bf5760e73414d9ed0253d6dedb8605
 SNES9X_SITE = https://github.com/snes9xgit/snes9x.git
 SNES9X_SITE_METHOD = git
 SNES9X_GIT_SUBMODULES = YES

@@ -3,8 +3,8 @@
 # r8168
 #
 ################################################################################
-# Version: Commits on Nov 30, 2022
-R8168_VERSION = 8264305bb119f40f860135bac6b2663df155e87f
+# Version: 8.052.01
+R8168_VERSION = 7df678fcbde879b7ec0740be351cead3919e6937
 R8168_SITE = $(call github,mtorromeo,r8168,$(R8168_VERSION))
 R8168_LICENSE = GPL-2.0
 R8168_LICENSE_FILES = LICENSE

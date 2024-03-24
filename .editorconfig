@@ -1,13 +1,37 @@
-# http://editorconfig.org
 root = true
 
 [*]
+charset = utf-8
+end_of_line = lf
 indent_style = space
 indent_size = 4
-end_of_line = lf
-charset = utf-8
+tab_width = 8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.md]
+[DEVELOPERS]
+indent_style = tab
+indent_size = tab
+
+[Config*.in*]
+indent_style = tab
+indent_size = tab
+
+[linux/Config.ext.in]
+indent_style = tab
+indent_size = tab
+
+[Makefile*]
+indent_style = tab
+indent_size = tab
+
+[*.mk]
+indent_style = tab
+indent_size = tab
+
+[S{0..9}{0..9}*]
+indent_style = tab
+indent_size = tab
+
+[*.adoc]
 trim_trailing_whitespace = false

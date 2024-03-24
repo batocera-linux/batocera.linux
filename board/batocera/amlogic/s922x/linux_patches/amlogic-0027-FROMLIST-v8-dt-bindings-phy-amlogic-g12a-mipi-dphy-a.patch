@@ -1,0 +1,45 @@
+From d9a23fe8b1b3d326641f818ac9f8c6a470eb05b7 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Thu, 9 Nov 2023 10:00:05 +0100
+Subject: [PATCH 27/64] FROMLIST(v8): dt-bindings: phy:
+ amlogic,g12a-mipi-dphy-analog: drop unneeded reg property and example
+
+Now this bindings is referred from amlogic,meson-gx-hhi-sysctrl.yaml and is
+documented as a subnode of a simple-mfd, drop the invalid reg property.
+
+Also drop the unnecessary example, the top level bindings example should
+be enough.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ .../bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml  | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml b/Documentation/devicetree/bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml
+index c8c83acfb871..81c2654b7e57 100644
+--- a/Documentation/devicetree/bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml
++++ b/Documentation/devicetree/bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml
+@@ -16,20 +16,8 @@ properties:
+   "#phy-cells":
+     const: 0
+ 
+-  reg:
+-    maxItems: 1
+-
+ required:
+   - compatible
+-  - reg
+   - "#phy-cells"
+ 
+ additionalProperties: false
+-
+-examples:
+-  - |
+-    phy@0 {
+-          compatible = "amlogic,g12a-mipi-dphy-analog";
+-          reg = <0x0 0xc>;
+-          #phy-cells = <0>;
+-    };
+-- 
+2.34.1
+

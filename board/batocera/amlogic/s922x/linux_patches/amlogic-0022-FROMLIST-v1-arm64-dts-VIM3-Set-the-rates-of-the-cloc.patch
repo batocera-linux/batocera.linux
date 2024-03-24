@@ -1,0 +1,31 @@
+From 2e3a661a580292de22a1d73b6e8987dde8a03bb2 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Date: Mon, 16 Oct 2023 10:02:03 +0200
+Subject: [PATCH 22/64] FROMLIST(v1): arm64: dts: VIM3: Set the rates of the
+ clocks for the NPU
+
+Otherwise they are left at 24MHz and the NPU runs very slowly.
+
+Signed-off-by: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Suggested-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index f7f8df88d464..a960d07f9af3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -2502,6 +2502,9 @@ npu: npu@ff100000 {
+ 		clocks = <&clkc CLKID_NNA_CORE_CLK>,
+ 			 <&clkc CLKID_NNA_AXI_CLK>;
+ 		clock-names = "core", "bus";
++		assigned-clocks = <&clkc CLKID_NNA_CORE_CLK>,
++				  <&clkc CLKID_NNA_AXI_CLK>;
++		assigned-clock-rates = <800000000>, <800000000>;
+ 		resets = <&reset RESET_NNA>;
+ 		status = "disabled";
+ 	};
+-- 
+2.34.1
+
