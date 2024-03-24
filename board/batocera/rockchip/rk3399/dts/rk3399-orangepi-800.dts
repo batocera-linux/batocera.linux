@@ -251,11 +251,6 @@
 		};
 	};
 
-	sprd-wlan {
-		compatible = "sprd,uwe5622-wifi";
-		status = "okay";
-	};
-
 	unisoc_uwe_bsp: uwe-bsp {
 		compatible = "unisoc,uwe_bsp";
 		wl-reg-on = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
@@ -269,6 +264,11 @@
 		data-irq;
 		blksz-512;
 		keep-power-on;
+		status = "okay";
+	};
+
+	sprd-wlan {
+		compatible = "sprd,uwe5622-wifi";
 		status = "okay";
 	};
 
@@ -340,6 +340,12 @@
 			interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
 		};
 	};
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
+	status = "okay";
 };
 
 &gpu {
@@ -809,6 +815,7 @@
 	cap-sd-highspeed;
 	cap-mmc-highspeed;
 	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
+	cd-debounce-delay-ms = <500>;
 	disable-wp;
 	max-frequency = <150000000>;
 	pinctrl-names = "default";
@@ -873,25 +880,6 @@
 		phy-supply = <&usb_vbus>;
 		status = "okay";
 	};
-};
-
-&uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
-	status = "okay";
-
-//	bluetooth {
-//		compatible = "brcm,bcm4345c5";
-//		clocks = <&rk808 1>;
-//		clock-names = "lpo";
-//		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
-//		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
-//		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-//		max-speed = <1500000>;
-//		pinctrl-names = "default";
-//		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_reg_on_h>;
-//	};
-
 };
 
 &uart2 {
