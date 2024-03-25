@@ -763,9 +763,6 @@
 		interrupts = <RK_PA6 IRQ_TYPE_LEVEL_LOW>;
 		irq-gpios = <&gpio1 RK_PA6 IRQ_TYPE_LEVEL_LOW>;
 		reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
-		touchscreen-inverted-x;
-		// touchscreen-inverted-y;
-		touchscreen-swapped-x-y;
 		touchscreen-size-x = <1080>;
 		touchscreen-size-y = <1920>;
 		status = "okay";
