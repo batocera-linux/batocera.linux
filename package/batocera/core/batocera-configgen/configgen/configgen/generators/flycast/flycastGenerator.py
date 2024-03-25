@@ -141,19 +141,19 @@ class FlycastGenerator(Generator):
         # Guns (WIP)
         # Guns crosshairs
         if system.isOptSet("flycast_lightgun1_crosshair"):
-            Config.set("config", "rend.CrossHairColor1", + str(system.config["flycast_lightgun1_crosshair"])
+            Config.set("config", "rend.CrossHairColor1", + str(system.config["flycast_lightgun1_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor1", "0")
         if system.isOptSet("flycast_lightgun2_crosshair"):
-            Config.set("config", "rend.CrossHairColor2", + str(system.config["flycast_lightgun2_crosshair"])
+            Config.set("config", "rend.CrossHairColor2", + str(system.config["flycast_lightgun2_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor2", "0")
         if system.isOptSet("flycast_lightgun3_crosshair"):
-            Config.set("config", "rend.CrossHairColor3", + str(system.config["flycast_lightgun3_crosshair"])
+            Config.set("config", "rend.CrossHairColor3", + str(system.config["flycast_lightgun3_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor3", "0")
         if system.isOptSet("flycast_lightgun4_crosshair"):
-            Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"])
+            Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor4", "0")
 
