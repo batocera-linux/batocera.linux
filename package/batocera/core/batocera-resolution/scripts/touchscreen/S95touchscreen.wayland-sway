@@ -7,12 +7,9 @@ export WAYLAND_DISPLAY=wayland-1
 export SWAYSOCK=/var/run/sway-ipc.0.sock
 
 # pause so set-prop applies after ES starts otherwise it fails
-sleep 6
-
 TRIES=0
 TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
-while test $? -ne 0 -a $TRIES -lt 5
-do
+while [ -z "${TOUCHSCREEN}" -a $TRIES -lt 30 ]; do
 	TRIES=$((TRIES+1))
 	sleep 1
 	TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
@@ -21,4 +18,3 @@ done
 /usr/bin/batocera-resolution mapTouchScreen
 
 exit 0
-
