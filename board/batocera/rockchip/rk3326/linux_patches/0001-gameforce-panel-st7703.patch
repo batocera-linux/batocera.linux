@@ -1,5 +1,5 @@
-From 7b8ed1cfcf95e7c12e8fa7de03f5d93d2d72ac83 Mon Sep 17 00:00:00 2001
-Date: Sun, 28 Jan 2024 08:08:29 -0400
+From 9463b64d927c6e9059e5dd71ba5bdcf07e70a170 Mon Sep 17 00:00:00 2001
+Date: Wed, 20 Mar 2024 08:22:47 -0400
 Subject: [PATCH] gameforce panel st7703
 
 ---
@@ -7,7 +7,7 @@ Subject: [PATCH] gameforce panel st7703
  1 file changed, 178 insertions(+)
 
 diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7703.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
-index b55bafd1a..4b8987266 100644
+index 7bb723d44..789d0ab66 100644
 --- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
 +++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
 @@ -333,6 +333,183 @@ static const struct drm_display_mode xbd599_mode = {
@@ -194,8 +194,8 @@ index b55bafd1a..4b8987266 100644
  static const struct st7703_panel_desc xbd599_desc = {
  	.mode = &xbd599_mode,
  	.lanes = 4,
-@@ -787,6 +964,7 @@ static const struct of_device_id st7703_of_match[] = {
- 	{ .compatible = "powkiddy,rgb30-panel", .data = &rgb30panel_desc },
+@@ -697,6 +874,7 @@ static const struct of_device_id st7703_of_match[] = {
+ 	{ .compatible = "anbernic,rg353v-panel-v2", .data = &rg353v2_desc },
  	{ .compatible = "rocktech,jh057n00900", .data = &jh057n00900_panel_desc },
  	{ .compatible = "xingbangda,xbd599", .data = &xbd599_desc },
 +	{ .compatible = "gameforce,st7703", .data = &gameforce_desc },
@@ -203,5 +203,5 @@ index b55bafd1a..4b8987266 100644
  };
  MODULE_DEVICE_TABLE(of, st7703_of_match);
 -- 
-2.43.0
+2.44.0
 

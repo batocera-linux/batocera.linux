@@ -26,10 +26,10 @@ class FlycastGenerator(Generator):
                 Config.read(batoceraFiles.flycastConfig)
             except:
                 pass # give up the file
-        
+
         if not Config.has_section("input"):
             Config.add_section("input")
-        # For each pad detected       
+        # For each pad detected
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
@@ -51,7 +51,7 @@ class FlycastGenerator(Generator):
             # Ensure controller(s) are on seperate Ports
             port = int(controller.player)-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
-        
+
         if not Config.has_section("config"):
             Config.add_section("config")
         if not Config.has_section("window"):
@@ -107,7 +107,7 @@ class FlycastGenerator(Generator):
             Config.set("config", "rend.PerStripSorting", "yes")
         else:
             Config.set("config", "rend.PerStripSorting", "no")
-        
+
         # [Dreamcast specifics]
         # language
         if system.isOptSet("flycast_language"):
@@ -137,7 +137,25 @@ class FlycastGenerator(Generator):
         if system.isOptSet("flycast_DSP"):
              Config.set("config", "aica.DSPEnabled", str(system.config["flycast_DSP"]))
         else:
-            Config.set("config", "aica.DSPEnabled", "no")           
+            Config.set("config", "aica.DSPEnabled", "no")
+        # Guns (WIP)
+        # Guns crosshairs
+        if system.isOptSet("flycast_lightgun1_crosshair"):
+            Config.set("config", "rend.CrossHairColor1", + str(system.config["flycast_lightgun1_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor1", "0")
+        if system.isOptSet("flycast_lightgun2_crosshair"):
+            Config.set("config", "rend.CrossHairColor2", + str(system.config["flycast_lightgun2_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor2", "0")
+        if system.isOptSet("flycast_lightgun3_crosshair"):
+            Config.set("config", "rend.CrossHairColor3", + str(system.config["flycast_lightgun3_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor3", "0")
+        if system.isOptSet("flycast_lightgun4_crosshair"):
+            Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor4", "0")
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:
@@ -154,9 +172,9 @@ class FlycastGenerator(Generator):
         if not os.path.exists(os.path.dirname(batoceraFiles.flycastConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.flycastConfig))
         with open(batoceraFiles.flycastConfig, 'w+') as cfgfile:
-            Config.write(cfgfile)        
+            Config.write(cfgfile)
             cfgfile.close()
-            
+
         # internal config
         if not isdir(batoceraFiles.flycastSaves):
             os.mkdir(batoceraFiles.flycastSaves)
@@ -168,8 +186,8 @@ class FlycastGenerator(Generator):
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
-        
-        # the command to run  
+
+        # the command to run
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         # Here is the trick to make flycast find files :

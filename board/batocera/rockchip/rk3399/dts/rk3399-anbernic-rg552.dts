@@ -1053,16 +1053,14 @@
 
     gt9xx: gt9xx@14 {
         compatible = "goodix,gt927";
-        goodix,config-name = "rg552_goodix_927_cfg.bin";
         reg = <0x14>;
+        interrupt-parent = <&gpio3>;
+        interrupts = <RK_PD7 IRQ_TYPE_EDGE_FALLING>;
         irq-gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
         reset-gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
         touchscreen-size-x = <1152>;
         touchscreen-size-y = <1920>;
-        touchscreen-inverted-x;
-        touchscreen-inverted-y;
-        interrupt-parent = <&gpio3>;
-        interrupts = <RK_PD7 IRQ_TYPE_EDGE_FALLING>;
+        status = "okay";
     };
 
     fusb0: typec-portc@22 {

@@ -230,6 +230,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
+        if args.netplaysession is not None:
+            system.config["netplay.server.session"] = args.netplaysession
 
         # autosave arguments
         if args.state_slot is not None:
@@ -590,6 +592,7 @@ if __name__ == '__main__':
     parser.add_argument("-netplaypass",    help="enable spectator mode",       type=str, required=False)
     parser.add_argument("-netplayip",      help="remote ip",                   type=str, required=False)
     parser.add_argument("-netplayport",    help="remote port",                 type=str, required=False)
+    parser.add_argument("-netplaysession", help="netplay session",             type=str, required=False)
     parser.add_argument("-state_slot",     help="state slot",                  type=str, required=False)
     parser.add_argument("-state_filename", help="state filename",              type=str, required=False)
     parser.add_argument("-autosave",       help="autosave",                    type=str, required=False)

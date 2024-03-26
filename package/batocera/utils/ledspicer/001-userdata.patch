@@ -12,7 +12,7 @@ index 374e18b..223ac48 100644
  			.append(".xml")
  	);
 diff --git a/src/Emitter.hpp b/src/Emitter.hpp
-index 1e47827..97a8e90 100644
+index 1e47827..a8a6b7c 100644
 --- a/src/Emitter.hpp
 +++ b/src/Emitter.hpp
 @@ -43,7 +43,7 @@ using std::endl;
@@ -33,6 +33,15 @@ index 1e47827..97a8e90 100644
  
  // Controllers
  #define MOUSE      "MOUSE"
+@@ -76,7 +76,7 @@ using std::endl;
+ #define POSITIONAL "POSITIONAL"
+ #define JOYSTICK   "JOYSTICK"
+ 
+-#define COLORINI_FILE PACKAGE_DATA_DIR "colors.ini"
++#define COLORINI_FILE "/userdata/system/configs/ledspicer/" "colors.ini"
+ 
+ struct PlayerData {
+ 
 diff --git a/src/Main.cpp b/src/Main.cpp
 index a95b594..74e7d31 100644
 --- a/src/Main.cpp

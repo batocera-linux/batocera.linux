@@ -1,0 +1,25 @@
+From 9d75df360d6a5fc9639202433aac4f9cef0d951f Mon Sep 17 00:00:00 2001
+From: Juliano Dorigão <jdorigao@gmail.com>
+Date: Wed, 20 Mar 2024 18:38:40 -0400
+Subject: [PATCH] rk3588: rename cw2015-battery
+
+---
+ drivers/power/supply/cw2015_battery.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/power/supply/cw2015_battery.c b/drivers/power/supply/cw2015_battery.c
+index 7b8268b0b..39d37b151 100644
+--- a/drivers/power/supply/cw2015_battery.c
++++ b/drivers/power/supply/cw2015_battery.c
+@@ -568,7 +568,7 @@ static enum power_supply_property cw_battery_properties[] = {
+ };
+ 
+ static const struct power_supply_desc cw2015_bat_desc = {
+-	.name		= "cw2015-battery",
++	.name		= "battery",
+ 	.type		= POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties	= cw_battery_properties,
+ 	.num_properties	= ARRAY_SIZE(cw_battery_properties),
+-- 
+2.44.0
+

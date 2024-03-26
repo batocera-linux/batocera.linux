@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v39beta(2024/01/29)\n"
+"Project-Id-Version: batocera-es v40b(2024/03/22)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-31 15:40+0900\n"
+"PO-Revision-Date: 2024-03-22 12:28+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -45,8 +45,8 @@ msgid ""
 "based on it's default max value. Caution, setting wattage too high could "
 "damage your device."
 msgstr ""
-"Ryzen Mobile シリーズ CPU に提供される電力 (ワット) の割合を調整します。ワッ"
-"ト数の設定が高すぎるとデバイスが損傷する可能性があります"
+"Ryzen Mobile シリーズ CPU に提供される電力 (ワット) の割合を調整します\n"
+"ワット数の設定が高すぎるとデバイスが損傷する可能性があります"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -7669,6 +7669,56 @@ msgctxt "game_options"
 msgid "Koalapad"
 msgstr "Koalaパッド"
 
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "Some games and homebrews require more RAM"
+msgstr "一部のゲームや自作にはより多くの RAM が必要です"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "RAM EXPANSION UNIT"
+msgstr "RAM 拡張ユニット"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "128kB (1700)"
+msgstr "128kB (1700)"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "256kB (1764)"
+msgstr "256kB (1764)"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "512kB (1750)"
+msgstr "512kB (1750)"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "1024kB"
+msgstr "1024kB"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "2048kB"
+msgstr "2048kB"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "4096kB"
+msgstr "4096kB"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "8192kB"
+msgstr "8192kB"
+
+#. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_x128
+msgctxt "game_options"
+msgid "16384kB"
+msgstr "16384kB"
+
 #. TRANSLATION: libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xscpu64, libretro/vice_x128, libretro/vice_xplus4, ...
 msgctxt "game_options"
 msgid "KEYBOARD PASSTHROUGH"
@@ -7946,7 +7996,7 @@ msgid ""
 "Changing driver can improve audio performance and reduce distortion. "
 "Alsathread is recommended for low-end systems."
 msgstr ""
-"ドライバーを変更すると、音声再生能力が向上し、歪みが軽減されます。 "
+"ドライバーを変更すると、音声再生能力が向上し、歪みが軽減されます\n"
 "Alsathread はローエンド システムに推奨されます"
 
 #. TRANSLATION: libretro
@@ -8587,8 +8637,8 @@ msgid ""
 "Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in "
 "appropriate user directory)."
 msgstr ""
-"Gamecube ブート アニメと BIOS アクセスを有効にします\n"
-"適切なディレクトリに IPL.bin (BIOS) が必要です"
+"BIOSを使用します(Gamecube ブート アニメーションを表示します)\n"
+"bios/GC/JAP(EUR,USA)フォルダに IPL.bin (BIOS) が必要です"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -8654,6 +8704,26 @@ msgstr "Wii リモコン横向き + 傾き動作"
 msgctxt "game_options"
 msgid "Wiimote Sideway + Nunchuk"
 msgstr "Wii リモコン横向き + ヌンチャク"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Position of wii sensor bar relative to the disaply for real wiimotes."
+msgstr "実際の Wii リモコンに対する Wii センサー バーの位置を選択します"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "SENSOR BAR POSITION"
+msgstr "センサーバーの位置"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Bottom (Default)"
+msgstr "下 (標準)"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Top"
+msgstr "上"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -9285,11 +9355,6 @@ msgstr "デュアルショック / Xbox タイプ"
 
 #. TRANSLATION: duckstation, duckstation
 msgctxt "game_options"
-msgid "Namco GunCon (Rumble)"
-msgstr "ナムコ ガンコン(振動有)"
-
-#. TRANSLATION: duckstation, duckstation
-msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "ネジコン(ナムコ)(振動有)"
 
@@ -9386,7 +9451,12 @@ msgstr "   1 秒間隔、合計120秒 (1320MB|240MB)"
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "ACHIEVEMENTS"
-msgstr "ACHIEVEMENTS(実績)"
+msgstr "アチーブメント(実績)"
+
+#. TRANSLATION: duckstation
+msgctxt "game_options"
+msgid "CROSSHAIR"
+msgstr "十字線(照準)"
 
 #. TRANSLATION: flycast/uzem
 msgctxt "game_options"
@@ -11033,7 +11103,7 @@ msgstr "レンダリング解像度を選択してください"
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "RENDER RESOLUTION (SCALING)"
-msgstr ""
+msgstr "レンダリング解像度 (スケーリング)"
 
 #. TRANSLATION: rpcs3, xenia-canary
 msgctxt "game_options"
@@ -11794,7 +11864,7 @@ msgstr "ペダル制御設定"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Change the speed of the emulated PowerPC chip (fixes some issues)."
-msgstr "エミュレートのPowerPCの速度を変更します（いくつかの問題を修正）"
+msgstr "エミュレートする PowerPC の速度を変更します（いくつかの問題を修正）"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -11970,8 +12040,8 @@ msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
 msgstr ""
-"トラックボール、スピナー、ガンコン、および同様の操作のためのマウス入力を有効"
-"にします"
+"トラックボール、スピナー、ガンコン(ガンコンが接続されていない場合)\n"
+"および同様の操作のマウス入力を有効にします"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -12073,12 +12143,37 @@ msgstr "MAME カスタム設定"
 msgctxt "game_options"
 msgid ""
 "Make game history, setup instructions, and special moves viewable in the menu"
-msgstr "ゲーム履歴、セットアップ手順、および特別な動きをメニューに表示します"
+msgstr ""
+"ゲーム履歴、セットアップ手順、および必殺技コマンドなどをメニューに表示します"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "DATA PLUGIN"
 msgstr "データ プラグイン"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Runners simplify compatibility of running Windows games. If choosing Custom, "
+"you must have a runner in /userdata/system/wine/custom."
+msgstr ""
+"ランナーは、実行中の Windows ゲームの互換性を簡素化します。 [カスタム] を選択"
+"する場合は、/userdata/system/wine/custom にランナーが必要です"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "WINE RUNNER"
+msgstr "WINE ランナー"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Glorius Eggroll Proton (Default)"
+msgstr "Glorius Eggroll Proton (標準)"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "User Provided Runner"
+msgstr "ユーザー提供 ランナー"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12103,7 +12198,7 @@ msgstr "FPS 制限"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Force mouse in games."
-msgstr "ゲームで強制的にマウスを使用します"
+msgstr "ゲームで強制的にマウスを使用します(又はカーソルを表示)"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12274,9 +12369,7 @@ msgstr "NTFS モードを有効にする"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Useful to troubleshoot when your Windows game won't start of crashes."
-msgstr ""
-"Windows ゲームが起動しない場合やクラッシュする場合のトラブルシューティングに"
-"役立ちます"
+msgstr "ゲームが起動しない場合や壊れる場合の問題解決に役立ちます"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -13568,6 +13661,11 @@ msgstr "30 秒 (標準)"
 msgctxt "game_options"
 msgid "45s"
 msgstr "45秒"
+
+#. TRANSLATION: xenia, xenia-canary
+msgctxt "game_options"
+msgid "60s"
+msgstr "60ミリ秒"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -14967,6 +15065,11 @@ msgctxt "keys_files"
 msgid "Exit Dosbox-X"
 msgstr "Dosbox-X を終了"
 
+#. TRANSLATION: daphne.daphne.keys
+msgctxt "keys_files"
+msgid "Service menu"
+msgstr ""
+
 #. TRANSLATION: wiiu.keys
 msgctxt "keys_files"
 msgid "Display the controller screen"
@@ -15111,6 +15214,10 @@ msgstr "メニュー"
 msgctxt "keys_files"
 msgid "Graphics filtering on/off"
 msgstr "グラフィックフィルタリングのオン/オフ"
+
+#~ msgctxt "game_options"
+#~ msgid "Namco GunCon (Rumble)"
+#~ msgstr "ナムコ ガンコン(振動有)"
 
 #~ msgctxt "game_options"
 #~ msgid "Horizontal position (in percentage of the screen width)."

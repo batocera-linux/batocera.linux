@@ -8,6 +8,7 @@ import batoceraFiles
 import shutil
 from utils.logger import get_logger
 import controllersConfig
+from utils.batoceraServices import batoceraServices
 
 eslog = get_logger(__name__)
 
@@ -26,7 +27,7 @@ class VPinballGenerator(Generator):
         if not os.path.exists(vpinballPinmameIniPath):
             os.makedirs(vpinballPinmameIniPath)            
         if not os.path.exists(vpinballConfigFileSource):
-            shutil.copy("/usr/bin/vpinball/assets/Default VPinballX.ini", vpinballConfigFileSource)
+            shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFileSource)
         # all the modifications will be applied to the VPinballX-configgen.ini which is a copy of the VPinballX.ini
         # this way VPinballX.ini is never touched, so advanced users (who edit VPinballX.ini) will never loose their settings
         shutil.copy(vpinballConfigFileSource, vpinballConfigFile)            
@@ -270,6 +271,11 @@ class VPinballGenerator(Generator):
             else:
                 vpinballSettings.set("Standalone", "AltSound","1")
 
+            # DMDServer
+            if batoceraServices.isServiceEnabled("dmd_real"):
+                vpinballSettings.set("Standalone", "DMDServer","1")
+            else:
+                vpinballSettings.set("Standalone", "DMDServer","0")
 
             # Save VPinballX.ini
             with open(vpinballConfigFile, 'w') as configfile:
