@@ -398,10 +398,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		enable-active-high;
-		// gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&vcc5v0_usb>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&vcc5v0_host_en>;
 	};
 
 	vcc5v0_spk: vcc5v0-spk {
@@ -437,18 +434,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pa_5v_en>;
 	};
-
-	// vcc_mipidcphy: vcc-mipidcphy-regulator {
-	// 	compatible = "regulator-fixed";
-	// 	gpio = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
-	// 	pinctrl-names = "default";
-	// 	pinctrl-0 = <&mipidcphy_pwr>;
-	// 	regulator-name = "vcc_mipidcphy";
-	// 	enable-active-high;
-	// 	regulator-boot-on;
-	// 	vin-supply = <&vcc_3v3_s3>;
-	// 	status = "okay";
-	// };
 
 	wireless_bluetooth: wireless-bluetooth {
 		compatible = "bluetooth-platdata";
@@ -561,7 +546,7 @@
 };
 
 &combphy2_psu {
-        status = "okay";
+    status = "okay";
 };
 
 &csi2_dphy0_hw {
@@ -603,7 +588,6 @@
 &rkcif_mipi_lvds1_sditf {
 	status = "disabled";
 };
-
 
 &rkisp0_vir1 {
 	status = "disabled";
@@ -667,27 +651,6 @@
 	upthreshold = <60>;
 	downdifferential = <30>;
 	status = "okay";
-};
-
-&hdptxphy0 {
-	/* Single Vdiff Training Table for power reduction (optional) */
-	training-table = /bits/ 8 <
-		/* voltage swing 0, pre-emphasis 0->3 */
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		/* voltage swing 1, pre-emphasis 0->2 */
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		/* voltage swing 2, pre-emphasis 0->1 */
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		0x0d 0x00 0x00 0x00 0x00 0x00
-		/* voltage swing 3, pre-emphasis 0 */
-		0x0d 0x00 0x00 0x00 0x00 0x00
-	>;
-	status = "disabled";
 };
 
 &i2c0 {
@@ -806,8 +769,6 @@
 		poll_delay_ms = <30>;
 		type = <SENSOR_TYPE_ACCEL>;
 		layout = <2>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&mpu_en>;
 	};
 
     mpu6500_gyro: mpu_gyro@68 {
@@ -991,9 +952,9 @@
 	status = "okay";
 	//rockchip,clk-trcm = <1>;
 	pinctrl-0 = <&i2s0_lrck
-		     &i2s0_sclk
-		     &i2s0_sdi0
-		     &i2s0_sdo0>;
+                &i2s0_sclk
+                &i2s0_sdi0
+                &i2s0_sdo0>;
 };
 
 &i2s5_8ch {
@@ -1061,11 +1022,11 @@
 };
 
 &sata0 {
-         status = "disabled";
+    status = "disabled";
 };
 
 &sata2 {
-         status = "disabled";
+    status = "disabled";
 };
 
 &mpp_srv {
@@ -1077,13 +1038,12 @@
 	status = "disabled";
 };
 
-
 &pinctrl {
 
 	leds_gpio {
 		leds_rgb: leds-rgb {
-		        rockchip,pins = <3 RK_PC2 RK_FUNC_GPIO &pcfg_pull_up>,
-					<3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
+            rockchip,pins = <3 RK_PC2 RK_FUNC_GPIO &pcfg_pull_up>,
+                            <3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
@@ -1110,12 +1070,6 @@
 			rockchip,pins = <3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
-	// mpuen {
-	// 	mpu_en: mpu_en {
-	// 		rockchip,pins = <3 RK_PC3 RK_FUNC_GPIO &pcfg_pull_up>;
-	// 	};
-	// };
 
 	hym8563 {
 		rtc_int: rtc-int {
