@@ -110,6 +110,8 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
                    'pagedown' :      {'button': 'R'},
                    'joystick1left' : {'axis': 'An.Left'},
                    'joystick1up' :   {'axis': 'An.Up'},
+                   'joystick2left' : {'axis': 'RightAn.Left'},
+                   'joystick2up' :   {'axis': 'RightAn.Up'},
                    # The DPAD can be an axis (for gpio sticks for example) or a hat
                    'up' :            {'hat': 'Up',    'axis': 'Up',    'button': 'Up'},
                    'down' :          {'hat': 'Down',  'axis': 'Down',  'button': 'Down'},
@@ -118,6 +120,8 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
                    # Need to add pseudo inputs as PPSSPP doesn't manually invert axises, and these are not referenced in es_input.cfg
                    'joystick1right' :{'axis': 'An.Right'},
                    'joystick1down' : {'axis': 'An.Down'},
+                   'joystick2right' :{'axis': 'RightAn.Right'},
+                   'joystick2down' : {'axis': 'RightAn.Down'}
 }
 
 # Create the controller configuration file
@@ -165,6 +169,10 @@ def generateControllerConfig(controller):
                 var = ppssppMapping['joystick1down'][input.type]
             elif input.name == 'joystick1left':
                 var = ppssppMapping['joystick1right'][input.type]
+            elif input.name == 'joystick2up':
+                var = ppssppMapping['joystick2down'][input.type]
+            elif input.name == 'joystick2left':
+                var = ppssppMapping['joystick2right'][input.type]
                 
             pspcode = axisToCode(nkAxisId, -int(input.value))
             val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
