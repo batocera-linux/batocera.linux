@@ -10,7 +10,7 @@ FLATPAK_SITE = https://github.com/flatpak/flatpak/releases/download/$(FLATPAK_VE
 
 FLATPAK_DEPENDENCIES += appstream-glib glib-networking host-pkgconf host-python3-pyparsing
 FLATPAK_DEPENDENCIES += json-glib libarchive libcap libfuse libglib2 libgpgme libostree
-FLATPAK_DEPENDENCIES += libseccomp libsoup3 pkgconf polkit python3-pyparsing yaml-cpp
+FLATPAK_DEPENDENCIES += libseccomp libsoup libsoup3 pkgconf polkit python3-pyparsing yaml-cpp
 
 FLATPAK_CONF_OPTS += --with-sysroot="$(STAGING_DIR)"
 FLATPAK_CONF_OPTS += --with-gpgme-prefix="$(STAGING_DIR)/usr"
@@ -19,7 +19,6 @@ FLATPAK_CONF_OPTS += --with-run-media-dir="/media"
 FLATPAK_CONF_OPTS += --disable-selinux-module
 
 FLATPAK_CONF_ENV += LDFLAGS=-lpthread
-
 
 define FLATPAK_INSTALL_SCRIPTS
 	install -m 0755 \
