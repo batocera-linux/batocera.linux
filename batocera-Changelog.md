@@ -12,6 +12,7 @@ Add support for Radxa Rock 3C
 - Light gun support in libretro-MAME
 - Light gun support in DuckStation (single light gun only)
 - libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
+- Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3 and libretro-pcsx-rearmed
 
 ### Fixed
 - RG552 Splash-screen rotation
@@ -22,6 +23,11 @@ Add support for Radxa Rock 3C
 - GunCon2 A and B buttons now separate
 - Sinden Lightgun now has limited bandwidth per camera to avoid timeout
 - Some Kodi settings were lost upon Batocera upgrades
+- Wii crosshairs in the wrong emulationstation group setting
+- Justifier gun type in emulationstation for pcsx-rearmed and mednafen cores
+- Justifier mapping and crosshair on libretro-snes9x
+- Daphne crosshair not hidden by default when a light gun is detected
+- Libretro-mesen light gun not loading up
 
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
