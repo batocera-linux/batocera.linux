@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_INITRAMFS_VERSION = 1.35.0
+BATOCERA_INITRAMFS_VERSION = 1.36.1
 BATOCERA_INITRAMFS_SITE = http://www.busybox.net/downloads
 BATOCERA_INITRAMFS_SOURCE = busybox-$(BATOCERA_INITRAMFS_VERSION).tar.bz2
 BATOCERA_INITRAMFS_LICENSE = GPLv2

@@ -14,7 +14,7 @@ index 036ac403ed21..2676e6161a44 100644
 @@ -423,6 +423,66 @@ static void kd50t048a_gip_sequence(struct st7701 *st7701)
  		   0xFF, 0xFF, 0xFF, 0xFF, 0x10, 0x45, 0x67, 0x98, 0xBA);
  }
- 
+
 +static void go_ultra_gip_sequence(struct st7701 *st7701)
 +{
 +	/**
@@ -84,15 +84,15 @@ index 036ac403ed21..2676e6161a44 100644
  		return ret;
 -	msleep(20);
 +	msleep(120);
- 
+
  	gpiod_set_value(st7701->reset, 1);
  	msleep(150);
 @@ -759,6 +819,25 @@ static const struct drm_display_mode kd50t048a_mode = {
  	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
  };
- 
+
 +static const struct drm_display_mode go_ultra_mode = {
-+	.clock          = 28748,
++	.clock          = 29170,
 +
 +	.hdisplay       = 480,
 +	.hsync_start    = 480 + 12,
@@ -100,9 +100,9 @@ index 036ac403ed21..2676e6161a44 100644
 +	.htotal         = 480 + 12 + 12 + 38,
 +
 +	.vdisplay       = 854,
-+	.vsync_start    = 854 + 0,
-+	.vsync_end      = 854 + 0 + 19,
-+	.vtotal         = 854 + 0 + 19 + 11,
++	.vsync_start    = 854 + 2,
++	.vsync_end      = 854 + 2 + 19,
++	.vtotal         = 854 + 2 + 19 + 22,
 +
 +	.width_mm       = 70,
 +	.height_mm      = 140,
@@ -116,7 +116,7 @@ index 036ac403ed21..2676e6161a44 100644
 @@ -839,6 +918,86 @@ static const struct st7701_panel_desc kd50t048a_desc = {
  	.gip_sequence = kd50t048a_gip_sequence,
  };
- 
+
 +static const struct st7701_panel_desc go_ultra_desc = {
 +	.mode = &go_ultra_mode,
 +	.lanes = 2,
@@ -208,6 +208,6 @@ index 036ac403ed21..2676e6161a44 100644
  	{ .compatible = "techstar,ts8550b", .data = &ts8550b_desc },
  	{ }
  };
--- 
+--
 2.34.1
 

@@ -125,10 +125,10 @@ class Rpcs3Generator(Generator):
         # Max Power Saving CPU-Preemptions
         # values are maximum yields per frame threshold
         if system.isOptSet("rpcs3_maxcpu_preemptcount"):
-            rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config["rpcs3_maxcpu_preemptcount"]           
+            rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config["rpcs3_maxcpu_preemptcount"]
         else:
             rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 0
-            
+
         # -= [Video] =-
         # gfx backend - default to Vulkan
         # Check Vulkan first to be sure
@@ -234,7 +234,7 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Video"]["Shader Precision"] = "High"
         # Internal resolution (CHANGE AT YOUR OWN RISK)
-            rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"        
+            rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
         # Resolution scaling
         if system.isOptSet("rpcs3_resolution_scale"):
             rpcs3ymlconfig["Video"]["Resolution Scale"] = system.config["rpcs3_resolution_scale"]
@@ -260,7 +260,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = system.config["rpcs3_async_texture"]
         else:
             rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = False
-        
+
         # -= [Audio] =-
         # defaults
         rpcs3ymlconfig["Audio"]["Renderer"] = "Cubeb"
@@ -274,7 +274,7 @@ class Rpcs3Generator(Generator):
         if system.isOptSet("rpcs3_audio_16bit") and system.config["rpcs3_audio_16bit"] == "True":
             rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = True
         else:
-            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = False        
+            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = False
         # audio buffering
         if system.isOptSet("rpcs3_audiobuffer"):
             rpcs3ymlconfig["Audio"]["Enable Buffering"] = system.config["rpcs3_audiobuffer"]
@@ -303,6 +303,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
+        # Gun crosshairs
+        if system.isOptSet("rpcs3_crosshairs"):
+            rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config["rpcs3_crosshairs"]
+        else:
+            rpcs3ymlconfig["Input/Output"]["Show move cursor"] = False
 
         # -= [Miscellaneous] =-
         rpcs3ymlconfig["Miscellaneous"]["Exit RPCS3 when process finishes"] = True
@@ -313,14 +318,14 @@ class Rpcs3Generator(Generator):
 
         with open(batoceraFiles.rpcs3config, "w") as file:
             yaml.dump(rpcs3ymlconfig, file, default_flow_style=False)
-        
+
         # copy icon files to config
         icon_source = '/usr/share/rpcs3/Icons/'
         icon_target = batoceraFiles.CONF + '/rpcs3/Icons'
         if not os.path.exists(icon_target):
             os.makedirs(icon_target)
         shutil.copytree(icon_source, icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
-        
+
         # determine the rom name
         if rom.endswith(".psn"):
             with open(rom) as fp:
@@ -330,11 +335,11 @@ class Rpcs3Generator(Generator):
         else:
             romBasename = path.basename(rom)
             romName = rom + "/PS3_GAME/USRDIR/EBOOT.BIN"
-        
+
         # write our own gamecontrollerdb.txt file before launching the game
         dbfile = "/userdata/system/configs/rpcs3/input_configs/gamecontrollerdb.txt"
         controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
-        
+
         commandArray = [batoceraFiles.batoceraBins[system.config["emulator"]], romName]
 
         if not (system.isOptSet("rpcs3_gui") and system.getOptBoolean("rpcs3_gui")):
@@ -355,7 +360,7 @@ class Rpcs3Generator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
-    
+
     def getClosestRatio(gameResolution):
         screenRatio = gameResolution["width"] / gameResolution["height"]
         if screenRatio < 1.6:

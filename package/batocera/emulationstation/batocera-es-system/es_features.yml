@@ -1486,6 +1486,13 @@ libretro:
                     "NeGcon":                        773
                     "Namco GunCon":                  260
                     "PlayStation Mouse":             258
+            swanstation_Controller_ShowCrosshair:
+                group:       LIGHT GUN
+                prompt:      SHOW LIGHT GUN CROSSHAIRS
+                description:
+                choices:
+                    "Off":     "false"
+                    "On":      "true"
     duckstation:
       features: [cheevos]
       shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
@@ -3836,7 +3843,7 @@ libretro:
                     "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
-                    #"Justifier":                     516
+                    "Justifier":                     516
                     "PlayStation Mouse":             258
             beetle_psx_hw_Controller2:
                 prompt:      CONTROLLER 2 TYPE
@@ -3849,7 +3856,7 @@ libretro:
                     "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
-                    #"Justifier":                     516
+                    "Justifier":                     516
                     "PlayStation Mouse":             258
     mednafen_supergrafx:
       features: [netplay, cheevos]
@@ -4815,6 +4822,7 @@ libretro:
                     "Analog Controller":             261
                     "DualShock Controller":          517
                     "Namco GunCon":                  260
+                    "Hyper Blaster/Justifier":       516
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
             controller2_pcsx:
@@ -4826,8 +4834,27 @@ libretro:
                     "Analog Controller":             261
                     "DualShock Controller":          517
                     "Namco GunCon":                  260
+                    "Hyper Blaster/Justifier":       516
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
+            pcsx_rearmed_crosshair1:
+                group:       LIGHT GUN
+                prompt:      PLAYER 1 CROSSHAIR COLOR
+                choices:
+                    Red:        red
+                    Blue:       blue
+                    Green:      green
+                    White:      white
+                    Disabled:   disabled
+            pcsx_rearmed_crosshair2:
+                group:       LIGHT GUN
+                prompt:      PLAYER 2 CROSSHAIR COLOR
+                choices:
+                    Red:        red
+                    Blue:       blue
+                    Green:      green
+                    White:      white
+                    Disabled:   disabled
     picodrive:
       features: [netplay, cheevos]
       shared: [autosave]
@@ -7025,7 +7052,7 @@ citra:
 
 daphne:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+  shared: [powermode, tdp, videomode, use_guns]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, bcm2712]
@@ -7090,12 +7117,12 @@ daphne:
                 "15": 15
                 "20": 20
         singe_crosshair:
-            group: ADVANCED OPTIONS
+            group:       LIGHT GUNS
             prompt:      HIDE LIGHT GUN CROSSHAIRS
-            description: Hide crosshairs in supported games e.g. ActionMax.
+            description: Hide crosshairs in supported games e.g. ActionMax, Maddog II.
             choices:
-                "Off":                          0
-                "On":                           1
+                "Hidden":                          1
+                "Shown":                           0
         daphne_texturestream:
             group: ADVANCED OPTIONS
             prompt:      SDL TEXTURE ACCESS STREAMING
@@ -7522,7 +7549,7 @@ dolphin:
                     "Off": 0
                     "On":  1
             dolphin-lightgun-hide-crosshair:
-                submenu: CONTROLLERS
+                group: LIGHT GUNS
                 prompt: SHOW LIGHT GUN CROSSHAIRS
                 choices:
                     "Off": 0
@@ -7959,7 +7986,7 @@ duckstation:
         duckstation_crosshair:
             group: LIGHT GUN
             prompt: CROSSHAIR
-            description: 
+            description:
             choices:
                 "Disabled (Default)": "0"
                 "Enabled":            "100"
@@ -8014,6 +8041,42 @@ flycast:
         "Per Strip":              2
         "Per Triangle (Default)": 1
         "Per Pixel":              3
+    flycast_lightgun1_crosshair:
+        group: LIGHT GUN
+        prompt:      PLAYER 1 CROSSHAIR COLOR
+        choices:
+            "Red"       :   -1073741571
+            "Blue"      :   -1057153792
+            "Green"     :   -1073479933
+            "White"     :   -1056964609
+            "Disabled"  :   0
+    flycast_lightgun2_crosshair:
+        group: LIGHT GUN
+        prompt:      PLAYER 2 CROSSHAIR COLOR
+        choices:
+            "Red"       :   -1073741571
+            "Blue"      :   -1057153792
+            "Green"     :   -1073479933
+            "White"     :   -1056964609
+            "Disabled"  :   0
+    flycast_lightgun3_crosshair:
+        group: LIGHT GUN
+        prompt:      PLAYER 3 CROSSHAIR COLOR
+        choices:
+            "Red"       :   -1073741571
+            "Blue"      :   -1057153792
+            "Green"     :   -1073479933
+            "White"     :   -1056964609
+            "Disabled"  :   0
+    flycast_lightgun4_crosshair:
+        group: LIGHT GUN
+        prompt:      PLAYER 4 CROSSHAIR COLOR
+        choices:
+            "Red"       :   -1073741571
+            "Blue"      :   -1057153792
+            "Green"     :   -1073479933
+            "White"     :   -1056964609
+            "Disabled"  :   0
   systems:
     dreamcast:
       cfeatures:
@@ -8834,6 +8897,13 @@ pcsx2:
               "Driving Force Pro":  DrivingForcePro
               "GT Force":           GTForce
               "Virtual":            Virtual
+        pcsx2_crosshairs:
+            group:       LIGHT GUN
+            prompt:      SHOW LIGHT GUN CROSSHAIRS
+            description:
+            choices:
+                "Off":     0
+                "On":      1
 
 ppsspp:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
@@ -9034,13 +9104,13 @@ rpcs3:
             choices:
                 "Off (faster, unstable)": Off
                 "20":                     20
-                "25":                     25    
+                "25":                     25
                 "30":                     30
                 "35":                     35
                 "40":                     40
                 "45":                     45
                 "50":                     50
-                "55":                     55 
+                "55":                     55
                 "59.94":                  59.94
                 "60":                     60
         rpcs3_anisotropic:
@@ -9246,6 +9316,12 @@ rpcs3:
             choices:
                 "Off": 0
                 "On":  1
+        rpcs3_crosshairs:
+            group: LIGHT GUN
+            prompt: SHOW LIGHT GUN CROSSHAIRS
+            choices:
+                "Off": False
+                "On":  True
         rpcs3_controller1:
             submenu: CONTROLLERS
             prompt: PS3 CONTROLLER 1
