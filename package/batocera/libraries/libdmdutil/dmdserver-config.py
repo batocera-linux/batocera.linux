@@ -72,5 +72,7 @@ else:
     config.set("ZeDMD", "SaveSettings", "0")
 
 ### save ###
+if not os.path.exists(os.path.dirname(args.config)):
+    os.makedirs(os.path.dirname(args.config))
 with open(args.config, 'w') as configfile:
         config.write(configfile)
