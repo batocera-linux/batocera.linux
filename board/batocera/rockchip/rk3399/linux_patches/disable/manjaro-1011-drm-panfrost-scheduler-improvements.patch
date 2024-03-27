@@ -1,0 +1,126 @@
+From adfe86d576383f2e5f1ad1b2ab9c56e48c5e3752 Mon Sep 17 00:00:00 2001
+From: Dragan Simic <dragan.simic@gmail.com>
+Date: Sat, 20 Nov 2021 16:04:53 +0100
+Subject: [PATCH 2/2] drm: scheduler: Increase scheduler threads priority
+
+---
+ drivers/gpu/drm/scheduler/sched_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/scheduler/sched_main.c b/drivers/gpu/drm/scheduler/sched_main.c
+index e067ff5afeaf..b0a9c69f0d71 100644
+--- a/drivers/gpu/drm/scheduler/sched_main.c
++++ b/drivers/gpu/drm/scheduler/sched_main.c
+@@ -911,7 +911,7 @@ static int drm_sched_main(void *param)
+ 	struct drm_gpu_scheduler *sched = (struct drm_gpu_scheduler *)param;
+ 	int r;
+ 
+-	sched_set_fifo_low(current);
++	sched_set_fifo(current);
+ 
+ 	while (!kthread_should_stop()) {
+ 		struct drm_sched_entity *entity = NULL;
+-- 
+2.33.1
+
+From 20e8afd7f5e9936097bc9adfbd624aab57711b76 Mon Sep 17 00:00:00 2001
+From: Dragan Simic <dragan.simic@gmail.com>
+Date: Sat, 20 Nov 2021 16:07:17 +0100
+Subject: [PATCH 1/2] drm: panfrost: Improve logged messages
+
+---
+ drivers/gpu/drm/panfrost/panfrost_job.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index a6925dbb6224..eaa80adf11b7 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -234,7 +234,7 @@ static void panfrost_job_hw_submit(struct panfrost_job *job, int js)
+ 	if (!atomic_read(&pfdev->reset.pending)) {
+ 		job_write(pfdev, JS_COMMAND_NEXT(js), JS_COMMAND_START);
+ 		dev_dbg(pfdev->dev,
+-			"JS: Submitting atom %p to js[%d][%d] with head=0x%llx AS %d",
++			"Job slot: submitting atom %p to js[%d][%d] with head=0x%llx, as=%d\n",
+ 			job, js, subslot, jc_head, cfg & 0xf);
+ 	}
+ 	spin_unlock(&pfdev->js->job_lock);
+@@ -400,12 +400,12 @@ static void panfrost_job_handle_err(struct panfrost_device *pfdev,
+ 	bool signal_fence = true;
+ 
+ 	if (!panfrost_exception_is_fault(js_status)) {
+-		dev_dbg(pfdev->dev, "js event, js=%d, status=%s, head=0x%x, tail=0x%x",
++		dev_dbg(pfdev->dev, "Job slot event: js=%d, status=%s, head=0x%x, tail=0x%x\n",
+ 			js, exception_name,
+ 			job_read(pfdev, JS_HEAD_LO(js)),
+ 			job_read(pfdev, JS_TAIL_LO(js)));
+ 	} else {
+-		dev_err(pfdev->dev, "js fault, js=%d, status=%s, head=0x%x, tail=0x%x",
++		dev_err(pfdev->dev, "Job slot fault: js=%d, status=%s, head=0x%x, tail=0x%x\n",
+ 			js, exception_name,
+ 			job_read(pfdev, JS_HEAD_LO(js)),
+ 			job_read(pfdev, JS_TAIL_LO(js)));
+@@ -646,7 +646,7 @@ panfrost_reset(struct panfrost_device *pfdev,
+ 				 10, 10000);
+ 
+ 	if (ret)
+-		dev_err(pfdev->dev, "Soft-stop failed\n");
++		dev_err(pfdev->dev, "Failed to complete soft-stop: %d\n", ret);
+ 
+ 	/* Handle the remaining interrupts before we reset. */
+ 	panfrost_job_handle_irqs(pfdev);
+@@ -715,7 +715,7 @@ static enum drm_gpu_sched_stat panfrost_job_timedout(struct drm_sched_job
+ 	if (dma_fence_is_signaled(job->done_fence))
+ 		return DRM_GPU_SCHED_STAT_NOMINAL;
+ 
+-	dev_err(pfdev->dev, "gpu sched timeout, js=%d, config=0x%x, status=0x%x, head=0x%x, tail=0x%x, sched_job=%p",
++	dev_err(pfdev->dev, "GPU scheduler timeout: js=%d, config=0x%x, status=0x%x, head=0x%x, tail=0x%x, sched_job=%p\n",
+ 		js,
+ 		job_read(pfdev, JS_CONFIG(js)),
+ 		job_read(pfdev, JS_STATUS(js)),
+@@ -796,7 +796,7 @@ int panfrost_job_init(struct panfrost_device *pfdev)
+ 					IRQF_SHARED, KBUILD_MODNAME "-job",
+ 					pfdev);
+ 	if (ret) {
+-		dev_err(pfdev->dev, "failed to request job irq");
++		dev_err(pfdev->dev, "Failed to request job IRQ: %d\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -814,7 +814,7 @@ int panfrost_job_init(struct panfrost_device *pfdev)
+ 				     pfdev->reset.wq,
+ 				     NULL, "pan_js", pfdev->dev);
+ 		if (ret) {
+-			dev_err(pfdev->dev, "Failed to create scheduler: %d.", ret);
++			dev_err(pfdev->dev, "Failed to create scheduler: %d\n", ret);
+ 			goto err_sched;
+ 		}
+ 	}
+-- 
+2.33.1
+
+From df6526d6fb26b9220d697ac22b6ab76c9b9d5994 Mon Sep 17 00:00:00 2001
+From: Dragan Simic <dragan.simic@gmail.com>
+Date: Sat, 20 Nov 2021 16:02:32 +0100
+Subject: [PATCH 1/2] drm: scheduler: Improve logged messages
+
+---
+ drivers/gpu/drm/scheduler/sched_main.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/scheduler/sched_main.c b/drivers/gpu/drm/scheduler/sched_main.c
+index b81fceb0b8a2..e067ff5afeaf 100644
+--- a/drivers/gpu/drm/scheduler/sched_main.c
++++ b/drivers/gpu/drm/scheduler/sched_main.c
+@@ -1019,7 +1016,7 @@ int drm_sched_init(struct drm_gpu_scheduler *sched,
+ 	if (IS_ERR(sched->thread)) {
+ 		ret = PTR_ERR(sched->thread);
+ 		sched->thread = NULL;
+-		DRM_DEV_ERROR(sched->dev, "Failed to create scheduler for %s.\n", name);
++		DRM_DEV_ERROR(sched->dev, "Failed to create scheduler for %s: %d\n", name, ret);
+ 		return ret;
+ 	}
+ 
+-- 
+2.33.1
+

@@ -1,0 +1,26 @@
+From c4ea1047edda5be7a86e7c9c1248716aeca364e8 Mon Sep 17 00:00:00 2001
+From: baiywt <baiywt_gj@163.com>
+Date: Wed, 20 Apr 2022 18:42:04 +0800
+Subject: [PATCH 6007/6021] drm/rockchip: analogix_dp: Accept
+ drm_of_find_panel_or_bridge failure
+
+---
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+index c82901d9a..6d29f30f8 100644
+--- a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+@@ -372,7 +372,7 @@ static int rockchip_dp_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	ret = drm_of_find_panel_or_bridge(dev->of_node, 1, 0, &panel, NULL);
+-	if (ret < 0)
++	if (ret < 0 && ret != -ENODEV)
+ 		return ret;
+ 
+ 	dp = devm_kzalloc(dev, sizeof(*dp), GFP_KERNEL);
+-- 
+2.30.2
+

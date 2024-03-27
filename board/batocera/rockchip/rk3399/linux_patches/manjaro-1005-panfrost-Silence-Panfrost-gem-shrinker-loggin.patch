@@ -1,0 +1,30 @@
+From 7a3337d25667b2179304d8bcdc91315da3a2cd0a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jari=20H=C3=A4m=C3=A4l=C3=A4inen?= <nuumiofi@gmail.com>
+Date: Tue, 28 Jul 2020 12:36:41 +0300
+Subject: [PATCH] nuumio/panfrost: Silence Panfrost gem shrinker logging
+
+Even though ratelimited panfrost gem shrinker messages are a bit
+annoying when keeping an eye for unexpected things in kernel logs.
+
+NOTE: This is just my personal preference.
+---
+ drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c b/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
+index 288e46c40673..173a04b6dcfd 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
+@@ -77,9 +77,6 @@ panfrost_gem_shrinker_scan(struct shrinker *shrinker, struct shrink_control *sc)
+ 
+ 	mutex_unlock(&pfdev->shrinker_lock);
+ 
+-	if (freed > 0)
+-		pr_info_ratelimited("Purging %lu bytes\n", freed << PAGE_SHIFT);
+-
+ 	return freed;
+ }
+ 
+-- 
+2.27.0
+

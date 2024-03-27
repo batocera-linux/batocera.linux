@@ -34,6 +34,22 @@
 		#clock-cells = <0>;
 	};
 
+	sdio_pwrseq: sdio-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		clocks = <&rk808 1>;
+		clock-names = "ext_clock";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_enable_h>;
+
+		/*
+		 * On the module itself this is one of these (depending
+		 * on the actual card populated):
+		 * - SDIO_RESET_L_WL_REG_ON
+		 * - PDN (power down when low)
+		 */
+		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
+	};
+
 	vcc_sys: vcc-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_sys";
@@ -195,21 +211,6 @@
 
 	};
 
-	/*
-	dw_hdmi_audio: dw-hdmi-audio {
-		status = "disable";
-		compatible = "rockchip,dw-hdmi-audio";
-		#sound-dai-cells = <0>;
-	};
-
-        hdmi_dp_sound: hdmi-dp-sound {
-                status = "okay";
-                compatible = "rockchip,rk3399-hdmi-dp";
-                rockchip,cpu = <&i2s2>;
-                rockchip,codec = <&hdmi>, <&cdn_dp>;
-        };
-        */
-
 	hdmi-sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -227,7 +228,7 @@
 	};
 
 	spdif-sound {
-		status = "disable";
+		status = "disabled";
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "ROCKCHIP,SPDIF";
 		simple-audio-card,cpu {
@@ -239,49 +240,9 @@
 	};
 
 	spdif_out: spdif-out {
-		status = "disable";
+		status = "disabled";
 		compatible = "linux,spdif-dit";
 		#sound-dai-cells = <0>;
-	};
-
-	pwm_bl: backlight {
-		status = "disable";
-		compatible = "pwm-backlight";
-		pwms = <&pwm0 0 25000 0>;
-		brightness-levels = <
-			  0   1   2   3   4   5   6   7
-			  8   9  10  11  12  13  14  15
-			 16  17  18  19  20  21  22  23
-			 24  25  26  27  28  29  30  31
-			 32  33  34  35  36  37  38  39
-			 40  41  42  43  44  45  46  47
-			 48  49  50  51  52  53  54  55
-			 56  57  58  59  60  61  62  63
-			 64  65  66  67  68  69  70  71
-			 72  73  74  75  76  77  78  79
-			 80  81  82  83  84  85  86  87
-			 88  89  90  91  92  93  94  95
-			 96  97  98  99 100 101 102 103
-			104 105 106 107 108 109 110 111
-			112 113 114 115 116 117 118 119
-			120 121 122 123 124 125 126 127
-			128 129 130 131 132 133 134 135
-			136 137 138 139 140 141 142 143
-			144 145 146 147 148 149 150 151
-			152 153 154 155 156 157 158 159
-			160 161 162 163 164 165 166 167
-			168 169 170 171 172 173 174 175
-			176 177 178 179 180 181 182 183
-			184 185 186 187 188 189 190 191
-			192 193 194 195 196 197 198 199
-			200 201 202 203 204 205 206 207
-			208 209 210 211 212 213 214 215
-			216 217 218 219 220 221 222 223
-			224 225 226 227 228 229 230 231
-			232 233 234 235 236 237 238 239
-			240 241 242 243 244 245 246 247
-			248 249 250 251 252 253 254 255>;
-		default-brightness-level = <200>;
 	};
 
 	gpio-keys {
@@ -336,22 +297,6 @@
 		};
 	};
 
-	sdio_pwrseq: sdio-pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		clocks = <&rk808 1>;
-		clock-names = "ext_clock";
-		pinctrl-names = "default";
-		pinctrl-0 = <&wifi_enable_h>;
-
-		/*
-		 * On the module itself this is one of these (depending
-		 * on the actual card populated):
-		 * - SDIO_RESET_L_WL_REG_ON
-		 * - PDN (power down when low)
-		 */
-		reset-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>; /* GPIO0_B2 */
-	};
-
 	unisoc_uwe_bsp: uwe-bsp {
 		compatible = "unisoc,uwe_bsp";
 		//wl-reg-on = <&gpio0 10 GPIO_ACTIVE_HIGH>;  // handled by sdio-pwrseq
@@ -360,6 +305,8 @@
 		bt-wake-host-gpio = <&gpio0 4 GPIO_ACTIVE_HIGH>;
 		sdio-ext-int-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
 		unisoc,btwf-file-name = "/lib/firmware/wcnmodem.bin";
+		//adma-tx;
+		//adma-rx;
 		data-irq;
 		blksz-512;
 		keep-power-on;
@@ -376,6 +323,26 @@
 		sprd,name = "ttyBT";
 		status = "okay";
 	};
+
+	/*dmc_opp_table: dmc_opp_table {
+		compatible = "operating-points-v2";
+
+		opp00 {
+			opp-hz = /bits/ 64 <328000000>;
+			opp-microvolt = <900000>;
+		};
+
+		opp01 {
+			opp-hz = /bits/ 64 <416000000>;
+			opp-microvolt = <900000>;
+		};
+
+		opp02 {
+			opp-hz = /bits/ 64 <666000000>;
+			opp-microvolt = <900000>;
+		};
+
+	};*/
 
 };
 
@@ -413,19 +380,39 @@
 	assigned-clock-parents = <&clkin_gmac>;
 	clock_in_out = "input";
 	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii_pins>;
+	pinctrl-0 = <&rgmii_pins>, <&phy_rstb>;
 	phy-mode = "rgmii";
 	phy-supply = <&vcc3v3_s3>;
+	phy-handle = <&yt8531c>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 10000 50000>;
 	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
 	tx_delay = <0x28>;
 	rx_delay = <0x11>;
 	status = "okay";
+
+	mdio {
+		compatible = "snps,dwmac-mdio";
+        	#address-cells = <1>;
+	        #size-cells = <0>;
+	        yt8531c: ethernet-phy@0 {
+			compatible = "ethernet-phy-id4f51.e91b",
+				     "ethernet-phy-ieee802.3-c22";
+            		reg = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&phy_intb>;
+            		motorcomm,clk-out-frequency-hz = <125000000>;
+            		motorcomm,keep-pll-enabled;
+            		motorcomm,auto-sleep-disabled;
+			interrupt-parent = <&gpio3>;
+			interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
+        	};
+    	};
+
 };
 
 &spi1 {
-	status = "disable";
+	status = "disabled";
 	pinctrl-names = "default", "sleep";
 	pinctrl-1 = <&spi1_gpio>;
 
@@ -436,37 +423,11 @@
 		status = "okay";
 	};
 };
-/*
-&spi1 {
-    status = "okay";
-    max-freq = <48000000>;
-    spidev@00 {
-        compatible = "linux,spidev";
-        reg = <0x00>;
-        spi-max-frequency = <48000000>;
-    };
-};
-*/
 
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
 	status = "okay";
-
-	/*
-	bluetooth {
-		compatible = "brcm,bcm4345c5";
-		clocks = <&rk808 1>;
-		clock-names = "lpo";
-		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
-		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
-		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-		max-speed = <1500000>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&bt_host_wake &bt_wake &bt_reset>;
-	};
-	*/
-
 };
 
 &uart2 {
@@ -522,8 +483,8 @@
 	rk808: pmic@1b {
 		compatible = "rockchip,rk808";
 		reg = <0x1b>;
-		interrupt-parent = <&gpio1>;
-		interrupts = <21 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
 		#clock-cells = <1>;
 		clock-output-names = "xin32k", "rk808-clkout2";
 		pinctrl-names = "default";
@@ -759,7 +720,7 @@
 	es8316c_codec: es8316c@11 {
 		#sound-dai-cells = <0>;
 		compatible = "everest,es8316";
-		reg = <17>;
+		reg = <0x11>;
 		clocks = <&cru SCLK_I2S_8CH_OUT>;
 		clock-names = "mclk";
 		//pinctrl-names = "default";
@@ -847,13 +808,6 @@
 		status = "okay";
 	};
 
-	/*
-	onewire_ts@2f {
-		compatible = "onewire";
-		reg = <0x2f>;
-		interrupt-parent = <&gpio1>;
-		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
-	}; */
 };
 
 &i2c7 {
@@ -861,10 +815,22 @@
 };
 
 &spdif {
-	status = "disable";
+	status = "disabled";
 	pinctrl-0 = <&spdif_bus>;
 	i2c-scl-rising-time-ns = <450>;
 	i2c-scl-falling-time-ns = <15>;
+	#sound-dai-cells = <0>;
+};
+
+&i2s0 {
+	rockchip,i2s-broken-burst-len;
+	assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
+	assigned-clock-parents = <&cru SCLK_I2S0_8CH>;
+	resets = <&cru SRST_I2S0_8CH>, <&cru SRST_H_I2S0_8CH>;
+	reset-names = "reset-m", "reset-h";
+	rockchip,playback-channels = <2>;
+	rockchip,capture-channels = <2>;
+	status = "okay";
 	#sound-dai-cells = <0>;
 };
 
@@ -901,10 +867,6 @@
 	max-link-speed = <1>;
 };
 
-&pwm_bl {
-	status = "okay";
-};
-
 &pwm0 {
 	status = "okay";
 };
@@ -939,8 +901,8 @@
 };
 
 &sdio0 {
-	clock-frequency = <50000000>;
-	clock-freq-min-max = <200000 50000000>;
+	clock-frequency = <150000000>;
+	max-frequency = <150000000>;
 	supports-sdio;
 	bus-width = <4>;
 	disable-wp;
@@ -1111,7 +1073,7 @@
 
 	pmic {
 		pmic_int_l: pmic-int-l {
-			rockchip,pins = <1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <2 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
 		vsel1_gpio: vsel1-gpio {
@@ -1120,16 +1082,6 @@
 
 		vsel2_gpio: vsel2-gpio {
 			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
-		};
-	};
-
-	sdmmc {
-		sdmmc0_det_l: sdmmc0-det-l {
-			rockchip,pins = <0 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-
-		sdmmc0_pwr_h: sdmmc0-pwr-h {
-			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
@@ -1227,15 +1179,124 @@
 		};
 	};
 
+       sdmmc {
+               sdmmc0_det_l: sdmmc0-det-l {
+                       rockchip,pins = <0 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
+               };
+
+               sdmmc0_pwr_h: sdmmc0-pwr-h {
+                       rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
+               };
+       };
+
+	gmac {
+		phy_intb: phy-intb {
+			rockchip,pins = <3 RK_PB2 1 &pcfg_pull_up>;
+		};
+
+		phy_rstb: phy-rstb {
+			rockchip,pins = <3 RK_PB7 1 &pcfg_pull_none>;
+		};
+	};
+
 };
 
 &hdmi_in_vopb {
 	status = "okay";
 };
 
+&hdmi_in_vopl {
+	status = "disabled";
+};
+
 &dp_in_vopb {
-	status = "disable";
+	status = "disabled";
 };
 &dp_in_vopl {
 	status = "okay";
 };
+
+/*&dmc {
+	#cooling-cells = <2>; 
+
+	status = "okay";
+	center-supply = <&vdd_log>;
+	operating-points-v2 = <&dmc_opp_table>;
+
+	rockchip,pd-idle-ns = <160>;
+	rockchip,sr-idle-ns = <10240>;
+	rockchip,sr-mc-gate-idle-ns = <40960>;
+	rockchip,srpd-lite-idle-ns = <61440>;
+	rockchip,standby-idle-ns = <81920>;
+
+	rockchip,ddr3_odt_dis_freq = <666000000>;
+	rockchip,lpddr3_odt_dis_freq = <666000000>;
+	rockchip,lpddr4_odt_dis_freq = <666000000>;
+
+	rockchip,sr-mc-gate-idle-dis-freq-hz = <1000000000>;
+	rockchip,srpd-lite-idle-dis-freq-hz = <0>;
+	rockchip,standby-idle-dis-freq-hz = <928000000>;
+
+};*/
+
+/*&dfi {
+	status = "okay";
+};*/
+
+/*
+ * Redefine some parameters for the thermal trip points for Opi4 LTS.
+ * First of all, the Soc does not like getting over 90°C. My sample
+ * froze at 94.4°C, so we lower the critical temprature to 90°C, hopefully
+ * giving enough room for safe reboot of the device.
+ * Big cores are getting throttled a bit when reaching 82°C, then at 85°C
+ * we aggressively throttle all the cores and even the memory controller.
+ * The GPU is handled by existing trip points in the base device tree, here
+ * we just set the same critical temperature as CPU.
+ */
+&cpu_alert0 {
+	temperature = <82000>;
+};
+
+&cpu_alert1 {
+	temperature = <85000>;
+};
+
+&cpu_crit {
+	temperature = <90000>;
+};
+
+&gpu_crit {
+	temperature = <90000>;
+};
+
+/*&cpu_thermal {
+
+	cooling-maps {
+
+		map0 {
+			trip = <&cpu_alert0>;
+			cooling-device =
+				<&cpu_b0 THERMAL_NO_LIMIT 3>,
+				<&cpu_b1 THERMAL_NO_LIMIT 3>;
+		};
+
+		map1 {
+			trip = <&cpu_alert1>;
+			cooling-device =
+				<&cpu_l0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+				<&cpu_l1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+				<&cpu_l2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+				<&cpu_l3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+				<&cpu_b0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+				<&cpu_b1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+		};
+
+		map2 {
+			trip = <&cpu_alert1>;
+			cooling-device =
+				<&dmc THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+		};
+
+	};
+
+};*/
