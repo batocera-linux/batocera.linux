@@ -76,7 +76,7 @@ Add support for Radxa Rock 3C
 - Sonic3-AIR to v24.02.02.0-stable
 
 ### System
-- Mainline Kernel 6.6.y bump to 6.6.21
+- Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
 - Nvidia Legacy driver to 470.239.06
 - wayland-protocols to 1.33
