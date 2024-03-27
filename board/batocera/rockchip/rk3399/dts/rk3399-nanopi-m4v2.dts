@@ -46,10 +46,26 @@
 		regulator-boot-on;
 		vin-supply = <&vcc5v0_sys>;
 	};
+
+	vdd_log: vdd-log {
+		compatible = "pwm-regulator";
+		pwms = <&pwm2 0 25000 1>;
+		regulator-name = "vdd_log";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <800000>;
+		regulator-max-microvolt = <1400000>;
+		regulator-init-microvolt = <900000>;
+		vin-supply = <&vcc5v0_core>;
+	};
 };
 
 &gmac {
 	rx_delay = <0x16>;
+};
+
+&rk808 {
+	max-buck-steps-per-change = <4>;
 };
 
 &vcc3v3_sys {
@@ -68,3 +84,4 @@
 	regulator-always-on;
 	vin-supply = <&vdd_5v>;
 };
+

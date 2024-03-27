@@ -18,7 +18,6 @@
 	aliases {
 		mmc0 = &sdmmc;
 		mmc1 = &sdhci;
-		spi2 = &spi2;
 	};
 
 	cpuinfo {
@@ -29,6 +28,10 @@
 
 	chosen {
 		stdout-path = "serial2:1500000n8";
+	};
+
+	aliases {
+		spi2 = &spi2;
 	};
 
 	clkin_gmac: external-gmac-clock {
@@ -251,6 +254,11 @@
 		};
 	};
 
+	sprd-wlan {
+		compatible = "sprd,uwe5622-wifi";
+		status = "okay";
+	};
+
 	unisoc_uwe_bsp: uwe-bsp {
 		compatible = "unisoc,uwe_bsp";
 		wl-reg-on = <&gpio0 RK_PB2 GPIO_ACTIVE_HIGH>;
@@ -264,11 +272,6 @@
 		data-irq;
 		blksz-512;
 		keep-power-on;
-		status = "okay";
-	};
-
-	sprd-wlan {
-		compatible = "sprd,uwe5622-wifi";
 		status = "okay";
 	};
 
@@ -340,12 +343,6 @@
 			interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
 		};
 	};
-};
-
-&uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
-	status = "okay";
 };
 
 &gpu {
@@ -595,10 +592,9 @@
 };
 
 &i2c1 {
-	clock-frequency = <100000>;
-	i2c-scl-falling-time-ns = <4>;
-	i2c-scl-rising-time-ns = <168>;
 	status = "okay";
+	i2c-scl-rising-time-ns = <450>;
+	i2c-scl-falling-time-ns = <15>;
 
 	es8316: audio-codec@11 {
 		compatible = "everest,es8316";
@@ -618,6 +614,22 @@
 	};
 };
 
+&i2c2 {
+	status = "disabled";
+};
+
+&i2c3 {
+	status = "disabled";
+};
+
+&i2c4 {
+	status = "disabled";
+};
+
+&spdif {
+	status = "disabled";
+};
+
 &i2c7 {
 	i2c-scl-rising-time-ns = <450>;
 	i2c-scl-falling-time-ns = <15>;
@@ -627,8 +639,8 @@
 &i2s0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2s0_2ch_bus>;
-	//assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
-	//assigned-clock-parents = <&cru SCLK_I2S0_8CH>;
+	assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
+	assigned-clock-parents = <&cru SCLK_I2S0_8CH>;
 	rockchip,capture-channels = <2>;
 	rockchip,playback-channels = <2>;
 	#sound-dai-cells = <0>;
@@ -636,9 +648,9 @@
 };
 
 &i2s1 {
-	//assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
-	//assigned-clock-parents = <&cru SCLK_I2S1_8CH>;
-	//pinctrl-names = "default";
+	assigned-clocks = <&cru SCLK_I2SOUT_SRC>;
+	assigned-clock-parents = <&cru SCLK_I2S1_8CH>;
+	pinctrl-names = "default";
 	pinctrl-0 = <&i2s1_2ch_bus>;
 	rockchip,playback-channels = <2>;
 	rockchip,capture-channels = <2>;
@@ -771,8 +783,16 @@
 	};
 };
 
+&pwm0 {
+	status = "disabled";
+};
+
 &pwm1 {
 	status = "okay";
+};
+
+&pwm2 {
+	status = "disabled";
 };
 
 &saradc {
@@ -827,19 +847,6 @@
 	status = "okay";
 };
 
-&spi2 {
-	status = "okay";
-	pinctrl-names = "default", "sleep";
-	pinctrl-1 = <&spi2_gpio>;
-
-	spidev0: spidev@0 {
-		compatible = "rohm,dh2228fv";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
-		status = "okay";
-	};
-};
-
 &tsadc {
 	/* tshut mode 0:CRU 1:GPIO */
 	rockchip,hw-tshut-mode = <1>;
@@ -880,6 +887,25 @@
 		phy-supply = <&usb_vbus>;
 		status = "okay";
 	};
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
+	status = "okay";
+
+//	bluetooth {
+//		compatible = "brcm,bcm4345c5";
+//		clocks = <&rk808 1>;
+//		clock-names = "lpo";
+//		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
+//		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+//		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
+//		max-speed = <1500000>;
+//		pinctrl-names = "default";
+//		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_reg_on_h>;
+//	};
+
 };
 
 &uart2 {
@@ -934,5 +960,36 @@
 
 &vopl_mmu {
 	status = "okay";
+};
+
+&spi2 {
+	status = "okay";
+	pinctrl-names = "default", "sleep";
+	pinctrl-1 = <&spi2_gpio>;
+
+	spidev0: spidev@0 {
+		compatible = "rohm,dh2228fv";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+		status = "okay";
+	};
+};
+
+/*&edp {
+        status = "okay";
+        hpd-gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_HIGH>;
+        enable-gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_HIGH>;
+};
+
+&edp_hpd {
+	rockchip,pins = <4 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
+};
+
+&edp_in_vopb {
+	status = "disabled";
+};*/
+
+&hdmi_in_vopb {
+        status = "okay";
 };
 
