@@ -84,13 +84,12 @@ Add support for Radxa Rock 3C
 - sway to 1.9
 - mesa3d to 24.0.3
 - RPI kernel to 6.6.20
-- sdl2 to 2.30.1
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.8
 - switchres 0.220
 - btop to 1.3.2
 - Linux firmware to 20240312
-- buildroot to 2024.02
+- buildroot to 2024.02.1
 
 # 2024/03/xx - batocera.linux 39 - Painted Lady
 ### Special Notes
