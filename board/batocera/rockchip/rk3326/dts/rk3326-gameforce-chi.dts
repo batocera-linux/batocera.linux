@@ -4,6 +4,7 @@
  * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
  * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
  * Copyright (c) 2024 Juliano Dorigão <jdorigao@gmail.com>
+ * Copyright (c) 2024 Chris Morgan <macromorgan@hotmail.com>
  */
 
 /dts-v1/;
@@ -15,7 +16,7 @@
 
 / {
 	model = "GameForce Chi";
-    compatible = "gameforce,chi", "rockchip,rk3326";
+	compatible = "gameforce,chi", "rockchip,rk3326";
 
 	aliases {
 		mmc0 = &sdmmc;
@@ -87,9 +88,9 @@
 		vibrator0-gpio = <&gpio3 RK_PC3 GPIO_ACTIVE_HIGH>;
 		vibrator1-gpio = <&gpio3 RK_PC2 GPIO_ACTIVE_HIGH>;
 		status = "okay";
-    };
+    	};
 
-    joypad: gameforce-gamepad {
+    	joypad: gameforce-gamepad {
 		compatible = "gameforce-gamepad";
 		pinctrl-names = "default";
 		pinctrl-0 = <&btn_pins>;
@@ -200,73 +201,75 @@
 		};
 	};
 
-    leds: gpio_leds {
-        compatible = "gpio-leds";
-        pinctrl-names = "led_pins";
-        pinctrl-0 = <&led_pins>;
+	leds: gpio_leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "led_pins";
+		pinctrl-0 = <&led_pins>;
 
-        heartbeat {
-            label = "heartbeat";
-            gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "heartbeat";
-        };
+		heartbeat {
+		label = "heartbeat";
+		gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_HIGH>;
+		linux,default-trigger = "heartbeat";
+		};
 
-        red {
-            label = "red";
-            gpios = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
-            default-state = "off";
-        };
+		red {
+		label = "red";
+		gpios = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
+		default-state = "off";
+		};
 
-        green {
-            label = "green";
-            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-            default-state = "off";
-        };
+		green {
+		label = "green";
+		gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
+		default-state = "off";
+		};
 
-        blue {
-            label = "blue";
-            gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
-            default-state = "off";
-        };
+		blue {
+		label = "blue";
+		gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
+		default-state = "off";
+		};
 	};
 
-	rk817-sound {
+	sound {
 		compatible = "simple-audio-card";
-        simple-audio-card,name = "rk817_ext";
-        simple-audio-card,aux-devs = <&spk_amp>;
-        simple-audio-card,format = "i2s";
-        simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
-        simple-audio-card,mclk-fs = <256>;
-        simple-audio-card,widgets =
-            "Microphone", "Mic Jack",
-            "Headphone", "Headphones",
-            "Speaker", "Internal Speakers";
-        simple-audio-card,routing =
-            "MICL", "Mic Jack",
-            "Headphones", "HPOL",
-            "Headphones", "HPOR",
-            "Internal Speakers", "Speaker Amp OUTL",
-            "Internal Speakers", "Speaker Amp OUTR",
-            "Speaker Amp INL", "HPOL",
-            "Speaker Amp INR", "HPOR";
-        simple-audio-card,pin-switches = "Internal Speakers";
+		pinctrl-0 = <&hp_det>;
+		pinctrl-names = "default";
+		simple-audio-card,name = "rk817_ext";
+		simple-audio-card,aux-devs = <&spk_amp>;
+		simple-audio-card,format = "i2s";
+		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,widgets =
+		"Microphone", "Mic Jack",
+		"Headphone", "Headphones",
+		"Speaker", "Internal Speakers";
+		simple-audio-card,routing =
+		"MICL", "Mic Jack",
+		"Headphones", "HPOL",
+		"Headphones", "HPOR",
+		"Internal Speakers", "Speaker Amp OUTL",
+		"Internal Speakers", "Speaker Amp OUTR",
+		"Speaker Amp INL", "HPOL",
+		"Speaker Amp INR", "HPOR";
+		simple-audio-card,pin-switches = "Internal Speakers";
 
-        simple-audio-card,codec {
-            sound-dai = <&rk817>;
-        };
+		simple-audio-card,codec {
+		sound-dai = <&rk817>;
+		};
 
-        simple-audio-card,cpu {
-            sound-dai = <&i2s1_2ch>;
-        };
-    };
+		simple-audio-card,cpu {
+		sound-dai = <&i2s1_2ch>;
+		};
+	};
 
-    spk_amp: audio-amplifier {
-        compatible = "simple-audio-amplifier";
-        enable-gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_HIGH>;
-        pinctrl-0 = <&spk_amp_enable_h>;
-        pinctrl-names = "default";
-        sound-name-prefix = "Speaker Amp";
-    };
+	spk_amp: audio-amplifier {
+		compatible = "simple-audio-amplifier";
+		enable-gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&spk_amp_enable_h>;
+		pinctrl-names = "default";
+		sound-name-prefix = "Speaker Amp";
+	};
 
 	wifi_pwrseq: wifi-pwrseq {
 		compatible = "mmc-pwrseq-simple";
@@ -275,24 +278,24 @@
 		reset-gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_LOW>;
 	};
 
-    battery: battery {
-        compatible = "simple-battery";
-        charge-full-design-microamp-hours = <3000000>;
-        charge-term-current-microamp = <300000>;
-        constant-charge-current-max-microamp = <1500000>;
-        constant-charge-voltage-max-microvolt = <4200000>;
-        factory-internal-resistance-micro-ohms = <180000>;
-        voltage-max-design-microvolt = <4100000>;
-        voltage-min-design-microvolt = <3400000>;
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <3000000>;
+		charge-term-current-microamp = <300000>;
+		constant-charge-current-max-microamp = <1500000>;
+		constant-charge-voltage-max-microvolt = <4200000>;
+		factory-internal-resistance-micro-ohms = <180000>;
+		voltage-max-design-microvolt = <4100000>;
+		voltage-min-design-microvolt = <3400000>;
 
-        ocv-capacity-celsius = <20>;
-        ocv-capacity-table-0 =	<4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
-                                <3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
-                                <3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
-                                <3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
-                                <3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
-                                <3574170 0>;
-    };
+		ocv-capacity-celsius = <20>;
+		ocv-capacity-table-0 =	<4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
+					<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
+					<3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
+					<3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
+					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+					<3574170 0>;
+	};
 
 	vccsys: vccsys {
 		compatible = "regulator-fixed";
@@ -300,19 +303,6 @@
 		regulator-always-on;
 		regulator-min-microvolt = <3800000>;
 		regulator-max-microvolt = <3800000>;
-	};
-
-	vcc_host: vcc_host {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc_host";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-
-		gpio = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-		regulator-always-on;
-		regulator-boot-on;
-		vin-supply = <&usb_midu>;
 	};
 };
 
@@ -362,13 +352,12 @@
     };
 
     internal_display: panel@0 {
-        compatible = "gameforce,st7703";
         reg = <0>;
+        compatible = "gameforce,chi-panel";
         backlight = <&backlight>;
-        reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
-        rotation = <0>;
         iovcc-supply = <&vcc_lcd>;
-		vdd-supply = <&vcc_lcd>;
+		vcc-supply = <&vcc_lcd>;
+        reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
 
         port {
             mipi_in_panel: endpoint {
@@ -578,9 +567,10 @@
 		};
 
 		rk817_charger: charger {
-			rockchip,resistor-sense-micro-ohms = <10000>;
-			rockchip,sleep-enter-current-microamp = <300000>;
-			rockchip,sleep-filter-current-microamp = <100000>;
+            monitored-battery = <&battery>;
+            rockchip,resistor-sense-micro-ohms = <10000>;
+            rockchip,sleep-enter-current-microamp = <300000>;
+            rockchip,sleep-filter-current-microamp = <100000>;
 		};
 	};
 };
@@ -712,8 +702,6 @@
 };
 /*
 &uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts>;
 	status = "okay";
 };
 */
@@ -736,10 +724,6 @@
 
 &vopb_mmu {
 	status = "okay";
-};
-
-&rk817_charger {
-	monitored-battery = <&battery>;
 };
 
 &pinctrl {
