@@ -149,6 +149,8 @@ class Rpcs3Generator(Generator):
                             discrete_name = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteName"], text=True).strip()
                             if discrete_name != "":
                                 eslog.debug("Using Discrete GPU Name: {} for RPCS3".format(discrete_name))
+                                if "Vulkan" not in rpcs3ymlconfig["Video"]:
+                                    rpcs3ymlconfig["Video"]["Vulkan"] = {}
                                 rpcs3ymlconfig["Video"]["Vulkan"]["Adapter"] = discrete_name
                             else:
                                 eslog.debug("Couldn't get discrete GPU Name")
