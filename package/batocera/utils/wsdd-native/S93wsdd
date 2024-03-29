@@ -1,0 +1,114 @@
+#!/bin/sh
+#
+# 93wsdd - init.d script for WSDD on Batocera
+# "I haven't written a straight init.d script in 2 decades" Edition
+# (c) 2023 Jay Moore - dewdude@pickmy.org - Now With More Gross Hacks!
+# Distributed under the terms of the MIT license
+#
+# Modified by n2qz and other Batocera contributors, for inclusion in
+# Batocera.
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="wsdd"
+NAME=wsdd
+DAEMON=/usr/bin/wsdd
+PIDFILE=/var/run/wsdd.pid
+LOG_FILE=/userdata/system/logs/wsdd.log
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Function that starts the daemon/service
+do_start() {
+    smbenabled="$(/usr/bin/batocera-settings-get system.samba.enabled)"
+    if [ "$smbenabled" = "0" ]; then
+        echo "SMB services: disabled"
+        exit 0
+    fi
+    securityenabled="$(/usr/bin/batocera-settings-get system.security.enabled)"
+    if [ "$securityenabled" = "1" ]; then
+        SMB_CONFIG_FILE="/etc/samba/smb-secure.conf"
+    else
+        SMB_CONFIG_FILE="/etc/samba/smb.conf"
+    fi
+
+    # wssd-native requires username, use root
+    OPTS="-U root"
+    # wssd-native needs to be run as unix daemon
+    OPTS="--unixd ${OPTS}"
+
+    # try to extract workgroup with Samba's testparm
+    if which testparm >/dev/null 2>/dev/null; then
+        GROUP="$(testparm -s --parameter-name workgroup "${SMB_CONFIG_FILE}" 2>/dev/null)"
+    fi
+
+    # fallback to poor man's approach if testparm is unavailable or failed for some reason
+    if [ -z "$GROUP" ] && [ -r "${SMB_CONFIG_FILE}" ]; then
+       GROUP="$(grep -i '^\s*workgroup\s*=' ${SMB_CONFIG_FILE} | cut -f2 -d= | tr -d '[:blank:]')"
+    fi
+
+    if [ -n "${GROUP}" ]; then
+        OPTS="-W ${GROUP} ${OPTS}"
+    fi
+
+    start-stop-daemon --start --background --make-pidfile --pidfile "${PIDFILE}" --output "${LOG_FILE}" --exec ${DAEMON} -- ${OPTS}
+}
+
+# Function that stops the daemon/service
+do_stop() {
+    start-stop-daemon --stop --remove-pidfile --pidfile "${PIDFILE}"
+}
+
+case "$1" in
+    start)
+        echo "Starting $DESC: $NAME"
+        do_start
+        RETVAL=$?
+        echo done
+        exit $RETVAL
+        ;;
+    stop)
+        echo "Stopping $DESC: $NAME"
+        do_stop
+        RETVAL=$?
+        echo done
+        exit $RETVAL
+        ;;
+    restart|force-reload)
+        echo "Restarting $DESC: $NAME"
+        do_stop
+        sleep 1
+        do_start
+        RETVAL=$?
+        echo done
+        exit $RETVAL
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|force-reload}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0
+
+
+#MIT License
+#Copyright (c) 2023 Jay Moore
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
