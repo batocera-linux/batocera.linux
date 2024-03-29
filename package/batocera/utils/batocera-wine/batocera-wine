@@ -25,25 +25,53 @@ if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
 fi
 echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
-# Wine Folder
-wine_folder() {
+find_wine_dir() {
+    local WINE_VERSION="$1"
     # check if we're using a custom wine runner
     if [[ "$WINE_VERSION" != "ge-custom" ]]; then
         # now check if the folder exists
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "/userdata/system/wine/custom"
         else
-            exit 1
+            WINE_VERSION="ge-custom"
+            if [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
+                echo "/usr/wine"
+            else
+                return 1
+            fi
         fi
     elif [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
         echo "/usr/wine"
     else
-        exit 1
+        return 1
+    fi
+}
+
+update_wine_version() {
+    local WINE_VERSION="$1"
+    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+        if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
+            echo "$WINE_VERSION"
+        else
+            WINE_VERSION="ge-custom"
+            echo "$WINE_VERSION"
+        fi
+    else
+        echo "$WINE_VERSION"
     fi
 }
 
 ## Wine executables
-DIR="$(wine_folder)" || { echo "can't find WINE version ${WINE_VERSION} directory"; exit 1; }
+DIR="$(find_wine_dir "$WINE_VERSION")"
+if [[ $? -eq 0 ]]; then
+    WINE_VERSION="$(update_wine_version "$WINE_VERSION")"
+else
+    echo "can't find WINE version ${WINE_VERSION} directory, you should change the runner"
+    exit 1
+fi
+
+echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
+
 USER_DIR="/userdata/system/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
