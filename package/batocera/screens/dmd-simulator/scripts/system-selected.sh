@@ -29,7 +29,7 @@ then
 	    dmd-play ${DMDOPT} -f "${HPATH}" && exit 0 # success
 	else
 	    mkdir -p "/var/run/dmd-simulator/cache"
-	    if convert -background black "${LOGO}" -resize 300x300 "${HPATH}" # try to cache
+	    if rsvg-convert --width=300 --height=300 --keep-aspect-ratio --output="${HPATH}" "${LOGO}" -b black # try to cache
 	    then
 		dmd-play ${DMDOPT} -f "${HPATH}" && exit 0 # success
 	    fi
