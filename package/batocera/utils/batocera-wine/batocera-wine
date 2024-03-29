@@ -27,13 +27,11 @@ echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
 # Wine Folder
 wine_folder() {
-    # check if custom wine runner
-    if [[ "$WINE_VERSION" == "custom" ]]; then
+    # check if we're using a custom wine runner
+    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
         # now check if the folder exists
-        if [[ -e "/userdata/system/wine/${WINE_VERSION}" ]]; then
-            echo "/userdata/system/wine"
-        elif [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
-            echo "/usr/wine"
+        if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
+            echo "/userdata/system/wine/custom"
         else
             exit 1
         fi
