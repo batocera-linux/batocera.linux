@@ -1,0 +1,43 @@
+diff --git a/cmd/hwrev.c b/cmd/hwrev.c
+index 640397e..18c1956 100644
+--- a/cmd/hwrev.c
++++ b/cmd/hwrev.c
+@@ -22,22 +22,32 @@ int do_hwrev(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ 	/* GO2 rev 1.1 */
+ 	if (check_range(655, 695, hwrev_adc)) {
+ 		env_set("hwrev", "v11");
+-		env_set("dtb_name", "rk3326-odroidgo2-linux-v11.dtb");
++		env_set("dtb_name", "rk3326-odroid-go2-v11.dtb");
+ 	}
+ 	/* GO2 rev 1.0 */
+-	else if (check_range(816, 896, hwrev_adc)) {
++	else if (check_range(851, 860, hwrev_adc)) {
+ 		env_set("hwrev", "v10");
+-		env_set("dtb_name", "rk3326-odroidgo2-linux.dtb");
++		env_set("dtb_name", "rk3326-odroid-go2.dtb");
+ 	}
+ 	/* GO3 rev 1.0 */
+ 	else if (check_range(40, 126, hwrev_adc)) {
+ 		env_set("hwrev", "v10-go3");
+-		env_set("dtb_name", "rk3326-odroidgo3-linux.dtb");
++		env_set("dtb_name", "rk3326-odroid-go3.dtb");
++	}
++	/* GameForce Chi rev 1.1 */
++	else if (check_range(501, 510, hwrev_adc)) {
++		env_set("hwrev", "v11");
++		env_set("dtb_name", "rk3326-gameforce-chi.dtb");
++	}
++	/* Ambernic RG351V rev 0.2 */
++	else if (check_range(511, 520, hwrev_adc)) {
++		env_set("hwrev", "v02");
++		env_set("dtb_name", "rk3326-anbernic-rg351v.dtb");
+ 	}
+ 	/* engineer samples */
+ 	else {
+-		env_set("hwrev", "v00");
+-		env_set("dtb_name", "rk3326-odroidgo2-linux.dtb");
++		env_set("hwrev", "v01");
++		env_set("dtb_name", "rk3326-anbernic-rg351m.dtb");
+ 	}
+ 
+ 	printf("adc0 (hw rev) %d\n", hwrev_adc);
