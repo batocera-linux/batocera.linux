@@ -82,15 +82,18 @@ WINETRICKS="${DIR}/winetricks"
 ## Folders
 WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
 G_ROMS_DIR="/userdata/roms/${SYSTEM}"
-
+# Check lib64 directory
 if [[ -e "${DIR}/${WINE_VERSION}/lib64/wine" ]]; then
     WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
 else
     WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib/wine"
 fi
-
-WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
-
+# Check lib32 directory
+if [[ -e "${DIR}/${WINE_VERSION}/lib32/wine" ]]; then
+    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib32/wine"
+else
+    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+fi
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
@@ -461,6 +464,7 @@ createWineDirectory() {
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname; then
 	    rm -rf "${WINEPREFIX}"
 	    kill -15 "${BSODPID}"
+        echo "+++ Failed initialising ${WINEPREFIX} +++"
 	    return 1
     fi
 
