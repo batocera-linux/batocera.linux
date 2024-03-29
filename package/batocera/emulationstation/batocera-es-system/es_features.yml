@@ -10901,10 +10901,8 @@ wine:
   cfeatures:
         wine-runner:
             prompt: WINE RUNNER
-            description: Runners simplify compatibility of running Windows games. If choosing Custom, you must have a runner in /userdata/system/wine/custom.
-            choices:
-                "Glorius Eggroll Proton (Default)": "ge-custom"
-                "User Provided Runner":             "custom"
+            description: Runners simplify compatibility of running Windows games. You must have a runner in it's own directory under /userdata/system/wine/custom.
+            preset: runners
         dxvk:
             prompt: DXVK FEATURE
             description: Converts DirectX 8/9/10/11/12 calls to Vulkan.
