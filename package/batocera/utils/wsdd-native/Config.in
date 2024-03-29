@@ -1,0 +1,10 @@
+config BR2_PACKAGE_WSDD_NATIVE
+        bool "wsdd-native"
+	select BR2_HOST_CMAKE_AT_LEAST_3_26
+
+        help
+          wsdd implements a Web Service Discovery host daemon. This
+          enables (Samba) hosts, like your local NAS device, to be
+          found by Web Service Discovery Clients like Windows.
+
+          https://github.com/gershnik/wsdd-native
