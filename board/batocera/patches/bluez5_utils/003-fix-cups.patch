@@ -1,0 +1,50 @@
+From e679b29bcf4890d61294e4110bace5f783632e5a Mon Sep 17 00:00:00 2001
+From: Rudi Heitbaum <rudi@heitbaum.com>
+Date: Sat, 9 Mar 2024 08:55:24 +0000
+Subject: [PATCH] Revert "build: Fix distcheck"
+
+This reverts commit d5a9195a6269e703c6e3a47c40982ec94d8cc838.
+---
+ Makefile.tools | 6 +-----
+ configure.ac   | 8 +-------
+ 2 files changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/Makefile.tools b/Makefile.tools
+index 27a753762..c17244677 100644
+--- a/Makefile.tools
++++ b/Makefile.tools
+@@ -539,11 +539,7 @@ endif
+ 
+ if CUPS
+ 
+-if CUPS_SERVERBIN
+-cupsdir = $(CUPS_SERVERBIN)/backend
+-else
+-cupsdir = $(libdir)/cups/backend
+-endif
++cupsdir = $(CUPSDIR)
+ 
+ cups_PROGRAMS = profiles/cups/bluetooth
+ 
+diff --git a/configure.ac b/configure.ac
+index 9ebc250cf..0190e8271 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -247,13 +247,7 @@ AC_ARG_ENABLE(cups, AS_HELP_STRING([--disable-cups],
+                 [disable CUPS printer support]), [enable_cups=${enableval}])
+ AM_CONDITIONAL(CUPS, test "${enable_cups}" != "no")
+ if (test "${enable_cups}" != "no"); then
+-	AC_MSG_CHECKING([cups directory])
+-	cups_serverbin=`$PKG_CONFIG cups --variable=cups_serverbin`
+-	AM_CONDITIONAL(CUPS_SERVERBIN, test "${cups_serverbin}" != "")
+-	if (test "${cups_serverbin}" != ""); then
+-		AC_SUBST(CUPS_SERVERBIN, ${cups_serverbin})
+-	fi
+-	AC_MSG_RESULT([${cups_serverbin}])
++   AC_SUBST(CUPSDIR, `$PKG_CONFIG cups --variable=cups_serverbin`/backend)
+ fi
+ 
+ AC_ARG_ENABLE(mesh, AS_HELP_STRING([--enable-mesh],
+-- 
+2.43.0
+
