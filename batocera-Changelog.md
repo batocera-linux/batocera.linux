@@ -98,6 +98,7 @@ Initial support for the Lenovo Legion Go
 - Buildroot to 2024.02.1
 - Xpad-Noone to Jan 10, 2024
 - XpadNeo to Mar 11, 2024
+- Xone to Mar 30, 2024
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
