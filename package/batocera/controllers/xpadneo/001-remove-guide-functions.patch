@@ -2,7 +2,7 @@ diff --git a/hid-xpadneo/src/hid-xpadneo.c b/hid-xpadneo/src/hid-xpadneo.c
 index 0417c2c996..7f0206fa2e 100644
 --- a/hid-xpadneo/src/hid-xpadneo.c
 +++ b/hid-xpadneo/src/hid-xpadneo.c
-@@ -919,62 +919,6 @@ static int xpadneo_event(struct hid_device *hdev, struct hid_field *field,
+@@ -940,62 +940,6 @@ static int xpadneo_event(struct hid_device *hdev, struct hid_field *field,
  			xdata->last_abs_rz = value;
  			goto combine_z_axes;
  		}
@@ -35,7 +35,7 @@ index 0417c2c996..7f0206fa2e 100644
 -		if (!keyboard)
 -			goto keyboard_missing;
 -		input_report_key(keyboard, BTN_SHARE, value);
--		input_sync(keyboard);
+-		xdata->keyboard_sync = true;
 -		goto stop_processing;
 -	} else if (xdata->xbox_button_down && (usage->type == EV_KEY)) {
 -		if (!(xdata->quirks & XPADNEO_QUIRK_USE_HW_PROFILES)) {
