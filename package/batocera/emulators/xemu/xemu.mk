@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.7.118
+XEMU_VERSION = v0.7.120
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -82,9 +82,9 @@ define XEMU_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
 		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-                CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-                PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-                PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+		    CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+            PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+            PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
 		$(MAKE) -C $(@D)
 endef
 
@@ -95,12 +95,14 @@ define XEMU_INSTALL_TARGET_CMDS
 	# XEmu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
-	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d $(TARGET_DIR)/usr/share/xemu/data
+	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d \
+	    $(TARGET_DIR)/usr/share/xemu/data
 endef
 
 define XEMU_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 XEMU_POST_INSTALL_TARGET_HOOKS += XEMU_EVMAPY
