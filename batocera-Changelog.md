@@ -78,6 +78,7 @@ Initial support for the Lenovo Legion Go
 - Solarus-engine: bump to Mar 10, 2024 build
 - Cemu to v2.0-72
 - Sonic3-AIR to v24.02.02.0-stable
+- Ruffle to 2024-03-28
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
