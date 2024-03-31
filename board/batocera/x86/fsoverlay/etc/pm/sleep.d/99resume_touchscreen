@@ -5,7 +5,7 @@ case "$1" in
         if test -z "${DISPLAY}"; then
             export DISPLAY=:0.0
         fi
-        CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
+        CURRENT_ROTATION=$(batocera-resolution getRotation)
         if [ "${CURRENT_ROTATION}" != "0" ]; then
             bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
             if test -z "${bootresolution}"; then
