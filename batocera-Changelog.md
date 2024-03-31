@@ -1,6 +1,9 @@
 # 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
-
+- Due to legal advice we have removed Nintendo systems from our operating system.
+  Whilst we can't disclose the full nature of the dispute, please note the team is deeply saddened on having to do this action.
+  Further details will be provided in due course.
+- As per our moto: Observa Diem Aprilis Stultorum
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)

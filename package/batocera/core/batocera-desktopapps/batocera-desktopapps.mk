@@ -21,20 +21,6 @@ ifeq ($(BR2_PACKAGE_PCSX2),y)
   BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
 endif
 
-# dolphin
-ifeq ($(BR2_PACKAGE_DOLPHIN_EMU)$(BR2_PACKAGE_XORG7),yy)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
-  BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
-endif
-
-# dolphin-triforce
-ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin-triforce
-  BATOCERA_DESKTOPAPPS_APPS    += dolphin-triforce-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += dolphin-triforce.png
-endif
-
 # duckstation
 ifeq ($(BR2_PACKAGE_DUCKSTATION),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-duckstation
@@ -70,25 +56,11 @@ ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
 endif
 
-# citra
-ifeq ($(BR2_PACKAGE_CITRA),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
-  BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += citra.png
-endif
-
 # rpcs3
 ifeq ($(BR2_PACKAGE_RPCS3),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-rpcs3
   BATOCERA_DESKTOPAPPS_APPS    += rpcs3-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += rpcs3.png
-endif
-
-# cemu
-ifeq ($(BR2_PACKAGE_CEMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-cemu
-  BATOCERA_DESKTOPAPPS_APPS    += cemu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
 endif
 
 # fpinball
@@ -110,32 +82,11 @@ ifeq ($(BR2_PACKAGE_BAUH),y)
   BATOCERA_DESKTOPAPPS_APPS    += flatpak-config.desktop
 endif
 
-# yuzu
-ifeq ($(BR2_PACKAGE_YUZU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-yuzu
-  BATOCERA_DESKTOPAPPS_APPS    += yuzu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += yuzu.png
-endif
-
-# ryujinx
-ifeq ($(BR2_PACKAGE_RYUJINX),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-ryujinx
-  BATOCERA_DESKTOPAPPS_APPS    += ryujinx-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += ryujinx.png
-endif
-
 # demul
 ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-demul
   BATOCERA_DESKTOPAPPS_APPS    += demul-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += demul.png
-endif
-
-# melonds
-ifeq ($(BR2_PACKAGE_DEMUL),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-melonds
-  BATOCERA_DESKTOPAPPS_APPS    += melonds-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
 endif
 
 # xenia

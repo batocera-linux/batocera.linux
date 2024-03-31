@@ -1,39 +1,3 @@
-snes:
-  name:       Super Nintendo Entertainment System
-  manufacturer: Nintendo
-  release: 1990
-  hardware: console
-  extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
-  group:      snes
-  emulators:
-    libretro:
-      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
-      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]    }
-      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]      }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:snes
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:snes
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:snes
-
-snes-msu1:
-  name:       Super Disc System (MSU1)
-  manufacturer: Nintendo
-  release: 1991
-  hardware: console
-  extensions: [smc, sfc]
-  group:      snes
-  emulators:
-    libretro:
-      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]}
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]    }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
-
 c64:
   name:       Commodore 64
   manufacturer: Commodore
@@ -190,204 +154,6 @@ amigacdtv:
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
       uae4arm:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE4ARM] }
 
-nes:
-  name:       Nintendo Entertainment System
-  manufacturer: Nintendo
-  release: 1983
-  hardware: console
-  extensions: [nes, unif, unf, zip, 7z]
-  group:      nes
-  emulators:
-    libretro:
-      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
-      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:nes
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:nes
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:nes
-
-n64:
-  name:       Nintendo 64
-  manufacturer: Nintendo
-  release: 1996
-  hardware: console
-  extensions: [z64, n64, v64, zip, 7z]
-  emulators:
-    mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64], incompatible_extensions: [zip, 7z] }
-      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2], incompatible_extensions: [zip, 7z] }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE], incompatible_extensions: [zip, 7z] }
-    libretro:
-      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
-      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
-  comment_en: |
-    If Mupen64Plus standalone cannot load your zipped ROMs (black screen, then return to menu), try unzipping your ROMs.
-    For more info: https://wiki.batocera.org/systems:n64
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:n64
-  comment_br: |
-    Caso o Mupen64Plus não carregue as ROMs compactadas em formato .zip (tela preta retornando ao menu), descompacte as ROMs e executando nos formatos .z64/.n64.
-    Para mais informações: https://wiki.batocera.org/systems:n64
-
-n64dd:
-  name:       Nintendo 64 Disk Drive
-  manufacturer: Nintendo
-  release: 1999
-  hardware: console
-  extensions: [z64, n64, zip, 7z] # ndd, d64 : Not supported yet
-  emulators:
-    mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
-      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
-    libretro:
-      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
-      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
-
-gba:
-  name:       Game Boy Advance
-  manufacturer: Nintendo
-  release: 2001
-  hardware: portable
-  extensions: [gba, zip, 7z]
-  emulators:
-    libretro:
-      mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
-      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
-      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:gba
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gba
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gba
-
-gbc:
-  name:       Game Boy Color
-  manufacturer: Nintendo
-  release: 1998
-  hardware: portable
-  extensions: [gbc, zip, 7z]
-  emulators:
-    libretro:
-      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
-      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
-      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
-      mesen-s:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:gbc
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gbc
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gbc
-
-gb:
-  name:       Game Boy
-  manufacturer: Nintendo
-  release: 1989
-  hardware: portable
-  extensions: [gb, zip, 7z]
-  emulators:
-    libretro:
-      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
-      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
-      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
-      mesen-s:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:gb
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gb
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gb
-
-sgb:
-  name:       Super Game Boy
-  manufacturer: Nintendo
-  release: 1994
-  hardware: console
-  extensions: [gb, gbc, zip, 7z]
-  group:      snes
-  emulators:
-    libretro:
-      mgba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
-      mesen-s:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
-
-gbc2players:
-  name:       Game Boy Color (2 players)
-  manufacturer: Nintendo
-  release: 1998
-  hardware: portable
-  extensions: [gbc, gb2, gbc2, zip, 7z]
-  platform:   gbc
-  emulators:
-    libretro:
-      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:gbc2players
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gbc2players
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gbc2players
-
-gb2players:
-  name:       Game Boy (2 players)
-  manufacturer: Nintendo
-  release: 1989
-  hardware: portable
-  extensions: [gb, gb2, gbc2, zip, 7z]
-  platform:   gb
-  emulators:
-    libretro:
-      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:gb2players
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gb2players
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gb2players
-
-nds:
-  name:       Nintendo DS
-  manufacturer: Nintendo
-  release: 2004
-  hardware: portable
-  extensions: [nds, bin, zip, 7z]
-  emulators:
-    libretro:
-      desmume:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
-      melonds:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
-      melondsds:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS_DS] }
-    melonds:
-      melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
-    drastic:
-      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
-
-fds:
-  name:       Family Computer Disk System
-  manufacturer: Nintendo
-  release: 1986
-  hardware: console
-  extensions: [fds, zip, 7z]
-  group:      nes
-  emulators:
-    libretro:
-      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
-      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
-
-virtualboy:
-  name:       Virtual Boy
-  manufacturer: Nintendo
-  release: 1995
-  hardware: console
-  extensions: [vb, zip, 7z]
-  emulators:
-    libretro:
-      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
-
 lcdgames:
   name:       LCD Games
   manufacturer: Various
@@ -397,20 +163,6 @@ lcdgames:
   group:      lcdgames
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
-    mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
-
-gameandwatch:
-  name:       Game and Watch
-  manufacturer: Nintendo
-  release: 1980
-  hardware: portable
-  extensions: [mgw, zip, 7z]
-  group:      lcdgames
-  emulators:
-    libretro:
-      gw:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW]                                   }
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [mgw]          }
@@ -1936,88 +1688,6 @@ jaguar:
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
-gamecube:
-  name:       GameCube
-  manufacturer: Nintendo
-  release: 2001
-  hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
-  platform:   gc
-  theme:      gc
-  emulators:
-    dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
-    libretro:
-      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
-  comment_en: |
-    To initiate the boot animation and access the BIOS settings.
-    Please ensure that you have the necessary BIOS file (IPL.bin) available in one of the designated locations:
-
-    - /userdata/bios/GC/EUR/IPL.bin
-    - /userdata/bios/GC/USA/IPL.bin
-    - /userdata/bios/GC/JAP/IPL.bin
-
-    You can access the BIOS settings by holding down the 'A' or 'east' button.
-    For more info: https://wiki.batocera.org/systems:gamecube
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:gamecube
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:gamecube
-
-triforce:
-  name:       Triforce
-  manufacturer: Namco, Sega, Nintendo
-  release: 2003
-  hardware: arcade
-  extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
-  platform:   triforce, arcade
-  emulators:
-    dolphin_triforce:
-      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
-  comment_en: |
-    Triforce is an arcade machine based on the GameCube's hardware. This build only supports certain games.
-    Playable - Mario Kart GP 1, Mario Kart GP 2 (after loading save state).
-    Intro - F-Zero AX, Virtua Striker 2002.
-    Nothing - All other Triforce games.
-
-    For the most up-to-date information and questions about manual save state download, visit https://wiki.batocera.org/systems:triforce
-
-wii:
-  name:       Wii
-  manufacturer: Nintendo
-  release: 2006
-  hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
-  emulators:
-    dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
-    libretro:
-      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
-  comment_en: |
-    To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
-    You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
-        for example, to play mariokart wii, rename it mario_kart.side.ti.iso (to get the tilt on the first axis and infrared on the 2nd one (ti))
-        for example, to play mario galaxy, rename it mario_galaxy.ni.iso (got get the nunchuk on the first axis and infrared on the 2nd one (ni))
-    To use custom textures, put them in /userdata/saves/dolphin-emu/Load/Textures/<game id>.
-
-    For more info: https://wiki.batocera.org/systems:wii
-  comment_fr: |
-    Pour utiliser une wiimote virtuelle en mode horizontal, il faut rajouter ".side." dans le nom du fichier (par exemple ".side.iso").
-    Vous pouvez également choisir quels axes contrôler parmi i(nfra rouge), s(wing), t(ilt) ou n(unchuk) :
-        par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
-        par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
-    Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
-
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:wii
-  comment_br: |
-    Para usar um wiimote virtual na horizontal, inclua ".side". no nome do arquivo da rom do jogo (por exemplo ".side.iso").
-    Você pode escolher os controles de eixo entre i(nfrared), s(wing), t(ilt) ou n(unchuk):
-        por exemplo, para jogar mariokart wii, renomeie-o como mario_kart.side.ti.iso (para obter a inclinação no primeiro eixo e o infravermelho no 2º (ti))
-        por exemplo, para jogar mario galaxy, renomeie-o como mario_galaxy.ni.iso (pegue o nunchuk no primeiro eixo e o infravermelho no 2º (ni))
-    Para usar texturas personalizadas, coloque-as em /userdata/saves/dolphin-emu/Load/Textures/<game id>.
-
-    Para mais informações: https://wiki.batocera.org/systems:wii
-
 ps2:
   name:       PlayStation 2
   manufacturer: Sony
@@ -2109,18 +1779,6 @@ x1:
     libretro:
       x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
 
-3ds:
-  name:       3DS
-  manufacturer: Nintendo
-  release: 2011
-  hardware: portable
-  extensions: [3ds, 3dsx, cxi, axf, elf]
-  emulators:
-    citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
-    libretro:
-      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
-
 openbor:
   name: OpenBOR
   manufacturer: Ports
@@ -2141,40 +1799,6 @@ openbor:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:openbor
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:openbor
-
-satellaview:
-  name:       Satellaview
-  manufacturer: Nintendo
-  release: 1995
-  hardware: console
-  extensions: [bs, smc, sfc, zip, 7z]
-  group:      snes
-  emulators:
-    libretro:
-      pocketsnes:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
-      snes9x:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]     }
-      mesen-s:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]     }
-
-sufami:
-  name:       SuFami Turbo
-  manufacturer: Bandai
-  release: 1996
-  hardware: console
-  extensions: [st, fig, bs, smc, sfc, zip, 7z]
-  group:      snes
-  emulators:
-    libretro:
-      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-
-pokemini:
-  name:       Pokemon Mini
-  manufacturer: Nintendo
-  release: 2001
-  hardware: portable
-  extensions: [min, zip, 7z]
-  emulators:
-    libretro:
-      pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
 gx4000:
   name:       GX4000
@@ -2384,24 +2008,6 @@ xash3d_fwgs:
     para /userdata/roms/xash3d_fwgs/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
 
     Para Half-Life 1, a pasta do jogo é `valve/`.
-
-wiiu:
-  name:       Wii U
-  manufacturer: Nintendo
-  release: 2012
-  hardware: console
-  extensions: [wua, wup, wud, wux, rpx, squashfs]
-  platform:   wiiu
-  theme:      wiiu
-  emulators:
-    cemu:
-      cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:wiiu
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:wiiu
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:wiiu
 
 solarus:
   name:       Solarus
@@ -3491,20 +3097,6 @@ superbroswar:
     Super Mario War - écrasez vos adversaires dans ce jeu multijoueurs compétitif.
   comment_br: |
      Super Mario War - esmague os adversários pisando neles, em um divertido jogo multijogador.
-
-switch:
-  name:       Switch
-  manufacturer: Nintendo
-  release: 2017
-  hardware: console
-  platform:   switch
-  theme:      switch
-  extensions: [xci, nsp]
-  emulators:
-    yuzu:
-      yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
-    ryujinx:
-      ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
   name: Quake II
