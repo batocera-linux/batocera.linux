@@ -1058,6 +1058,8 @@
         interrupts = <RK_PD7 IRQ_TYPE_EDGE_FALLING>;
         irq-gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
         reset-gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
+        touchscreen-inverted-x;
+        touchscreen-swapped-x-y;
         touchscreen-size-x = <1152>;
         touchscreen-size-y = <1920>;
         status = "okay";
