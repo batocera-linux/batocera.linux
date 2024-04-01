@@ -34,12 +34,48 @@ def getCurrentMode():
     for val in out.decode().splitlines():
         return val # return the first line
 
+def getScreensInfos(config):
+    resolution1 = getCurrentResolution()
+    outputs = getScreens()
+
+    res = []
+    res.append({"width": resolution1["width"], "height": resolution1["height"], "x": 0, "y": 0})
+
+    if "videooutput2" not in config or len(outputs) <= 1:
+        eslog.debug("Screens:")
+        eslog.debug(res)
+        return res
+
+    resolution2 = getCurrentResolution(config["videooutput2"])
+    res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+
+    if "videooutput3" not in config or len(outputs) <= 2:
+        eslog.debug("Screens:")
+        eslog.debug(res)
+        return res
+
+    resolution3 = getCurrentResolution(config["videooutput3"])
+    res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+
+    eslog.debug("Screens:")
+    eslog.debug(res)
+    return res
+
+def getScreens():    
+    proc = subprocess.Popen(["batocera-resolution listOutputs"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    return out.decode().splitlines()
+
 def minTomaxResolution():
     proc = subprocess.Popen(["batocera-resolution minTomaxResolution"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 
-def getCurrentResolution():
-    proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
+def getCurrentResolution(name = None):
+    if name is None:
+        proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
+    else:
+        proc = subprocess.Popen(["batocera-resolution --screen {} currentResolution".format(name)], stdout=subprocess.PIPE, shell=True)
+
     (out, err) = proc.communicate()
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }

@@ -54,6 +54,15 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# use for syntax only
+PSCREEN=
+if test "${1}" = "--screen"
+then
+    shift
+    PSCREEN=$1
+    shift
+fi
+
 ACTION=$1
 shift
 

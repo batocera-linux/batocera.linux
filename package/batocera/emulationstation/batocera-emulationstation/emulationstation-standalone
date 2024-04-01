@@ -35,11 +35,15 @@ do
     if test -e "/var/run/switch_screen_request"
     then
         settings_output=$(cat "/var/run/switch_screen_request")
+	settings_output2=
+	settings_output3=
         rm "/var/run/switch_screen_request"
     else
-	    settings_output="$(batocera-settings-get global.videooutput)"
+	settings_output="$(batocera-settings-get global.videooutput)"
+	settings_output2="$(batocera-settings-get global.videooutput2)"
+	settings_output3="$(batocera-settings-get global.videooutput3)"
     fi
-    batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
+    batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
     ###################
 
     ### rotation ###
@@ -66,9 +70,29 @@ do
             EXTRA_OPTS="--screenrotate ${display_rotate}"
         fi
     fi
+
+    # other screens
+    if test -n "${settings_output2}"
+    then
+	display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
+	fi
+    fi
+    if test -n "${settings_output3}"
+    then
+	display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
+	fi
+    fi
     ###################
 
     ### resolution ###
+    ## the resolution for the first screen is on the boot file so that it is easier to change it
+    ## it is not needed for other screens
     bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
     if test -z "${bootresolution}"
     then
@@ -76,6 +100,29 @@ do
     else
 	    batocera-resolution setMode "${bootresolution}"
     fi
+
+    # other screens
+    if test -n "${settings_output2}"
+    then
+	bootresolution2="$(batocera-settings-get es.resolution2)"
+	if test -z "${bootresolution2}"
+	then
+	    batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
+	else
+	    batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
+	fi
+    fi
+    if test -n "${settings_output3}"
+    then
+	bootresolution3="$(batocera-settings-get es.resolution3)"
+	if test -z "${bootresolution3}"
+	then
+	    batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
+	else
+	    batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+	fi
+    fi
+    
     ###################
 
     ### keyboard ###

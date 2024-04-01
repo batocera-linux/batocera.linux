@@ -4,6 +4,20 @@ log="/userdata/system/logs/display.log"
 mpvlog="/userdata/system/logs/mpv.log"
 BOOTCONF="/boot/batocera-boot.conf"
 
+PSCREEN=
+if test "${1}" = "--screen"
+then
+    shift
+    PSCREEN=$1
+    shift
+fi
+
+# set default screen, the first one
+if test -z "${PSCREEN}"
+then
+    PSCREEN=$(xrandr --listPrimary)
+fi
+
 f_usage() {
     echo "${0} listModes" >&2
     echo "${0} setMode <MODE>" >&2
@@ -22,7 +36,7 @@ f_usage() {
 }
 
 f_minTomaxResolution() {
-    CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
+    CURRENT_ROTATION=$(xrandr --currentRotation "${PSCREEN}" | cut -c1)
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
@@ -53,11 +67,11 @@ f_minTomaxResolution() {
         fi
     fi
     
-    CURRENT_RESOLUTION=$(xrandr --currentResolution)
+    CURRENT_RESOLUTION=$(xrandr --currentResolution "${PSCREEN}")
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d 'x' -f 2)
     # get the refresh rate - very important
-    CURRENTRATE=$(xrandr --listModes | grep -E '\*$' | sed -E 's/.*\.([0-9]+\.[0-9]+) .*/\1/')
+    CURRENTRATE=$(xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -E 's/.*\.([0-9]+\.[0-9]+) .*/\1/')
     echo "Current resolution: $CURRENTWIDTH x $CURRENTHEIGHT @ $CURRENTRATE Hz" >> "$log"
 
     # did we set a resolution?
@@ -85,14 +99,14 @@ f_minTomaxResolution() {
     
     # select the new resolution with preferred refresh rate
     if [ -n "$MAXRATE" ]; then
-        xrandr --listModes | while IFS= read -r line; do
+        xrandr --listModes "${PSCREEN}" | while IFS= read -r line; do
             resolution=$(echo "$line" | awk -F'.' '{print $1}')
             rate=$(echo "$line" | grep -oE '[0-9]+\.[0-9]+' | tail -1 | tr -d "*")
             # Check if the resolution and refresh rate match the MAX values
             if echo "$resolution" | grep -q "^${MAXWIDTH}x${MAXHEIGHT}" && [ "$rate" = "$MAXRATE" ]; then
                 echo "Found & using matching resolution: $line" >> "$log"
                 PARTRES=$(echo "$line" | awk -F'.' '{print $1}')
-                OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+                OUTPUT=${PSCREEN}
                 echo "New resolution applied = Output: ${OUTPUT} Resolution: ${PARTRES} Rate: ${MAXRATE}" >> "$log"
                 xrandr --output "$OUTPUT" --mode "$PARTRES" --rate "$MAXRATE"
                 if [ "${CURRENT_ROTATION}" != "0" ]; then
@@ -103,13 +117,13 @@ f_minTomaxResolution() {
         done
     else
         # no set refresh rate so select the first valid one
-        xrandr --listModes |
+        xrandr --listModes "${PSCREEN}" |
         while read SUGGRESOLUTIONRATE SUGGMODE; do
             SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
             SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
             SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
             if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"; then
-                OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+                OUTPUT=${PSCREEN}
                 echo "Using old method = Output: ${OUTPUT} Mode: ${SUGGRESOLUTION}" >> $log
                 xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
                 if [ "${CURRENT_ROTATION}" != "0" ]; then
@@ -133,7 +147,7 @@ case "${ACTION}" in
     "listModes")
 	echo "max-1920x1080:maximum 1920x1080"
 	echo "max-640x480:maximum 640x480"
-	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
+	xrandr --listModes "${PSCREEN}" | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
     ;;
     
     "setMode")
@@ -141,7 +155,7 @@ case "${ACTION}" in
         echo "setMode: ${MODE}" >> $log
         if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
         then
-            CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
+            CURRENT_ROTATION=$(xrandr --currentRotation "${PSCREEN}" | cut -c1)
             if test "${CURRENT_ROTATION}" = 1 -o "${CURRENT_ROTATION}" = 3
             then
                 SPMODE=$(echo "${MODE}" | sed -e s+"^max-([0-9]*)x([0-9]*)$"+"\2x\1"+)
@@ -151,8 +165,8 @@ case "${ACTION}" in
             echo "f_minTomaxResolution: $SPMODE" >> $log
             f_minTomaxResolution "${SPMODE}"
         else # normal mode
-            CURRENT_ROTATION=$(xrandr --currentRotation | cut -c1)
-            OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+            CURRENT_ROTATION=$(xrandr --currentRotation "${PSCREEN}" | cut -c1)
+            OUTPUT=${PSCREEN}
             if [ -z "$OUTPUT" ]; then
                 echo "No connected output detected" >> $log
                 exit 1
@@ -182,11 +196,11 @@ case "${ACTION}" in
     ;;
     
     "currentMode")
-	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
+	xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
     ;;
     
     "currentResolution")
-	xrandr --currentResolution | tail -n1
+	xrandr --currentResolution "${PSCREEN}" | tail -n1
     ;;
     
     "listOutputs")
@@ -194,22 +208,45 @@ case "${ACTION}" in
     ;;
     
     "currentOutput")
-	xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+"*$"++
+	echo "${PSCREEN}"
     ;;
     
     "setOutput")
-	MODE=$1
-	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE}$"; then
+	MODE1=$1
+	MODE2=$2 # screen 2 (facultativ)
+	MODE3=$3 # screen 3 (facultativ)
+	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE1}$"; then # if there is at least the screen 1
 	    # disable all other outputs
-	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE}$" |
+	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE1}$|^${MODE2}$|^${MODE3}$" |
 		while read OUTP
 		do
 		    echo "set ${OUTP} off" >&2
 		    xrandr --output "${OUTP}" --off
 		done
 	    # enable (in case of reboot of es)
-	    echo "set user output: ${MODE} as primary" >&2 >> "$log"
-	    xrandr --output "${MODE}" --auto
+	    echo "set user output: ${MODE1} as primary" >&2 >> "$log"
+	    xrandr --output "${MODE1}" --auto --primary
+	    PREVIOUS_SCREEN="${MODE1}"
+
+	    # screen 2
+	    if test -n "${MODE2}"
+	    then
+		if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE2}$"; then # if there is at least the screen 2
+		    echo "set user output: ${MODE2} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
+		    xrandr --output "${MODE2}" --auto --right-of "${PREVIOUS_SCREEN}"
+		    PREVIOUS_SCREEN="${MODE2}"
+		fi
+	    fi
+
+	    # screen 3
+	    if test -n "${MODE3}"
+	    then
+		if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE3}$"; then # if there is at least the screen 3
+		    echo "set user output: ${MODE3} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
+		    xrandr --output "${MODE3}" --auto --right-of "${PREVIOUS_SCREEN}"
+		    PREVIOUS_SCREEN="${MODE3}"
+		fi
+	    fi
 	else
 	    # disable all except the first one
 	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
@@ -252,7 +289,7 @@ case "${ACTION}" in
         fi
         MODE=$(echo "$MODELINE" | egrep -v "^#" | tail -n 1 | sed "s/^Modeline //")
         MNAME=$(echo "$MODE" | cut -d' ' -f1)
-        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        OUTPUT=${PSCREEN}
         xrandr --newmode ${MODE}
         xrandr --addmode "${OUTPUT}" "${MNAME}"
         xrandr --output "${OUTPUT}" --mode "${MNAME}"
@@ -266,7 +303,7 @@ case "${ACTION}" in
         TRIES=5
         COUNT=0
         ROTATE=$1
-        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        OUTPUT=${PSCREEN}
         while [ $COUNT -lt $TRIES ]; do
             TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
             TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
@@ -303,7 +340,7 @@ case "${ACTION}" in
     ;;
 
     "getRotation")
-	    xrandr --currentRotation
+	    xrandr --currentRotation "${PSCREEN}"
     ;;
 
     "getDisplayMode")
