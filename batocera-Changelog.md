@@ -83,6 +83,7 @@ Initial support for the Lenovo Legion Go
 - Xemu to v0.7.120
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
+- PCSX2 to v1.7.5663
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
