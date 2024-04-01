@@ -1,0 +1,35 @@
+From 7023d5b29957ffaec48c2cf1f5a3a2288c576deb Mon Sep 17 00:00:00 2001
+From: Adam Green <greena88@gmail.com>
+Date: Fri, 15 Mar 2024 19:49:19 +0000
+Subject: [PATCH] arm64: dts: amlogic: meson-g12b-odroid-n2: add support for
+ gpio power off
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index 91c9769fda20..326f9d8810af 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -19,6 +19,17 @@ dio2133: audio-amplifier-0 {
+ 		status = "okay";
+ 	};
+ 
++	gpio-keys {
++		compatible = "gpio-keys-polled";
++		poll-interval = <100>;
++
++		power-button {
++			label = "power";
++			linux,code = <KEY_POWER>;
++			gpios = <&gpio GPIOX_3 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
+ 	hub_5v: regulator-hub_5v {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "HUB_5V";
+-- 
+2.34.1
+
