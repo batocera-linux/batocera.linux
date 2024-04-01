@@ -82,6 +82,7 @@ Initial support for the Lenovo Legion Go
 - Xenia Canary to build 122f58c (Commits on Mar 26, 2024)
 - Xemu to v0.7.120
 - ScummVM to 2.8.1
+- fheroes2 to 1.0.13
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
