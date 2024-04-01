@@ -14,6 +14,7 @@ import json
 import httplib2
 import time
 import shutil
+import subprocess
 
 eslog = get_logger(__name__)
 
@@ -300,10 +301,50 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, met
         pcsx2INIConfig.add_section("EmuCore/GS")
 
     # Renderer
-    if system.isOptSet('pcsx2_gfxbackend'):
-        pcsx2INIConfig.set("EmuCore/GS", "Renderer", system.config["pcsx2_gfxbackend"])
-    else:
-        pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
+    # Check Vulkan first to be sure
+    try:
+        have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+        if have_vulkan == "true":
+            eslog.debug("Vulkan driver is available on the system.")
+            renderer = "12"  # Default to OpenGL
+
+            if system.isOptSet("pcsx2_gfxbackend"):
+                if system.config["pcsx2_gfxbackend"] == "13":
+                    eslog.debug("User selected Software! Man you must have a fast CPU!")
+                    renderer = "13"
+                elif system.config["pcsx2_gfxbackend"] == "14":
+                    eslog.debug("User selected Vulkan")
+                    renderer = "14"
+                    try:
+                        have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
+                        if have_discrete == "true":
+                            eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                            try:
+                                discrete_name = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteName"], text=True).strip()
+                                if discrete_name:
+                                    eslog.debug("Using Discrete GPU Name: {} for PCSX2".format(discrete_name))
+                                    pcsx2INIConfig.set("EmuCore/GS", "Adapter", discrete_name)
+                                else:
+                                    eslog.debug("Couldn't get discrete GPU Name")
+                                    pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
+                            except subprocess.CalledProcessError as e:
+                                eslog.debug("Error getting discrete GPU Name: {}".format(e))
+                                pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
+                        else:
+                            eslog.debug("Discrete GPU is not available on the system. Using default.")
+                            pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
+                    except subprocess.CalledProcessError as e:
+                        eslog.debug("Error checking for discrete GPU: {}".format(e))
+            else:
+                eslog.debug("User selected or defaulting to OpenGL")
+            
+            pcsx2INIConfig.set("EmuCore/GS", "Renderer", renderer)
+        else:
+            eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+            pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
+    except subprocess.CalledProcessError as e:
+        eslog.debug("Error checking for Vulkan driver: {}".format(e))
+    
     # Ratio
     if system.isOptSet('pcsx2_ratio'):
         pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", system.config["pcsx2_ratio"])
