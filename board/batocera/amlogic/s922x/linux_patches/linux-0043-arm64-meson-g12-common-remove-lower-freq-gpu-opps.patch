@@ -1,0 +1,35 @@
+From 02c115905fc0a36a98ff0ebec098112185f61f26 Mon Sep 17 00:00:00 2001
+From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+Date: Thu, 1 Feb 2024 19:03:03 +0000
+Subject: [PATCH 43/46] arm64: meson: g12-common: remove lower freq gpu opps
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index b31b077bd891..2631b19d8cf6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -62,18 +62,6 @@ efuse: efuse {
+ 	gpu_opp_table: opp-table-gpu {
+ 		compatible = "operating-points-v2";
+ 
+-		opp-124999998 {
+-			opp-hz = /bits/ 64 <124999998>;
+-			opp-microvolt = <800000>;
+-		};
+-		opp-249999996 {
+-			opp-hz = /bits/ 64 <249999996>;
+-			opp-microvolt = <800000>;
+-		};
+-		opp-285714281 {
+-			opp-hz = /bits/ 64 <285714281>;
+-			opp-microvolt = <800000>;
+-		};
+ 		opp-399999994 {
+ 			opp-hz = /bits/ 64 <399999994>;
+ 			opp-microvolt = <800000>;
+-- 
+2.34.1
+

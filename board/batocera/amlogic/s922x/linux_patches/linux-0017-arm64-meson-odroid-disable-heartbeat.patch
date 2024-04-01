@@ -1,0 +1,39 @@
+From e64757346ce9b6f92bf0cfcb734ef0e42ad326fe Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Wed, 24 Jan 2024 22:22:49 +0000
+Subject: [PATCH 17/46] arm64: meson: odroid: disable heartbeat
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid.dtsi         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index 595b2a76157e..40820c49aacc 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -194,7 +194,7 @@ leds {
+ 		led-blue {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			gpios = <&gpio_ao GPIOAO_11 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
++			linux,default-trigger = "none";
+ 		};
+ 	};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid.dtsi
+index 9e12a34b2840..fd41aaad2acc 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid.dtsi
+@@ -44,7 +44,7 @@ leds {
+ 		led-blue {
+ 			label = "n2:blue";
+ 			gpios = <&gpio_ao GPIOAO_11 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
++			linux,default-trigger = "none";
+ 		};
+ 	};
+ 
+-- 
+2.34.1
+
