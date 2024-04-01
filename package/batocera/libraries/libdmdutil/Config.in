@@ -5,6 +5,7 @@ config BR2_PACKAGE_LIBDMDUTIL
     select BR2_PACKAGE_CARGS
     select BR2_PACKAGE_LIBZEDMD
     select BR2_PACKAGE_LIBSERUM
+    select BR2_PACKAGE_LIBPUPDMD
     help
       libdmdutil - A cross platform library for performing DMD tasks.
       
