@@ -100,6 +100,7 @@ Initial support for the Lenovo Legion Go
 - Xpad-Noone to Jan 10, 2024
 - XpadNeo to Mar 11, 2024
 - Xone to Mar 30, 2024
+- fdupes to 2.3.0
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
