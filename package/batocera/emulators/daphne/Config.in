@@ -7,6 +7,7 @@ config BR2_PACKAGE_DAPHNE
     select BR2_PACKAGE_LIBOGG
     select BR2_PACKAGE_LIBVORBIS
     select BR2_PACKAGE_LIBMPEG2
+    select BR2_PACKAGE_LIBZIP
     # add opencv4 dependencies for configgen
     select BR2_PACKAGE_OPENCV4
     select BR2_PACKAGE_OPENCV4_LIB_PYTHON
