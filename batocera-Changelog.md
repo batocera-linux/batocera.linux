@@ -13,6 +13,9 @@ Initial support for the Lenovo Legion Go
 - Light gun support in DuckStation (single light gun only)
 - libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
 - Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3 and libretro-pcsx-rearmed
+- support for zedmd
+- dmd server (handling any dmd supported by libdmd) integrated with vpinball
+- support for multi screens (for pincab, mame multi games)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
