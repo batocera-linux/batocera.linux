@@ -13,9 +13,9 @@ Initial support for the Lenovo Legion Go
 - Light gun support in DuckStation (single light gun only)
 - libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
 - Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3 and libretro-pcsx-rearmed
-- support for zedmd
-- dmd server (handling any dmd supported by libdmd) integrated with vpinball
-- support for multi screens (for pincab, mame multi games)
+- Support for zedmd
+- DMD server (handling any dmd supported by libdmd) integrated with vpinball
+- Support for multi screens (for pincab, mame multi games)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -105,8 +105,9 @@ Initial support for the Lenovo Legion Go
 - Xpad-Noone to Jan 10, 2024
 - XpadNeo to Mar 11, 2024
 - Xone to Mar 30, 2024
-- fdupes to 2.3.0
+- Fdupes to 2.3.0
 - FAudio to 24.03
+- Sound Open Firmware to 2023.12.1
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
