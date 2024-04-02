@@ -9744,6 +9744,13 @@ mame:
             choices:
                 "Off":             0
                 "On":              1
+        multiscreens:
+            group: ADVANCED OPTIONS
+            prompt:      MULTISCREENS
+            description: Play this game on several screens (if available)
+            choices:
+                "Off":             0
+                "On":              1
         rotation:
             prompt:      VERTICAL ROTATION (TATE)
             description: Rotates screen by 90 degrees. Intended for rotating displays.

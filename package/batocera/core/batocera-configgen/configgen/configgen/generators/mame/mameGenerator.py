@@ -20,6 +20,7 @@ from . import mameControllers
 from pathlib import Path
 import csv
 import controllersConfig
+import utils.videoMode as videoMode
 
 eslog = get_logger(__name__)
 
@@ -265,6 +266,11 @@ class MameGenerator(Generator):
         useWheels = False
         if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
             useWheels = True
+
+        if system.isOptSet('multiscreens') and system.getOptBoolean('multiscreens'):
+            screens = videoMode.getScreensInfos(system.config)
+            if len(screens) > 1:
+                commandArray += [ "-numscreens", str(len(screens)) ]
 
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
