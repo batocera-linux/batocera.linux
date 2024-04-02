@@ -260,7 +260,7 @@ case "${ACTION}" in
             
             # enable (in case of reboot of es)
             echo "set ${FIRSTOUTPUT} as primary" >&2 >> "$log"
-            xrandr --output "${FIRSTOUTPUT}" --auto
+            xrandr --output "${FIRSTOUTPUT}" --auto --primary
         )
     fi
     ;;
