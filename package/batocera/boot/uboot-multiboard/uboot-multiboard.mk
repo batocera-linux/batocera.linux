@@ -3,7 +3,12 @@
 # uboot multiboard
 #
 ################################################################################
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
+UBOOT_MULTIBOARD_VERSION = 2024.01
+else
 UBOOT_MULTIBOARD_VERSION = 2023.01
+endif
+
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
