@@ -137,80 +137,144 @@ class VPinballGenerator(Generator):
             small,medium,large=20,25,30
             x,y,width=0,0,medium
 
+            # which windows to display, and where ?
+
+            # flexdmd
+            vpinball_flexdmd_val = ""
+            if system.isOptSet("vpinball_flexdmd"):
+                vpinball_flexdmd_val = system.config["vpinball_flexdmd"]
+            if vpinball_flexdmd_val == "":
+                if len(screens) > 2:
+                    vpinball_flexdmd_val = "screen3"
+                else:
+                    vpinball_flexdmd_val = "flexdmd_disabled"
+            if len(screens) <= 1 and vpinball_flexdmd_val == "screen2":
+                vpinball_flexdmd_val = "flexdmd_disabled"
+            if len(screens) <= 2 and vpinball_flexdmd_val == "screen3":
+                vpinball_flexdmd_val = "flexdmd_disabled"
+
+            # pinmame : same as flexdmd (and both should never be displayed at the same time)
+            vpinball_pinmame_val = ""
+            if system.isOptSet("vpinball_pinmame"):
+                vpinball_pinmame_val = system.config["vpinball_pinmame"]
+            if vpinball_pinmame_val == "":
+                if len(screens) > 2:
+                    vpinball_pinmame_val = "screen3"
+                else:
+                    vpinball_pinmame_val = "pinmame_disabled"
+            if len(screens) <= 1 and vpinball_pinmame_val == "screen2":
+                vpinball_pinmame_val = "pinmame_disabled"
+            if len(screens) <= 2 and vpinball_pinmame_val == "screen3":
+                vpinball_pinmame_val = "pinmame_disabled"
+            
+            # b2s
+            vpinball_b2s_val = ""
+            if system.isOptSet("vpinball_b2s"):
+                vpinball_b2s_val = system.config["vpinball_b2s"]
+
+            if vpinball_b2s_val == "":
+                if len(screens) > 1:
+                    vpinball_b2s_val = "screen2"
+                else:
+                    vpinball_b2s_val = "b2s_disabled"
+
+            if len(screens) <= 1 and vpinball_b2s_val == "screen2":
+                vpinball_b2s_val = "b2s_disabled"
+
+            #
+            reverse_playfield_and_b2s = False
+            if system.isOptSet("vpinball_inverseplayfieldandb2s") and system.getOptBoolean("vpinball_inverseplayfieldandb2s"):
+                reverse_playfield_and_b2s = True
+
+            playFieldScreen = 0
+            backglassScreen = 1
+            if reverse_playfield_and_b2s and len(screens) > 1:
+                playFieldScreen = 1
+                backglassScreen = 0
+
+            # playfield
+            vpinballSettings.set("Player", "WindowPosX", str(screens[playFieldScreen]["x"]))
+            vpinballSettings.set("Player", "WindowPosY", str(screens[playFieldScreen]["y"]))
+            vpinballSettings.set("Player", "Width",      str(screens[playFieldScreen]["width"]))
+            vpinballSettings.set("Player", "Height",     str(screens[playFieldScreen]["height"]))
+
             # PinMame
             WindowName="PinMAMEWindow"
             Rwindow = 4/1   #Usual Ratio for this window
             # Auto default behaviour is to read values from VPinballX.ini file
             # so we don't do anything in the configgen
-            if system.isOptSet("vpinball_pinmame"):
-                if system.config["vpinball_pinmame"] =="pinmame_disabled":
-                    vpinballSettings.set("Standalone", WindowName,"0")
-                else:
-                    vpinballSettings.set("Standalone", WindowName,"1")
-                    if system.config["vpinball_pinmame"]=="pinmame_topright_small":
-                        width=small
-                        x=100-width
-                    if system.config["vpinball_pinmame"]=="pinmame_topright_medium":
-                        width=medium
-                        x=100-width
-                    if system.config["vpinball_pinmame"]=="pinmame_topright_large":
-                        width=large
-                        x=100-width
-                    if system.config["vpinball_pinmame"]=="pinmame_topleft_small":
-                        width=small
-                        x=0
-                    if system.config["vpinball_pinmame"]=="pinmame_topleft_medium":
-                        width=medium
-                        x=0
-                    if system.config["vpinball_pinmame"]=="pinmame_topleft_large":
-                        width=large
-                        x=0
-                    # apply settings
-                    height=RelativeHeightCalculate(Rscreen,Rwindow,width)
-                    vpinballSettings.set("Standalone",WindowName+"X",      ConvertToPixel(gameResolution["width"],  x))
-                    vpinballSettings.set("Standalone",WindowName+"Y",      ConvertToPixel(gameResolution["height"], y))
-                    vpinballSettings.set("Standalone",WindowName+"Width",  ConvertToPixel(gameResolution["width"],  width))
-                    vpinballSettings.set("Standalone",WindowName+"Height", ConvertToPixel(gameResolution["height"], height))
-            else:
-                # disabled by default
+            if vpinball_pinmame_val=="pinmame_disabled":
                 vpinballSettings.set("Standalone", WindowName,"0")
+            elif vpinball_pinmame_val=="screen2":
+                if vpinball_b2s_val=="screen2": # share with b2s screen ?
+                    vpinballSettings.set("Standalone", WindowName,"1")
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]+(screens[backglassScreen]["width"]-1024)//2))
+                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[backglassScreen]["y"]))
+                    vpinballSettings.set("Standalone", WindowName+"Width",  str(1024))
+                    vpinballSettings.set("Standalone", WindowName+"Height", str(256))
+                else:
+                    width  = screens[backglassScreen]["width"]
+                    height = (screens[backglassScreen]["width"] // 128 * 32)
+                    y = (screens[backglassScreen]["height"]-height)//2
+                    vpinballSettings.set("Standalone", WindowName,"1")
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]))
+                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[backglassScreen]["y"]+y))
+                    vpinballSettings.set("Standalone", WindowName+"Width",  str(width))
+                    vpinballSettings.set("Standalone", WindowName+"Height", str(height))
+            elif vpinball_pinmame_val=="screen3":
+                vpinballSettings.set("Standalone", WindowName,"1")
+                vpinballSettings.set("Standalone", WindowName+"X",      str(screens[2]["x"]))
+                vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[2]["y"]))
+                vpinballSettings.set("Standalone", WindowName+"Width",  str(screens[2]["width"]))
+                vpinballSettings.set("Standalone", WindowName+"Height", str(screens[2]["height"]))
+            else:
+                vpinballSettings.set("Standalone", WindowName,"1")
+                if vpinball_pinmame_val=="pinmame_topright_small":
+                    width=small
+                    x=100-width
+                if vpinball_pinmame_val=="pinmame_topright_medium":
+                    width=medium
+                    x=100-width
+                if vpinball_pinmame_val=="pinmame_topright_large":
+                    width=large
+                    x=100-width
+                if vpinball_pinmame_val=="pinmame_topleft_small":
+                    width=small
+                    x=0
+                if vpinball_pinmame_val=="pinmame_topleft_medium":
+                    width=medium
+                    x=0
+                if vpinball_pinmame_val=="pinmame_topleft_large":
+                    width=large
+                    x=0
+                # apply settings
+                height=RelativeHeightCalculate(Rscreen,Rwindow,width)
+                vpinballSettings.set("Standalone",WindowName+"X",ConvertToPixel(gameResolution["width"],x))
+                vpinballSettings.set("Standalone",WindowName+"Y",ConvertToPixel(gameResolution["height"],y))
+                vpinballSettings.set("Standalone",WindowName+"Width",ConvertToPixel(gameResolution["width"],width))
+                vpinballSettings.set("Standalone",WindowName+"Height",ConvertToPixel(gameResolution["height"],height))
 
             # FlexDMD
             WindowName="FlexDMDWindow"
             Rwindow=4/1   #Usual Ratio for this window
             # Auto default behaviour is to read values from VPinballX.ini file
             # so we don't do anything in the configgen
-            vpinball_flexdmd_val = ""
-            if system.isOptSet("vpinball_flexdmd"):
-                vpinball_flexdmd_val = system.config["vpinball_flexdmd"]
-
-            if vpinball_flexdmd_val == "":
-                if len(screens) > 2:
-                    vpinball_flexdmd_val = "screen3"
-                else:
-                    vpinball_flexdmd_val = "flexdmd_disabled"
-
-            if len(screens) <= 1 and vpinball_flexdmd_val == "screen2":
-                vpinball_flexdmd_val = "flexdmd_disabled"
-            if len(screens) <= 2 and vpinball_flexdmd_val == "screen3":
-                vpinball_flexdmd_val = "flexdmd_disabled"
-            
-            if system.config["vpinball_flexdmd"]=="flexdmd_disabled":
+            if vpinball_flexdmd_val=="flexdmd_disabled":
                 vpinballSettings.set("Standalone", WindowName,"0")
             elif vpinball_flexdmd_val=="screen2":
-                if system.isOptSet("vpinball_b2s") == False or (system.config["vpinball_b2s"]=="screen2"): # share with b2s screen ?
+                if vpinball_b2s_val=="screen2": # share with b2s screen ?
                     vpinballSettings.set("Standalone", WindowName,"1")
-                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[1]["x"]+(screens[1]["width"]-1024)//2))
-                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[1]["y"]))
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]+(screens[backglassScreen]["width"]-1024)//2))
+                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[backglassScreen]["y"]))
                     vpinballSettings.set("Standalone", WindowName+"Width",  str(1024))
                     vpinballSettings.set("Standalone", WindowName+"Height", str(256))
                 else:
-                    width  = screens[1]["width"]
-                    height = (screens[1]["width"] // 128 * 32)
-                    y = (screens[1]["height"]-height)//2
+                    width  = screens[backglassScreen]["width"]
+                    height = (screens[backglassScreen]["width"] // 128 * 32)
+                    y = (screens[backglassScreen]["height"]-height)//2
                     vpinballSettings.set("Standalone", WindowName,"1")
-                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[1]["x"]))
-                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[1]["y"]+y))
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]))
+                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[backglassScreen]["y"]+y))
                     vpinballSettings.set("Standalone", WindowName+"Width",  str(width))
                     vpinballSettings.set("Standalone", WindowName+"Height", str(height))
             elif vpinball_flexdmd_val=="screen3":
@@ -221,22 +285,22 @@ class VPinballGenerator(Generator):
                 vpinballSettings.set("Standalone", WindowName+"Height", str(screens[2]["height"]))
             else:
                 vpinballSettings.set("Standalone", WindowName,"1")
-                if system.config["vpinball_flexdmd"]=="flexdmd_topright_small":
+                if vpinball_flexdmd_val=="flexdmd_topright_small":
                     width=small
                     x=100-width
-                if system.config["vpinball_flexdmd"]=="flexdmd_topright_medium":
+                if vpinball_flexdmd_val=="flexdmd_topright_medium":
                     width=medium
                     x=100-width
-                if system.config["vpinball_flexdmd"]=="flexdmd_topright_large":
+                if vpinball_flexdmd_val=="flexdmd_topright_large":
                     width=large
                     x=100-width
-                if system.config["vpinball_flexdmd"]=="flexdmd_topleft_small":
+                if vpinball_flexdmd_val=="flexdmd_topleft_small":
                     width=small
                     x=0
-                if system.config["vpinball_flexdmd"]=="flexdmd_topleft_medium":
+                if vpinball_flexdmd_val=="flexdmd_topleft_medium":
                     width=medium
                     x=0
-                if system.config["vpinball_flexdmd"]=="flexdmd_topleft_large":
+                if vpinball_flexdmd_val=="flexdmd_topleft_large":
                     width=large
                     x=0
                 # apply settings
@@ -250,35 +314,22 @@ class VPinballGenerator(Generator):
             WindowName="B2SBackglass"
             Rwindow = 4/3   #Usual Ratio for this window
             # Auto default behaviour is to read values from VPinballX.ini file
-            # so we don't do anything in the configgen
-            vpinball_b2s_val = ""
-            if system.isOptSet("vpinball_b2s"):
-                vpinball_b2s_val = system.config["vpinball_b2s"]
-
-            if vpinball_b2s_val == "":
-                if len(screens) > 1:
-                    vpinball_b2s_val = "screen2"
-                else:
-                    vpinball_b2s_val = "b2s_disabled"
-
-            if len(screens) <= 1 and vpinball_b2s_val == "screen2":
-                vpinball_b2s_val = "b2s_disabled"
-                    
+            # so we don't do anything in the configgen                    
             if vpinball_b2s_val=="b2s_disabled":
                 vpinballSettings.set("Standalone", "B2SWindows","0")
             elif vpinball_b2s_val=="screen2":
-                if system.isOptSet("vpinball_flexdmd") and system.config["vpinball_flexdmd"]=="screen2": # share with flexdmd screen ?
+                if vpinball_flexdmd_val=="screen2": # share with flexdmd screen ?
                     vpinballSettings.set("Standalone", WindowName,"1")
-                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[1]["x"]))
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]))
                     vpinballSettings.set("Standalone", WindowName+"Y",      str(256))
-                    vpinballSettings.set("Standalone", WindowName+"Width",  str(screens[1]["width"]))
-                    vpinballSettings.set("Standalone", WindowName+"Height", str(screens[1]["height"]-256))
+                    vpinballSettings.set("Standalone", WindowName+"Width",  str(screens[backglassScreen]["width"]))
+                    vpinballSettings.set("Standalone", WindowName+"Height", str(screens[backglassScreen]["height"]-256))
                 else:
                     vpinballSettings.set("Standalone", WindowName,"1")
-                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[1]["x"]))
-                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[1]["y"]))
-                    vpinballSettings.set("Standalone", WindowName+"Width",  str(screens[1]["width"]))
-                    vpinballSettings.set("Standalone", WindowName+"Height", str(screens[1]["height"]))
+                    vpinballSettings.set("Standalone", WindowName+"X",      str(screens[backglassScreen]["x"]))
+                    vpinballSettings.set("Standalone", WindowName+"Y",      str(screens[backglassScreen]["y"]))
+                    vpinballSettings.set("Standalone", WindowName+"Width",  str(screens[backglassScreen]["width"]))
+                    vpinballSettings.set("Standalone", WindowName+"Height", str(screens[backglassScreen]["height"]))
             else:
                 vpinballSettings.set("Standalone", "B2SHideGrill","1")
                 vpinballSettings.set("Standalone", "B2SWindows","1")
