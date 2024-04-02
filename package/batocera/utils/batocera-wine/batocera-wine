@@ -491,6 +491,7 @@ getWine_var() {
 }
 
 play_wine() {
+    echo "play_wine"
     GAMENAME=$1
     WINEPOINT="${GAMENAME}"
 
@@ -503,15 +504,17 @@ play_wine() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
 
 play_pc() {
+    echo "play_pc"
     GAMENAME=$1
     WINEPOINT="${WINE_BOTTLE_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
@@ -527,10 +530,11 @@ play_pc() {
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
+    WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
@@ -575,6 +579,7 @@ play_exe() {
 }
 
 play_winetgz() {
+    echo "play_winetgz"
     GAMENAME=$1
     WINEPOINT="${WINE_BOTTLE_DIR}/"$(basename "${GAMENAME}")".wine"
 
@@ -593,15 +598,17 @@ play_winetgz() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
 
 play_squashfs() {
+    echo "play_squashfs"
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
@@ -644,10 +651,11 @@ play_squashfs() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
     # wait 1 sec before unmounting
