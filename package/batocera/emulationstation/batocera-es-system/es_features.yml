@@ -12402,6 +12402,8 @@ vpinball:
         "Top-Left Position, Small": "pinmame_topleft_small"
         "Top-Left Position, Medium": "pinmame_topleft_medium"
         "Top-Left Position, Large": "pinmame_topleft_large"
+        "On screen 2 if available": "screen2"
+        "On screen 3 if available": "screen3"
         "PinMAME DMD disabled": "pinmame_disabled"
     vpinball_flexdmd:
       group: DISPLAY
@@ -12435,6 +12437,13 @@ vpinball:
       prompt: DISPLAY BACKGLASS DMD
       description: When the Backglass is activated, display the small additional part with the scores.
       preset: switchon
+    vpinball_inverseplayfieldandb2s:
+      group: DISPLAY
+      prompt: INVERSE PLAYFIELD AND B2S
+      description: Inverse the Backglass and the Playfield. Usefull to use the Backglass as main screen for other emulators.
+      choices:
+        "On": 1
+        "Off": 0
     vpinball_musicvolume:
       group: AUDIO
       prompt: MUSIC VOLUME
