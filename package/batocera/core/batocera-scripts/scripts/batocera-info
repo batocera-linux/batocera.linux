@@ -175,16 +175,18 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	fi
 
 	# VULKAN
-	if test -e /var/run/vulkaninfo.version
-	then
-	    APIVERSION=$(sed '2q;d' /var/run/vulkaninfo.version)
-        [ -z "$APIVERSION" ] && APIVERSION=$(head -n 1 /var/run/vulkaninfo.version)
-	    if test -n "${APIVERSION}"; then
-		    echo "Vulkan Driver Version: ${APIVERSION}"
-	    else
-		    echo "Vulkan Driver Version: none"
-	    fi
-	fi
+    if [ "$(batocera-vulkan hasVulkan)" = "true" ]; then
+        if [ "$(batocera-vulkan hasDiscrete)" = "true" ]; then
+            echo "Vulkan Driver Name: $(batocera-vulkan discreteName | tr -d '\n')"
+            discreteIndex=$(batocera-vulkan discreteIndex)
+            apiVersion=$(vulkaninfo | grep -A8 "GPU$discreteIndex" | awk '/apiVersion/ {print $3}')
+            echo "Vulkan Driver Version: $apiVersion"
+        else
+            echo "Vulkan Driver Name: $(batocera-vulkan listDevices | tr -d '\n')"
+            apiVersion=$(vulkaninfo | grep -A8 "GPU0" | awk '/apiVersion/ {print $3}')
+            echo "Vulkan Driver Version: $apiVersion"
+        fi
+    fi
 fi
 
 # userdata type
