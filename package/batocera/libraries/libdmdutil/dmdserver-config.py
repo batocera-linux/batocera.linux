@@ -17,11 +17,17 @@ config.optionxform = str
 if os.path.isfile(args.config):
     config.read(args.config)
 
+if not config.has_section("DMDServer"):
+    config.add_section("DMDServer")
+
 if not config.has_section("Pixelcade"):
     config.add_section("Pixelcade")
 
 if not config.has_section("ZeDMD"):
     config.add_section("ZeDMD")
+
+## global
+config.set("DMDServer", "AltColor", "1") # jsm174: AltColor should be 1 for everyone
 
 ### MATRIX ###
 zedmd_before_rgborder   = None
