@@ -43,6 +43,8 @@ do
 	settings_output2="$(batocera-settings-get global.videooutput2)"
 	settings_output3="$(batocera-settings-get global.videooutput3)"
     fi
+
+    # we set the output to enable screens...
     batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
     ###################
 
@@ -122,6 +124,13 @@ do
 	    batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
 	fi
     fi
+
+    # now that all screens are enabled, rotated, resized... we reenable cause it may change the position in case of multi screens
+    if test -n "${settings_output2}" -o -n "${settings_output3}"
+    then
+	batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
+    fi
+    ###################
     
     ###################
 
