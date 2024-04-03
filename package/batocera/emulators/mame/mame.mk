@@ -3,8 +3,8 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.263 - Switchres 2.220a
-MAME_VERSION = gm0263sr220a
+# Version: GroovyMAME 0.264 - Switchres 2.220b
+MAME_VERSION = gm0264sr220b
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME

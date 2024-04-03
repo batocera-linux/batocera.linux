@@ -72,7 +72,7 @@ Initial support for the Lenovo Legion Go
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
-- GroovyMAME to 0.263 SR 0.220a
+- GroovyMAME to 0.264 SR 0.220b
 - DOSBox-Staging to 0.81.0
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
