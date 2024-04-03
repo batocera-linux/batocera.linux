@@ -1112,13 +1112,13 @@ atari7800:
       prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
-  name:       Atari Lynx
+  name: Atari Lynx
   manufacturer: Atari
   release: 1989
   hardware: portable
-  extensions: [lnx, zip, 7z]
-  theme:      atarilynx
-  platform:   atarilynx
+  extensions: [lnx, lyx, o, zip, 7z]
+  theme: atarilynx
+  platform: atarilynx
   emulators:
     libretro:
       mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
