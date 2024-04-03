@@ -40,6 +40,30 @@ class XeniaGenerator(Generator):
 
         core = system.config['core']
 
+        # check Vulkan first before doing anything
+        try:
+            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+            if have_vulkan == "true":
+                eslog.debug("Vulkan driver is available on the system.")
+                try:
+                    vulkan_version = subprocess.check_output(["/usr/bin/batocera-vulkan", "vulkanVersion"], text=True).strip()
+                    if vulkan_version > "1.3":
+                        eslog.debug("Using Vulkan version: {}".format(vulkan_version))
+                    else:
+                        if system.isOptSet('xenia_api') and system.config['xenia_api'] == "D3D12":
+                            eslog.debug("Vulkan version: {} is not compatible with Xenia when using D3D12".format(vulkan_version))
+                            eslog.debug("You may have performance & graphical errors, switching to native Vulkan".format(vulkan_version))
+                            system.config['xenia_api'] = "Vulkan"
+                        else:
+                            eslog.debug("Vulkan version: {} is not recommended with Xenia".format(vulkan_version))
+                except subprocess.CalledProcessError:
+                    eslog.debug("Error checking for Vulkan version.")
+            else:
+                eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
+                sys.exit()
+        except subprocess.CalledProcessError:
+            eslog.debug("Error executing batocera-vulkan script.")
+        
         # make system directories
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)

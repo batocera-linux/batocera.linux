@@ -30,6 +30,7 @@ Initial support for the Lenovo Legion Go
 - Justifier mapping and crosshair on libretro-snes9x
 - Daphne crosshair not hidden by default when a light gun is detected
 - Libretro-mesen light gun not loading up
+- Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
@@ -37,6 +38,8 @@ Initial support for the Lenovo Legion Go
 - GunCon3 default mapping (visit light gun page on official wiki)
   - Calibration now on C2 (press and hold it few seconds)
 - Sinden Lightgun firmware updated to 1.9
+- Preferred vulkan driver name now listed in System Information
+- Start advisiong people on Vulkan GPU driver capabilities for Emualtors
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
