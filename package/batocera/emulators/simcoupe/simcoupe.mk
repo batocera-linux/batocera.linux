@@ -13,6 +13,8 @@ SIMCOUPE_SUPPORTS_IN_SOURCE_BUILD = YES
 SIMCOUPE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SIMCOUPE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 
+SIMCOUPE_BIOS_AND_RESOURCES = /usr/share/simcoupe
+
 define SIMCOUPE_INSTALL_TARGET_CMDS
 		$(INSTALL) -D $(@D)/simcoupe $(TARGET_DIR)/usr/bin/simcoupe
 		cp -d $(@D)/_deps/saasound-build/libSAASound* $(TARGET_DIR)/usr/lib/
