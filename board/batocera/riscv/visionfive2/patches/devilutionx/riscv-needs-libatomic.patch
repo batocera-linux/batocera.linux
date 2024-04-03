@@ -1,0 +1,12 @@
+--- a/CMakeLists.txt  2024-04-03 08:52:40.915146064 +0200
++++ b/CMakeLists.txt	2024-04-03 08:53:17.675898230 +0200
+@@ -346,6 +346,9 @@
+   target_link_libraries(${BIN_TARGET} PUBLIC ${GPERFTOOLS_LIBRARIES})
+ endif()
+ 
++# RISC-V needs libatomic_ops
++target_link_libraries(${BIN_TARGET} PUBLIC atomic)
++
+ # Must be included after `BIN_TARGET` and `libdevilutionx` are defined.
+ include(Assets)
+ 
