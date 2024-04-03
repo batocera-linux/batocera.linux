@@ -2116,8 +2116,8 @@ x1:
   hardware: portable
   extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
-    citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+    lemonade:
+      lemonade: { requireAnyOf: [BR2_PACKAGE_LEMONADE]          }
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 

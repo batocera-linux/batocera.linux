@@ -1,6 +1,6 @@
 # 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
-
+The standalone Citra emulator has migrated to it's successor, Lemonade emulator. You should be able to move your saves from /userdata/saves/3ds/citra to the equivalent lemonade directory.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
