@@ -40,6 +40,7 @@ Initial support for the Lenovo Legion Go
 - Sinden Lightgun firmware updated to 1.9
 - Preferred vulkan driver name now listed in System Information
 - Start advisiong people on Vulkan GPU driver capabilities for Emualtors
+- Added additional Atari Lynx extensions for Beetle Lynx & Handy
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
