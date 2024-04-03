@@ -71,9 +71,9 @@ def getGenerator(emulator):
         from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
         return PPSSPPGenerator()
 
-    if emulator == 'citra' :
-        from generators.citra.citraGenerator import CitraGenerator
-        return CitraGenerator()
+    if emulator == 'lemonade' :
+        from generators.lemonade.lemonadeGenerator import LemonadeGenerator
+        return LemonadeGenerator()
 
     if emulator == 'daphne' :
         from generators.daphne.daphneGenerator import DaphneGenerator

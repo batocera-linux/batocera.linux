@@ -141,7 +141,7 @@ PACKAGES_EMULATORS="amiberry
                     bigpemu
                     cemu
                     cgenius
-                    citra
+                    lemonade
                     daphne
                     demul
                     dolphin-emu
