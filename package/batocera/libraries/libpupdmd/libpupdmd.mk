@@ -3,8 +3,8 @@
 # libpupdmd
 #
 ################################################################################
-# Version: Commits on Mar 30, 2024
-LIBPUPDMD_VERSION = 332fc4aab2639a1b159545375df15e405cb2c82c
+# Version: Commits on Apr 3, 2024
+LIBPUPDMD_VERSION = c640ea2cec94097e8baefee9dab39266970e4405
 LIBPUPDMD_SITE = $(call github,ppuc,LIBPUPDMD,$(LIBPUPDMD_VERSION))
 LIBPUPDMD_LICENSE = GPL-3.0 license
 LIBPUPDMD_LICENSE_FILES = LICENSE
@@ -30,16 +30,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     BUILD_ARCH = x64
 endif
 
-define LIBPUPDMD_CMAKE_HACKS
-   ## derived from platforms/${PLATFORM}/${BUILD_ARCH}/external.sh and CMakeLists.txt ##
-   $(SED) 's:third-party/include$$:$(STAGING_DIR)/usr/include/\n   third-party/include:g' $(@D)/CMakeLists.txt
-   $(SED) 's:$${CMAKE_SOURCE_DIR}/third-party/runtime-libs/$${PLATFORM}/$${ARCH}/:$(STAGING_DIR)/usr/lib/:g' $(@D)/CMakeLists.txt
-   $(SED) 's:third-party/runtime-libs/$${PLATFORM}/$${ARCH}:$(STAGING_DIR)/usr/lib/:g' $(@D)/CMakeLists.txt
-endef
-
 # Install to staging to build Visual Pinball Standalone
 LIBPUPDMD_INSTALL_STAGING = YES
-
-LIBPUPDMD_PRE_CONFIGURE_HOOKS += LIBPUPDMD_CMAKE_HACKS
 
 $(eval $(cmake-package))
