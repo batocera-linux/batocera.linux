@@ -16,6 +16,7 @@ Initial support for the Lenovo Legion Go
 - Support for zedmd
 - DMD server (handling any dmd supported by libdmd) integrated with vpinball
 - Support for multi screens (for pincab, mame multi games)
+- Evmapy keys file to help exit running flatpak app
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
