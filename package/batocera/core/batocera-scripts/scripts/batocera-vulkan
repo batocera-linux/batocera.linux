@@ -93,6 +93,21 @@ has_vulkan() {
     fi
 }
 
+vulkan_version() {
+    if [ "$(batocera-vulkan hasVulkan)" = "true" ]; then
+        if [ "$(batocera-vulkan hasDiscrete)" = "true" ]; then
+            discreteIndex=$(batocera-vulkan discreteIndex)
+            apiVersion=$(vulkaninfo | grep -A8 "GPU$discreteIndex" | awk '/apiVersion/ {print $3}')
+            echo $apiVersion
+        else
+            apiVersion=$(vulkaninfo | grep -A8 "GPU0" | awk '/apiVersion/ {print $3}')
+            echo $apiVersion
+        fi
+    else
+        echo "No Vulkan driver found!"
+    fi
+}
+
 # Handle input options
 case "$1" in
     "listDevices")
@@ -116,8 +131,11 @@ case "$1" in
     "hasVulkan")
         has_vulkan
         ;;
+    "vulkanVersion")
+        vulkan_version
+        ;;
     *)
-        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|hasVulkan}"
+        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|hasVulkan|vulkanVersion}"
         exit 1
         ;;
 esac
