@@ -28,10 +28,10 @@ GNAME=$(wget "http://localhost:1234/systems/${GSYSTEM}/games/${GHASH}?localpaths
 if test -n "${GNAME}"
 then
     dmd-play ${DMDOPT} -t "${GNAME}" --once --moving-text && exit 0 # success
+else
+    # fallback : empty
+    dmd-play ${DMDOPT} --clear || exit 1
 fi
-
-# fallback : empty
-dmd-play ${DMDOPT} --clear || exit 1
 
 exit 0
 
