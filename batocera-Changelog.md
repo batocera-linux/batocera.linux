@@ -101,7 +101,7 @@ Initial support for the Lenovo Legion Go
 - Wayland-protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3d to 24.0.3
+- Mesa3d to 24.0.4
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.8
