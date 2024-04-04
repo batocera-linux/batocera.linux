@@ -1,7 +1,7 @@
 From b619319aa02b96b8a7271885066da15b5d3b6578 Mon Sep 17 00:00:00 2001
 From: Neil Armstrong <neil.armstrong@linaro.org>
 Date: Thu, 9 Nov 2023 10:00:11 +0100
-Subject: [PATCH 33/64] FROMLIST(v8): arm64: meson: g12-common: add the MIPI
+Subject: [PATCH 33/64] FROMLIST(v12): arm64: meson: g12-common: add the MIPI
  DSI nodes
 
 Add the MIPI DSI Analog & Digital PHY nodes and the DSI control
@@ -13,10 +13,10 @@ Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
  1 file changed, 70 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-index a960d07f9af3..ad0bfc8f1db6 100644
+index 9d5eab6595d0..b058ed78faf0 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
 +++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-@@ -1663,9 +1663,28 @@ pwrc: power-controller {
+@@ -1663,9 +1663,28 @@  pwrc: power-controller {
  								       <250000000>,
  								       <0>; /* Do Nothing */
  					};
@@ -28,7 +28,7 @@ index a960d07f9af3..ad0bfc8f1db6 100644
 +					};
  				};
  			};
- 
+
 +			mipi_dphy: phy@44000 {
 +				compatible = "amlogic,axg-mipi-dphy";
 +				reg = <0x0 0x44000 0x0 0x2000>;
@@ -45,7 +45,7 @@ index a960d07f9af3..ad0bfc8f1db6 100644
  			usb3_pcie_phy: phy@46000 {
  				compatible = "amlogic,g12a-usb3-pcie-phy";
  				reg = <0x0 0x46000 0x0 0x2000>;
-@@ -2152,6 +2171,15 @@ hdmi_tx_out: endpoint {
+@@ -2152,6 +2171,15 @@  hdmi_tx_out: endpoint {
  					remote-endpoint = <&hdmi_tx_in>;
  				};
  			};
@@ -59,12 +59,12 @@ index a960d07f9af3..ad0bfc8f1db6 100644
 +				};
 +			};
  		};
- 
+
  		gic: interrupt-controller@ffc01000 {
-@@ -2189,6 +2217,48 @@ gpio_intc: interrupt-controller@f080 {
+@@ -2189,6 +2217,48 @@  gpio_intc: interrupt-controller@f080 {
  				amlogic,channel-interrupts = <64 65 66 67 68 69 70 71>;
  			};
- 
+
 +			mipi_dsi: dsi@7000 {
 +				compatible = "amlogic,meson-g12a-dw-mipi-dsi";
 +				reg = <0x0 0x7000 0x0 0x1000>;
@@ -110,6 +110,6 @@ index a960d07f9af3..ad0bfc8f1db6 100644
  			watchdog: watchdog@f0d0 {
  				compatible = "amlogic,meson-gxbb-wdt";
  				reg = <0x0 0xf0d0 0x0 0x10>;
--- 
+--
 2.34.1
 
