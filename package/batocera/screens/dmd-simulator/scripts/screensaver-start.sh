@@ -7,8 +7,16 @@ DMDOPT=
 DMDFORMAT=$(batocera-settings-get dmd.format)
 test "${DMDFORMAT}" = "hd" && DMDOPT="--hd"
 
-dmd-play ${DMDOPT} -f "/usr/share/dmd-simulator/images/system/batocera.png" && exit 0 # success
+# custom
+for EXT in gif png
+do
+    CUS="/userdata/system/dmd/screensaver.${EXT}"
+    if test -e "${CUS}"
+    then
+	dmd-play ${DMDOPT} -f "${CUS}"
+	exit 0
+    fi
+done
 
-dmd-play ${DMDOPT} -t "batocera" || exit 1
-
+dmd-play ${DMDOPT} -f "/usr/share/dmd-simulator/images/system/batocera.png"
 exit 0
