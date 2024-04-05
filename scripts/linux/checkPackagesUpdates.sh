@@ -184,7 +184,7 @@ PACKAGES_EMULATORS="amiberry
                     xemu
                     xenia
                     xenia-canary
-                    yuzu"
+                    suyu"
 
 PACKAGES_PORTS="abuse
                 abuse-data

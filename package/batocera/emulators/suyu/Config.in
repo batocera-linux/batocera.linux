@@ -1,5 +1,5 @@
-config BR2_PACKAGE_YUZU
-    bool "yuzu"
+config BR2_PACKAGE_SUYU
+    bool "suyu"
     depends on BR2_x86_64
     depends on BR2_PACKAGE_XORG7
     select BR2_PACKAGE_JSON_FOR_MODERN_CPP
@@ -16,6 +16,6 @@ config BR2_PACKAGE_YUZU
     select BR2_PACKAGE_CATCH2
     select BR2_PACKAGE_OPUS
     help
-      A Emulator Yuzu core for Nintendo Switch.
+      A familiar, open source, and powerful Nintendo Switch emulator.
 
-	    https://yuzu-emu.org/
+	    https://suyu.dev/
