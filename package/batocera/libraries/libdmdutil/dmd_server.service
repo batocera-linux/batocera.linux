@@ -14,11 +14,13 @@ start() {
         done
 
         ARGS=
-        DMDMATRIX=$(batocera-settings-get dmd.matrix)
-        test -z "${DMDMATRIX}" && DMDMATRIX=auto
-        DMDBRIGHTNESS=$(batocera-settings-get dmd.brightness)
-        test -z "${DMDBRIGHTNESS}" && DMDBRIGHTNESS=-1
-        dmdserver-config --matrix "${DMDMATRIX}" --brightness "${DMDBRIGHTNESS}" || return 1 # configure the dmd server
+        DMDPIXELCADEMATRIX=$(batocera-settings-get dmd.pixelcade.matrix)
+        test -z "${DMDPIXELCADEMATRIX}" && DMDPIXELCADEMATRIX=auto
+        DMDZEDMDMATRIX=$(batocera-settings-get dmd.zedmd.matrix)
+        test -z "${DMDZEDMDMATRIX}" && DMDZEDMDMATRIX=auto
+        DMDZEDMDBRIGHTNESS=$(batocera-settings-get dmd.zedmd.brightness)
+        test -z "${DMDZEDMDBRIGHTNESS}" && DMDZEDMDBRIGHTNESS=-1
+        dmdserver-config --pixelcade-matrix "${DMDPIXELCADEMATRIX}" --zedmd-matrix "${DMDZEDMDMATRIX}" --zedmd-brightness "${DMDZEDMDBRIGHTNESS}" || return 1 # configure the dmd server
         test -e /userdata/system/configs/dmdserver/config.ini && ARGS="-c /userdata/system/configs/dmdserver/config.ini"
         start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/dmdserver -- ${ARGS} >/dev/null &
         RETVAL=$?
