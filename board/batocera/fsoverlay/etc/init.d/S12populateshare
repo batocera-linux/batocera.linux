@@ -7,6 +7,11 @@ then
     exit 0
 fi
 
+DOUPDATE=0
+CURVERSION=$(cat /usr/share/batocera/batocera.version)
+SHAREVERSION=$(cat /userdata/system/data.version 2>/dev/null)
+test "${CURVERSION}" != "${SHAREVERSION}" && DOUPDATE=1 # skip some part, just when new release
+
 IN=/usr/share/batocera/datainit
 OUT=/userdata
 # force the creation of some directories
@@ -54,21 +59,24 @@ done
 
 # sometimes we update _info.txt files.
 # add a loop to update newer files if necessary
-for DIR in roms roms/mame/mame2003
-do
-    find "$IN""/""$DIR" -mindepth 1 -maxdepth 2 -type f -name "_info.txt" |
-        while read FILE
-        do
-            RELATIVE_PATH="${FILE#$IN/}"
-            DEST_FILE="$OUT/$RELATIVE_PATH"
+if test "${DOUPDATE}" = 1
+then
+    for DIR in roms roms/mame/mame2003
+    do
+	find "$IN""/""$DIR" -mindepth 1 -maxdepth 2 -type f -name "_info.txt" |
+            while read FILE
+            do
+		RELATIVE_PATH="${FILE#$IN/}"
+		DEST_FILE="$OUT/$RELATIVE_PATH"
             
-            # Check if the source file is newer than the destination file
-            if [ "$FILE" -nt "$DEST_FILE" ]; then
-                echo "Updating $DEST_FILE"
-                cp -f "$FILE" "$DEST_FILE"
-            fi
-        done
-done
+		# Check if the source file is newer than the destination file
+		if [ "$FILE" -nt "$DEST_FILE" ]; then
+                    echo "Updating $DEST_FILE"
+                    cp -f "$FILE" "$DEST_FILE"
+		fi
+            done
+    done
+fi
 
 # directories / files to copy when initializing the user data
 #
@@ -150,16 +158,6 @@ cp /usr/share/batocera/batocera.version /userdata/system/data.version
 
 # call user script with start condition
 test -e /boot/postshare.sh && bash /boot/postshare.sh start
-
-### cleaning old alsa files - 08/07/2021
-rm -f /userdata/system/.asoundrc
-if test -e /boot/asoundrc
-then
-    mount -o remount,rw /boot
-    rm -f /boot/asoundrc
-    mount -o remount,ro /boot
-fi
-###
 
 exit 0
 # END
