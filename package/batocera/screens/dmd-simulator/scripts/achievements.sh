@@ -19,6 +19,6 @@ do
 done
 
 # fallback : empty
-dmd-play ${DMDOPT} -t "WOUHOU !" --once --moving-text
+dmd-play ${DMDOPT} -t "WOUHOU !" --once --moving-text --no-fit
 
 exit 0
