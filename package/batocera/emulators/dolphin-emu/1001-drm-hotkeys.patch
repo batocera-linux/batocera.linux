@@ -36,7 +36,7 @@ index b210cea..77d4e86 100644
 +    static int stereo = 0;
 +
      UpdateRunningFlag();
-     Core::HostDispatchJobs();
+     Core::HostDispatchJobs(Core::System::GetInstance());
  
 +    if(Pad::IsInitialized()) {
 +      GCPadStatus x = Pad::GetStatus(0);
@@ -56,11 +56,11 @@ index b210cea..77d4e86 100644
 +	}
 +
 +	if( (x.button & PAD_BUTTON_Y) == PAD_BUTTON_Y) {
-+	  State::Load(slot);
++	  State::Load(Core::System::GetInstance(), slot);
 +	  hotkey = 0;
 +	}
 +	if( (x.button & PAD_BUTTON_B) == PAD_BUTTON_B) {
-+	  State::Save(slot);
++	  State::Save(Core::System::GetInstance(), slot);
 +	  hotkey = 0;
 +	}
 +	if( (x.button & PAD_BUTTON_DOWN) == PAD_BUTTON_DOWN) {

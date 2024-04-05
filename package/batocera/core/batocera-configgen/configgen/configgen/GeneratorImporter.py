@@ -71,9 +71,9 @@ def getGenerator(emulator):
         from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
         return PPSSPPGenerator()
 
-    if emulator == 'citra' :
-        from generators.citra.citraGenerator import CitraGenerator
-        return CitraGenerator()
+    if emulator == 'lemonade' :
+        from generators.lemonade.lemonadeGenerator import LemonadeGenerator
+        return LemonadeGenerator()
 
     if emulator == 'daphne' :
         from generators.daphne.daphneGenerator import DaphneGenerator
@@ -219,9 +219,9 @@ def getGenerator(emulator):
         from generators.fba2x.fba2xGenerator import Fba2xGenerator
         return Fba2xGenerator()
 
-    if emulator == 'yuzu':
-        from generators.yuzu.yuzuGenerator import YuzuGenerator
-        return YuzuGenerator()
+    if emulator == 'suyu':
+        from generators.suyu.suyuGenerator import SuyuGenerator
+        return SuyuGenerator()
 
     if emulator == 'ryujinx':
         from generators.ryujinx.ryujinxGenerator import RyujinxGenerator

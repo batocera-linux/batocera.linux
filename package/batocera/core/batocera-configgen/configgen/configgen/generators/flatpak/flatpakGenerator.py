@@ -17,7 +17,7 @@ class FlatpakGenerator(Generator):
         os.system('chmod -R g+rwX /var/run/pulse')
 
         # the directory monitor must exist and all the dirs must be owned by batocera
-        commandArray = ["su", "-", "batocera", "-c",  "DISPLAY=:0.0 flatpak run -v " + romId]
+        commandArray = ["/usr/bin/flatpak", "run", "-v", romId]
         return Command.Command(array=commandArray)
 
     def getMouseMode(self, config, rom):

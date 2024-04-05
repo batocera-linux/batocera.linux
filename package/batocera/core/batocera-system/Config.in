@@ -117,7 +117,6 @@ config BR2_PACKAGE_BATOCERA_VULKAN
 
     # Vulkan headers, loaders, SPIR-V, glsLang
     select BR2_PACKAGE_VULKAN_TOOLS
-    select BR2_PACKAGE_VULKANINFO
     select BR2_PACKAGE_SPIRV_TOOLS
 
     # Vulkan mesa drivers
@@ -449,7 +448,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     default "broadcom/bcm2837"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
     default "broadcom/bcm2711"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
     default "broadcom/bcm2712"                                                              if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
-    default "rockchip/rk3326/gameforce rockchip/rk3326/odroidgo rockchip/rk3326/anbernic"   if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+    default "rockchip/rk3326"								    if BR2_PACKAGE_BATOCERA_TARGET_RK3326
     default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"                                 if BR2_PACKAGE_BATOCERA_TARGET_RK3328
     default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"                              if BR2_PACKAGE_BATOCERA_TARGET_RK3288
     default "rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2"	if BR2_PACKAGE_BATOCERA_TARGET_RK3568
@@ -724,6 +723,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_H3         && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_H5         && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_H6         && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86
 
     select BR2_PACKAGE_LIBRETRO_FLYCASTVL   if  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
@@ -731,7 +731,10 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_RK3326  || \
-                                                BR2_PACKAGE_BATOCERA_TARGET_H3
+                                                BR2_PACKAGE_BATOCERA_TARGET_H3      || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H5      || \
+                                                BR2_PACKAGE_BATOCERA_TARGET_H6
+
 
 select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
                                         # Redream not working with Sway => || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
@@ -816,7 +819,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
     select BR2_PACKAGE_MELONDS                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2712
 
     # 3DS
-    select BR2_PACKAGE_CITRA                    if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_LEMONADE                 if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
     #select BR2_PACKAGE_LIBRETRO_CITRA          if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY #disabled, build errors. not well maintained.
 
     # PSP
@@ -1137,7 +1140,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         BR2_PACKAGE_BATOCERA_TARGET_A3GEN2     || \
                                                         BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
-    select BR2_PACKAGE_YUZU							if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
+    select BR2_PACKAGE_SUYU							if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
     select BR2_PACKAGE_RYUJINX						if	BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
 
     # Triforce

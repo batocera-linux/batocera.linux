@@ -1,18 +1,23 @@
 # 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
-
+The standalone Citra emulator has migrated to it's successor, Lemonade emulator. You should be able to move your saves from /userdata/saves/3ds/citra to the equivalent lemonade directory.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
 Add support for Radxa Rock 3C
-
+Initial support for the Lenovo Legion Go
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
 - Light gun support in libretro-MAME
 - Light gun support in DuckStation (single light gun only)
 - libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
-
+- Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3 and libretro-pcsx-rearmed
+- Support for zedmd
+- DMD server (handling any dmd supported by libdmd) integrated with vpinball
+- Support for multi screens (for pincab, mame multi games)
+- Evmapy keys file to help exit running flatpak app
+- Steering wheel support for Thrustmaster T150RS
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -22,7 +27,12 @@ Add support for Radxa Rock 3C
 - GunCon2 A and B buttons now separate
 - Sinden Lightgun now has limited bandwidth per camera to avoid timeout
 - Some Kodi settings were lost upon Batocera upgrades
-
+- Wii crosshairs in the wrong emulationstation group setting
+- Justifier gun type in emulationstation for pcsx-rearmed and mednafen cores
+- Justifier mapping and crosshair on libretro-snes9x
+- Daphne crosshair not hidden by default when a light gun is detected
+- Libretro-mesen light gun not loading up
+- Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
@@ -30,38 +40,40 @@ Add support for Radxa Rock 3C
 - GunCon3 default mapping (visit light gun page on official wiki)
   - Calibration now on C2 (press and hold it few seconds)
 - Sinden Lightgun firmware updated to 1.9
-
+- Preferred vulkan driver name now listed in System Information
+- Start advisiong people on Vulkan GPU driver capabilities for Emualtors
+- Added additional Atari Lynx extensions for Beetle Lynx & Handy
 ### Updated
 - Retroarch to 1.18.0
-- libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
-- mupen64plus-core bump to Jan 25, 2024 build
-- mupen64plus-audio-sdl bump to Jun 11, 2023 build
-- mupen64plus-input-sdl bump to Nov 4, 2023 build
-- mupen64plus-ui-console bump to Jun 11, 2023 build
-- mupen64plus-rsp-hle bump to Jan 13, 2024 build
-- mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
-- mupen64plus-video-rice bump to Jun 11, 2023 build
-- mupen64plus-gliden64 bump to Feb 18, 2024 build
-- ppsspp: bump to 1.17.1
-- duckstation: bump to Feb 25, 2024 build
-- libretro-ppsspp: bump to 1.17.1
-- libretro-81: bump to Nov 1, 2023 build
-- libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
-- libretro-genesisplusgx: bump to Feb 23, 2024 build
-- libretro-mame: bump to 0.263
-- libretro-mame2003-plus: bump to Feb 21, 2024 build
-- libretro-mupen64plus-next: bump to Feb 6, 2024 build
-- libretro-neocd: bump to Feb 1, 2024 build
-- libretro-opera: bump to Jan 13, 2024 build
-- libretro-stella: bump to Jan 2, 2024 build
-- libretro-swanstation: bump to Jan 25, 2024 build
-- libretro-pcsx: bump to Feb 14, 2024 build
-- libretro-flycast: bump to v2.3
+- Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
+- Mupen64plus-core bump to Jan 25, 2024 build
+- Mupen64plus-audio-sdl bump to Jun 11, 2023 build
+- Mupen64plus-input-sdl bump to Nov 4, 2023 build
+- Mupen64plus-ui-console bump to Jun 11, 2023 build
+- Mupen64plus-rsp-hle bump to Jan 13, 2024 build
+- Mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
+- Mupen64plus-video-rice bump to Jun 11, 2023 build
+- Mupen64plus-gliden64 bump to Feb 18, 2024 build
+- PPSSPP: bump to 1.17.1
+- Duckstation: bump to Feb 25, 2024 build
+- Libretro-ppsspp: bump to 1.17.1
+- Libretro-81: bump to Nov 1, 2023 build
+- Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
+- Libretro-genesisplusgx: bump to Feb 23, 2024 build
+- Libretro-mame: bump to 0.263
+- Libretro-mame2003-plus: bump to Feb 21, 2024 build
+- Libretro-mupen64plus-next: bump to Feb 6, 2024 build
+- Libretro-neocd: bump to Feb 1, 2024 build
+- Libretro-opera: bump to Jan 13, 2024 build
+- Libretro-stella: bump to Jan 2, 2024 build
+- Libretro-swanstation: bump to Jan 25, 2024 build
+- Libretro-pcsx: bump to Feb 14, 2024 build
+- Libretro-flycast: bump to v2.3
 - Flycast: bump to v2.3
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
-- GroovyMAME to 0.263 SR 0.220a
+- GroovyMAME to 0.264 SR 0.220b
 - DOSBox-Staging to 0.81.0
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
@@ -72,27 +84,40 @@ Add support for Radxa Rock 3C
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
 - RPCS3 to 0.0.31
-- solarus-engine: bump to Mar 10, 2024 build
+- Solarus-engine: bump to Mar 10, 2024 build
 - Cemu to v2.0-72
 - Sonic3-AIR to v24.02.02.0-stable
-
+- Ruffle to 2024-03-28
+- Xenia Canary to build 122f58c (Commits on Mar 26, 2024)
+- Xemu to v0.7.120
+- ScummVM to 2.8.1
+- fheroes2 to 1.0.13
+- PCSX2 to v1.7.5663
+- Play! & Libretro Play! to Apr 3, 2024 builds
+- Dolphin to 5.0-21303
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
 - Nvidia Legacy driver to 470.239.06
-- wayland-protocols to 1.33
-- wlroots to 0.17.1
-- sway to 1.9
-- mesa3d to 24.0.3
+- Wayland-protocols to 1.33
+- Wlroots to 0.17.1
+- Sway to 1.9
+- Mesa3d to 24.0.4
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.8
-- switchres 0.220
-- btop to 1.3.2
+- Switchres 0.220
+- Btop to 1.3.2
 - Linux firmware to 20240312
-- buildroot to 2024.02.1
+- Buildroot to 2024.02.1
+- Xpad-Noone to Jan 10, 2024
+- XpadNeo to Mar 11, 2024
+- Xone to Mar 30, 2024
+- Fdupes to 2.3.0
+- FAudio to 24.03
+- Sound Open Firmware to 2023.12.1
 
-# 2024/03/xx - batocera.linux 39 - Painted Lady
+# 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
 - Emulators using Wine now use the Glorious Eggroll custom runner for latest capabilities and compatibility.
   Your previously saved games are still maintained in `/userdata/saves/` in their associated bottle for the afftected emulators Xenia, BigPemu, FPinball & Model2Emu.

@@ -1,0 +1,34 @@
+From 5dfbb3c0d3b148c632785e864a108fbce7004541 Mon Sep 17 00:00:00 2001
+From: adamg <adamg88@users.noreply.github.com>
+Date: Tue, 6 Feb 2024 17:50:09 +0000
+Subject: [PATCH 46/46] power: supply: rk818_charger: fix compiling driver on
+ 6.8
+
+---
+ drivers/power/supply/rk818_charger.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/supply/rk818_charger.c b/drivers/power/supply/rk818_charger.c
+index 6956d093c672..5cbdc1b46c5c 100644
+--- a/drivers/power/supply/rk818_charger.c
++++ b/drivers/power/supply/rk818_charger.c
+@@ -8,7 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mfd/rk808.h>
+ #include <linux/module.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/power_supply.h>
+ #include <linux/regmap.h>
+@@ -705,6 +705,7 @@ static const struct of_device_id rk818_charger_of_match[] = {
+ 	{ .compatible = "rockchip,rk818-charger", },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, rk818_charger_of_match);
+ 
+ static struct platform_driver rk818_charger_driver = {
+ 	.probe = rk818_charger_probe,
+-- 
+2.34.1
+

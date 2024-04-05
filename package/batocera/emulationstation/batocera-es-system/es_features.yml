@@ -6966,10 +6966,10 @@ cemu:
                "Disabled (Default)": false
                "Enabled":            true
 
-citra:
+lemonade:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        citra_screen_layout:
+        lemonade_screen_layout:
             prompt: SCREEN LAYOUT
             description: Arrange the dual screen layout. Separate windows can be changed with Hotkey+R2.
             choices:
@@ -6982,7 +6982,7 @@ citra:
                 "Separate Windows":      4-false
                 "Hybrid Screen Top":     5-false
                 "Hybrid Screen Bottom":  5-true
-        citra_resolution_factor:
+        lemonade_resolution_factor:
             submenu: GRAPHICS
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -6997,7 +6997,7 @@ citra:
                 "8x (3200x1920)":  8
                 "9x (3600x2160)":  9
                 "10x (4000x2400)": 10
-        citra_graphics_api:
+        lemonade_graphics_api:
             archs_include: [x86, x86_64]
             submenu: GRAPHICS
             prompt: GRAPHICS API
@@ -7006,43 +7006,43 @@ citra:
                 "Software":         0
                 "OpenGL (Default)": 1
                 "Vulkan":           2
-        citra_use_vsync_new:
+        lemonade_use_vsync_new:
             submenu: GRAPHICS
             prompt: VSYNC
             description: Fix screen tearing. CPU heavy.
             choices:
                 "Off": 0
                 "On":  1
-        citra_use_frame_limit:
+        lemonade_use_frame_limit:
             submenu: GRAPHICS
             prompt: FRAME LIMIT
             description: Off will help some games, others will run too fast.
             choices:
                 "Off": 0
                 "On":  1
-        citra_use_disk_shader_cache:
+        lemonade_use_disk_shader_cache:
             submenu: GRAPHICS
             prompt: DISK SHADER CACHE
             description: Reduce stutter that happens when compiling shaders.
             choices:
                 "Off": 0
                 "On":  1
-        citra_async_shader_compilation:
+        lemonade_async_shader_compilation:
             submenu: GRAPHICS
             prompt: ENABLE ASYNC SHADER COMPILATION
             description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
             choices:
                 "Off": 0
                 "On":  1
-        citra_custom_textures:
+        lemonade_custom_textures:
             submenu: GRAPHICS
             prompt: LOAD CUSTOM TEXTURES
             description: Preloading is impossible from ES.
             choices:
-                "Off": 0
-                "On":  1-normal
-                #"Preload": 1-preload
-        citra_is_new_3ds:
+                "Off":     0
+                "On":      1-normal
+                "Preload": 1-preload
+        lemonade_is_new_3ds:
             group: ADVANCED OPTIONS
             prompt: NEW 3DS MODE
             description: The New 3DS has a faster processor, ZL/ZR buttons and a C-stick.
@@ -9744,6 +9744,13 @@ mame:
             choices:
                 "Off":             0
                 "On":              1
+        multiscreens:
+            group: ADVANCED OPTIONS
+            prompt:      MULTISCREENS
+            description: Play this game on several screens (if available)
+            choices:
+                "Off":             0
+                "On":              1
         rotation:
             prompt:      VERTICAL ROTATION (TATE)
             description: Rotates screen by 90 degrees. Intended for rotating displays.
@@ -10901,10 +10908,8 @@ wine:
   cfeatures:
         wine-runner:
             prompt: WINE RUNNER
-            description: Runners simplify compatibility of running Windows games. If choosing Custom, you must have a runner in /userdata/system/wine/custom.
-            choices:
-                "Glorius Eggroll Proton (Default)": "ge-custom"
-                "User Provided Runner":             "custom"
+            description: Runners simplify compatibility of running Windows games. You must have a runner in it's own directory under /userdata/system/wine/custom.
+            preset: runners
         dxvk:
             prompt: DXVK FEATURE
             description: Converts DirectX 8/9/10/11/12 calls to Vulkan.
@@ -11504,27 +11509,28 @@ steam:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode]
 
-yuzu:
+suyu:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-        yuzu_backend:
-          prompt: GRAPHICS API
-          description: Choose which graphics API library to use.
-          choices:
-            "OpenGL": 0
-            "Vulkan": 1
-        yuzu_scale:
+        suyu_scale:
+          submenu: VIDEO
           prompt: RENDERING RESOLUTION
           description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
           choices:
-            "Native (720p/1080p)": 2
-            "2x (1440p/2160p)":    3
-            "3x (2160p/3240p)":    4
-            "4x (2880p/4320p)":    5
-            "5x (3600p/5400p)":    6
-            "6x (4320p/6480p)":    7
-        yuzu_ratio:
+            "0.5x (360p/540p) [EXPERIMENTAL]":   0
+            "0.75x (540p/810p) [EXPERIMENTAL]":  1
+            "1x (720p/1080p)":                   2
+            "1.5x (1080p/1620p) [EXPERIMENTAL]": 3
+            "2x (1440p/2160p)":                  4
+            "3x (2160p/3240p)":                  5
+            "4x (2880p/4320p)":                  6
+            "5x (3600p/5400p)":                  7
+            "6x (4320p/6480p)":                  8
+            "7x (5040p/7560p)":                  9
+            "8x (5760p/8640p)":                  10
+        suyu_ratio:
+          submenu: VIDEO
           prompt: ASPECT RATIO
           description: Change the output resolution ratio.
           choices:
@@ -11532,8 +11538,17 @@ yuzu:
             "Force 4:3":         1
             "Force 21:9":        2
             "Force 16:10":       3
-            "Stretch to window": 4
-        yuzu_anisotropy:
+            "Force 32:9":        4
+            "Stretch to window": 5
+        suyu_backend:
+          submenu: RENDERING
+          prompt: GRAPHICS API
+          description: Choose which graphics API library to use.
+          choices:
+            "OpenGL": 0
+            "Vulkan": 1
+        suyu_anisotropy:
+          submenu: RENDERING
           prompt: ANISOTROPIC FILTERING
           description: Improves clarity of distant textures.
           choices:
@@ -11542,7 +11557,62 @@ yuzu:
             "4x":      3
             "8x":      4
             "16x":     5
-        yuzu_language:
+        suyu_vsync:
+          submenu: RENDERING
+          prompt: VSYNC
+          description: Fix screen tearing. FIFO (Vsync) does not drop frames. FIFO Relaxed allows tearing as it recovers from a slow down. Mailbox can have lower latency but may drop frames.
+          choices:
+            "Immediate":             0
+            "Mailbox (Recommended)": 1
+            "FIFO (VSync On)":       2
+            "FIFO Relaxed":          3
+        suyu_async_shaders:
+          submenu: RENDERING
+          prompt: ASYNC SHADER COMPILE
+          description: Speed up shader compilation.
+          choices:
+            "Disabled": "false"
+            "Enabled":  "true"
+        suyu_aliasing_method:
+          submenu: RENDERING
+          prompt: ANTI-ALIASING METHOD
+          description: FXAA has a lower performance impact, goof for low resolutions. SMAA offers best quality.
+          choices:
+            "None": 0
+            "FXAA": 1
+            "SMAA": 2
+        suyu_scale_filter:
+          submenu: RENDERING
+          prompt: TEXTURE FILTERING
+          description: Smooth textures on 3D objects.
+          choices:
+            "Nearest Neighbour":               0
+            "Bilinear":                        1
+            "Bicubic":                         2
+            "Gaussian":                        3
+            "ScaleForce":                      4
+            "AMD FidelityFX Super Resolution": 5
+        suyu_accuracy:
+          submenu: RENDERING
+          prompt: ACCURACY LEVEL
+          description: GPU emulation accuracy. Most games render fine with Normal. High is required to ensure particles render correctly.
+          choices:
+            "Normal":  0
+            "High":    1
+            "Extreme": 2
+        suyu_sound_mode:
+          prompt: CHOOSE SOUND OUTPUT MODE
+          choices:
+            "Mono":     0
+            "Stereo":   1
+            "Surround": 2
+        suyu_dock_mode:
+          prompt: DOCK MODE
+          description: Choose whether the virtual switch is docked or not.
+          choices:
+            "Undocked":         "false"
+            "Docked (Default)": "true"
+        suyu_language:
           prompt: LANGUAGE
           description: Change the game's language.
           choices:
@@ -11564,7 +11634,7 @@ yuzu:
             "Simplified Chinese":     15
             "Traditional Chinese":    16
             "Brazilian Portuguese":   17
-        yuzu_region:
+        suyu_region:
           prompt: CHOOSE CONSOLE REGION
           description: Choose your console region.
           choices:
@@ -11575,7 +11645,7 @@ yuzu:
             "China":     4
             "Korea":     5
             "Taiwan":    6
-        ryujinx_timezone:
+        suyu_timezone:
           prompt: CHOOSE CONSOLE TIMEZONE
           description: Choose your console timezone.
           choices:
@@ -11624,43 +11694,6 @@ yuzu:
             "W-SU":      43
             "WET":       44
             "Zulu":      45
-        yuzu_sound_mode:
-          prompt: CHOOSE SOUND OUTPUT MODE
-          choices:
-            "Mono":     0
-            "Stereo":   1
-            "Surround": 2
-        yuzu_vsync:
-          prompt: VSYNC
-          description: Fix screen tearing.
-          choices:
-            "Disabled": "false"
-            "Enabled":  "true"
-        yuzu_async_shaders:
-          group: ADVANCED OPTIONS
-          prompt: ASYNC SHADER COMPILE
-          description: Speed up shader compilation.
-          choices:
-            "Disabled": "false"
-            "Enabled":  "true"
-        yuzu_aliasing_method:
-          group: ADVANCED OPTIONS
-          prompt:      ANTI-ALIASING METHOD
-          description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
-          choices:
-            "None": 0
-            "FXAA": 1
-        yuzu_scale_filter:
-          group: ADVANCED OPTIONS
-          prompt:      TEXTURE FILTERING
-          description: Smooth textures on 3D objects.
-          choices:
-            "Nearest Neighbour":            0
-            "Bilinear":                     1
-            "Bicubic":                      2
-            "Gaussian":                     3
-            "ScaleForce":                   4
-            "AMD FidelityFX (Vulkan Only)": 5
 
 ryujinx:
   features: [padtokeyboard]
@@ -12397,6 +12430,8 @@ vpinball:
         "Top-Left Position, Small": "pinmame_topleft_small"
         "Top-Left Position, Medium": "pinmame_topleft_medium"
         "Top-Left Position, Large": "pinmame_topleft_large"
+        "On screen 2 if available": "screen2"
+        "On screen 3 if available": "screen3"
         "PinMAME DMD disabled": "pinmame_disabled"
     vpinball_flexdmd:
       group: DISPLAY
@@ -12409,6 +12444,8 @@ vpinball:
         "Top-Left Position, Small": "flexdmd_topleft_small"
         "Top-Left Position, Medium": "flexdmd_topleft_medium"
         "Top-Left Position, Large": "flexdmd_topleft_large"
+        "On screen 2 if available": "screen2"
+        "On screen 3 if available": "screen3"
         "FlexDMD disabled": "flexdmd_disabled"
     vpinball_b2s:
       group: DISPLAY
@@ -12421,12 +12458,20 @@ vpinball:
         "Top-Left Position, Small": "b2s_topleft_small"
         "Top-Left Position, Medium": "b2s_topleft_medium"
         "Top-Left Position, Large": "b2s_topleft_large"
+        "On screen 2 if available": "screen2"
         "Backglass disabled": "b2s_disabled"
     vpinball_b2sdmd:
       group: DISPLAY
       prompt: DISPLAY BACKGLASS DMD
       description: When the Backglass is activated, display the small additional part with the scores.
       preset: switchon
+    vpinball_inverseplayfieldandb2s:
+      group: DISPLAY
+      prompt: INVERSE PLAYFIELD AND B2S
+      description: Inverse the Backglass and the Playfield. Usefull to use the Backglass as main screen for other emulators.
+      choices:
+        "On": 1
+        "Off": 0
     vpinball_musicvolume:
       group: AUDIO
       prompt: MUSIC VOLUME

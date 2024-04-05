@@ -4,15 +4,14 @@
 #
 ################################################################################
 
-DAPHNE_VERSION = v2.11.1
-DAPHNE_SITE = https://github.com/DirtBagXon/hypseus-singe
-DAPHNE_SITE_METHOD=git
+DAPHNE_VERSION = v2.11.2
+DAPHNE_SITE =  $(call github,DirtBagXon,hypseus-singe,$(DAPHNE_VERSION))
 DAPHNE_LICENSE = GPLv3
-DAPHNE_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis libmpeg2
+DAPHNE_DEPENDENCIES = libzip sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis libmpeg2
 
 DAPHNE_BEZELS_SOURCE = Bezels_Pack.zip
 DAPHNE_EXTRA_DOWNLOADS = \
-    $(DAPHNE_SITE)/releases/download/$(DAPHNE_VERSION)/$(DAPHNE_BEZELS_SOURCE)
+    https://github.com/DirtBagXon/hypseus-singe/releases/download/$(DAPHNE_VERSION)/$(DAPHNE_BEZELS_SOURCE)
 
 DAPHNE_SUBDIR = build
 DAPHNE_CONF_OPTS = ../src -DBUILD_SHARED_LIBS=OFF

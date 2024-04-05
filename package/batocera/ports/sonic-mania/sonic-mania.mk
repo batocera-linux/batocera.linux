@@ -11,7 +11,7 @@ SONIC_MANIA_GIT_SUBMODULES = YES
 SONIC_MANIA_LICENSE = Proprietary
 SONIC_MANIA_LICENSE_FILE = LICENSE.md
 
-SONIC_MANIA_DEPENDENCIES += libglew libglfw libogg libtheora portaudio
+SONIC_MANIA_DEPENDENCIES += libglu libglew libglfw libogg libtheora portaudio
 
 SONIC_MANIA_SUPPORTS_IN_SOURCE_BUILD = NO
 

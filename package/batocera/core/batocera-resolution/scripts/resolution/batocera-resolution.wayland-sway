@@ -54,6 +54,15 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# use for syntax only
+PSCREEN=
+if test "${1}" = "--screen"
+then
+    shift
+    PSCREEN=$1
+    shift
+fi
+
 ACTION=$1
 shift
 
@@ -124,14 +133,6 @@ case "${ACTION}" in
                 swaymsg output "${FIRSTOUTPUT}" enable
             )
         fi
-
-        # Mapping touch screen
-        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
-        if [ ! -z "${TOUCHSCREEN}" ]; then
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
-            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
-        fi
-
     ;;
     "minTomaxResolution" | "minTomaxResolution-secure")
         f_minTomaxResolution "$1"

@@ -1112,13 +1112,13 @@ atari7800:
       prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
-  name:       Atari Lynx
+  name: Atari Lynx
   manufacturer: Atari
   release: 1989
   hardware: portable
-  extensions: [lnx, zip, 7z]
-  theme:      atarilynx
-  platform:   atarilynx
+  extensions: [lnx, lyx, o, zip, 7z]
+  theme: atarilynx
+  platform: atarilynx
   emulators:
     libretro:
       mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
@@ -2116,8 +2116,8 @@ x1:
   hardware: portable
   extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
-    citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+    lemonade:
+      lemonade: { requireAnyOf: [BR2_PACKAGE_LEMONADE]          }
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
@@ -3501,8 +3501,8 @@ switch:
   theme:      switch
   extensions: [xci, nsp]
   emulators:
-    yuzu:
-      yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
+    suyu:
+      suyu: { requireAnyOf: [BR2_PACKAGE_SUYU] }
     ryujinx:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 

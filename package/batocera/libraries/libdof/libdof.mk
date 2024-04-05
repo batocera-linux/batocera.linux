@@ -3,12 +3,12 @@
 # libdof
 #
 ################################################################################
-# Version: Commits on Mar 23, 2024
-LIBDOF_VERSION = 92890aac83c03d76ed261424c274e17a9d54f6eb
+# Version: Commits on Apr 3, 2024
+LIBDOF_VERSION = 3ea64f3f74cd3d676866c077eb9eb297f87b29b3
 LIBDOF_SITE = $(call github,jsm174,libdof,$(LIBDOF_VERSION))
 LIBDOF_LICENSE = BSD-3-Clause
 LIBDOF_LICENSE_FILES = LICENSE
-LIBDOF_DEPENDENCIES = libserialport sockpp cargs
+LIBDOF_DEPENDENCIES = libserialport hidapi sockpp cargs
 LIBDOF_SUPPORTS_IN_SOURCE_BUILD = NO
 
 LIBDOF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -30,16 +30,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     BUILD_ARCH = x64
 endif
 
-define LIBDOF_CMAKE_HACKS
-   ## derived from platforms/${PLATFORM}/${BUILD_ARCH}/external.sh and CMakeLists.txt ##
-   $(SED) 's:third-party/include$$:$(STAGING_DIR)/usr/include/\n   third-party/include:g' $(@D)/CMakeLists.txt
-   $(SED) 's:$${CMAKE_SOURCE_DIR}/third-party/runtime-libs/$${PLATFORM}/$${ARCH}/:$(STAGING_DIR)/usr/lib/:g' $(@D)/CMakeLists.txt
-   $(SED) 's:third-party/runtime-libs/$${PLATFORM}/$${ARCH}:$(STAGING_DIR)/usr/lib/:g' $(@D)/CMakeLists.txt
-endef
-
 # Install to staging to build Visual Pinball Standalone
 LIBDOF_INSTALL_STAGING = YES
-
-LIBDOF_PRE_CONFIGURE_HOOKS += LIBDOF_CMAKE_HACKS
 
 $(eval $(cmake-package))

@@ -141,7 +141,7 @@ PACKAGES_EMULATORS="amiberry
                     bigpemu
                     cemu
                     cgenius
-                    citra
+                    lemonade
                     daphne
                     demul
                     dolphin-emu
@@ -184,7 +184,7 @@ PACKAGES_EMULATORS="amiberry
                     xemu
                     xenia
                     xenia-canary
-                    yuzu"
+                    suyu"
 
 PACKAGES_PORTS="abuse
                 abuse-data

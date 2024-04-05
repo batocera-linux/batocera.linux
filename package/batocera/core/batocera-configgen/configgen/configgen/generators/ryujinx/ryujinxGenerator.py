@@ -83,10 +83,17 @@ class RyujinxGenerator(Generator):
             os.makedirs(ryujinxConf + "/system")
 
         # Copy file & make executable (workaround)
-        if not os.path.exists(ryujinxExec) or not filecmp.cmp("/usr/ryujinx/Ryujinx", ryujinxExec):
-            shutil.copyfile("/usr/ryujinx/Ryujinx", ryujinxExec)
-            os.chmod(ryujinxExec, 0o0775)
+        files_to_copy = [
+            ("/usr/ryujinx/Ryujinx", ryujinxExec, 0o0775),
+            ("/usr/ryujinx/libSkiaSharp.so", os.path.join(ryujinxConf, "libSkiaSharp.so"), 0o0644),
+            ("/usr/ryujinx/libHarfBuzzSharp.so", os.path.join(ryujinxConf, "libHarfBuzzSharp.so"), 0o0644)
+        ]
 
+        for src, dest, mode in files_to_copy:
+            if not os.path.exists(dest) or not filecmp.cmp(src, dest):
+                shutil.copyfile(src, dest)
+                os.chmod(dest, mode)
+        
         # Copy the prod.keys file to where ryujinx reads it
         if os.path.exists(ryujinxKeys):
             shutil.copyfile(ryujinxKeys, ryujinxConf + "/system/prod.keys")

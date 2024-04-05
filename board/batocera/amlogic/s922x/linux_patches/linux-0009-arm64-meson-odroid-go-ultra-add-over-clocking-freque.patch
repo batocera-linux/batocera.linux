@@ -1,0 +1,57 @@
+From 40f0c572000dc88b972486b1aa5a014f7fb93dd2 Mon Sep 17 00:00:00 2001
+From: "Mauro (mdrjr) Ribeiro" <mauro.ribeiro@hardkernel.com>
+Date: Wed, 24 Jan 2024 10:56:00 +0000
+Subject: [PATCH 09/46] arm64: meson: odroid-go-ultra: add over-clocking
+ frequencies
+
+---
+ .../amlogic/meson-g12b-odroid-go-ultra.dts    | 26 ++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index 571a0393e148..1fcfe421ec73 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -347,7 +347,11 @@ opp-1896000000 {
+ 		opp-microvolt = <987500>;
+ 	};
+ 	opp-1992000000 {
+-		opp-microvolt = <1012500>;
++		opp-microvolt = <1050000>;
++	};
++	opp-2016000000 {
++		opp-hz = /bits/ 64 <2016000000>;
++		opp-microvolt = <1050000>;
+ 	};
+ };
+ 
+@@ -377,6 +381,26 @@ opp-1800000000 {
+ 	opp-1908000000 {
+ 		opp-microvolt = <1025000>;
+ 	};
++	opp-2016000000 {
++		opp-hz = /bits/ 64 <2016000000>;
++		opp-microvolt = <1025000>;
++	};
++	opp-2100000000 {
++		opp-hz = /bits/ 64 <2100000000>;
++		opp-microvolt = <1025000>;
++	};
++	opp-2208000000 {
++		opp-hz = /bits/ 64 <2208000000>;
++		opp-microvolt = <1050000>;
++	};
++	opp-2304000000 {
++		opp-hz = /bits/ 64 <2304000000>;
++		opp-microvolt = <1050000>;
++	};
++	opp-2400000000 {
++		opp-hz = /bits/ 64 <2400000000>;
++		opp-microvolt = <1050000>;
++	};
+ };
+ 
+ &i2c_AO {
+-- 
+2.34.1
+

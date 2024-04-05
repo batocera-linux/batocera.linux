@@ -3,8 +3,8 @@
 # scummvm
 #
 ################################################################################
-# Version: 2.8 - "Mysteries, Mammoths, and Muppets"
-SCUMMVM_VERSION = fd75208f27df1dd72dfdba713c198bb9d5b710d4
+# Version: 2.8.1 - "Oh MMy!"
+SCUMMVM_VERSION = v2.8.1
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES += sdl2 zlib libmpeg2 libogg libvorbis flac libmad

@@ -51,11 +51,11 @@ index 4c0eac3..60fc668 100644
    std::string m_gametdb_id;
    std::string m_title_name;
 diff --git a/Source/Core/Core/Core.cpp b/Source/Core/Core/Core.cpp
-index 1e940d1..ca68b1a 100644
+index 8e6f3b7c55..e2f14e5984 100644
 --- a/Source/Core/Core/Core.cpp
 +++ b/Source/Core/Core/Core.cpp
-@@ -767,10 +767,14 @@ void SaveScreenShot()
-   Core::RunAsCPUThread([] { g_frame_dumper->SaveScreenshot(GenerateScreenshotName()); });
+@@ -792,10 +792,14 @@ void SaveScreenShot()
+   g_frame_dumper->SaveScreenshot(GenerateScreenshotName());
  }
  
 -void SaveScreenShot(std::string_view name)
@@ -65,13 +65,12 @@ index 1e940d1..ca68b1a 100644
 +
 +void SaveScreenShotWithPath(std::string path, std::string_view name)
  {
--  Core::RunAsCPUThread([&name] {
--    g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", GenerateScreenshotFolderPath(), name));
-+  Core::RunAsCPUThread([&path, &name] {
-+    g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", path, name));
-   });
+   const Core::CPUThreadGuard guard(Core::System::GetInstance());
+-  g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", GenerateScreenshotFolderPath(), name));
++  g_frame_dumper->SaveScreenshot(fmt::format("{}{}.png", path, name));
  }
  
+ static bool PauseAndLock(Core::System& system, bool do_lock, bool unpause_on_unlock)
 diff --git a/Source/Core/Core/Core.h b/Source/Core/Core/Core.h
 index e237e25..542effa 100644
 --- a/Source/Core/Core/Core.h
@@ -127,7 +126,7 @@ index c298dd1..e6d71f4 100644
      return 0;
  
    constexpr u64 MS_PER_SEC = 1000;
-@@ -751,20 +754,49 @@ void Shutdown()
+@@ -968,20 +968,49 @@ void Shutdown()
    }
  }
  
@@ -167,18 +166,18 @@ index c298dd1..e6d71f4 100644
 +  return fmt::format("{}.s{:02d}", basesavestate, number);
  }
  
- void Save(int slot, bool wait)
+ void Save(Core::System& system, int slot, bool wait)
  {
--  SaveAs(MakeStateFilename(slot), wait);
+-  SaveAs(system, MakeStateFilename(slot), wait);
 +  std::string savePath = MakeStateFilename(false, slot);
-+  SaveAs(savePath, wait);
++  SaveAs(system, savePath, wait);
 +  Core::SaveScreenShotWithPath(MakeStateFilename_partdirectory(slot), PathToFileName(savePath));
  }
  
- void Load(int slot)
+ void Load(Core::System& system, int slot)
  {
--  LoadAs(MakeStateFilename(slot));
-+  LoadAs(MakeStateFilename(true, slot));
+-  LoadAs(system, MakeStateFilename(slot));
++  LoadAs(system, MakeStateFilename(true, slot));
  }
  
- void LoadLastSaved(int i)
+ void LoadLastSaved(Core::System& system, int i)

@@ -25,27 +25,53 @@ if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
 fi
 echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
-# Wine Folder
-wine_folder() {
-    # check if custom wine runner
-    if [[ "$WINE_VERSION" == "custom" ]]; then
+find_wine_dir() {
+    local WINE_VERSION="$1"
+    # check if we're using a custom wine runner
+    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
         # now check if the folder exists
-        if [[ -e "/userdata/system/wine/${WINE_VERSION}" ]]; then
-            echo "/userdata/system/wine"
-        elif [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
-            echo "/usr/wine"
+        if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
+            echo "/userdata/system/wine/custom"
         else
-            exit 1
+            WINE_VERSION="ge-custom"
+            if [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
+                echo "/usr/wine"
+            else
+                return 1
+            fi
         fi
     elif [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
         echo "/usr/wine"
     else
-        exit 1
+        return 1
+    fi
+}
+
+update_wine_version() {
+    local WINE_VERSION="$1"
+    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+        if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
+            echo "$WINE_VERSION"
+        else
+            WINE_VERSION="ge-custom"
+            echo "$WINE_VERSION"
+        fi
+    else
+        echo "$WINE_VERSION"
     fi
 }
 
 ## Wine executables
-DIR="$(wine_folder)" || { echo "can't find WINE version ${WINE_VERSION} directory"; exit 1; }
+DIR="$(find_wine_dir "$WINE_VERSION")"
+if [[ $? -eq 0 ]]; then
+    WINE_VERSION="$(update_wine_version "$WINE_VERSION")"
+else
+    echo "can't find WINE version ${WINE_VERSION} directory, you should change the runner"
+    exit 1
+fi
+
+echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
+
 USER_DIR="/userdata/system/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
@@ -56,15 +82,18 @@ WINETRICKS="${DIR}/winetricks"
 ## Folders
 WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
 G_ROMS_DIR="/userdata/roms/${SYSTEM}"
-
+# Check lib64 directory
 if [[ -e "${DIR}/${WINE_VERSION}/lib64/wine" ]]; then
     WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
 else
     WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib/wine"
 fi
-
-WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
-
+# Check lib32 directory
+if [[ -e "${DIR}/${WINE_VERSION}/lib32/wine" ]]; then
+    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib32/wine"
+else
+    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+fi
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
@@ -435,6 +464,7 @@ createWineDirectory() {
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname; then
 	    rm -rf "${WINEPREFIX}"
 	    kill -15 "${BSODPID}"
+        echo "+++ Failed initialising ${WINEPREFIX} +++"
 	    return 1
     fi
 
@@ -461,6 +491,7 @@ getWine_var() {
 }
 
 play_wine() {
+    echo "play_wine"
     GAMENAME=$1
     WINEPOINT="${GAMENAME}"
 
@@ -473,15 +504,17 @@ play_wine() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
 
 play_pc() {
+    echo "play_pc"
     GAMENAME=$1
     WINEPOINT="${WINE_BOTTLE_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
@@ -497,10 +530,11 @@ play_pc() {
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
+    WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
@@ -545,6 +579,7 @@ play_exe() {
 }
 
 play_winetgz() {
+    echo "play_winetgz"
     GAMENAME=$1
     WINEPOINT="${WINE_BOTTLE_DIR}/"$(basename "${GAMENAME}")".wine"
 
@@ -563,15 +598,17 @@ play_winetgz() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
 }
 
 play_squashfs() {
+    echo "play_squashfs"
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
@@ -614,10 +651,11 @@ play_squashfs() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
     # wait 1 sec before unmounting
