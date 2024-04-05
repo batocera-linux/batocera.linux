@@ -3,7 +3,7 @@
 # DMD_SIMULATOR
 #
 ################################################################################
-DMD_SIMULATOR_VERSION = 8f27da3c7739e19a029a9b797a959aeedf77d773
+DMD_SIMULATOR_VERSION = f9f6f39c80710d3d5561e9fb1d3b0132202a86df
 DMD_SIMULATOR_SITE =  $(call github,batocera-linux,dmd-simulator,$(DMD_SIMULATOR_VERSION))
 
 define DMD_SIMULATOR_INSTALL_DMD_SIMULATOR
@@ -22,6 +22,7 @@ define DMD_SIMULATOR_INSTALL_DMD_SIMULATOR_PLAYER
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/dmd-simulator/dmd_simulator.service $(TARGET_DIR)/usr/share/batocera/services/dmd_simulator
 
 	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/dmd-simulator/batocera.png $(TARGET_DIR)/usr/share/dmd-simulator/images/system/batocera.png
+	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/dmd-simulator/rainbow.png $(TARGET_DIR)/usr/share/dmd-simulator/images/system/rainbow.png
 endef
 
 ifeq ($(BR2_PACKAGE_DMD_SIMULATOR),y)
