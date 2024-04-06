@@ -3,7 +3,7 @@
 # soniccd
 #
 ################################################################################
-# Version: Commits on Dec 2, 2023
+# Version: Commits on Mar 22, 2024
 SONICCD_SITE = https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation.git
 SONICCD_SITE_METHOD = git
 SONICCD_GIT_SUBMODULES = YES
@@ -15,7 +15,7 @@ ifneq ($(BR2_PACKAGE_LIBGLEW),y)
     SONICCD_VERSION = 222caf6
     SONICCD_BINNAME = soniccd
 else
-    SONICCD_VERSION = 9832a50
+    SONICCD_VERSION = 7a23c39
     SONICCD_BINNAME = RSDKv3
     SONICCD_DEPENDENCIES += libglew
 endif

@@ -216,12 +216,17 @@ class LemonadeGenerator(Generator):
             tab = system.config["lemonade_custom_textures"].split('-')
             lemonadeConfig.set("Utility", "custom_textures",  "true")
             if tab[1] == 'normal':
+                lemonadeConfig.set("Utility", "async_custom_loading", "true")
                 lemonadeConfig.set("Utility", "preload_textures", "false")
             else:
-                lemonadeConfig.set("Utility", "preload_textures", "true") # It's not working from ES for now, only from the emulator menu
+                lemonadeConfig.set("Utility", "async_custom_loading", "false")
+                lemonadeConfig.set("Utility", "preload_textures", "true")
         else:
             lemonadeConfig.set("Utility", "custom_textures",  "false")
             lemonadeConfig.set("Utility", "preload_textures", "false")
+        lemonadeConfig.set("Utility", "async_custom_loading\\default", "true")
+        lemonadeConfig.set("Utility", "custom_textures\\default", "false")
+        lemonadeConfig.set("Utility", "preload_textures\\default", "false")
 
         ## [CONTROLS]
         if not lemonadeConfig.has_section("Controls"):

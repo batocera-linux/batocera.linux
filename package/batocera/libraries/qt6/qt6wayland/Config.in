@@ -10,5 +10,5 @@ config BR2_PACKAGE_QT6WAYLAND
         
         https://doc.qt.io/qt-6/qtwayland-index.html
 
-comment "qt6svg needs headers >= 3.6"
+comment "qt6wayland needs headers >= 3.6"
 	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_6

@@ -219,9 +219,9 @@ def getGenerator(emulator):
         from generators.fba2x.fba2xGenerator import Fba2xGenerator
         return Fba2xGenerator()
 
-    if emulator == 'yuzu':
-        from generators.yuzu.yuzuGenerator import YuzuGenerator
-        return YuzuGenerator()
+    if emulator == 'suyu':
+        from generators.suyu.suyuGenerator import SuyuGenerator
+        return SuyuGenerator()
 
     if emulator == 'ryujinx':
         from generators.ryujinx.ryujinxGenerator import RyujinxGenerator

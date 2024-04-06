@@ -5,8 +5,9 @@ import configparser
 import os
 
 parser = argparse.ArgumentParser(prog="dmdserver-config")
-parser.add_argument("--matrix",               help="matrix color")
-parser.add_argument("--brightness", type=int, help="matrix color")
+parser.add_argument("--pixelcade-matrix",           help="matrix color")
+parser.add_argument("--zedmd-matrix",               help="matrix color")
+parser.add_argument("--zedmd-brightness", type=int, help="brightness")
 parser.add_argument("--config", default="/userdata/system/configs/dmdserver/config.ini", help="config file")
 args = parser.parse_args()
 
@@ -37,31 +38,36 @@ if config.has_option("ZeDMD", "RGBOrder"):
 if config.has_option("ZeDMD", "Brightness"):
     zedmd_before_brightness = config.get("ZeDMD", "Brightness")
 
-if args.matrix is not None:
-    if args.matrix == "auto":
-        config.remove_option("Pixelcade", "Matrix")
-        config.remove_option("ZeDMD",     "RGBOrder")
-    elif args.matrix == "rgb":
-        config.set("Pixelcade", "Matrix",   "0")
+if args.zedmd_matrix is not None:
+    if args.zedmd_matrix == "auto":
+        config.remove_option("ZeDMD", "RGBOrder")
+    elif args.zedmd_matrix == "rgb":
         config.set("ZeDMD",     "RGBOrder", "0")
-    elif args.matrix == "brg":
+    elif args.zedmd_matrix == "brg":
         config.set("ZeDMD",     "RGBOrder", "1")
-    elif args.matrix == "gbr":
+    elif args.zedmd_matrix == "gbr":
         config.set("ZeDMD",     "RGBOrder", "2")
-    elif args.matrix == "rbg":
-        config.set("Pixelcade", "Matrix",   "1")
+    elif args.zedmd_matrix == "rbg":
         config.set("ZeDMD",     "RGBOrder", "3")
-    elif args.matrix == "grb":
+    elif args.zedmd_matrix == "grb":
         config.set("ZeDMD",     "RGBOrder", "4")
-    elif args.matrix == "bgr":
+    elif args.zedmd_matrix == "bgr":
         config.set("ZeDMD",     "RGBOrder", "5")
 
+if args.pixelcade_matrix is not None:
+    if args.pixelcade_matrix == "auto":
+        config.remove_option("Pixelcade", "Matrix")
+    elif args.pixelcade_matrix == "rgb":
+        config.set("Pixelcade", "Matrix",   "0")
+    elif args.pixelcade_matrix == "rbg":
+        config.set("Pixelcade", "Matrix",   "1")
+
 ### Brightness ###
-if args.brightness is not None:
-    if args.brightness < 0:
+if args.zedmd_brightness is not None:
+    if args.zedmd_brightness < 0:
         config.remove_option("ZeDMD", "Brightness")
     else:
-        config.set("ZeDMD", "Brightness", str(int(args.brightness/6.66))) # zedmd brightness is from 0 to 15 (The brightness levels could be calculated like this. But they aren't linear. But I think that doesn't matter)
+        config.set("ZeDMD", "Brightness", str(args.zedmd_brightness))
 
 ### zedmd as a special flag to save config for the next reboot ###
 # we do it only if something changes. this is not perfect, but i've no better way

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MOONLIGHT_EMBEDDED_VERSION = v2.6.1
+MOONLIGHT_EMBEDDED_VERSION = v2.7.0
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y

@@ -17,6 +17,7 @@ Initial support for the Lenovo Legion Go
 - DMD server (handling any dmd supported by libdmd) integrated with vpinball
 - Support for multi screens (for pincab, mame multi games)
 - Evmapy keys file to help exit running flatpak app
+- Steering wheel support for Thrustmaster T150RS
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -59,7 +60,7 @@ Initial support for the Lenovo Legion Go
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - Libretro-genesisplusgx: bump to Feb 23, 2024 build
-- Libretro-mame: bump to 0.263
+- Libretro-mame: bump to Apr 5, 2024 build (mame 0.264)
 - Libretro-mame2003-plus: bump to Feb 21, 2024 build
 - Libretro-mupen64plus-next: bump to Feb 6, 2024 build
 - Libretro-neocd: bump to Feb 1, 2024 build
@@ -104,7 +105,7 @@ Initial support for the Lenovo Legion Go
 - Mesa3d to 24.0.4
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
-- X86_64 kernel to 6.8
+- X86_64 kernel to 6.8.4
 - Switchres 0.220
 - Btop to 1.3.2
 - Linux firmware to 20240312
