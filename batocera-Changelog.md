@@ -105,7 +105,7 @@ Initial support for the Lenovo Legion Go
 - Mesa3d to 24.0.4
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
-- X86_64 kernel to 6.8
+- X86_64 kernel to 6.8.4
 - Switchres 0.220
 - Btop to 1.3.2
 - Linux firmware to 20240312
