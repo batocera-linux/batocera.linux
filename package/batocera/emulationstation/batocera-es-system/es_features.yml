@@ -12355,11 +12355,6 @@ vpinball:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-    vpinball_enableconfiggen:
-      group: EXPERT SETTINGS
-      prompt: ENABLE EMULATIONSTATION CONFIGURATION
-      description: Turn on to configure settings from this GUI (Recommended). If disabled, you have to manually edit the Config File (Experts only - not recommended).
-      preset: switchon
     vpinball_folders:
       group: EXPERT SETTINGS
       prompt: PER TABLE FOLDER
