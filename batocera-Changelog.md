@@ -60,7 +60,7 @@ Initial support for the Lenovo Legion Go
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - Libretro-genesisplusgx: bump to Feb 23, 2024 build
-- Libretro-mame: bump to 0.263
+- Libretro-mame: bump to Apr 5, 2024 build (mame 0.264)
 - Libretro-mame2003-plus: bump to Feb 21, 2024 build
 - Libretro-mupen64plus-next: bump to Feb 6, 2024 build
 - Libretro-neocd: bump to Feb 1, 2024 build
