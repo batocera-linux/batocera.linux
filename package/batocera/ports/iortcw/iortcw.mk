@@ -3,8 +3,8 @@
 # iortcw
 #
 ################################################################################
-
-IORTCW_VERSION = 3babd7aa7cff9974fbc5b7507eadd3e30e669d87
+# Version: Commits on Mar 13, 2024
+IORTCW_VERSION = a4e6f501b5ef1a1f6127d89164e850bb7cf873d6
 IORTCW_SITE = https://github.com/iortcw/iortcw.git
 IORTCW_SITE_METHOD = git
 IORTCW_GIT_SUBMODULES=YES
