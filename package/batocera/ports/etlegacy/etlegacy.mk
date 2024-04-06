@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits on Nov 4, 2023
-ETLEGACY_VERSION = 524f1ccce774594db16f226917441abbba077e2d
+ETLEGACY_VERSION = v2.82.0
 ETLEGACY_SITE = https://github.com/etlegacy/etlegacy.git
 ETLEGACY_SITE_METHOD = git
 ETLEGACY_GIT_SUBMODULES = YES
@@ -53,7 +53,7 @@ endif
 
 define ETLEGACY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/share/etlegacy
-	cp $(@D)/buildroot-build/legacy/legacy_2.81-dirty.pk3 \
+	cp $(@D)/buildroot-build/legacy/legacy_2.82-dirty.pk3 \
 	    $(TARGET_DIR)/usr/share/etlegacy
     cp $(@D)/buildroot-build/etl \
 	    $(TARGET_DIR)/usr/bin/etl
