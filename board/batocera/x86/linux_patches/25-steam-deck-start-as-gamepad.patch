@@ -1,0 +1,26 @@
+diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
+index e9d9051040..2ebd9bc649 100644
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -583,7 +583,10 @@ static int steam_input_open(struct input_dev *dev)
+ 	struct steam_device *steam = input_get_drvdata(dev);
+ 	unsigned long flags;
+ 	bool set_lizard_mode;
+-
++	
++	/* Force the gamepad_mode on for Steam Deck */
++	steam->gamepad_mode = true;
++	
+ 	/*
+ 	 * Disabling lizard mode automatically is only done on the Steam
+ 	 * Controller. On the Steam Deck, this is toggled manually by holding
+@@ -595,6 +598,9 @@ static int steam_input_open(struct input_dev *dev)
+ 		spin_unlock_irqrestore(&steam->lock, flags);
+ 		if (set_lizard_mode)
+ 			steam_set_lizard_mode(steam, false);
++	else
++        /* Force the lizard_mode off for Steam Deck */
++	    steam_set_lizard_mode(steam, false);
+ 	}
+ 
+ 	return 0;
