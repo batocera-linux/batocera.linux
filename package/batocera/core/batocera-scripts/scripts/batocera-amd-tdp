@@ -15,14 +15,22 @@ if [[ $ryzenadj_output =~ "unsupported model" ]]; then
   exit 1
 fi
 
-# Handle various AMD processor types
-# Maybe change this to detected RyzendAdj model family?
-info_output=$(batocera-info)
-if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+# Handle various AMD handhelds
+info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+
+if [[ $info_output == "Loki_Zero" ]]; then
     # Set the TDP range to 2-20w
     # We need vendor guidance to get accurate values
-    TDP_MIN=2
+    TDP_MIN=5
     TDP_MAX=20
+fi
+
+# Legion Go
+if [[ $info_output == "LNVNB161216" ]]; then
+    # Set the TDP range to 2-20w
+    # We need vendor guidance to get accurate values
+    TDP_MIN=5
+    TDP_MAX=30
 fi
 
 # Check if TDP is null or not provided. If so, set to 10w
