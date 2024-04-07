@@ -7,6 +7,8 @@
 #
 # users can set a higher or lower manufacturer TDP accordingly.
 
+log="/userdata/system/logs/amd-tdp.log"
+
 # check we have a max system TDP value
 CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
 
@@ -18,17 +20,18 @@ fi
 
 # set the final tdp value
 set_tdp() {
-    echo "Setting AMD Processor TDP to ${1}W"
+    echo "Game ${2} requested setting AMD Mobile Processor TDP to ${1} Watts" >> $log
     /usr/bin/batocera-amd-tdp $1
 }
 
 # determine the new TDP value based on max TDP
 handle_tdp() {
     TDP_PERCENTAGE=$1
+    ROM_NAME=$2
     MAX_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
     #round the value up or down to make bash happy
     TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
-    set_tdp "${TDP_VALUE}"
+    set_tdp "${TDP_VALUE}" "${ROM_NAME}"
 }
 
 # Check for events
@@ -50,10 +53,10 @@ if [ "$EVENT" = "gameStop" ]; then
     TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
     if [ -z "${TDP_SETTING}" ]; then
         TDP_SETTING="$(/usr/bin/batocera-settings-get system.cpu.tdp)"
-        set_tdp "${TDP_SETTING}"
+        set_tdp "${TDP_SETTING}" "${ROM_NAME}"
         exit 0
     fi
-    handle_tdp "${TDP_SETTING}"
+    handle_tdp "${TDP_SETTING}" "${ROM_NAME}"
 	exit 0
 fi
 
@@ -73,11 +76,11 @@ fi
 # If no value is found ensure tdp is default before exiting
 if [ -z "${TDP_SETTING}" ]; then
     TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
-    set_tdp "${TDP_SETTING}"
+    set_tdp "${TDP_SETTING}" "${ROM_NAME}"
     exit 0
 fi
 
 # now apply TDP percentage accordingly
 if ! [ -z "${TDP_SETTING}" ]; then
-	handle_tdp "${TDP_SETTING}"
+	handle_tdp "${TDP_SETTING}" "${ROM_NAME}"
 fi

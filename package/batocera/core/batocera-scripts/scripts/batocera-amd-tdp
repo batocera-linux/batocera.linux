@@ -3,6 +3,8 @@
 # Early script to set the TDP
 # We should call / set the TDP per emulator based on user selection
 
+log="/userdata/system/logs/amd-tdp.log"
+
 TDP_MIN=5
 TDP_MAX=100
 
@@ -23,6 +25,7 @@ if [[ $info_output == "Loki_Zero" ]]; then
     # We need vendor guidance to get accurate values
     TDP_MIN=5
     TDP_MAX=20
+    echo "Handheld AYN Loki Zero detected. Minumum TDP: $TDP_MIN Watts. Maximum TDP: $TDP_MAX Watts" >> $log
 fi
 
 # Legion Go
@@ -31,20 +34,26 @@ if [[ $info_output == "LNVNB161216" ]]; then
     # We need vendor guidance to get accurate values
     TDP_MIN=5
     TDP_MAX=30
+    echo "Handheld Lenovo Legion Go detected. Minumum TDP: $TDP_MIN Watts. Maximum TDP: $TDP_MAX Watts" >> $log
 fi
 
 # Check if TDP is null or not provided. If so, set to 10w
 if [ -z "$TDP" ]; then
     TDP=10
+    echo "No TDP detected, using TDP of $TDP Watts" >> $log
 fi
 
 # Align to the TDP_MIN if it's below it
 if (( TDP < TDP_MIN )); then
+    echo "Requested TDP of $TDP Watts is below the minimum" >> $log
     TDP=$TDP_MIN
+    echo "Using TDP of $TDP" >> $log
 fi
 # Cap TDP at TDP_MAX if it exceeds it
 if (( TDP > TDP_MAX )); then
+    echo "Requested TDP of $TDP Watts is above the maximum" >> $log
     TDP=$TDP_MAX
+    echo "Using TDP of $TDP Watts" >> $log
 fi
 
 if (( TDP >= TDP_MIN && TDP <= TDP_MAX )); then
@@ -52,5 +61,15 @@ if (( TDP >= TDP_MIN && TDP <= TDP_MAX )); then
     WATTS=$((TDP * 1000))
 fi
 
-ryzenadj --stapm-limit=${WATTS} --fast-limit=${WATTS} --slow-limit=${WATTS} --tctl-temp=90
+if /usr/bin/ryzenadj --stapm-limit="${WATTS}" --fast-limit="${WATTS}" --slow-limit="${WATTS}" --tctl-temp=95; then
+    echo "TDP of $TDP Watts has been set" >> $log
+else
+    echo "Error setting TDP. Please check the logs for more information." >> $log
+    exit 1
+fi
+
+echo "" >> $log
+echo "*** ------------------------------------- ***" >> $log
+echo "" >> $log
+
 batocera-settings-set amd.tdp ${TDP}
