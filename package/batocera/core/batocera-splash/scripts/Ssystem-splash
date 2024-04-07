@@ -34,6 +34,10 @@ do_start ()
         [ -f "$image" ] || exit 1
     fi
 
+    if test "${V_BOARD_MODEL}" = "Loki_Zero"; then
+        image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
+    fi
+
     FBV_OPTS="-f -e"
     # FBV_OPTS can be set differently for some boards to work
     MODELOPTS="/etc/opts.$V_BOARD_MODEL"
