@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log="/userdata/system/logs/amd-tdp.log"
+
 case "$1" in
   start)
     if ! lscpu | grep -q AuthenticAMD; then
@@ -7,15 +9,19 @@ case "$1" in
         exit 1
     else
         # check if tdp capable processor exists for Ryzen Mobile Processor
-        if ! ryzenadj -i | head -n 1 | grep -q "unsupported model"; then
-            echo "Supported Ryzen Mobile Processor found for TDP..."
+        if ! ryzenadj -i | head -n 1 | grep -q "unsupported model"; then            
+            echo "" >> $log
+            echo "*** ------------------------------------- ***" >> $log
+            echo "" >> $log
+            echo "Supported Ryzen Mobile Processor found for TDP..." > $log
             MAX_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
+            echo "Maximum reported TDP is $MAX_TDP Watts" >> $log
             /usr/bin/batocera-settings-set system.cpu.tdp "${MAX_TDP}"
             # set the global TDP if set
             TDP_PERCENTAGE="$(/usr/bin/batocera-settings-get global.tdp)"
             if ! [ -z "${TDP_PERCENTAGE}" ] && [ "$TDP_PERCENTAGE" -ge 10 ]; then
                 TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
-                echo "Setting Ryzen Mobile Processor TDP to $TDP_VALUE"
+                echo "Setting Ryzen Mobile Processor global TDP to $TDP_VALUE Watts" >> $log
                 /usr/bin/batocera-amd-tdp $TDP_VALUE
             fi
         else
