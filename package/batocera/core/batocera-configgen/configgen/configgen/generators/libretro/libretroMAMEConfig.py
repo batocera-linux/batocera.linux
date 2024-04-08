@@ -464,7 +464,7 @@ def getMameControlScheme(system, romBasename):
         neogeoList = set(open(mameNeogeo).read().split())
         twinstickList = set(open(mameTwinstick).read().split())
         qbertList = set(open(mameRotatedstick).read().split())
-            
+
         romName = os.path.splitext(romBasename)[0]
         if romName in capcomList:
             if controllerType in [ "auto", "snes" ]:
@@ -521,7 +521,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
 
     # Get controller scheme
     altButtons = getMameControlScheme(system, romBasename)
-    
+
     # Load standard controls from csv
     controlFile = '/usr/share/batocera/configgen/data/mame/mameControls.csv'
     openFile = open(controlFile, 'r')
@@ -565,7 +565,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             useControls = f"apple2-{specialController}"
     else:
         useControls = messSysName
-    
+
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
@@ -620,7 +620,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                 config_alt = minidom.parse(configFile_alt)
             except:
                 pass # reinit the file
-        
+
         perGameCfg = system.getOptBoolean('pergamecfg')
         if os.path.exists(configFile_alt) and (customCfg or perGameCfg):
             overwriteSystem = False
@@ -631,7 +631,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         xml_mameconfig_alt.setAttribute("version", "10")
         xml_system_alt = getSection(config_alt, xml_mameconfig_alt, "system")
         xml_system_alt.setAttribute("name", messSysName)
-        
+
         removeSection(config_alt, xml_system_alt, "input")
         xml_input_alt = config_alt.createElement("input")
         xml_system_alt.appendChild(xml_input_alt)
@@ -653,7 +653,11 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             xml_kbenable_alt.setAttribute("tag", ":")
             xml_kbenable_alt.setAttribute("enabled", "1")
             xml_input_alt.appendChild(xml_kbenable_alt)
-    
+
+    # Don't configure pads if guns are present and "use_guns" is on
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+        return
+
     # Fill in controls on cfg files
     nplayer = 1
     maxplayers = len(playersControllers)
@@ -664,7 +668,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             mappings_use["JOYSTICK_DOWN"] = "down"
             mappings_use["JOYSTICK_LEFT"] = "left"
             mappings_use["JOYSTICK_RIGHT"] = "right"
-            
+
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
@@ -703,7 +707,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                             retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
         nplayer = nplayer + 1
-        
+
         # save the config file
         #mameXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
@@ -711,7 +715,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             mameXml = codecs.open(configFile, "w", "utf-8")
             dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml.write(dom_string)
-        
+
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
         if messSysName in specialControlList and overwriteSystem:
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
