@@ -1,26 +1,24 @@
 diff --git a/Documentation/devicetree/bindings/media/rockchip-rga.yaml b/Documentation/devicetree/bindings/media/rockchip-rga.yaml
-index ea2342222..cc4d23b55 100644
+index dd645ddccb07..8adb18245187 100644
 --- a/Documentation/devicetree/bindings/media/rockchip-rga.yaml
 +++ b/Documentation/devicetree/bindings/media/rockchip-rga.yaml
-@@ -20,11 +20,13 @@ properties:
+@@ -20,9 +20,11 @@ properties:
      oneOf:
        - const: rockchip,rk3288-rga
        - const: rockchip,rk3399-rga
 +      - const: rockchip,rk356x-rga
        - items:
-           - enum:
-               - rockchip,rk3228-rga
-               - rockchip,rk3568-rga
+           - const: rockchip,rk3228-rga
            - const: rockchip,rk3288-rga
 +          - const: rockchip,rk356x-rga
  
    reg:
      maxItems: 1
 diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
-index 25f5b5eeb..bfd4e5d53 100644
+index 61b25fcf826e..b14844105788 100644
 --- a/drivers/media/platform/rockchip/rga/rga.c
 +++ b/drivers/media/platform/rockchip/rga/rga.c
-@@ -965,6 +965,9 @@ static const struct of_device_id rockchip_rga_match[] = {
+@@ -979,6 +979,9 @@ static const struct of_device_id rockchip_rga_match[] = {
  	{
  		.compatible = "rockchip,rk3399-rga",
  	},
@@ -30,3 +28,6 @@ index 25f5b5eeb..bfd4e5d53 100644
  	{},
  };
  
+-- 
+Armbian
+
