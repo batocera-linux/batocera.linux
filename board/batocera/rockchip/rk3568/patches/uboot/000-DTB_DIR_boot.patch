@@ -1,0 +1,26 @@
+diff --git a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+index d05502f6..d54f1fe1 100644
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -32,7 +32,7 @@
+ 
+ #define GPIO_WRITEMASK(bits)	((bits) << 16)
+ 
+-#define DTB_DIR			"rockchip/"
++#define DTB_DIR			"boot/"
+ 
+ struct rg3xx_model {
+ 	const u16 adc_value;
+diff --git a/configs/anbernic-rgxx3-rk3566_defconfig b/configs/anbernic-rgxx3-rk3566_defconfig
+index ed6643d9..d1ddf2de 100644
+--- a/configs/anbernic-rgxx3-rk3566_defconfig
++++ b/configs/anbernic-rgxx3-rk3566_defconfig
+@@ -27,7 +27,7 @@ CONFIG_FIT_VERBOSE=y
+ CONFIG_SPL_LOAD_FIT=y
+ CONFIG_OF_BOARD_SETUP=y
+ CONFIG_OF_STDOUT_VIA_ALIAS=y
+-CONFIG_DEFAULT_FDT_FILE="rockchip/rk3566-anbernic-rgxx3.dtb"
++CONFIG_DEFAULT_FDT_FILE="boot/rk3566-anbernic-rgxx3.dtb"
+ # CONFIG_CONSOLE_MUX is not set
+ # CONFIG_DISPLAY_CPUINFO is not set
+ CONFIG_DISPLAY_BOARDINFO_LATE=y
