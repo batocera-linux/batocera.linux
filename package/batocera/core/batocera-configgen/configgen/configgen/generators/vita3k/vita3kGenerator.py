@@ -19,6 +19,10 @@ class Vita3kGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         
+        # Fetch user-defined prefpath if it exists
+        if system.isOptSet("vita3k_prefpath"):
+            vitaConfig = system.config["vita3k_prefpath"]
+
         # Create config folder
         if not path.isdir(vitaConfig):
             os.mkdir(vitaConfig)
@@ -30,13 +34,14 @@ class Vita3kGenerator(Generator):
             os.mkdir(vitaSaves)
         
         # Move saves if necessary
-        if os.path.isdir(os.path.join(vitaConfig, 'ux0')):
-            # Move all folders from vitaConfig to vitaSaves except "data", "lang", and "shaders-builtin"
-            for item in os.listdir(vitaConfig):
-                if item not in ['data', 'lang', 'shaders-builtin']:
-                    item_path = os.path.join(vitaConfig, item)
-                    if os.path.isdir(item_path):
-                        shutil.move(item_path, vitaSaves)
+        if vitaSaves == vitaConfig:
+            if os.path.isdir(os.path.join(vitaConfig, 'ux0')):
+                # Move all folders from vitaConfig to vitaSaves except "data", "lang", and "shaders-builtin"
+                for item in os.listdir(vitaConfig):
+                    if item not in ['data', 'lang', 'shaders-builtin']:
+                        item_path = os.path.join(vitaConfig, item)
+                        if os.path.isdir(item_path):
+                            shutil.move(item_path, vitaSaves)
         
         # Create the config.yml file if it doesn't exist
         vita3kymlconfig = {}
@@ -48,7 +53,7 @@ class Vita3kGenerator(Generator):
             vita3kymlconfig = {}
         
         # ensure the correct path is set
-        vita3kymlconfig["pref-path"] = vitaSaves
+        vita3kymlconfig["pref-path"] = vitaConfig
 
         # Set the renderer
         if system.isOptSet("vita3k_gfxbackend"):
