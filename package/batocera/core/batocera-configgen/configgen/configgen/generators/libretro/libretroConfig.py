@@ -58,15 +58,24 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 coreForceSlangShaders = { 'mupen64plus-next' }
 
 def connected_to_internet():
-    # same call as in es
-    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "8.8.8.8"]
+    # Try 1.1.1.1 first
+    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "1.1.1.1"]
     process = subprocess.Popen(cmd)
     process.wait()
     if process.returncode == 0:
-        eslog.error(f"Connected to the internet")
+        eslog.debug("Connected to the internet")
         return True
-    eslog.error(f"Not connected to the internet")
-    return False
+    else:
+        # Try 8.8.8.8 if 1.1.1.1 fails
+        cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "8.8.8.8"]
+        process = subprocess.Popen(cmd)
+        process.wait()
+        if process.returncode == 0:
+            eslog.debug("Connected to the internet")
+            return True
+        else:
+            eslog.error("Not connected to the internet")
+            return False
 
 def writeLibretroConfig(generator, retroconfig, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
