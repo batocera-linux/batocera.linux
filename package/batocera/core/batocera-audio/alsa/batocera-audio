@@ -55,6 +55,7 @@ case "${ACTION}" in
                     ;;
                 "rk3326")
                     LANG=C pactl set-default-sink INTERNAL
+                    amixer -c 0 -q sset "Master" 100%
                     amixer -c 0 cset name='Playback Path' SPK
                     ;;
                 *)
