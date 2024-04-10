@@ -660,6 +660,36 @@ function pironman_start()
         echo "[Pironman]" >> "/boot/config.txt"
         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
     fi
+    # Check config.txt for spi
+    if grep -q "dtparam=spi=" "/boot/config.txt"; then
+        echo "*** Enabling Pironman spi config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/^\s*#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+    else
+        echo "*** Adding Pironman spi config.txt parameter ***"
+        mount -o remount, rw /boot
+        echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+    fi
+    # Check config.txt for core_freq
+    if grep -q "core_freq=" "/boot/config.txt"; then
+        echo "*** Setting Pironman core_freq config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/^\s*#\?\s*\(core_freq=\).*$/\1500/' /boot/config.txt
+    else
+        echo "*** Adding Pironman core_freq config.txt parameter ***"
+        mount -o remount, rw /boot
+        echo "core_freq=500" >> /boot/config.txt
+    fi
+    # Check config.txt for core_freq_min
+    if grep -q "core_freq_min=" "/boot/config.txt"; then
+        echo "*** Setting Pironman core_freq_min config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/^\s*#\?\s*\(core_freq_min=\).*$/\1500/' /boot/config.txt
+    else
+        echo "*** Adding Pironman core_freq_min config.txt parameter ***"
+        mount -o remount, rw /boot
+        echo "core_freq_min=500" >> /boot/config.txt
+    fi
     # Check config.txt for power button
     if ! grep -q "^dtoverlay=gpio-poweroff,gpio_pin=26,active_low=0" "/boot/config.txt"; then
         echo "*** Adding Pironman power off config.txt parameter ***"
@@ -678,6 +708,7 @@ function pironman_start()
     [ $CONF -eq 1 ] && return
     #------ CONFIG SECTION ------
     echo "*** Starting Pironman services ***"
+    modprobe i2c_dev
     /usr/bin/pironman start
 }
 
