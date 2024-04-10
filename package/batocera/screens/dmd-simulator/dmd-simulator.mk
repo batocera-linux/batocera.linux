@@ -3,7 +3,7 @@
 # DMD_SIMULATOR
 #
 ################################################################################
-DMD_SIMULATOR_VERSION = f9f6f39c80710d3d5561e9fb1d3b0132202a86df
+DMD_SIMULATOR_VERSION = b60e698c9fbdb5d7fc102fe53f05437441f95d68
 DMD_SIMULATOR_SITE =  $(call github,batocera-linux,dmd-simulator,$(DMD_SIMULATOR_VERSION))
 
 define DMD_SIMULATOR_INSTALL_DMD_SIMULATOR
