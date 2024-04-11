@@ -44,7 +44,6 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-tls.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_TLS = \
@@ -72,7 +71,6 @@ BATOCERA_NVIDIA340_LEGACY_DRIVER_32 = \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	libnvidia-tls.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 
 # Install the gl.pc file
@@ -160,7 +158,7 @@ define BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_LIBS
 		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/$(notdir $(lib))
 	)
 	$(foreach lib,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_TLS),\
-		$(INSTALL) -D -m 0644 $(@D)/tls/$(lib) $(1)/usr/lib/tls/$(notdir $(lib))
+		$(INSTALL) -D -m 0644 $(@D)/tls/$(lib) $(1)/usr/lib/$(notdir $(lib))
 	)
 	$(foreach lib,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_VDPAU),\
 		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/vdpau/$(notdir $(lib))
@@ -173,7 +171,7 @@ define BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_32
 		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/$(notdir $(lib))
 	)
 	$(foreach lib,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_TLS),\
-		$(INSTALL) -D -m 0644 $(@D)/32/tls/$(lib) $(1)/lib32/tls/$(notdir $(lib))
+		$(INSTALL) -D -m 0644 $(@D)/32/tls/$(lib) $(1)/lib32/$(notdir $(lib))
 	)
 	$(foreach lib,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_LIBS_VDPAU),\
 		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/vdpau/$(notdir $(lib))
@@ -187,7 +185,7 @@ define BATOCERA_NVIDIA340_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
 	    $(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia340_legacy_drv.so
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION) \
-	    $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
+	    $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.$(BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION)
 	$(foreach p,$(BATOCERA_NVIDIA340_LEGACY_DRIVER_PROGS), \
 		$(INSTALL) -D -m 0755 $(@D)/$(p) \
 			$(TARGET_DIR)/usr/bin/$(p)
