@@ -663,12 +663,12 @@ function pironman_start()
     # Check config.txt for spi
     if grep -q "dtparam=spi=" "/boot/config.txt"; then
         echo "*** Enabling Pironman spi config.txt parameter ***"
-        mount -o remount, rw /boot
-        sed -i 's/^\s*#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+        mount -o remount,rw /boot
+        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
     else
         echo "*** Adding Pironman spi config.txt parameter ***"
-        mount -o remount, rw /boot
-        echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+        mount -o remount,rw /boot
+        echo "dtparam=spi=on" >> /boot/config.txt
     fi
     # Check config.txt for core_freq
     if grep -q "core_freq=" "/boot/config.txt"; then
