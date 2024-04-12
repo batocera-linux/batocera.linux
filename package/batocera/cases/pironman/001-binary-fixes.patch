@@ -43,3 +43,16 @@ index 02e1c837fe..0fdedf5cfb 100644
      -u|--unit)
          if [ $# -lt 2 ] ;then
              echo "usage: pironman -c|--check [C/F]"
+diff --git a/bin/pironman b/bin/pironman
+index 0fdedf5cfb..059e6b1428 100644
+--- a/bin/pironman
++++ b/bin/pironman
+@@ -91,7 +91,7 @@ case "$1" in
+         ;;
+     -c|--check)
+         echo 'config file:'$CONF
+-        grep -E '*=.*' $CONF
++        grep -E '=.*' $CONF
+         ;;
+     -u|--unit)
+         if [ $# -lt 2 ] ;then
