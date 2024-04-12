@@ -17,7 +17,7 @@ Initial support for the Lenovo Legion Go
 - DMD server (handling any dmd supported by libdmd) integrated with vpinball
 - Support for multi screens (for pincab, mame multi games)
 - Evmapy keys file to help exit running flatpak app
-- Steering wheel support for Thrustmaster T150RS
+- Steering wheel support for Thrustmaster T150RS and T80 (gamepad mode only)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
