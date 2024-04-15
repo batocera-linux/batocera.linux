@@ -40,7 +40,7 @@ function smart_wait() {
 
 # Emulator currently running?
 function check_emurun() {
-    local RC_PID="$(pgrep -f -n 'sh -c emulatorlauncher')"
+    local RC_PID="$(pgrep -f -n emulatorlauncher)"
     echo $RC_PID
 }
 
