@@ -38,7 +38,7 @@ index 35c5f75a3..02138bf72 100644
 +	 * Device declares that support Park link status, but it really
 +	 * does not support it and fails to initialize
 +	 */
-+	HCI_QUIRK_BROKEN_PARK_LINK_STATUS
++	HCI_QUIRK_BROKEN_PARK_LINK_STATUS,
 +
  	/*
  	 * When this quirk is set, the HCI_OP_READ_ENC_KEY_SIZE command is
