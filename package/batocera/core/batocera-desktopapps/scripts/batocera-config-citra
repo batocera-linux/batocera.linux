@@ -8,20 +8,20 @@ then
     export DISPLAY=:0.0
 fi
 
-if [[ -x /usr/bin/lemonade-qt ]]; then
+if [[ -x /usr/bin/citra-qt ]]; then
     XDG_CONFIG_HOME=/userdata/system/configs \
         XDG_DATA_HOME=/userdata/saves/3ds  \
         XDG_CACHE_HOME=/userdata/system/cache \
         QT_QPA_PLATFORM=xcb \
         SDL_JOYSTICK_HIDAPI=0 \
-        /usr/bin/lemonade-qt
-elif [[ -x /usr/bin/lemonade ]]; then
+        /usr/bin/citra-qt
+elif [[ -x /usr/bin/citra ]]; then
     # DRM fallback
     XDG_CONFIG_HOME=/userdata/system/configs \
         XDG_DATA_HOME=/userdata/saves/3ds  \
         XDG_CACHE_HOME=/userdata/system/cache \
         QT_QPA_PLATFORM=xcb \
-        /usr/bin/lemonade
+        /usr/bin/citra
 else
     echo "System not found";
     exit 1
