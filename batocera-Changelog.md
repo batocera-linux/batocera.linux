@@ -74,7 +74,7 @@ Initial support for the Lenovo Legion Go
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
 - GroovyMAME to 0.264 SR 0.220b
-- DOSBox-Staging to 0.81.0
+- DOSBox-Staging to 0.81.1
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
 - Tsugaru to 20240223
