@@ -12408,60 +12408,78 @@ vpinball:
         "Default Performance Settings": "defaults"
         "Low-end Computer": "lowend"
         "High-end Computer": "highend"
-        "Manual (Default)": "manual"
+        "Manual": "manual"
     vpinball_altcolor:
       group: DISPLAY
       prompt: ALTCOLOR
       description: Alternative Coloured Dot Matrix Display (needs additional file).
       preset: switchon
+    vpinball_playfield:
+      group: WINDOWS POSITIONS
+      prompt: PLAYFIELD
+      description: Playfield configuration
+      choices:
+        "Manual": "manual"
     vpinball_pinmame:
-      group: DISPLAY
+      group: WINDOWS POSITIONS
       prompt: PINMAME DMD
       description: Extra DMD (Dot Matrix Display) window to display the score for tables with a pinmame rom. By default, settings come from the VPinballX.ini configuration file.
       choices:
-        "Top-Right Position, Small": "pinmame_topright_small"
-        "Top-Right Position, Medium": "pinmame_topright_medium"
-        "Top-Right Position, Large": "pinmame_topright_large"
-        "Top-Left Position, Small": "pinmame_topleft_small"
-        "Top-Left Position, Medium": "pinmame_topleft_medium"
-        "Top-Left Position, Large": "pinmame_topleft_large"
+        "Top-Right Position, Small": "topright_small"
+        "Top-Right Position, Medium": "topright_medium"
+        "Top-Right Position, Large": "topright_large"
+        "Top-Left Position, Small": "topleft_small"
+        "Top-Left Position, Medium": "topleft_medium"
+        "Top-Left Position, Large": "topleft_large"
         "On screen 2 if available": "screen2"
         "On screen 3 if available": "screen3"
-        "PinMAME DMD disabled": "pinmame_disabled"
+        "Disabled": "disabled"
+        "Manual": "manual"
     vpinball_flexdmd:
-      group: DISPLAY
+      group: WINDOWS POSITIONS
       prompt: FLEX DMD
       description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom. By default, settings come from the VPinballX.ini configuration file.
       choices:
-        "Top-Right Position, Small": "flexdmd_topright_small"
-        "Top-Right Position, Medium": "flexdmd_topright_medium"
-        "Top-Right Position, Large": "flexdmd_topright_large"
-        "Top-Left Position, Small": "flexdmd_topleft_small"
-        "Top-Left Position, Medium": "flexdmd_topleft_medium"
-        "Top-Left Position, Large": "flexdmd_topleft_large"
+        "Top-Right Position, Small": "topright_small"
+        "Top-Right Position, Medium": "topright_medium"
+        "Top-Right Position, Large": "topright_large"
+        "Top-Left Position, Small": "topleft_small"
+        "Top-Left Position, Medium": "topleft_medium"
+        "Top-Left Position, Large": "topleft_large"
         "On screen 2 if available": "screen2"
         "On screen 3 if available": "screen3"
-        "FlexDMD disabled": "flexdmd_disabled"
+        "Disabled": "disabled"
+        "Manual": "manual"
     vpinball_b2s:
-      group: DISPLAY
+      group: WINDOWS POSITIONS
       prompt: BACKGLASS (B2S)
       description: Upright glass panel displaying some illuminated artwork. By default, settings come from the VPinballX.ini configuration file.
       choices:
-        "Top-Right Position, Small": "b2s_topright_small"
-        "Top-Right Position, Medium": "b2s_topright_medium"
-        "Top-Right Position, Large": "b2s_topright_large"
-        "Top-Left Position, Small": "b2s_topleft_small"
-        "Top-Left Position, Medium": "b2s_topleft_medium"
-        "Top-Left Position, Large": "b2s_topleft_large"
+        "Top-Right Position, Small": "topright_small"
+        "Top-Right Position, Medium": "topright_medium"
+        "Top-Right Position, Large": "topright_large"
+        "Top-Left Position, Small": "topleft_small"
+        "Top-Left Position, Medium": "topleft_medium"
+        "Top-Left Position, Large": "topleft_large"
         "On screen 2 if available": "screen2"
-        "Backglass disabled": "b2s_disabled"
+        "Disabled": "disabled"
+        "Manual": "manual"
     vpinball_b2sdmd:
-      group: DISPLAY
+      group: WINDOWS POSITIONS
       prompt: DISPLAY BACKGLASS DMD
       description: When the Backglass is activated, display the small additional part with the scores.
       preset: switchon
+    vpinball_dmdsize:
+      group: WINDOWS POSITIONS
+      prompt: DMD SIZE
+      description: DMD window ratio
+      choices:
+        "128x16": "128x16",
+        "128x32": "128x32",
+        "192x64": "192x64",
+        "256x64": "256x64"
     vpinball_inverseplayfieldandb2s:
-      group: DISPLAY
+      group: WINDOWS POSITIONS
       prompt: INVERSE PLAYFIELD AND B2S
       description: Inverse the Backglass and the Playfield. Usefull to use the Backglass as main screen for other emulators.
       choices:
