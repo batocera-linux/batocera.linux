@@ -85,7 +85,7 @@ Initial support for the Lenovo Legion Go
 - Kodi to 20.5-Nexus
 - RPCS3 to 0.0.31
 - Solarus-engine: bump to Mar 10, 2024 build
-- Cemu to v2.0-72
+- Cemu to v2.0-78
 - Sonic3-AIR to v24.02.02.0-stable
 - Ruffle to 2024-03-28
 - Xenia Canary to build 122f58c (Commits on Mar 26, 2024)
