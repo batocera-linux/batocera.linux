@@ -9,6 +9,9 @@ MAKE_JLEVEL    ?= $(shell nproc)
 BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DOCKER         ?= docker
+HOST_USER_DIR  ?= /home/$(USER)
+UID            ?= id -u
+GID            ?= id -g
 
 -include $(LOCAL_MK)
 
@@ -105,7 +108,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -118,7 +121,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -131,7 +134,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -144,7 +147,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -157,7 +160,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -172,7 +175,7 @@ dl-dir:
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
 		-w /$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
@@ -185,7 +188,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOST_USER_DIR)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
