@@ -359,6 +359,10 @@ def getGenerator(emulator):
         from generators.sonic_mania.sonic_maniaGenerator import SonicManiaGenerator
         return SonicManiaGenerator()
 
+    if emulator == "uqm":
+        from generators.uqm.uqmGenerator import UqmGenerator
+        return UqmGenerator()
+
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator
         return ShGenerator()
