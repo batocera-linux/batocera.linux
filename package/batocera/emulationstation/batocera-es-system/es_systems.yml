@@ -5230,3 +5230,17 @@ uqm:
   comment_en: |
     Create a folder called 'packages' in this folder. This is where you place your game engine file 'uqm-0.8.0-content.uqm'.
     Then create a file called 'Ur-Quan Masters.game'. This is used to launch the game.
+
+st-v:
+  name: Sega Titan Video
+  manufacturer: Sega
+  release: 1994
+  hardware: arcade
+  extensions: [ zip, 7z ]
+  platform: st-v, arcade
+  emulators:
+    mame:
+      mame: { requireAnyOf: [ BR2_PACKAGE_MAME ] }
+  comment_en: |
+    Put your Sega Titan Video roms in this folder.
+    You also need to add the bios file (stvbios.zip) here from the compatible mame version.
