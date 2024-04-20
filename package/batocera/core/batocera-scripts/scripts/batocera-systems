@@ -791,6 +791,25 @@ systems = {
     "gamecube":   { "name": "Nintendo GameCube", "biosFiles":  [ { "md5": "db92574caab77a7ec99d4605fd6f2450", "file": "bios/GC/EUR/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/JAP/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/USA/IPL.bin" } ] },
+
+    # ---------- Sega Titan Video ---------- #
+    "st-v": { "name": "Sega Titan Video", "biosFiles": [ { "md5": "", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "a36acd9ac53b668bebbd98bd192c43e9", "zippedFile": "epr-17740.ic8",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "6193c4357b39916066d810bc0b2cb153", "zippedFile": "epr-17740a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "4c51a40cd3d0eec13c3b25c6b70ad632", "zippedFile": "epr-17741a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "858fc8d8ad62059ea912ec09e9a38111", "zippedFile": "epr-17742a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "4bee9b193799bd221a7482c7d7765295", "zippedFile": "epr-17951a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "249b67334cfae53810c1d1e3b93957a3", "zippedFile": "epr-17952a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "251f89478034d93abdf54d05b43c16c0", "zippedFile": "epr-17953a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "ba2cb634c15e59d7ea5552729306f2ef", "zippedFile": "epr-17954a.ic8", "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "b9574b29185fa9e16977d041dd21dabd", "zippedFile": "epr-18022.ic2",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "099c908e4af55d6602bb5fddbbc2d0b3", "zippedFile": "epr-19730.ic8",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "fa6117a16a7df94dcc6e9e12896c66f2", "zippedFile": "epr-19854.ic8",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "34175c7ad31acbe44f2baccc7ea065c7", "zippedFile": "epr-20091.ic8",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "202226db8648ef036b57bc64a4180c92", "zippedFile": "epr-23603.ic8",  "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "b52e39d0a0377c098b33957a1ad3ba88", "zippedFile": "stv110.bin",     "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "8e0a1096fc6593eeb508e1159bbdd70c", "zippedFile": "stv1061.bin",    "file": "roms/st-v/stvbios.zip" },
+                                                         { "md5": "a9ad871282e209b47adbdcb28241c02e", "zippedFile": "stvbios.nv",     "file": "roms/st-v/stvbios.zip" } ] },
 }
 
 class BiosStatus:
