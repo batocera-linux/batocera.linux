@@ -110,7 +110,7 @@ Initial support for the Lenovo Legion Go
 - X86_64 kernel to 6.8.7
 - Switchres 0.220
 - Btop to 1.3.2
-- Linux firmware to 20240312
+- Linux firmware to 20240410
 - Buildroot to 2024.02.1
 - Xpad-Noone to Jan 10, 2024
 - XpadNeo to Mar 11, 2024
