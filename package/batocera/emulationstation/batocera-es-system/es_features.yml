@@ -5,11 +5,18 @@ shared:
   cfeatures:
     powermode:
       prompt: POWER MODE
-      description: Adjust the cpu power profile while in-game.
+      description: Adjust the cpu power frequency profile whilst in-game. Some systems will benefit from improved voltage handling.
       choices:
         "High Performance": highperformance
-        "Balanced": balanced
-        "Power Saver": powersaver
+        "Balanced":         balanced
+        "Power Saver":      powersaver
+    batterymode:
+      prompt: BATTERY MODE
+      description: Adjust the cpu power profile whist on battery. Overwrites previous Power Mode(s).
+      choices:
+        "High Performance": highperformance
+        "Balanced":         balanced
+        "Power Saver":      powersaver
     tdp:
       archs_include: [x86_64]
       prompt: RYZEN THERMAL DESIGN POWER
@@ -322,7 +329,7 @@ shared:
         "hidden": "hidden"
 
 global:
-  shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
+  shared: [powermode, batterymode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
   shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]

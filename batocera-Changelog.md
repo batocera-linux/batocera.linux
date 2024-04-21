@@ -1,6 +1,9 @@
 # 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
-
+Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
+To potentially save battery, you can adjust the mode the handheld operates at when running on battery.
+By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
+Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)

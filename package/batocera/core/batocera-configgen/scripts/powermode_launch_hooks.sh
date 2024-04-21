@@ -2,7 +2,7 @@
 
 if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] && 
        [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }; then
-	exit 0
+    exit 0
 fi
 
 # Check if governor exists for CPU
@@ -34,29 +34,31 @@ set_governor() {
     done
 }
 
-# Determine which governors to set based on powermode setting
-handle_powermode() {
-	local POWERMODE_NAME=$1
-		case "$POWERMODE_NAME" in
-			"highperformance")
-				set_governor "performance"
-				;;
-			"balanced")
-				if check_governor "schedutil"; then
-					set_governor "schedutil"
-				# If 'schedutil' is not available, check for 'ondemand' governor
-				elif check_governor "ondemand"; then
-					set_governor "ondemand"
-				# If neither are available, fall back to 'performance'
-				else
-					set_governor "performance"
-				fi
-				;;
-			"powersaver")
-				set_governor "powersave"
-				;;
-			*)
-		esac				
+# Check if Energy Performance Preferences are available
+epp_available() {
+    if [ -e /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Set EPP
+set_epp() {
+    local PREFERENCE=$1
+    local AVAILABLE_PREFERENCES
+    AVAILABLE_PREFERENCES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences)
+
+    # Check if the specified preference is available
+    if ! echo "$AVAILABLE_PREFERENCES" | grep -q "\b$PREFERENCE\b"; then
+        return 1
+    fi
+
+    for cpu in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+        if [ -e "$cpu" ]; then
+            echo "$PREFERENCE" > "$cpu" 2>/dev/null
+        fi
+    done
 }
 
 # Check for events
@@ -70,11 +72,19 @@ fi
 
 # Handle gameStop event
 if [ "$EVENT" = "gameStop" ]; then
+    POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+    if ! [ -z "${POWER_MODE}" ]; then
+        /usr/bin/batocera-power-mode "${POWER_MODE}"
+        exit 0
+    fi
     SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
     if check_governor "$SYSTEM_GOVERNOR"; then
-		set_governor "$SYSTEM_GOVERNOR"
-	fi	
-	exit 0
+        set_governor "$SYSTEM_GOVERNOR"
+		if epp_available; then
+		    set_epp "default"
+		fi
+    fi    
+    exit 0
 fi
 
 # Check for user set system specific setting
@@ -88,16 +98,17 @@ if [ -z "${POWER_MODE}" ]; then
     POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
 fi
 
-# If no value is found ensure governor is system default before exiting
-if [ -z "${POWER_MODE}" ]; then
-    SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
-    if check_governor "$SYSTEM_GOVERNOR"; then
-		set_governor "$SYSTEM_GOVERNOR"
-	fi	
-	exit 0
+# If a value is found, call the batocera-power-profile script
+if ! [ -z "${POWER_MODE}" ]; then
+    /usr/bin/batocera-power-mode "${POWER_MODE}"
+    exit 0
 fi
 
-# select powermode
-if ! [ -z "${POWER_MODE}" ]; then
-	handle_powermode "${POWER_MODE}"
+# If no value is found ensure governor is system default before exiting
+SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
+if check_governor "$SYSTEM_GOVERNOR"; then
+    set_governor "$SYSTEM_GOVERNOR"
+	if epp_available; then
+	    set_epp "default"
+	fi
 fi
