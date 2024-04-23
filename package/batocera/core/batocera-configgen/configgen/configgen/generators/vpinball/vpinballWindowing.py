@@ -12,10 +12,11 @@ def configureWindowing(vpinballSettings, system, gameResolution):
     Rscreen=16/9
 
     # which windows to display, and where ?
-    flexdmd_config = getFlexDmdConfiguration(system, screens)
-    pinmame_config = getPinmameConfiguration(system, screens)
-    b2s_config     = getB2sConfiguration(system, screens)
-    b2sdmd_config  = getB2sdmdConfiguration(system, screens)
+    flexdmd_config  = getFlexDmdConfiguration(system, screens)
+    pinmame_config  = getPinmameConfiguration(system, screens)
+    b2s_config      = getB2sConfiguration(system, screens)
+    b2sdmd_config   = getB2sdmdConfiguration(system, screens)
+    b2sgrill_config = getB2sgrillConfiguration(system, screens)
 
     # determine playField and backglass screens numbers
     reverse_playfield_and_b2s = False
@@ -43,7 +44,7 @@ def configureWindowing(vpinballSettings, system, gameResolution):
 
     # B2S and B2SDMD
     if b2s_config != "manual":
-        configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b2sdmd_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize)
+        configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b2sdmd_config, b2sgrill_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize)
 
 def getFlexDmdConfiguration(system, screens):
     val = ""
@@ -91,6 +92,11 @@ def getB2sConfiguration(system, screens):
 
 def getB2sdmdConfiguration(system, screens):
     if system.isOptSet("vpinball_b2sdmd") and system.getOptBoolean("vpinball_b2sdmd") == False: # switchon
+        return False
+    return True
+
+def getB2sgrillConfiguration(system, screens):
+    if system.isOptSet("vpinball_b2sgrill") and system.getOptBoolean("vpinball_b2sgrill") == False: # switchon
         return False
     return True
 
@@ -229,7 +235,7 @@ def configureFlexdmd(vpinballSettings, flexdmd_config, b2s_config, screens, back
         vpinballSettings.set("Standalone", WindowName+"Width",  ConvertToPixel(gameResolution["width"],  width))
         vpinballSettings.set("Standalone", WindowName+"Height", ConvertToPixel(gameResolution["height"], height))
 
-def configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b2sdmd_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize):
+def configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b2sdmd_config, b2sgrill_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize):
     WindowName = "B2SBackglass"
     Rwindow    = 4/3 # Usual Ratio for this window
     small,medium,large=20,25,30
@@ -295,10 +301,13 @@ def configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b
     # B2S DMD: not displayed if B2S is hidden
     if b2sdmd_config:
         vpinballSettings.set("Standalone", "B2SHideB2SDMD", "0")
-        vpinballSettings.set("Standalone", "B2SHideDMD",    "0")
     else:
         vpinballSettings.set("Standalone", "B2SHideB2SDMD", "1")
-        vpinballSettings.set("Standalone", "B2SHideDMD",    "1")
+
+    if b2sgrill_config:
+        vpinballSettings.set("Standalone", "B2SHideGrill", "0")
+    else:
+        vpinballSettings.set("Standalone", "B2SHideGrill", "1")
 
 # Extra_windows (pinmamedmd, flexdmd, b2s,b2sdmd)
 # VideogetCurrentResolution to convert from percentage to pixel value
