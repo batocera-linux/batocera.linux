@@ -5,7 +5,7 @@
 ################################################################################
 # Version: Commits on Apr 16, 2024
 # uses standalone tree for now
-VPINBALL_VERSION = 9b49a0582b03af8a84e6086cf500d312366acfb2
+VPINBALL_VERSION = f69ba09c242dc71d78c99e4308e6bea0823cfa1f
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE

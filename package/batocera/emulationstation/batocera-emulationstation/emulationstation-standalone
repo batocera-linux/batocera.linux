@@ -72,24 +72,6 @@ do
             EXTRA_OPTS="--screenrotate ${display_rotate}"
         fi
     fi
-
-    # other screens
-    if test -n "${settings_output2}"
-    then
-	display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
-        if batocera-resolution supportSystemRotation
-        then
-            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
-	fi
-    fi
-    if test -n "${settings_output3}"
-    then
-	display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
-        if batocera-resolution supportSystemRotation
-        then
-            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
-	fi
-    fi
     ###################
 
     ### resolution ###
@@ -113,6 +95,11 @@ do
 	else
 	    batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
 	fi
+	display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
+	fi
     fi
     if test -n "${settings_output3}"
     then
@@ -122,6 +109,11 @@ do
 	    batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
 	else
 	    batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+	fi
+		display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
 	fi
     fi
 
