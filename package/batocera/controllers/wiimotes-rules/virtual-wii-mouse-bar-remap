@@ -21,6 +21,12 @@ do
 	udevadm trigger --action remove "${EVT}"
 	udevadm trigger --action add "${EVT}"
     fi
+    if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Nintendo Wii Remote Accelerometer"$'
+    then
+	echo "remapping ${EVT}"
+	udevadm trigger --action remove "${EVT}"
+	udevadm trigger --action add "${EVT}"
+    fi
     if evtest --info "${EVT}" 2>/dev/null | grep -qE '^Input device name: "Nintendo Wii Remote"$'
     then
 	echo "remapping ${EVT}"
