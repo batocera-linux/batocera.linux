@@ -20,8 +20,14 @@ def configureWindowing(vpinballSettings, system, gameResolution):
 
     # determine playField and backglass screens numbers
     reverse_playfield_and_b2s = False
-    if system.isOptSet("vpinball_inverseplayfieldandb2s") and system.getOptBoolean("vpinball_inverseplayfieldandb2s"):
-        reverse_playfield_and_b2s = True
+    if system.isOptSet("vpinball_inverseplayfieldandb2s"):
+        if system.getOptBoolean("vpinball_inverseplayfieldandb2s"):
+            reverse_playfield_and_b2s = True
+    else:
+        # auto : if the screen 2 is vertical while the first screen is not, inverse
+        if len(screens) >= 2 and screens[0]["width"] > screens[0]["height"] and screens[1]["width"] < screens[1]["height"]:
+            reverse_playfield_and_b2s = True
+
     playFieldScreen = 0
     backglassScreen = 1
     if reverse_playfield_and_b2s and len(screens) > 1:
