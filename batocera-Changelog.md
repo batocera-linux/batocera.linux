@@ -1,7 +1,7 @@
 # 2024/xx/xx - batocera.linux 40 -
 ### Special Notes
 Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
-To potentially save battery, you can adjust the mode the handheld operates at when running on battery.
+To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
 By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
 Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
 ### Hardware
@@ -24,7 +24,6 @@ Initial support for the Lenovo Legion Go
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
-
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -40,6 +39,7 @@ Initial support for the Lenovo Legion Go
 - Daphne crosshair not hidden by default when a light gun is detected
 - Libretro-mesen light gun not loading up
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
+- Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
