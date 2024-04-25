@@ -19,7 +19,7 @@ do
     CUS="/userdata/system/dmd/systems/${GSYSTEM}.${EXT}"
     if test -e "${CUS}"
     then
-	dmd-play ${DMDOPT} -f "${CUS}"
+	dmd-play ${DMDOPT} -f "${CUS}" --once
 	exit 0
     fi
 done
