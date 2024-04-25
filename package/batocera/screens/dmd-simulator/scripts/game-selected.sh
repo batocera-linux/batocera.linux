@@ -22,7 +22,7 @@ do
     CUS="/userdata/system/dmd/games/${GSYSTEM}/${ROMBASE}.${EXT}"
     if test -e "${CUS}"
     then
-	dmd-play ${DMDOPT} -f "${CUS}" --once
+	dmd-play ${DMDOPT} -f "${CUS}"
 	exit 0
     fi
 done
