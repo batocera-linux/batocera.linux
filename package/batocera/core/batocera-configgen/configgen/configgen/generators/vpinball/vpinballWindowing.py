@@ -40,6 +40,15 @@ def configureWindowing(vpinballSettings, system, gameResolution):
     if not (system.isOptSet("vpinball_playfield") and system.config["vpinball_playfield"] == "manual"):
         configurePlayfield(vpinballSettings, screens, playFieldScreen)
 
+    # playfiled mode
+    if system.isOptSet("vpinball_playfieldmode"):
+        vpinballSettings.set("Player", "BGSet", system.config["vpinball_playfieldmode"])
+    else:
+        if screens[playFieldScreen]["width"] < screens[playFieldScreen]["height"]:
+            vpinballSettings.set("Player", "BGSet", "1") # pincab / cabinet
+        else:
+            vpinballSettings.set("Player", "BGSet", "0") # desktop mode
+
     # PinMame
     if pinmame_config != "manual":
         configurePinmame(vpinballSettings, pinmame_config, b2s_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize)
