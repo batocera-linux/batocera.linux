@@ -12497,6 +12497,14 @@ vpinball:
       choices:
         "On": 1
         "Off": 0
+    vpinball_playfieldmode:
+      group: WINDOWS POSITIONS
+      prompt: PLAYFIELD MODE
+      description: FULLSCREEN gives you a top-down view on the playfield. For cabinet use or multi-window on desktop.
+      choices:
+        "DESKTOP": 0
+        "FULLSCREEN": 1
+        "FULL SINGLE SCREEN": 2
     vpinball_musicvolume:
       group: AUDIO
       prompt: MUSIC VOLUME
