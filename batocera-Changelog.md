@@ -127,6 +127,7 @@ Initial support for the Lenovo Legion Go
 - FAudio to 24.03
 - Sound Open Firmware to 2023.12.1
 - RyzenAdj to v0.15.0
+- Qt to 6.7.0
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
