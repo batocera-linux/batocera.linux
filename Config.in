@@ -520,6 +520,7 @@ endmenu
 
 menu "Screens"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/dmd-simulator/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/batocera-backglass/Config.in"
 endmenu
 
 menu "Libraries"
@@ -570,6 +571,8 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libgraphene/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libportmidi/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/shaderc/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-proxy-tools/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pywebview/Config.in"
 endmenu
 
 menu "Audio"
