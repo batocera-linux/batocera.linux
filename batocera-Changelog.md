@@ -99,7 +99,7 @@ Initial support for the Lenovo Legion Go
 - Xemu to v0.7.120
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
-- PCSX2 to v1.7.5663
+- PCSX2 to v1.7.5748
 - Play! & Libretro Play! to Apr 3, 2024 builds
 - Dolphin to 5.0-21453
 - Libretro-hatarib: bump to v0.3
