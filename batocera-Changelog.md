@@ -101,9 +101,10 @@ Initial support for the Lenovo Legion Go
 - fheroes2 to 1.0.13
 - PCSX2 to v1.7.5663
 - Play! & Libretro Play! to Apr 3, 2024 builds
-- Dolphin to 5.0-21303
+- Dolphin to 5.0-21453
 - Libretro-hatarib: bump to v0.3
 - Hatari to v2.5.0
+- Citra to ra8e601a
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
