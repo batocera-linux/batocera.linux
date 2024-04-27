@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CITRA_VERSION = r0c2f076
+CITRA_VERSION = ra8e601a
 CITRA_SITE = https://github.com/PabloMK7/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
