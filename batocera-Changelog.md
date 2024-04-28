@@ -64,7 +64,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Mupen64plus-video-rice bump to Jun 11, 2023 build
 - Mupen64plus-gliden64 bump to Feb 18, 2024 build
 - PPSSPP: bump to 1.17.1
-- Duckstation: bump to Feb 25, 2024 build
+- Duckstation to v0.1-6658
 - Libretro-ppsspp: bump to 1.17.1
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
