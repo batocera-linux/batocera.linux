@@ -40,6 +40,7 @@ Initial support for the Lenovo Legion Go
 - Libretro-mesen light gun not loading up
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
+- ScummVM configuration file location & ensure native file system is turned off
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
