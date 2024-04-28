@@ -1,0 +1,64 @@
+#!/bin/sh
+
+#EVENTS="game-selected system-selected game-start game-end screensaver-start screensaver-stop"
+EVENTS="game-selected system-selected"
+PIDFILE="/var/run/batocera-backglass.pid"
+
+ACTION=$1
+shift
+
+isRunning() {
+    if test -e "${PIDFILE}"
+    then
+	test -e "/proc/"$(cat "${PIDFILE}") && return 0
+	return 1
+    else
+	return 1
+    fi
+}
+
+case "${ACTION}" in
+    "enable")
+	if isRunning
+	then
+	    echo "batocera-backglass is already running" >&2
+	    exit 1
+	fi
+
+	X=$1
+	Y=$2
+	WIDTH=$3
+	HEIGHT=$4
+	if test -z "${X}" -o -z "${Y}" -o -z "${WIDTH}" -o -z "${HEIGHT}"
+	then
+	    echo "${0} X Y WIDTH HEIGHT "
+	    exit 1
+	fi
+	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" &
+	echo "$!" > "${PIDFILE}"
+
+	# add hooks
+        for EVT in ${EVENTS}
+        do
+            mkdir -p /var/run/emulationstation/scripts/${EVT} || exit 1
+            ln -sf /usr/share/batocera-backglass/scripts/${EVT}.sh /var/run/emulationstation/scripts/${EVT}/batocera-backglass.sh || exit 1
+        done
+    ;;
+
+    "disable")
+	if isRunning
+	then
+	    kill -15 $(cat "${PIDFILE}")
+	    rm -f "${PIDFILE}"
+	else
+	    echo "batocera-backglass is already disabled" >&2
+	    exit 1
+	fi
+
+	# remove hooks
+        for EVT in ${EVENTS}
+        do
+            unlink /var/run/emulationstation/scripts/${EVT}/batocera-backglass.sh
+        done
+    ;;
+esac
