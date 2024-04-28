@@ -1,167 +1,105 @@
-diff --git a/src/osdep/amiberry.cpp b/src/osdep/amiberry.cpp
-index f6f7c98..6017fac 100644
---- a/src/osdep/amiberry.cpp
-+++ b/src/osdep/amiberry.cpp
-@@ -2789,7 +2789,7 @@
+--- a/src/osdep/amiberry.cpp	2024-04-27 14:43:54.983411996 +0200
++++ b/src/osdep/amiberry.cpp	2024-04-27 14:55:30.996331192 +0200
+@@ -2914,22 +2914,22 @@
  
- void get_data_path(char* out, int size)
+ std::string get_data_path()
  {
--	fix_trailing(data_dir);
-+	strncpy(out, "/userdata/system/configs/amiberry/data", size - 1);
- 	strncpy(out, data_dir, size - 1);
+-	return fix_trailing(data_dir);
++	return std::string("/userdata/system/configs/amiberry/data/");
  }
- 
-@@ -2350,7 +2350,7 @@ void get_data_path(char* out, int size)
  
  void get_saveimage_path(char* out, int size, int dir)
  {
--	fix_trailing(saveimage_dir);
-+	strncpy(out, "/userdata/saves/amiga", size - 1);
- 	strncpy(out, saveimage_dir, size - 1);
+-	_tcsncpy(out, fix_trailing(saveimage_dir).c_str(), size - 1);
++	strncpy(out, "/userdata/saves/amiga/", size - 1);
  }
  
-@@ -2801,7 +2801,7 @@
+ std::string get_configuration_path()
+ {
+-	return fix_trailing(config_path);
++	return std::string("/userdata/system/configs/amiberry/conf/");
+ }
  
  void get_configuration_path(char* out, int size)
  {
--	fix_trailing(config_path);
-+	strncpy(out, "/userdata/system/configs/amiberry/conf", size - 1);
- 	strncpy(out, config_path, size - 1);
+-	_tcsncpy(out, fix_trailing(config_path).c_str(), size - 1);
++	strncpy(out, "/userdata/system/configs/amiberry/conf/", size - 1);
  }
  
-@@ -2832,7 +2832,7 @@
+ void set_configuration_path(const std::string& newpath)
+@@ -2959,7 +2959,7 @@
  
- void get_controllers_path(char* out, int size)
+ std::string get_controllers_path()
  {
--	fix_trailing(controllers_path);
-+	strncpy(out, "/userdata/system/configs/amiberry/conf/retroarch/inputs", size - 1);
- 	strncpy(out, controllers_path, size - 1);
+-	return fix_trailing(controllers_path);
++	return std::string("/userdata/system/configs/amiberry/conf/retroarch/inputs/");
  }
  
-@@ -2896,7 +2896,7 @@
+ void set_controllers_path(const std::string& newpath)
+@@ -3007,7 +3007,7 @@
  
- void get_whdbootpath(char* out, int size)
+ std::string get_whdbootpath()
  {
--	fix_trailing(whdboot_path);
-+	strncpy(out, "/userdata/system/configs/amiberry/whdboot", size - 1);
- 	strncpy(out, whdboot_path, size - 1);
+-	return fix_trailing(whdboot_path);
++	return std::string("/usr/share/amiberry/whdboot/");
  }
  
-@@ -2458,7 +2458,7 @@ void get_rp9_path(char* out, int size)
+ void set_whdbootpath(const std::string& newpath)
+@@ -3087,7 +3087,7 @@
  
  void get_savestate_path(char* out, int size)
  {
--	fix_trailing(savestate_dir);
-+	strncpy(out, "/userdata/saves/amiga", size - 1);
- 	strncpy(out, savestate_dir, size - 1);
+-	_tcsncpy(out, fix_trailing(savestate_dir).c_str(), size - 1);
++	strncpy(out, "/userdata/saves/amiga/", size - 1);
  }
  
-@@ -2482,7 +2482,7 @@ void get_nvram_path(TCHAR *out, int size)
+ void fetch_ripperpath(TCHAR* out, int size)
+@@ -3107,7 +3107,7 @@
  
- void get_screenshot_path(char* out, int size)
+ std::string get_screenshot_path()
  {
--	fix_trailing(screenshot_dir);
-+	strncpy(out, "/userdata/screenshots", size - 1);
- 	strncpy(out, screenshot_dir, size - 1);
+-	return fix_trailing(screenshot_dir);
++	return std::string("/userdata/screenshots/");
  }
  
-@@ -2829,19 +2829,19 @@ void save_amiberry_settings(void)
- 	snprintf(buffer, MAX_DPATH, "path=%s\n", current_dir);
- 	fputs(buffer, f);
+ void get_video_path(char* out, int size)
+@@ -3492,22 +3492,22 @@
  
--	snprintf(buffer, MAX_DPATH, "config_path=%s\n", config_path);
-+	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf", config_path);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "controllers_path=%s\n", controllers_path);
-+	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs", controllers_path);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "retroarch_config=%s\n", retroarch_file);
-+	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg", retroarch_file);
- 	fputs(buffer, f);
- 
- 	snprintf(buffer, MAX_DPATH, "whdboot_path=%s\n", whdboot_path);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "logfile_path=%s\n", logfile_path);
-+	snprintf(buffer, MAX_DPATH, "/userdata/system/logs", logfile_path);
- 	fputs(buffer, f);
- 
- 	snprintf(buffer, MAX_DPATH, "rom_path=%s\n", rom_path);
-@@ -2856,10 +2856,10 @@ void save_amiberry_settings(void)
- 	snprintf(buffer, MAX_DPATH, "data_dir=%s\n", data_dir);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "saveimage_dir=%s\n", saveimage_dir);
-+	snprintf(buffer, MAX_DPATH, "/userdata/saves/amiga", saveimage_dir);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "savestate_dir=%s\n", savestate_dir);
-+	snprintf(buffer, MAX_DPATH, "/userdata/saves/amiga", savestate_dir);
- 	fputs(buffer, f);
- 
- 	snprintf(buffer, MAX_DPATH, "ripper_dir=%s\n", ripper_path);
-@@ -2868,7 +2868,7 @@ void save_amiberry_settings(void)
- 	snprintf(buffer, MAX_DPATH, "inputrecordings_dir=%s\n", input_dir);
- 	fputs(buffer, f);
- 
--	snprintf(buffer, MAX_DPATH, "screenshot_dir=%s\n", screenshot_dir);
-+	snprintf(buffer, MAX_DPATH, "/userdata/screenshots", screenshot_dir);
- 	fputs(buffer, f);
- 
- 	snprintf(buffer, MAX_DPATH, "nvram_dir=%s\n", nvram_dir);
-@@ -3824,23 +3824,23 @@
- 	snprintf(nvram_dir, MAX_DPATH, "%s", (macos_amiberry_directory + "/Nvram/").c_str());
- 	snprintf(video_dir, MAX_DPATH, "%s", (macos_amiberry_directory + "/Videos/").c_str());
- #else
--	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
--	snprintf(controllers_path, MAX_DPATH, "%s/controllers/", start_path_data);
-+	snprintf(config_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf");
-+	snprintf(controllers_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs");
-+ 	snprintf(whdboot_path, MAX_DPATH, "%s/whdboot/", start_path_data);
-+	snprintf(logfile_path, MAX_DPATH, "/userdata/system/logs/amiberry.log");
- 	snprintf(data_dir, MAX_DPATH, "%s/data/", start_path_data);
--	snprintf(whdboot_path, MAX_DPATH, "%s/whdboot/", start_path_data);
--	snprintf(logfile_path, MAX_DPATH, "%s/amiberry.log", start_path_data);
--	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
-+	snprintf(rom_path, MAX_DPATH, "/userdata/bios/amiga/");
- 	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
--	snprintf(saveimage_dir, MAX_DPATH, "%s/savestates/", start_path_data);
--	snprintf(savestate_dir, MAX_DPATH, "%s/savestates/", start_path_data);
-+	snprintf(saveimage_dir, MAX_DPATH, "%s/savestates/", "/userdata/saves/amiga");
-+	snprintf(savestate_dir, MAX_DPATH, "%s/savestates/", "/userdata/saves/amiga");
- 	snprintf(ripper_path, MAX_DPATH, "%s/ripper/", start_path_data);
- 	snprintf(input_dir, MAX_DPATH, "%s/inputrecordings/", start_path_data);
--	snprintf(screenshot_dir, MAX_DPATH, "%s/screenshots/", start_path_data);
-+	snprintf(screenshot_dir, MAX_DPATH, "%s/screenshots/", "/userdata");
- 	snprintf(nvram_dir, MAX_DPATH, "%s/nvram/", start_path_data);
- 	snprintf(video_dir, MAX_DPATH, "%s/videos/", start_path_data);
- #endif
--	snprintf(amiberry_conf_file, MAX_DPATH, "%s/amiberry.conf", config_path);
--	snprintf(retroarch_file, MAX_DPATH, "%s/retroarch.cfg", config_path);
-+	snprintf(amiberry_conf_file, MAX_DPATH, "%s/conf/amiberry.conf", "/userdata/system/configs/amiberry");
-+	snprintf(retroarch_file, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
- 	snprintf(floppy_sounds_dir, MAX_DPATH, "%s/floppy_sounds/", data_dir);
- }
- 
-@@ -3308,8 +3308,8 @@ void rename_old_adfdir()
- {
- 	char old_path[MAX_DPATH];
- 	char new_path[MAX_DPATH];
--	snprintf(old_path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
--	snprintf(new_path, MAX_DPATH, "%s/conf/amiberry.conf", start_path_data);
-+	snprintf(old_path, MAX_DPATH, "%s/conf/adfdir.conf", "/userdata/system/configs/amiberry");
-+	snprintf(new_path, MAX_DPATH, "%s/conf/amiberry.conf", "/userdata/system/configs/amiberry");
- 
- 	const auto result = rename(old_path, new_path);
- 	if (result == 0)
-@@ -3439,7 +3439,7 @@ int main(int argc, char* argv[])
+ 	// Paths
+ 	write_string_option("path", current_dir);
+-	write_string_option("config_path", config_path);
+-	write_string_option("controllers_path", controllers_path);
+-	write_string_option("retroarch_config", retroarch_file);
++	write_string_option("config_path", "/userdata/system/configs/amiberry/conf/");
++	write_string_option("controllers_path", "/userdata/system/configs/amiberry/conf/retroarch/inputs/");
++	write_string_option("retroarch_config", "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
+ 	write_string_option("whdboot_path", whdboot_path);
+ 	write_string_option("whdload_arch_path", whdload_arch_path);
+ 	write_string_option("floppy_path", floppy_path);
+ 	write_string_option("harddrive_path", harddrive_path);
+ 	write_string_option("cdrom_path", cdrom_path);
+-	write_string_option("logfile_path", logfile_path);
+-	write_string_option("rom_path", rom_path);
++	write_string_option("logfile_path", "/userdata/system/logs/amiberry.log");
++	write_string_option("rom_path", "/userdata/bios/amiga/");
+ 	write_string_option("rp9_path", rp9_path);
+ 	write_string_option("floppy_sounds_dir", floppy_sounds_dir);
+ 	write_string_option("data_dir", data_dir);
+-	write_string_option("saveimage_dir", saveimage_dir);
+-	write_string_option("savestate_dir", savestate_dir);
+-	write_string_option("screenshot_dir", screenshot_dir);
++	write_string_option("saveimage_dir", "/userdata/saves/amiga/");
++	write_string_option("savestate_dir", "/userdata/saves/amiga/");
++	write_string_option("screenshot_dir", "/userdata/screenshots/");
+ 	write_string_option("ripper_path", ripper_path);
+ 	write_string_option("inputrecordings_dir", input_dir);
+ 	write_string_option("nvram_dir", nvram_dir);
+@@ -4127,7 +4127,7 @@
+ 		abort();
  	}
  
- 	fix_trailing(savestate_dir);
--	snprintf(savestate_fname, sizeof savestate_fname, "%s/default.ads", savestate_dir);
-+	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", "/userdata/saves/amiga");
+-	snprintf(savestate_fname, sizeof savestate_fname, "%s/default.ads", fix_trailing(savestate_dir).c_str());
++	snprintf(savestate_fname, sizeof savestate_fname, "%s/default.ads", "/userdata/saves/amiga");
  	logging_init();
- 
+ #if defined (CPU_arm)
  	memset(&action, 0, sizeof action);
