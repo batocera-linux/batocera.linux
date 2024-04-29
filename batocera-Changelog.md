@@ -9,6 +9,7 @@ Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
 Add support for Radxa Rock 3C
 Initial support for the Lenovo Legion Go
+Support for Nvidia cards requiring the legacy 340.108 driver.
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
