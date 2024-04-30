@@ -3,7 +3,6 @@
 CONFIGRULES=/etc/udev/rules.d/99-gpicase.rules
 CONFIGFILE=/boot/config.txt
 CMDLINE=/boot/cmdline.txt
-SWAYLAUNCH=/usr/bin/sway-launch
 RPIMODEL="/proc/device-tree/model"
 CMDMODIFIED=0
 CONFIGMODIFIED=0
@@ -26,26 +25,12 @@ then
     dpi_output_format=0x00016
     hdmi_timings=640 0 1 1 20 480 0 1 1 2 0 0 0 60 0 19200000 1"
 
-    # Enable audio in GPI Case
-    if ! grep -qE "snd_bcm2835.enable_headphones" "${CMDLINE}"
-    then
-        mount -o remount,rw /boot
-        sed -i s/$/" snd_bcm2835.enable_headphones=1"/ "${CMDLINE}"
-        CMDMODIFIED=1
-    fi
-
     # Forcing the use of fkms
     if grep -qE "^dtoverlay=vc4-kms-v3d" "${CONFIGFILE}"
     then
         mount -o remount,rw /boot
         sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' "${CONFIGFILE}"
         CONFIGMODIFIED=1
-    fi
-
-    # GPICase: needs the parameter to start the sway
-    if grep -qE '^/usr/bin/sway' "${SWAYLAUNCH}"
-    then
-        sed -i 's|/usr/bin/sway|WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway|g' "${SWAYLAUNCH}"
     fi
 else
     video="display_lcd_rotate=1
