@@ -69,7 +69,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - Libretro-genesisplusgx: bump to Feb 23, 2024 build
-- Libretro-mame: bump to Apr 5, 2024 build (mame 0.264)
+- Libretro-mame: to 0.265
 - Libretro-mame2003-plus: bump to Feb 21, 2024 build
 - Libretro-mupen64plus-next: bump to Feb 6, 2024 build
 - Libretro-neocd: bump to Feb 1, 2024 build
@@ -82,7 +82,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
-- GroovyMAME to 0.264 SR 0.220b
+- GroovyMAME to 0.265 SR 0.220c
 - DOSBox-Staging to 0.81.1
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
