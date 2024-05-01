@@ -37,52 +37,83 @@ do
         settings_output=$(cat "/var/run/switch_screen_request")
 	settings_output2=
 	settings_output3=
+
+	# try to fill the screen 2
+	# fill the screen2 with videooutput if <> from switch_screen_request, else videooutput2 if <> from switch_screen_request
+	if test "${settings_output}" != ""
+	then
+	    stmp="$(batocera-settings-get global.videooutput)"
+	    if test "${settings_output}" != "${stmp}"
+	    then
+		settings_output2="${stmp}"
+	    else
+		stmp="$(batocera-settings-get global.videooutput2)"
+		if test "${settings_output}" != "${stmp}"
+		then
+		    settings_output2="${stmp}"
+		fi
+	    fi
+	fi
+
         rm "/var/run/switch_screen_request"
     else
 	settings_output="$(batocera-settings-get global.videooutput)"
 	settings_output2="$(batocera-settings-get global.videooutput2)"
 	settings_output3="$(batocera-settings-get global.videooutput3)"
+    fi
 
-	# validate outputs
-	#   the output must exists in listOutputs
-	#   output n-1 must be defined
-	#   output must be different from n-x outputs
+    # validate outputs
+    #   the output must exists in listOutputs
+    #   output n-1 must be defined
+    #   output must be different from n-x outputs
 
-	# validate output 1
-	if test -n "${settings_output}"
+    # validate output 1
+    if test -n "${settings_output}"
+    then
+	if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output}"'$'
 	then
-	    if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output}"'$'
-	    then
-		settings_output=
-	    fi
+	    settings_output=
 	fi
-	# validate output 2
-	if test -n "${settings_output2}"
+    fi
+    # validate output 2
+    if test -n "${settings_output2}"
+    then
+	if test -z "${settings_output}" -o "${settings_output}" = "${settings_output2}"
 	then
-	    if test -z "${settings_output}" -o "${settings_output}" = "${settings_output2}"
+	    settings_output2=
+	else
+	    if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output2}"'$'
 	    then
 		settings_output2=
-	    else
-		if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output2}"'$'
-		then
-		    settings_output2=
-		fi
-	    fi
-	fi
-	# validate output 3
-	if test -n "${settings_output3}"
-	then
-	    if test -z "${settings_output}" -o -z "${settings_output2}" -o "${settings_output}" = "${settings_output3}" -o "${settings_output2}" = "${settings_output3}"
-	    then
-		settings_output3=
-	    else
-		if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output3}"'$'
-		then
-		    settings_output3=
-		fi
 	    fi
 	fi
     fi
+    # validate output 3
+    if test -n "${settings_output3}"
+    then
+	if test -z "${settings_output}" -o -z "${settings_output2}" -o "${settings_output}" = "${settings_output3}" -o "${settings_output2}" = "${settings_output3}"
+	then
+	    settings_output3=
+	else
+	    if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output3}"'$'
+	    then
+		settings_output3=
+	    fi
+	fi
+    fi
+
+    # if screen1 is empty, take the first one found
+    if test -z "${settings_output}"
+    then
+	settings_output=$(batocera-resolution currentOutput)
+	# currentOutput may be unplugged after an event of type unplugging it (/var/run/switch_screen_request)
+	if ! batocera-resolution listOutputs | grep -qE "^${settings_output}$"
+	then
+	    settings_output=$(batocera-resolution listOutputs | head -1)
+	fi
+    fi
+    # if screen2 is empty, take the first one found which is not screen1
+    test -z "${settings_output2}" && settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
 
     # we set the output to enable screens...
     batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
@@ -91,6 +122,7 @@ do
     ### rotation ###
     display_rotate=
     # try to find a rotation for the custom output
+    # read the final effective output
     effective_output=$(batocera-resolution currentOutput)
     if test -n "${effective_output}"
     then
