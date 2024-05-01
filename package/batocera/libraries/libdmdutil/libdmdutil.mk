@@ -39,6 +39,7 @@ define LIBDMDUTIL_INSTALL_SERVER
    mkdir -p $(TARGET_DIR)/usr/share/batocera/services
    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/libraries/libdmdutil/dmd_server.service $(TARGET_DIR)/usr/share/batocera/services/dmd_real
    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/libraries/libdmdutil/dmdserver-config.py $(TARGET_DIR)/usr/bin/dmdserver-config
+   install -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/libraries/libdmdutil/99-pixelcade.rules $(TARGET_DIR)/etc/udev/rules.d/99-pixelcade.rules
 endef
 
 LIBDMDUTIL_POST_INSTALL_TARGET_HOOKS += LIBDMDUTIL_INSTALL_SERVER
