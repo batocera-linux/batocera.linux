@@ -1,0 +1,85 @@
+--- a/retroarch.c 2024-03-18 11:26:19.653893100 +0000
++++ b/retroarch.c 2024-03-23 17:31:01.089300000 +0000
+@@ -6146,7 +6146,7 @@
+          "                                 "
+          "  $XDG_CONFIG_HOME/retroarch/retroarch.cfg,\n"
+          "                                 "
+-         "  $HOME/.config/retroarch/retroarch.cfg, and\n"
++         "  $HOME/configs/retroarch/retroarch.cfg, and\n"
+          "                                 "
+          "  $HOME/.retroarch.cfg.\n"
+          "                                 "
+--- a/frontend/drivers/platform_unix.c	2024-03-22 16:06:39.541406300 +0000
++++ b/frontend/drivers/platform_unix.c	2024-03-23 22:09:54.338292300 +0000
+@@ -1739,7 +1739,7 @@
+    else if (home)
+    {
+       size_t _len = strlcpy(base_path, home, sizeof(base_path));
+-      strlcpy(base_path + _len, "/.config/retroarch", sizeof(base_path) - _len);
++      strlcpy(base_path + _len, "/configs/retroarch", sizeof(base_path) - _len);
+    }
+    else
+       strlcpy(base_path, "retroarch", sizeof(base_path));
+@@ -2257,7 +2257,7 @@
+    else if (home)
+    {
+       size_t _len = strlcpy(base_path, home, sizeof(base_path));
+-      strlcpy(base_path + _len, "/.config/retroarch", sizeof(base_path) - _len);
++      strlcpy(base_path + _len, "/configs/retroarch", sizeof(base_path) - _len);
+    }
+ #endif
+ 
+--- a/pkg/sailfishos/retroarch-sailfishos.spec	2024-03-22 16:06:39.649411500 +0000
++++ b/pkg/sailfishos/retroarch-sailfishos.spec	2024-03-23 22:07:34.765049000 +0000
+@@ -41,8 +41,8 @@
+ make install DESTDIR=%{buildroot}
+ # Configuration changes
+ sed -i \
+-  's|^# libretro_directory =.*|libretro_directory = "~/.config/retroarch/cores/"|;
+-   s|^# libretro_info_path =.*|libretro_info_path = "~/.config/retroarch/cores/"|;
++  's|^# libretro_directory =.*|libretro_directory = "~/configs/retroarch/cores/"|;
++   s|^# libretro_info_path =.*|libretro_info_path = "~/configs/retroarch/cores/"|;
+    s|^# joypad_autoconfig_dir =.*|joypad_autoconfig_dir = "/etc/retroarch/joypad"|;
+    s|^# video_fullscreen =.*|video_fullscreen = "true"|;
+    s|^# menu_driver =.*|menu_driver = "glui"|;
+
+--- a/docs/retroarch.6	2024-03-18 11:26:14.847693500 +0000
++++ b/docs/retroarch.6	2024-03-24 14:45:46.328528700 +0000
+@@ -22,7 +22,7 @@
+ 
+ .TP
+ \fBLoad content, using a specific libretro core and config file.\fR
+-retroarch --config ~/.config/retroarch/retroarch.cfg --libretro /path/to/libretro/core.so /path/to/rom.rom --verbose
++retroarch --config ~/configs/retroarch/retroarch.cfg --libretro /path/to/libretro/core.so /path/to/rom.rom --verbose
+ 
+ .TP
+ \fBNo command line options will start RetroArch in menu mode.\fR
+@@ -92,7 +92,7 @@
+ /etc/retroarch.cfg should serve as a skeleton config only.
+ 
+ .IP
+-Unix-like systems will look in $XDG_CONFIG_HOME/retroarch/retroarch.cfg first. If $XDG_CONFIG_HOME is not defined, it is assumed to be $HOME/.config as per specification. Then it will try $HOME/.retroarch.cfg. If both paths fail, RetroArch will try to create a new, default config file in $XDG_CONFIG_HOME/retroarch/retroarch.cfg (or the $HOME/.config default for $XDG_CONFIG_HOME).
++Unix-like systems will look in $XDG_CONFIG_HOME/retroarch/retroarch.cfg first. If $XDG_CONFIG_HOME is not defined, it is assumed to be $HOME/configs as per specification. Then it will try $HOME/.retroarch.cfg. If both paths fail, RetroArch will try to create a new, default config file in $XDG_CONFIG_HOME/retroarch/retroarch.cfg (or the $HOME/configs default for $XDG_CONFIG_HOME).
+ If all fails, default settings will be assumed.
+ If RetroArch creates a new default config file, it will attempt to load the skeleton config file /etc/retroarch.cfg and use that as a basis.
+ This allows distributions to set up default paths for libretro cores, and similar things.
+--- a/file_path_special.c	2024-03-18 11:26:14.941805900 +0000
++++ b/file_path_special.c	2024-03-24 14:52:16.834768600 +0000
+@@ -160,7 +160,7 @@
+    const char *xdg     = getenv("XDG_CONFIG_HOME");
+    const char *appdata = getenv("HOME");
+ 
+-   /* XDG_CONFIG_HOME falls back to $HOME/.config with most Unix systems */
++   /* XDG_CONFIG_HOME falls back to $HOME/configs with most Unix systems */
+    /* On Haiku, it is set by default to /home/user/config/settings */
+    if (xdg)
+    {
+@@ -176,7 +176,7 @@
+             "config/settings/retroarch/", len);
+ #else
+       fill_pathname_join(s, appdata,
+-            ".config/retroarch/", len);
++            "configs/retroarch/", len);
+ #endif
+       return true;
+    }
