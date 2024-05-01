@@ -128,7 +128,11 @@ do
     # other screens
     if test -n "${settings_output2}"
     then
-	display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+	display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate2.${settings_output2}")
+	if test -z "${display_rotate2}"
+	then
+	    display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+	fi
         if batocera-resolution supportSystemRotation
         then
             batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
@@ -143,7 +147,11 @@ do
     fi
     if test -n "${settings_output3}"
     then
-	display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+	display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate3.${settings_output3}")
+	if test -z "${display_rotate3}"
+	then
+	    display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+	fi
         if batocera-resolution supportSystemRotation
         then
             batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
