@@ -8,6 +8,10 @@ def configureWindowing(vpinballSettings, system, gameResolution):
     # disable full screen to move the window if necessary
     vpinballSettings.set("Player", "FullScreen", "0")
 
+    # disable any kind of automatic vpx rotation
+    vpinballSettings.set("TableOverride", "ViewCabMode",     "2")
+    vpinballSettings.set("TableOverride", "ViewCabRotation", "0")
+
     # Reasonable constants / default values
     Rscreen=16/9
 
