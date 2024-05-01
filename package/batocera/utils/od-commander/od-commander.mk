@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OD_COMMANDER_VERSION = 079a84c
+OD_COMMANDER_VERSION = 079a84c8a8cc25e1899cb11bcfce8e9e2ed9fca9
 OD_COMMANDER_SITE = $(call github,od-contrib,commander,$(OD_COMMANDER_VERSION))
 OD_COMMANDER_DEPENDENCIES = sdl2 sdl2_gfx sdl2_image sdl2_ttf dejavu nanum-font
 OD_COMMANDER_RESOURCES_DIR = /usr/share/od-commander/
