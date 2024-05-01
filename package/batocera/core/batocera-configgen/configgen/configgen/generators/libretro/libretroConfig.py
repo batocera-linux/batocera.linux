@@ -14,10 +14,21 @@ from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
 import utils.videoMode as videoMode
 import controllersConfig
+import xml.etree.ElementTree as ET
 
 eslog = get_logger(__name__)
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+# Return value for es invertedbuttons    
+def getInvertButtonsValue():   
+    tree = ET.parse(batoceraFiles.esSettings)
+    root = tree.getroot()
+    # Find the InvertButtons element and return value
+    elem = root.find(".//bool[@name='InvertButtons']")
+    if elem is not None:
+        return elem.get('value') == 'true'
+    return False  # Return False if not found 
 
 # return true if the option is considered defined
 def defined(key, dict):
@@ -110,11 +121,14 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
     systemConfig = system.config
     renderConfig = system.renderconfig
     systemCore = system.config['core']
+    # Get value from ES settings
+    swapButtons = '"false"' if getInvertButtonsValue() else '"true"'
 
     # Basic configuration
     retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'      # this option messes everything up on Batocera if ever clicked
     retroarchConfig['menu_show_load_content_animation'] = 'false' # hide popup when starting a game
+    retroarchConfig['menu_swap_ok_cancel_buttons'] = swapButtons  # Set the correct value to match ES confirm /cancel inputs
 
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
     # Set Vulkan
