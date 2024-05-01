@@ -48,6 +48,8 @@ class VPinballGenerator(Generator):
             vpinballSettings.add_section("Standalone")
         if not vpinballSettings.has_section("Player"):
             vpinballSettings.add_section("Player")
+        if not vpinballSettings.has_section("TableOverride"):
+            vpinballSettings.add_section("TableOverride")
 
         # options
         vpinballOptions.configureOptions(vpinballSettings, system)
