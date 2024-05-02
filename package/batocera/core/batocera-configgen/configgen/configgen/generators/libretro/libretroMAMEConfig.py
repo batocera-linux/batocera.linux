@@ -71,7 +71,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
         else:
             commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', cfgPath ]
-        commandLine += [ '-rompath', romDirname + ';/userdata/bios/' ]
+        commandLine += [ '-rompath', romDirname + ';/userdata/bios/mame/;/userdata/bios/' ]
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             pluginsToLoad += [ "hiscore" ]

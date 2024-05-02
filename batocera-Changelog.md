@@ -49,6 +49,8 @@ Add support for the Rock 5c
   - Bind key C for player 1; V for player 2; B for player 3; N for player 4
 - Nvidia cards using the latest production driver now has cuda hardware accelerated playback enabled for ffmpeg & mpv
 - Wireguard VPN tools to setup your PC for Wireguard VPN access. See the wiki here: https://wiki.batocera.org/vpn_client
+- Support for standalone MAME (MAME) and libretro-MAME (lr-mame) BIOS files in bios/mame/ subfolder
+  - BIOS files in /userdata/bios/mame have precendence over /userdata/bios (per MAME -rompath behavior)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
