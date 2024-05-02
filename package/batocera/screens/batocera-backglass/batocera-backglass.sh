@@ -4,6 +4,12 @@
 EVENTS="game-selected system-selected"
 PIDFILE="/var/run/batocera-backglass.pid"
 
+# unset these variables while they causes issues on my side for webkit
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+export __GLX_VENDOR_LIBRARY_NAME=
+export __NV_PRIME_RENDER_OFFLOAD=
+export __VK_LAYER_NV_optimus=
+
 ACTION=$1
 shift
 
