@@ -33,13 +33,19 @@ index c0b8ac9df..17407e954 100644
  
  include( TargetArch )
  
-@@ -356,15 +356,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+@@ -336,18 +336,11 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
  option(FORCE_INTERNAL_ASMJIT "Use internal asmjit" ON)
  mark_as_advanced( FORCE_INTERNAL_ASMJIT )
  
 -if (HAVE_VULKAN)
 -	add_subdirectory( libraries/ZVulkan )
--endif()
++if(NOT TOOLS_ONLY)
++    add_subdirectory( libraries/ZWidget )
++    add_subdirectory( libraries/webp )
+ endif()
+ 
+-add_subdirectory( libraries/ZWidget )
+-add_subdirectory( libraries/webp )
 -
 -add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
 -set( DRPC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/discordrpc/include" )

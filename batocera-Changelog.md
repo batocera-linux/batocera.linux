@@ -108,6 +108,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Hatari to v2.5.0
 - Citra to ra8e601a
 - ETLegacy to v2.82.1
+- GZDoom to v4.12.2
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
