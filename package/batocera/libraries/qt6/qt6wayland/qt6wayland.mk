@@ -21,13 +21,21 @@ QT6WAYLAND_LICENSE_FILES = \
     LICENSES/GFDL-1.3-no-invariants-only.txt
 
 QT6WAYLAND_CONF_OPTS = \
-    -GNinja \
     -DQT_HOST_PATH=$(HOST_DIR) \
     -DBUILD_WITH_PCH=OFF \
     -DQT_BUILD_EXAMPLES=OFF \
     -DQT_BUILD_TESTS=OFF
 
-QT6WAYLAND_DEPENDENCIES = qt6base host-qt6wayland
+QT6WAYLAND_DEPENDENCIES = qt6base host-qt6wayland qt6declarative
+
+HOST_QT6WAYLAND_CONF_OPTS = \
+    -DQT_HOST_PATH=$(HOST_DIR) \
+    -DBUILD_WITH_PCH=OFF \
+    -DQT_BUILD_EXAMPLES=OFF \
+    -DQT_BUILD_TESTS=OFF \
+    -DFEATURE_wayland_server=OFF
+
+HOST_QT6WAYLAND_DEPENDENCIES = host-qt6base host-qt6declarative libxkbcommon
 
 define QT6WAYLAND_BUILD_CMDS
     $(TARGET_MAKE_ENV) $(BR2_CMAKE) --build $(QT6WAYLAND_BUILDDIR)
