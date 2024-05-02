@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ab69e72b9b..e2a34711cf 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -376,8 +376,10 @@ if (HAVE_VULKAN)
+ 	add_subdirectory( libraries/ZVulkan )
+ endif()
+ 
+-add_subdirectory( libraries/ZWidget )
+-add_subdirectory( libraries/webp )
++if ( NOT TOOLS_ONLY )
++    add_subdirectory( libraries/ZWidget )
++    add_subdirectory( libraries/webp )
++endif()
+ 
+ add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
+ set( DRPC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/discordrpc/include" )
