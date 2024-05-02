@@ -112,6 +112,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Fallout2-CE to v1.3.0
 - Raze to v1.10.2
 - Vice to v3.8
+- The Force Engine to Apr 29, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
