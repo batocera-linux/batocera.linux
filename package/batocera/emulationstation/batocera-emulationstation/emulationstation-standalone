@@ -279,8 +279,7 @@ do
 	then
 	    BGOFFSETX=$(batocera-resolution currentResolution | cut -d x -f 1)
 	    BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
-	    # unset these variables while they causes issues on my side for webkit
-	    __GLX_VENDOR_LIBRARY_NAME= __NV_PRIME_RENDER_OFFLOAD= __VK_LAYER_NV_optimus= batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE}
+	    batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE}
 	fi
     fi
 
