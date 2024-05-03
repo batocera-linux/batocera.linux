@@ -63,5 +63,5 @@ parser.add_argument("--width",  type=int, default=800, help="window width")
 parser.add_argument("--height", type=int, default=600, help="window height")
 args = parser.parse_args()
 
-window = webview.create_window('backglass', '/usr/share/batocera-backglass/www/backglass-default/index.htm', x=args.x, y=args.y, width=args.width, height=args.height, focus=False)
+window = webview.create_window('backglass', args.www, x=args.x, y=args.y, width=args.width, height=args.height, focus=False)
 webview.start(handle_api, window)

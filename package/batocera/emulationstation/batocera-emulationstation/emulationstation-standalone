@@ -279,7 +279,8 @@ do
 	then
 	    BGOFFSETX=$(batocera-resolution currentResolution | cut -d x -f 1)
 	    BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
-	    batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE}
+	    THEME="$(batocera-settings-get backglass.theme)"
+	    batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE} "${THEME}"
 	fi
     fi
 
