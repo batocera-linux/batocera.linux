@@ -1,0 +1,230 @@
+diff --git a/doc/CmdLine.md b/doc/CmdLine.md
+index db2b025..b4fd24c 100644
+--- a/doc/CmdLine.md
++++ b/doc/CmdLine.md
+@@ -68,6 +68,7 @@ Refer also to **bezel arguments** [here](Bezels.md)
+ | -gamepad                         | Enable SDL_GameController configuration. Use -haptic [0-4] to configure rumble. |
+ | -grabmouse                       | Capture mouse in SDL window.                           |
+ | -homedir \<dirname>              | Sets the Home Directory that Hypseus will use.         |
++| -romdir \<dirname>               | Sets the ROM Directory that Hypseus will use.          |
+ | -idleexit \<seconds>             | Tells Hypseus to exit after a certain number of seconds if no input has been received. |
+ | -ignore_aspect_ratio             | Tells Hypseus to ignore the aspect ratio defined in the MPEG header. |
+ | -keymapfile \<config>            | Specify an alternate hypinput.ini file.                |
+diff --git a/src/game/game.cpp b/src/game/game.cpp
+index 0c595c8..dd7e475 100644
+--- a/src/game/game.cpp
++++ b/src/game/game.cpp
+@@ -682,9 +682,14 @@ bool game::load_roms()
+                 zip_path = path + ".zip"; // append zip extension ...
+             }
+ 
+-            // Use homedir to locate the compressed rom
+-            zip_path = g_homedir.get_romfile(zip_path);
++            // Use romdir to locate the compressed rom
++            zip_path = g_homedir.get_full_romfile(zip_path);
+ 
++            // If romdir failed, try homedir
++            if (zip_path.empty()) {
++                zip_path = g_homedir.get_romfile(zip_path);
++            }
++            
+             // if we have not opened a ZIP file, or if we need to open a new zip
+             // file ...
+             if ((!zip_file) || (zip_path.compare(opened_zip_name) != 0)) {
+@@ -795,7 +800,12 @@ bool game::verify_required_file(const char *filename, const char *gamedir, Uint3
+     path += filename;
+ 
+     // TRY UNCOMPRESSED FIRST
+-    string uncompressed_path = g_homedir.get_romfile(path);
++    string uncompressed_path = g_homedir.get_full_romfile(path);
++
++    // If romdir failed, try homedir
++    if (uncompressed_path.empty()) {
++        uncompressed_path = g_homedir.get_romfile(path);
++    }
+ 
+     struct mpo_io *io;
+ 
+@@ -829,7 +839,12 @@ bool game::verify_required_file(const char *filename, const char *gamedir, Uint3
+     if (!passed_test) {
+         string zip_path = gamedir;
+         zip_path += ".zip"; // we now have "/gamename.zip"
+-        zip_path = g_homedir.get_romfile(zip_path);
++        zip_path = g_homedir.get_full_romfile(zip_path);
++
++        // If romdir failed, try homedir
++        if (zip_path.empty()) {
++            zip_path = g_homedir.get_romfile(zip_path);
++        }
+ 
+         unzFile zip_file = NULL; // pointer to open zip file (NULL if file is
+                                  // closed)
+@@ -859,8 +874,12 @@ bool game::load_rom(const char *filename, Uint8 *buf, Uint32 size)
+     struct mpo_io *F;
+     MPO_BYTES_READ bytes_read = 0;
+     bool result               = false;
+-    string fullpath           = g_homedir.get_romfile(filename); // pathname to roms
+-                                                                 // directory
++    string fullpath = g_homedir.get_full_romfile(filename); // Try romdir first
++    // If romdir failed, try homedir
++    if (fullpath.empty()) {
++        fullpath = g_homedir.get_romfile(filename); // pathname to roms directory
++    }
++
+     string s = "Loading " + fullpath + " ... ";
+ 
+     F = mpo_open(fullpath.c_str(), MPO_OPEN_READONLY);
+diff --git a/src/io/cmdline.cpp b/src/io/cmdline.cpp
+index 1324734..4e1b50f 100644
+--- a/src/io/cmdline.cpp
++++ b/src/io/cmdline.cpp
+@@ -171,6 +171,43 @@ bool parse_homedir()
+     return result;
+ }
+ 
++// parses the command line looking for the -romdir switch, returns true if
++// found and valid (or not found)
++bool parse_romdir() {
++    bool result = true;
++    char s[81] = {0};
++    char e[128];
++    bool bRomDirSet = false; // whether set_romdir was called
++
++    for (;;) {
++        get_next_word(s, sizeof(s));
++        // if there is nothing left for us to parse, break out of the while loop
++        if (s[0] == 0) {
++            break;
++        }
++        // if they are defining an alternate 'rom' directory
++        else if (strcasecmp(s, "-romdir") == 0) {
++            // Get the next word as the romdir path
++            get_next_word(s, sizeof(s));
++            if (s[0] == 0) {
++                printerror("Romdir switch used but no romdir specified!");
++                result = false;
++                break;
++            } else {
++                g_homedir.set_romdir(s);
++                bRomDirSet = true;
++                snprintf(e, sizeof(e), "Setting alternate rom dir: %s", s);
++                printline(e);
++                break;
++            }
++        }
++    }
++
++    // Reset arg index and return
++    g_arg_index = 1;
++    return result;
++}
++
+ // parses the game type from the command line and allocates g_game
+ // returns true if successful or false of failed
+ bool parse_game_type()
+@@ -491,7 +528,7 @@ bool parse_cmd_line(int argc, char **argv)
+     g_arg_index = 1; // skip name of executable from command line
+ 
+     // if game and ldp types are correct
+-    if (parse_homedir() && parse_game_type() && parse_ldp_type()) {
++    if (parse_homedir() && parse_romdir() && parse_game_type() && parse_ldp_type()) {
+         // while we have stuff left in the command line to parse
+         for (;;) {
+             get_next_word(s, sizeof(s));
+@@ -510,6 +547,14 @@ bool parse_cmd_line(int argc, char **argv)
+                 get_next_word(s, sizeof(s));
+             }
+ 
++            // if they are defining an alternate 'roms' directory.
++            // Primary used for OSX/linux to keep roms
++            // in the user-writable space.
++            else if (strcasecmp(s, "-romdir") == 0) {
++                // Ignore this one, already handled
++                get_next_word(s, sizeof(s));
++            }
++
+             // If they are defining an alternate 'data' directory, where all
+             // other files aside from the executable live.
+             // Primary used for linux to separate binary file (eg. hypseus.bin)
+diff --git a/src/io/homedir.cpp b/src/io/homedir.cpp
+index 67cfee8..bab093f 100644
+--- a/src/io/homedir.cpp
++++ b/src/io/homedir.cpp
+@@ -30,9 +30,11 @@ homedir::homedir()
+     m_appdir = "."; // our current directory must be our app directory, so a '.'
+                     // here is sufficient
+     m_homedir = "."; // using curdir is a sensible default for the constructor
++    m_romdir = "";
+ }
+ 
+ string homedir::get_homedir() { return m_homedir; }
++string homedir::get_romdir() { return m_romdir; }
+ 
+ // helper function
+ void homedir::make_dir(const string &dir)
+@@ -61,11 +63,25 @@ void homedir::set_homedir(const string &s)
+     make_dir(m_homedir + "/screenshots");
+ }
+ 
++void homedir::set_romdir(const string &s)
++{
++    m_romdir = s;
++
++    // create writable directories if they don't exist
++    make_dir(m_romdir);
++    make_dir(m_romdir + "/roms");
++}
++
+ string homedir::get_romfile(const string &s)
+ {
+     return find_file("roms/" + s, true);
+ }
+ 
++string homedir::get_full_romfile(const string &s)
++{
++    return find_file(get_romdir() + "/roms/" + s, true);
++}
++
+ string homedir::get_ramfile(const string &s)
+ {
+     return find_file("ram/" + s, false);
+@@ -87,8 +103,13 @@ string homedir::find_file(string fileName, bool bFallback)
+     string strFile = fileName;
+     string result  = "";
+ 
+-    // try homedir first
+-    result = m_homedir + "/" + strFile;
++    // try passed file path first
++    result = strFile;
++
++     // if file does not exist try in the home directory
++    if (bFallback && !mpo_file_exists(result.c_str())) {
++        result = m_homedir + "/" + strFile;
++    }
+ 
+     // if file does not exist in home directory and we are allowed to fallback
+     // to app dir
+diff --git a/src/io/homedir.h b/src/io/homedir.h
+index 2e87cf9..53a3e06 100644
+--- a/src/io/homedir.h
++++ b/src/io/homedir.h
+@@ -19,8 +19,11 @@ class homedir
+ 
+     // Properties
+     string get_homedir();
++    string get_romdir();
+     void set_homedir(const string &s);
++    void set_romdir(const string &s);
+     string get_romfile(const string &s);
++    string get_full_romfile(const string &s);
+     string get_ramfile(const string &s);
+     string get_framefile(const string &s);
+     void create_dirs(const string &s);
+@@ -39,6 +42,7 @@ class homedir
+     // Private members
+     string m_appdir; // Directory the app was launched from
+     string m_homedir; //"Home" directory to search first (defaults to appdir)
++    string m_romdir; // ROMS directory
+ };
+ 
+ extern homedir g_homedir; // our global game class.  Instead of having every

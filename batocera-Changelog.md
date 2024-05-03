@@ -4,6 +4,10 @@ Batocera now has a global battery mode option under Game Setting to determine th
 To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
 By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
 Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
+
+Singe games now have it's own system. Move any singe related games from rom/daphne to the roms/singe directory.
+Singe games in the roms/daphne folder will no longer work.
+You can determine a Singe game by the folder containing a .singe file.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)

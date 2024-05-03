@@ -2187,21 +2187,94 @@ gx4000:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
 daphne:
-  name:       Daphne
+  name: Daphne
   manufacturer: Arcade
   release: 1983
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform:   daphne, arcade
+  platform: daphne, arcade
   emulators:
-    daphne:
-      hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
+    hypseus-singe:
+      hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
   comment_en: |
+    Daphne supports these specific laser games games only:
+    - Astron Belt
+    - Badlands
+    - Bega's Battle
+    - Cliff Hanger
+    - Cobra Command
+    - Dragon's Lair
+    - Dragon's Lair II: Time Warp
+    - Esh's Aurunmilla
+    - Firefox
+    - Galaxy Ranger
+    - GP World
+    - Interstellar Laser Fantasy
+    - M.A.C.H. 3
+    - Road Blaster
+    - Space Ace
+    - Super Don Quix-Ote
+    - Thayer's Quest
+    - Us Vs Them
+
+    Games should be in a folder names with the .daphne extension.
+    Supporting ROM files should be in a folder named roms.
+
+    roms
+    |-- daphne
+        |   (The folder below holds a laserdisc...".daphne"
+        |   tells emulationstation to add this to the menu,
+        |   and "badlands" tells daphne to use that game engine)
+        |
+        |-- badlands.daphne     
+        |   |-- badlands.commands (Optional extra command-
+        |   |                      line parameters)
+        |   |-- badlands.txt      (Framefile)
+        |   |-- badlands-pc.m2v
+        |   |-- badlands-pc.ogg
+        |   |-- ...
+        |
+        |   (All rom zips files go into this roms folder)
+        |-- roms
+            |-- badlands.zip
+    
+    Singe games should now be run out of the singe rom directory.
+
     For more info: https://wiki.batocera.org/systems:daphne
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:daphne
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:daphne
+
+singe:
+  name: Singe
+  manufacturer: Arcade
+  release: 1990
+  hardware: arcade
+  extensions: [daphne, squashfs]
+  platform: daphne, arcade
+  emulators:
+    hypseus-singe:
+      hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
+  comment_en: |
+    Singe supports American Laser Games (Action Max) and fan made Singe & SInge 2 games.
+
+    Due to legacy supporting file structures, we still use the .daphne folder extension.
+
+    roms
+    |-- singe
+        |-- bluethunder.daphne    
+            |-- bluethunder.singe      (Singe parameters)
+            |-- bluethunder.txt        (Framefile)
+            |-- video_bluethunder.dat
+            |-- video_bluethunder.m2v
+            |-- video_bluethunder.ogg
+
+    For more info: https://wiki.batocera.org/systems:singe
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:singe
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:singe
 
 thextech:
   name:       TheXTech
