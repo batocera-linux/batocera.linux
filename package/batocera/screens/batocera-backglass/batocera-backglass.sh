@@ -31,16 +31,41 @@ case "${ACTION}" in
 	    exit 1
 	fi
 
+	#
 	X=$1
 	Y=$2
 	WIDTH=$3
 	HEIGHT=$4
 	if test -z "${X}" -o -z "${Y}" -o -z "${WIDTH}" -o -z "${HEIGHT}"
 	then
-	    echo "${0} X Y WIDTH HEIGHT "
+	    echo "${0} X Y WIDTH HEIGHT"
 	    exit 1
 	fi
-	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" &
+
+	### theme
+	THEME=$5
+	test -z "${THEME}" && THEME=backglass-default
+
+	# allow http:// or https:// urls
+	if echo "${THEME}" | grep -qE '^http://|^https://'
+	then
+	    THEMEPATH=${THEME}
+	else
+	    THEMEPATH="/userdata/system/backglass/${THEME}/index.htm"
+	    if ! test -e "${THEMEPATH}"
+	    then
+		THEMEPATH="/usr/share/batocera-backglass/www/${THEME}/index.htm"
+	    fi
+
+	    # not found => the default one
+	    if ! test -e "${THEMEPATH}"
+	    then
+		THEMEPATH="/usr/share/batocera-backglass/www/backglass-default/index.htm"
+	    fi
+	fi
+	###
+
+	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
 	echo "$!" > "${PIDFILE}"
 
 	# add hooks
