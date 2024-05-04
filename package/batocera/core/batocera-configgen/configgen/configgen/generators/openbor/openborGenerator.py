@@ -64,9 +64,9 @@ class OpenborGenerator(Generator):
             config.save("vsync", "1")
 
         if system.isOptSet("openbor_limit"):
-            config.save("vsync", system.config["openbor_limit"])
+            config.save("fpslimit", system.config["openbor_limit"])
         else:
-            config.save("vsync", "0")
+            config.save("fpslimit", "0")
 
         # controllers
         openborControllers.generateControllerConfig(config, playersControllers, core)
