@@ -49,12 +49,12 @@ class OpenborGenerator(Generator):
 
         # options
         if system.isOptSet("openbor_ratio"):
-            config.save("stretch", system.config["ratio"])
+            config.save("stretch", system.config["openbor_ratio"])
         else:
             config.save("stretch", "0")
 
         if system.isOptSet("openbor_filter"):
-            config.save("swfilter", system.config["filter"])
+            config.save("swfilter", system.config["openbor_filter"])
         else:
             config.save("swfilter", "0")
         
