@@ -29,6 +29,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
+  - PNX-V10 (x-input only)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
