@@ -12,7 +12,7 @@ from utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
-class DaphneGenerator(Generator):
+class HypseusSingeGenerator(Generator):
 
     @staticmethod
     def find_m2v_from_txt(txt_file):
@@ -48,16 +48,16 @@ class DaphneGenerator(Generator):
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # copy input.ini file templates
-        daphneConfigSource = "/usr/share/daphne/hypinput_gamepad.ini"
+        hypseusConfigSource = "/usr/share/hypseus-singe/hypinput_gamepad.ini"
 
-        if not os.path.isdir(batoceraFiles.daphneDatadir):
-            os.mkdir(batoceraFiles.daphneDatadir)
-        if not os.path.exists(batoceraFiles.daphneConfig) or not filecmp.cmp(daphneConfigSource, batoceraFiles.daphneConfig):
-            shutil.copyfile(daphneConfigSource, batoceraFiles.daphneConfig)
+        if not os.path.isdir(batoceraFiles.hypseusDatadir):
+            os.mkdir(batoceraFiles.hypseusDatadir)
+        if not os.path.exists(batoceraFiles.hypseusConfig) or not filecmp.cmp(hypseusConfigSource, batoceraFiles.hypseusConfig):
+            shutil.copyfile(hypseusConfigSource, batoceraFiles.hypseusConfig)
 
         # create a custom ini
-        if not os.path.exists(batoceraFiles.daphneDatadir + "/custom.ini"):
-            shutil.copyfile(batoceraFiles.daphneConfig, batoceraFiles.daphneDatadir + "/custom.ini")
+        if not os.path.exists(batoceraFiles.hypseusDatadir + "/custom.ini"):
+            shutil.copyfile(batoceraFiles.hypseusConfig, batoceraFiles.hypseusDatadir + "/custom.ini")
 
         # copy required resources to userdata config folder as needed
         def copy_resources(source_dir, destination_dir):
@@ -74,32 +74,25 @@ class DaphneGenerator(Generator):
                         copy_resources(source_item, destination_item)
 
         directories = [
-            {"source": "/usr/share/daphne/pics", "destination": batoceraFiles.daphneDatadir + "/pics"},
-            {"source": "/usr/share/daphne/sound", "destination": batoceraFiles.daphneDatadir + "/sound"},
-            {"source": "/usr/share/daphne/fonts", "destination": batoceraFiles.daphneDatadir + "/fonts"},
-            {"source": "/usr/share/daphne/bezels", "destination": batoceraFiles.daphneDatadir + "/bezels"}
+            {"source": "/usr/share/hypseus-singe/pics", "destination": batoceraFiles.hypseusDatadir + "/pics"},
+            {"source": "/usr/share/hypseus-singe/sound", "destination": batoceraFiles.hypseusDatadir + "/sound"},
+            {"source": "/usr/share/hypseus-singe/fonts", "destination": batoceraFiles.hypseusDatadir + "/fonts"},
+            {"source": "/usr/share/hypseus-singe/bezels", "destination": batoceraFiles.hypseusDatadir + "/bezels"}
         ]
 
         # Copy/update directories
         for directory in directories:
             copy_resources(directory["source"], directory["destination"])
-
-        # create symbolic link for singe
-        if not os.path.exists(batoceraFiles.daphneDatadir + "/singe"):
-            if not os.path.exists(batoceraFiles.daphneHomedir + "/roms"):
-                os.mkdir(batoceraFiles.daphneHomedir + "/roms")
-            os.symlink(batoceraFiles.daphneHomedir + "/roms", batoceraFiles.daphneDatadir + "/singe")
-        if not os.path.islink(batoceraFiles.daphneDatadir + "/singe"):
-            eslog.error("Your {} directory isn't a symlink, that's not good.".format(batoceraFiles.daphneDatadir + "/singe"))
-
+               
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
         commandsFile = rom + "/" + romName + ".commands"
         singeFile = rom + "/" + romName + ".singe"
+        
         bezelFile = romName + ".png"
-        bezelPath = "/userdata/system/configs/daphne/bezels/" + bezelFile
-        sindenBezelPath = "/userdata/system/configs/daphne/bezels/sinden/" + bezelFile
+        bezelPath = batoceraFiles.hypseusDatadir + "/bezels/" + bezelFile
+        sindenBezelPath = batoceraFiles.hypseusDatadir + "/bezels/sinden/" + bezelFile
 
         # get the first video file from frameFile to determine the resolution
         m2v_filename = self.find_m2v_from_txt(frameFile)
@@ -122,29 +115,31 @@ class DaphneGenerator(Generator):
             video_resolution = self.get_resolution(video_path)
             eslog.debug("Resolution: {}".format(video_resolution))
 
-        if os.path.isfile(singeFile):
+        if system.name == "singe":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile, "-fullscreen",
-                            "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
+                            "-fullscreen", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir,
+                            "-romdir", batoceraFiles.singeRomdir, "-homedir", batoceraFiles.hypseusDatadir]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
-                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir, 
+                            "-romdir", batoceraFiles.daphneRomdir, "-homedir", batoceraFiles.hypseusDatadir]
 
         # controller config file
-        if system.isOptSet('daphne_joy')  and system.getOptBoolean('daphne_joy'):
+        if system.isOptSet('hypseus_joy')  and system.getOptBoolean('hypseus_joy'):
             commandArray.extend(['-keymapfile', 'custom.ini'])
         else:
-            commandArray.extend(["-keymapfile", batoceraFiles.daphneConfigfile])
+            commandArray.extend(["-keymapfile", batoceraFiles.hypseusConfigfile])
 
         # Default -fullscreen behaviour respects game aspect ratio
         bezelRequired = False
         # stretch
-        if system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "stretch":
+        if system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "stretch":
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
             bezelRequired = False
         # 4:3
-        elif system.isOptSet('daphne_ratio') and system.config['daphne_ratio'] == "force_ratio":
+        elif system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "force_ratio":
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
             commandArray.extend(["-force_aspect_ratio"])
             bezelRequired = True
@@ -165,20 +160,20 @@ class DaphneGenerator(Generator):
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
 
         # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
+        if system.isOptSet("hypseus_api") and system.config["hypseus_api"] == 'Vulkan':
             commandArray.append("-vulkan")
         else:
             commandArray.append("-opengl")
 
         # Enable Bilinear Filtering
-        if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
+        if system.isOptSet('hypseus_filter') and system.getOptBoolean("hypseus_filter"):
             commandArray.append("-linear_scale")
 
-        #The following options should only be set when os.path.isfile(singeFile) is true.
+        #The following options should only be set when system is singe.
         #-blend_sprites, -nocrosshair, -sinden or -manymouse
-        if os.path.isfile(singeFile):
+        if system.name == "singe":
             # Blend Sprites (Singe)
-            if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
+            if system.isOptSet('singe_sprites') and system.getOptBoolean("singe_sprites"):
                 commandArray.append("-blend_sprites")
 
             bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
@@ -206,7 +201,7 @@ class DaphneGenerator(Generator):
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
                 else:
-                    if system.isOptSet('abs_mouse_input') and system.getOptBoolean("abs_mouse_input"):
+                    if system.isOptSet('singe_abs') and system.getOptBoolean("singe_abs"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
         # bezels
@@ -224,25 +219,25 @@ class DaphneGenerator(Generator):
                     commandArray.extend(["-bezel", bezelFile])
 
         # Invert HAT Axis
-        if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
+        if system.isOptSet('hypseus_axis') and system.getOptBoolean("hypseus_axis"):
             commandArray.append("-tiphat")
 
         # Game rotation options for vertical screens, default is 0.
-        if system.isOptSet('daphne_rotate') and system.config['daphne_rotate'] == "90":
+        if system.isOptSet('hypseus_rotate') and system.config['hypseus_rotate'] == "90":
             commandArray.extend(["-rotate", "90"])
-        elif system.isOptSet('daphne_rotate') and system.config['daphne_rotate'] == "270":
+        elif system.isOptSet('hypseus_rotate') and system.config['hypseus_rotate'] == "270":
             commandArray.extend(["-rotate", "270"])
 
         # Singe joystick sensitivity, default is 5.
-        if os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "10":
+        if system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "10":
             commandArray.extend(["-js_range", "10"])
-        elif os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "15":
+        elif system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "15":
             commandArray.extend(["-js_range", "15"])
-        elif os.path.isfile(singeFile) and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "20":
+        elif system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "20":
             commandArray.extend(["-js_range", "20"])
 
         # Scanlines
-        if system.isOptSet('daphne_scanlines') and system.getOptBoolean("daphne_scanlines"):
+        if system.isOptSet('hypseus_scanlines') and system.getOptBoolean("hypseus_scanlines"):
             commandArray.append("-scanlines")
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
@@ -251,7 +246,7 @@ class DaphneGenerator(Generator):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
-        if system.isOptSet('daphne_texturestream') and system.getOptBoolean("daphne_texturestream"):
+        if system.isOptSet('hypseus_texturestream') and system.getOptBoolean("hypseus_texturestream"):
             commandArray.append("-texturestream")
 
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
@@ -268,12 +263,10 @@ class DaphneGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        romName = os.path.splitext(os.path.basename(rom))[0]
-        singeFile = rom + "/" + romName + ".singe"
-        if "daphne_ratio" in config:
-            if config['daphne_ratio'] == "stretch":
+        if "hypseus_ratio" in config:
+            if config['hypseus_ratio'] == "stretch":
                 return 16/9
-        if os.path.isfile(singeFile):
-            return 16/9
+            if config['hypseus_ratio'] == "force_ratio":
+                return 4/3
         else:
             return 4/3

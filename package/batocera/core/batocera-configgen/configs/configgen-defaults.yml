@@ -149,8 +149,8 @@ crvision:
 # D-L
 
 daphne:
-  emulator: daphne
-  core:     hypseus
+  emulator: hypseus-singe
+  core:     hypseus-singe
   options:
     hud_support: false
 devilutionx:
@@ -542,6 +542,11 @@ sg1000:
 sgb:
   emulator: libretro
   core:     mgba
+singe:
+  emulator: hypseus-singe
+  core:     hypseus-singe
+  options:
+    hud_support: false
 socrates:
   emulator: libretro
   core:     mame

@@ -75,9 +75,9 @@ def getGenerator(emulator):
         from generators.citra.citraGenerator import CitraGenerator
         return CitraGenerator()
 
-    if emulator == 'daphne' :
-        from generators.daphne.daphneGenerator import DaphneGenerator
-        return DaphneGenerator()
+    if emulator == 'hypseus-singe' :
+        from generators.hypseus_singe.hypseusSingeGenerator import HypseusSingeGenerator
+        return HypseusSingeGenerator()
 
     if emulator == 'cannonball' :
         from generators.cannonball.cannonballGenerator import CannonballGenerator

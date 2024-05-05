@@ -147,7 +147,7 @@ PACKAGES_EMULATORS="amiberry
                     bigpemu
                     cemu
                     citra
-                    daphne
+                    hypseus-singe
                     demul
                     dolphin-emu
                     dolphin-triforce

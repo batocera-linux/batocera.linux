@@ -329,11 +329,6 @@ class LibretroGenerator(Generator):
         # Verbose logs
         commandArray.extend(['--verbose'])
 
-        # Extension used by hypseus .daphne but lr-daphne starts with .zip
-        if system.name == 'daphne':
-            romName = os.path.splitext(os.path.basename(rom))[0]
-            rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
-
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
