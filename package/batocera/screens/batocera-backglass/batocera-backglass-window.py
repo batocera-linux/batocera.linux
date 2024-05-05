@@ -43,6 +43,10 @@ class BackglassAPI(BaseHTTPRequestHandler):
                     window.evaluate_js("onSystem(" + json.dumps(data) + ")")
                 self.wfile.write(bytes("OK\n", "utf-8"))
 
+            elif query.path == "/location":
+                url = qs["url"][0]
+                window.load_url(url)
+
         except Exception as e:
             print(e)
             self.wfile.write(bytes("ERROR\n", "utf-8"))

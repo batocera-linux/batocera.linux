@@ -10,7 +10,19 @@ export __GLX_VENDOR_LIBRARY_NAME=
 export __NV_PRIME_RENDER_OFFLOAD=
 export __VK_LAYER_NV_optimus=
 
+do_help() {
+    echo "${1} enable <x> <y> <width> <height> <http location|theme>" >&2
+    echo "${1} disable" >&2
+    echo "${1} location <http location|theme name|empty for the default theme>" >&2
+}
+
 ACTION=$1
+if test -z "${ACTION}"
+then
+    do_help "${0}"
+    exit 1
+fi
+
 shift
 
 isRunning() {
@@ -23,7 +35,36 @@ isRunning() {
     fi
 }
 
+getUrl() {
+    THEME=$1
+    test -z "${THEME}" && THEME=backglass-default
+
+    # allow http:// or https:// urls
+    if echo "${THEME}" | grep -qE '^http://|^https://'
+    then
+	THEMEPATH=${THEME}
+    else
+	THEMEPATH="/userdata/system/backglass/${THEME}/index.htm"
+	if ! test -e "${THEMEPATH}"
+	then
+	    THEMEPATH="/usr/share/batocera-backglass/www/${THEME}/index.htm"
+	fi
+
+	# not found => the default one
+	if ! test -e "${THEMEPATH}"
+	then
+	    THEMEPATH="/usr/share/batocera-backglass/www/backglass-default/index.htm"
+	fi
+    fi
+    echo "${THEMEPATH}"
+}
+
 case "${ACTION}" in
+    "location")
+	LURL=$(getUrl "${1}")
+	curl "http://localhost:2033/location?url=${LURL}"
+	;;
+
     "enable")
 	if isRunning
 	then
@@ -43,26 +84,7 @@ case "${ACTION}" in
 	fi
 
 	### theme
-	THEME=$5
-	test -z "${THEME}" && THEME=backglass-default
-
-	# allow http:// or https:// urls
-	if echo "${THEME}" | grep -qE '^http://|^https://'
-	then
-	    THEMEPATH=${THEME}
-	else
-	    THEMEPATH="/userdata/system/backglass/${THEME}/index.htm"
-	    if ! test -e "${THEMEPATH}"
-	    then
-		THEMEPATH="/usr/share/batocera-backglass/www/${THEME}/index.htm"
-	    fi
-
-	    # not found => the default one
-	    if ! test -e "${THEMEPATH}"
-	    then
-		THEMEPATH="/usr/share/batocera-backglass/www/backglass-default/index.htm"
-	    fi
-	fi
+	THEMEPATH=$(getUrl "${5}")
 	###
 
 	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
