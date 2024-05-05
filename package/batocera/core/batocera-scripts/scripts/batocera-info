@@ -205,6 +205,21 @@ if test -n "${BATT}"; then
     echo "Battery: ${BATT}%"
 fi
 
+# battery health
+design_energy_file="/sys/class/power_supply/BAT0/energy_full_design"
+current_energy_file="/sys/class/power_supply/BAT0/energy_full"
+
+if [ -e "$design_energy_file" ]; then
+    design_energy=$(cat "$design_energy_file")
+    current_energy=$(cat "$current_energy_file")
+    
+    battery_health=$(awk "BEGIN {printf \"%.0f\", ($current_energy / $design_energy) * 100}")
+
+    if [ ! -z "$battery_health" ]; then
+        echo "Battery Health: $battery_health%"
+    fi
+fi
+
 # PAD Battery
 for PADBAT in /sys/class/power_supply/*/device/uevent
 do
