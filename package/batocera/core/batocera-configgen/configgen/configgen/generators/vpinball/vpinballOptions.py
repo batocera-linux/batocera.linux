@@ -75,6 +75,40 @@ def configureOptions(vpinballSettings, system):
         vpinballSettings.set("Player", "ForceAnisotropicFiltering", "")
         vpinballSettings.set("Player", "AlphaRampAccuracy", "")
 
+    # custom display physical setup
+    if system.isOptSet("vpinball_customphysicalsetup") and system.getOptBoolean("vpinball_customphysicalsetup"):
+        # Width
+        if system.isOptSet("vpinball_screenwidth"):
+            vpinballSettings.set("Player", "ScreenWidth", system.config["vpinball_screenwidth"])
+        else:
+            vpinballSettings.set("Player", "ScreenWidth", "")
+        # Height
+        if system.isOptSet("vpinball_screenheight"):
+            vpinballSettings.set("Player", "ScreenHeight", system.config["vpinball_screenheight"])
+        else:
+            vpinballSettings.set("Player", "ScreenHeight", "")
+        # Inclination
+        if system.isOptSet("vpinball_screeninclination"):
+            vpinballSettings.set("Player", "ScreenInclination", system.config["vpinball_screeninclination"])
+        else:
+            vpinballSettings.set("Player", "ScreenInclination", "")
+        # Y
+        if system.isOptSet("vpinball_screenplayery"):
+            vpinballSettings.set("Player", "ScreenPlayerY", system.config["vpinball_screenplayery"])
+        else:
+            vpinballSettings.set("Player", "ScreenPlayerY", "")
+        # Z
+        if system.isOptSet("vpinball_screenplayerz"):
+            vpinballSettings.set("Player", "ScreenPlayerZ", system.config["vpinball_screenplayerz"])
+        else:
+            vpinballSettings.set("Player", "ScreenPlayerZ", "")
+    else:
+        vpinballSettings.set("Player", "ScreenWidth",       "")
+        vpinballSettings.set("Player", "ScreenHeight",      "")
+        vpinballSettings.set("Player", "ScreenInclination", "")
+        vpinballSettings.set("Player", "ScreenPlayerY",     "")
+        vpinballSettings.set("Player", "ScreenPlayerZ",     "")
+
     # Altcolor (switchon)
     if system.isOptSet("vpinball_altcolor") and system.getOptBoolean("vpinball_altcolor") == False:
         vpinballSettings.set("Standalone", "AltColor", "0")
