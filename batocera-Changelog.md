@@ -116,7 +116,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Fallout2-CE to v1.3.0
 - Raze to v1.10.2
 - Vice to v3.8
-- The Force Engine to Apr 29, 2024 build
+- The Force Engine to Apr 29, 2024 build (Supports HD Textures)
 - DXX-Rebirth to Apr 22, 2024 build
 - BigPemu to v113 (Linux Build)
 ### System

@@ -84,8 +84,8 @@ class TheForceEngineGenerator(Generator):
         else:
             forceConfig.set("Graphics", "renderer", "1")
         
-        if system.isOptSet("force_colour") and system.getOptBoolean("force_colour"):
-            forceConfig.set("Graphics", "colorMode", "1")
+        if system.isOptSet("force_colour"):
+            forceConfig.set("Graphics", "colorMode", system.config["force_colour"])
         else:
             forceConfig.set("Graphics", "colorMode", "0")
 
@@ -115,6 +115,20 @@ class TheForceEngineGenerator(Generator):
         forceConfig.set("Hud", "hudScale", '"Proportional"')
         forceConfig.set("Hud", "hudPos", '"Edge"')
         forceConfig.set("Hud", "scale", "1.000")
+
+        # Enhancements
+        if not forceConfig.has_section("Enhancements"):
+            forceConfig.add_section("Enhancements")
+        if system.isOptSet("force_hd") and system.getOptBoolean("force_hd"):
+            forceConfig.set("Enhancements", "hdTextures", "1")
+            forceConfig.set("Enhancements", "hdSprites", "1")
+            forceConfig.set("Enhancements", "hdHud", "1")
+            # force true colour for HD textures
+            forceConfig.set("Graphics", "colorMode", "2")
+        else:
+            forceConfig.set("Enhancements", "hdTextures", "0")
+            forceConfig.set("Enhancements", "hdSprites", "0")
+            forceConfig.set("Enhancements", "hdHud", "0")
         
         # Sound
         if not forceConfig.has_section("Sound"):
