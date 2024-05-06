@@ -34,6 +34,12 @@ def getCurrentMode():
     for val in out.decode().splitlines():
         return val # return the first line
 
+def getRefreshRate():
+    proc = subprocess.Popen(["batocera-resolution refreshRate"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    for val in out.decode().splitlines():
+        return val # return the first line
+
 def getScreensInfos(config):
     resolution1 = getCurrentResolution()
     outputs = getScreens()
