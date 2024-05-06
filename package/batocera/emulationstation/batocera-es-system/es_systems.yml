@@ -2204,6 +2204,7 @@ daphne:
     - Cliff Hanger
     - Cobra Command
     - Dragon's Lair
+    - Dragon's Lair (Atari EU)
     - Dragon's Lair II: Time Warp
     - Esh's Aurunmilla
     - Galaxy Ranger
@@ -2213,6 +2214,7 @@ daphne:
     - M.A.C.H. 3
     - Road Blaster
     - Space Ace
+    - Space Ace (Atari EU)
     - Super Don Quix-Ote
     - Thayer's Quest
     - Us Vs Them
@@ -2257,18 +2259,17 @@ singe:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
   comment_en: |
-    Singe supports American Laser Games (Action Max) and fan made Singe & SInge 2 games.
+    Singe supports American Laser Games, Action Max and fan made Singe & Singe 2 games.
 
     Due to legacy supporting file structures, we still use the .daphne folder extension.
 
     roms
     |-- singe
-        |-- bluethunder.daphne    
-            |-- bluethunder.singe      (Singe parameters)
-            |-- bluethunder.txt        (Framefile)
-            |-- video_bluethunder.dat
-            |-- video_bluethunder.m2v
-            |-- video_bluethunder.ogg
+        |-- timegal.daphne    
+            |-- timegal.singe      (Singe Game LUA)
+            |-- timegal.txt        (Framefile)
+            |-- timegal.m2v
+            |-- timegal.ogg
 
     For more info: https://wiki.batocera.org/systems:singe
   comment_fr: |
