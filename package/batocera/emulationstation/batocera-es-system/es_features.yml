@@ -12320,8 +12320,21 @@ vita3k:
         "16x": 16
 
 bigpemu:
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode]
+  cfeatures:
+    bigpemu_vsync:
+      prompt: VSYNC
+      description: Fix screen tearing.
+      choices:
+        "Disabled": 0
+        "Enabled":  1
+    bigpemu_ratio:
+      prompt: ASPECT RATIO
+      description: Change the output resolution ratio.
+      choices:
+        "4:3 (Default)": 2
+        "16:9":          8
 
 pyxel:
   features: [padtokeyboard]

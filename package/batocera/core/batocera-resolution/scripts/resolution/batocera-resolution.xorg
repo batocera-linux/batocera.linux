@@ -33,6 +33,7 @@ f_usage() {
     echo "${0} setRotation (0|1|2|3)" >&2
     echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
+    echo "${0} refreshRate" >&2
 }
 
 f_minTomaxResolution() {
@@ -198,7 +199,11 @@ case "${ACTION}" in
     "currentMode")
 	xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
     ;;
-    
+
+    "refreshRate")
+    xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e 's/\*$//' -e 's/^\([^ ]*\) .*/\1/' | awk -F'[.]' '{print $2}'
+    ;;
+
     "currentResolution")
 	xrandr --currentResolution "${PSCREEN}" | tail -n1
     ;;
