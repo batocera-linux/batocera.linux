@@ -97,3 +97,14 @@ def configureOptions(vpinballSettings, system):
         vpinballSettings.set("Standalone", "AltSound", "0")
     else:
         vpinballSettings.set("Standalone", "AltSound","1")
+
+    # select which ID for sounddevices by running:
+    # /usr/bin/vpinball/VPinballX_GL -listsnd
+    if system.isOptSet("vpinball_sounddevice"):
+        vpinballSettings.set("Player", "SoundDevice", system.config["vpinball_sounddevice"])
+    else:
+        vpinballSettings.set("Player", "SoundDevice", "")
+    if system.isOptSet("vpinball_sounddevicebg"):
+        vpinballSettings.set("Player", "SoundDeviceBG", system.config["vpinball_sounddevicebg"])
+    else:
+        vpinballSettings.set("Player", "SoundDeviceBG", "")
