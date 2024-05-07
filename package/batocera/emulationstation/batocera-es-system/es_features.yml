@@ -12517,6 +12517,41 @@ vpinball:
         "DESKTOP": 0
         "FULLSCREEN": 1
         "FULL SINGLE SCREEN": 2
+    vpinball_customphysicalsetup:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: ENABLE CUSTOM DISPLAY PHYSICAL SETUP
+      description: Enable the custom values below.
+      preset: switch
+    vpinball_screenwidth:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: SCREEN WIDTH
+      description: Long visible screen edge (cm)
+      preset: slider
+      preset_parameters: 20 120 0.5 90
+    vpinball_screenheight:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: SCREEN HEIGHT
+      description: Short visible screen edge (cm)
+      preset: slider
+      preset_parameters: 10 80 0.5 50
+    vpinball_screeninclination:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: SCREEN INCLINATION
+      description: Screen inclination (degree)
+      preset: slider
+      preset_parameters: 0 90 0.5 0
+    vpinball_screenplayery:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: SCREEN PLAYER Y
+      description: Player distance from lower screen edge (cm)
+      preset: slider
+      preset_parameters: -30 50 0.5 0
+    vpinball_screenplayerz:
+      group: DISPLAY PHYSICAL SETUP
+      prompt: SCREEN PLAYER Z
+      description: Player's eyes distance from lower screen edge (cm)
+      preset: slider
+      preset_parameters: 15 120 0.5 70
     vpinball_musicvolume:
       group: AUDIO
       prompt: MUSIC VOLUME
