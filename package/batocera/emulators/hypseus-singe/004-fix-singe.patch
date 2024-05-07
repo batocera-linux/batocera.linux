@@ -1,8 +1,8 @@
 diff --git a/src/game/singe/luretro.c b/src/game/singe/luretro.c
-index 9c110dc..47ebf0b 100644
+index 9c110dc..a4cbd35 100644
 --- a/src/game/singe/luretro.c
 +++ b/src/game/singe/luretro.c
-@@ -48,38 +48,48 @@ unsigned char inPath(const char* src, char* path)
+@@ -48,38 +48,40 @@ unsigned char inPath(const char* src, char* path)
      return 0;
  }
  
@@ -42,30 +42,19 @@ index 9c110dc..47ebf0b 100644
                  r++;
                  continue;
              }
-+            if (r == 1) {
-+                switch (path) {
-+                    default:
-+                        memcpy(dst, ".daphne/", 8);
-+                        dst += 8;
-+                        break;
-+                }
-+                r = 0xf; //bool
-+            }
-             if (r == 2) {
+-            if (r == 2) {
 -                switch(path) {
 -                case (PATH_FRAMEWORK):
--                    memcpy(dst, "/", 1);
--                    dst += 1;
++            if (r == 1) {
++                if (path == PATH_FRAMEWORK) {
+                     memcpy(dst, "/", 1);
+                     dst += 1;
 -                    break;
 -                default:
--                    memcpy(dst, ".daphne/", 8);
--                    dst += 8;
++                } else {
+                     memcpy(dst, ".daphne/", 8);
+                     dst += 8;
 -                    break;
-+                switch (path) {
-+                    case (PATH_FRAMEWORK):
-+                        memcpy(dst, "/", 1);
-+                        dst += 1;
-+                        break;
                  }
                  r = 0xf; //bool
              }
