@@ -119,6 +119,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - The Force Engine to Apr 29, 2024 build (Supports HD Textures)
 - DXX-Rebirth to Apr 22, 2024 build
 - BigPemu to v113 (Linux Build)
+- Xenia to v1.0.2810
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.67
