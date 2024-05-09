@@ -128,7 +128,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Wayland-protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3d to 24.0.5
+- Mesa3d to 24.0.7
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.8.9
