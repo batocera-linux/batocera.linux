@@ -142,3 +142,9 @@ def configureOptions(vpinballSettings, system):
         vpinballSettings.set("Player", "SoundDeviceBG", system.config["vpinball_sounddevicebg"])
     else:
         vpinballSettings.set("Player", "SoundDeviceBG", "")
+
+    # Don't use SDL "Add credit" with the South button/plunger and pad2key default mapping
+    if system.isOptSet("vpinball_pad_add_credit") and system.getOptBoolean("vpinball_pad_add_credit") == True:
+        vpinballSettings.set("Player", "JoyAddCreditKey", "")
+    else:
+        vpinballSettings.set("Player", "JoyAddCreditKey", "0")
