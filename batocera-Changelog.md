@@ -147,6 +147,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Qt to 6.7.0
 - DXVK to 2.3.1
 - DXVK-NVAPI to 0.7.0
+- VKD3D-Proton to v2.12
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
