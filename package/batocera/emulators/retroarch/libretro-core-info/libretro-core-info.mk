@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_CORE_INFO_VERSION = v1.16.0
+LIBRETRO_CORE_INFO_VERSION = v1.18.0
 LIBRETRO_CORE_INFO_SITE = $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
 LIBRETRO_CORE_INFO_LICENSE = GPL
 
