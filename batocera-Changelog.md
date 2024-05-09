@@ -145,6 +145,8 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Sound Open Firmware to 2023.12.1
 - RyzenAdj to v0.15.0
 - Qt to 6.7.0
+- DXVK to 2.3.1
+- DXVK-NVAPI to 0.7.0
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
