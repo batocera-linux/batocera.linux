@@ -138,7 +138,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Linux firmware to 20240410
 - Buildroot to 2024.02.1
 - Xpad-Noone to Jan 10, 2024
-- XpadNeo to Mar 11, 2024
+- XpadNeo to Apr 23, 2024 build
 - Xone to Mar 30, 2024
 - Fdupes to 2.3.0
 - FAudio to 24.05
