@@ -115,6 +115,7 @@ menu "System"
 
   menu "LED"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayn-platform/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayaneo-platform/Config.in"
   endmenu
 
   menu "Device trees"

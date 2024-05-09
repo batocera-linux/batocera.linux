@@ -1,0 +1,10 @@
+comment "ayaneo-platform needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_AYANEO_PLATFORM
+	bool "ayaneo-platform"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux drivers for AYANEO x86 handhelds providing RGB control.
+
+	  https://github.com/ShadowBlip/ayaneo-platform
