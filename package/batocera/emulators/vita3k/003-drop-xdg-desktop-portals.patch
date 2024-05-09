@@ -1,8 +1,8 @@
 diff --git a/.gitmodules b/.gitmodules
-index e57fd159..bb5ed956 100644
+index 83486efc..4a494bb2 100644
 --- a/.gitmodules
 +++ b/.gitmodules
-@@ -90,9 +90,9 @@
+@@ -87,9 +87,9 @@
  [submodule "external/tracy"]
  	path = external/tracy
  	url = https://github.com/wolfpld/tracy.git
@@ -16,41 +16,38 @@ index e57fd159..bb5ed956 100644
  	path = external/cubeb
  	url = https://github.com/mozilla/cubeb.git
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index d4dcfc94..4cb3e1ee 100644
+index 567d06b1..763ae553 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
-@@ -344,11 +344,20 @@ target_compile_definitions(tracy PUBLIC $<$<CONFIG:Debug,RelWithDebInfo>:TRACY_E
+@@ -383,11 +383,17 @@ target_compile_definitions(tracy PUBLIC $<$<CONFIG:Debug,RelWithDebInfo>:TRACY_E
  #
  # target_compile_definitions(tracy PUBLIC TRACY_ENABLE)
  
 -# Use XDG desktop portals on Linux
 -set(NFD_PORTAL ON)
-+# Create alias to prevent the need of multiple changes in case the target name changes
 +# Batocera - bring back nativefiledialog
-+if(UNIX)
-+	find_package(PkgConfig REQUIRED)
-+	pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
  
 -# nativefiledialog-extended
 -add_subdirectory(nativefiledialog-extended)
-+	include_directories(${GTK3_INCLUDE_DIRS})
-+	link_directories(${GTK3_LIBRARY_DIRS})
-+
-+	add_definitions(${GTK3_CFLAGS_OTHER})
-+
-+	add_library(nativefiledialog STATIC nativefiledialog-cmake/src/nfd_gtk.c nativefiledialog-cmake/src/nfd_common.c)
-+	target_include_directories(nativefiledialog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog-cmake/src/include")
-+	target_link_libraries(nativefiledialog ${GTK3_LIBRARIES})
-+endif()
-+set_property(TARGET nativefiledialog PROPERTY FOLDER externals)
++include_directories(${GTK3_INCLUDE_DIRS})
++link_directories(${GTK3_LIBRARY_DIRS})
  
 -# Create alias to prevent the need of multiple changes in case the target name changes
 -add_library(NFDe::NFDe ALIAS nfd)
++add_definitions(${GTK3_CFLAGS_OTHER})
++
++add_library(nativefiledialog STATIC nativefiledialog-cmake/src/nfd_gtk.c nativefiledialog-cmake/src/nfd_common.c)
++target_include_directories(nativefiledialog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog-cmake/src/include")
++target_link_libraries(nativefiledialog ${GTK3_LIBRARIES})
++
++set_property(TARGET nativefiledialog PROPERTY FOLDER externals)
 diff --git a/vita3k/CMakeLists.txt b/vita3k/CMakeLists.txt
-index e1b27dfd..25d8f88b 100644
+index eceb00a6..43f5734f 100644
 --- a/vita3k/CMakeLists.txt
 +++ b/vita3k/CMakeLists.txt
-@@ -105,7 +105,6 @@ add_subdirectory(features)
+@@ -103,7 +103,6 @@ add_subdirectory(features)
  add_subdirectory(glutil)
  add_subdirectory(gui)
  add_subdirectory(gxm)
@@ -76,18 +73,18 @@ index b66bbd98..28d5a6f4 100644
   * @dir vita3k/io
   *
 diff --git a/vita3k/gui/CMakeLists.txt b/vita3k/gui/CMakeLists.txt
-index ef7de553..811ee661 100644
+index c2149892..b4bb64f3 100644
 --- a/vita3k/gui/CMakeLists.txt
 +++ b/vita3k/gui/CMakeLists.txt
 @@ -51,5 +51,5 @@ add_library(
  
  target_include_directories(gui PUBLIC include ${CMAKE_SOURCE_DIR}/vita3k)
  target_link_libraries(gui PUBLIC app compat config dialog emuenv ime imgui glutil lang regmgr np)
--target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil host::dialog concurrentqueue)
-+target_link_libraries(gui PRIVATE audio ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil nativefiledialog concurrentqueue)
+-target_link_libraries(gui PRIVATE audio cppcommon ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil host::dialog concurrentqueue)
++target_link_libraries(gui PRIVATE audio cppcommon ctrl kernel miniz psvpfsparser pugixml::pugixml stb renderer packages sdl2 touch vkutil nativefiledialog concurrentqueue)
  target_link_libraries(gui PUBLIC tracy)
 diff --git a/vita3k/gui/src/archive_install_dialog.cpp b/vita3k/gui/src/archive_install_dialog.cpp
-index 67832991..5d724637 100644
+index 74e07f4a..9eb35871 100644
 --- a/vita3k/gui/src/archive_install_dialog.cpp
 +++ b/vita3k/gui/src/archive_install_dialog.cpp
 @@ -19,7 +19,7 @@
@@ -99,21 +96,22 @@ index 67832991..5d724637 100644
  #include <packages/sfo.h>
  
  #include <util/string_utils.h>
-@@ -32,7 +33,7 @@ static bool delete_archive_file;
+@@ -34,7 +34,7 @@ static bool delete_archive_file;
  static std::string state, type, title;
  static std::map<fs::path, std::vector<ContentInfo>> contents_archives;
  static std::vector<fs::path> invalid_archives;
 -static std::filesystem::path archive_path = "";
 +static nfdchar_t *archive_path;
  static float global_progress = 0.f;
- static float archives_count = 0.f;
+ static int archives_count = 0;
  
-@@ -104,20 +104,12 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -105,24 +105,17 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
              gui.file_menu.archive_install_dialog = false;
      } else {
          if (state.empty()) {
 -            host::dialog::filesystem::Result result = host::dialog::filesystem::Result::CANCEL;
--            if (type == "file") {
++            nfdresult_t result = NFD_CANCEL;
+             if (type == "file") {
 -                // Set file filters for the file picking dialog
 -                std::vector<host::dialog::filesystem::FileFilter> file_filters = {
 -                    { "PlayStation Vita commercial software package (NoNpDrm/FAGDec) / PlayStation Vita homebrew software package", { "zip", "vpk" } },
@@ -124,53 +122,44 @@ index 67832991..5d724637 100644
 -                result = host::dialog::filesystem::open_file(archive_path, file_filters);
 -            } else {
 -                result = host::dialog::filesystem::pick_folder(archive_path);
--            }
--            if (result == host::dialog::filesystem::Result::SUCCESS) {
-+            nfdresult_t result = NFD_CANCEL;
-+            if (type == "file")
 +                result = NFD_OpenDialog("zip,vpk", nullptr, &archive_path);
-+            else
++            }
++            else {
 +                result = NFD_PickFolder(nullptr, &archive_path);
+             }
+-            if (result == host::dialog::filesystem::Result::SUCCESS) {
 +            if (result == NFD_OKAY) {
                  state = "install";
-             } else
+             } else {
+-                if (result == host::dialog::filesystem::Result::ERROR)
+-                    LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++                LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
                  type.clear();
-@@ -133,7 +127,7 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+             }
+         } else if (state == "install") {
+@@ -139,7 +132,7 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
                      } else
                          invalid_archives.push_back(archive_path);
                  };
--                const auto contents_path = fs::path(archive_path.wstring());
+-                const auto contents_path = fs::path(archive_path.native());
 +                const auto contents_path = fs::path(string_utils::utf_to_wide(archive_path));
                  if (type == "directory") {
                      const auto archives_path = get_path_of_archives(contents_path);
-                     archives_count = float(archives_path.size());
-@@ -264,7 +258,7 @@ void draw_archive_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-                     for (const auto archive : invalid_archives)
-                         fs::remove(archive);
-                 }
--                archive_path = "";
-+                archive_path = nullptr;
-                 gui.file_menu.archive_install_dialog = false;
-                 delete_archive_file = false;
-                 contents_archives.clear();
+                     archives_count = archives_path.size();
 diff --git a/vita3k/gui/src/firmware_install_dialog.cpp b/vita3k/gui/src/firmware_install_dialog.cpp
-index 1b7208e6..f29150f7 100644
+index f7fb2ebb..bbd22013 100644
 --- a/vita3k/gui/src/firmware_install_dialog.cpp
 +++ b/vita3k/gui/src/firmware_install_dialog.cpp
-@@ -19,18 +19,19 @@
+@@ -19,7 +19,7 @@
  
  #include <config/state.h>
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <packages/functions.h>
  #include <util/log.h>
  #include <util/string_utils.h>
- 
-+#include <nfd.h>
-+
- #include <thread>
- 
- namespace gui {
+@@ -30,7 +30,7 @@ namespace gui {
  
  std::string fw_version;
  bool delete_pup_file;
@@ -178,8 +167,8 @@ index 1b7208e6..f29150f7 100644
 +nfdchar_t *pup_path;
  
  static void get_firmware_version(EmuEnvState &emuenv) {
-     fs::ifstream versionFile(emuenv.pref_path + L"/PUP_DEC/PUP/version.txt");
-@@ -46,7 +46,7 @@ static void get_firmware_version(EmuEnvState &emuenv) {
+     fs::ifstream versionFile(emuenv.pref_path / "PUP_DEC/PUP/version.txt");
+@@ -45,7 +45,7 @@ static void get_firmware_version(EmuEnvState &emuenv) {
  }
  
  void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
@@ -188,7 +177,7 @@ index 1b7208e6..f29150f7 100644
  
      static std::mutex install_mutex;
      static bool draw_file_dialog = true;
-@@ -69,23 +69,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -68,23 +68,23 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
      ImGui::SetNextWindowPos(ImVec2(emuenv.viewport_pos.x + (display_size.x / 2.f) - (WINDOW_SIZE.x / 2), emuenv.viewport_pos.y + (display_size.y / 2.f) - (WINDOW_SIZE.y / 2.f)), ImGuiCond_Always);
      ImGui::SetNextWindowSize(WINDOW_SIZE);
      if (draw_file_dialog) {
@@ -200,7 +189,7 @@ index 1b7208e6..f29150f7 100644
 -        if (result == host::dialog::filesystem::Result::SUCCESS) {
 +        if (result == NFD_OKAY) {
              std::thread installation([&emuenv]() {
--                install_pup(emuenv.pref_path.wstring(), pup_path.string(), progress_callback);
+-                install_pup(emuenv.pref_path, fs::path(pup_path.native()), progress_callback);
 +                install_pup(emuenv.pref_path.wstring(), pup_path, progress_callback);
                  std::lock_guard<std::mutex> lock(install_mutex);
                  finished_installing = true;
@@ -217,34 +206,31 @@ index 1b7208e6..f29150f7 100644
              gui.file_menu.firmware_install_dialog = false;
              draw_file_dialog = true;
          }
-@@ -117,7 +118,7 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-             ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - 30);
-             if (ImGui::Button("OK", BUTTON_SIZE)) {
+@@ -143,7 +143,7 @@ void draw_firmware_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+             ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
+             if (ImGui::Button(common["ok"].c_str(), BUTTON_SIZE)) {
                  if (delete_pup_file) {
--                    fs::remove(fs::path(pup_path.wstring()));
+-                    fs::remove(fs::path(pup_path.native()));
 +                    fs::remove(fs::path(string_utils::utf_to_wide(pup_path)));
                      delete_pup_file = false;
                  }
-                 if (emuenv.cfg.initial_setup)
+                 get_modules_list(gui, emuenv);
 diff --git a/vita3k/gui/src/initial_setup.cpp b/vita3k/gui/src/initial_setup.cpp
-index 0bbe3548..e327c6cb 100644
+index 5a8c84b5..48cb37c5 100644
 --- a/vita3k/gui/src/initial_setup.cpp
 +++ b/vita3k/gui/src/initial_setup.cpp
-@@ -19,11 +19,12 @@
+@@ -19,8 +19,9 @@
  
  #include <config/state.h>
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
- #include <lang/functions.h>
- 
- #include <util/string_utils.h>
- 
 +#include <nfd.h>
-+
+ #include <lang/functions.h>
++#include <util/string_utils.h>
+ 
  namespace gui {
  
- enum InitialSetup {
-@@ -166,14 +166,12 @@ void draw_initial_setup(GuiState &gui, EmuEnvState &emuenv) {
+@@ -163,14 +164,15 @@ void draw_initial_setup(GuiState &gui, EmuEnvState &emuenv) {
          ImGui::TextWrapped("%s", emuenv.cfg.pref_path.c_str());
          ImGui::SetCursorPos(!is_default_path ? ImVec2((WINDOW_SIZE.x / 2.f) - BIG_BUTTON_SIZE.x - (20.f * SCALE.x), BIG_BUTTON_POS.y) : BIG_BUTTON_POS);
          if (ImGui::Button(lang["change_emu_path"].c_str(), BIG_BUTTON_SIZE)) {
@@ -253,30 +239,33 @@ index 0bbe3548..e327c6cb 100644
 +            nfdchar_t *emulator_path = nullptr;
 +            nfdresult_t result = NFD_PickFolder(nullptr, &emulator_path);
  
--            if ((result == host::dialog::filesystem::Result::SUCCESS) && (emulator_path.wstring() != emuenv.pref_path)) {
--                emuenv.pref_path = emulator_path.wstring() + L'/';
--                emuenv.cfg.pref_path = emulator_path.string();
+-            if ((result == host::dialog::filesystem::Result::SUCCESS) && (emulator_path.native() != emuenv.pref_path.native())) {
+-                emuenv.pref_path = fs::path(emulator_path.native()) / "";
+-                emuenv.cfg.set_pref_path(emuenv.pref_path);
 -            } else if (result == host::dialog::filesystem::Result::ERROR) {
 -                LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
 +            if ((result == NFD_OKAY) && (string_utils::utf_to_wide(emulator_path) != emuenv.pref_path)) {
 +                emuenv.pref_path = string_utils::utf_to_wide(emulator_path) + L'/';
 +                emuenv.cfg.pref_path = emulator_path;
++            }
++            else {
++                LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
              }
          }
          if (!is_default_path) {
 diff --git a/vita3k/gui/src/license_install_dialog.cpp b/vita3k/gui/src/license_install_dialog.cpp
-index beabedb8..7eb910a5 100644
+index 240caceb..cf31f34f 100644
 --- a/vita3k/gui/src/license_install_dialog.cpp
 +++ b/vita3k/gui/src/license_install_dialog.cpp
-@@ -17,15 +17,15 @@
+@@ -17,14 +17,15 @@
  
  #include "private.h"
  
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <misc/cpp/imgui_stdlib.h>
  #include <packages/functions.h>
- #include <util/string_utils.h>
-+#include <nfd.h>
++#include <util/string_utils.h>
  
  namespace gui {
  
@@ -286,14 +275,14 @@ index beabedb8..7eb910a5 100644
  static bool delete_license_file;
  
  void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-@@ -67,10 +67,10 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -66,16 +67,15 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
          if (ImGui::Button(common["cancel"].c_str(), BUTTON_SIZE))
              gui.file_menu.license_install_dialog = false;
      } else if (state == "license") {
 -        host::dialog::filesystem::Result result = host::dialog::filesystem::Result::CANCEL;
 -        result = host::dialog::filesystem::open_file(license_path, { { "PlayStation Vita software license file", { "bin", "rif" } } });
 -        if (result == host::dialog::filesystem::Result::SUCCESS) {
--            if (copy_license(emuenv, fs::path(license_path.wstring())))
+-            if (copy_license(emuenv, fs::path(license_path.native())))
 +        nfdresult_t result = NFD_CANCEL;
 +        result = NFD_OpenDialog("bin,rif", nullptr, &license_path);
 +        if (result == NFD_OKAY) {
@@ -301,7 +290,14 @@ index beabedb8..7eb910a5 100644
                  state = "success";
              else
                  state = "fail";
-@@ -105,12 +105,12 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+         } else {
+-            if (result == host::dialog::filesystem::Result::ERROR)
+-                LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++            LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
+ 
+             state.clear();
+         }
+@@ -108,12 +108,12 @@ void draw_license_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
          ImGui::Spacing();
          ImGui::Separator();
          ImGui::Spacing();
@@ -311,30 +307,25 @@ index beabedb8..7eb910a5 100644
          ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
          if (ImGui::Button(common["ok"].c_str(), BUTTON_SIZE)) {
              if (delete_license_file) {
--                fs::remove(fs::path(license_path.wstring()));
+-                fs::remove(fs::path(license_path.native()));
 +                fs::remove(fs::path(string_utils::utf_to_wide(std::string(license_path))));
                  delete_license_file = false;
              }
-             license_path = nullptr;
+             license_path = "";
 diff --git a/vita3k/gui/src/pkg_install_dialog.cpp b/vita3k/gui/src/pkg_install_dialog.cpp
-index 75c11214..46fcf6f8 100644
+index db1063e4..5007a5a1 100644
 --- a/vita3k/gui/src/pkg_install_dialog.cpp
 +++ b/vita3k/gui/src/pkg_install_dialog.cpp
-@@ -18,7 +18,6 @@
+@@ -18,7 +18,7 @@
  #include "private.h"
  
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <misc/cpp/imgui_stdlib.h>
  #include <packages/functions.h>
  #include <packages/pkg.h>
-@@ -25,19 +25,18 @@
- #include <rif2zrif.h>
- #include <util/log.h>
- #include <util/string_utils.h>
--
-+#include <nfd.h>
- #include <thread>
+@@ -31,14 +31,13 @@
  
  namespace gui {
  
@@ -351,8 +342,8 @@ index 75c11214..46fcf6f8 100644
      static std::atomic<float> progress(0);
      static std::mutex install_mutex;
      static const auto progress_callback = [&](float updated_progress) {
-@@ -53,15 +53,15 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-     const auto BUTTON_SIZE = ImVec2(160.f * SCALE.x, 45.f * SCALE.y);
+@@ -47,15 +46,15 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+     std::lock_guard<std::mutex> lock(install_mutex);
  
      if (draw_file_dialog) {
 -        result = host::dialog::filesystem::open_file(pkg_path, { { "PlayStation Store Downloaded Package", { "pkg" } } });
@@ -371,29 +362,35 @@ index 75c11214..46fcf6f8 100644
              gui.file_menu.pkg_install_dialog = false;
              draw_file_dialog = true;
          }
-@@ -97,9 +96,9 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -98,14 +97,13 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
                  draw_file_dialog = true;
              }
          } else if (state == "license") {
 -            result = host::dialog::filesystem::open_file(license_path, { { "PlayStation Vita software license file", { "bin", "rif" } } });
 -            if (result == host::dialog::filesystem::Result::SUCCESS) {
--                fs::ifstream binfile(license_path.wstring(), std::ios::in | std::ios::binary | std::ios::ate);
+-                fs::ifstream binfile(license_path.native(), std::ios::in | std::ios::binary | std::ios::ate);
 +            result = NFD_OpenDialog("bin,rif", nullptr, &license_path);
 +            if (result == NFD_OKAY) {
 +                fs::ifstream binfile(string_utils::utf_to_wide(std::string(license_path)), std::ios::in | std::ios::binary | std::ios::ate);
                  zRIF = rif2zrif(binfile);
                  state = "install";
-             } else
-@@ -125,7 +125,7 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+             } else {
+-                if (result == host::dialog::filesystem::Result::ERROR)
+-                    LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++                LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
+                 state.clear();
+             }
+         } else if (state == "zrif") {
+@@ -128,7 +126,7 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
                  state = "install";
          } else if (state == "install") {
              std::thread installation([&emuenv]() {
--                if (install_pkg(pkg_path.string(), emuenv, zRIF, progress_callback)) {
+-                if (install_pkg(pkg_path.native(), emuenv, zRIF, progress_callback)) {
 +                if (install_pkg(std::string(pkg_path), emuenv, zRIF, progress_callback)) {
                      std::lock_guard<std::mutex> lock(install_mutex);
                      state = "success";
                  } else {
-@@ -143,17 +142,17 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -147,17 +145,17 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
              ImGui::Separator();
              ImGui::Spacing();
              ImGui::Checkbox(lang["delete_pkg"].c_str(), &delete_pkg_file);
@@ -404,57 +401,30 @@ index 75c11214..46fcf6f8 100644
              ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
              if (ImGui::Button(common["ok"].c_str(), BUTTON_SIZE)) {
                  if (delete_pkg_file) {
--                    fs::remove(fs::path(pkg_path.wstring()));
+-                    fs::remove(fs::path(pkg_path.native()));
 +                    fs::remove(fs::path(string_utils::utf_to_wide(std::string(pkg_path))));
                      delete_pkg_file = false;
                  }
                  if (delete_license_file) {
--                    fs::remove(fs::path(license_path.wstring()));
+-                    fs::remove(fs::path(license_path.native()));
 +                    fs::remove(fs::path(string_utils::utf_to_wide(std::string(pkg_path))));
                      delete_license_file = false;
                  }
                  if ((emuenv.app_info.app_category.find("gd") != std::string::npos) || (emuenv.app_info.app_category.find("gp") != std::string::npos)) {
-@@ -160,8 +160,8 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-                     save_apps_cache(gui, emuenv);
-                 }
-                 update_notice_info(gui, emuenv, "content");
--                pkg_path = "";
--                license_path = "";
-+                pkg_path = nullptr;
-+                license_path = nullptr;
-                 gui.file_menu.pkg_install_dialog = false;
-                 draw_file_dialog = true;
-                 state.clear();
-@@ -175,7 +175,7 @@ void draw_pkg_install_dialog(GuiState &gui, EmuEnvState &emuenv) {
-             ImGui::SetCursorPos(ImVec2(POS_BUTTON, ImGui::GetWindowSize().y - BUTTON_SIZE.y - (20.f * SCALE.y)));
-             if (ImGui::Button("OK", BUTTON_SIZE)) {
-                 gui.file_menu.pkg_install_dialog = false;
--                pkg_path = "";
-+                pkg_path = nullptr;
-                 draw_file_dialog = true;
-                 work_path = "";
-                 state.clear();
 diff --git a/vita3k/gui/src/settings.cpp b/vita3k/gui/src/settings.cpp
-index 72ffabdb..7a6f4265 100644
+index 8223c5e7..52210249 100644
 --- a/vita3k/gui/src/settings.cpp
 +++ b/vita3k/gui/src/settings.cpp
-@@ -20,7 +20,6 @@
+@@ -20,7 +20,7 @@
  #include <config/functions.h>
  #include <config/state.h>
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <ime/functions.h>
  #include <io/device.h>
  #include <io/state.h>
-@@ -29,6 +28,7 @@
- #include <util/safe_time.h>
- #include <util/string_utils.h>
- 
-+#include <nfd.h>
- #include <pugixml.hpp>
- #include <stb_image.h>
- 
-@@ -581,11 +581,11 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
+@@ -601,16 +601,16 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
                              sub_menu.clear();
                          }
                      } else if (sub_menu == "image") {
@@ -463,52 +433,68 @@ index 72ffabdb..7a6f4265 100644
 +                        nfdchar_t *image_path;
 +                        nfdresult_t result = NFD_OpenDialog("bmp,gif,jpg,png,tif", nullptr, &image_path);
  
--                        if ((result == host::dialog::filesystem::Result::SUCCESS) && init_user_start_background(gui, image_path.string())) {
--                            gui.users[emuenv.io.user_id].start_path = image_path.string();
+-                        if ((result == host::dialog::filesystem::Result::SUCCESS) && init_user_start_background(gui, fs_utils::path_to_utf8(image_path.native()))) {
+-                            gui.users[emuenv.io.user_id].start_path = fs_utils::path_to_utf8(image_path.native());
 +                        if ((result == NFD_OKAY) && init_user_start_background(gui, image_path)) {
 +                            gui.users[emuenv.io.user_id].start_path = image_path;
                              gui.users[emuenv.io.user_id].start_type = "image";
                              save_user(gui, emuenv, emuenv.io.user_id);
                          }
-@@ -641,12 +641,12 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
+-                        if (result == host::dialog::filesystem::Result::ERROR) {
+-                            LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++                        else {
++                            LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
+                         }
+                         sub_menu.clear();
+                     } else if (sub_menu == "default") {
+@@ -664,18 +664,17 @@ void draw_settings(GuiState &gui, EmuEnvState &emuenv) {
                      ImGui::NextColumn();
                  }
                  if (ImGui::Selectable(theme_background.home_screen_backgrounds["add_background"].c_str(), false, ImGuiSelectableFlags_None, SIZE_PACKAGE)) {
 -                    std::filesystem::path background_path = "";
 -                    host::dialog::filesystem::Result result = host::dialog::filesystem::open_file(background_path, { { "Image file", { "bmp", "gif", "jpg", "png", "tif" } } });
+-                    auto background_path_string = fs_utils::path_to_utf8(background_path.native());
+-                    if ((result == host::dialog::filesystem::Result::SUCCESS) && (!gui.user_backgrounds.contains(background_path_string))) {
+-                        if (init_user_background(gui, emuenv, background_path_string)) {
+-                            gui.users[emuenv.io.user_id].backgrounds.push_back(background_path_string);
 +                    nfdchar_t *background_path;
 +                    nfdresult_t result = NFD_OpenDialog("bmp,gif,jpg,png,tif", nullptr, &background_path);
- 
--                    if ((result == host::dialog::filesystem::Result::SUCCESS) && (!gui.user_backgrounds.contains(background_path.string()))) {
--                        if (init_user_background(gui, emuenv, background_path.string())) {
--                            gui.users[emuenv.io.user_id].backgrounds.push_back(background_path.string());
 +                    if ((result == NFD_OKAY) && (gui.user_backgrounds.find(background_path) == gui.user_backgrounds.end())) {
 +                        if (init_user_background(gui, emuenv, background_path)) {
 +                            gui.users[emuenv.io.user_id].backgrounds.push_back(background_path);
                              gui.users[emuenv.io.user_id].use_theme_bg = false;
                              save_user(gui, emuenv, emuenv.io.user_id);
                          }
+                     }
+-                    if (result == host::dialog::filesystem::Result::ERROR) {
+-                        LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++                    else {
++                        LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
+                     }
+                 }
+                 ImGui::PopStyleVar();
 diff --git a/vita3k/gui/src/settings_dialog.cpp b/vita3k/gui/src/settings_dialog.cpp
-index 37c05f1c..73dc08c3 100644
+index ffa5d013..390f33de 100644
 --- a/vita3k/gui/src/settings_dialog.cpp
 +++ b/vita3k/gui/src/settings_dialog.cpp
-@@ -21,7 +21,6 @@
+@@ -23,7 +23,7 @@
  #include <config/functions.h>
  #include <config/state.h>
  #include <display/state.h>
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <io/state.h>
  #include <kernel/state.h>
- #include <renderer/state.h>
-@@ -43,6 +42,7 @@
+ #include <lang/functions.h>
+@@ -38,6 +38,7 @@
+ #include <string>
+ #include <util/fs.h>
+ #include <util/log.h>
++#include <util/string_utils.h>
+ 
  #include <SDL.h>
  
- #include <algorithm>
-+#include <nfd.h>
- #include <pugixml.hpp>
- #include <sstream>
- 
-@@ -111,21 +111,17 @@ static void reset_emulator(GuiState &gui, EmuEnvState &emuenv) {
+@@ -105,20 +106,20 @@ static void reset_emulator(GuiState &gui, EmuEnvState &emuenv) {
  }
  
  static void change_emulator_path(GuiState &gui, EmuEnvState &emuenv) {
@@ -517,55 +503,38 @@ index 37c05f1c..73dc08c3 100644
 +    nfdchar_t *emulator_path = nullptr;
 +    nfdresult_t result = NFD_PickFolder(nullptr, &emulator_path);
  
--    if (result == host::dialog::filesystem::Result::SUCCESS && emulator_path.wstring() != emuenv.pref_path.wstring()) {
+-    if (result == host::dialog::filesystem::Result::SUCCESS && emulator_path.native() != emuenv.pref_path.native()) {
 +    if (result == NFD_OKAY && string_utils::utf_to_wide(emulator_path) != emuenv.pref_path) {
          // Refresh the working paths
--        emuenv.pref_path = emulator_path.wstring() + L'/';
+-        emuenv.pref_path = fs::path(emulator_path.native()) / "";
 +        emuenv.pref_path = string_utils::utf_to_wide(emulator_path) + L'/';
  
          // TODO: Move app old to new path
          reset_emulator(gui, emuenv);
-         LOG_INFO("Successfully moved Vita3K path to: {}", emuenv.pref_path.string());
+         LOG_INFO("Successfully moved Vita3K path to: {}", emuenv.pref_path);
      }
--
+ 
 -    if (result == host::dialog::filesystem::Result::ERROR) {
 -        LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
--    }
++    else {
++        LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
+     }
  }
  
- static CPUBackend config_cpu_backend;
-diff --git a/vita3k/gui/src/trophy_collection.cpp b/vita3k/gui/src/trophy_collection.cpp
-index 85854dc3..97193c7d 100644
---- a/vita3k/gui/src/trophy_collection.cpp
-+++ b/vita3k/gui/src/trophy_collection.cpp
-@@ -26,6 +26,7 @@
- #include <io/device.h>
- #include <io/functions.h>
- 
-+#include <nfd.h>
- #include <pugixml.hpp>
- #include <stb_image.h>
- 
 diff --git a/vita3k/gui/src/user_management.cpp b/vita3k/gui/src/user_management.cpp
-index e1d23bfb..f0b8a935 100644
+index ade49c2b..84ef91ab 100644
 --- a/vita3k/gui/src/user_management.cpp
 +++ b/vita3k/gui/src/user_management.cpp
-@@ -24,13 +24,13 @@
+@@ -24,7 +24,7 @@
  
  #include <display/state.h>
  #include <gui/functions.h>
 -#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
  #include <io/state.h>
  #include <np/common.h>
  
- #include <util/log.h>
- #include <util/string_utils.h>
- 
-+#include <nfd.h>
- #include <pugixml.hpp>
- #include <stb_image.h>
- 
-@@ -679,14 +679,12 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
+@@ -668,14 +668,15 @@ void draw_user_management(GuiState &gui, EmuEnvState &emuenv) {
          const ImVec2 CHANGE_AVATAR_BTN_SIZE(LARGE_AVATAR_SIZE.x, 36.f * SCALE.y);
          ImGui::SetCursorPos(ImVec2(AVATAR_POS.x + (LARGE_AVATAR_SIZE.x / 2.f) - (CHANGE_AVATAR_BTN_SIZE.x / 2.f), AVATAR_POS.y + LARGE_AVATAR_SIZE.y + (5.f * SCALE.y)));
          if (ImGui::Button(lang["choose_avatar"].c_str(), CHANGE_AVATAR_BTN_SIZE)) {
@@ -581,16 +550,12 @@ index e1d23bfb..f0b8a935 100644
  
 -            if (result == host::dialog::filesystem::Result::ERROR)
 -                LOG_CRITICAL("Error initializing file dialog: {}", host::dialog::filesystem::get_error());
++            else {
++                LOG_CRITICAL("Error initializing file dialog: {}", NFD_GetError());
++            }
          }
          ImGui::SetWindowFontScale(0.8f);
          const auto INPUT_NAME_SIZE = 330.f * SCALE.x;
-diff --git a/vita3k/host/CMakeLists.txt b/vita3k/host/CMakeLists.txt
-deleted file mode 100644
-index f9d89128..00000000
---- a/vita3k/host/CMakeLists.txt
-+++ /dev/null
-@@ -1 +0,0 @@
--add_subdirectory(dialog)
 diff --git a/vita3k/host/dialog/CMakeLists.txt b/vita3k/host/dialog/CMakeLists.txt
 deleted file mode 100644
 index d577a152..00000000
@@ -608,3 +573,16 @@ index d577a152..00000000
 -target_include_directories(host_dialog PUBLIC include)
 -
 -target_link_libraries(host_dialog PRIVATE NFDe::NFDe)
+diff --git a/vita3k/host/dialog/src/filesystem.cpp b/vita3k/host/dialog/src/filesystem.cpp
+index fd5cb2c9..b41e54d6 100644
+--- a/vita3k/host/dialog/src/filesystem.cpp
++++ b/vita3k/host/dialog/src/filesystem.cpp
+@@ -31,7 +31,7 @@
+  * for a comma-separated list of file extensions to filter (ex. `"txt,md"`).
+  */
+ 
+-#include <host/dialog/filesystem.hpp>
++#include <nfd.h>
+ 
+ #include <nfd.hpp>
+ 

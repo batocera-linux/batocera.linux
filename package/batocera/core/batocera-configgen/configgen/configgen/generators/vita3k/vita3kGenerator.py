@@ -19,12 +19,6 @@ class Vita3kGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         
-        # Create config folder
-        if not path.isdir(vitaConfig):
-            os.mkdir(vitaConfig)
-            # copy /usr/bin/vita3k contents here
-            copy_tree("/usr/bin/vita3k", vitaConfig)
-
         # Create save folder
         if not path.isdir(vitaSaves):
             os.mkdir(vitaSaves)
@@ -99,18 +93,26 @@ class Vita3kGenerator(Generator):
         # Simplify the rom name (strip the directory & extension)
         begin, end = rom.find('['), rom.rfind(']')
         smplromname = rom[begin+1: end]
-        # becuase of the yml formatting, we don't allow Vita3k to modify it
-        # using the -w & -f options prevents Vuta3k from re-writing & prompting the user in GUI
-        # we wwant to avoid that so roms load staright away
+        # because of the yml formatting, we don't allow Vita3k to modify it
+        # using the -w & -f options prevents Vita3k from re-writing & prompting the user in GUI
+        # we want to avoid that so roms load straight away
         commandArray = ["/usr/bin/vita3k/Vita3K", "-F", "-w", "-f", "-c", vitaConfigFile, "-r", smplromname]
 
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0",
+                "XDG_CONFIG_HOME": batoceraFiles.CONF,
+                "XDG_DATA_HOME": batoceraFiles.SAVES,
+                "XDG_CACHE_HOME": batoceraFiles.CACHE,
+                "XDG_DATA_DIRS": batoceraFiles.SAVES
             }
         )
     
     # Show mouse for touchscreen actions
     def getMouseMode(self, config, rom):
         return True
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9
