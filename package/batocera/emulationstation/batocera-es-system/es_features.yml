@@ -12597,6 +12597,11 @@ vpinball:
       prompt: ALTERNATIVE SOUND
       description: Alternative sounds for the table (needs additional files).
       preset: switchon
+    vpinball_pad_add_credit:
+      prompt: USE JOYPAD SOUTH BUTTON TO ADD CREDIT
+      group: EXPERT SETTINGS
+      description: This should not be necessary, unless you are not using the default pad2key mapping.
+      preset: switch
 
 theforceengine:
   features: [padtokeyboard]
