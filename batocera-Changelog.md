@@ -141,7 +141,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - XpadNeo to Mar 11, 2024
 - Xone to Mar 30, 2024
 - Fdupes to 2.3.0
-- FAudio to 24.03
+- FAudio to 24.05
 - Sound Open Firmware to 2023.12.1
 - RyzenAdj to v0.15.0
 - Qt to 6.7.0
