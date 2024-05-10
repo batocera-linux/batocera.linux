@@ -3,23 +3,26 @@
 # batocera-emulationstation
 #
 ################################################################################
-# Last update: Commits on May 7, 2024
-BATOCERA_EMULATIONSTATION_VERSION = 87f97b8e9167a119aa8316e6d2e727938000e986
+# Last update: Commits on May 13, 2024
+BATOCERA_EMULATIONSTATION_VERSION = 9abc8833915c8d712f63f786051403dc9277dc50
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
 BATOCERA_EMULATIONSTATION_GIT_SUBMODULES = YES
 BATOCERA_EMULATIONSTATION_LICENSE = MIT, Apache-2.0
-BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer vlc libfreeimage freetype alsa-lib libcurl rapidjson batocera-es-system host-gettext
+BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer vlc libfreeimage freetype alsa-lib
+BATOCERA_EMULATIONSTATION_DEPENDENCIES += libcurl rapidjson batocera-es-system host-gettext
 # install in staging for debugging (gdb)
 BATOCERA_EMULATIONSTATION_INSTALL_STAGING = YES
 # BATOCERA_EMULATIONSTATION_OVERRIDE_SRCDIR = /sources/batocera-emulationstation
 
-BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCMAKE_CXX_FLAGS=-D$(call UPPERCASE,$(BATOCERA_SYSTEM_ARCH))
+BATOCERA_EMULATIONSTATION_CONF_OPTS += \
+    -DCMAKE_CXX_FLAGS=-D$(call UPPERCASE,$(BATOCERA_SYSTEM_ARCH))
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += libmali
-BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali
+BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali
+BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCMAKE_SHARED_LINKER_FLAGS=-lmali
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
@@ -60,22 +63,37 @@ endif
 
 BATOCERA_EMULATIONSTATION_CONF_OPTS += -DBATOCERA=ON
 
-BATOCERA_EMULATIONSTATION_KEY_SCREENSCRAPER_DEV_LOGIN=$(shell grep -E '^SCREENSCRAPER_DEV_LOGIN=' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/keys.txt | cut -d = -f 2-)
-BATOCERA_EMULATIONSTATION_KEY_GAMESDB_APIKEY=$(shell grep -E '^GAMESDB_APIKEY=' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/keys.txt | cut -d = -f 2-)
-BATOCERA_EMULATIONSTATION_KEY_CHEEVOS_DEV_LOGIN=$(shell grep -E '^CHEEVOS_DEV_LOGIN=' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/keys.txt | cut -d = -f 2-)
-BATOCERA_EMULATIONSTATION_KEY_HFS_DEV_LOGIN=$(shell grep -E '^HFS_DEV_LOGIN=' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/keys.txt | cut -d = -f 2-)
+BATOCERA_EMULATIONSTATION_SOURCE_PATH = \
+    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation
+
+BATOCERA_EMULATIONSTATION_KEY_SCREENSCRAPER_DEV_LOGIN=\
+    $(shell grep -E '^SCREENSCRAPER_DEV_LOGIN=' \
+	$(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/keys.txt | cut -d = -f 2-)
+BATOCERA_EMULATIONSTATION_KEY_GAMESDB_APIKEY=\
+    $(shell grep -E '^GAMESDB_APIKEY=' \
+	$(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/keys.txt | cut -d = -f 2-)
+BATOCERA_EMULATIONSTATION_KEY_CHEEVOS_DEV_LOGIN=\
+    $(shell grep -E '^CHEEVOS_DEV_LOGIN=' \
+	$(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/keys.txt | cut -d = -f 2-)
+BATOCERA_EMULATIONSTATION_KEY_HFS_DEV_LOGIN=\
+    $(shell grep -E '^HFS_DEV_LOGIN=' \
+	$(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/keys.txt | cut -d = -f 2-)
 
 ifneq ($(BATOCERA_EMULATIONSTATION_KEY_SCREENSCRAPER_DEV_LOGIN),)
-BATOCERA_EMULATIONSTATION_CONF_OPTS += "-DSCREENSCRAPER_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_SCREENSCRAPER_DEV_LOGIN)"
+BATOCERA_EMULATIONSTATION_CONF_OPTS += \
+    "-DSCREENSCRAPER_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_SCREENSCRAPER_DEV_LOGIN)"
 endif
 ifneq ($(BATOCERA_EMULATIONSTATION_KEY_GAMESDB_APIKEY),)
-BATOCERA_EMULATIONSTATION_CONF_OPTS += "-DGAMESDB_APIKEY=$(BATOCERA_EMULATIONSTATION_KEY_GAMESDB_APIKEY)"
+BATOCERA_EMULATIONSTATION_CONF_OPTS += \
+    "-DGAMESDB_APIKEY=$(BATOCERA_EMULATIONSTATION_KEY_GAMESDB_APIKEY)"
 endif
 ifneq ($(BATOCERA_EMULATIONSTATION_KEY_CHEEVOS_DEV_LOGIN),)
-BATOCERA_EMULATIONSTATION_CONF_OPTS += "-DCHEEVOS_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_CHEEVOS_DEV_LOGIN)"
+BATOCERA_EMULATIONSTATION_CONF_OPTS += \
+    "-DCHEEVOS_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_CHEEVOS_DEV_LOGIN)"
 endif
 ifneq ($(BATOCERA_EMULATIONSTATION_KEY_HFS_DEV_LOGIN),)
-BATOCERA_EMULATIONSTATION_CONF_OPTS += "-DHFS_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_HFS_DEV_LOGIN)"
+BATOCERA_EMULATIONSTATION_CONF_OPTS += \
+    "-DHFS_DEV_LOGIN=$(BATOCERA_EMULATIONSTATION_KEY_HFS_DEV_LOGIN)"
 endif
 
 define BATOCERA_EMULATIONSTATION_RPI_FIXUP
@@ -84,8 +102,16 @@ define BATOCERA_EMULATIONSTATION_RPI_FIXUP
 endef
 
 define BATOCERA_EMULATIONSTATION_EXTERNAL_POS
-	cp $(STAGING_DIR)/usr/share/batocera-es-system/es_external_translations.h $(STAGING_DIR)/usr/share/batocera-es-system/es_keys_translations.h $(@D)/es-app/src
-	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; do if test -e $$P/batocera-es-system.po; then cp $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp && $(HOST_DIR)/bin/msgcat $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp $$P/batocera-es-system.po > $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; fi; done
+	cp $(STAGING_DIR)/usr/share/batocera-es-system/es_external_translations.h \
+	    $(STAGING_DIR)/usr/share/batocera-es-system/es_keys_translations.h $(@D)/es-app/src
+	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; \
+	    do if test -e $$P/batocera-es-system.po; then \
+	    cp $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po \
+	    $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp && \
+	    $(HOST_DIR)/bin/msgcat \
+		$(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp \
+	    $$P/batocera-es-system.po > \
+	    $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; fi; done
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
@@ -93,19 +119,25 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/flags
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/battery
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/services
-	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
-	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
-	$(INSTALL) -m 0644 -D $(@D)/resources/flags/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/flags
-	$(INSTALL) -m 0644 -D $(@D)/resources/battery/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/battery
-	$(INSTALL) -m 0644 -D $(@D)/resources/services/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/services
+	$(INSTALL) -m 0644 -D $(@D)/resources/*.* \
+	    $(TARGET_DIR)/usr/share/emulationstation/resources
+	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* \
+	    $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0644 -D $(@D)/resources/flags/*.* \
+	    $(TARGET_DIR)/usr/share/emulationstation/resources/flags
+	$(INSTALL) -m 0644 -D $(@D)/resources/battery/*.* \
+	    $(TARGET_DIR)/usr/share/emulationstation/resources/battery
+	$(INSTALL) -m 0644 -D $(@D)/resources/services/*.* \
+	    $(TARGET_DIR)/usr/share/emulationstation/resources/services
 
 	# es_input.cfg
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
+	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/controllers/es_input.cfg \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 
 	# hooks
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/batocera-preupdate-gamelists-hook $(TARGET_DIR)/usr/bin/
+	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/batocera-preupdate-gamelists-hook \
+	    $(TARGET_DIR)/usr/bin/
 endef
 
 ### S31emulationstation
@@ -152,18 +184,24 @@ BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION
 endif
 
 define BATOCERA_EMULATIONSTATION_XORG
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/xorg/xinitrc $(TARGET_DIR)/etc/X11/xinit/xinitrc
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/xorg/xinitrc \
+	    $(TARGET_DIR)/etc/X11/xinit/xinitrc
 endef
 
 define BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/04-sway.sh  $(TARGET_DIR)/etc/profile.d/04-sway.sh
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/config      $(TARGET_DIR)/etc/sway/config
-    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/wayland/sway/sway-launch $(TARGET_DIR)/usr/bin/sway-launch
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/sway/04-sway.sh \
+	    $(TARGET_DIR)/etc/profile.d/04-sway.sh
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/sway/config \
+	    $(TARGET_DIR)/etc/sway/config
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/sway/sway-launch \
+	    $(TARGET_DIR)/usr/bin/sway-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation $(TARGET_DIR)/etc/init.d/S31emulationstation
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/emulationstation-standalone $(TARGET_DIR)/usr/bin/emulationstation-standalone
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/S31emulationstation \
+	    $(TARGET_DIR)/etc/init.d/S31emulationstation
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/emulationstation-standalone \
+	    $(TARGET_DIR)/usr/bin/emulationstation-standalone
 	sed -i -e 's;%BATOCERA_EMULATIONSTATION_PREFIX%;${BATOCERA_EMULATIONSTATION_PREFIX};g' \
 		-e 's;%BATOCERA_EMULATIONSTATION_CMD%;${BATOCERA_EMULATIONSTATION_CMD};g' \
 		-e 's;%BATOCERA_EMULATIONSTATION_ARGS%;${BATOCERA_EMULATIONSTATION_ARGS};g' \

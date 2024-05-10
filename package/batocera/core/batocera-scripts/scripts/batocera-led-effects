@@ -20,33 +20,33 @@ set_ayn_led_effect() {
     current_color="$(cat /sys/class/leds/multicolor:chassis/multi_intensity)"
     for i in $(seq 1 26); do 
 	    r=$(($i * 10))
-	    b=$(($i * 10))
 	    g=$(($i * 10))
+	    b=$(($i * 10))
 	    echo "$r $b $g" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     done
     for i in $(seq 1 26); do 
 	    r=$(($i * 4 + 125))
-	    b=0
 	    g=0
-	    echo "$r $b $g" | tee /sys/class/leds/multicolor:chassis/multi_intensity
+		b=0
+	    echo "$r $g $b" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     done
     for i in $(seq 1 26); do 
 	    r=0
-	    b=0
 	    g=$(($i * 4 + 125))
-	    echo "$r $b $g" | tee /sys/class/leds/multicolor:chassis/multi_intensity
+	    b=0
+	    echo "$r $g $b" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     done
     for i in $(seq 1 26); do 
 	    r=0
-	    b=$(($i * 4 + 125))
 	    g=0
-	    echo "$r $b $g" | tee /sys/class/leds/multicolor:chassis/multi_intensity
+		b=$(($i * 4 + 125))
+	    echo "$r $g $b" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     done
     for i in $(seq 1 25); do 
 	    r=$((250 - $i * 10))
 	    g=$((250 - $i * 10))
 	    b=$((250 - $i * 10))
-	    echo "$r $b $g" | tee /sys/class/leds/multicolor:chassis/multi_intensity
+	    echo "$r $g $b" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     done
     echo "$current_color" | tee /sys/class/leds/multicolor:chassis/multi_intensity
     
