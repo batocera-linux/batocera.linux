@@ -4,6 +4,7 @@
 shared:
   cfeatures:
     powermode:
+      group: POWER OPTIONS
       prompt: POWER MODE
       description: Adjust the cpu power frequency profile whilst in-game. Some systems will benefit from improved voltage handling.
       choices:
@@ -11,6 +12,7 @@ shared:
         "Balanced":         balanced
         "Power Saver":      powersaver
     batterymode:
+      group: POWER OPTIONS
       prompt: BATTERY MODE
       description: Adjust the cpu power profile whist on battery. Overwrites previous Power Mode(s).
       choices:
@@ -19,25 +21,11 @@ shared:
         "Power Saver":      powersaver
     tdp:
       archs_include: [x86_64]
+      group: POWER OPTIONS
       prompt: RYZEN THERMAL DESIGN POWER
       description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
-      choices:
-        "10%":                10
-        "20%":                20
-        "30%":                30
-        "40%":                40
-        "50%":                50
-        "60%":                60
-        "70%":                70
-        "80%":                80
-        "90%":                90
-        "100%":               100
-        "105% (Use caution":  105
-        "110% (Use caution)": 110
-        "115% (Use caution)": 115
-        "120% (Are you crazy?)": 120
-        "125% (Yes, you're crazy)": 125
-        "130% (Nope, you're just insane!)": 130
+      preset: slider
+      preset_parameters: 10 130 5 100 "%"
     videomode:
       prompt: VIDEO MODE
       description: Set the display's resolution. Does not affect the rendering resolution.
