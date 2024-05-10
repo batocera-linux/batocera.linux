@@ -101,7 +101,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Cemu to v2.0-82
 - Sonic3-AIR to v24.02.02.0-stable
 - Ruffle to 2024-03-28
-- Xenia Canary to build 5ca173c (Commits on Apr 26, 2024)
+- Xenia Canary to build 2ca752c (Commits on May 9, 2024)
 - Xemu to v0.7.121
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
