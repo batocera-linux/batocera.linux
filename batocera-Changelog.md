@@ -29,6 +29,11 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
+- Color Computer (coco) now autoloads cassettes and disks based on MAME software lists with default fallbacks
+  - uses "usage" info field in MAME software list
+  - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
+  - user overrides declarable in `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
+- "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -46,6 +51,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 - ScummVM configuration file location & ensure native file system is turned off
+- Color Computer .dsk floppy images accepted in ES. "Disk" altRomType added in Advanced Game Options
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder

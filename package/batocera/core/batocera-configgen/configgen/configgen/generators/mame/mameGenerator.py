@@ -10,6 +10,7 @@ from os import path
 from os import environ
 import configparser
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 import codecs
 import shutil
 import utils.bezels as bezelsUtil
@@ -33,6 +34,8 @@ class MameGenerator(Generator):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
+        (romName, romExt) = os.path.splitext(romBasename)
+
         softDir = "/var/run/mame_software/"
         softList = ""
         messModel = ""
@@ -374,6 +377,13 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop1" ]
                         else:
                             commandArray += [ "-cart1" ]
+                    elif system.name == "coco":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
+                        elif romExt.casefold() == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
                     else:
                         commandArray += [ "-" + messRomType[messMode] ]
                 else:
@@ -458,6 +468,47 @@ class MameGenerator(Generator):
                     if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                         autoRunCmd = 'LOADM”“,,R\\n'
                         autoRunDelay = 5
+            elif system.name == "coco":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = '/usr/bin/mame/hash/{}.xml'.format(softList)
+                    if os.path.exists(softListFile):
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib != {}:
+                                if software.get('name') == romName:
+                                    for info in software.iter('info'):
+                                        if info.get('name') == 'usage':
+                                            autoRunCmd = info.get('value') + '\\n'
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or (softList != "" and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'CLOAD:RUN\\n'
+                        else:
+                            autoRunCmd = 'CLOADM:EXEC\\n'
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "flop1") or (softList != "" and softList.endswith("flop")) or romExt.casefold() == ".dsk":
+                        romType = 'flop'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'RUN \"{}\"\\n'.format(romName)
+                        else:
+                            autoRunCmd = 'LOADM \"{}\":EXEC\\n'.format(romName)
+
+                # check for a user override
+                autoRunFile = 'system/configs/mame/autoload/{}_{}_autoload.csv'.format(system.name, romType)
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row:
+                                if row[0].casefold() == romName.casefold():
+                                    autoRunCmd = row[1] + "\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]

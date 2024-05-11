@@ -3506,14 +3506,24 @@ coco:
   manufacturer: Tandy Radio Shack
   release: 1980
   hardware: computer
-  extensions: [wav, cas, ccc, rom, zip, 7z]
+  extensions: [wav, cas, dsk, ccc, rom, zip, 7z]
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file coco.zip
+          Requires MAME BIOS file coco.zip and coco3.zip
+
+          Default Autoload Behaviors
+          1. "usage" info field when using MAME software lists (if declared)
+          2. Cassette (.cas) files autoload as binary (CLOADM:EXEC)
+          3. Disk (.dsk) files autoload based on basename (eg. ZONX.dsk autoloads as LOADM “ZONX”:EXEC)
+          4. BASIC programs autorun if file basename ends with .bas
+              3a. ALPHAII.BAS.dsk autoloads using RUN “ALPHAII”
+              3b. GROVER.bas.cas  autoloads using CLOAD:RUN
+
+          user definable autoload overrides in: `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
