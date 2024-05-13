@@ -13,8 +13,8 @@ class WineGenerator(Generator):
         if system.name == "windows_installers":
             commandArray = ["batocera-wine", "windows", "install", rom]
             return Command.Command(array=commandArray)
-        elif system.name == "windows":
-            commandArray = ["batocera-wine", "windows", "play", rom]
+        else:
+            commandArray = ["batocera-wine", system.name, "play", rom]
             
             environment = {}
             #system.language
@@ -51,7 +51,6 @@ class WineGenerator(Generator):
             
             return Command.Command(array=commandArray, env=environment)
         
-        raise Exception("invalid system " + system.name)
 
     def getMouseMode(self, config, rom):
         if "force_mouse" in config and config["force_mouse"] == "0":
