@@ -1,0 +1,84 @@
+With the DT bindings now describing the format of the CPU OPP tables, we
+can include the OPP table in each board's .dts file, and specify the CPU
+power supply.
+This allows to enable DVFS, and get up to 50% of performance benefit in
+the highest OPP, or up to 60% power savings in the lowest OPP, compared
+to the fixed 1GHz @ 1.0V OPP we are running in by default at the moment.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts | 5 +++++
+ arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts       | 5 +++++
+ arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts | 5 +++++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+index b5d713926..f663886b0 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+
+ #include "sun50i-h616-orangepi-zero.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+
+ / {
+ 	model = "OrangePi Zero2";
+@@ -19,6 +20,10 @@ &emac0 {
+ 	phy-supply = <&reg_dcdce>;
+ };
+
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
++};
++
+ &mmc0 {
+ 	vmmc-supply = <&reg_dcdce>;
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+index 959b6fd18..26d25b5b5 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+
+ #include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -32,6 +33,10 @@ reg_vcc5v: vcc5v {
+ 	};
+ };
+
++&cpu0 {
++	cpu-supply = <&reg_dcdca>;
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+index b3b1b8692..e1cd7572a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -6,12 +6,17 @@
+ /dts-v1/;
+
+ #include "sun50i-h616-orangepi-zero.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
+
+ / {
+ 	model = "OrangePi Zero3";
+ 	compatible = "xunlong,orangepi-zero3", "allwinner,sun50i-h618";
+ };
+
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &emac0 {
+ 	allwinner,tx-delay-ps = <700>;
+ 	phy-mode = "rgmii-rxid";
+
