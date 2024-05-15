@@ -81,8 +81,8 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Libretro-stella: bump to Jan 2, 2024 build
 - Libretro-swanstation: bump to Jan 25, 2024 build
 - Libretro-pcsx: bump to Feb 14, 2024 build
-- Libretro-flycast: bump to v2.3
-- Flycast: bump to v2.3
+- Libretro-Flycast: bump to v2.3.2
+- Flycast: bump to v2.3.2
 - Redream to 1.5.0-1103-g47bc2b7
 - Ikemen Go to 0.99
 - Amiberry to 5.6.8
