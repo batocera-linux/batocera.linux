@@ -135,7 +135,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - X86_64 kernel to 6.9
 - Switchres 0.220
 - Btop to 1.3.2
-- Linux firmware to 20240410
+- Linux firmware to 20240513
 - Buildroot to 2024.02.1
 - Xpad-Noone to Jan 10, 2024
 - XpadNeo to Apr 23, 2024 build
