@@ -124,7 +124,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Sonic-Mania to Mar 7, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
-- Nvidia Production driver to 550.67
+- Nvidia Production driver to 550.78
 - Nvidia Legacy driver to 470.239.06
 - Wayland-protocols to 1.33
 - Wlroots to 0.17.1
