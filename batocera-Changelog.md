@@ -123,6 +123,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Xenia to v1.0.2810
 - Vita3K to build 3596
 - Sonic-Mania to Mar 7, 2024 build
+- Libretro-Cap32 to May 15, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78
