@@ -56,6 +56,7 @@ Support for Nvidia cards requiring the legacy 340.108 driver.
 - Preferred vulkan driver name now listed in System Information
 - Start advisiong people on Vulkan GPU driver capabilities for Emualtors
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
+- Name the Bluetooth connection based on the host system hardware name.
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
