@@ -15,6 +15,7 @@ Add support for Radxa Rock 3C
 Initial support for the Lenovo Legion Go
 Support for Nvidia cards requiring the legacy 340.108 driver.
 Add support for the Ayaneo 2S
+Add support for the Ayaneo Air Plus (6800U) model
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
