@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c5fa66390b..ad40ef0b45 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,10 +2,6 @@
+ 
+ cmake_minimum_required(VERSION 3.20.0)
+ 
+-set(LLVM_COMMON_CMAKE_UTILS ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
+-include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
+-  NO_POLICY_SCOPE)
+-
+ # Builds with custom install names and installation rpath setups may not work
+ # in the build tree. Allow these cases to use CMake's default build tree
+ # behavior by setting `LLVM_NO_INSTALL_NAME_DIR_FOR_BUILD_TREE` to do this.

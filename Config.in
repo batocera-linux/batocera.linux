@@ -56,7 +56,6 @@ menu "System"
 
   menu "Toolchain"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/toolchain-optional-linaro-aarch64/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/llvm-project/batocera-llvm/Config.in"
   endmenu
 
   menu "Fonts"
