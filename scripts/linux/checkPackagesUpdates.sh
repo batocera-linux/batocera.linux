@@ -986,7 +986,7 @@ source_site_eval() {
           create_pkg_functions_No_Site "${pkg}"
         else
           BRANCH=$(grep '_BRANCH[ ]*=' "$PACKAGEMKFILE" | grep -vE '^#' | head -n 1 | sed -e s#'.*='## | sed -e s#' '##g)
-          TESTSTRING=$(grep '_SITE[ ]*=' "$PACKAGEMKFILE" 2>/dev/null | grep -vE '^#' | sed -e s#'.*=[ ]*\(.*\)'#'\1'# -e s#'\(.*\)/\$.*'#'\1'#)
+          TESTSTRING=$(grep -E '_SITE[ ]*=' "$PACKAGEMKFILE" 2>/dev/null | grep -vE '^#' | tr -d '\\\n' | sed -e 's#.*=[ ]*\(.*\)#\1#' -e 's#\(.*\)/\$.*#\1#' | tr -d ' ')
           case "$TESTSTRING" in
             *"call github"* )
               REPOPATH=$(echo "$TESTSTRING" | sed -e s#'.*call github,\([^,]*\),\([^,]*\),.*'#'\1/\2'#)
