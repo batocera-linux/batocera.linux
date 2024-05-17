@@ -137,6 +137,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - AppleWin to May 12, 2024 build
 - MelonDS to May 16, 2024 build
 - Snes9x to May 14, 2024 build
+- TheXTech to v1.3.6.5
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78
