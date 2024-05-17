@@ -1,5 +1,5 @@
 config BR2_PACKAGE_XASH3D_FWGS
-	bool "Xash3D-FWGS Half-Life Engine"
+	bool "xash3d-fwgs"
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_MIXER
     select BR2_PACKAGE_SDL2_IMAGE
@@ -7,14 +7,8 @@ config BR2_PACKAGE_XASH3D_FWGS
 	select BR2_PACKAGE_FREETYPE
 	select BR2_PACKAGE_FONTCONFIG
 	select BR2_PACKAGE_HLSDK_XASH3D
-
-	# Xash3D requires additional client and/or server libraries for some games.
-	# Below are the packages for these libraries
-	#
-	# See https://github.com/FWGS/xash3d-fwgs/blob/master/Documentation/supported-mod-list.md#list-of-games-and-mods-with-custom-gamedll
 	select BR2_PACKAGE_HLSDK_XASH3D_DMC
 	select BR2_PACKAGE_HLSDK_XASH3D_OPFOR
-
 	depends on BR2_INSTALL_LIBSTDCPP
 	help
 	  Half-Life 1 Engine.
