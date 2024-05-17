@@ -113,7 +113,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Dolphin to 5.0-21453
 - Libretro-hatarib: bump to v0.3
 - Hatari to v2.5.0
-- Citra to ra8e601a
+- Citra to r64e3e9f
 - ETLegacy to v2.82.1
 - GZDoom to v4.12.2
 - Fallout2-CE to v1.3.0
