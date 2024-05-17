@@ -104,7 +104,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Cemu to v2.0-82
 - Sonic3-AIR to v24.02.02.0-stable
 - Ruffle to 2024-03-28
-- Xenia Canary to build 2ca752c (Commits on May 9, 2024)
+- Xenia Canary to build 5bbba85 (Commits on May 14, 2024)
 - Xemu to v0.7.121
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
