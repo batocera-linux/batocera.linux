@@ -87,7 +87,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-Flycast: bump to v2.3.2
 - Flycast: bump to v2.3.2
 - Redream to 1.5.0-1103-g47bc2b7
-- Ikemen Go to 0.99
+- Ikemen Go to May 17, 2024 build
 - Amiberry to 5.6.8
 - GroovyMAME to 0.265 SR 0.220c
 - DOSBox-Staging to 0.81.1
