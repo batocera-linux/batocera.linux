@@ -568,7 +568,7 @@ create_pkg_functions_BitBucket() {
 
 create_pkg_functions_RichWhiteHouse() {
   eval "${1}_GETNET() {
-    wget -qO - 'https://www.richwhitehouse.com/jaguar/index.php?content=download' | grep -m1 'Current Version' | sed -e s#'.*BigPEmu_\(.*\)\.zip<.*$'#'\1'#
+    wget -qO - 'https://www.richwhitehouse.com/jaguar/index.php?content=download' | grep -m1 'BigPEmu_Linux64_v[0-9]*\.tar\.gz' | sed -e 's#.*BigPEmu_Linux64_\(v[0-9]*\)\.tar\.gz.*#\1#'
   }"
   eval "${1}_GETCUR() {
     X1=\$(pkg_GETCURVERSION ${1})
