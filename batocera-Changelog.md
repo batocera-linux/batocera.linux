@@ -109,7 +109,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
 - PCSX2 to v1.7.5817
-- Play! & Libretro Play! to Apr 3, 2024 builds
+- Play! & Libretro Play! to 0.65-1
 - Dolphin to 5.0-21543
 - Libretro-hatarib: bump to v0.3
 - Hatari to v2.5.0
