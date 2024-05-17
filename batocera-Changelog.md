@@ -122,7 +122,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - The Force Engine to Apr 29, 2024 build (Supports HD Textures)
 - DXX-Rebirth to May 6, 2024 build
 - BigPemu to v113 (Linux Build)
-- Xenia to v1.0.2810
+- Xenia to v1.0.2815
 - Vita3K to May 14, 2024 build
 - Sonic-Mania to Mar 7, 2024 build
 - Libretro-Cap32 to May 15, 2024 build
