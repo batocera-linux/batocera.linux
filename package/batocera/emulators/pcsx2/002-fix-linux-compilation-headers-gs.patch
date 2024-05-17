@@ -8,9 +8,9 @@ index 757d7ae..79c4937 100644
  #include "CDVD/IsoFileFormats.h"
 -#include "GS.h"
 +#include "../GS.h" // for gsVideoMode
+ #include "SIO/Sio.h"
  #include "Elfheader.h"
  #include "ps2/BiosTools.h"
- #include "Recording/InputRecording.h"
 diff --git a/pcsx2/DebugTools/DebugInterface.cpp b/pcsx2/DebugTools/DebugInterface.cpp
 index d29c2b0..2a89378 100644
 --- a/pcsx2/DebugTools/DebugInterface.cpp
