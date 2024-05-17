@@ -134,6 +134,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Sonic Mania to May 10, 2024 build
 - VCMI to v1.5.0
 - Xash3d-fwgs to May 15, 2024 build
+- AppleWin to May 12, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78

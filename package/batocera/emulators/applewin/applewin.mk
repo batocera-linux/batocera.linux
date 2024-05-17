@@ -3,8 +3,8 @@
 # applewin
 #
 ################################################################################
-# Version: Commits on Mar 4, 2024
-APPLEWIN_VERSION = 9dd627599628c22f34e1a7d02f1bb2d7f7e536a6
+# Version: Commits on May 12, 2024
+APPLEWIN_VERSION = a6367163cc896400a1f4f60145bfbb140a6ce4b3
 APPLEWIN_SITE = https://github.com/audetto/AppleWin
 APPLEWIN_SITE_METHOD=git
 APPLEWIN_GIT_SUBMODULES=YES
@@ -24,13 +24,13 @@ APPLEWIN_CONF_OPTS += -DSA2_OPENGL=OFF
 endif
 
 define APPLEWIN_INSTALL_TARGET_CMDS
-        mkdir -p $(TARGET_DIR)/usr/lib/libretro
-        $(INSTALL) -D $(@D)/buildroot-build/source/frontends/libretro/applewin_libretro.so $(TARGET_DIR)/usr/lib/libretro/
-        cp -avf $(@D)/buildroot-build/sa2 $(TARGET_DIR)/usr/bin/applewin
-        mkdir -p $(TARGET_DIR)/usr/share/applewin
-	cp -R $(@D)/resource/* $(TARGET_DIR)/usr/share/applewin/
-	rm $(TARGET_DIR)/usr/share/applewin/resource.h
-        #cp -avf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/applewin/applewin.keys $(TARGET_DIR)/usr/share/evmapy/
+    mkdir -p $(TARGET_DIR)/usr/lib/libretro
+    $(INSTALL) -D $(@D)/buildroot-build/source/frontends/libretro/applewin_libretro.so \
+        $(TARGET_DIR)/usr/lib/libretro/
+    cp -avf $(@D)/buildroot-build/sa2 $(TARGET_DIR)/usr/bin/applewin
+    mkdir -p $(TARGET_DIR)/usr/share/applewin
+    cp -R $(@D)/resource/* $(TARGET_DIR)/usr/share/applewin/
+    rm $(TARGET_DIR)/usr/share/applewin/resource.h
 endef
 
 $(eval $(cmake-package))
