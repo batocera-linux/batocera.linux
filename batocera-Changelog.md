@@ -129,6 +129,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-Arduous to May 14, 2024 build
 - Libretro-Beetle-PCE to May 3, 2024 build
 - Libretro-Beetle-PCE-Fast to May 10, 2024 build
+- Eduke32 to May 14, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78
