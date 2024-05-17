@@ -123,7 +123,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - DXX-Rebirth to May 6, 2024 build
 - BigPemu to v113 (Linux Build)
 - Xenia to v1.0.2810
-- Vita3K to build 3596
+- Vita3K to May 14, 2024 build
 - Sonic-Mania to Mar 7, 2024 build
 - Libretro-Cap32 to May 15, 2024 build
 - Libretro-Arduous to May 14, 2024 build
