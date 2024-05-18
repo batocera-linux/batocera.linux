@@ -3,9 +3,8 @@ config BR2_PACKAGE_LIBRETRO_TIC80
     depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
     select BR2_PACKAGE_JANET
-
-      help
-        A libretro TIC-80 engine
+    help
+      A libretro TIC-80 engine
 
 comment "LIBRETRO_TIC80 needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
