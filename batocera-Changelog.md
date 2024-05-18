@@ -132,7 +132,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Eduke32 to May 14, 2024 build
 - Hurrican to Dec 27, 2023 build
 - Sonic Mania to May 10, 2024 build
-- VCMI to v1.5.0
+- VCMI to v1.5.1
 - Xash3d-fwgs to May 15, 2024 build
 - AppleWin to May 12, 2024 build
 - MelonDS to May 16, 2024 build
