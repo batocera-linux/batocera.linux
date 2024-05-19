@@ -506,7 +506,7 @@ class MameGenerator(Generator):
                     with openARFile:
                         autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
                         for row in autoRunList:
-                            if row:
+                            if row and not row[0].startswith('#'):
                                 if row[0].casefold() == romName.casefold():
                                     autoRunCmd = row[1] + "\\n"
             else:
