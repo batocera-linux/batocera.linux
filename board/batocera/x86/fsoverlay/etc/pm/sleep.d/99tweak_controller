@@ -16,6 +16,10 @@ case "$1" in
             fi
             # Set lizard_mode to 0 (false)
             echo 0 > /sys/module/hid_steam/parameters/lizard_mode
+        # Ayaneo handhelds
+        elif [[ $info_output == "AB05_AMD" || $info_output == "AYANEO_2S" ]]; then
+            rmmod xpad_noone
+            modprobe xpad_noone
         fi
         ;;
 esac
