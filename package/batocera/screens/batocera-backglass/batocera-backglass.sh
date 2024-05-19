@@ -3,6 +3,7 @@
 #EVENTS="game-selected system-selected game-start game-end screensaver-start screensaver-stop"
 EVENTS="game-selected system-selected"
 PIDFILE="/var/run/batocera-backglass.pid"
+PARAMSFILE="/var/run/batocera-backglass.params"
 
 # unset these variables while they causes issues on my side for webkit
 export WEBKIT_DISABLE_DMABUF_RENDERER=1
@@ -12,6 +13,10 @@ export __VK_LAYER_NV_optimus=
 
 do_help() {
     echo "${1} enable <x> <y> <width> <height> <http location|theme>" >&2
+    echo "${1} enable" >&2
+    echo "${1} enable <http location|theme>" >&2
+    echo "${1} restart" >&2
+    echo "${1} restart <http location|theme>" >&2
     echo "${1} disable" >&2
     echo "${1} location <http location|theme name|empty for the default theme>" >&2
 }
@@ -72,19 +77,29 @@ case "${ACTION}" in
 	    exit 1
 	fi
 
-	#
-	X=$1
-	Y=$2
-	WIDTH=$3
-	HEIGHT=$4
-	if test -z "${X}" -o -z "${Y}" -o -z "${WIDTH}" -o -z "${HEIGHT}"
+	if test $# -le 1 -a -f "${PARAMSFILE}" # ok, we can reuse the last used parameters (to make easy restart)
 	then
-	    echo "${0} X Y WIDTH HEIGHT"
-	    exit 1
+	    read X Y WIDTH HEIGHT < "${PARAMSFILE}"
+	else
+	    #
+	    X=$1
+	    Y=$2
+	    WIDTH=$3
+	    HEIGHT=$4
+	    shift
+	    shift
+	    shift
+	    shift
+	    if test -z "${X}" -o -z "${Y}" -o -z "${WIDTH}" -o -z "${HEIGHT}"
+	    then
+		echo "${0} X Y WIDTH HEIGHT"
+		exit 1
+	    fi
+	    echo "${X} ${Y} ${WIDTH} ${HEIGHT}" > "${PARAMSFILE}" || exit 1
 	fi
 
 	### theme
-	THEMEPATH=$(getUrl "${5}")
+	THEMEPATH=$(getUrl "${1}")
 	###
 
 	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
@@ -113,5 +128,27 @@ case "${ACTION}" in
         do
             unlink /var/run/emulationstation/scripts/${EVT}/batocera-backglass.sh
         done
-    ;;
+	;;
+
+    "restart")
+	if isRunning
+	then
+	    kill -15 $(cat "${PIDFILE}")
+	    rm -f "${PIDFILE}"
+	fi
+
+	if test -f "${PARAMSFILE}"
+	then
+	    read X Y WIDTH HEIGHT < "${PARAMSFILE}"
+	fi
+
+	THEMEPATH=$(getUrl "${1}")
+
+	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
+	echo "$!" > "${PIDFILE}"
+	;;
+
+    "list-themes")
+	(ls /usr/share/batocera-backglass/www; ls /userdata/system/backglass2) 2>/dev/null | sort -u
+	;;
 esac
