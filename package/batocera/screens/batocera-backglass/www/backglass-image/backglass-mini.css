@@ -1,0 +1,74 @@
+body {
+    margin: 0px;
+}
+
+#infos {
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+
+#game_text {
+    height: 25%;
+    color: white;
+    font-size: 3.5em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game_text_internal {
+}
+
+#game_image {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game_image_internal {
+    width: 100%;
+    height: 100%;
+}
+
+#game_image_internal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#system_logo {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#system_logo_internal {
+    width: 95%;
+    height: 95%;
+}
+
+#system_logo_internal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#system_text {
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 3.5em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#system_text_internal {
+}
