@@ -53,6 +53,12 @@ class SupermodelGenerator(Generator):
             drivingGame = 1
         else:
             drivingGame = 0
+        
+        #driving sensitivity
+        if system.isOptSet("joystickSensitivity"):
+            sensitivity = system.config["joystickSensitivity"]
+        else:
+            sensitivity = "100"
 
         # resolution
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
@@ -70,7 +76,7 @@ class SupermodelGenerator(Generator):
         copy_xml()
 
         # config
-        configPadsIni(system, rom, playersControllers, guns, drivingGame)
+        configPadsIni(system, rom, playersControllers, guns, drivingGame, sensitivity)
 
         return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
 
@@ -121,7 +127,7 @@ def copy_xml():
     if not os.path.exists(dest_path) or os.path.getmtime(source_path) > os.path.getmtime(dest_path):
         shutil.copy2(source_path, dest_path)
 
-def configPadsIni(system, rom, playersControllers, guns, altControl):
+def configPadsIni(system, rom, playersControllers, guns, altControl, sensitivity):
     if bool(altControl):
         templateFile = "/usr/share/supermodel/Supermodel-Driving.ini.template"
         mapping = {
@@ -261,6 +267,12 @@ def configPadsIni(system, rom, playersControllers, guns, altControl):
                 else:
                     if key == "InputSystem":
                         targetConfig.set(section, key, "sdl")
+
+    # Update InputJoy1XSaturation key with the given sensitivity value
+    sensitivity = str(int(float(sensitivity)))
+    for section in targetConfig.sections():
+        if targetConfig.has_option(section, "InputJoy1XSaturation"):
+            targetConfig.set(section, "InputJoy1XSaturation", sensitivity)
 
     # save the ini file
     if not os.path.exists(os.path.dirname(targetFile)):
