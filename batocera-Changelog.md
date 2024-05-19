@@ -145,6 +145,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-Freechaf to Apr 26, 2024 build
 - Libretro-MiniVMac to Apr 26, 2024 build
 - Libretro-MrBoom to May 17, 2024 build
+- Libretro-Picodrive to Mar 27, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78
