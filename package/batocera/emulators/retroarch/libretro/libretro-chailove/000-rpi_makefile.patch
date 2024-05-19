@@ -1,8 +1,8 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 07b7969..81e9cea 100644
+index deb4eb6981..66397cc7d6 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -203,6 +203,24 @@ else ifeq ($(platform), rpi2)
+@@ -213,6 +213,33 @@ else ifeq ($(platform), rpi2)
  	CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -funsafe-math-optimizations
  	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
  
