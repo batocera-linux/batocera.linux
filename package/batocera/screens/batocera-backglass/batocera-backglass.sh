@@ -79,13 +79,14 @@ case "${ACTION}" in
 
 	if test $# -le 1 -a -f "${PARAMSFILE}" # ok, we can reuse the last used parameters (to make easy restart)
 	then
-	    read X Y WIDTH HEIGHT < "${PARAMSFILE}"
+	    read X Y WIDTH HEIGHT THEME < "${PARAMSFILE}"
 	else
 	    #
 	    X=$1
 	    Y=$2
 	    WIDTH=$3
 	    HEIGHT=$4
+	    THEME=$5 # can be empty
 	    shift
 	    shift
 	    shift
@@ -95,11 +96,11 @@ case "${ACTION}" in
 		echo "${0} X Y WIDTH HEIGHT"
 		exit 1
 	    fi
-	    echo "${X} ${Y} ${WIDTH} ${HEIGHT}" > "${PARAMSFILE}" || exit 1
+	    echo "${X} ${Y} ${WIDTH} ${HEIGHT} ${THEME}" > "${PARAMSFILE}" || exit 1
 	fi
 
 	### theme
-	THEMEPATH=$(getUrl "${1}")
+	THEMEPATH=$(getUrl "${THEME}")
 	###
 
 	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
@@ -139,10 +140,12 @@ case "${ACTION}" in
 
 	if test -f "${PARAMSFILE}"
 	then
-	    read X Y WIDTH HEIGHT < "${PARAMSFILE}"
+	    read X Y WIDTH HEIGHT THEME < "${PARAMSFILE}"
 	fi
 
-	THEMEPATH=$(getUrl "${1}")
+	# reread theme from configuration in case it changed
+	THEME=$(batocera-settings-get backglass.theme)
+	THEMEPATH=$(getUrl "${THEME}")
 
 	batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEMEPATH}" &
 	echo "$!" > "${PIDFILE}"
