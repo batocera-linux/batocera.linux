@@ -58,7 +58,7 @@ class VPinballGenerator(Generator):
         vpinballWindowing.configureWindowing(vpinballSettings, system, gameResolution)
 
         # DMDServer
-        if batoceraServices.isServiceEnabled("dmd_real"):
+        if batoceraServices.getServiceStatus("dmd_real") == "started":
             vpinballSettings.set("Standalone", "DMDServer","1")
         else:
             vpinballSettings.set("Standalone", "DMDServer","0")

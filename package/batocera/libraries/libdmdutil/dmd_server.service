@@ -46,12 +46,24 @@ stop() {
         return $RETVAL
 }
 
+status() {
+    if start-stop-daemon --status -q -p $PIDFILE
+    then
+	echo "started"
+    else
+	echo "stopped"
+    fi
+}
+
 case "$1" in
         start)
                 start
                 ;;
         stop)
                 stop
+                ;;
+	status)
+                status
                 ;;
         *)
                 echo "Usage: $0 {start|stop}"
