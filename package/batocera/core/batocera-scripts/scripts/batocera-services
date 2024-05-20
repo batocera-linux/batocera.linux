@@ -67,6 +67,14 @@ do_list() {
 	done
 }
 
+do_status() {
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+	while read SERVICE
+	do
+	    bash "${SERVICE}" status
+	done
+}
+
 do_start() {
     find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
 	while read SERVICE
@@ -151,6 +159,9 @@ shift
 case "${ACTION}" in
     list)
 	do_list "${1}"
+	;;
+    status)
+	do_status "${1}"
 	;;
     start)
 	do_start "${1}"
