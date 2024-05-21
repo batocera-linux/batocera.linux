@@ -24,7 +24,7 @@ case "$1" in
             echo "No CPU TDP value found."
             exit 0
         else
-            TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
+            TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
             if [ -z "${TDP_SETTING}" ]; then
                 TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
                 set_tdp "${TDP_SETTING}"

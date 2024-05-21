@@ -7,7 +7,7 @@ is_module_loaded() {
 
 # Functions to set the LED mode parameters
 # [ ayn-platform ]
-set_ayn_led_mode() {
+set_led_mode() {
     # turn off rainbow effect if enabled
     echo 1 | tee /sys/class/leds/multicolor:chassis/device/led_mode
     led_colour="$(/usr/bin/batocera-settings-get led.colour)"
@@ -19,7 +19,6 @@ set_ayn_led_mode() {
         # Set hot pink colour as default
         echo 255 0 165 | tee /sys/class/leds/multicolor:chassis/multi_intensity
     fi
-    
     # Set the brightness
     if [ -n "$led_brightness" ]; then
         led_max_brightness=$(cat /sys/class/leds/multicolor:chassis/max_brightness)
@@ -34,8 +33,8 @@ set_ayn_led_mode() {
 case "$1" in
     start)
         # ayn-platform is used for ayn handhelds
-        if is_module_loaded ayn_platform; then
-            set_ayn_led_mode
+        if is_module_loaded ayn_platform || is_module_loaded ayaneo_platform; then
+            set_led_mode
         fi
         ;;
     stop)

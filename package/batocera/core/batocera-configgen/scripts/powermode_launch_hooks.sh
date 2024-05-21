@@ -61,6 +61,15 @@ set_epp() {
     done
 }
 
+is_power_connected() {
+    PLUGGED=$(cat /sys/class/power_supply/*/online 2>/dev/null | grep -E "^1")
+    if [ -n "${PLUGGED}" ]; then
+        echo 1  # Power supply is connected
+    else
+        echo 0  # Power supply is not connected
+    fi
+}
+
 # Check for events
 EVENT=$1
 SYSTEM_NAME=$2
@@ -71,8 +80,13 @@ if [ "$EVENT" != "gameStart" ] && [ "$EVENT" != "gameStop" ]; then
 fi
 
 # Handle gameStop event
-if [ "$EVENT" = "gameStop" ]; then
-    POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+if [ "$EVENT" == "gameStop" ]; then
+    POWER_CONNECTED=$(is_power_connected)
+    if [[ "$POWER_CONNECTED" == 0 ]]; then
+        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.batterymode)"
+    else
+        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+    fi
     if ! [ -z "${POWER_MODE}" ]; then
         /usr/bin/batocera-power-mode "${POWER_MODE}"
         exit 0
@@ -95,7 +109,12 @@ fi
 
 # If no user set system specific setting check for user set global setting
 if [ -z "${POWER_MODE}" ]; then
-    POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+    POWER_CONNECTED=$(is_power_connected)
+    if [[ "$POWER_CONNECTED" == 0 ]]; then
+        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.batterymode)"
+    else
+        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+    fi
 fi
 
 # If a value is found, call the batocera-power-profile script

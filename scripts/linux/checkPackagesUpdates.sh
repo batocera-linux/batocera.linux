@@ -568,7 +568,7 @@ create_pkg_functions_BitBucket() {
 
 create_pkg_functions_RichWhiteHouse() {
   eval "${1}_GETNET() {
-    wget -qO - 'https://www.richwhitehouse.com/jaguar/index.php?content=download' | grep -m1 'Current Version' | sed -e s#'.*BigPEmu_\(.*\)\.zip<.*$'#'\1'#
+    wget -qO - 'https://www.richwhitehouse.com/jaguar/index.php?content=download' | grep -m1 'BigPEmu_Linux64_v[0-9]*\.tar\.gz' | sed -e 's#.*BigPEmu_Linux64_\(v[0-9]*\)\.tar\.gz.*#\1#'
   }"
   eval "${1}_GETCUR() {
     X1=\$(pkg_GETCURVERSION ${1})
@@ -986,7 +986,7 @@ source_site_eval() {
           create_pkg_functions_No_Site "${pkg}"
         else
           BRANCH=$(grep '_BRANCH[ ]*=' "$PACKAGEMKFILE" | grep -vE '^#' | head -n 1 | sed -e s#'.*='## | sed -e s#' '##g)
-          TESTSTRING=$(grep '_SITE[ ]*=' "$PACKAGEMKFILE" 2>/dev/null | grep -vE '^#' | sed -e s#'.*=[ ]*\(.*\)'#'\1'# -e s#'\(.*\)/\$.*'#'\1'#)
+          TESTSTRING=$(grep -E '_SITE[ ]*=' "$PACKAGEMKFILE" 2>/dev/null | grep -vE '^#' | tr -d '\\\n' | sed -e 's#.*=[ ]*\(.*\)#\1#' -e 's#\(.*\)/\$.*#\1#' | tr -d ' ')
           case "$TESTSTRING" in
             *"call github"* )
               REPOPATH=$(echo "$TESTSTRING" | sed -e s#'.*call github,\([^,]*\),\([^,]*\),.*'#'\1/\2'#)

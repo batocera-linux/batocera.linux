@@ -17,3 +17,10 @@ class batoceraServices:
                 return True
         eslog.debug(f"service {name} is disabled")
         return False
+
+    def getServiceStatus(name):
+        proc = subprocess.Popen(["batocera-services status \"" + name + "\""], stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+        val = out.decode().strip()
+        eslog.debug(f"service {name} status : \"" + val + "\"") # strip any end of lines
+        return val

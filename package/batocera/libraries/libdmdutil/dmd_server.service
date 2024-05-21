@@ -14,13 +14,11 @@ start() {
         done
 
         ARGS=
-        DMDPIXELCADEMATRIX=$(batocera-settings-get dmd.pixelcade.matrix)
-        test -z "${DMDPIXELCADEMATRIX}" && DMDPIXELCADEMATRIX=auto
         DMDZEDMDMATRIX=$(batocera-settings-get dmd.zedmd.matrix)
         test -z "${DMDZEDMDMATRIX}" && DMDZEDMDMATRIX=auto
         DMDZEDMDBRIGHTNESS=$(batocera-settings-get dmd.zedmd.brightness)
         test -z "${DMDZEDMDBRIGHTNESS}" && DMDZEDMDBRIGHTNESS=-1
-        dmdserver-config --pixelcade-matrix "${DMDPIXELCADEMATRIX}" --zedmd-matrix "${DMDZEDMDMATRIX}" --zedmd-brightness "${DMDZEDMDBRIGHTNESS}" || return 1 # configure the dmd server
+        dmdserver-config --zedmd-matrix "${DMDZEDMDMATRIX}" --zedmd-brightness "${DMDZEDMDBRIGHTNESS}" || return 1 # configure the dmd server
         test -e /userdata/system/configs/dmdserver/config.ini && ARGS="-c /userdata/system/configs/dmdserver/config.ini"
         start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/dmdserver -- ${ARGS} >/dev/null &
         RETVAL=$?
@@ -48,12 +46,24 @@ stop() {
         return $RETVAL
 }
 
+status() {
+    if start-stop-daemon --status -q -p $PIDFILE
+    then
+	echo "started"
+    else
+	echo "stopped"
+    fi
+}
+
 case "$1" in
         start)
                 start
                 ;;
         stop)
                 stop
+                ;;
+	status)
+                status
                 ;;
         *)
                 echo "Usage: $0 {start|stop}"

@@ -2966,6 +2966,7 @@ libretro:
                       description: Use MAME software lists to identify ROM
                       choices:
                           "Don't Use (Default)":                          none
+                          "Tandy Radio Shack Color Computer cassettes":   coco_cass
                           "Tandy Radio Shack Color Computer cartridges":  coco_cart
                           "Tandy Radio Shack Color Computer disk images": coco_flop
                   altmodel:
@@ -2982,8 +2983,9 @@ libretro:
                       prompt:      MEDIA TYPE
                       description: Type of ROM file to load.
                       choices:
-                          "Cassette":    cass
-                          "Cartridge":   cart
+                          "Cassette":       cass
+                          "Cartridge":      cart
+                          "Disk (Drive 1)": flop1
                   enableui:
                       group: ADVANCED OPTIONS
                       prompt:      UI KEYS
@@ -9584,6 +9586,11 @@ supermodel:
             choices:
                 "Off":      0
                 "On":       1
+        joystickSensitivity:
+            prompt: STEERING SENSITIVITY
+            description: For playing driving games with a game pad, it is sometimes a good idea to use a value larger than 100% so that the steering feels less sensitive on a thumbstick.
+            preset: slider
+            preset_parameters: 70 200 10 100 %
         pedalSwap:
             group: ADVANCED OPTIONS
             prompt:      MODERN PEDAL CONTROLS
@@ -10146,6 +10153,7 @@ mame:
                     description: Use MAME software lists to identify ROM
                     choices:
                         "Don't Use (Default)":                          none
+                        "Tandy Radio Shack Color Computer cassettes":   coco_cass
                         "Tandy Radio Shack Color Computer cartridges":  coco_cart
                         "Tandy Radio Shack Color Computer disk images": coco_flop
                 altmodel:
@@ -10162,8 +10170,9 @@ mame:
                     prompt:      MEDIA TYPE
                     description: Type of ROM file to load.
                     choices:
-                        "Cassette":    cass
-                        "Cartridge":   cart
+                        "Cassette":       cass
+                        "Cartridge":      cart
+                        "Disk (Drive 1)": flop1
                 enableui:
                     group: ADVANCED OPTIONS
                     prompt:      UI KEYS

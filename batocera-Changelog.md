@@ -32,6 +32,11 @@ Add support for the Ayaneo Air Plus (6800U) model
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
 - Dolphin: support for Retroachievements (when they are enabled)
+- Color Computer (coco) now autoloads cassettes and disks based on MAME software lists with default fallbacks
+  - uses "usage" info field in MAME software list
+  - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
+  - user overrides declarable in `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
+- "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -50,6 +55,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 - ScummVM configuration file location & ensure native file system is turned off
 - Duckstation: faster loading time when RetroAchievements are enabled
+- Color Computer .dsk floppy images accepted in ES. "Disk" altRomType added in Advanced Game Options
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
@@ -72,9 +78,9 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
 - Mupen64plus-video-rice bump to Jun 11, 2023 build
 - Mupen64plus-gliden64 bump to Feb 18, 2024 build
-- PPSSPP: to May 6, 2024 build
-- Duckstation to v0.1-6658
-- Libretro-ppsspp: to May 6, 2024 build
+- PPSSPP: to May 15, 2024 build
+- Duckstation to v0.1-6720
+- Libretro-PPSSPP: to May 15, 2024 build
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - Libretro-genesisplusgx: bump to Feb 23, 2024 build
@@ -88,8 +94,8 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-pcsx: bump to Feb 14, 2024 build
 - Libretro-Flycast: bump to v2.3.2
 - Flycast: bump to v2.3.2
-- Redream to 1.5.0-1103-g47bc2b7
-- Ikemen Go to 0.99
+- Redream to 1.5.0-1127-g6b62eff
+- Ikemen Go to May 17, 2024 build
 - Amiberry to 5.6.8
 - GroovyMAME to 0.265 SR 0.220c
 - DOSBox-Staging to 0.81.1
@@ -101,36 +107,53 @@ Add support for the Ayaneo Air Plus (6800U) model
 - DevilutionX to 1.5.2
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
-- RPCS3 to 0.0.31-16388
-- Solarus-engine: bump to Mar 10, 2024 build
+- RPCS3 to 0.0.32-16476
+- Solarus-engine: bump to Apr 27, 2024 build
 - Cemu to v2.0-82
 - Sonic3-AIR to v24.02.02.0-stable
 - Ruffle to 2024-03-28
-- Xenia Canary to build 2ca752c (Commits on May 9, 2024)
+- Xenia Canary to build 5bbba85 (Commits on May 14, 2024)
 - Xemu to v0.7.121
 - ScummVM to 2.8.1
 - fheroes2 to 1.0.13
-- PCSX2 to v1.7.5748
-- Play! & Libretro Play! to Apr 3, 2024 builds
-- Dolphin to 5.0-21453
+- PCSX2 to v1.7.5817
+- Play! & Libretro Play! to 0.65-1
+- Dolphin to 5.0-21543
 - Libretro-hatarib: bump to v0.3
 - Hatari to v2.5.0
-- Citra to ra8e601a
+- Citra to r64e3e9f
 - ETLegacy to v2.82.1
 - GZDoom to v4.12.2
 - Fallout2-CE to v1.3.0
 - Raze to v1.10.2
 - Vice to v3.8
 - The Force Engine to Apr 29, 2024 build (Supports HD Textures)
-- DXX-Rebirth to Apr 22, 2024 build
+- DXX-Rebirth to May 6, 2024 build
 - BigPemu to v113 (Linux Build)
-- Xenia to v1.0.2810
-- Vita3K to build 3596
+- Xenia to v1.0.2815
+- Vita3K to May 14, 2024 build
 - Sonic-Mania to Mar 7, 2024 build
 - Libretro-Cap32 to May 15, 2024 build
 - Libretro-Arduous to May 14, 2024 build
 - Libretro-Beetle-PCE to May 3, 2024 build
 - Libretro-Beetle-PCE-Fast to May 10, 2024 build
+- Eduke32 to May 14, 2024 build
+- Hurrican to Dec 27, 2023 build
+- Sonic Mania to May 10, 2024 build
+- VCMI to v1.5.1
+- Xash3d-fwgs to May 15, 2024 build
+- AppleWin to May 12, 2024 build
+- MelonDS to May 16, 2024 build
+- Snes9x to May 14, 2024 build
+- TheXTech to v1.3.6.5
+- Libretro-WASM4 to v2.7.0
+- Libretro-Tic80 to May 16, 2024 build
+- Libretro-Chailove to May 18, 2024 build
+- Libretro-Fake08 to Apr 17, 2024 build
+- Libretro-Freechaf to Apr 26, 2024 build
+- Libretro-MiniVMac to Apr 26, 2024 build
+- Libretro-MrBoom to May 17, 2024 build
+- Libretro-Picodrive to Mar 27, 2024 build
 ### System
 - Mainline Kernel 6.6.y bump to 6.6.23
 - Nvidia Production driver to 550.78
