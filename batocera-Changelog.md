@@ -31,6 +31,7 @@ Add support for the Ayaneo Air Plus (6800U) model
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
+- Dolphin: support for Retroachievements (when they are enabled)
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -48,6 +49,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 - ScummVM configuration file location & ensure native file system is turned off
+- Duckstation: faster loading time when RetroAchievements are enabled
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
