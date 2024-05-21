@@ -1,0 +1,13 @@
+# coco_cass autoload (mame -autoboot_command) override file
+#  https://github.com/batocera-linux/batocera.linux/pull/11706
+#
+# one rom override per line using ";" as delimiter:
+# <romBasename>;<autoload command override>
+#
+# it is *not* necessary to escape quotes or ampersands (&) (as required in MAME software list XML)
+#
+# example: coco/roms/Grover's Number Rover (CCW).cas
+# result:  loads BASIC (not binary) bootloader from cassette
+#
+# Grover's Number Rover (CCW);CLOAD:RUN
+
