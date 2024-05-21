@@ -412,6 +412,39 @@ class DolphinGenerator(Generator):
         hotkey_path = '/userdata/system/configs/dolphin-emu/Hotkeys.ini'
         with open(hotkey_path, 'w') as configfile:
             hotkeyConfig.write(configfile)
+
+        ## Retroachievements
+        RacConfig = configparser.ConfigParser(interpolation=None)
+        # To prevent ConfigParser from converting to lower case
+        RacConfig.optionxform = str
+        # [Achievements]
+        RacConfig.add_section('Achievements')
+        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
+            RacConfig.set('Achievements', 'Enabled', 'True')
+            RacConfig.set('Achievements', 'AchievementsEnabled', 'True')
+            username  = system.config.get('retroachievements.username', '')
+            token     = system.config.get('retroachievements.token', '')
+            hardcore  = system.config.get('retroachievements.hardcore', 'False')
+            presence  = system.config.get('retroachievements.richpresence', 'False')
+            leaderbd  = system.config.get('retroachievements.leaderboard', 'False')
+            progress  = system.config.get('retroachievements.challenge_indicators', 'False')
+            encore    = system.config.get('retroachievements.encore', 'False')
+            verbose   = system.config.get('retroachievements.verbose', 'False')
+            RacConfig.set('Achievements', 'Username', username)
+            RacConfig.set('Achievements', 'ApiToken', token)
+            RacConfig.set('Achievements', 'HardcoreEnabled', hardcore)
+            RacConfig.set('Achievements', 'BadgesEnabled', verbose)
+            RacConfig.set('Achievements', 'EncoreEnabled', encore)
+            RacConfig.set('Achievements', 'ProgressEnabled', progress)
+            RacConfig.set('Achievements', 'LeaderboardsEnabled', leaderbd)
+            RacConfig.set('Achievements', 'RichPresenceEnabled', presence)
+        else:
+            RacConfig.set('Achievements', 'Enabled', 'False')
+            RacConfig.set('Achievements', 'AchievementsEnabled', 'False')
+        # Write the configuration to the file
+        rac_path = '/userdata/system/configs/dolphin-emu/RetroAchievements.ini'
+        with open(rac_path, 'w') as rac_configfile:
+            RacConfig.write(rac_configfile)
         
         # Update SYSCONF
         try:

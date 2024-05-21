@@ -31,6 +31,7 @@ Add support for the Ayaneo Air Plus (6800U) model
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
+- Dolphin: support for Retroachievements (when they are enabled)
 - Color Computer (coco) now autoloads cassettes and disks based on MAME software lists with default fallbacks
   - uses "usage" info field in MAME software list
   - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
@@ -53,6 +54,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 - ScummVM configuration file location & ensure native file system is turned off
+- Duckstation: faster loading time when RetroAchievements are enabled
 - Color Computer .dsk floppy images accepted in ES. "Disk" altRomType added in Advanced Game Options
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
