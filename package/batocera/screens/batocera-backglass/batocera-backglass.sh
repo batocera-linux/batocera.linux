@@ -152,6 +152,6 @@ case "${ACTION}" in
 	;;
 
     "list-themes")
-	(ls /usr/share/batocera-backglass/www; ls /userdata/system/backglass2) 2>/dev/null | sort -u
+	(ls /usr/share/batocera-backglass/www; ls /userdata/system/backglass) 2>/dev/null | sort -u
 	;;
 esac
