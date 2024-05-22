@@ -107,7 +107,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - DevilutionX to 1.5.2
 - Commander Genius to 3.5.0
 - Kodi to 20.5-Nexus
-- RPCS3 to 0.0.32-16476
+- RPCS3 to 0.0.32-16518
 - Solarus-engine: bump to Apr 27, 2024 build
 - Cemu to v2.0-82
 - Sonic3-AIR to v24.02.02.0-stable
