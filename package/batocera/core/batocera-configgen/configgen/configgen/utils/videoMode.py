@@ -101,7 +101,7 @@ def getCurrentResolution(name = None):
 def getCurrentOutput():
     proc = subprocess.Popen(["batocera-resolution currentOutput"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    return out.decode()
+    return out.decode().strip()
 
 def supportSystemRotation():
     proc = subprocess.Popen(["batocera-resolution supportSystemRotation"], stdout=subprocess.PIPE, shell=True)
