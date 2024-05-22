@@ -107,10 +107,10 @@ class Pcsx2Generator(Generator):
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9
-    if "ratio" in config:
-        if config["ratio"] == "16/9":
+    if "pcsx2_ratio" in config:
+        if config["pcsx2_ratio"] == "16:9":
             return "16:9"
-        elif config["ratio"] == "full":
+        elif config["pcsx2_ratio"] == "full":
             return "Stretch"
     return "4:3"
 
