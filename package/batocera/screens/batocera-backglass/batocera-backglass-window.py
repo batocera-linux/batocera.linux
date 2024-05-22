@@ -26,7 +26,7 @@ class BackglassAPI(BaseHTTPRequestHandler):
                 data   = {}
                 with urllib.request.urlopen("http://localhost:1234/systems/{}/games/{}".format(system, hash)) as url:
                     data = json.load(url)
-                    for prop in ["image", "video", "marquee", "thumbnail", "fanart", "manual"]:
+                    for prop in ["image", "video", "marquee", "thumbnail", "fanart", "manual", "titleshot", "bezel", "magazine", "manual", "boxart", "boxback", "wheel", "mix"]:
                         if prop in data:
                             data[prop] = "http://localhost:1234" + data[prop]
                     window.evaluate_js("onGame(" + json.dumps(data) + ")")
