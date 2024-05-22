@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Vita3K Build: 3596 - Commits on May 14, 2024
-VITA3K_VERSION = d4c0c499a490bec87c626fdcb5ea0035a43a36d1
+VITA3K_VERSION = b8ef1dd732cd36bde8b05afa54fc64e2b7f90b1f
 VITA3K_SITE = https://github.com/vita3k/vita3k
 VITA3K_SITE_METHOD=git
 VITA3K_GIT_SUBMODULES=YES
