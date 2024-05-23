@@ -78,9 +78,9 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Mupen64plus-video-glide64mk2 bump to Jun 11, 2023 build
 - Mupen64plus-video-rice bump to Jun 11, 2023 build
 - Mupen64plus-gliden64 bump to Feb 18, 2024 build
-- PPSSPP: to May 15, 2024 build
+- PPSSPP: to v1.17.1
 - Duckstation to v0.1-6720
-- Libretro-PPSSPP: to May 15, 2024 build
+- Libretro-PPSSPP: to v1.17.1
 - Libretro-81: bump to Nov 1, 2023 build
 - Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
 - Libretro-genesisplusgx: bump to Feb 23, 2024 build
