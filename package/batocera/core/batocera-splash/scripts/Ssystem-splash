@@ -34,7 +34,7 @@ do_start ()
         [ -f "$image" ] || exit 1
     fi
 
-    if test "${V_BOARD_MODEL}" = "Loki_Zero" || test "${V_BOARD_MODEL}" = "AB05_AMD"; then
+    if test "${V_BOARD_MODEL}" = "Loki_Zero" || test "${V_BOARD_MODEL}" = "AIR_Plus"; then
         image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
     fi
 

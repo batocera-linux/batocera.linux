@@ -8,7 +8,7 @@ wifi_toggle() {
 }
 
 # add to this list of device models needing a wifi reset on resume
-device_models=("Loki_Zero" "AB05_AMD" "AYANEO_2S")
+device_models=("Loki_Zero" "AIR_Plus" "AYANEO_2S")
 
 case "$1" in
     resume|thaw)
