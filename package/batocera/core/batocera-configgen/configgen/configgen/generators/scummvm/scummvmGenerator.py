@@ -9,13 +9,14 @@ import configparser
 
 scummConfigDir = batoceraFiles.CONF + "/scummvm"
 scummConfigFile = scummConfigDir + "/scummvm.ini"
+scummExtra = "/userdata/bios/scummvm/extra"
 
 class ScummVMGenerator(Generator):  
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
-        if not os.path.exists('/userdata/bios/scummvm/extra'):
-            os.makedirs('/userdata/bios/scummvm/extra')
+        if not os.path.exists(scummExtra):
+            os.makedirs(scummExtra)
         
         # create / modify scummvm config file as needed
         scummConfig = configparser.ConfigParser()
@@ -94,14 +95,14 @@ class ScummVMGenerator(Generator):
             commandArray.extend(["-q", "en"])
 
         # logging
-        commandArray.append("--logfile=/userdata/system/logs")
+        commandArray.append("--logfile=/userdata/system/logs/scummvm.log")
 
         commandArray.extend(
             [f"--joystick={id}",
             "--screenshotspath="+batoceraFiles.screenshotsDir,
-            "--extrapath=/userdata/bios/scummvm/extra",
-            "--path=""{}""".format(romPath),
-            f"""{romName}"""]
+            "--extrapath="+scummExtra,
+            f"--path={romPath}",
+            f"{romName}"]
         )
 
         return Command.Command(
