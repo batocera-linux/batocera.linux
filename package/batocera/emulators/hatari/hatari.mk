@@ -4,9 +4,10 @@
 #
 ################################################################################
 
-HATARI_VERSION = 2.5.0
+HATARI_VERSION = v2.5.0
 HATARI_SOURCE = hatari-$(HATARI_VERSION).tar.gz
-HATARI_SITE = https://git.tuxfamily.org/hatari/hatari.git/snapshot
+HATARI_SITE = https://github.com/hatari/hatari.git
+HATARI_SITE_METHOD=git
 HATARI_LICENSE = GPLv3
 HATARI_DEPENDENCIES = sdl2 zlib libpng libcapsimage
 
