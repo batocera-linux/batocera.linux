@@ -19,6 +19,12 @@ VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
                    -DUSE_VITA3K_UPDATE=OFF \
                    -DBUILD_EXTERNAL=ON
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ZEN3),y)
+    VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=ON
+else
+    VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=OFF
+endif
+
 define VITA3K_GET_SUBMODULE
     mkdir -p $(@D)/external
     cd $(@D)/external && git clone https://github.com/Vita3K/nativefiledialog-cmake
