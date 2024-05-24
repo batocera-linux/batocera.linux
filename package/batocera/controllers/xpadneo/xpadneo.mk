@@ -18,7 +18,7 @@ define XPADNEO_INSTALL_TARGET_CMDS
 	cp -v $(@D)/hid-xpadneo/etc-udev-rules.d/*.rules $(TARGET_DIR)/etc/udev/rules.d/
 	cp -v $(@D)/hid-xpadneo/etc-modprobe.d/*.conf $(TARGET_DIR)/etc/modprobe.d/
 	echo "options bluetooth disable_ertm=1" >> $(TARGET_DIR)/etc/modprobe.d/xpadneo.conf
-	echo "options disable_shift_mode=1" >> $(TARGET_DIR)/etc/modprobe.d/xpadneo.conf
+	echo "options hid_xpadneo disable_shift_mode=1" >> $(TARGET_DIR)/etc/modprobe.d/xpadneo.conf
 endef
 
 $(eval $(kernel-module))
