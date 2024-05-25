@@ -9,6 +9,7 @@ do_help() {
     echo "${0} disable service1"
     echo "${0} stop service1"
     echo "${0} start service1"
+    echo "${0} restart service1"
 }
 
 is_valid_service_name() {
@@ -168,6 +169,11 @@ case "${ACTION}" in
 	;;
     stop)
 	do_stop "${1}"
+	;;
+    restart)
+	do_stop "${1}"
+	sleep 2
+	do_start "${1}"
 	;;
     enable)
 	do_enable "${1}"
