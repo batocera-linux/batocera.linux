@@ -41,11 +41,6 @@ define HYPSEUS_SINGE_INSTALL_BEZELS
 	cp -f $(@D)/bezels/singe/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels
 	cp -f $(@D)/bezels/singe/gungames/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels
 	cp -f $(@D)/bezels/singe/gungames/actionmax/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels
-	# Sinden
-	mkdir -p $(TARGET_DIR)/usr/share/hypseus-singe/bezels/sinden
-	cp -f $(@D)/bezels/singe/sinden/actionmax/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels/sinden
-	cp -f $(@D)/bezels/singe/sinden/original/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels/sinden
-	cp -f $(@D)/bezels/singe/sinden/shaded/*.png $(TARGET_DIR)/usr/share/hypseus-singe/bezels/sinden
 endef
 
 # Extract the bezels we want
