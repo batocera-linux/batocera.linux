@@ -37,6 +37,8 @@ f_usage() {
 }
 
 f_minTomaxResolution() {
+    xrandr --output "${PSCREEN}" --auto # reinit the screen (in case it was off)
+    
     CURRENT_ROTATION=$(xrandr --currentRotation "${PSCREEN}" | cut -c1)
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
