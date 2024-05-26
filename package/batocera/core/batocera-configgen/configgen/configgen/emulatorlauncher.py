@@ -154,7 +154,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         else:
             gunsUtils.precalibration(systemName, system.config['emulator'], None, rom)
     else:
-        eslog.info("guns disabled.");
+        eslog.info("guns disabled.")
         guns = []
 
     # search wheels in case use_wheels is enabled for this game
