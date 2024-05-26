@@ -1,0 +1,41 @@
+diff --git a/src/io/input.cpp b/src/io/input.cpp
+index b2f9c65..0e9edd6 100644
+--- a/src/io/input.cpp
++++ b/src/io/input.cpp
+@@ -611,6 +611,9 @@ void SDL_check_input()
+         process_event(&event);
+     }
+ 
++    // processes non sdl events
++    process_event(NULL);
++
+     // added by JFA for -idleexit
+     if (get_idleexit() > 0 && elapsed_ms_time(idle_timer) > get_idleexit())
+         set_quitflag();
+@@ -648,6 +651,8 @@ void process_event(SDL_Event *event)
+ {
+     unsigned int i = 0;
+ 
++    if(event != NULL) {
++
+     // by RDG2010
+     // make things easier to read...
+     SDL_Keycode keyPressed = event->key.keysym.sym;
+@@ -813,6 +818,8 @@ void process_event(SDL_Event *event)
+         break;
+     }
+ 
++    } else {
++
+     if (g_game->get_mouse_enabled())
+     {
+         if (g_mouse_mode == MANY_MOUSE)
+@@ -846,6 +853,8 @@ void process_event(SDL_Event *event)
+        }
+     }
+ 
++    }
++
+     // added by JFA for -idleexit
+     if (get_idleexit() > 0 && elapsed_ms_time(idle_timer) > get_idleexit())
+         set_quitflag();
