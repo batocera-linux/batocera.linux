@@ -15,14 +15,14 @@ BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
 
 # pcsx2
-ifneq ($(BR2_PACKAGE_PCSX2_X86)$(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),)
+ifeq ($(BR2_PACKAGE_PCSX2),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2
   BATOCERA_DESKTOPAPPS_APPS    += pcsx2-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
 endif
 
 # dolphin
-ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
+ifeq ($(BR2_PACKAGE_DOLPHIN_EMU)$(BR2_PACKAGE_XORG7),yy)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
   BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
@@ -110,11 +110,11 @@ ifeq ($(BR2_PACKAGE_BAUH),y)
   BATOCERA_DESKTOPAPPS_APPS    += flatpak-config.desktop
 endif
 
-# yuzu
-ifeq ($(BR2_PACKAGE_YUZU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-yuzu
-  BATOCERA_DESKTOPAPPS_APPS    += yuzu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += yuzu.png
+# suyu
+ifeq ($(BR2_PACKAGE_SUYU),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-suyu
+  BATOCERA_DESKTOPAPPS_APPS    += suyu-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += suyu.png
 endif
 
 # ryujinx
@@ -159,11 +159,11 @@ ifeq ($(BR2_PACKAGE_VITA3K),y)
   BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
 endif
 
-# BigPEmu
-ifeq ($(BR2_PACKAGE_BIGPEMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-bigpemu
-  BATOCERA_DESKTOPAPPS_APPS    += bigpemu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += bigpemu.png
+# play!
+ifeq ($(BR2_PACKAGE_PLAY),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-play
+  BATOCERA_DESKTOPAPPS_APPS    += play-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += play.png
 endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS

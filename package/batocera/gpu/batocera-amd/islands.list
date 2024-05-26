@@ -1,0 +1,180 @@
+### Supported AMD Island cards to use the amdgpu vs radeon Mesa driver
+### As definative as we can make it, may need adjusting for user specific models.
+
+### https://github.com/torvalds/linux/blob/master/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+
+## Southern Islands - from CONFIG_DRM_AMDGPU_SI
+
+# Tahiti
+1002:6780 ("Tahiti XT GL [FirePro W9000]")
+1002:6784 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:6788 ("Tahiti [FirePro Series Graphics Adapter]")
+1002:678a ("Tahiti PRO GL [FirePro Series]")
+1002:6790
+1002:6791
+1002:6792
+1002:6798 ("Tahiti XT [Radeon HD 7970/8970 OEM / R9 280X]")
+1002:6799
+1002:679a ("Tahiti PRO [Radeon HD 7950/8950 OEM / R9 280]")
+1002:679b ("Malta [Radeon HD 7990/8990 OEM]")
+1002:679e ("Tahiti LE [Radeon HD 7870 XT]")
+1002:679f ("Tahiti")
+
+# Pitcairn
+1002:6800 ("Wimbledon XT [Radeon HD 7970M]")
+1002:6801 ("Neptune XT [Radeon HD 8970M]")
+1002:6802 ("Wimbledon")
+1002:6806 ("Neptune")
+1002:6808 ("Pitcairn XT GL [FirePro W7000]")
+1002:6809 ("Pitcairn LE GL [FirePro W5000]")
+1002:6810 ("Curacao XT / Trinidad XT [Radeon R7 370 / R9 270X/370X]")
+1002:6811 ("Curacao PRO [Radeon R7 370 / R9 270/370 OEM]")
+1002:6816 ("Pitcairn")
+1002:6817 ("Pitcairn")
+1002:6818 ("Pitcairn XT [Radeon HD 7870 GHz Edition]")
+1002:6819 ("Pitcairn PRO [Radeon HD 7850 / R7 265 / R9 270 1024SP]")
+
+# Oland
+1002:6600 ("Mars [Radeon HD 8670A/8670M/8750M / R7 M370]")
+1002:6601 ("Mars [Radeon HD 8730M]")
+1002:6602
+1002:6603
+1002:6604 ("Opal XT [Radeon R7 M265/M365X/M465]")
+1002:6605 ("Opal PRO [Radeon R7 M260X]")
+1002:6606 ("Mars XTX [Radeon HD 8790M]")
+1002:6607 ("Mars LE [Radeon HD 8530M / R5 M240]")
+1002:6608 ("Oland GL [FirePro W2100]")
+1002:6610 ("Oland XT [Radeon HD 8670 / R5 340X OEM / R7 250/350/350X OEM]")
+1002:6611 ("Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon 520 OEM]")
+1002:6613 ("Oland PRO [Radeon R7 240/340 / Radeon 520]")
+1002:6617 ("Oland LE [Radeon R7 240]")
+1002:6620
+1002:6621
+1002:6623
+1002:6631 ("Oland")
+
+# Verde
+1002:6820 ("Venus XTX [Radeon HD 8890M / R9 M275X/M375X]")
+1002:6821 ("Venus XT [Radeon HD 8870M / R9 M270X/M370X]")
+1002:6822 ("Venus PRO [Radeon E8860]")
+1002:6823 ("Venus PRO [Radeon HD 8850M / R9 M265X]")
+1002:6824
+1002:6825 ("Heathrow XT [Radeon HD 7870M]")
+1002:6826 ("Chelsea LP [Radeon HD 7700M Series]")
+1002:6827 ("Heathrow PRO [Radeon HD 7850M/8850M]")
+1002:6828 ("Cape Verde PRO [FirePro W600]")
+1002:6829 ("Cape Verde")
+1002:682a ("Venus PRO")
+1002:682b ("Cape Verde PRO / Venus LE / Tropo PRO-L [Radeon HD 8830M / R7 250 / R7 M465X]")
+1002:682c ("Cape Verde GL [FirePro W4100]")
+1002:682d ("Chelsea XT GL [FirePro M4000]")
+1002:682f ("Chelsea LP [Radeon HD 7730M]")
+1002:6830
+1002:6831
+1002:6835 ("Cape Verde PRX [Radeon R9 255 OEM]")
+1002:6837 ("Cape Verde LE [Radeon HD 7730/8730]")
+1002:6838
+1002:6839
+1002:683b
+1002:683d ("Cape Verde XT [Radeon HD 7770/8760 / R7 250X]")
+1002:683f ("Cape Verde PRO [Radeon HD 7750/8740 / R7 250E]")
+
+# Hainan
+1002:6660 ("Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 / Radeon 520 Mobile]")
+1002:6663 ("Sun PRO [Radeon HD 8570A/8570M]")
+1002:6664 ("Jet XT [Radeon R5 M240]")
+1002:6665 ("Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520/610 Mobile]")
+1002:6667 ("Jet ULT [Radeon R5 M230]")
+1002:666f ("Sun LE [Radeon HD 8550M / R5 M230]")
+
+## Sea Islands - from CONFIG_DRM_AMDGPU_CIK
+
+# Kaveri
+1002:1304 ("Kaveri")
+1002:1305 ("Kaveri")
+1002:1306 ("Kaveri")
+1002:1307 ("Kaveri")
+1002:1309 ("Kaveri [Radeon R6/R7 Graphics]")
+1002:130a ("Kaveri [Radeon R6 Graphics]")
+1002:130b ("Kaveri [Radeon R4 Graphics]")
+1002:130c ("Kaveri [Radeon R7 Graphics]")
+1002:130d ("Kaveri [Radeon R6 Graphics]")
+1002:130e ("Kaveri [Radeon R5 Graphics]")
+1002:130f ("Kaveri [Radeon R7 Graphics]")
+1002:1310 ("Kaveri")
+1002:1311 ("Kaveri")
+1002:1312 ("Kaveri")
+1002:1313 ("Kaveri [Radeon R7 Graphics]")
+1002:1315 ("Kaveri [Radeon R5 Graphics]")
+1002:1316 ("Kaveri [Radeon R5 Graphics]")
+1002:1317 ("Kaveri")
+1002:1318 ("Kaveri [Radeon R5 Graphics]")
+1002:131b ("Kaveri [Radeon R4 Graphics]")
+1002:131c ("Kaveri [Radeon R7 Graphics]")
+1002:131d ("Kaveri [Radeon R6 Graphics]")
+
+# Bonaire
+1002:6640 ("Saturn XT [FirePro M6100]")
+1002:6641 ("Saturn PRO [Radeon HD 8930M]")
+1002:6646 ("Bonaire XT [Radeon R9 M280X]")
+1002:6647 ("Saturn PRO/XT [Radeon R9 M270X/M280X]")
+1002:6649 ("Bonaire [FirePro W5100]")
+1002:6650 ("Bonaire")
+1002:6651 ("Bonaire")
+1002:6658 ("Bonaire XTX [Radeon R7 260X/360]")
+1002:665c ("Bonaire XT [Radeon HD 7790/8770 / R7 360 / R9 260/360 OEM]")
+1002:665d ("Bonaire [Radeon R7 200 Series]")
+1002:665f ("Tobago PRO [Radeon R7 360 / R9 360 OEM]")
+
+# Hawaii
+1002:67a0 ("Hawaii XT GL [FirePro W9100]")
+1002:67a1 ("Hawaii PRO GL [FirePro W8100]")
+1002:67a2 ("Hawaii GL")
+1002:67a8 ("Hawaii")
+1002:67a9 ("Hawaii")
+1002:67aa ("Hawaii")
+1002:67b0 ("Hawaii XT / Grenada XT [Radeon R9 290X/390X]")
+1002:67b1 ("Hawaii PRO [Radeon R9 290/390]")
+1002:67b8 ("Hawaii XT [Radeon R9 290X Engineering Sample]")
+1002:67b9 ("Vesuvius [Radeon R9 295X2]")
+1002:67ba
+1002:67be ("Hawaii LE")
+
+# Kabini
+1002:9830 ("Kabini [Radeon HD 8400 / R3 Series]")
+1002:9831 ("Kabini [Radeon HD 8400E]")
+1002:9832 ("Kabini [Radeon HD 8330]")
+1002:9833 ("Kabini [Radeon HD 8330E]")
+1002:9834 ("Kabini [Radeon HD 8210]")
+1002:9835 ("Kabini [Radeon HD 8310E]")
+1002:9836 ("Kabini [Radeon HD 8280 / R3 Series]")
+1002:9837 ("Kabini [Radeon HD 8280E]")
+1002:9838 ("Kabini [Radeon HD 8240 / R3 Series]")
+1002:9839 ("Kabini [Radeon HD 8180]")
+1002:983a
+1002:983b
+1002:983c
+1002:983d ("Temash [Radeon HD 8250/8280G]")
+1002:983e
+1002:983f
+
+# Mullins
+1002:9850 ("Mullins [Radeon R3 Graphics]")
+1002:9851 ("Mullins [Radeon R4/R5 Graphics]")
+1002:9852 ("Mullins [Radeon R2 Graphics]")
+1002:9853 ("Mullins [Radeon R2 Graphics]")
+1002:9854 ("Mullins [Radeon R3E Graphics]")
+1002:9855 ("Mullins [Radeon R6 Graphics]")
+1002:9856 ("Mullins [Radeon R1E/R2E Graphics]")
+1002:9857 ("Mullins [Radeon APU XX-2200M with R2 Graphics]")
+1002:9858 ("Mullins")
+1002:9859 ("Mullins")
+1002:985a ("Mullins")
+1002:985b ("Mullins")
+1002:985c ("Mullins")
+1002:985d ("Mullins")
+1002:985e ("Mullins")
+1002:985f ("Mullins")
+
+## User tested ID's
+

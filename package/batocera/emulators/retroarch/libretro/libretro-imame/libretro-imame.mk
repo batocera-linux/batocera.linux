@@ -3,8 +3,8 @@
 # libretro-imame
 #
 ################################################################################
-# Version: Commits on Jul 26, 2022
-LIBRETRO_IMAME_VERSION = 0208517404e841fce0c094f1a2776a0e1c6c101d
+# Version: Commits on Oct 31, 2023
+LIBRETRO_IMAME_VERSION = 1472da3a39ab14fff8325b1f51a1dfdb8eabb5c8
 LIBRETRO_IMAME_SITE = $(call github,libretro,mame2000-libretro,$(LIBRETRO_IMAME_VERSION))
 LIBRETRO_IMAME_LICENSE = MAME
 
@@ -16,7 +16,8 @@ endif
 
 define LIBRETRO_IMAME_BUILD_CMDS
 	mkdir -p $(@D)/obj_libretro_libretro/cpu
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile platform="$(LIBRETRO_IMAME_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
+	    -f Makefile platform="$(LIBRETRO_IMAME_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_IMAME_VERSION) | cut -c 1-7)"
 endef
 

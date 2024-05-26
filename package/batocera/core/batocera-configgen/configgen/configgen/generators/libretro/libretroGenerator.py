@@ -24,7 +24,7 @@ class LibretroGenerator(Generator):
 
     # Main entry of the module
     # Configure retroarch and return a command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Fix for the removed MESS/MAMEVirtual cores
         if system.config['core'] in [ 'mess', 'mamevirtual' ]:
             system.config['core'] = 'mame'
@@ -75,7 +75,7 @@ class LibretroGenerator(Generator):
                 lightgun = system.getOptBoolean('lightgun_map')
             else:
                 # Lightgun button mapping breaks lr-mame's inputs, disable if left on auto
-                if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi', 'mame078plus', 'mame0139' ]:
+                if system.config['core'] in [ 'mess', 'mamevirtual', 'same_cdi', 'mame078plus', 'mame0139' ]:
                     lightgun = False
                 else:
                     lightgun = True
@@ -91,7 +91,7 @@ class LibretroGenerator(Generator):
             if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
                 bezel = None
 
-            libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, guns, rom, bezel, shaderBezel, gameResolution, gfxBackend)
+            libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend)
             retroconfig.write()
 
             # duplicate config to mapping files while ra now split in 2 parts
@@ -220,12 +220,7 @@ class LibretroGenerator(Generator):
                 elif os.path.exists(os.path.join(rom, "dosbox.bat")) and not os.path.exists(os.path.join(rom, romDOSName + ".bat")):
                     exe = os.path.join(rom, "dosbox.bat")
                 else:
-                    exe = '/tmp/'+ romDOSName # Ugly workaround for dosbox-pure not supporting extensions for dos game folders
-                    try:
-                        os.remove(exe)
-                    except OSError:
-                        pass
-                    os.symlink(rom, exe)
+                    exe = rom
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], exe]
                 dontAppendROM = True
             else:
@@ -238,13 +233,63 @@ class LibretroGenerator(Generator):
                     lines = fpin.readlines()
                 rom = os.path.dirname(os.path.abspath(rom)) + '/' + lines[0].strip()
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+        # vitaquake2 - choose core based on directory
+        elif system.name == 'vitaquake2':
+            directory_path = os.path.dirname(rom)
+            if "xatrix" in directory_path:
+                system.config['core'] = "vitaquake2-xatrix"            
+            elif "rogue" in directory_path:
+                system.config['core'] = "vitaquake2-rogue"
+            elif "zaero" in directory_path:
+                system.config['core'] = "vitaquake2-zaero"
+            # set the updated core name
+            retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+        # boom3
+        elif system.name == 'boom3':
+            with open(rom, 'r') as file:
+                first_line = file.readline().strip()
+            # extracting the directory path from the original 'rom' variable
+            directory_path = '/'.join(rom.split('/')[:-1])
+            # creating the new 'rom' variable by combining the directory path and the first line
+            rom = f"{directory_path}/{first_line}"
+            # choose core based on new rom directory
+            directory_path = os.path.dirname(rom)
+            if "d3xp" in directory_path:
+                system.config['core'] = "boom3_xp" 
+            retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+        # super mario wars - verify assets from Content Downloader
+        elif system.name == 'superbroswar':
+            romdir = os.path.dirname(os.path.abspath(rom))
+            assetdirs = [
+                "music/world/Standard", "music/game/Standard/Special", "music/game/Standard/Menu", "filters", "worlds/KingdomHigh",
+                "worlds/MrIsland", "worlds/Sky World", "worlds/Smb3", "worlds/Simple", "worlds/screenshots", "worlds/Flurry World",
+                "worlds/MixedRiver", "worlds/Contest", "gfx/skins", "gfx/packs/Retro/fonts", "gfx/packs/Retro/modeobjects",
+                "gfx/packs/Retro/eyecandy", "gfx/packs/Retro/awards", "gfx/packs/Retro/powerups", "gfx/packs/Retro/menu",
+                "gfx/packs/Classic/projectiles", "gfx/packs/Classic/fonts", "gfx/packs/Classic/modeobjects", "gfx/packs/Classic/world",
+                "gfx/packs/Classic/world/thumbnail", "gfx/packs/Classic/world/preview", "gfx/packs/Classic/modeskins",
+                "gfx/packs/Classic/hazards", "gfx/packs/Classic/blocks", "gfx/packs/Classic/backgrounds", "gfx/packs/Classic/tilesets/SMB2",
+                "gfx/packs/Classic/tilesets/Expanded", "gfx/packs/Classic/tilesets/SMB1", "gfx/packs/Classic/tilesets/Classic",
+                "gfx/packs/Classic/tilesets/SMB3", "gfx/packs/Classic/tilesets/SuperMarioWorld", "gfx/packs/Classic/tilesets/YoshisIsland",
+                "gfx/packs/Classic/eyecandy", "gfx/packs/Classic/awards", "gfx/packs/Classic/powerups", "gfx/packs/Classic/menu",
+                "gfx/leveleditor", "gfx/docs", "sfx/packs/Classic", "sfx/announcer/Mario",
+                "maps/tour", "maps/cache", "maps/screenshots", "maps/special", "tours",
+            ]
+            try:
+                for assetdir in assetdirs:
+                    os.chdir(f"{romdir}/{assetdir}")
+                os.chdir(romdir)
+            except FileNotFoundError:
+                eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
+                raise
+
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
-
-
+        
         configToAppend = []
-
-
+        
         # Custom configs - per core
         customCfg = f"{batoceraFiles.retroarchRoot}/{system.name}.cfg"
         if os.path.isfile(customCfg):
@@ -276,20 +321,29 @@ class LibretroGenerator(Generator):
                 commandArray.extend(["--connect", system.config['netplay.server.ip']])
             if 'netplay.server.port' in system.config:
                 commandArray.extend(["--port", system.config['netplay.server.port']])
+            if 'netplay.server.session' in system.config:
+                commandArray.extend(["--mitm-session", system.config['netplay.server.session']])
             if 'netplay.nickname' in system.config:
                 commandArray.extend(["--nick", system.config['netplay.nickname']])
 
         # Verbose logs
         commandArray.extend(['--verbose'])
 
-        # Extension used by hypseus .daphne but lr-daphne starts with .zip
-        if system.name == 'daphne':
-            romName = os.path.splitext(os.path.basename(rom))[0]
-            rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
-
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
+        if system.name == 'reminiscence':
+            with open(rom, 'r') as file:
+                first_line = file.readline().strip()
+            directory_path = '/'.join(rom.split('/')[:-1])
+            rom = f"{directory_path}/{first_line}"
+        
+        if system.name == 'openlara':
+            with open(rom, 'r') as file:
+                first_line = file.readline().strip()
+            directory_path = '/'.join(rom.split('/')[:-1])
+            rom = f"{directory_path}/{first_line}"
+                
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True

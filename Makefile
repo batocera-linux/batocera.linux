@@ -166,7 +166,7 @@ dl-dir:
 		make O=/$* BR2_EXTERNAL=/build BR2_GRAPH_OUT=svg -C /build/buildroot graph-depends
 
 %-shell: batocera-docker-image output-dir-%
-	$(if $(BATCH_MODE),$(error "not suppoorted in BATCH_MODE!"),)
+	$(if $(BATCH_MODE),$(if $(CMD),,$(error "not suppoorted in BATCH_MODE if CMD not specified!")),)
 	@$(DOCKER) run -t --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -177,7 +177,21 @@ dl-dir:
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		$(DOCKER_REPO)/$(IMAGE_NAME)
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
+		$(CMD)
+
+%-ccache-stats: batocera-docker-image %-config ccache-dir dl-dir
+	@$(DOCKER) run -t --init --rm \
+		-v $(PROJECT_DIR):/build \
+		-v $(DL_DIR):/build/buildroot/dl \
+		-v $(OUTPUT_DIR)/$*:/$* \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-u $(UID):$(GID) \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		$(DOCKER_OPTS) \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
+		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot ccache-stats
 
 %-cleanbuild: %-clean %-build
 	@echo
@@ -189,7 +203,13 @@ dl-dir:
 %-webserver: output-dir-%
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
 	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
-	@python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+ifeq ($(strip $(BOARD)),)
+	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$*/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$*"))
+	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+else
+	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)"))
+	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/
+endif
 
 %-rsync: output-dir-%
 	$(eval TMP := $(call UC, $*)_IP)

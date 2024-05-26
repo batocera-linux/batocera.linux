@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TOUCHEGG_VERSION = 2.0.14
+TOUCHEGG_VERSION = 2.0.17
 TOUCHEGG_SITE = $(call github,JoseExposito,touchegg,$(TOUCHEGG_VERSION))
 TOUCHEGG_DEPENDENCIES = xapp_xinput pugixml cairo libinput xlib_libXtst
 

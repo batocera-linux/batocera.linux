@@ -1,0 +1,63 @@
+From 3e9c8855643486b4f793bd13fbfc759058524062 Mon Sep 17 00:00:00 2001
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Sat, 3 Dec 2022 06:03:16 +0000
+Subject: [PATCH 025/120] FROMGIT(6.3): drm/etnaviv: add HWDB entry for
+ VIPNano-QI.7120.0055
+
+This is a compute-only module marketed towards AI and vision
+acceleration. This particular version can be found on the Amlogic A311D
+SoC.
+
+The feature bits are taken from the Khadas downstream kernel driver
+6.4.4.3.310723AAA.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ drivers/gpu/drm/etnaviv/etnaviv_hwdb.c | 31 ++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c b/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
+index 44df273a5aae..66b8ad6c7d26 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_hwdb.c
+@@ -134,6 +134,37 @@ static const struct etnaviv_chip_identity etnaviv_chip_identities[] = {
+ 		.minor_features10 = 0x90044250,
+ 		.minor_features11 = 0x00000024,
+ 	},
++	{
++		.model = 0x8000,
++		.revision = 0x7120,
++		.product_id = 0x45080009,
++		.customer_id = 0x88,
++		.eco_id = 0,
++		.stream_count = 8,
++		.register_max = 64,
++		.thread_count = 256,
++		.shader_core_count = 1,
++		.vertex_cache_size = 16,
++		.vertex_output_buffer_size = 1024,
++		.pixel_pipes = 1,
++		.instruction_count = 512,
++		.num_constants = 320,
++		.buffer_size = 0,
++		.varyings_count = 16,
++		.features = 0xe0287cac,
++		.minor_features0 = 0xc1799eff,
++		.minor_features1 = 0xfefbfadb,
++		.minor_features2 = 0xeb9d6fbf,
++		.minor_features3 = 0xedfffced,
++		.minor_features4 = 0xd30dafc7,
++		.minor_features5 = 0x7b5ac333,
++		.minor_features6 = 0xfc8ee200,
++		.minor_features7 = 0x03fffa6f,
++		.minor_features8 = 0x00fe0ef0,
++		.minor_features9 = 0x0088003c,
++		.minor_features10 = 0x108048c0,
++		.minor_features11 = 0x00000010,
++	},
+ };
+ 
+ bool etnaviv_fill_identity_from_hwdb(struct etnaviv_gpu *gpu)
+-- 
+2.34.1
+

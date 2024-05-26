@@ -1,0 +1,41 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+# TRIGGER               : LEFT
+# A1 (Middle)           : RIGHT
+# A2 (Right)            : BTN_2
+# A3 (West)             : BTN_9
+# B1 (Z)                : BTN_1
+# B2 (TL)               : MIDDLE
+# B3 (TR)               : BTN_10
+# C1 (Select)           : BTN_3
+# C2 (Start)            : BTN_4
+# OFFSCREEN (TL2)       : BTN_11
+# B_HAT_UP (HAT0Y)      : BTN_5
+# B_HAT_DOWN (HAT0Y)    : BTN_6
+# B_HAT_LEFT (HAT0X)    : BTN_7
+# B_HAT_RIGHT (HAT0X)   : BTN_8
+
+
+DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
+evsieve --input "${DEVNAME}" persist=exit \
+	--map btn:west btn:9 \
+        --map yield btn:middle btn:right \
+        --map yield btn:right btn:2 \
+	--map btn:z btn:1 \
+	--map yield btn:tl btn:middle \
+	--map btn:tr btn:tr \
+	--map btn:select btn:3 \
+	--map btn:start btn:4 \
+	--map btn:tl2 btn:tl2 \
+	--copy abs:hat0x:38~..~37    btn:7:1     \
+        --copy abs:hat0x:~37..38~    btn:7:0     \
+        --copy abs:hat0x:~216..217~  btn:8:1     \
+        --copy abs:hat0x:217~..~216  btn:8:0     \
+        --copy abs:hat0y:38~..~37    btn:5:1     \
+        --copy abs:hat0y:~37..38~    btn:5:0     \
+        --copy abs:hat0y:~216..217~  btn:6:1     \
+        --copy abs:hat0y:217~..~216  btn:6:0     \
+	--output name="GunCon3-Gun" >/dev/null 2>"/var/log/guncon3_{DEVHASH}.log" &

@@ -1,0 +1,23 @@
+--- a/Makefile	2023-09-13 19:06:51.291615894 +0200
++++ b/Makefile	2023-09-13 19:11:20.417904992 +0200
+@@ -84,18 +84,8 @@
+ CC  	        = $(LNXDEV)/$(PREFIX)gcc
+ OBJTYPE         = elf
+ INCLUDES        = $(SDKPATH)/include
+-ifeq ($(findstring 64, $(BUILD_PLATFORM)), 64)
+-TARGET_ARCH     = amd64
+-BUILD_AMD64     = 1
+-ARCHFLAGS       = -m64
+-#LIBRARIES       = $(SDKPATH)/lib/$(GCC_TARGET)
+-CFLAGS          += -DAMD64
+-else
+-TARGET_ARCH     = x86
+-ARCHFLAGS       = -m32
+-#LIBRARIES       = $(SDKPATH)/lib32
+-BUILD_MMX       = 1
+-endif
++TARGET_ARCH     = riscv64
++ARCHFLAGS       = 
+ ifeq ($(BUILD_LINUX), 0)
+ BUILD_DEBUG     = 1
+ endif

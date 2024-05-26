@@ -14,7 +14,7 @@ systems = {
     # ---------- Atari ---------- #
     # https://docs.libretro.com/library/atari800/#bios
     "atari800": { "name": "Atari 800", "biosFiles": [ { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"},
-                                                      { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"},
+                                                      { "md5": "4177f386a3bac989a981d3fe3388cb6c", "file": "bios/ATARIOSB.ROM"},
                                                       { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM" },
                                                       # The BASIC cart came with all Atari computers. On the XL and XE, it was built-in, so it's required by those models.
                                                       { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"} ] },
@@ -167,13 +167,8 @@ systems = {
                                             { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"    } ] },
 
     # https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios
-    "ps2": { "name": "PS2", "biosFiles": [  { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
-                                            { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
-                                            { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
-                                            { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
-                                            { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN"      },
-                                            { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin"      },
-                                            { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN"      } ] },
+    # use the last USA bios which can run NTSC and PAL games
+    "ps2": { "name": "PS2", "biosFiles": [  { "md5": "21038400dc633070a78ad53090c53017", "file": "bios/ps2/ps2-0230a-20080220.bin" } ] },
 
     # https://www.playstation.com/en-us/support/system-updates/ps3/
     "ps3": { "name": "PS3", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
@@ -183,13 +178,14 @@ systems = {
     "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
 
     # https://docs.libretro.com/library/melonds/#bios
-    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "94bc5094607c5e6598d50472c52f27f2", "file": "bios/firmware.bin" },
+    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "", "file": "bios/firmware.bin" }, # ideally - 94bc5094607c5e6598d50472c52f27f2
                                             { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin" },
                                             { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin" },
                                             { "md5": "559dae4ea78eb9d67702c56c1d791e81", "file": "bios/dsi_bios7.bin" },
                                             { "md5": "87b665fce118f76251271c3732532777", "file": "bios/dsi_bios9.bin" },
-                                            { "md5": "74f23348012d7b3e1cc216c47192ffeb", "file": "bios/dsi_firmware.bin" },
-                                            { "md5": "d71edf897ddd06bf335feeb68edeb272", "file": "bios/dsi_nand.bin" }, ] },
+                                            { "md5": "", "file": "bios/dsi_firmware.bin" }, # ideally - 74f23348012d7b3e1cc216c47192ffeb
+                                            { "md5": "", "file": "bios/dsi_nand.bin" } # ideally - d71edf897ddd06bf335feeb68edeb272
+                                            ] },
 
     # https://docs.libretro.com/library/mgba/#bios
     "gba": { "name": "Nintendo Gameboy Advance", "biosFiles": [  { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" },
@@ -223,41 +219,41 @@ systems = {
     # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
     # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
     # https://fs-uae.net/docs/kickstarts
-    "amiga500": { "name": "Amiga 500",     "biosFiles": [  { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
-                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
+    "amiga500": { "name": "Amiga 500",     "biosFiles": [  { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga/kick33180.A500"      },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga/kick37175.A500"      },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/kick34005.A500"      },
                                                            # Amiga 600 kickstart. Not really needed but maybe someone out there will want to switch their model to Amiga 600.
-                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/kick37350.A600"      },
-                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga/kick37350.A600"      },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga/kick40063.A600"      },
                                                            # The Amiga Forever equivalents. Really are these actually needed? Just so people don't have to rename their stuff?
-                                                           { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"    },
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"    },
-                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"    },
-                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"    },
-                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga-os-310-a600.rom" }] },
+                                                           { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga/amiga-os-120.rom"    },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/amiga-os-130.rom"    },
+                                                           { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga/amiga-os-204.rom"    },
+                                                           { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga/amiga-os-205.rom"    },
+                                                           { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/amiga/amiga-os-310-a600.rom" }] },
 
-    "amigacdtv": { "name": "Amiga CDTV",   "biosFiles": [  { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"          },
-                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/kick34005.CDTV"          },
+    "amigacdtv": { "name": "Amiga CDTV",   "biosFiles": [  { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/kick34005.A500"          },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga/kick34005.CDTV"          },
                                                            # CDTV requires both the Amiga 500 kickstart and its own extended kickstart.
-                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
-                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+                                                           { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga/amiga-os-130.rom"        },
+                                                           { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga/amiga-ext-130-cdtv.rom"  }] },
 
-    "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"         },
-                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"         },
-                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"         },
+    "amiga1200": { "name": "Amiga 1200",   "biosFiles": [  { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga/kick39106.A1200"         },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga/kick40068.A1200"         },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga/kick40068.A4000"         },
                                                            # The Amiga Forever equivalents. a3000 seems to not have a kickstart equivalent. amiga-os-310.rom doesn't match libretro's docs.
-                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga-os-300-a1200.rom"  },
-                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
-                                                           { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
-                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga-os-310-a4000.rom"  },
-                                                           { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        }] },
+                                                           { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/amiga/amiga-os-300-a1200.rom"  },
+                                                           { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga/amiga-os-310-a1200.rom"  },
+                                                           { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga/amiga-os-310-a3000.rom"  },
+                                                           { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/amiga/amiga-os-310-a4000.rom"  },
+                                                           { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga/amiga-os-310.rom"        }] },
 
-    "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"          },
-                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"      },
+    "amigacd32": { "name": "Amiga CD32",   "biosFiles": [  { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga/kick40060.CD32"          },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/kick40060.CD32.ext"      },
                                                            # Unlike the CDTV, CD32 does not need the Amiga 1200 kickstart.
                                                            # But, it has its own unique "base" anyway, which is required in addition to its extended.
-                                                           { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
-                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  }] },
+                                                           { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga/amiga-os-310-cd32.rom"   },
+                                                           { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/amiga-ext-310-cd32.rom"  }] },
 
     # ---------- NEC PC-8800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
@@ -613,8 +609,10 @@ systems = {
                                                 { "md5": "2020aa1413ff77fe29353f3ee72dc295", "zippedFile": "341-0027-a.p5", "file": "bios/a2diskiing.zip"},
                                                 { "md5": "", "file": "bios/a2cffa02.zip" },
                                                 { "md5": "80adbc2d79f347ec63f4b771ea32984d", "zippedFile": "cffa20ee02.bin", "file": "bios/a2cffa02.zip"},
-                                                { "md5": "", "file": "bios/votrax.zip" },
-                                                { "md5": "95b91e4a2fe7d6f13d353ba1827d37f9", "zippedFile": "sc01a.bin", "file": "bios/votrax.zip"},
+                                                { "md5": "", "file": "bios/votrsc01.zip" },
+                                                { "md5": "8ccf35a06f5e9a2131b0f42380ee5c15", "zippedFile": "sc01.bin", "file": "bios/votrsc01.zip"},
+                                                { "md5": "", "file": "bios/votrsc01a.zip" },
+                                                { "md5": "95b91e4a2fe7d6f13d353ba1827d37f9", "zippedFile": "sc01a.bin", "file": "bios/votrsc01a.zip"},
                                                 { "md5": "", "file": "bios/d2fdc.zip" },
                                                 { "md5": "5f1be0c1cdff26f5956eef9643911886", "zippedFile": "341-0028-a.rom", "file": "bios/d2fdc.zip"} ] },
 
@@ -741,6 +739,58 @@ systems = {
     "vectrex":   { "name": "GCE Vectrex", "emulator": "libretro", "core": "mame", "biosFiles":  [ { "md5": "", "file": "bios/vectrex.zip"  },
                                                 { "md5": "ab082fa8c8e632dd68589a8c7741388f", "zippedFile": "exec_rom.bin", "file": "bios/vectrex.zip"},
                                                 { "md5": "a9c238473229912eb757ff3dfe6f4631", "zippedFile": "exec_rom_intl_284001-1.bin", "file": "bios/vectrex.zip"} ] },
+
+    # ---------- ScummVM ---------- #
+    "scummvm":   { "name": "ScummVM", "biosFiles":  [ { "md5": "89e42e386e82e0cacb4a2704a03706ca", "file": "bios/scummvm/extra/MT32_PCM.ROM" },
+                                                      { "md5": "5626206284b22c2734f3e9efefcd2675", "file": "bios/scummvm/extra/MT32_CONTROL.ROM" } ] },
+
+    # ---------- MSX1/MSX2 ---------- #
+    #https://github.com/openMSX/openMSX/blob/master/share/machines/Boosted_MSX2_EN.txt
+    "msx1":   { "name": "MSX1/MS2", "biosFiles":  [ { "md5": "01dd1d72ed9bb6afe8a9b441c198a1cd", "file": "bios/openmsx/nms8250_disk.rom" },
+                                                    { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/openmsx/nms8250_basic-bios2.rom" },
+                                                    { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/openmsx/nms8250_msx2sub.rom" },
+                                                    { "md5": "6f69cc8b5ed761b03afd78000dfb0e19", "file": "bios/openmsx/fmpac.rom" },
+                                                    { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
+                                                    { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
+
+    # ---------- MSX LaserDisc ---------- #
+    #https://github.com/openMSX/openMSX/blob/master/share/machines/Pioneer_PX-7.xml
+    "msx1":   { "name": "MSX LaserDisc", "biosFiles":  [ { "md5": "281809cafe63437fc4bffb3033fbd0db", "file": "bios/openmsx/px-7_pbasic.rom" },
+                                                         { "md5": "9218f6dd89f7ba01e3090d44721b4260", "file": "bios/openmsx/px-7_basic-bios1.rom" } ] },
+
+    # ---------- MSX2+  ---------- #
+    #https://github.com/openMSX/openMSX/blob/master/share/machines/Boosted_MSX2+_JP.txt
+    "msx2+":   { "name": "MSX2+", "biosFiles":  [ { "md5": "acf53887c2d2783dc059a9b442c86b90", "file": "bios/openmsx/fs-a1wsx_kanjifont.rom" },
+                                                  { "md5": "c5c26c3e8bc6c485424818057f0507b9", "file": "bios/openmsx/fs-a1wsx_basic-bios2p.rom" },
+                                                  { "md5": "0c40e7db1c1fcc2405e4d0cdd215adb4", "file": "bios/openmsx/fs-a1wsx_fmbasic.rom" },
+                                                  { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/openmsx/fs-a1wsx_msx2psub.rom" },
+                                                  { "md5": "9dfdebfaa6b547222a40aab8bb2e29f8", "file": "bios/openmsx/fs-a1wsx_kanjibasic.rom" },
+                                                  { "md5": "00aa02b6077de40a0b51d71a3c3e1d5f", "file": "bios/openmsx/fs-a1wsx_disk.rom" },
+                                                  { "md5": "fa8e7d4b999af058fe2864a5f2e014ec", "file": "bios/openmsx/fs-a1wsx_firmware.rom" },
+                                                  { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
+                                                  { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
+
+    # ---------- MSX-Turbo  ---------- #
+    #https://github.com/openMSX/openMSX/blob/master/share/machines/Panasonic_FS-A1GT.xml
+    "msxturbor":   { "name": "MSX-Turbo", "biosFiles":  [ { "md5": "af17a344bcc177b97a4888c4c559f3ae", "file": "bios/openmsx/fs-a1gt_firmware.rom" },
+                                                          { "md5": "acf53887c2d2783dc059a9b442c86b90", "file": "bios/openmsx/fs-a1gt_kanjifont.rom" },
+                                                          { "md5": "afa4b5f2944334f84971af814a24bd5a", "file": "bios/openmsx/ide250.zip" },
+                                                          { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
+                                                          { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
+    
+    # ---------- Supr'A'can  ---------- #
+    "supracan":   { "name": "Supr'A'can", "biosFiles":  [ { "md5": "", "file": "bios/supracan.zip"  },
+                                    { "md5": "53c4343e062bb3b337370bbb58e64d16", "zippedFile": "internal_68k.bin", "file": "bios/supracan.zip" } ] },
+
+    # ---------- Tandy VIS ---------- #
+    "vis":  { "name": "Tandy Video Information System", "biosFiles": [  { "md5": "", "file": "bios/vis.zip" },
+                                  { "md5": "ebf432d3b09f694db1c62018eb2ab471", "zippedFile": "p513bk0b.bin", "file": "bios/vis.zip"},
+                                  { "md5": "758f8fec271fbf526bb22b36e88f154b", "zippedFile": "p513bk1b.bin", "file": "bios/vis.zip"} ] },
+    
+    # ---------- GameCube ---------- #
+    "gamecube":   { "name": "Nintendo GameCube", "biosFiles":  [ { "md5": "db92574caab77a7ec99d4605fd6f2450", "file": "bios/GC/EUR/IPL.bin" },
+                                                                 { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/JAP/IPL.bin" },
+                                                                 { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/USA/IPL.bin" } ] },
 }
 
 class BiosStatus:
@@ -756,7 +806,11 @@ def md5sum(filename, blocksize=65536):
 
 def checkInsideZip(container, fileName, md5sum):
     # Check inside Zip files
-    archive = zipfile.ZipFile(container)
+    try:
+        archive = zipfile.ZipFile(container)
+    except Exception as e:
+        print ('Error opening file {}: {}.'.format(container, e))
+        return False
     blocksize = 1024**2  #1M chunks
     for fname in archive.namelist():
         # Only check if the file matches

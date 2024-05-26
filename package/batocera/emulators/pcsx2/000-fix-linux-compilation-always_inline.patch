@@ -1,13 +1,13 @@
 diff --git a/common/Pcsx2Defs.h b/common/Pcsx2Defs.h
-index 111db24..4c4ad62 100644
+index 557713c0c6..6d0659a297 100644
 --- a/common/Pcsx2Defs.h
 +++ b/common/Pcsx2Defs.h
-@@ -119,7 +119,7 @@ static const int __pagesize = PCSX2_PAGESIZE;
- 	#define __vectorcall __fastcall
- 	#define _inline __inline__ __attribute__((unused))
- 	#ifdef NDEBUG
--		#define __forceinline __attribute__((always_inline, unused))
-+		#define __forceinline __attribute__((unused))
- 	#else
- 		#define __forceinline __attribute__((unused))
- 	#endif
+@@ -57,7 +57,7 @@ static constexpr unsigned int __pagemask = __pagesize - 1;
+ // __forceinline_odr is for member functions that are defined in headers. MSVC can't specify
+ // inline and __forceinline at the same time, but it required to not get ODR errors in GCC.
+ 
+-#define __forceinline __attribute__((always_inline, unused))
++#define __forceinline __attribute__((unused))
+ #define __forceinline_odr __forceinline inline
+ #define __noinline __attribute__((noinline))
+ #define __noreturn __attribute__((noreturn))

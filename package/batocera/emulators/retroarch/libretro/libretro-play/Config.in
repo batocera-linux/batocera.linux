@@ -1,8 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_PLAY
     bool "libretro-play"
-    select BR2_PACKAGE_QT5BASE
-    select BR2_PACKAGE_QT5X11EXTRAS
-    select BR2_PACKAGE_LIBGLEW
+    select BR2_PACKAGE_LIBGLEW              if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_VULKAN_HEADERS       if BR2_PACKAGE_BATOCERA_VULKAN
+    select BR2_PACKAGE_VULKAN_LOADER        if BR2_PACKAGE_BATOCERA_VULKAN
+
       help
         Play! - PlayStation2 Emulator
 

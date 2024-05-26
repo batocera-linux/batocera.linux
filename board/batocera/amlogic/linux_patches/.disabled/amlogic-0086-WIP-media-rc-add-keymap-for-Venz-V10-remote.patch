@@ -1,0 +1,154 @@
+From bbb4c8b01cf73f2e600b1d67b742d515e1f2e6d1 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 10 Apr 2022 11:51:38 +0000
+Subject: [PATCH 086/120] WIP: media: rc: add keymap for Venz V10 remote
+
+Add a keymap and bindings for the IR (NEC) remote used with
+the Venz V10 Android STB device.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../devicetree/bindings/media/rc.yaml         |  1 +
+ drivers/media/rc/keymaps/Makefile             |  1 +
+ drivers/media/rc/keymaps/rc-venz-v10.c        | 92 +++++++++++++++++++
+ include/media/rc-map.h                        |  1 +
+ 4 files changed, 95 insertions(+)
+ create mode 100644 drivers/media/rc/keymaps/rc-venz-v10.c
+
+diff --git a/Documentation/devicetree/bindings/media/rc.yaml b/Documentation/devicetree/bindings/media/rc.yaml
+index 37583861376e..f390a5d2c82d 100644
+--- a/Documentation/devicetree/bindings/media/rc.yaml
++++ b/Documentation/devicetree/bindings/media/rc.yaml
+@@ -152,6 +152,7 @@ properties:
+       - rc-videomate-tv-pvr
+       - rc-videostrong-kii-pro
+       - rc-vega-s9x
++      - rc-venz-v10
+       - rc-wetek-hub
+       - rc-wetek-play2
+       - rc-winfast
+diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
+index f1fba08d8ed4..03bc9a8d355e 100644
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -129,6 +129,7 @@ obj-$(CONFIG_RC_MAP) += \
+ 			rc-twinhan1027.o \
+ 			rc-twinhan-dtv-cab-ci.o \
+ 			rc-vega-s9x.o \
++			rc-venz-v10.o \
+ 			rc-videomate-m1f.o \
+ 			rc-videomate-s350.o \
+ 			rc-videomate-tv-pvr.o \
+diff --git a/drivers/media/rc/keymaps/rc-venz-v10.c b/drivers/media/rc/keymaps/rc-venz-v10.c
+new file mode 100644
+index 000000000000..f0a99a31a1d7
+--- /dev/null
++++ b/drivers/media/rc/keymaps/rc-venz-v10.c
+@@ -0,0 +1,92 @@
++// SPDX-License-Identifier: GPL-2.0+
++//
++// Copyright (C) 2022 Christian Hewitt <christianshewitt@gmail.com>
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++//
++// Keytable for the Venz V10 remote control
++//
++
++static struct rc_map_table venz_v10[] = {
++	{ 0x847912, KEY_POWER },
++	{ 0x847903, KEY_MUTE },
++
++	{ 0x847921, KEY_EPG },
++	{ 0x847922, KEY_ZOOMIN },
++	{ 0x847923, KEY_ZOOMOUT },
++	{ 0x847924, KEY_SCREEN }, // LAUNCHER
++
++	// UP
++	// DOWN
++	// LEFT
++	// RIGHT
++
++	{ 0x847904, KEY_FAVORITES }, // TV-SYS
++	{ 0x84790a, KEY_INFO }, // RATIO
++	{ 0x84791f, KEY_LANGUAGE }, // TRACK
++	{ 0x84791e, KEY_SUBTITLE }, // SUB-T
++
++	{ 0x847929, KEY_RED },
++	{ 0x847930, KEY_GREEN },
++	{ 0x847931, KEY_YELLOW },
++	{ 0x847932, KEY_BLUE },
++
++	{ 0x847906, KEY_HOME },
++	{ 0x84791b, KEY_CONFIG },
++
++	{ 0x847905, KEY_UP },
++	{ 0x847907, KEY_LEFT },
++	{ 0x847908, KEY_OK },
++	{ 0x847909, KEY_RIGHT },
++	{ 0x847900, KEY_DOWN },
++
++	{ 0x847920, KEY_CONTEXT_MENU },
++	{ 0x84791a, KEY_BACK },
++
++	{ 0x847910, KEY_VOLUMEUP },
++	{ 0x84790f, KEY_VOLUMEDOWN },
++	{ 0x847919, KEY_PLAYPAUSE },
++	{ 0x84791c, KEY_STOP },
++	{ 0x84791d, KEY_PREVIOUS },
++	{ 0x847928, KEY_NEXT },
++
++	{ 0x84790b, KEY_1 },
++	{ 0x84790c, KEY_2 },
++	{ 0x84790d, KEY_3 },
++	{ 0x84790e, KEY_4 },
++	{ 0x847911, KEY_5 },
++	{ 0x847927, KEY_6 },
++	{ 0x847913, KEY_7 },
++	{ 0x847914, KEY_8 },
++	{ 0x847915, KEY_9 },
++	{ 0x847916, KEY_MENU }, // MOUSE
++	{ 0x847917, KEY_0 },
++	{ 0x847918, KEY_DELETE },
++};
++
++static struct rc_map_list venz_v10_map = {
++	.map = {
++		.scan     = venz_v10,
++		.size     = ARRAY_SIZE(venz_v10),
++		.rc_proto = RC_PROTO_NEC,
++		.name     = RC_MAP_VENZ_V10,
++	}
++};
++
++static int __init init_rc_map_venz_v10(void)
++{
++	return rc_map_register(&venz_v10_map);
++}
++
++static void __exit exit_rc_map_venz_v10(void)
++{
++	rc_map_unregister(&venz_v10_map);
++}
++
++module_init(init_rc_map_venz_v10)
++module_exit(exit_rc_map_venz_v10)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Christian Hewitt <christianshewitt@gmail.com");
+diff --git a/include/media/rc-map.h b/include/media/rc-map.h
+index 4c4eaaf02ac1..dadd4d27a760 100644
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -334,6 +334,7 @@ struct rc_map *rc_map_get(const char *name);
+ #define RC_MAP_TT_1500                   "rc-tt-1500"
+ #define RC_MAP_TWINHAN_DTV_CAB_CI        "rc-twinhan-dtv-cab-ci"
+ #define RC_MAP_TWINHAN_VP1027_DVBS       "rc-twinhan1027"
++#define RC_MAP_VENZ_V10                  "rc-venz-v10"
+ #define RC_MAP_VEGA_S9X                  "rc-vega-s9x"
+ #define RC_MAP_VIDEOMATE_K100            "rc-videomate-k100"
+ #define RC_MAP_VIDEOMATE_S350            "rc-videomate-s350"
+-- 
+2.34.1
+

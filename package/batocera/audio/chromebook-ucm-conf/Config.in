@@ -1,0 +1,8 @@
+config BR2_PACKAGE_CHROMEBOOK_UCM_CONF
+	bool "chromebook-ucm-conf"
+	select BR2_PACKAGE_ALLLINUXFIRMWARES
+	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE
+	help
+	  Alsa UCM configuration for chrome devices.
+
+	  https://github.com/WeirdTreeThing/alsa-ucm-conf-cros

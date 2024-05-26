@@ -1,0 +1,28 @@
+From e262438bbff7de98affac0b45496fc1e96cab49e Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 19 Aug 2022 21:32:21 +0000
+Subject: [PATCH 077/120] LOCAL: arm64: dts: meson: add rtc/vrtc aliases to
+ Minix NEO-U1
+
+Add node aliases to prevent meson-vrtc from claiming /dev/rtc0
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxbb-minix-neo-u1.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-minix-neo-u1.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-minix-neo-u1.dts
+index 5343e90f9f34..5900ee92ca28 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-minix-neo-u1.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-minix-neo-u1.dts
+@@ -17,6 +17,7 @@ / {
+ 
+ 	aliases {
+ 		rtc0 = &rtc;
++		rtc1 = &vrtc;
+ 	};
+ 
+ 	spdif_dit: audio-codec-0 {
+-- 
+2.34.1
+

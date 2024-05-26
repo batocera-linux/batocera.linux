@@ -1,0 +1,64 @@
+default:
+  options:
+    video_threaded: true
+    smooth: false
+    retroarch.menu_driver: xmb
+    retroarch.audio_driver: alsathread
+
+amiga500:
+  emulator: amiberry
+  core:     A500
+amiga1200:
+  emulator: amiberry
+  core:     A1200
+amigacd32:
+  emulator: amiberry
+  core:     CD32
+amigacdtv:
+  emulator: libretro
+  core:     uae4arm
+mastersystem:
+  emulator: libretro
+  core:     picodrive
+megadrive:
+  emulator: libretro
+  core:     picodrive
+snes:
+  emulator: libretro
+  core:     snes9x
+c64:
+  emulator: vice
+  core:     x64
+c128:
+  emulator: vice
+  core:     x128
+c20:
+  emulator: vice
+  core:     xvic
+pet:
+  emulator: vice
+  core:     xpet
+cplus4:
+  emulator: vice
+  core:     xplus4
+fbneo:
+  options:
+    frameskip: auto
+fmtowns:
+  emulator: libretro
+  core:     mame
+atomiswave:
+  emulator: libretro
+  core:     flycastvl
+dreamcast:
+  emulator: libretro
+  core:     flycastvl
+naomi:
+  emulator: libretro
+  core:     flycastvl
+flash:
+  emulator: lightspark
+  core:     lightspark
+n64:
+  options:
+    hud_support:        false

@@ -8,4 +8,7 @@ then
     export DISPLAY=:0.0
 fi
 
-XDG_CONFIG_HOME=/userdata/system/configs LD_LIBRARY_PATH=/usr/pcsx2/lib /usr/pcsx2/bin/pcsx2
+export XDG_CONFIG_HOME=/userdata/system/configs
+export QT_QPA_PLATFORM=xcb
+
+/usr/pcsx2/bin/pcsx2-qt

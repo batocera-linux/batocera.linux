@@ -1,0 +1,34 @@
+From 2652e86837fdb21477d62ef1645e463da9139536 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 27 Jul 2022 10:27:10 +0000
+Subject: [PATCH 094/120] WIP: arm64: dts: meson: add vcc_5v regulator to WeTek
+ dtsi
+
+Add the vcc_5v regulator used by the audio DAC chip
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+index 94dafb955301..caa63f5edf03 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+@@ -71,6 +71,13 @@ vddio_ao18: regulator-vddio_ao18 {
+ 		regulator-always-on;
+ 	};
+ 
++	vcc_5v: regulator-vcc_5v {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
+ 	vcc_3v3: regulator-vcc_3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "VCC_3V3";
+-- 
+2.34.1
+

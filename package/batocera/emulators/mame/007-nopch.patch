@@ -1,0 +1,14 @@
+--- a/scripts/toolchain.lua	2023-08-04 19:05:52.870364341 +0200
++++ b/scripts/toolchain.lua	2023-08-04 19:10:17.891012236 +0200
+@@ -619,6 +619,11 @@
+ 	configuration { "osx*", "arm64", "Debug" }
+ 		targetdir (_buildDir .. "osx_clang" .. "/bin/x64/Debug")
+ 
++	configuration { "linux-*" }
++		flags {
++			"NoPCH",
++		}
++
+ 	configuration {} -- reset configuration
+ 
+ 	return true

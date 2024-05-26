@@ -1,0 +1,35 @@
+From 71128149d3bcae9cbe7f4ec7902e2c5727f629af Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Mon, 11 Sep 2023 17:45:38 +0200
+Subject: [PATCH 15/41] FROMGIT(6.7): arm64: dts: meson: u200: add missing
+ audio clock controller
+
+The audio subsystem will not work if the audio clock controller is not
+enabled.
+
+Fixes: cfae4eadb7cd ("arm64: dts: meson: add audio playback to u200")
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20230911154541.471484-3-jbrunet@baylibre.com
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index 8fa17a62534c..2380d237d220 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -286,6 +286,10 @@ &cpu3 {
+ 	clock-latency = <50000>;
+ };
+ 
++&clkc_audio {
++	status = "okay";
++};
++
+ &cvbs_vdac_port {
+ 	cvbs_vdac_out: endpoint {
+ 		remote-endpoint = <&cvbs_connector_in>;
+-- 
+2.34.1
+

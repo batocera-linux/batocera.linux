@@ -1,0 +1,23 @@
+diff --git a/src/main/main.c b/src/main/main.c
+index 487d288..49e255d 100644
+--- a/src/main/main.c
++++ b/src/main/main.c
+@@ -169,6 +169,18 @@ static char *get_save_filename(void)
+ 
+     if (format == 0) {
+         snprintf(filename, 256, "%s", ROM_PARAMS.headername);
++    } else if(format == 1000) {
++      char *bn;
++      char *tmpbn;
++      tmpbn = strdup(g_rom_filename);
++      if(tmpbn == NULL) {
++	snprintf(filename, 256, "unknown-%.8s", ROM_SETTINGS.MD5);
++      } else {
++	bn = basename(tmpbn);
++	snprintf(filename, 256, "%s", bn);
++	free(tmpbn);
++	return filename; // no sanitize
++      }
+     } else /* if (format == 1) */ {
+         if (strstr(ROM_SETTINGS.goodname, "(unknown rom)") == NULL) {
+             snprintf(filename, 256, "%.32s-%.8s", ROM_SETTINGS.goodname, ROM_SETTINGS.MD5);

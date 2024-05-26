@@ -10,6 +10,7 @@ from os import path
 from os import environ
 import configparser
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 import codecs
 import shutil
 import utils.bezels as bezelsUtil
@@ -20,6 +21,7 @@ from . import mameControllers
 from pathlib import Path
 import csv
 import controllersConfig
+import utils.videoMode as videoMode
 
 eslog = get_logger(__name__)
 
@@ -28,10 +30,12 @@ class MameGenerator(Generator):
     def supportsInternalBezels(self):
         return True
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
+        (romName, romExt) = os.path.splitext(romBasename)
+
         softDir = "/var/run/mame_software/"
         softList = ""
         messModel = ""
@@ -261,6 +265,16 @@ class MameGenerator(Generator):
         if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
             commandArray += [ "-offscreen_reload" ]
 
+        # wheels
+        useWheels = False
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+            useWheels = True
+
+        if system.isOptSet('multiscreens') and system.getOptBoolean('multiscreens'):
+            screens = videoMode.getScreensInfos(system.config)
+            if len(screens) > 1:
+                commandArray += [ "-numscreens", str(len(screens)) ]
+
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
         if messSysName[messMode] == "" or messMode == -1:
@@ -354,6 +368,22 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop" ]
                         else:
                             commandArray += [ "-" + system.config["altromtype"] ]
+                    elif system.name == "adam":
+                        # add some logic based on the rom extension
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".ddp":
+                            commandArray += [ "-cass1" ]
+                        elif rom_extension == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart1" ]
+                    elif system.name == "coco":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
+                        elif romExt.casefold() == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
                     else:
                         commandArray += [ "-" + messRomType[messMode] ]
                 else:
@@ -438,6 +468,47 @@ class MameGenerator(Generator):
                     if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                         autoRunCmd = 'LOADM”“,,R\\n'
                         autoRunDelay = 5
+            elif system.name == "coco":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = '/usr/bin/mame/hash/{}.xml'.format(softList)
+                    if os.path.exists(softListFile):
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib != {}:
+                                if software.get('name') == romName:
+                                    for info in software.iter('info'):
+                                        if info.get('name') == 'usage':
+                                            autoRunCmd = info.get('value') + '\\n'
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or (softList != "" and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'CLOAD:RUN\\n'
+                        else:
+                            autoRunCmd = 'CLOADM:EXEC\\n'
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "flop1") or (softList != "" and softList.endswith("flop")) or romExt.casefold() == ".dsk":
+                        romType = 'flop'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'RUN \"{}\"\\n'.format(romName)
+                        else:
+                            autoRunCmd = 'LOADM \"{}\":EXEC\\n'.format(romName)
+
+                # check for a user override
+                autoRunFile = 'system/configs/mame/autoload/{}_{}_autoload.csv'.format(system.name, romType)
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row and not row[0].startswith('#'):
+                                if row[0].casefold() == romName.casefold():
+                                    autoRunCmd = row[1] + "\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
@@ -473,9 +544,9 @@ class MameGenerator(Generator):
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')

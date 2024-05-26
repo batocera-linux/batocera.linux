@@ -1,0 +1,4 @@
+# http://pixelcade.org ; naming devices to recognize them easierly among other devices
+# start/restart dmd_server if needed and in case it is not enabled by the user (to not boot it 2 times at boot)
+ACTION=="add",    SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="0008", SYMLINK+="pixelcade%n", MODE="666", RUN+="/usr/bin/pixelcade-add"
+ACTION=="add",    SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="1050", SYMLINK+="pixelcade%n", MODE="666", RUN+="/usr/bin/pixelcade-add"

@@ -1,0 +1,9 @@
+config BR2_PACKAGE_SDL12_COMPAT
+    bool "sdl12-compat"
+    depends on BR2_PACKAGE_SDL2
+    help
+      This code is a compatibility layer; it provides a binary and source compatible API for programs written against SDL 1.2, but it uses SDL 2.0 behind the scenes. 
+
+      https://github.com/libsdl-org/sdl12-compat
+
+

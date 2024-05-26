@@ -1,0 +1,24 @@
+#!/bin/sh
+
+test "${1}" != "start" && exit 0
+
+# some event actions (for guns, and for the steamdeck virtual mouse) are executed when an udev event happen
+# the problem is that it can happen at early stage before /userdata is mounted.
+# because these actions depends on batocera.conf values, the user configuration is not taken into account
+# to avoid this, such actions are waiting for this script which must be executed after the /userdata is available
+# this script release the blocking point (via a script) + recall actions
+
+# let's new event execute actions
+touch /var/run/virtual-events.started
+test ! -e /var/run/virtual-events.waiting && exit 0
+
+# execute waiting action
+# if an event happen now, there is no risk of collision because actions are checking for already executed pid
+cat /var/run/virtual-events.waiting |
+    while read WMETHOD WACTION WDEVNAME WDEVPATH WCMD
+    do
+	ACTION=${WACTION} DEVNAME=${WDEVNAME} DEVPATH=${WDEVPATH} ${WCMD}
+    done
+
+rm /var/run/virtual-events.waiting
+exit 0

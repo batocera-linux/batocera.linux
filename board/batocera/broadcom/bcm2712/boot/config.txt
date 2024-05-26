@@ -1,0 +1,5 @@
+arm_boost=1
+arm_64bit=1
+kernel=boot/linux
+initramfs boot/initrd.lz4
+dtoverlay=vc4-kms-v3d,cma-512

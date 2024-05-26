@@ -1,0 +1,244 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Move camera up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Move camera down"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move camera to the left"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move camera to the right"
+        },
+        {
+            "trigger": "joystick1",
+            "type": "mouse"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTALT",
+                "KEY_F4"
+            ],
+            "description": "Quit the application"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Start / Valid"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Shows or hides the menu bar"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "BTN_RIGHT",
+            "description": "Rotates the current object"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "BTN_LEFT",
+            "description": "Select"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "y"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_RIGHTALT",
+                "KEY_S"
+            ],
+            "description": "Quick save"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "x"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_RIGHTALT",
+                "KEY_L"
+            ],
+            "description": "Quick load"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_KPPLUS"
+            ],
+            "description": "Zoom in x5"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_KPMINUS"
+            ],
+            "description": "Zoom out x5"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "pageup"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTCTRL",
+                "KEY_S"
+            ],
+            "description": "Take a screenshot"
+        },
+        {
+            "trigger": [
+                "a",
+                "hotkey"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_F10"
+            ],
+            "description": "Reset the application"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_B",
+            "description": "Hire staff"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_V",
+            "description": "Edit room"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_F",
+            "description": "Open build room menu"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_G",
+            "description": "Open furnish corridor menu"
+        },
+        {
+            "trigger": [
+                "b",
+                "hotkey"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_RIGHTSHIFT",
+                "KEY_Q"
+            ],
+            "description": "Quits the current level"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_Z",
+            "description": "Speeds up the game"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_KP3",
+            "description": "Set speed normal"
+        },
+        {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_F11",
+            "description": "Show the cheat menu"
+        },
+        {
+            "trigger": "joystick2left",
+            "type": "key",
+            "target": "KEY_KPMINUS",
+            "description": "Zoom the camera out"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": "KEY_KPPLUS",
+            "description": "Zoom in the camera"
+        },
+        {
+            "trigger": "r3",
+            "type": "key",
+            "target": "KEY_F12",
+            "description": "Open LUA console"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "up"
+            ],
+            "type": "key",
+            "target": "KEY_F4",
+            "description": "Town map"
+        },
+        {
+            "trigger": [
+                "down",
+                "hotkey"
+            ],
+            "type": "key",
+            "target": "KEY_F5",
+            "description": "Casebook"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "left"
+            ],
+            "type": "key",
+            "target": "KEY_F6",
+            "description": "Research"
+        },
+        {
+            "trigger": [
+                "hotkey",
+                "right"
+            ],
+            "type": "key",
+            "target": "KEY_F3",
+            "description": "Manage Staff"
+        }
+    ]
+}

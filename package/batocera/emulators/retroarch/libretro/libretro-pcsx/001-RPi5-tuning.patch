@@ -1,0 +1,21 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 4b561d88ca..bd2ad9db6c 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -438,6 +438,16 @@ else ifeq ($(platform), rpi4_64)
+         fpic := -fPIC
+         CFLAGS += -march=armv8-a+crc+simd -mtune=cortex-a72 -ftree-vectorize
+ 
++#Raspberry Pi 5 with a 64bit GNU/Linux OS
++else ifeq ($(platform), rpi5_64)
++        TARGET := $(TARGET_NAME)_libretro.so
++        ARCH := arm64
++        BUILTIN_GPU = neon
++        HAVE_NEON = 1
++        DYNAREC = ari64
++        fpic := -fPIC
++        CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 -ftree-vectorize
++
+ #RK3326 with a 64bit GNU/Linux OS
+ else ifeq ($(platform), rk3326)
+ 	TARGET := $(TARGET_NAME)_libretro.so

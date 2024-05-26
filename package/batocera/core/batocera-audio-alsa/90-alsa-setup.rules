@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+
+# When a sound device is detected, restore the volume settings
+	KERNEL=="controlC[0-9]*",  NAME="snd/%k", ACTION=="add", RUN+="/usr/bin/soundconfig %k"

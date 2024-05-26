@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_INITRAMFS_VERSION = 1.35.0
+BATOCERA_INITRAMFS_VERSION = 1.36.1
 BATOCERA_INITRAMFS_SITE = http://www.busybox.net/downloads
 BATOCERA_INITRAMFS_SOURCE = busybox-$(BATOCERA_INITRAMFS_VERSION).tar.bz2
 BATOCERA_INITRAMFS_LICENSE = GPLv2
@@ -42,11 +42,19 @@ else
 BATOCERA_INITRAMFS_INITRDA=arm
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_A3GEN2)$(BR2_PACKAGE_BATOCERA_TARGET_S9GEN4),y)
     COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
 else
     # -l is needed to make initramfs boot, this compresses using Legacy format (Linux kernel compression)
     COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -l > $(BINARIES_DIR)/initrd.lz4)
+endif
+
+ifeq ($(BR2_riscv),y)
+define BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
+	mkdir -p $(INITRAMFS_DIR)
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/riscv/initrd/* $(INITRAMFS_DIR)/
+endef
+BATOCERA_INITRAMFS_PRE_INSTALL_TARGET_HOOKS += BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
 endif
 
 define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS

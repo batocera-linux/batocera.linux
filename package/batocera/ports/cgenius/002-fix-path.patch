@@ -1,0 +1,13 @@
+diff --git a/GsKit/base/interface/FindFile.cpp b/GsKit/base/interface/FindFile.cpp
+index 212d4152bf..42271841c0 100644
+--- a/GsKit/base/interface/FindFile.cpp
++++ b/GsKit/base/interface/FindFile.cpp
+@@ -509,7 +509,7 @@ void InitBaseSearchPaths()
+     #ifdef ALTERNATE_HOME
+       AddToFileList(&basesearchpaths, ALTERNATE_HOME"/CommanderGenius");
+     #else
+-      AddToFileList(&basesearchpaths, "${HOME}/.CommanderGenius");
++      AddToFileList(&basesearchpaths, "${HOME}/configs/cgenius");
+     #endif
+ #endif
+     AddToFileList(&basesearchpaths, ".");

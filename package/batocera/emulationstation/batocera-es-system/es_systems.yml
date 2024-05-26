@@ -39,7 +39,7 @@ c64:
   manufacturer: Commodore
   release: 1982
   hardware: computer
-  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z, nib]
+  extensions: [d64, d71, d81, crt, prg, tap, t64, m3u, zip, 7z, nib, g64]
   platform:   c64
   group:      c64
   emulators:
@@ -58,7 +58,7 @@ cplus4:
   release: 1984
   hardware: computer
   extensions: [d64, prg, tap, m3u, zip, 7z]
-  platform:   c64
+  platform:   cplus4
   group:      c64
   emulators:
     vice:
@@ -84,11 +84,11 @@ c20:
   manufacturer: Commodore
   release: 1980
   hardware: computer
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
+  extensions: [20, 40, 60, rom, a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   c20
   emulators:
     vice:
-      xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z,20,40,60] }
     libretro:
       vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -98,7 +98,7 @@ pet:
   release: 1977
   hardware: computer
   extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
-  platform:   c64
+  platform:   pet
   emulators:
     vice:
       xpet:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
@@ -110,7 +110,7 @@ amiga500:
   manufacturer: Commodore
   release: 1987
   hardware: computer
-  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
+  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip, raw, scp]
   platform:     amiga
   group:        amiga
   emulators:
@@ -139,7 +139,7 @@ amiga1200:
   manufacturer: Commodore
   release: 1992
   hardware: computer
-  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
+  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip, raw, scp]
   platform:     amiga
   group:        amiga
   emulators:
@@ -357,8 +357,9 @@ nds:
   extensions: [nds, bin, zip, 7z]
   emulators:
     libretro:
-      desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
-      melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
+      desmume:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      melonds:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
+      melondsds:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS_DS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
     drastic:
@@ -422,7 +423,8 @@ dreamcast:
   extensions: [cdi, cue, gdi, chd, m3u]
   emulators:
     libretro:
-      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     redream:
@@ -445,7 +447,8 @@ naomi:
   platform:   naomi, arcade
   emulators:
     libretro:
-      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
     demul:
@@ -460,11 +463,25 @@ atomiswave:
   platform:   atomiswave, arcade
   emulators:
     libretro:
-      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycast:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     demul:
       demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
+
+systemsp:
+  name:       Sega System SP
+  manufacturer: Sega
+  release: 2004
+  hardware: arcade
+  extensions: [lst, bin, dat, zip, 7z]
+  platform:   systemsp, arcade
+  emulators:
+    libretro:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+    flycast:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
 
 megadrive:
   name:       Mega Drive
@@ -504,7 +521,7 @@ sega32x:
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [32x, smd, bin, md, zip, 7z]
+  extensions: [32x, chd, smd, bin, md, zip, 7z]
   group:      megadrive
   emulators:
     libretro:
@@ -533,7 +550,21 @@ mastersystem:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
-      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      smsplus:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
+
+pico:
+  name:       Sega Pico
+  manufacturer: Sega
+  release: 1993
+  hardware: console
+  extensions: [bin, md, zip, 7z]
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+      picodrive:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 gamegear:
   name:       Game Gear
@@ -545,7 +576,8 @@ gamegear:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
-      smsplusgx:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      smsplus:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 sg1000:
   name:       SG-1000
@@ -558,16 +590,29 @@ sg1000:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
+
+multivision:
+  name: Othello Multivision
+  manufacturer: Tsukuda Original
+  release: 1983
+  hardware: console
+  extensions: [bin, sg, zip, 7z]
+  platform: sg-1000
+  theme: multivision
+  emulators:
+    libretro:
+      gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 psp:
-  name:       PlayStation Portable
+  name: PlayStation Portable
   manufacturer: Sony
   release: 2004
   hardware: portable
-  extensions: [iso, cso, pbp]
+  extensions: [iso, cso, pbp, chd]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP] }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
   comment_en: |
@@ -589,7 +634,8 @@ psx:
       swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
     duckstation:
-      duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
+      duckstation:        { requireAnyOf: [BR2_PACKAGE_DUCKSTATION] }
+      duckstation-legacy: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION_LEGACY] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:psx
   comment_fr: |
@@ -635,7 +681,7 @@ pcfx:
   manufacturer: NEC
   release: 1994
   hardware: console
-  extensions: [cue, ccd, toc, chd, zip, 7z]
+  extensions: [cue, ccd, toc, chd, zip, 7z, m3u]
   emulators:
     libretro:
       pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
@@ -646,7 +692,7 @@ scummvm:
   release: 1987
   hardware: computer
   extensions: [scummvm, squashfs]
-  platform:   pc
+  platform:   scummvm
   emulators:
     scummvm:
       scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
@@ -660,7 +706,7 @@ scummvm:
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
 
-    If you wish to use Midi ROM's i.e. the MT-32 synth, put you files in /userdata/roms/scummvm/extras
+    If you wish to use Midi ROM's i.e. the MT-32 synth, put you files in /userdata/bios/scummvm/extra
 
     For more info: https://wiki.batocera.org/systems:scummvm
   comment_fr: |
@@ -671,7 +717,7 @@ scummvm:
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
 
-    Si vous souhaitez utiliser des Midi ROM, c'est-à-dire le synthé MT-32, mettez vos fichiers dans /userdata/roms/scummvm/extras
+    Si vous souhaitez utiliser des Midi ROM, c'est-à-dire le synthé MT-32, mettez vos fichiers dans /userdata/bios/scummvm/extra
 
     Trouvez la documentation ici: https://wiki.batocera.org/systems:scummvm
   comment_br: |
@@ -682,7 +728,7 @@ scummvm:
     Nomes curtos de jogos podem ser encontrados em http://scummvm.org/compatibility/
     Por exemplo, para "Broken Sword" crie o arquivo "Broken Sword/sword1.scummvm"
 
-    Se você deseja usar Midi ROM, ou seja, o sintetizador MT-32, coloque seus arquivos em /userdata/roms/scummvm/extras
+    Se você deseja usar Midi ROM, ou seja, o sintetizador MT-32, coloque seus arquivos em /userdata/bios/scummvm/extra
 
     Para mais informações: https://wiki.batocera.org/systems:scummvm
 
@@ -719,6 +765,11 @@ dos:
 
     To quit a game, press CTRL + F9.
 
+    MIDI:
+
+    SoundFonts (.sf2) files need to be placed in the /userdata/bios folder.
+    MT32_CONTROL.ROM file needs to be present inside /userdata/bios/scummvm/extra.
+
     For more info: https://wiki.batocera.org/systems:dos
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
@@ -736,6 +787,11 @@ dos:
 
     Pour quitter un jeu, appuyer sur CTRL + F9.
 
+    MIDI:
+
+    Les fichiers SoundFonts (.sf2) doivent être placés dans le dossier /userdata/bios.
+    Le fichier MT32_CONTROL.ROM doit être présent dans /userdata/bios/scummvm/extra.
+
     La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/systems:dos
   comment_br: |
      Cada jogo (arquivos) deve ser colocado em seu próprio diretório com a extensão ".pc .dos".
@@ -752,6 +808,11 @@ dos:
      Com pure-dosbox você também pode usar arquivos zip.
 
      Para sair de um jogo, pressione CTRL + F9.
+
+     MIDI:
+
+     Os arquivos SoundFonts (.sf2) precisam ser colocados na pasta /userdata/bios.
+     O arquivo MT32_CONTROL.ROM precisa estar presente em /userdata/bios/scummvm/extra.
 
      Para mais informações: https://wiki.batocera.org/systems:dos
 
@@ -916,8 +977,13 @@ colecovision:
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
   comment_en: |
     ## BIOS ##
+
+    - OpenMSX:
+    coleco.rom must be in /userdata/system/configs/openmsx/share/systemroms to run Coleco SGM roms.
 
     - BlueMSX:
     You must download the BlueMSX standalone version, available to this URL:
@@ -986,7 +1052,7 @@ atari800:
   manufacturer: Atari
   release: 1979
   hardware: computer
-  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
+  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z, m3u]
   group:      atari8bit
   emulators:
     libretro:
@@ -1021,6 +1087,8 @@ atari2600:
     libretro:
       stella:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA]     }
       stella2014: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA2014] }
+    stella:
+      stella:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_STELLA]     }
 
 atari5200:
   name:       Atari 5200
@@ -1044,13 +1112,13 @@ atari7800:
       prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
-  name:       Atari Lynx
+  name: Atari Lynx
   manufacturer: Atari
   release: 1989
   hardware: portable
-  extensions: [lnx, zip, 7z]
-  theme:      atarilynx
-  platform:   atarilynx
+  extensions: [lnx, lyx, o, zip, 7z]
+  theme: atarilynx
+  platform: atarilynx
   emulators:
     libretro:
       mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
@@ -1193,7 +1261,7 @@ pico8:
   extensions: [p8, png, m3u]
   emulators:
     libretro:
-      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+      fake08: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FAKE08] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:pico-8
   comment_fr: |
@@ -1220,6 +1288,20 @@ wasm4:
   emulators:
     libretro:
       wasm4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WASM4] }
+
+pyxel:
+  name:       pyxel
+  manufacturer: Fantasy
+  release: 2021
+  hardware: console
+  extensions: [py, pyxapp]
+  emulators:
+    pyxel:
+      pyxel: { requireAnyOf: [BR2_PACKAGE_PYTHON_PYXEL] }
+  comment_en: |
+    Fantasy console with many games available from https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples
+  comment_fr: |
+    Une fantasy console avec plein de jeux disponibles sur https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples
 
 channelf:
   name:       Channel-F
@@ -1350,17 +1432,25 @@ cavestory:
     Outras versões podem congelar o sistema.
 
 atarist:
-  name:       Atari ST
+  name: Atari ST
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z]
+  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos, vhd, gem, ide]
   emulators:
     libretro:
-      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
+      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB], incompatible_extensions: [ hd, gemdos ] }
     hatari:
       hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
-
+  comment_en: |
+    To enable GEMDOS support within the non-libretro version of Hatari.
+    Create a directory within the roms folder that has a .gemdos extension.
+    i.e. /userdata/roms/atarist/<drive name>.gemdos
+  comment_fr: |
+    Pour activer le support GEMDOS dans la version non libretro de Hatari.
+    Créez un répertoire dans le dossier roms portant une extension .gemdos.
+    c'est-à-dire /userdata/roms/atarist/<nom du lecteur>.gemdos
 amstradcpc:
   name:       Amstrad CPC
   manufacturer: Amstrad
@@ -1381,19 +1471,18 @@ amstradcpc:
     De "Quick Menu/Core Input Options/User 1 Device type: Retropad" para "Amstrad Joystick"
 
 msx1:
-  name:       MSX1
+  name: MSX1
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u]
-  platform:   msx
-  group:      msx
+  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv, openmsx]
+  platform: msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [ogv, openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [ogv, openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1418,6 +1507,13 @@ msx1:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
+
   comment_fr: |
     ## BIOS ##
 
@@ -1467,20 +1563,25 @@ msx1:
     PAINTER.ROM
     RS232.ROM
 
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
+
 msx2:
-  name:       MSX2
+  name: MSX2
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
-  platform:   msx
-  group:      msx
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, ogv, openmsx]
+  platform: msx2
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1505,6 +1606,12 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_fr: |
     ## BIOS ##
 
@@ -1529,6 +1636,12 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_br: |
     ## BIOS ##
 
@@ -1555,19 +1668,18 @@ msx2:
     RS232.ROM
 
 msx2+:
-  name:       MSX2+
+  name: MSX2+
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
-  platform:   msx
-  group:      msx
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
+  platform: msx2+
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
   comment_en: |
     ## BIOS ##
 
@@ -1592,6 +1704,12 @@ msx2+:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Various BIOS files for OpenMSX should be in either folder below:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_fr: |
     ## BIOS ##
 
@@ -1616,6 +1734,12 @@ msx2+:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
+
+    - OpenMSX
+    Divers fichiers BIOS pour OpenMSX doivent se trouver dans l'un ou l'autre des dossiers ci-dessous:
+        1. userdata/system/configs/openmsx/share/systemroms
+        2. userdata/bios/Machines
+        3. userdata/bios/openmsx
   comment_br: |
     ## BIOS ##
 
@@ -1642,16 +1766,15 @@ msx2+:
     RS232.ROM
 
 msxturbor:
-  name:       MSX Turbo-R
+  name: MSX Turbo-R
   manufacturer: Microsoft
   release: 1990
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
-  platform:   msx
-  group:      msx
+  extensions: [dsk, mx2, rom, zip, 7z, openmsx, m3u]
+  platform: msxturbor
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
@@ -1672,6 +1795,7 @@ videopacplus:
   manufacturer: Philips
   release: 1983
   hardware: console
+  platform: videopac
   extensions: [bin, zip, 7z]
   path:       videopacplus
   emulators:
@@ -1779,33 +1903,36 @@ apple2:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      applewin: { requireAnyOf: [BR2_PACKAGE_APPLEWIN] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
+    applewin:
+      applewin: { requireAnyOf: [BR2_PACKAGE_APPLEWIN], incompatible_extensions: [chd] }
 
 saturn:
   name:       Saturn
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [cue, ccd, m3u, chd, iso, zip]
+  extensions: [cue, ccd, m3u, chd, iso, zip, mds]
   emulators:
     libretro:
-      beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
+      beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN], incompatible_extensions: [zip] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS] }
-      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
+      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO], incompatible_extensions: [m3u] }
 
 jaguar:
-  name:       Jaguar
+  name: Jaguar
   manufacturer: Atari
   release: 1993
   hardware: console
   extensions: [cue, j64, jag, cof, abs, cdi, rom, zip, 7z]
-  theme:      atarijaguar
+  theme: atarijaguar
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
@@ -1823,6 +1950,14 @@ gamecube:
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
+    To initiate the boot animation and access the BIOS settings.
+    Please ensure that you have the necessary BIOS file (IPL.bin) available in one of the designated locations:
+
+    - /userdata/bios/GC/EUR/IPL.bin
+    - /userdata/bios/GC/USA/IPL.bin
+    - /userdata/bios/GC/JAP/IPL.bin
+
+    You can access the BIOS settings by holding down the 'A' or 'east' button.
     For more info: https://wiki.batocera.org/systems:gamecube
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:gamecube
@@ -1888,15 +2023,15 @@ ps2:
   manufacturer: Sony
   release: 2000
   hardware: console
-  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd]
+  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u]  }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
-      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY] }
+      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
     play:
-      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:ps2
   comment_fr: |
@@ -1987,7 +2122,7 @@ x1:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
 openbor:
-  name:       OpenBOR
+  name: OpenBOR
   manufacturer: Ports
   release:
   hardware: port
@@ -1997,7 +2132,10 @@ openbor:
       openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
       openbor6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR6412] }
       openbor7142: { requireAnyOf: [BR2_PACKAGE_OPENBOR7142] }
+      openbor7530: { requireAnyOf: [BR2_PACKAGE_OPENBOR7530] }
   comment_en: |
+    Note: For some games to work, pak files cannot be renamed and need to be in a folder called Paks.
+
     For more info: https://wiki.batocera.org/systems:openbor
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:openbor
@@ -2049,21 +2187,105 @@ gx4000:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
 daphne:
-  name:       Daphne
+  name: Daphne
   manufacturer: Arcade
   release: 1983
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform:   daphne, arcade
+  platform: daphne, arcade
   emulators:
-    daphne:
-      hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
+    hypseus-singe:
+      hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
   comment_en: |
+    Daphne supports these specific laser games games only:
+    - Astron Belt
+    - Badlands
+    - Bega's Battle
+    - Cliff Hanger
+    - Cobra Command
+    - Dragon's Lair
+    - Dragon's Lair (Atari EU)
+    - Dragon's Lair II: Time Warp
+    - Esh's Aurunmilla
+    - Galaxy Ranger
+    - Goal to Go
+    - GP World
+    - Interstellar Laser Fantasy
+    - M.A.C.H. 3
+    - Road Blaster
+    - Space Ace
+    - Space Ace (Atari EU)
+    - Super Don Quix-Ote
+    - Thayer's Quest
+    - Us Vs Them
+
+    Games should be in a folder names with the .daphne extension.
+    Supporting ROM files should be in a folder named roms.
+
+    roms
+    |-- daphne
+        |   (The folder below holds a laserdisc...".daphne"
+        |   tells emulationstation to add this to the menu,
+        |   and "badlands" tells daphne to use that game engine)
+        |
+        |-- badlands.daphne     
+        |   |-- badlands.commands (Optional extra command-
+        |   |                      line parameters)
+        |   |-- badlands.txt      (Framefile)
+        |   |-- badlands-pc.m2v
+        |   |-- badlands-pc.ogg
+        |   |-- ...
+        |
+        |   (All rom zips files go into this roms folder)
+        |-- roms
+            |-- badlands.zip
+    
+    Singe games should now be run out of the singe rom directory.
+
     For more info: https://wiki.batocera.org/systems:daphne
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:daphne
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:daphne
+
+singe:
+  name: Singe
+  manufacturer: Arcade
+  release: 1990
+  hardware: arcade
+  extensions: [daphne, squashfs]
+  platform: daphne, arcade
+  emulators:
+    hypseus-singe:
+      hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
+  comment_en: |
+    Singe supports American Laser Games, Action Max and fan made Singe & Singe 2 games.
+
+    Due to legacy supporting file structures, we still use the .daphne folder extension.
+
+    roms
+    |-- singe
+        |-- maddog.daphne    
+            |-- maddog.singe      (Singe Game LUA)
+            |-- maddog.txt        (Framefile)
+            |-- maddog.m2v
+            |-- maddog.ogg
+
+    For more info: https://wiki.batocera.org/systems:singe
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:singe
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:singe
+
+thextech:
+  name:       TheXTech
+  manufacturer: Wohlstand
+  release: 2020
+  hardware: port
+  extensions: [smbx]
+  emulators:
+    thextech:
+      thextech:  { requireAnyOf: [BR2_PACKAGE_THEXTECH] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
@@ -2165,8 +2387,9 @@ windows:
   theme:      windows
   emulators:
     wine:
-      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2184,8 +2407,9 @@ windows_installers:
   group:      windows
   emulators:
     wine:
-      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2240,7 +2464,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wua, wup, wud, rpx, squashfs]
+  extensions: [wua, wup, wud, wux, rpx, squashfs, wuhb]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -2280,15 +2504,33 @@ easyrpg:
           A engine do EasyRPG suporta jogos RPG Maker 2000 e 2003, você deve colocar a pasta inteira do jogo dentro do diretório, e adicionar .easyrpg ao final do nome da pasta do jogo, aquela que contém o arquivo RPG_RT.ldb.
 
 cgenius:
-  name:       Commander Genius
-  manufacturer: Ports
-  release:
+  name: Commander Genius
+  manufacturer: The Commander Genius Team
+  release: 1990
   hardware: port
-  extensions: [zip]
+  extensions: [cgenius]
   platform: pc
   emulators:
     cgenius:
       cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
+  comment_en: |
+          Commander Genius is a software piece that interprets the Commander Keen and Cosmos the Cosmic Adventure series.
+
+          Requirements:
+
+          You need the original DOS game files in a directory under /userdata/roms/cgenius in order to play on Commander Genius games.
+          `Commander Keen: Marooned on Mars` and `Secret of the Oracle` are shareware. They can also be downloaded from Commander Genius.
+          `Commander Keen: The Earth Explodes` and `Commander Keen: Keen Must Die!` are registered versions which can be purchased from 3D Realms or Apogee.
+          Keen 5 and 6 also need to be purchased.
+
+          Games need to be extracted into the /userdata/roms/cgenius/games directory in their own directory per game.
+          i.e. /userdata/roms/cgenius/games/Keen1/
+
+          You then need to create a .cgenius filename extension in that folder.
+          i.e. /userdata/roms/cgenius/games/Keen1/Commander Keen 1 - Marooned on Mars.cgenius
+          This will be the file that helps launch the game directly but also should be named to make it easier to scrape.
+
+          Note: Some 'mods' can also be downloaded via Commander Genius also.
 
 pygame:
   name:       Pygame
@@ -2337,7 +2579,8 @@ model3:
   platform: model3, arcade
   emulators:
     supermodel:
-      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+      supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
@@ -2440,11 +2683,12 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc, squashfs]
+  extensions: [pc]
   emulators:
     mugen:
-      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
 
 ikemen:
   name:       IKEMEN
@@ -2544,7 +2788,7 @@ steam:
   release:
   hardware:
   extensions: [steam]
-  platform: pc
+  platform: windows
   emulators:
     steam:
       steam: { requireAnyOf: [BR2_PACKAGE_BATOCERA_STEAM] }
@@ -2596,7 +2840,7 @@ ecwolf:
 
 sonicretro:
   name:       Sonic Retro Engine
-  manufacturer: Rubberduckycooly
+  manufacturer: Sega
   release: 2021
   hardware: port
   extensions: [son, scd]
@@ -2809,6 +3053,12 @@ apple2gs:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
+  comment_en: |
+          If your game does not start using LR-Mame. Ensure you choose the right floppy type for the rom extension.
+          i.e. some extensions require you to choose the 3 1/2 inch floppy drive (Drive 3).
+  comment_fr: |
+          Si votre jeu ne démarre pas avec LR-Mame, assurez-vous de choisir le bon type de disquette pour l'extension de la ROM.
+          Par exemple, certaines extensions nécessitent que vous choisissiez le lecteur de disquette 3 1/2 pouces (Lecteur 3).
 
 uzebox:
   name:       Uzebox
@@ -2873,13 +3123,9 @@ megaduck:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
-      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK], incompatible_extensions: [zip, 7z] }
+      sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-  comment_en: |
-          Use unzipped ROMs (BIN format) if using Sameduck.
-  comment_br: |
-           Use ROMs descompactadas (formato BIN) se estiver usando Sameduck.
 
 pv1000:
   name:       PV-1000
@@ -3143,7 +3389,7 @@ camplynx:
   manufacturer: Camputers
   release: 1983
   hardware: computer
-  extensions: [wav, tap, zip, 7z]
+  extensions: [wav, tap, ldf, zip, 7z]
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
@@ -3260,14 +3506,25 @@ coco:
   manufacturer: Tandy Radio Shack
   release: 1980
   hardware: computer
-  extensions: [wav, cas, ccc, rom, zip, 7z]
+  extensions: [wav, cas, dsk, ccc, rom, zip, 7z]
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file coco.zip
+          Requires MAME BIOS file coco.zip and coco3.zip
+
+          Default Autoload Behaviors
+          1. "usage" info field when using MAME software lists (if declared)
+          2. Cassette (.cas) files autoload as binary (CLOADM:EXEC)
+          3. Disk (.dsk) files autoload based on basename (eg. ZONX.dsk autoloads as LOADM “ZONX”:EXEC)
+          4. BASIC programs autorun if file basename ends with .bas
+              3a. ALPHAII.BAS.dsk autoloads using RUN “ALPHAII”
+              3b. GROVER.bas.cas  autoloads using CLOAD:RUN
+
+          user definable autoload overrides in: `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
+          syntax: <romBasename>;<autoload command> (see comments in .csv files for detailed help & examples)
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
@@ -3314,6 +3571,7 @@ superbroswar:
       superbroswar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SUPERBROSWAR] }
   comment_en: |
     Super Mario War - smash opponents by stomping on them, in a fun multiplayer game.
+    Get the game assets files from the Content Downloader.
   comment_fr: |
     Super Mario War - écrasez vos adversaires dans ce jeu multijoueurs compétitif.
   comment_br: |
@@ -3328,13 +3586,13 @@ switch:
   theme:      switch
   extensions: [xci, nsp]
   emulators:
-    yuzu:
-      yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
+    suyu:
+      suyu: { requireAnyOf: [BR2_PACKAGE_SUYU] }
     ryujinx:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
 vitaquake2:
-  name:       Quake II
+  name: Quake II
   manufacturer: Ports
   release: 1997
   hardware: port
@@ -3344,6 +3602,16 @@ vitaquake2:
   emulators:
     libretro:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
+  comment_en: |
+    The libretro vitaquake2 core offers several mission packs.
+    To ensure the correct vitaquake2 core loads for a mission pack, make sure it is placed in a subdirectory within this ROM directory.
+    The supported subdirectories for mission pack ROMs are: xatrix, rogue, and zaero.
+    For the standard Quake II directory, use 'baseq2' to utilize the standard vitaquake2 core.
+  comment_fr: |
+    Le cœur libretro de vitaquake2 propose différents packs de missions.
+    Pour vous assurer que le bon cœur vitaquake2 se charge pour un pack de missions, veillez à le placer dans un sous-répertoire de ce répertoire ROM.
+    Les sous-répertoires pris en charge pour les ROM de packs de missions sont : xatrix, rogue et zaero.
+    Pour le répertoire standard de Quake II, utilisez 'baseq2' pour utiliser le cœur vitaquake2 standard.
 
 j2me:
   name:       Java 2 MicroEdition
@@ -3390,10 +3658,28 @@ openjazz:
     openjazz:
       openjazz: { requireAnyOf: [BR2_PACKAGE_OPENJAZZ] }
 
+tyrian:
+  name:       Tyrian
+  manufacturer: Ports
+  release: 1995
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    tyrian:
+      tyrian: { requireAnyOf: [BR2_PACKAGE_TYRIAN] }
+  comment_en: |
+    This system is a standalone game. No rom required, get the game assets files from the Content Downloader.
+  comment_fr: |
+    Ce système est un jeu autonome. Aucune rom n'est requise, téléchargez les fichiers de données de jeu depuis le Content Downloader.
+  comment_br: |
+    Este sistema é um jogo independente. Não requer arquivo de rom.
+
 hurrican:
   name:       Hurrican
   manufacturer: Ports
-  release: 1990
+  release: 2007
   hardware: port
   extensions: [game]
   platform: pc
@@ -3402,9 +3688,9 @@ hurrican:
     hurrican:
       hurrican: { requireAnyOf: [BR2_PACKAGE_HURRICAN] }
   comment_en: |
-    This system is a standalone game. No rom required.
+    This system is a standalone game. No rom required, get the game assets files from the Content Downloader.
   comment_fr: |
-    Ce système est un jeu autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise, téléchargez les fichiers de données de jeu depuis le Content Downloader.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3420,9 +3706,9 @@ hcl:
     hcl:
       hcl: { requireAnyOf: [BR2_PACKAGE_HCL] }
   comment_en: |
-    This system is a standalone game. No rom required.
+    This system is a standalone game. No rom required, get the game assets files from the Content Downloader.
   comment_fr: |
-    Ce système est un jeu autonome. Aucune rom n'est requise.
+    Ce système est un jeu autonome. Aucune rom n'est requise, téléchargez les fichiers de données de jeu depuis le Content Downloader.
   comment_br: |
     Este sistema é um jogo independente. Não requer arquivo de rom.
 
@@ -3468,7 +3754,7 @@ cdogs:
     cdogs:
       cdogs: { requireAnyOf: [BR2_PACKAGE_CDOGS] }
   comment_en: |
-    This system is a standalone game. No rom required.
+    This system is a standalone game. No rom required, get the game assets files from the Content Downloader.
   comment_fr: |
     Ce système est un jeu autonome. Aucune rom n'est requise.
   comment_br: |
@@ -3950,28 +4236,39 @@ xbox360:
   manufacturer: Microsoft
   release: 2005
   hardware: console
-  extensions: [iso, xex, xbox360]
+  extensions: [iso, xex, xbox360, zar]
   emulators:
     xenia:
-      xenia: { requireAnyOf: [BR2_PACKAGE_XENIA] }
+      xenia: { requireAnyOf: [BR2_PACKAGE_XENIA], incompatible_extensions: [zar] }
     xenia-canary:
       xenia-canary: { requireAnyOf: [BR2_PACKAGE_XENIA_CANARY] }
   comment_en: |
-    Currently Xenia runs under Wine and therefore is currently restricted to run using Vulkan only.
-    Unfortunately the Vulkan implementation for Xenia is somewhat behind D3D12 in terms on graphics compatibility.
-    Therefore only a few games will run using Xenia until either Vulkan improves or VKD3D works with Xenia.
+    Currently the Xenia emulators run under WINE and are restricted to systems capable of Vulkan 1.3+ only.
+    The Xenia emulators will use native Vulkan by default however an experiemental D3D12 -> Vulkan (VKD3D) option is provided.
 
-    You therefore need a GPU that supports Vulkan well.
+    Note: An internet connection is required to create the initial WINE bottle.
+  comment_fr: |
+    Actuellement, les émulateurs Xenia fonctionnent sous WINE et sont limités aux systèmes compatibles uniquement avec Vulkan 1.3+.
+    Les émulateurs Xenia utiliseront Vulkan natif par défaut, mais une option expérimentale D3D12 -> Vulkan (VKD3D) est fournie.
 
-    Note: It is possible to build Xenia for Linux but functionality as of writing is extremely poor.
+    Remarque : Une connexion Internet est requise pour créer la bouteille de VIN initiale.
   comment_br: |
-    Atualmente, o Xenia é executado no Wine e, portanto, está restrito a ser executado apenas no Vulkan.
-    Infelizmente, a implementação Vulkan para Xenia está um pouco atrás do D3D12 em termos de compatibilidade gráfica.
-    Portanto, apenas alguns jogos serão executados usando o Xenia util ou melhorias Vulkan ou o VKD3D funciona com o Xenia.
+    Atualmente os emuladores Xenia rodam em WINE e estão restritos apenas a sistemas capazes de Vulkan 1.3+.
+    Os emuladores Xenia usarão Vulkan nativo por padrão, no entanto, uma opção experimental D3D12 -> Vulkan (VKD3D) é fornecida.
 
-    Portanto, você precisa de uma GPU que suporte bem o Vulkan.
+    Nota: É necessária uma ligação à Internet para criar a garrafa de WINE inicial.
 
-    Nota: É possível construir o Xenia para Linux, mas a funcionalidade no momento da escrita é extremamente pobre.
+ngage:
+  name: N-Gage
+  manufacturer: Nokia
+  release: 2003
+  hardware: portable
+  extensions: [n-gage, sisx, sis, zip]
+  platform: ngage
+  theme: ngage
+  emulators:
+    eka2l1:
+      eka2l1: { requireAnyOf: [BR2_PACKAGE_EKA2L1] }
 
 odcommander:
   name: OD-Commander
@@ -4049,6 +4346,25 @@ gzdoom:
     De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
 
     Plus d'infos : https://wiki.batocera.org/systems:gzdoom
+
+corsixth:
+  name: CorsixTH
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    corsixth:
+      corsixth: { requireAnyOf: [BR2_PACKAGE_CORSIXTH] }
+  comment_en: |
+    Theme Hospital engine written in LUA.
+    Grab a copy of your game or get it on GoG.
+    Copy the extracted folder with their contents from your Theme Hospital install (or use innoextract) into `/userdata/roms/corsixth/`
+    Create a corsixth.game file into '/userdata/roms/corsixth/'
+    If you want to listen to non-Theme-Hospital music or use an remastered version of original soundtracks, create a folder MP3 inside '/userdata/roms/corsixth/' and add your MP3 files.
+    If you want to change the names of songs ingame, into MP3 folder make a file called names.txt and write the file name on one row, followed by the desired ingame name on the next row.
 
 eduke32:
   name: EDuke32
@@ -4476,3 +4792,531 @@ psvita:
     Isso permitirá que o Emulation Station veja seu jogo instalado e o inicie por meio da GUI do ES.
 
     Consulte o wiki - https://wiki.batocera.org/playground:systems:psvita
+
+boom3:
+  name: Boom3
+  manufacturer: Ports
+  release: 2004
+  hardware: port
+  extensions: [boom3]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      boom3: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BOOM3] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:boom3
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:boom3
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:boom3
+
+reminiscence:
+  name: REminiscence
+  manufacturer: Ports
+  release: 1992
+  hardware: port
+  extensions: [rem]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      reminiscence: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REMINISCENCE] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:reminiscence
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:reminiscence
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:reminiscence
+
+openlara:
+  name: OpenLara
+  manufacturer: Ports
+  release: 1996
+  hardware: port
+  extensions: [croft]
+  platform: pc
+  group: ports
+  emulators:
+    libretro:
+      openlara: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPENLARA] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:openlara
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:openlara
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:openlara
+
+quake3:
+  name: Quake III
+  manufacturer: Ports
+  release: 1999
+  hardware: port
+  extensions: [ quake3 ]
+  platform: pc
+  group: ports
+  emulators:
+    ioquake3:
+      ioquake3: { requireAnyOf: [ BR2_PACKAGE_IOQUAKE3 ] }
+  comment_en: |
+    Quake III is optimized to be played with a mouse and keyboard, but here it is also pre-configured to be played with a gamepad.
+
+    For the basic configuration you must have the "baseq3" and "missionpack" folders in the "/userdata/roms/quake3" directory.
+
+    To start a game, create a file with the extension .quake3, for example "Quake III Arena.quake3".
+    Inside this file, add the following line: "+set fs_game "baseq3" for the game "Quake III Arena.
+    For Quake III: Team Arena mode create another file with: "+set fs_game "missionpack".
+
+    Repeat this step for each mod you wish to play, giving the file a logical name to help you navigate through artwork etc.
+
+    Please note that menu options in Team Arena and other mods can only be selected using a mouse, once the game is started the controller will function normally.
+
+    For more info: https://wiki.batocera.org/systems:ioquake3
+  comment_fr: |
+    Quake III est optimisé pour être joué avec une souris et un clavier, mais il est ici également pré-configuré pour y jouer avec une manette.
+
+    Pour la configuration de base vous devez avoir les dossiers "baseq3" et "missionpack" dans le répertoire "/userdata/roms/quake3".
+
+    Pour lancer une partie, créez un fichier avec l'extension .quake3, par exemple "Quake III Arena.quake3".
+    À l'intérieur de ce fichier, ajoutez la ligne suivante : "+set fs_game "baseq3" pour le jeu "Quake III Arena.
+    Pour le mode Quake III: Team Arena creez un autre fichier avec : "+set fs_game "missionpack".
+
+    Répétez cette étape pour chaque mod auquel vous souhaitez jouer, en donnant un nom logique au fichier pour vous aider à vous y retrouver avec les illustrations, etc.
+
+    Veuillez noter que les options de menu de Team Arena et d'autres mods peuvent être sélectionnées uniquement à l'aide d'une souris, une fois la partie lancée, la manette fonctionnera normalement.
+
+    Pour plus d'informations : https://wiki.batocera.org/systems:ioquake3
+  comment_br: |
+    O Quake III é otimizado para ser jogado com mouse e teclado, mas aqui também é pré-configurado para ser jogado com um gamepad.
+
+    Para a configuração básica você deve ter as pastas "baseq3" e "missionpack" no diretório "/userdata/roms/quake3".
+
+    Para iniciar um jogo, crie um arquivo com a extensão .quake3, por exemplo "Quake III Arena.quake3".
+    Dentro deste arquivo, adicione a seguinte linha: "+set fs_game "baseq3" para o jogo "Quake III Arena.
+    Para o modo Quake III: Team Arena, crie outro arquivo com: "+set fs_game "missionpack".
+
+    Repita esta etapa para cada mod que deseja reproduzir, dando ao arquivo um nome lógico para ajudá-lo a navegar pela arte, etc.
+
+    Observe que as opções de menu no Team Arena e outros mods só podem ser selecionadas usando um mouse, uma vez que o jogo é iniciado, o controlador funcionará normalmente.
+
+    Para mais informações: https://wiki.batocera.org/systems:ioquake3
+
+namco2x6:
+  name: Namco System 246/256
+  manufacturer: Sony / Namco
+  release: 2000
+  hardware: arcade
+  extensions: [zip]
+  platform: namco2x6, arcade
+  emulators:
+    play:
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+  comment_en: |
+    The Play! emulator provides `work in progress` support for Namco 246 & 256 systems.
+    Currently you will need a high performance system to be able to emulate supported games.
+    We recommend using the OpenGL API for now.
+
+    This rom directory should include a zip file based on the arcade id and a supporting folder with associated .chd file.
+    i.e. Tekken 4 - tekken4.zip
+                    |
+                    tekken4
+                    |
+                    ---tef1dvd0.chd
+
+    For more info: https://wiki.batocera.org/systems:namco2x6
+
+vis:
+  name: Tandy Video Information System
+  manufacturer: Tandy / Memorex
+  release: 1992
+  hardware: computer
+  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+
+vpinball:
+  name: Visual Pinball X
+  manufacturer: Randy Davis
+  release: 2000
+  hardware: pinball
+  extensions: [vpx]
+  emulators:
+    vpinball:
+      vpinball:  { requireAnyOf: [BR2_PACKAGE_VPINBALL] }
+  comment_en: |
+    Visual Pinball X - Standalone
+    -----------------------------
+
+    The current version of Visual Pinball supports version 10 (.vpx extension) tables.
+    Community based tables for can be downloaded from https://www.vpforums.org
+
+    PinMAME
+    -------
+
+    To use PinMAME roms, you need to add roms and / or nvram files into their respective folders at:
+    /userdata/system/configs/vpinball/pinmame. Note: If a PinMAME folder exists in the same directory as your vpx
+    file, it will be used instead.
+
+    All Paths
+    ---------
+
+    Your .vpx & and any associated .directb2s, .vbs, or .ini files should be in the: /userdata/roms/vpinball folder.
+    Any associated .UltraDMD folders should also be in the vpinball roms folders.
+    Note: .directb2s files should match the .vpx file name.
+
+
+    /userdata/system/configs/vpinball:                  VPinball configuration & log files
+    /userdata/system/configs/vpinball/user:             VPinball user directory
+    /userdata/system/configs/vpinball/pinmame:          VPinball generated PinMAME settings, ex. sound, cheat, dmd_red
+    /userdata/system/configs/vpinball/pinmame/roms:     PinMAME ROMs directory
+    /userdata/system/configs/vpinball/pinmame/nvram:    PinMAME NVRAM directory
+    /userdata/system/configs/vpinball/pinmame/altcolor: Serum colorizations directory <rom_name>/<rom.cRZ>
+    /userdata/system/configs/vpinball/pinmame/altsound: AltSound directory <rom_name>/
+    /userdata/system/configs/vpinball/pinmame/ini:      VPinball PinMAME settings directory
+
+    Music
+    -----
+    /userdata/system/configs/vpinball/music:            VPinball music directory, put your music here.
+    or in the same folder as your vpx file in it's own 'music' folder.
+    The music folder, should be lowercase - i.e. /userdata/roms/vpinball/Kiss/music
+  comment_fr: |
+    Visual Pinball X - Standalone
+    -----------------------------
+
+    La version actuelle de Visual Pinball prend en charge les tables de la version 10 (extension .vpx).
+    Les tables basées sur la communauté peuvent être téléchargées depuis https://www.vpforums.org.
+
+    PinMAME
+    --------
+
+    Pour utiliser les roms PinMAME, vous devez ajouter des roms et/ou des fichiers nvram dans leurs dossiers respectifs à :
+    /userdata/system/configs/vpinball/pinmame. Notez que si un dossier PinMAME existe dans le même répertoire que votre
+    fichier vpx, il sera utilisé à la place.
+
+    Tous les Chemins
+    ----------------
+
+    Vos fichiers .vpx & et tous les fichiers associés, comme .directb2s, .vbs, ou .ini, doivent se trouver dans le dossier :
+    /userdata/roms/vpinball. Tous les dossiers .UltraDMD associés doivent également se trouver dans les dossiers vpinball
+    roms. Remarque: les fichiers .directb2s doivent correspondre au nom de fichier .vpx.
+
+    /userdata/system/configs/vpinball:                  Configuration de VPinball et fichiers de log
+    /userdata/system/configs/vpinball/user:             Répertoire utilisateur VPinball
+    /userdata/system/configs/vpinball/pinmame:          Paramètres PinMAME générés pour VPinball, ex. son, triche, dmd_red
+    /userdata/system/configs/vpinball/pinmame/roms:     Répertoire des ROMs PinMAME
+    /userdata/system/configs/vpinball/pinmame/nvram:    Répertoire NVRAM PinMAME
+    /userdata/system/configs/vpinball/pinmame/altcolor: Répertoire des colorisations Serum <nom_rom>/<rom.cRZ>
+    /userdata/system/configs/vpinball/pinmame/altsound: Répertoire des AltSound <rom_name>/
+    /userdata/system/configs/vpinball/pinmame/ini:      Répertoire des paramètres VPinball pour PinMAME
+
+    Musique
+    -------
+    /userdata/system/configs/vpinball/music:             Répertoire de musique de VPinball, placez votre musique ici.
+    ou dans le même dossier que votre fichier vpx dans son propre dossier 'musique'.
+    Le dossier de musique doit être en minuscules - c'est-à-dire /userdata/roms/vpinball/Kiss/music
+
+spectravideo:
+  name: Spectravideo SV-328
+  manufacturer: Spectravideo
+  release: 1983
+  hardware: computer
+  extensions: [zip, 7z, cas]
+  platform: spectravideo
+  theme: spectravideo
+  emulators:
+    openmsx:
+      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+
+theforceengine:
+  name: The Force Engine
+  manufacturer: Ports
+  release: 1995
+  hardware: port
+  extensions: [tfe]
+  platform: pc
+  group: ports
+  emulators:
+    theforceengine:
+      theforceengine: { requireAnyOf: [BR2_PACKAGE_THEFORCEENGINE] }
+  comment_en: |
+    The Force Engine (TFE) uses the games files from older LucasArts games like `Dark Forces` & soon `Outlaws` in Batocera.
+    To use TFE in Batocera, you need to do the following:
+
+    1. Install the game you wish to use with The Force Engine in Windows (Steam or GOG receommended)
+    2. In this example, go to your C:\GOG folder and copy the `Star Wars - Dark Forces` folder to your roms/theforceengine folder.
+    3. Create an initial file with a tfe extension, like so: `Star Wars - Dark Forces.tfe`.
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
+
+    Mods:
+
+    Mods have to be installed into the /userdata/system/configs/theforceengine/Mods folder.
+    The mod files should be in zip format only.
+    To launch directly into your mod, create a file in the roms/theforceengine folder with the .tfe extension.
+    Again choose the name which makes sense, i.e. the mod game / level name.
+    i.e. `Assasssination at Nar Shaddaa.tfe`
+
+    Then edit the file with the name of the mod zip file only.
+    i.e. aons_modern.zip
+
+    Update the games list and Batocera can now launch the mod directly.
+
+    A good source of missions to try are available here: https://df-21.net/downloads/levels/
+
+    Dark Forces HD Textures:
+
+    To use HD textures you need to have a copy of the Remaster version of the games also.
+    Copy the `enhanced.gob` file from the Remaster installation into the previous `Star Wars - Dark Forces` folder.
+
+    Notes:
+
+    It is important to use the exact directory name above.
+    A keyboard and mouse / touchscreen is required to create the initial user profile & game start.
+
+    For more info: https://wiki.batocera.org/systems:theforceengine
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:theforceengine
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:theforceengine
+
+iortcw:
+  name: Return To Castle Wolfenstein
+  manufacturer: Ports
+  release: 2001
+  hardware: port
+  extensions: [rtcw]
+  platform: pc
+  group: ports
+  emulators:
+    iortcw:
+      iortcw: { requireAnyOf: [ BR2_PACKAGE_IORTCW ] }
+  comment_en: |
+    IORTCW uses the games files from your 2001 version of the game `Return to Castle Wolfenstein`.
+    To use IORTCW in Batocera, you need to do the following:
+
+    1. Install Return to Castle Wolfenstein in Windows or Linux (Steam or GOG receommended)
+    2. Copy the .pk3 files only from your installation locations `Main` folder to /userdata/roms/iortcw in it's own `main` folder.
+    3. Create an initial file with a rtcw extension, like so: `Return to Castle Wolfenstein.rtcw`.
+    4. Update you games list in Batocera EmulationStation and the game should be available under `Ports`.
+
+    Notes:
+
+    It is important to use the exact directory name above.
+    i.e. /userdata/roms/iortcw/main is where your .pk3 should be located.
+    A keyboard and mouse / touchscreen is required for game start.
+
+    For more info: https://wiki.batocera.org/systems:iortcw
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:iortcw
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:iortcw
+
+fallout1-ce:
+  name: Fallout Community Edition
+  manufacturer: Ports
+  release: 1997
+  hardware: port
+  extensions: [f1ce]
+  platform: pc
+  group: ports
+  emulators:
+    fallout1-ce:
+      fallout1-ce: { requireAnyOf: [ BR2_PACKAGE_FALLOUT1_CE ] }
+  comment_en: |
+    Fallout Community Edition is a fully working re-implementation of Fallout.
+    It provides the same original gameplay, engine bugfixes, and some quality of life improvements.
+
+    You must own the game to play. Purchase your copy on GOG or Steam.
+    Copy the contents of your Fallout folder from your Windows installation to your roms folder:
+    /userdata/roms/fallout1-ce
+
+    Create a blank file called `Fallout.f1ce` this allows for scrapping & helps launch the game via EmulationStation.
+
+    Note: This game currently requires a mouse and keyboard to play.
+
+    For more info: https://wiki.batocera.org/systems:fallout1-ce
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:fallout1-ce
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:fallout1-ce
+
+fallout2-ce:
+  name: Fallout 2 Community Edition
+  manufacturer: Ports
+  release: 1998
+  hardware: port
+  extensions: [f2ce]
+  platform: pc
+  group: ports
+  emulators:
+    fallout2-ce:
+      fallout2-ce: { requireAnyOf: [ BR2_PACKAGE_FALLOUT2_CE ] }
+  comment_en: |
+    Fallout 2 Community Edition is a fully working re-implementation of Fallout 2.
+    It provides the same original gameplay, engine bugfixes, and some quality of life improvements.
+
+    You must own the game to play. Purchase your copy on GOG or Steam.
+    Copy the contents of your Fallout 2 folder from your Windows installation to your roms folder:
+    /userdata/roms/fallout2-ce
+
+    Create a blank file called `Fallout 2.f2ce` this allows for scrapping & helps launch the game via EmulationStation.
+
+    Note: This game currently requires a mouse and keyboard to play.
+
+    For more info: https://wiki.batocera.org/systems:fallout2-ce
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:fallout2-ce
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:fallout2-ce
+
+dxx-rebirth:
+  name: DXX Rebirth
+  manufacturer: Ports
+  release: 1998
+  hardware: port
+  extensions: [d1x, d2x]
+  platform: pc
+  group: ports
+  emulators:
+    dxx-rebirth:
+      dxx-rebirth: { requireAnyOf: [ BR2_PACKAGE_DXX_REBIRTH ] }
+  comment_en: |
+    DXX-Rebirth allows you to play Descent 1 & 2.
+
+    DXX-Rebirth requires game data to play.
+    You can get Descent 1 PC shareware data and Descent 2 PC demo data from the DXX-Rebirth website.
+    https://www.dxx-rebirth.com/download/dxx/content/descent-pc-shareware.zip
+    https://www.dxx-rebirth.com/download/dxx/content/descent2-pc-demo.zip
+
+    Full game data is supported (and recommended), but is not freely available.
+    You can buy full Descent 1 game data and/or buy full Descent 2 game data from GOG.com.
+    DXX-Rebirth contains engines for both games.
+    Each engine works for its respective game without the data from the other, so players who wish to purchase only one game may do so.
+
+    Put your Descent data files in /userdata/roms/dxx-rebirth in it's own Descent directory.
+    Then within that directory, /userdata/roms/dxx-rebirth/Descent add a blank file Descent.d1x.
+    That file will launch the game and allow your to scrape game information via EmulationStation.
+
+    Do the same for Descent 2 however using a blank file Descent2.d2x in /userdata/roms/dxx-rebirth/Descent2 accordingly.
+
+    A mouse & keyboard is required initially but you can configure a controller per user.
+
+    For more info: https://wiki.batocera.org/systems:dxx-rebirth
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:dxx-rebirth
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:dxx-rebirth
+
+etlegacy:
+  name: Wolfenstein - Enemy Territory
+  manufacturer: Ports
+  release: 2010
+  hardware: port
+  extensions: [etl]
+  platform: pc
+  group: ports
+  emulators:
+    etlegacy:
+      etlegacy: { requireAnyOf: [ BR2_PACKAGE_ETLEGACY ] }
+  comment_en: |
+    Play the multiplayer online game - Wolfenstein: Enemy Territory.
+    You need the orginal game .pk3 data files from your copy purchased from GOG or Steam.
+    Alternatively, you can get the game files from :
+    https://www.splashdamage.com/games/wolfenstein-enemy-territory/
+
+    Copy the .pk3 files from the folder `etmain` from your installation into this rom folder ensuring they're added to their own `etmain` folder.
+    i.e. /userdata/roms/etlegacy/etmain
+
+    Create a blank file `Wolfenstein - Enemy Territory.etl` which will launch the game & allow you to scrape the game data via EmulationStation.
+
+    Notes: For the best experience you need a mouse & keyboard.
+           Game controllers can also be configured for your user.
+           The set language only applies on initial boot. Any previous profiles will need to be changed manually.
+           You may have to create a user profile twice for it to save.
+           Batocera only provides the client with mods & NOT the server to host matches.
+
+    For more info: https://wiki.batocera.org/systems:etlegacy
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:etlegacy
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:etlegacy
+
+sonic3-air:
+  name: Sonic 3 A.I.R.
+  manufacturer: Sega
+  release: 2019
+  hardware: port
+  extensions: [s3air]
+  platform: pc
+  group: ports
+  emulators:
+    sonic3-air:
+      sonic3-air: { requireAnyOf: [ BR2_PACKAGE_SONIC3_AIR ] }
+  comment_en: |
+    In this folder you need the Sonic_Knuckles_wSonic3.bin rom file to play Sonic 3 A.I.R. (Angel Island Revisited).
+    It is important that the rom file matches this name exactly.
+    Additionally, create a blank `Sonic 3 - Angel Island Revisited.s3air` file.
+    This file will allow EmulationStation to launch Sonic 3 A.I.R. and scrape artwork etc.
+
+    For more info: https://wiki.batocera.org/systems:sonic3-air
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic3-air
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:sonic3-air
+
+sonic-mania:
+  name: Sonic Mania
+  manufacturer: Sega
+  release: 2017
+  hardware: port
+  extensions: [sman]
+  platform: pc
+  group: ports
+  emulators:
+    sonic-mania:
+      sonic-mania: { requireAnyOf: [ BR2_PACKAGE_SONIC_MANIA ] }
+  comment_en: |
+    Add your copy of Sonic Mania, just the `Data.rsdk` file in here.
+    Then create a blank file called 'Sonic Mania.sman' in this folder also.
+    This file will allow EmulationStation to launch Sonic Mania and scrape artwork etc.
+
+    Once completed, it is **highly recommended** that you grab the Shaders folder in RSDKv5 and turn it into a mod.
+    Otherwise, movies will not display properly and the filters from video settings won't work.
+
+    To do this, create the following directory structure inside your mods directory:
+    ```
+    GLShaders/
+    | Data/
+    | | ...
+    | mod.ini
+    ```
+
+    Inside `mods/GLShaders/Data/` copy the `RSDKv5/Shaders` directory, and inside the mod.ini, paste this:
+    ```
+    Name=GLShaders
+    Description=GL3 shaders to enable filters and stuff
+    Author=Ducky
+    Version=1.0.0
+    TargetVersion=5
+    ```
+
+    For more info: https://wiki.batocera.org/systems:sonic-mania
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:sonic-mania
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:sonic-mania
+
+uqm:
+  name: Ur-Quan Masters
+  manufacturer: Ports
+  release: 1992
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    uqm:
+      uqm: { requireAnyOf: [ BR2_PACKAGE_UQM ] }
+  comment_en: |
+    Create a folder called 'packages' in this folder. This is where you place your game engine file 'uqm-0.8.0-content.uqm'.
+    Then create a file called 'Ur-Quan Masters.game'. This is used to launch the game.

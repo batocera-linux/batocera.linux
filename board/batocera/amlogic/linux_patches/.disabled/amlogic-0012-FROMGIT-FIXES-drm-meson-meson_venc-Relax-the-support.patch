@@ -1,0 +1,35 @@
+From 8f94ff5bdfe66ddbaafd35beb20b77fd3a1790f8 Mon Sep 17 00:00:00 2001
+From: Carlo Caione <ccaione@baylibre.com>
+Date: Mon, 13 Feb 2023 10:32:09 +0100
+Subject: [PATCH 012/120] FROMGIT(FIXES): drm/meson/meson_venc: Relax the
+ supported mode checks
+
+Relax a bit the supported modes list by including also 480x1920 and
+400x1280. This was actually tested on real hardware and it works
+correctly.
+
+Signed-off-by: Carlo Caione <ccaione@baylibre.com>
+---
+ drivers/gpu/drm/meson/meson_venc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_venc.c b/drivers/gpu/drm/meson/meson_venc.c
+index 3c55ed003359..fcd532db19c1 100644
+--- a/drivers/gpu/drm/meson/meson_venc.c
++++ b/drivers/gpu/drm/meson/meson_venc.c
+@@ -866,10 +866,10 @@ meson_venc_hdmi_supported_mode(const struct drm_display_mode *mode)
+ 			    DRM_MODE_FLAG_PVSYNC | DRM_MODE_FLAG_NVSYNC))
+ 		return MODE_BAD;
+ 
+-	if (mode->hdisplay < 640 || mode->hdisplay > 1920)
++	if (mode->hdisplay < 400 || mode->hdisplay > 1920)
+ 		return MODE_BAD_HVALUE;
+ 
+-	if (mode->vdisplay < 480 || mode->vdisplay > 1200)
++	if (mode->vdisplay < 480 || mode->vdisplay > 1920)
+ 		return MODE_BAD_VVALUE;
+ 
+ 	return MODE_OK;
+-- 
+2.34.1
+

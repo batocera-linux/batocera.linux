@@ -1,0 +1,63 @@
+comment "img-gpu-powervr needs a glibc toolchain"
+	depends on BR2_riscv
+	depends on !BR2_TOOLCHAIN_USES_GLIBC
+
+config BR2_PACKAGE_IMG_GPU_POWERVR
+	bool "img-gpu-powervr"
+	# Pre-built binaries only available for RISCV
+	depends on BR2_riscv
+	# Library binaries are linked against libc.so.6
+	depends on BR2_TOOLCHAIN_USES_GLIBC
+	# Library binaries are linked against libdrm.so.2, except framebuffer
+	# output on RISCV
+	select BR2_PACKAGE_LIBDRM if !(BR2_riscv && BR2_PACKAGE_IMG_GPU_POWERVR_OUTPUT_FB)
+	select BR2_PACKAGE_HAS_LIBGBM
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_HAS_LIBOPENCL
+	select BR2_PACKAGE_HAS_LIBVULKAN
+	select BR2_PACKAGE_IMG_MESA3D
+	select BR2_PACKAGE_IMG_MESA3D_GBM
+	select BR2_PACKAGE_IMG_MESA3D_OPENGL_EGL
+	select BR2_PACKAGE_IMG_MESA3D_GALLIUM_DRIVER_PVR
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+	help
+	  Userspace libraries for Imagination PowerGPU GPU on StarFive platforms
+
+	  It contains libraries and headers for GLES, OpenCL, and
+	  Vulkan. It also contains a DRI plugin for X11. It also
+	  contains a plugin for DirectFB-1.4.0.
+
+	  This library is provided by StarFive as-is and doesn't have
+	  an upstream.
+
+if BR2_PACKAGE_IMG_GPU_POWERVR
+
+#config BR2_PACKAGE_PROVIDES_LIBEGL
+#	default "img-gpu-powervr"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "img-gpu-powervr"
+
+config BR2_PACKAGE_PROVIDES_LIBOPENCL
+	default "img-gpu-powervr"
+
+endif
+
+config BR2_PACKAGE_IMG_GPU_POWERVR_EXAMPLES
+	bool "install examples"
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Copy the PowerVR examples to the target.
+
+	  Warning: examples take approximately 150 MB of disk space.
+
+comment "img-gpu-powervr-examples need a toolchain w/ C++ support"
+	depends on !BR2_INSTALL_LIBSTDCPP
+
+config BR2_PACKAGE_IMG_GPU_POWERVR_GMEM_INFO
+	bool "install gmem_info tool"
+	help
+	  Copy the gmem_info tool to the target which provides
+	  information about GPU memory consumption.

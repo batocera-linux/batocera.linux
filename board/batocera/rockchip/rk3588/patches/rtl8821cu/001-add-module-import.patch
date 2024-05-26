@@ -1,0 +1,26 @@
+diff --git a/os_dep/osdep_service.c b/os_dep/osdep_service.c
+index 40ec02c901..682bdfbdce 100644
+--- a/os_dep/osdep_service.c
++++ b/os_dep/osdep_service.c
+@@ -27,6 +27,8 @@ atomic_t _malloc_size = ATOMIC_INIT(0);
+ #endif
+ #endif /* DBG_MEMORY_LEAK */
+ 
++MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
++
+ #if defined(PLATFORM_LINUX)
+ /*
+ * Translate the OS dependent @param error_code to OS independent RTW_STATUS_CODE
+diff --git a/core/rtw_wlan_util.c b/core/rtw_wlan_util.c
+index 22c79ae44b..e28816e328 100644
+--- a/core/rtw_wlan_util.c
++++ b/core/rtw_wlan_util.c
+@@ -26,6 +26,8 @@
+ 	#define IPv6_PROTOCOL_OFFSET	20
+ #endif
+ 
++MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
++
+ unsigned char ARTHEROS_OUI1[] = {0x00, 0x03, 0x7f};
+ unsigned char ARTHEROS_OUI2[] = {0x00, 0x13, 0x74};
+ 

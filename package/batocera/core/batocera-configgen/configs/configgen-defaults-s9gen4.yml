@@ -1,0 +1,24 @@
+default:
+  options:
+    gfxbackend: gl
+    video_threaded: true
+
+nds:
+  emulator: libretro
+  core:     melonds
+fmtowns:
+  emulator: libretro
+  core:     mame
+atomiswave:
+  emulator: libretro
+  core:     flycast
+dreamcast:
+  emulator: libretro
+  core:     flycast
+naomi:
+  emulator: libretro
+  core:     flycast
+flash:
+  emulator: lightspark
+  core:     lightspark
+

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-
 GTMP="/tmp"
 DHOME="/userdata/system"
+V_ARCH=$(uname -m)
 
 # to be callable by any external tool
 if test $# -eq 1
@@ -24,7 +24,6 @@ d_cp() {
     test -d "$1" && cp -pr "$1" "$2"
 }
 
-
 if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/system" "${TMPDIR}/joysticks" "${TMPDIR}/lirc" "${TMPDIR}/kodi" "${TMPDIR}/coredumps"
 then
     if ! cd "${TMPDIR}"
@@ -37,45 +36,64 @@ else
     exit 1
 fi
 
-# in case xorg is in use
-export DISPLAY=:0.0
-
 # SYSTEM
 DSYSTEM="${TMPDIR}/system"
+
+# in case xorg is in use
+if test -z "${DISPLAY}"; then
+    export DISPLAY=:0.0
+fi
+
 dmesg 	         	> "${DSYSTEM}/dmesg.txt"
 lsmod 	         	> "${DSYSTEM}/lsmod.txt"
 ps    	         	> "${DSYSTEM}/ps.txt"
 df -h 	         	> "${DSYSTEM}/df.txt"
 netstat -tuan    	> "${DSYSTEM}/netstat.txt"
 lsusb -v         	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
-which tvservice >/dev/null && tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
-which tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
+command -v tvservice >/dev/null && tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
+command -v tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
 lspci                   > "${DSYSTEM}/lspci.txt"
 lspci -v                > "${DSYSTEM}/lspci_v.txt"
+hciconfig -a            > "${DSYSTEM}/bt-capabilities.txt"
 amixer                  > "${DSYSTEM}/amixer.txt"
 aplay -l                > "${DSYSTEM}/aplay-l.txt"
-which glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
-which xrandr  >/dev/null && xrandr     > "${DSYSTEM}/xrandr.txt"
+command -v glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
+command -v xrandr  >/dev/null && xrandr     > "${DSYSTEM}/xrandr.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
 wpctl status            > "${DSYSTEM}/wireplumber.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
 batocera-systems        > "${DSYSTEM}/bios.txt"
 batocera-version        > "${DSYSTEM}/batocera.version"
-f_cp /boot/boot/batocera.board                                "${DSYSTEM}"
-f_cp /boot/config.txt                                         "${DSYSTEM}"
-grep -vE '^[ #]*global.retroachievements.password[ ]*=|^[ #]*global.retroachievements.token[ ]*=' /userdata/system/batocera.conf > "${DSYSTEM}/batocera.conf"
-d_cp /userdata/system/logs                              "${DSYSTEM}"
-f_cp /var/log/messages                                        "${DSYSTEM}"
+batocera-info           > "${DSYSTEM}/batocera.info"
+ldconfig -p             > "${DSYSTEM}/ldcache.txt"
+# get xrandr provider if x86 system only
+if [ "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64" ]; then
+    xrandr --listproviders  > "${DSYSTEM}/xrandr-providers.txt"
+fi
+f_cp /boot/boot/batocera.board                                 "${DSYSTEM}"
+f_cp /boot/config.txt                                          "${DSYSTEM}"
+f_cp /userdata/system/batocera.conf                            "${DSYSTEM}"
+d_cp /userdata/system/logs                                     "${DSYSTEM}"
+f_cp /var/log/messages                                         "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_input.cfg    "${DSYSTEM}"
-f_cp /userdata/system/logs/es_launch_stdout.log         "${DSYSTEM}"
-f_cp /userdata/system/logs/es_launch_stderr.log         "${DSYSTEM}"
-f_cp /boot/batocera-boot.conf                                 "${DSYSTEM}"
-f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
-f_cp /var/log/bluetooth-agent.log                             "${DSYSTEM}"
+f_cp /boot/batocera-boot.conf                                  "${DSYSTEM}"
+f_cp /var/log/Xorg.0.log                                       "${DSYSTEM}"
+f_cp /var/log/bluetooth-agent.log                              "${DSYSTEM}"
+
+# clear passwords
+# filter some dangerous options (may include some path with /userdata)
+sed -i -e s+"^.*password.*$"+""+gI "${DSYSTEM}/logs/"*.log
+sed -i -e s+"^.*user.*$"+""+gI "${DSYSTEM}/es_settings.cfg"
+sed -i -e s+"^.*pass.*$"+""+gI "${DSYSTEM}/es_settings.cfg"
+sed -i -e s+"^.*wifi.*$"+""+gI "${DSYSTEM}/batocera.conf"
+sed -i -e s+"^.*retroachievements.*$"+""+gI "${DSYSTEM}/batocera.conf"
+sed -i -e s+"^.*password.*$"+""+gI "${DSYSTEM}/batocera.conf"
+sed -i -e s+"^.*token.*$"+""+gI "${DSYSTEM}/batocera.conf"
+sed -i -e s+"^.*wifi.*$"+""+gI "${DSYSTEM}/batocera-boot.conf"
 
 # Emulators configs
 #d_cp /userdata/system/configs                           "${TMPDIR}/configs", disabled, too big

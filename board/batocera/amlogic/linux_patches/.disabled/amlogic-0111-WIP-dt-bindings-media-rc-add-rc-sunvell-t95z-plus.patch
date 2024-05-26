@@ -1,0 +1,27 @@
+From 60054b9f599a0bfca817da045fd8d0458395fd0b Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 13 Feb 2023 18:36:56 +0000
+Subject: [PATCH 111/120] WIP: dt-bindings: media: rc: add rc-sunvell-t95z-plus
+
+Add a binding for the rc-sunvell-t95z-plus remote keymap
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/media/rc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/media/rc.yaml b/Documentation/devicetree/bindings/media/rc.yaml
+index f390a5d2c82d..98946af589a0 100644
+--- a/Documentation/devicetree/bindings/media/rc.yaml
++++ b/Documentation/devicetree/bindings/media/rc.yaml
+@@ -128,6 +128,7 @@ properties:
+       - rc-reddo
+       - rc-snapstream-firefly
+       - rc-streamzap
++      - rc-sunvell-t95z-plus
+       - rc-su3000
+       - rc-tanix-tx3mini
+       - rc-tanix-tx5max
+-- 
+2.34.1
+

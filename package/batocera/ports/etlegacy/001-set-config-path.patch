@@ -1,0 +1,13 @@
+diff --git a/src/sys/sys_unix.c b/src/sys/sys_unix.c
+index d2f683bffc..2a1464180e 100644
+--- a/src/sys/sys_unix.c
++++ b/src/sys/sys_unix.c
+@@ -77,7 +77,7 @@ char *Sys_DefaultHomePath(void)
+ 			Q_strncpyz(homePath, OSX_ApplicationSupportPath(), sizeof(homePath));
+ 			Q_strcat(homePath, sizeof(homePath), "/etlegacy");
+ #else
+-			Q_strcat(homePath, sizeof(homePath), "/.etlegacy");
++			Q_strcat(homePath, sizeof(homePath), "/configs/etlegacy");
+ #endif
+ 		}
+ 

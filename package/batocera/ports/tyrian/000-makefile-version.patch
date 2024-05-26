@@ -1,0 +1,11 @@
+--- a/Makefile	2022-03-18 08:13:57.000000000 +0100
++++ b/Makefile	2022-07-19 15:50:53.625083799 +0200
+@@ -20,7 +20,7 @@
+ INSTALL ?= install
+ PKG_CONFIG ?= pkg-config
+ 
+-VCS_IDREV ?= (git describe --tags || git rev-parse --short HEAD)
++VCS_IDREV ?= 2.1
+ 
+ INSTALL_PROGRAM ?= $(INSTALL)
+ INSTALL_DATA ?= $(INSTALL) -m 644

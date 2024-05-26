@@ -1,0 +1,34 @@
+From dd37d023ae1ccbdf3d8bb96ef209bd32ad8742f1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
+Date: Sun, 20 Feb 2022 08:23:12 +0000
+Subject: [PATCH 21/41] FROMLIST(v5): dt-bindings: vendor-prefixes: Add Titan
+ Micro Electronics
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Assign vendor prefix "titanmec", matching their domain name.
+
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Andreas Färber <afaerber@suse.de>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 573578db9509..0022fb4a36ed 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1383,6 +1383,8 @@ patternProperties:
+     description: Texas Instruments
+   "^tianma,.*":
+     description: Tianma Micro-electronics Co., Ltd.
++  "^titanmec,.*":
++    description: Shenzhen Titan Micro Electronics Co., Ltd.
+   "^tlm,.*":
+     description: Trusted Logic Mobility
+   "^tmt,.*":
+-- 
+2.34.1
+

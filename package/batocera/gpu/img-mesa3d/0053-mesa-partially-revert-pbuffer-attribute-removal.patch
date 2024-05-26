@@ -1,0 +1,59 @@
+From 8c5f7a9cffeae4b2516f286e78a8a1d35ab16e4e Mon Sep 17 00:00:00 2001
+From: brendan King <Brendan.King@imgtec.com>
+Date: Thu, 16 Sep 2021 17:46:28 +0100
+Subject: [PATCH 53/58] mesa: partially revert pbuffer attribute removal
+
+This partially reverts commit 5ffd1ebe6b3c8c7dd316dd47fac088044222e6ef
+("mesa: Remove misc pbuffer attributes from struct gl_config").
+
+The IMG PowerVR driver sets meaningful values for the maximum
+pbuffer width, height and pixels.
+---
+ src/gallium/frontends/dri/utils.c | 7 ++++---
+ src/mesa/main/glconfig.h          | 5 +++++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/src/gallium/frontends/dri/utils.c b/src/gallium/frontends/dri/utils.c
+index c27d150d7e5..20f2b519350 100644
+--- a/src/gallium/frontends/dri/utils.c
++++ b/src/gallium/frontends/dri/utils.c
+@@ -452,6 +452,7 @@ __DRIconfig **driConcatConfigs(__DRIconfig **a,
+     return all;
+ }
+ 
++/* careful, lack of trailing semicolon */
+ #define __ATTRIB(attrib, field) case attrib: *value = config->modes.field; break
+ 
+ /**
+@@ -527,9 +528,9 @@ driGetConfigAttribIndex(const __DRIconfig *config,
+     __ATTRIB(__DRI_ATTRIB_GREEN_MASK,			greenMask);
+     __ATTRIB(__DRI_ATTRIB_BLUE_MASK,			blueMask);
+     __ATTRIB(__DRI_ATTRIB_ALPHA_MASK,			alphaMask);
+-    case __DRI_ATTRIB_MAX_PBUFFER_WIDTH:
+-    case __DRI_ATTRIB_MAX_PBUFFER_HEIGHT:
+-    case __DRI_ATTRIB_MAX_PBUFFER_PIXELS:
++    __ATTRIB(__DRI_ATTRIB_MAX_PBUFFER_WIDTH,		maxPbufferWidth);
++    __ATTRIB(__DRI_ATTRIB_MAX_PBUFFER_HEIGHT,		maxPbufferHeight);
++    __ATTRIB(__DRI_ATTRIB_MAX_PBUFFER_PIXELS,		maxPbufferPixels);
+     case __DRI_ATTRIB_OPTIMAL_PBUFFER_WIDTH:
+     case __DRI_ATTRIB_OPTIMAL_PBUFFER_HEIGHT:
+     case __DRI_ATTRIB_VISUAL_SELECT_GROUP:
+diff --git a/src/mesa/main/glconfig.h b/src/mesa/main/glconfig.h
+index d54a4f75cfd..f9aa5a06940 100644
+--- a/src/mesa/main/glconfig.h
++++ b/src/mesa/main/glconfig.h
+@@ -27,6 +27,11 @@ struct gl_config
+    /* ARB_multisample / SGIS_multisample */
+    GLuint samples;
+ 
++   /* GLX 1.3 */
++   GLint maxPbufferWidth;
++   GLint maxPbufferHeight;
++   GLint maxPbufferPixels;
++
+    /* OML_swap_method */
+    GLint swapMethod;
+ 
+-- 
+2.25.1
+

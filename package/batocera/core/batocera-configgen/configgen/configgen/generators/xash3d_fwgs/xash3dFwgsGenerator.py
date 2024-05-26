@@ -84,7 +84,7 @@ def _get_arch_suffix():
 
 class Xash3dFwgsGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         game = os.path.splitext(os.path.basename(rom))[0]
 
         arch_suffix = _get_arch_suffix()
@@ -94,7 +94,7 @@ class Xash3dFwgsGenerator(Generator):
         # -log        # Log to /userdata/roms/xash3d_fwgs/engine.log
         # -dev 2      # Verbose logging
         # -ref gles2  # Select a specific renderer (gl, gl4es, gles1, gles2, soft)
-        commandArray = ['/usr/lib/xash3d/xash3d', '-fullscreen', '-dev']
+        commandArray = ['/usr/bin/xash3d', '-fullscreen', '-dev']
 
         # By default, xash3d will use `dlls/hl.so` in the valve directory (via the `liblist.gam` config file).
         # However, that `so` is incompatible with xash3d (it's the x86-glibc version from Valve).
@@ -110,10 +110,6 @@ class Xash3dFwgsGenerator(Generator):
 
         commandArray.append('+showfps')
         commandArray.append('1' if system.getOptBoolean('showFPS') == True else '0')
-
-        # https://github.com/FWGS/xash3d-fwgs/issues/307
-        commandArray.append('+sv_validate_changelevel')
-        commandArray.append('0')
 
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)

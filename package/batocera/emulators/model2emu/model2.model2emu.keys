@@ -4,6 +4,53 @@
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_LEFTALT", "KEY_F4" ]
+	},
+	{
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_1"
+	},
+	{
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_3"
 	}
     ]
+    ,"actions_player2": [
+	{
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_2"
+	},
+	{
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_4"
+	}
+    ]		
+    ,"actions_gun1": [
+	{
+            "trigger": "middle",
+            "type": "key",
+            "target": "KEY_3"
+	},
+	{
+            "trigger": "1",
+            "type": "key",
+            "target": "KEY_1"
+	}
+    ]
+    ,"actions_gun2": [
+	{
+            "trigger": "middle",
+            "type": "key",
+            "target": "KEY_4"
+	},
+	{
+            "trigger": "1",
+            "type": "key",
+            "target": "KEY_2"
+	}
+    ]
+
 }

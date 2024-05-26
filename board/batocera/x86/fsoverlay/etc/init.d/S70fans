@@ -1,0 +1,44 @@
+#!/bin/bash
+
+################################
+# Fan curves for X86 handhelds #
+################################
+
+case "$1" in
+    start)
+        info_output=$(batocera-info)
+        # ayn loki zero
+        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+            # fan speeds [0-255]
+            echo 51 > /sys/class/hwmon/hwmon5/pwm1_auto_point1_pwm
+            echo 83 > /sys/class/hwmon/hwmon5/pwm1_auto_point2_pwm
+            echo 115 > /sys/class/hwmon/hwmon5/pwm1_auto_point3_pwm
+            echo 147 > /sys/class/hwmon/hwmon5/pwm1_auto_point4_pwm
+            echo 179 > /sys/class/hwmon/hwmon5/pwm1_auto_point5_pwm
+            # temps [0-100]
+            echo 50 > /sys/class/hwmon/hwmon5/pwm1_auto_point1_temp 
+            echo 59 > /sys/class/hwmon/hwmon5/pwm1_auto_point2_temp
+            echo 68 > /sys/class/hwmon/hwmon5/pwm1_auto_point3_temp
+            echo 77 > /sys/class/hwmon/hwmon5/pwm1_auto_point4_temp
+            echo 86 > /sys/class/hwmon/hwmon5/pwm1_auto_point5_temp
+            # user controlled mode
+            echo 2 > /sys/class/hwmon/hwmon5/pwm1_mode
+        fi
+        ;;
+    stop)
+        # bios controlled mode
+        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+            echo 0 > /sys/class/hwmon/hwmon5/pwm1_mode
+        fi
+        ;;
+    restart)
+		stop
+		start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

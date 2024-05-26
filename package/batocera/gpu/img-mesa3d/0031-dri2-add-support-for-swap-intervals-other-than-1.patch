@@ -1,0 +1,787 @@
+From e8172c9aea79b5cf05523a606a53a0fe63d7f397 Mon Sep 17 00:00:00 2001
+From: Luigi Santivetti <luigi.santivetti@imgtec.com>
+Date: Wed, 19 Jun 2019 16:36:06 +0100
+Subject: [PATCH 31/58] dri2: add support for swap intervals other than 1
+
+Before this change, the swap interval was fixed at 1, with page flips
+scheduled on the next vblank. This change allows any swap interval
+between 0 and 10 to be set.
+
+An additional thread is created, so as not to rely on the application
+polling for previously scheduled drm events (be it a flip or a vblank).
+Instead, each call to swap buffers made by the application will be
+queued, and consumed asynchronously by the additional thread. This
+ensures that drm events will be handled as soon as possible,
+regardless of the timing of subsequent calls to swap buffers.
+
+Change-Id: If7c0495df7ddfaa08583a14f820c46e1b97da788
+Signed-off-by: Luigi Santivetti <luigi.santivetti@imgtec.com>
+---
+ src/egl/drivers/dri2/egl_dri2.h      |  42 ++-
+ src/egl/drivers/dri2/platform_null.c | 541 +++++++++++++++++++++++----
+ 2 files changed, 506 insertions(+), 77 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 5de5f0f9a16..f74ee282645 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -328,6 +328,25 @@ struct dri2_egl_context
+    __DRIcontext *dri_context;
+ };
+ 
++#define DRI2_SURFACE_NUM_COLOR_BUFFERS 4
++
++#ifdef HAVE_NULL_PLATFORM
++struct swap_queue_elem
++{
++   uint32_t             swap_interval;
++   uint32_t             back_id;
++   uint32_t             fb_id;
++};
++
++enum {
++   SWAP_IDLE,
++   SWAP_FLIP,
++   SWAP_VBLANK,
++   SWAP_POLL,
++   SWAP_ERROR,
++};
++#endif
++
+ struct dri2_egl_surface
+ {
+    _EGLSurface base;
+@@ -368,6 +387,19 @@ struct dri2_egl_surface
+    struct gbm_dri_surface *gbm_surf;
+ #endif
+ 
++#if defined(HAVE_NULL_PLATFORM)
++   /*
++    * Protects swap_queue_idx_head, swap_queue_idx_tail and
++    * color_buffers.locked.
++    */
++   pthread_mutex_t        mutex;
++   pthread_cond_t         swap_queue_cond;
++   pthread_cond_t         swap_unlock_buffer_cond;
++   int                    swap_queue_idx_head;
++   int                    swap_queue_idx_tail;
++   pthread_t              swap_queue_processor;
++#endif
++
+    /* EGL-owned buffers */
+    __DRIbuffer *local_buffers[__DRI_BUFFER_COUNT];
+ 
+@@ -394,7 +426,7 @@ struct dri2_egl_surface
+ #endif
+       bool locked;
+       int age;
+-   } color_buffers[4], *back, *current;
++   } color_buffers[DRI2_SURFACE_NUM_COLOR_BUFFERS], *back, *current;
+ #endif
+ 
+ #ifdef HAVE_ANDROID_PLATFORM
+@@ -428,7 +460,13 @@ struct dri2_egl_surface
+ #endif
+ 
+ #ifdef HAVE_NULL_PLATFORM
+-   uint32_t             front_fb_id;
++   uint32_t                front_fb_id;
++   struct swap_queue_elem  swap_queue[DRI2_SURFACE_NUM_COLOR_BUFFERS];
++   struct swap_queue_elem  *swap_data;
++   int                     swap_state;
++   bool                    mutex_init;
++   bool                    cond_init;
++   bool                    cond_init_unlock_buffer;
+ #endif
+ 
+    int out_fence_fd;
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index fb03ecc36fd..5b7c1ec426c 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -31,6 +31,7 @@
+ #include <drm_fourcc.h>
+ #include <fcntl.h>
+ #include <poll.h>
++#include <pthread.h>
+ #include <stdbool.h>
+ #include <stdint.h>
+ #include <stdlib.h>
+@@ -58,6 +59,17 @@ struct object_property {
+    uint64_t prop_value;
+ };
+ 
++static inline
++uint32_t get_back_buffer_id(struct dri2_egl_surface *dri2_surf)
++{
++   uintptr_t offset = ((uintptr_t) dri2_surf->back) -
++      ((uintptr_t) &dri2_surf->color_buffers[0]);
++
++   assert(dri2_surf->back && !(offset >> 32));
++
++   return (uint32_t) (offset / sizeof(dri2_surf->color_buffers[0]));
++}
++
+ #define object_property_set_named(output, object_type, prop_name, value)    \
+    {                                                                        \
+       .object_id = (output)->object_type##_id,                              \
+@@ -176,36 +188,6 @@ property_id_get_for_name(drmModePropertyRes **prop_res, const char *prop_name)
+    return 0;
+ }
+ 
+-static void
+-flip_handler(int fd, unsigned int sequence, unsigned int tv_sec,
+-             unsigned int tv_usec, void *user_data)
+-{
+-   bool *plocked = user_data;
+-
+-   if (plocked)
+-      *plocked = false;
+-}
+-
+-static bool
+-flip_process(int fd)
+-{
+-   static drmEventContext evctx =
+-      {.version = 2, .page_flip_handler = flip_handler};
+-   struct pollfd pfd = {.fd = fd, .events = POLLIN};
+-   int ret;
+-
+-   do {
+-      ret = poll(&pfd, 1, -1);
+-   } while (ret > 0 && pfd.revents != pfd.events);
+-
+-   if (ret <= 0)
+-      return false;
+-
+-   drmHandleEvent(fd, &evctx);
+-
+-   return true;
+-}
+-
+ static drmModePropertyRes **
+ object_get_property_resources(int fd, uint32_t object_id, uint32_t object_type)
+ {
+@@ -495,6 +477,113 @@ display_output_atomic_modeset(int fd, struct display_output *output, uint32_t fb
+                               DRM_MODE_ATOMIC_ALLOW_MODESET, NULL);
+ }
+ 
++static void
++swap_enqueue_data(struct dri2_egl_surface *dri2_surf, uint32_t back_id,
++                  uint32_t interval)
++{
++   struct swap_queue_elem *swap_data;
++
++   pthread_mutex_lock(&dri2_surf->mutex);
++   swap_data = &dri2_surf->swap_queue[dri2_surf->swap_queue_idx_tail];
++   swap_data->swap_interval = interval;
++   swap_data->fb_id = dri2_surf->back->fb_id;
++   swap_data->back_id = back_id;
++
++   dri2_surf->swap_queue_idx_tail++;
++   dri2_surf->swap_queue_idx_tail %= ARRAY_SIZE(dri2_surf->swap_queue);
++
++   /* Notify the swap thread there is new work to do */
++   pthread_cond_signal(&dri2_surf->swap_queue_cond);
++   pthread_mutex_unlock(&dri2_surf->mutex);
++}
++
++static void
++swap_dequeue_data_start(struct dri2_egl_surface *dri2_surf)
++{
++   pthread_mutex_lock(&dri2_surf->mutex);
++   while (dri2_surf->swap_queue_idx_head == dri2_surf->swap_queue_idx_tail)
++      pthread_cond_wait(&dri2_surf->swap_queue_cond, &dri2_surf->mutex);
++
++   dri2_surf->swap_data =
++      &dri2_surf->swap_queue[dri2_surf->swap_queue_idx_head];
++   pthread_mutex_unlock(&dri2_surf->mutex);
++}
++
++static void
++swap_dequeue_data_finish(struct dri2_egl_surface *dri2_surf)
++{
++   pthread_mutex_lock(&dri2_surf->mutex);
++
++   if (dri2_surf->current)
++      dri2_surf->current->locked = false;
++
++   dri2_surf->current =
++      &dri2_surf->color_buffers[dri2_surf->swap_data->back_id];
++   dri2_surf->swap_state = SWAP_IDLE;
++
++   dri2_surf->swap_queue_idx_head++;
++   dri2_surf->swap_queue_idx_head %= ARRAY_SIZE(dri2_surf->swap_queue);
++
++   /* Notify get_back_bo that a buffer has become available */
++   pthread_cond_signal(&dri2_surf->swap_unlock_buffer_cond);
++   pthread_mutex_unlock(&dri2_surf->mutex);
++}
++
++static void
++flip_handler(int fd, unsigned int sequence, unsigned int tv_sec,
++             unsigned int tv_usec, void *flip_data)
++{
++   struct dri2_egl_surface *dri2_surf = flip_data;
++
++   (void) tv_sec;
++   (void) tv_usec;
++   (void) sequence;
++
++   /* Ultimate queueing ops */
++   swap_dequeue_data_finish(dri2_surf);
++}
++
++static void
++vblank_handler(int fd, unsigned int sequence, unsigned int tv_sec,
++               unsigned int tv_usec, void *vblank_data)
++{
++   struct dri2_egl_surface *dri2_surf = vblank_data;
++
++   (void) tv_sec;
++   (void) tv_usec;
++   (void) sequence;
++
++   dri2_surf->swap_state = SWAP_FLIP;
++}
++
++static int
++drm_event_process(int fd)
++{
++   static drmEventContext evctx = {
++      .version = 2,
++      .page_flip_handler = flip_handler,
++      .vblank_handler = vblank_handler
++   };
++   struct pollfd pfd = {.fd = fd, .events = POLLIN};
++   int ret;
++
++   do {
++      ret = poll(&pfd, 1, -1);
++   } while (ret > 0 && pfd.revents != pfd.events);
++
++   if (ret <= 0)
++      /* Man says:
++       *
++       * On error, -1 is returned, and errno is set to indicate the
++       * cause of the error.
++       */
++      return -1;
++
++   drmHandleEvent(fd, &evctx);
++
++   return 0;
++}
++
+ static bool
+ display_output_init(int fd, struct display_output *output, bool use_atomic)
+ {
+@@ -571,10 +660,46 @@ static int
+ display_output_flip(int fd, struct display_output *output, uint32_t fb_id,
+                     uint32_t flags, void *flip_data)
+ {
+-   if (output->atomic_state)
+-      return display_output_atomic_flip(fd, output, fb_id, flags, flip_data);
++   int err;
++
++   do {
++      if (output->atomic_state)
++         err = display_output_atomic_flip(fd, output, fb_id, flags, flip_data);
++      else
++         err = drmModePageFlip(fd, output->crtc_id, fb_id, flags, flip_data);
++   } while (err == -EBUSY);
++
++   return err;
++}
++
++static int
++display_request_vblank(int fd, uint32_t target_frame, uint32_t flags,
++                       void *vblank_data)
++{
++   drmVBlank vblank = {
++      .request = {
++         .type = flags,
++         .sequence = target_frame,
++         .signal = (unsigned long)vblank_data,
++      }
++   };
++
++   return drmWaitVBlank(fd, &vblank);
++}
++
++static int
++display_get_vblank_sequence(int fd, uint32_t *current_vblank_out)
++{
++   drmVBlank vblank = { .request = { .type = DRM_VBLANK_RELATIVE } };
++   int err;
++
++   err = drmWaitVBlank(fd, &vblank);
++   if (err)
++      return err;
+ 
+-   return drmModePageFlip(fd, output->crtc_id, fb_id, flags, flip_data);
++   *current_vblank_out = vblank.reply.sequence;
++
++   return 0;
+ }
+ 
+ static int
+@@ -587,6 +712,213 @@ display_output_modeset(int fd, struct display_output *output, uint32_t fb_id)
+                          &output->connector_id, 1, &output->mode);
+ }
+ 
++static int
++swap_idle_get_target_frame(struct dri2_egl_surface *dri2_surf,
++                           uint32_t *current_vblank_out, uint32_t *target_frame_out)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   int err;
++
++   /* For intarvals bigger than 1, always update current_vblank. The
++    * spec isn't fully clear, nonetheless page 25 and 26 of the PDF of the
++    * EGL 1.5 spec say:
++    *
++    *     "[the parameter interval] indicates the number of swap intervals
++    *      that will elapse before a buffer swap takes place after calling
++    *      eglSwapBuffers."
++    *
++    * We need to guarantee that the target frame is always ahead of the
++    * current vblank by the number of intervals set at the time swapBuffer
++    * is called. For intervals of 1 or 0, we don't need a target frame.
++    */
++   err = display_get_vblank_sequence(dri2_dpy->fd, current_vblank_out);
++   if (err)
++      return err;
++
++   assert(dri2_surf->swap_data->swap_interval > 0);
++
++   /* -1 accounts for vsync locked flip, so get a vblank one frame earlier */
++   *target_frame_out =
++      *current_vblank_out + dri2_surf->swap_data->swap_interval - 1;
++
++   return 0;
++}
++
++static int
++swap_idle_state_transition(struct dri2_egl_surface *dri2_surf,
++                           uint32_t *target_frame_out)
++{
++   uint32_t current_vblank = 0;
++   uint32_t target_frame = 0;
++   int err;
++
++   /* update dri2_surf->swap_data */
++   swap_dequeue_data_start(dri2_surf);
++
++   /* update next target frame */
++   if (dri2_surf->swap_data->swap_interval > 1) {
++      err = swap_idle_get_target_frame(dri2_surf, &current_vblank,
++                                       &target_frame);
++      if (err) {
++         dri2_surf->swap_state = SWAP_ERROR;
++         return err;
++      }
++   }
++
++   dri2_surf->swap_state =
++      target_frame <= current_vblank ? SWAP_FLIP : SWAP_VBLANK;
++   *target_frame_out = target_frame;
++
++   return 0;
++}
++
++static int
++swap_vblank_state_transition(struct dri2_egl_surface *dri2_surf,
++                             uint32_t target_frame)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   uint32_t flags = DRM_VBLANK_ABSOLUTE | DRM_VBLANK_EVENT;
++   int err;
++
++   err = display_request_vblank(dri2_dpy->fd, target_frame,
++                                flags, dri2_surf);
++   if (err) {
++      dri2_surf->swap_state = SWAP_ERROR;
++      return err;
++   }
++
++   dri2_surf->swap_state = SWAP_POLL;
++
++   return 0;
++}
++
++static int
++swap_flip_state_transition(struct dri2_egl_surface *dri2_surf)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   uint32_t flags;
++   int err;
++
++   flags = DRM_MODE_PAGE_FLIP_EVENT;
++   if (dri2_surf->swap_data->swap_interval == 0) {
++      assert(!dri2_dpy->atomic_enabled);
++      flags |= DRM_MODE_PAGE_FLIP_ASYNC;
++   }
++
++   err = display_output_flip(dri2_dpy->fd, &dri2_dpy->output,
++                             dri2_surf->swap_data->fb_id, flags, dri2_surf);
++   if (err) {
++      dri2_surf->swap_state = SWAP_ERROR;
++      return err;
++   }
++
++   dri2_surf->swap_state = SWAP_POLL;
++
++   return 0;
++}
++
++static int
++swap_poll_state_transition(struct dri2_egl_surface *dri2_surf)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   int err;
++
++   /* dri2_surf->swap_state is being set inside the handler */
++   err = drm_event_process(dri2_dpy->fd);
++   if (err) {
++      dri2_surf->swap_state = SWAP_ERROR;
++      return err;
++   }
++
++   return 0;
++}
++
++static inline void
++swap_error_print_message(const int state, const int err)
++{
++   switch (state) {
++   case SWAP_IDLE:
++      _eglLog(_EGL_WARNING,
++              "failed to get a target frame (err=%d)", err);
++      break;
++   case SWAP_FLIP:
++      _eglLog(_EGL_WARNING,
++              "failed to schedule a pageflip (err=%d)", err);
++      break;
++   case SWAP_VBLANK:
++      _eglLog(_EGL_WARNING,
++              "failed to request a vblank event (err=%d)", err);
++      break;
++   case SWAP_POLL:
++      _eglLog(_EGL_WARNING,
++              "failed to poll for drm event (err=%d)", err);
++      break;
++   case SWAP_ERROR:
++      _eglLog(_EGL_WARNING,
++              "failed to swap buffers, unknown swap state");
++      break;
++   default:
++      _eglLog(_EGL_FATAL,
++              "failed to swap buffers (unknown error)");
++   };
++}
++
++static void
++swap_error_state_handler(struct dri2_egl_surface *dri2_surf,
++                         int state, int err)
++{
++   static bool do_log = true;
++
++   if (do_log) {
++      swap_error_print_message(state, err);
++      do_log = false;
++   }
++
++   swap_dequeue_data_finish(dri2_surf);
++}
++
++static void *
++swap_queue_processor_worker(void *data)
++{
++   struct dri2_egl_surface *dri2_surf = data;
++   int state = SWAP_IDLE, err = SWAP_ERROR;
++   uint32_t target_frame = 0;
++
++   assert(dri2_surf->swap_state == SWAP_IDLE);
++
++   while (1) {
++      switch (dri2_surf->swap_state) {
++      case SWAP_IDLE:
++         err = swap_idle_state_transition(dri2_surf, &target_frame);
++         break;
++      case SWAP_VBLANK:
++         err = swap_vblank_state_transition(dri2_surf, target_frame);
++         break;
++      case SWAP_FLIP:
++         err = swap_flip_state_transition(dri2_surf);
++         break;
++      case SWAP_POLL:
++         err = swap_poll_state_transition(dri2_surf);
++         break;
++      case SWAP_ERROR:
++         swap_error_state_handler(dri2_surf, state, err);
++         break;
++      default:
++         dri2_surf->swap_state = SWAP_ERROR;
++         break;
++      }
++
++      if (!err)
++         state = dri2_surf->swap_state;
++   }
++
++   return NULL;
++}
++
+ static bool
+ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+                      uint32_t *fb_id_out)
+@@ -651,15 +983,18 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+ 
+-   if (!dri2_surf->back) {
++   pthread_mutex_lock(&dri2_surf->mutex);
++   while (!dri2_surf->back) {
+       for (unsigned i = 0; i < ARRAY_SIZE(dri2_surf->color_buffers); i++) {
+          if (!dri2_surf->color_buffers[i].locked) {
+             dri2_surf->back = &dri2_surf->color_buffers[i];
+             break;
+          }
+       }
++
++      /* Wait for a flip to get a buffer off the screen and unlock it */
+       if (!dri2_surf->back)
+-         return false;
++         pthread_cond_wait(&dri2_surf->swap_unlock_buffer_cond, &dri2_surf->mutex);
+    }
+ 
+    if (!dri2_surf->back->dri_image) {
+@@ -671,19 +1006,23 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+                                       __DRI_IMAGE_USE_SCANOUT,
+                                       NULL);
+       if (!dri2_surf->back->dri_image)
+-         return false;
++         goto err_unlock;
+    }
+ 
+    if (!dri2_surf->back->fb_id) {
+       if (!add_fb_for_dri_image(dri2_dpy, dri2_surf->back->dri_image,
+-                                &dri2_surf->back->fb_id)) {
+-         return false;
+-      }
++                                &dri2_surf->back->fb_id))
++         goto err_unlock;
+    }
+ 
+    dri2_surf->back->locked = 1;
++   pthread_mutex_unlock(&dri2_surf->mutex);
+ 
+    return true;
++
++err_unlock:
++   pthread_mutex_unlock(&dri2_surf->mutex);
++   return false;
+ }
+ 
+ static _EGLSurface *
+@@ -770,6 +1109,26 @@ dri2_null_create_window_surface(_EGLDisplay *disp, _EGLConfig *config,
+    dri2_surf->base.Width = dri2_dpy->output.mode.hdisplay;
+    dri2_surf->base.Height = dri2_dpy->output.mode.vdisplay;
+ 
++   /* After the dri2_surf is created, init thread's data */
++   dri2_surf->mutex_init = !pthread_mutex_init(&dri2_surf->mutex, NULL);
++   if (!dri2_surf->mutex_init) {
++      _eglError(EGL_BAD_ALLOC, "failed to init swap thread mutex");
++      goto err_destroy_surface;
++   }
++
++   dri2_surf->cond_init = !pthread_cond_init(&dri2_surf->swap_queue_cond, NULL);
++   if (!dri2_surf->cond_init) {
++      _eglError(EGL_BAD_ALLOC, "failed to init swap queue condition");
++      goto err_destroy_surface;
++   }
++
++   dri2_surf->cond_init_unlock_buffer =
++      !pthread_cond_init(&dri2_surf->swap_unlock_buffer_cond, NULL);
++   if (!dri2_surf->cond_init_unlock_buffer) {
++      _eglError(EGL_BAD_ALLOC, "failed to init swap buffer unlock condition");
++      goto err_destroy_surface;
++   }
++
+    if (!get_front_bo(dri2_surf))  {
+       _eglError(EGL_BAD_NATIVE_WINDOW, "window get buffer");
+       goto err_destroy_surface;
+@@ -783,6 +1142,14 @@ dri2_null_create_window_surface(_EGLDisplay *disp, _EGLConfig *config,
+    }
+ 
+    dri2_dpy->output.in_use = true;
++   dri2_surf->swap_state = SWAP_IDLE;
++
++   err = pthread_create(&dri2_surf->swap_queue_processor, NULL,
++                        swap_queue_processor_worker, dri2_surf);
++   if (err) {
++      _eglError(EGL_BAD_ALLOC, "failed to create swap thread");
++      goto err_destroy_surface;
++   }
+ 
+    return surf;
+ 
+@@ -808,8 +1175,27 @@ dri2_null_destroy_surface(_EGLDisplay *disp, _EGLSurface *surf)
+    /* If there's a current surface then a page flip has been performed, so make
+     * sure we process the flip event.
+     */
+-   if (dri2_surf->current)
+-      flip_process(dri2_dpy->fd);
++   if (dri2_surf->swap_queue_processor) {
++      pthread_mutex_lock(&dri2_surf->mutex);
++
++      /* Wait for any outstanding swaps to complete */
++      while (dri2_surf->swap_queue_idx_head != dri2_surf->swap_queue_idx_tail)
++         pthread_cond_wait(&dri2_surf->swap_unlock_buffer_cond,
++                           &dri2_surf->mutex);
++
++      pthread_mutex_unlock(&dri2_surf->mutex);
++      pthread_cancel(dri2_surf->swap_queue_processor);
++      pthread_join(dri2_surf->swap_queue_processor, NULL);
++   }
++
++   if (dri2_surf->cond_init)
++      pthread_cond_destroy(&dri2_surf->swap_queue_cond);
++
++   if (dri2_surf->cond_init_unlock_buffer)
++      pthread_cond_destroy(&dri2_surf->swap_unlock_buffer_cond);
++
++   if (dri2_surf->mutex_init)
++      pthread_mutex_destroy(&dri2_surf->mutex);
+ 
+    if (dri2_surf->front)
+       dri2_dpy->image->destroyImage(dri2_surf->front);
+@@ -837,9 +1223,7 @@ dri2_null_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
+ {
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+    struct dri2_egl_surface *dri2_surf = dri2_egl_surface(draw);
+-   bool *plocked = NULL;
+-   uint32_t flags;
+-   int err;
++   uint32_t back_id;
+ 
+    if (dri2_surf->base.Type != EGL_WINDOW_BIT)
+       return EGL_TRUE;
+@@ -858,34 +1242,13 @@ dri2_null_swap_buffers(_EGLDisplay *disp, _EGLSurface *draw)
+    dri2_flush_drawable_for_swapbuffers(disp, draw);
+    dri2_dpy->flush->invalidate(dri2_surf->dri_drawable);
+ 
+-   if (dri2_surf->current) {
+-      /* Wait for the previous flip to happen so the next one can be queued */
+-      if (!flip_process(dri2_dpy->fd)) {
+-         _eglError(EGL_BAD_NATIVE_WINDOW, "dri2_null_swap_buffers process");
+-         return EGL_FALSE;
+-      }
++   back_id = get_back_buffer_id(dri2_surf);
++   assert(dri2_surf->back == &dri2_surf->color_buffers[back_id]);
+ 
+-      plocked = &dri2_surf->current->locked;
+-   }
+-
+-   flags = DRM_MODE_PAGE_FLIP_EVENT;
+-   if (draw->SwapInterval == 0)
+-      flags |= DRM_MODE_PAGE_FLIP_ASYNC;
+-
+-   do {
+-      err = display_output_flip(dri2_dpy->fd, &dri2_dpy->output,
+-                                dri2_surf->back->fb_id, flags, plocked);
+-   } while (err == -EBUSY);
+-
+-   if (err) {
+-      _eglError(EGL_BAD_NATIVE_WINDOW, "dri2_null_swap_buffers flip");
+-      dri2_surf->back->locked = false;
+-      dri2_surf->back = NULL;
+-      return EGL_FALSE;
+-   }
++   swap_enqueue_data(dri2_surf, back_id, draw->SwapInterval);
+ 
++   /* This back buffer is tracked in the swap_data, safe to drop it now */
+    dri2_surf->back->age = 1;
+-   dri2_surf->current = dri2_surf->back;
+    dri2_surf->back = NULL;
+ 
+    return EGL_TRUE;
+@@ -904,11 +1267,20 @@ dri2_null_query_buffer_age(_EGLDisplay *disp, _EGLSurface *surface)
+    return dri2_surf->back->age;
+ }
+ 
++static EGLBoolean
++dri2_null_swap_interval(_EGLDisplay *dpy, _EGLSurface *draw, EGLint interval)
++{
++   _eglLog(_EGL_DEBUG, "DRI2: set swap interval to %d", interval);
++   draw->SwapInterval = interval;
++   return EGL_TRUE;
++}
++
+ static struct dri2_egl_display_vtbl dri2_null_display_vtbl = {
+    .create_window_surface = dri2_null_create_window_surface,
+    .create_pbuffer_surface = dri2_null_create_pbuffer_surface,
+    .destroy_surface = dri2_null_destroy_surface,
+    .create_image = dri2_create_image_khr,
++   .swap_interval = dri2_null_swap_interval,
+    .swap_buffers = dri2_null_swap_buffers,
+    .query_buffer_age = dri2_null_query_buffer_age,
+    .get_dri_drawable = dri2_surface_get_dri_drawable,
+@@ -1062,12 +1434,35 @@ dri2_null_add_configs_for_formats(_EGLDisplay *disp)
+ 
+    return count != 0;
+ }
++static void
++dri2_null_setup_swap_interval(_EGLDisplay *disp)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   const int swap_max_interval = 10; /* Arbitrary max value */
++   uint64_t value;
++   int err;
++
++   dri2_setup_swap_interval(disp, swap_max_interval);
++
++   err = drmGetCap(dri2_dpy->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
++   if (err || value == 0)
++      dri2_dpy->min_swap_interval = 1;
++
++   /**
++    * drm/atomic: Reject FLIP_ASYNC unconditionally
++    * upstream f2cbda2dba11de868759cae9c0d2bab5b8411406
++    *
++    * Only allow swap interval 0 for legacy DRM/KMS and let
++    * the app be aware that swap interval is clamped to 1.
++    */
++   if (dri2_dpy->atomic_enabled)
++      dri2_dpy->min_swap_interval = 1;
++}
+ 
+ EGLBoolean
+ dri2_initialize_null(_EGLDisplay *disp)
+ {
+    struct dri2_egl_display *dri2_dpy;
+-   uint64_t value;
+    int err;
+ 
+    dri2_dpy = calloc(1, sizeof(*dri2_dpy));
+@@ -1114,11 +1509,7 @@ dri2_initialize_null(_EGLDisplay *disp)
+    }
+ 
+    dri2_setup_screen(disp);
+-   dri2_setup_swap_interval(disp, 1);
+-
+-   err = drmGetCap(dri2_dpy->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
+-   if (err || value == 0)
+-      dri2_dpy->min_swap_interval = 1;
++   dri2_null_setup_swap_interval(disp);
+ 
+    if (dri2_dpy->image->base.version < NULL_IMAGE_EXTENSION_VERSION_MIN) {
+       _eglError(EGL_NOT_INITIALIZED, "image extension version too old");
+-- 
+2.25.1
+

@@ -1,0 +1,21 @@
+--- a/meson.build	2023-09-05 07:18:17.000000000 +0200
++++ b/meson.build	2023-09-15 16:02:13.261224027 +0200
+@@ -22,18 +22,6 @@
+ conf_data.set('fallback_audio_sample_fmt', get_option('fallback_audio_sample_fmt'))
+ 
+ version = '"@0@"'.format(meson.project_version())
+-git = find_program('git', native: true, required: false)
+-if git.found()
+-	git_commit = run_command([git, 'rev-parse', '--short', 'HEAD'], check: false)
+-	git_branch = run_command([git, 'rev-parse', '--abbrev-ref', 'HEAD'], check: false)
+-	if git_commit.returncode() == 0 and git_branch.returncode() == 0
+-		version = '"@0@-@1@ (" __DATE__ ", branch \'@2@\')"'.format(
+-			meson.project_version(),
+-			git_commit.stdout().strip(),
+-			git_branch.stdout().strip(),
+-		)
+-	endif
+-endif
+ 
+ add_project_arguments('-DWFRECORDER_VERSION=@0@'.format(version), language: 'cpp')
+ 

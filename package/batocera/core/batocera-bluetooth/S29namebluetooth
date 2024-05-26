@@ -1,0 +1,17 @@
+#!/bin/bash
+
+MAIN_CONF_FILE="/etc/bluetooth/main.conf"
+
+# run this command to get the desired adapter name
+info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+
+if [ -n "$info_output" ]; then
+    sed -i '/^\[General\]/a Name = '"$info_output" "$MAIN_CONF_FILE"
+
+    echo "Bluetooth adapter name has been set to: $info_output"
+else
+    # fallback to a default naming scheme
+    sed -i '/^\[General\]/a Name = %h-%d' "$MAIN_CONF_FILE"
+
+    echo "Falling back to hostname & adapter"
+fi

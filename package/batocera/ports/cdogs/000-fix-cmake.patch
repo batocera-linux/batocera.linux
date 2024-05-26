@@ -1,0 +1,9 @@
+--- a/src/cdogs/CMakeLists.txt	2023-07-23 11:10:55.933528411 +0200
++++ b/src/cdogs/CMakeLists.txt	2023-07-23 11:11:11.928905892 +0200
+@@ -247,5 +247,5 @@
+ 	yajl_s
+ 	SDL2::SDL2
+ 	SDL2_image::SDL2_image
+-	SDL2_mixer::SDL2_mixer
++	SDL2_mixer
+ 	${ENet_LIBRARIES})

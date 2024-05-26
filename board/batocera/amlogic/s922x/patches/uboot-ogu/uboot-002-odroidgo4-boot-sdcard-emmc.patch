@@ -1,0 +1,23 @@
+---
+ board/hardkernel/odroidgo4/odroidgo4.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/hardkernel/odroidgo4/odroidgo4.c b/board/hardkernel/odroidgo4/odroidgo4.c
+index 73d1695..9a1f35e 100755
+--- a/board/hardkernel/odroidgo4/odroidgo4.c
++++ b/board/hardkernel/odroidgo4/odroidgo4.c
+@@ -165,9 +165,9 @@ static void board_mmc_register(unsigned port)
+ }
+ int board_mmc_init(bd_t	*bis)
+ {
+-	board_mmc_register(SDIO_PORT_C);	// eMMC
+ 	board_mmc_register(SDIO_PORT_B);	// SD card
+-
++	board_mmc_register(SDIO_PORT_C);	// eMMC
++	
+ 	return 0;
+ }
+ #endif
+-- 
+2.44.0
+

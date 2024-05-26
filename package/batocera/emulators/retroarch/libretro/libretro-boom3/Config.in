@@ -1,0 +1,18 @@
+config BR2_PACKAGE_LIBRETRO_BOOM3
+    bool "libretro-boom3"
+    depends on BR2_PACKAGE_RETROARCH
+    depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBJPEG
+    select BR2_PACKAGE_LIBOGG
+    select BR2_PACKAGE_LIBVORBIS
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_ZLIB
+    help
+      boom3 is a Doom 3 GPL source port.
+      
+      https://github.com/libretro/boom3
+
+comment "BR2_PACKAGE_LIBRETRO_BOOM3 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

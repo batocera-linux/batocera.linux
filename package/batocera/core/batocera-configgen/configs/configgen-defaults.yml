@@ -57,6 +57,8 @@ apple2gs:
 arcadia:
   emulator: libretro
   core:     mame
+  options:
+    sharemameart: 0
 archimedes:
   emulator: libretro
   core:     mame
@@ -90,6 +92,9 @@ atomiswave:
 bbc:
   emulator: libretro
   core:     mame
+boom3:
+  emulator: libretro
+  core:     boom3
 c64:
   emulator: libretro
   core:     vice_x64
@@ -115,8 +120,8 @@ cave3rd:
   emulator: demul
   core:     demul
 cdi:
-  emulator: libretro
-  core:     same_cdi
+  emulator: mame
+  core:     mame
 cdogs:
   emulator: cdogs
   core:     cdogs
@@ -132,6 +137,11 @@ coco:
 colecovision:
   emulator: libretro
   core:     bluemsx
+corsixth:
+  emulator: corsixth
+  core:     corsixth
+  options:
+    hud_support: false
 crvision:
   emulator: libretro
   core:     mame
@@ -139,8 +149,8 @@ crvision:
 # D-L
 
 daphne:
-  emulator: daphne
-  core:     hypseus
+  emulator: hypseus-singe
+  core:     hypseus-singe
   options:
     hud_support: false
 devilutionx:
@@ -152,6 +162,9 @@ dos:
 dreamcast:
   emulator: libretro
   core:     flycast
+dxx-rebirth:
+  emulator: dxx-rebirth
+  core:     dxx-rebirth
 easyrpg:
   emulator: easyrpg
   core:     easyrpg
@@ -164,6 +177,15 @@ eduke32:
 electron:
   emulator: libretro
   core:     mame
+etlegacy:
+  emulator: etlegacy
+  core:     etlegacy
+fallout1-ce:
+  emulator: fallout1-ce
+  core:     fallout1-ce
+fallout2-ce:
+  emulator: fallout2-ce
+  core:     fallout2-ce
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -242,9 +264,19 @@ gx4000:
 gzdoom:
   emulator: gzdoom
   core:     gzdoom
+hcl:
+  emulator: hcl
+  core:     hcl
+  options:
+    bezel: none
 hikaru:
   emulator: demul
   core:     demul
+hurrican:
+  emulator: hurrican
+  core:     hurrican
+  options:
+    bezel: none
 ikemen:
   emulator: ikemen
   core:     ikemen
@@ -253,6 +285,9 @@ ikemen:
 intellivision:
   emulator: libretro
   core:     freeintv
+iortcw:
+  emulator: iortcw
+  core:     iortcw
 jaguar:
   emulator: libretro
   core:     virtualjaguar
@@ -294,11 +329,12 @@ megadrive:
   core:     genesisplusgx
 megaduck:
   emulator: libretro
-  core:     mame
+  core:     sameduck
 model2:
   emulator: model2emu
   core:     model2emu
   options:
+    videomode: max-1920x1080
     hud_support: false
 model3:
   emulator: supermodel
@@ -306,6 +342,9 @@ model3:
 moonlight:
   emulator: moonlight
   core:     moonlight
+  options:
+    bezel: none
+    hud_support: false
 mrboom:
   emulator: libretro
   core:     mrboom
@@ -326,16 +365,22 @@ msxturbor:
   core:     bluemsx
 mugen:
   emulator: mugen
-  core:     proton
+  core:     ge-custom
 fpinball:
   emulator: fpinball
   core:     fpinball
+multivision:
+  emulator: libretro
+  core:     gearsystem
 n64:
   emulator: mupen64plus
   core:     glide64mk2
 n64dd:
   emulator: mupen64plus
   core:     glide64mk2
+namco2x6:
+  emulator: play
+  core:     play
 naomi:
   emulator: libretro
   core:     flycast
@@ -354,6 +399,9 @@ neogeocd:
 nes:
   emulator: libretro
   core:     fceumm
+ngage:
+  emulator: eka2l1
+  core:     eka2l1
 ngp:
   emulator: libretro
   core:     mednafen_ngp
@@ -374,6 +422,15 @@ openbor:
   options:
     # none because some games fails by default with textures (street of rage 2x)
     bezel: none
+    hud_support: false
+openjazz:
+  emulator: openjazz
+  core:     openjazz
+openlara:
+  emulator: libretro
+  core:     openlara
+  options:
+    gfxbackend: gl
 
 # P-S
 
@@ -398,9 +455,12 @@ pdp1:
 pet:
   emulator: vice
   core:     xpet
+pico:
+  emulator: libretro
+  core:     genesisplusgx
 pico8:
   emulator: libretro
-  core:     retro8
+  core:     fake08
 plugnplay:
   emulator: libretro
   core:     mame
@@ -438,6 +498,12 @@ pv1000:
 pygame:
   emulator: pygame
   core:     pygame
+pyxel:
+  emulator: pyxel
+  core:     pyxel
+quake3:
+  emulator: ioquake3
+  core:     ioquake3
 raze:
   emulator: raze
   core:     raze
@@ -476,15 +542,29 @@ sg1000:
 sgb:
   emulator: libretro
   core:     mgba
+singe:
+  emulator: hypseus-singe
+  core:     hypseus-singe
+  options:
+    hud_support: false
 socrates:
   emulator: libretro
   core:     mame
 solarus:
   emulator: solarus
   core:     solarus
+sonic3-air:
+  emulator: sonic3-air
+  core:     sonic3-air
+sonic-mania:
+  emulator: sonic-mania
+  core:     sonic-mania
 sonicretro:
   emulator: sonic2013
   core:     sonic2013
+spectravideo:
+  emulator: openmsx
+  core:     openmsx
 steam:
   emulator: steam
   core:     steam
@@ -510,13 +590,24 @@ supervision:
   emulator: libretro
   core:     potator
 switch:
-  emulator: yuzu
-  core:     yuzu
+  emulator: suyu
+  core:     suyu
   options:
     hud_support: false
+systemsp:
+  emulator: libretro
+  core:     flycast
 
 # T-Z
 
+theforceengine:
+  emulator: theforceengine
+  core:     theforceengine
+thextech:
+  emulator: thextech
+  core:     thextech
+  options:
+    bezel: none
 thomson:
   emulator: libretro
   core:     theodore
@@ -532,9 +623,15 @@ triforce:
 tutor:
   emulator: libretro
   core:     mame
+tyrian:
+  emulator: tyrian
+  core:     tyrian
 tyrquake:
   emulator: libretro
   core:     tyrquake
+uqm:
+  emulator: uqm
+  core:     uqm
 uzebox:
   emulator: libretro
   core:     uzem
@@ -553,12 +650,20 @@ videopacplus:
 virtualboy:
   emulator: libretro
   core:     vb
+vis:
+  emulator: libretro
+  core:     mame
 vitaquake2:
   emulator: libretro
   core:     vitaquake2
+  options:
+    gfxbackend: glcore
 vsmile:
   emulator: libretro
   core:     mame
+voxatron:
+  emulator: lexaloffle
+  core:     vox_official
 wasm4:
   emulator: libretro
   core:     wasm4
@@ -570,12 +675,12 @@ wiiu:
   core:     cemu
 windows:
   emulator: wine
-  core:     proton
+  core:     ge-custom
   options:
     hud_support: false
 windows_installers:
   emulator: wine
-  core:     proton
+  core:     ge-custom
   options:
     hud_support: false
 wswan:
@@ -605,8 +710,8 @@ xbox:
   emulator: xemu
   core:     xemu
 xbox360:
-  emulator: xenia
-  core:     xenia
+  emulator: xenia-canary
+  core:     xenia-canary
   options:
     hud_support: false
 zc210:
@@ -618,3 +723,6 @@ zx81:
 zxspectrum:
   emulator: libretro
   core:     fuse
+vpinball:
+  emulator: vpinball
+  core:     vpinball

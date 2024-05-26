@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RTMIDI
+    bool "rtmidi"
+    select BR2_PACKAGE_ALSA_LIB
+    help
+      A set of C++ classes that provide a common API for realtime MIDI
+      input/output across Linux (ALSA & JACK)
+      
+      https://github.com/thestk/rtmidi

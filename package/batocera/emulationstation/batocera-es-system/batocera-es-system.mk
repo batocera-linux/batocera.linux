@@ -14,6 +14,8 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/es_systems.yml        \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/es_features.yml       \
 		$(@D)/es_external_translations.h \
+		$(@D)/es_keys_translations.h \
+                $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/blacklisted-words.txt \
 		$(CONFIG_DIR)/.config \
 		$(@D)/es_systems.cfg \
@@ -24,7 +26,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		$(@D)/roms $(BATOCERA_SYSTEM_ARCH)
 		# translations
 		mkdir -p $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales
-		echo "$(@D)/es_external_translations.h" | xgettext --language=C --add-comments=TRANSLATION -f - -o $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot --no-location --keyword=_
+		(echo "$(@D)/es_external_translations.h"; echo "$(@D)/es_keys_translations.h") | xgettext --language=C --add-comments=TRANSLATION -f - -o $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot --no-location --keyword=_
 		# remove the pot creation date always changing
 		sed -i '/^"POT-Creation-Date: /d' $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales/batocera-es-system.pot
 
@@ -32,7 +34,8 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 
 		# install staging
 		mkdir -p $(STAGING_DIR)/usr/share/batocera-es-system/locales
-		cp $(@D)/es_external_translations.h $(STAGING_DIR)/usr/share/batocera-es-system/
+		cp $(@D)/es_external_translations.h      $(STAGING_DIR)/usr/share/batocera-es-system/
+		cp $(@D)/es_keys_translations.h          $(STAGING_DIR)/usr/share/batocera-es-system/
 		cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales $(STAGING_DIR)/usr/share/batocera-es-system
 endef
 

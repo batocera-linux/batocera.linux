@@ -35,16 +35,6 @@ advision:
 #triforce:
 #  emulator: dolphin-triforce
 #  core:     dolphin-triforce
-gamecube:
-  options:
-    ubershaders: asynchronous_ubershader
-    # causes issues on nvidia+dolphin
-    bezel: none
-wii:
-  options:
-    ubershaders: asynchronous_ubershader
-    # causes issues on nvidia+dolphin
-    bezel: none
 plugnplay:
   emulator: mame
   core:     mame
@@ -82,8 +72,10 @@ adam:
   emulator: mame
   core:     mame
 arcadia:
-  emulator: mame
+  emulator: libretro
   core:     mame
+  options:
+    sharemameart: 0
 gmaster:
   emulator: mame
   core:     mame
@@ -147,3 +139,6 @@ hikaru:
 psvita:
   options:
     hud_support: false
+jaguar:
+  emulator: bigpemu
+  core:    bigpemu

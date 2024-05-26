@@ -1,0 +1,6 @@
+config BR2_PACKAGE_BATOCERA_WHEEL_CALIBRATOR
+	bool "batocera-wheel-calibrator"
+	select BR2_PACKAGE_PYTHON_PYUDEV
+
+	help
+	  wheel calibration support

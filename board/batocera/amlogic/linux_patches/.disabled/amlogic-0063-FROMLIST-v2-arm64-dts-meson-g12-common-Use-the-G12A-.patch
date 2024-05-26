@@ -1,0 +1,76 @@
+From 9bf0bf029cc3ddea57cab66ea49db0d69048ee99 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 22 Feb 2023 21:47:16 +0100
+Subject: [PATCH 063/120] FROMLIST(v2): arm64: dts: meson-g12-common: Use the
+ G12A UART compatible string
+
+Switch meson-12-common.dtsi to use the Meson G12A specific UART
+compatible string. This enables the "divide XTAL by 2" divider which
+improves support for UART attached Bluetooth modules (for example
+RTL8822CS) running at a baud rate of 1500000. Without dividing XTAL
+(24MHz) by 2 a baud rate of 1500000 cannot be generated cleanly and the
+resulting jitter breaks communication with the module.
+
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index bb2e86073261..ec78283d9a9e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -2040,7 +2040,8 @@ pwm_AO_cd: pwm@2000 {
+ 			};
+ 
+ 			uart_AO: serial@3000 {
+-				compatible = "amlogic,meson-gx-uart",
++				compatible = "amlogic,meson-g12a-uart",
++					     "amlogic,meson-gx-uart",
+ 					     "amlogic,meson-ao-uart";
+ 				reg = <0x0 0x3000 0x0 0x18>;
+ 				interrupts = <GIC_SPI 193 IRQ_TYPE_EDGE_RISING>;
+@@ -2050,7 +2051,8 @@ uart_AO: serial@3000 {
+ 			};
+ 
+ 			uart_AO_B: serial@4000 {
+-				compatible = "amlogic,meson-gx-uart",
++				compatible = "amlogic,meson-g12a-uart",
++					     "amlogic,meson-gx-uart",
+ 					     "amlogic,meson-ao-uart";
+ 				reg = <0x0 0x4000 0x0 0x18>;
+ 				interrupts = <GIC_SPI 197 IRQ_TYPE_EDGE_RISING>;
+@@ -2287,7 +2289,8 @@ clk_msr: clock-measure@18000 {
+ 			};
+ 
+ 			uart_C: serial@22000 {
+-				compatible = "amlogic,meson-gx-uart";
++				compatible = "amlogic,meson-g12a-uart",
++					     "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x22000 0x0 0x18>;
+ 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>, <&clkc CLKID_UART2>, <&xtal>;
+@@ -2296,7 +2299,8 @@ uart_C: serial@22000 {
+ 			};
+ 
+ 			uart_B: serial@23000 {
+-				compatible = "amlogic,meson-gx-uart";
++				compatible = "amlogic,meson-g12a-uart",
++					     "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x23000 0x0 0x18>;
+ 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>, <&clkc CLKID_UART1>, <&xtal>;
+@@ -2305,7 +2309,8 @@ uart_B: serial@23000 {
+ 			};
+ 
+ 			uart_A: serial@24000 {
+-				compatible = "amlogic,meson-gx-uart";
++				compatible = "amlogic,meson-g12a-uart",
++					     "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x24000 0x0 0x18>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
+-- 
+2.34.1
+

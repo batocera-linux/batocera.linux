@@ -1,0 +1,303 @@
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus.dts
+new file mode 100644
+index 0000000000..91cf63ec26
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus.dts
+@@ -0,0 +1,262 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2019 BayLibre SAS. All rights reserved.
++ * Copyright (c) 2020 Christian Hewitt <christianshewitt@gmail.com>
++ * Copyright (c) 2021 flippy <uniqfreq@gmail.com>
++ */
++
++/dts-v1/;
++
++#include "meson-sm1-ac2xx.dtsi"
++#include <dt-bindings/sound/meson-g12a-tohdmitx.h>
++
++/ {
++	//compatible = "amediatech,x96-max-plus", "amlogic,sm1";
++	//model = "Shenzhen Amediatech Technology Co., Ltd X96 Max+";
++	compatible = "amlogic,sm1";
++	model = "AMedia X96 Max+";
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0xFFFFFFFF>;
++	};
++
++	sound {
++		compatible = "amlogic,axg-sound-card";
++		model = "X96-MAX";
++		audio-aux-devs = <&tdmout_b>;
++		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
++				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
++				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
++				"TDM_B Playback", "TDMOUT_B OUT";
++
++		assigned-clocks = <&clkc CLKID_MPLL2>,
++				  <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		status = "okay";
++
++		dai-link-0 {
++			sound-dai = <&frddr_a>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&frddr_b>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&frddr_c>;
++		};
++
++		/* 8ch hdmi interface */
++		dai-link-3 {
++			sound-dai = <&tdmif_b>;
++			dai-format = "i2s";
++			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
++			dai-tdm-slot-tx-mask-2 = <1 1>;
++			dai-tdm-slot-tx-mask-3 = <1 1>;
++			mclk-fs = <256>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
++			};
++		};
++
++		/* hdmi glue */
++		dai-link-4 {
++			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++	};
++
++	vddgpu: regulator-vddgpu {
++		compatible = "regulator-fixed";
++		regulator-name = "mali";
++		regulator-min-microvolt = <800000>;
++		regulator-max-microvolt = <800000>;
++		vin-supply = <&ao_5v>;
++		regulator-always-on;
++	};
++
++	openvfd {
++		compatible = "open,vfd";
++		dev_name = "openvfd";
++		status = "okay";
++	};
++};
++
++&vddcpu {
++	regulator-min-microvolt = <721000>;
++	regulator-max-microvolt = <1022000>;
++	pwms = <&pwm_AO_cd 1 1250 0>;
++};
++
++&arb {
++	status = "okay";
++};
++
++&clkc_audio {
++	status = "okay";
++};
++
++&ethmac {
++	status = "okay";
++
++	pinctrl-0 = <&eth_pins>, <&eth_rgmii_pins>;
++	pinctrl-names = "default";
++	phy-handle = <&external_phy>;
++
++	//phy-mode = "rgmii-txid";
++	//rx-internal-delay-ps = <800>;
++	phy-mode = "rgmii";
++	amlogic,tx-delay-ns = <2>;
++
++	snps,aal;
++	snps,rxpbl = <0x8>;
++	snps,txpbl = <0x8>;
++
++	rx-fifo-depth = <4096>;
++	tx-fifo-depth = <4096>;
++
++	nvmem-cells = <&eth_mac>;
++	nvmem-cell-names = "eth_mac";
++};
++
++&ext_mdio {
++	external_phy: ethernet-phy@0 {
++		/* 
++		 * Realtek RTL8211F (0x001cc916) 
++		 * JLSemi JL2101 (0x937c4032)
++		 */
++		reg = <0>;
++		max-speed = <1000>;
++
++		reset-assert-us = <30000>;
++		reset-deassert-us = <80000>;
++		reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
++
++		interrupt-parent = <&gpio_intc>;
++		/* MAC_INTR on GPIOZ_14 */
++		interrupts = <26 IRQ_TYPE_LEVEL_LOW>;
++	};
++};
++
++&frddr_a {
++	status = "okay";
++};
++
++&frddr_b {
++	status = "okay";
++};
++
++&frddr_c {
++	status = "okay";
++};
++
++&ir {
++	linux,rc-map-name = "rc-x96max";
++};
++
++&tdmif_b {
++	status = "okay";
++};
++
++&tdmout_b {
++	status = "okay";
++};
++
++&tohdmitx {
++	status = "okay";
++};
++
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth: bluetooth {
++		compatible = "realtek,rtl8822cs-bt";
++		interrupt-parent = <&gpio_intc>;
++		interrupts = <95 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "host-wakeup";
++		shutdown-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		max-speed = <2000000>;
++		clocks = <&wifi32k>;
++		clock-names = "lpo";
++		vbat-supply = <&vddao_3v3>;
++		vddio-supply = <&vddio_ao1v8>;
++		status = "disabled";
++	};
++};
++
++&mali {
++	mali-supply=<&vddgpu>;
++};
++
++&usb {
++	dr_mode = "host";
++};
++
++/* SDIO */
++&sd_emmc_a {
++	/delete-property/ sd-uhs-sdr104;
++	sd-uhs-sdr12;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
++	max-frequency = <100000000>;
++
++        //sd-uhs-ddr50;
++	//max-frequency = <50000000>;
++
++	//sd-uhs-sdr104;
++	//max-frequency = <200000000>;
++};
++
++/* SD card */
++&sd_emmc_b {
++	cap-sd-highspeed;
++	max-frequency = <25000000>;
++};
++
++/* eMMC */
++&sd_emmc_c {
++	max-frequency = <200000000>;
++};
++
++&cpu_opp_table {
++	opp-2016000000 {
++		opp-hz = /bits/ 64 <2016000000>;
++		opp-microvolt = <1000000>;
++	};
++
++	opp-2100000000 {
++		opp-hz = /bits/ 64 <2100000000>;
++		opp-microvolt = <1011000>;
++	};
++};
++
++&efuse {
++	eth_mac: eth_mac@0 {
++		reg = <0x0 0x06>;
++	};
++
++	bt_mac: bt_mac@6 {
++		reg = <0x6 0x06>;
++	};
++
++	wifi_mac: wifi_mac@12 {
++		reg = <0x0c 0x06>;
++	};
++
++	usid: usid@18 {
++		reg = <0x12 0x10>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus-100m.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus-100m.dts
+new file mode 100644
+index 0000000000..6c8fada1a6
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-max-plus-100m.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2019 BayLibre, SAS
++ * Author: flippy <flippy@sina.com>
++ */
++/dts-v1/;
++
++#include "meson-sm1-x96-max-plus.dts"
++
++/ {
++	model = "AMedia X96 Max+ (eth0 speed:100Mb/s)";
++};
++
++&external_phy  {
++	max-speed = <100>;
++};
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 2b00f9ec1a..ae2293b77f 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -88,6 +88,8 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-t95z-plus.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-vega-s96.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-wetek-core2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-s4-s805x2-aq222.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-max-plus.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-max-plus-100m.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-a95xf3-air-gbit.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-a95xf3-air.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-bananapi-m2-pro.dtb

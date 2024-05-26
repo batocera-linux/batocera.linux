@@ -1,0 +1,36 @@
+config BR2_PACKAGE_MALI_G31
+	bool "mali-G31"
+	depends on BR2_aarch64
+	select BR2_PACKAGE_LIBDRM
+	select BR2_PACKAGE_LIBGLVND
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_HAS_LIBMALI
+	select BR2_PACKAGE_HAS_LIBGBM
+	help
+	  Install the binary user-space libraries for the ARM Mali GPU
+	  suitable for Mali G31. This package requires a kernel with 
+	  the ARM Mali GPU kernel driver enabled, as found in the
+	  'mali-driver' package.
+
+if BR2_PACKAGE_MALI_G31
+
+config BR2_PACKAGE_PROVIDES_LIBMALI
+	default "mali-G31"
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-G31"
+
+config BR2_PACKAGE_PROVIDES_LIBEGL_WAYLAND
+	bool
+	default "mali-G31"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-G31"
+
+config BR2_PACKAGE_PROVIDES_LIBGBM
+	default "mali-G31"
+
+endif

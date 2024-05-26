@@ -1,0 +1,24 @@
+From c0bc2851e67647b65b4b65de6f5092a602a2c10a Mon Sep 17 00:00:00 2001
+From: troydm <d.geurkov@gmail.com>
+Date: Sun, 23 Jul 2023 12:27:49 +0300
+Subject: [PATCH] mt32 disabled for aarch64 by default fix
+
+---
+ configure.ac | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index e1f28bed97..84bf692241 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -858,6 +858,10 @@ if test x$enable_mt32 = xyes ; then
+       AC_MSG_RESULT(yes)
+       AC_DEFINE(C_MT32,1)
+       ;;
++    aarch64)
++      AC_MSG_RESULT(yes)
++      AC_DEFINE(C_MT32,1)
++      ;;
+     *)
+       enable_mt32=no
+       AC_MSG_RESULT(no)

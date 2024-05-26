@@ -1,0 +1,177 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi	2023-08-11 12:08:27.000000000 +0200
++++ b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi	2023-08-14 15:44:44.936280613 +0200
+@@ -167,20 +167,20 @@
+ 		};
+ 	};
+ 
++	/*spdif_dit: audio-codec-1 {
++		#sound-dai-cells = <0>;
++		compatible = "linux,spdif-dit";
++		status = "okay";
++		sound-name-prefix = "DIT";
++	};*/
+ 
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+ 		model = "KHADAS-VIM3";
+-		audio-aux-devs = <&tdmin_a>, <&tdmout_a>;
+-		audio-routing = "TDMOUT_A IN 0", "FRDDR_A OUT 0",
+-				"TDMOUT_A IN 1", "FRDDR_B OUT 0",
+-				"TDMOUT_A IN 2", "FRDDR_C OUT 0",
+-				"TDM_A Playback", "TDMOUT_A OUT",
+-				"TDMIN_A IN 0", "TDM_A Capture",
+-				"TDMIN_A IN 3", "TDM_A Loopback",
+-				"TODDR_A IN 0", "TDMIN_A OUT",
+-				"TODDR_B IN 0", "TDMIN_A OUT",
+-				"TODDR_C IN 0", "TDMIN_A OUT";
++		audio-aux-devs = <&tdmout_b>;
++		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
++				"TDM_B Playback", "TDMOUT_B OUT";
++				//"SPDIFOUT IN 0", "FRDDR_A OUT 3";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -195,29 +195,9 @@
+ 			sound-dai = <&frddr_a>;
+ 		};
+ 
+-		dai-link-1 {
+-			sound-dai = <&frddr_b>;
+-		};
+-
+-		dai-link-2 {
+-			sound-dai = <&frddr_c>;
+-		};
+-
+-		dai-link-3 {
+-			sound-dai = <&toddr_a>;
+-		};
+-
+-		dai-link-4 {
+-			sound-dai = <&toddr_b>;
+-		};
+-
+-		dai-link-5 {
+-			sound-dai = <&toddr_c>;
+-		};
+-
+ 		/* 8ch hdmi interface */
+ 		dai-link-6 {
+-			sound-dai = <&tdmif_a>;
++			sound-dai = <&tdmif_b>;
+ 			dai-format = "i2s";
+ 			dai-tdm-slot-tx-mask-0 = <1 1>;
+ 			dai-tdm-slot-tx-mask-1 = <1 1>;
+@@ -226,7 +206,7 @@
+ 			mclk-fs = <256>;
+ 
+ 			codec {
+-				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_A>;
++				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
+ 			};
+ 		};
+ 
+@@ -238,6 +218,16 @@
+ 				sound-dai = <&hdmi_tx>;
+ 			};
+ 		};
++
++		/* spdif or toslink interface */
++		/*dai-link-4 {
++			sound-dai = <&spdifout>;
++
++			codec-0 {
++				sound-dai = <&spdif_dit>;
++			};
++		};*/
++
+ 	};
+ 
+ 	wifi32k: wifi32k {
+@@ -256,6 +246,35 @@
+ 	status = "okay";
+ };
+ 
++&tdmif_b {
++	// uncomment next block  enable I2S output to GPIO HEADERS
++	//
++	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
++			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD1>;
++	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_SCLK>,
++				 <&clkc_audio AUD_CLKID_MST_B_LRCLK>;
++	assigned-clock-rates = <0>, <0>;
++	/*
++	pinctrl-0 = <&tdm_b_fs_pins>, <&tdm_b_dout0_pins>,
++		    <&tdm_b_sclk_pins>, <&mclk0_a_pins>;
++	*/
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&tdmout_b {
++	status = "okay";
++};
++
++/*&spdifout {
++	// uncomment next block  enable SPDIF output to GPIO HEADERS
++	//
++	//pinctrl-0 = <&spdif_ao_out_pins>;
++	//
++	pinctrl-names = "default";
++	status = "okay";
++};*/
++
+ &cec_AO {
+ 	pinctrl-0 = <&cec_ao_a_h_pins>;
+ 	pinctrl-names = "default";
+@@ -467,29 +486,6 @@
+ 	};
+ };
+ 
+-&tdmif_a {
+-	status = "okay";
+-};
+-
+-&tdmin_a {
+-	status = "okay";
+-};
+-
+-&tdmout_a {
+-	status = "okay";
+-};
+-
+-&toddr_a {
+-	status = "okay";
+-};
+-
+-&toddr_b {
+-	status = "okay";
+-};
+-
+-&toddr_c {
+-	status = "okay";
+-};
+ 
+ &tohdmitx {
+ 	status = "okay";
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts	2023-08-11 12:08:27.000000000 +0200
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts	2023-08-14 15:46:02.798022637 +0200
+@@ -33,18 +33,6 @@
+ 		regulator-always-on;
+ 	};
+ 
+-	sound {
+-		model = "G12B-KHADAS-VIM3L";
+-		audio-routing = "TDMOUT_A IN 0", "FRDDR_A OUT 0",
+-				"TDMOUT_A IN 1", "FRDDR_B OUT 0",
+-				"TDMOUT_A IN 2", "FRDDR_C OUT 0",
+-				"TDM_A Playback", "TDMOUT_A OUT",
+-				"TDMIN_A IN 0", "TDM_A Capture",
+-				"TDMIN_A IN 13", "TDM_A Loopback",
+-				"TODDR_A IN 0", "TDMIN_A OUT",
+-				"TODDR_B IN 0", "TDMIN_A OUT",
+-				"TODDR_C IN 0", "TDMIN_A OUT";
+-	};
+ };
+ 
+ &cpu0 {

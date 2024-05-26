@@ -1,0 +1,13 @@
+diff --git a/src/game/game.cc b/src/game/game.cc.new
+index c01b514e6e..bb607a4a54 100644
+--- a/src/game/game.cc
++++ b/src/game/game.cc.new
+@@ -151,7 +151,7 @@ int game_init(const char* windowTitle, bool isMapper, int font, int flags, int a
+ 
+     Config resolutionConfig;
+     if (config_init(&resolutionConfig)) {
+-        if (config_load(&resolutionConfig, "f1_res.ini", false)) {
++        if (config_load(&resolutionConfig, "/userdata/system/configs/fallout1/f1_res.ini", false)) {
+             int screenWidth;
+             if (config_get_value(&resolutionConfig, "MAIN", "SCR_WIDTH", &screenWidth)) {
+                 video_options.width = std::max(screenWidth, 640);

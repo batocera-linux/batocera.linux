@@ -1,0 +1,15 @@
+config BR2_PACKAGE_LEDSPICER
+    bool "ledspicer"
+    depends on BR2_PACKAGE_HAS_UDEV
+    select BR2_PACKAGE_TINYXML2
+    select BR2_PACKAGE_LIBUSB
+    select BR2_PACKAGE_PULSEAUDIO
+    select BR2_PACKAGE_ALSA_LIB
+    select BR2_PACKAGE_LIBTOOL
+    select BR2_PACKAGE_LIBPTHREAD_STUBS
+    select BR2_PACKAGE_PIGPIO if BR2_arm || BR2_aarch64
+    help
+        LED Manager for Linux
+
+        https://sourceforge.net/projects/ledspicer/
+        https://github.com/meduzapat/LEDSpicer

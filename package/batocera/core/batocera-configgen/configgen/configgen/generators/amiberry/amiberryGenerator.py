@@ -17,7 +17,7 @@ eslog = get_logger(__name__)
 
 class AmiberryGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         retroconfig = UnixSettings(batoceraFiles.amiberryRetroarchCustom, separator=' ')
         if not os.path.exists(dirname(batoceraFiles.amiberryRetroarchCustom)):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))
@@ -166,9 +166,11 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
 
-            # fix sound buffer
+            # fix sound buffer and frequency
             commandArray.append("-s")
             commandArray.append("sound_max_buff=4096")
+            commandArray.append("-s")
+            commandArray.append("sound_frequency=48000")
 
             os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray,env={

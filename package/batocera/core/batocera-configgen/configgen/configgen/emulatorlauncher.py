@@ -24,6 +24,7 @@ import subprocess
 import batoceraFiles
 import utils.videoMode as videoMode
 import utils.gunsUtils as gunsUtils
+import utils.wheelsUtils as wheelsUtils
 ############################
 from utils.logger import get_logger
 eslog = get_logger(__name__)
@@ -139,6 +140,9 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         if "emulator" in system.config:
             eslog.debug("emulator: {}".format(system.config["emulator"]))
 
+    # metadata
+    metadata = controllers.getGamesMetaData(systemName, rom)
+
     # search guns in case use_guns is enabled for this game
     # force use_guns in case es tells it has a gun
     if system.isOptSet('use_guns') == False and args.lightgun:
@@ -152,6 +156,19 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     else:
         eslog.info("guns disabled.");
         guns = []
+
+    # search wheels in case use_wheels is enabled for this game
+    # force use_wheels in case es tells it has a wheel
+    wheelProcesses = None
+    if system.isOptSet('use_wheels') == False and args.wheel:
+        system.config["use_wheels"] = True
+    if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+        deviceInfos = controllers.getDevicesInformation()
+        (wheelProcesses, playersControllers, deviceInfos) = wheelsUtils.reconfigureControllers(playersControllers, system, rom, metadata, deviceInfos)
+        wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
+    else:
+        eslog.info("wheels disabled.")
+        wheels = []
 
     # find the generator
     generator = GeneratorImporter.getGenerator(system.config['emulator'])
@@ -213,6 +230,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
+        if args.netplaysession is not None:
+            system.config["netplay.server.session"] = args.netplaysession
 
         # autosave arguments
         if args.state_slot is not None:
@@ -222,7 +241,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         if args.state_filename is not None:
             system.config["state_filename"] = args.state_filename
 
-        if generator.getMouseMode(system.config):
+        if generator.getMouseMode(system.config, rom):
             mouseChanged = True
             videoMode.changeMouse(True)
 
@@ -246,7 +265,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            cmd = generator.generate(system, rom, playersControllers, guns, gameResolution)
+            cmd = generator.generate(system, rom, playersControllers, metadata, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))
@@ -286,6 +305,12 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             except Exception:
                 pass # don't fail
 
+        if wheelProcesses is not None and len(wheelProcesses) > 0:
+            try:
+                wheelsUtils.resetControllers(wheelProcesses)
+            except Exception:
+                eslog.error("hum, unable to reset wheel controllers !")
+                pass # don't fail
     # exit
     return exitCode
 
@@ -567,12 +592,14 @@ if __name__ == '__main__':
     parser.add_argument("-netplaypass",    help="enable spectator mode",       type=str, required=False)
     parser.add_argument("-netplayip",      help="remote ip",                   type=str, required=False)
     parser.add_argument("-netplayport",    help="remote port",                 type=str, required=False)
+    parser.add_argument("-netplaysession", help="netplay session",             type=str, required=False)
     parser.add_argument("-state_slot",     help="state slot",                  type=str, required=False)
     parser.add_argument("-state_filename", help="state filename",              type=str, required=False)
     parser.add_argument("-autosave",       help="autosave",                    type=str, required=False)
     parser.add_argument("-systemname",     help="system fancy name",           type=str, required=False)
     parser.add_argument("-gameinfoxml",    help="game info xml",               type=str, nargs='?', default='/dev/null', required=False)
     parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
+    parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
 
     args = parser.parse_args()
     try:

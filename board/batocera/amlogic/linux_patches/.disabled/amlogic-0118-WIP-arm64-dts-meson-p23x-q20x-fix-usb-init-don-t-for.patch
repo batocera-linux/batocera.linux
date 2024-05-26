@@ -1,0 +1,42 @@
+From 295d65e7123908556d5fb78683c256459b9be871 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 14 Feb 2023 08:28:00 +0000
+Subject: [PATCH 118/120] WIP: arm64: dts: meson: p23x-q20x: fix usb init -
+ don't force otg
+
+Forcing OTG in the p23x-q20x dtsi causes USB problems on multiple boards:
+
+[    1.246056] dwc2 c9100000.usb: supply vusb_d not found, using dummy regulator
+[    1.246442] dwc2 c9100000.usb: supply vusb_a not found, using dummy regulator
+[    1.258386] dwc2 c9100000.usb: dwc2_core_reset: HANG! Soft Reset timeout GRSTCTL_CSFTRST
+[    1.258404] dwc2: probe of c9100000.usb failed with error -16
+
+Using 'peripheral' mode clears the error but still leaves boards without working
+USB ports. Using 'host' mode results in working USB ports:
+
+[    1.760353] dwc2 c9100000.usb: supply vusb_d not found, using dummy regulator
+[    1.760706] dwc2 c9100000.usb: supply vusb_a not found, using dummy regulator
+[    1.761307] dwc2 c9100000.usb: EPs: 7, dedicated fifos, 712 entries in SPRAM
+
+Define 'host' dr_mode as a safer default for all GXL/GXM boards that
+consume the common dtsi.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+index b0d008fc5f7a..025cefd6939a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+@@ -324,5 +324,5 @@ &uart_AO {
+ 
+ &usb {
+ 	status = "okay";
+-	dr_mode = "otg";
++	dr_mode = "host";
+ };
+-- 
+2.34.1
+

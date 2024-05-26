@@ -10,7 +10,7 @@ import zipfile
 
 class SolarusGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # basis
         commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
@@ -21,7 +21,7 @@ class SolarusGenerator(Generator):
             if nplayer == 1:
                 if "hotkey" in pad.inputs and "start" in pad.inputs:
                     commandArray.append("-quit-combo={}+{}".format(pad.inputs["hotkey"].id, pad.inputs["start"].id))
-                    commandArray.append(f"-joypad-num={pad.index}")
+            commandArray.append(f"-joypad-num{nplayer}={pad.index}")
             nplayer += 1
 
         # player pad
@@ -31,7 +31,10 @@ class SolarusGenerator(Generator):
         commandArray.append(rom)
 
         return Command.Command(array=commandArray, env={
-                'SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS': '0' })
+            'SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS': '0' ,
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_JOYSTICK_HIDAPI": "0"
+        })
 
     @staticmethod
     def padConfig(system, playersControllers):

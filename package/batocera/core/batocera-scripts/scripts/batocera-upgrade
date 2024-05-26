@@ -34,7 +34,7 @@ do_badgeines() {
             COUNT=$((COUNT+5))
             sleep 0.1
         else
-            CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\)[ \t].*$'+'\1'+)
+            CURVAL=$(stat --printf="%s" "/userdata/system/upgrade/boot.tar.xz")
             CURVAL=$((CURVAL / 1024 / 1024))
             PER=$((CURVAL * 100 / TARVAL))
             echo "$CURVAL of $TARVAL MB downloaded ... >>> ${PER}%"
@@ -51,6 +51,7 @@ echo "Starting the upgrade..."
 updateurl="https://updates.batocera.org"
 
 board=$(cat /boot/boot/batocera.board)
+oldboard="$board"
 test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
 
 updatetype="$(/usr/bin/batocera-settings-get updates.type)"
@@ -60,7 +61,7 @@ settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 # force a default value in case the value is removed or miswritten
-test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
+test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly" && updatetype="stable"
 
 # custom the url directory
 DWD_HTTP_DIR="${updateurl}/${board}/${updatetype}/last"
@@ -73,48 +74,71 @@ test $# -eq 1 && DWD_HTTP_DIR="$1"
 
 # --- Prepare file downloads ---
 
-# download directory
-mkdir -p /userdata/system/upgrade || exit 1
+# Check if "manual" argument is provided
+if [ "$1" == "manual" ]; then
+    # Check if the local file exists
+    if [ -f "/userdata/system/upgrade/boot.tar.xz" ]; then
+        size=$(du -m "/userdata/system/upgrade/boot.tar.xz" | awk '{print $1}')
+        echo "Using local file: /userdata/system/upgrade/boot.tar.xz (${size}MB)"
+    else
+        echo "Error: Local file /userdata/system/upgrade/boot.tar.xz not found."
+        exit 1
+    fi
+else
+    # download directory
+    mkdir -p /userdata/system/upgrade || exit 1
 
-# get size to download
-url="${DWD_HTTP_DIR}/boot.tar.xz"
-echo "url: ${url}"
-headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
-test $? -eq 0 || exit 1
-size=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
-size=$((size / 1024 / 1024))
-test $? -eq 0 || exit 1
-echo "need to download ${size}mb"
+    # get size to download
+    url="${DWD_HTTP_DIR}/boot.tar.xz"
+    echo "url: ${url}"
+    headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
+    test $? -eq 0 || exit 1
+    size=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
+    size=$((size / 1024 / 1024))
+    test $? -eq 0 || exit 1
+    echo "need to download ${size}mb"
+fi
 
 # check free space on fs
-for fs in /userdata /boot
+if [ "$1" != "manual" ]; then
+    filesystems="/userdata /boot"
+else
+    filesystems="/boot"
+fi
+
+# Check free space on filesystems
+for fs in $filesystems
 do
     freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
     test $? -eq 0 || exit 1
     if test "${size}" -gt "${freespace}"
     then
-        echo "Not enough space on ${fs} to download the update"
+        echo "Not enough space on ${fs} to perform the update"
         exit 1
     fi
 done
 
 ##### Up to this the GUI was not used, now do_upgmsg will automatically decide which output to use
 # download
-if [ $TERMINAL -eq 0 ]; then
-    # download inside ES with badge
-    touch "/userdata/system/upgrade/boot.tar.xz"
-    do_badgeines "${size}" &
-    GETPERPID=$!
-    curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
-    do_upgmsg "Calculating md5 checksum ..."
-else
-    # download inside SSH or terminal
-    wget -U "batocera-upgrade" -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
-	echo "Check proper file download, checking md5sum - please wait"
+if [ "$1" != "manual" ]; then
+    if [ $TERMINAL -eq 0 ]; then
+        # download inside ES with badge
+        touch "/userdata/system/upgrade/boot.tar.xz"
+        do_badgeines "${size}" &
+        GETPERPID=$!
+        curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+        do_upgmsg "Calculating md5 checksum ..."
+    else
+        # download inside SSH or terminal
+        curl -A "batocera-upgrade" -fL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+        echo "Check proper file download, checking md5sum - please wait"
+    fi
 fi
 
 # try to download an md5 checksum
-curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
+if [ "$1" != "manual" ]; then
+    curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
+fi
 if test -e "/userdata/system/upgrade/boot.tar.xz.md5"
 then
     DISTMD5=$(cat "/userdata/system/upgrade/boot.tar.xz.md5")
@@ -186,6 +210,13 @@ sync
 
 # exit from ES-badge without additional messages
 [ $TERMINAL -eq 0 ] && exit 0
+
+# verify update is for same board, provide a warning if not
+newboard=$(cat /boot/boot/batocera.board)
+if [ "$oldboard" != "$newboard" ]
+then
+    echo; echo "WARNING: Current board is ${oldboard}, applied update is for ${newboard}"
+fi
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0

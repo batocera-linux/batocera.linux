@@ -15,6 +15,8 @@ ROMS = '/userdata/roms'
 esInputs = CONF + '/emulationstation/es_input.cfg'
 esSettings = CONF + '/emulationstation/es_settings.cfg'
 esGunsMetadata = "/usr/share/emulationstation/resources/gungames.xml"
+esWheelsMetadata = "/usr/share/emulationstation/resources/wheelgames.xml"
+esGamesMetadata = "/usr/share/emulationstation/resources/gamesdb.xml"
 batoceraConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
@@ -31,7 +33,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'vice'           : '/usr/bin/'
               , 'fsuae'          : '/usr/bin/fs-uae'
               , 'amiberry'       : '/usr/bin/amiberry'
-              , 'daphne'         : '/usr/bin/hypseus'
+              , 'hypseus-singe'  : '/usr/bin/hypseus'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
               , 'hatari'         : '/usr/bin/hatari'
@@ -39,6 +41,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
               , 'xemu'           : '/usr/bin/xemu'
               , 'gsplus'         : '/usr/bin/GSplus'
+              , 'applewin'       : '/usr/bin/applewin'
               , 'fba2x'          : '/usr/bin/fba2x'
 }
 
@@ -91,7 +94,7 @@ dosboxStagingConfig = dosboxStagingCustom + '/dosbox.conf'
 dosboxxCustom = CONF + '/dosbox'
 dosboxxConfig = dosboxxCustom + '/dosboxx.conf'
 
-fsuaeBios = BIOS
+fsuaeBios = BIOS + "/amiga"
 fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 
@@ -111,11 +114,12 @@ amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
 
 hatariConf = CONF + '/hatari/hatari.cfg'
 
-daphneHomedir = ROMS + '/daphne'
-daphneDatadir = CONF + '/daphne'
-daphneConfig = daphneDatadir+ '/hypinput.ini'
-daphneConfigfile = 'hypinput.ini'
-daphneSaves = SAVES + '/daphne'
+daphneRomdir = ROMS + '/daphne'
+singeRomdir = ROMS + '/singe'
+hypseusDatadir = CONF + '/hypseus-singe'
+hypseusConfig = hypseusDatadir+ '/hypinput.ini'
+hypseusConfigfile = 'hypinput.ini'
+hypseusSaves = SAVES + '/hypseus'
 
 flycastCustom = CONF + '/flycast'
 flycastMapping = flycastCustom + '/mappings'

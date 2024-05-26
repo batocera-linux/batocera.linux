@@ -284,13 +284,13 @@ index 0000000..66b5196
 +	m_devices_btn[idx][2] = event.value;
 +	break;
 +      case BTN_MIDDLE:
-+	m_devices_btn[idx][1] = event.value;
-+	break;
-+      case BTN_1:
 +	m_devices_btn[idx][3] = event.value;
 +	break;
-+      case BTN_2:
++      case BTN_1:
 +	m_devices_btn[idx][4] = event.value;
++	break;
++      case BTN_2:
++	m_devices_btn[idx][1] = event.value;
 +	break;
 +      default:
 +	break;

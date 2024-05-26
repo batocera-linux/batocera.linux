@@ -12,7 +12,22 @@ fmtowns:
   emulator: libretro
   core:     mame
 model3:
+  emulator: supermodel
+  core:     supermodel-legacy
   options:
     videomode: max-720x576
+    decorations: none
+    hud_support: none
+scummvm:
+  emulator: scummvm
+  core:     scummvm
+  options:
+    decorations: none
+    hud_support: none
+quake3:
+  emulator: ioquake3
+  core:     ioquake3
+  options:
+    videomode: max-1280x720
     decorations: none
     hud_support: none

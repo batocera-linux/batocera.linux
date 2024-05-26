@@ -3,11 +3,10 @@
 # libretro-mame
 #
 ################################################################################
-# Version: Commits on Jan 13, 2023 (v0.251)
-LIBRETRO_MAME_VERSION = f7761a9902d59030882c58d4482446196e748c50
+
+LIBRETRO_MAME_VERSION = lrmame0265
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
-LIBRETRO_MAME_DEPENDENCIES = retroarch
 
 # Limit number of jobs not to eat too much RAM....
 LIBRETRO_MAME_MAX_JOBS = 16
@@ -17,8 +16,14 @@ ifeq ($(BR2_x86_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
 else ifeq ($(BR2_i386),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
+else ifeq ($(BR2_RISCV_64),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=riscv64 PLATFORM=riscv64
+else ifeq ($(BR2_riscv),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=riscv PLATFORM=riscv
 else ifeq ($(BR2_arm),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
+# workaround for linkage failure using ld on arm 32-bit targets
+LIBRETRO_MAME_ARCHOPTS += -fuse-ld=gold -Wl,--long-plt
 # workaround for asmjit broken build system (arm backend is not public)
 LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
 else ifeq ($(BR2_aarch64),y)

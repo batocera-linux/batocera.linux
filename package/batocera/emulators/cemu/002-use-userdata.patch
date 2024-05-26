@@ -15,15 +15,15 @@ diff --git a/src/Cemu/Logging/CemuLogging.cpp b/src/Cemu/Logging/CemuLogging.cpp
 index 28a86427f6..a4f78b6d94 100644
 --- a/src/Cemu/Logging/CemuLogging.cpp
 +++ b/src/Cemu/Logging/CemuLogging.cpp
-@@ -98,7 +98,7 @@ void cemuLog_createLogFile(bool triggeredByCrash)
- 	if (LogContext.file_stream.is_open())
- 		return;
+@@ -94,7 +94,7 @@ void cemuLog_thread()
  
--	const auto path = ActiveSettings::GetUserDataPath("log.txt");
-+	const auto path = "/userdata/system/logs/cemu-log.txt";
- 	LogContext.file_stream.open(path, std::ios::out);
- 	if (LogContext.file_stream.fail())
- 	{
+ fs::path cemuLog_GetLogFilePath()
+ {
+-    return ActiveSettings::GetUserDataPath("log.txt");
++    return "/userdata/system/logs/cemu-log.txt";
+ }
+ 
+ void cemuLog_createLogFile(bool triggeredByCrash)
 diff --git a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp b/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
 index 565f4f8fc4..00e15c51f3 100644
 --- a/src/Common/ExceptionHandler/ExceptionHandler_win32.cpp
@@ -41,31 +41,21 @@ diff --git a/src/gui/CemuApp.cpp b/src/gui/CemuApp.cpp
 index 2c766f5bab..425a125e5a 100644
 --- a/src/gui/CemuApp.cpp
 +++ b/src/gui/CemuApp.cpp
-@@ -79,7 +79,7 @@ bool CemuApp::OnInit()
- 	fs::path exePath(standardPaths.GetExecutablePath().ToStdString());
- 	user_data_path = config_path = cache_path = data_path = exePath.parent_path();
+@@ -86,14 +86,13 @@ bool CemuApp::OnInit()
+ 			return dir;
+ 		};
+ 		wxString homeDir=wxFileName::GetHomeDir();
+-		user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), homeDir + wxS("/.local/share")) + "/" + appName).ToStdString();
+-		config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), homeDir + wxS("/.config")) + "/" + appName).ToStdString();
++		user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), wxS("/userdata/saves")) + "/" + "wiiu").ToStdString();
++		config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), wxS("/userdata/system/configs")) + "/" + appName.Lower()).ToStdString();
  #else
--	SetAppName("Cemu");
-+	SetAppName("cemu");
- 	wxString appName=GetAppName();
- 	#if BOOST_OS_LINUX
- 	standardPaths.SetFileLayout(wxStandardPaths::FileLayout::FileLayout_XDG);
-@@ -91,14 +91,14 @@ bool CemuApp::OnInit()
- 		return dir;
- 	};
- 	wxString homeDir=wxFileName::GetHomeDir();
--	user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), homeDir + wxS("/.local/share")) + "/" + appName).ToStdString();
--	config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), homeDir + wxS("/.config")) + "/" + appName).ToStdString();
-+	user_data_path = (getEnvDir(wxS("XDG_DATA_HOME"), wxS("/userdata/saves")) + "/" + "wiiu").ToStdString();
-+	config_path = (getEnvDir(wxS("XDG_CONFIG_HOME"), wxS("/userdata/system/configs")) + "/" + appName).ToStdString();
- 	#else
- 	user_data_path = config_path = standardPaths.GetUserDataDir().ToStdString();
- 	#endif
- 	data_path = standardPaths.GetDataDir().ToStdString();
--	cache_path = standardPaths.GetUserDir(wxStandardPaths::Dir::Dir_Cache).ToStdString();
--	cache_path /= appName.ToStdString();
-+ 
-+	cache_path = (getEnvDir(wxS("XDG_CACHE_HOME"), wxS("userdata/system/cache")) + "/" + appName).ToStdString();
+ 		user_data_path = config_path = standardPaths.GetUserDataDir().ToStdString();
  #endif
- 	auto failed_write_access = ActiveSettings::LoadOnce(user_data_path, config_path, cache_path, data_path);
- 	for (auto&& path : failed_write_access)
+ 		data_path = standardPaths.GetDataDir().ToStdString();
+-		cache_path = standardPaths.GetUserDir(wxStandardPaths::Dir::Dir_Cache).ToStdString();
+-		cache_path /= appName.ToStdString();
++		cache_path = (getEnvDir(wxS("XDG_CACHE_HOME"), wxS("userdata/system/cache")) + "/" + appName.Lower()).ToStdString();
+ #endif
+ 	}
+ 

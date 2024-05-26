@@ -6,7 +6,7 @@ from Emulator import Emulator
 import configparser
 import controllersConfig
 
-def setViceConfig(viceConfigFile, system, guns, rom):
+def setViceConfig(viceConfigFile, system, metadata, guns, rom):
     
     # Path
     viceController = viceConfigFile + "/sdl-joymap.vjm"
@@ -40,28 +40,26 @@ def setViceConfig(viceConfigFile, system, guns, rom):
     if not viceConfig.has_section(systemCore):
         viceConfig.add_section(systemCore)
 
-    viceConfig.set(systemCore, "SaveResourcesOnExit",    "1")
+    viceConfig.set(systemCore, "SaveResourcesOnExit",    "0")
     viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
     if system.isOptSet('noborder') and system.getOptBoolean('noborder') == True:
         viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
-        viceConfig.set(systemCore, "VICIIBorderMode",        "3")
+        viceConfig.set(systemCore, "VICBorderMode",        "3")
     else:
         viceConfig.set(systemCore, "SDLGLAspectMode",        "2")
-        viceConfig.set(systemCore, "VICIIBorderMode",        "0")
-    viceConfig.set(systemCore, "VICIIFullscreen",        "1")
-    viceConfig.set(systemCore, "VICIISDLFullscreenMode", "0")
-    viceConfig.set(systemCore, "WarpMode",               "0")
+        viceConfig.set(systemCore, "VICBorderMode",        "0")
+    viceConfig.set(systemCore, "VICFullscreen",        "1")
     if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
-        gunsmetadata = controllersConfig.getGameGunsMetaData(system.name, rom)
-        if "gun" in gunsmetadata and gunsmetadata["gun"] == "stack_light_rifle":
+        if "gun_type" in metadata and metadata["gun_type"] == "stack_light_rifle":
             viceConfig.set(systemCore, "JoyPort1Device",             "15")
         else:
             viceConfig.set(systemCore, "JoyPort1Device",             "14")
     else:
         viceConfig.set(systemCore, "JoyPort1Device",             "1")
     viceConfig.set(systemCore, "JoyDevice1",             "4")
-    viceConfig.set(systemCore, "JoyDevice2",             "4")
+    if not systemCore == "VIC20":
+        viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  viceController)
 
     # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value

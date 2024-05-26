@@ -1,0 +1,106 @@
+From a5e8c3a310f9dac3ccc7537544e5288d1daadf66 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 10 Mar 2014 12:27:03 +0000
+Subject: [PATCH 04/58] Add support for various GLES extensions
+
+Add support for:
+	EXT_occlusion_query_boolean
+	IMG_multisampled_render_to_texture
+	OES_matrix_palette
+---
+ src/mapi/glapi/gen/es_EXT.xml     | 41 ++++++++++++++++++++++++-------
+ src/mapi/glapi/gen/static_data.py |  6 +++++
+ 2 files changed, 38 insertions(+), 9 deletions(-)
+
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index 79761210760..03c78ef9ca5 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -285,28 +285,25 @@
+     <enum name="WEIGHT_ARRAY_BUFFER_BINDING_OES"          value="0x889E"/>
+     <enum name="MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES"    value="0x8B9E"/>
+ 
+-    <function name="CurrentPaletteMatrixOES" alias="CurrentPaletteMatrixARB"
+-	      exec="skip">
++    <function name="CurrentPaletteMatrixOES" es1="1.0" exec="dynamic">
+         <param name="matrixpaletteindex" type="GLuint"/>
+     </function>
+ 
+-    <!-- no offset -->
+-    <function name="LoadPaletteFromModelViewMatrixOES" exec="skip">
++    <function name="LoadPaletteFromModelViewMatrixOES" es1="1.0" exec="dynamic">
+     </function>
+ 
+-    <function name="MatrixIndexPointerOES" alias="MatrixIndexPointerARB"
+-	      exec="skip">
++    <function name="MatrixIndexPointerOES" es1="1.0" exec="dynamic">
+         <param name="size" type="GLint"/>
+         <param name="type" type="GLenum"/>
+         <param name="stride" type="GLsizei"/>
+-        <param name="pointer" type="const GLvoid *"/>
++        <param name="pointer" type="GLvoid *"/>
+     </function>
+ 
+-    <function name="WeightPointerOES" alias="WeightPointerARB" exec="skip">
++    <function name="WeightPointerOES" es1="1.0" exec="dynamic">
+         <param name="size" type="GLint"/>
+         <param name="type" type="GLenum"/>
+         <param name="stride" type="GLsizei"/>
+-        <param name="pointer" type="const GLvoid *"/>
++        <param name="pointer" type="GLvoid *"/>
+     </function>
+ </category>
+ 
+@@ -680,6 +677,32 @@
+     </enum>
+ </category>
+ 
++<!-- 74. GL_IMG_multisampled_render_to_texture -->
++<category name="GL_IMG_multisampled_render_to_texture" number="74">
++    <enum name="RENDERBUFFER_SAMPLES_IMG"                   value="0x9133"/>
++    <enum name="FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG"     value="0x9134"/>
++    <enum name="MAX_SAMPLES_IMG"                            value="0x9135"/>
++    <enum name="TEXTURE_SAMPLES_IMG"                        value="0x9136"/>
++
++    <function name="RenderbufferStorageMultisampleIMG" es2="2.0" exec="dynamic">
++        <param name="target" type="GLenum"/>
++        <param name="samples" type="GLsizei"/>
++        <param name="internalformat" type="GLenum"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++    </function>
++
++    <function name="FramebufferTexture2DMultisampleIMG" es2="2.0"
++              exec="dynamic">
++        <param name="target" type="GLenum"/>
++        <param name="attachment" type="GLenum"/>
++        <param name="textarget" type="GLenum"/>
++        <param name="texture" type="GLuint"/>
++        <param name="level" type="GLint"/>
++        <param name="samples" type="GLsizei"/>
++    </function>
++</category>
++
+ <!-- 87. GL_OES_EGL_image_external -->
+ <category name="GL_OES_EGL_image_external" number="87">
+     <enum name="TEXTURE_EXTERNAL_OES"                     value="0x8D65"/>
+diff --git a/src/mapi/glapi/gen/static_data.py b/src/mapi/glapi/gen/static_data.py
+index 82acbf627ef..21af0789fee 100644
+--- a/src/mapi/glapi/gen/static_data.py
++++ b/src/mapi/glapi/gen/static_data.py
+@@ -1692,6 +1692,12 @@ offsets = {
+     "TexPageCommitmentARB": 1656,
+     "TexturePageCommitmentEXT": 1657,
+     "TexPageCommitmentEXT": 1658,
++    "CurrentPaletteMatrixOES" : 1659,
++    "LoadPaletteFromModelViewMatrixOES" : 1660,
++    "MatrixIndexPointerOES" : 1661,
++    "WeightPointerOES" : 1662,
++    "RenderbufferStorageMultisampleIMG" : 1663,
++    "FramebufferTexture2DMultisampleIMG" : 1664,
+ }
+ 
+ functions = [
+-- 
+2.25.1
+

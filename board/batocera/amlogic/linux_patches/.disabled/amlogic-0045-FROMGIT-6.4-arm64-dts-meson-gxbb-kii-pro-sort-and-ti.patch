@@ -1,0 +1,86 @@
+From 5c659c53668a1a8dbe101959142bb9e468a7cd87 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 10 Feb 2023 02:16:12 +0000
+Subject: [PATCH 045/120] FROMGIT(6.4): arm64: dts: meson: gxbb-kii-pro: sort
+ and tidy the dts
+
+Alpha-sort the nodes, move the default line in the LED node to where it's
+normally found, and remove excess spacing. No functional changes.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Tested-by: Ferass El Hafidi <vitali64pmemail@protonmail.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ .../boot/dts/amlogic/meson-gxbb-kii-pro.dts   | 31 ++++++++-----------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
+index 5f2d4317ecfb..73ad0f5110f3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
+@@ -6,10 +6,10 @@
+ /dts-v1/;
+ 
+ #include "meson-gxbb-p20x.dtsi"
+-
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/leds/common.h>
++
+ / {
+ 	compatible = "videostrong,kii-pro", "amlogic,meson-gxbb";
+ 	model = "Videostrong KII Pro";
+@@ -18,9 +18,9 @@ leds {
+ 		compatible = "gpio-leds";
+ 		led {
+ 			gpios = <&gpio_ao GPIOAO_13 GPIO_ACTIVE_LOW>;
+-			default-state = "off";
+ 			color = <LED_COLOR_ID_RED>;
+ 			function = LED_FUNCTION_STATUS;
++			default-state = "off";
+ 		};
+ 	};
+ 
+@@ -34,24 +34,8 @@ button-reset {
+ 			gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_HIGH>;
+ 		};
+ 	};
+-
+ };
+ 
+-
+-
+-&uart_A {
+-	status = "okay";
+-	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
+-	pinctrl-names = "default";
+-	uart-has-rtscts;
+-
+-	bluetooth {
+-		compatible = "brcm,bcm4335a0";
+-	};
+-};
+-
+-
+-
+ &ethmac {
+ 	status = "okay";
+ 	pinctrl-0 = <&eth_rmii_pins>;
+@@ -78,3 +62,14 @@ eth_phy0: ethernet-phy@0 {
+ &ir {
+ 	linux,rc-map-name = "rc-videostrong-kii-pro";
+ };
++
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "brcm,bcm4335a0";
++	};
++};
+-- 
+2.34.1
+

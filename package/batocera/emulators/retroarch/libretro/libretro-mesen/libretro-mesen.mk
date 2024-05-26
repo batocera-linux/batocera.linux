@@ -3,13 +3,14 @@
 # libretro-mesen
 #
 ################################################################################
-# Version: Commits on Apr 8, 2022
-LIBRETRO_MESEN_VERSION = bb9ea02eba28682986044a6f49329ec533aa26ba
+# Version: Commits on Jan 30, 2024
+LIBRETRO_MESEN_VERSION = d6f2f1797694f87e698c737b068f621889e96fa9
 LIBRETRO_MESEN_SITE = $(call github,libretro,Mesen,$(LIBRETRO_MESEN_VERSION))
 LIBRETRO_MESEN_LICENSE = GPL
 
 define LIBRETRO_MESEN_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" GIT_VERSION="" -C $(@D)/Libretro -f Makefile
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    GIT_VERSION="" -C $(@D)/Libretro -f Makefile
 endef
 
 define LIBRETRO_MESEN_INSTALL_TARGET_CMDS

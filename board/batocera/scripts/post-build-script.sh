@@ -15,7 +15,7 @@ BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CO
 sed -i "s|^root:x:.*$|root:x:0:0:root:/userdata/system:/bin/bash|g" "${TARGET_DIR}/etc/passwd" || exit 1
 
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
-ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
+ln -sf "/userdata/system/.ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
 
 mkdir -p ${TARGET_DIR}/etc/emulationstation || exit 1
 ln -sf "/usr/share/emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg" || exit 1
@@ -28,6 +28,10 @@ rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
 # we have custom urandom scripts
 rm -f "${TARGET_DIR}/etc/init.d/S20urandom" || exit 1
+
+# use /userdata/system/iptables.conf for S35iptables
+rm -f "${TARGET_DIR}/etc/iptables.conf" || exit 1
+ln -sf "/userdata/system/iptables.conf" "${TARGET_DIR}/etc/iptables.conf" || exit 1
 
 # acpid requires /var/run, so, requires S03populate
 if test -e "${TARGET_DIR}/etc/init.d/S02acpid"
@@ -42,8 +46,8 @@ rm -f "${TARGET_DIR}/etc/init.d/S40xorg" || exit 1
 # remove the S10triggerhappy
 rm -f "${TARGET_DIR}/etc/init.d/S10triggerhappy" || exit 1
 
-# remove the S40bluetooth
-rm -f "${TARGET_DIR}/etc/init.d/S40bluetooth" || exit 1
+# remove the S40bluetoothd
+rm -f "${TARGET_DIR}/etc/init.d/S40bluetoothd" || exit 1
 
 # we want an empty boot directory (grub installation copy some files in the target boot directory)
 rm -rf "${TARGET_DIR}/boot/grub" || exit 1

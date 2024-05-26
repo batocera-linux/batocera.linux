@@ -1,0 +1,9 @@
+config BR2_PACKAGE_FHEROES2
+	bool "fheroes2"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+
+	help
+	  Free Heroes of Might and Magic 2.
+
+	  https://github.com/ihhub/fheroes2

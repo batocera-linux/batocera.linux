@@ -20,11 +20,20 @@ diff -Naur vitaquake2-0fc99af0936735198e1788fb943498be78a9e740.org/Makefile vita
 +    TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
 +    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
-+	CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -ffast-math -DARM 
-+    CFLAGS += -D_POSIX_C_SOURCE=199309L	
++	CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -ffast-math -DARM
++    CFLAGS += -D_POSIX_C_SOURCE=199309L
 +    GLES := 1
 +    GLES31 := 1
 +
  else ifneq (,$(findstring osx,$(platform)))
     TARGET := $(TARGET_NAME)_libretro.dylib
     fpic := -fPIC
+@@ -261,7 +261,7 @@
+ ifeq ($(GLES), 1)
+    HAVE_OPENGL = 0
+    CFLAGS += -DHAVE_OPENGLES
+-   GL_LIB += -lGLESv2
++   GL_LIB = -lGLESv2
+    ifeq ($(GLES31), 1)
+       CFLAGS += -DHAVE_OPENGLES3 -DHAVE_OPENGLES_3_1
+    else ifeq ($(GLES3), 1)

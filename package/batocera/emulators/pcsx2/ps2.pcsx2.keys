@@ -2,8 +2,13 @@
     "actions_player1": [
 	{
             "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -9 pcsx2"
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ]
+	},
+	{
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_ESC" ]
 	},
 	{
             "trigger": ["hotkey", "x"],

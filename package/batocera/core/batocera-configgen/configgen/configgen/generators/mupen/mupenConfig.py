@@ -8,7 +8,7 @@ import json
 def setMupenConfig(iniConfig, system, controllers, gameResolution):
 
     # Hotkeys
-    setHotKeyConfig(iniConfig, controllers)
+    setHotKeyConfig(iniConfig, controllers, system)
 
     # Paths
     if not iniConfig.has_section("Core"):
@@ -18,6 +18,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Core", "SaveStatePath",  batoceraFiles.mupenSaves)
     iniConfig.set("Core", "SaveSRAMPath",   batoceraFiles.mupenSaves)
     iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
+    iniConfig.set("Core", "SaveFilenameFormat", "1000") # forces savesstates with rom name
     # TODO : Miss Mupen64Plus\hires_texture
 
     # 4MB RAM Extention Pack
@@ -206,7 +207,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
                     iniConfig.add_section(custom_section)
                 iniConfig.set(custom_section, custom_option, str(system.config[user_config]))
 
-def setHotKeyConfig(iniConfig, controllers):
+def setHotKeyConfig(iniConfig, controllers, system):
     if not iniConfig.has_section("CoreEvents"):
         iniConfig.add_section("CoreEvents")
     iniConfig.set("CoreEvents", "Version", "1")
@@ -215,6 +216,23 @@ def setHotKeyConfig(iniConfig, controllers):
         if 'hotkey' in controllers['1'].inputs:
             if 'start' in controllers['1'].inputs:
                 iniConfig.set("CoreEvents", "Joy Mapping Stop", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['start'])))
+            if system.isOptSet("mupen64-controller1") and system.config["mupen64-controller1"] == "n64limited":
+                if 'y' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Save State", "")
+                if 'x' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Load State", "")
+                if 'pageup' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "")
+                if 'up' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "")
+                if 'right' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
+                if 'a' in controllers['1'].inputs:
+                    iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
+                if 'b' in controllers['1'].inputs:                   
+                    iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
+                return
+               
             if 'y' in controllers['1'].inputs:
                 iniConfig.set("CoreEvents", "Joy Mapping Save State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['y'])))
             if 'x' in controllers['1'].inputs:

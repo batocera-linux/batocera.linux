@@ -1,0 +1,29 @@
+From df325d11ba5958c576be5594b3fd08d934d4139f Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 14 Mar 2023 01:13:15 +0000
+Subject: [PATCH 120/120] WIP: media: meson: vdec: fix memory leak of
+ 'new_frame'
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Link: https://lore.kernel.org/r/202303120441.YFGHDOya-lkp@intel.com/
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/staging/media/meson/vdec/codec_hevc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/media/meson/vdec/codec_hevc.c b/drivers/staging/media/meson/vdec/codec_hevc.c
+index fcaaa1ad50b8..b0d8623c3c7d 100644
+--- a/drivers/staging/media/meson/vdec/codec_hevc.c
++++ b/drivers/staging/media/meson/vdec/codec_hevc.c
+@@ -731,6 +731,7 @@ codec_hevc_prepare_new_frame(struct amvdec_session *sess)
+ 	vbuf = v4l2_m2m_dst_buf_remove(sess->m2m_ctx);
+ 	if (!vbuf) {
+ 		dev_err(sess->core->dev, "No dst buffer available\n");
++		kfree(new_frame);
+ 		return NULL;
+ 	}
+ 
+-- 
+2.34.1
+

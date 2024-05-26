@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPENMSX_VERSION = RELEASE_18_0
+OPENMSX_VERSION = RELEASE_19_1
 OPENMSX_SITE = $(call github,openMSX,openMSX,$(OPENMSX_VERSION))
 OPENMSX_LICENSE = GPLv2
 OPENMSX_DEPENDENCIES = zlib sdl2 sdl2_ttf libpng tcl freetype
@@ -61,8 +61,7 @@ endef
 
 define OPENMSX_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/openmsx/msx1.openmsx.keys $(TARGET_DIR)/usr/share/evmapy
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/openmsx/msx2.openmsx.keys $(TARGET_DIR)/usr/share/evmapy
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/openmsx/*.keys $(TARGET_DIR)/usr/share/evmapy/
     cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/openmsx/settings.xml $(TARGET_DIR)/usr/share/openmsx
 endef
 

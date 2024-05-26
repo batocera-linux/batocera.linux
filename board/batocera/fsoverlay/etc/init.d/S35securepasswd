@@ -28,6 +28,7 @@ fi
 # write the /etc/shadow file
 SHADOWPASSWD=$(openssl passwd -1 "${MASTERPASSWD}")
 echo "root:${SHADOWPASSWD}:::::::" > /run/batocera.shadow
+echo "batocera::::::::" >> /run/batocera.shadow # required for su for flatpak/batocera user
 
 # secure samba
 mkdir -p "/var/lib/samba/private"

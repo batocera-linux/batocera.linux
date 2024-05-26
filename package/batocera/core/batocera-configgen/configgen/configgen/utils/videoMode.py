@@ -14,10 +14,19 @@ eslog = get_logger(__name__)
 # Set a specific video mode
 def changeMode(videomode):
     if checkModeExists(videomode):
-        cmd = f"batocera-resolution setMode \"{videomode}\""
-        if cmd is not None:
-            eslog.debug(f"setVideoMode({videomode}): {cmd} ")
-            os.system(cmd)
+        cmd = ["batocera-resolution", "setMode", videomode]
+        eslog.debug(f"setVideoMode({videomode}): {cmd}")
+        max_tries = 2  # maximum number of tries to set the mode
+        for i in range(max_tries):
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                eslog.debug(result.stdout.strip())
+                return
+            except subprocess.CalledProcessError as e:
+                eslog.error(f"Error setting video mode: {e.stderr}")
+                if i == max_tries - 1:
+                    raise
+                time.sleep(1)
 
 def getCurrentMode():
     proc = subprocess.Popen(["batocera-resolution currentMode"], stdout=subprocess.PIPE, shell=True)
@@ -25,15 +34,74 @@ def getCurrentMode():
     for val in out.decode().splitlines():
         return val # return the first line
 
+def getRefreshRate():
+    proc = subprocess.Popen(["batocera-resolution refreshRate"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    for val in out.decode().splitlines():
+        return val # return the first line
+
+def getScreensInfos(config):
+    outputs = getScreens()
+    res = []
+
+    # output 1
+    vo1 = getCurrentOutput()
+    resolution1 = getCurrentResolution()
+    res.append({"width": resolution1["width"], "height": resolution1["height"], "x": 0, "y": 0})
+
+    # output2
+    vo2 = None
+    # find the configured one
+    if "videooutput2" in config and config["videooutput2"] in outputs and config["videooutput2"] != vo1:
+        vo2 = config["videooutput2"]
+    # find the first one
+    for x in outputs:
+        if x != vo1 and vo2 is None:
+            vo2 = x
+    if vo2 is not None:
+        resolution2 = getCurrentResolution(vo2)
+        res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+
+    # output3
+    vo3 = None
+    # find the configured one
+    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput2"] != vo2:
+        vo3 = config["videooutput3"]
+    # find the first one
+    for x in outputs:
+        if x != vo1 and x != vo2 and vo3 is None:
+            vo3 = x
+    if vo3 is not None:
+        resolution3 = getCurrentResolution(vo3)
+        res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+
+    eslog.debug("Screens:")
+    eslog.debug(res)
+    return res
+
+def getScreens():    
+    proc = subprocess.Popen(["batocera-resolution listOutputs"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    return out.decode().splitlines()
+
 def minTomaxResolution():
     proc = subprocess.Popen(["batocera-resolution minTomaxResolution"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 
-def getCurrentResolution():
-    proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
+def getCurrentResolution(name = None):
+    if name is None:
+        proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
+    else:
+        proc = subprocess.Popen(["batocera-resolution --screen {} currentResolution".format(name)], stdout=subprocess.PIPE, shell=True)
+
     (out, err) = proc.communicate()
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
+
+def getCurrentOutput():
+    proc = subprocess.Popen(["batocera-resolution currentOutput"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    return out.decode().strip()
 
 def supportSystemRotation():
     proc = subprocess.Popen(["batocera-resolution supportSystemRotation"], stdout=subprocess.PIPE, shell=True)

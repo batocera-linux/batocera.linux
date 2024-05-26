@@ -1,0 +1,14 @@
+config BR2_PACKAGE_CORSIXTH
+	bool "corsixth"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_LUA
+	select BR2_PACKAGE_LUAFILESYSTEM
+	select BR2_PACKAGE_LPEG
+	select BR2_PACKAGE_LUASOCKET
+	select BR2_PACKAGE_LUASEC
+
+	help
+	  CorsixTH - Theme Hospital engine
+
+	  https://github.com/CorsixTH/CorsixTH

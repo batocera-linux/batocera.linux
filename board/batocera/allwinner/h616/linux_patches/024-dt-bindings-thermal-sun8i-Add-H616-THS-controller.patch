@@ -1,0 +1,89 @@
+From: Martin Botka <martin.botka@somainline.org>
+
+This controller is similar to the H6, but covers four sensors and uses
+slightly different calibration methods.
+Also the H616 requires to poke a bit in the SYS_CFG register range for
+correct operation, so add a phandle property to point there.
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../thermal/allwinner,sun8i-a83t-ths.yaml     | 34 +++++++++++++------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+index fbd421228..7e0cd9c15 100644
+--- a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
++++ b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+@@ -20,6 +20,7 @@ properties:
+       - allwinner,sun50i-a100-ths
+       - allwinner,sun50i-h5-ths
+       - allwinner,sun50i-h6-ths
++      - allwinner,sun50i-h616-ths
+ 
+   clocks:
+     minItems: 1
+@@ -48,6 +49,10 @@ properties:
+ 
+   nvmem-cell-names:
+     const: calibration
++  
++  allwinner,sram:
++    maxItems: 1
++    description: phandle to device controlling temperate offset SYS_CFG register
+ 
+   # See Documentation/devicetree/bindings/thermal/thermal-sensor.yaml for details
+   "#thermal-sensor-cells":
+@@ -63,6 +68,7 @@ allOf:
+             enum:
+               - allwinner,sun50i-a100-ths
+               - allwinner,sun50i-h6-ths
++              - allwinner,sun50i-h616-ths
+ 
+     then:
+       properties:
+@@ -80,6 +86,17 @@ allOf:
+         clock-names:
+           minItems: 2
+ 
++    - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: allwinner,sun50i-h616-ths
++
++    then:
++      properties:
++        allwinner,sram: false
++
+   - if:
+       properties:
+         compatible:
+@@ -96,17 +113,12 @@ allOf:
+         "#thermal-sensor-cells":
+           const: 1
+ 
+-  - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - allwinner,sun8i-h3-ths
+-              - allwinner,sun8i-r40-ths
+-              - allwinner,sun50i-a64-ths
+-              - allwinner,sun50i-a100-ths
+-              - allwinner,sun50i-h5-ths
+-              - allwinner,sun50i-h6-ths
++      not:
++        properties:
++          compatible:
++            contains:
++              enum:
++                - allwinner,sun8i-a83t-ths
+ 
+     then:
+       required:
+-- 
+2.45.0

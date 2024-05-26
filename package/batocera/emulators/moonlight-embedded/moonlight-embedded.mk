@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MOONLIGHT_EMBEDDED_VERSION = v2.5.3
+MOONLIGHT_EMBEDDED_VERSION = v2.7.0
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -14,7 +14,7 @@ MOONLIGHT_EMBEDDED_DEPENDENCIES = opus expat libevdev avahi alsa-lib udev \
 
 MOONLIGHT_EMBEDDED_CONF_OPTS = "-DCMAKE_INSTALL_SYSCONFDIR=/etc"
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+ifeq ($(BR2_PACKAGE_XORG7),y)
     MOONLIGHT_EMBEDDED_CONF_OPTS += -DENABLE_X11=ON
 else
     MOONLIGHT_EMBEDDED_CONF_OPTS += -DENABLE_X11=OFF
@@ -25,14 +25,20 @@ ifeq ($(BR2_PACKAGE_LIBVA),y)
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
+    MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
+    MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
 endif
 
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
+    mkdir -p $(TARGET_DIR)/usr/share/evmapy
+    mkdir -p $(TARGET_DIR)/usr/share/moonlight-embedded
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/moonlight.moonlight.keys \
+        $(TARGET_DIR)/usr/share/evmapy
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/moonlight.conf \
+        $(TARGET_DIR)/usr/share/moonlight-embedded/
     install -m 0755 \
 	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/batocera-moonlight \
 	    $(TARGET_DIR)/usr/bin/

@@ -1,0 +1,15 @@
+config BR2_PACKAGE_PYTHON_PYXEL
+	bool "python-pyxel"
+
+    depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+        select BR2_PACKAGE_HOST_RUSTC
+
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_HOST_PYTHON_MATURIN
+
+	help
+	  Pyxel is a retro game engine for Python.
+	  Inspired by other fantasy consoles like PICO-8 and TIC-80,
+	  it displays 16 colors, 4 sounds and is coded in Python
+	  
+	  https://github.com/kitao/pyxel

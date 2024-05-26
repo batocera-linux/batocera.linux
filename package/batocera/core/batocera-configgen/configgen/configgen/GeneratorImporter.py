@@ -75,9 +75,9 @@ def getGenerator(emulator):
         from generators.citra.citraGenerator import CitraGenerator
         return CitraGenerator()
 
-    if emulator == 'daphne' :
-        from generators.daphne.daphneGenerator import DaphneGenerator
-        return DaphneGenerator()
+    if emulator == 'hypseus-singe' :
+        from generators.hypseus_singe.hypseusSingeGenerator import HypseusSingeGenerator
+        return HypseusSingeGenerator()
 
     if emulator == 'cannonball' :
         from generators.cannonball.cannonballGenerator import CannonballGenerator
@@ -166,7 +166,11 @@ def getGenerator(emulator):
     if emulator == 'duckstation':
         from generators.duckstation.duckstationGenerator import DuckstationGenerator
         return DuckstationGenerator()
-
+    
+    if emulator == 'duckstation-legacy':
+        from generators.duckstation_legacy.duckstationLegacyGenerator import DuckstationLegacyGenerator
+        return DuckstationLegacyGenerator()
+    
     if emulator == 'drastic':
         from generators.drastic.drasticGenerator import DrasticGenerator
         return DrasticGenerator()
@@ -215,9 +219,9 @@ def getGenerator(emulator):
         from generators.fba2x.fba2xGenerator import Fba2xGenerator
         return Fba2xGenerator()
 
-    if emulator == 'yuzu':
-        from generators.yuzu.yuzuGenerator import YuzuGenerator
-        return YuzuGenerator()
+    if emulator == 'suyu':
+        from generators.suyu.suyuGenerator import SuyuGenerator
+        return SuyuGenerator()
 
     if emulator == 'ryujinx':
         from generators.ryujinx.ryujinxGenerator import RyujinxGenerator
@@ -238,6 +242,18 @@ def getGenerator(emulator):
     if emulator == 'hcl':
         from generators.hcl.hclGenerator import HclGenerator
         return HclGenerator()
+
+    if emulator == 'hurrican':
+        from generators.hurrican.hurricanGenerator import HurricanGenerator
+        return HurricanGenerator()
+
+    if emulator == 'tyrian':
+        from generators.tyrian.tyrianGenerator import TyrianGenerator
+        return TyrianGenerator()
+
+    if emulator == 'openjazz':
+        from generators.openjazz.openjazzGenerator import OpenJazzGenerator
+        return OpenJazzGenerator()
 
     if emulator == 'openmsx':
         from generators.openmsx.openmsxGenerator import OpenmsxGenerator
@@ -279,9 +295,73 @@ def getGenerator(emulator):
         from generators.bigpemu.bigpemuGenerator import BigPEmuGenerator
         return BigPEmuGenerator()
 
-    #if emulator == 'play':
-    #from generators.play.playGenerator import PlayGenerator
-    #return PlayGenerator(),
+    if emulator == 'pyxel':
+        from generators.pyxel.pyxelGenerator import PyxelGenerator
+        return PyxelGenerator()
+
+    if emulator == 'play':
+        from generators.play.playGenerator import PlayGenerator
+        return PlayGenerator()
+    
+    if emulator == "ioquake3":
+        from generators.ioquake3.ioquake3Generator import IOQuake3Generator
+        return IOQuake3Generator()
+
+    if emulator == "thextech":
+        from generators.thextech.thextechGenerator import TheXTechGenerator
+        return TheXTechGenerator()
+
+    if emulator == 'vpinball':
+        from generators.vpinball.vpinballGenerator import VPinballGenerator
+        return VPinballGenerator()
+
+    if emulator == 'applewin':
+        from generators.applewin.applewinGenerator import AppleWinGenerator
+        return AppleWinGenerator()
+
+    if emulator == 'corsixth':
+        from generators.corsixth.corsixthGenerator import CorsixTHGenerator
+        return CorsixTHGenerator()
+
+    if emulator == 'stella':
+        from generators.stella.stellaGenerator import StellaGenerator
+        return StellaGenerator()
+    
+    if emulator == "theforceengine":
+        from generators.theforceengine.theforceengineGenerator import TheForceEngineGenerator
+        return TheForceEngineGenerator()
+    
+    if emulator == "iortcw":
+        from generators.iortcw.iortcwGenerator import IORTCWGenerator
+        return IORTCWGenerator()
+
+    if emulator == "fallout1-ce":
+        from generators.fallout1.fallout1Generator import Fallout1Generator
+        return Fallout1Generator()
+
+    if emulator == "fallout2-ce":
+        from generators.fallout2.fallout2Generator import Fallout2Generator
+        return Fallout2Generator()
+
+    if emulator == "dxx-rebirth":
+        from generators.dxx_rebirth.dxx_rebirthGenerator import DXX_RebirthGenerator
+        return DXX_RebirthGenerator()
+
+    if emulator == "etlegacy":
+        from generators.etlegacy.etlegacyGenerator import ETLegacyGenerator
+        return ETLegacyGenerator()
+
+    if emulator == "sonic3-air":
+        from generators.sonic3_air.sonic3_airGenerator import Sonic3AIRGenerator
+        return Sonic3AIRGenerator()
+
+    if emulator == "sonic-mania":
+        from generators.sonic_mania.sonic_maniaGenerator import SonicManiaGenerator
+        return SonicManiaGenerator()
+
+    if emulator == "uqm":
+        from generators.uqm.uqmGenerator import UqmGenerator
+        return UqmGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator

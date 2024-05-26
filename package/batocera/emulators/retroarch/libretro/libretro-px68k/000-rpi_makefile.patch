@@ -2,7 +2,7 @@ diff --git a/Makefile.libretro b/Makefile.libretro
 index d0ebcd7..aff400f 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -65,6 +65,26 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -65,6 +65,28 @@ ifneq (,$(findstring unix,$(platform)))
  	fpic := -fPIC
  	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
  	FLAGS += -D__LINUX__
@@ -25,6 +25,8 @@ index d0ebcd7..aff400f 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CPU_FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CPU_FLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
  
  # OS X

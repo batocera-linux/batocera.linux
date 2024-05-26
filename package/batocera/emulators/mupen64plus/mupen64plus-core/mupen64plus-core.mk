@@ -3,8 +3,8 @@
 # mupen64plus-core
 #
 ################################################################################
-# Version.: Commits on Dec 3, 2022
-MUPEN64PLUS_CORE_VERSION = f63e1b35063241738d848f73311496b76c8aa918
+# Version.: Commits on Jan 25, 2024
+MUPEN64PLUS_CORE_VERSION = 860fac3fbae94194a392c1d9857e185eda6d083e
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -24,6 +24,12 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MUPEN64PLUS_CORE_DEPENDENCIES += rpi-userland
 	MUPEN64PLUS_GL_LDLIBS = -lbcm_host
 	MUPEN64PLUS_PARAMS = VC=1
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
+    MUPEN64PLUS_PARAMS += VULKAN=1
+else
+    MUPEN64PLUS_PARAMS += VULKAN=0
 endif
 
 ifeq ($(BR2_arm),y)
@@ -63,6 +69,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	MUPEN64PLUS_HOST_CPU = x86_64
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RISCV),y)
+	MUPEN64PLUS_HOST_CPU = riscv64
 endif
 
 define MUPEN64PLUS_CORE_BUILD_CMDS

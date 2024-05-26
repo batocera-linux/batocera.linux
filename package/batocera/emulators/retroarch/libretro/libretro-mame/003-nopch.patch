@@ -1,0 +1,24 @@
+From aa682ec86a8782813a4a3e1264d30607a870fda1 Mon Sep 17 00:00:00 2001
+From: sonninnos <tony@pihaus.org>
+Date: Mon, 31 Jul 2023 01:03:20 +0300
+Subject: [PATCH] Disable precompiled headers
+
+---
+ scripts/toolchain.lua | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/scripts/toolchain.lua b/scripts/toolchain.lua
+index 7438c35c11db..48ef9753abb7 100644
+--- a/scripts/toolchain.lua
++++ b/scripts/toolchain.lua
+@@ -747,6 +747,10 @@ function toolchain(_buildDir, _subDir)
+ 			linkoptions { "-fPIC" }
+ 		end
+ 
++		flags {
++			"NoPCH",
++		}
++
+ 		-- libretro only supports the retro OSD
+ 		_OPTIONS["osd"] = "retro"
+ 

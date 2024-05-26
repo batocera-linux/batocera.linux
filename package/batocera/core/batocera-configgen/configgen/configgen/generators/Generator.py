@@ -5,13 +5,13 @@ class Generator(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         pass
 
     def getResolutionMode(self, config):
         return config['videomode']
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return False
 
     def executionDirectory(self, config, rom):

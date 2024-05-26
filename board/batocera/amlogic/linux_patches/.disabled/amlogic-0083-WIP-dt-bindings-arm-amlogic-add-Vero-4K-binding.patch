@@ -1,0 +1,27 @@
+From 98ae62b3a7453b7210a56a97b0d78d5772f5d797 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 19 Jan 2022 02:40:20 +0000
+Subject: [PATCH 083/120] WIP: dt-bindings: arm: amlogic: add Vero 4K binding
+
+Add the board binding for the OSMC Vero 4K STB device
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 70706c8d5ed8..63a2093cb626 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -102,6 +102,7 @@ properties:
+               - libretech,aml-s905x-cc
+               - libretech,aml-s905x-cc-v2
+               - nexbox,a95x
++              - osmc,vero4k
+           - const: amlogic,s905x
+           - const: amlogic,meson-gxl
+ 
+-- 
+2.34.1
+

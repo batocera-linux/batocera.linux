@@ -1,0 +1,18 @@
+#!/bin/bash
+
+MODEL=$(cat /sys/firmware/devicetree/base/model)
+if test "${1}" = "start"
+then
+    case "${MODEL}" in
+	"OrangePi 800"|"OrangePi 4 LTS")
+	    modprobe sprdbt_tty
+	    modprobe sprdwl_ng
+	    ;;
+    esac
+fi
+
+if test "${1}" = "stop"
+then
+    rmmod sprdbt_tty
+    rmmod sprdwl_ng
+fi

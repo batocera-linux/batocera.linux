@@ -2,15 +2,15 @@ diff --git a/src/config/LaunchSettings.cpp b/src/config/LaunchSettings.cpp
 index 4447f9b..a567953 100644
 --- a/src/config/LaunchSettings.cpp
 +++ b/src/config/LaunchSettings.cpp
-@@ -69,6 +69,8 @@ bool LaunchSettings::HandleCommandline(const std::vector<std::wstring>& args)
+@@ -70,6 +70,8 @@ bool LaunchSettings::HandleCommandline(const std::vector<std::wstring>& args)
  
  		("force-interpreter", po::value<bool>()->implicit_value(true), "Force interpreter CPU emulation, disables recompiler")
+ 		("enable-gdbstub", po::value<bool>()->implicit_value(true), "Enable GDB stub to debug executables inside Cemu using an external debugger");
++		
++		("force-no-menubar", po::value<bool>()->implicit_value(true), "Force no menubar (cosmetic)");
  
-+		("force-no-menubar", po::value<bool>()->implicit_value(true), "Force no menubar (cosmetic)")
-+
- 		("act-url", po::value<std::string>(), "URL prefix for account server")
- 		("ecs-url", po::value<std::string>(), "URL for ECS service");
- 
+ 	po::options_description hidden{ "Hidden options" };
+ 	hidden.add_options()
 @@ -163,6 +165,9 @@ bool LaunchSettings::HandleCommandline(const std::vector<std::wstring>& args)
  		if(vm.count("force-interpreter"))
  			s_force_interpreter = vm["force-interpreter"].as<bool>();

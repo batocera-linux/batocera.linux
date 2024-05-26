@@ -1,0 +1,30 @@
+--- a/Sugarbox/Display.cpp	2023-09-07 15:05:08.741514363 +0200
++++ b/Sugarbox/Display.cpp	2023-09-07 15:05:33.406012612 +0200
+@@ -76,7 +76,7 @@
+ {
+    initializeOpenGLFunctions();
+ 
+-   glDisable(GL_MULTISAMPLE);
++   //glDisable(GL_MULTISAMPLE);
+ 
+    static const int coords[4][2] = {
+       { +1, -1/*, -1*/ },
+@@ -211,7 +211,7 @@
+    {
+       textures[0]->setData(QOpenGLTexture::BGRA, QOpenGLTexture::UInt8, (unsigned char*)framebufferArray_[0]);
+ 
+-      glDisable(GL_MULTISAMPLE);
++      //glDisable(GL_MULTISAMPLE);
+       glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
+       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+--- a/Sugarbox/Display.cpp	2023-09-10 13:43:04.946752683 +0200
++++ b/Sugarbox/Display.cpp	2023-09-11 16:56:32.510181489 +0200
+@@ -143,6 +143,7 @@
+       "}";
+ 
+    QString fragmentShader =
++      "precision mediump float;\n"
+       "uniform sampler2D texture;\n"
+       "varying vec2 vTexCoord;\n"
+       "varying vec2 vorigin;\n"

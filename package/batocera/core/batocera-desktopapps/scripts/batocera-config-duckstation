@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# when the program is called from a non X environment, handle the mouse
-# maybe an other choice is better
-
-if test -z "${DISPLAY}"
-then
-    export DISPLAY=:0.0
+# Check if DISPLAY is not set
+if [ -z "${DISPLAY}" ]; then
+    DISPLAY=:0.0
 fi
 
-# We don't have QT library installed on SBC
-if [-e /usr/bin/duckstation-qt] ; then
-    XDG_CONFIG_HOME=/userdata/system/configs XDG_DATA_HOME=/userdata/saves QT_QPA_PLATFORM=xcb /usr/bin/duckstation-qt
+# Check if Wayland is available
+if [ -n "${WAYLAND_DISPLAY}" ]; then
+    QT_QPA_PLATFORM=wayland
 else
-    XDG_CONFIG_HOME=/userdata/system/configs XDG_DATA_HOME=/userdata/saves /usr/bin/duckstation-nogui
+    QT_QPA_PLATFORM=xcb
 fi
 
+XDG_CONFIG_HOME=/userdata/system/configs \
+QT_QPA_PLATFORM="$QT_QPA_PLATFORM" \
+/usr/bin/duckstation-qt

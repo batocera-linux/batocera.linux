@@ -349,7 +349,7 @@ def getGuns():
         eslog.info("no gun found")
     return guns
 
-def gunNameFromPath(path):
+def shortNameFromPath(path):
     redname = os.path.splitext(os.path.basename(path))[0].lower()
     inpar   = False
     inblock = False
@@ -367,22 +367,48 @@ def gunNameFromPath(path):
             inblock = True
     return ret
 
-def getGameGunsMetaData(system, rom):
+def getGamesMetaData(system, rom):
     # load the database
-    tree = ET.parse(batoceraFiles.esGunsMetadata)
+    tree = ET.parse(batoceraFiles.esGamesMetadata)
     root = tree.getroot()
-    game = gunNameFromPath(rom)
+    game = shortNameFromPath(rom)
     res = {}
-    eslog.info("looking for gun metadata ({}, {})".format(system, game))
+    eslog.info("looking for game metadata ({}, {})".format(system, game))
+
+    targetSystem = system
+    # hardcoded list of system for arcade
+    # this list can be found in es_system.yml
+    # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
+    if system in ['naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'hypseus-singe', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
+        targetSystem = 'arcade'
+
     for nodesystem in root.findall(".//system"):
-        if nodesystem.get("name") == system:
-            for nodegame in nodesystem:
-                if nodegame.text in game:
-                    for attribute in nodegame.attrib:
-                        res[attribute] = nodegame.get(attribute)
-                        eslog.info("found gun metadata {}={}".format(attribute, res[attribute]))
-                    return res
+        for sysname in nodesystem.get("name").split(','):
+          if sysname == targetSystem:
+              # search the game named default
+              for nodegame in nodesystem.findall(".//game"):
+                  if nodegame.get("name") == "default":
+                      for child in nodegame:
+                          for attribute in child.attrib:
+                              key = "{}_{}".format(child.tag, attribute)
+                              res[key] = child.get(attribute)
+                              eslog.info("found game metadata {}={} (system level)".format(key, res[key]))
+                      break
+              for nodegame in nodesystem.findall(".//game"):
+                  if nodegame.get("name") != "default" and nodegame.get("name") in game:
+                      for child in nodegame:
+                          for attribute in child.attrib:
+                              key = "{}_{}".format(child.tag, attribute)
+                              res[key] = child.get(attribute)
+                              eslog.info("found game metadata {}={}".format(key, res[key]))
+                      return res
     return res
+
+def dev2int(dev):
+    matches = re.match(r"^/dev/input/event([0-9]*)$", dev)
+    if matches is None:
+        return None
+    return int(matches.group(1))
 
 def getDevicesInformation():
   groups    = {}
@@ -392,11 +418,11 @@ def getDevicesInformation():
   mouses    = []
   joysticks = []
   for ev in events:
-    matches = re.match(r"^/dev/input/event([0-9]*)$", str(ev.device_node))
-    if matches != None:
-      eventId = int(matches.group(1))
+    eventId = dev2int(str(ev.device_node))
+    if eventId != None:
       isJoystick = ("ID_INPUT_JOYSTICK" in ev.properties and ev.properties["ID_INPUT_JOYSTICK"] == "1")
-      isMouse    = ("ID_INPUT_MOUSE" in ev.properties and ev.properties["ID_INPUT_MOUSE"] == "1") or ("ID_INPUT_TOUCHPAD" in ev.properties and ev.properties["ID_INPUT_TOUCHPAD"] == "1")
+      isWheel    = ("ID_INPUT_WHEEL"    in ev.properties and ev.properties["ID_INPUT_WHEEL"] == "1")
+      isMouse    = ("ID_INPUT_MOUSE"    in ev.properties and ev.properties["ID_INPUT_MOUSE"] == "1") or ("ID_INPUT_TOUCHPAD" in ev.properties and ev.properties["ID_INPUT_TOUCHPAD"] == "1")
       group = None
       if "ID_PATH" in ev.properties:
         group = ev.properties["ID_PATH"]
@@ -405,8 +431,10 @@ def getDevicesInformation():
           joysticks.append(eventId)
         if isMouse:
           mouses.append(eventId)
+        devices[eventId] = { "node": ev.device_node, "group": group, "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
         if "ID_PATH" in ev.properties:
-          devices[eventId] = { "node": ev.device_node, "group": ev.properties["ID_PATH"], "isJoystick": isJoystick, "isMouse": isMouse }
+          if isWheel and "WHEEL_ROTATION_ANGLE" in ev.properties:
+              devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
           if group not in groups:
             groups[group] = []
           groups[group].append(ev.device_node)
@@ -415,8 +443,10 @@ def getDevicesInformation():
   res = {}
   for device in devices:
     d = devices[device]
-    dgroup = groups[d["group"]].copy()
-    dgroup.remove(d["node"])
+    dgroup = None
+    if d["group"] is not None:
+        dgroup = groups[d["group"]].copy()
+        dgroup.remove(d["node"])
     nmouse    = None
     njoystick = None
     if d["isJoystick"]:
@@ -424,11 +454,13 @@ def getDevicesInformation():
     nmouse = None
     if d["isMouse"]:
       nmouse = mouses.index(device)
-    res[d["node"]] = { "isJoystick": d["isJoystick"], "isMouse": d["isMouse"], "associatedDevices": dgroup, "joystick_index": njoystick, "mouse_index": nmouse }
+    res[d["node"]] = { "eventId": device, "isJoystick": d["isJoystick"], "isWheel": d["isWheel"], "isMouse": d["isMouse"], "associatedDevices": dgroup, "joystick_index": njoystick, "mouse_index": nmouse }
+    if "wheel_rotation" in d:
+        res[d["node"]]["wheel_rotation"] = d["wheel_rotation"]
   return res
 
 def getAssociatedMouse(devicesInformation, dev):
-    if dev not in devicesInformation:
+    if dev not in devicesInformation or devicesInformation[dev]["associatedDevices"] is None:
         return None
     for candidate in devicesInformation[dev]["associatedDevices"]:
         if devicesInformation[candidate]["isMouse"]:

@@ -1,0 +1,11 @@
+--- a/meson.build	2021-08-05 10:25:13.000000000 +0200
++++ b/meson.build	2023-09-23 18:31:46.320719682 +0200
+@@ -28,7 +28,7 @@
+ 
+ gen_version = vcs_tag(
+ 	command : ['./genversion.sh', 'meson'],
+-	replace_string : ['$GIT_BUILD_VERSION'],
++	replace_string : '$GIT_BUILD_VERSION',
+ 	input : 'version.h.template', output : 'version.h',
+  )
+ add_project_arguments('-DLINUX=1', language : 'cpp')

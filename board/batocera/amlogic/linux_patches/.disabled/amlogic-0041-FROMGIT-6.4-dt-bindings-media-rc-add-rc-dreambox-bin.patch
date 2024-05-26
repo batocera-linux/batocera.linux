@@ -1,0 +1,28 @@
+From 1b5d94d6c98f76a33fcc98f09a9e2c414cb6c4ee Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 1 Feb 2023 08:53:39 +0000
+Subject: [PATCH 041/120] FROMGIT(6.4): dt-bindings: media: rc: add rc-dreambox
+ binding
+
+Add a binding for the rc-dreambox remote keymap
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/media/rc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/media/rc.yaml b/Documentation/devicetree/bindings/media/rc.yaml
+index e732b7f3a635..e7d2ae5a7eb9 100644
+--- a/Documentation/devicetree/bindings/media/rc.yaml
++++ b/Documentation/devicetree/bindings/media/rc.yaml
+@@ -55,6 +55,7 @@ properties:
+       - rc-dm1105-nec
+       - rc-dntv-live-dvb-t
+       - rc-dntv-live-dvbt-pro
++      - rc-dreambox
+       - rc-dtt200u
+       - rc-dvbsky
+       - rc-dvico-mce
+-- 
+2.34.1
+

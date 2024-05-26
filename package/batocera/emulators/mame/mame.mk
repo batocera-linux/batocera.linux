@@ -1,42 +1,64 @@
 ################################################################################
 #
-# mame (Groovy Mame)
+# MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.251 - Switchres 2.002o
-MAME_VERSION = gm0251sr002o
+# Version: GroovyMAME 0.265 - Switchres 2.220c
+MAME_VERSION = gm0265sr220c
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
 
 MAME_CROSS_ARCH = unknown
-MAME_CROSS_OPTS =
+MAME_CROSS_OPTS = PRECOMPILE=0
 MAME_CFLAGS =
+MAME_LDFLAGS =
 
 # Limit number of jobs not to eat too much RAM....
 MAME_MAX_JOBS = 17
 MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(MAME_MAX_JOBS) ]; then echo $(MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)
 
+# Set PTR64 on/off according to architecture
+ifeq ($(BR2_ARCH_IS_64),y)
+MAME_CROSS_OPTS += PTR64=1
+else
+MAME_CROSS_OPTS += PTR64=0
+# Temp hack for 32-bit architectures : disable WERROR to avoid switchres log warning treated as error
+MAME_CROSS_OPTS += NOWERROR=1
+endif
+
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 MAME_CROSS_ARCH = x86_64
-MAME_CROSS_OPTS += PTR64=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
-MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
+MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1 USE_WAYLAND=1
 endif
 
-# allow cross-architecture compilation with MAME build system
+# Allow cross-architecture compilation with MAME build system
 ifeq ($(BR2_aarch64),y)
 MAME_CROSS_ARCH = arm64
-MAME_CROSS_OPTS += PTR64=1
 MAME_CFLAGS += -DEGL_NO_X11=1
 endif
 ifeq ($(BR2_arm),y)
 MAME_CROSS_ARCH = arm
-MAME_CROSS_OPTS += PTR64=0
 # Always enable NEON on 32-bit arm
 MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON -DEGL_NO_X11=1
+# workaround for linkage failure using ld on arm 32-bit targets
+MAME_LDFLAGS += -fuse-ld=gold -Wl,--long-plt
+endif
+
+ifeq ($(BR2_RISCV_64),y)
+MAME_CROSS_ARCH = riscv64
+# Proper architecture flags
+MAME_CFLAGS += -mabi=lp64d -march=rv64imafdczbb_zba -mcpu=sifive-u74
+# Force OPTIMIZE level 1 to avoid fatal linking relocation issue so far....
+MAME_CROSS_OPTS += OPTIMIZE=2
+# Cast alignment warnings cause errors on riscv64
+MAME_CFLAGS += -Wno-error=cast-align
+# Some GCC hacks needed to get riscv64 binary linking
+MAME_CFLAGS += -mcmodel=medany -fno-inline-small-functions
+MAME_LDFLAGS += -mcmodel=medany
 endif
 
 ifeq ($(BR2_cortex_a9),y)
@@ -73,9 +95,10 @@ define MAME_BUILD_CMDS
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
+	LDFLAGS="--sysroot=$(STAGING_DIR) $(MAME_LDFLAGS)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
+	CCACHE_SLOPPINESS="pch_defines,time_macros" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=mame \
@@ -104,6 +127,8 @@ define MAME_BUILD_CMDS
 	STRIP_SYMBOLS=1 \
 	TOOLS=1
 endef
+
+MAME_CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/mame/
 
 define MAME_INSTALL_TARGET_CMDS
 	# Create specific directories on target to store MAME distro
@@ -173,6 +198,14 @@ define MAME_INSTALL_TARGET_CMDS
 	# Copy data plugin information
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/dats			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/history			$(TARGET_DIR)/usr/bin/mame/
+
+	# gameStop script when exiting a rotated screen
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
+
+	# Copy user -autoboot_command overrides (batocera.linux/batocera.linux#11706)
+	mkdir -p $(MAME_CONF_INIT)/autoload
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/autoload			$(MAME_CONF_INIT)
 endef
 
 define MAME_EVMAPY

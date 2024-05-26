@@ -6,15 +6,15 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/source/duke3d/src/game.cpp b/source/duke3d/src/game.cpp
 --- a/source/duke3d/src/game.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
 +++ b/source/duke3d/src/game.cpp	(date 1657236230400)
-@@ -6559,7 +6559,7 @@
-
- int app_main(int argc, char const* const* argv)
- {
+@@ -6596,7 +6596,7 @@ int app_main(int argc, char const* const* argv)
+ 
+     G_ExtPreInit(argc, argv);
+ 
 -    engineSetLogFile(APPBASENAME ".log", LOG_GAME_MAX);
 +    engineSetLogFile("/userdata/system/logs/" APPBASENAME ".log", LOG_GAME_MAX);
      engineSetLogVerbosityCallback(dukeVerbosityCallback);
-
- #ifndef NETCODE_DISABLE
+ 
+ #ifdef __APPLE__
 @@ -6893,7 +6893,7 @@
 
      CONFIG_ReadSettings();
@@ -32,19 +32,19 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/source/duke3d/src/common.cpp b/source/duke3d/src/common.cpp
 --- a/source/duke3d/src/common.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
 +++ b/source/duke3d/src/common.cpp	(date 1657270049493)
-@@ -300,15 +300,7 @@
-
+@@ -271,15 +271,7 @@ void G_ExtPreInit(int32_t argc,char const * const * argv)
+ 
          if ((homedir = Bgethomedir()))
          {
 -            Bsnprintf(cwd, ARRAY_SIZE(cwd), "%s/"
 -#if defined(_WIN32)
--                      APPNAME
+-                APPNAME
 -#elif defined(GEKKO)
--                      "apps/" APPBASENAME
+-                "apps/" APPBASENAME
 -#else
--                      ".config/" APPBASENAME
+-                ".config/" APPBASENAME
 -#endif
--                      ,homedir);
+-                ,homedir);
 +            Bsnprintf(cwd, ARRAY_SIZE(cwd), "/userdata/saves/" APPBASENAME);
              asperr = addsearchpath(cwd);
              if (asperr == -2)
@@ -57,13 +57,13 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/source/duke3d/src/startgtk.game.cpp b/source/duke3d/src/startgtk.game.cpp
 --- a/source/duke3d/src/startgtk.game.cpp	(revision 54177821c32a0ba601da9b43f02647fb7d1aa291)
 +++ b/source/duke3d/src/startgtk.game.cpp	(date 1657270555456)
-@@ -281,7 +281,7 @@
+@@ -286,7 +286,7 @@ static unsigned char GetModsDirNames(GtkListStore *list)
          if (buildvfs_exists("user_profiles_disabled"))
              buildvfs_getcwd(pdir, sizeof(pdir));
          else
--            Bsnprintf(pdir, sizeof(pdir), "%s/" ".config/eduke32", homedir);
+-            Bsnprintf(pdir, sizeof(pdir), "%s/.config/" APPBASENAME, homedir);
 +            Bsnprintf(pdir, sizeof(pdir), "/userdata/saves/" APPBASENAME);
-
+ 
          dirs = klistpath(pdir, "*", BUILDVFS_FIND_DIR);
          for (; dirs != NULL; dirs=dirs->next)
 Index: source/build/src/vfs.cpp

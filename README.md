@@ -21,13 +21,13 @@ Batocera Linux is an open-source and completely free retro-gaming distribution t
 
  - :sos: The most effective way is to join our [Discord Server](https://discord.gg/ndyUKA5) and go to the \#help-and-support channel
  - :neckbeard: There is a [Batocera subreddit](https://www.reddit.com/r/batocera/) that is fairly active
- - :bowtie: Finally, we also have a [forum](https://forum.batocera.org/public/) 
 
 ## How can you help Batocera?
 
  - :wrench: If you want to help with development, [we accept PRs](https://makeapullrequest.com/) -- anyone is welcome, we embrace the [Bazaar development principles](https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar)
  - :art: No need to be a developer, you can also [help with translations](https://wiki.batocera.org/help_with_translation), talk about our project on [Youtube](https://www.youtube.com/channel/UClFpqHKoXsOIV-GjyZqoZcw/featured) or [Twitter](https://twitter.com/batocera_linux/), create [themes for EmulationStation](https://wiki.batocera.org/themes)
- - :dollar: Finally, you can help us with a [Paypal donation](https://www.paypal.com/paypalme/nadenislamarre), it's always appreciated!
+ - :dollar: If you like Batocera, you can help us with a [Paypal donation](https://www.paypal.com/paypalme/nadenislamarre), it's always appreciated!
+ - :bowtie: Finally, you can now proudly rock some offcial [Batocera T-shirts, hoodies and other merch](https://batocera.printify.me/).
 
 ## Directory navigation
 

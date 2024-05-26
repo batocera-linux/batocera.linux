@@ -1,0 +1,22 @@
+--- a/src/debug/debugcpu.c	2022-01-19 14:20:08.000000000 +0100
++++ b/src/debug/debugcpu.c	2023-09-21 00:30:51.261822857 +0200
+@@ -248,7 +248,7 @@
+ 	{
+ 		if (r1 >= '0' && r1 <= '7')
+ 		{
+-			*addr = &(Regs[REG_A0 + r1 - '0']);
++			*addr = &(Regs[_REG_A0 + r1 - '0']);
+ 			return 32;
+ 		}
+ 		fprintf(stderr,"\tBad address register, valid values are 0-7\n");
+--- a/src/includes/m68000.h	2022-01-19 14:20:08.000000000 +0100
++++ b/src/includes/m68000.h	2023-09-21 00:30:32.077429878 +0200
+@@ -37,7 +37,7 @@
+   REG_D5,
+   REG_D6,
+   REG_D7,    /* ..D7 */
+-  REG_A0,    /* A0.. */
++  _REG_A0,    /* A0.. */
+   REG_A1,
+   REG_A2,
+   REG_A3,

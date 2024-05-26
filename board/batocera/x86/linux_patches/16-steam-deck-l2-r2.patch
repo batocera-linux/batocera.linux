@@ -1,0 +1,86 @@
+diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
+index b110818..b8ec347 100644
+--- a/drivers/hid/hid-steam.c
++++ b/drivers/hid/hid-steam.c
+@@ -545,8 +545,8 @@ static int steam_input_register(struct steam_device *steam)
+ 			STEAM_PAD_FUZZ, 0);
+ 
+ 	if (steam->quirks & STEAM_QUIRK_DECK) {
+-		input_set_abs_params(input, ABS_HAT2Y, 0, 32767, 0, 0);
+-		input_set_abs_params(input, ABS_HAT2X, 0, 32767, 0, 0);
++		input_set_abs_params(input, ABS_Z, 0, 32767, 0, 0);
++		input_set_abs_params(input, ABS_RZ, 0, 32767, 0, 0);
+ 
+ 		input_set_abs_params(input, ABS_RX, -32767, 32767, 0, 0);
+ 		input_set_abs_params(input, ABS_RY, -32767, 32767, 0, 0);
+@@ -562,11 +562,11 @@ static int steam_input_register(struct steam_device *steam)
+ 		input_abs_set_res(input, ABS_RY, STEAM_DECK_JOYSTICK_RESOLUTION);
+ 		input_abs_set_res(input, ABS_HAT1X, STEAM_PAD_RESOLUTION);
+ 		input_abs_set_res(input, ABS_HAT1Y, STEAM_PAD_RESOLUTION);
+-		input_abs_set_res(input, ABS_HAT2Y, STEAM_DECK_TRIGGER_RESOLUTION);
+-		input_abs_set_res(input, ABS_HAT2X, STEAM_DECK_TRIGGER_RESOLUTION);
++		input_abs_set_res(input, ABS_Z, STEAM_DECK_TRIGGER_RESOLUTION);
++		input_abs_set_res(input, ABS_RZ, STEAM_DECK_TRIGGER_RESOLUTION);
+ 	} else {
+-		input_set_abs_params(input, ABS_HAT2Y, 0, 255, 0, 0);
+-		input_set_abs_params(input, ABS_HAT2X, 0, 255, 0, 0);
++		input_set_abs_params(input, ABS_Z, 0, 255, 0, 0);
++		input_set_abs_params(input, ABS_RZ, 0, 255, 0, 0);
+ 
+ 		input_set_abs_params(input, ABS_RX, -32767, 32767,
+ 				STEAM_PAD_FUZZ, 0);
+@@ -577,8 +577,8 @@ static int steam_input_register(struct steam_device *steam)
+ 		input_abs_set_res(input, ABS_Y, STEAM_JOYSTICK_RESOLUTION);
+ 		input_abs_set_res(input, ABS_RX, STEAM_PAD_RESOLUTION);
+ 		input_abs_set_res(input, ABS_RY, STEAM_PAD_RESOLUTION);
+-		input_abs_set_res(input, ABS_HAT2Y, STEAM_TRIGGER_RESOLUTION);
+-		input_abs_set_res(input, ABS_HAT2X, STEAM_TRIGGER_RESOLUTION);
++		input_abs_set_res(input, ABS_Z, STEAM_TRIGGER_RESOLUTION);
++		input_abs_set_res(input, ABS_RZ, STEAM_TRIGGER_RESOLUTION);
+ 	}
+ 	input_abs_set_res(input, ABS_HAT0X, STEAM_PAD_RESOLUTION);
+ 	input_abs_set_res(input, ABS_HAT0Y, STEAM_PAD_RESOLUTION);
+@@ -1017,8 +1017,8 @@ static inline s16 steam_le16(u8 *data)
+  * -------+-------+-----------+--------------------------
+  *  4-7   | u32   | --        | sequence number
+  *  8-10  | 24bit | see below | buttons
+- *  11    | u8    | ABS_HAT2Y | left trigger
+- *  12    | u8    | ABS_HAT2X | right trigger
++ *  11    | u8    | ABS_Z | left trigger
++ *  12    | u8    | ABS_RZ | right trigger
+  *  13-15 | --    | --        | always 0
+  *  16-17 | s16   | ABS_X/ABS_HAT0X     | X value
+  *  18-19 | s16   | ABS_Y/ABS_HAT0Y     | Y value
+@@ -1086,8 +1086,8 @@ static void steam_do_input_event(struct steam_device *steam,
+ 	b9 = data[9];
+ 	b10 = data[10];
+ 
+-	input_report_abs(input, ABS_HAT2Y, data[11]);
+-	input_report_abs(input, ABS_HAT2X, data[12]);
++	input_report_abs(input, ABS_Z, data[11]);
++	input_report_abs(input, ABS_RZ, data[12]);
+ 
+ 	/*
+ 	 * These two bits tells how to interpret the values X and Y.
+@@ -1164,8 +1164,8 @@ static void steam_do_input_event(struct steam_device *steam,
+  *  38-39 | s16   | --        | quaternion X value
+  *  40-41 | s16   | --        | quaternion Y value
+  *  42-43 | s16   | --        | quaternion Z value
+- *  44-45 | u16   | ABS_HAT2Y | left trigger (uncalibrated)
+- *  46-47 | u16   | ABS_HAT2X | right trigger (uncalibrated)
++ *  44-45 | u16   | ABS_Z | left trigger (uncalibrated)
++ *  46-47 | u16   | ABS_RZ | right trigger (uncalibrated)
+  *  48-49 | s16   | ABS_X     | left joystick X
+  *  50-51 | s16   | ABS_Y     | left joystick Y
+  *  52-53 | s16   | ABS_RX    | right joystick X
+@@ -1278,8 +1278,8 @@ static void steam_do_deck_input_event(struct steam_device *steam,
+ 	input_report_abs(input, ABS_RX, steam_le16(data + 52));
+ 	input_report_abs(input, ABS_RY, -steam_le16(data + 54));
+ 
+-	input_report_abs(input, ABS_HAT2Y, steam_le16(data + 44));
+-	input_report_abs(input, ABS_HAT2X, steam_le16(data + 46));
++	input_report_abs(input, ABS_Z, steam_le16(data + 44));
++	input_report_abs(input, ABS_RZ, steam_le16(data + 46));
+ 
+ 	input_event(input, EV_KEY, BTN_TR2, !!(b8 & BIT(0)));
+ 	input_event(input, EV_KEY, BTN_TL2, !!(b8 & BIT(1)));

@@ -1,0 +1,36 @@
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Force Feedback",    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Driving Force GT",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster FFB Wheel", 	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster TRS Racing wheel",       	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G25 Racing Wheel",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G27 Racing Wheel",                    	    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Force Feedback Wheel (USB)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="220"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster F430 Cockpit Wireless PS3",          MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster Advance Racer",         MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G29 Driving Force Racing Wheel",         MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech  Logitech MOMO Racing ",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T300RS Racing wheel",   MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Force",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="200"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for PlayStation 4 and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="ThrustMaster, Inc. Ferrari 458 Spider",               MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T150RS",                    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T80",                       MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
+
+# for ThrustMaster, Inc. Ferrari 458 Spider, cause xpad driver is blacklisted for the prefered xone
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b671", RUN+="/sbin/modprobe xpad"
+
+# G920 Driving Force Racing Wheel for Xbox One
+ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+
+# HORI RACING WHEEL APEX RWA
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="0f0d", ATTR{idProduct}=="00a4", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+
+# DRIVING WHEEL SV200
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="0079", ATTR{idProduct}=="189c", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="180"
+
+#
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA R9 Base", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA SRP pedals", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
+KERNEL=="event*", SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="MOZA R9 wheels", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1" , ENV{ID_INPUT_WHEEL}="1" , ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0"

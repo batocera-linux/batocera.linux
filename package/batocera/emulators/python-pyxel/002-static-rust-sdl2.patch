@@ -1,0 +1,12 @@
+diff '--color=auto' -uri python-pyxel-lbrpdx/crates/pyxel-core/Cargo.toml python-pyxel-v1.9.12/crates/pyxel-core/Cargo.toml
+--- python-pyxel-lbrpdx/crates/pyxel-core/Cargo.toml    2023-02-05 05:29:24.000000000 -0800
++++ python-pyxel-v1.9.12/crates/pyxel-core/Cargo.toml   2023-03-20 14:22:48.207416364 -0700
+@@ -44,6 +44,8 @@
+
+ [target.'cfg(any(target_os = "linux", target_os = "emscripten"))'.dependencies]
+ sdl2 = { version = "0.35", default-features = false, features = [
++    "bundled",
++    "use-pkgconfig",
+     "unsafe_textures",
+ ] }
+

@@ -1,0 +1,58 @@
+From ef1379f8920505d862ae335355afa60ff564554b Mon Sep 17 00:00:00 2001
+From: Anssi Hannula <anssi.hannula@iki.fi>
+Date: Sun, 17 Apr 2022 04:37:48 +0000
+Subject: [PATCH 09/64] LOCAL: ASoC: meson: assign internal PCM
+ chmap/ELD/IEC958 kctls to device 0
+
+On SoC sound devices utilizing codec2codec DAI links with an HDMI codec the kctls
+for chmap, ELD, IEC958 are created using internal PCM device numbers. This causes
+userspace to not see the actual channel mapping. This affects all Amlogic devices
+using the AIU and AXG audio drivers: currently all Amlogic devices.
+
+The proper fix would be not create these kctls for internal PCMs and instead create
+them for the real userspace-visible PCMs, somehow forwarding the controls between
+the HDMI codec and the real PCM.
+
+As a workaround, simply use device=0 for all channel map controls and SoC HDMI codec
+controls for internal PCM devices.
+
+Signed-off-by: Anssi Hannula <anssi.hannula@iki.fi>
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/core/pcm_lib.c          | 5 ++++-
+ sound/soc/codecs/hdmi-codec.c | 3 ++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
+index a11cd7d6295f..94269e485873 100644
+--- a/sound/core/pcm_lib.c
++++ b/sound/core/pcm_lib.c
+@@ -2547,7 +2547,10 @@ int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
+ 		knew.name = "Playback Channel Map";
+ 	else
+ 		knew.name = "Capture Channel Map";
+-	knew.device = pcm->device;
++	if (pcm->internal && pcm->device)
++		dev_info(pcm->card->dev, "workaround active: internal PCM chmap controls mapped to device 0\n");
++	else
++		knew.device = pcm->device;
+ 	knew.count = pcm->streams[stream].substream_count;
+ 	knew.private_value = private_value;
+ 	info->kctl = snd_ctl_new1(&knew, info);
+diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
+index 0938671700c6..3131a20f1b21 100644
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -801,7 +801,8 @@ static int hdmi_codec_pcm_new(struct snd_soc_pcm_runtime *rtd,
+ 		if (!kctl)
+ 			return -ENOMEM;
+ 
+-		kctl->id.device = rtd->pcm->device;
++		if (!rtd->pcm->internal)
++			kctl->id.device = rtd->pcm->device;
+ 		ret = snd_ctl_add(rtd->card->snd_card, kctl);
+ 		if (ret < 0)
+ 			return ret;
+-- 
+2.34.1
+

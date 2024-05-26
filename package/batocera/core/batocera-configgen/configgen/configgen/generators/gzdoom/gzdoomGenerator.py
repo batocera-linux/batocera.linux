@@ -1,12 +1,35 @@
 import batoceraFiles
 import Command
-import controllersConfig
 from generators.Generator import Generator
 import os
 import shlex
 
+def set_joystick_setting(ini_file, set_gz_joystick):
+    with open(ini_file, "r") as file:
+        lines = file.readlines()
+        
+    joystick_line_found = False
+    for i, line in enumerate(lines):
+        if "use_joystick" in line:
+            lines[i] = f"use_joystick={set_gz_joystick}\n"
+            joystick_line_found = True
+            break
+            
+    if not joystick_line_found:
+        if "[GlobalSettings]" not in lines:
+            lines.append("[GlobalSettings]\n")
+            lines.append(f"use_joystick={set_gz_joystick}\n")
+        else:
+            for i, line in enumerate(lines):
+                if line.strip() == "[GlobalSettings]":
+                    lines.insert(i + 1, f"use_joystick={set_gz_joystick}\n")
+    
+    with open(ini_file, "w") as file:
+        file.writelines(lines)
+
 class GZDoomGenerator(Generator):
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         config_dir = f"{batoceraFiles.CONF}/gzdoom"
         ini_file = config_dir + "/gzdoom.ini"
 
@@ -21,20 +44,33 @@ class GZDoomGenerator(Generator):
             os.mkdir(config_dir + "/soundfonts")
         if not os.path.exists(config_dir + "/fm_banks"):
             os.mkdir(config_dir + "/fm_banks")
-
-        have_gles = os.path.exists("/usr/lib/libGLESv2_CM.so") or os.path.exists("/usr/lib/libGLESv2.so")
-        have_opengl = os.path.exists("/usr/lib/libGL.so")
-
+        
+        if system.isOptSet("gz_api"):
+            gzdoom_api = system.config["gz_api"]
+        else:
+            gzdoom_api = "0"
+        
+        # RPi4 workaround which has both ligl & libgles
+        # For arm systems, we want to force OpenGL ES - 3
+        arch_path = "/usr/share/batocera/batocera.arch"
+        if gzdoom_api == "0":
+            with open(arch_path, "r") as file:
+                content = file.read().strip()
+                if not content == "x86_64":
+                    gzdoom_api = "3"
+        
+        # now set the config
         extra_config = ""
-        if have_gles and not have_opengl:
-            extra_config += (
-                # Use the actual GLES context, not an OpenGL one:
+        if gzdoom_api == "3":
+            extra_config = (
                 "gl_es 1\n"
                 "vid_preferbackend 3\n"
                 # This setting greatly improves performance:
                 "gles_use_mapped_buffer true\n"
             )
-
+        else:
+            extra_config = (f"vid_preferbackend {gzdoom_api}\n")
+        
         # A script file with console commands that are always ran when a game starts
         script_file = f"{config_dir}/gzdoom.cfg"
         with open(script_file, "w") as script:
@@ -92,63 +128,13 @@ class GZDoomGenerator(Generator):
         with open(ini_file, "w") as file:
             file.writelines(lines)
                
-        if system.isOptSet("gz_joystick") and system.config["gz_joystick"] == "True":
+        if system.isOptSet("gz_joystick"):
             # Enable the joystick for configuration in GZDoom by the user currently
-            with open(ini_file, "r") as file:
-                lines = file.readlines()
-            # Set a flag to track whether the line was found or not
-            joystick_line_found = False
-            
-            for i, line in enumerate(lines):
-                if line.strip() == "use_joystick=false":
-                    lines[i] = "use_joystick=true\n"
-                    joystick_line_found = True
-                    break
-                elif line.strip() == "[GlobalSettings]":
-                    lines.insert(i + 1, "use_joystick=true\n")
-                    joystick_line_found = True
-                    break
-            
-            if not joystick_line_found:
-                for i, line in enumerate(lines):
-                    if line.strip() == "[GlobalSettings]":
-                        lines.insert(i + 1, "use_joystick=true\n")
-                        break
-            else:
-                lines.append("[GlobalSettings]\n")
-                lines.append("use_joystick=true\n")
-            
-            with open(ini_file, "w") as file:
-                file.writelines(lines)
+            set_gz_joystick = system.config["gz_joystick"]
         else:
-            # Disable controllers because support is poor
-            # we use evmapy instead for now...
-            with open(ini_file, "r") as file:
-                lines = file.readlines()
-            # Set a flag to track whether the line was found or not
-            joystick_line_found = False
+            set_gz_joystick = "false"
             
-            for i, line in enumerate(lines):
-                if line.strip() == "use_joystick=true":
-                    lines[i] = "use_joystick=false\n"
-                    joystick_line_found = True
-                    break
-                elif line.strip() == "[GlobalSettings]":
-                    lines.insert(i + 1, "use_joystick=false\n")
-                    joystick_line_found = True
-                    break
-            
-            if not joystick_line_found:
-                for i, line in enumerate(lines):
-                    if line.strip() == "[GlobalSettings]":
-                        lines.insert(i + 1, "use_joystick=false\n")
-                        break
-            else:
-                lines.append("[GlobalSettings]\n")
-                lines.append("use_joystick=false\n")
-            
-            with open(ini_file, "w") as file:
-                file.writelines(lines)
+        set_joystick_setting(ini_file, set_gz_joystick)
         
         # define how wads are loaded
         # if we use a custom extension use that instead
@@ -177,3 +163,6 @@ class GZDoomGenerator(Generator):
                     "-nologo" if system.getOptBoolean("nologo") else "",
                 ]
             )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9

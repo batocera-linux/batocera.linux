@@ -1,0 +1,13 @@
+diff --git a/pcsx2/MemoryPatchDatabase.h b/pcsx2/MemoryPatchDatabase.h
+index 6d0d17c8c2..1fd9e96ce2 100644
+--- a/pcsx2/MemoryPatchDatabase.h
++++ b/pcsx2/MemoryPatchDatabase.h
+@@ -3,6 +3,8 @@
+ #include <unordered_map>
+ #include <string>
+ #include <vector>
++#include <stdexcept>
++#include <cstdint>
+ 
+ class MemoryPatchDatabase
+ {

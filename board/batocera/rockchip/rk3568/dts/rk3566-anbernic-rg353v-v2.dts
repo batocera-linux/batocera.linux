@@ -1,0 +1,269 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/linux-event-codes.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include "rockchip/rk3566-anbernic-rg353x.dtsi"
+
+/ {
+	model = "RG353V-V2";
+	compatible = "anbernic,rg353v", "rockchip,rk3566";
+
+	aliases {
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc0;
+		mmc2 = &sdmmc1;
+		mmc3 = &sdmmc2;
+	};
+
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <3151000>;
+		charge-term-current-microamp = <300000>;
+		constant-charge-current-max-microamp = <2000000>;
+		constant-charge-voltage-max-microvolt = <4200000>;
+		factory-internal-resistance-micro-ohms = <117000>;
+		voltage-max-design-microvolt = <4172000>;
+		voltage-min-design-microvolt = <3400000>;
+
+		ocv-capacity-celsius = <20>;
+		ocv-capacity-table-0 =  <4172000 100>, <4054000 95>, <3984000 90>, <3926000 85>,
+					<3874000 80>, <3826000 75>, <3783000 70>, <3746000 65>,
+					<3714000 60>, <3683000 55>, <3650000 50>, <3628000 45>,
+					<3612000 40>, <3600000 35>, <3587000 30>, <3571000 25>,
+					<3552000 20>, <3525000 15>, <3492000 10>, <3446000 5>,
+					<3400000 0>;
+	};
+
+	/* Channels reversed for headphones. */
+	sound {
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "rk817_int";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,hp-det-gpio = <&gpio4 RK_PC6 GPIO_ACTIVE_HIGH>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,widgets =
+			"Microphone", "Mic Jack",
+			"Headphone", "Headphones",
+			"Speaker", "Internal Speakers";
+		simple-audio-card,routing =
+			"MICL", "Mic Jack",
+			"Headphones", "HPOL",
+			"Headphones", "HPOR",
+			"Internal Speakers", "SPKO";
+
+		simple-audio-card,codec {
+			sound-dai = <&rk817>;
+		};
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s1_8ch>;
+		};
+	};
+
+    joypad: singleadc-joypad {
+		compatible = "singleadc-joypad";
+		hw_info = <0x02>;
+
+		joypad-name = "retrogame_joypad";
+		joypad-product = <0x1101>;
+		joypad-revision = <0x0100>;
+
+		status = "okay";
+
+		/* gpio pincontrol setup */
+		pinctrl-names = "default";
+		pinctrl-0 = <&btn_pins_ctrl>;
+
+		/* Analog mux define */
+		io-channel-names = "amux_adc";
+		io-channels = <&saradc 3>;
+
+		/* adc mux channel count */
+		amux-count = <4>;
+		/* adc mux select(a,b) gpio */
+		amux-a-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+		amux-b-gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_LOW>;
+		/* adc mux enable gpio */
+		amux-en-gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_LOW>;
+
+		/* adc calculate scale */
+		button-adc-scale = <2>;
+
+		/* adc deadzone range  */
+		button-adc-deadzone = <64>;
+
+		/*
+		  specifies fuzz value that is used to filter noise from
+		  the event stream.
+		*/
+		button-adc-fuzz = <32>;
+		button-adc-flat = <32>;
+
+		/*
+		  Analog Stick data tuning value(precent)
+		  p = positive direction, n = negative direction
+		  report value = (real_adc_data * tuning_value) / 100
+		*/
+		abs_x-p-tuning = <245>;
+		abs_x-n-tuning = <245>;
+
+		abs_y-p-tuning = <245>;
+		abs_y-n-tuning = <245>;
+
+		abs_rx-p-tuning = <245>;
+		abs_rx-n-tuning = <245>;
+
+		abs_ry-p-tuning = <245>;
+		abs_ry-n-tuning = <245>;
+
+		/* poll device interval (ms), adc read interval */
+		poll-interval = <10>;
+
+		/* gpio button auto repeat set value : default disable */
+		/*
+			autorepeat;
+		*/
+		sw1 {
+            gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_LOW>;
+            label = "GPIO DPAD-UP";
+            linux,code = <BTN_DPAD_UP>;
+		};
+		sw2 {
+            gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_LOW>;
+            label = "GPIO DPAD-DOWN";
+            linux,code = <BTN_DPAD_DOWN>;
+		};
+		sw3 {
+            gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
+            label = "GPIO DPAD-LEFT";
+            linux,code = <BTN_DPAD_LEFT>;
+		};
+		sw4 {
+            gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_LOW>;
+            label = "GPIO DPAD-RIGHT";
+            linux,code = <BTN_DPAD_RIGHT>;
+		};
+		sw5 {
+            gpios = <&gpio3 RK_PC3 GPIO_ACTIVE_LOW>;
+            label = "GPIO KEY BTN-A";
+            linux,code = <BTN_SOUTH>;
+		};
+		sw6 {
+            gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN-B";
+            linux,code = <BTN_EAST>;
+		};
+		sw7 {
+            gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN-X";
+            linux,code = <BTN_NORTH>;
+		};
+		sw8 {
+            gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN-Y";
+            linux,code = <BTN_WEST>;
+		};
+		sw9 {
+            gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_SELECT";
+            linux,code = <BTN_SELECT>;
+		};
+		sw10 {
+            gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_START";
+            linux,code = <BTN_START>;
+		};
+		sw11 {
+            gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_F";
+            linux,code = <BTN_MODE>;
+		};
+		sw12 {
+            gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_TL";
+            linux,code = <BTN_TL>;
+		};
+		sw13 {
+            gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_TR";
+            linux,code = <BTN_TR>;
+		};
+		sw14 {
+            gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_TL2";
+            linux,code = <BTN_TL2>;
+		};
+		sw15 {
+            gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_TR2";
+            linux,code = <BTN_TR2>;
+		};
+		sw16 {
+            gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_THUMBL";
+            linux,code = <BTN_THUMBL>;
+		};
+		sw17 {
+            gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_LOW>;
+            label = "GPIO BTN_THUMBR";
+            linux,code = <BTN_THUMBR>;
+		};
+	};
+};
+
+&panel {
+        compatible = "anbernic,rg353v-panel-v2";
+        iovcc-supply = <&vcc3v3_lcd0_n>;
+        vcc-supply = <&vcc3v3_lcd0_n>;
+        /delete-property/ vdd-supply;
+};
+
+&i2c2 {
+	pintctrl-names = "default";
+	pinctrl-0 = <&i2c2m1_xfer>;
+	status = "okay";
+
+	touch@1a {
+		compatible = "hynitron,cst340";
+		reg = <0x1a>;
+		interrupt-parent = <&gpio4>;
+		interrupts = <RK_PB1 IRQ_TYPE_EDGE_FALLING>;
+		pinctrl-0 = <&touch_rst>;
+		pinctrl-names = "default";
+		reset-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <640>;
+		touchscreen-size-y = <480>;
+	};
+};
+
+&pinctrl {
+	touch {
+		touch_rst: touch-rst {
+			rockchip,pins =
+				<4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+&rk817 {
+	rk817_charger: charger {
+		monitored-battery = <&battery>;
+		rockchip,resistor-sense-micro-ohms = <10000>;
+		rockchip,sleep-enter-current-microamp = <300000>;
+		rockchip,sleep-filter-current-microamp = <100000>;
+	};
+};
+
+&sdhci {
+	pinctrl-0 = <&emmc_bus8>, <&emmc_clk>, <&emmc_cmd>, <&emmc_datastrobe>, <&emmc_rstnout>;
+	pinctrl-names = "default";
+	bus-width = <8>;
+	mmc-hs200-1_8v;
+	non-removable;
+	vmmc-supply = <&vcc_3v3>;
+	vqmmc-supply = <&vcc_1v8>;
+	status = "okay";
+};

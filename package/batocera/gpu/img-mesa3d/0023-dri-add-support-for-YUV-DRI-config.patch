@@ -1,0 +1,576 @@
+From bfda2098179b9b79124d267b312948f5b9c7b5cf Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Fri, 22 Dec 2017 17:17:50 +0000
+Subject: [PATCH 23/58] dri: add support for YUV DRI config
+
+This is prerequisite for adding support for EGL_EXT_yuv_surface.
+
+This also adds support for NV12 and NV21 EGL configs.
+---
+ include/GL/internal/dri_interface.h     |  48 ++++++++-
+ src/gallium/frontends/dri/dri_screen.c  |   8 +-
+ src/gallium/frontends/dri/utils.c       | 133 ++++++++++++++++++++++--
+ src/gallium/frontends/dri/utils.h       |   3 +-
+ src/gallium/frontends/pvr/dri_support.h |   5 +
+ src/gallium/frontends/pvr/pvrutil.c     |  34 ++++++
+ src/gallium/include/pipe/p_format.h     |   9 ++
+ src/mesa/main/format_info.py            |   2 +-
+ src/mesa/main/formats.c                 |  13 +++
+ src/mesa/main/formats.csv               |   6 ++
+ src/mesa/main/formats.h                 |  15 +++
+ src/mesa/main/glconfig.h                |   9 ++
+ 12 files changed, 273 insertions(+), 12 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index ef2f44fad02..24ccf864f74 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -720,7 +720,13 @@ struct __DRIuseInvalidateExtensionRec {
+ #define __DRI_ATTRIB_GREEN_SHIFT		51
+ #define __DRI_ATTRIB_BLUE_SHIFT			52
+ #define __DRI_ATTRIB_ALPHA_SHIFT		53
+-#define __DRI_ATTRIB_MAX			54
++#define __DRI_ATTRIB_YUV_ORDER			54
++#define __DRI_ATTRIB_YUV_NUMBER_OF_PLANES	55
++#define __DRI_ATTRIB_YUV_SUBSAMPLE		56
++#define __DRI_ATTRIB_YUV_DEPTH_RANGE		57
++#define __DRI_ATTRIB_YUV_CSC_STANDARD		58
++#define __DRI_ATTRIB_YUV_PLANE_BPP		59
++#define __DRI_ATTRIB_MAX			60
+ 
+ /* __DRI_ATTRIB_RENDER_TYPE */
+ #define __DRI_ATTRIB_RGBA_BIT			0x01	
+@@ -728,6 +734,7 @@ struct __DRIuseInvalidateExtensionRec {
+ #define __DRI_ATTRIB_LUMINANCE_BIT		0x04
+ #define __DRI_ATTRIB_FLOAT_BIT			0x08
+ #define __DRI_ATTRIB_UNSIGNED_FLOAT_BIT		0x10
++#define __DRI_ATTRIB_YUV_BIT			0x20
+ 
+ /* __DRI_ATTRIB_CONFIG_CAVEAT */
+ #define __DRI_ATTRIB_SLOW_BIT			0x01
+@@ -754,6 +761,39 @@ struct __DRIuseInvalidateExtensionRec {
+ #define __DRI_ATTRIB_SWAP_COPY                  0x8062
+ #define __DRI_ATTRIB_SWAP_UNDEFINED             0x8063
+ 
++/* __DRI_ATTRIB_YUV_ORDER */
++#define __DRI_ATTRIB_YUV_ORDER_NONE             0x0
++#define __DRI_ATTRIB_YUV_ORDER_YUV_BIT          0x1
++#define __DRI_ATTRIB_YUV_ORDER_YVU_BIT          0x2
++#define __DRI_ATTRIB_YUV_ORDER_YUYV_BIT         0x4
++#define __DRI_ATTRIB_YUV_ORDER_UYVY_BIT         0x8
++#define __DRI_ATTRIB_YUV_ORDER_YVYU_BIT         0x10
++#define __DRI_ATTRIB_YUV_ORDER_VYUY_BIT         0x20
++#define __DRI_ATTRIB_YUV_ORDER_AYUV_BIT         0x40
++
++/* __DRI_ATTRIB_YUV_SUBSAMPLE */
++#define __DRI_ATTRIB_YUV_SUBSAMPLE_NONE         0x0
++#define __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT    0x1
++#define __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT    0x2
++#define __DRI_ATTRIB_YUV_SUBSAMPLE_4_4_4_BIT    0x4
++
++/* __DRI_ATTRIB_YUV_DEPTH_RANGE */
++#define __DRI_ATTRIB_YUV_DEPTH_RANGE_NONE       0x0
++#define __DRI_ATTRIB_YUV_DEPTH_RANGE_LIMITED_BIT 0x1
++#define __DRI_ATTRIB_YUV_DEPTH_RANGE_FULL_BIT   0x2
++
++/* __DRI_ATTRIB_YUV_CSC_STANDARD */
++#define __DRI_ATTRIB_YUV_CSC_STANDARD_NONE      0x0
++#define __DRI_ATTRIB_YUV_CSC_STANDARD_601_BIT   0x1
++#define __DRI_ATTRIB_YUV_CSC_STANDARD_709_BIT   0x2
++#define __DRI_ATTRIB_YUV_CSC_STANDARD_2020_BIT  0x4
++
++/* __DRI_ATTRIB_YUV_PLANE_BPP */
++#define __DRI_ATTRIB_YUV_PLANE_BPP_NONE         0x0
++#define __DRI_ATTRIB_YUV_PLANE_BPP_0_BIT        0x1
++#define __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT        0x2
++#define __DRI_ATTRIB_YUV_PLANE_BPP_10_BIT       0x4
++
+ /**
+  * This extension defines the core DRI functionality.
+  *
+@@ -1214,6 +1254,12 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FORMAT_ARGB4444     0x1018
+ #define __DRI_IMAGE_FORMAT_YVU444_PACK10_IMG 0x1019
+ #define __DRI_IMAGE_FORMAT_BGR888       0x101a
++#define __DRI_IMAGE_FORMAT_NV12         0x101b
++#define __DRI_IMAGE_FORMAT_NV21         0x101c
++#define __DRI_IMAGE_FORMAT_YU12         0x101d
++#define __DRI_IMAGE_FORMAT_YV12         0x101e
++#define __DRI_IMAGE_FORMAT_YVYU         0x101f
++#define __DRI_IMAGE_FORMAT_VYUY         0x1020
+ 
+ #define __DRI_IMAGE_USE_SHARE		0x0001
+ #define __DRI_IMAGE_USE_SCANOUT		0x0002
+diff --git a/src/gallium/frontends/dri/dri_screen.c b/src/gallium/frontends/dri/dri_screen.c
+index e68a8c19eec..903162aab8c 100644
+--- a/src/gallium/frontends/dri/dri_screen.c
++++ b/src/gallium/frontends/dri/dri_screen.c
+@@ -273,7 +273,9 @@ dri_fill_in_modes(struct dri_screen *screen)
+                                         depth_buffer_factor, back_buffer_modes,
+                                         ARRAY_SIZE(back_buffer_modes),
+                                         msaa_modes, 1,
+-                                        GL_TRUE, !mixed_color_depth);
++                                        GL_TRUE, !mixed_color_depth,
++                                        __DRI_ATTRIB_YUV_DEPTH_RANGE_NONE,
++                                        __DRI_ATTRIB_YUV_CSC_STANDARD_NONE);
+          configs = driConcatConfigs(configs, new_configs);
+ 
+          /* Multi-sample configs without an accumulation buffer. */
+@@ -283,7 +285,9 @@ dri_fill_in_modes(struct dri_screen *screen)
+                                            depth_buffer_factor, back_buffer_modes,
+                                            ARRAY_SIZE(back_buffer_modes),
+                                            msaa_modes+1, num_msaa_modes-1,
+-                                           GL_FALSE, !mixed_color_depth);
++                                           GL_FALSE, !mixed_color_depth,
++                                           __DRI_ATTRIB_YUV_DEPTH_RANGE_NONE,
++                                           __DRI_ATTRIB_YUV_CSC_STANDARD_NONE);
+             configs = driConcatConfigs(configs, new_configs);
+          }
+       }
+diff --git a/src/gallium/frontends/dri/utils.c b/src/gallium/frontends/dri/utils.c
+index 9fb940cf12f..c27d150d7e5 100644
+--- a/src/gallium/frontends/dri/utils.c
++++ b/src/gallium/frontends/dri/utils.c
+@@ -108,6 +108,21 @@
+  *                          This forces 32-bit color to have 24-bit depth, and
+  *                          16-bit color to have 16-bit depth.
+  *
++ * \param yuv_depth_range YUV pixel depth range. For non-YUV pixel formats this
++ *                        should be \c __DRI_ATTRIB_YUV_DEPTH_RANGE_NONE.
++ *                        Otherwise valid values are
++ *                        \c __DRI_ATTRIB_YUV_DEPTH_RANGE_LIMITED_BIT and
++ *                        \c __DRI_ATTRIB_YUV_DEPTH_RANGE_FULL_BIT. See the
++ *                        EGL_EXT_yuv_surface extension spec for more details.
++ * \param yuv_csc_standard YUV color conversion standard. For non-YUV pixel
++ *                         formats this should be
++ *                         \c __DRI_ATTRIB_YUV_CSC_STANDARD_NONE. Otherwise
++ *                         valid values are
++ *                         \c __DRI_ATTRIB_YUV_CSC_STANDARD_601_BIT,
++ *                         \c __DRI_ATTRIB_YUV_CSC_STANDARD_709_BIT and
++ *                         \c __DRI_ATTRIB_YUV_CSC_STANDARD_2020_BIT. See the
++ *                         EGL_EXT_yuv_surface extension spec for more details.
++ *
+  * \returns
+  * Pointer to any array of pointers to the \c __DRIconfig structures created
+  * for the specified formats.  If there is an error, \c NULL is returned.
+@@ -120,7 +135,8 @@ driCreateConfigs(mesa_format format,
+ 		 unsigned num_depth_stencil_bits,
+ 		 const GLenum * db_modes, unsigned num_db_modes,
+ 		 const uint8_t * msaa_samples, unsigned num_msaa_modes,
+-		 GLboolean enable_accum, GLboolean color_depth_match)
++		 GLboolean enable_accum, GLboolean color_depth_match,
++		 GLint yuv_depth_range, GLint yuv_csc_standard)
+ {
+    static const struct {
+       uint32_t masks[4];
+@@ -159,6 +175,9 @@ driCreateConfigs(mesa_format format,
+       /* MESA_FORMAT_RGBA_FLOAT16 */
+       {{ 0, 0, 0, 0},
+        { 0, 16, 32, 48 }},
++      /* Mesa YUV formats */
++      {{ 0, 0, 0, 0 },
++       { -1, -1, -1, -1}},
+    };
+ 
+    const uint32_t * masks;
+@@ -172,6 +191,11 @@ driCreateConfigs(mesa_format format,
+    int green_bits;
+    int blue_bits;
+    int alpha_bits;
++   int yuv_order = __DRI_ATTRIB_YUV_ORDER_NONE;
++   int yuv_num_planes = 0;
++   int yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_NONE;
++   int yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_NONE;
++   bool is_yuv = false;
+    bool is_srgb;
+    bool is_float;
+ 
+@@ -224,6 +248,78 @@ driCreateConfigs(mesa_format format,
+       masks = format_table[8].masks;
+       shifts = format_table[8].shifts;
+       break;
++   case MESA_FORMAT_YCBCR:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YUYV_BIT;
++      yuv_num_planes = 1;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YUV420_2PLANE:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YUV_BIT;
++      yuv_num_planes = 2;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YVU420_2PLANE:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YVU_BIT;
++      yuv_num_planes = 2;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YUV420_3PLANE:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YUV_BIT;
++      yuv_num_planes = 3;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YVU420_3PLANE:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YVU_BIT;
++      yuv_num_planes = 3;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_0_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YCBCR_REV:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_UYVY_BIT;
++      yuv_num_planes = 1;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_VYUY:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_VYUY_BIT;
++      yuv_num_planes = 1;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
++   case MESA_FORMAT_YVYU:
++      masks = format_table[11].masks;
++      shifts = format_table[11].shifts;
++      is_yuv = true; /* FIXME: This should come from formats_info.py */
++      yuv_order = __DRI_ATTRIB_YUV_ORDER_YVYU_BIT;
++      yuv_num_planes = 1;
++      yuv_subsample = __DRI_ATTRIB_YUV_SUBSAMPLE_4_2_2_BIT;
++      yuv_plane_bpp = __DRI_ATTRIB_YUV_PLANE_BPP_8_BIT;
++      break;
+    default:
+       fprintf(stderr, "[%s:%u] Unknown framebuffer type %s (%d).\n",
+               __func__, __LINE__,
+@@ -279,8 +375,12 @@ driCreateConfigs(mesa_format format,
+ 		    modes->greenShift = shifts[1];
+ 		    modes->blueShift  = shifts[2];
+ 		    modes->alphaShift = shifts[3];
+-		    modes->rgbBits   = modes->redBits + modes->greenBits
+-		    	+ modes->blueBits + modes->alphaBits;
++
++		    if (is_yuv)
++			modes->rgbBits = 8;
++		    else
++			modes->rgbBits = modes->redBits + modes->greenBits
++			    + modes->blueBits + modes->alphaBits;
+ 
+ 		    modes->accumRedBits   = 16 * j;
+ 		    modes->accumGreenBits = 16 * j;
+@@ -290,6 +390,8 @@ driCreateConfigs(mesa_format format,
+ 		    modes->stencilBits = stencil_bits[k];
+ 		    modes->depthBits = depth_bits[k];
+ 
++		    modes->rgbMode = !is_yuv;
++
+ 		    if (db_modes[i] == __DRI_ATTRIB_SWAP_NONE) {
+ 		    	modes->doubleBufferMode = GL_FALSE;
+ 		        modes->swapMethod = __DRI_ATTRIB_SWAP_UNDEFINED;
+@@ -302,6 +404,13 @@ driCreateConfigs(mesa_format format,
+ 		    modes->samples = msaa_samples[h];
+ 
+ 		    modes->sRGBCapable = is_srgb;
++
++		    modes->YUVOrder = yuv_order;
++		    modes->YUVNumberOfPlanes = yuv_num_planes;
++		    modes->YUVSubsample = yuv_subsample;
++		    modes->YUVDepthRange = yuv_depth_range;
++		    modes->YUVCSCStandard = yuv_csc_standard;
++		    modes->YUVPlaneBPP = yuv_plane_bpp;
+ 		}
+ 	    }
+ 	}
+@@ -381,10 +490,14 @@ driGetConfigAttribIndex(const __DRIconfig *config,
+         break;
+     __ATTRIB(__DRI_ATTRIB_SAMPLES,			samples);
+     case __DRI_ATTRIB_RENDER_TYPE:
+-        /* no support for color index mode */
+-	*value = __DRI_ATTRIB_RGBA_BIT;
+-        if (config->modes.floatMode)
+-            *value |= __DRI_ATTRIB_FLOAT_BIT;
++	/* no support for color index mode */
++	if (config->modes.rgbMode)
++	    *value = __DRI_ATTRIB_RGBA_BIT;
++	else
++	    *value = __DRI_ATTRIB_YUV_BIT;
++
++	if (config->modes.floatMode)
++	    *value |= __DRI_ATTRIB_FLOAT_BIT;
+ 	break;
+     case __DRI_ATTRIB_CONFIG_CAVEAT:
+ 	if (config->modes.accumRedBits != 0)
+@@ -450,6 +563,12 @@ driGetConfigAttribIndex(const __DRIconfig *config,
+     __ATTRIB(__DRI_ATTRIB_GREEN_SHIFT,			greenShift);
+     __ATTRIB(__DRI_ATTRIB_BLUE_SHIFT,			blueShift);
+     __ATTRIB(__DRI_ATTRIB_ALPHA_SHIFT,			alphaShift);
++    __ATTRIB(__DRI_ATTRIB_YUV_ORDER,			YUVOrder);
++    __ATTRIB(__DRI_ATTRIB_YUV_NUMBER_OF_PLANES,		YUVNumberOfPlanes);
++    __ATTRIB(__DRI_ATTRIB_YUV_SUBSAMPLE,		YUVSubsample);
++    __ATTRIB(__DRI_ATTRIB_YUV_DEPTH_RANGE,		YUVDepthRange);
++    __ATTRIB(__DRI_ATTRIB_YUV_CSC_STANDARD,		YUVCSCStandard);
++    __ATTRIB(__DRI_ATTRIB_YUV_PLANE_BPP,		YUVPlaneBPP);
+     default:
+         /* XXX log an error or smth */
+         return GL_FALSE;
+diff --git a/src/gallium/frontends/dri/utils.h b/src/gallium/frontends/dri/utils.h
+index c30c8faab54..8e2b5e9671a 100644
+--- a/src/gallium/frontends/dri/utils.h
++++ b/src/gallium/frontends/dri/utils.h
+@@ -43,7 +43,8 @@ driCreateConfigs(mesa_format format,
+ 		 unsigned num_depth_stencil_bits,
+ 		 const GLenum * db_modes, unsigned num_db_modes,
+ 		 const uint8_t * msaa_samples, unsigned num_msaa_modes,
+-		 GLboolean enable_accum, GLboolean color_depth_match);
++		 GLboolean enable_accum, GLboolean color_depth_match,
++		 GLint yuv_depth_range, GLint yuv_csc_standards);
+ 
+ __DRIconfig **driConcatConfigs(__DRIconfig **a,
+ 			       __DRIconfig **b);
+diff --git a/src/gallium/frontends/pvr/dri_support.h b/src/gallium/frontends/pvr/dri_support.h
+index 631410438fd..ca928cf9cef 100644
+--- a/src/gallium/frontends/pvr/dri_support.h
++++ b/src/gallium/frontends/pvr/dri_support.h
+@@ -92,6 +92,11 @@ typedef enum
+ #define PVRDRI_MESA_FORMAT_YVU420_2PLANE	8
+ #define PVRDRI_MESA_FORMAT_B8G8R8A8_SRGB	9
+ #define PVRDRI_MESA_FORMAT_R8G8B8A8_SRGB	10
++#define PVRDRI_MESA_FORMAT_YUV420_3PLANE	11
++#define PVRDRI_MESA_FORMAT_YVU420_3PLANE	12
++#define PVRDRI_MESA_FORMAT_YCBCR_REV		13
++#define PVRDRI_MESA_FORMAT_YVYU        	14
++#define PVRDRI_MESA_FORMAT_VYUY        	15
+ 
+ typedef struct __DRIimageRec __DRIimage;
+ 
+diff --git a/src/gallium/frontends/pvr/pvrutil.c b/src/gallium/frontends/pvr/pvrutil.c
+index 4bb114f64ef..2706b02d7bc 100644
+--- a/src/gallium/frontends/pvr/pvrutil.c
++++ b/src/gallium/frontends/pvr/pvrutil.c
+@@ -114,6 +114,16 @@ PVRDRIMesaFormatToMesaFormat(int pvrdri_mesa_format)
+       return MESA_FORMAT_B8G8R8A8_SRGB;
+    case PVRDRI_MESA_FORMAT_R8G8B8A8_SRGB:
+       return MESA_FORMAT_R8G8B8A8_SRGB;
++   case PVRDRI_MESA_FORMAT_YUV420_3PLANE:
++         return MESA_FORMAT_YUV420_3PLANE;
++   case PVRDRI_MESA_FORMAT_YVU420_3PLANE:
++         return MESA_FORMAT_YVU420_3PLANE;
++   case PVRDRI_MESA_FORMAT_YCBCR_REV:
++      return MESA_FORMAT_YCBCR_REV;
++   case PVRDRI_MESA_FORMAT_YVYU:
++      return MESA_FORMAT_YVYU;
++   case PVRDRI_MESA_FORMAT_VYUY:
++      return MESA_FORMAT_VYUY;
+    default:
+       __driUtilMessage("%s: Unknown format: %d", __func__, pvrdri_mesa_format);
+       break;
+@@ -170,6 +180,18 @@ PVRDRIFormatToFourCC(int dri_format)
+       return DRM_FORMAT_YVU444_PACK10_IMG;
+    case __DRI_IMAGE_FORMAT_BGR888:
+       return DRM_FORMAT_BGR888;
++   case __DRI_IMAGE_FORMAT_NV12:
++      return DRM_FORMAT_NV12;
++   case __DRI_IMAGE_FORMAT_NV21:
++      return DRM_FORMAT_NV21;
++   case __DRI_IMAGE_FORMAT_YU12:
++      return DRM_FORMAT_YUV420;
++   case __DRI_IMAGE_FORMAT_YV12:
++      return DRM_FORMAT_YVU420;
++   case __DRI_IMAGE_FORMAT_YVYU:
++      return DRM_FORMAT_YVYU;
++   case __DRI_IMAGE_FORMAT_VYUY:
++      return DRM_FORMAT_VYUY;
+    default:
+       __driUtilMessage("%s: Unknown format: %d", __func__, dri_format);
+       break;
+@@ -226,6 +248,18 @@ PVRDRIFourCCToDRIFormat(int iFourCC)
+       return __DRI_IMAGE_FORMAT_YVU444_PACK10_IMG;
+    case DRM_FORMAT_BGR888:
+       return __DRI_IMAGE_FORMAT_BGR888;
++   case DRM_FORMAT_NV12:
++      return __DRI_IMAGE_FORMAT_NV12;
++   case DRM_FORMAT_NV21:
++      return __DRI_IMAGE_FORMAT_NV21;
++   case DRM_FORMAT_YUV420:
++      return __DRI_IMAGE_FORMAT_YU12;
++   case DRM_FORMAT_YVU420:
++      return __DRI_IMAGE_FORMAT_YV12;
++   case DRM_FORMAT_YVYU:
++      return __DRI_IMAGE_FORMAT_YVYU;
++   case DRM_FORMAT_VYUY:
++      return __DRI_IMAGE_FORMAT_VYUY;
+    default:
+       __driUtilMessage("%s: Unknown format: %d", __func__, iFourCC);
+       break;
+diff --git a/src/gallium/include/pipe/p_format.h b/src/gallium/include/pipe/p_format.h
+index 7dcbe7bb42b..7436f10dcf3 100644
+--- a/src/gallium/include/pipe/p_format.h
++++ b/src/gallium/include/pipe/p_format.h
+@@ -178,6 +178,8 @@ enum pipe_format {
+    PIPE_FORMAT_L16_UNORM,   /**< ushort luminance */
+    PIPE_FORMAT_UYVY,
+    PIPE_FORMAT_YUYV,
++   PIPE_FORMAT_YVYU,
++   PIPE_FORMAT_VYUY,
+    PIPE_FORMAT_Z16_UNORM,
+    PIPE_FORMAT_Z16_UNORM_S8_UINT,
+    PIPE_FORMAT_Z32_UNORM,
+@@ -520,6 +522,11 @@ enum pipe_format {
+    PIPE_FORMAT_R4G4B4X4_UNORM,
+    PIPE_FORMAT_B10G10R10X2_SNORM,
+    PIPE_FORMAT_R5G6B5_SRGB,
++   PIPE_FORMAT_YUV420_2PLANE,
++   PIPE_FORMAT_YVU420_2PLANE,
++
++   PIPE_FORMAT_YUV420_3PLANE,
++   PIPE_FORMAT_YVU420_3PLANE,
+ 
+    PIPE_FORMAT_COUNT
+ };
+@@ -622,6 +629,8 @@ pipe_format_to_chroma_format(enum pipe_format format)
+          return PIPE_VIDEO_CHROMA_FORMAT_420;
+       case PIPE_FORMAT_UYVY:
+       case PIPE_FORMAT_YUYV:
++      case PIPE_FORMAT_VYUY:
++      case PIPE_FORMAT_YVYU:
+       case PIPE_FORMAT_YV16:
+       case PIPE_FORMAT_Y8_U8_V8_422_UNORM:
+       case PIPE_FORMAT_Y8_U8V8_422_UNORM:
+diff --git a/src/mesa/main/format_info.py b/src/mesa/main/format_info.py
+index 37b46a27c31..9aa1bb9fc63 100644
+--- a/src/mesa/main/format_info.py
++++ b/src/mesa/main/format_info.py
+@@ -27,7 +27,7 @@ import sys
+ def get_gl_base_format(fmat):
+    if fmat.name == 'MESA_FORMAT_NONE':
+       return 'GL_NONE'
+-   elif fmat.name in ['MESA_FORMAT_YCBCR', 'MESA_FORMAT_YCBCR_REV']:
++   elif fmat.name in ['MESA_FORMAT_YCBCR', 'MESA_FORMAT_YCBCR_REV', 'MESA_FORMAT_YUV420_2PLANE', 'MESA_FORMAT_YVU420_2PLANE', 'MESA_FORMAT_YUV420_3PLANE', 'MESA_FORMAT_YVU420_3PLANE', 'MESA_FORMAT_YVYU', 'MESA_FORMAT_VYUY']:
+       return 'GL_YCBCR_MESA'
+    elif fmat.has_channel('r'):
+       if fmat.has_channel('g'):
+diff --git a/src/mesa/main/formats.c b/src/mesa/main/formats.c
+index 9cd026f7507..c63e1677717 100644
+--- a/src/mesa/main/formats.c
++++ b/src/mesa/main/formats.c
+@@ -1024,6 +1024,8 @@ _mesa_uncompressed_format_to_type_and_comps(mesa_format format,
+ 
+    case MESA_FORMAT_YCBCR:
+    case MESA_FORMAT_YCBCR_REV:
++   case MESA_FORMAT_YVYU:
++   case MESA_FORMAT_VYUY:
+    case MESA_FORMAT_RG_RB_UNORM8:
+    case MESA_FORMAT_GR_BR_UNORM8:
+       *datatype = GL_UNSIGNED_SHORT;
+@@ -1452,6 +1454,17 @@ _mesa_format_matches_format_and_type(mesa_format mformat,
+    if (error)
+       *error = GL_NO_ERROR;
+ 
++   switch (mformat) {
++   case MESA_FORMAT_YUV420_2PLANE:
++   case MESA_FORMAT_YVU420_2PLANE:
++   case MESA_FORMAT_YUV420_3PLANE:
++   case MESA_FORMAT_YVU420_3PLANE:
++      return false;
++
++   default:
++      break;
++   }
++
+    if (_mesa_is_format_compressed(mformat)) {
+       if (error)
+          *error = GL_INVALID_ENUM;
+diff --git a/src/mesa/main/formats.csv b/src/mesa/main/formats.csv
+index 21cdea26e08..d1532b19b06 100644
+--- a/src/mesa/main/formats.csv
++++ b/src/mesa/main/formats.csv
+@@ -92,6 +92,12 @@ MESA_FORMAT_A2R10G10B10_UNORM             , packed, 1, 1, 1, un2 , un10, un10, u
+ 
+ MESA_FORMAT_YCBCR                         , other , 1, 1, 1, x16 ,     ,     ,     , xyzw, yuv
+ MESA_FORMAT_YCBCR_REV                     , other , 1, 1, 1, x16 ,     ,     ,     , xyzw, yuv
++MESA_FORMAT_YUV420_2PLANE                 , other , 1, 1, 1, x8  ,     ,     ,     , y___, yuv
++MESA_FORMAT_YVU420_2PLANE                 , other , 1, 1, 1, x8  ,     ,     ,     , y___, yuv
++MESA_FORMAT_YUV420_3PLANE                 , other , 1, 1, 1, x8  ,     ,     ,     , y___, yuv
++MESA_FORMAT_YVU420_3PLANE                 , other , 1, 1, 1, x8  ,     ,     ,     , y___, yuv
++MESA_FORMAT_YVYU                          , other , 1, 1, 1, x16 ,     ,     ,     , xyzw, yuv
++MESA_FORMAT_VYUY                          , other , 1, 1, 1, x16 ,     ,     ,     , xyzw, yuv
+ 
+ MESA_FORMAT_RG_RB_UNORM8                  , other , 2, 1, 1, x16 ,     ,     ,     , xyz1, rgb
+ MESA_FORMAT_GR_BR_UNORM8                  , other , 2, 1, 1, x16 ,     ,     ,     , xyz1, rgb
+diff --git a/src/mesa/main/formats.h b/src/mesa/main/formats.h
+index 18139680ef2..37a53949fae 100644
+--- a/src/mesa/main/formats.h
++++ b/src/mesa/main/formats.h
+@@ -617,6 +617,21 @@ typedef enum pipe_format mesa_format;
+ #define MESA_FORMAT_ATC_RGB                      PIPE_FORMAT_ATC_RGB
+ #define MESA_FORMAT_ATC_RGBA_EXPLICIT            PIPE_FORMAT_ATC_RGBA_EXPLICIT
+ #define MESA_FORMAT_ATC_RGBA_INTERPOLATED        PIPE_FORMAT_ATC_RGBA_INTERPOLATED
++#define MESA_FORMAT_YVYU                         PIPE_FORMAT_YVYU
++#define MESA_FORMAT_VYUY                         PIPE_FORMAT_VYUY
++
++#define HAVE_MESA_FORMAT_YUV420_2PLANE
++#define MESA_FORMAT_YUV420_2PLANE                PIPE_FORMAT_YUV420_2PLANE
++
++#define HAVE_MESA_FORMAT_YVU420_2PLANE
++#define MESA_FORMAT_YVU420_2PLANE                PIPE_FORMAT_YVU420_2PLANE
++
++#define HAVE_MESA_FORMAT_YUV420_3PLANE
++#define MESA_FORMAT_YUV420_3PLANE                PIPE_FORMAT_YUV420_3PLANE
++
++#define HAVE_MESA_FORMAT_YVU420_3PLANE
++#define MESA_FORMAT_YVU420_3PLANE                PIPE_FORMAT_YVU420_3PLANE
++
+ #define MESA_FORMAT_COUNT                        PIPE_FORMAT_COUNT
+ 
+ /* Packed to array format adapters */
+diff --git a/src/mesa/main/glconfig.h b/src/mesa/main/glconfig.h
+index 80414d5d78e..d54a4f75cfd 100644
+--- a/src/mesa/main/glconfig.h
++++ b/src/mesa/main/glconfig.h
+@@ -10,6 +10,7 @@
+  */
+ struct gl_config
+ {
++   GLboolean rgbMode;
+    GLboolean floatMode;
+    GLuint doubleBufferMode;
+    GLuint stereoMode;
+@@ -31,6 +32,14 @@ struct gl_config
+ 
+    /* EXT_framebuffer_sRGB */
+    GLint sRGBCapable;
++
++   /* EXT_yuv_surface */
++   GLint YUVOrder;
++   GLint YUVNumberOfPlanes;
++   GLint YUVSubsample;
++   GLint YUVDepthRange;
++   GLint YUVCSCStandard;
++   GLint YUVPlaneBPP;
+ };
+ 
+ 
+-- 
+2.25.1
+

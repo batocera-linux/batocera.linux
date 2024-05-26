@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBALTSOUND
+    bool "libaltsound"
+    select BR2_PACKAGE_ZLIB
+    select BR2_HOST_CMAKE_AT_LEAST_3_26
+    help
+      libaltsound - A cross platform compilation of altsound that is baked directly into VPinMAME.
+      
+      https://github.com/vpinball/libaltsound
+      www.vpforums.org

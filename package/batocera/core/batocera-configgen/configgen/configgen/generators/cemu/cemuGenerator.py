@@ -29,7 +29,7 @@ class CemuGenerator(Generator):
     def hasInternalMangoHUDCall(self):
         return True
     
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # in case of squashfs, the root directory is passed
         rpxrom = rom
@@ -67,7 +67,8 @@ class CemuGenerator(Generator):
                 "XDG_DATA_HOME":batoceraFiles.SAVES,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
-            })
+            }
+        )
 
     @staticmethod
     def CemuConfig(configFile, system):
@@ -139,9 +140,41 @@ class CemuGenerator(Generator):
         graphic_root = CemuGenerator.getRoot(config, "Graphic")
         # Graphical backend
         if system.isOptSet("cemu_gfxbackend"):
-            CemuGenerator.setSectionConfig(config, graphic_root, "api", system.config["cemu_gfxbackend"])
+            api_value = system.config["cemu_gfxbackend"]
         else:
-            CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") # Vulkan
+            api_value = "1"  # Vulkan
+        CemuGenerator.setSectionConfig(config, graphic_root, "api", api_value)
+        # Only set the graphics `device` if Vulkan
+        if api_value == "1":
+            # Check if we have a discrete GPU & if so, set the UUID
+            try:
+                have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
+                if have_vulkan == "true":
+                    eslog.debug("Vulkan driver is available on the system.")
+                    try:
+                        have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
+                        if have_discrete == "true":
+                            eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                            try:
+                                discrete_uuid = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteUUID"], text=True).strip()
+                                if discrete_uuid != "":
+                                    discrete_uuid_num = discrete_uuid.replace("-", "")
+                                    eslog.debug("Using Discrete GPU UUID: {} for Cemu".format(discrete_uuid_num))
+                                    CemuGenerator.setSectionConfig(config, graphic_root, "device", discrete_uuid_num)
+                                else:
+                                    eslog.debug("Couldn't get discrete GPU UUID!")
+                            except subprocess.CalledProcessError:
+                                eslog.debug("Error getting discrete GPU UUID!")
+                        else:
+                            eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    except subprocess.CalledProcessError:
+                        eslog.debug("Error checking for discrete GPU.")
+                else:
+                    eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+                    CemuGenerator.setSectionConfig(config, graphic_root, "api", "0")
+            except subprocess.CalledProcessError:
+                eslog.debug("Error executing batocera-vulkan script.")
+        
         # Async VULKAN Shader compilation
         if system.isOptSet("cemu_async") and system.config["cemu_async"] == "False":
             CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "false")
@@ -247,7 +280,7 @@ class CemuGenerator(Generator):
         xml.write(dom_string)
     
     # Show mouse for touchscreen actions    
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         if "cemu_touchpad" in config and config["cemu_touchpad"] == "1":
             return True
         else:

@@ -1,0 +1,79 @@
+#!/usr/bin/python
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2023 Nicolas Adenis-Lamarre.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+#
+
+import sys
+import evdev
+from evdev import ecodes
+import select
+import argparse
+
+parser = argparse.ArgumentParser(prog='batocera-wheel-calibrator', description='creates a virtual wheel from a wheel, limiting the rotation and adding a deadzone')
+parser.add_argument('-d', '--device',   required=True)
+parser.add_argument('-a', '--axis',     required=True, type=int)
+parser.add_argument('-m', '--minimum',  required=True, type=int)
+parser.add_argument('-M', '--maximum',  required=True, type=int)
+parser.add_argument('-z', '--deadzone', required=True, type=int)
+parser.add_argument('-c', '--midzone',  required=True, type=int)
+args = parser.parse_args()
+
+midval     = (args.minimum+args.maximum) // 2
+mideadzone = args.deadzone // 2
+mimidzone  = args.midzone  // 2
+
+input = evdev.InputDevice(args.device)
+
+# create a virtual device identical to the input one
+evkeys = []
+for code in input.capabilities()[ecodes.EV_KEY]:
+    evkeys.append(code)
+evabs = []
+for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
+    if code != args.axis:
+        evabs.append((code, inf))
+evabs.append((args.axis, evdev.AbsInfo(value=0, min=args.minimum, max=args.maximum, fuzz=0, flat=0, resolution=0)))
+target = evdev.UInput(name="virtual wheel", events={ ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys})
+print(target.device.path)
+sys.stdout.close() # to not block processes that tries to read the stdout
+
+# duplicate events
+poll = select.poll()
+poll.register(input.fd, select.POLLIN)
+try:
+    while True:
+        if poll.poll(1000):
+            for event in input.read():
+                if event.type == ecodes.EV_ABS and event.code == args.axis:
+                    if event.value >= -mimidzone and event.value <= mimidzone:
+                        target.write(event.type, event.code, event.value)
+                    else:
+                        if event.value >= args.minimum+mideadzone-mimidzone and event.value <= args.maximum-mideadzone+mimidzone:
+                            if event.value >= midval:
+                                target.write(event.type, event.code, event.value + mideadzone - mimidzone)
+                            else:
+                                target.write(event.type, event.code, event.value - mideadzone + mimidzone)
+                else:
+                    target.write(event.type, event.code, event.value)
+
+except KeyboardInterrupt:
+    poll.unregister(input.fd)
+    target.close()    
+except Exception as e:
+    import traceback
+    with open('/var/run/wheel-calibrator.crash', 'w') as fd:
+        fd.write(traceback.format_exc())
+    raise e
+###

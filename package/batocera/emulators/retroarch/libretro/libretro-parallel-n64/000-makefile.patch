@@ -56,7 +56,7 @@ index 3269005..a215089 100644
 +   # RK3588
 +   ifneq (,$(findstring rk3588,$(platform)))
 +      GLES = 1
-+      GL_LIB := -lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali
++      GL_LIB := -lGLESv2
 +      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
 +      HAVE_NEON = 1
 +      WITH_DYNAREC=aarch64

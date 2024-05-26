@@ -1,0 +1,28 @@
+From 654df5af5a8feddbb6407c100061a1412a5f8238 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 25 Jan 2023 09:28:27 +0000
+Subject: [PATCH 033/120] FROMGIT(6.3): dt-bindings: arm: amlogic: add support
+ for BananaPi M2-Pro
+
+BPI-M2-PRO is based upon the BPI-M5 using the Amlogic SM1 (S905X3) chipset.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 9fda2436c618..d63f6b899f25 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -175,6 +175,7 @@ properties:
+           - enum:
+               - amediatech,x96-air
+               - amediatech,x96-air-gbit
++              - bananapi,bpi-m2-pro
+               - bananapi,bpi-m5
+               - cyx,a95xf3-air
+               - cyx,a95xf3-air-gbit
+-- 
+2.34.1
+

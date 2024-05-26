@@ -3,13 +3,21 @@
 # uboot multiboard
 #
 ################################################################################
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
+UBOOT_MULTIBOARD_VERSION = 2024.01
+else
 UBOOT_MULTIBOARD_VERSION = 2023.01
+endif
+
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
-UBOOT_MULTIBOARD_DEPENDENCIES = arm-trusted-firmware
-UBOOT_MULTIBOARD_DEPENDENCIES += host-python3 host-python-setuptools
+UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools
 UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
+
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_H3),y)
+UBOOT_MULTIBOARD_DEPENDENCIES += arm-trusted-firmware
+endif
 
 # Default make opts, adaptation of buildroot uboot's opts. "-I $(HOST_DIR)/include"
 # prevents mixing openssl headers from docker (currently 3.0.2) and
@@ -24,9 +32,24 @@ UBOOT_MULTIBOARD_MAKE_OPTS = \
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3288),y)
 UBOOT_MULTIBOARD_MAKE_OPTS += BL32=$(BINARIES_DIR)/bl32.elf
 UBOOT_MULTIBOARD_SOC_DIR = common-rk3288
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H3),y)
+UBOOT_MULTIBOARD_MAKE_OPTS += BL32=$(BINARIES_DIR)/bl32.elf
+UBOOT_MULTIBOARD_SOC_DIR = common-h3
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
 UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.elf
 UBOOT_MULTIBOARD_SOC_DIR = common-rk3399
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H5),y)
+UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
+UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
+UBOOT_MULTIBOARD_SOC_DIR = common-h5
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
+UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
+UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
+UBOOT_MULTIBOARD_SOC_DIR = common-h6
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
+UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
+UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
+UBOOT_MULTIBOARD_SOC_DIR = common-h616
 else
 # Dummy SoC dir prevents adding common level patches twice
 # in case a new target SoC starts using this package and

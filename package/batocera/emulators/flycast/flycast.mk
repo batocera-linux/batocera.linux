@@ -4,16 +4,19 @@
 #
 ################################################################################
 
-FLYCAST_VERSION = V2.1
+FLYCAST_VERSION = v2.3.2
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
-FLYCAST_DEPENDENCIES = sdl2 libpng libzip libcurl libao libminiupnpc
+FLYCAST_DEPENDENCIES = boost sdl2 libpng libzip libcurl libao libminiupnpc elfutils
 
 FLYCAST_SUPPORTS_IN_SOURCE_BUILD = NO
 
+FLYCAST_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+FLYCAST_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
+FLYCAST_CONF_OPTS += -DUSE_HOST_SDL=ON
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON

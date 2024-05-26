@@ -99,7 +99,17 @@ flatpak list --app --columns=app,name | (
 	es_add_game_end
 	# fix rights (the package installation create some files)
 	echo "updating permissions on files..." >&2
-	chown -R batocera:batocera /userdata/saves/flatpak/data || exit 1
+	target_dir="/userdata/saves/flatpak/data"
+	# Get the current owner and group of the target directory
+	current_owner=$(stat -c "%U" "$target_dir")
+	current_group=$(stat -c "%G" "$target_dir")
+	# Check if the owner is not root:root
+	if [ "$current_owner:$current_group" != "root:root" ]; then
+	    echo "Changing owner of $target_dir to root:root"
+		# Change the owner and group to root:root
+		chown -R root:root "$target_dir" || exit 1
+		echo "Owner changed successfully."
+	fi
 	chmod -R a+rX /userdata/saves/flatpak/binaries || exit 1
 	chmod a+rx /userdata /userdata/saves /userdata/saves/flatpak || exit 1
     )

@@ -1,0 +1,16 @@
+diff --git a/platform/libretro/libretrohosthelpers.h b/platform/libretro/libretrohosthelpers.h
+index e898bf37d9..4fa7a161b6 100644
+--- a/platform/libretro/libretrohosthelpers.h
++++ b/platform/libretro/libretrohosthelpers.h
+@@ -1,3 +1,4 @@
++#include <cstdint>
+ #include <string.h>
+ 
+ void setInputState(
+@@ -7,4 +8,4 @@ void setInputState(
+     int16_t mouseY,
+     uint8_t mouseBtnState);
+ 
+-void setCartDirectory(std::string dir);
+\ No newline at end of file
++void setCartDirectory(std::string dir);

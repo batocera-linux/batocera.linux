@@ -6,7 +6,7 @@ import os
 
 class SteamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         basename = os.path.basename(rom)
         gameId = None
         if basename != "Steam.steam":
@@ -20,5 +20,5 @@ class SteamGenerator(Generator):
             commandArray = ["batocera-steam", gameId]
         return Command.Command(array=commandArray)
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

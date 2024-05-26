@@ -1,0 +1,25 @@
+diff '--color=auto' -uri hurrican-lbrpdx/Hurrican/src/Main.cpp hurrican-67da195a2fea7cb43202626a18f13357ac6adac2/Hurrican/src/Main.cpp
+--- hurrican-lbrpdx/Hurrican/src/Main.cpp	2023-08-02 08:11:47.000000000 -0700
++++ hurrican-67da195a2fea7cb43202626a18f13357ac6adac2/Hurrican/src/Main.cpp	2023-08-07 17:31:30.331188767 -0700
+@@ -365,7 +365,7 @@
+ #else  // NON-ANDROID:
+ #  ifdef USE_STORAGE_PATH
+         // A data-files storage path has been specified in the Makefile:
+-        g_storage_ext = USE_STORAGE_PATH;
++        g_storage_ext = "/userdata/roms/hurrican";
+         // Attempt to locate the dir
+         if (!fs::is_directory(g_storage_ext)) {
+             // Failed, print message and use "." folder as fall-back
+@@ -392,10 +392,10 @@
+ #else  // NON-ANDROID:
+ #  ifdef USE_HOME_DIR
+         // Makefile is specifying this is a UNIX machine and we should write saves, settings, etc to $XDG_CONFIG_HOME/hurrican/ dir
+-        g_config_ext = getXdgDir("XDG_CONFIG_HOME", "/.config/hurrican");
++        g_config_ext = "/userdata/saves/hurrican";
+ 
+         // Makefile is specifying this is a UNIX machine and we should write saves, settings, etc to $XDG_DATA_HOME/hurrican/ dir
+-        g_save_ext = getXdgDir("XDG_DATA_HOME", "/.local/share/hurrican");
++        g_save_ext = "/userdata/saves/hurrican";
+ #  else
+         g_save_ext = ".";
+         g_config_ext = g_save_ext;

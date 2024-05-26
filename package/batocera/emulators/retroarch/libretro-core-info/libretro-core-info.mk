@@ -3,8 +3,8 @@
 # libretro-core-info
 #
 ################################################################################
-# Version:Commits on Oct 04 2022
-LIBRETRO_CORE_INFO_VERSION = 90eff5d4e72db1b5929af7210c9b665c33034536
+
+LIBRETRO_CORE_INFO_VERSION = v1.18.0
 LIBRETRO_CORE_INFO_SITE = $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
 LIBRETRO_CORE_INFO_LICENSE = GPL
 
@@ -23,6 +23,7 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_fast_libretro.info    pce_fast_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_libretro.info         pce_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pcfx_libretro.info        pcfx_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2002_libretro.info           pocketsnes_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2010_libretro.info           snes9x_next_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf vbam_libretro.info                 vba-m_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_vb_libretro.info          vb_libretro.info
@@ -31,10 +32,12 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	# mamevirtual_libretro.so      => no info found
 	# superflappybirds_libretro.so => no info found
 	# zc210_libretro.so            => no info found
+	# hatarib_libretro.info       => no info found
 	touch $(TARGET_DIR)/usr/share/libretro/info/emuscv_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/mamevirtual_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/superflappybirds_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/zc210_libretro.info
+	touch $(TARGET_DIR)/usr/share/libretro/info/hatarib_libretro.info
 
 endef
 

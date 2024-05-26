@@ -109,10 +109,10 @@ class EsSystemConf:
             return True
         for requirement in requirements:
             if isinstance(requirement, list):
-                subreqValid = True
+                subreq = False
                 for reqitem in requirement:
-                    if reqitem not in config:
-                        subreq = False
+                    if reqitem in config:
+                        subreq = True
                 if subreq:
                     return True
             else:
@@ -179,7 +179,7 @@ class EsSystemConf:
             emulators_result[emulator] = result_cores
 
         if nb_variants > 0 and defaultFound == False:
-            raise Exception("default core not enabled for {}/{} ({}/{})" . format(arch, system, defaultEmulator, defaultCore))
+            raise Exception("default core ({}/{}) not enabled for {}/{}" . format(defaultEmulator, defaultCore, arch, system))
 
         result = {}
         result["name"] = data["name"]

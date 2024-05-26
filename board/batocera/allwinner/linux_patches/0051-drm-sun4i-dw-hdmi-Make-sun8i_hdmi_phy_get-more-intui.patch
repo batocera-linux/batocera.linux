@@ -1,0 +1,85 @@
+From 873d6afcf4f64ac7380e7f18cd3604d47bea7570 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 23 Sep 2023 17:52:08 +0200
+Subject: [PATCH 05/23] drm/sun4i: dw-hdmi: Make sun8i_hdmi_phy_get() more
+ intuitive
+
+Let's make sun8i_hdmi_phy_get() to behave more like other kernel
+functions and return phy pointer instead of setting field in struct.
+This also makes function more universal.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c  |  5 +++--
+ drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h  |  2 +-
+ drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c | 10 ++++------
+ 3 files changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+index 93831cdf1917..50cffdbc4b5c 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+@@ -239,10 +239,11 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 		goto err_disable_clk_tmds;
+ 	}
+ 
+-	ret = sun8i_hdmi_phy_get(hdmi, phy_node);
++	hdmi->phy = sun8i_hdmi_phy_get(phy_node);
+ 	of_node_put(phy_node);
+-	if (ret) {
++	if (IS_ERR(hdmi->phy)) {
+ 		dev_err(dev, "Couldn't get the HDMI PHY\n");
++		ret = PTR_ERR(hdmi->phy);
+ 		goto err_disable_clk_tmds;
+ 	}
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
+index 18ffc1b4841f..5383d9267a4d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
+@@ -202,7 +202,7 @@ encoder_to_sun8i_dw_hdmi(struct drm_encoder *encoder)
+ 	return container_of(encoder, struct sun8i_dw_hdmi, encoder);
+ }
+ 
+-int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi, struct device_node *node);
++struct sun8i_hdmi_phy *sun8i_hdmi_phy_get(struct device_node *node);
+ 
+ int sun8i_hdmi_phy_init(struct sun8i_hdmi_phy *phy);
+ void sun8i_hdmi_phy_deinit(struct sun8i_hdmi_phy *phy);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+index 489ea94693ff..581233d6eaf2 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
++++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+@@ -650,25 +650,23 @@ static const struct of_device_id sun8i_hdmi_phy_of_table[] = {
+ 	{ /* sentinel */ }
+ };
+ 
+-int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi, struct device_node *node)
++struct sun8i_hdmi_phy *sun8i_hdmi_phy_get(struct device_node *node)
+ {
+ 	struct platform_device *pdev = of_find_device_by_node(node);
+ 	struct sun8i_hdmi_phy *phy;
+ 
+ 	if (!pdev)
+-		return -EPROBE_DEFER;
++		return ERR_PTR(-EPROBE_DEFER);
+ 
+ 	phy = platform_get_drvdata(pdev);
+ 	if (!phy) {
+ 		put_device(&pdev->dev);
+-		return -EPROBE_DEFER;
++		return ERR_PTR(-EPROBE_DEFER);
+ 	}
+ 
+-	hdmi->phy = phy;
+-
+ 	put_device(&pdev->dev);
+ 
+-	return 0;
++	return phy;
+ }
+ 
+ static int sun8i_hdmi_phy_probe(struct platform_device *pdev)
+-- 
+2.42.0
+

@@ -11,9 +11,9 @@ index 40e853f..dc1c5fa 100644
  	"  --soundfont=FILE         Select the SoundFont for MIDI playback (only\n"
  	"                           supported by some MIDI drivers)\n"
 @@ -308,6 +309,8 @@ void registerDefaults() {
- 
+
  	ConfMan.registerDefault("enable_unsupported_game_warning", true);
- 
+
 +	ConfMan.registerDefault("screenshotspath", ".");
 +
  	// Game specific
@@ -22,7 +22,7 @@ index 40e853f..dc1c5fa 100644
 @@ -857,6 +860,15 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
  			DO_LONG_OPTION("md5-engine")
  			END_OPTION
- 
+
 +			DO_LONG_OPTION("screenshotspath")
 +				Common::FSNode path(option);
 +				if (!path.exists()) {
@@ -34,4 +34,4 @@ index 40e853f..dc1c5fa 100644
 +
  			DO_LONG_OPTION_INT("talkspeed")
  			END_OPTION
- 
+

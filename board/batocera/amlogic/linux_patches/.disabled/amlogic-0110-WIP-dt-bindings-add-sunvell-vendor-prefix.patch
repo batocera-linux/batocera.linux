@@ -1,0 +1,28 @@
+From ecd545158c8a7a097246012838dc9e06cb616c53 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 13 Feb 2023 11:38:16 +0000
+Subject: [PATCH 110/120] WIP: dt-bindings: add sunvell vendor prefix
+
+Add vendor prefix for Shenzhen Sunvell Electronics Co., Ltd
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index a585da02832e..290bc7b7bc5f 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1250,6 +1250,8 @@ patternProperties:
+     description: Sundance DSP Inc.
+   "^sunplus,.*":
+     description: Sunplus Technology Co., Ltd.
++  "^sunvell,.*":
++    description: Shenzhen Sunvell Electronics Co., Ltd
+   "^SUNW,.*":
+     description: Sun Microsystems, Inc
+   "^supermicro,.*":
+-- 
+2.34.1
+

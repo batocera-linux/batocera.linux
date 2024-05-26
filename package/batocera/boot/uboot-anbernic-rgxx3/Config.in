@@ -1,0 +1,7 @@
+config BR2_PACKAGE_UBOOT_ANBERNIC_RGXX3
+	bool "U-Boot for Anbernic RG353 / RG503 family"
+	select BR2_PACKAGE_HOST_DTC
+	help
+	  u-boot for Anbernic RG35P/PS/V/VS/M and RG503
+
+	  https://github.com/pkegg/RG353P_uboot

@@ -2,8 +2,15 @@
 
 if test "$1" != "start"
 then
-  exit 0
+    # call user script with stop condition
+    test -e /boot/postshare.sh && bash /boot/postshare.sh stop
+    exit 0
 fi
+
+DOUPDATE=0
+CURVERSION=$(cat /usr/share/batocera/batocera.version)
+SHAREVERSION=$(cat /userdata/system/data.version 2>/dev/null)
+test "${CURVERSION}" != "${SHAREVERSION}" && DOUPDATE=1 # skip some part, just when new release
 
 IN=/usr/share/batocera/datainit
 OUT=/userdata
@@ -24,44 +31,6 @@ do
         mkdir -p "$OUT""/""$DIR"
     fi
 done
-
-# directories / files to copy when initializing the user data
-#
-# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN batocera.linux IS UPDATED
-#
-# there are almost empty, it's just for the structure
-# the user can delete the directory, it will recreate the structure
-# the user can delete files, files will not be recreated
-for FILE in music bios extractions kodi library saves screenshots splash \
-            system/.config/lirc/lircd.conf \
-            system/configs/emulationstation/es_input.cfg \
-            system/configs/emulationstation/es_settings.cfg \
-            system/.kodi \
-            system/configs/amiberry \
-            system/configs/cannonball \
-            system/configs/dosbox \
-            system/configs/mupen64 \
-            system/configs/ppsspp \
-            system/configs/shadersets \
-            system/configs/umtool \
-            system/configs/xarcade2jstick \
-            system/batocera.conf \
-            system/pacman/hooks/batocera-install.hook \
-            system/pacman/hooks/batocera-uninstall.hook \
-            system/pacman/pacman.conf \
-            bios/mame2003
-do
-    # not wanted for kodi
-    test -e "${IN}/${FILE}" && test ! -e "${OUT}/${FILE}" && mkdir -p $(dirname "${OUT}/${FILE}") && cp -r "${IN}/${FILE}" "${OUT}/${FILE}"
-done
-
-### specific directories
-# decorations - copy only the readme file
-mkdir -p "${OUT}/decorations"
-test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" "${OUT}/decorations/readme.txt"
-
-# themes
-mkdir -p "${OUT}/themes"
 
 # directories to force directories exists
 # files are linked
@@ -88,8 +57,91 @@ do
     fi
 done
 
+# sometimes we update _info.txt files.
+# add a loop to update newer files if necessary
+if test "${DOUPDATE}" = 1
+then
+    for DIR in roms roms/mame/mame2003
+    do
+	find "$IN""/""$DIR" -mindepth 1 -maxdepth 2 -type f -name "_info.txt" |
+            while read FILE
+            do
+		RELATIVE_PATH="${FILE#$IN/}"
+		DEST_FILE="$OUT/$RELATIVE_PATH"
+            
+		# Check if the source file is newer than the destination file
+		if [ "$FILE" -nt "$DEST_FILE" ]; then
+                    echo "Updating $DEST_FILE"
+                    cp -f "$FILE" "$DEST_FILE"
+		fi
+            done
+    done
+fi
+
+# directories / files to copy when initializing the user data
+#
+# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN batocera.linux IS UPDATED
+#
+# there are almost empty, it's just for the structure
+# the user can delete the directory, it will recreate the structure
+# the user can delete files, files will not be recreated
+for FILE in music bios extractions kodi library saves screenshots splash \
+            system/.config/lirc/lircd.conf \
+            system/configs/emulationstation/es_input.cfg \
+            system/configs/emulationstation/es_settings.cfg \
+            system/.kodi \
+            system/configs/amiberry \
+            system/configs/amiberry/whdboot \
+            system/configs/amiberry/data \
+            system/configs/cannonball \
+            system/configs/dosbox \
+            system/configs/mupen64 \
+            system/configs/ppsspp \
+            system/configs/shadersets \
+            system/configs/umtool \
+            system/configs/xarcade2jstick \
+            system/configs/theforceengine \
+            system/batocera.conf \
+            system/pacman/hooks/batocera-install.hook \
+            system/pacman/hooks/batocera-uninstall.hook \
+            system/pacman/pacman.conf \
+            bios/mame2003 \
+            bios/dolphin-emu \
+            roms/iortcw/main \
+            bios/ps2
+do
+    # Skip updating specific files
+    if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/configs/emulationstation/es_input.cfg" ] || [ "$FILE" = "system/batocera.conf" ] || [ "$FILE" = "system/.kodi/userdata/guisettings.xml" ]; then
+        # Check if the file doesn't exist, then create it
+        if [ ! -e "${OUT}/${FILE}" ]; then
+            mkdir -p "$(dirname "${OUT}/${FILE}")"
+            echo "Creating $OUT/$FILE"
+            cp -rfu --preserve=timestamps "${IN}/${FILE}" "$(dirname "${OUT}/${FILE}")"/
+        fi
+    else
+        # Update if newer
+        if [ -e "${IN}/${FILE}" ] && { [ ! -e "${OUT}/${FILE}" ] || [ "${IN}/${FILE}" -nt "${OUT}/${FILE}" ]; }; then
+            mkdir -p "$(dirname "${OUT}/${FILE}")"
+            echo "Updating $OUT/$FILE"
+            cp -rfu --preserve=timestamps "${IN}/${FILE}" "$(dirname "${OUT}/${FILE}")"/
+        fi
+    fi
+done
+
+### specific directories
+# decorations - copy only the readme file
+mkdir -p "${OUT}/decorations"
+test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" "${OUT}/decorations/readme.txt"
+
+# themes
+mkdir -p "${OUT}/themes"
+
 # ssh : create directory, but not keys because lack of entropy, dropbear will automatically generate key on client connection
 mkdir -p /userdata/system/ssh
+
+# ssh : create directory for SSH user data (including identity keys, authorized_keys, known_hosts)
+mkdir -p -m 0700 /userdata/system/.ssh
+chmod 0700 /userdata/system/.ssh
 
 # udev : create a link for rules persistance
 mkdir -p /userdata/system/udev/rules.d
@@ -102,17 +154,10 @@ ln -sf /userdata/system/machine-id /var/lib/dbus/machine-id
 ln -sf /userdata/system/machine-id /etc/machine-id
 
 # save to avoid to redo that all the times
-cp /usr/share/batocera/batocera.version /userdata/system/data.version || exit 1
+cp /usr/share/batocera/batocera.version /userdata/system/data.version
 
-### cleaning old alsa files - 08/07/2021
-rm -f /userdata/system/.asoundrc
-if test -e /boot/asoundrc
-then
-    mount -o remount,rw /boot
-    rm -f /boot/asoundrc
-    mount -o remount,ro /boot
-fi
-###
+# call user script with start condition
+test -e /boot/postshare.sh && bash /boot/postshare.sh start
 
 exit 0
 # END

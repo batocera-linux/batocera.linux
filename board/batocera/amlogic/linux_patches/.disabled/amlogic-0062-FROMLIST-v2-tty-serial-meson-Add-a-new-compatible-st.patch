@@ -1,0 +1,47 @@
+From 6784e19cbe62900c5524fe8e2b5b6216f7fb2ae5 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 22 Feb 2023 21:44:16 +0100
+Subject: [PATCH 062/120] FROMLIST(v2): tty: serial: meson: Add a new
+ compatible string for the G12A SoC
+
+Amlogic Meson G12A (and later) SoCs also have the "divide XTAL by 2" bit
+as the S4 UART controllers. Add a new compatible string for these SoCs
+and enable the has_xtal_div2 flag for them.
+
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/tty/serial/meson_uart.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 056243c12836..931965d2fecc 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -780,7 +780,7 @@ static int meson_uart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static struct meson_uart_data s4_uart_data = {
++static struct meson_uart_data meson_g12a_uart_data = {
+ 	.has_xtal_div2 = true,
+ };
+ 
+@@ -789,9 +789,13 @@ static const struct of_device_id meson_uart_dt_match[] = {
+ 	{ .compatible = "amlogic,meson8-uart" },
+ 	{ .compatible = "amlogic,meson8b-uart" },
+ 	{ .compatible = "amlogic,meson-gx-uart" },
++	{
++		.compatible = "amlogic,meson-g12a-uart",
++		.data = (void *)&meson_g12a_uart_data,
++	},
+ 	{
+ 		.compatible = "amlogic,meson-s4-uart",
+-		.data = (void *)&s4_uart_data,
++		.data = (void *)&meson_g12a_uart_data,
+ 	},
+ 	{ /* sentinel */ },
+ };
+-- 
+2.34.1
+

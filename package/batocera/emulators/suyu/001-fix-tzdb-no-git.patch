@@ -1,0 +1,19 @@
+diff --git a/externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt b/externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
+index 948fe69a23..abe2bd6fb0 100644
+--- a/externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
++++ b/externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
+@@ -24,7 +24,13 @@ if (NOT EXISTS "${TZ_DIR}" OR NOT EXISTS "${TZIF_LIST_FILE}")
+         # separate directory before building.
+         execute_process(
+             COMMAND
+-                ${GIT_PROGRAM} clone --depth 1 "file://${TZ_SOURCE_DIR}" "${TZ_TMP_SOURCE_DIR}"
++                ${GIT_PROGRAM} clone https://github.com/eggert/tz.git "${TZ_TMP_SOURCE_DIR}"
++            COMMAND_ERROR_IS_FATAL ANY
++        )
++        
++        execute_process(
++            COMMAND
++                ${GIT_PROGRAM} -C "${TZ_TMP_SOURCE_DIR}" checkout 16ce126a87c5f130cde8b8dce73b38952a19f085
+             COMMAND_ERROR_IS_FATAL ANY
+         )
+ 

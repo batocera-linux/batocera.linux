@@ -10,3 +10,13 @@ wii:
 fmtowns:
   emulator: libretro
   core:     mame
+psx:
+  options:
+    hud_support: false # duckstation doesn't like it
+ps2:
+  emulator: libretro
+  core:     play
+flash:
+  emulator: lightspark
+  core:     lightspark
+

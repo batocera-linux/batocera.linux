@@ -1,0 +1,36 @@
+Zhang Ning <832666+zhangn1985@users.noreply.github.com>
+https://github.com/libretro/OpenLara/issues/32
+diff --git a/src/platform/libretro/libretro-common/glsym/glgen.py b/src/platform/libretro/libretro-common/glsym/glgen.py
+index a599e55..270e2c2 100644
+--- a/src/platform/libretro/libretro-common/glsym/glgen.py
++++ b/src/platform/libretro/libretro-common/glsym/glgen.py
+@@ -57,7 +57,7 @@ def find_gl_symbols(lines):
+    syms = []
+    for line in lines:
+       m = re.search(r'^typedef.+PFN(\S+)PROC.+$', line)
+-      g = re.search(r'^.+(gl\S+)\W*\(.+\).*$', line)
++      g = re.search(r'^.+\s(gl\S+)\W*\(.+\).*$', line)
+       if m and noext(m.group(1)):
+          typedefs.append(m.group(0).replace('PFN', 'RGLSYM').replace('GLDEBUGPROC', 'RGLGENGLDEBUGPROC'))
+       if g and noext(g.group(1)):
+@@ -74,7 +74,7 @@ def generate_declarations(gl_syms):
+    return ['RGLSYM' + x.upper() + 'PROC ' + '__rglgen_' + x + ';' for x in gl_syms]
+ 
+ def generate_macros(gl_syms):
+-   return ['    SYM(' + x.replace('gl', '') + '),' for x in gl_syms]
++   return ['    SYM(' + x.replace('gl', '', 1) + '),' for x in gl_syms]
+ 
+ def dump(f, lines):
+    f.write('\n'.join(lines))
+diff --git a/src/platform/libretro/main.cpp b/src/platform/libretro/main.cpp
+index abccf05..c9546d1 100644
+--- a/src/platform/libretro/main.cpp
++++ b/src/platform/libretro/main.cpp
+@@ -4,7 +4,7 @@
+ #ifdef _WIN32
+ #include "glsym.h" // Use local modified glsym.h to allow compilation on 64bit Windows
+ #else
+-#include <glsym/glsym.h>
++#include <glsym/rglgen.h>
+ #endif
+

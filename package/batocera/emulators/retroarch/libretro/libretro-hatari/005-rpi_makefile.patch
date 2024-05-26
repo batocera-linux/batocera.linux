@@ -1,10 +1,10 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 85f7648..0655b48 100755
+index b7c26def..325c1737 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -79,6 +79,28 @@ else ifeq ($(platform), osx)
-    SHARED := -dynamiclib
-    PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
+@@ -87,6 +87,30 @@ else ifeq ($(platform), osx)
+ 		LDFLAGS  += $(TARGET_RULE)
+    endif
  
 +# Raspberry Pi
 +else ifneq (,$(findstring rpi,$(platform)))
@@ -26,6 +26,8 @@ index 85f7648..0655b48 100755
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
 +
  # ARM

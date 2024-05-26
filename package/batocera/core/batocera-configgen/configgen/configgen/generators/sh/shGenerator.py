@@ -7,7 +7,7 @@ import glob
 
 class ShGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # in case of squashfs, the root directory is passed
         shInDir = glob.glob(rom + "/run.sh")
@@ -21,5 +21,5 @@ class ShGenerator(Generator):
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         })
 
-    def getMouseMode(self, config):
+    def getMouseMode(self, config, rom):
         return True

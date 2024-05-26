@@ -1,0 +1,24 @@
+From 99e15f010cbe449b0872d2322cfd0ab80936c94f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juliano=20Dorig=C3=A3o?= <jdorigao@gmail.com>
+Date: Mon, 6 May 2024 17:16:56 -0400
+Subject: [PATCH] add uwe5622 makefile
+
+---
+ drivers/net/wireless/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/Makefile b/drivers/net/wireless/Makefile
+index 4d7374d56..95f071f1b 100644
+--- a/drivers/net/wireless/Makefile
++++ b/drivers/net/wireless/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_WLAN_VENDOR_SILABS) += silabs/
+ obj-$(CONFIG_WLAN_VENDOR_ST) += st/
+ obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
+ obj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/
++obj-$(CONFIG_SPARD_WLAN_SUPPORT) += uwe5622/
+ 
+ obj-$(CONFIG_WLAN) += legacy/
+ obj-$(CONFIG_WLAN) += virtual/
+-- 
+2.45.0
+

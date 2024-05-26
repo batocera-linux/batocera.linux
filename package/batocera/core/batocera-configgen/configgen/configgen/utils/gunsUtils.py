@@ -67,3 +67,10 @@ def precalibration(systemName, emulator, core, rom):
         src = "{}/NVDATA/{}.nv".format(dir, baserom_noext)
         dst = "/userdata/saves/supermodel/NVDATA/{}.nv".format(baserom_noext)
         precalibration_copyFile(src, dst)
+
+    elif systemName == "namco2x6":
+        if emulator == "play":
+            baserom_noext = os.path.splitext(baserom)[0]
+            src = "{}/play/{}".format(dir, baserom_noext)
+            dst = "/userdata/system/configs/play/Play Data Files/arcadesaves/{}.backupram".format(baserom_noext)
+            precalibration_copyFile(src, dst)

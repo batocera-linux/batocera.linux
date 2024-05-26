@@ -1,0 +1,86 @@
+--- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c	2024-03-26 22:09:27.731947131 +0100
++++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c	2024-03-26 22:12:24.799772072 +0100
+@@ -743,7 +743,10 @@
+ 	 * 2560x1600, but we can't distinguish them as they have the same
+ 	 * compatible.
+ 	 */
+-	.max_output = { 3840, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const int rk3368_vop_intrs[] = {
+@@ -845,7 +848,10 @@
+ 	.misc = &rk3368_misc,
+ 	.win = rk3368_vop_win_data,
+ 	.win_size = ARRAY_SIZE(rk3368_vop_win_data),
+-	.max_output = { 4096, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct vop_intr rk3366_vop_intr = {
+@@ -867,7 +873,10 @@
+ 	.misc = &rk3368_misc,
+ 	.win = rk3368_vop_win_data,
+ 	.win_size = ARRAY_SIZE(rk3368_vop_win_data),
+-	.max_output = { 4096, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct vop_output rk3399_output = {
+@@ -998,7 +1007,10 @@
+ 	.win_size = ARRAY_SIZE(rk3399_vop_win_data),
+ 	.win_yuv2yuv = rk3399_vop_big_win_yuv2yuv_data,
+ 	.lut_size = 1024,
+-	.max_output = { 4096, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct vop_win_data rk3399_vop_lit_win_data[] = {
+@@ -1025,7 +1037,10 @@
+ 	.win_size = ARRAY_SIZE(rk3399_vop_lit_win_data),
+ 	.win_yuv2yuv = rk3399_vop_lit_win_yuv2yuv_data,
+ 	.lut_size = 256,
+-	.max_output = { 2560, 1600 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct vop_win_data rk3228_vop_win_data[] = {
+@@ -1045,7 +1060,10 @@
+ 	.misc = &rk3368_misc,
+ 	.win = rk3228_vop_win_data,
+ 	.win_size = ARRAY_SIZE(rk3228_vop_win_data),
+-	.max_output = { 4096, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct vop_modeset rk3328_modeset = {
+@@ -1117,7 +1135,10 @@
+ 	.misc = &rk3328_misc,
+ 	.win = rk3328_vop_win_data,
+ 	.win_size = ARRAY_SIZE(rk3328_vop_win_data),
+-	.max_output = { 4096, 2160 },
++	/*
++	 * Batocera : Limit output to 2560x1200
++	 */
++	.max_output = { 2560, 1200 },
+ };
+ 
+ static const struct of_device_id vop_driver_dt_match[] = {

@@ -1,0 +1,60 @@
+From 21595fc129419a9b06e5feabc7ff211700baf8f7 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Mon, 25 Sep 2023 23:00:04 +0300
+Subject: [PATCH]  RK3288-MiQi: Adjust cpu and gpu regulator configs to
+ 1.4V(max 1.5V) 
+ https://file.elecfans.com/web2/M00/26/1E/poYBAGG5lKeAM48aACH87zBE10w368.pdf?SYR827/SYR828_SILERGY.pdf
+  - Add MiQi's fan gpio  - Rename the leds from green to blue.This is the
+ colour on newer revisions Signed-off-by: Demetris Ierokipides
+ <ierokipides.dem@gmail.com>
+
+---
+ arch/arm/boot/dts/rk3288-miqi.dts | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
+index db1eb648e..aeaf15331 100644
+--- a/arch/arm/boot/dts/rk3288-miqi.dts
++++ b/arch/arm/boot/dts/rk3288-miqi.dts
+@@ -30,9 +30,15 @@ ext_gmac: external-gmac-clock {
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
++		fan {
++			gpios = <&gpio0 RK_PC2 GPIO_ACTIVE_HIGH>;
++			label = "miqi:blue:fan";
++			linux,default-trigger = "default-on";
++		};
++
+ 		work_led: led-0 {
+ 			gpios = <&gpio7 RK_PA2 GPIO_ACTIVE_HIGH>;
+-			label = "miqi:green:user";
++			label = "miqi:blue:user";
+ 			linux,default-trigger = "timer";
+ 		};
+ 	};
+@@ -143,10 +149,10 @@ vdd_cpu: syr827@40 {
+ 		reg = <0x40>;
+ 		regulator-name = "vdd_cpu";
+ 		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-max-microvolt = <1400000>;
+ 		regulator-always-on;
+ 		regulator-boot-on;
+-		regulator-enable-ramp-delay = <300>;
++		regulator-enable-ramp-delay = <400>;
+ 		regulator-ramp-delay = <8000>;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+@@ -157,7 +163,7 @@ vdd_gpu: syr828@41 {
+ 		reg = <0x41>;
+ 		regulator-name = "vdd_gpu";
+ 		regulator-min-microvolt = <850000>;
+-		regulator-max-microvolt = <1350000>;
++		regulator-max-microvolt = <1400000>;
+ 		regulator-always-on;
+ 		vin-supply = <&vcc_sys>;
+ 	};
+-- 
+2.34.1
+

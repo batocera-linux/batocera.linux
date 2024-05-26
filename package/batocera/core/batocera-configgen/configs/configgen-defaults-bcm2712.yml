@@ -1,0 +1,39 @@
+default:
+  options:
+    hud_support: true
+
+nds:
+  emulator: drastic
+  core:     drastic
+flash:
+  emulator: lightspark
+  core:     lightspark
+fmtowns:
+  emulator: libretro
+  core:     mame
+model3:
+  emulator: supermodel
+  core:     supermodel-legacy
+  options:
+    videomode: max-1920x1080
+    decorations: none
+    hud_support: none
+scummvm:
+  emulator: scummvm
+  core:     scummvm
+  options:
+    decorations: none
+    hud_support: none
+quake3:
+  emulator: ioquake3
+  core:     ioquake3
+  options:
+    videomode: max-1920x1080
+    decorations: none
+    hud_support: none
+gamecube:
+  emulator: dolphin
+  core:     dolphin
+wii:
+  emulator: dolphin
+  core:     dolphin

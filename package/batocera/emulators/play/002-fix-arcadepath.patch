@@ -1,0 +1,13 @@
+diff --git a/deps/Framework/src/PathUtils.cpp b/deps/Framework/src/PathUtils.cpp
+index 42cabcde87..e47a38b0fd 100644
+--- a/deps/Framework/src/PathUtils.cpp
++++ b/deps/Framework/src/PathUtils.cpp
+@@ -138,7 +138,7 @@ fs::path PathUtils::GetAppResourcesPath()
+ 	//TODO: We should probably append an app name to this path, as installing there pollutes the directory.
+ 	//Also, the prefix path can be overridden by the build system, which makes hardcoding this not appropriate,
+ 	//but works for the default settings.
+-	return "/usr/local/share";
++	return "/usr/share";
+ }
+ 
+ fs::path PathUtils::GetRoamingDataPath()

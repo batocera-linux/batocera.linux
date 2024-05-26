@@ -1,0 +1,94 @@
+From 573181cefb8ff2013dd1f1d796d681ea99ac579a Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 13 Feb 2023 13:11:14 +0000
+Subject: [PATCH 115/120] WIP: arm64: dts: meson: add SPI VFD to Sunvell T95Z
+ Plus
+
+making guesses at the config..
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../boot/dts/amlogic/meson-gxm-t95z-plus.dts  | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
+index 30ed5b6d325f..54a08da0a7eb 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
+@@ -38,6 +38,73 @@ button-function {
+ 			press-threshold-microvolt = <10000>;
+ 		};
+ 	};
++
++	spi {
++		compatible = "spi-gpio";
++
++		/* T95Z v1 (enabled) */
++		sck-gpios = <&gpio GPIODV_22 GPIO_ACTIVE_HIGH>;
++		mosi-gpios = <&gpio GPIODV_23 GPIO_ACTIVE_HIGH>;
++		cs-gpios = <&gpio GPIODV_21 GPIO_ACTIVE_LOW>;
++
++		/* T95Z v2 (disabled)
++		sck-gpios = <&gpio GPIODV_19 GPIO_ACTIVE_HIGH>;
++		mosi-gpios = <&gpio GPIODV_18 GPIO_ACTIVE_HIGH>;
++		cs-gpios = <&gpio GPIODV_20 GPIO_ACTIVE_LOW>;
++		*/
++
++		num-chipselects = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		tm1628: led-controller@0 {
++			compatible = "titanmec,tm1628";
++			reg = <0>;
++			spi-3wire;
++			spi-lsb-first;
++			spi-rx-delay-us = <1>;
++			spi-max-frequency = <500000>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			titanmec,segment-mapping = /bits/ 8 <4 5 6 1 2 3 7>;
++			titanmec,grid = /bits/ 8 <4 3 2 1>;
++
++			alarm@5,1 {
++				reg = <5 1>;
++				function = LED_FUNCTION_ALARM;
++			};
++
++			usb@5,2 {
++				reg = <5 2>;
++				function = LED_FUNCTION_USB;
++			};
++			play@5,3 {
++				reg = <5 3>;
++				function = "play";
++			};
++
++			pause@5,4 {
++				reg = <5 4>;
++				function = "pause";
++			};
++
++			colon@5,5 {
++				reg = <5 5>;
++				function = "colon";
++			};
++
++			lan@5,6 {
++				reg = <5 6>;
++				function = LED_FUNCTION_LAN;
++			};
++
++			wlan@5,7 {
++				reg = <5 7>;
++				function = LED_FUNCTION_WLAN;
++			};
++		};
++	};
+ };
+ 
+ &ethmac {
+-- 
+2.34.1
+

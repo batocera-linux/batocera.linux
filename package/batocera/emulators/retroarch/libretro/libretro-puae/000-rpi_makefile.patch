@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index b834962..c1f37dc 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -37,12 +37,26 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -37,12 +37,28 @@ ifneq (,$(findstring unix,$(platform)))
     endif
  
  # RPI
@@ -25,6 +25,8 @@ index b834962..c1f37dc 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
 +
  # Classic Platforms ####################

@@ -8,49 +8,41 @@ BATOCERA_SHADERS_VERSION = 1.0
 BATOCERA_SHADERS_SOURCE=
 BATOCERA_SHADERS_DEPENDENCIES= glsl-shaders
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
-	BATOCERA_SHADERS_SYSTEM=low-gpu
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
-	BATOCERA_SHADERS_SYSTEM=low-gpu
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
-	BATOCERA_SHADERS_SYSTEM=low-gpu
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
-	BATOCERA_SHADERS_SYSTEM=low-gpu
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+	BATOCERA_GPU_SYSTEM=x86
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RISCV),y)
+	BATOCERA_GPU_SYSTEM=riscv
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2836)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
+	BATOCERA_GPU_SYSTEM=vc4
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+	BATOCERA_GPU_SYSTEM=vc5
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H3)$(BR2_PACKAGE_BATOCERA_TARGET_RK3128)$(BR2_PACKAGE_BATOCERA_TARGET_RK3328),y)
+	BATOCERA_GPU_SYSTEM=mali-400
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812)$(BR2_PACKAGE_BATOCERA_TARGET_S905)$(BR2_PACKAGE_BATOCERA_TARGET_H5),y)
+	BATOCERA_GPU_SYSTEM=mali-450
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
-	BATOCERA_SHADERS_SYSTEM=xu4
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3),y)
-	BATOCERA_SHADERS_SYSTEM=c4
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
-	BATOCERA_SHADERS_SYSTEM=s812
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905),y)
-	BATOCERA_SHADERS_SYSTEM=s905
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
-	BATOCERA_SHADERS_SYSTEM=s912
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-	BATOCERA_SHADERS_SYSTEM=x86
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3328),y)
-	BATOCERA_SHADERS_SYSTEM=rk3328
+	BATOCERA_GPU_SYSTEM=mali-t628
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
+	BATOCERA_GPU_SYSTEM=mali-t720
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3288),y)
-	BATOCERA_SHADERS_SYSTEM=rk3288
+	BATOCERA_GPU_SYSTEM=mali-t760
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN2),y)
+	BATOCERA_GPU_SYSTEM=mali-t820
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
-	BATOCERA_SHADERS_SYSTEM=rk3399
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-	BATOCERA_SHADERS_SYSTEM=odroidn2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5),y)
-	BATOCERA_SHADERS_SYSTEM=tritium_h5
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
-	BATOCERA_SHADERS_SYSTEM=orangepi_pc
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
-	BATOCERA_SHADERS_SYSTEM=cha
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
-	BATOCERA_SHADERS_SYSTEM=low-gpu
+	BATOCERA_GPU_SYSTEM=mali-t860
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_S9GEN4),y)
+	BATOCERA_GPU_SYSTEM=mali-g31
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568)$(BR2_PACKAGE_BATOCERA_TARGET_A3GEN2),y)
+	BATOCERA_GPU_SYSTEM=mali-g52
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+	BATOCERA_GPU_SYSTEM=mali-g610
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN),y)
-	BATOCERA_SHADERS_SYSTEM=odin
+	BATOCERA_GPU_SYSTEM=adreno-630
 endif
 
 BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
 
-ifeq ($(BATOCERA_SHADERS_SYSTEM),x86)
+ifeq ($(BATOCERA_GPU_SYSTEM),x86)
 	BATOCERA_SHADERS_SETS=sharp-bilinear-simple retro scanlines enhanced curvature zfast flatten-glow mega-bezel mega-bezel-lite mega-bezel-ultralite
 else
 	BATOCERA_SHADERS_SETS=sharp-bilinear-simple retro scanlines enhanced curvature zfast flatten-glow
@@ -63,18 +55,30 @@ define BATOCERA_SHADERS_INSTALL_TARGET_CMDS
 	# general
     mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs
 	cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults.yml           $(TARGET_DIR)/usr/share/batocera/shaders/configs/
-	if test -e $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml; then \
-		cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml; \
+	if test -e $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_GPU_SYSTEM).yml; then \
+		cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults-$(BATOCERA_GPU_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml; \
 	fi
 
 	# sets
 	for set in $(BATOCERA_SHADERS_SETS); do \
 		mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set; \
 		cp $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults.yml     $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set/; \
-		if test -e $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml; then \
-			cp $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set/rendering-defaults-arch.yml; \
+		if test -e $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_GPU_SYSTEM).yml; then \
+			cp $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_GPU_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set/rendering-defaults-arch.yml; \
 		fi \
 	done
 endef
+
+define BATOCERA_SHADERS_SLANG
+    # Some shaders got the .slan(g) variants moved
+    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && cp -f pixel-art-scaling/sharp-bilinear-simple.slangp ./interpolation/ && \
+		cp -f pixel-art-scaling/shaders/sharp-bilinear-simple.slang ./interpolation/shaders/
+    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && cp -f edge-smoothing/scalehq/2xScaleHQ.slangp ./scalehq/ && \
+		cp -f ./edge-smoothing/scalehq/shaders/2xScaleHQ.slang ./scalehq/shaders/
+endef
+
+ifeq ($(BR2_PACKAGE_SLANG_SHADERS),y)
+    BATOCERA_SHADERS_POST_INSTALL_TARGET_HOOKS = BATOCERA_SHADERS_SLANG
+endif
 
 $(eval $(generic-package))

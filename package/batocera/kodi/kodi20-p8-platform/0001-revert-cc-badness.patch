@@ -1,0 +1,28 @@
+From f91594676d1f75530addd87363ccbc6510efb84e Mon Sep 17 00:00:00 2001
+From: Stefan Saraev <stefan@saraev.ca>
+Date: Fri, 8 May 2015 11:19:42 +0300
+Subject: [PATCH] revert cc badness
+
+this reverts upstream commit 68f8418
+---
+ CMakeLists.txt |    6 ------
+ 1 file changed, 6 deletions(-)
+
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2016-01-05 23:58:40.000000000 +0100
++++ b/CMakeLists.txt	2016-01-06 01:26:52.004076744 +0100
+@@ -22,12 +22,6 @@
+                    src/windows/os-threads.cpp)
+ endif()
+ 
+-set(p8-platform_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include/p8-platform")
+-IF(WIN32)
+-  LIST(APPEND p8-platform_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include/p8-platform/windows")
+-ENDIF(WIN32)
+-set(p8-platform_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+-
+ if(NOT ${CORE_SYSTEM_NAME} STREQUAL "")
+   if(${CORE_SYSTEM_NAME} STREQUAL "osx" OR ${CORE_SYSTEM_NAME} STREQUAL "ios")
+     list(APPEND p8-platform_LIBRARIES "-framework CoreVideo -framework IOKit")
+-- 
+1.7.10.4

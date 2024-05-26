@@ -1,0 +1,9 @@
+config BR2_PACKAGE_EKA2L1
+    bool "eka2l1"
+
+    select BR2_PACKAGE_BATOCERA_QT6
+
+    help
+      Symbian OS / N-Gage emulator
+
+	    https://github.com/EKA2L1/EKA2L1

@@ -1,0 +1,10 @@
+--- a/CMake/finders/FindSDL2_image.cmake	2023-07-11 18:40:21.950940303 +0200
++++ b/CMake/finders/FindSDL2_image.cmake	2023-07-11 18:40:31.051141065 +0200
+@@ -1,6 +1,6 @@
+ find_package(SDL2_image CONFIG)
+ 
+-if(TARGET SDL2_image::SDL2_image)
++if(TARGET SDL2::SDL2_image)
+   if(CMAKE_VERSION VERSION_LESS "3.18")
+     # Aliasing local targets is not supported on CMake < 3.18, so make it global.
+     set_target_properties(SDL2_image::SDL2_image PROPERTIES IMPORTED_GLOBAL TRUE)

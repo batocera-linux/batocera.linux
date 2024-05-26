@@ -33,7 +33,9 @@ flycastMapping = { # Directions
                    'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'},
                    'r2' :            {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
                    # System Buttons
-                   'start' :         {'button': 'btn_start'}
+                   'start' :         {'button': 'btn_start'},
+                   # Menu
+                   'hotkey' :        {'button': 'btn_menu'}
 }
 
 flycastArcadeMapping = { # Directions
@@ -60,7 +62,9 @@ flycastArcadeMapping = { # Directions
                          # System Buttons
                          'start' :         {'button': 'btn_start'},
                          # coin
-                         'select':         {'button': 'btn_d'}
+                         'select':         {'button': 'btn_d'},
+                         # Menu
+                         'hotkey' :        {'button': 'btn_menu'}
 }
 
 sections = { 'analog', 'digital', 'emulator' }

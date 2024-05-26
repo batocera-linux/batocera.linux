@@ -2,8 +2,8 @@
     "actions_player1": [
 	{
             "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -9 mame"
+            "type": "key",
+            "target": [ "KEY_ESC" ]
 	},
 	{
             "trigger": ["hotkey", "b"],

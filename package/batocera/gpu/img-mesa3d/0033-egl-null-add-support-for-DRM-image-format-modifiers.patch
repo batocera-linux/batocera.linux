@@ -1,0 +1,384 @@
+From 681768aaf01927af5337088079a70db7cec7dbb0 Mon Sep 17 00:00:00 2001
+From: Luigi Santivetti <luigi.santivetti@imgtec.com>
+Date: Thu, 26 Sep 2019 13:32:15 +0100
+Subject: [PATCH 33/58] egl/null: add support for DRM image format modifiers
+
+This change introduces support for image modifiers to platform_null. In
+order for it to create an image with modifiers, it relies on libdrm to
+iterate all formats with associated modifiers supported by the display
+for the primary drm plane in use.
+
+drmModeFormatModifierBlobIterNext() is added to the DRM api in a different
+change and it is not upstream at present.
+
+Internal notes:
+ [1] IN_FORMATS blobs are available since kernel 4.14:
+  - db1689aa61bd1efb5ce9b896e7aa860a85b7f1b6
+  - https://patchwork.freedesktop.org/patch/168543
+
+ [2] the dri image->base.version threshold is 14.
+  - Unlike for platform_wayland, where no details were found regarding
+  why it's using 15
+  - dri_interface.h makes createImageWithModifiers available since
+  version 14
+  - dri/gbm_dri.c as an example checks for minimum version 14.
+
+Change-Id: I0f7b030f6e1943690692674bf18daabfc153208a
+Signed-off-by: Luigi Santivetti <luigi.santivetti@imgtec.com>
+---
+ src/egl/drivers/dri2/egl_dri2.h      |   3 +
+ src/egl/drivers/dri2/platform_null.c | 221 +++++++++++++++++++++++----
+ 2 files changed, 198 insertions(+), 26 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index e2348443dc9..5b382685d38 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -112,6 +112,8 @@ struct display_output {
+    uint32_t               mode_blob_id;
+    unsigned               formats;
+    drmModeAtomicReq      *atomic_state;
++   uint32_t               in_formats_id;
++   struct u_vector        modifiers;
+ };
+ #endif
+ 
+@@ -310,6 +312,7 @@ struct dri2_egl_display
+ 
+ #ifdef HAVE_NULL_PLATFORM
+    bool                      atomic_enabled;
++   bool                      in_formats_enabled;
+    struct display_output     output;
+ #endif
+ 
+diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
+index d36dc0ced2a..2c79199da26 100644
+--- a/src/egl/drivers/dri2/platform_null.c
++++ b/src/egl/drivers/dri2/platform_null.c
+@@ -40,6 +40,7 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
++#include <util/u_vector.h>
+ #include <xf86drm.h>
+ 
+ #include "egl_dri2.h"
+@@ -156,6 +157,18 @@ format_idx_get_from_drm_format(uint32_t drm_format)
+    return -1;
+ }
+ 
++static inline uint32_t
++blob_id_from_property_value(uint64_t prop_value)
++{
++   /* The KMS properties documetation, 01.org/linuxgraphics, says:
++    *
++    *     For all property types except blob properties the value is a 64-bit
++    *     unsigned integer.
++    */
++   assert(!(prop_value >> 32));
++   return (uint32_t) prop_value;
++}
++
+ static int
+ atomic_state_add_object_properties(drmModeAtomicReq *atomic_state,
+                                    const struct object_property *props,
+@@ -645,7 +658,66 @@ drm_event_process(int fd)
+ }
+ 
+ static bool
+-display_output_init(int fd, struct display_output *output, bool use_atomic)
++plane_init_in_formats(int fd, drmModePlane *plane, struct u_vector *modifiers,
++                      uint32_t *in_formats_id_out, unsigned *formats_out)
++{
++   uint32_t blob_id, prev_fmt = DRM_FORMAT_INVALID, count_formats = 0;
++   drmModeFormatModifierIterator drm_iter = {0};
++   drmModePropertyBlobRes *blob;
++   uint64_t prop_value;
++   int idx, err;
++
++   assert(plane && in_formats_id_out && formats_out);
++
++   err = !object_property_value_for_name(fd, plane->plane_id,
++                                         DRM_MODE_OBJECT_PLANE,
++                                         "IN_FORMATS", &prop_value);
++   if (err)
++      return false;
++
++   blob_id = blob_id_from_property_value(prop_value);
++   blob = drmModeGetPropertyBlob(fd, blob_id);
++
++   while (drmModeFormatModifierBlobIterNext(blob, &drm_iter)) {
++      if (drm_iter.fmt != prev_fmt) {
++         prev_fmt = drm_iter.fmt;
++         count_formats++;
++
++         idx = format_idx_get_from_drm_format(drm_iter.fmt);
++         if (idx < 0)
++            continue;
++
++         *formats_out |= (1 << idx);
++      }
++   }
++
++   drmModeFreePropertyBlob(blob);
++
++   if (!count_formats) {
++      /* None of the formats in the IN_FORMATS blob has associated modifiers */
++      _eglLog(_EGL_WARNING, "no format-modifiers found in IN_FORMATS");
++      return false;
++   }
++
++   if (plane->count_formats != count_formats)
++      /* Only some of the formats in the IN_FORMATS blob have associated modifiers,
++       * try to use this subset.
++       */
++      _eglLog(_EGL_WARNING, "discarding formats without modifiers");
++
++   /* Allocate space for modifiers, if ENOMEM fallback to plane formats */
++   if (!u_vector_init(modifiers, sizeof(uint64_t), 64)) {
++     _eglLog(_EGL_WARNING, "failed to allocate modifiers");
++     return false;
++   }
++
++   *in_formats_id_out = blob_id;
++   return true;
++}
++
++static bool
++display_output_init(int fd, struct display_output *output, bool use_atomic,
++                    bool prefer_in_formats, bool *in_formats_enabled_out)
+ {
+    drmModeRes *resources;
+    drmModeConnector *connector;
+@@ -674,16 +746,34 @@ display_output_init(int fd, struct display_output *output, bool use_atomic)
+       goto err_free_plane;
+    output->mode = connector->modes[mode_idx];
+ 
+-   /* Record the display supported formats */
+-   for (unsigned i = 0; i < plane->count_formats; i++) {
+-      int format_idx;
++   assert(in_formats_enabled_out && !(*in_formats_enabled_out));
+ 
+-      format_idx = format_idx_get_from_drm_format(plane->formats[i]);
+-      if (format_idx == -1)
+-         continue;
++   /* Track display supported formats. Look them up from IN_FORMATS blobs
++    * if they are available, otherwise use plane formats.
++    */
++   if (prefer_in_formats)
++      *in_formats_enabled_out = plane_init_in_formats(fd, plane,
++                                                      &output->modifiers,
++                                                      &output->in_formats_id,
++                                                      &output->formats);
+ 
+-      output->formats |= (1 << format_idx);
++   if (!*in_formats_enabled_out) {
++      _eglLog(_EGL_WARNING, "fallback to plane formats");
++
++      for (unsigned i = 0; i < plane->count_formats; i++) {
++         int format_idx;
++
++         format_idx = format_idx_get_from_drm_format(plane->formats[i]);
++         if (format_idx == -1)
++            continue;
++
++         output->formats |= (1 << format_idx);
++      }
+    }
++
++   /* At this point we can only shut down if the look up failed and
++    * it is safe to pass NULL to drmModeFreeFormats().
++    */
+    if (!output->formats)
+       goto err_free_plane;
+ 
+@@ -983,10 +1073,12 @@ static bool
+ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+                      uint32_t *fb_id_out)
+ {
++   uint64_t modifiers[4] = {0};
+    uint32_t handles[4] = {0};
+    uint32_t pitches[4] = {0};
+    uint32_t offsets[4] = {0};
+-   int handle, stride, width, height, format;
++   uint32_t flags = 0;
++   int handle, stride, width, height, format, l_mod, h_mod;
+    int format_idx;
+ 
+    dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_HANDLE, &handle);
+@@ -1001,9 +1093,47 @@ add_fb_for_dri_image(struct dri2_egl_display *dri2_dpy, __DRIimage *image,
+    format_idx = format_idx_get_from_dri_image_format(format);
+    assert(format_idx != -1);
+ 
+-   return !drmModeAddFB2(dri2_dpy->fd, width, height,
+-                         dri2_null_formats[format_idx].drm_format,
+-                         handles, pitches, offsets, fb_id_out, 0);
++   if (dri2_dpy->in_formats_enabled) {
++      dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_MODIFIER_UPPER, &h_mod);
++      dri2_dpy->image->queryImage(image, __DRI_IMAGE_ATTRIB_MODIFIER_LOWER, &l_mod);
++
++      modifiers[0] = combine_u32_into_u64((uint32_t) h_mod, (uint32_t) l_mod);
++      flags |= DRM_MODE_FB_MODIFIERS;
++   }
++
++   return !drmModeAddFB2WithModifiers(dri2_dpy->fd, width, height,
++                                      dri2_null_formats[format_idx].drm_format,
++                                      handles, pitches, offsets, modifiers,
++                                      fb_id_out, flags);
++}
++
++static __DRIimage *
++create_image(struct dri2_egl_surface *dri2_surf, uint32_t flags)
++{
++   struct dri2_egl_display *dri2_dpy =
++      dri2_egl_display(dri2_surf->base.Resource.Display);
++   uint32_t count_modifiers;
++   uint64_t *modifiers;
++
++   if (dri2_dpy->in_formats_enabled) {
++      count_modifiers = u_vector_length(&dri2_dpy->output.modifiers);
++      modifiers = u_vector_tail(&dri2_dpy->output.modifiers);
++
++      return dri2_dpy->image->createImageWithModifiers(dri2_dpy->dri_screen,
++                                                       dri2_surf->base.Width,
++                                                       dri2_surf->base.Height,
++                                                       dri2_surf->format,
++                                                       modifiers,
++                                                       count_modifiers,
++                                                       NULL);
++   }
++
++   return dri2_dpy->image->createImage(dri2_dpy->dri_screen,
++                                       dri2_surf->base.Width,
++                                       dri2_surf->base.Height,
++                                       dri2_surf->format,
++                                       flags,
++                                       NULL);
+ }
+ 
+ static bool
+@@ -1016,12 +1146,7 @@ get_front_bo(struct dri2_egl_surface *dri2_surf)
+    if (dri2_surf->base.Type == EGL_WINDOW_BIT)
+       use |= __DRI_IMAGE_USE_SCANOUT;
+ 
+-   dri2_surf->front = dri2_dpy->image->createImage(dri2_dpy->dri_screen,
+-                                                   dri2_surf->base.Width,
+-                                                   dri2_surf->base.Height,
+-                                                   dri2_surf->format,
+-                                                   use,
+-                                                   NULL);
++   dri2_surf->front = create_image(dri2_surf, use);
+    if (!dri2_surf->front)
+       return false;
+ 
+@@ -1058,13 +1183,8 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+    }
+ 
+    if (!dri2_surf->back->dri_image) {
+-      dri2_surf->back->dri_image =
+-         dri2_dpy->image->createImage(dri2_dpy->dri_screen,
+-                                      dri2_surf->base.Width,
+-                                      dri2_surf->base.Height,
+-                                      dri2_surf->format,
+-                                      __DRI_IMAGE_USE_SCANOUT,
+-                                      NULL);
++      dri2_surf->back->dri_image = create_image(dri2_surf,
++                                                __DRI_IMAGE_USE_SCANOUT);
+       if (!dri2_surf->back->dri_image)
+          goto err_unlock;
+    }
+@@ -1094,6 +1214,30 @@ static void surface_swap_queue_init(struct dri2_egl_surface *dri2_surf)
+       swap_queue[i].kms_in_fence_fd = -1;
+ }
+ 
++static bool
++in_formats_get_modifiers(const int fd, const uint32_t in_formats_id,
++                         const int drm_format, struct u_vector *modifiers)
++{
++   drmModeFormatModifierIterator drm_iter = {0};
++   drmModePropertyBlobRes *blob;
++   uint64_t *mod = NULL;
++
++   blob = drmModeGetPropertyBlob(fd, in_formats_id);
++
++   while (drmModeFormatModifierBlobIterNext(blob, &drm_iter)) {
++      if (drm_iter.fmt == drm_format) {
++         assert(drm_iter.mod != DRM_FORMAT_MOD_INVALID);
++
++         mod = u_vector_add(modifiers);
++         *mod = drm_iter.mod;
++      }
++   }
++
++   drmModeFreePropertyBlob(blob);
++
++   return mod != NULL;
++}
++
+ static _EGLSurface *
+ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+                const EGLint *attrib_list)
+@@ -1105,6 +1249,7 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+    const __DRIconfig *dri_config;
+    _EGLSurface *surf;
+    int format_idx;
++   bool ret;
+ 
+    dri2_surf = calloc(1, sizeof(*dri2_surf));
+    if (!dri2_surf) {
+@@ -1137,6 +1282,15 @@ create_surface(_EGLDisplay *disp, _EGLConfig *config, EGLint type,
+ 
+    dri2_surf->format = dri2_null_formats[format_idx].dri_image_format;
+ 
++   if (dri2_dpy->in_formats_enabled) {
++      ret = in_formats_get_modifiers(dri2_dpy->fd,
++                                     dri2_dpy->output.in_formats_id,
++                                     dri2_null_formats[format_idx].drm_format,
++                                     &dri2_dpy->output.modifiers);
++      if (!ret)
++         goto err_free_surface;
++   }
++
+    surface_swap_queue_init(dri2_surf);
+ 
+    return surf;
+@@ -1536,6 +1690,8 @@ EGLBoolean
+ dri2_initialize_null(_EGLDisplay *disp)
+ {
+    struct dri2_egl_display *dri2_dpy;
++   bool prefer_in_formats = false;
++   uint64_t value;
+    int err;
+ 
+    dri2_dpy = calloc(1, sizeof(*dri2_dpy));
+@@ -1589,8 +1745,19 @@ dri2_initialize_null(_EGLDisplay *disp)
+       goto cleanup;
+    }
+ 
++   err = drmGetCap(dri2_dpy->fd_dpy, DRM_CAP_ADDFB2_MODIFIERS, &value);
++   if (!err && value) {
++      /* in_formats could be supported by the platform, however not being
++       * actually enabled, i.e. in_formats init can still fail.
++       */
++      prefer_in_formats = dri2_dpy->image->base.version >= 14 &&
++         dri2_dpy->image->createImageWithModifiers;
++   }
++
+    if (!display_output_init(dri2_dpy->fd, &dri2_dpy->output,
+-                            dri2_dpy->atomic_enabled)) {
++                            dri2_dpy->atomic_enabled,
++                            prefer_in_formats,
++                            &dri2_dpy->in_formats_enabled)) {
+       _eglError(EGL_NOT_INITIALIZED, "failed to create output");
+       goto cleanup;
+    }
+@@ -1640,4 +1807,6 @@ dri2_teardown_null(struct dri2_egl_display *dri2_dpy)
+          drmModeFreeProperty(dri2_dpy->output.connector_prop_res[i]);
+       free(dri2_dpy->output.connector_prop_res);
+    }
++
++   u_vector_finish(&dri2_dpy->output.modifiers);
+ }
+-- 
+2.25.1
+

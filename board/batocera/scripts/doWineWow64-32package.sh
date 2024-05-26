@@ -50,7 +50,7 @@ findDeps() {
 }
 
 findLibDir() {
-    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/lutris/lib"  "${G_TARGETDIR}/usr/wine/proton/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
+    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/ge-custom/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
     done
@@ -102,35 +102,34 @@ echo
 cp -prv "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/vdpau/"* "${TMPOUT}/lib32/vdpau" || exit 1
 
 # libglvnd
 echo
 echo "libglvnd..."
 echo
-cp -pv "${G_TARGETDIR}/usr/lib/libEGL.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLESv1_CM.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLESv2.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libOpenGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libEGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLESv1_CM.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLESv2.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libOpenGL.so"* "${TMPOUT}/lib32" || exit 1
 
 # mesa
 echo
 echo "mesa..."
 echo
-cp -pv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
-cp -pv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -dpv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 
 for BIN in \
-"${G_TARGETDIR}/usr/wine/lutris/bin/wine" \
-"${G_TARGETDIR}/usr/wine/proton/bin/wine" \
+"${G_TARGETDIR}/usr/wine/ge-custom/bin/wine" \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
@@ -203,17 +202,15 @@ cp -prv "${G_TARGETDIR}/usr/lib/pipewire-0.3" "${TMPOUT}/lib32/" || exit 1
 echo 
 echo "wine installation..."
 echo 
-mkdir -p "${TMPOUT}/usr/wine/lutris"                         || exit 1
-mkdir -p "${TMPOUT}/usr/wine/proton"                         || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/lutris" "${TMPOUT}/usr/wine/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton" "${TMPOUT}/usr/wine/" || exit 1
+mkdir -p "${TMPOUT}/usr/wine/ge-custom" || exit 1
+cp -pr "${G_TARGETDIR}/usr/wine/ge-custom" "${TMPOUT}/usr/wine/" || exit 1
 # helper bins
 echo 
 echo " wine helper binaries"
 echo 
-mkdir -p "${TMPOUT}/usr/bin32"				|| exit 1
+mkdir -p "${TMPOUT}/usr/bin32" || exit 1
 #cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
-cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin32/" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/gst"* "${TMPOUT}/usr/bin32/" || exit 1
 
 # dri
 echo 
@@ -235,12 +232,9 @@ echo
 echo "icd.d json files..."
 echo
 mkdir -p "${TMPOUT}/usr/share/vulkan/icd.d" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.x86_64.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.x86_64.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
-cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd..json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.x86_64.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_hasvk_icd.i686.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/intel_icd.i686.json" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
 sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/icd.d/"*i686.json || exit 1
 
 # extra helper libraries

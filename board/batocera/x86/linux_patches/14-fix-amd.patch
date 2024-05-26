@@ -1,0 +1,14 @@
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index d5cec03eaa8d..0819ed156276 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -7275,7 +7275,7 @@ void amdgpu_dm_connector_init_helper(struct amdgpu_display_manager *dm,
+ 	if (!aconnector->mst_root)
+ 		drm_connector_attach_max_bpc_property(&aconnector->base, 8, 16);
+ 
+-	aconnector->base.state->max_bpc = 16;
++	aconnector->base.state->max_bpc = (connector_type == DRM_MODE_CONNECTOR_eDP) ? 16 : 8;
+ 	aconnector->base.state->max_requested_bpc = aconnector->base.state->max_bpc;
+ 
+ 	if (connector_type == DRM_MODE_CONNECTOR_eDP &&
+

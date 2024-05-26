@@ -1,0 +1,140 @@
+From 44e39b9ad7a1094d7cfd788481a219138cf34336 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 13 Feb 2023 11:46:39 +0000
+Subject: [PATCH 114/120] WIP: arm64: dts: meson: add support for Sunvell T95Z
+ Plus
+
+Sunvell T95Z Pluz is based on the Amlogic Q200 reference design with
+an S912 chip and the following specifications:
+
+- 2GB DDR3 RAM
+- 16GB eMMC
+- 10/100/1000 Base-T Ethernet
+- AP6255 Wireless (802.11 b/g/n/ac, BT 4.1)
+- HDMI 2.0a video
+- FTD628 VFD for clock/status
+- 2x USB 2.0 ports
+- IR receiver
+- 1x Power LED (white)
+- 1x Update/Reset button (underside)
+- 1x micro SD card slot
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |  1 +
+ .../boot/dts/amlogic/meson-gxm-t95z-plus.dts  | 91 +++++++++++++++++++
+ 2 files changed, 92 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 8b4155e0140c..8ce0c8697c94 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -79,6 +79,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q201.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-rbox-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-s912-libretech-pc.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-tx9-pro.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxm-t95z-plus.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-vega-s96.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-wetek-core2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-s4-s805x2-aq222.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
+new file mode 100644
+index 000000000000..30ed5b6d325f
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-t95z-plus.dts
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++/dts-v1/;
++
++#include "meson-gxm.dtsi"
++#include "meson-gx-p23x-q20x.dtsi"
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
++
++/ {
++	compatible = "sunvell,t95z-plus", "amlogic,s912", "amlogic,meson-gxm";
++	model = "Sunvell T95Z Plus";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led-white {
++			color = <LED_COLOR_ID_WHITE>;
++			function = LED_FUNCTION_POWER;
++			gpios = <&gpio_ao GPIOAO_9 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++			panic-indicator;
++		};
++	};
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1710000>;
++
++		button-function {
++			label = "update";
++			linux,code = <KEY_VENDOR>;
++			press-threshold-microvolt = <10000>;
++		};
++	};
++};
++
++&ethmac {
++	pinctrl-0 = <&eth_pins>;
++	pinctrl-names = "default";
++
++	phy-handle = <&external_phy>;
++	phy-mode = "rgmii";
++
++	amlogic,tx-delay-ns = <2>;
++};
++
++&external_mdio {
++	external_phy: ethernet-phy@1 {
++		/* ZTE ZX2AA500 */
++		compatible = "ethernet-phy-id0381.5c11",
++			     "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++		max-speed = <1000>;
++
++		reset-assert-us = <10000>;
++		reset-deassert-us = <80000>;
++		reset-gpios = <&gpio GPIOZ_14 GPIO_ACTIVE_LOW>;
++
++		interrupt-parent = <&gpio_intc>;
++		/* MAC_INTR on GPIOZ_15 */
++		interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
++	};
++};
++
++&sd_emmc_a {
++	brcmf: wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++	};
++};
++
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		shutdown-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++		max-speed = <2000000>;
++		clocks = <&wifi32k>;
++		clock-names = "lpo";
++	};
++};
+-- 
+2.34.1
+

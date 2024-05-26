@@ -1,0 +1,165 @@
+From 25b44143ea8162209beb02759ca3ea3bd3be7a74 Mon Sep 17 00:00:00 2001
+From: Corentin Labbe <clabbe.montjoie@gmail.com>
+Date: Fri, 14 Oct 2022 12:54:21 +0200
+Subject: [PATCH] phy: handle optional regulator for PHY
+
+Add handling of optional regulators for PHY.
+
+Regulators need to be enabled before PHY scanning, so MDIO bus
+initiate this task.
+
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/net/mdio/fwnode_mdio.c | 53 ++++++++++++++++++++++++++++++++--
+ drivers/net/phy/phy_device.c   |  6 ++++
+ include/linux/phy.h            |  3 ++
+ 3 files changed, 60 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index fd02f5cbc853..bd5a27eaf40c 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -11,6 +11,7 @@
+ #include <linux/of.h>
+ #include <linux/phy.h>
+ #include <linux/pse-pd/pse.h>
++#include <linux/regulator/consumer.h>
+ 
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+@@ -58,6 +59,40 @@ fwnode_find_mii_timestamper(struct fwnode_handle *fwnode)
+ 	return register_mii_timestamper(arg.np, arg.args[0]);
+ }
+ 
++static int
++fwnode_regulator_get_bulk_enabled(struct device *dev,
++				  struct fwnode_handle *fwnode,
++				  struct regulator_bulk_data **consumers)
++{
++	struct device_node *np;
++	int ret, reg_cnt;
++
++	np = to_of_node(fwnode);
++	if (!np)
++		return 0;
++
++	reg_cnt = of_regulator_bulk_get_all(dev, np, consumers);
++	if (reg_cnt < 0) {
++		ret = reg_cnt;
++		goto clean_consumers;
++	}
++
++	if (reg_cnt == 0)
++		return 0;
++
++	ret = regulator_bulk_enable(reg_cnt, *consumers);
++	if (ret)
++		goto clean_consumers;
++
++	return reg_cnt;
++
++clean_consumers:
++	kfree(*consumers);
++	*consumers = NULL;
++
++	return ret;
++}
++
+ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 				       struct phy_device *phy,
+ 				       struct fwnode_handle *child, u32 addr)
+@@ -113,12 +148,13 @@ EXPORT_SYMBOL(fwnode_mdiobus_phy_device_register);
+ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 				struct fwnode_handle *child, u32 addr)
+ {
++	struct regulator_bulk_data *consumers = NULL;
+ 	struct mii_timestamper *mii_ts = NULL;
+ 	struct pse_control *psec = NULL;
+ 	struct phy_device *phy;
++	int rc, reg_cnt;
+ 	bool is_c45;
+ 	u32 phy_id;
+-	int rc;
+ 
+ 	psec = fwnode_find_pse_control(child);
+ 	if (IS_ERR(psec))
+@@ -130,6 +166,12 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 		goto clean_pse;
+ 	}
+ 
++	reg_cnt = fwnode_regulator_get_bulk_enabled(&bus->dev, child, &consumers);
++	if (reg_cnt < 0) {
++		rc = reg_cnt;
++		goto clean_mii_ts;
++	}
++
+ 	is_c45 = fwnode_device_is_compatible(child, "ethernet-phy-ieee802.3-c45");
+ 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
+ 		phy = get_phy_device(bus, addr, is_c45);
+@@ -137,9 +179,12 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 		phy = phy_device_create(bus, addr, phy_id, 0, NULL);
+ 	if (IS_ERR(phy)) {
+ 		rc = PTR_ERR(phy);
+-		goto clean_mii_ts;
++		goto clean_regulators;
+ 	}
+ 
++	phy->regulator_cnt = reg_cnt;
++	phy->consumers = consumers;
++
+ 	if (is_acpi_node(child)) {
+ 		phy->irq = bus->irq[addr];
+ 
+@@ -174,6 +219,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 
+ clean_phy:
+ 	phy_device_free(phy);
++clean_regulators:
++	if (reg_cnt > 0)
++		regulator_bulk_disable(reg_cnt, consumers);
++	kfree(consumers);
+ clean_mii_ts:
+ 	unregister_mii_timestamper(mii_ts);
+ clean_pse:
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 2ce74593d6e4..31b6913ceed1 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -31,6 +31,7 @@
+ #include <linux/phy_led_triggers.h>
+ #include <linux/pse-pd/pse.h>
+ #include <linux/property.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/sfp.h>
+ #include <linux/skbuff.h>
+@@ -3400,6 +3401,11 @@ static int phy_remove(struct device *dev)
+ 
+ 	phydev->drv = NULL;
+ 
++	if (phydev->regulator_cnt > 0)
++		regulator_bulk_disable(phydev->regulator_cnt, phydev->consumers);
++
++	kfree(phydev->consumers);
++
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 3cc52826f18e..832cb2d4f76a 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -757,6 +757,9 @@ struct phy_device {
+ 	void (*phy_link_change)(struct phy_device *phydev, bool up);
+ 	void (*adjust_link)(struct net_device *dev);
+ 
++	int regulator_cnt;
++	struct regulator_bulk_data *consumers;
++
+ #if IS_ENABLED(CONFIG_MACSEC)
+ 	/* MACsec management functions */
+ 	const struct macsec_ops *macsec_ops;
+-- 
+2.43.0
+

@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 import controllersConfig
 
-def generateCoreSettings(coreSettings, system, rom, guns):
+def generateCoreSettings(coreSettings, system, rom, guns, wheels):
 
     # Amstrad CPC / GX4000
     if (system.config['core'] == 'cap32'):
@@ -67,6 +67,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('atari800_resolution', '"' + system.config['atari800_resolution'] + '"')
             else:
                 coreSettings.save('atari800_resolution', '""') # Default : 336x240
+            # Internal BASIC interpreter
+            if system.isOptSet('atari800_internalbasic'):
+                coreSettings.save('atari800_internalbasic', '"' + system.config['atari800_internalbasic'] + '"')
+            else:
+                coreSettings.save('atari800_internalbasic', '"disabled"')
 
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
@@ -193,9 +198,14 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
             else:
                 coreSettings.save('vice_joyport_type', '"1"')
+        # RAM Expansion Unit (REU)
+        if system.isOptSet('vice_ram_expansion_unit'):
+            coreSettings.save('vice_ram_expansion_unit', '"' + system.config['vice_ram_expansion_unit'] + '"')
+        else:
+            coreSettings.save('vice_ram_expansion_unit', '"none"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('vice_keyboard_pass_through'):
-            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['keyboard_pass_through'] + '"')
+            coreSettings.save('vice_physical_keyboard_pass_through', '"' + system.config['vice_keyboard_pass_through'] + '"')
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
 
@@ -545,7 +555,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', '"' + system.config['video_standard'] + '"')
         else:
-            coreSettings.save('puae_video_standard', '"PAL"')
+            coreSettings.save('puae_video_standard', '"PAL auto"')
         # Video Resolution
         if system.isOptSet('video_resolution'):
             coreSettings.save('puae_video_resolution', '"' + system.config['video_resolution'] + '"')
@@ -619,36 +629,40 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     # Dolpin Wii
     if (system.config['core'] == 'dolphin'):
         # Wii System Languages
-            if system.isOptSet('wii_language'):
-                coreSettings.save('dolphin_language', '"' + system.config['wii_language'] + '"')
-            else:
-                coreSettings.save('dolphin_language', '"French"')
+        if system.isOptSet('wii_language'):
+            coreSettings.save('dolphin_language', '"' + system.config['wii_language'] + '"')
+        else:
+            coreSettings.save('dolphin_language', '"English"')
         # Wii Resolution Scale
-            if system.isOptSet('wii_resolution'):
-                coreSettings.save('dolphin_efb_scale', '"' + system.config['wii_resolution'] + '"')
-            else:
-                coreSettings.save('dolphin_efb_scale', '"x1 (640 x 528)"')
+        if system.isOptSet('wii_resolution'):
+            coreSettings.save('dolphin_efb_scale', '"' + system.config['wii_resolution'] + '"')
+        else:
+            coreSettings.save('dolphin_efb_scale', '"x1 (640 x 528)"')
         # Anisotropic Filtering
-            if system.isOptSet('wii_anisotropic'):
-                coreSettings.save('dolphin_max_anisotropy', '"' + system.config['wii_anisotropic'] + '"')
-            else:
-                coreSettings.save('dolphin_max_anisotropy', '"x1"')
+        if system.isOptSet('wii_anisotropic'):
+            coreSettings.save('dolphin_max_anisotropy', '"' + system.config['wii_anisotropic'] + '"')
+        else:
+            coreSettings.save('dolphin_max_anisotropy', '"x1"')
         # Wii Tv Mode
-            if system.isOptSet('wii_widescreen'):
-                coreSettings.save('dolphin_widescreen', '"' + system.config['wii_widescreen'] + '"')
-            else:
-                coreSettings.save('dolphin_widescreen', '"enabled"')
+        if system.isOptSet('wii_widescreen'):
+            coreSettings.save('dolphin_widescreen', '"' + system.config['wii_widescreen'] + '"')
+        else:
+            coreSettings.save('dolphin_widescreen', '"enabled"')
         # Widescreen Hack
-            if system.isOptSet('wii_widescreen_hack'):
-                coreSettings.save('dolphin_widescreen_hack', '"' + system.config['wii_widescreen_hack'] + '"')
-            else:
-                coreSettings.save('dolphin_widescreen_hack', '"disabled"')
+        if system.isOptSet('wii_widescreen_hack'):
+            coreSettings.save('dolphin_widescreen_hack', '"' + system.config['wii_widescreen_hack'] + '"')
+        else:
+            coreSettings.save('dolphin_widescreen_hack', '"disabled"')
         # Shader Compilation Mode
-            if system.isOptSet('wii_shader_mode'):
-                coreSettings.save('dolphin_shader_compilation_mode', '"' + system.config['wii_shader_mode'] + '"')
-            else:
-                coreSettings.save('dolphin_shader_compilation_mode', '"sync"')
-
+        if system.isOptSet('wii_shader_mode'):
+            coreSettings.save('dolphin_shader_compilation_mode', '"' + system.config['wii_shader_mode'] + '"')
+        else:
+            coreSettings.save('dolphin_shader_compilation_mode', '"sync"')
+        # OSD
+        if system.isOptSet('wii_osd'):
+            coreSettings.save('dolphin_osd_enabled', '"' + system.config['wii_osd'] + '"')
+        else:
+            coreSettings.save('dolphin_osd_enabled', '"enabled"')
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
@@ -683,7 +697,7 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         # Audio Filter
         if system.isOptSet('o2em_low_pass_range') and system.config['o2em_low_pass_range'] != "0":
             coreSettings.save('o2em_low_pass_filter', '"enabled"')
-            coreSettings.save('o2em_low_pass_range',  system.config['o2em_low_pass_range'] + '"')
+            coreSettings.save('o2em_low_pass_range', '"' + system.config['o2em_low_pass_range'] + '"')
         else:
             coreSettings.save('o2em_low_pass_filter', '"disabled"')
             coreSettings.save('o2em_low_pass_range',  '"0"')
@@ -877,6 +891,21 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('dosbox_pure_joystick_timed', '"' + system.config['pure_joystick_timed'] + '"')
         else:
             coreSettings.save('dosbox_pure_joystick_timed', '"true"')
+        # SoundBlaster Type
+        if system.isOptSet('pure_sblaster_type'):
+            coreSettings.save('dosbox_pure_sblaster_type', '"' + system.config['pure_sblaster_type'] + '"')
+        else:
+            coreSettings.save('dosbox_pure_sblaster_type', '"sb16"')
+        # Enable Gravis Sound
+        if system.isOptSet("pure_gravis"):
+            coreSettings.save("dosbox_pure_gus", '"' + system.config['pure_gravis'] + '"')
+        else:
+            coreSettings.save("dosbox_pure_gus", '"false"')
+        # Midi Type
+        if system.isOptSet('pure_midi'):
+            coreSettings.save('dosbox_pure_midi', '"' + system.config['pure_midi'] + '"')
+        else:
+            coreSettings.save('dosbox_pure_midi', '"disabled"')
 
     # Microsoft MSX and Colecovision
     if (system.config['core'] == 'bluemsx'):
@@ -1064,24 +1093,60 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
+
+        # Check if any controller packs are set to auto rumble
+        auto_rumble_pak = None
+        for pak in range(1, 5):
+            pak_value = f'mupen64plus-pak{pak}'
+            if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
+                auto_rumble_pak = pak_value
+                break
+
+        if auto_rumble_pak:
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+
         # Controller Pak 1
         if system.isOptSet('mupen64plus-pak1'):
-            coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')
+            if system.config['mupen64plus-pak1'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak1', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak1', '"memory"')
+            else:
+                coreSettings.save('mupen64plus-pak1', '"' + system.config['mupen64plus-pak1'] + '"')
         else:
             coreSettings.save('mupen64plus-pak1', '"memory"')
         # Controller Pak 2
         if system.isOptSet('mupen64plus-pak2'):
-            coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')
+            if system.config['mupen64plus-pak2'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak2', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak2', '"none"')
+            else:
+                coreSettings.save('mupen64plus-pak2', '"' + system.config['mupen64plus-pak2'] + '"')
         else:
             coreSettings.save('mupen64plus-pak2', '"none"')
         # Controller Pak 3
         if system.isOptSet('mupen64plus-pak3'):
-            coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')
+            if system.config['mupen64plus-pak3'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak3', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak3', '"none"')
+            else:
+                coreSettings.save('mupen64plus-pak3', '"' + system.config['mupen64plus-pak3'] + '"')
         else:
             coreSettings.save('mupen64plus-pak3', '"none"')
         # Controller Pak 4
         if system.isOptSet('mupen64plus-pak4'):
-            coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')
+            if system.config['mupen64plus-pak4'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('mupen64plus-pak4', '"rumble"')
+                else:
+                    coreSettings.save('mupen64plus-pak4', '"none"')
+            else:
+                coreSettings.save('mupen64plus-pak4', '"' + system.config['mupen64plus-pak4'] + '"')
         else:
             coreSettings.save('mupen64plus-pak4', '"none"')
         # RDP Plugin
@@ -1104,11 +1169,39 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mupen64plus-Framerate', '"' + system.config['mupen64plus-Framerate'] + '"')
         else:
             coreSettings.save('mupen64plus-Framerate', '"Original"')
+        # Parallel-RDP Upscaling
+        if system.isOptSet('mupen64plus-parallel-rdp-upscaling'):
+            coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"' + system.config['mupen64plus-parallel-rdp-upscaling'] + '"')
+        else:
+            coreSettings.save('mupen64plus-parallel-rdp-upscaling', '"1x"')
+        # Joystick deadzone
+        if system.isOptSet('mupen64plus-deadzone'):
+            coreSettings.save('mupen64plus-astick-deadzone', '"' + system.config['mupen64plus-deadzone'] + '"')
+        else:
+            if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+                coreSettings.save('mupen64plus-astick-deadzone', '"0"')
+            else:
+                coreSettings.save('mupen64plus-astick-deadzone', '"15"')
+
+        # Joystick sensitivity
+        if system.isOptSet('mupen64plus-sensitivity'):
+            coreSettings.save('mupen64plus-astick-sensitivity', '"' + system.config['mupen64plus-sensitivity'] + '"')
+        else:
+            coreSettings.save('mupen64plus-astick-sensitivity', '"100"')
 
     if (system.config['core'] == 'parallel_n64'):
         coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
         coreSettings.save('parallel-n64-boot-device',   '"Default"')
 
+        # Graphics Plugin
+        if system.isOptSet('parallel-n64-gfxplugin'):
+            coreSettings.save('parallel-n64-gfxplugin', '"' + system.config['parallel-n64-gfxplugin'] + '"')
+        else:
+            # vulkan doesn't work with auto
+            if system.isOptSet('gfxbackend') and system.config['gfxbackend'] == "vulkan":
+                coreSettings.save('parallel-n64-gfxplugin', '"parallel"')
+            else:
+                coreSettings.save('parallel-n64-gfxplugin', '"auto"')
         # Video Resolution
         if system.isOptSet('parallel-n64-screensize'):
             coreSettings.save('parallel-n64-screensize', '"' + system.config['parallel-n64-screensize'] + '"')
@@ -1130,26 +1223,76 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('parallel-n64-framerate', '"' + system.config['parallel-n64-framerate'] + '"')
         else:
             coreSettings.save('parallel-n64-framerate', '"automatic"')
+
+        # Check if any controller packs are set to auto rumble
+        auto_rumble_pak = None
+        for pak in range(1, 5):
+            pak_value = f'parallel-n64-pak{pak}'
+            if system.isOptSet(pak_value) and system.config[pak_value] == 'auto_rumble':
+                auto_rumble_pak = pak_value
+                break
+
+        if auto_rumble_pak:
+            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+
         # Controller Pak 1
         if system.isOptSet('parallel-n64-pak1'):
-            coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')
+            if system.config['parallel-n64-pak1'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak1', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak1', '"memory"')
+            else:
+                coreSettings.save('parallel-n64-pak1', '"' + system.config['parallel-n64-pak1'] + '"')
         else:
             coreSettings.save('parallel-n64-pak1', '"memory"')
         # Controller Pak 2
         if system.isOptSet('parallel-n64-pak2'):
-            coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')
+            if system.config['parallel-n64-pak2'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak2', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak2', '"none"')
+            else:
+                coreSettings.save('parallel-n64-pak2', '"' + system.config['parallel-n64-pak2'] + '"')
         else:
             coreSettings.save('parallel-n64-pak2', '"none"')
         # Controller Pak 3
         if system.isOptSet('parallel-n64-pak3'):
-            coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')
+            if system.config['parallel-n64-pak3'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak3', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak3', '"none"')
+            else:
+                coreSettings.save('parallel-n64-pak3', '"' + system.config['parallel-n64-pak3'] + '"')
         else:
             coreSettings.save('parallel-n64-pak3', '"none"')
         # Controller Pak 4
         if system.isOptSet('parallel-n64-pak4'):
-            coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
+            if system.config['parallel-n64-pak4'] == 'auto_rumble':
+                if metadata.get("controller_rumble") == "true":
+                    coreSettings.save('parallel-n64-pak4', '"rumble"')
+                else:
+                    coreSettings.save('parallel-n64-pak4', '"none"')
+            else:
+                coreSettings.save('parallel-n64-pak4', '"' + system.config['parallel-n64-pak4'] + '"')
         else:
             coreSettings.save('parallel-n64-pak4', '"none"')
+        # Joystick deadzone
+        if system.isOptSet('parallel-n64-deadzone'):
+            coreSettings.save('parallel-n64-astick-deadzone', '"' + system.config['parallel-n64-deadzone'] + '"')
+        else:
+            if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+                coreSettings.save('parallel-n64-astick-deadzone', '"0"')
+            else:
+                coreSettings.save('parallel-n64-astick-deadzone', '"15"')
+
+        # Joystick sensitivity
+        if system.isOptSet('parallel-n64-sensitivity'):
+            coreSettings.save('parallel-n64-astick-sensitivity', '"' + system.config['parallel-n64-sensitivity'] + '"')
+        else:
+            coreSettings.save('parallel-n64-astick-sensitivity', '"100"')
 
         # Nintendo 64-DD
         if (system.name == 'n64dd'):
@@ -1195,6 +1338,21 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('desmume_screens_layout', '"top/bottom"')
 
     if (system.config['core'] == 'melonds'):
+        # Console Mode
+        if system.isOptSet('melonds_console_mode'):
+            coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
+        else:
+            coreSettings.save('melonds_console_mode', '"DS"')
+        # Language
+        if system.isOptSet('melonds_language'):
+            coreSettings.save('melonds_language', '"' + system.config['melonds_language'] + '"')
+        else:
+            coreSettings.save('melonds_language', '"English"')
+        # External Firmware
+        if system.isOptSet('melonds_use_fw_settings'):
+            coreSettings.save('melonds_use_fw_settings', '"' + system.config['melonds_use_fw_settings'] + '"')
+        else:
+            coreSettings.save('melonds_use_fw_settings', '"disable"')
         # Enable threaded rendering
         coreSettings.save('melonds_threaded_renderer', '"enabled"')
         # Emulate Stylus on Right Stick
@@ -1225,6 +1383,96 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
 
+    if (system.config['core'] == 'melondsds'):
+        # System Settings
+        if system.isOptSet('melondsds_console_mode'):
+            coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
+        else:
+            coreSettings.save('melonds_console_mode', '"DS"')
+
+        # Video Settings
+        if system.isOptSet('melondsds_render_mode'):
+            coreSettings.save('melonds_render_mode', '"' + system.config['melondsds_render_mode'] + '"')
+        else:
+            coreSettings.save('melonds_render_mode', '"software"')
+        if system.isOptSet('melondsds_resolution'):
+            coreSettings.save('melonds_opengl_resolution', '"' + system.config['melondsds_resolution'] + '"')
+        else:
+            coreSettings.save('melonds_render_mode', '"1"')
+        if system.isOptSet('melondsds_poygon'):
+            coreSettings.save('melonds_opengl_better_polygons', '"' + system.config['melondsds_poygon'] + '"')
+        else:
+            coreSettings.save('melonds_opengl_better_polygons', '"disabled"')
+        if system.isOptSet('melondsds_filtering'):
+            coreSettings.save('melonds_opengl_filtering', '"' + system.config['melondsds_filtering'] + '"')
+        else:
+            coreSettings.save('melonds_opengl_filtering', '"nearest"')
+
+        # Screen Settings
+        if system.isOptSet('melondsds_cursor'):
+            coreSettings.save('melonds_show_cursor', '"' + system.config['melondsds_cursor'] + '"')
+        else:
+            coreSettings.save('melonds_show_cursor', '"nearest"')
+        if system.isOptSet('melondsds_cursor_timeout'):
+            coreSettings.save('melonds_cursor_timeout', '"' + system.config['melondsds_cursor_timeout'] + '"')
+        else:
+            coreSettings.save('melonds_cursor_timeout', '"3"')
+        if system.isOptSet('melondsds_touchmode'):
+            coreSettings.save('melonds_touch_mode', '"' + system.config['melondsds_touchmode'] + '"')
+        else:
+            coreSettings.save('melonds_touch_mode', '"auto"')
+        # set 1 screen for now top/botton
+        coreSettings.save('melonds_number_of_screen_layouts', '"1"')
+        coreSettings.save('melonds_screen_gap', '"0"')
+        coreSettings.save('melonds_screen_layout1', '"top-bottom"')
+
+        # Firmware Settings
+        if system.isOptSet('melondsds_dns'):
+            coreSettings.save('melonds_firmware_wfc_dns', '"' + system.config['melondsds_dns'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_wfc_dns', '"178.62.43.212"')
+        if system.isOptSet('melondsds_language'):
+            coreSettings.save('melonds_firmware_language', '"' + system.config['melondsds_language'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_language', '"default"')
+        if system.isOptSet('melondsds_colour'):
+            coreSettings.save('melonds_firmware_favorite_color', '"' + system.config['melondsds_colour'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_favorite_color', '"default"')
+        if system.isOptSet('melondsds_month'):
+            coreSettings.save('melonds_firmware_birth_month', '"' + system.config['melondsds_month'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_birth_month', '"default"')
+        if system.isOptSet('melondsds_day'):
+            coreSettings.save('melonds_firmware_birth_day', '"' + system.config['melondsds_day'] + '"')
+        else:
+            coreSettings.save('melonds_firmware_birth_day', '"default"')
+
+        # Onscreen Display
+        if system.isOptSet('melondsds_show_unsupported'):
+            coreSettings.save('melonds_show_unsupported_features', '"' + system.config['melondsds_show_unsupported'] + '"')
+        else:
+            coreSettings.save('melonds_show_unsupported_features', '"disabled"')
+        if system.isOptSet('melondsds_show_bios'):
+            coreSettings.save('melonds_show_bios_warnings', '"' + system.config['melondsds_show_bios'] + '"')
+        else:
+            coreSettings.save('melonds_show_bios_warnings', '"disabled"')
+        if system.isOptSet('melondsds_show_layout'):
+            coreSettings.save('melonds_show_current_layout', '"' + system.config['melondsds_show_layout'] + '"')
+        else:
+            coreSettings.save('melonds_show_current_layout', '"disabled"')
+        if system.isOptSet('melondsds_show_mic'):
+            coreSettings.save('melonds_show_mic_state', '"' + system.config['melondsds_show_mic'] + '"')
+        else:
+            coreSettings.save('melonds_show_mic_state', '"disabled"')
+        if system.isOptSet('melondsds_show_camera'):
+            coreSettings.save('melonds_show_camera_state', '"' + system.config['melondsds_show_camera'] + '"')
+        else:
+            coreSettings.save('melonds_show_camera_state', '"disabled"')
+        if system.isOptSet('melondsds_show_lid'):
+            coreSettings.save('melonds_show_lid_state', '"' + system.config['melondsds_show_lid'] + '"')
+        else:
+            coreSettings.save('melonds_show_lid_state', '"disabled"')
 
     # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen)
     if (system.config['core'] == 'tgbdual'):
@@ -1289,6 +1537,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mgba_skip_bios', '"ON"')
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
+
+        # Rumble
+        if system.isOptSet('rumble_gain') and system.config['rumble_gain'] != "1":
+            coreSettings.save('mgba_force_gbp', '"ON"')
+        else:
+            coreSettings.save('mgba_force_gbp', '"OFF"')
 
         if (system.name != 'gba'):
             # GB / GBC: Use Super Game Boy borders
@@ -1405,17 +1659,25 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('nestopia_nospritelimit', '"enabled"')
         # Crop Overscan
         if system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "none":
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
-            coreSettings.save('nestopia_overscan_v',    '"disabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"0"')
+            coreSettings.save('nestopia_overscan_h_right', '"0"')
+            coreSettings.save('nestopia_overscan_v_top', '"0"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"0"')
         elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "h":
-            coreSettings.save('nestopia_overscan_h',    '"enabled"')
-            coreSettings.save('nestopia_overscan_v',    '"disabled"')
-        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "v":
-            coreSettings.save('nestopia_overscan_h',    '"disabled"')
-            coreSettings.save('nestopia_overscan_v',    '"enabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"8"')
+            coreSettings.save('nestopia_overscan_h_right', '"8"')
+            coreSettings.save('nestopia_overscan_v_top', '"0"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"0"')
+        elif system.isOptSet('nestopia_cropoverscan') and system.config['nestopia_cropoverscan'] == "both":
+            coreSettings.save('nestopia_overscan_h_left', '"8"')
+            coreSettings.save('nestopia_overscan_h_right', '"8"')
+            coreSettings.save('nestopia_overscan_v_top', '"8"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"8"')
         else:
-            coreSettings.save('nestopia_overscan_h',    '"enabled"')
-            coreSettings.save('nestopia_overscan_v',    '"enabled"')
+            coreSettings.save('nestopia_overscan_h_left', '"0"')
+            coreSettings.save('nestopia_overscan_h_right', '"0"')
+            coreSettings.save('nestopia_overscan_v_top', '"8"')
+            coreSettings.save('nestopia_overscan_v_bottom', '"8"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
             coreSettings.save('nestopia_palette', '"' + system.config['nestopia_palette'] + '"')
@@ -1462,17 +1724,25 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
         # Crop Overscan
         if system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "none":
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
-            coreSettings.save('fceumm_overscan_v',    '"disabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"0"')
+            coreSettings.save('fceumm_overscan_h_right', '"0"')
+            coreSettings.save('fceumm_overscan_v_top', '"0"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"0"')
         elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "h":
-            coreSettings.save('fceumm_overscan_h',    '"enabled"')
-            coreSettings.save('fceumm_overscan_v',    '"disabled"')
-        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "v":
-            coreSettings.save('fceumm_overscan_h',    '"disabled"')
-            coreSettings.save('fceumm_overscan_v',    '"enabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"8"')
+            coreSettings.save('fceumm_overscan_h_right', '"8"')
+            coreSettings.save('fceumm_overscan_v_top', '"0"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"0"')
+        elif system.isOptSet('fceumm_cropoverscan') and system.config['fceumm_cropoverscan'] == "both":
+            coreSettings.save('fceumm_overscan_h_left', '"8"')
+            coreSettings.save('fceumm_overscan_h_right', '"8"')
+            coreSettings.save('fceumm_overscan_v_top', '"8"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"8"')
         else:
-            coreSettings.save('fceumm_overscan_h',    '"enabled"')
-            coreSettings.save('fceumm_overscan_v',    '"enabled"')
+            coreSettings.save('fceumm_overscan_h_left', '"0"')
+            coreSettings.save('fceumm_overscan_h_right', '"0"')
+            coreSettings.save('fceumm_overscan_v_top', '"8"')
+            coreSettings.save('fceumm_overscan_v_bottom', '"8"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
             coreSettings.save('fceumm_palette', '"' + system.config['fceumm_palette'] + '"')
@@ -1526,12 +1796,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('mesen_hdpacks', '"enabled"')
         # FDS Auto-insert side A
         if system.isOptSet('mesen_fdsautoinsertdisk'):
-            coreSettings.save('mesen_fdsautoinsertdisk', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsautoinsertdisk', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsautoinsertdisk', '"disabled"')
         # FDS Fast forward floppy disk loading
         if system.isOptSet('mesen_fdsfastforwardload'):
-            coreSettings.save('mesen_fdsfastforwardload', + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsfastforwardload', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
         else:
             coreSettings.save('mesen_fdsfastforwardload', '"disabled"')
         # RAM init state (speedrunning)
@@ -1585,14 +1855,24 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_hires_blend', '"' + system.config['hires_blend'] + '"')
         else:
             coreSettings.save('snes9x_hires_blend', '"disabled"')
+        # Blargg NTSC Filter
+        if system.isOptSet('snes9x_blargg_filter'):
+            coreSettings.save('snes9x_blargg', '"' + system.config['snes9x_blargg_filter'] + '"')
+        else:
+            coreSettings.save('snes9x_blargg', '"disabled"')
+        # Crosshair
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
+            coreSettings.save('snes9x_justifier1_crosshair', '"' + system.config['superscope_crosshair'] + '"')
+            coreSettings.save('snes9x_justifier2_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"2"'
             else:
                 status = '"0"'
             coreSettings.save('snes9x_superscope_crosshair', status)
+            coreSettings.save('snes9x_justifier1_crosshair', status)
+            coreSettings.save('snes9x_justifier2_crosshair', status)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save('snes9x_superscope_reverse_buttons', '"disabled"')
 
@@ -1612,6 +1892,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             coreSettings.save('snes9x_2010_overclock', '"' + system.config['2010_overclock_superfx'] + '"')
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
+        # Blargg NTSC Filter
+        if system.isOptSet('snes9x_2010_blargg_filter'):
+            coreSettings.save('snes9x_2010_blargg', '"' + system.config['snes9x_2010_blargg_filter'] + '"')
+        else:
+            coreSettings.save('snes9x_2010_blargg', '"disabled"')
+        # Crosshair
         if system.isOptSet('superscope_crosshair'):
             coreSettings.save('snes9x_2010_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
@@ -1625,6 +1911,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
     if (system.config['core'] == 'bsnes'):
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save('bsnes_touchscreen_lightgun_superscope_reverse', '"OFF"')
+        # Video Filters
+        if system.isOptSet('bsnes_video_filter'):
+            coreSettings.save('bsnes_video_filter', '"' + system.config['bsnes_video_filter'] + '"')
+        else:
+            coreSettings.save('bsnes_video_filter', '"disabled"')
 
     # Nintendo SNES/GB/GBC/SGB
     if (system.config['core'] == 'mesen-s'):
@@ -1773,6 +2064,8 @@ def generateCoreSettings(coreSettings, system, rom, guns):
 
     # Sega Dreamcast / Atomiswave / Naomi
     if (system.config['core'] == 'flycast'):
+        # force vmu all, to save in saves (otherwise, it saves in game_dir, which is bios)
+        coreSettings.save('reicast_per_content_vmus',  '"All VMUs"')
         # Synchronous rendering
         if system.isOptSet('reicast_synchronous_rendering'):
             coreSettings.save('reicast_synchronous_rendering', '"' + system.config['reicast_synchronous_rendering'] + '"')
@@ -1866,6 +2159,12 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('reicast_screen_rotation', '"horizontal"')
 
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+            coreSettings.save('reicast_analog_stick_deadzone', '"0%"')
+        else:
+            coreSettings.save('reicast_analog_stick_deadzone', '"15%"') # default value
+
     # Sega SG1000 / Master System / Game Gear / Megadrive / Mega CD
     if (system.config['core'] == 'genesisplusgx'):
         # Allows each game to have its own one brm file for save without lack of space
@@ -1899,6 +2198,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"disabled"'
             coreSettings.save('genesis_plus_gx_gun_cursor', status)
+        # Megadrive FM (YM2612)
+        if system.isOptSet('gpgx_fm'):
+            coreSettings.save('genesis_plus_gx_ym2612', '"' + system.config['gpgx_fm'] + '"')
+        else:
+            coreSettings.save('genesis_plus_gx_ym2612', '"mame (ym2612)"')
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
@@ -1994,16 +2298,58 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('yabasanshiro_multitap_port1', '"disabled"')
             coreSettings.save('yabasanshiro_multitap_port2', '"disabled"')
+        # Language
+        if system.isOptSet('yabasanshiro_language'):
+            coreSettings.save('yabasanshiro_system_language', '"' + system.config['yabasanshiro_language'] + '"')
+        else:
+            coreSettings.save('yabasanshiro_system_language', '"english"')
 
     if (system.config['core'] == 'kronos'):
+        # Set best OpenGL renderer
+        coreSettings.save('kronos_videocoretype', '"opengl_cs"')
+        # Video Resolution
+        if system.isOptSet('kronos_resolution'):
+            coreSettings.save('kronos_resolution_mode', '"' + system.config['kronos_resolution'] + '"')
+        else:
+            coreSettings.save('kronos_resolution_mode', '"original"')
+        # Mesh mode
+        if system.isOptSet('kronos_meshmode'):
+            coreSettings.save('kronos_meshmode', '"' + system.config['kronos_meshmode'] + '"')
+        else:
+            coreSettings.save('kronos_meshmode', '"disabled"')
+        # Banding mode
+        if system.isOptSet('kronos_bandingmode'):
+            coreSettings.save('kronos_bandingmode', '"' + system.config['kronos_bandingmode'] + '"')
+        else:
+            coreSettings.save('kronos_bandingmode', '"disabled"')
         # Share saves with Beetle
         if system.isOptSet('kronos_use_beetle_saves') and system.config['kronos_use_beetle_saves'] == 'disabled':
             coreSettings.save('kronos_use_beetle_saves', '"disabled"')
         else:
             coreSettings.save('kronos_use_beetle_saves', '"enabled"')
+        # Multitap
+        if system.isOptSet('kronos_multitap') and system.config['kronos_multitap'] != 'disabled':
+            if system.config['kronos_multitap'] == 'port1':
+                coreSettings.save('kronos_multitap_port1', '"enabled"')
+                coreSettings.save('kronos_multitap_port2', '"disabled"')
+            elif system.config['kronos_multitap'] == 'port2':
+                coreSettings.save('kronos_multitap_port1', '"disabled"')
+                coreSettings.save('kronos_multitap_port2', '"enabled"')
+            elif system.config['kronos_multitap'] == 'port12':
+                coreSettings.save('kronos_multitap_port1', '"enabled"')
+                coreSettings.save('kronos_multitap_port2', '"enabled"')
+        else:
+            coreSettings.save('kronos_multitap_port1', '"disabled"')
+            coreSettings.save('kronos_multitap_port2', '"disabled"')
+        # BIOS langauge
+        if system.isOptSet('kronos_language_id'):
+            coreSettings.save('kronos_language_id', '"' + system.config['kronos_language_id'] + '"')
+        else:
+            coreSettings.save('kronos_language_id', '"English"')
 
-    # gun cross
+    # gun cross / wheel
     if (system.config['core'] == 'beetle-saturn'):
+        # gun
         if system.isOptSet('beetle-saturn_crosshair'):
             coreSettings.save('beetle_saturn_virtuagun_crosshair', '"' + system.config['beetle-saturn_crosshair'] + '"')
         else:
@@ -2012,6 +2358,11 @@ def generateCoreSettings(coreSettings, system, rom, guns):
             else:
                 status = '"Off"'
             coreSettings.save('beetle_saturn_virtuagun_crosshair', status)
+        # wheel
+        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+            coreSettings.save('beetle_saturn_analog_stick_deadzone', '"0%"')
+        else:
+            coreSettings.save('beetle_saturn_analog_stick_deadzone', '"15%"') # default value
 
     # Sharp X68000
     if (system.config['core'] == 'px68k'):
@@ -2163,107 +2514,130 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('neocd_per_content_saves', '"On"')
 
+    # Sony PSP
+    if (system.config['core'] == 'ppsspp'):
+        if system.isOptSet('ppsspp_resolution'):
+            coreSettings.save('ppsspp_internal_resolution', '"' + system.config['ppsspp_resolution'] + '"')
+        else:
+            coreSettings.save('ppsspp_internal_resolution', '"480x272"')
+
     # Sony PSX
     if (system.config['core'] == 'mednafen_psx'):
         # CPU Frequency Scaling (Overclock)
-        if system.isOptSet('beetle_psx_cpu_freq_scale'):
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"' + system.config['beetle_psx_cpu_freq_scale'] + '"')
+        if system.isOptSet('beetle_psx_hw_cpu_freq_scale'):
+            coreSettings.save('beetle_psx_hw_cpu_freq_scale', '"' + system.config['beetle_psx_hw_cpu_freq_scale'] + '"')
         else:
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
+            coreSettings.save('beetle_psx_hw_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
         # Show official Bootlogo
-        if system.isOptSet('beetle_psx_skip_bios'):
-            coreSettings.save('beetle_psx_skip_bios', '"' + system.config['beetle_psx_skip_bios'] + '"')
+        if system.isOptSet('beetle_psx_hw_skip_bios'):
+            coreSettings.save('beetle_psx_hw_skip_bios', '"' + system.config['beetle_psx_hw_skip_bios'] + '"')
         else:
-            coreSettings.save('beetle_psx_skip_bios', '"disabled"')
+            coreSettings.save('beetle_psx_hw_skip_bios', '"disabled"')
         # Video Resolution
-        if system.isOptSet('beetle_psx_internal_resolution'):
-            coreSettings.save('beetle_psx_internal_resolution', '"' + system.config['beetle_psx_internal_resolution'] + '"')
+        if system.isOptSet('beetle_psx_hw_internal_resolution'):
+            coreSettings.save('beetle_psx_hw_internal_resolution', '"' + system.config['beetle_psx_hw_internal_resolution'] + '"')
         else:
-            coreSettings.save('beetle_psx_internal_resolution', '"1x(native)"')
+            coreSettings.save('beetle_psx_hw_internal_resolution', '"1x(native)"')
         # Widescreen Hack
-        if system.isOptSet('beetle_psx_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['beetle_psx_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
-            coreSettings.save('beetle_psx_widescreen_hack', '"enabled"')
+        if system.isOptSet('beetle_psx_hw_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['beetle_psx_hw_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('beetle_psx_hw_widescreen_hack', '"enabled"')
         else:
-            coreSettings.save('beetle_psx_widescreen_hack', '"disabled"')
+            coreSettings.save('beetle_psx_hw_widescreen_hack', '"disabled"')
         # Frame Duping (Speedup)
-        if system.isOptSet('beetle_psx_frame_duping'):
-            coreSettings.save('beetle_psx_frame_duping', '"' + system.config['beetle_psx_frame_duping'] + '"')
+        if system.isOptSet('beetle_psx_hw_frame_duping'):
+            coreSettings.save('beetle_psx_hw_frame_duping', '"' + system.config['beetle_psx_hw_frame_duping'] + '"')
         else:
-            coreSettings.save('beetle_psx_frame_duping', '"disabled"')
+            coreSettings.save('beetle_psx_hw_frame_duping', '"disabled"')
         # CPU Dynarec (Speedup)
-        if system.isOptSet('beetle_psx_cpu_dynarec'):
-            coreSettings.save('beetle_psx_cpu_dynarec', '"' + system.config['beetle_psx_cpu_dynarec'] + '"')
+        if system.isOptSet('beetle_psx_hw_cpu_dynarec'):
+            coreSettings.save('beetle_psx_hw_cpu_dynarec', '"' + system.config['beetle_psx_hw_cpu_dynarec'] + '"')
         else:
-            coreSettings.save('beetle_psx_cpu_dynarec', '"disabled"')
+            coreSettings.save('beetle_psx_hw_cpu_dynarec', '"disabled"')
         # Dynarec Code Invalidation
-        if system.isOptSet('beetle_psx_dynarec_invalidate'):
-            coreSettings.save('beetle_psx_dynarec_invalidate', '"' + system.config['beetle_psx_dynarec_invalidate'] + '"')
+        if system.isOptSet('beetle_psx_hw_dynarec_invalidate'):
+            coreSettings.save('beetle_psx_hw_dynarec_invalidate', '"' + system.config['beetle_psx_hw_dynarec_invalidate'] + '"')
         else:
-            coreSettings.save('beetle_psx_dynarec_invalidate', '"full"')
+            coreSettings.save('beetle_psx_hw_dynarec_invalidate', '"full"')
         # Analog Stick self calibration
-        coreSettings.save('beetle_psx_analog_calibration', '"enabled"')
+        coreSettings.save('beetle_psx_hw_analog_calibration', '"enabled"')
         # Multitap
         if system.isOptSet('multitap_mednafen') and system.config['multitap_mednafen'] != 'disabled':
             if system.config['multitap_mednafen'] == 'port1':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"enabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"disabled"')
             elif system.config['multitap_mednafen'] == 'port2':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"disabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"enabled"')
             elif system.config['multitap_mednafen'] == 'port12':
-                coreSettings.save('beetle_psx_enable_multitap_port1', '"enabled"')
-                coreSettings.save('beetle_psx_enable_multitap_port2', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"enabled"')
+                coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"enabled"')
         else:
-            coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
-            coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
+            coreSettings.save('beetle_psx_hw_enable_multitap_port1', '"disabled"')
+            coreSettings.save('beetle_psx_hw_enable_multitap_port2', '"disabled"')
 
     if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
         if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software"):
-            coreSettings.save('duckstation_GPU.Renderer', '"Software"')
+            coreSettings.save('swanstation_GPU_Renderer', '"Software"')
         else:
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
-                    coreSettings.save('duckstation_GPU.Renderer', '"Vulkan"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Vulkan"')
                 elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
-                    coreSettings.save('duckstation_GPU.Renderer', "OpenGL")
+                    coreSettings.save('swanstation_GPU_Renderer', "OpenGL")
                 else:
-                    coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
+                    coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
             else:
-                coreSettings.save('duckstation_GPU.Renderer', '"Auto"')
+                coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
 
         # Show official Bootlogo
-        if system.isOptSet('duckstation_PatchFastBoot'):
-            coreSettings.save('duckstation_BIOS.PatchFastBoot', '"' + system.config['duckstation_PatchFastBoot'] + '"')
+        if system.isOptSet('swanstation_PatchFastBoot'):
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"' + system.config['swanstation_PatchFastBoot'] + '"')
         else:
-            coreSettings.save('duckstation_BIOS.PatchFastBoot', '"false"')
+            coreSettings.save('swanstation_BIOS_PatchFastBoot', '"false"')
         # Video Resolution
-        if system.isOptSet('duckstation_resolution_scale'):
-            coreSettings.save('duckstation_GPU.ResolutionScale', '"' + system.config['duckstation_resolution_scale'] + '"')
+        if system.isOptSet('swanstation_resolution_scale'):
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.ResolutionScale', '"1"')
+            coreSettings.save('swanstation_GPU_ResolutionScale', '"1"')
         # Anti-aliasing (MSAA/SSAA)
-        if system.isOptSet('duckstation_antialiasing'):
-            coreSettings.save('duckstation_GPU.MSAA', '"' + system.config['duckstation_antialiasing'] + '"')
+        if system.isOptSet('swanstation_antialiasing'):
+            coreSettings.save('swanstation_GPU_MSAA', '"' + system.config['swanstation_antialiasing'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.MSAA', '"1"')
+            coreSettings.save('swanstation_GPU_MSAA', '"1"')
         # Texture Filtering
-        if system.isOptSet('duckstation_texture_filtering'):
-            coreSettings.save('duckstation_GPU.TextureFilter', '"' + system.config['duckstation_texture_filtering'] + '"')
+        if system.isOptSet('swanstation_texture_filtering'):
+            coreSettings.save('swanstation_GPU_TextureFilter', '"' + system.config['swanstation_texture_filtering'] + '"')
         else:
-            coreSettings.save('duckstation_GPU.TextureFilter', '"Nearest"')
+            coreSettings.save('swanstation_GPU_TextureFilter', '"Nearest"')
         # Widescreen Hack
-        if system.isOptSet('duckstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['duckstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
-            coreSettings.save('duckstation_GPU.WidescreenHack',  '"true"')
-            coreSettings.save('duckstation_Display.AspectRatio', '"16:9"')
+        if system.isOptSet('swanstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['swanstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"true"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"16:9"')
         else:
-            coreSettings.save('duckstation_GPU.WidescreenHack',  '"false"')
-            coreSettings.save('duckstation_Display.AspectRatio', '"4:3"')
+            coreSettings.save('swanstation_GPU_WidescreenHack',  '"false"')
+            coreSettings.save('swanstation_Display_AspectRatio', '"4:3"')
          # Crop Mode
-        if system.isOptSet('duckstation_CropMode'):
-            coreSettings.save('duckstation_Display.CropMode', '"' + system.config['duckstation_CropMode'] + '"')
+        if system.isOptSet('swanstation_CropMode'):
+            coreSettings.save('swanstation_Display_CropMode', '"' + system.config['swanstation_CropMode'] + '"')
         else:
-            coreSettings.save('duckstation_Display.CropMode', '"Overscan"')
+            coreSettings.save('swanstation_Display_CropMode', '"Overscan"')
+        # Gun crosshairs
+        if system.isOptSet('swanstation_Controller_ShowCrosshair'):
+            coreSettings.save('swanstation_Controller_ShowCrosshair', '"' + system.config['swanstation_Controller_ShowCrosshair'] + '"')
+        else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"true"'
+            else:
+                status = '"false"'
+            coreSettings.save('swanstation_Controller_ShowCrosshair', status)
+
+    if (system.config['core'] == 'pcsx2'):
+        # Fast Boot
+        if system.isOptSet('lr_pcsx2_fast_boot'):
+            coreSettings.save('pcsx2_fast_boot', '"' + system.config['lr_pcsx2_fast_boot'] + '"')
+        else:
+            coreSettings.save('pcsx2_fast_boot', '"disabled"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options
@@ -2284,17 +2658,9 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('pcsx_rearmed_frameskip', '"0"')
         # Enhanced resolution at the cost of lower performance
-        # Speed hack causes game glitches.
-        if system.isOptSet('neon_enhancement') and system.config['neon_enhancement'] != 'disabled':
-            if system.config['neon_enhancement'] == 'enabled':
-                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
-                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
-            elif system.config['neon_enhancement'] == 'enabled_with_speedhack':
-                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
-                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"enabled"')
-        else:
-            coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
-            coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+        # Speed hack causes game glitches - turn it off.
+        coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
+        coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
         # Multitap
         if system.isOptSet('pcsx_rearmed_multitap'):
             coreSettings.save('pcsx_rearmed_multitap', '"' + system.config['pcsx_rearmed_multitap'] + '"')
@@ -2326,6 +2692,17 @@ def generateCoreSettings(coreSettings, system, rom, guns):
                 coreSettings.save('pcsx_rearmed_gpu_peops_lazy_screen_update',  '"enabled"')
             elif system.config['game_fixes_pcsx'] == 'Dark_Forces':
                 coreSettings.save('pcsx_rearmed_gpu_peops_repeated_triangles',  '"enabled"')
+        # gun cross
+        # Crossbar Colors
+        for player in [ {"id": 1, "color": "red"}, {"id": 2, "color": "blue"} ]:
+          if system.isOptSet('pcsx_rearmed_crosshair'+str(player["id"])):
+            coreSettings.save('pcsx_rearmed_crosshair'+str(player["id"]), '"' + system.config['pcsx_rearmed_crosshair'+str(player["id"])] + '"')
+          else:
+            if controllersConfig.gunsNeedCrosses(guns):
+                status = '"'+player["color"]+'"'
+            else:
+                status = '"disabled"'
+            coreSettings.save('pcsx_rearmed_crosshair'+str(player["id"]), status)
 
     # Thomson MO5 / TO7
     if (system.config['core'] == 'theodore'):
@@ -2381,17 +2758,71 @@ def generateCoreSettings(coreSettings, system, rom, guns):
         else:
             coreSettings.save('mrboom-aspect', '"Native"')
         # Monsters
-        if system.isOptSet('mrboom-nomonster') and system.config['mrboom-nomonster'] == "True":
-            coreSettings.save('mrboom-nomonster', '"ON"')
+        if system.isOptSet('mrboom-nomonster'):
+            coreSettings.save('mrboom-nomonster', '"' + system.config['mrboom-nomonster'] + '"')
         else:
-            coreSettings.save('mrboom-nomonster', '"OFF"')
+            coreSettings.save('mrboom-nomonster', '"ON"')
 
+    # OpenLara
+    if (system.config['core'] == 'openlara'):
+        # Internal resolution
+        if system.isOptSet('lara-resolution'):
+            coreSettings.save('openlara_resolution', '"' + system.config['lara-resolution'] + '"')
+        else:
+            coreSettings.save('openlara_resolution', '"1280x720"')
 
+        # Framerate
+        if system.isOptSet('lara-framerate'):
+            coreSettings.save('openlara_framerate', '"' + system.config['lara-framerate'] + '"')
+        else:
+            coreSettings.save('openlara_framerate', '"60fps"')
+
+    # HatariB
+    if (system.config['core'] == 'hatarib'):
+        # Defaults
+        coreSettings.save('hatarib_statusbar', '"0"')
+        coreSettings.save('hatarib_fast_floppy', '"1"')
+        coreSettings.save('hatarib_show_welcome', '"0"')
+        # Machine Type
+        if system.isOptSet('hatarib_machine'):
+            coreSettings.save('hatarib_machine', '"' + system.config['hatarib_machine'] + '"')
+        else:
+            coreSettings.save('hatarib_machine', '"0"')
+        # CPU
+        if system.isOptSet('hatarib_cpu'):
+            coreSettings.save('hatarib_cpu', '"' + system.config['hatarib_cpu'] + '"')
+        else:
+            coreSettings.save('hatarib_cpu', '"-1"')
+        # CPU Clock
+        if system.isOptSet('hatarib_cpu_clock'):
+            coreSettings.save('hatarib_cpu_clock', '"' + system.config['hatarib_cpu'] + '"')
+        else:
+            coreSettings.save('hatarib_cpu_clock', '"-1"')
+        # ST Memory Size
+        if system.isOptSet('hatarib_memory'):
+            coreSettings.save('hatarib_memory', '"' + system.config['hatarib_memory'] + '"')
+        else:
+            coreSettings.save('hatarib_memory', '"0"')
+        # Pause Screen
+        if system.isOptSet('hatarib_pause'):
+            coreSettings.save('hatarib_pause_osk', '"' + system.config['hatarib_pause'] + '"')
+        else:
+            coreSettings.save('hatarib_pause_osk', '"2"')
+        # Aspect Ratio
+        if system.isOptSet('hatarib_ratio'):
+            coreSettings.save('hatarib_aspect', '"' + system.config['hatarib_ratio'] + '"')
+        else:
+            coreSettings.save('hatarib_aspect', '"0"')
+        # Borders
+        if system.isOptSet('hatarib_borders'):
+            coreSettings.save('hatarib_borders', '"' + system.config['hatarib_borders'] + '"')
+        else:
+            coreSettings.save('hatarib_borders', '"0"')
 
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
     for user_config in system.config:
         if user_config[:14] == "retroarchcore.":
-            coreSettings.save(user_config[14:], '"' + system.config[user_config])
+            coreSettings.save(user_config[14:], '"' + system.config[user_config] + '"')
 
 def generateHatariConf(hatariConf):
     hatariConfig = configparser.ConfigParser(interpolation=None)

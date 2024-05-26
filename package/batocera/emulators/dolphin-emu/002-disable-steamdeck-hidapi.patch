@@ -1,0 +1,17 @@
+diff --git a/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h b/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
+index 6dc0afafe8..3c87b3c30d 100644
+--- a/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
++++ b/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
+@@ -34,9 +34,9 @@
+ #if defined(HAVE_SDL2)
+ #define CIFACE_USE_SDL
+ #endif
+-#if defined(HAVE_HIDAPI)
+-#define CIFACE_USE_STEAMDECK
+-#endif
++//#if defined(HAVE_HIDAPI)
++//#define CIFACE_USE_STEAMDECK
++//#endif
+ 
+ namespace ciface
+ {

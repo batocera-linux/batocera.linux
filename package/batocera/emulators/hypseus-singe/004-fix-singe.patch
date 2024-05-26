@@ -1,0 +1,60 @@
+diff --git a/src/game/singe/luretro.c b/src/game/singe/luretro.c
+index 9c110dc..a4cbd35 100644
+--- a/src/game/singe/luretro.c
++++ b/src/game/singe/luretro.c
+@@ -48,38 +48,40 @@ unsigned char inPath(const char* src, char* path)
+     return 0;
+ }
+ 
+-void lua_retropath(const char *src, char *dst, int len)
+-{
++void lua_retropath(const char *src, char *dst, int len) {
+     unsigned char r = 0, fin = 0, folder = 0, path = PATH_DAPHNE;
+ 
+-    if (inPath(src, "Framework")) path = PATH_FRAMEWORK;
+-    if (inPath(src, "singe/")) folder = PATH_SINGE;
+-    else r++;
++    if (inPath(src, "Framework"))
++        path = PATH_FRAMEWORK;
++    if (inPath(src, "singe/")) {
++        folder = PATH_SINGE;
++        src += 6; // Skip "singe" in the source path
++    } else {
++        r++;
++    }
+ 
+     for (int i = 0; i < (len - 2); src++, i++) {
+         if (fin != PATH_END) {
+             if (*src == '\0') {
+                 fin = PATH_END;
+             }
+-            if (i == 0 && *src == '/') continue;
+-            if (folder == PATH_SINGE && i == 6) {
+-                memcpy(dst, "/../", 4);
+-                dst += 4;
++            if (i == 0 && *src == '/')
++                continue;
++            if (folder == PATH_SINGE && i == 0) {
++                memcpy(dst, "/userdata/roms/singe/", 21);
++                dst += 21;
+             }
+             if (*src == '/' && r < 0xf) {
+                 r++;
+                 continue;
+             }
+-            if (r == 2) {
+-                switch(path) {
+-                case (PATH_FRAMEWORK):
++            if (r == 1) {
++                if (path == PATH_FRAMEWORK) {
+                     memcpy(dst, "/", 1);
+                     dst += 1;
+-                    break;
+-                default:
++                } else {
+                     memcpy(dst, ".daphne/", 8);
+                     dst += 8;
+-                    break;
+                 }
+                 r = 0xf; //bool
+             }

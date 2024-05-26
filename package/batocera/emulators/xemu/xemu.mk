@@ -4,14 +4,12 @@
 #
 ################################################################################
 
-# Aug 6, 2022
-# Version 0.7.67
-XEMU_VERSION = 940bee452cc34127ecf3f364c3c5f52e4e6a80a4
-XEMU_SITE = https://github.com/mborgerson/xemu.git
+XEMU_VERSION = v0.7.121
+XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES = sdl2 libsamplerate
+XEMU_DEPENDENCIES = sdl2 libsamplerate slirp
 
 XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
@@ -38,13 +36,11 @@ XEMU_CONF_OPTS += --disable-live-block-migration
 XEMU_CONF_OPTS += --disable-rdma
 XEMU_CONF_OPTS += --disable-replication
 XEMU_CONF_OPTS += --disable-capstone
-XEMU_CONF_OPTS += --disable-fdt
 XEMU_CONF_OPTS += --disable-libiscsi
 XEMU_CONF_OPTS += --disable-spice
 XEMU_CONF_OPTS += --disable-user
 XEMU_CONF_OPTS += --disable-stack-protector
 XEMU_CONF_OPTS += --disable-glusterfs
-XEMU_CONF_OPTS += --disable-gtk
 XEMU_CONF_OPTS += --disable-curses
 XEMU_CONF_OPTS += --disable-gnutls
 XEMU_CONF_OPTS += --disable-nettle
@@ -53,13 +49,11 @@ XEMU_CONF_OPTS += --disable-crypto-afalg
 XEMU_CONF_OPTS += --disable-virglrenderer
 XEMU_CONF_OPTS += --disable-vhost-net
 XEMU_CONF_OPTS += --disable-vhost-crypto
-XEMU_CONF_OPTS += --disable-vhost-vsock
 XEMU_CONF_OPTS += --disable-vhost-user
 XEMU_CONF_OPTS += --disable-virtfs
 XEMU_CONF_OPTS += --disable-snappy
 XEMU_CONF_OPTS += --disable-bzip2
 XEMU_CONF_OPTS += --disable-vde
-XEMU_CONF_OPTS += --disable-libxml2
 XEMU_CONF_OPTS += --disable-seccomp
 XEMU_CONF_OPTS += --disable-numa
 XEMU_CONF_OPTS += --disable-lzo
@@ -88,9 +82,9 @@ define XEMU_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
 		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-                CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-                PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-                PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+		    CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+            PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+            PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
 		$(MAKE) -C $(@D)
 endef
 
@@ -101,12 +95,14 @@ define XEMU_INSTALL_TARGET_CMDS
 	# XEmu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
-	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d $(TARGET_DIR)/usr/share/xemu/data
+	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d \
+	    $(TARGET_DIR)/usr/share/xemu/data
 endef
 
 define XEMU_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 XEMU_POST_INSTALL_TARGET_HOOKS += XEMU_EVMAPY

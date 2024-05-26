@@ -1,0 +1,31 @@
+# batocera-audio alsa config
+# dmix + softvol
+
+pcm.!default {
+	type            plug
+	slave.pcm       "softvol"
+}
+
+ctl.!default {
+	type            hw 
+	card            %CARDNO%
+}
+
+pcm.ddmix {
+	ipc_key         1024
+	type            dmix
+	slave {
+		pcm         "hw:%CARDNO%,%DEVICENO%"
+	}
+}
+
+pcm.softvol {
+	type            softvol
+	slave {
+		pcm         "ddmix"
+	}
+	control {
+		name        "Master"
+		card        %CARDNO%
+	}
+}

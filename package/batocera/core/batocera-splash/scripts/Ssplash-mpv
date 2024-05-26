@@ -1,0 +1,194 @@
+#!/bin/bash
+
+log="/userdata/system/logs/display.log"
+
+DAEMON="splash-mpv"
+DEFAULT="/usr/share/batocera/splash/splash.mp4"
+SPLASH_DIR=/userdata/splash
+
+FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
+FM_VIDEO=".*\.\(mp4\|MP4\)"
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+# CHA wants a specific splash file
+if [ -f /sys/firmware/devicetree/base/model ]; then
+    IFS= read -r BOARD_MODEL </sys/firmware/devicetree/base/model
+fi
+BOARD_MODEL="$(echo "$BOARD_MODEL" | sed -e s+"[^A-Za-z0-9]"+"_"+g)"
+BOARD_CHA="Capcom_Home_Arcade"
+if [ "${BOARD_MODEL}" = "${BOARD_CHA}" ]; then
+    DEFAULT="/usr/share/batocera/splash/Capcom.mp4"
+fi
+
+do_angels_conversion ()
+{
+    [[ $1 -lt 0 || $1 -gt 3 ]] && echo 0 || echo $(($1*90))
+    return $?
+}
+
+do_filerandomize ()
+{
+    local array
+    [[ -d "$SPLASH_DIR" ]] || return 1
+    readarray -t array < <(find "$SPLASH_DIR" -maxdepth 1 -regex "$1" -type f)
+    if [[ ${#array[@]} -gt 0 ]]; then
+        echo "${array[$RANDOM % ${#array[@]}]}"
+    fi
+}
+
+do_start()
+{
+    video_file=$(do_filerandomize "$FM_VIDEO")
+    image_file=$(do_filerandomize "$FM_IMAGE")
+
+    if [[ -n "$video_file" ]]; then
+        do_videostart "$video_file"
+    elif [[ -n "$image_file" ]]; then
+        do_imagestart "$image_file"
+    else
+        do_videostart "$DEFAULT"
+    fi
+}
+
+do_imagestart()
+{
+    image="$1"
+    printf 'Image: %s: ' "$image"
+    if test -e /dev/fb0
+    then
+        start-stop-daemon -S -b -q -m -p /var/run/user-splash-image.pid --exec fbv -- -f -i "$image"
+    fi
+}
+
+get_connected_display() {
+    local display_type="$1"
+    local drm_connector=""
+    local card_path=""
+
+    for card_folder_path in /sys/class/drm/card*; do
+        card_id=$(basename "$card_folder_path")
+        if [ -d "$card_folder_path" ]; then
+            card_folder_name=$(basename "$card_folder_path")
+            if [[ "$card_folder_name" == card* ]]; then
+                for sub_folder in "$card_folder_path"/*; do
+                    if [[ "$(basename "$sub_folder")" == "card"* ]]; then
+                        status_file="${sub_folder}/status"
+                        if [ -f "$status_file" ] && [ "$(cat "$status_file")" == "connected" ] && [[ "$status_file" == *"$display_type"* ]]; then
+                            echo "Splash: Display Type $display_type has a connection at $status_file" >> "$log"
+                            drm_connector=$(echo "$status_file" | sed -n 's/.*\/card[0-9]\-\(.*\)\/status/\1/p')
+                            echo "Splash: Selected DRM connector: $drm_connector" >> "$log"
+                            card_number=$(echo "$card_id" | sed -n 's/card\([0-9]\+\).*/\1/p')
+                            card_path="/dev/dri/card$card_number"
+                            echo "Splash: DRM connected card path: $card_path" >> "$log"
+                            break 2  # We found a connected display, exit both loops
+                        fi
+                    fi
+                done
+            fi
+        fi
+    done
+
+    echo "$drm_connector $card_path"
+}
+
+do_videostart ()
+{
+    video="$1"
+    printf 'Video: %s: ' "$video"
+    mpv_audio=--ao=sdl
+
+    soundDisabled=$(batocera-settings-get splash.screen.sound)
+    if [[ $? -eq 0 ]]; then
+	if test "${soundDisabled}" = 0
+	then
+            mpv_audio=--no-audio
+	fi
+    fi
+
+    ## current drm output ##
+    effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -E '^0.0:' | sed -e s+"^0.0:\([^ ]*\) .*$"+"\1"+; done | head -1)
+    mpv_video=
+    video_rotation=$(batocera-settings-get-master "display.rotate.${effectiveDrmOutput}")
+    if test -z "${video_rotation}"
+    then
+	video_rotation=$(batocera-settings-get-master display.rotate)
+    fi
+    if [[ $? -eq 0 ]]; then
+        video_rotation=$(do_angels_conversion $video_rotation)
+	# --vf-add=sub : rotation of subtitles
+        [[ $? -eq 0 ]] && mpv_video="--video-rotate=${video_rotation} --vf-add=sub"
+    fi
+
+    drm_mode="preferred"
+    video_resize=$(batocera-settings-get-master splash.screen.resize)
+    if [[ $? -eq 0 ]]; then
+        resize=$(echo "${video_resize}" | sed "s/x/:/")
+        mpv_video="${mpv_video} --vf=scale=${resize}"
+        drm_mode=$video_resize
+    fi
+    
+    video_subtitle=$(batocera-settings-get splash.screen.subtitle)
+    if [[ $? -eq 0 ]]; then
+	if test "${video_subtitle}" = 0
+	then
+           mpv_video="${mpv_video} --no-sub-auto"
+	fi
+    fi
+
+    # determine the output display to use for MPV
+    # fixes splash video output where the user wants it
+    if preferred_display=$(batocera-settings-get global.videooutput); then
+        echo "Splash: Preferred display is $preferred_display" > $log
+        display_type=$(echo "$preferred_display" | cut -d'-' -f1)
+        if [[ "$display_type" == "DisplayPort" ]]; then
+            # workaround some cards using DisplayPort as the xorg output name
+            display_type="DP"
+        fi
+        echo "Splash: Display Type = $display_type" >> $log
+        read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
+    else
+        # we choose the first connected display
+        mpv_connector=$(mpv --drm-connector=help | grep "(connected)" | sed 's/ (connected)//' | sed 's/^[[:space:]]*//' | head -n1)
+        if [ -n "$mpv_connector" ]; then
+            echo "Splash: No preferred display chosen, using the first MPV detected (connected) display: $mpv_connector" > $log
+            display_type=$(echo "$mpv_connector" | cut -d'-' -f1)
+            echo "Splash: MPV detected display Type = $display_type" >> $log
+            read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
+        else
+            echo "Splash: No preferred display chosen, no connected display found" > $log
+        fi
+    fi
+
+    # set the sound again due to drm init causing some cards to default to 40% volume
+    VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
+    batocera-audio setSystemVolume "${VOLUME}"
+
+    if [ -n "$drm_connector" ] && [ -n "$card_path" ]; then
+        start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --drm-mode=$drm_mode --drm-connector=$drm_connector --drm-device=$card_path --log-file=/userdata/system/logs/mpv.log $mpv_audio $mpv_video "$video"
+    else
+        start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --drm-mode=$drm_mode --log-file=/userdata/system/logs/mpv.log $mpv_audio $mpv_video "$video"
+    fi
+}
+
+case "$1" in
+    start)
+        printf 'Starting %s: ' "$DAEMON"
+        if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf"
+        then
+            echo "SKIPPED"
+            exit 0
+        fi
+        do_start
+        echo "OK"
+        ;;
+    stop)
+        start-stop-daemon -K -q -p /var/run/user-splash.pid
+        ;;
+    restart|reload)
+        ;;
+    *)
+esac
+
+exit $?

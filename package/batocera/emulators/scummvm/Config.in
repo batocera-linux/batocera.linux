@@ -1,9 +1,11 @@
 config BR2_PACKAGE_SCUMMVM
     bool "Scummvm"
     depends on BR2_INSTALL_LIBSTDCPP
+    depends on BR2_PACKAGE_FLUIDSYNTH
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_LIBMPEG2
     select BR2_PACKAGE_JPEG
+    select BR2_PACKAGE_LIBJPEG_BATO
     select BR2_PACKAGE_LIBOGG
     select BR2_PACKAGE_LIBVORBIS
     select BR2_PACKAGE_FLAC
@@ -13,11 +15,10 @@ config BR2_PACKAGE_SCUMMVM
     select BR2_PACKAGE_FAAD2
     select BR2_PACKAGE_FREETYPE
     select BR2_PACKAGE_ZLIB
-    depends on BR2_PACKAGE_FLUIDSYNTH
-
     help
-    ScummVM point and click
-    http://wiki.scummvm.org/
+      ScummVM point and click
+      
+      http://wiki.scummvm.org/
 
 comment "Scummvm  needs a toolchain w/ C++,  SDL2"
     depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2

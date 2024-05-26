@@ -1,0 +1,73 @@
+From e014499333c6ca6ef4dca3a15b8c81ec07d80c12 Mon Sep 17 00:00:00 2001
+From: Dom Cobley <popcornmix@gmail.com>
+Date: Wed, 24 Nov 2021 20:21:28 +0000
+Subject: [PATCH 6/6] DVDVideoCodecDRMPRIME: Close deinterlace filter on error
+
+Otherwise we crash later with an invalid m_pFilterGraph pointer
+---
+ .../VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp  | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+index 9139233bc4..0b44d90f13 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+@@ -686,6 +686,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+     CLog::Log(LOGERROR,
+               "CDVDVideoCodecDRMPRIME::FilterOpen - avfilter_graph_create_filter: src: {} ({})",
+               err, result);
++    FilterClose();
+     return false;
+   }
+ 
+@@ -693,6 +694,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+   if (!par)
+   {
+     CLog::Log(LOGERROR, "CDVDVideoCodecDRMPRIME::FilterOpen - unable to alloc buffersrc");
++    FilterClose();
+     return false;
+   }
+ 
+@@ -708,6 +710,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+     CLog::Log(LOGERROR,
+               "CDVDVideoCodecDRMPRIME::FilterOpen - av_buffersrc_parameters_set:  {} ({})",
+               err, result);
++    FilterClose();
+     return false;
+   }
+   av_freep(&par);
+@@ -721,6 +724,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+     CLog::Log(LOGERROR,
+               "CDVDVideoCodecDRMPRIME::FilterOpen - avfilter_graph_create_filter: out: {} ({})",
+               err, result);
++    FilterClose();
+     return false;
+   }
+ 
+@@ -729,6 +733,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+   if (result < 0)
+   {
+     CLog::Log(LOGERROR, "CDVDVideoCodecDRMPRIME::FilterOpen - failed settings pix formats");
++    FilterClose();
+     return false;
+   }
+ 
+@@ -752,6 +757,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+   if (result < 0)
+   {
+     CLog::Log(LOGERROR, "CDVDVideoCodecDRMPRIME::FilterOpen - avfilter_graph_parse");
++    FilterClose();
+     return false;
+   }
+ 
+@@ -761,6 +767,7 @@ bool CDVDVideoCodecDRMPRIME::FilterOpen(const std::string& filters, bool test)
+     av_strerror(result, err, AV_ERROR_MAX_STRING_SIZE);
+     CLog::Log(LOGERROR, "CDVDVideoCodecDRMPRIME::FilterOpen - avfilter_graph_config:  {} ({})",
+               err, result);
++    FilterClose();
+     return false;
+   }
+ 
+-- 
+2.34.1
+

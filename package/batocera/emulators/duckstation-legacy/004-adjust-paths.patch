@@ -1,0 +1,35 @@
+diff --git a/src/core/settings.cpp b/src/core/settings.cpp
+index bd9c676483..c340c157fc 100644
+--- a/src/core/settings.cpp
++++ b/src/core/settings.cpp
+@@ -1307,18 +1307,18 @@ std::string EmuFolders::Textures;
+ 
+ void EmuFolders::SetDefaults()
+ {
+-  Bios = Path::Combine(DataRoot, "bios");
+-  Cache = Path::Combine(DataRoot, "cache");
+-  Cheats = Path::Combine(DataRoot, "cheats");
+-  Covers = Path::Combine(DataRoot, "covers");
+-  Dumps = Path::Combine(DataRoot, "dump");
+-  GameSettings = Path::Combine(DataRoot, "gamesettings");
+-  InputProfiles = Path::Combine(DataRoot, "inputprofiles");
+-  MemoryCards = Path::Combine(DataRoot, "memcards");
+-  SaveStates = Path::Combine(DataRoot, "savestates");
+-  Screenshots = Path::Combine(DataRoot, "screenshots");
+-  Shaders = Path::Combine(DataRoot, "shaders");
+-  Textures = Path::Combine(DataRoot, "textures");
++  Bios = "/userdata/bios";
++  Cache = "/userdata/system/cache/duckstation";
++  Cheats = "/userdata/cheats";
++  Covers = "/userdata/system/configs/duckstation/covers";
++  Dumps = "/userdata/system/configs/duckstation/dump";
++  GameSettings = "/userdata/system/configs/duckstation/gamesettings";
++  InputProfiles = "/userdata/system/configs/duckstation/inputprofiles";
++  MemoryCards = "/userdata/saves/duckstation/memcards";
++  SaveStates = "/userdata/saves/duckstation";
++  Screenshots = "/userdata/screenshots";
++  Shaders = "/userdata/system/configs/duckstation/shaders";
++  Textures = "/userdata/system/configs/duckstation/textures";
+ }
+ 
+ static std::string LoadPathFromSettings(SettingsInterface& si, const std::string& root, const char* section,

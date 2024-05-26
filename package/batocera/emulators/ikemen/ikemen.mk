@@ -3,8 +3,8 @@
 # ikemen
 #
 ################################################################################
-# Last commit on March 15, 2023
-IKEMEN_VERSION = c9a56b761d392a7303687e0c597fbd366774ee72
+# Version: Commits on May 17, 2024
+IKEMEN_VERSION = 5aec6c9218dab467e461d6fc3d4c914a31d54bc8
 IKEMEN_SITE = https://github.com/ikemen-engine/Ikemen-GO
 IKEMEN_LICENSE = MIT
 IKEMEN_DEPENDENCIES = libgtk3 mesa3d openal libglfw
@@ -32,7 +32,8 @@ define IKEMEN_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/bin/Ikemen_GO_Linux $(TARGET_DIR)/usr/bin/ikemen
 	# evmapy
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ikemen/ikemen.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ikemen/ikemen.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(golang-package))

@@ -1,15 +1,10 @@
 {
     "actions_player1": [
         {
-            "trigger": [
-                "hotkey",
-                "start"
-            ],
-            "type": "key",
-            "target": [
-                "KEY_LEFTALT",
-                "KEY_F4"
-            ]
+            "trigger": ["hotkey", "start"],
+            "type": "exec",
+            "target": "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -shutdown",
+            "description": "Exit Steam"
         }
     ]
 }

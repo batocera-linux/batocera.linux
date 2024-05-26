@@ -1,8 +1,5 @@
 #!/bin/bash
 
-ACTION=$1
-shift
-
 # the mode format is : 17.720x576.50 (the drm number + resolution + hz).
 # the idea is to detect at setMode that the tv changed (ie, don't set mode 17 if on the tv i configured, 17 is 640x480 and that on the new one, this is a different resolution)
 # at the same time, we keep in /var/run/drmMode the single drm number so that emulators patches remain simple
@@ -18,6 +15,18 @@ f_usage() {
     echo "${0} minTomaxResolution-secure" >&2
     echo "${0} getDisplayMode" >&2
 }
+
+# use for syntax only
+PSCREEN=
+if test "${1}" = "--screen"
+then
+    shift
+    PSCREEN=$1
+    shift
+fi
+
+ACTION=$1
+shift
 
 if test -z "${ACTION}"
 then
@@ -187,7 +196,7 @@ case "${ACTION}" in
         ;;
 esac
 
-if which batocera-resolution-post >/dev/null
+if command -v batocera-resolution-post >/dev/null
 then
     batocera-resolution-post "${ACTION}" "${1}"
 fi

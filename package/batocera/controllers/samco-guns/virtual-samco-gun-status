@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SAMCOGUNMODE=$(batocera-settings-get controllers.samco-guns.mode)
+
+if test "${SAMCOGUN}" = 'gun'
+then
+    echo 1
+else
+    echo 0
+fi

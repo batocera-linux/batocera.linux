@@ -3,8 +3,8 @@
 # libretro-a5200
 #
 ################################################################################
-# Version.: Commits on Jul 26, 2022
-LIBRETRO_A5200_VERSION = b8f8571eb5c6f484fe6be9a3a895ffb162b08422
+# Version: Commits on Aug 18, 2023
+LIBRETRO_A5200_VERSION = 0942c88d64cad6853b539f51b39060a9de0cbcab
 LIBRETRO_A5200_SITE = $(call github,libretro,a5200,$(LIBRETRO_A5200_VERSION))
 LIBRETRO_A5200_LICENSE = GPLv2
 
@@ -22,6 +22,9 @@ LIBRETRO_A5200_PLATFORM = rpi3_64
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_A5200_PLATFORM = rpi4
 
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+LIBRETRO_A5200_PLATFORM = rpi5
+
 else ifeq ($(BR2_arm),y)
 LIBRETRO_A5200_PLATFORM = ARCH=armv
 
@@ -30,7 +33,8 @@ LIBRETRO_A5200_PLATFORM = ARCH=aarch64
 endif
 
 define LIBRETRO_A5200_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_A5200_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_A5200_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_A5200_VERSION) | cut -c 1-7)"
 endef
 

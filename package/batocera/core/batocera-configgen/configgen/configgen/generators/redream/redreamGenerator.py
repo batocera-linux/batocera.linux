@@ -8,16 +8,13 @@ import os
 import batoceraFiles
 import filecmp
 import codecs
-from utils.logger import get_logger
-
-eslog = get_logger(__name__)
 
 redream_file = "/usr/bin/redream"
 redreamConfig = batoceraFiles.CONF + "/redream"
 
 class RedreamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         redream_exec = redreamConfig + "/redream"
 
         if not os.path.exists(redreamConfig):
@@ -32,14 +29,9 @@ class RedreamGenerator(Generator):
         # set the roms path
         f.write("gamedir=/userdata/roms/dreamcast\n")
         # force fullscreen
-        f.write("mode=borderless fullscreen\n")
-        f.write("fullmode=borderless fullscreen\n")
-        
+        f.write("mode=exclusive fullscreen\n")
+        f.write("fullmode=exclusive fullscreen\n")
         # configure controller
-        # examples:
-        # port - port0=dev:4,desc:03000000c82d00000660000011010000,type:controller
-        # ctrl - profile0=name:03000000c82d00000660000011010000,type:controller,deadzone:12,crosshair:1,a:joy1,b:joy0,x:joy4,y:joy3,start:joy11,dpad_up:hat0,dpad_down:hat1,dpad_left:hat2,dpad_right:hat3,ljoy_up:-axis1,ljoy_down:+axis1,ljoy_left:-axis0,ljoy_right:+axis0,ltrig:axis2,rtrig:axis3,turbo:joy10,turbo:f6,menu:escape,lcd:f5,screenshot:f12,exit:joy12
-        
         ButtonMap = {
             "a":      "b",
             "b":      "a",
@@ -49,14 +41,12 @@ class RedreamGenerator(Generator):
             "select": "menu",
             "pageup": "turbo"
         }
-
         HatMap = {
             "up":    0,
             "down":  1,
             "left":  2,
             "right": 3
         }
-
         AxisMap = {
             "joystick1left": 0,
             "joystick1up":   1,
@@ -64,62 +54,59 @@ class RedreamGenerator(Generator):
             "l2":            2,
             "r2":            3
         }
-
         nplayer = 1
+        written_guids = set()
         for index in playersControllers:
             controller = playersControllers[index]
             if nplayer <= 4:
-                # dev = ? seems to be 4+
                 ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
                 f.write((ctrlport)+ "\n")
-                
                 ctrlprofile = "profile{}=name:{},type:controller,deadzone:12,crosshair:1,".format(controller.index, controller.guid)
                 fullprofile = ctrlprofile
-                
-                eslog.debug(f"CONTROLLER: {controller.index} - {controller.guid}")
-                
                 for index in controller.inputs:
                     input = controller.inputs[index]
-                    eslog.debug(f"Name: {input.name}, Type: {input.type}, ID: {input.id}, Code: {input.code}")
-                    
                     # [buttons]
                     if input.type == "button" and input.name in ButtonMap:
                         buttonname = ButtonMap[input.name]
                         fullprofile = fullprofile + "{}:joy{},".format(buttonname, input.id)
-                    #on rare occassions when triggers are buttons
+                    # on rare occassions when triggers are buttons
                     if input.type == "button" and input.name == "l2":
                         fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
                     if input.type == "button" and input.name == "r2":
                         fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
-                    #on occassions when dpad directions are buttons
+                    # on occassions when dpad directions are buttons
                     if input.type == "button":
                         if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
                             fullprofile = fullprofile + "dpad_{}:joy{},".format(input.name, input.id)
-                    
                     # [hats]
                     if input.type == "hat" and input.name in HatMap:
                         hatid = HatMap[input.name]
                         fullprofile = fullprofile + "dpad_{}:hat{},".format(input.name, hatid)
-                    
                     # [axis]
                     if input.type == "axis" and input.name in AxisMap:
                         axisid = AxisMap[input.name]
-                        #l2/r2 as axis triggers
+                        # l2/r2 as axis triggers
                         if input.name == "l2":
                             fullprofile = fullprofile + "ltrig:+axis{},".format(input.id)
                         if input.name == "r2":
                             fullprofile = fullprofile + "rtrig:+axis{},".format(input.id)
-                        #handle axis l,r,u,d
+                        # handle axis l,r,u,d
                         if input.name == "joystick1left":
                             fullprofile = fullprofile + "ljoy_left:-axis{},".format(axisid)
                             fullprofile = fullprofile + "ljoy_right:+axis{},".format(axisid)
                         if input.name == "joystick1up":
                             fullprofile = fullprofile + "ljoy_up:-axis{},".format(axisid)
                             fullprofile = fullprofile + "ljoy_down:+axis{},".format(axisid)
-                    
+                
+                # special nintendo workaround since redream makes no sense...
+                if controller.guid == "030000007e0500000920000011810000":
+                    fullprofile = ctrlprofile + "b:joy1,a:joy0,dpad_down:hat1,ljoy_left:-axis0,ljoy_right:+axis0,ljoy_up:-axis1,ljoy_down:+axis1,ltrig:joy6,dpad_left:hat2,rtrig:joy7,dpad_right:hat3,turbo:joy8,start:joy9,dpad_up:hat0,y:joy2,x:joy3,"
                 # add key to exit for evmapy to the end
                 fullprofile = fullprofile + "exit:f10"
-                f.write((fullprofile)+ "\n")
+                # check if we have already writtent the profile, if so, we don't save it
+                if controller.guid not in written_guids:
+                    written_guids.add(controller.guid)
+                    f.write((fullprofile)+ "\n")
                 nplayer = nplayer + 1
         
         # change settings as per users options
@@ -144,10 +131,10 @@ class RedreamGenerator(Generator):
             f.write("vysnc={}".format(system.config["redreamVsync"]) + "\n")
         else:
             f.write("vsync=0\n")
-        if system.isOptSet("redreamPolygon"):
-            f.write("autosort={}".format(system.config["redreamPolygon"]) + "\n")
+        if system.isOptSet("redreamRender"):
+            f.write("renderer={}".format(system.config["redreamRender"]) + "\n")
         else:
-            f.write("autosort=0\n")
+            f.write("renderer=hle_perstrip\n")
         # [system]
         if system.isOptSet("redreamRegion"):
             f.write("region={}".format(system.config["redreamRegion"]) + "\n")
@@ -175,4 +162,14 @@ class RedreamGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0'
-            })
+            }
+        )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        if 'redreamRatio' in config:
+            if config['redreamRatio'] == "16:9" or config['redreamRatio'] == "stretch":
+                return 16/9
+            else:
+                return 4/3      
+        else:
+            return 4/3

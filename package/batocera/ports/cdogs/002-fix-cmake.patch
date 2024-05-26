@@ -1,0 +1,12 @@
+--- a/src/cdogs/CMakeLists.txt	2023-07-23 11:22:58.832124021 +0200
++++ b/src/cdogs/CMakeLists.txt	2023-07-23 11:23:30.263678243 +0200
+@@ -245,7 +245,7 @@
+ 	json
+ 	SDL_joystickbuttonnames
+ 	yajl_s
+-	SDL2::SDL2
+-	SDL2_image::SDL2_image
++	SDL2
++	SDL2_image
+ 	SDL2_mixer
+ 	${ENet_LIBRARIES})

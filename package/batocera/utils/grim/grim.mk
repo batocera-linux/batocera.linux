@@ -12,4 +12,8 @@ GRIM_LICENSE_FILES = LICENSE
 
 GRIM_CONF_OPTS = -Dman-pages=disabled -Dwerror=false
 
+ifeq ($(BR2_riscv),y)
+GRIM_CONF_OPTS += -Djpeg=disabled
+endif
+
 $(eval $(meson-package))

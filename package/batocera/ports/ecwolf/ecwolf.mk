@@ -3,8 +3,8 @@
 # ecwolf
 #
 ################################################################################
-# Version.: Commits on Nov 11, 2022
-ECWOLF_VERSION = 8b64784e33f35d96f8a57a41a4658e5dedf20289
+
+ECWOLF_VERSION = 1.5pre
 ECWOLF_SITE = https://bitbucket.org/ecwolf/ecwolf.git
 ECWOLF_SITE_METHOD=git
 ECWOLF_GIT_SUBMODULES=YES
@@ -21,9 +21,14 @@ define HOST_ECWOLF_INSTALL_CMDS
 	# Skipping install, the tools are used directly via `ImportExecutables.cmake` from the build directory.
 endef
 
-ECWOLF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DGPL=ON -DFORCE_CROSSCOMPILE=ON \
-  -DINTERNAL_SDL_MIXER=ON \
-  -DIMPORT_EXECUTABLES="$(HOST_ECWOLF_BUILDDIR)/ImportExecutables.cmake"
+ECWOLF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release \
+                    -DBUILD_SHARED_LIBS=OFF \
+                    -DGPL=ON \
+					-DIMPORT_EXECUTABLES="$(HOST_ECWOLF_BUILDDIR)/ImportExecutables.cmake" \
+					-DFORCE_CROSSCOMPILE=ON \
+					-DINTERNAL_JPEG=ON \
+					-DINTERNAL_SDL_NET=ON \
+					-DINTERNAL_SDL_MIXER=ON
 
 # Copy the headers that are usually generated on the target machine
 # but must be provided when cross-compiling.

@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 
 # Define RetroPad inputs for mapping
 retroPad = {
@@ -20,10 +21,10 @@ retroPad = {
     "joystick1down":    "YAXIS_DOWN_SWITCH",
     "joystick1left":    "XAXIS_LEFT_SWITCH",
     "joystick1right":   "XAXIS_RIGHT_SWITCH",
-    "up":               "HAT1UP",
-    "down":             "HAT1DOWN",
-    "left":             "HAT1LEFT",
-    "right":            "HAT1RIGHT",
+    "up":               "HAT{0}UP",
+    "down":             "HAT{0}DOWN",
+    "left":             "HAT{0}LEFT",
+    "right":            "HAT{0}RIGHT",
     "joystick2up":      "RYAXIS_NEG_SWITCH",
     "joystick2down":    "RYAXIS_POS_SWITCH",
     "joystick2left":    "RXAXIS_NEG_SWITCH",
@@ -42,7 +43,7 @@ retroPad = {
     "start":            "START"
 }
 
-def generateMAMEConfigs(playersControllers, system, rom):
+def generateMAMEConfigs(playersControllers, system, rom, guns):
     # Generate command line for MAME/MESS/MAMEVirtual
     commandLine = []
     romBasename = os.path.basename(rom)
@@ -55,7 +56,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
     else:
         corePath = system.config['core']
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.getOptBoolean("customcfg"):
@@ -64,9 +65,12 @@ def generateMAMEConfigs(playersControllers, system, rom):
             cfgPath = "/userdata/saves/mame/mame/cfg/"
         if not os.path.exists(cfgPath):
             os.makedirs(cfgPath)
-        commandLine += [ romDrivername ]
+        if system.name == 'vis':
+            commandLine += [ 'vis', '-cdrom', f'"{rom}"' ]
+        else:
+            commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', cfgPath ]
-        commandLine += [ '-rompath', romDirname ]
+        commandLine += [ '-rompath', romDirname + ';/userdata/bios/' ]
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             pluginsToLoad += [ "hiscore" ]
@@ -127,10 +131,11 @@ def generateMAMEConfigs(playersControllers, system, rom):
             commandLine += [ '-rompath', romDirname + ";/userdata/bios/" ]
         else:
             # Command line for MESS consoles/computers
-            #TI-99 32k RAM expansion & speech modules - enabled by default
+            # TI-99 32k RAM expansion & speech modules
+            # Don't enable 32k by default
             if system.name == "ti99":
                 commandLine += [ "-ioport", "peb" ]
-                if not system.isOptSet("ti99_32kram") or (system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram")):
+                if system.isOptSet("ti99_32kram") and system.getOptBoolean("ti99_32kram"):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if not system.isOptSet("ti99_speech") or (system.isOptSet("ti99_speech") and system.getOptBoolean("ti99_speech")):
                     commandLine += ["-ioport:peb:slot3", "speech"]
@@ -207,6 +212,29 @@ def generateMAMEConfigs(playersControllers, system, rom):
                             commandLine += [ "-flop" ]
                         else:
                             commandLine += [ "-" + system.config["altromtype"] ]
+                    elif system.name == "adam":
+                        # add some logic based on the extension
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".ddp":
+                            commandLine += [ "-cass1" ]
+                        elif rom_extension == ".dsk":
+                            commandLine += [ "-flop1" ]
+                        else:
+                            commandLine += [ "-cart1" ]
+                    # try to choose the right floppy for Apple2gs
+                    elif system.name == "apple2gs":
+                        rom_extension = os.path.splitext(rom)[1].lower()
+                        if rom_extension == ".zip":
+                            with zipfile.ZipFile(rom, 'r') as zip_file:
+                                file_list = zip_file.namelist()
+                                # assume only one file in zip
+                                if len(file_list) == 1:
+                                    filename = file_list[0]
+                                    rom_extension = os.path.splitext(filename)[1].lower()
+                        if rom_extension in [".2mg", ".2img", ".img", ".image"]:
+                            commandLine += [ "-flop3" ]
+                        else:
+                            commandLine += [ "-flop1" ]
                     else:
                         commandLine += [ "-" + messRomType[messMode] ]
                 else:
@@ -276,20 +304,19 @@ def generateMAMEConfigs(playersControllers, system, rom):
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
             # lr-mame does NOT support multiple ini paths
-            # Using computer.ini since autorun only applies to computers, and this would be unlikely to be used otherwise
             autoRunCmd = ""
             autoRunDelay = 0
             if not os.path.exists('/userdata/saves/mame/mame/ini/'):
                      os.makedirs('/userdata/saves/mame/mame/ini/')
-            if os.path.exists('/userdata/saves/mame/mame/ini/computer.ini'):
-                os.remove('/userdata/saves/mame/mame/ini/computer.ini')
+            if os.path.exists('/userdata/saves/mame/mame/ini/batocera.ini'):
+                os.remove('/userdata/saves/mame/mame/ini/batocera.ini')
             # bbc has different boots for floppy & cassette, no special boot for carts
             if system.name == "bbc":
                 if system.isOptSet("altromtype") or softList != "":
                     if (system.isOptSet("altromtype") and system.config["altromtype"] == "cass") or softList[-4:] == "cass":
                         autoRunCmd = '*tape\\nchain""\\n'
                         autoRunDelay = 2
-                    elif (system.isOptSet("altromtype") and left(system.config["altromtype"], 4) == "flop") or softList[-4:] == "flop":
+                    elif (system.isOptSet("altromtype") and system.config["altromtype"].startswith("flop")) or "flop" in softList:
                         autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
                         autoRunDelay = 3
                 else:
@@ -317,7 +344,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
             if autoRunCmd != "":
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
-                iniFile = open('/userdata/saves/mame/mame/ini/computer.ini', "w")
+                iniFile = open('/userdata/saves/mame/mame/ini/batocera.ini', "w")
                 iniFile.write('autoboot_command          ' + autoRunCmd + "\n")
                 iniFile.write('autoboot_delay            ' + str(autoRunDelay))
                 iniFile.close()
@@ -334,7 +361,7 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
     # Lightgun reload option
     if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
-        commandArray += [ "-offscreen_reload" ]
+        commandLine += [ "-offscreen_reload" ]
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
@@ -343,23 +370,27 @@ def generateMAMEConfigs(playersControllers, system, rom):
             artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/"
         else:
             artPath = "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/lr-mame/artwork/"
-        commandLine += [ '-artpath', artPath ]
+        if not system.name == "ti99":
+            commandLine += [ '-artpath', artPath ]
 
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
     if not system.isOptSet("artworkcrop"):
-        if not system.name in [ 'pdp1', 'vgmplay' ]:
+        if not system.name in [ 'pdp1', 'vgmplay', 'ti99' ]:
             commandLine += [ "-artwork_crop" ]
     else:
         if system.getOptBoolean("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME
-    commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
-    commandLine += [ "-homepath" , "/userdata/saves/mame/plugins/" ]
+    # Share plugins & samples with standalone MAME (except TI99)
+    if not system.name == "ti99":
+        commandLine += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
+        commandLine += [ "-homepath" , "/userdata/saves/mame/plugins/" ]
+        commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
     if not os.path.exists("/userdata/saves/mame/plugins/"):
         os.makedirs("/userdata/saves/mame/plugins/")
-    commandLine += [ "-samplepath", "/userdata/bios/mame/samples/" ]
+    if not os.path.exists("/userdata/bios/mame/samples/"):
+        os.makedirs("/userdata/bios/mame/samples/")
 
     # Delete old cmd files & prepare path
     cmdPath = "/var/run/cmdfiles/"
@@ -378,9 +409,9 @@ def generateMAMEConfigs(playersControllers, system, rom):
 
     # Call Controller Config
     if messMode == -1:
-        generateMAMEPadConfig(cfgPath, playersControllers, system, "", romBasename, specialController)
+        generateMAMEPadConfig(cfgPath, playersControllers, system, "", romBasename, specialController, guns)
     else:
-        generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, romBasename, specialController)
+        generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, romBasename, specialController, guns)
 
 def prepSoftwareList(subdirSoftList, softList, softDir, hashDir, romDirname):
     if not os.path.exists(softDir):
@@ -433,7 +464,7 @@ def getMameControlScheme(system, romBasename):
         neogeoList = set(open(mameNeogeo).read().split())
         twinstickList = set(open(mameTwinstick).read().split())
         qbertList = set(open(mameRotatedstick).read().split())
-            
+
         romName = os.path.splitext(romBasename)[0]
         if romName in capcomList:
             if controllerType in [ "auto", "snes" ]:
@@ -468,7 +499,7 @@ def getMameControlScheme(system, romBasename):
 
     return "default"
 
-def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romBasename, specialController):
+def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romBasename, specialController, guns):
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -490,7 +521,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
 
     # Get controller scheme
     altButtons = getMameControlScheme(system, romBasename)
-    
+
     # Load standard controls from csv
     controlFile = '/usr/share/batocera/configgen/data/mame/mameControls.csv'
     openFile = open(controlFile, 'r')
@@ -508,7 +539,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         mappings[controlDef] = controlDict['default'][controlDef]
 
     # Buttons that change based on game/setting
-    if altButtons != "":
+    if altButtons in controlDict:
         for controlDef in controlDict[altButtons].keys():
             mappings.update({controlDef: controlDict[altButtons][controlDef]})
 
@@ -534,7 +565,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             useControls = f"apple2-{specialController}"
     else:
         useControls = messSysName
-    
+
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
@@ -589,7 +620,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                 config_alt = minidom.parse(configFile_alt)
             except:
                 pass # reinit the file
-        
+
         perGameCfg = system.getOptBoolean('pergamecfg')
         if os.path.exists(configFile_alt) and (customCfg or perGameCfg):
             overwriteSystem = False
@@ -600,7 +631,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
         xml_mameconfig_alt.setAttribute("version", "10")
         xml_system_alt = getSection(config_alt, xml_mameconfig_alt, "system")
         xml_system_alt.setAttribute("name", messSysName)
-        
+
         removeSection(config_alt, xml_system_alt, "input")
         xml_input_alt = config_alt.createElement("input")
         xml_system_alt.appendChild(xml_input_alt)
@@ -622,7 +653,11 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             xml_kbenable_alt.setAttribute("tag", ":")
             xml_kbenable_alt.setAttribute("enabled", "1")
             xml_input_alt.appendChild(xml_kbenable_alt)
-    
+
+    # Don't configure pads if guns are present and "use_guns" is on
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+        return
+
     # Fill in controls on cfg files
     nplayer = 1
     maxplayers = len(playersControllers)
@@ -633,7 +668,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             mappings_use["JOYSTICK_DOWN"] = "down"
             mappings_use["JOYSTICK_LEFT"] = "left"
             mappings_use["JOYSTICK_RIGHT"] = "right"
-            
+
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
@@ -647,10 +682,10 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
 
         #UI Mappings
         if nplayer == 1:
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))      # Down
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_DOWN"]], False, "", ""))      # Down
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", "")) # Right
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
 
         if useControls in messControlDict.keys():
@@ -672,7 +707,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
                             retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
         nplayer = nplayer + 1
-        
+
         # save the config file
         #mameXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
@@ -680,7 +715,7 @@ def generateMAMEPadConfig(cfgPath, playersControllers, system, messSysName, romB
             mameXml = codecs.open(configFile, "w", "utf-8")
             dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml.write(dom_string)
-        
+
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
         if messSysName in specialControlList and overwriteSystem:
             mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
@@ -767,41 +802,42 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
 
 def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
     if input.find("BUTTON") != -1 or input.find("HAT") != -1 or input == "START" or input == "SELECT":
+        input = input.format(joycode) if "{0}" in input else input
         return f"JOYCODE_{joycode}_{input}"
     elif input.find("AXIS") != -1:
         if altButtons == "qbert": # Q*Bert Joystick
             if key == "joystick1up" or key == "up":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1up']}_{joycode}_{retroPad['joystick1right']} OR \
-                    JOYCODE_{joycode}_{retroPad['up']} JOYCODE_{joycode}_{retroPad['right']}"
+                    JOYCODE_{joycode}_{retroPad['up'].format(joycode)} JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1down']} JOYCODE_{joycode}_{retroPad['joystick1left']} OR \
-                    JOYCODE_{joycode}_{retroPad['down']} JOYCODE_{joycode}_{retroPad['left']}"
+                    JOYCODE_{joycode}_{retroPad['down'].format(joycode)} JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1left']} JOYCODE_{joycode}_{retroPad['joystick1up']} OR \
-                    JOYCODE_{joycode}_{retroPad['left']} JOYCODE_{joycode}_{retroPad['up']}"
+                    JOYCODE_{joycode}_{retroPad['left'].format(joycode)} JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
                 return f"JOYCODE_{joycode}_{retroPad['joystick1right']} JOYCODE_{joycode}_{retroPad['joystick1down']} OR \
-                    JOYCODE_{joycode}_{retroPad['right']} JOYCODE_{joycode}_{retroPad['down']}"
+                    JOYCODE_{joycode}_{retroPad['right'].format(joycode)} JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             else:
                 return f"JOYCODE_{joycode}_{input}"
         elif ignoreAxis:
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_{retroPad['up']}"
+                return f"JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_{retroPad['down']}"
+                return f"JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_{retroPad['left']}"
+                return f"JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_{retroPad['right']}"
+                return f"JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
         else:
             if key == "joystick1up" or key == "up":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['up'].format(joycode)}"
             elif key == "joystick1down" or key == "down":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['down']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['down'].format(joycode)}"
             elif key == "joystick1left" or key == "left":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['left']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['left'].format(joycode)}"
             elif key == "joystick1right" or key == "right":
-                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['right']}"
+                return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['right'].format(joycode)}"
             elif(key == "joystick2up"):
                 return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['x']}"
             elif(key == "joystick2down"):

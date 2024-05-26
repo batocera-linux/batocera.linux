@@ -1,0 +1,8 @@
+config BR2_PACKAGE_WSDD
+        bool "wsdd"
+        help
+          wsdd implements a Web Service Discovery host daemon. This
+          enables (Samba) hosts, like your local NAS device, to be
+          found by Web Service Discovery Clients like Windows.
+
+          https://github.com/christgau/wsdd

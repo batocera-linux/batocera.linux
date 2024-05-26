@@ -1,10 +1,17 @@
 config BR2_PACKAGE_PLAY
-        bool "play"
-        select BR2_PACKAGE_QT5BASE
-        select BR2_PACKAGE_QT5X11EXTRAS
-        select BR2_PACKAGE_LIBGLEW
-        select BR2_PACKAGE_VULKAN_HEADERS
-        select BR2_PACKAGE_VULKAN_LOADER
+    bool "play"
+    select BR2_PACKAGE_PCRE2
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBCURL_OPENSSL
+    select BR2_PACKAGE_LIBGLEW		               if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_BATOCERA_QT6
+    select BR2_PACKAGE_SQLITE
+    select BR2_PACKAGE_VULKAN_HEADERS	           if BR2_PACKAGE_BATOCERA_VULKAN
+    select BR2_PACKAGE_VULKAN_LOADER	           if BR2_PACKAGE_BATOCERA_VULKAN
+    select BR2_PACKAGE_ECM
 
-        help
-          A PS2 portable emulator
+    help
+      Play! is a PlayStation2 emulator.
+
+      https://purei.org/

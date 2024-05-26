@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 5e89fa7..54f09e9 100644
+index cc72f13..e94d9ba 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -59,6 +59,26 @@ ifneq (,$(filter $(platform), unix unix-armv7-hardfloat-neon unix-armv7-neon-har
+@@ -59,6 +59,28 @@ ifneq (,$(filter $(platform), unix unix-armv7-hardfloat-neon unix-armv7-neon-har
  			endif
  		endif
  	endif
@@ -25,7 +25,9 @@ index 5e89fa7..54f09e9 100644
 +		endif
 +	else ifneq (,$(findstring rpi4,$(platform)))
 +         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
-+	endif	
++	else ifneq (,$(findstring rpi5,$(platform)))
++         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
++	endif
  else ifeq ($(platform), linux-portable)
  	TARGET := $(TARGET_NAME)_libretro.$(EXT)
  	fpic := -fPIC -nostdlib

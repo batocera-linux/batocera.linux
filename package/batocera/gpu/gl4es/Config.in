@@ -1,0 +1,7 @@
+config BR2_PACKAGE_GL4ES
+  bool "gl4es"
+  depends on BR2_PACKAGE_HAS_LIBGLES
+  help
+    GL4ES emulation layer
+
+    https://github.com/ptitSeb/gl4es

@@ -1,0 +1,4029 @@
+Exposing should not be done in a single commit anymore due to
+dt-bindings enforced rules.
+
+Prepend PRIV to the private CLK IDs so we can add new clock to
+the bindings header and in a separate commit remove such private
+define and switch to the public CLK IDs identifier.
+
+This refers to a discussion at [1] with Arnd and Krzysztof.
+
+[1] https://lore.kernel.org/all/2fabe721-7434-43e7-bae5-088a42ba128d@app.fastmail.com/
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/clk/meson/g12a.c | 628 +++++++++++++++++++++++------------------------
+ drivers/clk/meson/g12a.h | 260 ++++++++++----------
+ 2 files changed, 444 insertions(+), 444 deletions(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index 310accf94830..d2e481ae2429 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -4255,8 +4255,8 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_FCLK_DIV7]		= &g12a_fclk_div7.hw,
+ 		[CLKID_FCLK_DIV2P5]		= &g12a_fclk_div2p5.hw,
+ 		[CLKID_GP0_PLL]			= &g12a_gp0_pll.hw,
+-		[CLKID_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
+-		[CLKID_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
++		[CLKID_PRIV_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
++		[CLKID_PRIV_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
+ 		[CLKID_CLK81]			= &g12a_clk81.hw,
+ 		[CLKID_MPLL0]			= &g12a_mpll0.hw,
+ 		[CLKID_MPLL1]			= &g12a_mpll1.hw,
+@@ -4307,25 +4307,25 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_UART2]			= &g12a_uart2.hw,
+ 		[CLKID_VPU_INTR]		= &g12a_vpu_intr.hw,
+ 		[CLKID_GIC]			= &g12a_gic.hw,
+-		[CLKID_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
+-		[CLKID_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
+ 		[CLKID_SD_EMMC_A_CLK0]		= &g12a_sd_emmc_a_clk0.hw,
+-		[CLKID_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
+-		[CLKID_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
+ 		[CLKID_SD_EMMC_B_CLK0]		= &g12a_sd_emmc_b_clk0.hw,
+-		[CLKID_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
+-		[CLKID_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
+ 		[CLKID_SD_EMMC_C_CLK0]		= &g12a_sd_emmc_c_clk0.hw,
+-		[CLKID_MPLL0_DIV]		= &g12a_mpll0_div.hw,
+-		[CLKID_MPLL1_DIV]		= &g12a_mpll1_div.hw,
+-		[CLKID_MPLL2_DIV]		= &g12a_mpll2_div.hw,
+-		[CLKID_MPLL3_DIV]		= &g12a_mpll3_div.hw,
+-		[CLKID_FCLK_DIV2_DIV]		= &g12a_fclk_div2_div.hw,
+-		[CLKID_FCLK_DIV3_DIV]		= &g12a_fclk_div3_div.hw,
+-		[CLKID_FCLK_DIV4_DIV]		= &g12a_fclk_div4_div.hw,
+-		[CLKID_FCLK_DIV5_DIV]		= &g12a_fclk_div5_div.hw,
+-		[CLKID_FCLK_DIV7_DIV]		= &g12a_fclk_div7_div.hw,
+-		[CLKID_FCLK_DIV2P5_DIV]		= &g12a_fclk_div2p5_div.hw,
++		[CLKID_PRIV_MPLL0_DIV]		= &g12a_mpll0_div.hw,
++		[CLKID_PRIV_MPLL1_DIV]		= &g12a_mpll1_div.hw,
++		[CLKID_PRIV_MPLL2_DIV]		= &g12a_mpll2_div.hw,
++		[CLKID_PRIV_MPLL3_DIV]		= &g12a_mpll3_div.hw,
++		[CLKID_PRIV_FCLK_DIV2_DIV]	= &g12a_fclk_div2_div.hw,
++		[CLKID_PRIV_FCLK_DIV3_DIV]	= &g12a_fclk_div3_div.hw,
++		[CLKID_PRIV_FCLK_DIV4_DIV]	= &g12a_fclk_div4_div.hw,
++		[CLKID_PRIV_FCLK_DIV5_DIV]	= &g12a_fclk_div5_div.hw,
++		[CLKID_PRIV_FCLK_DIV7_DIV]	= &g12a_fclk_div7_div.hw,
++		[CLKID_PRIV_FCLK_DIV2P5_DIV]	= &g12a_fclk_div2p5_div.hw,
+ 		[CLKID_HIFI_PLL]		= &g12a_hifi_pll.hw,
+ 		[CLKID_VCLK2_VENCI0]		= &g12a_vclk2_venci0.hw,
+ 		[CLKID_VCLK2_VENCI1]		= &g12a_vclk2_venci1.hw,
+@@ -4346,56 +4346,56 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_VCLK2_VENCLMMC]		= &g12a_vclk2_venclmmc.hw,
+ 		[CLKID_VCLK2_VENCL]		= &g12a_vclk2_vencl.hw,
+ 		[CLKID_VCLK2_OTHER1]		= &g12a_vclk2_other1.hw,
+-		[CLKID_FIXED_PLL_DCO]		= &g12a_fixed_pll_dco.hw,
+-		[CLKID_SYS_PLL_DCO]		= &g12a_sys_pll_dco.hw,
+-		[CLKID_GP0_PLL_DCO]		= &g12a_gp0_pll_dco.hw,
+-		[CLKID_HIFI_PLL_DCO]		= &g12a_hifi_pll_dco.hw,
++		[CLKID_PRIV_FIXED_PLL_DCO]	= &g12a_fixed_pll_dco.hw,
++		[CLKID_PRIV_SYS_PLL_DCO]	= &g12a_sys_pll_dco.hw,
++		[CLKID_PRIV_GP0_PLL_DCO]	= &g12a_gp0_pll_dco.hw,
++		[CLKID_PRIV_HIFI_PLL_DCO]	= &g12a_hifi_pll_dco.hw,
+ 		[CLKID_DMA]			= &g12a_dma.hw,
+ 		[CLKID_EFUSE]			= &g12a_efuse.hw,
+ 		[CLKID_ROM_BOOT]		= &g12a_rom_boot.hw,
+ 		[CLKID_RESET_SEC]		= &g12a_reset_sec.hw,
+ 		[CLKID_SEC_AHB_APB3]		= &g12a_sec_ahb_apb3.hw,
+-		[CLKID_MPLL_PREDIV]		= &g12a_mpll_prediv.hw,
++		[CLKID_PRIV_MPLL_PREDIV]	= &g12a_mpll_prediv.hw,
+ 		[CLKID_VPU_0_SEL]		= &g12a_vpu_0_sel.hw,
+-		[CLKID_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
++		[CLKID_PRIV_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
+ 		[CLKID_VPU_0]			= &g12a_vpu_0.hw,
+ 		[CLKID_VPU_1_SEL]		= &g12a_vpu_1_sel.hw,
+-		[CLKID_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
++		[CLKID_PRIV_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
+ 		[CLKID_VPU_1]			= &g12a_vpu_1.hw,
+ 		[CLKID_VPU]			= &g12a_vpu.hw,
+ 		[CLKID_VAPB_0_SEL]		= &g12a_vapb_0_sel.hw,
+-		[CLKID_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
++		[CLKID_PRIV_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
+ 		[CLKID_VAPB_0]			= &g12a_vapb_0.hw,
+ 		[CLKID_VAPB_1_SEL]		= &g12a_vapb_1_sel.hw,
+-		[CLKID_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
++		[CLKID_PRIV_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
+ 		[CLKID_VAPB_1]			= &g12a_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]		= &g12a_vapb_sel.hw,
+ 		[CLKID_VAPB]			= &g12a_vapb.hw,
+-		[CLKID_HDMI_PLL_DCO]		= &g12a_hdmi_pll_dco.hw,
+-		[CLKID_HDMI_PLL_OD]		= &g12a_hdmi_pll_od.hw,
+-		[CLKID_HDMI_PLL_OD2]		= &g12a_hdmi_pll_od2.hw,
++		[CLKID_PRIV_HDMI_PLL_DCO]	= &g12a_hdmi_pll_dco.hw,
++		[CLKID_PRIV_HDMI_PLL_OD]	= &g12a_hdmi_pll_od.hw,
++		[CLKID_PRIV_HDMI_PLL_OD2]	= &g12a_hdmi_pll_od2.hw,
+ 		[CLKID_HDMI_PLL]		= &g12a_hdmi_pll.hw,
+ 		[CLKID_VID_PLL]			= &g12a_vid_pll_div.hw,
+-		[CLKID_VID_PLL_SEL]		= &g12a_vid_pll_sel.hw,
+-		[CLKID_VID_PLL_DIV]		= &g12a_vid_pll.hw,
+-		[CLKID_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+-		[CLKID_VCLK_INPUT]		= &g12a_vclk_input.hw,
+-		[CLKID_VCLK2_INPUT]		= &g12a_vclk2_input.hw,
+-		[CLKID_VCLK_DIV]		= &g12a_vclk_div.hw,
+-		[CLKID_VCLK2_DIV]		= &g12a_vclk2_div.hw,
++		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
++		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
++		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
++		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
++		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
++		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
++		[CLKID_PRIV_VCLK2_DIV]		= &g12a_vclk2_div.hw,
+ 		[CLKID_VCLK]			= &g12a_vclk.hw,
+ 		[CLKID_VCLK2]			= &g12a_vclk2.hw,
+ 		[CLKID_VCLK_DIV1]		= &g12a_vclk_div1.hw,
+-		[CLKID_VCLK_DIV2_EN]		= &g12a_vclk_div2_en.hw,
+-		[CLKID_VCLK_DIV4_EN]		= &g12a_vclk_div4_en.hw,
+-		[CLKID_VCLK_DIV6_EN]		= &g12a_vclk_div6_en.hw,
+-		[CLKID_VCLK_DIV12_EN]		= &g12a_vclk_div12_en.hw,
++		[CLKID_PRIV_VCLK_DIV2_EN]	= &g12a_vclk_div2_en.hw,
++		[CLKID_PRIV_VCLK_DIV4_EN]	= &g12a_vclk_div4_en.hw,
++		[CLKID_PRIV_VCLK_DIV6_EN]	= &g12a_vclk_div6_en.hw,
++		[CLKID_PRIV_VCLK_DIV12_EN]	= &g12a_vclk_div12_en.hw,
+ 		[CLKID_VCLK2_DIV1]		= &g12a_vclk2_div1.hw,
+-		[CLKID_VCLK2_DIV2_EN]		= &g12a_vclk2_div2_en.hw,
+-		[CLKID_VCLK2_DIV4_EN]		= &g12a_vclk2_div4_en.hw,
+-		[CLKID_VCLK2_DIV6_EN]		= &g12a_vclk2_div6_en.hw,
+-		[CLKID_VCLK2_DIV12_EN]		= &g12a_vclk2_div12_en.hw,
++		[CLKID_PRIV_VCLK2_DIV2_EN]	= &g12a_vclk2_div2_en.hw,
++		[CLKID_PRIV_VCLK2_DIV4_EN]	= &g12a_vclk2_div4_en.hw,
++		[CLKID_PRIV_VCLK2_DIV6_EN]	= &g12a_vclk2_div6_en.hw,
++		[CLKID_PRIV_VCLK2_DIV12_EN]	= &g12a_vclk2_div12_en.hw,
+ 		[CLKID_VCLK_DIV2]		= &g12a_vclk_div2.hw,
+ 		[CLKID_VCLK_DIV4]		= &g12a_vclk_div4.hw,
+ 		[CLKID_VCLK_DIV6]		= &g12a_vclk_div6.hw,
+@@ -4404,69 +4404,69 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV4]		= &g12a_vclk2_div4.hw,
+ 		[CLKID_VCLK2_DIV6]		= &g12a_vclk2_div6.hw,
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+-		[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
+-		[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
+-		[CLKID_CTS_VDAC_SEL]		= &g12a_cts_vdac_sel.hw,
+-		[CLKID_HDMI_TX_SEL]		= &g12a_hdmi_tx_sel.hw,
++		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
++		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
++		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+-		[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+-		[CLKID_HDMI_DIV]		= &g12a_hdmi_div.hw,
++		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
++		[CLKID_PRIV_HDMI_DIV]		= &g12a_hdmi_div.hw,
+ 		[CLKID_HDMI]			= &g12a_hdmi.hw,
+ 		[CLKID_MALI_0_SEL]		= &g12a_mali_0_sel.hw,
+-		[CLKID_MALI_0_DIV]		= &g12a_mali_0_div.hw,
++		[CLKID_PRIV_MALI_0_DIV]		= &g12a_mali_0_div.hw,
+ 		[CLKID_MALI_0]			= &g12a_mali_0.hw,
+ 		[CLKID_MALI_1_SEL]		= &g12a_mali_1_sel.hw,
+-		[CLKID_MALI_1_DIV]		= &g12a_mali_1_div.hw,
++		[CLKID_PRIV_MALI_1_DIV]		= &g12a_mali_1_div.hw,
+ 		[CLKID_MALI_1]			= &g12a_mali_1.hw,
+ 		[CLKID_MALI]			= &g12a_mali.hw,
+-		[CLKID_MPLL_50M_DIV]		= &g12a_mpll_50m_div.hw,
++		[CLKID_PRIV_MPLL_50M_DIV]	= &g12a_mpll_50m_div.hw,
+ 		[CLKID_MPLL_50M]		= &g12a_mpll_50m.hw,
+-		[CLKID_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
+-		[CLKID_SYS_PLL_DIV16]		= &g12a_sys_pll_div16.hw,
+-		[CLKID_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
+-		[CLKID_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
+-		[CLKID_CPU_CLK_DYN0]		= &g12a_cpu_clk_postmux0.hw,
+-		[CLKID_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
+-		[CLKID_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
+-		[CLKID_CPU_CLK_DYN1]		= &g12a_cpu_clk_postmux1.hw,
+-		[CLKID_CPU_CLK_DYN]		= &g12a_cpu_clk_dyn.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16]	= &g12a_sys_pll_div16.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0]	= &g12a_cpu_clk_postmux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1]	= &g12a_cpu_clk_postmux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN]	= &g12a_cpu_clk_dyn.hw,
+ 		[CLKID_CPU_CLK]			= &g12a_cpu_clk.hw,
+-		[CLKID_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
+-		[CLKID_CPU_CLK_DIV16]		= &g12a_cpu_clk_div16.hw,
+-		[CLKID_CPU_CLK_APB_DIV]		= &g12a_cpu_clk_apb_div.hw,
+-		[CLKID_CPU_CLK_APB]		= &g12a_cpu_clk_apb.hw,
+-		[CLKID_CPU_CLK_ATB_DIV]		= &g12a_cpu_clk_atb_div.hw,
+-		[CLKID_CPU_CLK_ATB]		= &g12a_cpu_clk_atb.hw,
+-		[CLKID_CPU_CLK_AXI_DIV]		= &g12a_cpu_clk_axi_div.hw,
+-		[CLKID_CPU_CLK_AXI]		= &g12a_cpu_clk_axi.hw,
+-		[CLKID_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
+-		[CLKID_CPU_CLK_TRACE]		= &g12a_cpu_clk_trace.hw,
+-		[CLKID_PCIE_PLL_DCO]		= &g12a_pcie_pll_dco.hw,
+-		[CLKID_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
+-		[CLKID_PCIE_PLL_OD]		= &g12a_pcie_pll_od.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16]	= &g12a_cpu_clk_div16.hw,
++		[CLKID_PRIV_CPU_CLK_APB_DIV]	= &g12a_cpu_clk_apb_div.hw,
++		[CLKID_PRIV_CPU_CLK_APB]	= &g12a_cpu_clk_apb.hw,
++		[CLKID_PRIV_CPU_CLK_ATB_DIV]	= &g12a_cpu_clk_atb_div.hw,
++		[CLKID_PRIV_CPU_CLK_ATB]	= &g12a_cpu_clk_atb.hw,
++		[CLKID_PRIV_CPU_CLK_AXI_DIV]	= &g12a_cpu_clk_axi_div.hw,
++		[CLKID_PRIV_CPU_CLK_AXI]	= &g12a_cpu_clk_axi.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE]	= &g12a_cpu_clk_trace.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO]	= &g12a_pcie_pll_dco.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
++		[CLKID_PRIV_PCIE_PLL_OD]	= &g12a_pcie_pll_od.hw,
+ 		[CLKID_PCIE_PLL]		= &g12a_pcie_pll.hw,
+-		[CLKID_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
+-		[CLKID_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
++		[CLKID_PRIV_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
++		[CLKID_PRIV_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
+ 		[CLKID_VDEC_1]			= &g12a_vdec_1.hw,
+-		[CLKID_VDEC_HEVC_SEL]		= &g12a_vdec_hevc_sel.hw,
+-		[CLKID_VDEC_HEVC_DIV]		= &g12a_vdec_hevc_div.hw,
++		[CLKID_PRIV_VDEC_HEVC_SEL]	= &g12a_vdec_hevc_sel.hw,
++		[CLKID_PRIV_VDEC_HEVC_DIV]	= &g12a_vdec_hevc_div.hw,
+ 		[CLKID_VDEC_HEVC]		= &g12a_vdec_hevc.hw,
+-		[CLKID_VDEC_HEVCF_SEL]		= &g12a_vdec_hevcf_sel.hw,
+-		[CLKID_VDEC_HEVCF_DIV]		= &g12a_vdec_hevcf_div.hw,
++		[CLKID_PRIV_VDEC_HEVCF_SEL]	= &g12a_vdec_hevcf_sel.hw,
++		[CLKID_PRIV_VDEC_HEVCF_DIV]	= &g12a_vdec_hevcf_div.hw,
+ 		[CLKID_VDEC_HEVCF]		= &g12a_vdec_hevcf.hw,
+-		[CLKID_TS_DIV]			= &g12a_ts_div.hw,
++		[CLKID_PRIV_TS_DIV]		= &g12a_ts_div.hw,
+ 		[CLKID_TS]			= &g12a_ts.hw,
+-		[CLKID_SPICC0_SCLK_SEL]		= &g12a_spicc0_sclk_sel.hw,
+-		[CLKID_SPICC0_SCLK_DIV]		= &g12a_spicc0_sclk_div.hw,
++		[CLKID_PRIV_SPICC0_SCLK_SEL]	= &g12a_spicc0_sclk_sel.hw,
++		[CLKID_PRIV_SPICC0_SCLK_DIV]	= &g12a_spicc0_sclk_div.hw,
+ 		[CLKID_SPICC0_SCLK]		= &g12a_spicc0_sclk.hw,
+-		[CLKID_SPICC1_SCLK_SEL]		= &g12a_spicc1_sclk_sel.hw,
+-		[CLKID_SPICC1_SCLK_DIV]		= &g12a_spicc1_sclk_div.hw,
++		[CLKID_PRIV_SPICC1_SCLK_SEL]	= &g12a_spicc1_sclk_sel.hw,
++		[CLKID_PRIV_SPICC1_SCLK_DIV]	= &g12a_spicc1_sclk_div.hw,
+ 		[CLKID_SPICC1_SCLK]		= &g12a_spicc1_sclk.hw,
+ 		[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+-		[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
++		[CLKID_PRIV_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 		[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
+ 		[NR_CLKS]			= NULL,
+ 	},
+@@ -4484,8 +4484,8 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_FCLK_DIV7]		= &g12a_fclk_div7.hw,
+ 		[CLKID_FCLK_DIV2P5]		= &g12a_fclk_div2p5.hw,
+ 		[CLKID_GP0_PLL]			= &g12a_gp0_pll.hw,
+-		[CLKID_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
+-		[CLKID_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
++		[CLKID_PRIV_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
++		[CLKID_PRIV_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
+ 		[CLKID_CLK81]			= &g12a_clk81.hw,
+ 		[CLKID_MPLL0]			= &g12a_mpll0.hw,
+ 		[CLKID_MPLL1]			= &g12a_mpll1.hw,
+@@ -4536,25 +4536,25 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_UART2]			= &g12a_uart2.hw,
+ 		[CLKID_VPU_INTR]		= &g12a_vpu_intr.hw,
+ 		[CLKID_GIC]			= &g12a_gic.hw,
+-		[CLKID_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
+-		[CLKID_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
+ 		[CLKID_SD_EMMC_A_CLK0]		= &g12a_sd_emmc_a_clk0.hw,
+-		[CLKID_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
+-		[CLKID_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
+ 		[CLKID_SD_EMMC_B_CLK0]		= &g12a_sd_emmc_b_clk0.hw,
+-		[CLKID_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
+-		[CLKID_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
+ 		[CLKID_SD_EMMC_C_CLK0]		= &g12a_sd_emmc_c_clk0.hw,
+-		[CLKID_MPLL0_DIV]		= &g12a_mpll0_div.hw,
+-		[CLKID_MPLL1_DIV]		= &g12a_mpll1_div.hw,
+-		[CLKID_MPLL2_DIV]		= &g12a_mpll2_div.hw,
+-		[CLKID_MPLL3_DIV]		= &g12a_mpll3_div.hw,
+-		[CLKID_FCLK_DIV2_DIV]		= &g12a_fclk_div2_div.hw,
+-		[CLKID_FCLK_DIV3_DIV]		= &g12a_fclk_div3_div.hw,
+-		[CLKID_FCLK_DIV4_DIV]		= &g12a_fclk_div4_div.hw,
+-		[CLKID_FCLK_DIV5_DIV]		= &g12a_fclk_div5_div.hw,
+-		[CLKID_FCLK_DIV7_DIV]		= &g12a_fclk_div7_div.hw,
+-		[CLKID_FCLK_DIV2P5_DIV]		= &g12a_fclk_div2p5_div.hw,
++		[CLKID_PRIV_MPLL0_DIV]		= &g12a_mpll0_div.hw,
++		[CLKID_PRIV_MPLL1_DIV]		= &g12a_mpll1_div.hw,
++		[CLKID_PRIV_MPLL2_DIV]		= &g12a_mpll2_div.hw,
++		[CLKID_PRIV_MPLL3_DIV]		= &g12a_mpll3_div.hw,
++		[CLKID_PRIV_FCLK_DIV2_DIV]	= &g12a_fclk_div2_div.hw,
++		[CLKID_PRIV_FCLK_DIV3_DIV]	= &g12a_fclk_div3_div.hw,
++		[CLKID_PRIV_FCLK_DIV4_DIV]	= &g12a_fclk_div4_div.hw,
++		[CLKID_PRIV_FCLK_DIV5_DIV]	= &g12a_fclk_div5_div.hw,
++		[CLKID_PRIV_FCLK_DIV7_DIV]	= &g12a_fclk_div7_div.hw,
++		[CLKID_PRIV_FCLK_DIV2P5_DIV]	= &g12a_fclk_div2p5_div.hw,
+ 		[CLKID_HIFI_PLL]		= &g12a_hifi_pll.hw,
+ 		[CLKID_VCLK2_VENCI0]		= &g12a_vclk2_venci0.hw,
+ 		[CLKID_VCLK2_VENCI1]		= &g12a_vclk2_venci1.hw,
+@@ -4575,56 +4575,56 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_VCLK2_VENCLMMC]		= &g12a_vclk2_venclmmc.hw,
+ 		[CLKID_VCLK2_VENCL]		= &g12a_vclk2_vencl.hw,
+ 		[CLKID_VCLK2_OTHER1]		= &g12a_vclk2_other1.hw,
+-		[CLKID_FIXED_PLL_DCO]		= &g12a_fixed_pll_dco.hw,
+-		[CLKID_SYS_PLL_DCO]		= &g12a_sys_pll_dco.hw,
+-		[CLKID_GP0_PLL_DCO]		= &g12a_gp0_pll_dco.hw,
+-		[CLKID_HIFI_PLL_DCO]		= &g12a_hifi_pll_dco.hw,
++		[CLKID_PRIV_FIXED_PLL_DCO]	= &g12a_fixed_pll_dco.hw,
++		[CLKID_PRIV_SYS_PLL_DCO]	= &g12a_sys_pll_dco.hw,
++		[CLKID_PRIV_GP0_PLL_DCO]	= &g12a_gp0_pll_dco.hw,
++		[CLKID_PRIV_HIFI_PLL_DCO]	= &g12a_hifi_pll_dco.hw,
+ 		[CLKID_DMA]			= &g12a_dma.hw,
+ 		[CLKID_EFUSE]			= &g12a_efuse.hw,
+ 		[CLKID_ROM_BOOT]		= &g12a_rom_boot.hw,
+ 		[CLKID_RESET_SEC]		= &g12a_reset_sec.hw,
+ 		[CLKID_SEC_AHB_APB3]		= &g12a_sec_ahb_apb3.hw,
+-		[CLKID_MPLL_PREDIV]		= &g12a_mpll_prediv.hw,
++		[CLKID_PRIV_MPLL_PREDIV]	= &g12a_mpll_prediv.hw,
+ 		[CLKID_VPU_0_SEL]		= &g12a_vpu_0_sel.hw,
+-		[CLKID_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
++		[CLKID_PRIV_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
+ 		[CLKID_VPU_0]			= &g12a_vpu_0.hw,
+ 		[CLKID_VPU_1_SEL]		= &g12a_vpu_1_sel.hw,
+-		[CLKID_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
++		[CLKID_PRIV_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
+ 		[CLKID_VPU_1]			= &g12a_vpu_1.hw,
+ 		[CLKID_VPU]			= &g12a_vpu.hw,
+ 		[CLKID_VAPB_0_SEL]		= &g12a_vapb_0_sel.hw,
+-		[CLKID_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
++		[CLKID_PRIV_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
+ 		[CLKID_VAPB_0]			= &g12a_vapb_0.hw,
+ 		[CLKID_VAPB_1_SEL]		= &g12a_vapb_1_sel.hw,
+-		[CLKID_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
++		[CLKID_PRIV_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
+ 		[CLKID_VAPB_1]			= &g12a_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]		= &g12a_vapb_sel.hw,
+ 		[CLKID_VAPB]			= &g12a_vapb.hw,
+-		[CLKID_HDMI_PLL_DCO]		= &g12a_hdmi_pll_dco.hw,
+-		[CLKID_HDMI_PLL_OD]		= &g12a_hdmi_pll_od.hw,
+-		[CLKID_HDMI_PLL_OD2]		= &g12a_hdmi_pll_od2.hw,
++		[CLKID_PRIV_HDMI_PLL_DCO]	= &g12a_hdmi_pll_dco.hw,
++		[CLKID_PRIV_HDMI_PLL_OD]	= &g12a_hdmi_pll_od.hw,
++		[CLKID_PRIV_HDMI_PLL_OD2]	= &g12a_hdmi_pll_od2.hw,
+ 		[CLKID_HDMI_PLL]		= &g12a_hdmi_pll.hw,
+ 		[CLKID_VID_PLL]			= &g12a_vid_pll_div.hw,
+-		[CLKID_VID_PLL_SEL]		= &g12a_vid_pll_sel.hw,
+-		[CLKID_VID_PLL_DIV]		= &g12a_vid_pll.hw,
+-		[CLKID_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+-		[CLKID_VCLK_INPUT]		= &g12a_vclk_input.hw,
+-		[CLKID_VCLK2_INPUT]		= &g12a_vclk2_input.hw,
+-		[CLKID_VCLK_DIV]		= &g12a_vclk_div.hw,
+-		[CLKID_VCLK2_DIV]		= &g12a_vclk2_div.hw,
++		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
++		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
++		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
++		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
++		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
++		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
++		[CLKID_PRIV_VCLK2_DIV]		= &g12a_vclk2_div.hw,
+ 		[CLKID_VCLK]			= &g12a_vclk.hw,
+ 		[CLKID_VCLK2]			= &g12a_vclk2.hw,
+ 		[CLKID_VCLK_DIV1]		= &g12a_vclk_div1.hw,
+-		[CLKID_VCLK_DIV2_EN]		= &g12a_vclk_div2_en.hw,
+-		[CLKID_VCLK_DIV4_EN]		= &g12a_vclk_div4_en.hw,
+-		[CLKID_VCLK_DIV6_EN]		= &g12a_vclk_div6_en.hw,
+-		[CLKID_VCLK_DIV12_EN]		= &g12a_vclk_div12_en.hw,
++		[CLKID_PRIV_VCLK_DIV2_EN]	= &g12a_vclk_div2_en.hw,
++		[CLKID_PRIV_VCLK_DIV4_EN]	= &g12a_vclk_div4_en.hw,
++		[CLKID_PRIV_VCLK_DIV6_EN]	= &g12a_vclk_div6_en.hw,
++		[CLKID_PRIV_VCLK_DIV12_EN]	= &g12a_vclk_div12_en.hw,
+ 		[CLKID_VCLK2_DIV1]		= &g12a_vclk2_div1.hw,
+-		[CLKID_VCLK2_DIV2_EN]		= &g12a_vclk2_div2_en.hw,
+-		[CLKID_VCLK2_DIV4_EN]		= &g12a_vclk2_div4_en.hw,
+-		[CLKID_VCLK2_DIV6_EN]		= &g12a_vclk2_div6_en.hw,
+-		[CLKID_VCLK2_DIV12_EN]		= &g12a_vclk2_div12_en.hw,
++		[CLKID_PRIV_VCLK2_DIV2_EN]	= &g12a_vclk2_div2_en.hw,
++		[CLKID_PRIV_VCLK2_DIV4_EN]	= &g12a_vclk2_div4_en.hw,
++		[CLKID_PRIV_VCLK2_DIV6_EN]	= &g12a_vclk2_div6_en.hw,
++		[CLKID_PRIV_VCLK2_DIV12_EN]	= &g12a_vclk2_div12_en.hw,
+ 		[CLKID_VCLK_DIV2]		= &g12a_vclk_div2.hw,
+ 		[CLKID_VCLK_DIV4]		= &g12a_vclk_div4.hw,
+ 		[CLKID_VCLK_DIV6]		= &g12a_vclk_div6.hw,
+@@ -4633,104 +4633,104 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV4]		= &g12a_vclk2_div4.hw,
+ 		[CLKID_VCLK2_DIV6]		= &g12a_vclk2_div6.hw,
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+-		[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
+-		[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
+-		[CLKID_CTS_VDAC_SEL]		= &g12a_cts_vdac_sel.hw,
+-		[CLKID_HDMI_TX_SEL]		= &g12a_hdmi_tx_sel.hw,
++		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
++		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
++		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+-		[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+-		[CLKID_HDMI_DIV]		= &g12a_hdmi_div.hw,
++		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
++		[CLKID_PRIV_HDMI_DIV]		= &g12a_hdmi_div.hw,
+ 		[CLKID_HDMI]			= &g12a_hdmi.hw,
+ 		[CLKID_MALI_0_SEL]		= &g12a_mali_0_sel.hw,
+-		[CLKID_MALI_0_DIV]		= &g12a_mali_0_div.hw,
++		[CLKID_PRIV_MALI_0_DIV]		= &g12a_mali_0_div.hw,
+ 		[CLKID_MALI_0]			= &g12a_mali_0.hw,
+ 		[CLKID_MALI_1_SEL]		= &g12a_mali_1_sel.hw,
+-		[CLKID_MALI_1_DIV]		= &g12a_mali_1_div.hw,
++		[CLKID_PRIV_MALI_1_DIV]		= &g12a_mali_1_div.hw,
+ 		[CLKID_MALI_1]			= &g12a_mali_1.hw,
+ 		[CLKID_MALI]			= &g12a_mali.hw,
+-		[CLKID_MPLL_50M_DIV]		= &g12a_mpll_50m_div.hw,
++		[CLKID_PRIV_MPLL_50M_DIV]	= &g12a_mpll_50m_div.hw,
+ 		[CLKID_MPLL_50M]		= &g12a_mpll_50m.hw,
+-		[CLKID_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
+-		[CLKID_SYS_PLL_DIV16]		= &g12a_sys_pll_div16.hw,
+-		[CLKID_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
+-		[CLKID_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
+-		[CLKID_CPU_CLK_DYN0]		= &g12a_cpu_clk_postmux0.hw,
+-		[CLKID_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
+-		[CLKID_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
+-		[CLKID_CPU_CLK_DYN1]		= &g12a_cpu_clk_postmux1.hw,
+-		[CLKID_CPU_CLK_DYN]		= &g12a_cpu_clk_dyn.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16]	= &g12a_sys_pll_div16.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0]	= &g12a_cpu_clk_postmux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1]	= &g12a_cpu_clk_postmux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN]	= &g12a_cpu_clk_dyn.hw,
+ 		[CLKID_CPU_CLK]			= &g12b_cpu_clk.hw,
+-		[CLKID_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
+-		[CLKID_CPU_CLK_DIV16]		= &g12a_cpu_clk_div16.hw,
+-		[CLKID_CPU_CLK_APB_DIV]		= &g12a_cpu_clk_apb_div.hw,
+-		[CLKID_CPU_CLK_APB]		= &g12a_cpu_clk_apb.hw,
+-		[CLKID_CPU_CLK_ATB_DIV]		= &g12a_cpu_clk_atb_div.hw,
+-		[CLKID_CPU_CLK_ATB]		= &g12a_cpu_clk_atb.hw,
+-		[CLKID_CPU_CLK_AXI_DIV]		= &g12a_cpu_clk_axi_div.hw,
+-		[CLKID_CPU_CLK_AXI]		= &g12a_cpu_clk_axi.hw,
+-		[CLKID_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
+-		[CLKID_CPU_CLK_TRACE]		= &g12a_cpu_clk_trace.hw,
+-		[CLKID_PCIE_PLL_DCO]		= &g12a_pcie_pll_dco.hw,
+-		[CLKID_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
+-		[CLKID_PCIE_PLL_OD]		= &g12a_pcie_pll_od.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16]	= &g12a_cpu_clk_div16.hw,
++		[CLKID_PRIV_CPU_CLK_APB_DIV]	= &g12a_cpu_clk_apb_div.hw,
++		[CLKID_PRIV_CPU_CLK_APB]	= &g12a_cpu_clk_apb.hw,
++		[CLKID_PRIV_CPU_CLK_ATB_DIV]	= &g12a_cpu_clk_atb_div.hw,
++		[CLKID_PRIV_CPU_CLK_ATB]	= &g12a_cpu_clk_atb.hw,
++		[CLKID_PRIV_CPU_CLK_AXI_DIV]	= &g12a_cpu_clk_axi_div.hw,
++		[CLKID_PRIV_CPU_CLK_AXI]	= &g12a_cpu_clk_axi.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE]	= &g12a_cpu_clk_trace.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO]	= &g12a_pcie_pll_dco.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
++		[CLKID_PRIV_PCIE_PLL_OD]	= &g12a_pcie_pll_od.hw,
+ 		[CLKID_PCIE_PLL]		= &g12a_pcie_pll.hw,
+-		[CLKID_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
+-		[CLKID_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
++		[CLKID_PRIV_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
++		[CLKID_PRIV_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
+ 		[CLKID_VDEC_1]			= &g12a_vdec_1.hw,
+-		[CLKID_VDEC_HEVC_SEL]		= &g12a_vdec_hevc_sel.hw,
+-		[CLKID_VDEC_HEVC_DIV]		= &g12a_vdec_hevc_div.hw,
++		[CLKID_PRIV_VDEC_HEVC_SEL]	= &g12a_vdec_hevc_sel.hw,
++		[CLKID_PRIV_VDEC_HEVC_DIV]	= &g12a_vdec_hevc_div.hw,
+ 		[CLKID_VDEC_HEVC]		= &g12a_vdec_hevc.hw,
+-		[CLKID_VDEC_HEVCF_SEL]		= &g12a_vdec_hevcf_sel.hw,
+-		[CLKID_VDEC_HEVCF_DIV]		= &g12a_vdec_hevcf_div.hw,
++		[CLKID_PRIV_VDEC_HEVCF_SEL]	= &g12a_vdec_hevcf_sel.hw,
++		[CLKID_PRIV_VDEC_HEVCF_DIV]	= &g12a_vdec_hevcf_div.hw,
+ 		[CLKID_VDEC_HEVCF]		= &g12a_vdec_hevcf.hw,
+-		[CLKID_TS_DIV]			= &g12a_ts_div.hw,
++		[CLKID_PRIV_TS_DIV]		= &g12a_ts_div.hw,
+ 		[CLKID_TS]			= &g12a_ts.hw,
+-		[CLKID_SYS1_PLL_DCO]		= &g12b_sys1_pll_dco.hw,
+-		[CLKID_SYS1_PLL]		= &g12b_sys1_pll.hw,
+-		[CLKID_SYS1_PLL_DIV16_EN]	= &g12b_sys1_pll_div16_en.hw,
+-		[CLKID_SYS1_PLL_DIV16]		= &g12b_sys1_pll_div16.hw,
+-		[CLKID_CPUB_CLK_DYN0_SEL]	= &g12b_cpub_clk_premux0.hw,
+-		[CLKID_CPUB_CLK_DYN0_DIV]	= &g12b_cpub_clk_mux0_div.hw,
+-		[CLKID_CPUB_CLK_DYN0]		= &g12b_cpub_clk_postmux0.hw,
+-		[CLKID_CPUB_CLK_DYN1_SEL]	= &g12b_cpub_clk_premux1.hw,
+-		[CLKID_CPUB_CLK_DYN1_DIV]	= &g12b_cpub_clk_mux1_div.hw,
+-		[CLKID_CPUB_CLK_DYN1]		= &g12b_cpub_clk_postmux1.hw,
+-		[CLKID_CPUB_CLK_DYN]		= &g12b_cpub_clk_dyn.hw,
++		[CLKID_PRIV_SYS1_PLL_DCO]	= &g12b_sys1_pll_dco.hw,
++		[CLKID_PRIV_SYS1_PLL]		= &g12b_sys1_pll.hw,
++		[CLKID_PRIV_SYS1_PLL_DIV16_EN]	= &g12b_sys1_pll_div16_en.hw,
++		[CLKID_PRIV_SYS1_PLL_DIV16]	= &g12b_sys1_pll_div16.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN0_SEL]	= &g12b_cpub_clk_premux0.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN0_DIV]	= &g12b_cpub_clk_mux0_div.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN0]	= &g12b_cpub_clk_postmux0.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN1_SEL]	= &g12b_cpub_clk_premux1.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN1_DIV]	= &g12b_cpub_clk_mux1_div.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN1]	= &g12b_cpub_clk_postmux1.hw,
++		[CLKID_PRIV_CPUB_CLK_DYN]	= &g12b_cpub_clk_dyn.hw,
+ 		[CLKID_CPUB_CLK]		= &g12b_cpub_clk.hw,
+-		[CLKID_CPUB_CLK_DIV16_EN]	= &g12b_cpub_clk_div16_en.hw,
+-		[CLKID_CPUB_CLK_DIV16]		= &g12b_cpub_clk_div16.hw,
+-		[CLKID_CPUB_CLK_DIV2]		= &g12b_cpub_clk_div2.hw,
+-		[CLKID_CPUB_CLK_DIV3]		= &g12b_cpub_clk_div3.hw,
+-		[CLKID_CPUB_CLK_DIV4]		= &g12b_cpub_clk_div4.hw,
+-		[CLKID_CPUB_CLK_DIV5]		= &g12b_cpub_clk_div5.hw,
+-		[CLKID_CPUB_CLK_DIV6]		= &g12b_cpub_clk_div6.hw,
+-		[CLKID_CPUB_CLK_DIV7]		= &g12b_cpub_clk_div7.hw,
+-		[CLKID_CPUB_CLK_DIV8]		= &g12b_cpub_clk_div8.hw,
+-		[CLKID_CPUB_CLK_APB_SEL]	= &g12b_cpub_clk_apb_sel.hw,
+-		[CLKID_CPUB_CLK_APB]		= &g12b_cpub_clk_apb.hw,
+-		[CLKID_CPUB_CLK_ATB_SEL]	= &g12b_cpub_clk_atb_sel.hw,
+-		[CLKID_CPUB_CLK_ATB]		= &g12b_cpub_clk_atb.hw,
+-		[CLKID_CPUB_CLK_AXI_SEL]	= &g12b_cpub_clk_axi_sel.hw,
+-		[CLKID_CPUB_CLK_AXI]		= &g12b_cpub_clk_axi.hw,
+-		[CLKID_CPUB_CLK_TRACE_SEL]	= &g12b_cpub_clk_trace_sel.hw,
+-		[CLKID_CPUB_CLK_TRACE]		= &g12b_cpub_clk_trace.hw,
+-		[CLKID_SPICC0_SCLK_SEL]		= &g12a_spicc0_sclk_sel.hw,
+-		[CLKID_SPICC0_SCLK_DIV]		= &g12a_spicc0_sclk_div.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV16_EN]	= &g12b_cpub_clk_div16_en.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV16]	= &g12b_cpub_clk_div16.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV2]	= &g12b_cpub_clk_div2.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV3]	= &g12b_cpub_clk_div3.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV4]	= &g12b_cpub_clk_div4.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV5]	= &g12b_cpub_clk_div5.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV6]	= &g12b_cpub_clk_div6.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV7]	= &g12b_cpub_clk_div7.hw,
++		[CLKID_PRIV_CPUB_CLK_DIV8]	= &g12b_cpub_clk_div8.hw,
++		[CLKID_PRIV_CPUB_CLK_APB_SEL]	= &g12b_cpub_clk_apb_sel.hw,
++		[CLKID_PRIV_CPUB_CLK_APB]	= &g12b_cpub_clk_apb.hw,
++		[CLKID_PRIV_CPUB_CLK_ATB_SEL]	= &g12b_cpub_clk_atb_sel.hw,
++		[CLKID_PRIV_CPUB_CLK_ATB]	= &g12b_cpub_clk_atb.hw,
++		[CLKID_PRIV_CPUB_CLK_AXI_SEL]	= &g12b_cpub_clk_axi_sel.hw,
++		[CLKID_PRIV_CPUB_CLK_AXI]	= &g12b_cpub_clk_axi.hw,
++		[CLKID_PRIV_CPUB_CLK_TRACE_SEL]	= &g12b_cpub_clk_trace_sel.hw,
++		[CLKID_PRIV_CPUB_CLK_TRACE]	= &g12b_cpub_clk_trace.hw,
++		[CLKID_PRIV_SPICC0_SCLK_SEL]	= &g12a_spicc0_sclk_sel.hw,
++		[CLKID_PRIV_SPICC0_SCLK_DIV]	= &g12a_spicc0_sclk_div.hw,
+ 		[CLKID_SPICC0_SCLK]		= &g12a_spicc0_sclk.hw,
+-		[CLKID_SPICC1_SCLK_SEL]		= &g12a_spicc1_sclk_sel.hw,
+-		[CLKID_SPICC1_SCLK_DIV]		= &g12a_spicc1_sclk_div.hw,
++		[CLKID_PRIV_SPICC1_SCLK_SEL]	= &g12a_spicc1_sclk_sel.hw,
++		[CLKID_PRIV_SPICC1_SCLK_DIV]	= &g12a_spicc1_sclk_div.hw,
+ 		[CLKID_SPICC1_SCLK]		= &g12a_spicc1_sclk.hw,
+-		[CLKID_NNA_AXI_CLK_SEL]		= &sm1_nna_axi_clk_sel.hw,
+-		[CLKID_NNA_AXI_CLK_DIV]		= &sm1_nna_axi_clk_div.hw,
++		[CLKID_PRIV_NNA_AXI_CLK_SEL]	= &sm1_nna_axi_clk_sel.hw,
++		[CLKID_PRIV_NNA_AXI_CLK_DIV]	= &sm1_nna_axi_clk_div.hw,
+ 		[CLKID_NNA_AXI_CLK]		= &sm1_nna_axi_clk.hw,
+-		[CLKID_NNA_CORE_CLK_SEL]	= &sm1_nna_core_clk_sel.hw,
+-		[CLKID_NNA_CORE_CLK_DIV]	= &sm1_nna_core_clk_div.hw,
++		[CLKID_PRIV_NNA_CORE_CLK_SEL]	= &sm1_nna_core_clk_sel.hw,
++		[CLKID_PRIV_NNA_CORE_CLK_DIV]	= &sm1_nna_core_clk_div.hw,
+ 		[CLKID_NNA_CORE_CLK]		= &sm1_nna_core_clk.hw,
+ 		[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+-		[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
++		[CLKID_PRIV_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 		[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
+ 		[NR_CLKS]			= NULL,
+ 	},
+@@ -4748,8 +4748,8 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_FCLK_DIV7]		= &g12a_fclk_div7.hw,
+ 		[CLKID_FCLK_DIV2P5]		= &g12a_fclk_div2p5.hw,
+ 		[CLKID_GP0_PLL]			= &g12a_gp0_pll.hw,
+-		[CLKID_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
+-		[CLKID_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
++		[CLKID_PRIV_MPEG_SEL]		= &g12a_mpeg_clk_sel.hw,
++		[CLKID_PRIV_MPEG_DIV]		= &g12a_mpeg_clk_div.hw,
+ 		[CLKID_CLK81]			= &g12a_clk81.hw,
+ 		[CLKID_MPLL0]			= &g12a_mpll0.hw,
+ 		[CLKID_MPLL1]			= &g12a_mpll1.hw,
+@@ -4800,25 +4800,25 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_UART2]			= &g12a_uart2.hw,
+ 		[CLKID_VPU_INTR]		= &g12a_vpu_intr.hw,
+ 		[CLKID_GIC]			= &g12a_gic.hw,
+-		[CLKID_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
+-		[CLKID_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_SEL]	= &g12a_sd_emmc_a_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_A_CLK0_DIV]	= &g12a_sd_emmc_a_clk0_div.hw,
+ 		[CLKID_SD_EMMC_A_CLK0]		= &g12a_sd_emmc_a_clk0.hw,
+-		[CLKID_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
+-		[CLKID_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_SEL]	= &g12a_sd_emmc_b_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_B_CLK0_DIV]	= &g12a_sd_emmc_b_clk0_div.hw,
+ 		[CLKID_SD_EMMC_B_CLK0]		= &g12a_sd_emmc_b_clk0.hw,
+-		[CLKID_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
+-		[CLKID_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_SEL]	= &g12a_sd_emmc_c_clk0_sel.hw,
++		[CLKID_PRIV_SD_EMMC_C_CLK0_DIV]	= &g12a_sd_emmc_c_clk0_div.hw,
+ 		[CLKID_SD_EMMC_C_CLK0]		= &g12a_sd_emmc_c_clk0.hw,
+-		[CLKID_MPLL0_DIV]		= &g12a_mpll0_div.hw,
+-		[CLKID_MPLL1_DIV]		= &g12a_mpll1_div.hw,
+-		[CLKID_MPLL2_DIV]		= &g12a_mpll2_div.hw,
+-		[CLKID_MPLL3_DIV]		= &g12a_mpll3_div.hw,
+-		[CLKID_FCLK_DIV2_DIV]		= &g12a_fclk_div2_div.hw,
+-		[CLKID_FCLK_DIV3_DIV]		= &g12a_fclk_div3_div.hw,
+-		[CLKID_FCLK_DIV4_DIV]		= &g12a_fclk_div4_div.hw,
+-		[CLKID_FCLK_DIV5_DIV]		= &g12a_fclk_div5_div.hw,
+-		[CLKID_FCLK_DIV7_DIV]		= &g12a_fclk_div7_div.hw,
+-		[CLKID_FCLK_DIV2P5_DIV]		= &g12a_fclk_div2p5_div.hw,
++		[CLKID_PRIV_MPLL0_DIV]		= &g12a_mpll0_div.hw,
++		[CLKID_PRIV_MPLL1_DIV]		= &g12a_mpll1_div.hw,
++		[CLKID_PRIV_MPLL2_DIV]		= &g12a_mpll2_div.hw,
++		[CLKID_PRIV_MPLL3_DIV]		= &g12a_mpll3_div.hw,
++		[CLKID_PRIV_FCLK_DIV2_DIV]	= &g12a_fclk_div2_div.hw,
++		[CLKID_PRIV_FCLK_DIV3_DIV]	= &g12a_fclk_div3_div.hw,
++		[CLKID_PRIV_FCLK_DIV4_DIV]	= &g12a_fclk_div4_div.hw,
++		[CLKID_PRIV_FCLK_DIV5_DIV]	= &g12a_fclk_div5_div.hw,
++		[CLKID_PRIV_FCLK_DIV7_DIV]	= &g12a_fclk_div7_div.hw,
++		[CLKID_PRIV_FCLK_DIV2P5_DIV]	= &g12a_fclk_div2p5_div.hw,
+ 		[CLKID_HIFI_PLL]		= &g12a_hifi_pll.hw,
+ 		[CLKID_VCLK2_VENCI0]		= &g12a_vclk2_venci0.hw,
+ 		[CLKID_VCLK2_VENCI1]		= &g12a_vclk2_venci1.hw,
+@@ -4839,56 +4839,56 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_VCLK2_VENCLMMC]		= &g12a_vclk2_venclmmc.hw,
+ 		[CLKID_VCLK2_VENCL]		= &g12a_vclk2_vencl.hw,
+ 		[CLKID_VCLK2_OTHER1]		= &g12a_vclk2_other1.hw,
+-		[CLKID_FIXED_PLL_DCO]		= &g12a_fixed_pll_dco.hw,
+-		[CLKID_SYS_PLL_DCO]		= &g12a_sys_pll_dco.hw,
+-		[CLKID_GP0_PLL_DCO]		= &g12a_gp0_pll_dco.hw,
+-		[CLKID_HIFI_PLL_DCO]		= &g12a_hifi_pll_dco.hw,
++		[CLKID_PRIV_FIXED_PLL_DCO]	= &g12a_fixed_pll_dco.hw,
++		[CLKID_PRIV_SYS_PLL_DCO]	= &g12a_sys_pll_dco.hw,
++		[CLKID_PRIV_GP0_PLL_DCO]	= &g12a_gp0_pll_dco.hw,
++		[CLKID_PRIV_HIFI_PLL_DCO]	= &g12a_hifi_pll_dco.hw,
+ 		[CLKID_DMA]			= &g12a_dma.hw,
+ 		[CLKID_EFUSE]			= &g12a_efuse.hw,
+ 		[CLKID_ROM_BOOT]		= &g12a_rom_boot.hw,
+ 		[CLKID_RESET_SEC]		= &g12a_reset_sec.hw,
+ 		[CLKID_SEC_AHB_APB3]		= &g12a_sec_ahb_apb3.hw,
+-		[CLKID_MPLL_PREDIV]		= &g12a_mpll_prediv.hw,
++		[CLKID_PRIV_MPLL_PREDIV]	= &g12a_mpll_prediv.hw,
+ 		[CLKID_VPU_0_SEL]		= &g12a_vpu_0_sel.hw,
+-		[CLKID_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
++		[CLKID_PRIV_VPU_0_DIV]		= &g12a_vpu_0_div.hw,
+ 		[CLKID_VPU_0]			= &g12a_vpu_0.hw,
+ 		[CLKID_VPU_1_SEL]		= &g12a_vpu_1_sel.hw,
+-		[CLKID_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
++		[CLKID_PRIV_VPU_1_DIV]		= &g12a_vpu_1_div.hw,
+ 		[CLKID_VPU_1]			= &g12a_vpu_1.hw,
+ 		[CLKID_VPU]			= &g12a_vpu.hw,
+ 		[CLKID_VAPB_0_SEL]		= &g12a_vapb_0_sel.hw,
+-		[CLKID_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
++		[CLKID_PRIV_VAPB_0_DIV]		= &g12a_vapb_0_div.hw,
+ 		[CLKID_VAPB_0]			= &g12a_vapb_0.hw,
+ 		[CLKID_VAPB_1_SEL]		= &g12a_vapb_1_sel.hw,
+-		[CLKID_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
++		[CLKID_PRIV_VAPB_1_DIV]		= &g12a_vapb_1_div.hw,
+ 		[CLKID_VAPB_1]			= &g12a_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]		= &g12a_vapb_sel.hw,
+ 		[CLKID_VAPB]			= &g12a_vapb.hw,
+-		[CLKID_HDMI_PLL_DCO]		= &g12a_hdmi_pll_dco.hw,
+-		[CLKID_HDMI_PLL_OD]		= &g12a_hdmi_pll_od.hw,
+-		[CLKID_HDMI_PLL_OD2]		= &g12a_hdmi_pll_od2.hw,
++		[CLKID_PRIV_HDMI_PLL_DCO]	= &g12a_hdmi_pll_dco.hw,
++		[CLKID_PRIV_HDMI_PLL_OD]	= &g12a_hdmi_pll_od.hw,
++		[CLKID_PRIV_HDMI_PLL_OD2]	= &g12a_hdmi_pll_od2.hw,
+ 		[CLKID_HDMI_PLL]		= &g12a_hdmi_pll.hw,
+ 		[CLKID_VID_PLL]			= &g12a_vid_pll_div.hw,
+-		[CLKID_VID_PLL_SEL]		= &g12a_vid_pll_sel.hw,
+-		[CLKID_VID_PLL_DIV]		= &g12a_vid_pll.hw,
+-		[CLKID_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+-		[CLKID_VCLK_INPUT]		= &g12a_vclk_input.hw,
+-		[CLKID_VCLK2_INPUT]		= &g12a_vclk2_input.hw,
+-		[CLKID_VCLK_DIV]		= &g12a_vclk_div.hw,
+-		[CLKID_VCLK2_DIV]		= &g12a_vclk2_div.hw,
++		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
++		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
++		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
++		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
++		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
++		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
++		[CLKID_PRIV_VCLK2_DIV]		= &g12a_vclk2_div.hw,
+ 		[CLKID_VCLK]			= &g12a_vclk.hw,
+ 		[CLKID_VCLK2]			= &g12a_vclk2.hw,
+ 		[CLKID_VCLK_DIV1]		= &g12a_vclk_div1.hw,
+-		[CLKID_VCLK_DIV2_EN]		= &g12a_vclk_div2_en.hw,
+-		[CLKID_VCLK_DIV4_EN]		= &g12a_vclk_div4_en.hw,
+-		[CLKID_VCLK_DIV6_EN]		= &g12a_vclk_div6_en.hw,
+-		[CLKID_VCLK_DIV12_EN]		= &g12a_vclk_div12_en.hw,
++		[CLKID_PRIV_VCLK_DIV2_EN]	= &g12a_vclk_div2_en.hw,
++		[CLKID_PRIV_VCLK_DIV4_EN]	= &g12a_vclk_div4_en.hw,
++		[CLKID_PRIV_VCLK_DIV6_EN]	= &g12a_vclk_div6_en.hw,
++		[CLKID_PRIV_VCLK_DIV12_EN]	= &g12a_vclk_div12_en.hw,
+ 		[CLKID_VCLK2_DIV1]		= &g12a_vclk2_div1.hw,
+-		[CLKID_VCLK2_DIV2_EN]		= &g12a_vclk2_div2_en.hw,
+-		[CLKID_VCLK2_DIV4_EN]		= &g12a_vclk2_div4_en.hw,
+-		[CLKID_VCLK2_DIV6_EN]		= &g12a_vclk2_div6_en.hw,
+-		[CLKID_VCLK2_DIV12_EN]		= &g12a_vclk2_div12_en.hw,
++		[CLKID_PRIV_VCLK2_DIV2_EN]	= &g12a_vclk2_div2_en.hw,
++		[CLKID_PRIV_VCLK2_DIV4_EN]	= &g12a_vclk2_div4_en.hw,
++		[CLKID_PRIV_VCLK2_DIV6_EN]	= &g12a_vclk2_div6_en.hw,
++		[CLKID_PRIV_VCLK2_DIV12_EN]	= &g12a_vclk2_div12_en.hw,
+ 		[CLKID_VCLK_DIV2]		= &g12a_vclk_div2.hw,
+ 		[CLKID_VCLK_DIV4]		= &g12a_vclk_div4.hw,
+ 		[CLKID_VCLK_DIV6]		= &g12a_vclk_div6.hw,
+@@ -4897,89 +4897,89 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV4]		= &g12a_vclk2_div4.hw,
+ 		[CLKID_VCLK2_DIV6]		= &g12a_vclk2_div6.hw,
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+-		[CLKID_CTS_ENCI_SEL]		= &g12a_cts_enci_sel.hw,
+-		[CLKID_CTS_ENCP_SEL]		= &g12a_cts_encp_sel.hw,
+-		[CLKID_CTS_VDAC_SEL]		= &g12a_cts_vdac_sel.hw,
+-		[CLKID_HDMI_TX_SEL]		= &g12a_hdmi_tx_sel.hw,
++		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
++		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
++		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+-		[CLKID_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+-		[CLKID_HDMI_DIV]		= &g12a_hdmi_div.hw,
++		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
++		[CLKID_PRIV_HDMI_DIV]		= &g12a_hdmi_div.hw,
+ 		[CLKID_HDMI]			= &g12a_hdmi.hw,
+ 		[CLKID_MALI_0_SEL]		= &g12a_mali_0_sel.hw,
+-		[CLKID_MALI_0_DIV]		= &g12a_mali_0_div.hw,
++		[CLKID_PRIV_MALI_0_DIV]		= &g12a_mali_0_div.hw,
+ 		[CLKID_MALI_0]			= &g12a_mali_0.hw,
+ 		[CLKID_MALI_1_SEL]		= &g12a_mali_1_sel.hw,
+-		[CLKID_MALI_1_DIV]		= &g12a_mali_1_div.hw,
++		[CLKID_PRIV_MALI_1_DIV]		= &g12a_mali_1_div.hw,
+ 		[CLKID_MALI_1]			= &g12a_mali_1.hw,
+ 		[CLKID_MALI]			= &g12a_mali.hw,
+-		[CLKID_MPLL_50M_DIV]		= &g12a_mpll_50m_div.hw,
++		[CLKID_PRIV_MPLL_50M_DIV]	= &g12a_mpll_50m_div.hw,
+ 		[CLKID_MPLL_50M]		= &g12a_mpll_50m.hw,
+-		[CLKID_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
+-		[CLKID_SYS_PLL_DIV16]		= &g12a_sys_pll_div16.hw,
+-		[CLKID_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
+-		[CLKID_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
+-		[CLKID_CPU_CLK_DYN0]		= &g12a_cpu_clk_postmux0.hw,
+-		[CLKID_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
+-		[CLKID_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
+-		[CLKID_CPU_CLK_DYN1]		= &g12a_cpu_clk_postmux1.hw,
+-		[CLKID_CPU_CLK_DYN]		= &g12a_cpu_clk_dyn.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16_EN]	= &g12a_sys_pll_div16_en.hw,
++		[CLKID_PRIV_SYS_PLL_DIV16]	= &g12a_sys_pll_div16.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_SEL]	= &g12a_cpu_clk_premux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0_DIV]	= &g12a_cpu_clk_mux0_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN0]	= &g12a_cpu_clk_postmux0.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_SEL]	= &g12a_cpu_clk_premux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1_DIV]	= &g12a_cpu_clk_mux1_div.hw,
++		[CLKID_PRIV_CPU_CLK_DYN1]	= &g12a_cpu_clk_postmux1.hw,
++		[CLKID_PRIV_CPU_CLK_DYN]	= &g12a_cpu_clk_dyn.hw,
+ 		[CLKID_CPU_CLK]			= &g12a_cpu_clk.hw,
+-		[CLKID_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
+-		[CLKID_CPU_CLK_DIV16]		= &g12a_cpu_clk_div16.hw,
+-		[CLKID_CPU_CLK_APB_DIV]		= &g12a_cpu_clk_apb_div.hw,
+-		[CLKID_CPU_CLK_APB]		= &g12a_cpu_clk_apb.hw,
+-		[CLKID_CPU_CLK_ATB_DIV]		= &g12a_cpu_clk_atb_div.hw,
+-		[CLKID_CPU_CLK_ATB]		= &g12a_cpu_clk_atb.hw,
+-		[CLKID_CPU_CLK_AXI_DIV]		= &g12a_cpu_clk_axi_div.hw,
+-		[CLKID_CPU_CLK_AXI]		= &g12a_cpu_clk_axi.hw,
+-		[CLKID_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
+-		[CLKID_CPU_CLK_TRACE]		= &g12a_cpu_clk_trace.hw,
+-		[CLKID_PCIE_PLL_DCO]		= &g12a_pcie_pll_dco.hw,
+-		[CLKID_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
+-		[CLKID_PCIE_PLL_OD]		= &g12a_pcie_pll_od.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16_EN]	= &g12a_cpu_clk_div16_en.hw,
++		[CLKID_PRIV_CPU_CLK_DIV16]	= &g12a_cpu_clk_div16.hw,
++		[CLKID_PRIV_CPU_CLK_APB_DIV]	= &g12a_cpu_clk_apb_div.hw,
++		[CLKID_PRIV_CPU_CLK_APB]	= &g12a_cpu_clk_apb.hw,
++		[CLKID_PRIV_CPU_CLK_ATB_DIV]	= &g12a_cpu_clk_atb_div.hw,
++		[CLKID_PRIV_CPU_CLK_ATB]	= &g12a_cpu_clk_atb.hw,
++		[CLKID_PRIV_CPU_CLK_AXI_DIV]	= &g12a_cpu_clk_axi_div.hw,
++		[CLKID_PRIV_CPU_CLK_AXI]	= &g12a_cpu_clk_axi.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE_DIV]	= &g12a_cpu_clk_trace_div.hw,
++		[CLKID_PRIV_CPU_CLK_TRACE]	= &g12a_cpu_clk_trace.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO]	= &g12a_pcie_pll_dco.hw,
++		[CLKID_PRIV_PCIE_PLL_DCO_DIV2]	= &g12a_pcie_pll_dco_div2.hw,
++		[CLKID_PRIV_PCIE_PLL_OD]	= &g12a_pcie_pll_od.hw,
+ 		[CLKID_PCIE_PLL]		= &g12a_pcie_pll.hw,
+-		[CLKID_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
+-		[CLKID_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
++		[CLKID_PRIV_VDEC_1_SEL]		= &g12a_vdec_1_sel.hw,
++		[CLKID_PRIV_VDEC_1_DIV]		= &g12a_vdec_1_div.hw,
+ 		[CLKID_VDEC_1]			= &g12a_vdec_1.hw,
+-		[CLKID_VDEC_HEVC_SEL]		= &g12a_vdec_hevc_sel.hw,
+-		[CLKID_VDEC_HEVC_DIV]		= &g12a_vdec_hevc_div.hw,
++		[CLKID_PRIV_VDEC_HEVC_SEL]	= &g12a_vdec_hevc_sel.hw,
++		[CLKID_PRIV_VDEC_HEVC_DIV]	= &g12a_vdec_hevc_div.hw,
+ 		[CLKID_VDEC_HEVC]		= &g12a_vdec_hevc.hw,
+-		[CLKID_VDEC_HEVCF_SEL]		= &g12a_vdec_hevcf_sel.hw,
+-		[CLKID_VDEC_HEVCF_DIV]		= &g12a_vdec_hevcf_div.hw,
++		[CLKID_PRIV_VDEC_HEVCF_SEL]	= &g12a_vdec_hevcf_sel.hw,
++		[CLKID_PRIV_VDEC_HEVCF_DIV]	= &g12a_vdec_hevcf_div.hw,
+ 		[CLKID_VDEC_HEVCF]		= &g12a_vdec_hevcf.hw,
+-		[CLKID_TS_DIV]			= &g12a_ts_div.hw,
++		[CLKID_PRIV_TS_DIV]		= &g12a_ts_div.hw,
+ 		[CLKID_TS]			= &g12a_ts.hw,
+-		[CLKID_GP1_PLL_DCO]		= &sm1_gp1_pll_dco.hw,
++		[CLKID_PRIV_GP1_PLL_DCO]	= &sm1_gp1_pll_dco.hw,
+ 		[CLKID_GP1_PLL]			= &sm1_gp1_pll.hw,
+-		[CLKID_DSU_CLK_DYN0_SEL]	= &sm1_dsu_clk_premux0.hw,
+-		[CLKID_DSU_CLK_DYN0_DIV]	= &sm1_dsu_clk_premux1.hw,
+-		[CLKID_DSU_CLK_DYN0]		= &sm1_dsu_clk_mux0_div.hw,
+-		[CLKID_DSU_CLK_DYN1_SEL]	= &sm1_dsu_clk_postmux0.hw,
+-		[CLKID_DSU_CLK_DYN1_DIV]	= &sm1_dsu_clk_mux1_div.hw,
+-		[CLKID_DSU_CLK_DYN1]		= &sm1_dsu_clk_postmux1.hw,
+-		[CLKID_DSU_CLK_DYN]		= &sm1_dsu_clk_dyn.hw,
+-		[CLKID_DSU_CLK_FINAL]		= &sm1_dsu_final_clk.hw,
++		[CLKID_PRIV_DSU_CLK_DYN0_SEL]	= &sm1_dsu_clk_premux0.hw,
++		[CLKID_PRIV_DSU_CLK_DYN0_DIV]	= &sm1_dsu_clk_premux1.hw,
++		[CLKID_PRIV_DSU_CLK_DYN0]	= &sm1_dsu_clk_mux0_div.hw,
++		[CLKID_PRIV_DSU_CLK_DYN1_SEL]	= &sm1_dsu_clk_postmux0.hw,
++		[CLKID_PRIV_DSU_CLK_DYN1_DIV]	= &sm1_dsu_clk_mux1_div.hw,
++		[CLKID_PRIV_DSU_CLK_DYN1]	= &sm1_dsu_clk_postmux1.hw,
++		[CLKID_PRIV_DSU_CLK_DYN]	= &sm1_dsu_clk_dyn.hw,
++		[CLKID_PRIV_DSU_CLK_FINAL]	= &sm1_dsu_final_clk.hw,
+ 		[CLKID_DSU_CLK]			= &sm1_dsu_clk.hw,
+ 		[CLKID_CPU1_CLK]		= &sm1_cpu1_clk.hw,
+ 		[CLKID_CPU2_CLK]		= &sm1_cpu2_clk.hw,
+ 		[CLKID_CPU3_CLK]		= &sm1_cpu3_clk.hw,
+-		[CLKID_SPICC0_SCLK_SEL]		= &g12a_spicc0_sclk_sel.hw,
+-		[CLKID_SPICC0_SCLK_DIV]		= &g12a_spicc0_sclk_div.hw,
++		[CLKID_PRIV_SPICC0_SCLK_SEL]	= &g12a_spicc0_sclk_sel.hw,
++		[CLKID_PRIV_SPICC0_SCLK_DIV]	= &g12a_spicc0_sclk_div.hw,
+ 		[CLKID_SPICC0_SCLK]		= &g12a_spicc0_sclk.hw,
+-		[CLKID_SPICC1_SCLK_SEL]		= &g12a_spicc1_sclk_sel.hw,
+-		[CLKID_SPICC1_SCLK_DIV]		= &g12a_spicc1_sclk_div.hw,
++		[CLKID_PRIV_SPICC1_SCLK_SEL]	= &g12a_spicc1_sclk_sel.hw,
++		[CLKID_PRIV_SPICC1_SCLK_DIV]	= &g12a_spicc1_sclk_div.hw,
+ 		[CLKID_SPICC1_SCLK]		= &g12a_spicc1_sclk.hw,
+-		[CLKID_NNA_AXI_CLK_SEL]		= &sm1_nna_axi_clk_sel.hw,
+-		[CLKID_NNA_AXI_CLK_DIV]		= &sm1_nna_axi_clk_div.hw,
++		[CLKID_PRIV_NNA_AXI_CLK_SEL]	= &sm1_nna_axi_clk_sel.hw,
++		[CLKID_PRIV_NNA_AXI_CLK_DIV]	= &sm1_nna_axi_clk_div.hw,
+ 		[CLKID_NNA_AXI_CLK]		= &sm1_nna_axi_clk.hw,
+-		[CLKID_NNA_CORE_CLK_SEL]	= &sm1_nna_core_clk_sel.hw,
+-		[CLKID_NNA_CORE_CLK_DIV]	= &sm1_nna_core_clk_div.hw,
++		[CLKID_PRIV_NNA_CORE_CLK_SEL]	= &sm1_nna_core_clk_sel.hw,
++		[CLKID_PRIV_NNA_CORE_CLK_DIV]	= &sm1_nna_core_clk_div.hw,
+ 		[CLKID_NNA_CORE_CLK]		= &sm1_nna_core_clk.hw,
+ 		[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+-		[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
++		[CLKID_PRIV_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 		[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
+ 		[NR_CLKS]			= NULL,
+ 	},
+@@ -5246,7 +5246,7 @@ static int meson_g12a_dvfs_setup_common(struct device *dev,
+ 	struct clk_hw *xtal;
+ 	int ret;
+ 
+-	xtal = clk_hw_get_parent_by_index(hws[CLKID_CPU_CLK_DYN1_SEL], 0);
++	xtal = clk_hw_get_parent_by_index(hws[CLKID_PRIV_CPU_CLK_DYN1_SEL], 0);
+ 
+ 	/* Setup clock notifier for cpu_clk_postmux0 */
+ 	g12a_cpu_clk_postmux0_nb_data.xtal = xtal;
+@@ -5284,7 +5284,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	xtal = clk_hw_get_parent_by_index(hws[CLKID_CPU_CLK_DYN1_SEL], 0);
++	xtal = clk_hw_get_parent_by_index(hws[CLKID_PRIV_CPU_CLK_DYN1_SEL], 0);
+ 
+ 	/* Setup clock notifier for cpu_clk mux */
+ 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_cpu_clk.hw,
+diff --git a/drivers/clk/meson/g12a.h b/drivers/clk/meson/g12a.h
+index a97613df38b3..a57f4a9717db 100644
+--- a/drivers/clk/meson/g12a.h
++++ b/drivers/clk/meson/g12a.h
+@@ -135,136 +135,136 @@
+  * to expose, such as the internal muxes and dividers of composite clocks,
+  * will remain defined here.
+  */
+-#define CLKID_MPEG_SEL				8
+-#define CLKID_MPEG_DIV				9
+-#define CLKID_SD_EMMC_A_CLK0_SEL		63
+-#define CLKID_SD_EMMC_A_CLK0_DIV		64
+-#define CLKID_SD_EMMC_B_CLK0_SEL		65
+-#define CLKID_SD_EMMC_B_CLK0_DIV		66
+-#define CLKID_SD_EMMC_C_CLK0_SEL		67
+-#define CLKID_SD_EMMC_C_CLK0_DIV		68
+-#define CLKID_MPLL0_DIV				69
+-#define CLKID_MPLL1_DIV				70
+-#define CLKID_MPLL2_DIV				71
+-#define CLKID_MPLL3_DIV				72
+-#define CLKID_MPLL_PREDIV			73
+-#define CLKID_FCLK_DIV2_DIV			75
+-#define CLKID_FCLK_DIV3_DIV			76
+-#define CLKID_FCLK_DIV4_DIV			77
+-#define CLKID_FCLK_DIV5_DIV			78
+-#define CLKID_FCLK_DIV7_DIV			79
+-#define CLKID_FCLK_DIV2P5_DIV			100
+-#define CLKID_FIXED_PLL_DCO			101
+-#define CLKID_SYS_PLL_DCO			102
+-#define CLKID_GP0_PLL_DCO			103
+-#define CLKID_HIFI_PLL_DCO			104
+-#define CLKID_VPU_0_DIV				111
+-#define CLKID_VPU_1_DIV				114
+-#define CLKID_VAPB_0_DIV			118
+-#define CLKID_VAPB_1_DIV			121
+-#define CLKID_HDMI_PLL_DCO			125
+-#define CLKID_HDMI_PLL_OD			126
+-#define CLKID_HDMI_PLL_OD2			127
+-#define CLKID_VID_PLL_SEL			130
+-#define CLKID_VID_PLL_DIV			131
+-#define CLKID_VCLK_SEL				132
+-#define CLKID_VCLK2_SEL				133
+-#define CLKID_VCLK_INPUT			134
+-#define CLKID_VCLK2_INPUT			135
+-#define CLKID_VCLK_DIV				136
+-#define CLKID_VCLK2_DIV				137
+-#define CLKID_VCLK_DIV2_EN			140
+-#define CLKID_VCLK_DIV4_EN			141
+-#define CLKID_VCLK_DIV6_EN			142
+-#define CLKID_VCLK_DIV12_EN			143
+-#define CLKID_VCLK2_DIV2_EN			144
+-#define CLKID_VCLK2_DIV4_EN			145
+-#define CLKID_VCLK2_DIV6_EN			146
+-#define CLKID_VCLK2_DIV12_EN			147
+-#define CLKID_CTS_ENCI_SEL			158
+-#define CLKID_CTS_ENCP_SEL			159
+-#define CLKID_CTS_VDAC_SEL			160
+-#define CLKID_HDMI_TX_SEL			161
+-#define CLKID_HDMI_SEL				166
+-#define CLKID_HDMI_DIV				167
+-#define CLKID_MALI_0_DIV			170
+-#define CLKID_MALI_1_DIV			173
+-#define CLKID_MPLL_50M_DIV			176
+-#define CLKID_SYS_PLL_DIV16_EN			178
+-#define CLKID_SYS_PLL_DIV16			179
+-#define CLKID_CPU_CLK_DYN0_SEL			180
+-#define CLKID_CPU_CLK_DYN0_DIV			181
+-#define CLKID_CPU_CLK_DYN0			182
+-#define CLKID_CPU_CLK_DYN1_SEL			183
+-#define CLKID_CPU_CLK_DYN1_DIV			184
+-#define CLKID_CPU_CLK_DYN1			185
+-#define CLKID_CPU_CLK_DYN			186
+-#define CLKID_CPU_CLK_DIV16_EN			188
+-#define CLKID_CPU_CLK_DIV16			189
+-#define CLKID_CPU_CLK_APB_DIV			190
+-#define CLKID_CPU_CLK_APB			191
+-#define CLKID_CPU_CLK_ATB_DIV			192
+-#define CLKID_CPU_CLK_ATB			193
+-#define CLKID_CPU_CLK_AXI_DIV			194
+-#define CLKID_CPU_CLK_AXI			195
+-#define CLKID_CPU_CLK_TRACE_DIV			196
+-#define CLKID_CPU_CLK_TRACE			197
+-#define CLKID_PCIE_PLL_DCO			198
+-#define CLKID_PCIE_PLL_DCO_DIV2			199
+-#define CLKID_PCIE_PLL_OD			200
+-#define CLKID_VDEC_1_SEL			202
+-#define CLKID_VDEC_1_DIV			203
+-#define CLKID_VDEC_HEVC_SEL			205
+-#define CLKID_VDEC_HEVC_DIV			206
+-#define CLKID_VDEC_HEVCF_SEL			208
+-#define CLKID_VDEC_HEVCF_DIV			209
+-#define CLKID_TS_DIV				211
+-#define CLKID_SYS1_PLL_DCO			213
+-#define CLKID_SYS1_PLL				214
+-#define CLKID_SYS1_PLL_DIV16_EN			215
+-#define CLKID_SYS1_PLL_DIV16			216
+-#define CLKID_CPUB_CLK_DYN0_SEL			217
+-#define CLKID_CPUB_CLK_DYN0_DIV			218
+-#define CLKID_CPUB_CLK_DYN0			219
+-#define CLKID_CPUB_CLK_DYN1_SEL			220
+-#define CLKID_CPUB_CLK_DYN1_DIV			221
+-#define CLKID_CPUB_CLK_DYN1			222
+-#define CLKID_CPUB_CLK_DYN			223
+-#define CLKID_CPUB_CLK_DIV16_EN			225
+-#define CLKID_CPUB_CLK_DIV16			226
+-#define CLKID_CPUB_CLK_DIV2			227
+-#define CLKID_CPUB_CLK_DIV3			228
+-#define CLKID_CPUB_CLK_DIV4			229
+-#define CLKID_CPUB_CLK_DIV5			230
+-#define CLKID_CPUB_CLK_DIV6			231
+-#define CLKID_CPUB_CLK_DIV7			232
+-#define CLKID_CPUB_CLK_DIV8			233
+-#define CLKID_CPUB_CLK_APB_SEL			234
+-#define CLKID_CPUB_CLK_APB			235
+-#define CLKID_CPUB_CLK_ATB_SEL			236
+-#define CLKID_CPUB_CLK_ATB			237
+-#define CLKID_CPUB_CLK_AXI_SEL			238
+-#define CLKID_CPUB_CLK_AXI			239
+-#define CLKID_CPUB_CLK_TRACE_SEL		240
+-#define CLKID_CPUB_CLK_TRACE			241
+-#define CLKID_GP1_PLL_DCO			242
+-#define CLKID_DSU_CLK_DYN0_SEL			244
+-#define CLKID_DSU_CLK_DYN0_DIV			245
+-#define CLKID_DSU_CLK_DYN0			246
+-#define CLKID_DSU_CLK_DYN1_SEL			247
+-#define CLKID_DSU_CLK_DYN1_DIV			248
+-#define CLKID_DSU_CLK_DYN1			249
+-#define CLKID_DSU_CLK_DYN			250
+-#define CLKID_DSU_CLK_FINAL			251
+-#define CLKID_SPICC0_SCLK_SEL			256
+-#define CLKID_SPICC0_SCLK_DIV			257
+-#define CLKID_SPICC1_SCLK_SEL			259
+-#define CLKID_SPICC1_SCLK_DIV			260
+-#define CLKID_NNA_AXI_CLK_SEL			262
+-#define CLKID_NNA_AXI_CLK_DIV			263
+-#define CLKID_NNA_CORE_CLK_SEL			265
+-#define CLKID_NNA_CORE_CLK_DIV			266
+-#define CLKID_MIPI_DSI_PXCLK_DIV		268
++#define CLKID_PRIV_MPEG_SEL			8
++#define CLKID_PRIV_MPEG_DIV			9
++#define CLKID_PRIV_SD_EMMC_A_CLK0_SEL		63
++#define CLKID_PRIV_SD_EMMC_A_CLK0_DIV		64
++#define CLKID_PRIV_SD_EMMC_B_CLK0_SEL		65
++#define CLKID_PRIV_SD_EMMC_B_CLK0_DIV		66
++#define CLKID_PRIV_SD_EMMC_C_CLK0_SEL		67
++#define CLKID_PRIV_SD_EMMC_C_CLK0_DIV		68
++#define CLKID_PRIV_MPLL0_DIV			69
++#define CLKID_PRIV_MPLL1_DIV			70
++#define CLKID_PRIV_MPLL2_DIV			71
++#define CLKID_PRIV_MPLL3_DIV			72
++#define CLKID_PRIV_MPLL_PREDIV			73
++#define CLKID_PRIV_FCLK_DIV2_DIV		75
++#define CLKID_PRIV_FCLK_DIV3_DIV		76
++#define CLKID_PRIV_FCLK_DIV4_DIV		77
++#define CLKID_PRIV_FCLK_DIV5_DIV		78
++#define CLKID_PRIV_FCLK_DIV7_DIV		79
++#define CLKID_PRIV_FCLK_DIV2P5_DIV		100
++#define CLKID_PRIV_FIXED_PLL_DCO		101
++#define CLKID_PRIV_SYS_PLL_DCO			102
++#define CLKID_PRIV_GP0_PLL_DCO			103
++#define CLKID_PRIV_HIFI_PLL_DCO			104
++#define CLKID_PRIV_VPU_0_DIV			111
++#define CLKID_PRIV_VPU_1_DIV			114
++#define CLKID_PRIV_VAPB_0_DIV			118
++#define CLKID_PRIV_VAPB_1_DIV			121
++#define CLKID_PRIV_HDMI_PLL_DCO			125
++#define CLKID_PRIV_HDMI_PLL_OD			126
++#define CLKID_PRIV_HDMI_PLL_OD2			127
++#define CLKID_PRIV_VID_PLL_SEL			130
++#define CLKID_PRIV_VID_PLL_DIV			131
++#define CLKID_PRIV_VCLK_SEL			132
++#define CLKID_PRIV_VCLK2_SEL			133
++#define CLKID_PRIV_VCLK_INPUT			134
++#define CLKID_PRIV_VCLK2_INPUT			135
++#define CLKID_PRIV_VCLK_DIV			136
++#define CLKID_PRIV_VCLK2_DIV			137
++#define CLKID_PRIV_VCLK_DIV2_EN			140
++#define CLKID_PRIV_VCLK_DIV4_EN			141
++#define CLKID_PRIV_VCLK_DIV6_EN			142
++#define CLKID_PRIV_VCLK_DIV12_EN		143
++#define CLKID_PRIV_VCLK2_DIV2_EN		144
++#define CLKID_PRIV_VCLK2_DIV4_EN		145
++#define CLKID_PRIV_VCLK2_DIV6_EN		146
++#define CLKID_PRIV_VCLK2_DIV12_EN		147
++#define CLKID_PRIV_CTS_ENCI_SEL			158
++#define CLKID_PRIV_CTS_ENCP_SEL			159
++#define CLKID_PRIV_CTS_VDAC_SEL			160
++#define CLKID_PRIV_HDMI_TX_SEL			161
++#define CLKID_PRIV_HDMI_SEL			166
++#define CLKID_PRIV_HDMI_DIV			167
++#define CLKID_PRIV_MALI_0_DIV			170
++#define CLKID_PRIV_MALI_1_DIV			173
++#define CLKID_PRIV_MPLL_50M_DIV			176
++#define CLKID_PRIV_SYS_PLL_DIV16_EN		178
++#define CLKID_PRIV_SYS_PLL_DIV16		179
++#define CLKID_PRIV_CPU_CLK_DYN0_SEL		180
++#define CLKID_PRIV_CPU_CLK_DYN0_DIV		181
++#define CLKID_PRIV_CPU_CLK_DYN0			182
++#define CLKID_PRIV_CPU_CLK_DYN1_SEL		183
++#define CLKID_PRIV_CPU_CLK_DYN1_DIV		184
++#define CLKID_PRIV_CPU_CLK_DYN1			185
++#define CLKID_PRIV_CPU_CLK_DYN			186
++#define CLKID_PRIV_CPU_CLK_DIV16_EN		188
++#define CLKID_PRIV_CPU_CLK_DIV16		189
++#define CLKID_PRIV_CPU_CLK_APB_DIV		190
++#define CLKID_PRIV_CPU_CLK_APB			191
++#define CLKID_PRIV_CPU_CLK_ATB_DIV		192
++#define CLKID_PRIV_CPU_CLK_ATB			193
++#define CLKID_PRIV_CPU_CLK_AXI_DIV		194
++#define CLKID_PRIV_CPU_CLK_AXI			195
++#define CLKID_PRIV_CPU_CLK_TRACE_DIV		196
++#define CLKID_PRIV_CPU_CLK_TRACE		197
++#define CLKID_PRIV_PCIE_PLL_DCO			198
++#define CLKID_PRIV_PCIE_PLL_DCO_DIV2		199
++#define CLKID_PRIV_PCIE_PLL_OD			200
++#define CLKID_PRIV_VDEC_1_SEL			202
++#define CLKID_PRIV_VDEC_1_DIV			203
++#define CLKID_PRIV_VDEC_HEVC_SEL		205
++#define CLKID_PRIV_VDEC_HEVC_DIV		206
++#define CLKID_PRIV_VDEC_HEVCF_SEL		208
++#define CLKID_PRIV_VDEC_HEVCF_DIV		209
++#define CLKID_PRIV_TS_DIV			211
++#define CLKID_PRIV_SYS1_PLL_DCO			213
++#define CLKID_PRIV_SYS1_PLL			214
++#define CLKID_PRIV_SYS1_PLL_DIV16_EN		215
++#define CLKID_PRIV_SYS1_PLL_DIV16		216
++#define CLKID_PRIV_CPUB_CLK_DYN0_SEL		217
++#define CLKID_PRIV_CPUB_CLK_DYN0_DIV		218
++#define CLKID_PRIV_CPUB_CLK_DYN0		219
++#define CLKID_PRIV_CPUB_CLK_DYN1_SEL		220
++#define CLKID_PRIV_CPUB_CLK_DYN1_DIV		221
++#define CLKID_PRIV_CPUB_CLK_DYN1		222
++#define CLKID_PRIV_CPUB_CLK_DYN			223
++#define CLKID_PRIV_CPUB_CLK_DIV16_EN		225
++#define CLKID_PRIV_CPUB_CLK_DIV16		226
++#define CLKID_PRIV_CPUB_CLK_DIV2		227
++#define CLKID_PRIV_CPUB_CLK_DIV3		228
++#define CLKID_PRIV_CPUB_CLK_DIV4		229
++#define CLKID_PRIV_CPUB_CLK_DIV5		230
++#define CLKID_PRIV_CPUB_CLK_DIV6		231
++#define CLKID_PRIV_CPUB_CLK_DIV7		232
++#define CLKID_PRIV_CPUB_CLK_DIV8		233
++#define CLKID_PRIV_CPUB_CLK_APB_SEL		234
++#define CLKID_PRIV_CPUB_CLK_APB			235
++#define CLKID_PRIV_CPUB_CLK_ATB_SEL		236
++#define CLKID_PRIV_CPUB_CLK_ATB			237
++#define CLKID_PRIV_CPUB_CLK_AXI_SEL		238
++#define CLKID_PRIV_CPUB_CLK_AXI			239
++#define CLKID_PRIV_CPUB_CLK_TRACE_SEL		240
++#define CLKID_PRIV_CPUB_CLK_TRACE		241
++#define CLKID_PRIV_GP1_PLL_DCO			242
++#define CLKID_PRIV_DSU_CLK_DYN0_SEL		244
++#define CLKID_PRIV_DSU_CLK_DYN0_DIV		245
++#define CLKID_PRIV_DSU_CLK_DYN0			246
++#define CLKID_PRIV_DSU_CLK_DYN1_SEL		247
++#define CLKID_PRIV_DSU_CLK_DYN1_DIV		248
++#define CLKID_PRIV_DSU_CLK_DYN1			249
++#define CLKID_PRIV_DSU_CLK_DYN			250
++#define CLKID_PRIV_DSU_CLK_FINAL		251
++#define CLKID_PRIV_SPICC0_SCLK_SEL		256
++#define CLKID_PRIV_SPICC0_SCLK_DIV		257
++#define CLKID_PRIV_SPICC1_SCLK_SEL		259
++#define CLKID_PRIV_SPICC1_SCLK_DIV		260
++#define CLKID_PRIV_NNA_AXI_CLK_SEL		262
++#define CLKID_PRIV_NNA_AXI_CLK_DIV		263
++#define CLKID_PRIV_NNA_CORE_CLK_SEL		265
++#define CLKID_PRIV_NNA_CORE_CLK_DIV		266
++#define CLKID_PRIV_MIPI_DSI_PXCLK_DIV		268
+ 
+ #define NR_CLKS					271
+ 
+
+
+Add new CTS_ENCL & CTS_ENCL_SEL clocks for the G12A compatible
+SoCs, they are used to feed the VPU LCD Pixel encoder used for
+DSI display purposes.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/clk/meson/g12a.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ drivers/clk/meson/g12a.h |  4 +++-
+ 2 files changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index d2e481ae2429..a132aad2aac9 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -3547,6 +3547,22 @@ static struct clk_regmap g12a_cts_encp_sel = {
+ 	},
+ };
+ 
++static struct clk_regmap g12a_cts_encl_sel = {
++	.data = &(struct clk_regmap_mux_data){
++		.offset = HHI_VIID_CLK_DIV,
++		.mask = 0xf,
++		.shift = 12,
++		.table = mux_table_cts_sel,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "cts_encl_sel",
++		.ops = &clk_regmap_mux_ops,
++		.parent_hws = g12a_cts_parent_hws,
++		.num_parents = ARRAY_SIZE(g12a_cts_parent_hws),
++		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
++	},
++};
++
+ static struct clk_regmap g12a_cts_vdac_sel = {
+ 	.data = &(struct clk_regmap_mux_data){
+ 		.offset = HHI_VIID_CLK_DIV,
+@@ -3626,6 +3642,22 @@ static struct clk_regmap g12a_cts_encp = {
+ 	},
+ };
+ 
++static struct clk_regmap g12a_cts_encl = {
++	.data = &(struct clk_regmap_gate_data){
++		.offset = HHI_VID_CLK_CNTL2,
++		.bit_idx = 3,
++	},
++	.hw.init = &(struct clk_init_data) {
++		.name = "cts_encl",
++		.ops = &clk_regmap_gate_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12a_cts_encl_sel.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++	},
++};
++
+ static struct clk_regmap g12a_cts_vdac = {
+ 	.data = &(struct clk_regmap_gate_data){
+ 		.offset = HHI_VID_CLK_CNTL2,
+@@ -4406,10 +4438,12 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
++		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+@@ -4635,10 +4669,12 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
++		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+@@ -4899,10 +4935,12 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
++		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
++		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+@@ -5133,10 +5171,12 @@ static struct clk_regmap *const g12a_clk_regmaps[] = {
+ 	&g12a_vclk2_div12_en,
+ 	&g12a_cts_enci_sel,
+ 	&g12a_cts_encp_sel,
++	&g12a_cts_encl_sel,
+ 	&g12a_cts_vdac_sel,
+ 	&g12a_hdmi_tx_sel,
+ 	&g12a_cts_enci,
+ 	&g12a_cts_encp,
++	&g12a_cts_encl,
+ 	&g12a_cts_vdac,
+ 	&g12a_hdmi_tx,
+ 	&g12a_hdmi_sel,
+diff --git a/drivers/clk/meson/g12a.h b/drivers/clk/meson/g12a.h
+index a57f4a9717db..9a3091fcaa41 100644
+--- a/drivers/clk/meson/g12a.h
++++ b/drivers/clk/meson/g12a.h
+@@ -265,8 +265,10 @@
+ #define CLKID_PRIV_NNA_CORE_CLK_SEL		265
+ #define CLKID_PRIV_NNA_CORE_CLK_DIV		266
+ #define CLKID_PRIV_MIPI_DSI_PXCLK_DIV		268
++#define CLKID_PRIV_CTS_ENCL			271
++#define CLKID_PRIV_CTS_ENCL_SEL			272
+ 
+-#define NR_CLKS					271
++#define NR_CLKS					273
+ 
+ /* include the CLKIDs that have been made part of the DT binding */
+ #include <dt-bindings/clock/g12a-clkc.h>
+
+Add new CLK ids for the VCLK2_SEL, CTS_ENCL and CTS_ENCL_SEL clocks
+on G12A compatible SoCs.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ include/dt-bindings/clock/g12a-clkc.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/dt-bindings/clock/g12a-clkc.h b/include/dt-bindings/clock/g12a-clkc.h
+index a93b58c5e18e..80421d7982dd 100644
+--- a/include/dt-bindings/clock/g12a-clkc.h
++++ b/include/dt-bindings/clock/g12a-clkc.h
+@@ -108,6 +108,7 @@
+ #define CLKID_VAPB				124
+ #define CLKID_HDMI_PLL				128
+ #define CLKID_VID_PLL				129
++#define CLKID_VCLK2_SEL				133
+ #define CLKID_VCLK				138
+ #define CLKID_VCLK2				139
+ #define CLKID_VCLK_DIV1				148
+@@ -149,5 +150,7 @@
+ #define CLKID_NNA_CORE_CLK			267
+ #define CLKID_MIPI_DSI_PXCLK_SEL		269
+ #define CLKID_MIPI_DSI_PXCLK			270
++#define CLKID_CTS_ENCL				271
++#define CLKID_CTS_ENCL_SEL			272
+ 
+ #endif /* __G12A_CLKC_H */
+
+
+Now those CLK IDs were added to the public bindings header, switch
+to use those defines and drop the PRIV defines.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/clk/meson/g12a.c | 18 +++++++++---------
+ drivers/clk/meson/g12a.h |  3 ---
+ 2 files changed, 9 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index a132aad2aac9..461ebd79497c 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -4411,7 +4411,7 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
+ 		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
+ 		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+ 		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
+ 		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
+ 		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
+@@ -4438,12 +4438,12 @@ static struct clk_hw_onecell_data g12a_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
+-		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
++		[CLKID_CTS_ENCL_SEL]		= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+-		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
++		[CLKID_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+@@ -4642,7 +4642,7 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
+ 		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
+ 		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+ 		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
+ 		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
+ 		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
+@@ -4669,12 +4669,12 @@ static struct clk_hw_onecell_data g12b_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
+-		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
++		[CLKID_CTS_ENCL_SEL]		= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+-		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
++		[CLKID_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+@@ -4908,7 +4908,7 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_PRIV_VID_PLL_SEL]	= &g12a_vid_pll_sel.hw,
+ 		[CLKID_PRIV_VID_PLL_DIV]	= &g12a_vid_pll.hw,
+ 		[CLKID_PRIV_VCLK_SEL]		= &g12a_vclk_sel.hw,
+-		[CLKID_PRIV_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
++		[CLKID_VCLK2_SEL]		= &g12a_vclk2_sel.hw,
+ 		[CLKID_PRIV_VCLK_INPUT]		= &g12a_vclk_input.hw,
+ 		[CLKID_PRIV_VCLK2_INPUT]	= &g12a_vclk2_input.hw,
+ 		[CLKID_PRIV_VCLK_DIV]		= &g12a_vclk_div.hw,
+@@ -4935,12 +4935,12 @@ static struct clk_hw_onecell_data sm1_hw_onecell_data = {
+ 		[CLKID_VCLK2_DIV12]		= &g12a_vclk2_div12.hw,
+ 		[CLKID_PRIV_CTS_ENCI_SEL]	= &g12a_cts_enci_sel.hw,
+ 		[CLKID_PRIV_CTS_ENCP_SEL]	= &g12a_cts_encp_sel.hw,
+-		[CLKID_PRIV_CTS_ENCL_SEL]	= &g12a_cts_encl_sel.hw,
++		[CLKID_CTS_ENCL_SEL]		= &g12a_cts_encl_sel.hw,
+ 		[CLKID_PRIV_CTS_VDAC_SEL]	= &g12a_cts_vdac_sel.hw,
+ 		[CLKID_PRIV_HDMI_TX_SEL]	= &g12a_hdmi_tx_sel.hw,
+ 		[CLKID_CTS_ENCI]		= &g12a_cts_enci.hw,
+ 		[CLKID_CTS_ENCP]		= &g12a_cts_encp.hw,
+-		[CLKID_PRIV_CTS_ENCL]		= &g12a_cts_encl.hw,
++		[CLKID_CTS_ENCL]		= &g12a_cts_encl.hw,
+ 		[CLKID_CTS_VDAC]		= &g12a_cts_vdac.hw,
+ 		[CLKID_HDMI_TX]			= &g12a_hdmi_tx.hw,
+ 		[CLKID_PRIV_HDMI_SEL]		= &g12a_hdmi_sel.hw,
+diff --git a/drivers/clk/meson/g12a.h b/drivers/clk/meson/g12a.h
+index 9a3091fcaa41..8275413f2beb 100644
+--- a/drivers/clk/meson/g12a.h
++++ b/drivers/clk/meson/g12a.h
+@@ -168,7 +168,6 @@
+ #define CLKID_PRIV_VID_PLL_SEL			130
+ #define CLKID_PRIV_VID_PLL_DIV			131
+ #define CLKID_PRIV_VCLK_SEL			132
+-#define CLKID_PRIV_VCLK2_SEL			133
+ #define CLKID_PRIV_VCLK_INPUT			134
+ #define CLKID_PRIV_VCLK2_INPUT			135
+ #define CLKID_PRIV_VCLK_DIV			136
+@@ -265,8 +264,6 @@
+ #define CLKID_PRIV_NNA_CORE_CLK_SEL		265
+ #define CLKID_PRIV_NNA_CORE_CLK_DIV		266
+ #define CLKID_PRIV_MIPI_DSI_PXCLK_DIV		268
+-#define CLKID_PRIV_CTS_ENCL			271
+-#define CLKID_PRIV_CTS_ENCL_SEL			272
+ 
+ #define NR_CLKS					273
+ 
+
+
+In order to setup the DSI clock, let's make the unused VCLK2 clock path
+configuration via CCF.
+
+The nocache option is removed from following clocks:
+- vclk2_sel
+- vclk2_input
+- vclk2_div
+- vclk2
+- vclk_div1
+- vclk2_div2_en
+- vclk2_div4_en
+- vclk2_div6_en
+- vclk2_div12_en
+- vclk2_div2
+- vclk2_div4
+- vclk2_div6
+- vclk2_div12
+- cts_encl_sel
+
+The missing vclk2 reset sequence is handled via new clkc notifiers
+in order to reset the vclk2 after each rate change as done by Amlogic
+in the vendor implementation.
+
+In order to set a rate on cts_encl via the vclk2 clock path,
+the NO_REPARENT flag is set on cts_encl_sel & vclk2_sel in order
+to keep CCF from selection a parent.
+The parents of cts_encl_sel & vclk2_sel are expected to be defined
+in DT.
+
+The following clock scheme is to be used for DSI:
+
+xtal
+\_ gp0_pll_dco
+   \_ gp0_pll
+      |- vclk2_sel
+      |  \_ vclk2_input
+      |     \_ vclk2_div
+      |        \_ vclk2
+      |           \_ vclk2_div1
+      |              \_ cts_encl_sel
+      |                 \_ cts_encl	-> to VPU LCD Encoder
+      |- mipi_dsi_pxclk_sel
+      \_ mipi_dsi_pxclk_div
+         \_ mipi_dsi_pxclk		-> to DSI controller
+
+The mipi_dsi_pxclk_div is set as RO in order to use the same GP0
+for mipi_dsi_pxclk and vclk2_input.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/clk/meson/g12a.c | 131 +++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 120 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index 461ebd79497c..e4053f4957d5 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -3163,7 +3163,7 @@ static struct clk_regmap g12a_vclk2_sel = {
+ 		.ops = &clk_regmap_mux_ops,
+ 		.parent_hws = g12a_vclk_parent_hws,
+ 		.num_parents = ARRAY_SIZE(g12a_vclk_parent_hws),
+-		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
++		.flags = CLK_SET_RATE_NO_REPARENT,
+ 	},
+ };
+ 
+@@ -3191,7 +3191,6 @@ static struct clk_regmap g12a_vclk2_input = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2_sel.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
+ 	},
+ };
+ 
+@@ -3212,6 +3211,40 @@ static struct clk_regmap g12a_vclk_div = {
+ 	},
+ };
+ 
++struct g12a_vclk_div_notifier {
++	struct clk_regmap *clk;
++	unsigned int offset;
++	u8 en_bit_idx;
++	u8 reset_bit_idx;
++	struct notifier_block nb;
++};
++
++static int g12a_vclk_div_notifier_cb(struct notifier_block *nb,
++				  unsigned long event, void *data)
++{
++	struct g12a_vclk_div_notifier *nb_data =
++		container_of(nb, struct g12a_vclk_div_notifier, nb);
++
++	switch (event) {
++	case PRE_RATE_CHANGE:
++		/* disable and reset vclk2 divider */
++		regmap_update_bits(nb_data->clk->map, nb_data->offset,
++				   BIT(nb_data->en_bit_idx) |
++				   BIT(nb_data->reset_bit_idx),
++				   BIT(nb_data->reset_bit_idx));
++		return NOTIFY_OK;
++	case POST_RATE_CHANGE:
++		/* enabled and release reset */
++		regmap_update_bits(nb_data->clk->map, nb_data->offset,
++				   BIT(nb_data->en_bit_idx) |
++				   BIT(nb_data->reset_bit_idx),
++				   BIT(nb_data->en_bit_idx));
++		return NOTIFY_OK;
++	default:
++		return NOTIFY_DONE;
++	};
++};
++
+ static struct clk_regmap g12a_vclk2_div = {
+ 	.data = &(struct clk_regmap_div_data){
+ 		.offset = HHI_VIID_CLK_DIV,
+@@ -3225,10 +3258,18 @@ static struct clk_regmap g12a_vclk2_div = {
+ 			&g12a_vclk2_input.hw
+ 		},
+ 		.num_parents = 1,
+-		.flags = CLK_GET_RATE_NOCACHE,
++		.flags = CLK_DIVIDER_ROUND_CLOSEST,
+ 	},
+ };
+ 
++static struct g12a_vclk_div_notifier g12a_vclk2_div_data = {
++	.clk = &g12a_vclk2_div,
++	.offset = HHI_VIID_CLK_DIV,
++	.en_bit_idx = 16,
++	.reset_bit_idx = 17,
++	.nb.notifier_call = g12a_vclk_div_notifier_cb,
++};
++
+ static struct clk_regmap g12a_vclk = {
+ 	.data = &(struct clk_regmap_gate_data){
+ 		.offset = HHI_VID_CLK_CNTL,
+@@ -3243,6 +3284,33 @@ static struct clk_regmap g12a_vclk = {
+ 	},
+ };
+ 
++struct g12a_vclk_reset_notifier {
++	struct clk_regmap *clk;
++	unsigned int offset;
++	u8 bit_idx;
++	struct notifier_block nb;
++};
++
++static int g12a_vclk_notifier_cb(struct notifier_block *nb,
++				  unsigned long event, void *data)
++{
++	struct g12a_vclk_reset_notifier *nb_data =
++		container_of(nb, struct g12a_vclk_reset_notifier, nb);
++
++	switch (event) {
++	case POST_RATE_CHANGE:
++		/* reset vclk2 */
++		regmap_update_bits(nb_data->clk->map, nb_data->offset,
++				   BIT(nb_data->bit_idx), BIT(nb_data->bit_idx));
++		regmap_update_bits(nb_data->clk->map, nb_data->offset,
++				   BIT(nb_data->bit_idx), 0);
++
++		return NOTIFY_OK;
++	default:
++		return NOTIFY_DONE;
++	};
++}
++
+ static struct clk_regmap g12a_vclk2 = {
+ 	.data = &(struct clk_regmap_gate_data){
+ 		.offset = HHI_VIID_CLK_CNTL,
+@@ -3253,10 +3321,17 @@ static struct clk_regmap g12a_vclk2 = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2_div.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
++static struct g12a_vclk_reset_notifier g12a_vclk2_data = {
++	.clk = &g12a_vclk2,
++	.offset = HHI_VIID_CLK_CNTL,
++	.bit_idx = 15,
++	.nb.notifier_call = g12a_vclk_notifier_cb,
++};
++
+ static struct clk_regmap g12a_vclk_div1 = {
+ 	.data = &(struct clk_regmap_gate_data){
+ 		.offset = HHI_VID_CLK_CNTL,
+@@ -3337,7 +3412,7 @@ static struct clk_regmap g12a_vclk2_div1 = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3351,7 +3426,7 @@ static struct clk_regmap g12a_vclk2_div2_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3365,7 +3440,7 @@ static struct clk_regmap g12a_vclk2_div4_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3379,7 +3454,7 @@ static struct clk_regmap g12a_vclk2_div6_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3393,7 +3468,7 @@ static struct clk_regmap g12a_vclk2_div12_en = {
+ 		.ops = &clk_regmap_gate_ops,
+ 		.parent_hws = (const struct clk_hw *[]) { &g12a_vclk2.hw },
+ 		.num_parents = 1,
+-		.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3459,6 +3534,7 @@ static struct clk_fixed_factor g12a_vclk2_div2 = {
+ 			&g12a_vclk2_div2_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3472,6 +3548,7 @@ static struct clk_fixed_factor g12a_vclk2_div4 = {
+ 			&g12a_vclk2_div4_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3485,6 +3562,7 @@ static struct clk_fixed_factor g12a_vclk2_div6 = {
+ 			&g12a_vclk2_div6_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3498,6 +3576,7 @@ static struct clk_fixed_factor g12a_vclk2_div12 = {
+ 			&g12a_vclk2_div12_en.hw
+ 		},
+ 		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3559,7 +3638,7 @@ static struct clk_regmap g12a_cts_encl_sel = {
+ 		.ops = &clk_regmap_mux_ops,
+ 		.parent_hws = g12a_cts_parent_hws,
+ 		.num_parents = ARRAY_SIZE(g12a_cts_parent_hws),
+-		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
++		.flags = CLK_SET_RATE_NO_REPARENT | CLK_SET_RATE_PARENT,
+ 	},
+ };
+ 
+@@ -3727,7 +3806,7 @@ static struct clk_regmap g12a_mipi_dsi_pxclk_div = {
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "mipi_dsi_pxclk_div",
+-		.ops = &clk_regmap_divider_ops,
++		.ops = &clk_regmap_divider_ro_ops,
+ 		.parent_hws = (const struct clk_hw *[]) {
+ 			&g12a_mipi_dsi_pxclk_sel.hw
+ 		},
+@@ -5421,6 +5500,32 @@ static int meson_g12a_dvfs_setup(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int meson_g12a_vclk_setup(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct clk *notifier_clk;
++	int ret;
++
++	/* Setup clock notifier for vclk2 */
++	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_vclk2.hw, DVFS_CON_ID);
++	ret = devm_clk_notifier_register(dev, notifier_clk, &g12a_vclk2_data.nb);
++	if (ret) {
++		dev_err(dev, "failed to register the vlkc2 notifier\n");
++		return ret;
++	}
++
++	/* Setup clock notifier for vclk2_div */
++	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_vclk2_div.hw, DVFS_CON_ID);
++	ret = devm_clk_notifier_register(dev, notifier_clk,
++					 &g12a_vclk2_div_data.nb);
++	if (ret) {
++		dev_err(dev, "failed to register the vclk2_div notifier\n");
++		return ret;
++	}
++
++	return 0;
++}
++
+ struct meson_g12a_data {
+ 	const struct meson_eeclkc_data eeclkc_data;
+ 	int (*dvfs_setup)(struct platform_device *pdev);
+@@ -5443,6 +5548,10 @@ static int meson_g12a_probe(struct platform_device *pdev)
+ 	g12a_data = container_of(eeclkc_data, struct meson_g12a_data,
+ 				 eeclkc_data);
+ 
++	ret = meson_g12a_vclk_setup(pdev);
++	if (ret)
++		return ret;
++
+ 	if (g12a_data->dvfs_setup)
+ 		return g12a_data->dvfs_setup(pdev);
+ 
+
+
+The Amlogic G12A, G12B & SM1 SoCs embeds a Synopsys DW-MIPI-DSI
+transceiver (ver 1.21a) with a custom glue managing the IP resets,
+clock and data inputs similar to the DW-HDMI Glue on the same
+Amlogic SoC families.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ .../display/amlogic,meson-g12a-dw-mipi-dsi.yaml    | 118 +++++++++++++++++++++
+ 1 file changed, 118 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/display/amlogic,meson-g12a-dw-mipi-dsi.yaml b/Documentation/devicetree/bindings/display/amlogic,meson-g12a-dw-mipi-dsi.yaml
+new file mode 100644
+index 000000000000..a3428f012005
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-g12a-dw-mipi-dsi.yaml
+@@ -0,0 +1,118 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2020 BayLibre, SAS
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/amlogic,meson-g12a-dw-mipi-dsi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Amlogic specific extensions to the Synopsys Designware MIPI DSI Host Controller
++
++maintainers:
++  - Neil Armstrong <neil.armstrong@linaro.org>
++
++description: |
++  The Amlogic Meson Synopsys Designware Integration is composed of
++  - A Synopsys DesignWare MIPI DSI Host Controller IP
++  - A TOP control block controlling the Clocks & Resets of the IP
++
++allOf:
++  - $ref: dsi-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - amlogic,meson-g12a-dw-mipi-dsi
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    minItems: 3
++    maxItems: 4
++
++  clock-names:
++    minItems: 3
++    items:
++      - const: pclk
++      - const: bit
++      - const: px
++      - const: meas
++
++  resets:
++    maxItems: 1
++
++  reset-names:
++    items:
++      - const: top
++
++  phys:
++    maxItems: 1
++
++  phy-names:
++    items:
++      - const: dphy
++
++  ports:
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++      port@0:
++        $ref: /schemas/graph.yaml#/properties/port
++        description: Input node to receive pixel data.
++
++      port@1:
++        $ref: /schemas/graph.yaml#/properties/port
++        description: DSI output node to panel.
++
++    required:
++      - port@0
++      - port@1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - phys
++  - phy-names
++  - ports
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    dsi@6000 {
++          compatible = "amlogic,meson-g12a-dw-mipi-dsi";
++          reg = <0x6000 0x400>;
++          resets = <&reset_top>;
++          reset-names = "top";
++          clocks = <&clk_pclk>, <&bit_clk>, <&clk_px>;
++          clock-names = "pclk", "bit", "px";
++          phys = <&mipi_dphy>;
++          phy-names = "dphy";
++
++          ports {
++              #address-cells = <1>;
++              #size-cells = <0>;
++
++              /* VPU VENC Input */
++              mipi_dsi_venc_port: port@0 {
++                  reg = <0>;
++
++                  mipi_dsi_in: endpoint {
++                       remote-endpoint = <&dpi_out>;
++                  };
++              };
++
++              /* DSI Output */
++              mipi_dsi_panel_port: port@1 {
++                  reg = <1>;
++
++                  mipi_out_panel: endpoint {
++                      remote-endpoint = <&mipi_in_panel>;
++                  };
++              };
++          };
++    };
+
+
+Add third port corresponding to the ENCL DPI encoder used to connect
+to DSI or LVDS transceivers.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
+index 0c72120acc4f..cb0a90f02321 100644
+--- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
+@@ -96,6 +96,11 @@ properties:
+     description:
+       A port node pointing to the HDMI-TX port node.
+ 
++  port@2:
++    $ref: /schemas/graph.yaml#/properties/port
++    description:
++      A port node pointing to the DPI port node (e.g. DSI or LVDS transceiver).
++
+   "#address-cells":
+     const: 1
+ 
+
+
+If the case the HDMI controller fails to bind, we try to unbind
+all components before calling drm_dev_put() which makes drm_bridge_detach()
+crash because unbinding the HDMI controller frees the bridge memory.
+
+The solution is the unbind all components at the end like in the remove
+path.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com>
+---
+ drivers/gpu/drm/meson/meson_drv.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index ca6d1e59e5d9..e060279dc80a 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -316,32 +316,34 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 		goto exit_afbcd;
+ 
+ 	if (has_components) {
+-		ret = component_bind_all(drm->dev, drm);
++		ret = component_bind_all(dev, drm);
+ 		if (ret) {
+ 			dev_err(drm->dev, "Couldn't bind all components\n");
++			/* Do not try to unbind */
++			has_components = false;
+ 			goto exit_afbcd;
+ 		}
+ 	}
+ 
+ 	ret = meson_encoder_hdmi_init(priv);
+ 	if (ret)
+-		goto unbind_all;
++		goto exit_afbcd;
+ 
+ 	ret = meson_plane_create(priv);
+ 	if (ret)
+-		goto unbind_all;
++		goto exit_afbcd;
+ 
+ 	ret = meson_overlay_create(priv);
+ 	if (ret)
+-		goto unbind_all;
++		goto exit_afbcd;
+ 
+ 	ret = meson_crtc_create(priv);
+ 	if (ret)
+-		goto unbind_all;
++		goto exit_afbcd;
+ 
+ 	ret = request_irq(priv->vsync_irq, meson_irq, 0, drm->driver->name, drm);
+ 	if (ret)
+-		goto unbind_all;
++		goto exit_afbcd;
+ 
+ 	drm_mode_config_reset(drm);
+ 
+@@ -359,15 +361,18 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 
+ uninstall_irq:
+ 	free_irq(priv->vsync_irq, drm);
+-unbind_all:
+-	if (has_components)
+-		component_unbind_all(drm->dev, drm);
+ exit_afbcd:
+ 	if (priv->afbcd.ops)
+ 		priv->afbcd.ops->exit(priv);
+ free_drm:
+ 	drm_dev_put(drm);
+ 
++	meson_encoder_hdmi_remove(priv);
++	meson_encoder_cvbs_remove(priv);
++
++	if (has_components)
++		component_unbind_all(dev, drm);
++
+ 	return ret;
+ }
+ 
+
+
+Only DW-HDMI currently needs components since it reuses
+the drm-meson driver context to access HHI registers (sic).
+
+Once this is solved, we can get rid on components.
+
+Until now, limit the components matching to the dw-hdmi compatibles
+we know to require this hack, for other bridges simply use probe defer
+instead and get over this components sitation.
+
+The back story is that we simply cannot attach DSI adapters bridges
+if we use components, only DSI panels, this is because we bind/unbind
+the DSI controller at each drm-meson driver master bind tentative.
+With this the I2C DSI bridge is unable to find the DSI controller
+host and everything fails to probe.
+
+This will simplify a lot adding new or older HDMI bridges.
+
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com> # on Khadas VIM3 + TS050 Panel
+---
+ drivers/gpu/drm/meson/meson_drv.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index e060279dc80a..e935c0286a20 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -451,10 +451,17 @@ static void meson_drv_shutdown(struct platform_device *pdev)
+ 	drm_atomic_helper_shutdown(priv->drm);
+ }
+ 
+-/* Possible connectors nodes to ignore */
+-static const struct of_device_id connectors_match[] = {
+-	{ .compatible = "composite-video-connector" },
+-	{ .compatible = "svideo-connector" },
++/*
++ * Only devices to use as components
++ * TOFIX: get rid of components when we can finally
++ * get meson_dx_hdmi to stop using the meson_drm
++ * private structure for HHI registers.
++ */
++static const struct of_device_id components_dev_match[] = {
++	{ .compatible = "amlogic,meson-gxbb-dw-hdmi" },
++	{ .compatible = "amlogic,meson-gxl-dw-hdmi" },
++	{ .compatible = "amlogic,meson-gxm-dw-hdmi" },
++	{ .compatible = "amlogic,meson-g12a-dw-hdmi" },
+ 	{}
+ };
+ 
+@@ -472,17 +479,12 @@ static int meson_drv_probe(struct platform_device *pdev)
+ 			continue;
+ 		}
+ 
+-		/* If an analog connector is detected, count it as an output */
+-		if (of_match_node(connectors_match, remote)) {
+-			++count;
+-			of_node_put(remote);
+-			continue;
+-		}
+-
+-		dev_dbg(&pdev->dev, "parent %pOF remote match add %pOF parent %s\n",
+-			np, remote, dev_name(&pdev->dev));
++		if (of_match_node(components_dev_match, remote)) {
++			component_match_add(&pdev->dev, &match, component_compare_of, remote);
+ 
+-		component_match_add(&pdev->dev, &match, component_compare_of, remote);
++			dev_dbg(&pdev->dev, "parent %pOF remote match add %pOF parent %s\n",
++				np, remote, dev_name(&pdev->dev));
++		}
+ 
+ 		of_node_put(remote);
+ 
+
+
+This adds supports for the ENCL encoder connected to a MIPI-DSI transceiver on the
+Amlogic AXG, G12A, G12B & SM1 SoCs.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com> # on Khadas VIM3 + TS050 Panel
+---
+ drivers/gpu/drm/meson/meson_registers.h |  25 ++++
+ drivers/gpu/drm/meson/meson_venc.c      | 211 +++++++++++++++++++++++++++++++-
+ drivers/gpu/drm/meson/meson_venc.h      |   6 +
+ drivers/gpu/drm/meson/meson_vpp.h       |   2 +
+ 4 files changed, 242 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_registers.h b/drivers/gpu/drm/meson/meson_registers.h
+index 0f3cafab8860..3d73d00a1f4c 100644
+--- a/drivers/gpu/drm/meson/meson_registers.h
++++ b/drivers/gpu/drm/meson/meson_registers.h
+@@ -812,6 +812,7 @@
+ #define VENC_STATA 0x1b6d
+ #define VENC_INTCTRL 0x1b6e
+ #define		VENC_INTCTRL_ENCI_LNRST_INT_EN  BIT(1)
++#define		VENC_INTCTRL_ENCP_LNRST_INT_EN  BIT(9)
+ #define VENC_INTFLAG 0x1b6f
+ #define VENC_VIDEO_TST_EN 0x1b70
+ #define VENC_VIDEO_TST_MDSEL 0x1b71
+@@ -1192,7 +1193,11 @@
+ #define ENCL_VIDEO_PB_OFFST 0x1ca5
+ #define ENCL_VIDEO_PR_OFFST 0x1ca6
+ #define ENCL_VIDEO_MODE 0x1ca7
++#define		ENCL_PX_LN_CNT_SHADOW_EN	BIT(15)
+ #define ENCL_VIDEO_MODE_ADV 0x1ca8
++#define		ENCL_VIDEO_MODE_ADV_VFIFO_EN	BIT(3)
++#define		ENCL_VIDEO_MODE_ADV_GAIN_HDTV	BIT(4)
++#define		ENCL_SEL_GAMMA_RGB_IN		BIT(10)
+ #define ENCL_DBG_PX_RST 0x1ca9
+ #define ENCL_DBG_LN_RST 0x1caa
+ #define ENCL_DBG_PX_INT 0x1cab
+@@ -1219,11 +1224,14 @@
+ #define ENCL_VIDEO_VOFFST 0x1cc0
+ #define ENCL_VIDEO_RGB_CTRL 0x1cc1
+ #define ENCL_VIDEO_FILT_CTRL 0x1cc2
++#define		ENCL_VIDEO_FILT_CTRL_BYPASS_FILTER	BIT(12)
+ #define ENCL_VIDEO_OFLD_VPEQ_OFST 0x1cc3
+ #define ENCL_VIDEO_OFLD_VOAV_OFST 0x1cc4
+ #define ENCL_VIDEO_MATRIX_CB 0x1cc5
+ #define ENCL_VIDEO_MATRIX_CR 0x1cc6
+ #define ENCL_VIDEO_RGBIN_CTRL 0x1cc7
++#define		ENCL_VIDEO_RGBIN_RGB	BIT(0)
++#define		ENCL_VIDEO_RGBIN_ZBLK	BIT(1)
+ #define ENCL_MAX_LINE_SWITCH_POINT 0x1cc8
+ #define ENCL_DACSEL_0 0x1cc9
+ #define ENCL_DACSEL_1 0x1cca
+@@ -1300,13 +1308,28 @@
+ #define RDMA_STATUS2 0x1116
+ #define RDMA_STATUS3 0x1117
+ #define L_GAMMA_CNTL_PORT 0x1400
++#define		L_GAMMA_CNTL_PORT_VCOM_POL	BIT(7)	/* RW */
++#define		L_GAMMA_CNTL_PORT_RVS_OUT	BIT(6)	/* RW */
++#define		L_GAMMA_CNTL_PORT_ADR_RDY	BIT(5)	/* Read Only */
++#define		L_GAMMA_CNTL_PORT_WR_RDY	BIT(4)	/* Read Only */
++#define		L_GAMMA_CNTL_PORT_RD_RDY	BIT(3)	/* Read Only */
++#define		L_GAMMA_CNTL_PORT_TR		BIT(2)	/* RW */
++#define		L_GAMMA_CNTL_PORT_SET		BIT(1)	/* RW */
++#define		L_GAMMA_CNTL_PORT_EN		BIT(0)	/* RW */
+ #define L_GAMMA_DATA_PORT 0x1401
+ #define L_GAMMA_ADDR_PORT 0x1402
++#define		L_GAMMA_ADDR_PORT_RD		BIT(12)
++#define		L_GAMMA_ADDR_PORT_AUTO_INC	BIT(11)
++#define		L_GAMMA_ADDR_PORT_SEL_R		BIT(10)
++#define		L_GAMMA_ADDR_PORT_SEL_G		BIT(9)
++#define		L_GAMMA_ADDR_PORT_SEL_B		BIT(8)
++#define		L_GAMMA_ADDR_PORT_ADDR		GENMASK(7, 0)
+ #define L_GAMMA_VCOM_HSWITCH_ADDR 0x1403
+ #define L_RGB_BASE_ADDR 0x1405
+ #define L_RGB_COEFF_ADDR 0x1406
+ #define L_POL_CNTL_ADDR 0x1407
+ #define L_DITH_CNTL_ADDR 0x1408
++#define		L_DITH_CNTL_DITH10_EN	BIT(10)
+ #define L_GAMMA_PROBE_CTRL 0x1409
+ #define L_GAMMA_PROBE_COLOR_L 0x140a
+ #define L_GAMMA_PROBE_COLOR_H 0x140b
+@@ -1363,6 +1386,8 @@
+ #define L_LCD_PWM1_HI_ADDR 0x143f
+ #define L_INV_CNT_ADDR 0x1440
+ #define L_TCON_MISC_SEL_ADDR 0x1441
++#define		L_TCON_MISC_SEL_STV1	BIT(4)
++#define		L_TCON_MISC_SEL_STV2	BIT(5)
+ #define L_DUAL_PORT_CNTL_ADDR 0x1442
+ #define MLVDS_CLK_CTL1_HI 0x1443
+ #define MLVDS_CLK_CTL1_LO 0x1444
+diff --git a/drivers/gpu/drm/meson/meson_venc.c b/drivers/gpu/drm/meson/meson_venc.c
+index 27ef9f88e4ff..2bdc2855e249 100644
+--- a/drivers/gpu/drm/meson/meson_venc.c
++++ b/drivers/gpu/drm/meson/meson_venc.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/export.h>
++#include <linux/iopoll.h>
+ 
+ #include <drm/drm_modes.h>
+ 
+@@ -1557,6 +1558,205 @@ void meson_venc_hdmi_mode_set(struct meson_drm *priv, int vic,
+ }
+ EXPORT_SYMBOL_GPL(meson_venc_hdmi_mode_set);
+ 
++static unsigned short meson_encl_gamma_table[256] = {
++	0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60,
++	64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124,
++	128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188,
++	192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252,
++	256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316,
++	320, 324, 328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380,
++	384, 388, 392, 396, 400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444,
++	448, 452, 456, 460, 464, 468, 472, 476, 480, 484, 488, 492, 496, 500, 504, 508,
++	512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572,
++	576, 580, 584, 588, 592, 596, 600, 604, 608, 612, 616, 620, 624, 628, 632, 636,
++	640, 644, 648, 652, 656, 660, 664, 668, 672, 676, 680, 684, 688, 692, 696, 700,
++	704, 708, 712, 716, 720, 724, 728, 732, 736, 740, 744, 748, 752, 756, 760, 764,
++	768, 772, 776, 780, 784, 788, 792, 796, 800, 804, 808, 812, 816, 820, 824, 828,
++	832, 836, 840, 844, 848, 852, 856, 860, 864, 868, 872, 876, 880, 884, 888, 892,
++	896, 900, 904, 908, 912, 916, 920, 924, 928, 932, 936, 940, 944, 948, 952, 956,
++	960, 964, 968, 972, 976, 980, 984, 988, 992, 996, 1000, 1004, 1008, 1012, 1016, 1020,
++};
++
++static void meson_encl_set_gamma_table(struct meson_drm *priv, u16 *data,
++				       u32 rgb_mask)
++{
++	int i, ret;
++	u32 reg;
++
++	writel_bits_relaxed(L_GAMMA_CNTL_PORT_EN, 0,
++			    priv->io_base + _REG(L_GAMMA_CNTL_PORT));
++
++	ret = readl_relaxed_poll_timeout(priv->io_base + _REG(L_GAMMA_CNTL_PORT),
++					 reg, reg & L_GAMMA_CNTL_PORT_ADR_RDY, 10, 10000);
++	if (ret)
++		pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++
++	writel_relaxed(L_GAMMA_ADDR_PORT_AUTO_INC | rgb_mask |
++		       FIELD_PREP(L_GAMMA_ADDR_PORT_ADDR, 0),
++		       priv->io_base + _REG(L_GAMMA_ADDR_PORT));
++
++	for (i = 0; i < 256; i++) {
++		ret = readl_relaxed_poll_timeout(priv->io_base + _REG(L_GAMMA_CNTL_PORT),
++						 reg, reg & L_GAMMA_CNTL_PORT_WR_RDY,
++						 10, 10000);
++		if (ret)
++			pr_warn_once("%s: GAMMA WR_RDY timeout\n", __func__);
++
++		writel_relaxed(data[i], priv->io_base + _REG(L_GAMMA_DATA_PORT));
++	}
++
++	ret = readl_relaxed_poll_timeout(priv->io_base + _REG(L_GAMMA_CNTL_PORT),
++					 reg, reg & L_GAMMA_CNTL_PORT_ADR_RDY, 10, 10000);
++	if (ret)
++		pr_warn("%s: GAMMA ADR_RDY timeout\n", __func__);
++
++	writel_relaxed(L_GAMMA_ADDR_PORT_AUTO_INC | rgb_mask |
++		       FIELD_PREP(L_GAMMA_ADDR_PORT_ADDR, 0x23),
++		       priv->io_base + _REG(L_GAMMA_ADDR_PORT));
++}
++
++void meson_encl_load_gamma(struct meson_drm *priv)
++{
++	meson_encl_set_gamma_table(priv, meson_encl_gamma_table, L_GAMMA_ADDR_PORT_SEL_R);
++	meson_encl_set_gamma_table(priv, meson_encl_gamma_table, L_GAMMA_ADDR_PORT_SEL_G);
++	meson_encl_set_gamma_table(priv, meson_encl_gamma_table, L_GAMMA_ADDR_PORT_SEL_B);
++
++	writel_bits_relaxed(L_GAMMA_CNTL_PORT_EN, L_GAMMA_CNTL_PORT_EN,
++			    priv->io_base + _REG(L_GAMMA_CNTL_PORT));
++}
++
++void meson_venc_mipi_dsi_mode_set(struct meson_drm *priv,
++				  const struct drm_display_mode *mode)
++{
++	unsigned int max_pxcnt;
++	unsigned int max_lncnt;
++	unsigned int havon_begin;
++	unsigned int havon_end;
++	unsigned int vavon_bline;
++	unsigned int vavon_eline;
++	unsigned int hso_begin;
++	unsigned int hso_end;
++	unsigned int vso_begin;
++	unsigned int vso_end;
++	unsigned int vso_bline;
++	unsigned int vso_eline;
++
++	max_pxcnt = mode->htotal - 1;
++	max_lncnt = mode->vtotal - 1;
++	havon_begin = mode->htotal - mode->hsync_start;
++	havon_end = havon_begin + mode->hdisplay - 1;
++	vavon_bline = mode->vtotal - mode->vsync_start;
++	vavon_eline = vavon_bline + mode->vdisplay - 1;
++	hso_begin = 0;
++	hso_end = mode->hsync_end - mode->hsync_start;
++	vso_begin = 0;
++	vso_end = 0;
++	vso_bline = 0;
++	vso_eline = mode->vsync_end - mode->vsync_start;
++
++	meson_vpp_setup_mux(priv, MESON_VIU_VPP_MUX_ENCL);
++
++	writel_relaxed(0, priv->io_base + _REG(ENCL_VIDEO_EN));
++
++	writel_relaxed(ENCL_PX_LN_CNT_SHADOW_EN, priv->io_base + _REG(ENCL_VIDEO_MODE));
++	writel_relaxed(ENCL_VIDEO_MODE_ADV_VFIFO_EN |
++		       ENCL_VIDEO_MODE_ADV_GAIN_HDTV |
++		       ENCL_SEL_GAMMA_RGB_IN, priv->io_base + _REG(ENCL_VIDEO_MODE_ADV));
++
++	writel_relaxed(ENCL_VIDEO_FILT_CTRL_BYPASS_FILTER,
++		       priv->io_base + _REG(ENCL_VIDEO_FILT_CTRL));
++	writel_relaxed(max_pxcnt, priv->io_base + _REG(ENCL_VIDEO_MAX_PXCNT));
++	writel_relaxed(max_lncnt, priv->io_base + _REG(ENCL_VIDEO_MAX_LNCNT));
++	writel_relaxed(havon_begin, priv->io_base + _REG(ENCL_VIDEO_HAVON_BEGIN));
++	writel_relaxed(havon_end, priv->io_base + _REG(ENCL_VIDEO_HAVON_END));
++	writel_relaxed(vavon_bline, priv->io_base + _REG(ENCL_VIDEO_VAVON_BLINE));
++	writel_relaxed(vavon_eline, priv->io_base + _REG(ENCL_VIDEO_VAVON_ELINE));
++
++	writel_relaxed(hso_begin, priv->io_base + _REG(ENCL_VIDEO_HSO_BEGIN));
++	writel_relaxed(hso_end, priv->io_base + _REG(ENCL_VIDEO_HSO_END));
++	writel_relaxed(vso_begin, priv->io_base + _REG(ENCL_VIDEO_VSO_BEGIN));
++	writel_relaxed(vso_end, priv->io_base + _REG(ENCL_VIDEO_VSO_END));
++	writel_relaxed(vso_bline, priv->io_base + _REG(ENCL_VIDEO_VSO_BLINE));
++	writel_relaxed(vso_eline, priv->io_base + _REG(ENCL_VIDEO_VSO_ELINE));
++	writel_relaxed(ENCL_VIDEO_RGBIN_RGB | ENCL_VIDEO_RGBIN_ZBLK,
++		       priv->io_base + _REG(ENCL_VIDEO_RGBIN_CTRL));
++
++	/* default black pattern */
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_MDSEL));
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_Y));
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_CB));
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_CR));
++	writel_relaxed(1, priv->io_base + _REG(ENCL_TST_EN));
++	writel_bits_relaxed(ENCL_VIDEO_MODE_ADV_VFIFO_EN, 0,
++			    priv->io_base + _REG(ENCL_VIDEO_MODE_ADV));
++
++	writel_relaxed(1, priv->io_base + _REG(ENCL_VIDEO_EN));
++
++	writel_relaxed(0, priv->io_base + _REG(L_RGB_BASE_ADDR));
++	writel_relaxed(0x400, priv->io_base + _REG(L_RGB_COEFF_ADDR)); /* Magic value */
++
++	writel_relaxed(L_DITH_CNTL_DITH10_EN, priv->io_base + _REG(L_DITH_CNTL_ADDR));
++
++	/* DE signal for TTL */
++	writel_relaxed(havon_begin, priv->io_base + _REG(L_OEH_HS_ADDR));
++	writel_relaxed(havon_end + 1, priv->io_base + _REG(L_OEH_HE_ADDR));
++	writel_relaxed(vavon_bline, priv->io_base + _REG(L_OEH_VS_ADDR));
++	writel_relaxed(vavon_eline, priv->io_base + _REG(L_OEH_VE_ADDR));
++
++	/* DE signal for TTL */
++	writel_relaxed(havon_begin, priv->io_base + _REG(L_OEV1_HS_ADDR));
++	writel_relaxed(havon_end + 1, priv->io_base + _REG(L_OEV1_HE_ADDR));
++	writel_relaxed(vavon_bline, priv->io_base + _REG(L_OEV1_VS_ADDR));
++	writel_relaxed(vavon_eline, priv->io_base + _REG(L_OEV1_VE_ADDR));
++
++	/* Hsync signal for TTL */
++	if (mode->flags & DRM_MODE_FLAG_PHSYNC) {
++		writel_relaxed(hso_begin, priv->io_base + _REG(L_STH1_HS_ADDR));
++		writel_relaxed(hso_end, priv->io_base + _REG(L_STH1_HE_ADDR));
++	} else {
++		writel_relaxed(hso_end, priv->io_base + _REG(L_STH1_HS_ADDR));
++		writel_relaxed(hso_begin, priv->io_base + _REG(L_STH1_HE_ADDR));
++	}
++	writel_relaxed(0, priv->io_base + _REG(L_STH1_VS_ADDR));
++	writel_relaxed(max_lncnt, priv->io_base + _REG(L_STH1_VE_ADDR));
++
++	/* Vsync signal for TTL */
++	writel_relaxed(vso_begin, priv->io_base + _REG(L_STV1_HS_ADDR));
++	writel_relaxed(vso_end, priv->io_base + _REG(L_STV1_HE_ADDR));
++	if (mode->flags & DRM_MODE_FLAG_PVSYNC) {
++		writel_relaxed(vso_bline, priv->io_base + _REG(L_STV1_VS_ADDR));
++		writel_relaxed(vso_eline, priv->io_base + _REG(L_STV1_VE_ADDR));
++	} else {
++		writel_relaxed(vso_eline, priv->io_base + _REG(L_STV1_VS_ADDR));
++		writel_relaxed(vso_bline, priv->io_base + _REG(L_STV1_VE_ADDR));
++	}
++
++	/* DE signal */
++	writel_relaxed(havon_begin, priv->io_base + _REG(L_DE_HS_ADDR));
++	writel_relaxed(havon_end + 1, priv->io_base + _REG(L_DE_HE_ADDR));
++	writel_relaxed(vavon_bline, priv->io_base + _REG(L_DE_VS_ADDR));
++	writel_relaxed(vavon_eline, priv->io_base + _REG(L_DE_VE_ADDR));
++
++	/* Hsync signal */
++	writel_relaxed(hso_begin, priv->io_base + _REG(L_HSYNC_HS_ADDR));
++	writel_relaxed(hso_end, priv->io_base + _REG(L_HSYNC_HE_ADDR));
++	writel_relaxed(0, priv->io_base + _REG(L_HSYNC_VS_ADDR));
++	writel_relaxed(max_lncnt, priv->io_base + _REG(L_HSYNC_VE_ADDR));
++
++	/* Vsync signal */
++	writel_relaxed(vso_begin, priv->io_base + _REG(L_VSYNC_HS_ADDR));
++	writel_relaxed(vso_end, priv->io_base + _REG(L_VSYNC_HE_ADDR));
++	writel_relaxed(vso_bline, priv->io_base + _REG(L_VSYNC_VS_ADDR));
++	writel_relaxed(vso_eline, priv->io_base + _REG(L_VSYNC_VE_ADDR));
++
++	writel_relaxed(0, priv->io_base + _REG(L_INV_CNT_ADDR));
++	writel_relaxed(L_TCON_MISC_SEL_STV1 | L_TCON_MISC_SEL_STV2,
++		       priv->io_base + _REG(L_TCON_MISC_SEL_ADDR));
++
++	priv->venc.current_mode = MESON_VENC_MODE_MIPI_DSI;
++}
++EXPORT_SYMBOL_GPL(meson_venc_mipi_dsi_mode_set);
++
+ void meson_venci_cvbs_mode_set(struct meson_drm *priv,
+ 			       struct meson_cvbs_enci_mode *mode)
+ {
+@@ -1747,8 +1947,15 @@ unsigned int meson_venci_get_field(struct meson_drm *priv)
+ 
+ void meson_venc_enable_vsync(struct meson_drm *priv)
+ {
+-	writel_relaxed(VENC_INTCTRL_ENCI_LNRST_INT_EN,
+-		       priv->io_base + _REG(VENC_INTCTRL));
++	switch (priv->venc.current_mode) {
++	case MESON_VENC_MODE_MIPI_DSI:
++		writel_relaxed(VENC_INTCTRL_ENCP_LNRST_INT_EN,
++			       priv->io_base + _REG(VENC_INTCTRL));
++		break;
++	default:
++		writel_relaxed(VENC_INTCTRL_ENCI_LNRST_INT_EN,
++			       priv->io_base + _REG(VENC_INTCTRL));
++	}
+ 	regmap_update_bits(priv->hhi, HHI_GCLK_MPEG2, BIT(25), BIT(25));
+ }
+ 
+diff --git a/drivers/gpu/drm/meson/meson_venc.h b/drivers/gpu/drm/meson/meson_venc.h
+index 9138255ffc9e..0f59adb1c6db 100644
+--- a/drivers/gpu/drm/meson/meson_venc.h
++++ b/drivers/gpu/drm/meson/meson_venc.h
+@@ -21,6 +21,7 @@ enum {
+ 	MESON_VENC_MODE_CVBS_PAL,
+ 	MESON_VENC_MODE_CVBS_NTSC,
+ 	MESON_VENC_MODE_HDMI,
++	MESON_VENC_MODE_MIPI_DSI,
+ };
+ 
+ struct meson_cvbs_enci_mode {
+@@ -47,6 +48,9 @@ struct meson_cvbs_enci_mode {
+ 	unsigned int analog_sync_adj;
+ };
+ 
++/* LCD Encoder gamma setup */
++void meson_encl_load_gamma(struct meson_drm *priv);
++
+ /* HDMI Clock parameters */
+ enum drm_mode_status
+ meson_venc_hdmi_supported_mode(const struct drm_display_mode *mode);
+@@ -63,6 +67,8 @@ void meson_venc_hdmi_mode_set(struct meson_drm *priv, int vic,
+ 			      unsigned int ycrcb_map,
+ 			      bool yuv420_mode,
+ 			      const struct drm_display_mode *mode);
++void meson_venc_mipi_dsi_mode_set(struct meson_drm *priv,
++				  const struct drm_display_mode *mode);
+ unsigned int meson_venci_get_field(struct meson_drm *priv);
+ 
+ void meson_venc_enable_vsync(struct meson_drm *priv);
+diff --git a/drivers/gpu/drm/meson/meson_vpp.h b/drivers/gpu/drm/meson/meson_vpp.h
+index afc9553ed8d3..b790042a1650 100644
+--- a/drivers/gpu/drm/meson/meson_vpp.h
++++ b/drivers/gpu/drm/meson/meson_vpp.h
+@@ -12,6 +12,8 @@
+ struct drm_rect;
+ struct meson_drm;
+ 
++/* Mux VIU/VPP to ENCL */
++#define MESON_VIU_VPP_MUX_ENCL	0x0
+ /* Mux VIU/VPP to ENCI */
+ #define MESON_VIU_VPP_MUX_ENCI	0x5
+ /* Mux VIU/VPP to ENCP */
+
+
+This adds an encoder bridge designed to drive a MIPI-DSI display
+by using the ENCL encoder through the internal MIPI DSI transceiver
+connected to the output of the ENCL pixel encoder.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com> # on Khadas VIM3 + TS050 Panel
+---
+ drivers/gpu/drm/meson/Makefile            |   2 +-
+ drivers/gpu/drm/meson/meson_drv.c         |   9 ++
+ drivers/gpu/drm/meson/meson_drv.h         |   1 +
+ drivers/gpu/drm/meson/meson_encoder_dsi.c | 174 ++++++++++++++++++++++++++++++
+ drivers/gpu/drm/meson/meson_encoder_dsi.h |  13 +++
+ 5 files changed, 198 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/meson/Makefile b/drivers/gpu/drm/meson/Makefile
+index 3afa31bdc950..833e18c20603 100644
+--- a/drivers/gpu/drm/meson/Makefile
++++ b/drivers/gpu/drm/meson/Makefile
+@@ -2,7 +2,7 @@
+ meson-drm-y := meson_drv.o meson_plane.o meson_crtc.o meson_encoder_cvbs.o
+ meson-drm-y += meson_viu.o meson_vpp.o meson_venc.o meson_vclk.o meson_overlay.o
+ meson-drm-y += meson_rdma.o meson_osd_afbcd.o
+-meson-drm-y += meson_encoder_hdmi.o
++meson-drm-y += meson_encoder_hdmi.o meson_encoder_dsi.o
+ 
+ obj-$(CONFIG_DRM_MESON) += meson-drm.o
+ obj-$(CONFIG_DRM_MESON_DW_HDMI) += meson_dw_hdmi.o
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index e935c0286a20..747b639ea0c4 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -34,6 +34,7 @@
+ #include "meson_registers.h"
+ #include "meson_encoder_cvbs.h"
+ #include "meson_encoder_hdmi.h"
++#include "meson_encoder_dsi.h"
+ #include "meson_viu.h"
+ #include "meson_vpp.h"
+ #include "meson_rdma.h"
+@@ -329,6 +330,12 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 	if (ret)
+ 		goto exit_afbcd;
+ 
++	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
++		ret = meson_encoder_dsi_init(priv);
++		if (ret)
++			goto exit_afbcd;
++	}
++
+ 	ret = meson_plane_create(priv);
+ 	if (ret)
+ 		goto exit_afbcd;
+@@ -367,6 +374,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ free_drm:
+ 	drm_dev_put(drm);
+ 
++	meson_encoder_dsi_remove(priv);
+ 	meson_encoder_hdmi_remove(priv);
+ 	meson_encoder_cvbs_remove(priv);
+ 
+@@ -399,6 +407,7 @@ static void meson_drv_unbind(struct device *dev)
+ 	free_irq(priv->vsync_irq, drm);
+ 	drm_dev_put(drm);
+ 
++	meson_encoder_dsi_remove(priv);
+ 	meson_encoder_hdmi_remove(priv);
+ 	meson_encoder_cvbs_remove(priv);
+ 
+diff --git a/drivers/gpu/drm/meson/meson_drv.h b/drivers/gpu/drm/meson/meson_drv.h
+index c62ee358456f..b23009a3380f 100644
+--- a/drivers/gpu/drm/meson/meson_drv.h
++++ b/drivers/gpu/drm/meson/meson_drv.h
+@@ -28,6 +28,7 @@ enum vpu_compatible {
+ enum {
+ 	MESON_ENC_CVBS = 0,
+ 	MESON_ENC_HDMI,
++	MESON_ENC_DSI,
+ 	MESON_ENC_LAST,
+ };
+ 
+diff --git a/drivers/gpu/drm/meson/meson_encoder_dsi.c b/drivers/gpu/drm/meson/meson_encoder_dsi.c
+new file mode 100644
+index 000000000000..812e172dec63
+--- /dev/null
++++ b/drivers/gpu/drm/meson/meson_encoder_dsi.c
+@@ -0,0 +1,174 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2016 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_graph.h>
++
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_simple_kms_helper.h>
++#include <drm/drm_bridge.h>
++#include <drm/drm_bridge_connector.h>
++#include <drm/drm_device.h>
++#include <drm/drm_probe_helper.h>
++
++#include "meson_drv.h"
++#include "meson_encoder_dsi.h"
++#include "meson_registers.h"
++#include "meson_venc.h"
++#include "meson_vclk.h"
++
++struct meson_encoder_dsi {
++	struct drm_encoder encoder;
++	struct drm_bridge bridge;
++	struct drm_bridge *next_bridge;
++	struct meson_drm *priv;
++};
++
++#define bridge_to_meson_encoder_dsi(x) \
++	container_of(x, struct meson_encoder_dsi, bridge)
++
++static int meson_encoder_dsi_attach(struct drm_bridge *bridge,
++				    enum drm_bridge_attach_flags flags)
++{
++	struct meson_encoder_dsi *encoder_dsi = bridge_to_meson_encoder_dsi(bridge);
++
++	return drm_bridge_attach(bridge->encoder, encoder_dsi->next_bridge,
++				 &encoder_dsi->bridge, flags);
++}
++
++static void meson_encoder_dsi_atomic_enable(struct drm_bridge *bridge,
++					    struct drm_bridge_state *bridge_state)
++{
++	struct meson_encoder_dsi *encoder_dsi = bridge_to_meson_encoder_dsi(bridge);
++	struct drm_atomic_state *state = bridge_state->base.state;
++	struct meson_drm *priv = encoder_dsi->priv;
++	struct drm_connector_state *conn_state;
++	struct drm_crtc_state *crtc_state;
++	struct drm_connector *connector;
++
++	connector = drm_atomic_get_new_connector_for_encoder(state, bridge->encoder);
++	if (WARN_ON(!connector))
++		return;
++
++	conn_state = drm_atomic_get_new_connector_state(state, connector);
++	if (WARN_ON(!conn_state))
++		return;
++
++	crtc_state = drm_atomic_get_new_crtc_state(state, conn_state->crtc);
++	if (WARN_ON(!crtc_state))
++		return;
++
++	/* ENCL clock setup is handled by CCF */
++
++	meson_venc_mipi_dsi_mode_set(priv, &crtc_state->adjusted_mode);
++	meson_encl_load_gamma(priv);
++
++	writel_relaxed(0, priv->io_base + _REG(ENCL_VIDEO_EN));
++
++	writel_bits_relaxed(ENCL_VIDEO_MODE_ADV_VFIFO_EN, ENCL_VIDEO_MODE_ADV_VFIFO_EN,
++			    priv->io_base + _REG(ENCL_VIDEO_MODE_ADV));
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_EN));
++
++	writel_bits_relaxed(BIT(0), 0, priv->io_base + _REG(VPP_WRAP_OSD1_MATRIX_EN_CTRL));
++
++	writel_relaxed(1, priv->io_base + _REG(ENCL_VIDEO_EN));
++}
++
++static void meson_encoder_dsi_atomic_disable(struct drm_bridge *bridge,
++					     struct drm_bridge_state *bridge_state)
++{
++	struct meson_encoder_dsi *meson_encoder_dsi =
++					bridge_to_meson_encoder_dsi(bridge);
++	struct meson_drm *priv = meson_encoder_dsi->priv;
++
++	writel_relaxed(0, priv->io_base + _REG(ENCL_VIDEO_EN));
++
++	writel_bits_relaxed(BIT(0), BIT(0), priv->io_base + _REG(VPP_WRAP_OSD1_MATRIX_EN_CTRL));
++}
++
++static const struct drm_bridge_funcs meson_encoder_dsi_bridge_funcs = {
++	.attach	= meson_encoder_dsi_attach,
++	.atomic_enable = meson_encoder_dsi_atomic_enable,
++	.atomic_disable	= meson_encoder_dsi_atomic_disable,
++	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
++	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
++	.atomic_reset = drm_atomic_helper_bridge_reset,
++};
++
++int meson_encoder_dsi_init(struct meson_drm *priv)
++{
++	struct meson_encoder_dsi *meson_encoder_dsi;
++	struct device_node *remote;
++	int ret;
++
++	meson_encoder_dsi = devm_kzalloc(priv->dev, sizeof(*meson_encoder_dsi), GFP_KERNEL);
++	if (!meson_encoder_dsi)
++		return -ENOMEM;
++
++	/* DSI Transceiver Bridge */
++	remote = of_graph_get_remote_node(priv->dev->of_node, 2, 0);
++	if (!remote) {
++		dev_err(priv->dev, "DSI transceiver device is disabled");
++		return 0;
++	}
++
++	meson_encoder_dsi->next_bridge = of_drm_find_bridge(remote);
++	if (!meson_encoder_dsi->next_bridge) {
++		dev_dbg(priv->dev, "Failed to find DSI transceiver bridge\n");
++		return -EPROBE_DEFER;
++	}
++
++	/* DSI Encoder Bridge */
++	meson_encoder_dsi->bridge.funcs = &meson_encoder_dsi_bridge_funcs;
++	meson_encoder_dsi->bridge.of_node = priv->dev->of_node;
++	meson_encoder_dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
++
++	drm_bridge_add(&meson_encoder_dsi->bridge);
++
++	meson_encoder_dsi->priv = priv;
++
++	/* Encoder */
++	ret = drm_simple_encoder_init(priv->drm, &meson_encoder_dsi->encoder,
++				      DRM_MODE_ENCODER_DSI);
++	if (ret) {
++		dev_err(priv->dev, "Failed to init DSI encoder: %d\n", ret);
++		return ret;
++	}
++
++	meson_encoder_dsi->encoder.possible_crtcs = BIT(0);
++
++	/* Attach DSI Encoder Bridge to Encoder */
++	ret = drm_bridge_attach(&meson_encoder_dsi->encoder, &meson_encoder_dsi->bridge, NULL, 0);
++	if (ret) {
++		dev_err(priv->dev, "Failed to attach bridge: %d\n", ret);
++		return ret;
++	}
++
++	/*
++	 * We should have now in place:
++	 * encoder->[dsi encoder bridge]->[dw-mipi-dsi bridge]->[panel bridge]->[panel]
++	 */
++
++	priv->encoders[MESON_ENC_DSI] = meson_encoder_dsi;
++
++	dev_dbg(priv->dev, "DSI encoder initialized\n");
++
++	return 0;
++}
++
++void meson_encoder_dsi_remove(struct meson_drm *priv)
++{
++	struct meson_encoder_dsi *meson_encoder_dsi;
++
++	if (priv->encoders[MESON_ENC_DSI]) {
++		meson_encoder_dsi = priv->encoders[MESON_ENC_DSI];
++		drm_bridge_remove(&meson_encoder_dsi->bridge);
++		drm_bridge_remove(meson_encoder_dsi->next_bridge);
++	}
++}
+diff --git a/drivers/gpu/drm/meson/meson_encoder_dsi.h b/drivers/gpu/drm/meson/meson_encoder_dsi.h
+new file mode 100644
+index 000000000000..9277d7015193
+--- /dev/null
++++ b/drivers/gpu/drm/meson/meson_encoder_dsi.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2021 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ */
++
++#ifndef __MESON_ENCODER_DSI_H
++#define __MESON_ENCODER_DSI_H
++
++int meson_encoder_dsi_init(struct meson_drm *priv);
++void meson_encoder_dsi_remove(struct meson_drm *priv);
++
++#endif /* __MESON_ENCODER_DSI_H */
+
+
+The Amlogic G12A/G12B/SM1 SoCs embeds a Synopsys DW-MIPI-DSI transceiver
+(ver 1.21a), with a custom glue managing the IP resets, clock and data
+inputs similar to the DW-HDMI Glue on other Amlogic SoCs.
+
+This adds support for the Glue managing the transceiver, mimicing the init
+flow provided by Amlogic to setup the ENCL encoder, the glue, the transceiver,
+the digital D-PHY and the Analog PHY in the proper way.
+
+An optional "MEAS" clock can be enabled to measure the delay between each
+vsync feeding the DW-MIPI-DSI transceiver.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com> # on Khadas VIM3 + TS050 Panel
+---
+ drivers/gpu/drm/meson/Kconfig             |   7 +
+ drivers/gpu/drm/meson/Makefile            |   1 +
+ drivers/gpu/drm/meson/meson_dw_mipi_dsi.c | 352 ++++++++++++++++++++++++++++++
+ drivers/gpu/drm/meson/meson_dw_mipi_dsi.h | 160 ++++++++++++++
+ 4 files changed, 520 insertions(+)
+
+diff --git a/drivers/gpu/drm/meson/Kconfig b/drivers/gpu/drm/meson/Kconfig
+index 823909da87db..615fdd0ce41b 100644
+--- a/drivers/gpu/drm/meson/Kconfig
++++ b/drivers/gpu/drm/meson/Kconfig
+@@ -17,3 +17,10 @@ config DRM_MESON_DW_HDMI
+ 	default y if DRM_MESON
+ 	select DRM_DW_HDMI
+ 	imply DRM_DW_HDMI_I2S_AUDIO
++
++config DRM_MESON_DW_MIPI_DSI
++	tristate "MIPI DSI Synopsys Controller support for Amlogic Meson Display"
++	depends on DRM_MESON
++	default y if DRM_MESON
++	select DRM_DW_MIPI_DSI
++	select GENERIC_PHY_MIPI_DPHY
+diff --git a/drivers/gpu/drm/meson/Makefile b/drivers/gpu/drm/meson/Makefile
+index 833e18c20603..43071bdbd4b9 100644
+--- a/drivers/gpu/drm/meson/Makefile
++++ b/drivers/gpu/drm/meson/Makefile
+@@ -6,3 +6,4 @@ meson-drm-y += meson_encoder_hdmi.o meson_encoder_dsi.o
+ 
+ obj-$(CONFIG_DRM_MESON) += meson-drm.o
+ obj-$(CONFIG_DRM_MESON_DW_HDMI) += meson_dw_hdmi.o
++obj-$(CONFIG_DRM_MESON_DW_MIPI_DSI) += meson_dw_mipi_dsi.o
+diff --git a/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c
+new file mode 100644
+index 000000000000..dd505ac37976
+--- /dev/null
++++ b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.c
+@@ -0,0 +1,352 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2021 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
++ */
++
++#include <linux/clk.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_graph.h>
++#include <linux/reset.h>
++#include <linux/phy/phy.h>
++#include <linux/bitfield.h>
++
++#include <video/mipi_display.h>
++
++#include <drm/bridge/dw_mipi_dsi.h>
++#include <drm/drm_mipi_dsi.h>
++
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_device.h>
++#include <drm/drm_probe_helper.h>
++#include <drm/drm_print.h>
++
++#include "meson_drv.h"
++#include "meson_dw_mipi_dsi.h"
++#include "meson_registers.h"
++#include "meson_venc.h"
++
++#define DRIVER_NAME "meson-dw-mipi-dsi"
++#define DRIVER_DESC "Amlogic Meson MIPI-DSI DRM driver"
++
++struct meson_dw_mipi_dsi {
++	struct meson_drm *priv;
++	struct device *dev;
++	void __iomem *base;
++	struct phy *phy;
++	union phy_configure_opts phy_opts;
++	struct dw_mipi_dsi *dmd;
++	struct dw_mipi_dsi_plat_data pdata;
++	struct mipi_dsi_device *dsi_device;
++	const struct drm_display_mode *mode;
++	struct clk *bit_clk;
++	struct clk *px_clk;
++	struct reset_control *top_rst;
++};
++
++#define encoder_to_meson_dw_mipi_dsi(x) \
++	container_of(x, struct meson_dw_mipi_dsi, encoder)
++
++static void meson_dw_mipi_dsi_hw_init(struct meson_dw_mipi_dsi *mipi_dsi)
++{
++	/* Software reset */
++	writel_bits_relaxed(MIPI_DSI_TOP_SW_RESET_DWC | MIPI_DSI_TOP_SW_RESET_INTR |
++			    MIPI_DSI_TOP_SW_RESET_DPI | MIPI_DSI_TOP_SW_RESET_TIMING,
++			    MIPI_DSI_TOP_SW_RESET_DWC | MIPI_DSI_TOP_SW_RESET_INTR |
++			    MIPI_DSI_TOP_SW_RESET_DPI | MIPI_DSI_TOP_SW_RESET_TIMING,
++			    mipi_dsi->base + MIPI_DSI_TOP_SW_RESET);
++	writel_bits_relaxed(MIPI_DSI_TOP_SW_RESET_DWC | MIPI_DSI_TOP_SW_RESET_INTR |
++			    MIPI_DSI_TOP_SW_RESET_DPI | MIPI_DSI_TOP_SW_RESET_TIMING,
++			    0, mipi_dsi->base + MIPI_DSI_TOP_SW_RESET);
++
++	/* Enable clocks */
++	writel_bits_relaxed(MIPI_DSI_TOP_CLK_SYSCLK_EN | MIPI_DSI_TOP_CLK_PIXCLK_EN,
++			    MIPI_DSI_TOP_CLK_SYSCLK_EN | MIPI_DSI_TOP_CLK_PIXCLK_EN,
++			    mipi_dsi->base + MIPI_DSI_TOP_CLK_CNTL);
++
++	/* Take memory out of power down */
++	writel_relaxed(0, mipi_dsi->base + MIPI_DSI_TOP_MEM_PD);
++}
++
++static int dw_mipi_dsi_phy_init(void *priv_data)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++	unsigned int dpi_data_format, venc_data_width;
++	int ret;
++
++	/* Set the bit clock rate to hs_clk_rate */
++	ret = clk_set_rate(mipi_dsi->bit_clk,
++			   mipi_dsi->phy_opts.mipi_dphy.hs_clk_rate);
++	if (ret) {
++		dev_err(mipi_dsi->dev, "Failed to set DSI Bit clock rate %lu (ret %d)\n",
++			mipi_dsi->phy_opts.mipi_dphy.hs_clk_rate, ret);
++		return ret;
++	}
++
++	/* Make sure the rate of the bit clock is not modified by someone else */
++	ret = clk_rate_exclusive_get(mipi_dsi->bit_clk);
++	if (ret) {
++		dev_err(mipi_dsi->dev,
++			"Failed to set the exclusivity on the bit clock rate (ret %d)\n", ret);
++		return ret;
++	}
++
++	ret = clk_set_rate(mipi_dsi->px_clk, mipi_dsi->mode->clock * 1000);
++
++	if (ret) {
++		dev_err(mipi_dsi->dev, "Failed to set DSI Pixel clock rate %u (%d)\n",
++			mipi_dsi->mode->clock * 1000, ret);
++		return ret;
++	}
++
++	switch (mipi_dsi->dsi_device->format) {
++	case MIPI_DSI_FMT_RGB888:
++		dpi_data_format = DPI_COLOR_24BIT;
++		venc_data_width = VENC_IN_COLOR_24B;
++		break;
++	case MIPI_DSI_FMT_RGB666:
++		dpi_data_format = DPI_COLOR_18BIT_CFG_2;
++		venc_data_width = VENC_IN_COLOR_18B;
++		break;
++	case MIPI_DSI_FMT_RGB666_PACKED:
++	case MIPI_DSI_FMT_RGB565:
++		return -EINVAL;
++	};
++
++	/* Configure color format for DPI register */
++	writel_relaxed(FIELD_PREP(MIPI_DSI_TOP_DPI_COLOR_MODE, dpi_data_format) |
++		       FIELD_PREP(MIPI_DSI_TOP_IN_COLOR_MODE, venc_data_width) |
++		       FIELD_PREP(MIPI_DSI_TOP_COMP2_SEL, 2) |
++		       FIELD_PREP(MIPI_DSI_TOP_COMP1_SEL, 1) |
++		       FIELD_PREP(MIPI_DSI_TOP_COMP0_SEL, 0),
++			mipi_dsi->base + MIPI_DSI_TOP_CNTL);
++
++	return phy_configure(mipi_dsi->phy, &mipi_dsi->phy_opts);
++}
++
++static void dw_mipi_dsi_phy_power_on(void *priv_data)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++
++	if (phy_power_on(mipi_dsi->phy))
++		dev_warn(mipi_dsi->dev, "Failed to power on PHY\n");
++}
++
++static void dw_mipi_dsi_phy_power_off(void *priv_data)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++
++	if (phy_power_off(mipi_dsi->phy))
++		dev_warn(mipi_dsi->dev, "Failed to power off PHY\n");
++
++	/* Remove the exclusivity on the bit clock rate */
++	clk_rate_exclusive_put(mipi_dsi->bit_clk);
++}
++
++static int
++dw_mipi_dsi_get_lane_mbps(void *priv_data, const struct drm_display_mode *mode,
++			  unsigned long mode_flags, u32 lanes, u32 format,
++			  unsigned int *lane_mbps)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++	int bpp;
++
++	mipi_dsi->mode = mode;
++
++	bpp = mipi_dsi_pixel_format_to_bpp(mipi_dsi->dsi_device->format);
++
++	phy_mipi_dphy_get_default_config(mode->clock * 1000,
++					 bpp, mipi_dsi->dsi_device->lanes,
++					 &mipi_dsi->phy_opts.mipi_dphy);
++
++	*lane_mbps = DIV_ROUND_UP(mipi_dsi->phy_opts.mipi_dphy.hs_clk_rate, USEC_PER_SEC);
++
++	return 0;
++}
++
++static int
++dw_mipi_dsi_phy_get_timing(void *priv_data, unsigned int lane_mbps,
++			   struct dw_mipi_dsi_dphy_timing *timing)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++
++	switch (mipi_dsi->mode->hdisplay) {
++	case 240:
++	case 768:
++	case 1920:
++	case 2560:
++		timing->clk_lp2hs = 23;
++		timing->clk_hs2lp = 38;
++		timing->data_lp2hs = 15;
++		timing->data_hs2lp = 9;
++		break;
++
++	default:
++		timing->clk_lp2hs = 37;
++		timing->clk_hs2lp = 135;
++		timing->data_lp2hs = 50;
++		timing->data_hs2lp = 3;
++	}
++
++	return 0;
++}
++
++static int
++dw_mipi_dsi_get_esc_clk_rate(void *priv_data, unsigned int *esc_clk_rate)
++{
++	*esc_clk_rate = 4; /* Mhz */
++
++	return 0;
++}
++
++static const struct dw_mipi_dsi_phy_ops meson_dw_mipi_dsi_phy_ops = {
++	.init = dw_mipi_dsi_phy_init,
++	.power_on = dw_mipi_dsi_phy_power_on,
++	.power_off = dw_mipi_dsi_phy_power_off,
++	.get_lane_mbps = dw_mipi_dsi_get_lane_mbps,
++	.get_timing = dw_mipi_dsi_phy_get_timing,
++	.get_esc_clk_rate = dw_mipi_dsi_get_esc_clk_rate,
++};
++
++static int meson_dw_mipi_dsi_host_attach(void *priv_data,
++					 struct mipi_dsi_device *device)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++	int ret;
++
++	mipi_dsi->dsi_device = device;
++
++	switch (device->format) {
++	case MIPI_DSI_FMT_RGB888:
++		break;
++	case MIPI_DSI_FMT_RGB666:
++		break;
++	case MIPI_DSI_FMT_RGB666_PACKED:
++	case MIPI_DSI_FMT_RGB565:
++		dev_err(mipi_dsi->dev, "invalid pixel format %d\n", device->format);
++		return -EINVAL;
++	};
++
++	ret = phy_init(mipi_dsi->phy);
++	if (ret)
++		return ret;
++
++	meson_dw_mipi_dsi_hw_init(mipi_dsi);
++
++	return 0;
++}
++
++static int meson_dw_mipi_dsi_host_detach(void *priv_data,
++					 struct mipi_dsi_device *device)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = priv_data;
++
++	if (device == mipi_dsi->dsi_device)
++		mipi_dsi->dsi_device = NULL;
++	else
++		return -EINVAL;
++
++	return phy_exit(mipi_dsi->phy);
++}
++
++static const struct dw_mipi_dsi_host_ops meson_dw_mipi_dsi_host_ops = {
++	.attach = meson_dw_mipi_dsi_host_attach,
++	.detach = meson_dw_mipi_dsi_host_detach,
++};
++
++static int meson_dw_mipi_dsi_probe(struct platform_device *pdev)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi;
++	struct device *dev = &pdev->dev;
++
++	mipi_dsi = devm_kzalloc(dev, sizeof(*mipi_dsi), GFP_KERNEL);
++	if (!mipi_dsi)
++		return -ENOMEM;
++
++	mipi_dsi->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(mipi_dsi->base))
++		return PTR_ERR(mipi_dsi->base);
++
++	mipi_dsi->phy = devm_phy_get(dev, "dphy");
++	if (IS_ERR(mipi_dsi->phy))
++		return dev_err_probe(dev, PTR_ERR(mipi_dsi->phy),
++				     "failed to get mipi dphy\n");
++
++	mipi_dsi->bit_clk = devm_clk_get_enabled(dev, "bit");
++	if (IS_ERR(mipi_dsi->bit_clk)) {
++		int ret = PTR_ERR(mipi_dsi->bit_clk);
++
++		/* TOFIX GP0 on some platforms fails to lock in early boot, defer probe */
++		if (ret == -EIO)
++			ret = -EPROBE_DEFER;
++
++		return dev_err_probe(dev, ret, "Unable to get enabled bit_clk\n");
++	}
++
++	mipi_dsi->px_clk = devm_clk_get_enabled(dev, "px");
++	if (IS_ERR(mipi_dsi->px_clk))
++		return dev_err_probe(dev, PTR_ERR(mipi_dsi->px_clk),
++				     "Unable to get enabled px_clk\n");
++
++	/*
++	 * We use a TOP reset signal because the APB reset signal
++	 * is handled by the TOP control registers.
++	 */
++	mipi_dsi->top_rst = devm_reset_control_get_exclusive(dev, "top");
++	if (IS_ERR(mipi_dsi->top_rst))
++		return dev_err_probe(dev, PTR_ERR(mipi_dsi->top_rst),
++				     "Unable to get reset control\n");
++
++	reset_control_assert(mipi_dsi->top_rst);
++	usleep_range(10, 20);
++	reset_control_deassert(mipi_dsi->top_rst);
++
++	/* MIPI DSI Controller */
++
++	mipi_dsi->dev = dev;
++	mipi_dsi->pdata.base = mipi_dsi->base;
++	mipi_dsi->pdata.max_data_lanes = 4;
++	mipi_dsi->pdata.phy_ops = &meson_dw_mipi_dsi_phy_ops;
++	mipi_dsi->pdata.host_ops = &meson_dw_mipi_dsi_host_ops;
++	mipi_dsi->pdata.priv_data = mipi_dsi;
++	platform_set_drvdata(pdev, mipi_dsi);
++
++	mipi_dsi->dmd = dw_mipi_dsi_probe(pdev, &mipi_dsi->pdata);
++	if (IS_ERR(mipi_dsi->dmd))
++		return dev_err_probe(dev, PTR_ERR(mipi_dsi->dmd),
++				     "Failed to probe dw_mipi_dsi\n");
++
++	return 0;
++}
++
++static int meson_dw_mipi_dsi_remove(struct platform_device *pdev)
++{
++	struct meson_dw_mipi_dsi *mipi_dsi = platform_get_drvdata(pdev);
++
++	dw_mipi_dsi_remove(mipi_dsi->dmd);
++
++	return 0;
++}
++
++static const struct of_device_id meson_dw_mipi_dsi_of_table[] = {
++	{ .compatible = "amlogic,meson-g12a-dw-mipi-dsi", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, meson_dw_mipi_dsi_of_table);
++
++static struct platform_driver meson_dw_mipi_dsi_platform_driver = {
++	.probe		= meson_dw_mipi_dsi_probe,
++	.remove		= meson_dw_mipi_dsi_remove,
++	.driver		= {
++		.name		= DRIVER_NAME,
++		.of_match_table	= meson_dw_mipi_dsi_of_table,
++	},
++};
++module_platform_driver(meson_dw_mipi_dsi_platform_driver);
++
++MODULE_AUTHOR("Neil Armstrong <narmstrong@baylibre.com>");
++MODULE_DESCRIPTION(DRIVER_DESC);
++MODULE_LICENSE("GPL");
+diff --git a/drivers/gpu/drm/meson/meson_dw_mipi_dsi.h b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.h
+new file mode 100644
+index 000000000000..e1bd6b85d6a3
+--- /dev/null
++++ b/drivers/gpu/drm/meson/meson_dw_mipi_dsi.h
+@@ -0,0 +1,160 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2020 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ * Copyright (C) 2018 Amlogic, Inc. All rights reserved.
++ */
++
++#ifndef __MESON_DW_MIPI_DSI_H
++#define __MESON_DW_MIPI_DSI_H
++
++/* Top-level registers */
++/* [31: 4]    Reserved.     Default 0.
++ *     [3] RW timing_rst_n: Default 1.
++ *		1=Assert SW reset of timing feature.   0=Release reset.
++ *     [2] RW dpi_rst_n: Default 1.
++ *		1=Assert SW reset on mipi_dsi_host_dpi block.   0=Release reset.
++ *     [1] RW intr_rst_n: Default 1.
++ *		1=Assert SW reset on mipi_dsi_host_intr block.  0=Release reset.
++ *     [0] RW dwc_rst_n:  Default 1.
++ *		1=Assert SW reset on IP core.   0=Release reset.
++ */
++#define MIPI_DSI_TOP_SW_RESET                      0x3c0
++
++#define MIPI_DSI_TOP_SW_RESET_DWC	BIT(0)
++#define MIPI_DSI_TOP_SW_RESET_INTR	BIT(1)
++#define MIPI_DSI_TOP_SW_RESET_DPI	BIT(2)
++#define MIPI_DSI_TOP_SW_RESET_TIMING	BIT(3)
++
++/* [31: 5] Reserved.   Default 0.
++ *     [4] RW manual_edpihalt: Default 0.
++ *		1=Manual suspend VencL; 0=do not suspend VencL.
++ *     [3] RW auto_edpihalt_en: Default 0.
++ *		1=Enable IP's edpihalt signal to suspend VencL;
++ *		0=IP's edpihalt signal does not affect VencL.
++ *     [2] RW clock_freerun: Apply to auto-clock gate only. Default 0.
++ *		0=Default, use auto-clock gating to save power;
++ *		1=use free-run clock, disable auto-clock gating, for debug mode.
++ *     [1] RW enable_pixclk: A manual clock gate option, due to DWC IP does not
++ *		have auto-clock gating. 1=Enable pixclk.      Default 0.
++ *     [0] RW enable_sysclk: A manual clock gate option, due to DWC IP does not
++ *		have auto-clock gating. 1=Enable sysclk.      Default 0.
++ */
++#define MIPI_DSI_TOP_CLK_CNTL                      0x3c4
++
++#define MIPI_DSI_TOP_CLK_SYSCLK_EN	BIT(0)
++#define MIPI_DSI_TOP_CLK_PIXCLK_EN	BIT(1)
++
++/* [31:24]    Reserved. Default 0.
++ * [23:20] RW dpi_color_mode: Define DPI pixel format. Default 0.
++ *		0=16-bit RGB565 config 1;
++ *		1=16-bit RGB565 config 2;
++ *		2=16-bit RGB565 config 3;
++ *		3=18-bit RGB666 config 1;
++ *		4=18-bit RGB666 config 2;
++ *		5=24-bit RGB888;
++ *		6=20-bit YCbCr 4:2:2;
++ *		7=24-bit YCbCr 4:2:2;
++ *		8=16-bit YCbCr 4:2:2;
++ *		9=30-bit RGB;
++ *		10=36-bit RGB;
++ *		11=12-bit YCbCr 4:2:0.
++ *    [19] Reserved. Default 0.
++ * [18:16] RW in_color_mode:  Define VENC data width. Default 0.
++ *		0=30-bit pixel;
++ *		1=24-bit pixel;
++ *		2=18-bit pixel, RGB666;
++ *		3=16-bit pixel, RGB565.
++ * [15:14] RW chroma_subsample: Define method of chroma subsampling. Default 0.
++ *		Applicable to YUV422 or YUV420 only.
++ *		0=Use even pixel's chroma;
++ *		1=Use odd pixel's chroma;
++ *		2=Use averaged value between even and odd pair.
++ * [13:12] RW comp2_sel:  Select which component to be Cr or B: Default 2.
++ *		0=comp0; 1=comp1; 2=comp2.
++ * [11:10] RW comp1_sel:  Select which component to be Cb or G: Default 1.
++ *		0=comp0; 1=comp1; 2=comp2.
++ *  [9: 8] RW comp0_sel:  Select which component to be Y  or R: Default 0.
++ *		0=comp0; 1=comp1; 2=comp2.
++ *     [7]    Reserved. Default 0.
++ *     [6] RW de_pol:  Default 0.
++ *		If DE input is active low, set to 1 to invert to active high.
++ *     [5] RW hsync_pol: Default 0.
++ *		If HS input is active low, set to 1 to invert to active high.
++ *     [4] RW vsync_pol: Default 0.
++ *		If VS input is active low, set to 1 to invert to active high.
++ *     [3] RW dpicolorm: Signal to IP.   Default 0.
++ *     [2] RW dpishutdn: Signal to IP.   Default 0.
++ *     [1]    Reserved.  Default 0.
++ *     [0]    Reserved.  Default 0.
++ */
++#define MIPI_DSI_TOP_CNTL                          0x3c8
++
++/* VENC data width */
++#define VENC_IN_COLOR_30B   0x0
++#define VENC_IN_COLOR_24B   0x1
++#define VENC_IN_COLOR_18B   0x2
++#define VENC_IN_COLOR_16B   0x3
++
++/* DPI pixel format */
++#define DPI_COLOR_16BIT_CFG_1		0
++#define DPI_COLOR_16BIT_CFG_2		1
++#define DPI_COLOR_16BIT_CFG_3		2
++#define DPI_COLOR_18BIT_CFG_1		3
++#define DPI_COLOR_18BIT_CFG_2		4
++#define DPI_COLOR_24BIT			5
++#define DPI_COLOR_20BIT_YCBCR_422	6
++#define DPI_COLOR_24BIT_YCBCR_422	7
++#define DPI_COLOR_16BIT_YCBCR_422	8
++#define DPI_COLOR_30BIT			9
++#define DPI_COLOR_36BIT			10
++#define DPI_COLOR_12BIT_YCBCR_420	11
++
++#define MIPI_DSI_TOP_DPI_COLOR_MODE	GENMASK(23, 20)
++#define MIPI_DSI_TOP_IN_COLOR_MODE	GENMASK(18, 16)
++#define MIPI_DSI_TOP_CHROMA_SUBSAMPLE	GENMASK(15, 14)
++#define MIPI_DSI_TOP_COMP2_SEL		GENMASK(13, 12)
++#define MIPI_DSI_TOP_COMP1_SEL		GENMASK(11, 10)
++#define MIPI_DSI_TOP_COMP0_SEL		GENMASK(9, 8)
++#define MIPI_DSI_TOP_DE_INVERT		BIT(6)
++#define MIPI_DSI_TOP_HSYNC_INVERT	BIT(5)
++#define MIPI_DSI_TOP_VSYNC_INVERT	BIT(4)
++#define MIPI_DSI_TOP_DPICOLORM		BIT(3)
++#define MIPI_DSI_TOP_DPISHUTDN		BIT(2)
++
++#define MIPI_DSI_TOP_SUSPEND_CNTL                  0x3cc
++#define MIPI_DSI_TOP_SUSPEND_LINE                  0x3d0
++#define MIPI_DSI_TOP_SUSPEND_PIX                   0x3d4
++#define MIPI_DSI_TOP_MEAS_CNTL                     0x3d8
++/* [0] R  stat_edpihalt:  edpihalt signal from IP.    Default 0. */
++#define MIPI_DSI_TOP_STAT                          0x3dc
++#define MIPI_DSI_TOP_MEAS_STAT_TE0                 0x3e0
++#define MIPI_DSI_TOP_MEAS_STAT_TE1                 0x3e4
++#define MIPI_DSI_TOP_MEAS_STAT_VS0                 0x3e8
++#define MIPI_DSI_TOP_MEAS_STAT_VS1                 0x3ec
++/* [31:16] RW intr_stat/clr. Default 0.
++ *		For each bit, read as this interrupt level status,
++ *		write 1 to clear.
++ * [31:22] Reserved
++ * [   21] stat/clr of eof interrupt
++ * [   21] vde_fall interrupt
++ * [   19] stat/clr of de_rise interrupt
++ * [   18] stat/clr of vs_fall interrupt
++ * [   17] stat/clr of vs_rise interrupt
++ * [   16] stat/clr of dwc_edpite interrupt
++ * [15: 0] RW intr_enable. Default 0.
++ *		For each bit, 1=enable this interrupt, 0=disable.
++ *	[15: 6] Reserved
++ *	[    5] eof interrupt
++ *	[    4] de_fall interrupt
++ *	[    3] de_rise interrupt
++ *	[    2] vs_fall interrupt
++ *	[    1] vs_rise interrupt
++ *	[    0] dwc_edpite interrupt
++ */
++#define MIPI_DSI_TOP_INTR_CNTL_STAT                0x3f0
++// 31: 2    Reserved.   Default 0.
++//  1: 0 RW mem_pd.     Default 3.
++#define MIPI_DSI_TOP_MEM_PD                        0x3f4
++
++#endif /* __MESON_DW_MIPI_DSI_H */
+
+
+This updates the panel timings to achieve a clean 60Hz refresh rate.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Nicolas Belin <nbelin@baylibre.com>
+Tested-by: Nicolas Belin <nbelin@baylibre.com> # on Khadas VIM3 + TS050 Panel
+---
+ drivers/gpu/drm/panel/panel-khadas-ts050.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-khadas-ts050.c b/drivers/gpu/drm/panel/panel-khadas-ts050.c
+index 1ab1ebe30882..b942a0162274 100644
+--- a/drivers/gpu/drm/panel/panel-khadas-ts050.c
++++ b/drivers/gpu/drm/panel/panel-khadas-ts050.c
+@@ -568,7 +568,7 @@ static const struct khadas_ts050_panel_cmd init_code[] = {
+ 	{0xfb, 0x01},
+ 	/* Select CMD1 */
+ 	{0xff, 0x00},
+-	{0xd3, 0x05}, /* RGBMIPICTRL: VSYNC back porch = 5 */
++	{0xd3, 0x22}, /* RGBMIPICTRL: VSYNC back porch = 34 */
+ 	{0xd4, 0x04}, /* RGBMIPICTRL: VSYNC front porch = 4 */
+ };
+ 
+@@ -717,15 +717,15 @@ static int khadas_ts050_panel_disable(struct drm_panel *panel)
+ }
+ 
+ static const struct drm_display_mode default_mode = {
+-	.clock = 120000,
+-	.hdisplay = 1088,
+-	.hsync_start = 1088 + 104,
+-	.hsync_end = 1088 + 104 + 4,
+-	.htotal = 1088 + 104 + 4 + 127,
++	.clock = 160000,
++	.hdisplay = 1080,
++	.hsync_start = 1080 + 117,
++	.hsync_end = 1080 + 117 + 5,
++	.htotal = 1080 + 117 + 5 + 160,
+ 	.vdisplay = 1920,
+ 	.vsync_start = 1920 + 4,
+-	.vsync_end = 1920 + 4 + 2,
+-	.vtotal = 1920 + 4 + 2 + 3,
++	.vsync_end = 1920 + 4 + 3,
++	.vtotal = 1920 + 4 + 3 + 31,
+ 	.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+ };
+ 
+
+
+Add the MIPI DSI Analog & Digital PHY nodes and the DSI control
+nodes with proper port endpoint to the VPU.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 70 +++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 0c49655cc90c..e2d890e72940 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -1662,9 +1662,28 @@ pwrc: power-controller {
+ 								       <250000000>,
+ 								       <0>; /* Do Nothing */
+ 					};
++
++					mipi_analog_dphy: phy {
++						compatible = "amlogic,g12a-mipi-dphy-analog";
++						#phy-cells = <0>;
++						status = "disabled";
++					};
+ 				};
+ 			};
+ 
++			mipi_dphy: phy@44000 {
++				compatible = "amlogic,axg-mipi-dphy";
++				reg = <0x0 0x44000 0x0 0x2000>;
++				clocks = <&clkc CLKID_MIPI_DSI_PHY>;
++				clock-names = "pclk";
++				resets = <&reset RESET_MIPI_DSI_PHY>;
++				reset-names = "phy";
++				phys = <&mipi_analog_dphy>;
++				phy-names = "analog";
++				#phy-cells = <0>;
++				status = "disabled";
++			};
++
+ 			usb3_pcie_phy: phy@46000 {
+ 				compatible = "amlogic,g12a-usb3-pcie-phy";
+ 				reg = <0x0 0x46000 0x0 0x2000>;
+@@ -2151,6 +2170,15 @@ hdmi_tx_out: endpoint {
+ 					remote-endpoint = <&hdmi_tx_in>;
+ 				};
+ 			};
++
++			/* DPI output port */
++			dpi_port: port@2 {
++				reg = <2>;
++
++				dpi_out: endpoint {
++					remote-endpoint = <&mipi_dsi_in>;
++				};
++			};
+ 		};
+ 
+ 		gic: interrupt-controller@ffc01000 {
+@@ -2188,6 +2216,48 @@ gpio_intc: interrupt-controller@f080 {
+ 				amlogic,channel-interrupts = <64 65 66 67 68 69 70 71>;
+ 			};
+ 
++			mipi_dsi: mipi-dsi@7000 {
++				compatible = "amlogic,meson-g12a-dw-mipi-dsi";
++				reg = <0x0 0x7000 0x0 0x1000>;
++				resets = <&reset RESET_MIPI_DSI_HOST>;
++				reset-names = "top";
++				clocks = <&clkc CLKID_MIPI_DSI_HOST>,
++					 <&clkc CLKID_MIPI_DSI_PXCLK>,
++					 <&clkc CLKID_CTS_ENCL>;
++				clock-names = "pclk", "bit", "px";
++				phys = <&mipi_dphy>;
++				phy-names = "dphy";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++
++				assigned-clocks = <&clkc CLKID_MIPI_DSI_PXCLK_SEL>,
++					 <&clkc CLKID_CTS_ENCL_SEL>,
++					 <&clkc CLKID_VCLK2_SEL>;
++				assigned-clock-parents = <&clkc CLKID_GP0_PLL>,
++					 <&clkc CLKID_VCLK2_DIV1>,
++					 <&clkc CLKID_GP0_PLL>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					/* VPU VENC Input */
++					mipi_dsi_venc_port: port@0 {
++						reg = <0>;
++
++						mipi_dsi_in: endpoint {
++							remote-endpoint = <&dpi_out>;
++						};
++					};
++
++					/* DSI Output */
++					mipi_dsi_panel_port: port@1 {
++						reg = <1>;
++					};
++				};
++			};
++
+ 			watchdog: watchdog@f0d0 {
+ 				compatible = "amlogic,meson-gxbb-wdt";
+ 				reg = <0x0 0xf0d0 0x0 0x10>;
+
+
+This add nodes to support the Khadas TS050 panel on the
+Khadas VIM3 & VIM3L boards.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ .../boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi   |  2 +-
+ arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi | 76 ++++++++++++++++++++++
+ .../boot/dts/amlogic/meson-sm1-khadas-vim3l.dts    |  2 +-
+ 3 files changed, 78 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
+index 16dd409051b4..81c3057143b4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
+@@ -98,7 +98,7 @@ &pwm_ab {
+ };
+ 
+ &pwm_AO_cd {
+-	pinctrl-0 = <&pwm_ao_d_e_pins>;
++	pinctrl-0 = <&pwm_ao_c_6_pins>, <&pwm_ao_d_e_pins>;
+ 	pinctrl-names = "default";
+ 	clocks = <&xtal>;
+ 	clock-names = "clkin1";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+index c9705941e4ab..0c50a32bb0c0 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+@@ -40,6 +40,14 @@ button-function {
+ 		};
+ 	};
+ 
++	panel_backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm_AO_cd 0 25000 0>;
++		brightness-levels = <0 255>;
++		num-interpolated-steps = <255>;
++		default-brightness-level = <200>;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -359,6 +367,23 @@ rtc: rtc@51 {
+ 	};
+ };
+ 
++&i2c3 {
++	status = "okay";
++	pinctrl-0 = <&i2c3_sda_a_pins>, <&i2c3_sck_a_pins>;
++	pinctrl-names = "default";
++
++	touch-controller@38 {
++		compatible = "edt,edt-ft5206";
++		reg = <0x38>;
++		interrupt-parent = <&gpio_intc>;
++		interrupts = <66 IRQ_TYPE_EDGE_FALLING>; /* GPIOA_5 */
++		reset-gpio = <&gpio_expander 6 GPIO_ACTIVE_LOW>;
++		touchscreen-size-x = <1080>;
++		touchscreen-size-y = <1920>;
++		status = "okay";
++	};
++};
++
+ &ir {
+ 	status = "okay";
+ 	pinctrl-0 = <&remote_input_ao_pins>;
+@@ -366,6 +391,57 @@ &ir {
+ 	linux,rc-map-name = "rc-khadas";
+ };
+ 
++&mipi_dsi {
++	status = "okay";
++
++	assigned-clocks = <&clkc CLKID_GP0_PLL>,
++			  <&clkc CLKID_MIPI_DSI_PXCLK_SEL>,
++			  <&clkc CLKID_MIPI_DSI_PXCLK>,
++			  <&clkc CLKID_CTS_ENCL_SEL>,
++			  <&clkc CLKID_VCLK2_SEL>;
++	assigned-clock-parents = <0>,
++				 <&clkc CLKID_GP0_PLL>,
++				 <0>,
++				 <&clkc CLKID_VCLK2_DIV1>,
++				 <&clkc CLKID_GP0_PLL>;
++	assigned-clock-rates = <960000000>,
++			       <0>,
++			       <960000000>,
++			       <0>,
++			       <0>;
++
++	panel@0 {
++		compatible = "khadas,ts050";
++		reset-gpios = <&gpio_expander 0 GPIO_ACTIVE_LOW>;
++		enable-gpios = <&gpio_expander 1 GPIO_ACTIVE_HIGH>;
++		power-supply = <&vcc_3v3>;
++		backlight = <&panel_backlight>;
++		width-mm = <64>;
++		height-mm = <118>;
++		reg = <0>;
++
++		port {
++			mipi_in_panel: endpoint {
++				remote-endpoint = <&mipi_out_panel>;
++			};
++		};
++	};
++};
++
++&mipi_analog_dphy {
++	status = "okay";
++};
++
++&mipi_dphy {
++	status = "okay";
++};
++
++&mipi_dsi_panel_port {
++	mipi_out_panel: endpoint {
++		remote-endpoint = <&mipi_in_panel>;
++	};
++};
++
+ &pcie {
+ 	reset-gpios = <&gpio GPIOA_8 GPIO_ACTIVE_LOW>;
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts
+index 9c0b544e2209..cb52a55ab70a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dts
+@@ -76,7 +76,7 @@ &cpu3 {
+ };
+ 
+ &pwm_AO_cd {
+-	pinctrl-0 = <&pwm_ao_d_e_pins>;
++	pinctrl-0 = <&pwm_ao_c_6_pins>, <&pwm_ao_d_e_pins>;
+ 	pinctrl-names = "default";
+ 	clocks = <&xtal>;
+ 	clock-names = "clkin1";
+
+
+The MNT Reform 2 CM4 adapter can be populated with any Raspberry Pi CM4
+compatible module such as a BPI-CM4 Module, document that.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 08d59842655c..c237afef5093 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -168,6 +168,7 @@
+         items:
+           - enum:
+               - khadas,vim3
++              - mntre,reform2-cm4
+               - radxa,zero2
+           - const: amlogic,a311d
+           - const: amlogic,g12b
+
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+new file mode 100644
+index 000000000000..12c4ff9c9372
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+@@ -0,0 +1,388 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2023 Neil Armstrong <neil.armstrong@linaro.org>
++ * Copyright 2023 MNT Research GmbH
++ */
++
++/dts-v1/;
++
++#include "meson-g12b-bananapi-cm4.dtsi"
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
++#include <dt-bindings/sound/meson-g12a-tohdmitx.h>
++
++/ {
++	model = "MNT Reform 2 with BPI-CM4 Module";
++	compatible = "mntre,reform2-cm4", "bananapi,bpi-cm4", "amlogic,a311d", "amlogic,g12b";
++	chassis-type = "laptop";
++
++	aliases {
++		ethernet0 = &ethmac;
++		i2c0 = &i2c1;
++		i2c1 = &i2c3;
++	};
++
++	hdmi_connector: hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_tx_tmds_out>;
++			};
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		led-blue {
++			color = <LED_COLOR_ID_BLUE>;
++			function = LED_FUNCTION_STATUS;
++			gpios = <&gpio_ao GPIOAO_7 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "heartbeat";
++		};
++
++		led-green {
++			color = <LED_COLOR_ID_GREEN>;
++			function = LED_FUNCTION_STATUS;
++			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	sound {
++		compatible = "amlogic,axg-sound-card";
++		model = "MNT-REFORM2-BPI-CM4";
++		audio-widgets = "Headphone", "Headphone Jack",
++				"Speaker", "External Speaker",
++				"Microphone", "Mic Jack";
++		audio-aux-devs = <&tdmout_a>, <&tdmout_b>, <&tdmin_b>;
++		audio-routing =	"TDMOUT_A IN 0", "FRDDR_A OUT 0",
++				"TDMOUT_A IN 1", "FRDDR_B OUT 0",
++				"TDMOUT_A IN 2", "FRDDR_C OUT 0",
++				"TDM_A Playback", "TDMOUT_A OUT",
++				"TDMOUT_B IN 0", "FRDDR_A OUT 1",
++				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
++				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"TDMIN_B IN 1", "TDM_B Capture",
++				"TDMIN_B IN 4", "TDM_B Loopback",
++				"TODDR_A IN 1", "TDMIN_B OUT",
++				"TODDR_B IN 1", "TDMIN_B OUT",
++				"TODDR_C IN 1", "TDMIN_B OUT",
++				"Headphone Jack", "HP_L",
++				"Headphone Jack", "HP_R",
++				"External Speaker", "SPK_LP",
++				"External Speaker", "SPK_LN",
++				"External Speaker", "SPK_RP",
++				"External Speaker", "SPK_RN",
++				"LINPUT1", "Mic Jack",
++				"Mic Jack", "MICB";
++
++		assigned-clocks = <&clkc CLKID_MPLL2>,
++					<&clkc CLKID_MPLL0>,
++					<&clkc CLKID_MPLL1>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++
++		dai-link-0 {
++			sound-dai = <&frddr_a>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&frddr_b>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&frddr_c>;
++		};
++
++		dai-link-3 {
++			sound-dai = <&toddr_a>;
++		};
++
++		dai-link-4 {
++			sound-dai = <&toddr_b>;
++		};
++
++		dai-link-5 {
++			sound-dai = <&toddr_c>;
++		};
++
++		/* 8ch hdmi interface */
++		dai-link-6 {
++			sound-dai = <&tdmif_a>;
++			dai-format = "i2s";
++			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
++			dai-tdm-slot-tx-mask-2 = <1 1>;
++			dai-tdm-slot-tx-mask-3 = <1 1>;
++			mclk-fs = <256>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_A>;
++			};
++		};
++
++		/* Analog Audio */
++		dai-link-7 {
++			sound-dai = <&tdmif_b>;
++			dai-format = "i2s";
++			dai-tdm-slot-tx-mask-0 = <1 1>;
++			mclk-fs = <256>;
++
++			codec {
++				sound-dai = <&wm8960>;
++			};
++		};
++
++		/* hdmi glue */
++		dai-link-8 {
++			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++	};
++
++	reg_main_1v8: regulator-main-1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&reg_main_3v3>;
++	};
++
++	reg_main_1v2: regulator-main-1v2 {
++		compatible = "regulator-fixed";
++		regulator-name = "1V2";
++		regulator-min-microvolt = <1200000>;
++		regulator-max-microvolt = <1200000>;
++		vin-supply = <&reg_main_5v>;
++	};
++
++	reg_main_3v3: regulator-main-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++
++	reg_main_5v: regulator-main-5v {
++		compatible = "regulator-fixed";
++		regulator-name = "5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
++	reg_main_usb: regulator-main-usb {
++		compatible = "regulator-fixed";
++		regulator-name = "USB_PWR";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&reg_main_5v>;
++	};
++
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm_AO_ab 0 10000 0>;
++		power-supply = <&reg_main_usb>;
++		enable-gpios = <&gpio 58 GPIO_ACTIVE_HIGH>;
++		brightness-levels = <0 32 64 128 160 200 255>;
++		default-brightness-level = <6>;
++
++		status = "okay";
++	};
++
++	panel {
++		compatible = "innolux,n125hce-gn1", "simple-panel";
++		power-supply = <&reg_main_3v3>;
++		backlight = <&backlight>;
++		no-hpd;
++
++		status = "okay";
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&edp_bridge_out>;
++			};
++		};
++	};
++
++	clock_12288: clock_12288 {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <12288000>;
++	};
++};
++
++&mipi_analog_dphy {
++	status = "okay";
++};
++
++&mipi_dphy {
++	status = "okay";
++};
++
++&mipi_dsi {
++	status = "okay";
++
++	assigned-clocks = <&clkc CLKID_GP0_PLL>,
++			  <&clkc CLKID_MIPI_DSI_PXCLK_SEL>,
++			  <&clkc CLKID_MIPI_DSI_PXCLK>,
++			  <&clkc CLKID_CTS_ENCL_SEL>,
++			  <&clkc CLKID_VCLK2_SEL>;
++	assigned-clock-parents = <0>,
++				 <&clkc CLKID_GP0_PLL>,
++				 <0>,
++				 <&clkc CLKID_VCLK2_DIV1>,
++				 <&clkc CLKID_GP0_PLL>;
++	assigned-clock-rates = <936000000>,
++			       <0>,
++			       <936000000>,
++			       <0>,
++			       <0>;
++};
++
++&mipi_dsi_panel_port {
++	mipi_dsi_out: endpoint {
++		remote-endpoint = <&edp_bridge_in>;
++	};
++};
++
++&cecb_AO {
++	status = "okay";
++};
++
++&ethmac {
++	status = "okay";
++};
++
++&hdmi_tx {
++	status = "okay";
++};
++
++&hdmi_tx_tmds_port {
++	hdmi_tx_tmds_out: endpoint {
++		remote-endpoint = <&hdmi_connector_in>;
++	};
++};
++
++&pwm_AO_ab {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_ao_a_pins>;
++	status = "okay";
++};
++
++&i2c0 {
++	status = "okay";
++};
++
++&i2c3 {
++	status = "okay";
++
++	edp_bridge: bridge@2c {
++		compatible = "ti,sn65dsi86";
++		reg = <0x2c>;
++		enable-gpios = <&gpio GPIOX_10 GPIO_ACTIVE_HIGH>; // PIN_24 / GPIO8
++		vccio-supply = <&reg_main_1v8>;
++		vpll-supply = <&reg_main_1v8>;
++		vcca-supply = <&reg_main_1v2>;
++		vcc-supply = <&reg_main_1v2>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				edp_bridge_in: endpoint {
++					remote-endpoint = <&mipi_dsi_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				edp_bridge_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++};
++
++&i2c2 {
++	status = "okay";
++
++	wm8960: codec@1a {
++		compatible = "wlf,wm8960";
++		reg = <0x1a>;
++		clocks = <&clock_12288>;
++		clock-names = "mclk";
++		#sound-dai-cells = <0>;
++		wlf,shared-lrclk;
++	};
++
++	rtc@68 {
++		compatible = "nxp,pcf8523";
++		reg = <0x68>;
++	};
++};
++
++&pcie {
++	status = "okay";
++};
++
++&sd_emmc_b {
++	status = "okay";
++};
++
++&tdmif_a {
++	status = "okay";
++};
++
++&tdmout_a {
++	status = "okay";
++};
++
++&tdmif_b {
++	pinctrl-0 = <&tdm_b_dout0_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>, <&tdm_b_din1_pins>;
++	pinctrl-names = "default";
++
++	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
++			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD1>;
++	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_SCLK>,
++				 <&clkc_audio AUD_CLKID_MST_B_LRCLK>;
++	assigned-clock-rates = <0>, <0>;
++};
++
++&tdmin_b {
++	status = "okay";
++};
++
++&toddr_a {
++	status = "okay";
++};
++
++&toddr_b {
++	status = "okay";
++};
++
++&toddr_c {
++	status = "okay";
++};
++
++&tohdmitx {
++	status = "okay";
++};
++
++&usb {
++	dr_mode = "host";
++
++	status = "okay";
++};

@@ -48,7 +48,7 @@ disks_to_keep() {
 
 do_listDisks() {
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
-	grep -E '^TYPE=\"disk\" ' |
+	grep -E '^TYPE="disk" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
 	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
 	while read XDRIVE XTEXT
@@ -80,7 +80,7 @@ getPer() {
 
     while true
     do
-	CURVAL=$(stat "${TARFILE}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+	CURVAL=$(stat "${TARFILE}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
 	CURVAL=$((CURVAL / 1024 / 1024))
 	PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
 	echo "downloading >>> ${PER}%"
@@ -143,14 +143,14 @@ do_install() {
 	echo "url: ${url}"
 	headers=$(curl -A "batocera-install.header" -sfIL ${url})
 	test $? -eq 0 || return 1
-	bytessize=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
+	bytessize=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
 	size=$((bytessize / 1024 / 1024))
 	test $? -eq 0 || return 1
 
 	FILETHERE=0
 	if test -f "${INSIMG}"
 	then
-	    CURVAL=$(stat "${INSIMG}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+	    CURVAL=$(stat "${INSIMG}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
 	    if test "${CURVAL}" = "${bytessize}"
 	    then
 		FILETHERE=1

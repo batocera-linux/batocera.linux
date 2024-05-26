@@ -1,15 +1,31 @@
 diff --git a/board/rockchip/odroidgoa/odroidgoa.c b/board/rockchip/odroidgoa/odroidgoa.c
-index 387125f..ac11983 100644
+index 387125f..15e5531 100644
 --- a/board/rockchip/odroidgoa/odroidgoa.c
 +++ b/board/rockchip/odroidgoa/odroidgoa.c
-@@ -196,8 +196,8 @@ int rk_board_late_init(void)
- 	/* show boot logo and version */
+@@ -142,13 +142,6 @@ void board_check_mandatory_files(void)
+ 		}
+ 	}
+ 
+-	/* check launcher in ext4 fs of sd card */
+-	if (file_exists("mmc", "1:2", "/usr/local/bin/emulationstation/emulationstation",
+-				FS_TYPE_EXT)) {
+-		lcd_setfg_color("white");
+-		lcd_printf(0, 0, 1, "[ GO Advanced EMULATION Image ]");
+-	}
+-
+ 	return;
+ 
+ err:
+@@ -193,11 +186,8 @@ int rk_board_late_init(void)
+ 		charge_display();
+ #endif
+ 
+-	/* show boot logo and version */
++	/* show boot logo */
  	lcd_show_logo();
- 	lcd_setfg_color("grey");
+-	lcd_setfg_color("grey");
 -	lcd_printf(0, 18 + disp_offs, 1, " %s", U_BOOT_VERSION);
 -	lcd_printf(0, 19 + disp_offs, 1, " %s %s", U_BOOT_DATE, U_BOOT_TIME);
-+	lcd_printf(0, 18 + disp_offs, 1, " %s", "batocera.linux");
-+	lcd_printf(0, 19 + disp_offs, 1, " %s", "ready to retro");
  
  	if (!board_check_autotest()) {
  		board_run_autotest();

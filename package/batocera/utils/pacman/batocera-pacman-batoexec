@@ -5,6 +5,8 @@
 #
 # 20200528 - Initial revision (support for 'gamelist' and 'exec')
 # 20210521 - Support for multi-Batoexecs and better string escaping
+# 20231018 - Support for a <gameList> of multiple <game> nodes
+# 20231114 - Remove bad ' escaping, add the ability to add games when ES down
 #
 import os
 import sys
@@ -13,6 +15,7 @@ import subprocess
 import httplib2
 import xml.etree.ElementTree as ET
 ES_SERVER="http://127.0.0.1:1234"
+ROMPATH="/userdata/roms"
 
 ########
 # Parse the command file BATOEXEC
@@ -32,25 +35,15 @@ def parse_batoexec():
         key, val, datastr = 'noop', '', ''
     return (key.strip(), val.strip(), datastr)
 
-#######
-# Add / Remove a <game> XML subtree through ES webservice
-# this is the recommended method
-def gamelist_xml_es(system, data, mode):
-    if (mode not in [ 'install',  'uninstall' ]):
-        print ("ERROR: BATOEXEC gamelist can only be call with 'install' or 'uninstall'")
-        return (1)
-    try:
-        tree = ET.ElementTree(ET.fromstring(data))
-    except Exception as e:
-        print ("ERROR: bad XML format in {} ({})".format(BATOEXEC, e))
-        return (1)
-    # check new tree syntax (to avoid adding garbage)
-    newroot = tree.getroot()
-    if newroot.tag != 'game':
-        print ("ERROR: " + BATOEXEC + " gamefile expects a <game> root")
-        return (1)
-    freshgl = ET.Element("gameList")
-    freshgl.append(newroot)
+######
+# Create the XML structure for ES and calls the webservice
+#
+def call_es(system, elem, mode):
+    if elem.tag == "gameList" or elem.tag == "gamelist":
+        freshgl=elem
+    else:
+        freshgl = ET.Element("gameList")
+        freshgl.append(elem)
     bodytree = ET.ElementTree(freshgl)
     body = ET.tostring(bodytree.getroot()).decode()
     headers = {"Content-type": "application/x-www-form-urlencoded",\
@@ -59,23 +52,63 @@ def gamelist_xml_es(system, data, mode):
         cnx=httplib2.Http()
         resp, content = cnx.request(ES_SERVER)
     except Exception as e:
-        print ("ERROR: Is EmulationStation running? Impossible to connect to {} ({})".format(ES_SERVER, e))
-        return (1)
+        print (f"WARNING: Looks like {ES_SERVER} is not responding ({e}) - processing local files")
+        if not os.path.isfile(ROMPATH+'/'+system+'/gamelist.xml'):
+            if not os.path.isdir(ROMPATH+'/'+system):
+                os.mkdir(ROMPATH+'/'+system)
+            out=open(ROMPATH+'/'+system+'/gamelist.xml', 'w')
+            dumpxml=ET.tostring(freshgl, encoding='utf8').decode('utf8')
+            out.write(dumpxml)
+            out.close()
+            return(0)
+        else:
+            # add another XML element in the file
+            xmltree=ET.parse(ROMPATH+'/'+system+'/gamelist.xml')
+            root=xmltree.getroot()
+            oldgl=root.find('.')
+            for g in freshgl.iterfind('game'):
+                oldgl.append(g)
+            out=open(ROMPATH+'/'+system+'/gamelist.xml', 'w')
+            dumpxml=ET.tostring(root, encoding='utf8').decode('utf8')
+            out.write(dumpxml)
+            out.close()
+            return(0)
     try:
         if (mode in 'install'):
             res, rout = cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
         elif (mode in 'uninstall'):
             res, rout = cnx.request(ES_SERVER + "/removegames/" + str(system).strip(), method="POST", body=body, headers=headers)
         if (res.status != 200):
-            print ("WARNING: ES responded with #{} [{}] {}".format( \
-                    res.status, res.reason, rout))
+            print (f"WARNING: ES responded with #{res.status} [{res.reason}] {rout}")
     except Exception as e:
-        print ("ERROR: Impossible to access ES service endpoints through {}: {} ".format(ES_SERVER, e))
+        print (f"ERROR: Impossible to access ES service endpoints through {ES_SERVER}: {e} ")
         return (1)
     return (0)
 
 #######
-# Execute a command (shell, python... scripts that can
+# Add / Remove one or multiple <game> XML subtreethrough ES webservice
+# this is the recommended method
+def gamelist_xml_es(system, data, mode):
+    if (mode not in [ 'install',  'uninstall' ]):
+        print ("ERROR: BATOEXEC gamelist can only be call with 'install' or 'uninstall'")
+        return (1)
+    try:
+        tree = ET.ElementTree(ET.fromstring(data))
+    except Exception as e:
+        print (f"ERROR: bad XML format in {BATOEXEC} ({e})")
+        return (1)
+    # check new tree syntax (to avoid adding garbage)
+    newroot = tree.getroot()
+    match newroot.tag:
+        case 'gameList' | 'gamelist' | 'game':
+            r = call_es(system, newroot, mode)
+            return (0)
+        case _:
+            print ("ERROR: BATOEXEC gamefile expects either a <gameList> or <game> root")
+            return (1)
+
+#######
+# Execute a command (shell, python... any script that can
 # be called with a -c argument)
 def exec_cmd(base_cmd, data, mode):
     if (mode not in [ 'install',  'uninstall' ]):
@@ -92,7 +125,6 @@ def exec_cmd(base_cmd, data, mode):
             data = re.sub("\.UNINSTALL_END", "", data)
         clist = data.split('\n')
         clist = [sub.replace('"', '\\"') for sub in clist]
-        clist = [sub.replace("'", "\\'") for sub in clist]
         for el in clist:
             if str(el).strip() == '':
                 clist.remove(el)
@@ -104,7 +136,7 @@ def exec_cmd(base_cmd, data, mode):
     try:
         subprocess.check_output(cmd_line[0], shell=True)
     except Exception as e:
-        print ("ERROR: {} could not fork {} ({})".format(BATOEXEC, base_cmd, e))
+        print (f"ERROR: {BATOEXEC} could not fork {base_cmd} ({e})")
         return (1)
     # Not sure if we want to return the return code of the script
     # This might lead to unwanted error cases from Batoexec
@@ -120,24 +152,24 @@ if __name__ == "__main__":
         print ("ERROR: batocera-pacman-batoexec [install | uninstall] [batoexec_file]")
         exit (1)
     key, val, data=parse_batoexec()
-
-    if key == 'gamelist':
-        ret = gamelist_xml_es(val, data, mode)
-        if ret == 0:
+    match key:
+        case 'gamelist':
+            ret = gamelist_xml_es(val, data, mode)
+            if ret == 0:
+                exit (0)
+            else:
+                print (f"ERROR while processing {mode} gamelist in {BATOEXEC}")
+                exit (1)
+        case 'exec':
+            ret = exec_cmd(val, data, mode)
+            if ret == 0:
+                exit (0)
+            else:
+                print (f"ERROR while processing {mode} exec in {BATOEXEC}")
+                exit (1)
+        case 'noop':
+            # alright, nothing to do!
             exit (0)
-        else:
-            print ("ERROR while processing " + mode + " " + BATOEXEC)
+        case _:
+            print (f"ERROR: function '{key}' not implemented yet")
             exit (1)
-    elif key == 'exec':
-        ret = exec_cmd(val, data, mode)
-        if ret == 0:
-            exit (0)
-        else:
-            print ("ERROR while processing " + mode + " " + BATOEXEC)
-            exit (1)
-    elif key == 'noop':
-        # alright, nothing to do!
-        exit (0)
-    else:
-        print ("ERROR: function '" + key +"' not implemented yet")
-        exit (1)

@@ -2,6 +2,7 @@
 
 BOOTCONF="/boot/batocera-boot.conf"
 REBOOT_FLAG=/var/run/emulationstation-standalone
+log="/userdata/system/logs/display.log"
 
 if test "$1" = "--stop-rebooting"
 then
@@ -34,16 +35,94 @@ do
     if test -e "/var/run/switch_screen_request"
     then
         settings_output=$(cat "/var/run/switch_screen_request")
+	settings_output2=
+	settings_output3=
+
+	# try to fill the screen 2
+	# fill the screen2 with videooutput if <> from switch_screen_request, else videooutput2 if <> from switch_screen_request
+	if test "${settings_output}" != ""
+	then
+	    stmp="$(batocera-settings-get global.videooutput)"
+	    if test "${settings_output}" != "${stmp}"
+	    then
+		settings_output2="${stmp}"
+	    else
+		stmp="$(batocera-settings-get global.videooutput2)"
+		if test "${settings_output}" != "${stmp}"
+		then
+		    settings_output2="${stmp}"
+		fi
+	    fi
+	fi
+
         rm "/var/run/switch_screen_request"
     else
-	    settings_output="$(batocera-settings-get global.videooutput)"
+	settings_output="$(batocera-settings-get global.videooutput)"
+	settings_output2="$(batocera-settings-get global.videooutput2)"
+	settings_output3="$(batocera-settings-get global.videooutput3)"
     fi
-    batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
+
+    # validate outputs
+    #   the output must exists in listOutputs
+    #   output n-1 must be defined
+    #   output must be different from n-x outputs
+
+    # validate output 1
+    if test -n "${settings_output}"
+    then
+	if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output}"'$'
+	then
+	    settings_output=
+	fi
+    fi
+    # validate output 2
+    if test -n "${settings_output2}"
+    then
+	if test -z "${settings_output}" -o "${settings_output}" = "${settings_output2}"
+	then
+	    settings_output2=
+	else
+	    if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output2}"'$'
+	    then
+		settings_output2=
+	    fi
+	fi
+    fi
+    # validate output 3
+    if test -n "${settings_output3}"
+    then
+	if test -z "${settings_output}" -o -z "${settings_output2}" -o "${settings_output}" = "${settings_output3}" -o "${settings_output2}" = "${settings_output3}"
+	then
+	    settings_output3=
+	else
+	    if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output3}"'$'
+	    then
+		settings_output3=
+	    fi
+	fi
+    fi
+
+    # if screen1 is empty, take the first one found
+    if test -z "${settings_output}"
+    then
+	settings_output=$(batocera-resolution currentOutput)
+	# currentOutput may be unplugged after an event of type unplugging it (/var/run/switch_screen_request)
+	if ! batocera-resolution listOutputs | grep -qE "^${settings_output}$"
+	then
+	    settings_output=$(batocera-resolution listOutputs | head -1)
+	fi
+    fi
+    # if screen2 is empty, take the first one found which is not screen1
+    test -z "${settings_output2}" && settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
+
+    # we set the output to enable screens...
+    batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
     ###################
 
     ### rotation ###
     display_rotate=
     # try to find a rotation for the custom output
+    # read the final effective output
     effective_output=$(batocera-resolution currentOutput)
     if test -n "${effective_output}"
     then
@@ -58,9 +137,9 @@ do
     if test -n "${effective_output}" && test -n "${display_rotate}"
     then
         if batocera-resolution supportSystemRotation
-	then
+        then
             batocera-resolution setRotation "${display_rotate}"
-	else
+        else
             # when no rotation is available by the system, apply it
             EXTRA_OPTS="--screenrotate ${display_rotate}"
         fi
@@ -68,13 +147,63 @@ do
     ###################
 
     ### resolution ###
-    bootresolution="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
+    ## the resolution for the first screen is on the boot file so that it is easier to change it
+    ## it is not needed for other screens
+    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
     if test -z "${bootresolution}"
     then
 	    batocera-resolution minTomaxResolution-secure
     else
 	    batocera-resolution setMode "${bootresolution}"
     fi
+
+    # other screens
+    if test -n "${settings_output2}"
+    then
+	display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate2.${settings_output2}")
+	if test -z "${display_rotate2}"
+	then
+	    display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+	fi
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
+	fi
+	bootresolution2="$(batocera-settings-get es.resolution2)"
+	if test -z "${bootresolution2}"
+	then
+	    batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
+	else
+	    batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
+	fi
+    fi
+    if test -n "${settings_output3}"
+    then
+	display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate3.${settings_output3}")
+	if test -z "${display_rotate3}"
+	then
+	    display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+	fi
+        if batocera-resolution supportSystemRotation
+        then
+            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
+	fi
+	bootresolution3="$(batocera-settings-get es.resolution3)"
+	if test -z "${bootresolution3}"
+	then
+	    batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
+	else
+	    batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+	fi
+    fi
+
+    # now that all screens are enabled, rotated, resized... we reenable cause it may change the position in case of multi screens
+    if test -n "${settings_output2}" -o -n "${settings_output3}"
+    then
+	batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
+    fi
+    ###################
+    
     ###################
 
     ### keyboard ###
@@ -109,20 +238,15 @@ do
         setxkbmap "${map_name}"
         fi
         ###################
-
-        # try to force 60hz (specific to xorg)
-        FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
-        test -z "${FRAMERATE}" && FRAMERATE=60
-        which xrandr && xrandr -r "${FRAMERATE}"
-        ###################
-
-        forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
+                
+        forcedresolution="$(/usr/bin/batocera-settings-get -f $BOOTCONF es.forcedresolution)"
         if test -n "${forcedresolution}"
         then
             batocera-resolution forceMode "${forcedresolution}"
         fi
 
         # Multitouch for touch screens
+        TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
         if ! test -z "${TOUCHSCREEN}"
         then
             killall -9 touchegg
@@ -130,27 +254,10 @@ do
             touchegg --client&
         fi
 
-        CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
-
-        #####################
-        ## CUSTOMISATIONS ###
-        # to customize your display, you can create the file /userdata/system/custom-es-config
-        # including this kind of commands
-        # rotate the screen
-        # xrandr -o left
-        # xrandr -o right
-        # xrandr -o inverted
-
-        # change the resolution
-        # xrandr -s 640x480
-
-        # change the resolution and the Hz
-        # xrandr -s 640x480 -r 60
-        #####################
-
-        test -x /userdata/system/custom-es-config && /userdata/system/custom-es-config
+        test -e /userdata/system/custom-es-config && bash /userdata/system/custom-es-config &
         ###################
     fi
+    CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
 
     # launch automatically a game only the first time
     if test ${GAMELAUNCH} = 1
@@ -163,8 +270,30 @@ do
     # save the current output in which es is started (used to switch screen, when unplugged)
     batocera-resolution currentOutput > "/var/run/switch_screen_current"
 
+    # dbus launch is required for the gio/gvfs/trash:///...
+    eval "$(dbus-launch --sh-syntax --exit-with-session)"
+
+    if which batocera-backglass
+    then
+	if test -n "${settings_output2}"
+	then
+	    BGOFFSETX=$(batocera-resolution currentResolution | cut -d x -f 1)
+	    BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
+	    THEME="$(batocera-settings-get backglass.theme)"
+	    batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE} "${THEME}"
+	fi
+    fi
+
     cd /userdata # es need a PWD
     %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
+
+    if which batocera-backglass
+    then
+	if test -n "${settings_output2}"
+	then
+	    batocera-backglass disable
+	fi
+    fi
 
     # es flag when rebooting (https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-core/src/platform.cpp#L194)
     if test -e "/tmp/restart.please" -o -e "/tmp/shutdown.please"

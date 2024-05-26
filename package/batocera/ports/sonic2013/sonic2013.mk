@@ -1,14 +1,22 @@
+################################################################################
+#
+# sonic2013
+#
+################################################################################
+# Version: Commits on Mar 20, 2024
+SONIC2013_VERSION = b78db1b795d6907b0f834765b6bf338abe5a2834
 SONIC2013_SITE = https://github.com/Rubberduckycooly/Sonic-1-2-2013-Decompilation.git
 SONIC2013_SITE_METHOD = git
 SONIC2013_GIT_SUBMODULES == YES
-
-SONIC2013_DEPENDENCIES = sdl2 libogg libvorbis
 SONIC2013_LICENSE = Custom
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-	SONIC2013_VERSION = 290cd5f
+SONIC2013_DEPENDENCIES = sdl2 libogg libvorbis
+
+# legacy version for systems that don't support libglew
+ifneq ($(BR2_PACKAGE_LIBGLEW),y)
+    SONIC2013_VERSION = f9718af
 else
-	SONIC2013_VERSION = f9718af
+    SONIC2013_DEPENDENCIES += libglew
 endif
 
 define SONIC2013_BUILD_CMDS
@@ -21,7 +29,8 @@ endef
 
 define SONIC2013_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/sonic2013
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic2013/sonicretro.keys $(TARGET_DIR)/usr/share/evmapy
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic2013/sonicretro.sonic2013.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 SONIC2013_POST_INSTALL_TARGET_HOOKS += SONIC2013_POST_PROCESS

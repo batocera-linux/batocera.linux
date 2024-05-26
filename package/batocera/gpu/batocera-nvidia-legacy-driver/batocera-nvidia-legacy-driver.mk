@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION = 470.161.03
+BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION = 470.239.06
 BATOCERA_NVIDIA_LEGACY_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_LEGACY_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_LEGACY_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 BATOCERA_NVIDIA_LEGACY_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_LEGACY_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION).run
@@ -44,9 +44,11 @@ BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+
+BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU = \
+	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_GL) \
@@ -63,7 +65,6 @@ BATOCERA_NVIDIA_LEGACY_DRIVER_32 = \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
-	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
@@ -130,7 +131,8 @@ BATOCERA_NVIDIA_LEGACY_DRIVER_MODULE_MAKE_OPTS = \
 	NV_KERNEL_SOURCES="$(LINUX_DIR)" \
 	NV_KERNEL_OUTPUT="$(LINUX_DIR)" \
 	NV_KERNEL_MODULES="$(BATOCERA_NVIDIA_LEGACY_DRIVER_MODULES)" \
-	IGNORE_CC_MISMATCH="1"
+	IGNORE_CC_MISMATCH="1" \
+	NV_SPECTRE_V2="0"
 
 BATOCERA_NVIDIA_LEGACY_DRIVER_MODULE_SUBDIRS = kernel
 
@@ -156,12 +158,18 @@ define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_LIBS
 	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS),\
 		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/$(notdir $(lib))
 	)
+	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/$(lib) $(1)/usr/lib/vdpau/$(notdir $(lib))
+	)
 endef
 
 # batocera install 32bit libraries
 define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_32
 	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_32),\
 		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/$(notdir $(lib))
+	)
+	$(foreach lib,$(BATOCERA_NVIDIA_LEGACY_DRIVER_LIBS_VDPAU),\
+		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/vdpau/$(notdir $(lib))
 	)
 endef
 
@@ -200,6 +208,10 @@ define BATOCERA_NVIDIA_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
 
+# firmware
+    mkdir -p $(TARGET_DIR)/lib/firmware/nvidia/$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+	$(INSTALL) -D -m 0644 $(@D)/firmware/* $(TARGET_DIR)/lib/firmware/nvidia/$(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION)
+
 endef
 
 define BATOCERA_NVIDIA_LEGACY_DRIVER_VULKANJSON_X86_64
@@ -227,13 +239,13 @@ define BATOCERA_NVIDIA_LEGACY_DRIVER_RENAME_KERNEL_MODULES
     mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
 	# rename the kernel modules to avoid conflict
-	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-modeset.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-legacy.ko
-	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-drm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-legacy.ko	
-	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/nvidia-uvm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-legacy.ko
 	# set the driver version file
 	echo $(BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/legacy.version

@@ -1,0 +1,142 @@
+#!/bin/bash
+
+BOOTCONF="/boot/batocera-boot.conf"
+log="/tmp/resize.log"
+
+# only at start
+test "$1" != "start" && exit 0
+
+# true if triggers are not available or not set to do so
+if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" && ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"
+then
+    exit 0
+fi
+
+# UI Output with dialog, default colorset
+function dialogoutput()
+{
+    local percent="$1"
+    local text="Do not switch off your device!"
+
+    dialog --backtitle "batocera.linux" --title " Resizing Partition " \
+           --mixedgauge "$text" 18 50 "$percent" "${arr[@]}" &>/dev/tty1
+}
+
+# Executing parameters and watch background pid
+# Changes text messages parsed to dialog --mixedgauge
+function textoutput()
+{
+    local cmd="$3"
+    local percent="$2"
+    local pid ret
+    echo "cmd:$cmd" >> $log
+    $cmd >> $log 2>&1 &
+    ret=$?
+    pid=$!
+    arr[$1]=7 #msg: In Progress
+    dialogoutput "$percent"
+    wait $pid
+    code=$?
+    echo "cmd code:$code" >> $log
+    arr[$1]=$ret #msg: Depends from return value
+}
+
+# only when resizing is wanted
+if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"
+then
+    # Preparing text arrays
+    arr=(
+    "Aligning GPT table.........." "Pending"
+    "Resizing partition.........." "Pending"
+    "Informing the Kernel........" "Pending"
+    "Checking /userdata.........." "Pending"
+    "Resizing /userdata.........." "Pending"
+    "Syncing disk data..........." "Pending"
+    )
+
+    # --- BEGIN RESIZE ---
+    # /userdata partition
+    PART=$(batocera-part "share_internal")
+    echo "Partition = $PART" >> $log
+    # boot disk
+    DISK=$(batocera-part prefix "${PART}")
+    echo "Disk = $DISK" >> $log
+
+    # only for ext4
+    PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
+    test "${PARTTYPE}" != "ext4" && exit 0
+    echo "Partition type = ${PARTTYPE}" >> $log
+    
+    # remove the trigger
+    mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
+
+    # textoutput "Message" "percentage" "command call" 
+    for i in 1 3 5 7 9 11; do
+    case $i in
+        1) 
+           # move backup GPT data structures to the end of the disk
+           echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$log"
+           textoutput $i 10 "sgdisk -e ${DISK}";;
+        3) 
+           # resize the partition
+           echo "Step $i: Resizing the partition to 100%" >> "$log"
+           textoutput $i 50 "parted -s -m -f ${DISK} resizepart 4 100%";;
+        
+        5)
+           # update the kernel
+           echo "Step $i: Updating the kernel" >> "$log"
+           textoutput $i 60 "partprobe ${DISK}";;
+        7)
+           # check & resize the ext4 file system
+           if test "${PARTTYPE}" = "ext4"
+           then
+	           echo "Step $i: Checking ext4 file system" >> "$log"
+	           textoutput $i 70 "e2fsck -f -p ${PART}"
+           fi
+           ;;
+        9) 
+           if test "${PARTTYPE}" = "ext4"
+           then
+               echo "Step $i: Expanding ext4 the file system" >> "$log"
+               textoutput $i 80 "resize2fs ${PART}"
+           fi
+           ;;
+        11) 
+           # finally disk sync
+           echo "Step $i: Final sync" >> "$log"
+           textoutput $i 90 "sync";;
+    esac
+    done
+
+else
+    ###### format internal share #####
+    FORMAT_INTERNAL_TYPE=$(grep -E '^[ ]*format-internal[ ]*=.*$' "${BOOTCONF}" | head -1 | sed -e s+"^[ ]*format-internal[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
+    if test -n "${FORMAT_INTERNAL_TYPE}"
+    then
+	# Preparing text arrays
+	arr=("Formatting /userdata.........." "Pending")
+	PART=$(batocera-part "share_internal")
+
+	# remove the trigger
+	mount -o remount,rw /boot && sed -i -e s+'^[ ]*format-internal'+'#format-internal'+ "${BOOTCONF}" && mount -o remount,ro /boot
+
+	case "${FORMAT_INTERNAL_TYPE}" in
+	    "btrfs")
+		textoutput 1 10 "mkfs.btrfs -L SHARE -f ${PART}" # what to do in case of error ? nothing.
+		;;
+	    "ext4")
+		textoutput 1 10 "mkfs.ext4 -L SHARE -q -F -F ${PART}" # what to do in case of error ? nothing.
+		;;
+	    "exfat")
+		textoutput 1 10 "mkfs.exfat -n SHARE ${PART}" # what to do in case of error ? nothing.
+		;;
+	    *)
+		# do nothing
+	esac
+    fi
+fi
+
+#Cleanup, restore screen, set progress of last item to 100%
+dialogoutput 100
+clear > /dev/tty1
+exit 0

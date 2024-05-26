@@ -1,9 +1,10 @@
 #!/bin/sh
 
-if [ ! "$1" ];then
+if [ ! "$1" ]; then
 	printf "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]\n"
 	exit 1
 fi
+
 configFile="/boot/config.txt"
 storageFile="/boot/batocera-boot.conf"
 command="$1"
@@ -29,8 +30,8 @@ bato_config_set_value () {
 	value=$2
 	[ -z "$value" ] && value=0
 	cat "$configFile" | grep "$key"
-        valPresent=$?
-	if [ "$valPresent" != "0" ];then
+    valPresent=$?
+	if [ "$valPresent" != "0" ]; then
 		echo "$key=$value" >> "$configFile"
 	else
 		sed -i "s/#\?$key=.*/$key=$value/g" "$configFile"
@@ -44,19 +45,17 @@ log=/userdata/system/logs/batocera.log
 if [ "$command" = "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
     securityenabled="$(/usr/bin/batocera-settings-get system.security.enabled)"
-    if [ "$securityenabled" != "1" ];then
-	echo "linux"
-	exit 0
+    if [ "$securityenabled" != "1" ]; then
+	    echo "linux"
+		exit 0
     fi
     
     ENCPASSWD=$(grep -E '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}" | sed -e s+'^[ \t]*rootshadowpassword[ \t]*='++)
-    if test -z "${ENCPASSWD}"
-    then
-	exit 1
+    if test -z "${ENCPASSWD}"; then
+	    exit 1
     fi
-    if ! batocera-encode decode "${ENCPASSWD}"
-    then
-	exit 1
+    if ! batocera-encode decode "${ENCPASSWD}"; then
+	    exit 1
     fi
     exit 0
 fi
@@ -66,144 +65,152 @@ if [ "$command" = "setRootPassword" ]; then
 
     # security disabled, don't change
     securityenabled="$(/usr/bin/batocera-settings-get system.security.enabled)"
-    if [ "$securityenabled" != "1" ];then
-	exit 0
+    if [ "$securityenabled" != "1" ]; then
+	    exit 0
     fi
-    
+
     # if no password if provided, generate one
-    if test -z "${PASSWD}"
-    then
-	PASSWD=$(tr -cd _A-Z-a-z-0-9 < /dev/urandom | fold -w8 | head -n1)
+    if test -z "${PASSWD}"; then
+	    PASSWD=$(tr -cd _A-Z-a-z-0-9 < /dev/urandom | fold -w8 | head -n1)
     fi
     PASSWDENC=$(batocera-encode encode "${PASSWD}")
     
     preBootConfig
-    if grep -qE '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}"
-    then
-	# update it
-	if ! sed -i -e s@'^[ \t]*rootshadowpassword[ \t]*=.*$'@"rootshadowpassword=${PASSWDENC}"@ "${storageFile}"
-	then
-	    postBootConfig
-	    exit 1
-	fi
-	postBootConfig
-	exit 0
-    else
-	# create it
-	if ! echo "rootshadowpassword=${PASSWDENC}" >> "${storageFile}"
-	then
-	    postBootConfig
-	    exit 1
-	fi
-	postBootConfig
-	exit 0
-    fi    
+    if grep -qE '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}"; then
+	    # update it
+		if ! sed -i -e s@'^[ \t]*rootshadowpassword[ \t]*=.*$'@"rootshadowpassword=${PASSWDENC}"@ "${storageFile}"; then
+		    postBootConfig
+			exit 1
+		fi
+		postBootConfig
+		exit 0
+	else
+	    # create it
+		if ! echo "rootshadowpassword=${PASSWDENC}" >> "${storageFile}"; then
+		    postBootConfig
+			exit 1
+		fi
+		postBootConfig
+		exit 0
+	fi    
 fi
 
 if [ "$command" = "overscan" ]; then
-if [ "$mode" = "set" ];then
-# set will set overscan values abd  also enable this mode
-	if [ -z "$extra1" ] || [ -z "$extra2" ] || [ -z "$extra3" ] || [ -z "$extra4" ]; then
-		echo "$0 $command $mode needs 4 arguments:"
-		echo "$0 $command $mode overscan_left overscan_right overscan_top overscan_bottom"
-		exit 2
-	fi
-	preBootConfig
-	[ -f "$configFile" ] || touch "$configFile"
+    if [ "$mode" = "set" ];then
+	    # set will set overscan values abd  also enable this mode
+		if [ -z "$extra1" ] || [ -z "$extra2" ] || [ -z "$extra3" ] || [ -z "$extra4" ]; then
+		    echo "$0 $command $mode needs 4 arguments:"
+			echo "$0 $command $mode overscan_left overscan_right overscan_top overscan_bottom"
+			exit 2
+		fi
+		preBootConfig
+		[ -f "$configFile" ] || touch "$configFile"
 
-	echo "setting overscan values $extra1 $extra2 $extra3 $extra4 " >> $log
-	bato_config_set_value disable_overscan 0
-	bato_config_set_value overscan_scale 1
-	bato_config_set_value overscan_left "$extra1"
-	bato_config_set_value overscan_right "$extra2"
-	bato_config_set_value overscan_top "$extra3"
-	bato_config_set_value overscan_bottom "$extra4"
-
-	postBootConfig
-	exit 0
-
-fi
-if [ -f "$configFile" ];then
-        preBootConfig
-	if [ "$mode" = "enable" ];then
-		echo "enabling overscan" >> $log
+		echo "setting overscan values $extra1 $extra2 $extra3 $extra4 " >> $log
 		bato_config_set_value disable_overscan 0
 		bato_config_set_value overscan_scale 1
-	elif [ "$mode" = "disable" ];then
-                echo "disabling overscan" >> $log
-		bato_config_set_value disable_overscan 1
-		bato_config_set_value overscan_scale 0
-	else
-                postBootConfig
-		exit 1
+		bato_config_set_value overscan_left "$extra1"
+		bato_config_set_value overscan_right "$extra2"
+		bato_config_set_value overscan_top "$extra3"
+		bato_config_set_value overscan_bottom "$extra4"
+		
+		postBootConfig
+		exit 0
 	fi
-	postBootConfig
-	exit 0
-else
-	exit 2
-fi
+	if [ -f "$configFile" ]; then
+	    preBootConfig
+		if [ "$mode" = "enable" ]; then
+		    echo "enabling overscan" >> $log
+			bato_config_set_value disable_overscan 0
+			bato_config_set_value overscan_scale 1
+		elif [ "$mode" = "disable" ]; then
+		    echo "disabling overscan" >> $log
+			bato_config_set_value disable_overscan 1
+			bato_config_set_value overscan_scale 0
+		else
+		    postBootConfig
+			exit 1
+		fi
+		postBootConfig
+		exit 0
+	else
+	    exit 2
+	fi
 fi
 
-if [ "$command" = "lsoutputs" ]
-then
+if [ "$command" = "lsoutputs" ]; then
     echo "auto"
     batocera-resolution listOutputs
 fi
 
-if [ "$command" = "gpiocontrollers" ];then
-	command="module"
+if [ "$command" = "gpiocontrollers" ]; then
+    command="module"
 	mode="load"
 	extra1="mk_arcade_joystick_rpi"
 	extra2="map=1,2"
 fi
 
-if [ "$command" = "module" ];then
-	modulename="$extra1"
-	map="$extra2"
-	# remove in all cases
-	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
+if [ "$command" = "module" ]; then
+    modulename="$extra1"
+    map="$extra2"
+    log="/var/log/myapp.log"
+    kernel_version="$(uname -r)"
+    module_path=""
+    # Check if the module is present in updates directory (Kernel 6.3+)
+    if [ -f "/lib/modules/$kernel_version/updates/${modulename}.ko" ]; then
+        module_path="/lib/modules/$kernel_version/updates/${modulename}.ko"
+    # Check if the module is present in extra directory (Kernel < 6.3)
+    elif [ -f "/lib/modules/$kernel_version/extra/${modulename}.ko" ]; then
+        module_path="/lib/modules/$kernel_version/extra/${modulename}.ko"
+    else
+        echo "Error: Module ${modulename} not found in /lib/modules/$kernel_version/updates or /lib/modules/$kernel_version/extra directory." >> $log
+        exit 1
+    fi
 
-        if [ "$mode" = "load" ];then
-	        echo "loading module $modulename args = $map" >> $log
-		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
-		[ "$?" ] || exit 1
+    # Remove the module
+    rmmod "$module_path" >> $log
+
+    if [ "$mode" = "load" ]; then
+        echo "Loading module $modulename with args $map" >> $log
+        insmod "$module_path" "$map" >> $log
+        if [ "$?" -ne 0 ]; then
+            echo "Error: Failed to load module ${modulename} with args ${map}" >> $log
+            exit 1
         fi
-	exit 0
+    fi
+    exit 0
 fi
 
 if [ "$command" = "canupdate" ];then
 	updatetype="$(/usr/bin/batocera-settings-get updates.type)"
-	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
-	then
-		# force a default value in case the value is removed or miswritten
+	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly"; then
+	    # force a default value in case the value is removed or miswritten
 		updatetype="stable"
 	fi
 	settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
 
 	# customizable upgrade url website
-	if test -n "${settingsupdateurl}"
-	then
+	if test -n "${settingsupdateurl}"; then
 	    updateurl="${settingsupdateurl}"
 	fi
 
 	#echo "Update url: ${updateurl}/${board}/${updatetype}/last"
 	test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
 	available=`wget -qO- ${updateurl}/${board}/${updatetype}/last/batocera.version`
-	if [ "$?" != "0" ];then
-	        echo "Unable to access the url" >&2
+	if [ "$?" != "0" ]; then
+	    echo "Unable to access the url" >&2
 		exit 2
 	fi
 	# hum, i don't know how to check correctly while the ws return success in case of real 404
 	nbytes=`echo "${available}" | wc -c`
-	if test "${nbytes}" -ge 50
-	then
+	if test "${nbytes}" -ge 50; then
 	    echo "Unable to retrieve the version" >&2
 	    exit 2
 	fi
 	installed=`cat /usr/share/batocera/batocera.version`
 
 	echo "${available}"
-
+	
 	if [ "$available" != "$installed" ]; then
 		exit 0
 	fi
@@ -217,50 +224,46 @@ fi
 
 if [ "$command" = "storage" ]; then
     if [ "$mode" = "current" ]; then
-	if test -e $storageFile
-	then
-            SHAREDEVICE=`cat ${storageFile} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
+	    if test -e $storageFile; then
+		    SHAREDEVICE=`cat ${storageFile} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
             [ "$?" -ne "0" -o "$SHAREDEVICE" = "" ] && SHAREDEVICE=INTERNAL
-	    echo "$SHAREDEVICE"
-	else
-	    echo "INTERNAL"
-	fi
-	exit 0
+			echo "$SHAREDEVICE"
+		else
+		    echo "INTERNAL"
+		fi
+		exit 0
     fi
     if [ "$mode" = "list" ]; then
-	echo "INTERNAL INTERNAL"
-	echo "ANYEXTERNAL ANY EXTERNAL"
-
-	INTERNAL_DEVICE=$(batocera-part share_internal)
-	PARTPREFIX=$(batocera-part prefix "${INTERNAL_DEVICE}")
-	lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
-	    grep 'TYPE="part"' |
-	    grep -v "FSTYPE=\"swap\"" |
+	    echo "INTERNAL INTERNAL"
+		echo "ANYEXTERNAL ANY EXTERNAL"
+		INTERNAL_DEVICE=$(batocera-part share_internal)
+		PARTPREFIX=$(batocera-part prefix "${INTERNAL_DEVICE}")
+		lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
+		grep -E "TYPE=\"(part|lvm)\"" |
+	    grep -vE "FSTYPE=\"(swap|LVM2_member)\"" |
 	    sed -e s+'^NAME="'+'NAME="/dev/'+ -e s+'LABEL=""'+'LABEL="NO_NAME"'+ |
 	    grep -vE "^NAME=\"${PARTPREFIX}" |
 	    sed -e s+'^NAME="[^"]*" FSTYPE="[^"]*" LABEL="\([^"]*\)" UUID="\([^"]*\)" SIZE="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1 - \3'+
-	exit 0
+		exit 0
     fi
     if [ "${mode}" = "INTERNAL" -o "${mode}" = "ANYEXTERNAL" -o "${mode}" = "RAM" -o "${mode}" = "DEV" ]; then
-	preBootConfig
-	if [ "${mode}" = "INTERNAL" -o "${mode}" = "ANYEXTERNAL" -o "${mode}" = "RAM" ]; then
-            if grep -qE "^sharedevice=" "${storageFile}"
-	    then
-               sed -i "s|sharedevice=.*|sharedevice=${mode}|g" "${storageFile}"
+	    preBootConfig
+		if [ "${mode}" = "INTERNAL" -o "${mode}" = "ANYEXTERNAL" -o "${mode}" = "RAM" ]; then
+		    if grep -qE "^sharedevice=" "${storageFile}"; then
+			    sed -i "s|sharedevice=.*|sharedevice=${mode}|g" "${storageFile}"
             else
-               echo "sharedevice=${mode}" >> "${storageFile}"
+			    echo "sharedevice=${mode}" >> "${storageFile}"
             fi
-	fi
-	if [ "${mode}" = "DEV" ]; then
-            if grep -qE "^sharedevice=" "${storageFile}"
-	    then
-               sed -i "s|sharedevice=.*|sharedevice=${mode} $extra1|g" "${storageFile}"
+		fi
+		if [ "${mode}" = "DEV" ]; then
+		    if grep -qE "^sharedevice=" "${storageFile}"; then
+			    sed -i "s|sharedevice=.*|sharedevice=${mode} $extra1|g" "${storageFile}"
             else
-               echo "sharedevice=${mode} ${extra1}" >> "${storageFile}"
+			    echo "sharedevice=${mode} ${extra1}" >> "${storageFile}"
             fi
-	fi
-	postBootConfig
-	exit 0
+		fi
+		postBootConfig
+		exit 0
     fi
 fi
 
@@ -274,16 +277,14 @@ if [ "$command" = "forgetBT" ]; then
    exit 0
 fi
 
-if [ "$command" = "tz" ];then
-    if test "$mode" = ""
-    then
-	cat /usr/share/batocera/tz
-    else
-	if test -f "/usr/share/zoneinfo/${mode}"
-	then
-	    echo "${mode}" > /etc/timezone
+if [ "$command" = "tz" ]; then
+    if test "$mode" = ""; then
+	    at /usr/share/batocera/tz
+	else
+	    if test -f "/usr/share/zoneinfo/${mode}"; then
+		    echo "${mode}" > /etc/timezone
             ln -sf "/usr/share/zoneinfo/${mode}" /etc/localtime
-	fi
+		fi
     fi
     exit $?
 fi

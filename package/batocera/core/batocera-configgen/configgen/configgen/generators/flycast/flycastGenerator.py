@@ -17,7 +17,7 @@ class FlycastGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
@@ -26,10 +26,10 @@ class FlycastGenerator(Generator):
                 Config.read(batoceraFiles.flycastConfig)
             except:
                 pass # give up the file
-        
+
         if not Config.has_section("input"):
             Config.add_section("input")
-        # For each pad detected       
+        # For each pad detected
         for index in playersControllers:
             controller = playersControllers[index]
             # Write the mapping files for Dreamcast
@@ -51,7 +51,7 @@ class FlycastGenerator(Generator):
             # Ensure controller(s) are on seperate Ports
             port = int(controller.player)-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
-        
+
         if not Config.has_section("config"):
             Config.add_section("config")
         if not Config.has_section("window"):
@@ -93,6 +93,9 @@ class FlycastGenerator(Generator):
                 Config.set("config", "pvr.rend", "4")
         else:
             Config.set("config", "pvr.rend", "0")
+            if system.isOptSet("flycast_sorting") and system.config["flycast_sorting"] == "3":
+                # per pixel
+                Config.set("config", "pvr.rend", "3")
         # anisotropic filtering
         if system.isOptSet("flycast_anisotropic"):
             Config.set("config", "rend.AnisotropicFiltering", str(system.config["flycast_anisotropic"]))
@@ -104,7 +107,7 @@ class FlycastGenerator(Generator):
             Config.set("config", "rend.PerStripSorting", "yes")
         else:
             Config.set("config", "rend.PerStripSorting", "no")
-        
+
         # [Dreamcast specifics]
         # language
         if system.isOptSet("flycast_language"):
@@ -134,7 +137,25 @@ class FlycastGenerator(Generator):
         if system.isOptSet("flycast_DSP"):
              Config.set("config", "aica.DSPEnabled", str(system.config["flycast_DSP"]))
         else:
-            Config.set("config", "aica.DSPEnabled", "no")           
+            Config.set("config", "aica.DSPEnabled", "no")
+        # Guns (WIP)
+        # Guns crosshairs
+        if system.isOptSet("flycast_lightgun1_crosshair"):
+            Config.set("config", "rend.CrossHairColor1", + str(system.config["flycast_lightgun1_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor1", "0")
+        if system.isOptSet("flycast_lightgun2_crosshair"):
+            Config.set("config", "rend.CrossHairColor2", + str(system.config["flycast_lightgun2_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor2", "0")
+        if system.isOptSet("flycast_lightgun3_crosshair"):
+            Config.set("config", "rend.CrossHairColor3", + str(system.config["flycast_lightgun3_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor3", "0")
+        if system.isOptSet("flycast_lightgun4_crosshair"):
+            Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"]))
+        else:
+            Config.set("config", "rend.CrossHairColor4", "0")
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:
@@ -151,9 +172,9 @@ class FlycastGenerator(Generator):
         if not os.path.exists(os.path.dirname(batoceraFiles.flycastConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.flycastConfig))
         with open(batoceraFiles.flycastConfig, 'w+') as cfgfile:
-            Config.write(cfgfile)        
+            Config.write(cfgfile)
             cfgfile.close()
-            
+
         # internal config
         if not isdir(batoceraFiles.flycastSaves):
             os.mkdir(batoceraFiles.flycastSaves)
@@ -165,8 +186,8 @@ class FlycastGenerator(Generator):
         # vmuA2
         if not isfile(batoceraFiles.flycastVMUA2):
             copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
-        
-        # the command to run  
+
+        # the command to run
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         # Here is the trick to make flycast find files :
@@ -174,9 +195,15 @@ class FlycastGenerator(Generator):
         # VMU will be in $XDG_DATA_HOME / $FLYCAST_DATADIR because it needs rw access -> /userdata/saves/dreamcast
         # $FLYCAST_BIOS_PATH is where Flaycast should find the bios files
         # controller cfg files are set with an absolute path, so no worry
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF,
-            "XDG_CONFIG_DIRS":batoceraFiles.CONF,
-            "XDG_DATA_HOME":batoceraFiles.flycastSaves,
-            "FLYCAST_DATADIR":batoceraFiles.flycastSaves,
-            "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
-            })
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                "XDG_CONFIG_DIRS":batoceraFiles.CONF,
+                "XDG_DATA_HOME":batoceraFiles.flycastSaves,
+                "FLYCAST_DATADIR":batoceraFiles.flycastSaves,
+                "FLYCAST_BIOS_PATH":batoceraFiles.flycastBios,
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )

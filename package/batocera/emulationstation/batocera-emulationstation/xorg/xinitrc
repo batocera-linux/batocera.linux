@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+
+mkdir -p "/var/log"
+mkdir -p "/userdata/system/logs"
+
+display_log="/userdata/system/logs/display.log"
+nvidia_log="/var/log/nvidia.log"
+amd_log="/userdata/system/logs/amd.log"
 
 # hide mouse cursor
 unclutter --noevents -b
@@ -7,28 +14,54 @@ unclutter --noevents -b
 xset -dpms
 xset s off
 
-# allow coredumps for ES
-ulimit -H -c unlimited
-ulimit -S -c unlimited emulationstation
+# uncomment to allow coredumps for ES
+# ulimit -c unlimited
 
-# dbus launch is required for the gio/gvfs/trash:///...
-eval `dbus-launch --sh-syntax --exit-with-session`
-
-### nvidia ###
-nvidia_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf nvidia-prime)"
-if test "${nvidia_prime}" = "true"
-then
-  export __NV_PRIME_RENDER_OFFLOAD=1
-  export __VK_LAYER_NV_optimus=NVIDIA_only
-  export __GLX_VENDOR_LIBRARY_NAME=nvidia
+## [ Prime settings ]
+# nvidia
+if [ -f "/var/tmp/nvidia.prime" ]; then
+    echo "Xrandr Providers:" >> "$nvidia_log"
+    xrandr --listproviders >> "$nvidia_log" || { echo "Failed xrandr --listproviders" >> "$nvidia_log"; }
+    provider_count=$(xrandr --listproviders | grep 'Providers:' | awk '{print $4}')
+    if [ -z "$provider_count" ]; then
+        echo "Failed to get provider count" >> "$nvidia_log"
+    fi
+    # ensure we have 2 or more providers
+    if [ "$provider_count" -ge 2 ]; then
+        echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
+        # find the Nvidia provider number
+        provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2}' | tr -d ':')
+        if [ -z "$provider_number" ]; then
+            echo "Multiple xrandr providers however none appear to be a NVIDIA driver device!" >> "$nvidia_log"
+            echo "Check for Nouveau drivers..." >> "$nvidia_log"
+            provider_number=$(xrandr --listproviders | awk '/nouveau/ {print $2}' | tr -d ':')
+            if [ -z "$provider_number" ]; then
+                echo "Nouveau drivers not found either, using integrated graphics" >> "$nvidia_log"
+            else
+                echo "Nouveau drivers found using provider number: $provider_number" >> "$nvidia_log"
+                export DRI_PRIME="$provider_number"
+            fi
+        else
+            export __NV_PRIME_RENDER_OFFLOAD=$provider_number
+            export __VK_LAYER_NV_optimus=NVIDIA_only
+            export __GLX_VENDOR_LIBRARY_NAME=nvidia
+            echo "Nvidia Prime provider = $provider_number" >> "$nvidia_log"
+        fi
+    else
+        echo "You do not have multiple xrandr providers to support Nvidia Prime!" >> "$nvidia_log"      
+    fi
 fi
 
-### radeon ###
-# variable for AMD Dynamic Switchable Graphics to take amd-radeon gpu over intel cards when such hybrid cards are available
-radeon_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)"
-if test "${radeon_prime}" = "true"
-then
-    export DRI_PRIME=1
+# amd
+if [ -f "/var/tmp/amd.prime" ]; then
+    echo "Setting AMD Prime environment variable" >> "$amd_log"
+    amd_prime_value=$(<"/var/tmp/amd.prime")
+    if [ -z "$amd_prime_value" ]; then
+        export DRI_PRIME=1
+    else
+        export DRI_PRIME="$amd_prime_value"
+        echo "AMD Prime environment variable set to $amd_prime_value" >> "$amd_log"
+    fi
 fi
 
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"

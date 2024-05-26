@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBZEDMD
+    bool "libzedmd"
+    select BR2_PACKAGE_LIBSERIALPORT
+    help
+      ZeDMD communication library.
+      
+      https://github.com/PPUC/libzedmd
+

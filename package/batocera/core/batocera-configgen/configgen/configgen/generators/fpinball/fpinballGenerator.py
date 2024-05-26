@@ -15,18 +15,22 @@ eslog = get_logger(__name__)
 
 class FpinballGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
-        wineprefix = batoceraFiles.SAVES + "/fpinball"
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        wineprefix = "/userdata/system/wine-bottles/fpinball"
         emupath = wineprefix + "/fpinball"
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
 
         if not os.path.exists(wineprefix + "/wsh57.done"):
-            cmd = ["/usr/wine/winetricks", "wsh57"]
-            env = {"W_CACHE": "/userdata/bios", "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
+            cmd = ["/usr/wine/winetricks", "-q", "wsh57"]
+            env = {
+                "W_CACHE": "/userdata/bios",
+                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
+                "WINEPREFIX": wineprefix
+            }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -40,15 +44,32 @@ class FpinballGenerator(Generator):
         if not os.path.exists(emupath):
             shutil.copytree('/usr/fpinball', emupath)
         
+        # copy updated folder if we have a new BAM FPLoader.exe file
+        src_file = "/usr/fpinball/BAM/FPLoader.exe"
+        dest_file = emupath + "/BAM/FPLoader.exe"
+        if os.path.getmtime(src_file) > os.path.getmtime(dest_file):
+            shutil.copytree('/usr/fpinball', emupath)
+        
         # convert rom path
         rompath = PureWindowsPath(rom)
         rom = f"Z:{rompath}"
 
         if rom == 'config':
-            commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), emupath +"/Future Pinball.exe" ]
+            commandArray = [
+                "/usr/wine/ge-custom/bin/wine",
+                "explorer",
+                "/desktop=Wine,{}x{}".format(gameResolution["width"],
+                gameResolution["height"]),
+                emupath +"/BAM/FPLoader.exe" ]
         else:
-            commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), emupath +"/Future Pinball.exe", "/open", rom, "/play", "/exit" ]
-
+            commandArray = [
+                "/usr/wine/ge-custom/bin/wine",
+                "explorer",
+                "/desktop=Wine,{}x{}".format(gameResolution["width"],
+                gameResolution["height"]),
+                emupath +"/BAM/FPLoader.exe",
+                "/open", rom, "/play", "/exit" ]
+        
         # config
         if not os.path.exists("/userdata/system/configs/fpinball"):
             os.makedirs("/userdata/system/configs/fpinball")
@@ -143,9 +164,9 @@ class FpinballGenerator(Generator):
                         f.write("\r\n")
 
         cmd = ["wine", "regedit", "/userdata/system/configs/fpinball/batocera.confg.reg"]
-        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
+        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
         env.update(os.environ)
-        env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
+        env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
         eslog.debug(f"command: {str(cmd)}")
         proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate()
@@ -153,16 +174,33 @@ class FpinballGenerator(Generator):
         eslog.debug(out.decode())
         eslog.error(err.decode())
 
+        environment={
+            "WINEPREFIX": wineprefix,
+            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
+            "LIBGL_DRIVERS_PATH": "/lib32/dri",
+            # hum pw 0.2 and 0.3 are hardcoded, not nice
+            "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
+            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+        }
+
+        # ensure nvidia driver used for vulkan
+        if os.path.exists('/var/tmp/nvidia.prime'):
+            variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
+            for variable_name in variables_to_remove:
+                if variable_name in os.environ:
+                    del os.environ[variable_name]
+            
+            environment.update(
+                {
+                    'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
+                    'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
+                }
+            )
+        
         return Command.Command(
             array=commandArray,
-            env={
-                "WINEPREFIX": wineprefix,
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine",
-                "LIBGL_DRIVERS_PATH": "/lib32/dri",
-                # hum pw 0.2 and 0.3 are hardcoded, not nice
-                "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-                "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
-            })
+            env=environment
+        )
 
     def getGfxRatioFromConfig(config, gameResolution):
         # 2: 4:3 ; 1: 16:9  ; 0: auto

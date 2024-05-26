@@ -22,208 +22,108 @@ def generateControllerConfig(system, playersControllers):
     API_SDL = "SDLController"
     API_DSU = "DSUController"
 
-    DEFAULT_CONTROLLER_API = API_SDL
     DEFAULT_IP             = 'localhost'
     DEFAULT_PORT           = '26760'
     DEFAULT_DEADZONE       = '0.25'
     DEFAULT_RANGE          = '1'
 
-    apiButtonMappings = {
-        API_SDL: {
-            GAMEPAD: { # excludes blow mic & show screen
-                    "1":  "1",
-                    "2":  "0",
-                    "3":  "3",
-                    "4":  "2",
-                    "5":  "9",
-                    "6":  "10",
-                    "7":  "42",
-                    "8":  "43",
-                    "9":  "6",
-                    "10": "4",
-                    "11": "11",
-                    "12": "12",
-                    "13": "13",
-                    "14": "14",
-                    "15": "7",
-                    "16": "8",
-                    "17": "45",
-                    "18": "39",
-                    "19": "44",
-                    "20": "38",
-                    "21": "47",
-                    "22": "41",
-                    "23": "46",
-                    "24": "40"
-            },
-            PRO: {
-                    "1":  "1",
-                    "2":  "0",
-                    "3":  "3",
-                    "4":  "2",
-                    "5":  "9",
-                    "6":  "10",
-                    "7":  "42",
-                    "8":  "43",
-                    "9":  "6",
-                    "10": "4",
-                    # 11 is excluded
-                    "12": "11",
-                    "13": "12",
-                    "14": "13",
-                    "15": "14",
-                    "16": "7",
-                    "17": "8",
-                    "18": "45",
-                    "19": "39",
-                    "20": "44",
-                    "21": "38",
-                    "22": "47",
-                    "23": "41",
-                    "24": "46",
-                    "25": "40"
-            },
-            CLASSIC: {
-                    "1":  "13",
-                    "2":  "12",
-                    "3":  "15",
-                    "4":  "14",
-                    "5":  "8",
-                    "6":  "9",
-                    "7":  "42",
-                    "8":  "43",
-                    "9":  "4",
-                    "10": "5",
-                    # 11 is excluded
-                    "12": "0",
-                    "13": "1",
-                    "14": "2",
-                    "15": "3",
-                    "16": "39",
-                    "17": "45",
-                    "18": "44",
-                    "19": "38",
-                    "20": "41",
-                    "21": "47",
-                    "22": "46",
-                    "23": "40"
-            },
-            WIIMOTE: { # with MotionPlus & Nunchuck, excludes Home button
-                    "1":  "0",
-                    "2":  "43",
-                    "3":  "2",
-                    "4":  "1",
-                    "5":  "42",
-                    "6":  "9",
-                    "7":  "6",
-                    "8":  "4",
-                    "9":  "11",
-                    "10": "12",
-                    "11": "13",
-                    "12": "14",
-                    "13": "45",
-                    "14": "39",
-                    "15": "44",
-                    "16": "38"
-            }
+    buttonMappings = {
+        GAMEPAD: { # excludes show screen
+            "1":  "1",
+            "2":  "0",
+            "3":  "3",
+            "4":  "2",
+            "5":  "9",
+            "6":  "10",
+            "7":  "42",
+            "8":  "43",
+            "9":  "6",
+            "10": "4",
+            "11": "11",
+            "12": "12",
+            "13": "13",
+            "14": "14",
+            "15": "7",
+            "16": "8",
+            "17": "45",
+            "18": "39",
+            "19": "44",
+            "20": "38",
+            "21": "47",
+            "22": "41",
+            "23": "46",
+            "24": "40",
+            "25": "7"
         },
-        API_DSU: {
-            GAMEPAD: { # excludes blow mic & show screen
-                    "1":  "13",
-                    "2":  "14",
-                    "3":  "12",
-                    "4":  "15",
-                    "5":  "10",
-                    "6":  "11",
-                    "7":  "8",
-                    "8":  "9",
-                    "9":  "3",
-                    "10": "0",
-                    "11": "4",
-                    "12": "6",
-                    "13": "7",
-                    "14": "5",
-                    "15": "1",
-                    "16": "2",
-                    "17": "39",
-                    "18": "45",
-                    "19": "44",
-                    "20": "38",
-                    "21": "41",
-                    "22": "47",
-                    "23": "46",
-                    "24": "40"
-            },
-            PRO: {
-                    "1":  "13",
-                    "2":  "14",
-                    "3":  "12",
-                    "4":  "15",
-                    "5":  "10",
-                    "6":  "11",
-                    "7":  "8",
-                    "8":  "9",
-                    "9":  "3",
-                    "10": "0",
-                    # 11 is excluded
-                    "12": "4",
-                    "13": "6",
-                    "14": "7",
-                    "15": "5",
-                    "16": "1",
-                    "17": "2",
-                    "18": "39",
-                    "19": "45",
-                    "20": "44",
-                    "21": "38",
-                    "22": "41",
-                    "23": "47",
-                    "24": "46",
-                    "25": "40"
-            },
-            CLASSIC: {
-                    "1":  "13",
-                    "2":  "14",
-                    "3":  "12",
-                    "4":  "15",
-                    "5":  "10",
-                    "6":  "11",
-                    "7":  "8",
-                    "8":  "9",
-                    "9":  "3",
-                    "10": "0",
-                    # 11 is excluded
-                    "12": "4",
-                    "13": "6",
-                    "14": "7",
-                    "15": "5",
-                    "16": "39",
-                    "17": "45",
-                    "18": "44",
-                    "19": "38",
-                    "20": "41",
-                    "21": "47",
-                    "22": "46",
-                    "23": "40"
-            },
-            WIIMOTE: { # with MotionPlus & Nunchuck, excludes Home button
-                    "1":  "13",
-                    "2":  "14",
-                    "3":  "15",
-                    "4":  "12",
-                    "5":  "8",
-                    "6":  "10",
-                    "7":  "3",
-                    "8":  "0",
-                    "9":  "4",
-                    "10": "6",
-                    "11": "7",
-                    "12": "5",
-                    "13": "39",
-                    "14": "45",
-                    "15": "44",
-                    "16": "38"
-            }
+        PRO: {
+            "1":  "1",
+            "2":  "0",
+            "3":  "3",
+            "4":  "2",
+            "5":  "9",
+            "6":  "10",
+            "7":  "42",
+            "8":  "43",
+            "9":  "6",
+            "10": "4",
+            # 11 is excluded
+            "12": "11",
+            "13": "12",
+            "14": "13",
+            "15": "14",
+            "16": "7",
+            "17": "8",
+            "18": "45",
+            "19": "39",
+            "20": "44",
+            "21": "38",
+            "22": "47",
+            "23": "41",
+            "24": "46",
+            "25": "40"
+        },
+        CLASSIC: {
+            "1":  "13",
+            "2":  "12",
+            "3":  "15",
+            "4":  "14",
+            "5":  "8",
+            "6":  "9",
+            "7":  "42",
+            "8":  "43",
+            "9":  "4",
+            "10": "5",
+            # 11 is excluded
+            "12": "0",
+            "13": "1",
+            "14": "2",
+            "15": "3",
+            "16": "39",
+            "17": "45",
+            "18": "44",
+            "19": "38",
+            "20": "41",
+            "21": "47",
+            "22": "46",
+            "23": "40"
+        },
+        WIIMOTE: { # with MotionPlus & Nunchuck, excludes Home button
+            "1":  "0",
+            "2":  "43",
+            "3":  "2",
+            "4":  "1",
+            "5":  "42",
+            "6":  "9",
+            "7":  "6",
+            "8":  "4",
+            "9":  "11",
+            "10": "12",
+            "11": "13",
+            "12": "14",
+            "13": "45",
+            "14": "39",
+            "15": "44",
+            "16": "38"
         }
     }
 
@@ -274,11 +174,6 @@ def generateControllerConfig(system, playersControllers):
         guid_n[pad.index] = guid_count[pad.guid]
     ###
 
-    # Read the controller API from config, use default on invalid value
-    controllerAPI = getOption('cemu_controller_api', DEFAULT_CONTROLLER_API)
-    if not controllerAPI in apiButtonMappings:
-        controllerAPI = DEFAULT_CONTROLLER_API
-
     for playercontroller, pad in sorted(playersControllers.items()):
         root = ET.Element("emulated_controller")
 
@@ -305,11 +200,7 @@ def generateControllerConfig(system, playersControllers):
 
         # Create controller configuration
         controllerNode = ET.SubElement(root, 'controller')
-        addTextElement(controllerNode, 'api', controllerAPI)
-        if (controllerAPI == API_DSU):
-            addTextElement(controllerNode, 'motion', 'true')
-            addTextElement(controllerNode, 'ip', getOption('cemuhook_server_ip', DEFAULT_IP))
-            addTextElement(controllerNode, 'port', getOption('cemuhook_server_port', DEFAULT_PORT))
+        addTextElement(controllerNode, 'api', API_SDL)
         addTextElement(controllerNode, 'uuid', "{}_{}".format(guid_n[pad.index], pad.guid)) # controller guid
         addTextElement(controllerNode, 'display_name', pad.realName) # controller name
         addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
@@ -319,10 +210,19 @@ def generateControllerConfig(system, playersControllers):
 
         # Apply the appropriate button mappings
         mappingsNode = ET.SubElement(controllerNode, "mappings")
-        for key, value in apiButtonMappings[controllerAPI][type].items():
+        for key, value in buttonMappings[type].items():
             entryNode = ET.SubElement(mappingsNode, "entry")
             addTextElement(entryNode, "mapping", key)
             addTextElement(entryNode, "button", value)
+
+        # Add motion control
+        if (system.isOptSet('cemuhook_server_port')):
+            motionControllerNode = ET.SubElement(root, 'controller')
+            addTextElement(motionControllerNode, 'api', API_DSU)
+            addTextElement(motionControllerNode, 'uuid', '0')
+            addTextElement(motionControllerNode, 'motion', 'true')
+            addTextElement(motionControllerNode, 'ip', getOption('cemuhook_server_ip', DEFAULT_IP))
+            addTextElement(motionControllerNode, 'port', getOption('cemuhook_server_port', DEFAULT_PORT))
 
         # Save to file
         with open(getConfigFileName(nplayer), 'wb') as handle:

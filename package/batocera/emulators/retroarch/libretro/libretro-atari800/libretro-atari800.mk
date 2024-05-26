@@ -3,8 +3,8 @@
 # libretro-atari800
 #
 ################################################################################
-# Version.: Commits on Jul 26, 2022
-LIBRETRO_ATARI800_VERSION = 94033288b026fe699bc50703609807aa8075f4dd
+# Version: Commits on Nov 14, 2023
+LIBRETRO_ATARI800_VERSION = 410d7bf0c215f3444793a9cec51c129e7b67c400
 LIBRETRO_ATARI800_SITE = $(call github,libretro,libretro-atari800,$(LIBRETRO_ATARI800_VERSION))
 LIBRETRO_ATARI800_LICENSE = GPL
 
@@ -21,10 +21,15 @@ LIBRETRO_ATARI800_PLATFORM = rpi3_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_ATARI800_PLATFORM = rpi4
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+LIBRETRO_ATARI800_PLATFORM = rpi5
+
 endif
 
 define LIBRETRO_ATARI800_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_ATARI800_PLATFORM)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_ATARI800_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_ATARI800_VERSION) | cut -c 1-7)"
 endef
 

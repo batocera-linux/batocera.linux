@@ -1,0 +1,57 @@
+From e02408aadb8f9a73c8af428548e1726015669a46 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 18 Aug 2016 15:52:28 +0100
+Subject: [PATCH 11/58] wayland-drm: install wayland-drm.xml to the configured
+ pkgdatadir
+
+Add a pkg-config file as well so that it can be located without hardcoding the
+path.
+---
+ src/egl/wayland/wayland-drm/meson.build       | 15 +++++++++++++++
+ src/egl/wayland/wayland-drm/wayland-drm.pc.in |  7 +++++++
+ 2 files changed, 22 insertions(+)
+ create mode 100644 src/egl/wayland/wayland-drm/wayland-drm.pc.in
+
+diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
+index b4782a013c9..f291ef9f55e 100644
+--- a/src/egl/wayland/wayland-drm/meson.build
++++ b/src/egl/wayland/wayland-drm/meson.build
+@@ -49,6 +49,21 @@ libwayland_drm = static_library(
+   build_by_default : false,
+ )
+ 
++install_data('wayland-drm.xml')
++
++pkg.generate(
++  filebase : 'wayland-drm',
++  name : 'Mesa Wayland Protocols',
++  description : 'Mesa Wayland protocol files',
++  version : meson.project_version(),
++  variables : [
++     'datarootdir=${prefix}/' + get_option('datadir'),
++     'pkgdatadir=${pc_sysrootdir}${datarootdir}/' + meson.project_name(),
++  ],
++  install_dir : '@0@/@1@/pkgconfig'.format(get_option('prefix'),
++                get_option('datadir')),
++)
++
+ # linux-dmabuf isn't part of wayland-drm, but this happens to be the only
+ # place which is a) guaranteed to be built when building either or both
+ # of EGL and Vulkan WSI, and b) guaranteed to be included before both,
+diff --git a/src/egl/wayland/wayland-drm/wayland-drm.pc.in b/src/egl/wayland/wayland-drm/wayland-drm.pc.in
+new file mode 100644
+index 00000000000..d08ccdaf6ce
+--- /dev/null
++++ b/src/egl/wayland/wayland-drm/wayland-drm.pc.in
+@@ -0,0 +1,7 @@
++prefix=@prefix@
++datarootdir=@datarootdir@
++pkgdatadir=${pc_sysrootdir}@datadir@/@PACKAGE@
++
++Name: @PACKAGE_NAME@ Wayland Protocols
++Description: @PACKAGE_NAME@ Wayland protocol files
++Version: @PACKAGE_VERSION@
+\ No newline at end of file
+-- 
+2.25.1
+

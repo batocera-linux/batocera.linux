@@ -13,7 +13,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index c0b8ac9df..17407e954 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -19,6 +19,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+@@ -52,6 +52,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
  include( FindPackageHandleStandardArgs )
  
  # Support cross compiling
@@ -22,13 +22,10 @@ index c0b8ac9df..17407e954 100644
  option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
  if( FORCE_CROSSCOMPILE )
  	set( CMAKE_CROSSCOMPILING TRUE )
-@@ -188,9 +190,11 @@ endmacro()
- option( NO_OPENAL "Disable OpenAL sound support" OFF )
- 
- find_package( BZip2 )
--find_package( JPEG )
--find_package( VPX )
- find_package( ZLIB )
+@@ -231,6 +231,10 @@ if (NOT WebP_FOUND)
+ 	add_library(WebP::webpdemux ALIAS PkgConfig::libwebpdemux)
+ 	add_library(WebP::libwebpmux ALIAS PkgConfig::libwebpmux)
+ endif()
 +if(NOT TOOLS_ONLY)
 +	find_package( JPEG )
 +	find_package( VPX )
@@ -36,77 +33,35 @@ index c0b8ac9df..17407e954 100644
  
  include( TargetArch )
  
-@@ -323,17 +327,6 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+@@ -336,18 +336,11 @@ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
  option(FORCE_INTERNAL_ASMJIT "Use internal asmjit" ON)
  mark_as_advanced( FORCE_INTERNAL_ASMJIT )
  
 -if (HAVE_VULKAN)
--	add_subdirectory( libraries/glslang/glslang)
--	add_subdirectory( libraries/glslang/spirv )
--	add_subdirectory( libraries/glslang/OGLCompilersDLL )
--endif()
+-	add_subdirectory( libraries/ZVulkan )
++if(NOT TOOLS_ONLY)
++    add_subdirectory( libraries/ZWidget )
++    add_subdirectory( libraries/webp )
+ endif()
+ 
+-add_subdirectory( libraries/ZWidget )
+-add_subdirectory( libraries/webp )
 -
 -add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
 -set( DRPC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/discordrpc/include" )
 -set( DRPC_LIBRARIES discord-rpc )
 -set( DRPC_LIBRARY discord-rpc )
 -
- if( ZLIB_FOUND AND NOT FORCE_INTERNAL_ZLIB )
- 	message( STATUS "Using system zlib, includes found at ${ZLIB_INCLUDE_DIR}" )
- else()
-@@ -345,43 +338,6 @@ else()
- 	set( ZLIB_LIBRARY z )
- endif()
- 
--if( HAVE_VM_JIT AND UNIX )
--	check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
--	if( NOT HAVE_BACKTRACE )
--		set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
--		check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
--		if( HAVE_LIBEXECINFO )
--			set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
--		else( HAVE_LIBEXECINFO )
--			set( HAVE_VM_JIT NO )
--		endif( HAVE_LIBEXECINFO )
--		set( CMAKE_REQUIRED_FLAGS )
--	endif( NOT HAVE_BACKTRACE )
--endif( HAVE_VM_JIT AND UNIX )
--
--if( ${HAVE_VM_JIT} )
--	if( ASMJIT_FOUND AND NOT FORCE_INTERNAL_ASMJIT )
--		message( STATUS "Using system asmjit, includes found at ${ASMJIT_INCLUDE_DIR}" )
--	else()
--		message( STATUS "Using internal asmjit" )
--		set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
--		add_subdirectory( libraries/asmjit )
--		set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
--		set( ASMJIT_LIBRARIES asmjit )
--		set( ASMJIT_LIBRARY asmjit )
--	endif()
--endif()
--
--if( JPEG_FOUND AND NOT FORCE_INTERNAL_JPEG )
--	message( STATUS "Using system jpeg library, includes found at ${JPEG_INCLUDE_DIR}" )
--else()
--	message( STATUS "Using internal jpeg library" )
--	add_subdirectory( libraries/jpeg )
--	set( JPEG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/jpeg )
--	set( JPEG_LIBRARIES jpeg )
--	set( JPEG_LIBRARY jpeg )
--endif()
--
- if( BZIP2_FOUND AND NOT FORCE_INTERNAL_BZIP2 )
- 	message( STATUS "Using system bzip2 library, includes found at ${BZIP2_INCLUDE_DIR}" )
- else()
-@@ -394,6 +350,56 @@ endif()
+ if( HAVE_VM_JIT AND UNIX )
+ 	check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
+ 	if( NOT HAVE_BACKTRACE )
+@@ -423,6 +381,57 @@ endif()
  
  set( LZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/lzma/C" )
  
 +if(NOT TOOLS_ONLY)
 +	if (HAVE_VULKAN)
-+		add_subdirectory( libraries/glslang/glslang)
-+		add_subdirectory( libraries/glslang/spirv )
-+		add_subdirectory( libraries/glslang/OGLCompilersDLL )
++		add_subdirectory( libraries/ZVulkan )
 +	endif()
 +
 +	add_subdirectory( libraries/discordrpc EXCLUDE_FROM_ALL )
@@ -152,10 +107,13 @@ index c0b8ac9df..17407e954 100644
 +	endif()
 +endif()
 +
++
++
++
  if( NOT CMAKE_CROSSCOMPILING )
  	if( NOT CROSS_EXPORTS )
  		set( CROSS_EXPORTS "" )
-@@ -401,26 +407,31 @@ if( NOT CMAKE_CROSSCOMPILING )
+@@ -453,26 +453,30 @@ if( NOT CMAKE_CROSSCOMPILING )
  endif()
  
  # Install the entire docs directory in the distributed zip package
@@ -180,17 +138,15 @@ index c0b8ac9df..17407e954 100644
  option( DYN_OPENAL "Dynamically load OpenAL" ON )
  
  add_subdirectory( libraries/lzma )
+ add_subdirectory( libraries/miniz )
  add_subdirectory( tools )
--add_subdirectory( libraries/gdtoa )
 -add_subdirectory( wadsrc )
 -add_subdirectory( wadsrc_bm )
 -add_subdirectory( wadsrc_lights )
 -add_subdirectory( wadsrc_extra )
 -add_subdirectory( wadsrc_widepix )
 -add_subdirectory( src )
-+
 +if(NOT TOOLS_ONLY)
-+	add_subdirectory( libraries/gdtoa )
 +	add_subdirectory( wadsrc )
 +	add_subdirectory( wadsrc_bm )
 +	add_subdirectory( wadsrc_lights )

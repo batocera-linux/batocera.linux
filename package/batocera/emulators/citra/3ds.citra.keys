@@ -48,6 +48,12 @@
             "description": "Toggle Speed Limit"
         },
         {
+            "trigger": ["hotkey", "r2"],
+            "type": "key",
+            "target": ["KEY_LEFTALT", "KEY_TAB"],
+            "description": "Swap screens"
+        },
+        {
             "trigger": "r3",
             "type": "key",
             "target": "BTN_LEFT",

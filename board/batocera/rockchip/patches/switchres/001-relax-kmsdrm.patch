@@ -1,0 +1,22 @@
+diff --git a/custom_video_drmkms.cpp b/custom_video_drmkms.cpp
+index c7c2d0a3b1..9fda57fdbc
+--- a/custom_video_drmkms.cpp
++++ b/custom_video_drmkms.cpp
+@@ -591,7 +591,7 @@ bool drmkms_timing::init()
+ 		log_verbose("DRM/KMS: <%d> (init) version %d.%d.%d type %s\n", m_id, version->version_major, version->version_minor, version->version_patchlevel, version->name);
+ 		drmFreeVersion(version);
+ 
+-		uint64_t check_dumb = 0;
++		/*uint64_t check_dumb = 0;
+ 		if (drmGetCap(m_drm_fd, DRM_CAP_DUMB_BUFFER, &check_dumb) < 0)
+ 			log_error("DRM/KMS: <%d> (init) [ERROR] ioctl DRM_CAP_DUMB_BUFFER\n", m_id);
+ 
+@@ -599,7 +599,7 @@ bool drmkms_timing::init()
+ 		{
+ 			log_error("DRM/KMS: <%d> (init) [ERROR] dumb buffer not supported\n", m_id);
+ 			continue;
+-		}
++		}*/
+ 
+ 		p_res = drmModeGetResources(m_drm_fd);
+ 

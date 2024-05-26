@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SINDEN_GUNS_VERSION = 1.08
+SINDEN_GUNS_VERSION = 1.09
 SINDEN_GUNS_SOURCE=SindenLightgunSoftwareReleaseV$(SINDEN_GUNS_VERSION).zip
 SINDEN_GUNS_SITE=https://www.sindenlightgun.com/software
 
@@ -19,6 +19,7 @@ endef
 
 define SINDEN_GUNS_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/99-sinden.rules $(TARGET_DIR)/etc/udev/rules.d/99-sinden.rules
+	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/uvcvideo.conf $(TARGET_DIR)/etc/modprobe.d/uvcvideo.conf
 	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/virtual-sindenlightgun-add $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-add
 	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/virtual-sindenlightgun-remap $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-remap
 

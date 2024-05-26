@@ -3,8 +3,8 @@
 # libretro-fbneo
 #
 ################################################################################
-# Version: Commits on Oct 10, 2022
-LIBRETRO_FBNEO_VERSION = 4d0777dc8d07bffa1e89ffe1c9e8921e8a6da3cf
+# Version: Commits on Feb 24, 2024
+LIBRETRO_FBNEO_VERSION = 4a555e062b3a388dfc0893515cde78ce0b0b3909
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -13,15 +13,14 @@ LIBRETRO_FBNEO_EXTRA_ARGS =
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_FBNEO_PLATFORM = unix-rpi1
-
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_FBNEO_PLATFORM = unix-rpi2
-
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
 LIBRETRO_FBNEO_PLATFORM = unix-rpi3_64
-
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_FBNEO_PLATFORM = unix-rpi4_64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+LIBRETRO_FBNEO_PLATFORM = unix-rpi5_64
 endif
 
 ifeq ($(BR2_arm),y)
@@ -45,7 +44,9 @@ LIBRETRO_FBNEO_EXTRA_ARGS += USE_EXPERIMENTAL_FLAGS=0
 endif
 
 define LIBRETRO_FBNEO_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/burner/libretro -f Makefile platform="$(LIBRETRO_FBNEO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS) \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D)/src/burner/libretro -f Makefile \
+		platform="$(LIBRETRO_FBNEO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS) \
         GIT_VERSION="$(shell echo $(LIBRETRO_FBNEO_VERSION) | cut -c 1-7)"
 endef
 

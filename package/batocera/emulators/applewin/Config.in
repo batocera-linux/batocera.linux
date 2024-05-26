@@ -1,0 +1,13 @@
+config BR2_PACKAGE_APPLEWIN
+	bool "applewin"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_BOOST
+	select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+	select BR2_PACKAGE_MINIZIP_ZLIB
+	select BR2_PACKAGE_SLIRP
+	select BR2_PACKAGE_LIBPCAP
+	help
+		AppleWin linux / libretro port
+
+		https://github.com/audetto/AppleWin

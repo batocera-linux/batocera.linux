@@ -25,11 +25,21 @@ ba_timezone() {
 
 ba_hostname() {
     settings_hostname="$(/usr/bin/batocera-settings-get system.hostname)"
+    hostname="$(hostname)"
+    echo "Hostname after DHCP setup is: ${hostname}" >> /tmp/hostname.log
     if [ "$settings_hostname" != "" ]; then
+        echo "Setting hostname from system.hostname: ${settings_hostname}" >> /tmp/hostname.log
+        hostname="${settings_hostname}"
         hostname "${settings_hostname}"
-        echo "127.0.0.1	localhost"             > /etc/hosts
-        echo "127.0.1.1	${settings_hostname}" >> /etc/hosts
+    else
+        echo "No system.hostname value is set, leaving hostname unchanged" >> /tmp/hostname.log
     fi
+    if [ "$hostname" != "" ]; then
+        echo "Creating /etc/hosts" >> /tmp/hostname.log
+        echo "127.0.0.1	localhost"             > /etc/hosts
+        echo "127.0.1.1	${hostname}"          >> /etc/hosts
+    fi
+    cp /tmp/hostname.log /userdata/system/logs/hostname.log
 }
 
 ba_xarcade2jstick() {

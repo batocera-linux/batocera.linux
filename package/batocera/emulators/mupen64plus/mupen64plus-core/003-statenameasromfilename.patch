@@ -1,8 +1,8 @@
 diff --git a/src/api/frontend.c b/src/api/frontend.c
-index 0f8c344..253e7c9 100644
+index 6f2d267..2ec0538 100644
 --- a/src/api/frontend.c
 +++ b/src/api/frontend.c
-@@ -176,6 +176,9 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
+@@ -177,6 +177,9 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
      {
          case M64CMD_NOP:
              return M64ERR_SUCCESS;
@@ -10,48 +10,46 @@ index 0f8c344..253e7c9 100644
 +            strncpy(g_rom_filename, (const unsigned char *) ParamPtr, ParamInt);
 +            return M64ERR_SUCCESS;
          case M64CMD_ROM_OPEN:
-             if (g_EmulatorRunning || l_ROMOpen)
+             if (g_EmulatorRunning || l_DiskOpen || l_ROMOpen)
                  return M64ERR_INVALID_STATE;
 diff --git a/src/api/m64p_types.h b/src/api/m64p_types.h
-index d36ca80..960bebd 100644
+index 088f011..e68c92d 100644
 --- a/src/api/m64p_types.h
 +++ b/src/api/m64p_types.h
-@@ -168,7 +168,8 @@ typedef enum {
-   M64CMD_NETPLAY_GET_VERSION,
+@@ -170,6 +170,7 @@ typedef enum {
    M64CMD_NETPLAY_CLOSE,
    M64CMD_PIF_OPEN,
--  M64CMD_ROM_SET_SETTINGS
-+  M64CMD_ROM_SET_SETTINGS,
-+  M64CMD_ROM_FILENAME
+   M64CMD_ROM_SET_SETTINGS,
++  M64CMD_ROM_FILENAME,
+   M64CMD_DISK_OPEN,
+   M64CMD_DISK_CLOSE
  } m64p_command;
-
- typedef struct {
 diff --git a/src/main/main.c b/src/main/main.c
-index 4ee1c98..2652746 100644
+index 7612875..954a9d7 100644
 --- a/src/main/main.c
 +++ b/src/main/main.c
 @@ -114,6 +114,7 @@ uint32_t g_start_address = UINT32_C(0xa4000040);
  struct device g_dev;
-
+ 
  m64p_media_loader g_media_loader;
 +char g_rom_filename[1024] = "";
-
+ 
  int g_gs_vi_counter = 0;
-
+ 
 diff --git a/src/main/main.h b/src/main/main.h
-index 54797b9..227b44a 100644
+index 3aacca3..e03574b 100644
 --- a/src/main/main.h
 +++ b/src/main/main.h
 @@ -50,6 +50,7 @@ extern void* g_mem_base;
  extern struct device g_dev;
-
+ 
  extern m64p_media_loader g_media_loader;
 +extern char g_rom_filename[1024];
-
+ 
  extern m64p_frame_callback g_FrameCallback;
-
+ 
 diff --git a/src/main/savestates.c b/src/main/savestates.c
-index fea8bdd..8ed6f83 100644
+index bf3926d..5a957c3 100644
 --- a/src/main/savestates.c
 +++ b/src/main/savestates.c
 @@ -86,6 +86,12 @@ static char *savestates_generate_path(savestates_type type)
@@ -66,7 +64,7 @@ index fea8bdd..8ed6f83 100644
 +
          char *filepath;
          size_t size = 0;
-
+ 
 @@ -93,7 +99,7 @@ static char *savestates_generate_path(savestates_type type)
          {
              case savestates_type_m64p:
@@ -89,15 +87,15 @@ index fea8bdd..8ed6f83 100644
                  break;
              default:
                  filepath = NULL;
-@@ -2144,6 +2150,7 @@ int savestates_save(void)
+@@ -2156,6 +2162,7 @@ int savestates_save(void)
      char *filepath;
      int ret = 0;
      const struct device* dev = &g_dev;
 +    char ScreenshotFileName[256];
-
+ 
      /* Can only save PJ64 savestates on VI / COMPARE interrupt.
         Otherwise try again in a little while. */
-@@ -2167,9 +2174,13 @@ int savestates_save(void)
+@@ -2179,9 +2186,13 @@ int savestates_save(void)
              case savestates_type_pj64_unc: ret = savestates_save_pj64_unc(dev, filepath); break;
              default: ret = 0; break;
          }
@@ -105,20 +103,20 @@ index fea8bdd..8ed6f83 100644
 +        strncat(ScreenshotFileName, ".png", 4);
          free(filepath);
      }
-
+ 
 +    TakeScreenshotToFile(ScreenshotFileName, 0);
-+
++    
      // deliver callback to indicate completion of state saving operation
      StateChanged(M64CORE_STATE_SAVECOMPLETE, ret);
-
+ 
 diff --git a/src/main/screenshot.c b/src/main/screenshot.c
-index 7f2260e..4866bf5 100644
+index a831571..12a184b 100644
 --- a/src/main/screenshot.c
 +++ b/src/main/screenshot.c
-@@ -224,6 +224,12 @@ void TakeScreenshot(int iFrameNumber)
-     if (filename == NULL)
+@@ -227,6 +227,12 @@ void TakeScreenshot(int iFrameNumber)
          return;
-
+     }
+ 
 +    TakeScreenshotToFile(filename, iFrameNumber);
 +    free(filename);
 +}
@@ -128,30 +126,30 @@ index 7f2260e..4866bf5 100644
      // get the width and height
      int width = 640;
      int height = 480;
-@@ -233,7 +239,6 @@ void TakeScreenshot(int iFrameNumber)
-     unsigned char *pucFrame = (unsigned char *) malloc(width * height * 3);
+@@ -237,7 +243,6 @@ void TakeScreenshot(int iFrameNumber)
      if (pucFrame == NULL)
      {
+         StateChanged(M64CORE_SCREENSHOT_CAPTURED, 0);
 -        free(filename);
          return;
      }
-
-@@ -244,7 +249,6 @@ void TakeScreenshot(int iFrameNumber)
-     SaveRGBBufferToFile(filename, pucFrame, width, height, width * 3);
+ 
+@@ -248,7 +253,6 @@ void TakeScreenshot(int iFrameNumber)
+     int rval = SaveRGBBufferToFile(filename, pucFrame, width, height, width * 3);
      // free the memory
      free(pucFrame);
 -    free(filename);
      // print message -- this allows developers to capture frames and use them in the regression test
-     main_message(M64MSG_INFO, OSD_BOTTOM_LEFT, "Captured screenshot for frame %i.", iFrameNumber);
- }
+     if (rval != 0)
+     {
 diff --git a/src/main/screenshot.h b/src/main/screenshot.h
 index c7f6bad..fdc3e36 100644
 --- a/src/main/screenshot.h
 +++ b/src/main/screenshot.h
 @@ -24,5 +24,6 @@
-
+ 
  void ScreenshotRomOpen(void);
  void TakeScreenshot(int iFrameNumber);
 +void TakeScreenshotToFile(char *filename, int iFrameNumber);
-
+ 
  #endif

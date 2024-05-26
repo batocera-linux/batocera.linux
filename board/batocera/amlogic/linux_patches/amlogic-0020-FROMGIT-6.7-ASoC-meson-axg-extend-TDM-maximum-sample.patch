@@ -1,0 +1,60 @@
+From 2def978be083a51a830916e6e9773bafb4336f33 Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Thu, 7 Sep 2023 11:09:10 +0200
+Subject: [PATCH 20/41] FROMGIT(6.7): ASoC: meson: axg: extend TDM maximum
+ sample rate to 384kHz
+
+The TDM HW on the axg SoC families and derivatives actually supports
+384kHz sampling rate.
+
+Update the fifo and tdm interface constraints accordingly.
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ sound/soc/meson/axg-fifo.c | 2 +-
+ sound/soc/meson/axg-fifo.h | 2 +-
+ sound/soc/meson/axg-tdm.h  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/meson/axg-fifo.c b/sound/soc/meson/axg-fifo.c
+index bccfb770b339..2e3d0108179b 100644
+--- a/sound/soc/meson/axg-fifo.c
++++ b/sound/soc/meson/axg-fifo.c
+@@ -31,7 +31,7 @@ static struct snd_pcm_hardware axg_fifo_hw = {
+ 		 SNDRV_PCM_INFO_NO_PERIOD_WAKEUP),
+ 	.formats = AXG_FIFO_FORMATS,
+ 	.rate_min = 5512,
+-	.rate_max = 192000,
++	.rate_max = 384000,
+ 	.channels_min = 1,
+ 	.channels_max = AXG_FIFO_CH_MAX,
+ 	.period_bytes_min = AXG_FIFO_BURST,
+diff --git a/sound/soc/meson/axg-fifo.h b/sound/soc/meson/axg-fifo.h
+index b63acd723c87..df528e8cb7c9 100644
+--- a/sound/soc/meson/axg-fifo.h
++++ b/sound/soc/meson/axg-fifo.h
+@@ -22,7 +22,7 @@ struct snd_soc_pcm_runtime;
+ 
+ #define AXG_FIFO_CH_MAX			128
+ #define AXG_FIFO_RATES			(SNDRV_PCM_RATE_5512 |		\
+-					 SNDRV_PCM_RATE_8000_192000)
++					 SNDRV_PCM_RATE_8000_384000)
+ #define AXG_FIFO_FORMATS		(SNDRV_PCM_FMTBIT_S8 |		\
+ 					 SNDRV_PCM_FMTBIT_S16_LE |	\
+ 					 SNDRV_PCM_FMTBIT_S20_LE |	\
+diff --git a/sound/soc/meson/axg-tdm.h b/sound/soc/meson/axg-tdm.h
+index 5774ce0916d4..42f7470b9a7f 100644
+--- a/sound/soc/meson/axg-tdm.h
++++ b/sound/soc/meson/axg-tdm.h
+@@ -16,7 +16,7 @@
+ #define AXG_TDM_NUM_LANES	4
+ #define AXG_TDM_CHANNEL_MAX	128
+ #define AXG_TDM_RATES		(SNDRV_PCM_RATE_5512 |		\
+-				 SNDRV_PCM_RATE_8000_192000)
++				 SNDRV_PCM_RATE_8000_384000)
+ #define AXG_TDM_FORMATS		(SNDRV_PCM_FMTBIT_S8 |		\
+ 				 SNDRV_PCM_FMTBIT_S16_LE |	\
+ 				 SNDRV_PCM_FMTBIT_S20_LE |	\
+-- 
+2.34.1
+

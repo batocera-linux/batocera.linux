@@ -76,17 +76,24 @@ ryujinxCtrl = {
 
 class RyujinxGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(ryujinxConf):
             os.makedirs(ryujinxConf)
         if not os.path.exists(ryujinxConf + "/system"):
             os.makedirs(ryujinxConf + "/system")
 
         # Copy file & make executable (workaround)
-        if not os.path.exists(ryujinxExec) or not filecmp.cmp("/usr/ryujinx/Ryujinx", ryujinxExec):
-            shutil.copyfile("/usr/ryujinx/Ryujinx", ryujinxExec)
-            os.chmod(ryujinxExec, 0o0775)
+        files_to_copy = [
+            ("/usr/ryujinx/Ryujinx", ryujinxExec, 0o0775),
+            ("/usr/ryujinx/libSkiaSharp.so", os.path.join(ryujinxConf, "libSkiaSharp.so"), 0o0644),
+            ("/usr/ryujinx/libHarfBuzzSharp.so", os.path.join(ryujinxConf, "libHarfBuzzSharp.so"), 0o0644)
+        ]
 
+        for src, dest, mode in files_to_copy:
+            if not os.path.exists(dest) or not filecmp.cmp(src, dest):
+                shutil.copyfile(src, dest)
+                os.chmod(dest, mode)
+        
         # Copy the prod.keys file to where ryujinx reads it
         if os.path.exists(ryujinxKeys):
             shutil.copyfile(ryujinxKeys, ryujinxConf + "/system/prod.keys")
@@ -107,6 +114,8 @@ class RyujinxGenerator(Generator):
         conf["game_dirs"] = ["/userdata/roms/switch"]
         conf["start_fullscreen"] = True
         conf["docked_mode"] = True
+        conf["audio_backend"] = "OpenAl"
+        conf["audio_volume"] = 1
         # set ryujinx app language
         conf["language_code"] = str(getLangFromEnvironment())
 

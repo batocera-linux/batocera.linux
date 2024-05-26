@@ -22,9 +22,9 @@ typetoname = {'button': 'btn', 'hat': 'btn', 'axis': 'axis', 'key': 'key'}
 # Map an emulationstation input hat to the corresponding retroarch hat value
 hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
 
-# Systems to swap Disc/CD : Atari ST / Amstrad CPC / AMIGA 500 1200 / DOS / MSX / PC98 / X68000 / Commodore 64 128 Plus4 | Dreamcast / PSX / Saturn / SegaCD / 3DO
+# Systems to swap Disc/CD : Atari ST / Amstrad CPC / AMIGA 500 1200 / DOS / MSX / PC98 / X68000 / Commodore 64 128 Plus4 | Dreamcast / PSX / Saturn / SegaCD / 3DO / PS2 / PC-FX
 # Systems with internal mapping : PC88 / FDS | No multi-disc support : opera / yabasanshiro | No m3u support : PicoDrive
-coreWithSwapSupport = {'hatari', 'cap32', 'bluemsx', 'dosbox_pure', 'flycast', 'np2kai', 'puae', 'puae2021', 'px68k', 'vice_x64', 'vice_x64sc', 'vice_xscpu64', 'vice_xplus4', 'vice_x128', 'pcsx_rearmed', 'duckstation', 'mednafen_psx', 'beetle-saturn', 'genesisplusgx'};
+coreWithSwapSupport = {'hatari', 'cap32', 'bluemsx', 'dosbox_pure', 'flycast', 'np2kai', 'puae', 'puae2021', 'px68k', 'vice_x64', 'vice_x64sc', 'vice_xscpu64', 'vice_xplus4', 'vice_x128', 'pcsx_rearmed', 'duckstation', 'mednafen_psx', 'beetle-saturn', 'kronos', 'genesisplusgx', 'pcsx2', 'pcfx'};
 systemToSwapDisable = {'amigacd32', 'amigacdtv', 'naomi', 'atomiswave', 'megadrive', 'mastersystem', 'gamegear'}
 
 # Write a configuration for a specified controller
@@ -55,7 +55,19 @@ def writeControllersConfig(retroconfig, system, controllers, lightgun):
     # No menu in non full uimode
     if system.config["uimode"] != "Full":
         del retroarchspecials['b']
-
+    
+    # Check if hotkeys need to be removed/disabled (Needed for N64 controllers without a dedicated hotkey button)
+    # Assign value based on core
+    if (system.config['core'] == 'mupen64plus-next'):
+        option = 'mupen64plus-controller1'
+    elif (system.config['core'] == 'parallel_n64'):
+        option = 'parallel-n64-controller1'
+    else:
+        option = None
+    # Check for limited hotkey setting
+    if option and option in system.config and system.config[option] in ['n64limited']:
+        retroarchspecials = {'start': 'exit_emulator'}
+    
     for controller in controllers:
         mouseIndex = None
         if system.name in ['nds', '3ds']:
@@ -77,7 +89,7 @@ def cleanControllerConfig(retroconfig, controllers, retroarchspecials):
 # Write the hotkey for player 1
 def writeHotKeyConfig(retroconfig, controllers):
     if '1' in controllers:
-        if 'hotkey' in controllers['1'].inputs:
+        if 'hotkey' in controllers['1'].inputs and controllers['1'].inputs['hotkey'].type == 'button':
             retroconfig.save('input_enable_hotkey_btn', controllers['1'].inputs['hotkey'].id)
 
 
@@ -108,6 +120,11 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
         if 'r2' not in controller.inputs:
             retroarchbtns["pageup"] = "l2"
             retroarchbtns["l2"] = "l"
+
+    # Fix for reversed inputs in Yabasanshiro core which is unmaintained by retroarch
+    if (system.config['core'] == 'yabasanshiro'):
+        retroarchbtns["pageup"] = "r"
+        retroarchbtns["pagedown"] = "l"
 
     config = dict()
     # config['input_device'] = '"%s"' % controller.realName
@@ -151,10 +168,13 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
             if specialkey in controller.inputs:
                 input = controller.inputs[specialkey]
                 config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
-        specialvalue = retroarchspecials['start']
-        input = controller.inputs['start']
-        config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
-    config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
+        if 'start' in controller.inputs:
+            specialvalue = retroarchspecials['start']
+            input = controller.inputs['start']
+            config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
+    if not lightgun:
+        # dont touch to it when there are connected lightguns
+        config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
     return config
 
 

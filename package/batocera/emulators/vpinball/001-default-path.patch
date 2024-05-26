@@ -1,0 +1,13 @@
+diff --git a/standalone/inc/vpinmame/VPinMAMEController.cpp b/standalone/inc/vpinmame/VPinMAMEController.cpp
+index 69ca58b8..0c912c2a 100644
+--- a/standalone/inc/vpinmame/VPinMAMEController.cpp
++++ b/standalone/inc/vpinmame/VPinMAMEController.cpp
+@@ -302,7 +302,7 @@ VPinMAMEController::VPinMAMEController()
+ #if (defined(__APPLE__) && ((defined(TARGET_OS_IOS) && TARGET_OS_IOS) || (defined(TARGET_OS_TV) && TARGET_OS_TV))) || defined(__ANDROID__)
+          m_szPath = g_pvp->m_szMyPath + "pinmame" + PATH_SEPARATOR_CHAR;
+ #else
+-         m_szPath = string(getenv("HOME")) + PATH_SEPARATOR_CHAR + ".pinmame" + PATH_SEPARATOR_CHAR;
++         m_szPath = g_pvp->m_szMyPrefPath + "pinmame" + PATH_SEPARATOR_CHAR;
+ #endif
+       }
+    }

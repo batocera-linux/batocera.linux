@@ -3,9 +3,10 @@
 # libretro-beetle-pce-fast
 #
 ################################################################################
-# Version.: Commits on Aug 28, 2022
-LIBRETRO_BEETLE_PCE_FAST_VERSION = cc248db4d2f47d0f255fbc1a3c651df4beb3d835
-LIBRETRO_BEETLE_PCE_FAST_SITE = $(call github,libretro,beetle-pce-fast-libretro,$(LIBRETRO_BEETLE_PCE_FAST_VERSION))
+# Version: Commits on May 10, 2024
+LIBRETRO_BEETLE_PCE_FAST_VERSION = 3d9a5ed8ae186227e9bdbcd17f2cb295255f7338
+LIBRETRO_BEETLE_PCE_FAST_SITE = \
+    $(call github,libretro,beetle-pce-fast-libretro,$(LIBRETRO_BEETLE_PCE_FAST_VERSION))
 LIBRETRO_BEETLE_PCE_FAST_LICENSE = GPLv2
 
 LIBRETRO_BEETLE_PCE_FAST_PLATFORM = $(LIBRETRO_PLATFORM)
@@ -21,10 +22,15 @@ LIBRETRO_BEETLE_PCE_FAST_PLATFORM = rpi3_64
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
 LIBRETRO_BEETLE_PCE_FAST_PLATFORM = rpi4_64
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+LIBRETRO_BEETLE_PCE_FAST_PLATFORM = rpi5_64
+
 endif
 
 define LIBRETRO_BEETLE_PCE_FAST_BUILD_CMDS
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) platform="$(LIBRETRO_BEETLE_PCE_FAST_PLATFORM)" \
+    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	    -C $(@D) platform="$(LIBRETRO_BEETLE_PCE_FAST_PLATFORM)" \
         GIT_VERSION="-$(shell echo $(LIBRETRO_BEETLE_PCE_FAST_VERSION) | cut -c 1-7)"
 endef
 

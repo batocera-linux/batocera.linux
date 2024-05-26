@@ -4,11 +4,13 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_VERSION = 1.0
+BATOCERA_NVIDIA_VERSION = 1.3
 BATOCERA_NVIDIA_SOURCE =
 
 define BATOCERA_NVIDIA_INSTALL_TARGET_CMDS
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/batocera-nvidia/batocera-nvidia $(TARGET_DIR)/usr/bin/
+	install -m 0755 \
+	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/batocera-nvidia/batocera-nvidia \
+	    $(TARGET_DIR)/usr/bin/
 	
 	# [Xorg]
 	ln -sf /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf

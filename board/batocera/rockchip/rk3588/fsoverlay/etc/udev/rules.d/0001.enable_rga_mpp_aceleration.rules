@@ -1,4 +1,5 @@
 KERNEL=="mpp_service", MODE="0660", GROUP="video"
 KERNEL=="rga", MODE="0660", GROUP="video"
 KERNEL=="system-dma32", MODE="0666", GROUP="video"
-KERNEL=="system-uncached-dma32", MODE="0666", GROUP="video" RUN+="/usr/bin/chmod a+rw /dev/dma_heap"
+KERNEL=="system-uncached", MODE="0666", GROUP="video"
+KERNEL=="system-uncached-dma32", MODE="0666", GROUP="video" RUN+="/bin/chmod a+rw /dev/dma_heap"

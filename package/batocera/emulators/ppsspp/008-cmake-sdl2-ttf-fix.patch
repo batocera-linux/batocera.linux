@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2023-09-22 18:48:12.251115174 +0200
++++ b/CMakeLists.txt	2023-09-22 18:48:50.560097325 +0200
+@@ -1351,7 +1351,7 @@
+ 		endif()
+ 	endif()
+ 	if(SDL2_ttf_FOUND)
+-		set(nativeExtraLibs ${nativeExtraLibs} SDL2_ttf::SDL2_ttf)
++		set(nativeExtraLibs ${nativeExtraLibs} SDL2_ttf)
+ 	elseif(SDL2_ttf_PKGCONFIG_FOUND)
+ 		add_definitions(-DUSE_SDL2_TTF_PKGCONFIG)
+ 		set(nativeExtraLibs ${nativeExtraLibs} PkgConfig::SDL2_ttf_PKGCONFIG)

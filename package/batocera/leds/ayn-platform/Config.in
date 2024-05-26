@@ -1,0 +1,11 @@
+comment "ayn-platform needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_AYN_PLATFORM
+	bool "ayn-platform"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux drivers for AYN x86 handhelds providing a hwmon interface for
+	  pwm fan control and temperature sensors, as well as RGB control.
+
+	  https://github.com/ShadowBlip/ayn-platform

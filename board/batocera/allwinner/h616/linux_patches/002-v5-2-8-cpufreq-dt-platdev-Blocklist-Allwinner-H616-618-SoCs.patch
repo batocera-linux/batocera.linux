@@ -1,0 +1,27 @@
+From: Martin Botka <martin.botka@somainline.org>
+
+The AllWinner H616 SoC will use the (extended) H6 OPP driver, so add
+them to the cpufreq-dt blocklist, to not create the device twice.
+This also affects the closely related sibling SoCs H618 and H700.
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/cpufreq/cpufreq-dt-platdev.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
+index b993a498084bc..86d8baa816795 100644
+--- a/drivers/cpufreq/cpufreq-dt-platdev.c
++++ b/drivers/cpufreq/cpufreq-dt-platdev.c
+@@ -104,6 +104,9 @@ static const struct of_device_id allowlist[] __initconst = {
+  */
+ static const struct of_device_id blocklist[] __initconst = {
+ 	{ .compatible = "allwinner,sun50i-h6", },
++	{ .compatible = "allwinner,sun50i-h616", },
++	{ .compatible = "allwinner,sun50i-h618", },
++	{ .compatible = "allwinner,sun50i-h700", },
+
+ 	{ .compatible = "apple,arm-platform", },
+

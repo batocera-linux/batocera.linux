@@ -2,20 +2,20 @@ diff --git a/rpcs3/rpcs3qt/main_window.cpp b/rpcs3/rpcs3qt/main_window.cpp
 index 8a67c71..d4eecbb 100644
 --- a/rpcs3/rpcs3qt/main_window.cpp
 +++ b/rpcs3/rpcs3qt/main_window.cpp
-@@ -847,12 +847,12 @@ void main_window::InstallPup(QString file_path)
+@@ -1224,12 +1224,12 @@
  	}
  	else
  	{
 -		if (QMessageBox::question(this, tr("RPCS3 Firmware Installer"), tr("Install firmware: %1?").arg(file_path),
 -			QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 -		{
--			gui_log.notice("Firmware: Cancelled installation from drop. File: %s", sstr(file_path));
+-			gui_log.notice("Firmware: Cancelled installation from drop. File: %s", file_path);
 -			return;
 -		}
 +		//if (QMessageBox::question(this, tr("RPCS3 Firmware Installer"), tr("Install firmware: %1?").arg(file_path),
 +		//	QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes)
 +		//{
-+		//	gui_log.notice("Firmware: Cancelled installation from drop. File: %s", sstr(file_path));
++		//	gui_log.notice("Firmware: Cancelled installation from drop. File: %s", file_path);
 +		//	return;
 +		//}
  	}

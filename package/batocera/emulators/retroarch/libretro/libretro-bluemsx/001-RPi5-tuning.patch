@@ -1,0 +1,21 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 804670618b..245f16cde6 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -112,6 +112,16 @@ else ifeq ($(platform), rpi4_64)
+ 	PLATFORM_DEFINES += -fomit-frame-pointer -ffast-math
+ 	PLATFORM_DEFINES += -DARM
+ 	HAVE_NEON = 1
++
++# Raspberry Pi 5 64 bits
++else ifeq ($(platform), rpi5_64)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic = -fPIC
++	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
++	PLATFORM_DEFINES += -mcpu=cortex-a76 -mtune=cortex-a76
++	PLATFORM_DEFINES += -fomit-frame-pointer -ffast-math
++	PLATFORM_DEFINES += -DARM
++	HAVE_NEON = 1
+ 	
+ #RETROFW
+ else ifeq ($(platform), retrofw)

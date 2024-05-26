@@ -1,0 +1,77 @@
+diff --git a/gfx/drivers_context/drm_ctx.c b/gfx/drivers_context/drm_ctx.c
+index 5b59e4c..6ecaa72 100644
+--- a/gfx/drivers_context/drm_ctx.c
++++ b/gfx/drivers_context/drm_ctx.c
+@@ -807,6 +807,8 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
+    settings_t *settings            = config_get_ptr();
+    unsigned black_frame_insertion  = settings->uints.video_black_frame_insertion;
+    float video_refresh_rate        = settings->floats.video_refresh_rate;
++   FILE* fdDrmMode;
++   int drmMode;
+ 
+    if (!drm)
+       return false;
+@@ -848,8 +848,17 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
+    }
+    if ((width == 0 && height == 0) || !fullscreen)
+    {
+-      RARCH_WARN("[KMS]: Falling back to mode 0 (default)\n");
+-      g_drm_mode     = &g_drm_connector->modes[0];
++      // on batocera, we won't guess a mode ; we want the one set by drmMode
++      g_drm_mode = &g_drm_connector->modes[0];
++      // batocera - set resolution
++      if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++         if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++            if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++               g_drm_mode = &g_drm_connector->modes[drmMode];
++            }
++         }
++         fclose(fdDrmMode);
++      }
+    }
+    else
+    {
+@@ -864,34 +873,16 @@
+       }
+       else
+       {
+-         /* Try to match refresh_rate as closely as possible.
+-          *
+-          * Lower resolutions tend to have multiple supported
+-          * refresh rates as well.
+-          */
+-         drmModeModeInfo *mode     = NULL;
+-         float minimum_fps_diff    = 0.0f;
+-         float mode_vrefresh       = 0.0f;
+-         g_drm_mode                = 0;
+-
+-         /* Find best match. */
+-         for (i = 0; i < g_drm_connector->count_modes; i++)
+-         {
+-            float diff;
+-            mode                   = &g_drm_connector->modes[i];
+-
+-            if (   (width  != mode->hdisplay)
+-                || (height != mode->vdisplay))
+-               continue;
+-
+-            mode_vrefresh          = drm_calc_refresh_rate(mode);
+-            diff                   = fabsf(refresh_mod * mode_vrefresh - video_refresh_rate);
+-
+-            if (!g_drm_mode || diff < minimum_fps_diff)
+-            {
+-               g_drm_mode          = mode;
+-               minimum_fps_diff    = diff;
++         // on batocera, we won't guess a mode ; we want the one set by drmMode
++         g_drm_mode = &g_drm_connector->modes[0];
++         // batocera - set resolution
++         if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++            if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++               if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++                  g_drm_mode = &g_drm_connector->modes[drmMode];
++               }
+             }
++            fclose(fdDrmMode);
+          }
+       }
+    }

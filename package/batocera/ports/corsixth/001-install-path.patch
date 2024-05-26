@@ -1,0 +1,10 @@
+--- a/CorsixTH/Lua/app.lua	2023-08-18 21:39:45.813805146 +0200
++++ b/CorsixTH/Lua/app.lua	2023-08-18 21:40:36.690727325 +0200
+@@ -1337,6 +1337,7 @@
+ function App:checkInstallFolder()
+   self.fs = FileSystem()
+   local status, _
++  self.config.theme_hospital_install = "/userdata/roms/corsixth"
+   if self.config.theme_hospital_install then
+     status, _ = self.fs:setRoot(self.config.theme_hospital_install)
+   end

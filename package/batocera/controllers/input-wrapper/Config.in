@@ -1,0 +1,8 @@
+config BR2_PACKAGE_INPUT_WRAPPER
+    bool "input-wrapper"
+
+    help
+        Virtual Controller is a simple C program to emulate to userspace
+        a controller composed of a specific set of input devices.
+
+        https://github.com/macromorgan/input-wrapper

@@ -1,16 +1,3 @@
-diff --git a/src/Common/CMakeLists.txt b/src/Common/CMakeLists.txt
-index ca7ea238cc..7f5248d271 100644
---- a/src/Common/CMakeLists.txt
-+++ b/src/Common/CMakeLists.txt
-@@ -54,7 +54,7 @@ target_link_libraries(CemuCommon PRIVATE
- 	CemuComponents
- 	Boost::nowide
- 	Boost::filesystem
--	glm::glm
-+	glm
- )
- 
- if (UNIX AND NOT APPLE)
 diff --git a/src/input/CMakeLists.txt b/src/input/CMakeLists.txt
 index ecb88cd285..16bb9d7596 100644
 --- a/src/input/CMakeLists.txt
@@ -19,9 +6,8 @@ index ecb88cd285..16bb9d7596 100644
  	CemuUtil
  	Boost::headers
  	Boost::program_options
--	glm::glm
+	glm::glm
 -	pugixml::pugixml
-+	glm
 +	pugixml
  	SDL2::SDL2
  )

@@ -1,0 +1,36 @@
+{
+    "actions_player1": [
+        {
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+	{
+            "trigger": "joystick1",
+            "type": "mouse"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "BTN_LEFT"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "BTN_RIGHT"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_TAB"
+        }
+    ]
+}

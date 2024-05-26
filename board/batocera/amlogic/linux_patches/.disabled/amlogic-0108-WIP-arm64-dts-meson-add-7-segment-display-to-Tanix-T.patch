@@ -1,0 +1,93 @@
+From 0b2aaaf3f86a0b904b45cb7ef30ae5804a2b95b9 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 9 Feb 2023 10:11:39 +0000
+Subject: [PATCH 108/120] WIP: arm64: dts: meson: add 7-segment display to
+ Tanix TX9 Pro
+
+Add support for the 7-segment VFD display of the device
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../boot/dts/amlogic/meson-gxm-tx9-pro.dts    | 59 +++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
+index 9a62176cfe5a..2dcff00794b9 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-tx9-pro.dts
+@@ -9,6 +9,7 @@
+ #include "meson-gxm.dtsi"
+ #include "meson-gx-p23x-q20x.dtsi"
+ #include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
+ 
+ / {
+ 	compatible = "oranth,tx9-pro", "amlogic,s912", "amlogic,meson-gxm";
+@@ -37,6 +38,64 @@ button {
+ 			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
+ 		};
+ 	};
++
++	spi {
++		compatible = "spi-gpio";
++		sck-gpios = <&gpio GPIODV_27  GPIO_ACTIVE_HIGH>;
++		mosi-gpios = <&gpio GPIODV_26 GPIO_ACTIVE_HIGH>;
++		cs-gpios = <&gpio GPIODV_4 GPIO_ACTIVE_LOW>;
++		num-chipselects = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		tm1628: led-controller@0 {
++			compatible = "titanmec,tm1628";
++			reg = <0>;
++			spi-3wire;
++			spi-lsb-first;
++			spi-rx-delay-us = <1>;
++			spi-max-frequency = <500000>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			titanmec,segment-mapping = /bits/ 8 <4 5 6 1 2 3 7>;
++			titanmec,grid = /bits/ 8 <4 3 2 1>;
++
++			alarm@5,1 {
++				reg = <5 1>;
++				function = LED_FUNCTION_ALARM;
++			};
++
++			usb@5,2 {
++				reg = <5 2>;
++				function = LED_FUNCTION_USB;
++			};
++			play@5,3 {
++				reg = <5 3>;
++				function = "play";
++			};
++
++			pause@5,4 {
++				reg = <5 4>;
++				function = "pause";
++			};
++
++			colon@5,5 {
++				reg = <5 5>;
++				function = "colon";
++			};
++
++			lan@5,6 {
++				reg = <5 6>;
++				function = LED_FUNCTION_LAN;
++			};
++
++			wlan@5,7 {
++				reg = <5 7>;
++				function = LED_FUNCTION_WLAN;
++			};
++		};
++	};
+ };
+ 
+ &ethmac {
+-- 
+2.34.1
+

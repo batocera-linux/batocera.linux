@@ -9,7 +9,7 @@ from . import mupenControllers
 
 class MupenGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, guns, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Read the configuration file
         iniConfig = configparser.ConfigParser(interpolation=None)
@@ -23,7 +23,7 @@ class MupenGenerator(Generator):
             iniConfig.read(batoceraFiles.mupenCustom)
 
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
-        mupenControllers.setControllersConfig(iniConfig, playersControllers, system.config)
+        mupenControllers.setControllersConfig(iniConfig, playersControllers, system, wheels)
 
         # Save the ini file
         if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
@@ -36,7 +36,7 @@ class MupenGenerator(Generator):
 
         # state_slot option
         if system.isOptSet('state_filename'):
-            commandArray.extend(["--savestate", "/userdata/saves/n64/{}".format(system.config['state_filename'])])
+            commandArray.extend(["--savestate", system.config['state_filename']])
 
         commandArray.append(rom)
 

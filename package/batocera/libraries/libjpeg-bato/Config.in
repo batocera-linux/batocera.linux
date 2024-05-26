@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LIBJPEG_BATO
+    bool "libjpeg-bato"
+    help
+      out-of-tree libjpeg so that we can compile ScummVM with both jpeg-turbo and libjpeg

@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_MELONDS_DS
+    bool "libretro-melonds-ds"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_LIBPCAP
+    help
+      A remake of the libretro melonDS core that prioritizes standalone parity, reliability, and usability.
+	  
+	  http://www.libretro.com
+
+comment "BR2_PACKAGE_LIBRETRO_MELONDS_DS needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

@@ -1,22 +1,22 @@
-From b855601daf932018e03506922a9c0a96593eabec Mon Sep 17 00:00:00 2001
+From 99a68290a7491aa45990a91e0ad315d695f18e60 Mon Sep 17 00:00:00 2001
 From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Thu, 8 Sep 2022 06:02:34 +0000
-Subject: [PATCH] mame lightgun udev driver
+Date: Thu, 27 Apr 2023 17:38:55 +0000
+Subject: [PATCH] udev for lightguns
 
 Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
 ---
  scripts/src/main.lua                  |   1 +
  scripts/src/osd/modules.lua           |   1 +
- src/osd/modules/input/input_udev.cpp  | 405 ++++++++++++++++++++++++++
+ src/osd/modules/input/input_udev.cpp  | 391 ++++++++++++++++++++++++++
  src/osd/modules/lib/osdobj_common.cpp |   1 +
- 4 files changed, 408 insertions(+)
+ 4 files changed, 394 insertions(+)
  create mode 100644 src/osd/modules/input/input_udev.cpp
 
 diff --git a/scripts/src/main.lua b/scripts/src/main.lua
-index 94ee2b3..d5f0150 100644
+index 32d5b7c..13e9f73 100644
 --- a/scripts/src/main.lua
 +++ b/scripts/src/main.lua
-@@ -162,6 +162,7 @@ end
+@@ -166,6 +166,7 @@ end
  	links {
  		ext_lib("zlib"),
  		ext_lib("flac"),
@@ -25,31 +25,34 @@ index 94ee2b3..d5f0150 100644
  	}
  if (STANDALONE~=true) then
 diff --git a/scripts/src/osd/modules.lua b/scripts/src/osd/modules.lua
-index 5ede2a8..ec34889 100644
+index 4bbd42b..b7fa7ef 100644
 --- a/scripts/src/osd/modules.lua
 +++ b/scripts/src/osd/modules.lua
-@@ -103,6 +103,7 @@ function osdmodulesbuild()
- 		MAME_DIR .. "src/osd/modules/input/input_sdlcommon.cpp",
- 		MAME_DIR .. "src/osd/modules/input/input_sdlcommon.h",
- 		MAME_DIR .. "src/osd/modules/input/input_x11.cpp",
+@@ -87,6 +87,7 @@ function osdmodulesbuild()
+ 		MAME_DIR .. "src/osd/modules/input/input_none.cpp",
+ 		MAME_DIR .. "src/osd/modules/input/input_rawinput.cpp",
+ 		MAME_DIR .. "src/osd/modules/input/input_sdl.cpp",
 +		MAME_DIR .. "src/osd/modules/input/input_udev.cpp",
+ 		MAME_DIR .. "src/osd/modules/input/input_win32.cpp",
+ 		MAME_DIR .. "src/osd/modules/input/input_wincommon.h",
  		MAME_DIR .. "src/osd/modules/input/input_windows.cpp",
- 		MAME_DIR .. "src/osd/modules/input/input_windows.h",
- 		MAME_DIR .. "src/osd/modules/input/input_xinput.cpp",
 diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
 new file mode 100644
-index 0000000..c1926a2
+index 0000000..ad7a63c
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,405 @@
+@@ -0,0 +1,391 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
 +#include "emu.h"
 +#include "osdepend.h"
 +
-+// MAMEOS headers
++//// MAMEOS headers
 +#include "input_common.h"
++#include "modules/lib/osdobj_common.h"
++#include "modules/osdmodule.h"
++
 +#include "render.h"
 +
 +#include <libudev.h>
@@ -124,81 +127,99 @@ index 0000000..c1926a2
 +  const struct event_udev_entry *bb = (const struct event_udev_entry*)b;
 +  return event_strcmp_events(aa->devnode, bb->devnode);
 +}
-+
++  
 +//============================================================
-+// udev_input_device
++//  udev_input_device
 +//============================================================
 +
-+class udev_input_device : public event_based_device<struct input_event>
-+{
-+public:
-+  int index;
-+  udev_input_device(running_machine &machine, std::string &&name, std::string &&id, input_device_class devclass, input_module &module) :
-+    event_based_device(machine, std::move(name), std::move(id), devclass, module) {
-+    index = -1;
-+  }
-+};
++using udev_input_device = event_based_device<struct input_event>;
 +
 +//============================================================
 +//  udev_lightgun_device
 +//============================================================
 +
-+class udev_lightgun_device : public udev_input_device
-+{
++class udev_lightgun_device : public udev_input_device {
 +public:
-+  lightgun_state lightgun;
-+  int minx, maxx, miny, maxy;
-+  int borderX, borderY;
++  lightgun_state m_lightgun;
++  int m_minx, m_maxx, m_miny, m_maxy;
++  int m_borderX, m_borderY;
++  std::string m_devpath;
++  int m_fd;
++  running_machine* m_machine;
 +
-+  udev_lightgun_device(running_machine &machine, std::string &&name, std::string &&id, input_module &module) :
-+    udev_input_device(machine, std::move(name), std::move(id), DEVICE_CLASS_LIGHTGUN, module), lightgun({0}) {
-+    minx = 0;
-+    maxx = 0;
-+    miny = 0;
-+    maxy = 0;
-+    borderX = -1;
-+    borderY = -1;
++  udev_lightgun_device(std::string &&name, std::string &&id, input_module &module, std::string devpath, running_machine* machine) :
++    udev_input_device(std::move(name), std::move(id), module), m_lightgun({0}) {
++    m_devpath = devpath;
++    m_fd = -1;
++
++    m_minx = 0;
++    m_maxx = 0;
++    m_miny = 0;
++    m_maxy = 0;
++    m_borderX = -1;
++    m_borderY = -1;
++    m_machine = machine;
 +  }
 +
-+  void process_event(struct input_event &event) override {
++  ~udev_lightgun_device() {
++    if(m_fd != -1) {
++      close(m_fd);
++    }
++  }
++
++  virtual void poll(bool relative_reset) override {
++    struct input_event input_events[32];
++    int j, len;
++
++    event_based_device<struct input_event>::poll(relative_reset);
++    
++    while ((len = read(m_fd, input_events, sizeof(input_events))) > 0) {
++      len /= sizeof(*input_events);
++      for (j = 0; j < len; j++) {
++    	queue_events(&(input_events[j]), 1);
++      }
++    }
++  }
++
++  virtual void process_event(struct input_event const &event) override {
 +    switch (event.type) {
 +    case EV_KEY:
 +      switch (event.code) {
 +      case BTN_LEFT:
-+	lightgun.buttons[0] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[0] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_RIGHT:
-+	lightgun.buttons[1] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[1] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_MIDDLE:
-+	lightgun.buttons[2] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[2] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_1:
-+	lightgun.buttons[3] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[3] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_2:
-+	lightgun.buttons[4] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[4] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_3:
-+	lightgun.buttons[5] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[5] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_4:
-+	lightgun.buttons[6] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[6] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_5:
-+	lightgun.buttons[7] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[7] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_6:
-+	lightgun.buttons[8] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[8] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_7:
-+	lightgun.buttons[9] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[9] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_8:
-+	lightgun.buttons[10] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[10] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +      case BTN_9:
-+	lightgun.buttons[11] = (event.value == 1) ? 0x80 : 0;
++	m_lightgun.buttons[11] = (event.value == 1) ? 0x80 : 0;
 +	break;
 +	//case BTN_TOUCH:
 +	//break;
@@ -224,51 +245,78 @@ index 0000000..c1926a2
 +      switch (event.code) {
 +      case ABS_X:
 +	// compute the border if not already done
-+	if(borderX == -1 || borderY == -1) computeBorders(borderX, borderY);
-+
-+	if(borderX != -1 && borderY != -1) {
-+	  if(event.value >= minx+borderX && event.value <= maxx-borderX) {
-+	    // in game
-+	    lightgun.lX = normalize_absolute_axis(event.value, minx+borderX, maxx-borderX);
-+	  } else {
-+	    // in borders
-+	    if(event.value < minx+borderX) lightgun.lX = normalize_absolute_axis(minx+borderX, minx+borderX, maxx-borderX);
-+	    if(event.value > maxx-borderX) lightgun.lX = normalize_absolute_axis(maxx-borderX, minx+borderX, maxx-borderX);
-+	  }
-+	}
-+	break;
++    	if(m_borderX == -1 || m_borderY == -1) computeBorders(m_borderX, m_borderY);
++	
++    	if(m_borderX != -1 && m_borderY != -1) {
++    	  if(event.value >= m_minx+m_borderX && event.value <= m_maxx-m_borderX) {
++    	    // in game
++    	    m_lightgun.lX = normalize_absolute_axis(event.value, m_minx+m_borderX, m_maxx-m_borderX);
++    	  } else {
++    	    // in borders
++    	    if(event.value < m_minx+m_borderX) m_lightgun.lX = normalize_absolute_axis(m_minx+m_borderX, m_minx+m_borderX, m_maxx-m_borderX);
++    	    if(event.value > m_maxx-m_borderX) m_lightgun.lX = normalize_absolute_axis(m_maxx-m_borderX, m_minx+m_borderX, m_maxx-m_borderX);
++    	  }
++    	}
++    	break;
 +      case ABS_Y:
-+	lightgun.lY = normalize_absolute_axis(event.value, miny, maxy);
-+	break;
++    	m_lightgun.lY = normalize_absolute_axis(event.value, m_miny, m_maxy);
++    	break;
 +      }
 +      break;
 +    }
 +  }
 +
-+  void reset() override {
-+    memset(&lightgun, 0, sizeof(lightgun));
++  virtual void reset() override {
++    memset(&m_lightgun, 0, sizeof(m_lightgun));
++  }
++
++  virtual void configure(osd::input_device &device) override {
++    struct input_absinfo absx, absy;
++ 
++    m_fd = open(m_devpath.c_str(), O_RDONLY | O_NONBLOCK);
++    if (m_fd != -1) {
++      for (int button = 0; button < 16; button++) {
++    	input_item_id itemid = static_cast<input_item_id>(ITEM_ID_BUTTON1 + button);
++    	device.add_item(default_button_name(button), std::string_view(), itemid, generic_button_get_state<std::int32_t>, &(m_lightgun.buttons[button]));
++      }
++
++      if (ioctl(m_fd, EVIOCGABS(ABS_X), &absx) >= 0) {
++    	if (ioctl(m_fd, EVIOCGABS(ABS_Y), &absy) >= 0) {
++    	  m_minx = absx.minimum;
++    	  m_maxx = absx.maximum;
++    	  m_miny = absy.minimum;
++    	  m_maxy = absy.maximum;
++    
++    	  device.add_item("axis X", std::string_view(), ITEM_ID_XAXIS, generic_axis_get_state<std::int32_t>, &(m_lightgun.lX));
++    	  device.add_item("axis Y", std::string_view(), ITEM_ID_YAXIS, generic_axis_get_state<std::int32_t>, &(m_lightgun.lY));
++    	}
++      }
++    }
 +  }
 +
 +  void computeBorders(int& borderX, int& borderY) {
 +    int w, h, neww;
 +    double game_ratio = 4.0/3.0; // assume 4/3 for the game itself (because i don't manage to find the information in mame structures)
-+    render_target* target = machine().render().first_target();
++    render_target* target = m_machine->render().first_target();
 +
-+    if(machine().paused()) {
++
++
++    // wait that the game is correctly set. not perfect.
++    if(m_machine->paused()) {
 +      return;
 +    }
 +
 +    w = target->width();
 +    h = target->height();
-+
++  
 +    neww = h * game_ratio;
 +    if(neww < w) { // w borders
-+      borderY = 0;
-+      borderX = (maxx-minx)*((w - neww)/2)/w;
++      m_borderY = 0;
++      m_borderX = (m_maxx-m_minx)*((w - neww)/2)/w;
 +    } else {
 +      // h borders - not handled case
-+      borderX = 0;
-+      borderY = 0;
++      m_borderX = 0;
++      m_borderY = 0;
 +    }
 +
 +    osd_printf_verbose("Lightgun: borders size : %ix%i (resolution=%ix%i)\n", borderX, borderY, w, h);
@@ -279,29 +327,24 @@ index 0000000..c1926a2
 +//  udev_lightgun_module
 +//============================================================
 +
-+class udev_lightgun_module : public input_module_base {
-+
++class udev_lightgun_module : public input_module_impl<udev_lightgun_device, osd_common_t>
++{
 +private:
 +  struct udev *m_udev;
-+  int m_devices[8];
-+  int m_ndevices;
-+    
++
 +public:
-+  udev_lightgun_module() : input_module_base(OSD_LIGHTGUNINPUT_PROVIDER, "udev") {
-+    m_ndevices = 0;
++  udev_lightgun_module() : input_module_impl<udev_lightgun_device, osd_common_t>(OSD_LIGHTGUNINPUT_PROVIDER, "udev")
++  {
 +    m_udev = NULL;
 +  }
 +
 +  ~udev_lightgun_module() {
-+    for(unsigned int i=0; i<m_ndevices; i++) {
-+      close(m_devices[i]);
-+    }
 +    if (m_udev != NULL) udev_unref(m_udev);
 +  }
 +
-+  virtual bool probe() override {
-+    // udev always available
-+    return true;
++  virtual void exit() override
++  {
++    input_module_impl<udev_lightgun_device, osd_common_t>::exit();
 +  }
 +
 +  void input_init(running_machine &machine) override {
@@ -312,7 +355,9 @@ index 0000000..c1926a2
 +    struct event_udev_entry sorted[8]; // max devices
 +    unsigned int i;
 +
-+    osd_printf_verbose("Lightgun: Begin udev initialization\n");
++   osd_printf_verbose("Lightgun: Begin udev initialization\n");
++
++   input_module_impl<udev_lightgun_device, osd_common_t>::input_init(machine);
 +
 +    m_udev = udev_new();
 +    if(m_udev == NULL) return;
@@ -345,98 +390,39 @@ index 0000000..c1926a2
 +	    sizeof(struct event_udev_entry), sort_devnodes);
 +
 +      for (i = 0; i < sorted_count; i++) {
-+	const char *name = udev_list_entry_get_name(sorted[i].item);
++      	const char *name = udev_list_entry_get_name(sorted[i].item);
 +
-+	/* Get the filename of the /sys entry for the device
-+	 * and create a udev_device object (dev) representing it. */
-+	struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
-+	const char *devnode     = udev_device_get_devnode(dev);
++      	/* Get the filename of the /sys entry for the device
++      	 * and create a udev_device object (dev) representing it. */
++      	struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
++      	const char *devnode     = udev_device_get_devnode(dev);
++      	char devname[64];
 +
-+	if (devnode) {
-+	  int fd = open(devnode, O_RDONLY | O_NONBLOCK);
-+	  if (fd != -1) {
-+	    auto *devinfo = create_lightgun_device(machine, i, fd);
-+	    if(devinfo != NULL) {
-+	      struct input_absinfo absx, absy;
-+	      
-+	      devinfo->index = m_ndevices;
-+	      for (int button = 0; button < 16; button++) {
-+		input_item_id itemid = static_cast<input_item_id>(ITEM_ID_BUTTON1 + button);
-+		devinfo->device()->add_item(default_button_name(button), itemid, generic_button_get_state<std::int32_t>, &(devinfo->lightgun.buttons[button]));
-+	      }
-+
-+
-+	      if (ioctl(fd, EVIOCGABS(ABS_X), &absx) >= 0) {
-+		if (ioctl(fd, EVIOCGABS(ABS_Y), &absy) >= 0) {
-+		  devinfo->minx = absx.minimum;
-+		  devinfo->maxx = absx.maximum;
-+		  devinfo->miny = absy.minimum;
-+		  devinfo->maxy = absy.maximum;
-+
-+		  devinfo->device()->add_item("axis X", ITEM_ID_XAXIS, generic_axis_get_state<std::int32_t>, &(devinfo->lightgun.lX));
-+		  devinfo->device()->add_item("axis Y", ITEM_ID_YAXIS, generic_axis_get_state<std::int32_t>, &(devinfo->lightgun.lY));
-+	      
-+		  m_devices[m_ndevices++] = fd;
-+		}
-+	      }
-+	    }
-+	  }
-+	}
-+	udev_device_unref(dev);
++      	if (devnode) {
++      	  int fd = open(devnode, O_RDONLY | O_NONBLOCK);
++      	  if (fd != -1) {
++      	    if (ioctl(fd, EVIOCGNAME(sizeof(devname)), devname) < 0) {
++      	      devname[0] = '\0';
++      	    }
++      	    close(fd);
++      	    auto &devinfo = create_device<udev_lightgun_device>(DEVICE_CLASS_LIGHTGUN,
++								std::string(devname),
++								std::string(devname),
++								std::string(devnode),
++								&machine);
++	    osd_printf_verbose("Lightgun: registered %s (%s)\n", devinfo.name(), devnode);
++     	  }
++      	}
++      	udev_device_unref(dev);
 +      }
 +      udev_enumerate_unref(enumerate);
 +    }
 +
 +    osd_printf_verbose("Lightgun: End udev initialization\n");
 +  }
-+
-+  bool should_poll_devices(running_machine &machine) override {
-+    return true;
-+  }
-+
-+  void before_poll(running_machine &machine) override {
-+    struct input_event input_events[32];
-+    int j, len;
-+
-+    if (!should_poll_devices(machine))
-+      return;
-+
-+    for(unsigned int i=0; i<m_ndevices; i++) {
-+      while ((len = read(m_devices[i], input_events, sizeof(input_events))) > 0) {
-+	len /= sizeof(*input_events);
-+	for (j = 0; j < len; j++) {
-+	  handle_event(i, input_events[j]);
-+	}
-+      }
-+    }
-+  }
-+
-+  void handle_event(int index, struct input_event& e) {
-+    // Figure out which lightgun this event id destined for
-+    auto target_device = std::find_if(devicelist().begin(), devicelist().end(), [index](auto &device)
-+    {
-+      std::unique_ptr<device_info> &ptr = device;
-+      return downcast<udev_input_device*>(ptr.get())->index == index;
-+    });
-+
-+    // If we find a matching lightgun, dispatch the event to the lightgun
-+    if (target_device != devicelist().end()) {
-+      downcast<udev_input_device*>((*target_device).get())->queue_events(&e, 1);
-+    }
-+
-+    downcast<udev_input_device*>((*target_device).get())->queue_events(&e, 1);
-+  }
-+
-+private:
-+  udev_lightgun_device *create_lightgun_device(running_machine &machine, int index, int fd) {
-+    char name[64];
-+
-+    if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0) {
-+      name[0] = '\0';
-+    }
-+    return &devicelist().create_device<udev_lightgun_device>(machine, name, name, *this);
-+  }
++  
 +};
++
 +
 +} // anonymous namespace
 +
@@ -448,10 +434,10 @@ index 0000000..c1926a2
 +
 +MODULE_DEFINITION(LIGHTGUN_UDEV, udev_lightgun_module)
 diff --git a/src/osd/modules/lib/osdobj_common.cpp b/src/osd/modules/lib/osdobj_common.cpp
-index 2546abd..0ecfbac 100644
+index d2fb751..1e785d1 100644
 --- a/src/osd/modules/lib/osdobj_common.cpp
 +++ b/src/osd/modules/lib/osdobj_common.cpp
-@@ -305,6 +305,7 @@ void osd_common_t::register_options()
+@@ -348,6 +348,7 @@ void osd_common_t::register_options()
  	REGISTER_MODULE(m_mod_man, MOUSE_NONE);
  
  	REGISTER_MODULE(m_mod_man, LIGHTGUN_X11);

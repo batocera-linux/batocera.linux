@@ -1,0 +1,27 @@
+From b0f528f9a74f15c509654f3a76707da99b00a8be Mon Sep 17 00:00:00 2001
+From: brendan King <Brendan.King@imgtec.com>
+Date: Tue, 3 Aug 2021 15:44:57 +0100
+Subject: [PATCH 52/58] vulkan/wsi: enable additional formats for Display
+
+Add VK_FORMAT_R5G6B5_UNORM_PACK16.
+
+This is for compatibility with IMG WSI.
+---
+ src/vulkan/wsi/wsi_common_display.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/vulkan/wsi/wsi_common_display.c b/src/vulkan/wsi/wsi_common_display.c
+index 5b020f9fdc0..66052b7dcee 100644
+--- a/src/vulkan/wsi/wsi_common_display.c
++++ b/src/vulkan/wsi/wsi_common_display.c
+@@ -1134,6 +1134,7 @@ static const struct {
+ } available_surface_formats[] = {
+    { .format = VK_FORMAT_B8G8R8A8_SRGB, .drm_format = DRM_FORMAT_XRGB8888 },
+    { .format = VK_FORMAT_B8G8R8A8_UNORM, .drm_format = DRM_FORMAT_XRGB8888 },
++   { .format = VK_FORMAT_R5G6B5_UNORM_PACK16, .drm_format = DRM_FORMAT_RGB565 },
+ };
+ 
+ static void
+-- 
+2.25.1
+

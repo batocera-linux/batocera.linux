@@ -6,60 +6,68 @@ import os
 from Emulator import Emulator
 import configparser
 
+# inputtype:
+# 0      axis
+# 1      button
+# 2      hat
+# 3      ball
+#
+# Note that each axis has 2 inputindex entries and each hat has 4.
+#
+# action [action_parameters]:
+# 0               none
+# 1 port pin      joystick (pin: 1/2/4/8/16/32/64/128/256/512/1024/2048 = u/d/l/r/fire(A)/fire2(B)/fire3(X)/Y/LB/RB/select/start)
+# 2 row col       keyboard
+# 3               map
+# 4               UI activate
+# 5 path&to&item  UI function
+# 6 pot axis      joystick (pot: 1/2/3/4 = x1/y1/x2/y2)
+
 viceJoystick = {
-            "up":               "0 1 # 1 1 1",
-            "down":             "0 1 # 1 1 2",
-            "left":             "0 1 # 1 1 4",
-            "right":            "0 1 # 1 1 8",
-            "select":           "0 1 # 5 Virtual keyboard",
-            "start":            "0 1 # 4",      # Main menu
-            "hotkey":           "0 1 # 5 Quit emulator",
-            "a":                "0 1 # 2 7 4",  # Space
-            "b":                "0 1 # 1 1 16", # Fire button
-            "x":                "0 1 # 2 4 7",  # N
-            "y":                "0 1 # 2 3 1",  # Y
-            "pagedown":         "0 1 # 2 0 1",  # Enter
-            "pageup":           "0 1 # 2 7 7", # Run/stop
-        }
+            "up":       "# 2 0 1 / 1",
+            "down":     "# 2 1 1 / 2",
+            "left":     "# 2 2 1 / 4",
+            "right":    "# 2 3 1 / 8",
+            "start":    "# 1 ? 0",
+            "select":   "# 1 ? 4",
+            "hotkey":   "# 1 ? 5 Quit emulator",
+            "a":        "# 1 ? 1 / 32", # Space
+            "b":        "# 1 ? 1 / 16", # Fire button
+            "x":        "# 1 ? 0",
+            "y":        "# 1 ? 1 / 64", # Y
+            "pageup":   "# 1 ? 0",
+            "pagedown": "# 1 ? 0",
+            "l1":       "# 1 ? 0",
+            "r1":       "# 1 ? 0",
+}
 
 # Create the controller configuration file
-def generateControllerConfig(viceConfigFile, playersControllers):
+def generateControllerConfig(system, viceConfigFile, playersControllers):
     # vjm file
     viceFile = viceConfigFile + "/sdl-joymap.vjm"
+    # vic20 uses a slightly different port
+    if(system.config['core'] == 'xvic'):
+        joy_port = "0"
+    else:
+        joy_port = "1"
                 
     if not os.path.exists(os.path.dirname(viceFile)):
         os.makedirs(os.path.dirname(viceFile))
 
     listVice = [];
+    listVice.append("# Batocera configured controllers")
+    listVice.append("")
+    listVice.append("!CLEAR")
     nplayer = 1
-    listVice = [];
     for playercontroller, pad in sorted(playersControllers.items()):
-        if nplayer == 1:    
-            listVice.append("!CLEAR")
-            # joystick 1 right
-            listVice.append("0 0 0 1 1 8")
-            # joystick 1 left
-            listVice.append("0 0 1 1 1 4")
-            # joystick 1 down
-            listVice.append("0 0 2 1 1 2")
-            # joystick 1 up
-            listVice.append("0 0 3 1 1 1")
-
-            # hat 1 right
-            listVice.append("0 2 0 1 1 1")
-            # hat 1 left
-            listVice.append("0 2 1 1 1 2")
-            # hat 1 down
-            listVice.append("0 2 2 1 1 4")
-            # hat 1 up
-            listVice.append("0 2 3 1 1 8")
-        
-        # more logic for controllers with fewer configured buttons
+        listVice.append("")
+        listVice.append("# " + pad.realName)
         for x in pad.inputs:
             input = pad.inputs[x]
             for indexName, indexValue in viceJoystick.items():
                 if indexName == input.name:
-                    listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
+                    listVice.append(indexValue.replace('#', str(pad.index)).replace('?', str(input.id)).replace('/', joy_port))
+        listVice.append("")
         nplayer += 1
 
     f = open(viceFile, 'w')
