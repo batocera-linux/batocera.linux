@@ -190,7 +190,11 @@ class HypseusSingeGenerator(Generator):
             else:
                 eslog.debug("Video resolution not found - using stretch")
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
-
+        
+        # Don't set bezel if screeen resolution is not conducive to needing them (i.e. CRT)
+        if gameResolution["width"] / gameResolution["height"] < 1.51:
+            bezelRequired = False
+        
         # Backend - Default OpenGL
         if system.isOptSet("hypseus_api") and system.config["hypseus_api"] == 'Vulkan':
             commandArray.append("-vulkan")
