@@ -7,7 +7,7 @@ import shutil
 import os
 import controllersConfig
 import filecmp
-import cv2
+import ffmpeg
 from utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -39,10 +39,17 @@ class HypseusSingeGenerator(Generator):
 
     @staticmethod
     def get_resolution(video_path):
-        cap = cv2.VideoCapture(video_path)
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        cap.release()
+        probe = ffmpeg.probe(video_path)
+        video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+        width = int(video_stream['width'])
+        height = int(video_stream['height'])
+        sar_num = video_stream['display_aspect_ratio'].split(':')[0]
+        sar_den = video_stream['display_aspect_ratio'].split(':')[1]
+        sar_num = int(sar_num) if sar_num else 0
+        sar_den = int(sar_den) if sar_den else 0
+        if sar_num != 0 and sar_den != 0:
+            ratio = sar_num / sar_den
+            width = int(height * ratio)
         return width, height
     
     # Main entry of the module
