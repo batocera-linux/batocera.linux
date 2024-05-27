@@ -66,13 +66,11 @@ class HypseusSingeGenerator(Generator):
             "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd"],
         }
 
-        default_bezel = "default"
-
         def find_bezel(rom_name):
             for bezel, rom_names in bezel_to_rom.items():
                 if rom_name in rom_names:
                     return bezel
-            return default_bezel
+            return None
 
         if not os.path.isdir(batoceraFiles.hypseusDatadir):
             os.mkdir(batoceraFiles.hypseusDatadir)
@@ -114,7 +112,11 @@ class HypseusSingeGenerator(Generator):
         commandsFile = rom + "/" + romName + ".commands"
         singeFile = rom + "/" + romName + ".singe"
         
-        bezelFile = find_bezel(romName.lower()) + ".png"
+        bezelFile = find_bezel(romName.lower())
+        if bezelFile is not None:
+            bezelFile += ".png"
+        else:
+            bezelFile = romName.lower() + ".png"
         bezelPath = batoceraFiles.hypseusDatadir + "/bezels/" + bezelFile
 
         # get the first video file from frameFile to determine the resolution
@@ -229,7 +231,10 @@ class HypseusSingeGenerator(Generator):
 
         # bezels
         if bezelRequired:
-            commandArray.extend(["-bezel", bezelFile])
+            if not os.path.exists(bezelPath):
+                commandArray.extend(["-bezel", "default.png"])
+            else:
+                commandArray.extend(["-bezel", bezelFile])
         
         # Invert HAT Axis
         if system.isOptSet('hypseus_axis') and system.getOptBoolean("hypseus_axis"):
