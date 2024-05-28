@@ -51,7 +51,7 @@ class HypseusSingeGenerator(Generator):
             ratio = sar_num / sar_den
             width = int(height * ratio)
         return width, height
-    
+
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # copy input.ini file templates
@@ -112,13 +112,13 @@ class HypseusSingeGenerator(Generator):
         # Copy/update directories
         for directory in directories:
             copy_resources(directory["source"], directory["destination"])
-               
+
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
         commandsFile = rom + "/" + romName + ".commands"
         singeFile = rom + "/" + romName + ".singe"
-        
+
         bezelFile = find_bezel(romName.lower())
         if bezelFile is not None:
             bezelFile += ".png"
@@ -155,7 +155,7 @@ class HypseusSingeGenerator(Generator):
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
-                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir, 
+                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir,
                             "-romdir", batoceraFiles.daphneRomdir, "-homedir", batoceraFiles.hypseusDatadir]
 
         # controller config file
@@ -190,11 +190,11 @@ class HypseusSingeGenerator(Generator):
             else:
                 eslog.debug("Video resolution not found - using stretch")
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
-        
+
         # Don't set bezel if screeen resolution is not conducive to needing them (i.e. CRT)
         if gameResolution["width"] / gameResolution["height"] < 1.51:
             bezelRequired = False
-        
+
         # Backend - Default OpenGL
         if system.isOptSet("hypseus_api") and system.config["hypseus_api"] == 'Vulkan':
             commandArray.append("-vulkan")
@@ -236,6 +236,7 @@ class HypseusSingeGenerator(Generator):
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                    commandArray.extend(["-xratio", "1.33"]) # accuracy correction for 4:3 on non-Sinden
                 else:
                     if system.isOptSet('singe_abs') and system.getOptBoolean("singe_abs"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
@@ -246,7 +247,7 @@ class HypseusSingeGenerator(Generator):
                 commandArray.extend(["-bezel", "default.png"])
             else:
                 commandArray.extend(["-bezel", bezelFile])
-        
+
         # Invert HAT Axis
         if system.isOptSet('hypseus_axis') and system.getOptBoolean("hypseus_axis"):
             commandArray.append("-tiphat")
