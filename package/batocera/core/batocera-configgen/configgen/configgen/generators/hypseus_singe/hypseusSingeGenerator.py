@@ -166,14 +166,18 @@ class HypseusSingeGenerator(Generator):
 
         # Default -fullscreen behaviour respects game aspect ratio
         bezelRequired = False
+        xratio = None
         # stretch
         if system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "stretch":
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
             bezelRequired = False
+            if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
+                xratio = 4/3
         # 4:3
         elif system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "force_ratio":
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
             commandArray.extend(["-force_aspect_ratio"])
+            xratio = 4/3
             bezelRequired = True
         # original
         else:
@@ -185,11 +189,14 @@ class HypseusSingeGenerator(Generator):
                 # check if 4:3 for bezels
                 if abs(new_width / gameResolution["height"] - 4/3) < 0.01:
                     bezelRequired = True
+                    xratio = 4/3
                 else:
                     bezelRequired = False
             else:
                 eslog.debug("Video resolution not found - using stretch")
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
+                if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
+                    xratio = 4/3
         
         # Don't set bezel if screeen resolution is not conducive to needing them (i.e. CRT)
         if gameResolution["width"] / gameResolution["height"] < 1.51:
@@ -236,6 +243,8 @@ class HypseusSingeGenerator(Generator):
             else:
                 if len(guns) > 0: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                    if xratio is not None:
+                        commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
                 else:
                     if system.isOptSet('singe_abs') and system.getOptBoolean("singe_abs"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
