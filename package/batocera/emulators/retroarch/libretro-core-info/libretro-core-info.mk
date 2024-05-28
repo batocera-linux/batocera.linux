@@ -28,6 +28,7 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf vbam_libretro.info			vba-m_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_vb_libretro.info		vb_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf fbalpha2012_libretro.info		fbalpha_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2000_libretro.info		imame4all_libretro.info
 
 	# emuscv_libretro.info         => no info found
 	# mamevirtual_libretro.so      => no info found
