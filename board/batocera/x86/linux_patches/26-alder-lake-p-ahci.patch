@@ -1,0 +1,49 @@
+author	Jason Nader <dev@kayoway.com>	2024-05-21 22:36:24 +0900
+committer	Niklas Cassel <cassel@kernel.org>	2024-05-27 10:07:37 +0200
+commit	9e2f46cd87473c70d01fcaf8a559809e6d18dd50 (patch)
+tree	5a6ff65c4d85534a0caf96781c15bc5f06513207
+parent	1613e604df0cd359cf2a7fbd9be7a0bcfacfabd0 (diff)
+download	linux-9e2f46cd87473c70d01fcaf8a559809e6d18dd50.tar.gz
+ata: ahci: Do not apply Intel PCS quirk on Intel Alder Lakefor-6.10-fixes
+Commit b8b8b4e0c052 ("ata: ahci: Add Intel Alder Lake-P AHCI controller
+to low power chipsets list") added Intel Alder Lake to the ahci_pci_tbl.
+
+Because of the way that the Intel PCS quirk was implemented, having
+an explicit entry in the ahci_pci_tbl caused the Intel PCS quirk to
+be applied. (The quirk was not being applied if there was no explict
+entry.)
+
+Thus, entries that were added to the ahci_pci_tbl also got the Intel
+PCS quirk applied.
+
+The quirk was cleaned up in commit 7edbb6059274 ("ahci: clean up
+intel_pcs_quirk"), such that it is clear which entries that actually
+applies the Intel PCS quirk.
+
+Newer Intel AHCI controllers do not need the Intel PCS quirk,
+and applying it when not needed actually breaks some platforms.
+
+Do not apply the Intel PCS quirk for Intel Alder Lake.
+This is in line with how things worked before commit b8b8b4e0c052 ("ata:
+ahci: Add Intel Alder Lake-P AHCI controller to low power chipsets list"),
+such that certain platforms using Intel Alder Lake will work once again.
+
+Cc: stable@vger.kernel.org # 6.7
+Fixes: b8b8b4e0c052 ("ata: ahci: Add Intel Alder Lake-P AHCI controller to low power chipsets list")
+Signed-off-by: Jason Nader <dev@kayoway.com>
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+Diffstat
+-rw-r--r--	drivers/ata/ahci.c	1	
+1 files changed, 0 insertions, 1 deletions
+diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
+index 6548f10e61d9c7..07d66d2c5f0dd8 100644
+--- a/drivers/ata/ahci.c
++++ b/drivers/ata/ahci.c
+@@ -429,7 +429,6 @@ static const struct pci_device_id ahci_pci_tbl[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x02d7), board_ahci_pcs_quirk }, /* Comet Lake PCH RAID */
+ 	/* Elkhart Lake IDs 0x4b60 & 0x4b62 https://sata-io.org/product/8803 not tested yet */
+ 	{ PCI_VDEVICE(INTEL, 0x4b63), board_ahci_pcs_quirk }, /* Elkhart Lake AHCI */
+-	{ PCI_VDEVICE(INTEL, 0x7ae2), board_ahci_pcs_quirk }, /* Alder Lake-P AHCI */
+ 
+ 	/* JMicron 360/1/3/5/6, match class to avoid IDE function */
+ 	{ PCI_VENDOR_ID_JMICRON, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
