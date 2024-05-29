@@ -60,7 +60,7 @@ class HypseusSingeGenerator(Generator):
         bezel_to_rom = {
             "cliffhanger": ["cliffhanger", "cliff"],
             "conan": ["conan", "future_boy"],
-            "cochantze_hd": ["cochantze_hd", "triad_hd", "triadstone"],
+            "chantze_hd": ["chantze_hd", "triad_hd", "triadstone"],
             "crimepatrol": ["crimepatrol", "crimepatrol-hd", "cp_hd"],
             "drugwars": ["drugwars", "drugwars-hd", "cp2dw_hd"],
             "daitarn": ["daitarn", "daitarn_3"],
