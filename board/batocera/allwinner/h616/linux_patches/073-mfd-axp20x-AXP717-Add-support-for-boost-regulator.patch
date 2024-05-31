@@ -1,0 +1,47 @@
+From db0531a2d5b56bac5177611aaf291a8664ee5950 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Thu, 18 Apr 2024 01:07:35 +0100
+Subject: [PATCH 05/11] mfd: axp20x: AXP717: Add support for boost regulator
+
+The AXP717 also contains a boost regulator, to provide the 5V USB VBUS
+rail when running on battery.
+
+Add the registers to the MFD description to be able to use them from the
+regulator driver.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: John Watts <contact@jookia.org>
+---
+ drivers/mfd/axp20x.c       | 2 ++
+ include/linux/mfd/axp20x.h | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index dacd3c96c9f5..609e7e149681 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -209,6 +209,8 @@ static const struct regmap_access_table axp313a_volatile_table = {
+ };
+ 
+ static const struct regmap_range axp717_writeable_ranges[] = {
++	regmap_reg_range(AXP717_MODULE_EN_CONTROL, AXP717_MODULE_EN_CONTROL),
++	regmap_reg_range(AXP717_BOOST_CONTROL, AXP717_BOOST_CONTROL),
+ 	regmap_reg_range(AXP717_IRQ0_EN, AXP717_IRQ4_EN),
+ 	regmap_reg_range(AXP717_IRQ0_STATE, AXP717_IRQ4_STATE),
+ 	regmap_reg_range(AXP717_DCDC_OUTPUT_CONTROL, AXP717_CPUSLDO_CONTROL),
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index 8c0a33a2e9ce..4dad54fdf67e 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -115,6 +115,8 @@ enum axp20x_variants {
+ #define AXP313A_IRQ_STATE		0x21
+ 
+ #define AXP717_ON_INDICATE		0x00
++#define AXP717_MODULE_EN_CONTROL	0x19
++#define AXP717_BOOST_CONTROL		0x1e
+ #define AXP717_IRQ0_EN			0x40
+ #define AXP717_IRQ1_EN			0x41
+ #define AXP717_IRQ2_EN			0x42
+-- 
+2.45.1
+

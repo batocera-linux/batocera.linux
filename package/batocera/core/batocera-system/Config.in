@@ -472,7 +472,6 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"		if BR2_PACKAGE_BATOCERA_TARGET_RK3128
 	default "allwinner/h5/tritium-h5 allwinner/h5/orangepi-pc2"					if BR2_PACKAGE_BATOCERA_TARGET_H5
 	default "allwinner/h6/orangepi-3-lts allwinner/h6/orangepi-3 allwinner/h6/orangepi-one-plus"	if BR2_PACKAGE_BATOCERA_TARGET_H6
-	default "allwinner/h616/orangepi-zero2 allwinner/h616/orangepi-zero3 allwinner/h616/x96-mate"	if BR2_PACKAGE_BATOCERA_TARGET_H616
 	default "amlogic/s812"										if BR2_PACKAGE_BATOCERA_TARGET_S812
 	default "samsung/exynos5422/odroidxu4"								if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"											if BR2_PACKAGE_BATOCERA_TARGET_X86
@@ -480,6 +479,8 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86-64-v3"										    if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sd845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_ODIN
 	default "riscv/visionfive2"									if BR2_PACKAGE_BATOCERA_TARGET_RISCV
+	default "allwinner/h616/anbernic-rg35xx allwinner/h616/orangepi-zero2 allwinner/h616/orangepi-zero3 allwinner/h616/x96-mate" \
+													if BR2_PACKAGE_BATOCERA_TARGET_H616
 	default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_S922X
 	default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201 amlogic/s905/lepotatov2 amlogic/s905/minix-neo-u1" \

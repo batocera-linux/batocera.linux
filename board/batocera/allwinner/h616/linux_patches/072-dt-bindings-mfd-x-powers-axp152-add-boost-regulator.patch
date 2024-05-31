@@ -1,0 +1,33 @@
+From 5bd0fcf75d78fe28f2ec64d5688f72f19960bd86 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Thu, 18 Apr 2024 01:07:34 +0100
+Subject: [PATCH 04/11] dt-bindings: mfd: x-powers,axp152: add boost regulator
+
+The X-Powers AXP717 contains a boost regulator, that it meant to provide
+the 5V USB VBUS voltage when the devices operates on battery.
+
+Add the name "boost" to the regexp describing the allowed node names,
+to allow the regulator to be described in the devicetree.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
+index b8e8db0d58e9..14ab367fc887 100644
+--- a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
++++ b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
+@@ -274,7 +274,7 @@ properties:
+           Defines the work frequency of DC-DC in kHz.
+ 
+     patternProperties:
+-      "^(([a-f])?ldo[0-9]|dcdc[0-7a-e]|ldo(_|-)io(0|1)|(dc1)?sw|rtc(_|-)ldo|cpusldo|drivevbus|dc5ldo)$":
++      "^(([a-f])?ldo[0-9]|dcdc[0-7a-e]|ldo(_|-)io(0|1)|(dc1)?sw|rtc(_|-)ldo|cpusldo|drivevbus|dc5ldo|boost)$":
+         $ref: /schemas/regulator/regulator.yaml#
+         type: object
+         unevaluatedProperties: false
+-- 
+2.45.1
+

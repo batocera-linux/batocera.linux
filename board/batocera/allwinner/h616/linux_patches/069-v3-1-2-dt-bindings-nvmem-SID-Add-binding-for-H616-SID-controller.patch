@@ -1,0 +1,24 @@
+Add binding for the SID controller found in H616 SoC
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
+index 296001e7f498..0928ec408170 100644
+--- a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
++++ b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
+@@ -23,7 +23,9 @@ properties:
+       - const: allwinner,sun20i-d1-sid
+       - const: allwinner,sun50i-a64-sid
+       - items:
+-          - const: allwinner,sun50i-a100-sid
++          - enum:
++              - allwinner,sun50i-a100-sid
++              - allwinner,sun50i-h616-sid
+           - const: allwinner,sun50i-a64-sid
+       - const: allwinner,sun50i-h5-sid
+       - const: allwinner,sun50i-h6-sid

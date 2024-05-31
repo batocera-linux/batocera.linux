@@ -1,0 +1,48 @@
+From 095e3a99e793767ca6c0483d31fb5d4087966d51 Mon Sep 17 00:00:00 2001
+From: John Watts <contact@jookia.org>
+Date: Sun, 10 Dec 2023 17:55:50 +1100
+Subject: drm/panel: nv3052c: Add SPI device IDs
+
+SPI drivers needs their own list of compatible device IDs in order
+for automatic module loading to work. Add those for this driver.
+
+Signed-off-by: John Watts <contact@jookia.org>
+Reviewed-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20231210-fs035vg158-v5-2-d75adc75571f@jookia.org
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231210-fs035vg158-v5-2-d75adc75571f@jookia.org
+---
+ drivers/gpu/drm/panel/panel-newvision-nv3052c.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+(limited to 'drivers/gpu/drm/panel/panel-newvision-nv3052c.c')
+
+diff --git a/drivers/gpu/drm/panel/panel-newvision-nv3052c.c b/drivers/gpu/drm/panel/panel-newvision-nv3052c.c
+index 589431523ce7ff..90dea21f9856a6 100644
+--- a/drivers/gpu/drm/panel/panel-newvision-nv3052c.c
++++ b/drivers/gpu/drm/panel/panel-newvision-nv3052c.c
+@@ -465,6 +465,12 @@ static const struct nv3052c_panel_info ltk035c5444t_panel_info = {
+ 	.bus_flags = DRM_BUS_FLAG_DE_HIGH | DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE,
+ };
+ 
++static const struct spi_device_id nv3052c_ids[] = {
++	{ "ltk035c5444t", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, nv3052c_ids);
++
+ static const struct of_device_id nv3052c_of_match[] = {
+ 	{ .compatible = "leadtek,ltk035c5444t", .data = &ltk035c5444t_panel_info },
+ 	{ /* sentinel */ }
+@@ -476,6 +482,7 @@ static struct spi_driver nv3052c_driver = {
+ 		.name = "nv3052c",
+ 		.of_match_table = nv3052c_of_match,
+ 	},
++	.id_table = nv3052c_ids,
+ 	.probe = nv3052c_probe,
+ 	.remove = nv3052c_remove,
+ };
+-- 
+cgit 1.2.3-korg
+

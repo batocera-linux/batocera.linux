@@ -1,0 +1,173 @@
+From d2ac3df75c3a995064cfac0171e082a30d8c4c66 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Sun, 10 Mar 2024 01:02:11 +0000
+Subject: regulator: axp20x: add support for the AXP717
+
+The X-Powers AXP717 is a typical PMIC from X-Powers, featuring four
+DC/DC converters and 15 LDOs, on the regulator side.
+
+Describe the chip's voltage settings and switch registers, how the
+voltages are encoded, and connect this to the MFD device via its
+regulator ID.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Mark Brown <broonie@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+Link: https://lore.kernel.org/r/20240310010211.28653-5-andre.przywara@arm.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/regulator/axp20x-regulator.c | 84 ++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/axp20x.h           | 21 +++++++++
+ 2 files changed, 105 insertions(+)
+
+diff --git a/drivers/regulator/axp20x-regulator.c b/drivers/regulator/axp20x-regulator.c
+index 7bcc2d508b65a3..34fcdd82b2eaa7 100644
+--- a/drivers/regulator/axp20x-regulator.c
++++ b/drivers/regulator/axp20x-regulator.c
+@@ -138,6 +138,12 @@
+ #define AXP313A_DCDC_V_OUT_MASK		GENMASK(6, 0)
+ #define AXP313A_LDO_V_OUT_MASK		GENMASK(4, 0)
+ 
++#define AXP717_DCDC1_NUM_VOLTAGES	88
++#define AXP717_DCDC2_NUM_VOLTAGES	107
++#define AXP717_DCDC3_NUM_VOLTAGES	104
++#define AXP717_DCDC_V_OUT_MASK		GENMASK(6, 0)
++#define AXP717_LDO_V_OUT_MASK		GENMASK(4, 0)
++
+ #define AXP803_PWR_OUT_DCDC1_MASK	BIT_MASK(0)
+ #define AXP803_PWR_OUT_DCDC2_MASK	BIT_MASK(1)
+ #define AXP803_PWR_OUT_DCDC3_MASK	BIT_MASK(2)
+@@ -752,6 +758,79 @@ static const struct regulator_desc axp313a_regulators[] = {
+ 	AXP_DESC_FIXED(AXP313A, RTC_LDO, "rtc-ldo", "vin1", 1800),
+ };
+ 
++static const struct linear_range axp717_dcdc1_ranges[] = {
++	REGULATOR_LINEAR_RANGE(500000,   0, 70, 10000),
++	REGULATOR_LINEAR_RANGE(1220000, 71, 87, 20000),
++};
++
++static const struct linear_range axp717_dcdc2_ranges[] = {
++	REGULATOR_LINEAR_RANGE(500000,   0,  70,  10000),
++	REGULATOR_LINEAR_RANGE(1220000, 71,  87,  20000),
++	REGULATOR_LINEAR_RANGE(1600000, 88, 107, 100000),
++};
++
++static const struct linear_range axp717_dcdc3_ranges[] = {
++	REGULATOR_LINEAR_RANGE(500000,   0,  70, 10000),
++	REGULATOR_LINEAR_RANGE(1220000, 71, 102, 20000),
++};
++
++static const struct regulator_desc axp717_regulators[] = {
++	AXP_DESC_RANGES(AXP717, DCDC1, "dcdc1", "vin1",
++			axp717_dcdc1_ranges, AXP717_DCDC1_NUM_VOLTAGES,
++			AXP717_DCDC1_CONTROL, AXP717_DCDC_V_OUT_MASK,
++			AXP717_DCDC_OUTPUT_CONTROL, BIT(0)),
++	AXP_DESC_RANGES(AXP717, DCDC2, "dcdc2", "vin2",
++			axp717_dcdc2_ranges, AXP717_DCDC2_NUM_VOLTAGES,
++			AXP717_DCDC2_CONTROL, AXP717_DCDC_V_OUT_MASK,
++			AXP717_DCDC_OUTPUT_CONTROL, BIT(1)),
++	AXP_DESC_RANGES(AXP717, DCDC3, "dcdc3", "vin3",
++			axp717_dcdc3_ranges, AXP717_DCDC3_NUM_VOLTAGES,
++			AXP717_DCDC3_CONTROL, AXP717_DCDC_V_OUT_MASK,
++			AXP717_DCDC_OUTPUT_CONTROL, BIT(2)),
++	AXP_DESC(AXP717, DCDC4, "dcdc4", "vin4", 1000, 3700, 100,
++		 AXP717_DCDC4_CONTROL, AXP717_DCDC_V_OUT_MASK,
++		 AXP717_DCDC_OUTPUT_CONTROL, BIT(3)),
++	AXP_DESC(AXP717, ALDO1, "aldo1", "vin1", 500, 3500, 100,
++		 AXP717_ALDO1_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(0)),
++	AXP_DESC(AXP717, ALDO2, "aldo2", "vin1", 500, 3500, 100,
++		 AXP717_ALDO2_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(1)),
++	AXP_DESC(AXP717, ALDO3, "aldo3", "vin1", 500, 3500, 100,
++		 AXP717_ALDO3_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(2)),
++	AXP_DESC(AXP717, ALDO4, "aldo4", "vin1", 500, 3500, 100,
++		 AXP717_ALDO4_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(3)),
++	AXP_DESC(AXP717, BLDO1, "bldo1", "vin1", 500, 3500, 100,
++		 AXP717_BLDO1_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(4)),
++	AXP_DESC(AXP717, BLDO2, "bldo2", "vin1", 500, 3500, 100,
++		 AXP717_BLDO2_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(5)),
++	AXP_DESC(AXP717, BLDO3, "bldo3", "vin1", 500, 3500, 100,
++		 AXP717_BLDO3_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(6)),
++	AXP_DESC(AXP717, BLDO4, "bldo4", "vin1", 500, 3500, 100,
++		 AXP717_BLDO4_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO0_OUTPUT_CONTROL, BIT(7)),
++	AXP_DESC(AXP717, CLDO1, "cldo1", "vin1", 500, 3500, 100,
++		 AXP717_CLDO1_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO1_OUTPUT_CONTROL, BIT(0)),
++	AXP_DESC(AXP717, CLDO2, "cldo2", "vin1", 500, 3500, 100,
++		 AXP717_CLDO2_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO1_OUTPUT_CONTROL, BIT(1)),
++	AXP_DESC(AXP717, CLDO3, "cldo3", "vin1", 500, 3500, 100,
++		 AXP717_CLDO3_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO1_OUTPUT_CONTROL, BIT(2)),
++	AXP_DESC(AXP717, CLDO4, "cldo4", "vin1", 500, 3500, 100,
++		 AXP717_CLDO4_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO1_OUTPUT_CONTROL, BIT(3)),
++	AXP_DESC(AXP717, CPUSLDO, "cpusldo", "vin1", 500, 1400, 50,
++		 AXP717_CPUSLDO_CONTROL, AXP717_LDO_V_OUT_MASK,
++		 AXP717_LDO1_OUTPUT_CONTROL, BIT(4)),
++};
++
+ /* DCDC ranges shared with AXP813 */
+ static const struct linear_range axp803_dcdc234_ranges[] = {
+ 	REGULATOR_LINEAR_RANGE(500000,
+@@ -1253,6 +1332,7 @@ static int axp20x_set_dcdc_freq(struct platform_device *pdev, u32 dcdcfreq)
+ 		step = 150;
+ 		break;
+ 	case AXP313A_ID:
++	case AXP717_ID:
+ 	case AXP15060_ID:
+ 		/* The DCDC PWM frequency seems to be fixed to 3 MHz. */
+ 		if (dcdcfreq != 0) {
+@@ -1479,6 +1559,10 @@ static int axp20x_regulator_probe(struct platform_device *pdev)
+ 		regulators = axp313a_regulators;
+ 		nregulators = AXP313A_REG_ID_MAX;
+ 		break;
++	case AXP717_ID:
++		regulators = axp717_regulators;
++		nregulators = AXP717_REG_ID_MAX;
++		break;
+ 	case AXP803_ID:
+ 		regulators = axp803_regulators;
+ 		nregulators = AXP803_REG_ID_MAX;
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index fd7a41a69526f8..8c0a33a2e9ce22 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -466,6 +466,27 @@ enum {
+ 	AXP313A_REG_ID_MAX,
+ };
+ 
++enum {
++	AXP717_DCDC1 = 0,
++	AXP717_DCDC2,
++	AXP717_DCDC3,
++	AXP717_DCDC4,
++	AXP717_ALDO1,
++	AXP717_ALDO2,
++	AXP717_ALDO3,
++	AXP717_ALDO4,
++	AXP717_BLDO1,
++	AXP717_BLDO2,
++	AXP717_BLDO3,
++	AXP717_BLDO4,
++	AXP717_CLDO1,
++	AXP717_CLDO2,
++	AXP717_CLDO3,
++	AXP717_CLDO4,
++	AXP717_CPUSLDO,
++	AXP717_REG_ID_MAX,
++};
++
+ enum {
+ 	AXP806_DCDCA = 0,
+ 	AXP806_DCDCB,
+-- 
+cgit 1.2.3-korg
+
