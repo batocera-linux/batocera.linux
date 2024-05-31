@@ -45,6 +45,8 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "ConfirmPowerOff", "false")
         # Force applying game Settings fixes
         settings.set("Main","ApplyGameSettings", "true")
+        # Remove wizard
+        settings.set("Main","SetupWizardIncomplete", "false")
         # overclock
         if system.isOptSet("duckstation_clocking"):
             settings.set("Main","EmulationSpeed", system.config["duckstation_clocking"])
@@ -426,7 +428,7 @@ class DuckstationGenerator(Generator):
                 if system.isOptSet("duckstation_digitalmode"):
                     settings.set(pad_num, "AnalogDPadInDigitalMode", system.config["duckstation_digitalmode"])
                     if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "AnalogController":
-                        settings.set(pad_num, "Analog", sdl_num+"/Guide & "+sdl_num+"/+LeftTrigger")
+                        settings.set(pad_num, "Analog", sdl_num+"/Guide")
                 else:
                     settings.set(pad_num, "AnalogDPadInDigitalMode", "false")
                 # NeGcon ?
