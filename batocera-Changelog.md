@@ -37,6 +37,7 @@ Add support for the Ayaneo Air Plus (6800U) model
   - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
   - user overrides declarable in `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
 - "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
+- RetroAchievements for Flycast & Libretro-Flycast
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled

@@ -3,13 +3,13 @@ index ee5e3b4..9ae8f5e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -25,6 +25,7 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
- option(ENABLE_GDB_SERVER "Build with GDB debugging support" OFF)
  option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
+ option(USE_DISCORD "Use Discord Presence API" OFF)
 +option(USE_MALI "Use mali" OFF)
- 
- set(SENTRY_UPLOAD_URL "" CACHE STRING "Sentry upload URL")
- 
+
+ if(IOS AND NOT LIBRETRO)
+	 set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
 @@ -157,6 +158,10 @@ else()
  	add_executable(${PROJECT_NAME} core/emulator.cpp)
  endif()
