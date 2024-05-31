@@ -8,6 +8,13 @@ fi
 # $$ is this globally defined somewhere else?
 CFGDIR=/userdata/system/configs/vita3k
 
+# check the config folder exists, if not create it & copy files
+if [[ ! -e $CFGDIR ]]
+then
+    mkdir $CFGDIR
+    cp -R /usr/bin/vita3k/* $CFGDIR
+fi
+
 # $$ how to create a conditional for those who opt into moving app install data in /userdata/saves ?
 XDGDATA=$CFGDIR
 #XDGDATA=/userdata/saves
