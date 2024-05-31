@@ -791,6 +791,10 @@ systems = {
     "gamecube":   { "name": "Nintendo GameCube", "biosFiles":  [ { "md5": "db92574caab77a7ec99d4605fd6f2450", "file": "bios/GC/EUR/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/JAP/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/USA/IPL.bin" } ] },
+    
+    # ---------- Sega Chihiro ---------- #
+    "chihiro": { "name": "Sega Chihiro", "biosFiles": [{ "md5": "d49c52a4102f6df7bcf8d0617ac475ed", "file": "bios/mcpx_1.0.bin" },
+                                                       { "md5": "f23d7e00ae8fbf88908ed1f9165f35eb", "file": "bios/cerbios.bin" }] },
 }
 
 class BiosStatus:
