@@ -7069,39 +7069,42 @@ hypseus-singe:
                 "0 degrees":   0
                 "90 degrees":  90
                 "270 degrees": 270
+        hypseus_bezels:
+            prompt: BEZELS
+            description: Enable or disable bezels being added when content is a 4:3 aspect with a widescreen display.
+            preset: switchon          
         hypseus_filter:
             prompt: SMOOTH GAMES (BILINEAR FILTERING)
-            choices:
-                "On":  1
-                "Off": 0
+            preset: switchoff
         hypseus_scanlines:
             archs_include: [x86, x86_64]
             group: ADVANCED OPTIONS
             prompt: SCANLINES
-            description: Use with the stretch aspect ratio and adjust joystick sensitivity as required.
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":      0
+                "Shunt 2":  2
+                "Shunt 3":  3
+                "Shunt 4":  4
+                "Shunt 5":  5
+                "Shunt 6":  6
+                "Shunt 7":  7
+                "Shunt 8":  8
+                "Shunt 9":  9
+                "Shunt 10": 10
         hypseus_axis:
             prompt: INVERT AXIS
             description: Invert the vertical joystick axis on flight games.
-            choices:
-                "Off": 0
-                "On":  1
+            preset: switchoff
         hypseus_texturestream:
             group: ADVANCED OPTIONS
             prompt: SDL TEXTURE ACCESS STREAMING
             description: Can improve video performance. Do not use with ActionMax games or scanlines.
-            choices:
-                "Off":                          0
-                "On":                           1
+            preset: switchoff
         hypseus_joy:
             group: ADVANCED OPTIONS
             prompt: CUSTOM CONTROLLER
             description: Use controller settings manually defined in custom.ini.
-            choices:
-                "Off":                          0
-                "On":                           1
+            preset: switchoff
   systems:
     singe:
       cfeatures:

@@ -250,6 +250,9 @@ class HypseusSingeGenerator(Generator):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
         # bezels
+        if system.isOptSet('hypseus_bezels') and system.getOptBoolean("hypseus_bezels") == False:
+            bezelRequired = False
+        
         if bezelRequired:
             if not os.path.exists(bezelPath):
                 commandArray.extend(["-bezel", "default.png"])
@@ -267,16 +270,12 @@ class HypseusSingeGenerator(Generator):
             commandArray.extend(["-rotate", "270"])
 
         # Singe joystick sensitivity, default is 5.
-        if system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "10":
-            commandArray.extend(["-js_range", "10"])
-        elif system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "15":
-            commandArray.extend(["-js_range", "15"])
-        elif system.name == "singe" and system.isOptSet('singe_joystick_range') and system.config['singe_joystick_range'] == "20":
-            commandArray.extend(["-js_range", "20"])
-
+        if system.name == "singe" and system.isOptSet('singe_joystick_range'):
+            commandArray.extend(["-js_range", system.config['singe_joystick_range']])
+        
         # Scanlines
-        if system.isOptSet('hypseus_scanlines') and system.getOptBoolean("hypseus_scanlines"):
-            commandArray.append("-scanlines")
+        if system.isOptSet('hypseus_scanlines') and system.config['hypseus_scanlines'] > "0":
+            commandArray.extend(["-scanlines", "-scanline_shunt", system.config['hypseus_scanlines']])
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
