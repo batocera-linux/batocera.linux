@@ -5320,3 +5320,19 @@ uqm:
   comment_en: |
     Create a folder called 'packages' in this folder. This is where you place your game engine file 'uqm-0.8.0-content.uqm'.
     Then create a file called 'Ur-Quan Masters.game'. This is used to launch the game.
+
+chihiro:
+  name: Sega Chihiro
+  manufacturer: Sega & Microsoft
+  release: 2002
+  hardware: arcade
+  extensions: [iso]
+  emulators:
+    xemu:
+      xemu: { requireAnyOf: [ BR2_PACKAGE_XEMU ] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:chihiro
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:chihiro
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:chihiro
