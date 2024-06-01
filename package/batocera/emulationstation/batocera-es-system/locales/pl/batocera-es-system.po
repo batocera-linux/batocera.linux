@@ -425,10 +425,15 @@ msgstr ""
 "Użyj pistoletów świetlnych zamiast padów, jeśli pistolety świetlne są "
 "podłączone."
 
-#. TRANSLATION: shared, shared, libretro/beetle-saturn, libretro/swanstation, libretro/fbneo, ...
+#. TRANSLATION: shared, dolphin/uzem
 msgctxt "game_options"
-msgid "LIGHT GUN"
-msgstr "PISTOLET ŚWIETLNY"
+msgid "LIGHT GUNS"
+msgstr "PISTOLETY ŚWIETLNE"
+
+#. TRANSLATION: shared, shared, shared, shared, shared, ...
+msgctxt "game_options"
+msgid "CONTROLS"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -513,6 +518,11 @@ msgstr "0 (brak wzmocnienia)"
 msgctxt "game_options"
 msgid "Show/Hide guns borders for specific systems"
 msgstr "Pokaż/ukryj obramowania broni dla określonych systemów"
+
+#. TRANSLATION: shared, libretro/beetle-saturn, libretro/swanstation, libretro/fbneo, libretro/fceumm, ...
+msgctxt "game_options"
+msgid "LIGHT GUN"
+msgstr "PISTOLET ŚWIETLNY"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -5724,7 +5734,7 @@ msgstr ""
 "Przydatne dla kontrolerów typu N64. Ograniczone skróty klawiszowe dla "
 "kontrolerów bez dedykowanego skrótu."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 1"
 msgstr "KONTROLER 1"
@@ -5754,17 +5764,17 @@ msgctxt "game_options"
 msgid "Useful for N64 style controllers."
 msgstr "Przydatne dla kontrolerów typu N64."
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 2"
 msgstr "KONTROLER 2"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 3"
 msgstr "KONTROLER 3"
 
-#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, dolphin, ...
+#. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, libretro/parallel_n64, mupen64plus, ...
 msgctxt "game_options"
 msgid "CONTROLLER 4"
 msgstr "KONTROLER 4"
@@ -7488,7 +7498,7 @@ msgctxt "game_options"
 msgid "160fps"
 msgstr "160 klatek/s"
 
-#. TRANSLATION: libretro/tyrquake, cemu, dolphin/uzem, dolphin_triforce, openbor/openbor7530, ...
+#. TRANSLATION: libretro/tyrquake, cemu, dolphin, dolphin_triforce, openbor/openbor7530, ...
 msgctxt "game_options"
 msgid "RUMBLE"
 msgstr "WIBRACJE"
@@ -8806,6 +8816,11 @@ msgstr ""
 "Włączenie animacji rozruchu Gamecube i dostępu do BIOS-u (wymaga BIOS-u IPL."
 "bin w odpowiednim katalogu użytkownika)."
 
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
+msgctxt "game_options"
+msgid "EMULATION"
+msgstr "EMULACJA"
+
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
 msgid "ENABLE BOOT ANIMATION"
@@ -8830,6 +8845,11 @@ msgstr "Angielski/japoński"
 msgctxt "game_options"
 msgid "Map your controller to an emulated Wiimote."
 msgstr "Zmapuj swój kontroler do emulowanego Wiimote."
+
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem
+msgctxt "game_options"
+msgid "WII CONTROLLERS"
+msgstr ""
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -8911,13 +8931,6 @@ msgctxt "game_options"
 msgid "MOUSE AS WIIMOTE POINTER"
 msgstr "MYSZ JAKO WSKAŹNIK WIIMOTE'A"
 
-#. TRANSLATION: dolphin/uzem
-msgctxt "game_options"
-msgid "Enable controller rumble capabilities if supported by the controller."
-msgstr ""
-"Włączenie funkcji wibracji kontrolera, jeśli jest ona obsługiwana przez "
-"kontroler."
-
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "The final output image, unrelated to the Wii's emulated NAND setting."
@@ -8957,103 +8970,36 @@ msgctxt "game_options"
 msgid "PRE-CACHE SHADERS"
 msgstr "WSTĘPNE BUFOROWANIE SHADERÓW"
 
-#. TRANSLATION: dolphin
+#. TRANSLATION: dolphin, dolphin_triforce, rpcs3, iortcw
 msgctxt "game_options"
-msgid "Off (default)"
-msgstr "Wyłączone (domyślnie)"
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "Increase emulator performance, at the cost of accuracy/stability."
-msgstr "Zwiększ wydajność emulatora kosztem dokładności/stabilności."
+msgid "ANTI-ALIASING"
+msgstr "WYGŁADZANIE"
 
 #. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "PERFORMANCE HACKS"
-msgstr "HAKI WYDAJNOŚCI"
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "Search for custom configured joystick profiles."
-msgstr "Wyszukaj niestandardowe profile joysticków."
-
-#. TRANSLATION: dolphin, dolphin_triforce
-msgctxt "game_options"
-msgid "USE PAD PROFILES"
-msgstr "ZASTOSUJ PROFILE KONTROLERÓW"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Change what's plugged into the virtual GameCube ports."
-msgstr "Podmień to, co jest podłączone do wirtualnych portów GameCube."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "GAMECUBE PORT 1 TYPE"
-msgstr "TYP PORTU GAMECUBE 1"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Standard Controller"
-msgstr "Kontroler standardowy"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "GameCube Adapter for Wii U"
-msgstr "Adapter GameCube dla Wii U"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Steering Wheel"
-msgstr "Kierownica"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "Dance Mat"
-msgstr "Mata taneczna"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "DK Bongos"
-msgstr "DK Bongos"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "GAMECUBE PORT 2 TYPE"
-msgstr "TYP PORTU GAMECUBE 2"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "GAMECUBE PORT 3 TYPE"
-msgstr "TYP PORTU GAMECUBE 3"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "GAMECUBE PORT 4 TYPE"
-msgstr "TYP PORTU GAMECUBE 4"
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid ""
-"Use alternative input mappings. Only applies to Standard Controller type."
+"Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
+"higher performance cost."
 msgstr ""
-"Użyj alternatywnych mapowań wejść. Dotyczy tylko standardowego typu "
-"kontrolera."
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+#. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "ALT INPUT MAPPING"
-msgstr "ALT MAPOWANIE WEJŚCIA"
+msgid "ANTI-ALIASING MODE"
+msgstr "TRYB WYGŁADZANIA"
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+#. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Face Buttons (CW)"
-msgstr "Przyciski czołowe (w prawo)"
+msgid ""
+"Enabling will allow for correct emulation of texture wrapping. This comes at "
+"a cost of potential worse performance."
+msgstr ""
+"Włączenie tej opcji pozwoli na poprawną emulację zawijania tekstur. Wiąże "
+"się to jednak z potencjalnie gorszą wydajnością."
 
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+#. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Face Buttons (CCW)"
-msgstr "Przyciski czołowe (w lewo)"
+msgid "MANUAL TEXTURE SAMPLING"
+msgstr "RĘCZNE PRÓBKOWANIE TEKSTUR"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -9075,44 +9021,15 @@ msgctxt "game_options"
 msgid "GPU SYNC"
 msgstr "GPU SYNC"
 
-#. TRANSLATION: dolphin, dolphin_triforce, rpcs3, iortcw
+#. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
-msgid "ANTI-ALIASING"
-msgstr "WYGŁADZANIE"
+msgid "Increase emulator performance, at the cost of accuracy/stability."
+msgstr "Zwiększ wydajność emulatora kosztem dokładności/stabilności."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
-msgstr "Przełącz MSAA/SSAA. Zależy od włączonego wygładzania."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "ANTI-ALIASING MODE"
-msgstr "TRYB WYGŁADZANIA"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "MSAA (default)"
-msgstr "MSAA (domyślnie)"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "SSAA"
-msgstr "SSAA"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid ""
-"Enabling will allow for correct emulation of texture wrapping. This comes at "
-"a cost of potential worse performance."
-msgstr ""
-"Włączenie tej opcji pozwoli na poprawną emulację zawijania tekstur. Wiąże "
-"się to jednak z potencjalnie gorszą wydajnością."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "MANUAL TEXTURE SAMPLING"
-msgstr "RĘCZNE PRÓBKOWANIE TEKSTUR"
+msgid "PERFORMANCE HACKS"
+msgstr "HAKI WYDAJNOŚCI"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9146,16 +9063,6 @@ msgstr "SZYBKI TRANSFER DYSKU"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
-msgid "Show on screen display messages (memory card saves..)."
-msgstr "Wyświetlanie wiadomości ekranowych (np. zapisy na karcie pamięci)."
-
-#. TRANSLATION: dolphin, duckstation, melonds
-msgctxt "game_options"
-msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
-msgstr "POKAŻ KOMUNIKATY WYŚWIETLANE NA EKRANIE"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
 msgid ""
 "Skips Vertical Blank Interrupts when lag is detected, allowing for smooth "
 "audio playback when emulation speed is not 100%."
@@ -9167,6 +9074,116 @@ msgstr ""
 msgctxt "game_options"
 msgid "VBI SKIP"
 msgstr "POMIŃ VBI"
+
+#. TRANSLATION: dolphin, dolphin_triforce
+msgctxt "game_options"
+msgid "Search for custom configured joystick profiles."
+msgstr "Wyszukaj niestandardowe profile joysticków."
+
+#. TRANSLATION: dolphin, dolphin_triforce
+msgctxt "game_options"
+msgid "USE PAD PROFILES"
+msgstr "ZASTOSUJ PROFILE KONTROLERÓW"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Enable controller rumble capabilities if supported by the controller."
+msgstr ""
+"Włączenie funkcji wibracji kontrolera, jeśli jest ona obsługiwana przez "
+"kontroler."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Change what's plugged into the virtual GameCube ports."
+msgstr "Podmień to, co jest podłączone do wirtualnych portów GameCube."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GAMECUBE CONTROLLER 1"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 1 TYPE"
+msgstr "TYP PORTU GAMECUBE 1"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Standard Controller"
+msgstr "Kontroler standardowy"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GameCube Adapter for Wii U"
+msgstr "Adapter GameCube dla Wii U"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Steering Wheel"
+msgstr "Kierownica"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Dance Mat"
+msgstr "Mata taneczna"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "DK Bongos"
+msgstr "DK Bongos"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GAMECUBE CONTROLLER 2"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 2 TYPE"
+msgstr "TYP PORTU GAMECUBE 2"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GAMECUBE CONTROLLER 3"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 3 TYPE"
+msgstr "TYP PORTU GAMECUBE 3"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "GAMECUBE CONTROLLER 4"
+msgstr ""
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "GAMECUBE PORT 4 TYPE"
+msgstr "TYP PORTU GAMECUBE 4"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid ""
+"Use alternative input mappings. Only applies to Standard Controller type."
+msgstr ""
+"Użyj alternatywnych mapowań wejść. Dotyczy tylko standardowego typu "
+"kontrolera."
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "ALT INPUT MAPPING"
+msgstr "ALT MAPOWANIE WEJŚCIA"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CW)"
+msgstr "Przyciski czołowe (w prawo)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CCW)"
+msgstr "Przyciski czołowe (w lewo)"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
@@ -9219,10 +9236,25 @@ msgstr ""
 "Włącza Dolby Pro Logic II dla dźwięku przestrzennego. Może mieć wpływ na "
 "wydajność."
 
+#. TRANSLATION: dolphin, duckstation, rpcs3, rpcs3, rpcs3, ...
+msgctxt "game_options"
+msgid "AUDIO"
+msgstr "AUDIO"
+
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "DOLBY PRO LOGIC II"
 msgstr "DOLBY PRO LOGIC II"
+
+#. TRANSLATION: dolphin
+msgctxt "game_options"
+msgid "Show on screen display messages (memory card saves..)."
+msgstr "Wyświetlanie wiadomości ekranowych (np. zapisy na karcie pamięci)."
+
+#. TRANSLATION: dolphin, duckstation, melonds
+msgctxt "game_options"
+msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
+msgstr "POKAŻ KOMUNIKATY WYŚWIETLANE NA EKRANIE"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -9273,11 +9305,6 @@ msgstr "WYŁĄCZ KOMUNIKATY WYŚWIETLANE NA EKRANIE"
 msgctxt "game_options"
 msgid "Determines the speed and the runahead behaviour of the system."
 msgstr "Określa prędkość i zachowanie systemu w trybie runahead."
-
-#. TRANSLATION: duckstation, duckstation, duckstation
-msgctxt "game_options"
-msgid "EMULATION"
-msgstr "EMULACJA"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -9438,11 +9465,6 @@ msgid ""
 "When running outside of 100%, adjusts the temp instead of dropping frames."
 msgstr ""
 "Podczas pracy poza 100% dostosowuje temperaturę zamiast opuszczać klatki."
-
-#. TRANSLATION: duckstation, rpcs3, rpcs3, rpcs3, rpcs3, ...
-msgctxt "game_options"
-msgid "AUDIO"
-msgstr "AUDIO"
 
 #. TRANSLATION: duckstation, scummvm
 msgctxt "game_options"
@@ -15778,16 +15800,28 @@ msgid "Configuration menu"
 msgstr "Menu ustawień"
 
 #~ msgctxt "game_options"
+#~ msgid "Off (default)"
+#~ msgstr "Wyłączone (domyślnie)"
+
+#~ msgctxt "game_options"
+#~ msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
+#~ msgstr "Przełącz MSAA/SSAA. Zależy od włączonego wygładzania."
+
+#~ msgctxt "game_options"
+#~ msgid "MSAA (default)"
+#~ msgstr "MSAA (domyślnie)"
+
+#~ msgctxt "game_options"
+#~ msgid "SSAA"
+#~ msgstr "SSAA"
+
+#~ msgctxt "game_options"
 #~ msgid ""
 #~ "Use with the stretch aspect ratio and adjust joystick sensitivity as "
 #~ "required."
 #~ msgstr ""
 #~ "Używaj ze współczynnikiem proporcji rozciągania i dostosuj czułość "
 #~ "joysticka zgodnie z wymaganiami."
-
-#~ msgctxt "game_options"
-#~ msgid "LIGHT GUNS"
-#~ msgstr "PISTOLETY ŚWIETLNE"
 
 #~ msgctxt "game_options"
 #~ msgid "105% (Use caution"
