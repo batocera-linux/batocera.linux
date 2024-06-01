@@ -38,6 +38,7 @@ Add support for the Ayaneo Air Plus (6800U) model
   - user overrides declarable in `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
 - "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
 - RetroAchievements for Flycast & Libretro-Flycast
+- Chihiro support via Xemu for Xbox compatible Chihiro patched games.
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled

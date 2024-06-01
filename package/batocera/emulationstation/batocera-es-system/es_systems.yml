@@ -5331,6 +5331,15 @@ chihiro:
     xemu:
       xemu: { requireAnyOf: [ BR2_PACKAGE_XEMU ] }
   comment_en: |
+    Place your Xbox compatible Chihiro roms in here.
+    Currently support ISO's are:
+    - Ghost Squad
+    - Outrun 2
+    - Virtual Cop 3
+    
+    You will also need the Cerbios flashrom in your roms directory.
+    - Most modern Cerbios versions will work with the udma variants not being necessary.
+
     For more info: https://wiki.batocera.org/systems:chihiro
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:chihiro
