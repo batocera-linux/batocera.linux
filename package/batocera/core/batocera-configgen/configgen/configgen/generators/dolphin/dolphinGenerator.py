@@ -278,7 +278,10 @@ class DolphinGenerator(Generator):
 
         # Shader pre-caching
         if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders') == True:
-            dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
+            if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
+                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
+            else:
+                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
         else:
             dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
 
