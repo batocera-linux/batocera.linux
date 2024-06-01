@@ -7459,15 +7459,15 @@ dolphin:
                 "Normal (Default)": normal
                 "Larger":           larger                             
         dplii:
-            submenu: AUDIO
+            group: AUDIO
             prompt: DOLBY PRO LOGIC II
             description: Enables Dolby Pro Logic II for surround sound. May impact performance.
             preset: switchoff
         ShowDpMsg:
-            submenu: UI
+            submenu: DISPLAY
             prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             description: Show on screen display messages (memory card saves..).
-            preset: switchon              
+            preset: switchoff              
   systems:
     gamecube:
         cfeatures:
@@ -7482,7 +7482,7 @@ dolphin:
                 description: Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in appropriate user directory).
                 preset: switchoff
             gamecube_language:
-                submenu: UI
+                submenu: EMULATION
                 prompt: GAMECUBE LANGUAGE
                 description: Change the Gamecube system language.
                 choices:
