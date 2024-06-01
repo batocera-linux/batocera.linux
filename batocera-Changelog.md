@@ -166,7 +166,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Mesa3d to 24.0.7
 - RPI kernel to 6.6.20
 - Pipewire to 1.0.4
-- X86_64 kernel to 6.9.2
+- X86_64 kernel to 6.9.3
 - Switchres 0.220
 - Btop to 1.3.2
 - Linux firmware to 20240513
