@@ -39,6 +39,9 @@ Add support for the Ayaneo Air Plus (6800U) model
 - "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
 - RetroAchievements for Flycast & Libretro-Flycast
 - Chihiro support via Xemu for Xbox compatible Chihiro patched games.
+- Bezel support for Daphne/SINGE
+- Foot pedal for light guns on libretro cores, Duckstation, PCSX2 and MAME standalone
+  - Bind key C for player 1; V for player 2; B for player 3; N for player 4
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
@@ -58,6 +61,10 @@ Add support for the Ayaneo Air Plus (6800U) model
 - ScummVM configuration file location & ensure native file system is turned off
 - Duckstation: faster loading time when RetroAchievements are enabled
 - Color Computer .dsk floppy images accepted in ES. "Disk" altRomType added in Advanced Game Options
+- Hypseus SINGE light gun accuracy with selected ratio
+- Rpi4 udev rules when a gun is detected in Hypseus SINGE
+- Scanlines not showing in Daphne/SINGE
+- Supermodel persistent crash in some cases with light guns
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
