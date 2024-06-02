@@ -20,8 +20,7 @@ LIBRETRO_HATARIB_CONF_ENV += \
 	ZLIB_LINK="$(STAGING_DIR)/usr/lib/libz.so"
 
 define LIBRETRO_HATARIB_BUILD_CMDS
-    CC="$(TARGET_CC)" AR="$(TARGET_AR)" RANLIB="$(TARGET_RANLIB)" \
-	cd $(@D) && $(MAKE) -f makefile \
+	cd $(@D) && $(MAKE) CC=$(TARGET_CC) -f makefile \
 	$(LIBRETRO_HATARIB_CONF_ENV)
 endef
 
