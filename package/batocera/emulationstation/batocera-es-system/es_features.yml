@@ -9777,6 +9777,13 @@ mame:
             choices:
                 "On":            1
                 "Off (Default)": 0
+        mame_crosshair:
+            group: LIGHT GUN
+            prompt: CROSSHAIR
+            description:
+            choices:
+                "Disabled (Default)": "0"
+                "Enabled":            "1"
   systems:
        adam:
             cfeatures:
