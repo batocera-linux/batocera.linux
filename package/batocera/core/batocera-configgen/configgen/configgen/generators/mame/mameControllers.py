@@ -73,6 +73,19 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
     xml_system     = getSection(config, xml_mameconfig, "system")
     xml_system.setAttribute("name", "default")
 
+    # crosshairs
+    removeSection(config, xml_system, "crosshairs")
+    xml_crosshairs = config.createElement("crosshairs")
+    for p in range(0, 4):
+        xml_crosshair = config.createElement("crosshair")
+        xml_crosshair.setAttribute("player", str(p))
+        if system.isOptSet("mame_crosshair") and system.config["mame_crosshair"] == "1":
+            xml_crosshair.setAttribute("mode", "1")
+        else:
+            xml_crosshair.setAttribute("mode", "0")
+        xml_crosshairs.appendChild(xml_crosshair)
+    xml_system.appendChild(xml_crosshairs)
+
     removeSection(config, xml_system, "input")
     xml_input = config.createElement("input")
     xml_system.appendChild(xml_input)
