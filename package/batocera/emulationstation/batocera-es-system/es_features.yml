@@ -7672,6 +7672,7 @@ dosbox-x:
 
 duckstation:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  features: [cheevos]
   cfeatures:
         duckstation_clocking:
             submenu: EMULATION
@@ -7979,6 +7980,7 @@ duckstation:
 
 flycast:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  features: [cheevos]
   cfeatures:
     flycast_ratio:
       prompt:      GAME ASPECT RATIO
