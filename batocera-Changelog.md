@@ -22,7 +22,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Light gun support in libretro-MAME
 - Light gun support in DuckStation (single light gun only)
 - libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
-- Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3 and libretro-pcsx-rearmed
+- Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3, MAME (standalone) and libretro-pcsx-rearmed
 - Support for zedmd
 - DMD server (handling any dmd supported by libdmd) integrated with vpinball
 - Support for multi screens (for pincab, mame multi games)
