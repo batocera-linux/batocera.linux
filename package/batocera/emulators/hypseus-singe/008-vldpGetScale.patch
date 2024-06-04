@@ -1,0 +1,61 @@
+diff --git a/src/game/singe.cpp b/src/game/singe.cpp
+index 7838359..bc91379 100644
+--- a/src/game/singe.cpp
++++ b/src/game/singe.cpp
+@@ -132,6 +132,7 @@ bool singe::init()
+         g_SingeIn.g_vldp_info         = g_vldp_info;
+         g_SingeIn.get_video_height    = video::get_video_height;
+         g_SingeIn.get_video_width     = video::get_video_width;
++        g_SingeIn.get_scalefactor     = video::get_scalefactor;
+         g_SingeIn.draw_string         = video::draw_string;
+         g_SingeIn.samples_play_sample = samples::play;
+         g_SingeIn.set_last_error      = set_last_error;
+diff --git a/src/game/singe/singe_interface.h b/src/game/singe/singe_interface.h
+index 6bab357..4d458b3 100644
+--- a/src/game/singe/singe_interface.h
++++ b/src/game/singe/singe_interface.h
+@@ -40,6 +40,7 @@ struct singe_in_info
+ 	// From video/video.h
+ 	Uint16 (*get_video_width)();
+ 	Uint16 (*get_video_height)();
++	int (*get_scalefactor)();
+ 	void (*draw_string)(const char*, int, int, SDL_Surface*);
+ 	
+ 	// From sound/samples.h
+diff --git a/src/game/singe/singeproxy.cpp b/src/game/singe/singeproxy.cpp
+index 3ee9e82..43014ac 100644
+--- a/src/game/singe/singeproxy.cpp
++++ b/src/game/singe/singeproxy.cpp
+@@ -1118,6 +1118,7 @@ void sep_startup(const char *data)
+     lua_register(g_se_lua_context, "spriteFrameHeight",      sep_sprite_height);
+     lua_register(g_se_lua_context, "spriteFrameWidth",       sep_frame_width);
+     lua_register(g_se_lua_context, "takeScreenshot",         sep_screenshot);
++    lua_register(g_se_lua_context, "vldpGetScale",           sep_mpeg_get_scale);
+     lua_register(g_se_lua_context, "dofile",                 sep_doluafile);
+ 
+     lua_register(g_se_lua_context, "scoreBezelEnable",       sep_bezel_enable);
+@@ -1605,6 +1606,12 @@ static int sep_mpeg_get_height(lua_State *L)
+     return 1;
+ }
+ 
++static int sep_mpeg_get_scale(lua_State *L)
++{
++    lua_pushnumber(L, g_pSingeIn->get_scalefactor());
++    return 1;
++}
++
+ static int sep_mpeg_get_pixel(lua_State *L)
+ {
+     Uint32 format;
+diff --git a/src/game/singe/singeproxy.h b/src/game/singe/singeproxy.h
+index a946492..b0c2d5d 100644
+--- a/src/game/singe/singeproxy.h
++++ b/src/game/singe/singeproxy.h
+@@ -111,6 +111,7 @@ static int sep_get_overlay_width(lua_State *L);
+ static int sep_mpeg_get_height(lua_State *L);
+ static int sep_mpeg_get_pixel(lua_State *L);
+ static int sep_mpeg_get_width(lua_State *L);
++static int sep_mpeg_get_scale(lua_State *L);
+ static int sep_overlay_clear(lua_State *L);
+ static int sep_overlay_ellipse(lua_State *L);
+ static int sep_overlay_circle(lua_State *L);
