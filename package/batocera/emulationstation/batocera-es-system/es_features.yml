@@ -242,6 +242,7 @@ shared:
         "On":  1
         "Off": 0
     wheel_rotation:
+      order: 100
       group: CONTROLS
       submenu: WHEELS
       prompt: WHEEL ROTATION
@@ -257,6 +258,7 @@ shared:
         "900": 900
         "1080": 1080
     wheel_deadzone:
+      order: 100
       group: CONTROLS
       submenu: WHEELS
       prompt: WHEEL DEADZONE
@@ -273,6 +275,7 @@ shared:
         "45": 45
         "50": 50
     wheel_midzone:
+      order: 100
       group: CONTROLS
       submenu: WHEELS
       prompt: WHEEL MIDZONE
@@ -7542,6 +7545,7 @@ dolphin:
                 description: Emulate the Wiimote pointer with a mouse.
                 preset: switchoff
             dolphin-lightgun-hide-crosshair:
+                order: 99
                 group: CONTROLS
                 submenu: LIGHT GUNS
                 prompt: SHOW LIGHT GUN CROSSHAIRS
