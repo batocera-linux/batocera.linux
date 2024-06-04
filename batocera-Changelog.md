@@ -1,13 +1,13 @@
-# 2024/xx/xx - batocera.linux 40 -
+# 2024/07/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
 Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
 To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
 By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
 Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
 
-Singe games now have it's own system. Move any singe related games from rom/daphne to the roms/singe directory.
-Singe games in the roms/daphne folder will no longer work.
-You can determine a Singe game by the folder containing a .singe file.
+Singe games now have it's own system. Move any singe related games from roms/daphne to the roms/singe directory.
+Note: Singe games in the roms/daphne folder will no longer work.
+You can determine you have a Singe simulation game by the games folder contains a .singe file.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
@@ -19,9 +19,9 @@ Add support for the Ayaneo Air Plus (6800U) model
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
-- Light gun support in libretro-MAME
+- Light gun support in Libretro-MAME
 - Light gun support in DuckStation (single light gun only)
-- libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
+- Libretro-Flycast ES setting for offscreen reload as button 2 on the light gun
 - Light gun crosshairs for PCSX2, libretro-swanstation, Flycast, RPCS3, MAME (standalone) and libretro-pcsx-rearmed
 - Support for zedmd
 - DMD server (handling any dmd supported by libdmd) integrated with vpinball
@@ -37,9 +37,9 @@ Add support for the Ayaneo Air Plus (6800U) model
   - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
   - user overrides declarable in `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
 - "Tandy Radio Shack Color Computer cassettes" softList added to coco Advanced Game Options
-- RetroAchievements for Flycast & Libretro-Flycast
+- RetroAchievements for Flycast & Libretro-Flycast (when they are enabled)
 - Chihiro support via Xemu for Xbox compatible Chihiro patched games.
-- Bezel support for Daphne/SINGE
+- Bezel support for Daphne/Singe (can be toggled off)
 - Foot pedal for light guns on libretro cores, Duckstation, PCSX2 and MAME standalone
   - Bind key C for player 1; V for player 2; B for player 3; N for player 4
 ### Fixed
@@ -55,15 +55,15 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Justifier gun type in emulationstation for pcsx-rearmed and mednafen cores
 - Justifier mapping and crosshair on libretro-snes9x
 - Daphne crosshair not hidden by default when a light gun is detected
-- Libretro-mesen light gun not loading up
+- Libretro-Mesen light gun not loading up
 - Vulkan driver version via System Information whne using a multi-GPU systems was sometimes wrong
 - Fix SteamDeck LCD mono audio which snuck in with the v39 release.
 - ScummVM configuration file location & ensure native file system is turned off
 - Duckstation: faster loading time when RetroAchievements are enabled
 - Color Computer .dsk floppy images accepted in ES. "Disk" altRomType added in Advanced Game Options
-- Hypseus SINGE light gun accuracy with selected ratio
-- Rpi4 udev rules when a gun is detected in Hypseus SINGE
-- Scanlines not showing in Daphne/SINGE
+- Hypseus Singe light gun accuracy with selected ratio
+- Rpi4 udev rules when a gun is detected in Hypseus Singe
+- Scanlines not showing in Daphne/Singe
 - Supermodel persistent crash in some cases with light guns
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
@@ -91,16 +91,16 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Duckstation to v0.1-6892
 - Libretro-PPSSPP: to v1.17.1
 - Libretro-81: bump to Nov 1, 2023 build
-- Libretro-fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
-- Libretro-genesisplusgx: bump to Feb 23, 2024 build
-- Libretro-mame: to 0.265
-- Libretro-mame2003-plus: bump to Feb 21, 2024 build
-- Libretro-mupen64plus-next: bump to Feb 6, 2024 build
-- Libretro-neocd: bump to Feb 1, 2024 build
-- Libretro-opera: bump to Jan 13, 2024 build
-- Libretro-stella: bump to Jan 2, 2024 build
-- Libretro-swanstation: bump to Jan 25, 2024 build
-- Libretro-pcsx: bump to Feb 14, 2024 build
+- Libretro-Fbneo: bump to Feb 23, 2024 build (v1.0.0.03)
+- Libretro-Genesisplusgx: bump to Feb 23, 2024 build
+- Libretro-MAME: to 0.265
+- Libretro-MAME2003-plus: bump to Feb 21, 2024 build
+- Libretro-Mupen64plus-next: bump to Feb 6, 2024 build
+- Libretro-Neocd: bump to Feb 1, 2024 build
+- Libretro-Opera: bump to Jan 13, 2024 build
+- Libretro-Stella: bump to Jan 2, 2024 build
+- Libretro-Swanstation: bump to Jan 25, 2024 build
+- Libretro-PCSX: bump to Feb 14, 2024 build
 - Libretro-Flycast: bump to v2.3.2
 - Flycast: bump to v2.3.2
 - Redream to 1.5.0-1127-g6b62eff
@@ -111,7 +111,6 @@ Add support for the Ayaneo Air Plus (6800U) model
 - DOSBox-X to 2024.03.01
 - SimCoupe to 1.2.13
 - Tsugaru to 20240223
-- Redream to 1.5.0-1125-g0f0a5c3
 - Fallout 1 CE to v1.1.0 (March 2024 release)
 - DevilutionX to 1.5.2
 - Commander Genius to 3.5.0
@@ -124,11 +123,11 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Xenia Canary to build 5bbba85 (Commits on May 14, 2024)
 - Xemu to v0.7.121
 - ScummVM to 2.8.1
-- fheroes2 to 1.0.13
+- Fheroes2 to 1.0.13
 - PCSX2 to v1.7.5864
 - Play! & Libretro Play! to 0.65-1
 - Dolphin to 5.0-21543
-- Libretro-hatarib: bump to v0.3
+- Libretro-Hatarib: bump to v0.3
 - Hatari to v2.5.0
 - Citra to r64e3e9f
 - ETLegacy to v2.82.1
@@ -164,14 +163,14 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-MrBoom to May 17, 2024 build
 - Libretro-Picodrive to Mar 27, 2024 build
 ### System
-- Mainline Kernel 6.6.y bump to 6.6.23
+- ARM mainline kernel to 6.6.23
 - Nvidia Production driver to 550.78
 - Nvidia Legacy driver to 470.239.06
-- Wayland-protocols to 1.33
+- Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3d to 24.1
-- RPI kernel to 6.6.20
+- Mesa3D to 24.1
+- RPi kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.3
 - Switchres 0.220
@@ -185,10 +184,11 @@ Add support for the Ayaneo Air Plus (6800U) model
 - FAudio to 24.05
 - Sound Open Firmware to 2024.03
 - RyzenAdj to v0.15.0
-- Qt to 6.7.0
+- QT to 6.7.0
 - DXVK to 2.3.1
 - DXVK-NVAPI to 0.7.0
 - VKD3D-Proton to v2.12
+- Vulkan headers to 1.3.286
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
