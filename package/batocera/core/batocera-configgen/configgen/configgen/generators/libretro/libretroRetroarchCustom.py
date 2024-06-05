@@ -85,7 +85,7 @@ def generateRetroarchCustom():
 
     retroarchSettings.write()
 
-def generateRetroarchCustomPathes(retroarchSettings):
+def generateRetroarchCustomPathes(retroarchSettings, system_directory):
     # Path Retroarch
     retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')
     retroarchSettings.save('assets_directory',              '"/usr/share/libretro/assets"')
@@ -96,7 +96,7 @@ def generateRetroarchCustomPathes(retroarchSettings):
     retroarchSettings.save('extraction_directory',          '"/userdata/extractions/"')
     retroarchSettings.save('cheat_database_path',           '"/userdata/cheats/cht/"')
     retroarchSettings.save('cheat_settings_path',           '"/userdata/cheats/saves/"')
-    retroarchSettings.save('system_directory',              '"/userdata/bios/"')
+    retroarchSettings.save('system_directory',              '"{}"'.format(system_directory))
     retroarchSettings.save('joypad_autoconfig_dir',         '"/userdata/system/configs/retroarch/inputs/"')
     retroarchSettings.save('video_shader_dir',              '"/usr/share/batocera/shaders/"')
     retroarchSettings.save('video_font_path',               '"/usr/share/fonts/dejavu/DejaVuSansMono.ttf"')

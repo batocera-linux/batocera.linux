@@ -8,12 +8,12 @@ from . import libretroControllers
 import shutil
 from generators.Generator import Generator
 import os
+from os import path
 import stat
 import subprocess
 from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 import utils.videoMode as videoMode
-import shutil
 
 eslog = get_logger(__name__)
 
@@ -80,8 +80,52 @@ class LibretroGenerator(Generator):
                 else:
                     lightgun = True
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers, lightgun)
+
+            match system.config['core']:
+                case 'mame0139':
+                    system_directory=batoceraFiles.BIOS + "/" + "mame2010/"
+                case 'mame078plus':
+                    system_directory=batoceraFiles.BIOS + "/" + "mame2003-plus/"
+                case _:
+                    system_directory=batoceraFiles.BIOS
+
+            # MAME2010/MAME2003+ cannot be passed a command file to specify -rompath (see #11907)
+            #   emulates: -rompath <romDir>;/userdata/bios/<coreBiosDir>;/userdata/bios
+            if system.config['core'] in [ 'mame0139', 'mame078plus' ]:
+                softDir="/var/run/mame_software/"
+                softDirRoms=(softDir + "roms/")
+
+                if os.path.exists(softDir):
+                    shutil.rmtree(softDir)
+                os.makedirs(softDirRoms)
+
+                linkedHash = {}
+
+                # link files in directory rom is found first
+                romDir=path.dirname(rom)
+                for fileName in os.listdir(romDir):
+                    if fileName.endswith('.zip'):
+                        os.symlink(romDir + "/" + fileName, softDirRoms + fileName)
+                        linkedHash[fileName] = 1
+
+                # link files in core specific bios directory second (if not already found)
+                for fileName in os.listdir(system_directory):
+                    if fileName.endswith('.zip'):
+                        if fileName not in linkedHash:
+                            os.symlink(system_directory + fileName, softDirRoms + fileName)
+                            linkedHash[fileName] = 1
+
+                # link files in default BIOS directory (if not already found above)
+                for fileName in os.listdir(batoceraFiles.BIOS):
+                    if fileName.endswith('.zip'):
+                        if fileName not in linkedHash:
+                            os.symlink(batoceraFiles.BIOS + "/" + fileName, softDirRoms + fileName)
+
+		# point mame to staged directory
+                system_directory=softDirRoms
+
             # force pathes
-            libretroRetroarchCustom.generateRetroarchCustomPathes(retroconfig)
+            libretroRetroarchCustom.generateRetroarchCustomPathes(retroconfig, system_directory)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
                 bezel = None
@@ -354,7 +398,11 @@ class LibretroGenerator(Generator):
             commandArray.append(f'/var/run/cmdfiles/{os.path.splitext(os.path.basename(rom))[0]}.cmd')
 
         if dontAppendROM == False:
-            commandArray.append(rom)
+            if system.config['core'] in [ 'mame0139', 'mame078plus' ]:
+		# special case to run out of softDir
+                commandArray.append(softDirRoms + path.basename(rom))
+            else:
+                commandArray.append(rom)
             
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 

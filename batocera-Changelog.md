@@ -65,6 +65,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Rpi4 udev rules when a gun is detected in Hypseus Singe
 - Scanlines not showing in Daphne/Singe
 - Supermodel persistent crash in some cases with light guns
+- libretro MAME0139 core no longer picks up BIOS files in bios or bios/mame2010 (#11650)
 ### Changed
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
