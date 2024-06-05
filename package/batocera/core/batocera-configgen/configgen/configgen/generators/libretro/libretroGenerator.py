@@ -101,10 +101,10 @@ class LibretroGenerator(Generator):
 
                 linkedHash = {}
 
-                # link files in directory rom is found first
+                # link files in directory rom is located in first (and be sure to link CHD subdir)
                 romDir=path.dirname(rom)
                 for fileName in os.listdir(romDir):
-                    if fileName.endswith('.zip'):
+                    if fileName.endswith('.zip') or (fileName == os.path.splitext(path.basename(rom))[0]):
                         os.symlink(romDir + "/" + fileName, softDirRoms + fileName)
                         linkedHash[fileName] = 1
 
