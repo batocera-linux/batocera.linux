@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: emulationstation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-15 23:48+0100\n"
-"PO-Revision-Date: 2024-04-18 10:04+0000\n"
+"PO-Revision-Date: 2024-06-03 21:25+0000\n"
 "Last-Translator: THa_MuSHeR\n"
 "Language-Team: Dutch (Netherlands)\n"
 "Language: nl-NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: nl_NL\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po\n"
+"X-Loco-Parser: loco_parse_po"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -21,11 +21,13 @@ msgid ""
 "Adjust the cpu power frequency profile whilst in-game. Some systems will "
 "benefit from improved voltage handling."
 msgstr ""
+"Pas het CPU-vermogensprofiel aan tijdens het gamen. Sommige systemen zullen "
+"profiteren van een verbeterd voltage."
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "POWER OPTIONS"
-msgstr ""
+msgstr "POWER OPTIES"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -53,11 +55,13 @@ msgid ""
 "Adjust the cpu power profile whist on battery. Overwrites previous Power "
 "Mode(s)."
 msgstr ""
+"Pas het CPU-voedingsprofiel aan terwijl de batterij is ingeschakeld. "
+"Overschrijft eerdere energiemodus(sen)."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "BATTERY MODE"
-msgstr ""
+msgstr "BATTERIJ MODUS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -429,7 +433,7 @@ msgstr "LIGHTGUNS"
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "CONTROLS"
-msgstr ""
+msgstr "CONTROLS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -4806,6 +4810,7 @@ msgstr "Philips CD-i CD-ROMs"
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer cassettes"
 msgstr ""
+"Tandy Radio Shack Color Computer cassettes"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -8584,8 +8589,8 @@ msgstr "DISK SHADER CACHE"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation stutter."
+" May cause graphical glitches."
 msgstr ""
 "Compileer shaders met behulp van achtergrondthreads om haperen van de shader-"
 "compilatie te voorkomen. Kan grafische problemen veroorzaken."
@@ -8701,56 +8706,58 @@ msgid ""
 "Enable or disable bezels being added when content is a 4:3 aspect with a "
 "widescreen display."
 msgstr ""
+"In- of uitschakelen dat randen worden toegevoegd wanneer de inhoud een 4:3-"
+"aspect heeft met een breedbeeldscherm."
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "BEZELS"
-msgstr ""
+msgstr "BEZELS"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 2"
-msgstr ""
+msgstr "Shunt 2"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 3"
-msgstr ""
+msgstr "Shunt 3"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 4"
-msgstr ""
+msgstr "Shunt 4"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 5"
-msgstr ""
+msgstr "Shunt 5"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 6"
-msgstr ""
+msgstr "Shunt 6"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 7"
-msgstr ""
+msgstr "Shunt 7"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 8"
-msgstr ""
+msgstr "Shunt 8"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 9"
-msgstr ""
+msgstr "Shunt 9"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 10"
-msgstr ""
+msgstr "Shunt 10"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
@@ -8833,7 +8840,7 @@ msgstr "Wijs uw controller toe aan een geëmuleerde Wiimote."
 #. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem
 msgctxt "game_options"
 msgid "WII CONTROLLERS"
-msgstr ""
+msgstr "WII CONTROLLERS"
 
 #. TRANSLATION: dolphin/uzem
 msgctxt "game_options"
@@ -8950,6 +8957,8 @@ msgid ""
 "Compile shaders on next launch of game (one time). Reduces micro-freezes. "
 "Vulkan only."
 msgstr ""
+"Compileer shaders bij de volgende lancering van het spel (eenmalig). "
+"Vermindert microbevriezingen. Alleen Vulkan."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8967,6 +8976,8 @@ msgid ""
 "Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
 "higher performance cost."
 msgstr ""
+"Gebruik SSAA in plaats van MSAA voor anti-aliasing. SSAA ziet er misschien "
+"beter uit, maar kost meer prestatie."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8979,8 +8990,8 @@ msgid ""
 "Enabling will allow for correct emulation of texture wrapping. This comes at "
 "a cost of potential worse performance."
 msgstr ""
-"Als u dit inschakelt, is een correcte emulatie van textuur wrapping "
-"mogelijk. Dit kan mogelijk slechtere prestaties opleveren."
+"Als u dit inschakelt, is een correcte emulatie van textuur wrapping mogelijk."
+" Dit kan mogelijk slechtere prestaties opleveren."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9087,7 +9098,7 @@ msgstr "Wijzig wat er op de virtuele GameCube-poorten is aangesloten."
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 1"
-msgstr ""
+msgstr "GAMECUBE CONTROLLER 1"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9122,7 +9133,7 @@ msgstr "DK Bongos"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 2"
-msgstr ""
+msgstr "GAMECUBE CONTROLLER 2"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9132,7 +9143,7 @@ msgstr "GAMECUBE PORT 2 TYPE"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 3"
-msgstr ""
+msgstr "GAMECUBE CONTROLLER 3"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9142,7 +9153,7 @@ msgstr "GAMECUBE PORT 3 TYPE"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 4"
-msgstr ""
+msgstr "GAMECUBE CONTROLLER 4"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9634,7 +9645,7 @@ msgctxt "game_options"
 msgid "ACHIEVEMENTS"
 msgstr "PRESTATIES"
 
-#. TRANSLATION: duckstation, mame, theforceengine
+#. TRANSLATION: duckstation, theforceengine
 msgctxt "game_options"
 msgid "CROSSHAIR"
 msgstr "CROSSHAIR"
@@ -9775,7 +9786,7 @@ msgstr "Per Pixel"
 #. TRANSLATION: fpinball
 msgctxt "game_options"
 msgid "Allow mapping Future Pinball with Pad to Keyboard."
-msgstr ""
+msgstr "Sta het mappen van Future Pinball met Padtokey toe."
 
 #. TRANSLATION: fpinball
 msgctxt "game_options"
@@ -10315,8 +10326,8 @@ msgid ""
 "Required for some effects in-game (Banjo Kazooie and DK64 transitions), can "
 "cause slowdown."
 msgstr ""
-"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en "
-"DK64), kan vertraging veroorzaken."
+"Vereist voor sommige effecten in het spel (overgangen Banjo Kazooie en DK64),"
+" kan vertraging veroorzaken."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -11164,8 +11175,8 @@ msgid ""
 "May provide performance gain on CPUs with low core/thread count at the "
 "expense of possible broken timings."
 msgstr ""
-"Kan prestatieverbetering opleveren op CPU's met een laag aantal cores/"
-"threads, ten koste van mogelijk kapotte timing."
+"Kan prestatieverbetering opleveren op CPU's met een laag aantal "
+"cores/threads, ten koste van mogelijk kapotte timing."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11956,22 +11967,22 @@ msgstr ""
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "RENDER MODE"
-msgstr ""
+msgstr "RENDERMODUS"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "HLE (per-strip)"
-msgstr ""
+msgstr "HLE (per-strip)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "HLE (per-pixel)"
-msgstr ""
+msgstr "HLE (per-pixel)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
 msgid "LLE"
-msgstr ""
+msgstr "HLE (per-strip)"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -12083,14 +12094,17 @@ msgstr "P1 & P2"
 msgctxt "game_options"
 msgid ""
 "For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
+"use a value larger than 100% so that the steering feels less sensitive on a "
 "thumbstick."
 msgstr ""
+"Voor het spelen van racegames met een gamepad is het soms een goed idee om "
+"een ​​waarde groter dan 100% te gebruiken, zodat de besturing op een "
+"thumbstick minder gevoelig aanvoelt."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "STEERING SENSITIVITY"
-msgstr ""
+msgstr "STUUR GEVOELIGHEID"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -12284,8 +12298,8 @@ msgstr "Interton VC 4000 cartridges"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun "
-"connected), and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
+" and similar controls"
 msgstr ""
 "Schakel muisinvoer in voor trackballs, spinners, lightguns (als er geen gun "
 "is aangesloten) en soortgelijke bedieningselementen"
@@ -12800,8 +12814,8 @@ msgstr "128MiB"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid ""
-"Nat to access internet from xemu machine. Udp for System Link. Default "
-"(Auto) disables network access."
+"Nat to access internet from xemu machine. Udp for System Link. Default (Auto)"
+" disables network access."
 msgstr ""
 "Nat voor toegang tot internet vanaf de Xemu-machine. UDP voor systeemlink. "
 "Standaard (Auto) schakelt netwerktoegang uit."
@@ -13780,6 +13794,8 @@ msgid ""
 "This option enables the ability to play Xbox Live Arcade games. May cause "
 "compatibility issues with non-XBLA games."
 msgstr ""
+"Deze optie maakt het mogelijk om Xbox Live Arcade-games te spelen. Kan "
+"compatibiliteitsproblemen veroorzaken met niet-XBLA-games."
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -14220,12 +14236,12 @@ msgstr "Anti-aliasing is een techniek om gekartelde randen glad te strijken."
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "You can hide the pointer on touchscreen devices."
-msgstr ""
+msgstr "U kunt de aanwijzer op apparaten met touchscreen verbergen."
 
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "SHOW POINTER"
-msgstr ""
+msgstr "TOON AANWIJZER"
 
 #. TRANSLATION: ioquake3
 msgctxt "game_options"
@@ -14269,8 +14285,8 @@ msgstr "V-SYNC"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Per Table Folder requires all files to be in the associated rom table "
-"folder. If disabled, consult the Wiki for further details."
+"Per Table Folder requires all files to be in the associated rom table folder."
+" If disabled, consult the Wiki for further details."
 msgstr ""
 "Per Tafel Folder vereist dat alle bestanden zich in de bijbehorende rom-"
 "tabelmap bevinden. Indien uitgeschakeld, raadpleeg de WIKI voor meer details."
@@ -14507,12 +14523,12 @@ msgstr "TOON KOPRUIT DMD"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "When the Backglass is activated, display the grill."
-msgstr ""
+msgstr "Wanneer de kopruit is geactiveerd, geeft u de grill weer."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "DISPLAY BACKGLASS GRILL"
-msgstr ""
+msgstr "TOON KOPRUIT GRILL"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -14544,91 +14560,94 @@ msgid ""
 "FULLSCREEN gives you a top-down view on the playfield. For cabinet use or "
 "multi-window on desktop."
 msgstr ""
+"VOLLEDIG SCHERM geeft je een bovenaanzicht van het speelveld. Voor gebruik "
+"in een kast of met meerdere vensters op het bureaublad."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PLAYFIELD MODE"
-msgstr ""
+msgstr "SPEELVELDMODUS"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "DESKTOP"
-msgstr ""
+msgstr "BUREAUBLAD"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FULLSCREEN"
 msgstr ""
+"VOLLEDIG SCHERM"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "FULL SINGLE SCREEN"
-msgstr ""
+msgstr "VOLLEDIG ENKEL SCHERM"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Enable the custom values below."
-msgstr ""
+msgstr "Schakel de onderstaande aangepaste waarden in."
 
 #. TRANSLATION: vpinball, vpinball, vpinball, vpinball, vpinball, ...
 msgctxt "game_options"
 msgid "DISPLAY PHYSICAL SETUP"
-msgstr ""
+msgstr "FYSIEKE INSTELLING WEERGEVEN"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "ENABLE CUSTOM DISPLAY PHYSICAL SETUP"
-msgstr ""
+msgstr "AANGEPASTE WEERGAVE FYSIEKE INSTELLING INSCHAKELEN"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Long visible screen edge (cm)"
-msgstr ""
+msgstr "Lange zichtbare schermrand (cm)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SCREEN WIDTH"
-msgstr ""
+msgstr "SCHERMBREEDTE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Short visible screen edge (cm)"
-msgstr ""
+msgstr "Korte zichtbare schermrand (cm)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SCREEN HEIGHT"
-msgstr ""
+msgstr "SCHERMHOOGTE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Screen inclination (degree)"
-msgstr ""
+msgstr "Schermhelling (graden)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SCREEN INCLINATION"
-msgstr ""
+msgstr "SCHERM HELLING"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Player distance from lower screen edge (cm)"
-msgstr ""
+msgstr "Spelerafstand vanaf onderkant schermrand (cm)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SCREEN PLAYER Y"
-msgstr ""
+msgstr "SCHERM SPELER Y"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Player's eyes distance from lower screen edge (cm)"
-msgstr ""
+msgstr "Afstand van ogen van de speler vanaf de onderkant van het scherm (cm)"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "SCREEN PLAYER Z"
-msgstr ""
+msgstr "SCHERM SPELER Z"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -14667,11 +14686,13 @@ msgid ""
 "This should not be necessary, unless you are not using the default pad2key "
 "mapping."
 msgstr ""
+"Dit zou niet nodig moeten zijn, tenzij u niet de standaard pad2key-"
+"toewijzing gebruikt."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "USE JOYPAD SOUTH BUTTON TO ADD CREDIT"
-msgstr ""
+msgstr "GEBRUIK DE JOYPAD ZUID-KNOP OM CREDITS TOE TE VOEGEN"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14706,7 +14727,7 @@ msgstr "960p"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "WIDESCREEN"
-msgstr ""
+msgstr "BREEDBEELD"
 
 #. TRANSLATION: theforceengine, iortcw
 msgctxt "game_options"
@@ -14778,22 +14799,22 @@ msgstr "GPU / OpenGL (Standaard)"
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "COLOUR MODE"
-msgstr ""
+msgstr "KLEURENMODUS"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "8-bit (Classic)"
-msgstr ""
+msgstr "8-bit (Klassiek)"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "8-bit Interpolated"
-msgstr ""
+msgstr "8-bit Geïnterpoleerd"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "True Colour"
-msgstr ""
+msgstr "Ware Kleur"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14801,16 +14822,18 @@ msgid ""
 "Choose to render high definition graphics textures. Requires OpenGL, True "
 "Colour and the enhanced.gob file."
 msgstr ""
+"Kies ervoor om grafische texturen in hoge definitie weer te geven. Vereist "
+"OpenGL, True Color en het enhanced.gob bestand."
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "HD TEXTURES"
-msgstr ""
+msgstr "HD TEXTUREN"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "BILINEAR FILTER"
-msgstr ""
+msgstr "BILINEAIR FILTER"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -14820,7 +14843,7 @@ msgstr "Kies ervoor om Bloom-nabewerking te gebruiken."
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
 msgid "BLOOM"
-msgstr ""
+msgstr "BLOOM"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -15785,120 +15808,4 @@ msgstr "Grafische filtering aan/uit"
 #. TRANSLATION: jaguar.bigpemu.keys
 msgctxt "keys_files"
 msgid "Configuration menu"
-msgstr ""
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Compile shaders on next launch of game (one time). Reduces micro-freezes."
-#~ msgstr ""
-#~ "Compileer shaders op volgende start van spel (eenmaal). Verminderd micro-"
-#~ "freezes."
-
-#~ msgctxt "game_options"
-#~ msgid "Off (default)"
-#~ msgstr "Uit (standaard)"
-
-#~ msgctxt "game_options"
-#~ msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
-#~ msgstr ""
-#~ "Schakel tussen MSAA/SSAA. Afhankelijk van of anti-aliasing is "
-#~ "ingeschakeld."
-
-#~ msgctxt "game_options"
-#~ msgid "MSAA (default)"
-#~ msgstr "MSAA (standaard)"
-
-#~ msgctxt "game_options"
-#~ msgid "SSAA"
-#~ msgstr "SSAA"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use with the stretch aspect ratio and adjust joystick sensitivity as "
-#~ "required."
-#~ msgstr ""
-#~ "Gebruik de uitgerekte beeldverhouding en pas de gevoeligheid van de "
-#~ "joystick indien nodig aan."
-
-#~ msgctxt "game_options"
-#~ msgid "105% (Use caution"
-#~ msgstr "105% (Wees voorzichtig)"
-
-#~ msgctxt "game_options"
-#~ msgid "110% (Use caution)"
-#~ msgstr "110% (Wees voorzichtig)"
-
-#~ msgctxt "game_options"
-#~ msgid "115% (Use caution)"
-#~ msgstr "115% (Wees voorzichtig)"
-
-#~ msgctxt "game_options"
-#~ msgid "120% (Are you crazy?)"
-#~ msgstr "120% (Ben je gek?)"
-
-#~ msgctxt "game_options"
-#~ msgid "125% (Yes, you're crazy)"
-#~ msgstr "125% (Ja, je bent gek)"
-
-#~ msgctxt "game_options"
-#~ msgid "130% (Nope, you're just insane!)"
-#~ msgstr "130% (Nee, je bent krankzinnig!)"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Choose the amount of polygon sort accuracy (Higher may cause artifacts)."
-#~ msgstr ""
-#~ "Kies de mate van nauwkeurigheid van het sorteren van polygonen (hoger kan "
-#~ "artefacten veroorzaken)."
-
-#~ msgctxt "game_options"
-#~ msgid "POLYGON SORT ACCURACY"
-#~ msgstr "POLYGON SORTEER NAUWKEURIGHEID"
-
-#~ msgctxt "game_options"
-#~ msgid "Per-strip (Default)"
-#~ msgstr "Per-strip (Standaard)"
-
-#~ msgctxt "game_options"
-#~ msgid "Per-pixel (32 layers)"
-#~ msgstr "Per-pixel (32 lagen)"
-
-#~ msgctxt "game_options"
-#~ msgid "Per-pixel (64 layers)"
-#~ msgstr "Per-pixel (64 lagen)"
-
-#~ msgctxt "game_options"
-#~ msgid "Allow mapping Future Pinabll with Pad to Keyboard."
-#~ msgstr "Toewijzing van Future Pinball met Pad naar toetsenbord toestaan."
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "This option enables the ability to play Xbox Live Arcacde games. May "
-#~ "cause compatibility issues with non-XBLA games."
-#~ msgstr ""
-#~ "Deze optie maakt het mogelijk om Xbox Live Arcade-games te spelen. Kan "
-#~ "compatibiliteitsproblemen veroorzaken met niet-XBLA spellen."
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE TRUE COLOUR"
-#~ msgstr "WARE KLEUR INSCHAKELEN"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE BILINEAR FILTER"
-#~ msgstr "BILINEAIR FILTER INSCHAKELEN"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE MIPMAPPING"
-#~ msgstr "MIPMAPPING INSCHAKELEN"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE CROSSHAIR"
-#~ msgstr "CROSSHAIR INSCHAKELEN"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE BLOOM"
-#~ msgstr "BLOOM INSCHAKELEN"
-
-#~ msgctxt "game_options"
-#~ msgid "Adjust the cpu power profile while in-game."
-#~ msgstr "Pas het CPU-energieprofiel aan tijdens het gamen."
+msgstr "Configuratiemenu"
