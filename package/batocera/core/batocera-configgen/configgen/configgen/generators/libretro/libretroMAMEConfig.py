@@ -4,6 +4,7 @@ from pathlib import Path
 from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 import Command
 import batoceraFiles
 import codecs
@@ -48,7 +49,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
     commandLine = []
     romBasename = os.path.basename(rom)
     romDirname  = os.path.dirname(rom)
-    romDrivername = os.path.splitext(romBasename)[0]
+    (romDrivername, romExt) = os.path.splitext(romBasename)[0]
     specialController = 'none'
 
     if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
@@ -221,6 +222,13 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
                             commandLine += [ "-flop1" ]
                         else:
                             commandLine += [ "-cart1" ]
+                    elif system.name == "coco":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
+                        elif romExt.casefold() == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
                     # try to choose the right floppy for Apple2gs
                     elif system.name == "apple2gs":
                         rom_extension = os.path.splitext(rom)[1].lower()
@@ -328,6 +336,47 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
                     if (system.isOptSet("altromtype") and system.config["altromtype"] == "cass") or softList[-4:] == "cass":
                         autoRunCmd = 'LOADM”“,,R\\n'
                         autoRunDelay = 5
+            elif system.name == "coco":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = '/usr/bin/mame/hash/{}.xml'.format(softList)
+                    if os.path.exists(softListFile):
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib != {}:
+                                if software.get('name') == romDrivername:
+                                    for info in software.iter('info'):
+                                        if info.get('name') == 'usage':
+                                            autoRunCmd = info.get('value') + '\\n'
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or (softList != "" and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        if romDrivername.casefold().endswith(".bas"):
+                            autoRunCmd = 'CLOAD:RUN\\n'
+                        else:
+                            autoRunCmd = 'CLOADM:EXEC\\n'
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "flop1") or (softList != "" and softList.endswith("flop")) or romExt.casefold() == ".dsk":
+                        romType = 'flop'
+                        if romDrivename.casefold().endswith(".bas"):
+                            autoRunCmd = 'RUN \"{}\"\\n'.format(romDrivername)
+                        else:
+                            autoRunCmd = 'LOADM \"{}\":EXEC\\n'.format(romDrivername)
+
+                # check for a user override
+                autoRunFile = 'system/configs/mame/autoload/{}_{}_autoload.csv'.format(system.name, romType)
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row and not row[0].startswith('#'):
+                                if row[0].casefold() == romDrivername.casefold():
+                                    autoRunCmd = row[1] + "\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
