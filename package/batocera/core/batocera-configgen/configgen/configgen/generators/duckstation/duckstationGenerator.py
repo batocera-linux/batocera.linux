@@ -441,10 +441,17 @@ class DuckstationGenerator(Generator):
                     settings.set(pad_num, "R", sdl_num+"/RightShoulder")
                     settings.set(pad_num, "SteeringLeft", sdl_num+"/-LeftX")
                     settings.set(pad_num, "SteeringRight", sdl_num+"/+LeftX")
-                # Guns - GunCon
+                # Guns
                 if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and len(guns) > 0:
-                    settings.set(pad_num, "Type", "GunCon")
-                    settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
+                    # Justifier compatible ROM...
+                    if "gun_type" in metadata and metadata["gun_type"] == "justifier":
+                        settings.set(pad_num, "Type", "Justifier")
+                        settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
+                        settings.set(pad_num, "Start", gun_num+"/RightButton")
+                    # Default or GunCon compatible ROM...
+                    else:
+                        settings.set(pad_num, "Type", "GunCon")
+                        settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
 
                     ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
                     pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
@@ -519,7 +526,7 @@ class DuckstationGenerator(Generator):
             qt_qpa_platform = "wayland"
         else:
             qt_qpa_platform = "xcb"
-        
+
         return Command.Command(
             array=commandArray,
             env={
