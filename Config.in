@@ -98,6 +98,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-amd/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/gl4es/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/intel-clc/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-volk/Config.in"
   endmenu
 
   menu "Network"
