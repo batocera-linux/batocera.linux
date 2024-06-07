@@ -12265,12 +12265,12 @@ vita3k:
   features: []
   cfeatures:
     # Disabled until vulkan fixed upstream
-    #vita3k_gfxbackend:
-    #  prompt:      GRAPHICS API
-    #  description: Choose which graphics API library to use.
-    #  choices:
-    #    "OpenGL": "OpenGL"
-    #    "Vulkan": "Vulkan"
+    vita3k_gfxbackend:
+      prompt:      GRAPHICS API
+      description: Choose which graphics API library to use.
+      choices:
+        "OpenGL": "OpenGL"
+        "Vulkan": "Vulkan"
     vita3k_resolution:
       prompt:      RENDERING RESOLUTION
       description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.

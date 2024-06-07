@@ -46,9 +46,7 @@ class Vita3kGenerator(Generator):
 
         # Set the renderer
         if system.isOptSet("vita3k_gfxbackend"):
-            # disabled until vulkan fixed upstream
-            #vita3kymlconfig["backend-renderer"] = system.config["vita3k_gfxbackend"]
-            vita3kymlconfig["backend-renderer"] = "OpenGL" # use opengl manually for now
+            vita3kymlconfig["backend-renderer"] = system.config["vita3k_gfxbackend"]
         else:
             vita3kymlconfig["backend-renderer"] = "OpenGL"
         # Set the resolution multiplier
@@ -111,8 +109,7 @@ class Vita3kGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0",
                 "XDG_CONFIG_HOME": batoceraFiles.CONF,
                 "XDG_DATA_HOME": batoceraFiles.SAVES,
-                "XDG_CACHE_HOME": batoceraFiles.CACHE,
-                "XDG_DATA_DIRS": batoceraFiles.SAVES
+                "XDG_CACHE_HOME": batoceraFiles.CACHE
             }
         )
     
