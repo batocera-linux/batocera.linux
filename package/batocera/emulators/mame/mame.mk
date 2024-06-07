@@ -55,7 +55,7 @@ MAME_CFLAGS += -mabi=lp64d -march=rv64imafdczbb_zba -mcpu=sifive-u74
 # Force OPTIMIZE level 1 to avoid fatal linking relocation issue so far....
 MAME_CROSS_OPTS += OPTIMIZE=2
 # Cast alignment warnings cause errors on riscv64
-MAME_CFLAGS += -Wno-error=cast-align
+MAME_CFLAGS += -Wno-error=cast-align -Wno-error=unused-function
 # Some GCC hacks needed to get riscv64 binary linking
 MAME_CFLAGS += -mcmodel=medany -fno-inline-small-functions
 MAME_LDFLAGS += -mcmodel=medany
