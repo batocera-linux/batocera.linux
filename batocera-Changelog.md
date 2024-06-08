@@ -31,6 +31,7 @@ Add support for the Ayaneo Air Plus (6800U) model
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
   - Driving Wheel SV200
+  - PNX-V10 (x-input only)
 - Dolphin: support for Retroachievements (when they are enabled)
 - Color Computer (coco) now autoloads cassettes and disks based on MAME software lists with default fallbacks
   - uses "usage" info field in MAME software list
