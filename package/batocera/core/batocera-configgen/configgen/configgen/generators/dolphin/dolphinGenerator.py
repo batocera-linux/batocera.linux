@@ -56,14 +56,6 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("General", "ISOPath1", "/userdata/roms/gamecube")
             dolphinSettings.set("General", "ISOPaths", "2")
 
-        # Draw or not FPS
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            dolphinSettings.set("General", "ShowLag",        "True")
-            dolphinSettings.set("General", "ShowFrameCount", "True")
-        else:
-            dolphinSettings.set("General", "ShowLag",        "False")
-            dolphinSettings.set("General", "ShowFrameCount", "False")
-
         # Don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
 
