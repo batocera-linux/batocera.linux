@@ -2,13 +2,13 @@ diff --git a/src/gallium/drivers/radeonsi/si_pipe.h b/src/gallium/drivers/radeon
 index 50849fc8920..567c873f90f 100644
 --- a/src/gallium/drivers/radeonsi/si_pipe.h
 +++ b/src/gallium/drivers/radeonsi/si_pipe.h
-@@ -2194,7 +2194,7 @@ si_set_rasterized_prim(struct si_context *sctx, enum mesa_prim rast_prim,
+@@ -2227,7 +2227,7 @@ si_set_rasterized_prim(struct si_context *sctx, enum mesa_prim rast_prim,
        }
  
        sctx->current_rast_prim = rast_prim;
 -      si_vs_ps_key_update_rast_prim_smooth_stipple(sctx);
 +      sctx->do_update_shaders = true;
-       si_update_ngg_prim_state_sgpr(sctx, hw_vs, ngg);
+       si_update_ngg_sgpr_state_out_prim(sctx, hw_vs, ngg);
     }
  }
 diff --git a/src/gallium/drivers/radeonsi/si_state.c b/src/gallium/drivers/radeonsi/si_state.c

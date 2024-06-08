@@ -113,7 +113,14 @@ do
 	fi
     fi
     # if screen2 is empty, take the first one found which is not screen1
-    test -z "${settings_output2}" && settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
+    if test -z "${settings_output2}"
+    then
+	user_output2="$(batocera-settings-get global.videooutput2)"
+	if test "${user_output2}" != "none"
+	then
+	    settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
+	fi
+    fi
 
     # we set the output to enable screens...
     batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid

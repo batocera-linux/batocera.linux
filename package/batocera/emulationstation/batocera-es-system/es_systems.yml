@@ -1052,7 +1052,7 @@ atari800:
   manufacturer: Atari
   release: 1979
   hardware: computer
-  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
+  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z, m3u]
   group:      atari8bit
   emulators:
     libretro:
@@ -2114,7 +2114,7 @@ x1:
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [3ds, 3dsx, cxi, axf, elf]
+  extensions: [3ds, 3dsx, cxi, axf, elf, app]
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
@@ -2204,15 +2204,17 @@ daphne:
     - Cliff Hanger
     - Cobra Command
     - Dragon's Lair
+    - Dragon's Lair (Atari EU)
     - Dragon's Lair II: Time Warp
     - Esh's Aurunmilla
-    - Firefox
     - Galaxy Ranger
+    - Goal to Go
     - GP World
     - Interstellar Laser Fantasy
     - M.A.C.H. 3
     - Road Blaster
     - Space Ace
+    - Space Ace (Atari EU)
     - Super Don Quix-Ote
     - Thayer's Quest
     - Us Vs Them
@@ -2257,18 +2259,17 @@ singe:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
   comment_en: |
-    Singe supports American Laser Games (Action Max) and fan made Singe & SInge 2 games.
+    Singe supports American Laser Games, Action Max and fan made Singe & Singe 2 games.
 
     Due to legacy supporting file structures, we still use the .daphne folder extension.
 
     roms
     |-- singe
-        |-- bluethunder.daphne    
-            |-- bluethunder.singe      (Singe parameters)
-            |-- bluethunder.txt        (Framefile)
-            |-- video_bluethunder.dat
-            |-- video_bluethunder.m2v
-            |-- video_bluethunder.ogg
+        |-- maddog.daphne    
+            |-- maddog.singe      (Singe Game LUA)
+            |-- maddog.txt        (Framefile)
+            |-- maddog.m2v
+            |-- maddog.ogg
 
     For more info: https://wiki.batocera.org/systems:singe
   comment_fr: |
@@ -2463,7 +2464,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wua, wup, wud, wux, rpx, squashfs]
+  extensions: [wua, wup, wud, wux, rpx, squashfs, wuhb]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -3505,14 +3506,25 @@ coco:
   manufacturer: Tandy Radio Shack
   release: 1980
   hardware: computer
-  extensions: [wav, cas, ccc, rom, zip, 7z]
+  extensions: [wav, cas, dsk, ccc, rom, zip, 7z]
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires MAME BIOS file coco.zip
+          Requires MAME BIOS file coco.zip and coco3.zip
+
+          Default Autoload Behaviors
+          1. "usage" info field when using MAME software lists (if declared)
+          2. Cassette (.cas) files autoload as binary (CLOADM:EXEC)
+          3. Disk (.dsk) files autoload based on basename (eg. ZONX.dsk autoloads as LOADM “ZONX”:EXEC)
+          4. BASIC programs autorun if file basename ends with .bas
+              3a. ALPHAII.BAS.dsk autoloads using RUN “ALPHAII”
+              3b. GROVER.bas.cas  autoloads using CLOAD:RUN
+
+          user definable autoload overrides in: `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
+          syntax: <romBasename>;<autoload command> (see comments in .csv files for detailed help & examples)
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
@@ -5051,6 +5063,11 @@ theforceengine:
 
     A good source of missions to try are available here: https://df-21.net/downloads/levels/
 
+    Dark Forces HD Textures:
+
+    To use HD textures you need to have a copy of the Remaster version of the games also.
+    Copy the `enhanced.gob` file from the Remaster installation into the previous `Star Wars - Dark Forces` folder.
+
     Notes:
 
     It is important to use the exact directory name above.
@@ -5303,3 +5320,28 @@ uqm:
   comment_en: |
     Create a folder called 'packages' in this folder. This is where you place your game engine file 'uqm-0.8.0-content.uqm'.
     Then create a file called 'Ur-Quan Masters.game'. This is used to launch the game.
+
+chihiro:
+  name: Sega Chihiro
+  manufacturer: Sega & Microsoft
+  release: 2002
+  hardware: arcade
+  extensions: [iso]
+  emulators:
+    xemu:
+      xemu: { requireAnyOf: [ BR2_PACKAGE_XEMU ] }
+  comment_en: |
+    Place your Xbox compatible Chihiro roms in here.
+    Currently support ISO's are:
+    - Ghost Squad
+    - Outrun 2
+    - Virtual Cop 3
+    
+    You will also need the Cerbios flashrom in your roms directory.
+    - Most modern Cerbios versions will work with the udma variants not being necessary.
+
+    For more info: https://wiki.batocera.org/systems:chihiro
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:chihiro
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:chihiro

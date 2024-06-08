@@ -1,0 +1,50 @@
+diff --git a/vita3k/app/src/app_init.cpp b/vita3k/app/src/app_init.cpp
+index 667f7f75..acec3244 100644
+--- a/vita3k/app/src/app_init.cpp
++++ b/vita3k/app/src/app_init.cpp
+@@ -125,11 +125,7 @@ void init_paths(Root &root_paths) {
+         root_paths.set_shared_path(portable_path);
+         root_paths.set_cache_path(portable_path / "cache" / "");
+     } else {
+-        // SDL_GetPrefPath is deferred as it creates the directory.
+-        // When using a portable directory, it is not needed.
+-        auto sdl_pref_path = SDL_GetPrefPath(org_name, app_name);
+-        auto pref_path = fs_utils::utf8_to_path(sdl_pref_path);
+-        SDL_free(sdl_pref_path);
++        auto pref_path = "/userdata/saves/psvita/";
+ 
+ #if defined(__APPLE__)
+         // Store other data in the user-wide path. Otherwise we may end up dumping
+@@ -166,12 +166,12 @@ void init_paths(Root &root_paths) {
+         auto APPDIR = getenv("APPDIR"); // Used in AppImage
+ 
+         if (XDG_DATA_HOME != NULL)
+-            root_paths.set_pref_path(fs::path(XDG_DATA_HOME) / app_name / app_name / "");
++            root_paths.set_pref_path(fs::path(XDG_DATA_HOME) / "psvita" / "");
+ 
+         if (XDG_CONFIG_HOME != NULL)
+             root_paths.set_config_path(fs::path(XDG_CONFIG_HOME) / app_name / "");
+         else if (env_home != NULL)
+-            root_paths.set_config_path(fs::path(env_home) / ".config" / app_name / "");
++            root_paths.set_config_path(fs::path(env_home) / "configs" / app_name / "");
+ 
+         if (XDG_CACHE_HOME != NULL) {
+             root_paths.set_cache_path(fs::path(XDG_CACHE_HOME) / app_name / "");
+@@ -206,7 +202,7 @@ void init_paths(Root &root_paths) {
+ 
+         // shared path
+         if (env_home != NULL)
+-            root_paths.set_shared_path(fs::path(env_home) / ".local/share" / app_name / "");
++            root_paths.set_shared_path(fs::path("/userdata/saves/psvita/"));
+ 
+         if (XDG_DATA_DIRS != NULL) {
+             auto env_paths = string_utils::split_string(XDG_DATA_DIRS, ':');
+@@ -217,7 +217,7 @@ void init_paths(Root &root_paths) {
+                 }
+             }
+         } else if (XDG_DATA_HOME != NULL) {
+-            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / app_name / "");
++            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / "psvita" / "");
+         }
+ #endif
+     }

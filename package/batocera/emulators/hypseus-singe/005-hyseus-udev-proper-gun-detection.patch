@@ -1,0 +1,261 @@
+From 8066a5eca448d8dd6c9858db5ad89f3b221d2599 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Sun, 26 May 2024 09:10:14 +0000
+Subject: [PATCH] 005-hyseus-udev-proper-gun-detection
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ src/CMakeLists.txt               |   3 +-
+ src/cmake/modules/FindUdev.cmake |  15 +++
+ src/manymouse/linux_evdev.c      | 173 ++++++++++++++++++++++++++-----
+ 3 files changed, 164 insertions(+), 27 deletions(-)
+ create mode 100644 src/cmake/modules/FindUdev.cmake
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 6a85063..13a86bf 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -119,13 +119,14 @@ find_package(SDL2 REQUIRED)
+ find_package(SDL2TTF REQUIRED)
+ find_package(SDL2_IMAGE REQUIRED)
+ find_package(Vorbis REQUIRED)
++find_package(Udev REQUIRED)
+ 
+ if(APPLE)
+     set( SDL2_LIBRARIES ${SDL2_LIBRARY} )
+ endif(APPLE)
+ 
+ add_executable( hypseus hypseus.cpp globals.h )
+-target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} )
++target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} ${UDEV_LIBRARY} )
+ 
+ if(ASAN)
+     target_link_options(hypseus PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
+diff --git a/src/cmake/modules/FindUdev.cmake b/src/cmake/modules/FindUdev.cmake
+new file mode 100644
+index 0000000..161027f
+--- /dev/null
++++ b/src/cmake/modules/FindUdev.cmake
+@@ -0,0 +1,15 @@
++
++if(UDEV_INCLUDE_DIR)
++  # Already in cache, be silent
++  set(UDEV_FIND_QUIETLY TRUE)
++endif(UDEV_INCLUDE_DIR)
++
++find_path(UDEV_INCLUDE_DIR libudev.h)
++
++find_library(UDEV_LIBRARY NAMES udev)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(Udev DEFAULT_MSG
++                                  UDEV_LIBRARY UDEV_INCLUDE_DIR)
++
++mark_as_advanced(UDEV_LIBRARY UDEV_INCLUDE_DIR)
+diff --git a/src/manymouse/linux_evdev.c b/src/manymouse/linux_evdev.c
+index 61d61e6..84dd5cc 100644
+--- a/src/manymouse/linux_evdev.c
++++ b/src/manymouse/linux_evdev.c
+@@ -23,6 +23,65 @@
+ 
+ #include <linux/input.h>  /* evdev interface...  */
+ 
++struct event_udev_entry
++{
++   const char *devnode;
++   struct udev_list_entry *item;
++};
++
++int event_isNumber(const char *s) {
++  int n;
++
++  if(strlen(s) == 0) {
++    return 0;
++  }
++
++  for(n=0; n<strlen(s); n++) {
++    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
++         s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++      return 0;
++  }
++  return 1;
++}
++
++// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
++int event_strcmp_events(const char* x, const char* y) {
++
++  // find a common string
++  int n, common, is_number;
++  int a, b;
++
++  n=0;
++  while(x[n] == y[n] && x[n] != '\0' && y[n] != '\0') {
++    n++;
++  }
++  common = n;
++
++  // check if remaining string is a number
++  is_number = 1;
++  if(event_isNumber(x+common) == 0) is_number = 0;
++  if(event_isNumber(y+common) == 0) is_number = 0;
++
++  if(is_number == 1) {
++    a = atoi(x+common);
++    b = atoi(y+common);
++
++    if(a == b) return  0;
++    if(a < b)  return -1;
++    return 1;
++  } else {
++    return strcmp(x, y);
++  }
++}
++
++/* Used for sorting devnodes to appear in the correct order */
++static int sort_devnodes(const void *a, const void *b)
++{
++  const struct event_udev_entry *aa = (const struct event_udev_entry*)a;
++  const struct event_udev_entry *bb = (const struct event_udev_entry*)b;
++  return event_strcmp_events(aa->devnode, bb->devnode);
++}
++
+ #define test_bit(array, bit)    (array[bit/8] & (1<<(bit%8)))
+ 
+ /* linux allows 32 evdev nodes currently. */
+@@ -214,21 +273,7 @@ static int init_mouse(const char *fname, int fd)
+ /* Return a file descriptor if this is really a mouse, -1 otherwise. */
+ static int open_if_mouse(const char *fname)
+ {
+-    struct stat statbuf;
+     int fd;
+-    int devmajor, devminor;
+-
+-    if (stat(fname, &statbuf) == -1)
+-        return 0;
+-
+-    if (S_ISCHR(statbuf.st_mode) == 0)
+-        return 0;  /* not a character device... */
+-
+-    /* evdev node ids are major 13, minor 64-96. Is this safe to check? */
+-    devmajor = (statbuf.st_rdev & 0xFF00) >> 8;
+-    devminor = (statbuf.st_rdev & 0x00FF);
+-    if ( (devmajor != 13) || (devminor < 64) || (devminor > 96) )
+-        return 0;  /* not an evdev. */
+ 
+     if ((fd = open(fname, O_RDONLY | O_NONBLOCK)) == -1)
+         return 0;
+@@ -246,23 +291,99 @@ static int linux_evdev_init(void)
+     DIR *dirp;
+     struct dirent *dent;
+     int i;
++    struct udev *m_udev;
++    struct udev_enumerate *enumerate  = NULL;
++    struct udev_enumerate *enumerate2 = NULL;
++    struct udev_list_entry     *devs = NULL;
++    struct udev_list_entry     *item = NULL;
++    unsigned sorted_count = 0;
++    struct event_udev_entry sorted[8]; // max devices
+ 
+     for (i = 0; i < MAX_MICE; i++)
+-        mice[i].fd = -1;
++      mice[i].fd = -1;
++
++    m_udev = udev_new();
++    // look for guns
++    enumerate = udev_enumerate_new(m_udev);
++    if(enumerate != NULL) {
++      udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++      udev_enumerate_add_match_subsystem(enumerate, "input");
++      udev_enumerate_scan_devices(enumerate);
++      devs = udev_enumerate_get_list_entry(enumerate);
++
++      for (item = devs; item; item = udev_list_entry_get_next(item)) {
++	const char         *name = udev_list_entry_get_name(item);
++	struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
++	const char      *devnode = udev_device_get_devnode(dev);
++	
++	if (devnode != NULL && sorted_count < 8) {
++	  sorted[sorted_count].devnode = devnode;
++	  sorted[sorted_count].item = item;
++	  sorted_count++;
++	} else {
++	  udev_device_unref(dev);
++	}
++      }
++
++      /* Sort the udev entries by devnode name so that they are
++       * created in the proper order */
++      qsort(sorted, sorted_count,
++	    sizeof(struct event_udev_entry), sort_devnodes);
++    }
++    // look for mices : no gun ? look for mice
++    if(sorted_count == 0) {
++      enumerate2 = udev_enumerate_new(m_udev);
++      if(enumerate2 != NULL) {
++	udev_enumerate_add_match_property(enumerate2, "ID_INPUT_MOUSE", "1");
++	udev_enumerate_add_match_property(enumerate2, "ID_INPUT_TOUCHPAD", "1");
++	udev_enumerate_add_match_subsystem(enumerate2, "input");
++	udev_enumerate_scan_devices(enumerate2);
++	devs = udev_enumerate_get_list_entry(enumerate2);
++
++	for (item = devs; item; item = udev_list_entry_get_next(item)) {
++	  const char         *name = udev_list_entry_get_name(item);
++	  struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
++	  const char      *devnode = udev_device_get_devnode(dev);
++	
++	  if (devnode != NULL && sorted_count < 8) {
++	    sorted[sorted_count].devnode = devnode;
++	    sorted[sorted_count].item = item;
++	    sorted_count++;
++	  } else {
++	    udev_device_unref(dev);
++	  }
++	}
++
++	/* Sort the udev entries by devnode name so that they are
++	 * created in the proper order */
++	qsort(sorted, sorted_count,
++	      sizeof(struct event_udev_entry), sort_devnodes);
++      }
++    }
+ 
+-    dirp = opendir("/dev/input");
+-    if (!dirp)
+-        return -1;
++    for (i = 0; i < sorted_count; i++) {
++      const char *name = udev_list_entry_get_name(sorted[i].item);
+ 
+-    while ((dent = readdir(dirp)) != NULL)
+-    {
+-        char fname[384];
+-        snprintf(fname, sizeof (fname), "/dev/input/%s", dent->d_name);
+-        if (open_if_mouse(fname))
+-            available_mice++;
+-    } /* while */
++      /* Get the filename of the /sys entry for the device
++       * and create a udev_device object (dev) representing it. */
++      struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
++      const char *devnode     = udev_device_get_devnode(dev);
++
++      if (devnode) {
++	if (open_if_mouse(devnode))
++	  available_mice++;
++	udev_device_unref(dev);
++      }
++    }
++
++    if(enumerate != NULL) {
++      udev_enumerate_unref(enumerate);
++    }
++    if(enumerate2 != NULL) {
++      udev_enumerate_unref(enumerate2);
++    }
+ 
+-    closedir(dirp);
++    udev_unref(m_udev);
+ 
+     return (int)available_mice;
+ } /* linux_evdev_init */
+-- 
+2.34.1
+

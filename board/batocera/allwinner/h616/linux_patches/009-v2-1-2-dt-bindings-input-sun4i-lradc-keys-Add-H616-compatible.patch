@@ -1,0 +1,27 @@
+The Allwinner H616 SoC has an LRADC which is compatible with the
+versions in existing SoCs.
+Add a compatible string for H616, with the R329 fallback. This is the
+same as the D1, so put them into an enum.
+
+Signed-off-by: James McGregor <jamcgregor@protonmail.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+---
+ .../bindings/input/allwinner,sun4i-a10-lradc-keys.yaml        | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml b/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
+index c384bf0bb25d..6bdb8040be65 100644
+--- a/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
++++ b/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml
+@@ -22,7 +22,9 @@ properties:
+           - const: allwinner,sun8i-a83t-r-lradc
+       - const: allwinner,sun50i-r329-lradc
+       - items:
+-          - const: allwinner,sun20i-d1-lradc
++          - enum:
++              - allwinner,sun50i-h616-lradc
++              - allwinner,sun20i-d1-lradc
+           - const: allwinner,sun50i-r329-lradc
+
+   reg:

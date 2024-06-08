@@ -51,8 +51,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 	BATOCERA_SYSTEM_ARCH=x86_64
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_STEAMDECK),y)
 	BATOCERA_SYSTEM_ARCH=steamdeck
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ZNVER2),y)
-	BATOCERA_SYSTEM_ARCH=znver2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ZEN3),y)
+	BATOCERA_SYSTEM_ARCH=x86-64-v3
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 	BATOCERA_SYSTEM_ARCH=bcm2836
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
@@ -74,7 +74,8 @@ else
 endif
 
 ifneq (,$(findstring dev,$(BATOCERA_SYSTEM_VERSION)))
-    BATOCERA_SYSTEM_COMMIT = "-$(shell cd $(BR2_EXTERNAL_BATOCERA_PATH) && git rev-parse --short HEAD)"
+    BATOCERA_SYSTEM_COMMIT = \
+	    "-$(shell cd $(BR2_EXTERNAL_BATOCERA_PATH) && git rev-parse --short HEAD)"
 else
     BATOCERA_SYSTEM_COMMIT =
 endif
@@ -84,26 +85,37 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 	# version/arch
 	mkdir -p $(TARGET_DIR)/usr/share/batocera
 	echo -n "$(BATOCERA_SYSTEM_ARCH)" > $(TARGET_DIR)/usr/share/batocera/batocera.arch
-	echo $(BATOCERA_SYSTEM_VERSION)$(BATOCERA_SYSTEM_COMMIT) $(BATOCERA_SYSTEM_DATE_TIME) > $(TARGET_DIR)/usr/share/batocera/batocera.version
+	echo $(BATOCERA_SYSTEM_VERSION)$(BATOCERA_SYSTEM_COMMIT) \
+	    $(BATOCERA_SYSTEM_DATE_TIME) > \
+		$(TARGET_DIR)/usr/share/batocera/batocera.version
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera.conf \
+	    $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# batocera-boot.conf
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf $(BINARIES_DIR)/batocera-boot.conf
+	$(INSTALL) -D -m 0644 \
+	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf \
+		$(BINARIES_DIR)/batocera-boot.conf
 
 	# sysconfigs (default batocera.conf for boards)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/sysconfigs
-        if test -d $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}; then cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* $(TARGET_DIR)/usr/share/batocera/sysconfigs; fi
+    if test -d \
+	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}; \
+		then cp -pr \
+		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* \
+		$(TARGET_DIR)/usr/share/batocera/sysconfigs; fi
 
 	# mounts
 	mkdir -p $(TARGET_DIR)/boot $(TARGET_DIR)/overlay $(TARGET_DIR)/userdata
 
 	# variables
 	mkdir -p $(TARGET_DIR)/etc/profile.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/xdg.sh $(TARGET_DIR)/etc/profile.d/xdg.sh
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/dbus.sh $(TARGET_DIR)/etc/profile.d/dbus.sh
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/xdg.sh \
+	    $(TARGET_DIR)/etc/profile.d/xdg.sh
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/dbus.sh \
+	    $(TARGET_DIR)/etc/profile.d/dbus.sh
 
 	# list of modules that doesnt like suspend
 	mkdir -p $(TARGET_DIR)/etc/pm/config.d

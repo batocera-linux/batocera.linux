@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DUCKSTATION_VERSION = v0.1-6658
+DUCKSTATION_VERSION = e25bb4801c524aaae17b0628b58669b51c6c64eb
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
@@ -12,7 +12,7 @@ DUCKSTATION_LICENSE = GPLv2
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg libcurl ecm shaderc
-DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg
+DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg libbacktrace
 
 DUCKSTATION_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE

@@ -9,6 +9,7 @@ do_help() {
     echo "${0} disable service1"
     echo "${0} stop service1"
     echo "${0} start service1"
+    echo "${0} restart service1"
 }
 
 is_valid_service_name() {
@@ -64,6 +65,14 @@ do_list() {
 	    	    printf "%s;%s\n" "${SNAME}" "-"
 		fi
 	    fi
+	done
+}
+
+do_status() {
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+	while read SERVICE
+	do
+	    bash "${SERVICE}" status
 	done
 }
 
@@ -152,11 +161,19 @@ case "${ACTION}" in
     list)
 	do_list "${1}"
 	;;
+    status)
+	do_status "${1}"
+	;;
     start)
 	do_start "${1}"
 	;;
     stop)
 	do_stop "${1}"
+	;;
+    restart)
+	do_stop "${1}"
+	sleep 2
+	do_start "${1}"
 	;;
     enable)
 	do_enable "${1}"

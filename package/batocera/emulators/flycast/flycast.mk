@@ -3,8 +3,8 @@
 # flycast
 #
 ################################################################################
-# Version: Commits on Mar 15, 2024
-FLYCAST_VERSION = v2.3
+
+FLYCAST_VERSION = 95de83431b9a9a1a3cc3dd042e72a3c10154480c
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
@@ -17,6 +17,8 @@ FLYCAST_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 FLYCAST_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 FLYCAST_CONF_OPTS += -DLIBRETRO=OFF
 FLYCAST_CONF_OPTS += -DUSE_HOST_SDL=ON
+FLYCAST_CONF_OPTS += -DUSE_DX9=OFF
+FLYCAST_CONF_OPTS += -DUSE_DX11=OFF
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     FLYCAST_CONF_OPTS += -DUSE_OPENGL=ON
@@ -46,7 +48,8 @@ define FLYCAST_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/flycast $(TARGET_DIR)/usr/bin/flycast
 	# evmapy files
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/flycast/*.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/flycast/*.keys \
+        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))

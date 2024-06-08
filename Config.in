@@ -56,7 +56,6 @@ menu "System"
 
   menu "Toolchain"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/toolchain-optional-linaro-aarch64/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/llvm-project/batocera-llvm/Config.in"
   endmenu
 
   menu "Fonts"
@@ -98,6 +97,9 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-lists/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-amd/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/gl4es/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/intel-clc/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-volk/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/nv-codec-headers/Config.in"
   endmenu
 
   menu "Network"
@@ -115,6 +117,7 @@ menu "System"
 
   menu "LED"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayn-platform/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayaneo-platform/Config.in"
   endmenu
 
   menu "Device trees"
@@ -458,6 +461,7 @@ endmenu
 
 menu "Looks"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/adwaita-icon-theme-light/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/hypseus-singe-bezels/Config.in"
 endmenu
 
 menu "Utils"
@@ -573,6 +577,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/shaderc/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-proxy-tools/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pywebview/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg-python/Config.in"
 endmenu
 
 menu "Audio"

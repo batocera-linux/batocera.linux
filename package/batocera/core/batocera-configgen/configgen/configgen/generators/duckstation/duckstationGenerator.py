@@ -45,6 +45,8 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "ConfirmPowerOff", "false")
         # Force applying game Settings fixes
         settings.set("Main","ApplyGameSettings", "true")
+        # Remove wizard
+        settings.set("Main","SetupWizardIncomplete", "false")
         # overclock
         if system.isOptSet("duckstation_clocking"):
             settings.set("Main","EmulationSpeed", system.config["duckstation_clocking"])
@@ -299,48 +301,28 @@ class DuckstationGenerator(Generator):
             presence  = system.config.get('retroachievements.richpresence', "")
             indicator = system.config.get('retroachievements.challenge_indicators', "")
             leaderbd  = system.config.get('retroachievements.leaderboards', "")
-            login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
-            try:
-                cnx = httplib2.Http()
-            except:
-                eslog.error("ERROR: Unable to connect to " + login_url)
-            try:
-                res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
-                if (res.status != 200):
-                    eslog.warning(f"ERROR: RetroAchievements.org responded with #{res.status} [{res.reason}] {rout}")
-                    settings.set("Cheevos", "Enabled",  "false")
-                else:
-                    parsedout = json.loads(rout.decode('utf-8'))
-                    if not parsedout['Success']:
-                        eslog.warning(f"ERROR: RetroAchievements login failed with ({str(parsedout)})")
-                    token = parsedout['Token']
-                    settings.set("Cheevos", "Enabled",       "true")
-                    settings.set("Cheevos", "Username",      username)
-                    settings.set("Cheevos", "Token",         token)
-
-                    if hardcore == '1':
-                        settings.set("Cheevos", "ChallengeMode", "true")    # For "hardcore" retroachievement points (no save, no rewind...)
-                    else:
-                        settings.set("Cheevos", "ChallengeMode", "false")
-                    if presence == '1':
-                        settings.set("Cheevos", "RichPresence",  "true")    # Enable rich presence information will be collected and sent to the server where supported
-                    else:
-                        settings.set("Cheevos", "RichPresence",  "false")
-                    if indicator == '1':
-                        settings.set("Cheevos", "PrimedIndicators",  "true")
-                    else:
-                        settings.set("Cheevos", "PrimedIndicators",  "false")
-                    if leaderbd == '1':
-                        settings.set("Cheevos", "Leaderboards",  "true")
-                    else:
-                        settings.set("Cheevos", "Leaderboards",  "false")
-                    #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
-                    #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
-
-                    eslog.debug(f"Duckstation RetroAchievements enabled for {username}")
-            except Exception as e:
-                eslog.error(f"ERROR: Impossible to get a RetroAchievements token ({e})")
-                settings.set("Cheevos", "Enabled", "false")
+            token     = system.config.get('retroachievements.token', "")
+            settings.set("Cheevos", "Enabled",       "true")
+            settings.set("Cheevos", "Username",      username)
+            settings.set("Cheevos", "Token",         token)
+            if hardcore == '1':
+                settings.set("Cheevos", "ChallengeMode", "true")    # For "hardcore" retroachievement points (no save, no rewind...)
+            else:
+                settings.set("Cheevos", "ChallengeMode", "false")
+            if presence == '1':
+                settings.set("Cheevos", "RichPresence",  "true")    # Enable rich presence information will be collected and sent to the server where supported
+            else:
+                settings.set("Cheevos", "RichPresence",  "false")
+            if indicator == '1':
+                settings.set("Cheevos", "PrimedIndicators",  "true")
+            else:
+                settings.set("Cheevos", "PrimedIndicators",  "false")
+            if leaderbd == '1':
+                settings.set("Cheevos", "Leaderboards",  "true")
+            else:
+                settings.set("Cheevos", "Leaderboards",  "false")
+            #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
+            #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
         else:
             settings.set("Cheevos", "Enabled", "false")
 
@@ -446,7 +428,7 @@ class DuckstationGenerator(Generator):
                 if system.isOptSet("duckstation_digitalmode"):
                     settings.set(pad_num, "AnalogDPadInDigitalMode", system.config["duckstation_digitalmode"])
                     if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "AnalogController":
-                        settings.set(pad_num, "Analog", sdl_num+"/Guide & "+sdl_num+"/+LeftTrigger")
+                        settings.set(pad_num, "Analog", sdl_num+"/Guide")
                 else:
                     settings.set(pad_num, "AnalogDPadInDigitalMode", "false")
                 # NeGcon ?
@@ -459,11 +441,32 @@ class DuckstationGenerator(Generator):
                     settings.set(pad_num, "R", sdl_num+"/RightShoulder")
                     settings.set(pad_num, "SteeringLeft", sdl_num+"/-LeftX")
                     settings.set(pad_num, "SteeringRight", sdl_num+"/+LeftX")
-                # Guns - GunCon
+                # Guns
                 if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and len(guns) > 0:
-                    settings.set(pad_num, "Type", "GunCon")
-                    settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
-                    settings.set(pad_num, "A", gun_num+"/RightButton")
+                    # Justifier compatible ROM...
+                    if "gun_type" in metadata and metadata["gun_type"] == "justifier":
+                        settings.set(pad_num, "Type", "Justifier")
+                        settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
+                        settings.set(pad_num, "Start", gun_num+"/RightButton")
+                    # Default or GunCon compatible ROM...
+                    else:
+                        settings.set(pad_num, "Type", "GunCon")
+                        settings.set(pad_num, "Trigger", gun_num+"/LeftButton")
+
+                    ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
+                    pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
+                    pedalkey = None
+                    pedalcname = "controllers.pedals{}".format(nplayer)
+                    if pedalcname in system.config:
+                        pedalkey = system.config[pedalcname]
+                    else:
+                        if nplayer in pedalsKeys:
+                            pedalkey = pedalsKeys[nplayer]
+                    if pedalkey is None:
+                        settings.set(pad_num, "A", gun_num+"/RightButton")
+                    else:
+                        settings.set(pad_num, "A", gun_num+"/RightButton & Keyboard/"+pedalkey.upper())
+                    ###
                     settings.set(pad_num, "B", gun_num+"/MiddleButton")
                     if system.isOptSet("duckstation_" + ctrl_num) and system.config["duckstation_" + ctrl_num] == "GunCon":
                         settings.set(pad_num, "Trigger", sdl_num+"/+RightTrigger")
@@ -523,7 +526,7 @@ class DuckstationGenerator(Generator):
             qt_qpa_platform = "wayland"
         else:
             qt_qpa_platform = "xcb"
-        
+
         return Command.Command(
             array=commandArray,
             env={

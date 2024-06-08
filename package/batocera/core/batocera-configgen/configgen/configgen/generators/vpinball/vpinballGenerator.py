@@ -20,6 +20,7 @@ class VPinballGenerator(Generator):
         # files
         vpinballConfigPath     = batoceraFiles.CONF + "/vpinball"
         vpinballConfigFile     = vpinballConfigPath + "/VPinballX.ini"
+        vpinballLogFile        = vpinballConfigPath + "/vpinball.log"
         vpinballPinmameIniPath = batoceraFiles.CONF + "/vpinball/pinmame/ini"
 
         # create vpinball config directory and default config file if they don't exist
@@ -29,6 +30,8 @@ class VPinballGenerator(Generator):
             shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFile)
         if not os.path.exists(vpinballPinmameIniPath):
             os.makedirs(vpinballPinmameIniPath)
+        if os.path.exists(vpinballLogFile):
+            os.rename(vpinballLogFile, vpinballLogFile + ".1")
 
         ## [ VPinballX.ini ] ##
         try:
@@ -54,11 +57,14 @@ class VPinballGenerator(Generator):
         # options
         vpinballOptions.configureOptions(vpinballSettings, system)
 
+        # dmd
+        hasDmd = (batoceraServices.getServiceStatus("dmd_real") == "started")
+
         # windows
-        vpinballWindowing.configureWindowing(vpinballSettings, system, gameResolution)
+        vpinballWindowing.configureWindowing(vpinballSettings, system, gameResolution, hasDmd)
 
         # DMDServer
-        if batoceraServices.isServiceEnabled("dmd_real"):
+        if hasDmd:
             vpinballSettings.set("Standalone", "DMDServer","1")
         else:
             vpinballSettings.set("Standalone", "DMDServer","0")
@@ -75,7 +81,8 @@ class VPinballGenerator(Generator):
             "-Play", rom
         ]
 
-        return Command.Command(array=commandArray, env={"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+        # SDL_RENDER_VSYNC is causing perf issues (set by emulatorlauncher.py)
+        return Command.Command(array=commandArray, env={"SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers), "SDL_RENDER_VSYNC": "0"})
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

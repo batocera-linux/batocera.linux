@@ -66,11 +66,11 @@ let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 if test -z "${V_BOARD_MODEL}"; then
     # give an other chance with dmi
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
 # 3rd time lucky
 if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"; then
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
 if test -n "${V_BOARD_MODEL}"; then
     echo "Model: ${V_BOARD_MODEL}"
@@ -205,13 +205,35 @@ if test -n "${BATT}"; then
     echo "Battery: ${BATT}%"
 fi
 
+# battery health
+design_energy_file="/sys/class/power_supply/BAT0/energy_full_design"
+current_energy_file="/sys/class/power_supply/BAT0/energy_full"
+
+if [ -e "$design_energy_file" ]; then
+    design_energy=$(cat "$design_energy_file")
+    current_energy=$(cat "$current_energy_file")
+    
+    battery_health=$(awk "BEGIN {
+        health = ($current_energy / $design_energy) * 100;
+        if (health > 100) 
+            health = 100;
+        printf \"%.0f\", health
+    }")
+
+    if [ ! -z "$battery_health" ]; then
+        echo "Battery Health: $battery_health%"
+    fi
+fi
+
 # PAD Battery
 for PADBAT in /sys/class/power_supply/*/device/uevent
 do
     if test -e "${PADBAT}"; then
         # HID devices only
-        PADNAME=$(sed -nE 's/^HID_NAME=(.+)/\1/p' "${PADBAT}")
+        PADNAME=$(sed -nE 's/^HID_NAME=(.*)/\1/p' "${PADBAT}")
         if test -n "${PADNAME}"; then
+            # Remove PID if it exists in the name
+            PADNAME=$(echo "${PADNAME}" | sed -E 's/ PID:[0-9]+//')
             # parent of parent / uevent
             BATTUEVENT=$(dirname "${PADBAT}")
             BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent

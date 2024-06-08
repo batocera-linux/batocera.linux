@@ -2,7 +2,7 @@
 
 import utils.videoMode as videoMode
 
-def configureWindowing(vpinballSettings, system, gameResolution):
+def configureWindowing(vpinballSettings, system, gameResolution, hasDmd):
     screens = videoMode.getScreensInfos(system.config)
 
     # disable full screen to move the window if necessary
@@ -16,10 +16,10 @@ def configureWindowing(vpinballSettings, system, gameResolution):
     Rscreen=16/9
 
     # which windows to display, and where ?
-    flexdmd_config  = getFlexDmdConfiguration(system, screens)
+    flexdmd_config  = getFlexDmdConfiguration(system, screens, hasDmd)
     pinmame_config  = getPinmameConfiguration(system, screens)
     b2s_config      = getB2sConfiguration(system, screens)
-    b2sdmd_config   = getB2sdmdConfiguration(system, screens)
+    b2sdmd_config   = getB2sdmdConfiguration(system, screens, hasDmd)
     b2sgrill_config = getB2sgrillConfiguration(system, screens)
 
     # determine playField and backglass screens numbers
@@ -65,10 +65,13 @@ def configureWindowing(vpinballSettings, system, gameResolution):
     if b2s_config != "manual":
         configureB2s(vpinballSettings, flexdmd_config, pinmame_config, b2s_config, b2sdmd_config, b2sgrill_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize)
 
-def getFlexDmdConfiguration(system, screens):
+def getFlexDmdConfiguration(system, screens, hasDmd):
     val = ""
     if system.isOptSet("vpinball_flexdmd"):
         val = system.config["vpinball_flexdmd"]
+    else:
+        if hasDmd:
+            val = "disabled"
     if val == "":
         if len(screens) > 2:
             val = "screen3"
@@ -109,8 +112,10 @@ def getB2sConfiguration(system, screens):
         val = "disabled"
     return val
 
-def getB2sdmdConfiguration(system, screens):
+def getB2sdmdConfiguration(system, screens, hasDmd):
     if system.isOptSet("vpinball_b2sdmd") and system.getOptBoolean("vpinball_b2sdmd") == False: # switchon
+        return False
+    if hasDmd:
         return False
     return True
 
