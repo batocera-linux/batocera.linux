@@ -71,10 +71,10 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Interface", "UsePanicHandlers", "False")
         
         # Display message in game (Memory card save and many more...)
-        if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg") == False:
-            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "False")
-        else:
+        if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg"):
             dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
+        else:
+            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "False")
 
         # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", "False")
@@ -84,25 +84,25 @@ class DolphinGenerator(Generator):
         dolphinSettings.remove_option("Display", "Fullscreen")
 
         # Enable Cheats
-        if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats") == True:
+        if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats"):
             dolphinSettings.set("Core", "EnableCheats", "True")
         else:
             dolphinSettings.set("Core", "EnableCheats", "False")
 
         # Speed up disc transfer rate
-        if system.isOptSet("enable_fastdisc") and system.getOptBoolean("enable_fastdisc") == True:
+        if system.isOptSet("enable_fastdisc") and system.getOptBoolean("enable_fastdisc"):
             dolphinSettings.set("Core", "FastDiscSpeed", "True")
         else:
             dolphinSettings.set("Core", "FastDiscSpeed", "False")
 
         # Dual Core
-        if system.isOptSet("dual_core") and system.getOptBoolean("dual_core") == True:
+        if system.isOptSet("dual_core") and system.getOptBoolean("dual_core"):
             dolphinSettings.set("Core", "CPUThread", "True")
         else:
             dolphinSettings.set("Core", "CPUThread", "False")
 
         # Gpu Sync
-        if system.isOptSet("gpu_sync") and system.getOptBoolean("gpu_sync") == True:
+        if system.isOptSet("gpu_sync") and system.getOptBoolean("gpu_sync"):
             dolphinSettings.set("Core", "SyncGPU", "True")
         else:
             dolphinSettings.set("Core", "SyncGPU", "False")
@@ -114,7 +114,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment()))
 
         # Enable MMU
-        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu") == True:
+        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
             dolphinSettings.set("Core", "MMU", "True")
         else:
             dolphinSettings.set("Core", "MMU", "False")
@@ -163,7 +163,7 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "AutoDiscChange", "True")
 
         # Skip Menu
-        if system.isOptSet("dolphin_SkipIPL") and system.getOptBoolean("dolphin_SkipIPL") == True:
+        if system.isOptSet("dolphin_SkipIPL") and system.getOptBoolean("dolphin_SkipIPL"):
             # check files exist to avoid crashes
             ipl_regions = ["USA", "EUR", "JAP"]
             base_path = "/userdata/bios/GC"
@@ -179,7 +179,7 @@ class DolphinGenerator(Generator):
         
         # Dolby Pro Logic II for surround sound
         # DPL II requires DSPHLE to be disabled
-        if system.isOptSet("dplii") and system.getOptBoolean("dplii") == True:
+        if system.isOptSet("dplii") and system.getOptBoolean("dplii"):
             dolphinSettings.set("Core", "DPL2Decoder", "True")
             dolphinSettings.set("Core", "DSPHLE", "False")
             dolphinSettings.set("DSP", "EnableJIT", "True")
@@ -247,7 +247,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
 
         # HiResTextures
-        if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures') == True:
+        if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures'):
             dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
         else:
@@ -261,9 +261,9 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
 
         # Widescreen Hack
-        if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') == True:
+        if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
             # Prefer Cheats than Hack
-            if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats') == True:
+            if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
                 dolphinGFXSettings.set("Settings", "wideScreenHack", "False")
             else:
                 dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
@@ -277,7 +277,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "0")
 
         # Shader pre-caching
-        if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders') == True:
+        if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders'):
             if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
                 dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
             else:
@@ -286,7 +286,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
 
         # Various performance hacks - Default Off
-        if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks') == True:
+        if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
             dolphinGFXSettings.set("Hacks", "BBoxEnable", "False")
             dolphinGFXSettings.set("Hacks", "DeferEFBCopies", "True")
             dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", "False")
@@ -313,8 +313,8 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")
         
-        if system.isOptSet('vbi_hack') and system.getOptBoolean("vbi_hack") == True:
-            dolphinGFXSettings.set("Hacks", "VISkip", system.config["vbi_hack"])
+        if system.isOptSet('vbi_hack') and system.getOptBoolean("vbi_hack"):
+            dolphinGFXSettings.set("Hacks", "VISkip", "True")
         else:
             dolphinGFXSettings.set("Hacks", "VISkip", "False")
 
@@ -325,10 +325,10 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "InternalResolution", "1")
 
         # VSync
-        if system.isOptSet('vsync') and system.getOptBoolean("vsync") == True:
-            dolphinGFXSettings.set("Hardware", "VSync", "True")
-        else:
+        if system.isOptSet('vsync') and system.getOptBoolean("vsync") == False:
             dolphinGFXSettings.set("Hardware", "VSync", "False")
+        else:
+            dolphinGFXSettings.set("Hardware", "VSync", "True")
 
         # Anisotropic filtering
         if system.isOptSet('anisotropic_filtering'):
@@ -343,13 +343,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "MSAA", "0")
 
         # Anti aliasing mode
-        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa') == True:
+        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa'):
             dolphinGFXSettings.set("Settings", "SSAA", "True")
         else:
             dolphinGFXSettings.set("Settings", "SSAA", "False")
         
         # Manual texture sampling
-        if system.isOptSet('manual_texture_sampling') and system.getOptBoolean('manual_texture_sampling') == True:
+        if system.isOptSet('manual_texture_sampling') and system.getOptBoolean('manual_texture_sampling'):
             dolphinGFXSettings.set("Hacks", "FastTextureSampling", "True")
         else:
             dolphinGFXSettings.set("Hacks", "FastTextureSampling", "False")        
@@ -423,7 +423,7 @@ class DolphinGenerator(Generator):
         RacConfig.optionxform = str
         # [Achievements]
         RacConfig.add_section('Achievements')
-        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
+        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
             RacConfig.set('Achievements', 'Enabled', 'True')
             RacConfig.set('Achievements', 'AchievementsEnabled', 'True')
             username  = system.config.get('retroachievements.username', '')
