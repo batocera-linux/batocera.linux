@@ -168,7 +168,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Libretro-Picodrive to Mar 27, 2024 build
 ### System
 - ARM mainline kernel to 6.6.23
-- Nvidia Production driver to 550.78
+- Nvidia Production driver to 550.90.07
 - Nvidia Legacy driver to 470.239.06
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
