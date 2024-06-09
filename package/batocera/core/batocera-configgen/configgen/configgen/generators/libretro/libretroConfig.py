@@ -938,7 +938,12 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
             # override core settings
             for key in raguncoreconf:
                 coreSettings.save(key, '"' + raguncoreconf[key] + '"')
-
+            
+            # hide the mouse pointer with gun games
+            retroarchConfig['input_overlay_show_mouse_cursor'] = "false"
+    else:
+        retroarchConfig['input_overlay_show_mouse_cursor'] = "true"
+    
     # write coreSettings a bit late while guns configs can modify it
     coreSettings.write()
 
