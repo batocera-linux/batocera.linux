@@ -22,6 +22,8 @@ bindsym $alt+f fullscreen
 default_border none
 
 # Set a default rule to start all applications in fullscreen mode
+for_window [app_id="*"] fullscreen
+# Keep apps in fullscreen
 for_window [fullscreen] fullscreen
 
 # Hide decorations for xwayland apps
@@ -29,6 +31,8 @@ for_window [instance="supermodel"] border none, fullscreen
 for_window [instance="dolphin-emu"] border none, fullscreen
 for_window [instance="batocera-config-dolphin"] border none, fullscreen
 for_window [instance="batocera-config-scummvm"] border none, fullscreen
+for_window [instance="scummvm"] border none, fullscreen
+for_window [instance="duckstation-qt"] border none, fullscreen
 for_window [instance="xterm"] border none, fullscreen
 
 # Starts EmulationStation when loading sway

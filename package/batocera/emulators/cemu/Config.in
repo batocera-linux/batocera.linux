@@ -16,6 +16,7 @@ config BR2_PACKAGE_CEMU
     select BR2_PACKAGE_GLM
     select BR2_PACKAGE_LIBPNG
     select BR2_PACKAGE_WXWIDGETS
+    select BR2_PACKAGE_HIDAPI
     help
       Cemu is a Wii U emulator that now runs natively on Linux.
 

@@ -35,11 +35,15 @@ fi
 if [ -f /sys/firmware/devicetree/base/model ]; then
     IFS= read -r BOARD_MODEL </sys/firmware/devicetree/base/model
 fi
-if [ -z "${BOARD_MODEL}" -a -f /sys/devices/virtual/dmi/id/board_name ]; then
+if [ -z "${BOARD_MODEL}" -a -f /sys/devices/virtual/dmi/id/product_name ]; then
     # give an other chance with dmi
-    IFS= read -r BOARD_MODEL </sys/devices/virtual/dmi/id/board_name
+    IFS= read -r BOARD_MODEL </sys/devices/virtual/dmi/id/product_name
 fi
 BOARD_MODEL="$(echo "$BOARD_MODEL" | sed -e s+"[^A-Za-z0-9]"+"_"+g)"
+# fall back to board name if product name is not ideal
+if [ -z "${BOARD_MODEL}" ] || [ "${BOARD_MODEL}" = "Default_string" ]; then
+    BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
 
 # prefer the board value
 if [ -e "${SYSCONFFILE}.${BOARD_MODEL}" ]; then

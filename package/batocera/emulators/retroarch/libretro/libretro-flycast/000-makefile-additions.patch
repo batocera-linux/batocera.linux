@@ -7,9 +7,9 @@ index 49f312f..256dbb7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -68,6 +68,12 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
- option(ENABLE_GDB_SERVER "Build with GDB debugging support" OFF)
  option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
+ option(USE_DISCORD "Use Discord Presence API" OFF)
 +option(USE_MALI "Use mali" OFF)
 +option(RK3399 "Optimize for RK3399" OFF)
 +option(RPI4 "Optimize for RPi4" OFF)

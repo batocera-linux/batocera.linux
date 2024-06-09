@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt.new
+index 5f2b7f064d..f74296be34 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt.new
+@@ -1,11 +1,5 @@
+ cmake_minimum_required(VERSION 3.20.0)
+ 
+-if(NOT DEFINED LLVM_COMMON_CMAKE_UTILS)
+-  set(LLVM_COMMON_CMAKE_UTILS ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
+-endif()
+-include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
+-  NO_POLICY_SCOPE)
+-
+ # If we are not building as a part of LLVM, build Clang as an
+ # standalone project, using LLVM as an external library:
+ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+@@ -107,10 +107,6 @@ if(CLANG_BUILT_STANDALONE)
+       endif()
+     endif()
+ 
+-    if (NOT TARGET llvm_gtest)
+-        message(FATAL_ERROR "llvm-gtest not found. Please install llvm-gtest or disable tests with -DLLVM_INCLUDE_TESTS=OFF")
+-    endif()
+-
+     if(LLVM_LIT)
+       # Define the default arguments to use with 'lit', and an option for the user
+       # to override.

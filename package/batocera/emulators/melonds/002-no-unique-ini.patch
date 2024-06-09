@@ -2,8 +2,8 @@ diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
 index c91d6ef911..549a41ddb2 100644
 --- a/src/frontend/qt_sdl/Config.cpp
 +++ b/src/frontend/qt_sdl/Config.cpp
-@@ -354,14 +354,7 @@ ConfigEntry ConfigFile[] =
- void LoadFile(int inst)
+@@ -383,21 +383,10 @@ ConfigEntry ConfigFile[] =
+ bool LoadFile(int inst, int actualinst)
  {
      Platform::FileHandle* f;
 -    if (inst > 0)
@@ -11,13 +11,22 @@ index c91d6ef911..549a41ddb2 100644
 -        char name[100] = {0};
 -        snprintf(name, 99, kUniqueConfigFile, inst+1);
 -        f = Platform::OpenLocalFile(name, Platform::FileMode::ReadText);
+-
+-        if (!Platform::CheckLocalFileWritable(name)) return false;
 -    }
 -    else
+-    {
 -        f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::ReadText);
+-
+-        if (actualinst == 0 && !Platform::CheckLocalFileWritable(kConfigFile)) return false;
+-    }
 +    f = Platform::OpenLocalFile(kConfigFile, Platform::FileMode::ReadText);
  
-     if (!f) return;
++    if (actualinst == 0 && !Platform::CheckLocalFileWritable(kConfigFile)) return false;
++    
+     if (!f) return true;
  
+     char linebuf[1024];
 @@ -362,9 +355,6 @@ void LoadFile(int inst)
          {
              if (!strncmp(entry->Name, entryname, 32))
@@ -28,17 +37,15 @@ index c91d6ef911..549a41ddb2 100644
                  switch (entry->Type)
                  {
                  case 0: *(int*)entry->Value = strtol(entryval, NULL, 10); break;
-@@ -394,10 +384,6 @@ void Load()
-     }
+@@ -450,8 +439,6 @@ bool Load()
+     int inst = Platform::InstanceID();
  
-     LoadFile(0);
--
--    int inst = Platform::InstanceID();
+     bool ret = LoadFile(0, inst);
 -    if (inst > 0)
--        LoadFile(inst);
- }
+-        ret = LoadFile(inst, inst);
  
- void Save()
+     return ret;
+ }
 @@ -405,22 +391,12 @@ void Save()
      int inst = Platform::InstanceID();
  

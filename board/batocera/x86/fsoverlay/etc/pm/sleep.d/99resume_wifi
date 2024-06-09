@@ -1,19 +1,24 @@
 #!/bin/bash
 
 # workaround for wifi not working after standby / sleep
-# add other models accordingly
 
 wifi_toggle() {
     batocera-wifi disable
     batocera-wifi enable
 }
 
+# add to this list of device models needing a wifi reset on resume
+device_models=("Loki_Zero" "AIR_Plus" "AYANEO_2S")
+
 case "$1" in
     resume|thaw)
-        info_output=$(batocera-info)
-        # ayn loki zero
-        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
-            wifi_toggle
-        fi
+        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+        # Check if the device model is in the list
+        for model in "${device_models[@]}"; do
+            if [[ $info_output == "$model" ]]; then
+                wifi_toggle
+                break
+            fi
+        done
         ;;
 esac

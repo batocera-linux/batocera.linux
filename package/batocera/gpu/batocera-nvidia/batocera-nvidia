@@ -79,8 +79,7 @@ if test "${MODE}" = "auto"; then
                 # now check pci vendor id
                 if grep -q -i "$PCIDEVID" "$LEGACY340LISTDIR/legacy340.list" 2>/dev/null; then
                     echo "Detected PCI device ID: $PCIDEVID in legacy340 list too, yay!" >> "$log"
-                    echo "Using Mesa Nouveau driver, currently the legacy 340 driver doesn't work" >> $log
-                    MODE=nouveau
+                    MODE=legacy340
                     break
                 else
                     echo "PCI device ID: $PCIDEVID not detected in legacy340 list" >> "$log"
@@ -107,7 +106,7 @@ BATOCERA_NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
 # legacy driver versions
 BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy.version)
 BATOCERA_NVIDIA390_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy390.version)
-#BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
+BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
 
 mkdir -p /var/run/nvidia/modprobe || exit 1
 
@@ -308,36 +307,59 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
     echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
     # [symbolic link 64-bit library files]
     mkdir -p /var/run/nvidia/lib
-    if [ "$MODE" = "legacy340" ]
-    then
+    if [ "$MODE" = "legacy340" ]; then
         # libglx.so
-        ln -sf /usr/lib/libglx.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so
-        ln -sf /var/run/nvidia/lib/libglx.so /usr/lib/libglx.so
-        ln -sf /usr/lib/libglx.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so.0
-        ln -sf /var/run/nvidia/lib/libglx.so.0 /usr/lib/libglx.so.0
+        ln -sf /usr/lib/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so
+        ln -sf /usr/lib/nvidia/xorg/libglx.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so.1
+        ln -sf /var/run/nvidia/lib/libglx.so /usr/lib/nvidia/xorg/libglx.so
+        ln -sf /var/run/nvidia/lib/libglx.so.1 /usr/lib/nvidia/xorg/libglx.so.1
         # libGL.so
-        ln -sf /usr/lib/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGL.so
+        ln -sf /usr/share/nvidia/libraries/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /usr/lib/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGL.so
         ln -sf /var/run/nvidia/lib/libGL.so /usr/lib/libGL.so
-        ln -sf /usr/lib/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGL.so.0
-        ln -sf /var/run/nvidia/lib/libGL.so.0 /usr/lib/libGL.so.0
+        ln -sf /usr/share/nvidia/libraries/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGL.so.1
+        ln -sf /var/run/nvidia/lib/libGL.so.1 /usr/lib/libGL.so.1
         # libEGL.so
-        ln -sf /usr/lib/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL.so
+        ln -sf /usr/share/nvidia/libraries/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /usr/lib/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libEGL.so
         ln -sf /var/run/nvidia/lib/libEGL.so /usr/lib/libEGL.so
-        ln -sf /usr/lib/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL.so.0
+        ln -sf /usr/share/nvidia/libraries/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libEGL.so.0
         ln -sf /var/run/nvidia/lib/libEGL.so.0 /usr/lib/libEGL.so.0
         # libGLESv1_CM.so
-        ln -sf /usr/lib/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM.so
+        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /usr/lib/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGLESv1_CM.so
         ln -sf /var/run/nvidia/lib/libGLESv1_CM.so /usr/lib/libGLESv1_CM.so
-        ln -sf /usr/lib/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM.so.1
+        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGLESv1_CM.so.1
         ln -sf /var/run/nvidia/lib/libGLESv1_CM.so.1 /usr/lib/libGLESv1_CM.so.1
         # libGLESv2.so
-        ln -sf /usr/lib/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2.so
+        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /usr/lib/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGLESv2.so
         ln -sf /var/run/nvidia/lib/libGLESv2.so /usr/lib/libGLESv2.so
-        ln -sf /usr/lib/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2.so.2
+        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib/libGLESv2.so.2
         ln -sf /var/run/nvidia/lib/libGLESv2.so.2 /usr/lib/libGLESv2.so.2
         # X11 conf
+        mkdir -p /var/run/nvidia/configs/
         ln -sf /usr/share/nvidia/X11/20-nvidia.conf /var/run/nvidia/configs/20-nvidia.conf
-        ln -sf /var/run/nvidia/configs/20-nvidia.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+        ln -sf /var/run/nvidia/configs/20-nvidia.conf /etc/X11/xorg.conf.d/20-nvidia.conf
+        # libvdpau_trace.so
+        ln -sf /usr/lib/vdpau/libvdpau_trace.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_trace.so.1.0.0
+        ln -sf /var/run/nvidia/lib/libvdpau_trace.so.1.0.0 /usr/lib/vdpau/libvdpau_trace.so.1.0.0
+        # libcuda.so
+        ln -sf /usr/lib/libcuda.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so.1
+        ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so.1
+        ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so
     else
         # libGLX_nvidia.so
         ln -sf /usr/lib/libGLX_nvidia.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so
@@ -397,24 +419,40 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
 
     if [ "$MODE" = "legacy340" ]; then
         # libGL.so
-        ln -sf /lib32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGL.so
-        ln -sf /var/run/nvidia/lib32/libGL.so /lib32/libGLX.so
-        ln -sf /lib32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGL.so.0
-        ln -sf /var/run/nvidia/lib32/libGL.so.0 /lib32/libGL.so.0
+        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /lib32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGL.so
+        ln -sf /var/run/nvidia/lib32/libGL.so /lib32/libGL.so
+        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGL.so.1
+        ln -sf /var/run/nvidia/lib32/libGL.so.1 /lib32/libGL.so.1
         # libEGL.so
-        ln -sf /lib32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL.so
+        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /lib32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libEGL.so
         ln -sf /var/run/nvidia/lib32/libEGL.so /lib32/libEGL.so
-        ln -sf /lib32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL.so.0
+        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libEGL.so.0
         ln -sf /var/run/nvidia/lib32/libEGL.so.0 /lib32/libEGL.so.0
         # libGLESv1_CM.so
-        ln -sf /lib32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM.so
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv1_CM.so
         ln -sf /var/run/nvidia/lib32/libGLESv1_CM.so /lib32/libGLESv1_CM.so
-        ln -sf /lib32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM.so.1
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv1_CM.so.1
         ln -sf /var/run/nvidia/lib32/libGLESv1_CM.so.1 /lib32/libGLESv1_CM.so.1
         # libGLESv2.so
-        ln -sf /lib32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2.so
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv2.so
         ln -sf /var/run/nvidia/lib32/libGLESv2.so /lib32/libGLESv2.so
-        ln -sf /lib32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2.so.2
+        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$BATOCERA_NVIDIA_LEGACY_DRIVER_VERSION \
+            /var/run/nvidia/lib32/libGLESv2.so.2
         ln -sf /var/run/nvidia/lib32/libGLESv2.so.2 /lib32/libGLESv2.so.2
     else
         # libGLX_nvidia.so
@@ -477,25 +515,24 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
             /var/run/nvidia/lib/libglxserver_nvidia.so.1
         ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
     fi
+    
+    # [ Kernel modules ]
+    
     # 340 version
     if [ "$MODE" = "legacy340" ]; then
 	    # link Xorg driver
         mkdir -p /var/run/nvidia/lib
-	    mkdir -p /var/run/nvidia/xorg
 	    ln -sf /usr/lib/xorg/modules/drivers/nvidia340_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
         ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-	    ln -sf /usr/lib/xorg/modules/extensions/libglx.so.$BATOCERA_NVIDIA340_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/xorg/libglx.so
-        ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/xorg/modules/extensions/libglx.so
-	    
         # finally copy kernel modules & run them
-	    mkdir -p /var/run/nvidia/modules
+        mkdir -p /var/run/nvidia/modules
 	    ln -sf /usr/share/nvidia/modules/nvidia340-legacy.ko /var/run/nvidia/modules/nvidia.ko
         ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
 	    ln -sf /usr/share/nvidia/modules/nvidia340-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
 	    
         for m in ipmi_devintf nvidia nvidia_uvm ; do modprobe $m ; done
+    
     # 390 version
     elif [ "$MODE" = "legacy390" ]; then
         # link Xorg driver
@@ -530,6 +567,7 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
 	    ln -sf /usr/share/nvidia/modules/nvidia390-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
 	    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+    
     else
         # 470 version
         # link Xorg driver
@@ -562,6 +600,7 @@ elif echo "$MODE" | grep -q -E '^(legacy|legacy340|legacy390)$'; then
         ln -sf /usr/share/nvidia/modules/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
         for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+    
     fi
 
 elif test "${MODE}" = "nouveau"; then

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.6
+BATOCERA_AUDIO_VERSION = 6.7
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 

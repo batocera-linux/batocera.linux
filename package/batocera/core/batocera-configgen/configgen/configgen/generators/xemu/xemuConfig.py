@@ -67,8 +67,13 @@ def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
         iniConfig.set("sys", "mem_limit", '"' + system.config["xemu_memory"] + '"')
     else:
         iniConfig.set("sys", "mem_limit", '"64"')
+    
+    if system.name == "chihiro":
+        iniConfig.set("sys", "mem_limit", '"128"')
+        iniConfig.set("sys.files", "flashrom_path", '"/userdata/bios/cerbios.bin"')
+    else:
+        iniConfig.set("sys.files", "flashrom_path", '"/userdata/bios/Complex_4627.bin"')
 
-    iniConfig.set("sys.files", "flashrom_path", '"/userdata/bios/Complex_4627.bin"')
     iniConfig.set("sys.files", "bootrom_path", '"/userdata/bios/mcpx_1.0.bin"')
     iniConfig.set("sys.files", "hdd_path", '"/userdata/saves/xbox/xbox_hdd.qcow2"')
     iniConfig.set("sys.files", "eeprom_path", '"/userdata/saves/xbox/xemu_eeprom.bin"')

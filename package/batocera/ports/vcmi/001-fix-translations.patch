@@ -1,0 +1,13 @@
+diff --git a/launcher/CMakeLists.txt b/launcher/CMakeLists.txt.new
+index 301cbe3fd4..38b77b2f63 100644
+--- a/launcher/CMakeLists.txt
++++ b/launcher/CMakeLists.txt.new
+@@ -112,7 +112,7 @@ if(TARGET Qt6::Core)
+ 		set_source_files_properties(${launcher_TS} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/translation)
+ 		qt_add_translations(vcmilauncher
+ 			TS_FILES ${launcher_TS}
+-			QM_FILES_OUTPUT_VARIABLE launcher_QM
++			QM_FILES_OUTPUT_VARIABLE ${CMAKE_CURRENT_BINARY_DIR}/translation
+ 			INCLUDE_DIRECTORIES
+ 				${CMAKE_CURRENT_BINARY_DIR})
+ 	endif()

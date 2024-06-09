@@ -3,8 +3,8 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.264 - Switchres 2.220b
-MAME_VERSION = gm0264sr220b
+# Version: GroovyMAME 0.265 - Switchres 2.220c
+MAME_VERSION = gm0265sr220c
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -55,7 +55,7 @@ MAME_CFLAGS += -mabi=lp64d -march=rv64imafdczbb_zba -mcpu=sifive-u74
 # Force OPTIMIZE level 1 to avoid fatal linking relocation issue so far....
 MAME_CROSS_OPTS += OPTIMIZE=2
 # Cast alignment warnings cause errors on riscv64
-MAME_CFLAGS += -Wno-error=cast-align
+MAME_CFLAGS += -Wno-error=cast-align -Wno-error=unused-function
 # Some GCC hacks needed to get riscv64 binary linking
 MAME_CFLAGS += -mcmodel=medany -fno-inline-small-functions
 MAME_LDFLAGS += -mcmodel=medany
@@ -127,6 +127,8 @@ define MAME_BUILD_CMDS
 	STRIP_SYMBOLS=1 \
 	TOOLS=1
 endef
+
+MAME_CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/mame/
 
 define MAME_INSTALL_TARGET_CMDS
 	# Create specific directories on target to store MAME distro
@@ -200,6 +202,10 @@ define MAME_INSTALL_TARGET_CMDS
 	# gameStop script when exiting a rotated screen
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
+
+	# Copy user -autoboot_command overrides (batocera.linux/batocera.linux#11706)
+	mkdir -p $(MAME_CONF_INIT)/autoload
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/autoload			$(MAME_CONF_INIT)
 endef
 
 define MAME_EVMAPY

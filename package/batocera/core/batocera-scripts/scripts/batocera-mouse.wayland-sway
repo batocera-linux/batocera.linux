@@ -5,14 +5,14 @@ case "${1}" in
 	swaymsg -t get_seats | jq -r '.[] | .name' |
 	    while read SEAT
 	    do
-		swaymsg seat "${SEAT}" hide_cursor force-hidden disable || exit 1
+		swaymsg seat "${SEAT}" hide_cursor when-typing disable || exit 1
 	    done
     ;;
     "hide")
 	swaymsg -t get_seats | jq -r '.[] | .name' |
 	    while read SEAT
 	    do
-		swaymsg seat "${SEAT}" hide_cursor force-hidden enable || exit 1
+		swaymsg seat "${SEAT}" hide_cursor 0001 || exit 1
 	    done
     ;;
     *)

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_BATTERY_CHECKER_VERSION = 1
+BATOCERA_BATTERY_CHECKER_VERSION = 1.1
 BATOCERA_BATTERY_CHECKER_LICENSE = GPL
 BATOCERA_BATTERY_CHECKER_SOURCE=
 

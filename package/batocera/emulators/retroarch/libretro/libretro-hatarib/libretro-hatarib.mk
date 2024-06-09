@@ -3,14 +3,12 @@
 # libretro-hatarib
 #
 ################################################################################
-# Version: Commits on Dec 20, 2023
-LIBRETRO_HATARIB_VERSION = 8cd70b61c2d0dfdfd3849a6277a94e57bf167351
+
+LIBRETRO_HATARIB_VERSION = 0.3
 LIBRETRO_HATARIB_SITE = https://github.com/bbbradsmith/hatariB
 LIBRETRO_HATARIB_SITE_METHOD=git
 LIBRETRO_HATARIB_LICENSE = GPLv2
 LIBRETRO_HATARIB_DEPENDENCIES = libcapsimage libpng libzlib sdl2
-
-LIBRETRO_HATARIB_GIT_SUBMODULES = YES
 
 LIBRETRO_HATARIB_CONF_ENV += \
     SHORTHASH='"$(shell echo $(LIBRETRO_HATARIB_VERSION) | cut -c 1-7)"' \
@@ -22,8 +20,7 @@ LIBRETRO_HATARIB_CONF_ENV += \
 	ZLIB_LINK="$(STAGING_DIR)/usr/lib/libz.so"
 
 define LIBRETRO_HATARIB_BUILD_CMDS
-    CC="$(TARGET_CC)" AR="$(TARGET_AR)" RANLIB="$(TARGET_RANLIB)" \
-	cd $(@D) && $(MAKE) -f makefile \
+	cd $(@D) && $(MAKE) CC=$(TARGET_CC) -f makefile \
 	$(LIBRETRO_HATARIB_CONF_ENV)
 endef
 

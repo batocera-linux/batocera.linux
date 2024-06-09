@@ -32,7 +32,15 @@ if [ -f "/var/tmp/nvidia.prime" ]; then
         # find the Nvidia provider number
         provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2}' | tr -d ':')
         if [ -z "$provider_number" ]; then
-            echo "Multiple xrandr providers however none appear to be a NVIDIA device!" >> "$nvidia_log"
+            echo "Multiple xrandr providers however none appear to be a NVIDIA driver device!" >> "$nvidia_log"
+            echo "Check for Nouveau drivers..." >> "$nvidia_log"
+            provider_number=$(xrandr --listproviders | awk '/nouveau/ {print $2}' | tr -d ':')
+            if [ -z "$provider_number" ]; then
+                echo "Nouveau drivers not found either, using integrated graphics" >> "$nvidia_log"
+            else
+                echo "Nouveau drivers found using provider number: $provider_number" >> "$nvidia_log"
+                export DRI_PRIME="$provider_number"
+            fi
         else
             export __NV_PRIME_RENDER_OFFLOAD=$provider_number
             export __VK_LAYER_NV_optimus=NVIDIA_only

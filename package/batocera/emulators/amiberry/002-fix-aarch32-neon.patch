@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2024-04-27 12:57:04.259473282 +0200
++++ b/CMakeLists.txt	2024-04-27 12:56:46.311091934 +0200
+@@ -348,7 +348,7 @@
+ if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR ARCHITECTURE MATCHES "arm32")
+     add_definitions(-DCPU_arm -DARMV6_ASSEMBLY -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV)
+     target_sources(${PROJECT_NAME} PRIVATE
+-            src/osdep/arm_helper.s
++            src/osdep/neon_helper.s
+             src/jit/compemu.cpp
+             src/jit/compstbl.cpp
+             src/jit/compemu_fpp.cpp

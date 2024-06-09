@@ -3,7 +3,14 @@
 	{
             "trigger": ["hotkey", "start"],
             "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	}
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "description": "Exit the emulator"
+	},
+    {
+           "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": ["KEY_ESC"],
+            "description": "Configuration menu"
+    }
     ]
 }

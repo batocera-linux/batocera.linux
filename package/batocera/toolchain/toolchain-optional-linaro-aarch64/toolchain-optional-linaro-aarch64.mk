@@ -5,12 +5,14 @@
 ################################################################################
 
 TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION = 7.5-2019.12
-TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SITE = https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/aarch64-linux-gnu
+TOOLCHAIN_OPTIONAL_LINARO_AARCH64_BINARY_VERSION = 7.5.0-2019.12
+TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SITE = \
+    https://releases.linaro.org/components/toolchain/binaries/$(TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION)/aarch64-linux-gnu
 
 ifeq ($(HOSTARCH),x86)
-	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-7.5.0-2019.12-I686_aarch64-linux-gnu.tar.xz
+	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-$(TOOLCHAIN_OPTIONAL_LINARO_AARCH64_BINARY_VERSION)-I686_aarch64-linux-gnu.tar.xz
 else
-	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-$(TOOLCHAIN_OPTIONAL_LINARO_AARCH64_BINARY_VERSION)-x86_64_aarch64-linux-gnu.tar.xz
 endif
 
 # wrap gcc and g++ with ccache like in gcc package.mk

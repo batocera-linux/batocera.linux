@@ -3,8 +3,8 @@
 # r8168
 #
 ################################################################################
-# Version: 8.052.01
-R8168_VERSION = 7df678fcbde879b7ec0740be351cead3919e6937
+# Version: 8.053.00
+R8168_VERSION = 503086686ea7b08b8b9b323ab52991987dfd9f6a
 R8168_SITE = $(call github,mtorromeo,r8168,$(R8168_VERSION))
 R8168_LICENSE = GPL-2.0
 R8168_LICENSE_FILES = LICENSE

@@ -49,7 +49,7 @@ UBOOT_MULTIBOARD_SOC_DIR = common-h6
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
 UBOOT_MULTIBOARD_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
 UBOOT_MULTIBOARD_MAKE_OPTS += SCP=/dev/null
-UBOOT_MULTIBOARD_SOC_DIR = common-h6
+UBOOT_MULTIBOARD_SOC_DIR = common-h616
 else
 # Dummy SoC dir prevents adding common level patches twice
 # in case a new target SoC starts using this package and

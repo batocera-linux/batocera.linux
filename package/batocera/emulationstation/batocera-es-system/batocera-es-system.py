@@ -140,21 +140,21 @@ class EsSystemConf:
         command        = EsSystemConf.commandName(data)
 
         systemTxt =  "  <system>\n"
-        systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
+        systemTxt += "        <fullname>%s</fullname>\n" % (EsSystemConf.protectXml(data["name"]))
         systemTxt += "        <name>%s</name>\n"           % (system)
-        systemTxt += "        <manufacturer>%s</manufacturer>\n" % (data["manufacturer"])
-        systemTxt += "        <release>%s</release>\n" % (data["release"])
-        systemTxt += "        <hardware>%s</hardware>\n" % (data["hardware"])
+        systemTxt += "        <manufacturer>%s</manufacturer>\n" % (EsSystemConf.protectXml(data["manufacturer"]))
+        systemTxt += "        <release>%s</release>\n" % (EsSystemConf.protectXml(data["release"]))
+        systemTxt += "        <hardware>%s</hardware>\n" % (EsSystemConf.protectXml(data["hardware"]))
         if listExtensions != "":
             if pathValue != "":
                 systemTxt += "        <path>%s</path>\n"           % (pathValue)
             systemTxt += "        <extension>%s</extension>\n" % (listExtensions)
             systemTxt += "        <command>%s</command>\n"     % (command)
         if platformValue != "":
-            systemTxt += "        <platform>%s</platform>\n"   % (platformValue)
+            systemTxt += "        <platform>%s</platform>\n"   % (EsSystemConf.protectXml(platformValue))
         systemTxt += "        <theme>%s</theme>\n"         % (EsSystemConf.themeName(system, data))
         if groupValue != "":
-            systemTxt += "        <group>%s</group>\n" % (groupValue)        
+            systemTxt += "        <group>%s</group>\n" % (EsSystemConf.protectXml(groupValue))
         systemTxt += listEmulatorsTxt
         systemTxt += "  </system>\n"
         return systemTxt
@@ -390,6 +390,8 @@ class EsSystemConf:
         presetstr = ""
         if "preset" in infos:
             presetstr = " preset=\"{}\"".format(EsSystemConf.protectXml(infos["preset"]))
+        if "preset_parameters" in infos:
+            presetstr +=  " preset-parameters=\"{}\"".format(EsSystemConf.protectXml(infos["preset_parameters"]))
         featuresTxt += fspaces + "<feature name=\"{}\"{}{}{} value=\"{}\" description=\"{}\"{}>\n".format(EsSystemConf.protectXml(infos["prompt"]), submenustr, groupstr, orderstr, EsSystemConf.protectXml(key), EsSystemConf.protectXml(description), presetstr)
         EsSystemConf.addCommentToDictKey(toTranslate, infos["prompt"], { "emulator": emulator, "core": core })
         EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })

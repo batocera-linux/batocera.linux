@@ -1,0 +1,993 @@
+From 3f721d0e6825edcdcae91dd4f3d9c2a77c58d537 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Tue, 9 Apr 2024 18:32:53 +0200
+Subject: [PATCH] add cmake buildscripts
+
+---
+ sc2/CMakeLists.txt                            | 43 ++++++++++
+ sc2/cmake/FindVorbis.cmake                    | 34 ++++++++
+ sc2/src/CMakeLists.txt                        | 30 +++++++
+ sc2/src/config.h                              |  4 +-
+ sc2/src/config_cmake.h.in                     | 64 ++++++++++++++
+ sc2/src/getopt/CMakeLists.txt                 |  7 ++
+ sc2/src/libs/CMakeLists.txt                   | 30 +++++++
+ sc2/src/libs/callback/CMakeLists.txt          |  9 ++
+ sc2/src/libs/decomp/CMakeLists.txt            |  6 ++
+ sc2/src/libs/file/CMakeLists.txt              |  6 ++
+ sc2/src/libs/graphics/CMakeLists.txt          | 15 ++++
+ sc2/src/libs/graphics/sdl/CMakeLists.txt      | 13 +++
+ sc2/src/libs/heap/CMakeLists.txt              |  6 ++
+ sc2/src/libs/input/CMakeLists.txt             | 10 +++
+ sc2/src/libs/input/sdl/CMakeLists.txt         |  8 ++
+ sc2/src/libs/list/CMakeLists.txt              |  6 ++
+ sc2/src/libs/log/CMakeLists.txt               |  6 ++
+ sc2/src/libs/math/CMakeLists.txt              |  6 ++
+ sc2/src/libs/memory/CMakeLists.txt            |  6 ++
+ sc2/src/libs/mikmod/CMakeLists.txt            |  9 ++
+ sc2/src/libs/network/CMakeLists.txt           | 10 +++
+ sc2/src/libs/resource/CMakeLists.txt          | 11 +++
+ sc2/src/libs/sound/CMakeLists.txt             | 12 +++
+ sc2/src/libs/sound/decoders/CMakeLists.txt    | 17 ++++
+ sc2/src/libs/sound/mixer/CMakeLists.txt       |  9 ++
+ sc2/src/libs/strings/CMakeLists.txt           |  9 ++
+ sc2/src/libs/task/CMakeLists.txt              |  6 ++
+ sc2/src/libs/threads/CMakeLists.txt           |  9 ++
+ sc2/src/libs/time/CMakeLists.txt              |  8 ++
+ sc2/src/libs/uio/CMakeLists.txt               | 10 +++
+ sc2/src/libs/video/CMakeLists.txt             |  7 ++
+ sc2/src/regex/CMakeLists.txt                  |  7 ++
+ sc2/src/uqm/CMakeLists.txt                    | 84 +++++++++++++++++++
+ sc2/src/uqm/comm/CMakeLists.txt               | 34 ++++++++
+ sc2/src/uqm/planets/CMakeLists.txt            | 57 +++++++++++++
+ sc2/src/uqm/ships/CMakeLists.txt              | 35 ++++++++
+ sc2/src/uqm/supermelee/CMakeLists.txt         | 20 +++++
+ sc2/src/uqm/supermelee/netplay/CMakeLists.txt | 14 ++++
+ 38 files changed, 676 insertions(+), 1 deletion(-)
+ create mode 100644 sc2/CMakeLists.txt
+ create mode 100644 sc2/cmake/FindVorbis.cmake
+ create mode 100644 sc2/src/CMakeLists.txt
+ create mode 100644 sc2/src/config_cmake.h.in
+ create mode 100644 sc2/src/getopt/CMakeLists.txt
+ create mode 100644 sc2/src/libs/CMakeLists.txt
+ create mode 100644 sc2/src/libs/callback/CMakeLists.txt
+ create mode 100644 sc2/src/libs/decomp/CMakeLists.txt
+ create mode 100644 sc2/src/libs/file/CMakeLists.txt
+ create mode 100644 sc2/src/libs/graphics/CMakeLists.txt
+ create mode 100644 sc2/src/libs/graphics/sdl/CMakeLists.txt
+ create mode 100644 sc2/src/libs/heap/CMakeLists.txt
+ create mode 100644 sc2/src/libs/input/CMakeLists.txt
+ create mode 100644 sc2/src/libs/input/sdl/CMakeLists.txt
+ create mode 100644 sc2/src/libs/list/CMakeLists.txt
+ create mode 100644 sc2/src/libs/log/CMakeLists.txt
+ create mode 100644 sc2/src/libs/math/CMakeLists.txt
+ create mode 100644 sc2/src/libs/memory/CMakeLists.txt
+ create mode 100644 sc2/src/libs/mikmod/CMakeLists.txt
+ create mode 100644 sc2/src/libs/network/CMakeLists.txt
+ create mode 100644 sc2/src/libs/resource/CMakeLists.txt
+ create mode 100644 sc2/src/libs/sound/CMakeLists.txt
+ create mode 100644 sc2/src/libs/sound/decoders/CMakeLists.txt
+ create mode 100644 sc2/src/libs/sound/mixer/CMakeLists.txt
+ create mode 100644 sc2/src/libs/strings/CMakeLists.txt
+ create mode 100644 sc2/src/libs/task/CMakeLists.txt
+ create mode 100644 sc2/src/libs/threads/CMakeLists.txt
+ create mode 100644 sc2/src/libs/time/CMakeLists.txt
+ create mode 100644 sc2/src/libs/uio/CMakeLists.txt
+ create mode 100644 sc2/src/libs/video/CMakeLists.txt
+ create mode 100644 sc2/src/regex/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/comm/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/planets/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/ships/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/supermelee/CMakeLists.txt
+ create mode 100644 sc2/src/uqm/supermelee/netplay/CMakeLists.txt
+
+diff --git a/sc2/CMakeLists.txt b/sc2/CMakeLists.txt
+new file mode 100644
+index 000000000..0a629905e
+--- /dev/null
++++ b/sc2/CMakeLists.txt
+@@ -0,0 +1,43 @@
++cmake_minimum_required(VERSION 3.20.3)
++
++project(urquan VERSION 0.8.0
++            LANGUAGES C)
++
++option(NETPLAY "Set to ON to enable netplay" ON)
++
++include(CheckSymbolExists)
++include(CheckTypeSize)
++
++check_symbol_exists(readdir_r   "dirent.h"  HAVE_READDIR_R)
++check_symbol_exists(setenv      "stdlib.h"  HAVE_SETENV)
++check_symbol_exists(strupr      "string.h"  HAVE_STRUPR)
++check_symbol_exists(strcasecmp  "strings.h" HAVE_STRCASECMP_UQM)
++check_symbol_exists(stricmp     "string.h"  HAVE_STRICMP)
++check_symbol_exists(getopt_long "getopt.h"  HAVE_GETOPT_LONG)
++check_symbol_exists(iswgraph    "wctype.h"  HAVE_ISWGRAPH)
++check_type_size(wchar_t WCHAR_T)
++check_type_size(_Bool   _BOOL)
++
++set(CONTENTDIR "/userdata/roms/uqm")
++set(USERDIR "/userdata/saves/uqm")
++
++configure_file(${PROJECT_SOURCE_DIR}/src/config_cmake.h.in
++               ${PROJECT_BINARY_DIR}/src/config_cmake.h @ONLY)
++
++add_definitions(-DCMAKE -DGFXMODULE_SDL -DUSE_INTERNAL_MIKMOD -DTHREADLIB_SDL -DHAVE_JOYSTICK -DHAVE_ZIP=1)
++if(NETPLAY)
++    add_definitions(-DNETPLAY=NETPLAY_FULL)
++endif()
++
++list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
++
++find_package(SDL2 2.0.0 REQUIRED)
++find_package(PNG REQUIRED)
++find_package(ZLIB REQUIRED)
++find_package(Vorbis REQUIRED)
++
++if(!VORBIS_FOUND)
++    add_definitions(-DOVCODEC_NONE)
++endif()
++
++add_subdirectory(src)
+diff --git a/sc2/cmake/FindVorbis.cmake b/sc2/cmake/FindVorbis.cmake
+new file mode 100644
+index 000000000..c3de467ef
+--- /dev/null
++++ b/sc2/cmake/FindVorbis.cmake
+@@ -0,0 +1,34 @@
++# - FindVorbis.cmake
++# Find the native vorbis includes and libraries
++#
++# VORBIS_INCLUDE_DIRS - where to find vorbis/vorbis.h, etc.
++# VORBIS_LIBRARIES - List of libraries when using vorbis(file).
++# VORBIS_FOUND - True if vorbis found.
++
++if(VORBIS_INCLUDE_DIR AND VORBIS_LIBRARY AND VORBISFILE_LIBRARY)
++    # Already in cache, be silent
++    set(VORBIS_FIND_QUIETLY TRUE)
++endif(VORBIS_INCLUDE_DIR AND VORBIS_LIBRARY AND VORBISFILE_LIBRARY)
++
++find_path(VORBIS_INCLUDE_DIR vorbis/vorbisfile.h)
++
++# MSVC built vorbis may be named vorbis_static
++# The provided project files name the library with the lib prefix.
++find_library(VORBIS_LIBRARY
++    NAMES vorbis vorbis_static libvorbis libvorbis_static
++)
++find_library(VORBISFILE_LIBRARY
++    NAMES vorbisfile vorbisfile_static libvorbisfile libvorbisfile_static
++)
++
++# Handle the QUIETLY and REQUIRED arguments and set VORBIS_FOUND
++# to TRUE if all listed variables are TRUE.
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(VORBIS DEFAULT_MSG
++    VORBISFILE_LIBRARY VORBIS_LIBRARY VORBIS_INCLUDE_DIR
++)
++
++if(VORBIS_FOUND)
++    set(VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY})
++    set(VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDE_DIR})
++endif(VORBIS_FOUND)
+diff --git a/sc2/src/CMakeLists.txt b/sc2/src/CMakeLists.txt
+new file mode 100644
+index 000000000..94297015a
+--- /dev/null
++++ b/sc2/src/CMakeLists.txt
+@@ -0,0 +1,30 @@
++add_subdirectory(regex)
++add_subdirectory(libs)
++add_subdirectory(uqm)
++
++if(NOT HAVE_GETOPT_LONG)
++    add_subdirectory(getopt)
++endif()
++
++add_executable(urquan
++    config.h
++    endian_uqm.h
++    options.c options.h
++    port.c port.h
++    types.h
++    uqm.c
++    uqmversion.h)
++
++target_link_libraries(urquan regex)
++target_link_libraries(urquan libs)
++target_link_libraries(urquan uqm)
++
++if(NOT HAVE_GETOPT_LONG)
++    target_link_libraries(urquan getopt)
++endif()
++
++include_directories(
++    ${urquan_SOURCE_DIR}/src
++    ${SDL2_INCLUDE_DIR}
++    ${SDL2_MIXER_INCLUDE_DIR}
++)
+diff --git a/sc2/src/config.h b/sc2/src/config.h
+index f2ef1d894..92f81c4d3 100644
+--- a/sc2/src/config.h
++++ b/sc2/src/config.h
+@@ -1,7 +1,9 @@
+ /* This file contains some compile-time configuration options.
+  */
+ 
+-#ifdef _MSC_VER
++#ifdef CMAKE
++#	include "config_cmake.h"
++#elif defined(_MSC_VER)
+ 	/* In this case, build.sh is not run to generate a config file, so
+ 	 * we use a default file config_vc6.h instead.
+ 	 * If you want anything else than the defaults, you'll have to edit
+diff --git a/sc2/src/config_cmake.h.in b/sc2/src/config_cmake.h.in
+new file mode 100644
+index 000000000..36fbbef6d
+--- /dev/null
++++ b/sc2/src/config_cmake.h.in
+@@ -0,0 +1,64 @@
++/* This file contains some compile-time configuration options for all
++ * targets when building with CMake.
++ * config_cmake.h is generated in the CMake from config_cmake.h.in by 
++ * UqmBuildConfig.cmake.
++ * The same template is used by all build toolchains and platforms when
++ * using CMake; OS-specific paths are set in UqmBuildConfig.cmake.
++ */
++
++#ifndef CONFIG_CMAKE_H_
++#define CONFIG_CMAKE_H_
++
++/* Directory where the UQM game data is located */
++#cmakedefine CONTENTDIR "@CONTENTDIR@"
++
++/* Directory where game data will be stored */
++//#define USERDIR "../userdata/"
++#cmakedefine USERDIR "@USERDIR@"
++
++/* Directory where config files will be stored */
++#define CONFIGDIR USERDIR
++
++/* Directory where supermelee teams will be stored */
++#define MELEEDIR "${UQM_CONFIG_DIR}/teams/"
++
++/* Directory where save games will be stored */
++#define SAVEDIR "${UQM_CONFIG_DIR}/save/"
++
++/* Defined if words are stored with the most significant byte first */
++#cmakedefine WORDS_BIGENDIAN
++
++/* Defined if your system has readdir_r of its own */
++#cmakedefine HAVE_READDIR_R
++
++/* Defined if your system has setenv of its own */
++#cmakedefine HAVE_SETENV
++
++/* Defined if your system has strupr of its own */
++#cmakedefine HAVE_STRUPR
++
++/* Defined if your system has strcasecmp of its own */
++#cmakedefine HAVE_STRCASECMP_UQM
++		// Not using "HAVE_STRCASECMP" as that conflicts with SDL.
++
++/* Defined if your system has stricmp of its own */
++#cmakedefine HAVE_STRICMP
++
++/* Defined if your system has getopt_long */
++#cmakedefine HAVE_GETOPT_LONG
++
++/* Defined if your system has iswgraph of its own*/
++#cmakedefine HAVE_ISWGRAPH
++
++/* Defined if your system has wchar_t of its own */
++#cmakedefine HAVE_WCHAR_T
++
++/* Defined if your system has wint_t of its own */
++#cmakedefine HAVE_WINT_T
++
++/* Defined if your system has _Bool of its own */
++#cmakedefine HAVE__BOOL
++
++#endif  /* CONFIG_CMAKE_H_ */
++
++
+diff --git a/sc2/src/getopt/CMakeLists.txt b/sc2/src/getopt/CMakeLists.txt
+new file mode 100644
+index 000000000..1309e843e
+--- /dev/null
++++ b/sc2/src/getopt/CMakeLists.txt
+@@ -0,0 +1,7 @@
++add_library(getopt STATIC getopt.c getopt1.c)
++
++target_include_directories(getopt PUBLIC
++    ${CMAKE_CURRENT_LIST_DIR}
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/CMakeLists.txt b/sc2/src/libs/CMakeLists.txt
+new file mode 100644
+index 000000000..a62eb6c27
+--- /dev/null
++++ b/sc2/src/libs/CMakeLists.txt
+@@ -0,0 +1,30 @@
++add_subdirectory(callback)
++add_subdirectory(decomp)
++add_subdirectory(file)
++add_subdirectory(graphics)
++add_subdirectory(heap)
++add_subdirectory(input)
++add_subdirectory(list)
++add_subdirectory(math)
++add_subdirectory(memory)
++add_subdirectory(resource)
++add_subdirectory(sound)
++add_subdirectory(strings)
++add_subdirectory(task)
++add_subdirectory(threads)
++add_subdirectory(time)
++add_subdirectory(uio)
++add_subdirectory(video)
++add_subdirectory(log)
++add_subdirectory(mikmod)
++
++set(LIBRARIES callback decomp file graphics heap input list math
++    memory resource sound strings task threads time uio video log mikmod)
++
++if(NETPLAY)
++    add_subdirectory(network)
++    list(APPEND LIBRARIES network)
++endif()
++
++add_library(libs INTERFACE)
++set_property(TARGET libs PROPERTY INTERFACE_LINK_LIBRARIES ${LIBRARIES})
+diff --git a/sc2/src/libs/callback/CMakeLists.txt b/sc2/src/libs/callback/CMakeLists.txt
+new file mode 100644
+index 000000000..affa46d79
+--- /dev/null
++++ b/sc2/src/libs/callback/CMakeLists.txt
+@@ -0,0 +1,9 @@
++add_library(callback STATIC alarm.c async.c callback.c)
++
++target_include_directories(callback PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(callback PRIVATE SDL2::SDL2)
++target_link_libraries(callback PRIVATE heap)
+diff --git a/sc2/src/libs/decomp/CMakeLists.txt b/sc2/src/libs/decomp/CMakeLists.txt
+new file mode 100644
+index 000000000..905dad5f3
+--- /dev/null
++++ b/sc2/src/libs/decomp/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(decomp STATIC lzdecode.c lzencode.c update.c)
++
++target_include_directories(decomp PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/file/CMakeLists.txt b/sc2/src/libs/file/CMakeLists.txt
+new file mode 100644
+index 000000000..9a4b208cc
+--- /dev/null
++++ b/sc2/src/libs/file/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(file STATIC dirs.c files.c)
++
++target_include_directories(file PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/graphics/CMakeLists.txt b/sc2/src/libs/graphics/CMakeLists.txt
+new file mode 100644
+index 000000000..ddd99d295
+--- /dev/null
++++ b/sc2/src/libs/graphics/CMakeLists.txt
+@@ -0,0 +1,15 @@
++add_subdirectory(sdl)
++
++add_library(graphics STATIC boxint.c clipline.c cmap.c context.c drawable.c filegfx.c
++bbox.c dcqueue.c gfxload.c
++font.c frame.c gfx_common.c intersec.c loaddisp.c
++pixmap.c resgfx.c tfb_draw.c tfb_prim.c widgets.c)
++
++target_include_directories(graphics PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(graphics PRIVATE graphics_sdl)
++target_link_libraries(graphics PRIVATE resource)
++target_link_libraries(graphics PRIVATE png)
+diff --git a/sc2/src/libs/graphics/sdl/CMakeLists.txt b/sc2/src/libs/graphics/sdl/CMakeLists.txt
+new file mode 100644
+index 000000000..e5a7968ac
+--- /dev/null
++++ b/sc2/src/libs/graphics/sdl/CMakeLists.txt
+@@ -0,0 +1,13 @@
++add_library(graphics_sdl STATIC opengl.c palette.c primitives.c pure.c sdl2_pure.c
++sdl_common.c sdl1_common.c sdl2_common.c
++scalers.c 2xscalers.c
++2xscalers_mmx.c 2xscalers_sse.c 2xscalers_3dnow.c
++nearest2x.c bilinear2x.c biadv2x.c triscan2x.c hq2x.c
++canvas.c png2sdl.c sdluio.c rotozoom.c)
++
++target_include_directories(graphics_sdl PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(graphics_sdl PRIVATE SDL2::SDL2)
+diff --git a/sc2/src/libs/heap/CMakeLists.txt b/sc2/src/libs/heap/CMakeLists.txt
+new file mode 100644
+index 000000000..c6bdbf2b4
+--- /dev/null
++++ b/sc2/src/libs/heap/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(heap STATIC heap.c)
++
++target_include_directories(heap PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/input/CMakeLists.txt b/sc2/src/libs/input/CMakeLists.txt
+new file mode 100644
+index 000000000..ab177b2a6
+--- /dev/null
++++ b/sc2/src/libs/input/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_subdirectory(sdl)
++
++add_library(input STATIC input_common.c)
++
++target_include_directories(input PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(input PRIVATE input_sdl)
+diff --git a/sc2/src/libs/input/sdl/CMakeLists.txt b/sc2/src/libs/input/sdl/CMakeLists.txt
+new file mode 100644
+index 000000000..6a4ab69b3
+--- /dev/null
++++ b/sc2/src/libs/input/sdl/CMakeLists.txt
+@@ -0,0 +1,8 @@
++add_library(input_sdl STATIC input.c keynames.c vcontrol.c)
++
++target_include_directories(input_sdl PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(input_sdl SDL2::SDL2)
+diff --git a/sc2/src/libs/list/CMakeLists.txt b/sc2/src/libs/list/CMakeLists.txt
+new file mode 100644
+index 000000000..812540240
+--- /dev/null
++++ b/sc2/src/libs/list/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(list STATIC list.c)
++
++target_include_directories(list PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/log/CMakeLists.txt b/sc2/src/libs/log/CMakeLists.txt
+new file mode 100644
+index 000000000..05482cc75
+--- /dev/null
++++ b/sc2/src/libs/log/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(log STATIC uqmlog.c msgbox_stub.c)
++
++target_include_directories(log PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/math/CMakeLists.txt b/sc2/src/libs/math/CMakeLists.txt
+new file mode 100644
+index 000000000..22cc63857
+--- /dev/null
++++ b/sc2/src/libs/math/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(math STATIC random.c random2.c sqrt.c)
++
++target_include_directories(math PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/memory/CMakeLists.txt b/sc2/src/libs/memory/CMakeLists.txt
+new file mode 100644
+index 000000000..c94cfc52e
+--- /dev/null
++++ b/sc2/src/libs/memory/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(memory STATIC w_memlib.c)
++
++target_include_directories(memory PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/mikmod/CMakeLists.txt b/sc2/src/libs/mikmod/CMakeLists.txt
+new file mode 100644
+index 000000000..20c5b4468
+--- /dev/null
++++ b/sc2/src/libs/mikmod/CMakeLists.txt
+@@ -0,0 +1,9 @@
++add_library(mikmod STATIC drv_nos.c load_it.c load_mod.c load_s3m.c load_stm.c load_xm.c
++mdreg.c mdriver.c mloader.c
++mlreg.c mlutil.c mmalloc.c mmerror.c mmio.c mplayer.c munitrk.c
++mwav.c npertab.c sloader.c virtch.c virtch2.c virtch_common.c)
++
++target_include_directories(mikmod PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/network/CMakeLists.txt b/sc2/src/libs/network/CMakeLists.txt
+new file mode 100644
+index 000000000..3ffacfbb1
+--- /dev/null
++++ b/sc2/src/libs/network/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_library(network STATIC
++    netport.c network_bsd.c
++    connect/connect.c connect/listen.c connect/resolve.c
++    netmanager/ndesc.c netmanager/netmanager_bsd.c
++    socket/socket.c socket/socket_bsd.c)
++
++target_include_directories(network PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/resource/CMakeLists.txt b/sc2/src/libs/resource/CMakeLists.txt
+new file mode 100644
+index 000000000..a95d9507e
+--- /dev/null
++++ b/sc2/src/libs/resource/CMakeLists.txt
+@@ -0,0 +1,11 @@
++add_library(resource STATIC direct.c filecntl.c getres.c loadres.c stringbank.c
++propfile.c resinit.c)
++
++target_include_directories(resource PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(resource PRIVATE graphics)
++target_link_libraries(resource PRIVATE strings)
++target_link_libraries(resource PRIVATE sound)
+diff --git a/sc2/src/libs/sound/CMakeLists.txt b/sc2/src/libs/sound/CMakeLists.txt
+new file mode 100644
+index 000000000..552d5fc5e
+--- /dev/null
++++ b/sc2/src/libs/sound/CMakeLists.txt
+@@ -0,0 +1,12 @@
++add_subdirectory(mixer)
++add_subdirectory(decoders)
++
++add_library(sound STATIC audiocore.c fileinst.c resinst.c sound.c sfx.c music.c stream.c trackplayer.c)
++
++target_include_directories(sound PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(sound PRIVATE sound_mixer)
++target_link_libraries(sound PRIVATE sound_decoders)
+diff --git a/sc2/src/libs/sound/decoders/CMakeLists.txt b/sc2/src/libs/sound/decoders/CMakeLists.txt
+new file mode 100644
+index 000000000..6ed42b116
+--- /dev/null
++++ b/sc2/src/libs/sound/decoders/CMakeLists.txt
+@@ -0,0 +1,17 @@
++set(SOUND_DECODERS_SRC decoder.c aiffaud.c wav.c dukaud.c modaud.c)
++if(VORBIS_FOUND)
++    list(APPEND SOUND_DECODERS_SRC oggaud.c)
++endif()
++
++add_library(sound_decoders STATIC ${SOUND_DECODERS_SRC})
++
++target_include_directories(sound_decoders PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(sound_decoders PRIVATE mikmod)
++
++if(VORBIS_FOUND)
++    target_link_libraries(sound_decoders PRIVATE ${VORBIS_LIBRARIES})
++endif()
+diff --git a/sc2/src/libs/sound/mixer/CMakeLists.txt b/sc2/src/libs/sound/mixer/CMakeLists.txt
+new file mode 100644
+index 000000000..73311d6a8
+--- /dev/null
++++ b/sc2/src/libs/sound/mixer/CMakeLists.txt
+@@ -0,0 +1,9 @@
++add_library(sound_mixer STATIC mixer.c
++nosound/audiodrv_nosound.c sdl/audiodrv_sdl.c)
++
++target_include_directories(sound_mixer PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(sound_mixer PUBLIC SDL2::SDL2)
+diff --git a/sc2/src/libs/strings/CMakeLists.txt b/sc2/src/libs/strings/CMakeLists.txt
+new file mode 100644
+index 000000000..ce69e15e7
+--- /dev/null
++++ b/sc2/src/libs/strings/CMakeLists.txt
+@@ -0,0 +1,9 @@
++add_library(strings STATIC getstr.c sfileins.c sresins.c stringhashtable.c strings.c unicode.c)
++
++target_include_directories(strings PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(strings PRIVATE resource)
++target_link_libraries(strings PRIVATE m)
+diff --git a/sc2/src/libs/task/CMakeLists.txt b/sc2/src/libs/task/CMakeLists.txt
+new file mode 100644
+index 000000000..9a9e21b46
+--- /dev/null
++++ b/sc2/src/libs/task/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(task STATIC tasklib.c)
++
++target_include_directories(task PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/libs/threads/CMakeLists.txt b/sc2/src/libs/threads/CMakeLists.txt
+new file mode 100644
+index 000000000..c65950ccc
+--- /dev/null
++++ b/sc2/src/libs/threads/CMakeLists.txt
+@@ -0,0 +1,9 @@
++add_library(threads STATIC thrcommon.c sdl/sdlthreads.c)
++
++target_include_directories(threads PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(threads PUBLIC SDL2::SDL2)
++target_link_libraries(threads PRIVATE callback)
+diff --git a/sc2/src/libs/time/CMakeLists.txt b/sc2/src/libs/time/CMakeLists.txt
+new file mode 100644
+index 000000000..1a9e38995
+--- /dev/null
++++ b/sc2/src/libs/time/CMakeLists.txt
+@@ -0,0 +1,8 @@
++add_library(time STATIC timecommon.c sdl/sdltime.c)
++
++target_include_directories(time PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(time PUBLIC SDL2::SDL2)
+diff --git a/sc2/src/libs/uio/CMakeLists.txt b/sc2/src/libs/uio/CMakeLists.txt
+new file mode 100644
+index 000000000..63b1759d6
+--- /dev/null
++++ b/sc2/src/libs/uio/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_library(uio STATIC charhashtable.c defaultfs.c fileblock.c fstypes.c gphys.c io.c
++ioaux.c match.c mount.c mounttree.c paths.c physical.c uiostream.c
++uioutils.c utils.c stdio/stdio.c zip/zip.c)
++
++target_include_directories(uio PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(uio PRIVATE ${ZLIB_LIBRARIES})
+diff --git a/sc2/src/libs/video/CMakeLists.txt b/sc2/src/libs/video/CMakeLists.txt
+new file mode 100644
+index 000000000..27775e370
+--- /dev/null
++++ b/sc2/src/libs/video/CMakeLists.txt
+@@ -0,0 +1,7 @@
++add_library(video STATIC vfileins.c vresins.c video.c videodec.c vidplayer.c dukvid.c
++legacyplayer.c)
++
++target_include_directories(video PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/regex/CMakeLists.txt b/sc2/src/regex/CMakeLists.txt
+new file mode 100644
+index 000000000..64ca247b6
+--- /dev/null
++++ b/sc2/src/regex/CMakeLists.txt
+@@ -0,0 +1,7 @@
++add_library(regex STATIC regex.c)
++
++target_include_directories(regex PUBLIC
++    ${CMAKE_CURRENT_LIST_DIR}
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/uqm/CMakeLists.txt b/sc2/src/uqm/CMakeLists.txt
+new file mode 100644
+index 000000000..b7e4f5384
+--- /dev/null
++++ b/sc2/src/uqm/CMakeLists.txt
+@@ -0,0 +1,84 @@
++add_subdirectory(comm)
++add_subdirectory(planets)
++add_subdirectory(ships)
++add_subdirectory(supermelee)
++
++add_library(uqm STATIC 
++    battle.c
++    battlecontrols.c
++    border.c
++    build.c
++    cleanup.c
++    clock.c
++    cnctdlg.c
++    collide.c
++    comm.c 
++    commanim.c
++    commglue.c
++    confirm.c
++    cons_res.c
++    credits.c
++    cyborg.c
++    demo.c
++    displist.c
++    dummy.c
++    encount.c
++    flash.c
++    fmv.c
++    galaxy.c
++    gameev.c
++    gameinp.c
++    gameopt.c
++    gendef.c
++    getchar.c
++    globdata.c
++    gravity.c
++    grpinfo.c
++    hyper.c
++    init.c
++    intel.c
++    intro.c
++    ipdisp.c
++    load_legacy.c
++    load.c
++    loadship.c
++    master.c
++    menu.c
++    misc.c
++    oscill.c
++    outfit.c
++    pickship.c
++    plandata.c
++    process.c
++    restart.c
++    save.c
++    settings.c
++    setup.c
++    setupmenu.c
++    ship.c
++    shipstat.c
++    shipyard.c
++    sis.c
++    sounds.c
++    starbase.c
++    starcon.c
++    starmap.c
++    state.c
++    status.c
++    tactrans.c
++    trans.c
++    uqmdebug.c
++    util.c
++    velocity.c
++    weapon.c
++)
++
++target_include_directories(uqm PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(uqm uqm_commm)
++target_link_libraries(uqm uqm_planets)
++target_link_libraries(uqm uqm_ships)
++target_link_libraries(uqm uqm_supermelee)
+diff --git a/sc2/src/uqm/comm/CMakeLists.txt b/sc2/src/uqm/comm/CMakeLists.txt
+new file mode 100644
+index 000000000..7d22ceb8b
+--- /dev/null
++++ b/sc2/src/uqm/comm/CMakeLists.txt
+@@ -0,0 +1,34 @@
++add_library(uqm_commm STATIC 
++    arilou/arilouc.c
++    blackur/blackurc.c
++    chmmr/chmmrc.c
++    comandr/comandr.c
++    druuge/druugec.c
++    ilwrath/ilwrathc.c
++    melnorm/melnorm.c
++    mycon/myconc.c
++    orz/orzc.c
++    pkunk/pkunkc.c
++    rebel/rebel.c
++    shofixt/shofixt.c
++    slyhome/slyhome.c
++    slyland/slyland.c
++    spahome/spahome.c
++    spathi/spathic.c
++    starbas/starbas.c
++    supox/supoxc.c
++    syreen/syreenc.c
++    talkpet/talkpet.c
++    thradd/thraddc.c
++    umgah/umgahc.c
++    urquan/urquanc.c
++    utwig/utwigc.c
++    vux/vuxc.c
++    yehat/yehatc.c
++    zoqfot/zoqfotc.c
++)
++
++target_include_directories(uqm_commm PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/uqm/planets/CMakeLists.txt b/sc2/src/uqm/planets/CMakeLists.txt
+new file mode 100644
+index 000000000..add797a2d
+--- /dev/null
++++ b/sc2/src/uqm/planets/CMakeLists.txt
+@@ -0,0 +1,57 @@
++add_library(uqm_planets STATIC 
++    calc.c
++    cargo.c
++    devices.c
++    gentopo.c
++    lander.c
++    orbits.c
++    oval.c
++    pl_stuff.c
++    planets.c
++    plangen.c
++    pstarmap.c
++    report.c
++    roster.c
++    scan.c
++    solarsys.c
++    surface.c
++    generate/genand.c
++    generate/genburv.c
++    generate/genchmmr.c
++    generate/gencol.c
++    generate/gendefault.c
++    generate/gendru.c
++    generate/genilw.c
++    generate/genmel.c
++    generate/genmyc.c
++    generate/genorz.c
++    generate/genpet.c
++    generate/genpku.c
++    generate/genrain.c
++    generate/gensam.c
++    generate/genshof.c
++    generate/gensly.c
++    generate/gensol.c
++    generate/genspa.c
++    generate/gensup.c
++    generate/gensyr.c
++    generate/genthrad.c
++    generate/gentrap.c
++    generate/genutw.c
++    generate/genvault.c
++    generate/genvux.c
++    generate/genwreck.c
++    generate/genyeh.c
++    generate/genzfpscout.c
++    generate/genzoq.c
++)
++
++target_include_directories(uqm_planets PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(uqm_planets PRIVATE math)
++target_link_libraries(uqm_planets PRIVATE uqm)
++target_link_libraries(uqm_planets PRIVATE graphics)
++
+diff --git a/sc2/src/uqm/ships/CMakeLists.txt b/sc2/src/uqm/ships/CMakeLists.txt
+new file mode 100644
+index 000000000..77d7551a3
+--- /dev/null
++++ b/sc2/src/uqm/ships/CMakeLists.txt
+@@ -0,0 +1,35 @@
++add_library(uqm_ships STATIC
++    androsyn/androsyn.c
++    arilou/arilou.c
++    blackurq/blackurq.c
++    chenjesu/chenjesu.c
++    chmmr/chmmr.c
++    human/human.c
++    druuge/druuge.c
++    ilwrath/ilwrath.c
++    lastbat/lastbat.c
++    melnorme/melnorme.c
++    mmrnmhrm/mmrnmhrm.c
++    mycon/mycon.c
++    orz/orz.c
++    pkunk/pkunk.c
++    probe/probe.c
++    shofixti/shofixti.c
++    sis_ship/sis_ship.c
++    slylandr/slylandr.c
++    spathi/spathi.c
++    supox/supox.c
++    syreen/syreen.c
++    thradd/thradd.c
++    umgah/umgah.c
++    urquan/urquan.c
++    utwig/utwig.c
++    vux/vux.c
++    yehat/yehat.c
++    zoqfot/zoqfot.c
++)
++
++target_include_directories(uqm_ships PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
+diff --git a/sc2/src/uqm/supermelee/CMakeLists.txt b/sc2/src/uqm/supermelee/CMakeLists.txt
+new file mode 100644
+index 000000000..2777394f3
+--- /dev/null
++++ b/sc2/src/uqm/supermelee/CMakeLists.txt
+@@ -0,0 +1,20 @@
++if(NETPLAY)
++    add_subdirectory(netplay)
++endif()
++
++add_library(uqm_supermelee STATIC 
++    buildpick.c
++    loadmele.c
++    melee.c
++    meleesetup.c
++    pickmele.c
++)
++
++target_include_directories(uqm_supermelee PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++if(NETPLAY)
++    target_link_libraries(uqm_supermelee PRIVATE uqm_supermelee_netplay)
++endif()
+diff --git a/sc2/src/uqm/supermelee/netplay/CMakeLists.txt b/sc2/src/uqm/supermelee/netplay/CMakeLists.txt
+new file mode 100644
+index 000000000..539756eba
+--- /dev/null
++++ b/sc2/src/uqm/supermelee/netplay/CMakeLists.txt
+@@ -0,0 +1,14 @@
++add_library(uqm_supermelee_netplay STATIC 
++    checkbuf.c checksum.c crc.c netconnection.c netinput.c netmelee.c netmisc.c
++    netoptions.c netrcv.c netsend.c netstate.c notify.c notifyall.c
++    packet.c packethandlers.c packetsenders.c packetq.c
++    proto/npconfirm.c proto/ready.c proto/reset.c
++)
++
++target_include_directories(uqm_supermelee_netplay PUBLIC
++    ${urquan_SOURCE_DIR}/src
++    ${PROJECT_BINARY_DIR}/src
++)
++
++target_link_libraries(uqm_supermelee_netplay PRIVATE network)
++target_link_libraries(uqm_supermelee_netplay PRIVATE uqm)

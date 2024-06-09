@@ -48,15 +48,15 @@ if [ "$EVENT" != "gameStart" ] && [ "$EVENT" != "gameStop" ]; then
 fi
 
 # handle gameStop event
-if [ "$EVENT" = "gameStop" ]; then
+if [ "$EVENT" == "gameStop" ]; then
     # set either user global setting or default tdp
-    TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
+    TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
     if [ -z "${TDP_SETTING}" ]; then
         TDP_SETTING="$(/usr/bin/batocera-settings-get system.cpu.tdp)"
-        set_tdp "${TDP_SETTING}" "${ROM_NAME}"
+        set_tdp "${TDP_SETTING}" "STOP"
         exit 0
     fi
-    handle_tdp "${TDP_SETTING}" "${ROM_NAME}"
+    handle_tdp "${TDP_SETTING}" "STOP"
 	exit 0
 fi
 
@@ -71,7 +71,7 @@ if [ -n "${SYSTEM_NAME}" ]; then
 fi
 # If no user set system specific setting check for user set global setting
 if [ -z "${TDP_SETTING}" ]; then
-    TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
+    TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
 fi
 # If no value is found ensure tdp is default before exiting
 if [ -z "${TDP_SETTING}" ]; then

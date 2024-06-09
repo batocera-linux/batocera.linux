@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d41ed7619e..dfd326a7d8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -37,6 +37,9 @@ include(DuckStationBuildOptions)
+ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D_DEBUG")
+ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
+ 
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flax-vector-conversions")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flax-vector-conversions")
++
+ # Release build optimizations for MSVC.
+ if(MSVC)
+   add_definitions("/D_CRT_SECURE_NO_WARNINGS")

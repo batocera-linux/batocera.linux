@@ -29,8 +29,8 @@ class RedreamGenerator(Generator):
         # set the roms path
         f.write("gamedir=/userdata/roms/dreamcast\n")
         # force fullscreen
-        f.write("mode=borderless fullscreen\n")
-        f.write("fullmode=borderless fullscreen\n")
+        f.write("mode=exclusive fullscreen\n")
+        f.write("fullmode=exclusive fullscreen\n")
         # configure controller
         ButtonMap = {
             "a":      "b",
@@ -131,10 +131,10 @@ class RedreamGenerator(Generator):
             f.write("vysnc={}".format(system.config["redreamVsync"]) + "\n")
         else:
             f.write("vsync=0\n")
-        if system.isOptSet("redreamPolygon"):
-            f.write("autosort={}".format(system.config["redreamPolygon"]) + "\n")
+        if system.isOptSet("redreamRender"):
+            f.write("renderer={}".format(system.config["redreamRender"]) + "\n")
         else:
-            f.write("autosort=0\n")
+            f.write("renderer=hle_perstrip\n")
         # [system]
         if system.isOptSet("redreamRegion"):
             f.write("region={}".format(system.config["redreamRegion"]) + "\n")
