@@ -8,6 +8,7 @@ config BR2_PACKAGE_PYTHON_PYGAME2
 	select BR2_PACKAGE_LIBPNG
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_PYTHON_PSUTIL
+	select BR2_PACKAGE_HOST_PYTHON_CYTHON
 
 	help
 	  Pygame is a cross-platfrom library designed to make it easy

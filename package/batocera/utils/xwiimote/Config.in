@@ -1,5 +1,6 @@
 config BR2_PACKAGE_XWIIMOTE
 	bool "xwiimote"
 	depends on BR2_PACKAGE_HAS_UDEV
+	select BR2_PACKAGE_NCURSES
 	help
 	  a tool to analyze the wiimote events

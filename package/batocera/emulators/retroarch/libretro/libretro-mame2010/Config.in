@@ -2,6 +2,7 @@ config BR2_PACKAGE_LIBRETRO_MAME2010
     bool "libretro-mame2010"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_ZLIB
       help
         A libretro mame2010 core for ARM.
 

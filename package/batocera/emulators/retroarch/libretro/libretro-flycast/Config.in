@@ -3,10 +3,13 @@ config BR2_PACKAGE_LIBRETRO_FLYCAST
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_GCC_ENABLE_OPENMP
+	depends on (BR2_PACKAGE_HAS_LIBGLES || BR2_PACKAGE_HAS_LIBGL)
         help
           A libretro dreamcast emulator core.
 
 	  http://www.libretro.com
 
-comment "LIBRETRO_FLYCAST needs a toolchain w/ C++"
-	depends on !BR2_INSTALL_LIBSTDCPP
+comment "LIBRETRO_FLYCAST needs a toolchain w/ C++ and OpenGL ES or OpenGL"
+	depends on !BR2_INSTALL_LIBSTDCPP || \
+		(!BR2_PACKAGE_HAS_LIBGLES && !BR2_PACKAGE_HAS_LIBGL)
+

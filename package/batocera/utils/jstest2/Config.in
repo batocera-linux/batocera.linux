@@ -1,6 +1,7 @@
 config BR2_PACKAGE_JSTEST2
 	bool "JSTEST2"
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_NCURSES
 	help
 	  Command line tool to test the joysticks with sdl2
 

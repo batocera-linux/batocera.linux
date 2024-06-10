@@ -10,7 +10,7 @@ PYTHON_HIDAPI_SETUP_TYPE = setuptools
 PYTHON_HIDAPI_SITE = https://pypi.python.org/packages/source/h/hidapi
 PYTHON_HIDAPI_LICENSE = GPLv3
 PYTHON_HIDAPI_LICENSE_FILES = LICENSE-gpl3.txt
-PYTHON_HIDAPI_DEPENDENCIES = libusb udev
+PYTHON_HIDAPI_DEPENDENCIES = libusb udev hidapi host-python-cython
 
 define PYTHON_HIDAPI_UPDATE_INCLUDE_PATH
 	sed -i "s+/usr/include/+$(STAGING_DIR)/usr/include/+g" $(@D)/setup.py
