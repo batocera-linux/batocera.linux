@@ -1839,6 +1839,25 @@ libretro:
                     "4":   4
                     "5":   5
                     "6":   6
+            reicast_region:
+                prompt: CONSOLE REGION
+                description: Choose the Dreamcast console region.
+                choices:
+                    "USA":      Usa
+                    "Europe":   Europe
+                    "Japan":    Japan
+                    "Default":  Default
+            reicast_language:
+                prompt: BIOS LANGUAGE
+                description: Dreamcast BIOS's language setting. Can change the language of some games. Some games default to Japanese.
+                choices:
+                    "English":   English
+                    "German":    German
+                    "French":    French
+                    "Spanish":   Spanish
+                    "Italian":   Italian
+                    "Japanese":  Japanese
+                    "Default":   Default
             reicast_force_wince:
                 group: ADVANCED OPTIONS
                 prompt:      FORCE WINDOWS CE MODE
@@ -7082,7 +7101,7 @@ hypseus-singe:
         hypseus_bezels:
             prompt: BEZELS
             description: Enable or disable bezels being added when content is a 4:3 aspect with a widescreen display.
-            preset: switchon          
+            preset: switchon
         hypseus_filter:
             prompt: SMOOTH GAMES (BILINEAR FILTERING)
             preset: switchoff
@@ -7167,7 +7186,7 @@ dolphin:
             submenu: DISPLAY
             prompt: VSYNC
             description: Fix screen tearing. CPU heavy.
-            preset: switchon       
+            preset: switchon
         gfxbackend:
             archs_include: [x86, x86_64, bcm2711, bcm2712]
             submenu: RENDERING
@@ -7235,7 +7254,7 @@ dolphin:
             submenu: RENDERING
             prompt: MANUAL TEXTURE SAMPLING
             description: Enabling will allow for correct emulation of texture wrapping. This comes at a cost of potential worse performance.
-            preset: switchoff           
+            preset: switchoff
         dual_core:
             submenu: EMULATION
             prompt: DUAL CORE MODE
@@ -7250,7 +7269,7 @@ dolphin:
             submenu: EMULATION
             prompt: PERFORMANCE HACKS
             description: Increase emulator performance, at the cost of accuracy/stability.
-            preset: switchoff             
+            preset: switchoff
         enable_cheats:
             submenu: EMULATION
             prompt: ENABLE CHEATS
@@ -7265,12 +7284,12 @@ dolphin:
             submenu: EMULATION
             prompt: FAST DISK TRANSFER RATE
             description: Enhancement. Removes disc loading.
-            preset: switchoff             
+            preset: switchoff
         vbi_hack:
             submenu: EMULATION
             prompt: VBI SKIP
             description: Skips Vertical Blank Interrupts when lag is detected, allowing for smooth audio playback when emulation speed is not 100%.
-            preset: switchoff      
+            preset: switchoff
         use_pad_profiles:
             group: CONTROLS
             prompt: USE PAD PROFILES
@@ -7280,7 +7299,7 @@ dolphin:
             group: CONTROLS
             prompt: RUMBLE
             description: Enable controller rumble capabilities if supported by the controller.
-            preset: switchoff       
+            preset: switchoff
         dolphin_port_1_type:
             group: CONTROLS
             submenu: GAMECUBE CONTROLLER 1
@@ -7460,7 +7479,7 @@ dolphin:
             choices:
                 "Smaller":          smaller
                 "Normal (Default)": normal
-                "Larger":           larger                             
+                "Larger":           larger
         dplii:
             group: AUDIO
             prompt: DOLBY PRO LOGIC II
@@ -7470,7 +7489,7 @@ dolphin:
             submenu: DISPLAY
             prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             description: Show on screen display messages (memory card saves..).
-            preset: switchoff              
+            preset: switchoff
   systems:
     gamecube:
         cfeatures:

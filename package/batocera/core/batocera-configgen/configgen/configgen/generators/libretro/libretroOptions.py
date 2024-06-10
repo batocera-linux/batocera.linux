@@ -2148,6 +2148,15 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('reicast_widescreen_hack',   '"enabled"')
         else:
             coreSettings.save('reicast_widescreen_hack',   '"disabled"')
+        # Bios
+        if system.isOptSet('reicast_language'):
+            coreSettings.save('reicast_language', '"' + system.config['reicast_language'] + '"')
+        else:
+            coreSettings.save('reicast_language', '"Default"')
+        if system.isOptSet('reicast_region'):
+            coreSettings.save('reicast_region', '"' + system.config['reicast_region'] + '"')
+        else:
+            coreSettings.save('reicast_region', '"Default"')
 
         ## Atomiswave / Naomi
 
