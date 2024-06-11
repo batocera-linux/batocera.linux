@@ -3,44 +3,178 @@
 ACTION=$1
 
 export DISPLAY=:0.0
+
 RESOLUTION=$(batocera-resolution currentResolution)
-OUTPUT="/userdata/screenshots/capture-$(date +%Y.%m.%d-%Hh%M.%S).mkv"
-mkdir -p /userdata/screenshots || exit 1
+REFRESH_RATE=$(batocera-resolution refreshRate)
+OUTPUT="/userdata/recordings/capture-$(date +%Y.%m.%d-%Hh%M.%S).mkv"
+VAAPI_DEVICE="/dev/dri/renderD128"  # Default VAAPI device ?
+# look to add audio out from batocera.conf?
+PULSEAUDIO_MONITOR=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
+
+mkdir -p /userdata/recordings || exit 1
+
+# Check for VA-API hardware encoding support
+check_hardware_encoding() {
+    if vainfo 2>/dev/null | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
+        ENCODER="hevc_vaapi"
+        echo
+        echo "Using: HEVC hardware encoding via VA-API."
+    elif vainfo 2>/dev/null | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
+        ENCODER="h264_vaapi"
+        echo
+        echo "Using: H.264 hardware encoding via VA-API."
+    elif vainfo 2>/dev/null | grep -q "VAProfileMPEG2Main.*VAEntrypointEncSlice"; then
+        ENCODER="mpeg2_vaapi"
+        echo
+        echo "Using: MPEG-2 hardware encoding via VA-API."
+    else
+        ENCODER="libx264"  # Fallback to software H.264 encoding
+        echo
+        echo "Hardware encoding is not available."
+        echo "Using: software encoder ${ENCODER}."
+    fi
+    echo "With an audio input source of: ${PULSEAUDIO_MONITOR}"
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        echo "A resolution of: ${RESOLUTION} and a framerate of: ${REFRESH_RATE}"
+    else
+        echo "A resolution of: ${RESOLUTION}"
+    fi
+    echo
+    echo "Recording to file: ${OUTPUT}"
+}
 
 usage() {
-    echo "${1} --default"     >&2
-    echo "${1} --fast"        >&2
-    echo "${1} --compress"    >&2
+    echo "${1} --default"      >&2
+    echo "${1} --fast"         >&2
+    echo "${1} --compress"     >&2
+    echo "${1} --high-quality" >&2
+    echo "${1} --epic-mode"    >&2
+}
+
+exit_info() {
+    echo >&2
+    echo "+-------------------------------+"   >&2
+    echo "| Press Ctrl+c to end recording |"   >&2
+    echo "+-------------------------------+"   >&2
+    echo >&2
 }
 
 default_record(){
-ffmpeg -video_size "${RESOLUTION}" -framerate 25 -f x11grab -i :0.0+0,0 "${OUTPUT}"
+    check_hardware_encoding
+    exit_info
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0+0,0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vaapi_device "${VAAPI_DEVICE}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -b:v 5000k -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    else
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 25 \
+               -thread_queue_size 1024 -f x11grab -i :0.0+0,0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -c:v ${ENCODER} -b:v 5000k -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    fi
 }
 
 fast_record(){
-ffmpeg -video_size "${RESOLUTION}" -framerate 30 -f x11grab -i :0.0 -c:v libx264rgb -crf 0 -preset ultrafast "${OUTPUT}"
+    check_hardware_encoding
+    exit_info
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vaapi_device "${VAAPI_DEVICE}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 0 -preset ultrafast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    else
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 30 \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -c:v ${ENCODER} -crf 0 -preset ultrafast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    fi
 }
 
 compress_record(){
-ffmpeg -video_size "${RESOLUTION}" -framerate 30 -f x11grab -i :0.0 -c:v libx264rgb -crf 20 -preset veryfast "${OUTPUT}"
+    check_hardware_encoding
+    exit_info
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vaapi_device "${VAAPI_DEVICE}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -crf 20 -preset veryfast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    else
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 30 \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -c:v ${ENCODER} -crf 20 -preset veryfast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    fi
 }
 
+high_quality_record(){
+    check_hardware_encoding
+    exit_info
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vaapi_device "${VAAPI_DEVICE}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    else
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 60 \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    fi
+}
+
+epic_mode_record(){
+    check_hardware_encoding
+    exit_info
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vaapi_device "${VAAPI_DEVICE}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    else
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 60 \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -c:v ${ENCODER} -qp 18 -preset medium -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    fi
+}
 
 case "${ACTION}" in
-        --fast)
+    --fast)
         fast_record || exit 1
         ;;
-        --default)
+    --default)
         default_record || exit 1
         ;;
-        --compress)
+    --compress)
         compress_record || exit 1
         ;;
-        -h|--help)
+    --high-quality)
+        high_quality_record || exit 1
+        ;;
+    --epic-mode)
+        epic_mode_record || exit 1
+        ;;
+    -h|--help)
         usage "${0}" || exit 1
         exit 0
         ;;
-        *)
+    *)
         default_record || exit 1
         ;;
 esac
