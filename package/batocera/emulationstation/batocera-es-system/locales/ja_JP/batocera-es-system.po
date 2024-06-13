@@ -813,12 +813,12 @@ msgctxt "game_options"
 msgid "English (Default)"
 msgstr "英語 (標準)"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Spanish"
 msgstr "スペイン語"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, ...
 msgctxt "game_options"
 msgid "French"
 msgstr "フランス語"
@@ -979,7 +979,7 @@ msgctxt "game_options"
 msgid "Dendy is a popular Russian clone with unique characteristics."
 msgstr "Dendyは、独特の特徴を持つ人気のあるロシアのファミコン互換機です"
 
-#. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation, flycast/uzem
+#. TRANSLATION: libretro/mesen, libretro/flycast, libretro/neocd, libretro/o2em, duckstation, ...
 msgctxt "game_options"
 msgid "CONSOLE REGION"
 msgstr "コンソール リージョン"
@@ -1050,7 +1050,7 @@ msgctxt "game_options"
 msgid "COLOR PALETTE"
 msgstr "カラーパレット"
 
-#. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, suyu, suyu
+#. TRANSLATION: libretro/mesen, libretro/flycast, libretro/flycast, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "Default"
 msgstr "標準値"
@@ -1310,17 +1310,17 @@ msgstr ""
 "[ファームウェア設定を使用] が無効の場合、またはファームウェア ファイルが見つ"
 "からない場合は、使用する言語を選択します"
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, cemu, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "German"
 msgstr "ドイツ語"
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, libretro/yabasanshiro, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "Italian"
 msgstr "イタリア語"
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, libretro/yabasanshiro, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "Japanese"
 msgstr "日本語"
@@ -1659,7 +1659,7 @@ msgctxt "game_options"
 msgid "Use Host"
 msgstr "使用するホスト"
 
-#. TRANSLATION: libretro/melondsds, libretro/dolphin, libretro/kronos, cemu, flycast/uzem, ...
+#. TRANSLATION: libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, cemu, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "英語"
@@ -3225,6 +3225,39 @@ msgstr "ミップマッピングの有効時、離れたテクスチャの明瞭
 msgctxt "game_options"
 msgid "Enhancement. Upscales screen textures (2D games only)."
 msgstr "強化：スクリーンテクスチャをアップスケール（2Dゲームのみ）"
+
+#. TRANSLATION: libretro/flycast, redream
+msgctxt "game_options"
+msgid "Choose the Dreamcast console region."
+msgstr "ドリームキャストのコンソールリージョンを選択します"
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, suyu, ryujinx
+msgctxt "game_options"
+msgid "USA"
+msgstr "USA"
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
+msgctxt "game_options"
+msgid "Europe"
+msgstr "ヨーロッパ"
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
+msgctxt "game_options"
+msgid "Japan"
+msgstr "日本"
+
+#. TRANSLATION: libretro/flycast, flycast/uzem
+msgctxt "game_options"
+msgid ""
+"Dreamcast BIOS's language setting. Can change the language of some games. "
+"Some games default to Japanese."
+msgstr ""
+"ドリームキャスト BIOS の言語設定。一部のゲームは日本語に設定されています"
+
+#. TRANSLATION: libretro/flycast, flycast/uzem
+msgctxt "game_options"
+msgid "BIOS LANGUAGE"
+msgstr "BIOS 言語"
 
 #. TRANSLATION: libretro/flycast, libretro/quasi88, flycast/uzem
 msgctxt "game_options"
@@ -5815,21 +5848,6 @@ msgstr "1x (標準)"
 msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "一部のゲームの言語を変更します"
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, suyu, suyu, ...
-msgctxt "game_options"
-msgid "Japan"
-msgstr "日本"
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, suyu, ryujinx
-msgctxt "game_options"
-msgid "USA"
-msgstr "USA"
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, suyu, ryujinx
-msgctxt "game_options"
-msgid "Europe"
-msgstr "ヨーロッパ"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -9551,19 +9569,6 @@ msgctxt "game_options"
 msgid "CROSSHAIR"
 msgstr "十字線(照準)"
 
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid ""
-"Dreamcast BIOS's language setting. Can change the language of some games. "
-"Some games default to Japanese."
-msgstr ""
-"ドリームキャスト BIOS の言語設定。一部のゲームは日本語に設定されています"
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "BIOS LANGUAGE"
-msgstr "BIOS 言語"
-
 #. TRANSLATION: flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Game's default"
@@ -11829,11 +11834,6 @@ msgstr "HLE (ピクセルごと)"
 msgctxt "game_options"
 msgid "LLE"
 msgstr "LLE"
-
-#. TRANSLATION: redream
-msgctxt "game_options"
-msgid "Choose the Dreamcast console region."
-msgstr "ドリームキャストのコンソールリージョンを選択します"
 
 #. TRANSLATION: redream
 msgctxt "game_options"

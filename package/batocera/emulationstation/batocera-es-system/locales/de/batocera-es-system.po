@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: German (Germany)\n"
 "Language: de-DE\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -840,12 +840,12 @@ msgctxt "game_options"
 msgid "English (Default)"
 msgstr "Englisch (Standard)"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, ...
 msgctxt "game_options"
 msgid "Spanish"
 msgstr "Spanisch"
 
-#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, ...
+#. TRANSLATION: libretro/cap32, libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, ...
 msgctxt "game_options"
 msgid "French"
 msgstr "Französisch"
@@ -1016,7 +1016,7 @@ msgctxt "game_options"
 msgid "Dendy is a popular Russian clone with unique characteristics."
 msgstr "Dendy ist ein beliebter russischer Klon mit einzigartigen Merkmalen."
 
-#. TRANSLATION: libretro/mesen, libretro/neocd, libretro/o2em, duckstation, flycast/uzem
+#. TRANSLATION: libretro/mesen, libretro/flycast, libretro/neocd, libretro/o2em, duckstation, ...
 msgctxt "game_options"
 msgid "CONSOLE REGION"
 msgstr "KONSOLE REGIONSAUSWAHL"
@@ -1088,7 +1088,7 @@ msgctxt "game_options"
 msgid "COLOR PALETTE"
 msgstr "FARBPALETTE"
 
-#. TRANSLATION: libretro/mesen, libretro/puae, libretro/puae2021, suyu, suyu
+#. TRANSLATION: libretro/mesen, libretro/flycast, libretro/flycast, libretro/puae, libretro/puae2021, ...
 msgctxt "game_options"
 msgid "Default"
 msgstr "Standard"
@@ -1353,17 +1353,17 @@ msgstr ""
 "\"Firmware-Einstellungen verwenden\" oder falls die Firmware-Datei nicht "
 "gefunden wurde."
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, cemu, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "German"
 msgstr "Deutsch"
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, libretro/yabasanshiro, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "Italian"
 msgstr "Italienisch"
 
-#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/kronos, libretro/yabasanshiro, ...
+#. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
 msgid "Japanese"
 msgstr "Japanisch"
@@ -1704,7 +1704,7 @@ msgctxt "game_options"
 msgid "Use Host"
 msgstr "Host nutzen"
 
-#. TRANSLATION: libretro/melondsds, libretro/dolphin, libretro/kronos, cemu, flycast/uzem, ...
+#. TRANSLATION: libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, cemu, ...
 msgctxt "game_options"
 msgid "English"
 msgstr "Englisch"
@@ -3289,6 +3289,38 @@ msgctxt "game_options"
 msgid "Enhancement. Upscales screen textures (2D games only)."
 msgstr "Bildschirmtexturen werden hochskaliert (nur 2D-Spiele)."
 
+#. TRANSLATION: libretro/flycast, redream
+msgctxt "game_options"
+msgid "Choose the Dreamcast console region."
+msgstr "Region für Dreamcast Konsole auswählen."
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, suyu, ryujinx
+msgctxt "game_options"
+msgid "USA"
+msgstr "USA"
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
+msgctxt "game_options"
+msgid "Europe"
+msgstr "Europa"
+
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
+msgctxt "game_options"
+msgid "Japan"
+msgstr "Japan"
+
+#. TRANSLATION: libretro/flycast, flycast/uzem
+msgctxt "game_options"
+msgid ""
+"Dreamcast BIOS's language setting. Can change the language of some games. "
+"Some games default to Japanese."
+msgstr "Dreamcast BIOS-Spracheinstellungen."
+
+#. TRANSLATION: libretro/flycast, flycast/uzem
+msgctxt "game_options"
+msgid "BIOS LANGUAGE"
+msgstr "BIOS SPRACHEINSTELLUNGEN"
+
 #. TRANSLATION: libretro/flycast, libretro/quasi88, flycast/uzem
 msgctxt "game_options"
 msgid "Required for some games."
@@ -4058,8 +4090,8 @@ msgid ""
 "Atari ST monitors had a visible border around the main screen area, but most "
 "software does not display anything in it."
 msgstr ""
-"Atari ST-Monitore hatten einen sichtbaren Rand um den Hauptbildschirmbereich,"
-" aber die meisten Programme zeigen darin nichts an."
+"Atari ST-Monitore hatten einen sichtbaren Rand um den "
+"Hauptbildschirmbereich, aber die meisten Programme zeigen darin nichts an."
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -5903,21 +5935,6 @@ msgstr "1x (Standardeinstellung)"
 msgctxt "game_options"
 msgid "Can change the language of some games."
 msgstr "Kann die Spracheinstellungen einiger Spiele ändern."
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, suyu, suyu, ...
-msgctxt "game_options"
-msgid "Japan"
-msgstr "Japan"
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, suyu, ryujinx
-msgctxt "game_options"
-msgid "USA"
-msgstr "USA"
-
-#. TRANSLATION: libretro/neocd, flycast/uzem, redream, suyu, ryujinx
-msgctxt "game_options"
-msgid "Europe"
-msgstr "Europa"
 
 #. TRANSLATION: libretro/neocd
 msgctxt "game_options"
@@ -8630,8 +8647,8 @@ msgstr "DISK SHADER CACHE"
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation stutter."
-" May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 "Kompilieren Sie Shader mithilfe von Hintergrundthreads, um Stottern bei der "
 "Shader-Kompilierung zu vermeiden. Kann zu Grafikfehlern führen."
@@ -8747,8 +8764,8 @@ msgid ""
 "Enable or disable bezels being added when content is a 4:3 aspect with a "
 "widescreen display."
 msgstr ""
-"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein 4:"
-"3-Seitenverhältnis mit einem Widescreen-Display hat."
+"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein "
+"4:3-Seitenverhältnis mit einem Widescreen-Display hat."
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
@@ -9017,8 +9034,8 @@ msgid ""
 "Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
 "higher performance cost."
 msgstr ""
-"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser aus,"
-" hat aber einen höheren Leistungsaufwand."
+"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser "
+"aus, hat aber einen höheren Leistungsaufwand."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9695,18 +9712,6 @@ msgstr "ERRUNGENSCHAFTEN"
 msgctxt "game_options"
 msgid "CROSSHAIR"
 msgstr "CROSSHAIR"
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid ""
-"Dreamcast BIOS's language setting. Can change the language of some games. "
-"Some games default to Japanese."
-msgstr "Dreamcast BIOS-Spracheinstellungen."
-
-#. TRANSLATION: flycast/uzem
-msgctxt "game_options"
-msgid "BIOS LANGUAGE"
-msgstr "BIOS SPRACHEINSTELLUNGEN"
 
 #. TRANSLATION: flycast/uzem, flycast/uzem
 msgctxt "game_options"
@@ -12040,11 +12045,6 @@ msgstr "LLE"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
-msgid "Choose the Dreamcast console region."
-msgstr "Region für Dreamcast Konsole auswählen."
-
-#. TRANSLATION: redream
-msgctxt "game_options"
 msgid "USA (Default)"
 msgstr "USA (Standard)"
 
@@ -12356,8 +12356,8 @@ msgstr "Interton VC 4000 Steckmodule"
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 "Aktivierung der Mauseingabe für Trackballs, Spinner, Lightguns (wenn nicht "
 "verbunden) und ähnliche Steuerungen"
@@ -12493,8 +12493,8 @@ msgid ""
 "runner in it's own directory under /userdata/system/wine/custom."
 msgstr ""
 "Runner vereinfachen die Kompatibilität der laufenden Windows-Spiele. Sie "
-"müssen einen Runner in seinem eigenen Verzeichnis unter "
-"/userdata/system/wine/custom haben."
+"müssen einen Runner in seinem eigenen Verzeichnis unter /userdata/system/"
+"wine/custom haben."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -12880,8 +12880,8 @@ msgstr "128MiB"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid ""
-"Nat to access internet from xemu machine. Udp for System Link. Default (Auto)"
-" disables network access."
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
 msgstr ""
 "Verwende Nat für den Internetzugang von einem xemu-Rechner aus. Udp für "
 "System Link. Standard (Auto) deaktiviert den Netzwerkzugang."
@@ -14354,8 +14354,8 @@ msgstr "VSync"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Per Table Folder requires all files to be in the associated rom table folder."
-" If disabled, consult the Wiki for further details."
+"Per Table Folder requires all files to be in the associated rom table "
+"folder. If disabled, consult the Wiki for further details."
 msgstr ""
 "Pro Tabellenordner erfordert, dass sich alle Dateien in dem zugehörigen "
 "Tabellenordner befinden. Wenn diese Funktion deaktiviert ist, finden Sie "
