@@ -69,7 +69,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Scanlines not showing in Daphne/Singe
 - Supermodel persistent crash in some cases with light guns
 - Cuda hardware acceleration of the splash video for Nvidia cards using the production driver.
-### Changed
+### Changed / Improved
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
 - RPCS3 upscaling now outputs properly
@@ -80,6 +80,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Start advisiong people on Vulkan GPU driver capabilities for Emualtors
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
+- We now record audio & use hardware encoding with Intel & AMD GPU's when using `batocera-record` (x86_64 only).
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
