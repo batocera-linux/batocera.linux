@@ -59,8 +59,11 @@ def getScreensInfos(config):
         if x != vo1 and vo2 is None:
             vo2 = x
     if vo2 is not None:
-        resolution2 = getCurrentResolution(vo2)
-        res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+        try:
+            resolution2 = getCurrentResolution(vo2)
+            res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+        except:
+            pass # ignore bad information
 
     # output3
     vo3 = None
@@ -72,8 +75,11 @@ def getScreensInfos(config):
         if x != vo1 and x != vo2 and vo3 is None:
             vo3 = x
     if vo3 is not None:
-        resolution3 = getCurrentResolution(vo3)
-        res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+        try:
+            resolution3 = getCurrentResolution(vo3)
+            res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+        except:
+            pass # ignore bad information
 
     eslog.debug("Screens:")
     eslog.debug(res)
