@@ -80,7 +80,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Start advisiong people on Vulkan GPU driver capabilities for Emualtors
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
-- We now record audio & use hardware encoding with Intel & AMD GPU's when using `batocera-record` (x86_64 only).
+- We now record audio & use hardware encoding (x86_64 only) with Intel & AMD GPU's when using `batocera-record`.
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
