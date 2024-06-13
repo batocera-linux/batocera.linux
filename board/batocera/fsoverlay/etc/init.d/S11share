@@ -220,6 +220,9 @@ mountDevicesOrNetwork() {
                         "CONFIGS")
                             CMD_TDIR="/userdata/system/configs"
                         ;;
+                        "RECORDINGS")
+                            CMD_TDIR="/userdata/recordings"
+                        ;;
                     esac
 
                     mkdir -p "${CMD_TDIR}" || return 1
