@@ -8,6 +8,8 @@ LIBRETRO_MAME_VERSION = lrmame0265
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 
+LIBRETRO_MAME_DEPENDENCIES = alsa-lib
+
 # Limit number of jobs not to eat too much RAM....
 LIBRETRO_MAME_MAX_JOBS = 16
 LIBRETRO_MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(LIBRETRO_MAME_MAX_JOBS) ]; then echo $(LIBRETRO_MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)

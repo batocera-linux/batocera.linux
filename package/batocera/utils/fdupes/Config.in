@@ -1,6 +1,7 @@
 config BR2_PACKAGE_FDUPES
 	bool "FDUPES"
 	depends on  BR2_PACKAGE_NCURSES
+	depends on  BR2_PACKAGE_SQLITE
 
 	help
 	  Command line tool to find duplicate files

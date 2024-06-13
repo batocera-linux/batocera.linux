@@ -3,5 +3,7 @@ config BR2_PACKAGE_PYTHON_HIDAPI
 	depends on BR2_PACKAGE_HAS_UDEV
 	select BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_LIBUSB
+	select BR2_PACKAGE_HIDAPI
+	select BR2_PACKAGE_HOST_PYTHON_CYTHON
 	help
 	 https://pypi.org/project/hidapi

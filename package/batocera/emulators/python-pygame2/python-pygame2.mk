@@ -10,7 +10,7 @@ PYTHON_PYGAME2_SETUP_TYPE = setuptools
 PYTHON_PYGAME2_LICENSE = LGPL-2.1+
 PYTHON_PYGAME2_LICENSE_FILES = LGPL
 
-PYTHON_PYGAME2_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf sdl2_mixer libpng jpeg
+PYTHON_PYGAME2_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf sdl2_mixer libpng jpeg host-python-cython
 
 define PYTHON_PYGAME2_FIXSDL2_PATH
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/buildconfig/config_unix.py
