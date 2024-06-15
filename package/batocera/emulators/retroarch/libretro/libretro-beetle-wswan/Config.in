@@ -2,8 +2,9 @@ config BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN
     bool "libretro-beetle-wswan"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-      help
-        A libretro Wonderswan emulator core for ARM.
+	select BR2_PACKAGE_LIBPNG
+    help
+      A libretro Wonderswan emulator core for ARM.
 
 	  http://www.libretro.com
 
