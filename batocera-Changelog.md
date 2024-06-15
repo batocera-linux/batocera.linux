@@ -16,6 +16,7 @@ Initial support for the Lenovo Legion Go
 Support for Nvidia cards requiring the legacy 340.108 driver.
 Add support for the Ayaneo 2S
 Add support for the Ayaneo Air Plus (6800U) model
+Add support for the Rock 5c
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
@@ -69,6 +70,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Scanlines not showing in Daphne/Singe
 - Supermodel persistent crash in some cases with light guns
 - Cuda hardware acceleration of the splash video for Nvidia cards using the production driver.
+- Kodi green screen with RK3588 boards
 ### Changed / Improved
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
@@ -81,6 +83,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
 - We now record audio & use hardware encoding (x86_64 only) with Intel & AMD GPU's when using `batocera-record`.
+- Moved the RK3588 boards to the new Mesa 3D Panthor driver (now supports more emulators)
 ### Updated
 - Retroarch to 1.18.0
 - Libretro cores for retroarch 1.17.0 [#11113](https://github.com/batocera-linux/batocera.linux/pull/11113/files)
