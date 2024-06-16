@@ -5,7 +5,7 @@ config BR2_PACKAGE_SONIC2013
 	select BR2_PACKAGE_SDL2_MIXER
 	select BR2_PACKAGE_LIBOGG
 	select BR2_PACKAGE_LIBVORBIS
-	select BR2_PACKAGE_LIBGLEW    if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_LIBGLEW    if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBGL
     help
       The Sonic 2013 decompilation is for the Android & iOS ports of Sonic 1 and 2
 
