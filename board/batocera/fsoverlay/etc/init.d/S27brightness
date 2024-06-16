@@ -6,15 +6,20 @@ case $1 in
     start)
         # don't set if under 5%, while it can cause false positive issues
         BRI=$(batocera-settings-get display.brightness)
-        if test $? = 0
-        then
-            test "${BRI}" -lt 5 && BRI=5
-            batocera-brightness "${BRI}"
+        if [ $? -eq 0 ]; then
+            if [ "$BRI" -lt 5 ]; then
+                BRI=5
+            fi
+            batocera-brightness "$BRI"
         fi
         ;;
     stop)
-        if [ "$(batocera-settings-get display.brightness)" != "$(batocera-brightness)" ]; then
-            batocera-settings-set display.brightness $(batocera-brightness)
+        current_brightness=$(batocera-brightness)
+        stored_brightness=$(batocera-settings-get display.brightness)
+        if [ "$stored_brightness" != "$current_brightness" ]; then
+            if [ -e "/userdata/system/batocera.conf" ]; then
+                batocera-settings-set display.brightness "$current_brightness"
+            fi
         fi
         ;;
 esac
