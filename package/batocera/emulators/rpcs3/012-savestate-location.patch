@@ -6,7 +6,7 @@ index 6bc53fc7f1..538a4eb9d6 100644
  {
  	if (!g_cfg.savestate.suspend_emu && !Emu.GetTitleID().empty() && (Emu.IsRunning() || Emu.GetStatus() == system_state::paused))
  	{
--		const std::string save_dir = fs::get_cache_dir() + "savestates/" + Emu.GetTitleID() + '/';
+-		const std::string save_dir = get_savestate_file(Emu.GetTitleID(), Emu.GetBoot(), -1, -1);
 +		const std::string save_dir = "/userdata/saves/ps3/" + Emu.GetTitleID() + "/";
  
  		std::string savestate_path;
