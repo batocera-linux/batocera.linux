@@ -174,7 +174,7 @@ Add support for the Ayaneo Air Plus (6800U) model
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3D to 24.1
+- Mesa3D to 24.1.2
 - RPi kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.5
