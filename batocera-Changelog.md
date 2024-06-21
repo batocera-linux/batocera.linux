@@ -133,7 +133,7 @@ Add support for the Rock 5c
 - ScummVM to 2.8.1
 - Fheroes2 to 1.0.13
 - PCSX2 to v1.7.5864
-- Play! & Libretro Play! to 0.65-1
+- Play! & Libretro Play! to 0.66
 - Dolphin to 5.0-21543
 - Libretro-Hatarib: bump to v0.3
 - Hatari to v2.5.0
