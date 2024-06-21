@@ -8,6 +8,8 @@ Note: The `powersave` mode will have the biggest impact on CPU performance whils
 Singe games now have it's own system. Move any singe related games from roms/daphne to the roms/singe directory.
 Note: Singe games in the roms/daphne folder will no longer work.
 You can determine you have a Singe simulation game by the games folder contains a .singe file.
+
+EmulationStation's Video Mode (resolution) is now under System Settings rather than under Frontend Developers.
 ### Hardware
 Add support for the Pironman case with RPI4 devices.
 Add support for OrangePi Zero 3 (all variants)
