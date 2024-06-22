@@ -86,6 +86,7 @@ Add support for the Rock 5c
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
 - We now record audio & use hardware encoding (x86_64 only) with Intel & AMD GPU's when using `batocera-record`.
+  - Recorded videos are now saved in `/recordings/` folder
 - Moved the RK3588 boards to the new Mesa 3D Panthor driver (now supports more emulators)
 ### Updated
 - Retroarch to 1.18.0
