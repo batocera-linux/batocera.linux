@@ -135,7 +135,7 @@ Add support for the Rock 5c
 - Xemu to v0.7.121
 - ScummVM to 2.8.1
 - Fheroes2 to 1.0.13
-- PCSX2 to v1.7.5864
+- PCSX2 to v1.7.5913
 - Play! & Libretro Play! to 0.66
 - Dolphin to 5.0-21543
 - Libretro-Hatarib: bump to v0.3

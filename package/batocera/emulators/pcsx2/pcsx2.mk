@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_VERSION = v1.7.5864
+PCSX2_VERSION = v1.7.5913
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -42,7 +42,7 @@ else
     PCSX2_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     PCSX2_CONF_OPTS += -DUSE_VULKAN=ON
 else
     PCSX2_CONF_OPTS += -DUSE_VULKAN=OFF
