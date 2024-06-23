@@ -33,6 +33,7 @@ Add support for the Rock 5c
 - Steering wheel support for:
   - Thrustmaster T150RS
   - Thrustmaster T80 (gamepad mode only)
+  - Thrustmaster Ferrari GT 2 in 1 Rumble Force Racing Wheel
   - Driving Wheel SV200
   - PNX-V10 (x-input only)
   - Logitech Driving Force Pro
