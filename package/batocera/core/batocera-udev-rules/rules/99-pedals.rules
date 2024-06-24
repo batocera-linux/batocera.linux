@@ -1,0 +1,5 @@
+# Foot pedal name        : VEC Infinity 3 USB Digital Foot Control (Player 1)
+# Left pedal (coins)     : BTN_0
+# Middle pedal (reload)  : BTN_1
+# Right pedal (start)    : BTN_2
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="05f3", ATTRS{idProduct}=="00ff", MODE="0666", ENV{ID_INPUT_KEYBOARD}="1", ENV{ID_INPUT_KEY}="1", RUN+="/usr/bin/evsieve --input $env{DEVNAME} grab --map yield btn:0 key:5 --map yield btn:1 key:c --map yield btn:2 key:1 --block --output name=FootPedal"
