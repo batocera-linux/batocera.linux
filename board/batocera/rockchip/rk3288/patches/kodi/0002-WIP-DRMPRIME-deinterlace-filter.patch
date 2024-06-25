@@ -12,6 +12,14 @@ diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp b/
 index 01ee7e7fe6..1b662d11c7 100644
 --- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
 +++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+@@ -19,6 +19,7 @@
+ #include "threads/SingleLock.h"
+ #include "utils/CPUInfo.h"
+ #include "utils/log.h"
++#include "utils/StringUtils.h"
+ 
+ #if defined(HAVE_GBM)
+ #include "windowing/gbm/WinSystemGbm.h"
 @@ -79,12 +79,15 @@ CDVDVideoCodecDRMPRIME::CDVDVideoCodecDRMPRIME(CProcessInfo& processInfo)
    : CDVDVideoCodec(processInfo)
  {
@@ -480,7 +488,7 @@ diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h b/xb
 index 48bbae40fc..c0478f0072 100644
 --- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h
 +++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h
-@@ -38,18 +38,25 @@ public:
+@@ -38,19 +38,26 @@ public:
  
  protected:
    void Drain();
@@ -501,6 +509,7 @@ index 48bbae40fc..c0478f0072 100644
 +  std::string m_filters;
    int m_codecControlFlags = 0;
    CDVDStreamInfo m_hints;
+   double m_DAR = 1.0;
    AVCodecContext* m_pCodecContext = nullptr;
    AVFrame* m_pFrame = nullptr;
 +  AVFrame* m_pFilterFrame = nullptr;
