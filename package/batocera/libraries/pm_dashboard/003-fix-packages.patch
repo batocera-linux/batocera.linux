@@ -1,0 +1,17 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 4b2b5ace7a..c806ddf141 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -24,7 +24,11 @@ dependencies = [
+ ]
+ 
+ [tool.setuptools]
+-packages = ["pm_dashboard"]
++packages = ["pm_dashboard",
++            "pm_dashboard.www",
++            "pm_dashboard.www.static.css",
++            "pm_dashboard.www.static.js"
++]
+ 
+ [project.urls]
+ "Homepage" = "https://github.com/sunfounder/pm_dashboard"

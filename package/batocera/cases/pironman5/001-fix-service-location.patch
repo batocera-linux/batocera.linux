@@ -1,0 +1,15 @@
+diff --git a/bin/pironman5 b/bin/pironman5
+index e68ccf122a..71080c975f 100644
+--- a/bin/pironman5
++++ b/bin/pironman5
+@@ -13,8 +13,8 @@ done
+ 
+ if [ $background == true ]; then
+     echo "running at background"
+-    /opt/pironman5/venv/bin/pironman5-service "$args" 2>1 1>/dev/null &
++    /usr/bin/pironman5-service "$args" 2>1 1>/dev/null &
+ else
+-    /opt/pironman5/venv/bin/pironman5-service "$@"
++    /usr/bin/pironman5-service "$@"
+ fi
+ 

@@ -20,6 +20,7 @@ Add support for the Ayaneo 2S
 Add support for the Ayaneo Air Plus (6800U) model
 Add support for the Radxa Rock 5c
 Add support for the Banana Pi BPI-M7
+Add support for the Pironman 5 case with RPi5 devices.
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
