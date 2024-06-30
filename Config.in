@@ -523,6 +523,7 @@ menu "Cases"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/deskpipro-case/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/element14-pi-desktop/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/pironman/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/pironman5/Config.in"
 endmenu
 
 menu "Screens"
@@ -581,6 +582,17 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-proxy-tools/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pywebview/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg-python/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pm_auto/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pm_dashboard/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sf_rpi_status/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-neopixel-spi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-pixelbuf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-smbus2/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-connectionmanager/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-requests/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/liblgpio/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-lgpio/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-binho-host-adapter/Config.in"
 endmenu
 
 menu "Audio"
@@ -590,6 +602,10 @@ menu "Audio"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/alsa-topology-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/alsa-ucm-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/zmusic/Config.in"
+endmenu
+
+menu "Database"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/database/influxdb/Config.in"
 endmenu
 
 endmenu
