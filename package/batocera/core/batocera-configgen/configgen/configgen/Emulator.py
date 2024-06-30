@@ -76,7 +76,9 @@ class Emulator():
 
     def game_settings_name(self,rom):
 
-        rom = os.path.basename(rom)
+        # $$$ if users have roms in subdirs previously, batocera.conf needs updating (could script upgrade)
+        # https://stackoverflow.com/a/19856910/9983389
+        rom = os.path.relpath(rom, batoceraFiles.ROMS + "/" + self.name)
 
         # sanitize rule by EmulationStation 
         # see FileData::getConfigurationName() on batocera-emulationstation 
