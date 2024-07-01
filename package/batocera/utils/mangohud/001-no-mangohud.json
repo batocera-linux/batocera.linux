@@ -1,0 +1,25 @@
+diff --git a/src/meson.build b/src/meson.build
+index 0331983..9d6857d 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -358,13 +358,13 @@ if get_option('mangoapp_layer')
+   )
+ endif
+ 
+-configure_file(input : 'mangohud.json.in',
+-  output : '@0@.@1@.json'.format(meson.project_name(), host_machine.cpu_family()),
+-  configuration : conf_data,
+-  install : true,
+-  install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
+-  install_tag : 'runtime',
+-)
++#configure_file(input : 'mangohud.json.in',
++#  output : '@0@.@1@.json'.format(meson.project_name(), host_machine.cpu_family()),
++#  configuration : conf_data,
++#  install : true,
++#  install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
++#  install_tag : 'runtime',
++#)
+ 
+ configure_file(input : '../bin/mangohud.in',
+   output : 'mangohud',
