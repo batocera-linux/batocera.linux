@@ -51,26 +51,37 @@ class HypseusSingeGenerator(Generator):
             ratio = sar_num / sar_den
             width = int(height * ratio)
         return width, height
-    
+
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # copy input.ini file templates
         hypseusConfigSource = "/usr/share/hypseus-singe/hypinput_gamepad.ini"
 
         bezel_to_rom = {
-            "cliffhanger": ["cliffhanger", "cliff"],
+            "ace": ["ace", "ace_a", "ace_a2", "ace91", "ace91_euro", "aceeuro"],
+            "astron": ["astron", "astronp"],
+            "badlands": ["badlands", "badlandsp"],
+            "bega": ["bega", "begar1"],
+            "cliffhanger": ["cliffhanger", "cliff", "cliffalt", "cliffalt2"],
+            "cobra": ["cobra", "cobraab", "cobraconv", "cobram3"],
             "conan": ["conan", "future_boy"],
             "chantze_hd": ["chantze_hd", "triad_hd", "triadstone"],
             "crimepatrol": ["crimepatrol", "crimepatrol-hd", "cp_hd"],
+            "dle": ["dle", "dle_alt", "dle11", "dle21"],
+            "dragon": ["dragon", "dragon_trainer"],
             "drugwars": ["drugwars", "drugwars-hd", "cp2dw_hd"],
             "daitarn": ["daitarn", "daitarn_3"],
             "dle": ["dle", "dle_alt"],
+            "fire_and_ice": ["fire_and_ice", "fire_and_ice_v2"],
+            "galaxy": ["galaxy", "galaxyp"],
+            "lair": ["lair", "lair_a", "lair_b", "lair_c", "lair_d", "lair_d2", "lair_e", "lair_f", "lair_ita", "lair_n1", "lair_x", "laireuro"],
             "lbh": ["lbh", "lbh-hd", "lbh_hd"],
             "maddog": ["maddog", "maddog-hd", "maddog_hd"],
             "maddog2": ["maddog2", "maddog2-hd", "maddog2_hd"],
             "jack": ["jack", "samurai_jack"],
-            "spacepirates": ["spacepirates", "spacepirates-hd", "space_pirates_hd"],
             "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd"],
+            "pussinboots": ["pussinboots", "puss_in_boots"],
+            "spacepirates": ["spacepirates", "spacepirates-hd", "space_pirates_hd"],
         }
 
         def find_bezel(rom_name):
@@ -112,13 +123,13 @@ class HypseusSingeGenerator(Generator):
         # Copy/update directories
         for directory in directories:
             copy_resources(directory["source"], directory["destination"])
-               
+
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
         commandsFile = rom + "/" + romName + ".commands"
         singeFile = rom + "/" + romName + ".singe"
-        
+
         bezelFile = find_bezel(romName.lower())
         if bezelFile is not None:
             bezelFile += ".png"
@@ -155,7 +166,7 @@ class HypseusSingeGenerator(Generator):
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
-                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir, 
+                            "-fastboot", "-gamepad", "-datadir", batoceraFiles.hypseusDatadir,
                             "-romdir", batoceraFiles.daphneRomdir, "-homedir", batoceraFiles.hypseusDatadir]
 
         # controller config file
@@ -197,11 +208,11 @@ class HypseusSingeGenerator(Generator):
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
                 if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
                     xratio = 4/3
-        
+
         # Don't set bezel if screeen resolution is not conducive to needing them (i.e. CRT)
         if gameResolution["width"] / gameResolution["height"] < 1.51:
             bezelRequired = False
-        
+
         # Backend - Default OpenGL
         if system.isOptSet("hypseus_api") and system.config["hypseus_api"] == 'Vulkan':
             commandArray.append("-vulkan")
@@ -252,13 +263,13 @@ class HypseusSingeGenerator(Generator):
         # bezels
         if system.isOptSet('hypseus_bezels') and system.getOptBoolean("hypseus_bezels") == False:
             bezelRequired = False
-        
+
         if bezelRequired:
             if not os.path.exists(bezelPath):
                 commandArray.extend(["-bezel", "default.png"])
             else:
                 commandArray.extend(["-bezel", bezelFile])
-        
+
         # Invert HAT Axis
         if system.isOptSet('hypseus_axis') and system.getOptBoolean("hypseus_axis"):
             commandArray.append("-tiphat")
@@ -272,7 +283,7 @@ class HypseusSingeGenerator(Generator):
         # Singe joystick sensitivity, default is 5.
         if system.name == "singe" and system.isOptSet('singe_joystick_range'):
             commandArray.extend(["-js_range", system.config['singe_joystick_range']])
-        
+
         # Scanlines
         if system.isOptSet('hypseus_scanlines') and system.config['hypseus_scanlines'] > "0":
             commandArray.extend(["-scanlines", "-scanline_shunt", system.config['hypseus_scanlines']])
