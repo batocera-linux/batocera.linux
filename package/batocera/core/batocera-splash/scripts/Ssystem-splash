@@ -34,10 +34,10 @@ do_start ()
         [ -f "$image" ] || exit 1
     fi
 
-    if test "${V_BOARD_MODEL}" = "Loki_Zero" || test "${V_BOARD_MODEL}" = "AIR_Plus"; then
+    if test "${V_BOARD_MODEL}" = "Loki_Zero"; then
         image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
     fi
-
+    
     # don't display a rotate image if the screen is not horizontal
     # we can't know if that's left or right, it depends on the device, so, just ignore
     # maybe in some case we want the rotated image for some boards. add those boards here
