@@ -660,12 +660,15 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
     retroarchConfig['run_ahead_enabled'] = 'false'
     retroarchConfig['run_ahead_frames'] = '0'
     retroarchConfig['run_ahead_secondary_instance'] = 'false'
+    retroarchConfig['preemptive_frames_enable'] = 'false'
     if system.isOptSet('runahead') and int(system.config['runahead']) >0:
        if (not system.name in systemNoRunahead):
           retroarchConfig['run_ahead_enabled'] = 'true'
           retroarchConfig['run_ahead_frames'] = system.config['runahead']
-          if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
+          if system.isOptSet('runaheadtype') and int(system.config['runaheadtype']) = 2:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
+          if system.isOptSet('runaheadtype') and int(system.config['runaheadtype']) = 1:
+              retroarchConfig['preemptive_frames_enable'] = 'true'
 
     # Auto frame delay (input delay reduction via frame timing)
     if system.isOptSet('video_frame_delay_auto') and system.getOptBoolean('video_frame_delay_auto') == True:
