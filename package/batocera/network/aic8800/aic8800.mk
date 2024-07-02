@@ -3,8 +3,8 @@
 # aic8800
 #
 ################################################################################
-# Version: Commits on Jun 24, 2024
-AIC8800_VERSION = 09a573c3b840744a7dd83e33a6478ae218f43625
+# Version: Commits on Jun 25, 2024
+AIC8800_VERSION = ccba7fffed8554fe861bd631ff6f852d2d6eec39
 AIC8800_SITE = $(call github,batocera-linux,aic8800,$(AIC8800_VERSION))
 AIC8800_LICENSE = GPL-2.0
 AIC8800_LICENSE_FILES = LICENSE
