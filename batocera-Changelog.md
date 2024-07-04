@@ -187,7 +187,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3D to 24.1.2
+- Mesa3D to 24.1.3
 - RPi kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.7
@@ -207,6 +207,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - DXVK-NVAPI to 0.7.0
 - VKD3D-Proton to v2.12
 - Vulkan headers to 1.3.286
+- Bluez to 5.76
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes
