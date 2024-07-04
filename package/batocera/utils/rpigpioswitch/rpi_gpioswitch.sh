@@ -751,7 +751,7 @@ function pironman5_start()
         echo "dtparam=spi=on" >> /boot/config.txt
     fi
     # log location
-    mkdir -p /var/logs/pironman5
+    mkdir -p /var/log/pironman5
     # ensure i2c is running
     modprobe i2c_dev
     # setup user adjustable config file
