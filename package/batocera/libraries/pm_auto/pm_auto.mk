@@ -11,8 +11,8 @@ PM_AUTO_LICENSE = GPL-2.0
 PM_AUTO_LICENSE_FILES = LICENSE
 
 PM_AUTO_DEPENDENCIES += python-adafruit-circuitpython-neopixel-spi
-PM_AUTO_DEPENDENCIES += python-smbus2 python-psutil python-influxdb
-PM_AUTO_DEPENDENCIES += python-pillow python3-gpiod python-gpiozero python-lgpio
-PM_AUTO_DEPENDENCIES += python-adafruit-circuitpython-requests influxdb
+PM_AUTO_DEPENDENCIES += python-smbus2 python-psutil python-lgpio
+PM_AUTO_DEPENDENCIES += python-pillow python3-gpiod python-gpiozero
+PM_AUTO_DEPENDENCIES += python-adafruit-circuitpython-requests
 
 $(eval $(python-package))

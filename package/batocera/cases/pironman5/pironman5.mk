@@ -3,15 +3,15 @@
 # pironman5
 #
 ################################################################################
-# Version: Commits on Jun 27, 2024
-PIRONMAN5_VERSION = 235176fd693021fe191653fddbff8b2d3929c4b1
+# Version: Commits on Jul 4, 2024
+PIRONMAN5_VERSION = efd1d50d678a9048b5612eeec34530c08469e8a3
 PIRONMAN5_SITE = $(call github,sunfounder,pironman5,$(PIRONMAN5_VERSION))
 PIRONMAN5_SETUP_TYPE = setuptools
 PIRONMAN5_LICENSE = GPL-2.0
 PIRONMAN5_LICENSE_FILE = LICENSE
 
 PIRONMAN5_DEPENDENCIES += python-influxdb freetype i2c-tools kmod python-numpy
-PIRONMAN5_DEPENDENCIES += python-gpiozero pm_auto pm_dashboard sf_rpi_status
+PIRONMAN5_DEPENDENCIES += python-gpiozero pm_auto sf_rpi_status
 
 define PIRONMAN5_INSTALL_OVERLAY
     $(INSTALL) -D -m 0755 $(@D)/bin/pironman5 $(TARGET_DIR)/usr/bin/
