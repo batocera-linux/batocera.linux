@@ -190,7 +190,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Mesa3D to 24.1.3
 - RPi kernel to 6.6.20
 - Pipewire to 1.0.4
-- X86_64 kernel to 6.9.7
+- X86_64 kernel to 6.9.8
 - Switchres 0.220
 - Btop to 1.3.2
 - Linux firmware to 20240513
