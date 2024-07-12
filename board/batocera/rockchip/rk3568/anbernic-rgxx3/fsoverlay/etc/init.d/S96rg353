@@ -1,28 +1,35 @@
-#!/bin/sh
+#!/bin/bash
 #
 # GPIO init for RTW88_8821CS SDIO
+# dmanlfc - updated 13 July 2024
 #
 
 start() {
-	echo "Starting RTW88 network services..."
-	info_output=$(batocera-info)
-	if [[ $info_output == *"Model: RG353V"*]]; then
-		echo 5 > /sys/class/gpio/export
-		echo out > /sys/class/gpio/gpio5/direction
-		echo 1 > /sys/class/gpio/gpio5/value
+	info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+	if [[ $info_output == "RG353V" ]]; then
+	    echo "Starting RG353V RTW88 network adaptor..."
+	    if [ ! -d /sys/class/gpio/gpio5 ]; then
+	        echo 5 > /sys/class/gpio/export
+			echo out > /sys/class/gpio/gpio5/direction
+			echo 1 > /sys/class/gpio/gpio5/value
+			modrpobe rtw88_8821cs
+	    fi
 	fi
 }
 
 stop() {
-	echo "Shutting down RTW88 network services..."
-	info_output=$(batocera-info)
-	if [[ $info_output == *"Model: RG353V"*]]; then
-	    echo 0 > /sys/class/gpio/gpio5/value
+	info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+	if [[ $info_output == "RG353V" ]]; then
+	    echo "Shutting down RG353V RTW88 network adaptor..."
+	    if [ -d /sys/class/gpio/gpio5 ]; then
+	        echo 0 > /sys/class/gpio/gpio5/value
+			modrpobe -r rtw88_8821cs
+	    fi
 	fi
 }	
 
 restart() {
-	echo "Restarting RTW88 network services..."
+	echo "Restarting RTW88 network adaptor..."
 	stop
 	start
 }	
@@ -42,4 +49,4 @@ case "$1" in
 	exit 1
 esac
 
-exit $?
+exit 0
