@@ -16,10 +16,10 @@ class MugenGenerator(Generator):
         #clean up
         contents = re.sub(r'^[ ]*;', ';', contents, 0, re.MULTILINE)
         contents = re.sub(r'^[ ;]*FullScreen[ ]*=.*', 'FullScreen = 1', contents, 0, re.MULTILINE)
-        contents = re.sub(r'^[ ;]*GameWidth[ ]*=.*', 'Width = '+str(gameResolution["width"]), contents, 0, re.MULTILINE)
-        contents = re.sub(r'^[ ;]*GameHeight[ ]*=.*', 'Height = '+str(gameResolution["height"]), contents, 0, re.MULTILINE)
-        contents = re.sub(r'^[ ;]*Width[ ]*=.*', 'GameWidth = '+str(gameResolution["width"]), contents, 0, re.MULTILINE)
-        contents = re.sub(r'^[ ;]*Height[ ]*=.*', 'GameHeight = '+str(gameResolution["height"]), contents, 0, re.MULTILINE)
+        contents = re.sub(r'^[ ;]*GameWidth[ ]*=.*', 'GameWidth = '+str(gameResolution["width"]), contents, 0, re.MULTILINE)
+        contents = re.sub(r'^[ ;]*GameHeight[ ]*=.*', 'GameHeight = '+str(gameResolution["height"]), contents, 0, re.MULTILINE)
+        contents = re.sub(r'^[ ;]*Width[ ]*=.*', 'Width = '+str(gameResolution["width"]), contents, 0, re.MULTILINE)
+        contents = re.sub(r'^[ ;]*Height[ ]*=.*', 'Height = '+str(gameResolution["height"]), contents, 0, re.MULTILINE)
         contents = re.sub(r'^[ ;]*Language[ ]*=.*', 'Language = "en"', contents, 0, re.MULTILINE)
         with open(settings_path, 'w') as f:
             f.write(contents)
