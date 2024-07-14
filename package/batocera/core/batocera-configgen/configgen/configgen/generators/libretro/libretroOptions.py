@@ -2667,9 +2667,16 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         else:
             coreSettings.save('pcsx_rearmed_frameskip', '"0"')
         # Enhanced resolution at the cost of lower performance
-        # Speed hack causes game glitches - turn it off.
-        coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
-        coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+        if system.isOptSet('neon_enhancement') and system.config['neon_enhancement'] != 'disabled':
+            if system.config['neon_enhancement'] == 'enabled':
+                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
+                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+            elif system.config['neon_enhancement'] == 'enabled_with_speedhack':
+                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
+                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"enabled"')
+        else:
+            coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
+            coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
         # Multitap
         if system.isOptSet('pcsx_rearmed_multitap'):
             coreSettings.save('pcsx_rearmed_multitap', '"' + system.config['pcsx_rearmed_multitap'] + '"')
