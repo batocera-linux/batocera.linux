@@ -25,7 +25,6 @@ endef
 define MALI_G52_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/lib/pkgconfig
         cp -R $(@D)/etc/* $(TARGET_DIR)/etc/
-        cp -R $(@D)/usr/include/* $(TARGET_DIR)/usr/include/
         cp -R $(@D)/usr/lib/aarch64-linux-gnu/* $(TARGET_DIR)/usr/lib/
 endef
 
