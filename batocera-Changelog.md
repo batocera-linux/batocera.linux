@@ -55,6 +55,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Wireguard VPN tools to setup your PC for Wireguard VPN access. See the wiki here: https://wiki.batocera.org/vpn_client
 - Support for standalone MAME (MAME) and libretro-MAME (lr-mame) BIOS files in bios/mame/ subfolder
   - BIOS files in /userdata/bios/mame have precendence over /userdata/bios (per MAME -rompath behavior)
+- Start and Select buttons on light guns for Hypseus Singe
 ### Fixed
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
