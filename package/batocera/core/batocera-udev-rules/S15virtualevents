@@ -17,7 +17,7 @@ test ! -e /var/run/virtual-events.waiting && exit 0
 cat /var/run/virtual-events.waiting |
     while read WMETHOD WACTION WDEVNAME WDEVPATH WCMD
     do
-	ACTION=${WACTION} DEVNAME=${WDEVNAME} DEVPATH=${WDEVPATH} ${WCMD}
+	ACTION=${WACTION} DEVNAME=${WDEVNAME} DEVPATH=${WDEVPATH} ${WCMD} &
     done
 
 rm /var/run/virtual-events.waiting
