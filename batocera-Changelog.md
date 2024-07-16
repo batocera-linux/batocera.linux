@@ -57,6 +57,7 @@ Add support for the Pironman 5 case with RPi5 devices.
   - BIOS files in /userdata/bios/mame have precendence over /userdata/bios (per MAME -rompath behavior)
 - Start and Select buttons on light guns for Hypseus Singe
 ### Fixed
+- RA menu confirm/cancel inputs now follows ES confirm/cancel setting.
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
 - GameForce Vibrator enabled
@@ -82,6 +83,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Cuda hardware acceleration of the splash video for Nvidia cards using the production driver.
 - Kodi green screen with RK3588 boards
 ### Changed / Improved
+- Organized dolphin ES settings.
 - RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
 - RPCS3 upscaling now outputs properly
