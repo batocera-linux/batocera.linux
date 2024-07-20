@@ -1,0 +1,108 @@
+From 241f70e5a13bb9c13a168282446ad074e16c3d74 Mon Sep 17 00:00:00 2001
+From: David Rosca <david.rosca@amd.com>
+Date: Thu, 18 Jul 2024 19:15:13 +0200
+Subject: [PATCH] Revert "frontends/va: Fix AV1 slice_data_offset with multiple
+ slice data buffers"
+
+This commit is fixing an issue where all AV1 slice data offsets always point
+into the first slice data buffer, even when multiple slice data buffers
+are submitted. However, after b0d6e58d88f ("Reapply "radeonsi/vcn: AV1 skip the redundant bs resize"")
+only the first slice data buffer will be sent to decoder and the incorrect
+behavior is required, so this commit also needs to be reverted.
+
+This reverts commit 6746d4df6eac83d048e88c2d54aa19e7c1a0a696.
+
+Reviewed-by: Leo Liu <leo.liu@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/30255>
+---
+ src/gallium/frontends/va/picture.c     | 11 +++--------
+ src/gallium/frontends/va/picture_av1.c |  4 ++--
+ src/gallium/frontends/va/va_private.h  |  2 +-
+ 3 files changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/src/gallium/frontends/va/picture.c b/src/gallium/frontends/va/picture.c
+index 59692aeee91cc..a2bb608ec96a8 100644
+--- a/src/gallium/frontends/va/picture.c
++++ b/src/gallium/frontends/va/picture.c
+@@ -299,7 +299,7 @@ handleIQMatrixBuffer(vlVaContext *context, vlVaBuffer *buf)
+ }
+ 
+ static void
+-handleSliceParameterBuffer(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices, unsigned slice_offset)
++handleSliceParameterBuffer(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices)
+ {
+    switch (u_reduce_video_profile(context->templat.profile)) {
+    case PIPE_VIDEO_FORMAT_MPEG12:
+@@ -331,7 +331,7 @@ handleSliceParameterBuffer(vlVaContext *context, vlVaBuffer *buf, unsigned num_s
+       break;
+ 
+    case PIPE_VIDEO_FORMAT_AV1:
+-      vlVaHandleSliceParameterBufferAV1(context, buf, num_slices, slice_offset);
++      vlVaHandleSliceParameterBufferAV1(context, buf, num_slices);
+       break;
+ 
+    default:
+@@ -968,7 +968,6 @@ vlVaRenderPicture(VADriverContextP ctx, VAContextID context_id, VABufferID *buff
+ 
+    unsigned i;
+    unsigned slice_idx = 0;
+-   unsigned slice_offset = 0;
+    vlVaBuffer *seq_param_buf = NULL;
+ 
+    if (!ctx)
+@@ -1024,17 +1023,13 @@ vlVaRenderPicture(VADriverContextP ctx, VAContextID context_id, VABufferID *buff
+ 
+             slice_idx is the zero based number of total slices received
+                before this call to handleSliceParameterBuffer
+-
+-            slice_offset is the slice offset in bitstream buffer
+          */
+-         handleSliceParameterBuffer(context, buf, slice_idx, slice_offset);
++         handleSliceParameterBuffer(context, buf, slice_idx);
+          slice_idx += buf->num_elements;
+       } break;
+ 
+       case VASliceDataBufferType:
+          vaStatus = handleVASliceDataBufferType(context, buf);
+-         if (slice_idx)
+-            slice_offset += buf->size;
+          break;
+ 
+       case VAProcPipelineParameterBufferType:
+diff --git a/src/gallium/frontends/va/picture_av1.c b/src/gallium/frontends/va/picture_av1.c
+index c014b0b1168ce..e6f2652e36234 100644
+--- a/src/gallium/frontends/va/picture_av1.c
++++ b/src/gallium/frontends/va/picture_av1.c
+@@ -396,7 +396,7 @@ void vlVaHandlePictureParameterBufferAV1(vlVaDriver *drv, vlVaContext *context,
+   context->desc.av1.slice_parameter.slice_count = 0;
+ }
+ 
+-void vlVaHandleSliceParameterBufferAV1(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices, unsigned slice_offset)
++void vlVaHandleSliceParameterBufferAV1(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices)
+ {
+    for (uint32_t buffer_idx = 0; buffer_idx < buf->num_elements; buffer_idx++) {
+       uint32_t slice_index =
+@@ -407,7 +407,7 @@ void vlVaHandleSliceParameterBufferAV1(vlVaContext *context, vlVaBuffer *buf, un
+ 
+       VASliceParameterBufferAV1 *av1 = &(((VASliceParameterBufferAV1*)buf->data)[buffer_idx]);
+       context->desc.av1.slice_parameter.slice_data_size[slice_index] = av1->slice_data_size;
+-      context->desc.av1.slice_parameter.slice_data_offset[slice_index] = slice_offset + av1->slice_data_offset;
++      context->desc.av1.slice_parameter.slice_data_offset[slice_index] = av1->slice_data_offset;
+       context->desc.av1.slice_parameter.slice_data_row[slice_index] = av1->tile_row;
+       context->desc.av1.slice_parameter.slice_data_col[slice_index] = av1->tile_column;
+       context->desc.av1.slice_parameter.slice_data_anchor_frame_idx[slice_index] = av1->anchor_frame_idx;
+diff --git a/src/gallium/frontends/va/va_private.h b/src/gallium/frontends/va/va_private.h
+index 007ed95ce7f7c..ad30f3bad2a91 100644
+--- a/src/gallium/frontends/va/va_private.h
++++ b/src/gallium/frontends/va/va_private.h
+@@ -540,7 +540,7 @@ void vlVaHandlePictureParameterBufferVP9(vlVaDriver *drv, vlVaContext *context,
+ void vlVaHandleSliceParameterBufferVP9(vlVaContext *context, vlVaBuffer *buf);
+ void vlVaDecoderVP9BitstreamHeader(vlVaContext *context, vlVaBuffer *buf);
+ void vlVaHandlePictureParameterBufferAV1(vlVaDriver *drv, vlVaContext *context, vlVaBuffer *buf);
+-void vlVaHandleSliceParameterBufferAV1(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices, unsigned slice_offset);
++void vlVaHandleSliceParameterBufferAV1(vlVaContext *context, vlVaBuffer *buf, unsigned num_slices);
+ void getEncParamPresetH264(vlVaContext *context);
+ void getEncParamPresetH265(vlVaContext *context);
+ void getEncParamPresetAV1(vlVaContext *context);
+-- 
+GitLab
