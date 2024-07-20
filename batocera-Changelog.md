@@ -1,4 +1,4 @@
-# 2024/07/xx - batocera.linux 40 - Swallowtail
+# 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
 Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
 To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
@@ -84,7 +84,6 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Kodi green screen with RK3588 boards
 ### Changed / Improved
 - Organized dolphin ES settings.
-- RK3326 Replaced the mali-G31 driver with mesa3d
 - Amiga BIOS files now go into the bios/amiga/ subfolder
 - RPCS3 upscaling now outputs properly
 - GunCon3 default mapping (visit light gun page on official wiki)
@@ -190,7 +189,7 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3D to 24.1.3
+- Mesa3D to 24.1.4
 - RPi kernel to 6.6.20
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.8
