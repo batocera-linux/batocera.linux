@@ -183,14 +183,14 @@ Add support for the Pironman 5 case with RPi5 devices.
 - Libretro-MrBoom to May 17, 2024 build
 - Libretro-Picodrive to Mar 27, 2024 build
 ### System
-- ARM mainline kernel to 6.6.23
+- ARM mainline kernel to 6.6.27
 - Nvidia Production driver to 550.90.07
 - Nvidia Legacy driver to 470.239.06
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
 - Mesa3D to 24.1.4
-- RPi kernel to 6.6.20
+- RPi kernel to 6.6.41
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.10
 - Switchres 0.220
