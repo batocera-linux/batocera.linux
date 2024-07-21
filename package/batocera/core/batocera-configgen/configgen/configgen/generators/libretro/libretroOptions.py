@@ -2609,6 +2609,11 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('swanstation_GPU_ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
         else:
             coreSettings.save('swanstation_GPU_ResolutionScale', '"1"')
+        # PGXP Geometry Correction
+        if system.isOptSet('swanstation_pgxp'):
+            coreSettings.save('swanstation_GPU_PGXPEnable', '"' + system.config['swanstation_pgxp'] + '"')
+        else:
+            coreSettings.save('swanstation_GPU_PGXPEnable', '"true"')
         # Anti-aliasing (MSAA/SSAA)
         if system.isOptSet('swanstation_antialiasing'):
             coreSettings.save('swanstation_GPU_MSAA', '"' + system.config['swanstation_antialiasing'] + '"')

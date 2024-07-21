@@ -1429,6 +1429,13 @@ libretro:
                     "7x (2240x1680)": 7
                     "8x (2560x1920)": 8
                     "9x (2880x2160)": 9
+            swanstation_pgxp:
+                group: ADVANCED OPTIONS
+                prompt: ENABLE PGXP CORRECTIONS
+                description: Reduces wobbly polygons & warping textures.
+                choices:
+                    "Disabled":          "false"
+                    "Enabled (Default)": "true"
             swanstation_antialiasing:
                 group: ADVANCED OPTIONS
                 prompt:      ANTI-ALIASING (MSAA/SSAA)
