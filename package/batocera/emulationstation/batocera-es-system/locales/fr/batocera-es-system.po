@@ -2879,6 +2879,21 @@ msgctxt "game_options"
 msgid "USE SOFTWARE RENDERING"
 msgstr "UTILISER LE RENDU LOGICIEL"
 
+#. TRANSLATION: libretro/swanstation, duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygons & warping textures."
+msgstr "Réduit les polygones de travers et les textures déformées."
+
+#. TRANSLATION: libretro/swanstation, duckstation
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr "ACTIVER LES CORRECTIONS PGXP"
+
+#. TRANSLATION: libretro/swanstation, libretro/mame, libretro/mame, duckstation, duckstation, ...
+msgctxt "game_options"
+msgid "Enabled (Default)"
+msgstr "Activé (par défaut)"
+
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA/SSAA)"
@@ -4278,11 +4293,6 @@ msgstr "Active/désactive la sauvegarde des scores"
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "PLUGIN HIGH SCORE"
-
-#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, pcsx2, ...
-msgctxt "game_options"
-msgid "Enabled (Default)"
-msgstr "Activé (par défaut)"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -9539,16 +9549,6 @@ msgstr "Type DualShock/Xbox"
 msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "NeGcon (Vibration)"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "Reduces wobbly polygons & warping textures."
-msgstr "Réduit les polygones de travers et les textures déformées."
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "ENABLE PGXP CORRECTIONS"
-msgstr "ACTIVER LES CORRECTIONS PGXP"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -15324,12 +15324,12 @@ msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr "Quitter Duckstation"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Load State"
 msgstr "Charger une sauvegarde d'état"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Save State"
 msgstr "Écrire une sauvegarde d'état"
@@ -15344,12 +15344,12 @@ msgctxt "keys_files"
 msgid "Restart Game"
 msgstr "Redémarrer le jeu"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot -"
 msgstr "Emplacement -"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot +"
 msgstr "Emplacement +"
@@ -15364,7 +15364,7 @@ msgctxt "keys_files"
 msgid "Next Disc (m3u)"
 msgstr "Disque suivant (m3u)"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Fast Forward"
 msgstr "Avance rapide"
@@ -15618,6 +15618,16 @@ msgstr "Afficher l'écran du contrôleur"
 msgctxt "keys_files"
 msgid "Pause / Menu"
 msgstr "Pause / Menu"
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "Exit Emulator"
+msgstr ""
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "RetroArch Menu"
+msgstr ""
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"

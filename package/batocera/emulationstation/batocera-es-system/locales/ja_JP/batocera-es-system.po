@@ -2851,6 +2851,21 @@ msgctxt "game_options"
 msgid "USE SOFTWARE RENDERING"
 msgstr "ソフトウェアレンダリングを使用"
 
+#. TRANSLATION: libretro/swanstation, duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygons & warping textures."
+msgstr "ポリゴンのぐらつきやテクスチャの歪みを軽減します"
+
+#. TRANSLATION: libretro/swanstation, duckstation
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr "PGXP 修正を有効"
+
+#. TRANSLATION: libretro/swanstation, libretro/mame, libretro/mame, duckstation, duckstation, ...
+msgctxt "game_options"
+msgid "Enabled (Default)"
+msgstr "使用する (標準)"
+
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA/SSAA)"
@@ -4235,11 +4250,6 @@ msgstr "HIGH SCOREの保存を有効/無効にします"
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "HIGH SCORE プラグイン"
-
-#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, pcsx2, ...
-msgctxt "game_options"
-msgid "Enabled (Default)"
-msgstr "使用する (標準)"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -9448,16 +9458,6 @@ msgstr "デュアルショック / Xbox タイプ"
 msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "ネジコン(ナムコ)(振動有)"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "Reduces wobbly polygons & warping textures."
-msgstr "ポリゴンのぐらつきやテクスチャの歪みを軽減します"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "ENABLE PGXP CORRECTIONS"
-msgstr "PGXP 修正を有効"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -15160,12 +15160,12 @@ msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr "Duckstation を終了"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Load State"
 msgstr "ステートロード"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Save State"
 msgstr "ステートセーブ"
@@ -15180,12 +15180,12 @@ msgctxt "keys_files"
 msgid "Restart Game"
 msgstr "ゲームを再開"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot -"
 msgstr "スロット -"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot +"
 msgstr "スロット +"
@@ -15200,7 +15200,7 @@ msgctxt "keys_files"
 msgid "Next Disc (m3u)"
 msgstr "次のディスク (m3u)"
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Fast Forward"
 msgstr "早送り"
@@ -15454,6 +15454,16 @@ msgstr "コントローラー画面を表示"
 msgctxt "keys_files"
 msgid "Pause / Menu"
 msgstr "一時停止/メニュー"
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "Exit Emulator"
+msgstr ""
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "RetroArch Menu"
+msgstr ""
 
 #. TRANSLATION: moonlight.moonlight.keys
 msgctxt "keys_files"
