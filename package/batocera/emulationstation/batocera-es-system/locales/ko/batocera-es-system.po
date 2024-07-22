@@ -3141,6 +3141,23 @@ msgctxt "game_options"
 msgid "USE SOFTWARE RENDERING"
 msgstr "소프트웨어 렌더링 사용"
 
+#. TRANSLATION: libretro/swanstation, duckstation
+msgctxt "game_options"
+msgid "Reduces wobbly polygons & warping textures."
+msgstr ""
+
+#. TRANSLATION: libretro/swanstation, duckstation
+#, fuzzy
+msgctxt "game_options"
+msgid "ENABLE PGXP CORRECTIONS"
+msgstr "PGXP 수정 활성화"
+
+#. TRANSLATION: libretro/swanstation, libretro/mame, libretro/mame, duckstation, duckstation, ...
+#, fuzzy
+msgctxt "game_options"
+msgid "Enabled (Default)"
+msgstr "사용(기본값)"
+
 #. TRANSLATION: libretro/swanstation, libretro/duckstation, duckstation
 #, fuzzy
 msgctxt "game_options"
@@ -4710,12 +4727,6 @@ msgstr "최고 점수 저장 사용 또는 사용 안 함"
 msgctxt "game_options"
 msgid "HIGH SCORE PLUGIN"
 msgstr "고득점 플러그인"
-
-#. TRANSLATION: libretro/mame, libretro/mame, duckstation, duckstation, pcsx2, ...
-#, fuzzy
-msgctxt "game_options"
-msgid "Enabled (Default)"
-msgstr "사용(기본값)"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 #, fuzzy
@@ -10602,17 +10613,6 @@ msgstr "듀얼쇼크 / 엑스박스 타입"
 msgctxt "game_options"
 msgid "NeGcon (Rumble)"
 msgstr "네그콘 (럼블)"
-
-#. TRANSLATION: duckstation
-msgctxt "game_options"
-msgid "Reduces wobbly polygons & warping textures."
-msgstr ""
-
-#. TRANSLATION: duckstation
-#, fuzzy
-msgctxt "game_options"
-msgid "ENABLE PGXP CORRECTIONS"
-msgstr "PGXP 수정 활성화"
 
 #. TRANSLATION: duckstation
 #, fuzzy
@@ -16612,12 +16612,12 @@ msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr ""
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Load State"
 msgstr ""
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, nds.drastic.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys, nds.drastic.keys
 msgctxt "keys_files"
 msgid "Save State"
 msgstr ""
@@ -16632,12 +16632,12 @@ msgctxt "keys_files"
 msgid "Restart Game"
 msgstr ""
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot -"
 msgstr ""
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Slot +"
 msgstr ""
@@ -16652,7 +16652,7 @@ msgctxt "keys_files"
 msgid "Next Disc (m3u)"
 msgstr ""
 
-#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys
+#. TRANSLATION: psx.duckstation.keys, psp.ppsspp.keys, mame.mame.keys
 msgctxt "keys_files"
 msgid "Fast Forward"
 msgstr ""
@@ -16905,6 +16905,16 @@ msgstr ""
 #. TRANSLATION: psp.ppsspp.keys
 msgctxt "keys_files"
 msgid "Pause / Menu"
+msgstr ""
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "Exit Emulator"
+msgstr ""
+
+#. TRANSLATION: mame.mame.keys
+msgctxt "keys_files"
+msgid "RetroArch Menu"
 msgstr ""
 
 #. TRANSLATION: moonlight.moonlight.keys
