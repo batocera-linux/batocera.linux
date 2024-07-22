@@ -74,4 +74,12 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 endef
 
+define LIBRETRO_MAME_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-mame/mame.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
+endef
+
+LIBRETRO_MAME_POST_INSTALL_TARGET_HOOKS += LIBRETRO_MAME_EVMAPY
+
 $(eval $(generic-package))
