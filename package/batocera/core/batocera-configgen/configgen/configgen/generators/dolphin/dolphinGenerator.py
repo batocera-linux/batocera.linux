@@ -128,6 +128,10 @@ class DolphinGenerator(Generator):
         # Wiimote scanning
         dolphinSettings.set("Core", "WiimoteContinuousScanning", "True")
 
+        # Force OSD for RetroAchievements messages
+        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
+            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
+
         # Gamecube ports
         # Create a for loop going 1 through to 4 and iterate through it:
         for i in range(1, 5):

@@ -1,0 +1,13 @@
+diff '--color=auto' -uri dolphin-emu-lbrpdx/CMake/ScmRevGen.cmake dolphin-emu-139e6f6f1b748211c0bd4d13d03e7ef433bee670/CMake/ScmRevGen.cmake
+--- dolphin-emu-lbrpdx/CMake/ScmRevGen.cmake	2024-07-18 12:15:38.000000000 -0700
++++ dolphin-emu-139e6f6f1b748211c0bd4d13d03e7ef433bee670/CMake/ScmRevGen.cmake	2024-07-23 11:42:02.196829390 -0700
+@@ -32,7 +32,7 @@
+
+ # version number
+ set(DOLPHIN_VERSION_MAJOR "2407")
+-set(DOLPHIN_VERSION_MINOR "0")
++set(DOLPHIN_VERSION_MINOR "76")
+ set(DOLPHIN_VERSION_PATCH ${DOLPHIN_WC_REVISION})
+
+ # If Dolphin is not built from a Git repository, default the version info to
+
