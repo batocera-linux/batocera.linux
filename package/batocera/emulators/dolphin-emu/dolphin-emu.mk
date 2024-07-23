@@ -4,6 +4,8 @@
 #
 ################################################################################
 # Version: 2407-76 (5.0 development) - Commits on Jul 19, 2024
+# Warning: update 1004-version-retroachievements.patch with the right version
+# Because otherwise RetroAchievements are blocked
 DOLPHIN_EMU_VERSION = 139e6f6f1b748211c0bd4d13d03e7ef433bee670
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
@@ -25,6 +27,7 @@ DOLPHIN_EMU_CONF_OPTS += -DENABLE_AUTOUPDATE=OFF
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_ANALYTICS=OFF
 DOLPHIN_EMU_CONF_OPTS += -DUSE_SYSTEM_LIBS=AUTO
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_CLI_TOOL=OFF
+DOLPHIN_EMU_CONF_OPTS += -DUSE_RETRO_ACHIEVEMENTS=ON
 
 ifeq ($(BR2_PACKAGE_QT6),y)
 DOLPHIN_EMU_DEPENDENCIES += qt6base qt6svg
