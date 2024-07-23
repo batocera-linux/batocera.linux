@@ -1,0 +1,64 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}" input usb)
+BASEFILE="/var/run/virtual-blamcon-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+
+    # Trigger                           : BTN_LEFT
+    # A                                 : BTN_RIGHT
+    # B                                 : BTN_MIDDLE
+    # Foot pedal (GX16-8 pin connector) : BTN_SIDE
+    # Start                             : KEY_1
+    # Select                            : KEY_5
+    # D-pad up                          : KEY_UP
+    # D-pad down                        : KEY_DOWN
+    # D-pad left                        : KEY_LEFT
+    # D-pad right                       : KEY_RIGHT
+    # Semi/Auto switch                  : BTN_EXTRA
+
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield btn:side btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --block btn:extra --output name="Blamcon lightgun" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0
