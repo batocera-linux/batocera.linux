@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if test "$1" != "start"
+then
+  exit 0
+fi
+
+printf "Configure VIMs Fan: "
+
+# Change the default 50-60-70 Fan trigger temperature thresholds
+echo 80 > /sys/class/fan/trigger_temp_high
+echo 70 > /sys/class/fan/trigger_temp_mid
+echo 60 > /sys/class/fan/trigger_temp_low
+# Enable auto Fan mode
+echo 1 > /sys/class/fan/mode
+echo 1 > /sys/class/fan/enable
+
+echo "OK"
