@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log="/userdata/system/logs/steam.log"
+
 es_add_game_begin() {
     echo "<gameList>" > /tmp/batocera-steam-update.tmp || return 1
 }
@@ -35,12 +37,24 @@ EOF
 ) >> /tmp/batocera-steam-update.tmp || return 1
 }
 
-mkdir -p "/userdata/roms/steam" || exit 1
-
-#if ! test -e "/userdata/roms/steam/Steam.steam"
-#then
-#   touch "/userdata/roms/steam/Steam.steam" || exit 1
-#fi
+# create steam application app
+steam_file="/userdata/roms/steam/Steam.steam"
+mkdir -p /userdata/roms/steam || exit 1
+if [ ! -f "$steam_file" ]; then
+    echo "com.valvesoftware.Steam" > "$steam_file"
+    echo "Steam.steam file created successfully." >> $log
+    mkdir -p /userdata/roms/steam/images
+    # take flatpak logo
+    steam_png="/userdata/roms/flatpak/images/Valve Corporation.png"
+    if [ -f "$steam_png" ]; then
+        cp "$steam_png" /userdata/roms/steam/images/Steam.png
+        echo "Steam logo copied successfully." >> $log
+    else
+        echo "Steam logo not found, could not copy." >> $log
+    fi
+	es_add_game "Steam.steam" "Steam" "./images/Steam.png"
+	es_add_game_end
+fi
 
 # add applications
 find /userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications -name "*.desktop" |
