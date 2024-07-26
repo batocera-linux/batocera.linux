@@ -11,7 +11,7 @@ PIRONMAN_LICENSE_FILE = LICENSE
 
 PIRONMAN_DEPENDENCIES += freetype getent i2c-tools libpng libxcb lirc-tools
 PIRONMAN_DEPENDENCIES += net-tools openjpeg python-rpi-gpio python-rpi-ws281x
-PIRONMAN_DEPENDENCIES += python-smbus-cffi python-spidev python3 tiff zlib
+PIRONMAN_DEPENDENCIES += python-smbus-cffi python-spidev python3 tiff zlib rpi-eeprom
 
 define PIRONMAN_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/bin/pironman $(TARGET_DIR)/usr/bin/
