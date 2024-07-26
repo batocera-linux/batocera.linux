@@ -11,7 +11,7 @@ PIRONMAN5_LICENSE = GPL-2.0
 PIRONMAN5_LICENSE_FILE = LICENSE
 
 PIRONMAN5_DEPENDENCIES += python-influxdb freetype i2c-tools kmod python-numpy
-PIRONMAN5_DEPENDENCIES += python-gpiozero pm_auto sf_rpi_status
+PIRONMAN5_DEPENDENCIES += python-gpiozero pm_auto sf_rpi_status rpi-eeprom
 
 define PIRONMAN5_INSTALL_OVERLAY
     $(INSTALL) -D -m 0755 $(@D)/bin/pironman5 $(TARGET_DIR)/usr/bin/

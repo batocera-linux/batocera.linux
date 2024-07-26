@@ -9,6 +9,7 @@ config BR2_PACKAGE_PIRONMAN5
 	select BR2_PACKAGE_PYTHON_GPIOZERO
 	select BR2_PACKAGE_PM_AUTO
 	select BR2_PACKAGE_SF_RPI_STATUS
+	select BR2_PACKAGE_RPI_EEPROM
 	help
 	  Enable OLED, fan, RGB & infrared for the Pironman 5 case.
       
