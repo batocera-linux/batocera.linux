@@ -203,7 +203,7 @@ case "${ACTION}" in
     ;;
 
     "refreshRate")
-    xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e 's/\*$//' -e 's/^\([^ ]*\) .*/\1/' | awk -F'[.]' '{if ($2 >= 50) {print $2+1} else {print $2}}'
+    xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e 's/\*$//' -e 's/^\([^ ]*\) .*/\1/' | awk -F'[.]' '{print $2 "." $3}'
     ;;
 
     "currentResolution")
