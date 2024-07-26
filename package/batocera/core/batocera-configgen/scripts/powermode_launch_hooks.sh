@@ -62,9 +62,14 @@ set_epp() {
 }
 
 is_power_connected() {
+    # Detect battery
+    BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
+    BATT=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
     PLUGGED=$(cat /sys/class/power_supply/*/online 2>/dev/null | grep -E "^1")
     if [ -n "${PLUGGED}" ]; then
         echo 1  # Power supply is connected
+    elif [ -z "${BATT}" ]; then
+        echo 1  # No battery detected, assume power supply is connected
     else
         echo 0  # Power supply is not connected
     fi
