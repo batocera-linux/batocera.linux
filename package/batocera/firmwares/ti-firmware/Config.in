@@ -1,0 +1,7 @@
+config BR2_PACKAGE_TI_FIRMWARE
+	bool "ti-firmware"
+    select BR2_PACKAGE_ALLLINUXFIRMWARES
+	help
+	  Texas Instruments firmware for the
+	  Asus ROG Ally X
+
