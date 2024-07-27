@@ -3,7 +3,7 @@
         {
             "trigger": ["hotkey", "start"],
             "type": "exec",
-            "target": "DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -shutdown",
+            "target": "batocera-es-swissknife --emukill",
             "description": "Exit Steam"
         }
     ]
