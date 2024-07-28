@@ -2,10 +2,10 @@ diff --git a/src/common/fs/path_util.cpp b/src/common/fs/path_util.cpp
 index f92cbe0f7b..9e3dcd9c18 100644
 --- a/src/common/fs/path_util.cpp
 +++ b/src/common/fs/path_util.cpp
-@@ -121,12 +121,12 @@ public:
-         GenerateSuyuPath(SuyuPath::ConfigDir, suyu_path_config);
+@@ -122,12 +122,12 @@ public:
          GenerateSuyuPath(SuyuPath::CrashDumpsDir, suyu_path / CRASH_DUMPS_DIR);
          GenerateSuyuPath(SuyuPath::DumpDir, suyu_path / DUMP_DIR);
+         GenerateSuyuPath(SuyuPath::IconsDir, suyu_path / ICONS_DIR);
 -        GenerateSuyuPath(SuyuPath::KeysDir, suyu_path / KEYS_DIR);
 +        GenerateSuyuPath(SuyuPath::KeysDir, "/userdata/bios/switch");
          GenerateSuyuPath(SuyuPath::LoadDir, suyu_path / LOAD_DIR);
