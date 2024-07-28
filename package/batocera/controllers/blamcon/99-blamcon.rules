@@ -1,0 +1,3 @@
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun Mouse",    MODE="0666", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-blamcon-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun Keyboard", MODE="0666", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/virtual-blamcon-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Blamcon lightgun", MODE="0666", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1"
