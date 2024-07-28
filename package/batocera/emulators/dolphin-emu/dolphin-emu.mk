@@ -3,10 +3,10 @@
 # dolphin-emu
 #
 ################################################################################
-# Version: 2407-76 (5.0 development) - Commits on Jul 19, 2024
+# Version: 2407-103 (5.0 development) - Commits on Jul 26, 2024
 # Warning: update 1004-version-retroachievements.patch with the right version
 # Because otherwise RetroAchievements are blocked
-DOLPHIN_EMU_VERSION = 139e6f6f1b748211c0bd4d13d03e7ef433bee670
+DOLPHIN_EMU_VERSION = 87b7009c126e7792627e2eb4e5a8be52a0bc4586
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
