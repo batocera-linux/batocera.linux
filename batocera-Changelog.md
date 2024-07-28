@@ -12,6 +12,7 @@
 - Amiberry to v5.7.3
 - BigPEmu to v115
 - Citra to r518f723
+- Dolphin to 2407-103
 ### System
 - Nvidia Driver to 555.58.02
 - Nvidia Legacy Driver to 470.256.02
