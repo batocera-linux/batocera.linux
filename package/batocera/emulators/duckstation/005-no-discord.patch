@@ -1,0 +1,22 @@
+--- a/CMakeModules/DuckStationDependencies.cmake	2024-07-13 18:48:37.929702366 +0200
++++ b/CMakeModules/DuckStationDependencies.cmake	2024-07-13 18:48:43.433823767 +0200
+@@ -17,7 +17,7 @@
+ find_package(JPEG REQUIRED) # No version because flatpak uses libjpeg-turbo.
+ find_package(Freetype 2.11.1 REQUIRED)
+ find_package(cpuinfo REQUIRED)
+-find_package(DiscordRPC 3.4.0 REQUIRED)
++#find_package(DiscordRPC 3.4.0 REQUIRED)
+ 
+ if(NOT WIN32)
+   find_package(CURL REQUIRED)
+--- a/src/core/system.cpp	2024-07-13 19:04:51.535710998 +0200
++++ b/src/core/system.cpp	2024-07-13 19:05:16.404315649 +0200
+@@ -79,7 +79,7 @@
+ #endif
+ 
+ #ifndef __ANDROID__
+-#define ENABLE_DISCORD_PRESENCE 1
++//#define ENABLE_DISCORD_PRESENCE 1
+ #define ENABLE_PINE_SERVER 1
+ #define ENABLE_GDB_SERVER 1
+ #define ENABLE_SOCKET_MULTIPLEXER 1
