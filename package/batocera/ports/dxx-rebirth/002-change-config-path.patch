@@ -2,12 +2,12 @@ diff --git a/similar/misc/physfsx.cpp b/similar/misc/physfsx.cpp
 index acb655f9dd..8890ca413b 100644
 --- a/similar/misc/physfsx.cpp
 +++ b/similar/misc/physfsx.cpp
-@@ -143,7 +143,7 @@ bool PHYSFSX_init(int argc, char *argv[])
- 		path = getenv(&home_environ_var[4]);
- 		if (!path)
- # if !(defined(__APPLE__) && defined(__MACH__))
--	path = "~/.d" DESCENT_PATH_NUMBER "x-rebirth/";
-+	path = "/userdata/system/configs/d" DESCENT_PATH_NUMBER "x-rebirth/";
- # else
- 	path = "~/Library/Preferences/D" DESCENT_PATH_NUMBER "X Rebirth/";
- # endif
+@@ -193,7 +193,7 @@ bool PHYSFSX_init(int argc, char *argv[])
+ #define DESCENT_PATH_NUMBER	"2"
+ #endif
+ #if !(defined(__APPLE__) && defined(__MACH__))
+-#define DXX_FALLBACK_HOME_PATH	"~/.d" DESCENT_PATH_NUMBER "x-rebirth/"
++#define DXX_FALLBACK_HOME_PATH	"/userdata/system/configs/d" DESCENT_PATH_NUMBER "x-rebirth/"
+ #else
+ #define DXX_FALLBACK_HOME_PATH	"~/Library/Preferences/D" DESCENT_PATH_NUMBER "X Rebirth/"
+ #endif
