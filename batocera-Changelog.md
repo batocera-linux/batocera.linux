@@ -22,6 +22,7 @@
 - Ayn Platform driver to Jul 17, 2024 build
 - MangoHud to Jun 15, 2024 build
 - SDL2 to 2.30.5
+- DXVK to 2.4
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
