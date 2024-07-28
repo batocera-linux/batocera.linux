@@ -1,3 +1,19 @@
+# 2024/12/xx - batocera.linux 41 - xxx
+### Special Notes
+### Hardware
+- Add Blamcon Gun support
+- Khadis VIM4 optimizations and enhancements
+### Added
+### Fixed
+### Changed / Improved
+### Updated
+### System
+- Nvidia Driver to 555.58.02
+- Nvidia Legacy Driver to 470.256.02
+- x86_64 Kernel to 6.10.2
+- Ayaneo Platform driver to Jul 17, 2024 build
+- Ayn Platform driver to Jul 17, 2024 build
+
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
 Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
