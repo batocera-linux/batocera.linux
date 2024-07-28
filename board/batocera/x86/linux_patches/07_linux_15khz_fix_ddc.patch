@@ -1,8 +1,8 @@
-Index: linux-6.8/drivers/gpu/drm/drm_edid.c
+Index: linux-6.10/drivers/gpu/drm/drm_edid.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_edid.c
-+++ linux-6.8/drivers/gpu/drm/drm_edid.c
-@@ -2176,7 +2176,10 @@ drm_do_probe_ddc_edid(void *data, u8 *bu
+--- linux-6.10.orig/drivers/gpu/drm/drm_edid.c
++++ linux-6.10/drivers/gpu/drm/drm_edid.c
+@@ -2174,7 +2174,10 @@ drm_do_probe_ddc_edid(void *data, u8 *bu
  		 * Avoid sending the segment addr to not upset non-compliant
  		 * DDC monitors.
  		 */

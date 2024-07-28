@@ -1,8 +1,8 @@
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-@@ -2735,6 +2735,9 @@ static void dce110_program_front_end_for
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+@@ -2796,6 +2796,9 @@ static void dce110_program_front_end_for
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != NULL;
  
@@ -12,10 +12,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
  	program_scaler(dc, pipe_ctx);
  
  	mi->funcs->mem_input_program_surface_config(
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
 @@ -1132,10 +1132,6 @@ bool dce110_timing_generator_validate_ti
  	if (timing->timing_3d_format != TIMING_3D_FORMAT_NONE)
  		return false;
@@ -65,10 +65,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
  bool dce110_tg_is_blanked(struct timing_generator *tg)
  {
  	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
 @@ -264,6 +264,15 @@ void dce110_tg_program_timing(struct tim
  	const enum signal_type signal,
  	bool use_vbios);
@@ -85,10 +85,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
  bool dce110_tg_is_blanked(struct timing_generator *tg);
  
  void dce110_tg_set_blank(struct timing_generator *tg,
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
 @@ -704,6 +704,15 @@ static void dce120_tg_program_timing(str
  		dce110_timing_generator_program_timing_generator(tg, timing);
  	else
@@ -105,10 +105,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
  }
  
  static bool dce120_tg_is_blanked(struct timing_generator *tg)
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
 @@ -311,6 +311,9 @@ dce60_program_front_end_for_pipe(
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != 0;
@@ -119,10 +119,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
  	dce60_program_scaler(dc, pipe_ctx);
  
  	mi->funcs->mem_input_program_surface_config(
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 @@ -117,7 +117,17 @@ static void program_timing(struct timing
  	if (!use_vbios)
  		program_pix_dur(tg, timing->pix_clk_100hz);
@@ -142,11 +142,11 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
  }
  
  static void dce60_timing_generator_enable_advanced_request(
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
-@@ -2871,7 +2871,8 @@ static void populate_initial_data(
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+@@ -2869,7 +2869,8 @@ static void populate_initial_data(
  			data->bytes_per_pixel[num_displays + 4] = 4;
  			break;
  		}
@@ -156,7 +156,7 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
  		data->stereo_mode[num_displays + 4] = bw_def_mono;
  
  
-@@ -3000,7 +3001,8 @@ static void populate_initial_data(
+@@ -2998,7 +2999,8 @@ static void populate_initial_data(
  			data->bytes_per_pixel[num_displays + 4] = 4;
  		}
  
