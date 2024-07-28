@@ -13,6 +13,7 @@
 - x86_64 Kernel to 6.10.2
 - Ayaneo Platform driver to Jul 17, 2024 build
 - Ayn Platform driver to Jul 17, 2024 build
+- MongoHud to Jun 15, 2024 build
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
