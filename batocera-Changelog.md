@@ -14,6 +14,7 @@
 - Citra to r518f723
 - Dolphin to 2407-103
 - Duckstaton to Jul 27, 2024 build
+- DXX-Rebirth to July 21 build
 ### System
 - Nvidia Driver to 555.58.02
 - Nvidia Legacy Driver to 470.256.02
