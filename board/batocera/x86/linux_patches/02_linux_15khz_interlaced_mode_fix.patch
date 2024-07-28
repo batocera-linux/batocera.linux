@@ -1,8 +1,8 @@
-Index: linux-6.8/drivers/gpu/drm/drm_vblank.c
+Index: linux-6.10/drivers/gpu/drm/drm_vblank.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_vblank.c
-+++ linux-6.8/drivers/gpu/drm/drm_vblank.c
-@@ -280,6 +280,7 @@ static void drm_update_vblank_count(stru
+--- linux-6.10.orig/drivers/gpu/drm/drm_vblank.c
++++ linux-6.10/drivers/gpu/drm/drm_vblank.c
+@@ -293,6 +293,7 @@ static void drm_update_vblank_count(stru
  	int count = DRM_TIMESTAMP_MAXRETRIES;
  	int framedur_ns = vblank->framedur_ns;
  	u32 max_vblank_count = drm_max_vblank_count(dev, pipe);
@@ -10,7 +10,7 @@ Index: linux-6.8/drivers/gpu/drm/drm_vblank.c
  
  	/*
  	 * Interrupts were disabled prior to this call, so deal with counter
-@@ -298,12 +299,17 @@ static void drm_update_vblank_count(stru
+@@ -311,12 +312,17 @@ static void drm_update_vblank_count(stru
  		rc = drm_get_last_vbltimestamp(dev, pipe, &t_vblank, in_vblank_irq);
  	} while (cur_vblank != __get_vblank_counter(dev, pipe) && --count > 0);
  

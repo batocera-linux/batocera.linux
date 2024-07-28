@@ -2,10 +2,10 @@ diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/dr
 index 0cb646cb04..338f0c3e1a 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -188,6 +188,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_MATCH(DMI_BOARD_NAME, "NEXT"),
+@@ -208,6 +208,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_MATCH(DMI_BOARD_NAME, "KUN"),
  		},
- 		.driver_data = (void *)&lcd800x1280_rightside_up,
+ 		.driver_data = (void *)&lcd1600x2560_rightside_up,
 +	}, {	/* AYN LOKI ZERO */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "ayn"),

@@ -1,0 +1,30 @@
+diff --git a/ayaneo-platform.c b/ayaneo-platform.c
+index bef883a9e0..c3b9625708 100644
+--- a/ayaneo-platform.c
++++ b/ayaneo-platform.c
+@@ -964,7 +964,7 @@ static int ayaneo_platform_probe(struct platform_device *pdev)
+ {
+         struct device *dev = &pdev->dev;
+         const struct dmi_system_id *match;
+-        int ret;
++        int ret, i;
+ 
+         match = dmi_first_match(dmi_table);
+         ret = PTR_ERR_OR_ZERO(match);
+@@ -979,8 +979,14 @@ static int ayaneo_platform_probe(struct platform_device *pdev)
+         if (ret)
+                 return ret;
+ 
+-        ret = devm_device_add_groups(ayaneo_led_mc.led_cdev.dev, ayaneo_led_mc_groups);
+-        return ret;
++        // Register each group individually
++        for (i = 0; ayaneo_led_mc_groups[i]; i++) {
++                ret = devm_device_add_group(ayaneo_led_mc.led_cdev.dev, ayaneo_led_mc_groups[i]);
++                if (ret)
++                        return ret;
++        }
++
++        return 0;
+ }
+ 
+ static struct platform_driver ayaneo_platform_driver = {
