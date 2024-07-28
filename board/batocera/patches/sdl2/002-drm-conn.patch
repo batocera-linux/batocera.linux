@@ -2,10 +2,10 @@ diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvid
 index 7223a5a..0972cb9 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-@@ -78,6 +78,7 @@ get_driindex(void)
-     int devindex = -1;
+@@ -78,6 +78,7 @@
      DIR *folder;
      const char *hint;
+     struct dirent *res;
 +    int drmConn = 0;
  
      hint = SDL_GetHint(SDL_HINT_KMSDRM_DEVICE_INDEX);

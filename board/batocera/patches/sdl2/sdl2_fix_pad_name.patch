@@ -1,13 +1,11 @@
-diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index 9f82452..af9d10c 100644
---- a/src/joystick/linux/SDL_sysjoystick.c
-+++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -255,10 +255,7 @@
+--- a/src/joystick/linux/SDL_sysjoystick.c	2024-05-09 16:43:08.110716779 +0200
++++ b/src/joystick/linux/SDL_sysjoystick.c	2024-05-09 16:43:36.127405653 +0200
+@@ -312,10 +312,7 @@
          }
      }
  
 -    name = SDL_CreateJoystickName(inpid.vendor, inpid.product, NULL, product_string);
--    if (name == NULL) {
+-    if (!name) {
 -        return 0;
 -    }
 +    name = SDL_strdup(product_string);

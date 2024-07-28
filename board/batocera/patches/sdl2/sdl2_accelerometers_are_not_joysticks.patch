@@ -1,21 +1,10 @@
-diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
-index 4c38b6e..b416a53 100644
---- a/src/core/linux/SDL_udev.c
-+++ b/src/core/linux/SDL_udev.c
-@@ -418,11 +418,11 @@
+--- a/src/core/linux/SDL_udev.c	2024-05-09 16:37:37.438583598 +0200
++++ b/src/core/linux/SDL_udev.c	2024-05-09 16:38:29.543745412 +0200
+@@ -423,6 +423,7 @@
              devclass |= SDL_UDEV_DEVICE_JOYSTICK;
          }
  
--        val = _this->syms.udev_device_get_property_value(dev, "ID_INPUT_ACCELEROMETER");
--        if (SDL_GetHintBoolean(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, SDL_TRUE) &&
--            val != NULL && SDL_strcmp(val, "1") == 0) {
--            devclass |= SDL_UDEV_DEVICE_JOYSTICK;
--        }
-+        //val = _this->syms.udev_device_get_property_value(dev, "ID_INPUT_ACCELEROMETER");
-+        //if (SDL_GetHintBoolean(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, SDL_TRUE) &&
-+        //    val != NULL && SDL_strcmp(val, "1") == 0) {
-+        //    devclass |= SDL_UDEV_DEVICE_JOYSTICK;
-+        //}
- 
-         val = _this->syms.udev_device_get_property_value(dev, "ID_INPUT_MOUSE");
-         if (val != NULL && SDL_strcmp(val, "1") == 0) {
++        SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
+         val = _this->syms.udev_device_get_property_value(dev, "ID_INPUT_ACCELEROMETER");
+         if (SDL_GetHintBoolean(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, SDL_TRUE) &&
+             val && SDL_strcmp(val, "1") == 0) {
