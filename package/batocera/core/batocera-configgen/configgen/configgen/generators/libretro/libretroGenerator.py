@@ -14,6 +14,7 @@ from settings.unixSettings import UnixSettings
 from utils.logger import get_logger
 import utils.videoMode as videoMode
 import shutil
+import glob
 
 eslog = get_logger(__name__)
 
@@ -237,7 +238,7 @@ class LibretroGenerator(Generator):
         elif system.name == 'vitaquake2':
             directory_path = os.path.dirname(rom)
             if "xatrix" in directory_path:
-                system.config['core'] = "vitaquake2-xatrix"            
+                system.config['core'] = "vitaquake2-xatrix"
             elif "rogue" in directory_path:
                 system.config['core'] = "vitaquake2-rogue"
             elif "zaero" in directory_path:
@@ -256,7 +257,7 @@ class LibretroGenerator(Generator):
             # choose core based on new rom directory
             directory_path = os.path.dirname(rom)
             if "d3xp" in directory_path:
-                system.config['core'] = "boom3_xp" 
+                system.config['core'] = "boom3_xp"
             retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + "_libretro.so"
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         # super mario wars - verify assets from Content Downloader
@@ -287,9 +288,9 @@ class LibretroGenerator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
-        
+
         configToAppend = []
-        
+
         # Custom configs - per core
         customCfg = f"{batoceraFiles.retroarchRoot}/{system.name}.cfg"
         if os.path.isfile(customCfg):
@@ -329,21 +330,26 @@ class LibretroGenerator(Generator):
         # Verbose logs
         commandArray.extend(['--verbose'])
 
+        if system.name == 'snes-msu1' or system.name == 'satellaview':
+            if "squashfs" in rom:
+                romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc')
+                rom = romsInDir[0]
+
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
-        
+
         if system.name == 'reminiscence':
             with open(rom, 'r') as file:
                 first_line = file.readline().strip()
             directory_path = '/'.join(rom.split('/')[:-1])
             rom = f"{directory_path}/{first_line}"
-        
+
         if system.name == 'openlara':
             with open(rom, 'r') as file:
                 first_line = file.readline().strip()
             directory_path = '/'.join(rom.split('/')[:-1])
             rom = f"{directory_path}/{first_line}"
-                
+
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
@@ -355,7 +361,7 @@ class LibretroGenerator(Generator):
 
         if dontAppendROM == False:
             commandArray.append(rom)
-            
+
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 
 def getGFXBackend(system):
