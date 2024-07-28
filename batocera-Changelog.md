@@ -10,6 +10,7 @@
 - RetroArch to v1.19.1
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
+- BigPEmu to v115
 ### System
 - Nvidia Driver to 555.58.02
 - Nvidia Legacy Driver to 470.256.02
