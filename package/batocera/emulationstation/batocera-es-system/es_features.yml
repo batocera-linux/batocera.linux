@@ -4817,6 +4817,13 @@ libretro:
                     "1":                1
                     "2":                2
                     "3":                3
+            neon_enhancement:
+                prompt:      ENHANCED RENDERING RESOLUTION
+                description: Double the rendering resolution.
+                choices:
+                    "Off":              disabled
+                    "On":               enabled
+                    "On (Speed hack)":  enabled_with_speedhack
             pcsx_rearmed_multitap:
                 prompt:      MULTITAP
                 description: Allows up to 5 or 8 controllers in supported games.
