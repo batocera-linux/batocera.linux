@@ -15,6 +15,7 @@
 - Dolphin to 2407-103
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
+- RPCS3 to Jul 28, 2024 build
 - Sonic Mania to Jul 21, 2024 build
 - The Force Engine to Jul 27, 2024 build
 - Vita3k to Jul 27 build
