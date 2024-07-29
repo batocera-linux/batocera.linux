@@ -13,4 +13,13 @@
             "description": "Hide the bezel"
 	}
     ]
+    ,"actions_gun1": [
+    {
+            "trigger": ["left", "right", "middle"],
+            "type": "exec",
+            "hold": "2.0",
+            "target": "killall -15 flycast",
+            "description": "Exit emulator"
+    }
+	]
 }
