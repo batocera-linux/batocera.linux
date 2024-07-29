@@ -15,6 +15,7 @@
 - Dolphin to 2407-103
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
+- The Force Engine to Jul 27, 2024 build
 - Vita3k to Jul 27 build
 - Xemu to v0.7.131
 - Xenia Canary to Jul 15, 2024 build
