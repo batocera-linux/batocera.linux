@@ -25,6 +25,7 @@
 - SDL2 to 2.30.5
 - DXVK to 2.4
 - DXVK NVAPI to v0.7.1
+- Xemu to v0.7.131
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
