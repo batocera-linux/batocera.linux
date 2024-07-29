@@ -15,6 +15,8 @@
 - Dolphin to 2407-103
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
+- Xemu to v0.7.131
+- Xenia Canary to Jul 15, 2024 build
 ### System
 - Nvidia Driver to 555.58.02
 - Nvidia Legacy Driver to 470.256.02
@@ -25,7 +27,6 @@
 - SDL2 to 2.30.5
 - DXVK to 2.4
 - DXVK NVAPI to v0.7.1
-- Xemu to v0.7.131
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
