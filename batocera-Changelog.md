@@ -34,6 +34,7 @@
 - DXVK to 2.4
 - DXVK NVAPI to v0.7.1
 - VKD3D Proton to 2.13
+- Linux Firmware to 20240709
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
