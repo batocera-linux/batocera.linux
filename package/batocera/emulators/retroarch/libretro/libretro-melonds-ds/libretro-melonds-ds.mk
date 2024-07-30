@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_MELONDS_DS_VERSION = v1.1.1
+LIBRETRO_MELONDS_DS_VERSION = v1.1.5
 LIBRETRO_MELONDS_DS_SITE = $(call github,JesseTG,melonds-ds,$(LIBRETRO_MELONDS_DS_VERSION))
 LIBRETRO_MELONDS_DS_LICENSE = GPLv2
 LIBRETRO_MELONDS_DS_DEPENDENCIES = libpcap
