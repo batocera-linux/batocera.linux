@@ -1,0 +1,41 @@
+--- a/src/core/cpu_newrec_compiler_aarch64.cpp	2024-07-14 03:44:16.989235523 +0200
++++ b/src/core/cpu_newrec_compiler_aarch64.cpp	2024-07-14 03:50:00.333531419 +0200
+@@ -1533,9 +1533,9 @@
+ void CPU::NewRec::AArch64Compiler::Compile_lxx(CompileFlags cf, MemoryAccessSize size, bool sign, bool use_fastmem,
+                                                const std::optional<VirtualMemoryAddress>& address)
+ {
+-  const std::optional<WRegister> addr_reg =
+-    g_settings.gpu_pgxp_enable ? std::optional<WRegister>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
+-                                 std::optional<WRegister>();
++  const std::optional<vixl::aarch64::Register> addr_reg =
++    g_settings.gpu_pgxp_enable ? std::optional<vixl::aarch64::Register>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
++                                 std::optional<vixl::aarch64::Register>();
+   FlushForLoadStore(address, false, use_fastmem);
+   const Register addr = ComputeLoadStoreAddressArg(cf, address, addr_reg);
+   const Register data = GenerateLoad(addr, size, sign, use_fastmem, [this, cf]() -> Register {
+@@ -1658,9 +1658,9 @@
+ {
+   const u32 index = static_cast<u32>(inst->r.rt.GetValue());
+   const auto [ptr, action] = GetGTERegisterPointer(index, true);
+-  const std::optional<WRegister> addr_reg =
+-    g_settings.gpu_pgxp_enable ? std::optional<WRegister>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
+-                                 std::optional<WRegister>();
++  const std::optional<vixl::aarch64::Register> addr_reg =
++    g_settings.gpu_pgxp_enable ? std::optional<vixl::aarch64::Register>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
++                                 std::optional<vixl::aarch64::Register>();
+   FlushForLoadStore(address, false, use_fastmem);
+   const Register addr = ComputeLoadStoreAddressArg(cf, address, addr_reg);
+   const Register value = GenerateLoad(addr, MemoryAccessSize::Word, false, use_fastmem, [this, action = action]() {
+@@ -1745,9 +1745,9 @@
+   AssertRegOrConstS(cf);
+   AssertRegOrConstT(cf);
+ 
+-  const std::optional<WRegister> addr_reg =
+-    g_settings.gpu_pgxp_enable ? std::optional<WRegister>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
+-                                 std::optional<WRegister>();
++  const std::optional<vixl::aarch64::Register> addr_reg =
++    g_settings.gpu_pgxp_enable ? std::optional<vixl::aarch64::Register>(WRegister(AllocateTempHostReg(HR_CALLEE_SAVED))) :
++                                 std::optional<vixl::aarch64::Register>();
+   FlushForLoadStore(address, true, use_fastmem);
+   const Register addr = ComputeLoadStoreAddressArg(cf, address, addr_reg);
+   const Register data = cf.valid_host_t ? CFGetRegT(cf) : RWARG2;
