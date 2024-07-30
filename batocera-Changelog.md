@@ -9,6 +9,7 @@
 ### Changed / Improved
 ### Updated
 - RetroArch to v1.19.1
+  - Libretro-Melonds-Ds to v1.1.5
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
 - BigPEmu to v115
