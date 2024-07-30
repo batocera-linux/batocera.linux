@@ -1,13 +1,11 @@
-# Player 1 light gun exit
-# Hold trigger, action and start for 2s.
 {
     "actions_gun1": [
-    {
+        {
             "trigger": ["left", "right", "middle"],
             "type": "key",
             "hold": "2.0",
             "target": [ "KEY_LEFTALT", "KEY_F4" ],
             "description": "Exit emulator"
-    }
+        }
     ]
 }
