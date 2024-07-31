@@ -20,7 +20,10 @@ def generateControllerConfig(system, playersControllers):
     WIIMOTE = "Wiimote"
 
     API_SDL = "SDLController"
+    API_DSU = "DSUController"
 
+    DEFAULT_IP             = 'localhost'
+    DEFAULT_PORT           = '26760'
     DEFAULT_DEADZONE       = '0.25'
     DEFAULT_RANGE          = '1'
 
@@ -211,6 +214,15 @@ def generateControllerConfig(system, playersControllers):
             entryNode = ET.SubElement(mappingsNode, "entry")
             addTextElement(entryNode, "mapping", key)
             addTextElement(entryNode, "button", value)
+
+        # Add motion control
+        if (system.isOptSet('cemuhook_server_port')):
+            motionControllerNode = ET.SubElement(root, 'controller')
+            addTextElement(motionControllerNode, 'api', API_DSU)
+            addTextElement(motionControllerNode, 'uuid', '0')
+            addTextElement(motionControllerNode, 'motion', 'true')
+            addTextElement(motionControllerNode, 'ip', getOption('cemuhook_server_ip', DEFAULT_IP))
+            addTextElement(motionControllerNode, 'port', getOption('cemuhook_server_port', DEFAULT_PORT))
 
         # Save to file
         with open(getConfigFileName(nplayer), 'wb') as handle:
