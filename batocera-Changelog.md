@@ -13,6 +13,7 @@
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-Melonds-Ds to v1.1.5
+  - Libretro-Flycast to Jul 30 build
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
 - BigPEmu to v115
@@ -21,6 +22,7 @@
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
+- Flycast to Jul 30 build
 - PCSX2 to v2.1.42
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to Jul 28, 2024 build
