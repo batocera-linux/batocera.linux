@@ -335,7 +335,10 @@ class LibretroGenerator(Generator):
             rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
 
         if system.name == 'scummvm':
-            rom = os.path.dirname(rom) + '/' + romName[0:-8]
+            rom = os.path.dirname(rom) + '/' + romName
+            if os.stat(rom).st_size == 0:
+                # File is empty, run game directly
+                rom = rom[0:-8]
         
         if system.name == 'reminiscence':
             with open(rom, 'r') as file:
