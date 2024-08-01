@@ -748,7 +748,7 @@ class MameGenerator(Generator):
         if gunsBordersSize is not None:
             output_png_file = "/tmp/bezel_gunborders.png"
             innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, None, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:

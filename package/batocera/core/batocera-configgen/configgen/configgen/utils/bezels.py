@@ -244,7 +244,7 @@ def gunBordersSize(bordersSize):
         return 2, 1
     return 0, 0
 
-def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSizePer = 3, innerBorderColor = "#ffffff", outerBorderColor = "#000000"):
+def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, outerBorderSizePer=3, innerBorderColor="#ffffff", outerBorderColor="#000000"):
     # good default border that works in most circumstances is:
     # 
     # 2% of the screen width in white.  Surrounded by 3% screen width of
@@ -264,20 +264,38 @@ def gunBorderImage(input_png, output_png, innerBorderSizePer = 2, outerBorderSiz
     from PIL import ImageDraw
     w,h = fast_image_size(input_png)
 
+    # Calculate new width for 4:3 aspect ratio if a widescreen resolution
+    if abs(w / h - 4 / 3) < 0.01:
+        new_w = w
+    elif aspect_ratio == "4:3":
+        new_w = int((4 / 3) * h)
+    else:
+        new_w = w
+
+    # Calculate offset for centering the border image
+    offset_x = (w - new_w) // 2
+
     # outer border
     outerBorderSize = h * outerBorderSizePer // 100 # use only h to have homogen border size
     if outerBorderSize < 1: # minimal size
         outerBorderSize = 1
-    outerShapes = [ [(0, 0), (w, outerBorderSize)], [(w-outerBorderSize, 0), (w, h)], [(0, h-outerBorderSize), (w, h)], [(0, 0), (outerBorderSize, h)] ]
+    outerShapes = [
+        [(offset_x, 0), (offset_x + new_w, outerBorderSize)],
+        [(offset_x + new_w - outerBorderSize, 0), (offset_x + new_w, h)],
+        [(offset_x, h - outerBorderSize), (offset_x + new_w, h)],
+        [(offset_x, 0), (offset_x + outerBorderSize, h)]
+    ]
 
     # inner border
-    innerBorderSize = w * innerBorderSizePer // 100 # use only h to have homogen border size
+    innerBorderSize = new_w * innerBorderSizePer // 100 # use only h to have homogen border size
     if innerBorderSize < 1: # minimal size
         innerBorderSize = 1
-    innerShapes = [ [(outerBorderSize, outerBorderSize), (w-outerBorderSize, outerBorderSize+innerBorderSize)],
-                    [(w-outerBorderSize-innerBorderSize, outerBorderSize), (w-outerBorderSize, h-outerBorderSize)],
-                    [(outerBorderSize, h-outerBorderSize-innerBorderSize), (w-outerBorderSize, h-outerBorderSize)],
-                    [(outerBorderSize, outerBorderSize), (outerBorderSize+innerBorderSize, h-outerBorderSize)] ]
+    innerShapes = [
+        [(offset_x + outerBorderSize, outerBorderSize), (offset_x + new_w - outerBorderSize, outerBorderSize + innerBorderSize)],
+        [(offset_x + new_w - outerBorderSize - innerBorderSize, outerBorderSize), (offset_x + new_w - outerBorderSize, h - outerBorderSize)],
+        [(offset_x + outerBorderSize, h - outerBorderSize - innerBorderSize), (offset_x + new_w - outerBorderSize, h - outerBorderSize)],
+        [(offset_x + outerBorderSize, outerBorderSize), (offset_x + outerBorderSize + innerBorderSize, h - outerBorderSize)]
+    ]
     
     back = Image.open(input_png)
     imgnew = Image.new("RGBA", (w,h), (0,0,0,255))

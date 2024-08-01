@@ -22,9 +22,10 @@ class SupermodelGenerator(Generator):
              commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
         
         # widescreen
-        if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
+        if system.isOptSet("m3_wideScreen") and system.getOptBoolean("m3_wideScreen"):
             commandArray.append("-wide-screen")
             commandArray.append("-wide-bg")
+            system.config["bezel"] == "none"
 
         # quad rendering
         if system.isOptSet("quadRendering") and system.getOptBoolean("quadRendering"):
