@@ -137,7 +137,7 @@ def readChangeLogLine(infos, line):
         return
 
     # item
-    m = re.search('^- ([a-zA-Z0-9/\*].*)$', line)
+    m = re.search('^- ([a-zA-Z0-9/"\*\.].*)$', line)
     if m is not None:
         if infos["nsubitems"] > 0:
             infos["nsubitems"] = 0
@@ -150,7 +150,7 @@ def readChangeLogLine(infos, line):
         return
 
     # subitem
-    m = re.search('^  - ([a-zA-Z0-9/\*].*)$', line)
+    m = re.search('^  - ([a-zA-Z0-9/"\*\.].*)$', line)
     if m is not None:
         if infos["nsubitems"] == 0:
             do_start_subitems()
@@ -159,7 +159,7 @@ def readChangeLogLine(infos, line):
         return
 
     # comments
-    m = re.search('^  ([a-zA-Z0-9/\*].*)$', line)
+    m = re.search('^  ([a-zA-Z0-9/"\*\.].*)$', line)
     if m is not None:
         do_comment(m.group(1))
         return

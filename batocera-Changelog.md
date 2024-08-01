@@ -87,29 +87,27 @@
 - Sound Open Firmware to 2024.06
 - LibVA to 2.22.0
 
-# 2024/08/xx - batocera.linux 40 - Swallowtail
+# 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
-Batocera now has a global battery mode option under Game Settings to determine the power mode when a handheld is unplugged.
-To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
-By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
-Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
-
-Singe games now have their own system. Move any Singe related games from `roms/daphne` to the `roms/singe` directory.
-Note: Singe games in the `roms/daphne` folder will no longer work.
-You can determine you have a Singe simulation game when the game folder contains a .singe file.
-
-EmulationStation's Video Mode (resolution) is now under System Settings rather than under Frontend Developers.
+- Batocera now has a global battery mode option under Game Settings to determine the power mode when a handheld is unplugged.
+  To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
+  By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
+  Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
+- Singe games now have their own system. Move any Singe related games from `roms/daphne` to the `roms/singe` directory.
+  Note: Singe games in the `roms/daphne` folder will no longer work.
+  You can determine you have a Singe simulation game when the game folder contains a .singe file.
+- EmulationStation's Video Mode (resolution) is now under System Settings rather than under Frontend Developers.
 ### Hardware
-Add support for the Pironman case with RPI4 devices.
-Add support for OrangePi Zero 3 (all variants)
-Add support for Radxa Rock 3C
-Initial support for the Lenovo Legion Go
-Support for Nvidia cards requiring the legacy 340.108 driver.
-Add support for the Ayaneo 2S
-Add support for the Ayaneo Air Plus (6800U) model
-Add support for the Radxa Rock 5c
-Add support for the Banana Pi BPI-M7
-Add support for the Pironman 5 case with RPi5 devices.
+- Add support for the Pironman case with RPI4 devices.
+- Add support for OrangePi Zero 3 (all variants)
+- Add support for Radxa Rock 3C
+- Initial support for the Lenovo Legion Go
+- Support for Nvidia cards requiring the legacy 340.108 driver.
+- Add support for the Ayaneo 2S
+- Add support for the Ayaneo Air Plus (6800U) model
+- Add support for the Radxa Rock 5c
+- Add support for the Banana Pi BPI-M7
+- Add support for the Pironman 5 case with RPi5 devices.
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
