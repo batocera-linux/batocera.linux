@@ -7,6 +7,7 @@
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds) 
 ### Fixed
 ### Changed / Improved
+- Added bezel & sinden border support for the RPi5 with Model 3 games
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-Melonds-Ds to v1.1.5
