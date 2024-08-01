@@ -26,6 +26,7 @@
 #v2.4 - removed code duplicates @lala
 #v2.5 - add PIRONMAN case support (RPi4) - @dmanlfc
 #v2.6 - add PIRONMAN 5 case support (RPi5) - @dmanlfc
+#v2.7 - add Dockerpi Powerboard support - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -49,7 +50,8 @@ powerdevices=(
               PISTATION_LCD "Config.txt tweaks to get the display to work" \
               ELEMENT14_PI_DESKTOP "Adds on/off button support" \
               PIRONMAN "Fan, OLED, RGB case support for the Pironman case with RPi4 devices" \
-              PIRONMAN5 "Fan, OLED, RGB case support for the Pironman 5 case with RPi5 devices"
+              PIRONMAN5 "Fan, OLED, RGB case support for the Pironman 5 case with RPi5 devices" \
+              DOCKERPI_POWERBOARD "Dockerpi Powerboard Hat support for compatible Raspberry Pi boards"
              )
 
 #dialog for selecting your switch or power device
@@ -773,6 +775,43 @@ function pironman5_config()
     pironman5_start $@
 }
 
+#https://wiki.52pi.com/index.php?title=EP-0104
+function powerboard_start()
+{
+    echo "*** Starting Pironman 5 services ***"
+    #------ CONFIG SECTION ------
+    # Check config.txt for i2c
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+        echo "*** Adding Pironman i2c config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtparam=i2c_arm type configs to avoid conflicts
+        sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[DockerPi]" >> "/boot/config.txt"
+        echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    # ensure i2c is running
+    modprobe i2c_dev
+    # start
+    arch=$(uname -m)
+    if [ "$arch" == "aarch64" ]; then
+        /usr/sbin/powerboard64 &
+    else
+        /usr/sbin/powerboard32 &
+    fi
+}
+
+function powerboard_stop()
+{
+    # Handled by the Hat
+    true
+}
+
+function powerboard_config()
+{
+    powerboard_start $@
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -850,6 +889,9 @@ case "$CONFVALUE" in
     ;;
     "PIRONMAN5")
         pironman5_$1
+    ;;
+    "DOCKERPI_POWERBOARD")
+        powerboard_$1
     ;;
     "--DIALOG")
         # Go to selection dialog

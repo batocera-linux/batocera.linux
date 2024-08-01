@@ -3,6 +3,7 @@
 ### Hardware
 - Add Blamcon Gun support
 - Khadis VIM4 optimizations and enhancements
+- Add Dockerpi Powerboard support initially for the RPi3
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds) 
 ### Fixed

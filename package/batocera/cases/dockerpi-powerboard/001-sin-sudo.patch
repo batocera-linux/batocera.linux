@@ -1,0 +1,30 @@
+diff --git a/powerboard/src/32bit/powerboard32.c b/powerboard/src/32bit/powerboard32.c
+index a67d8b9c2f..65c6835a29 100644
+--- a/powerboard/src/32bit/powerboard32.c
++++ b/powerboard/src/32bit/powerboard32.c
+@@ -60,8 +60,8 @@ int main()
+         if ((buf & 0x01) == 0x01)
+         {
+             printf("Request Halt\n");
+-            system("sudo sync");
+-            system("sudo halt");
++            system("sync");
++            system("halt");
+         }
+     }
+ 
+diff --git a/powerboard/src/64bit/powerboard64.c b/powerboard/src/64bit/powerboard64.c
+index a67d8b9c2f..65c6835a29 100644
+--- a/powerboard/src/64bit/powerboard64.c
++++ b/powerboard/src/64bit/powerboard64.c
+@@ -60,8 +60,8 @@ int main()
+         if ((buf & 0x01) == 0x01)
+         {
+             printf("Request Halt\n");
+-            system("sudo sync");
+-            system("sudo halt");
++            system("sync");
++            system("halt");
+         }
+     }
+ 
