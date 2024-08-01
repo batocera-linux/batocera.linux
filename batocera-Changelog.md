@@ -20,6 +20,7 @@
 - Dolphin to 2407-103
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
+- Eduke32 to Jul 25 build
 - PCSX2 to v2.1.42
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to Jul 28, 2024 build
