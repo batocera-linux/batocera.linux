@@ -120,7 +120,7 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
     """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
     config = []
     config.append(controller.guid)
-    config.append(controller.realName)
+    config.append(controller.realName.replace(",", "."))
     config.append("platform:Linux")
 
     def add_mapping(input):
