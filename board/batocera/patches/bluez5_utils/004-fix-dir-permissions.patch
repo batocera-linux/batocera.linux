@@ -1,0 +1,15 @@
+diff --git a/Makefile.am b/Makefile.am
+index 0ae7211117..0b366b70fb 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -32,8 +32,8 @@ confdir = $(sysconfdir)/bluetooth
+ statedir = $(localstatedir)/lib/bluetooth
+ 
+ bluetoothd-fix-permissions:
+-	install -dm555 $(DESTDIR)$(confdir)
+-	install -dm700 $(DESTDIR)$(statedir)
++	install -dm755 $(DESTDIR)$(confdir)
++	install -dm755 $(DESTDIR)$(statedir)
+ 
+ if DATAFILES
+ dbusdir = $(DBUS_CONFDIR)/dbus-1/system.d
