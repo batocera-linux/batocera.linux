@@ -18,6 +18,7 @@
   - Libretro-Freechaf to June 28 build
   - Libretro-Minivac to July 1 build
   - Libretro-MrBoom to v5.5
+  - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to June 22 build
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
