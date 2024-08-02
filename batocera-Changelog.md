@@ -16,6 +16,7 @@
   - Libretro-Ecwolf to June 28 build
   - Libretro-Flycast to Jul 30 build
   - Libretro-Freechaf to Jun 28 build
+  - Libretro-Minivac to Jul 1 build
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
 - BigPEmu to v115
