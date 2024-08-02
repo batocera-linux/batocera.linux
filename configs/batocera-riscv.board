@@ -21,7 +21,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
 # Kernel - Version: 6.1.y dev
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,starfive-tech,linux,8578097ed9b6f67dfc06624fde5fbbf707cf96d6)/linux-8578097ed9b6f67dfc06624fde5fbbf707cf96d6.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,starfive-tech,linux,54b09736222dcc3368f151a0a9f27992d680be95)/linux-54b09736222dcc3368f151a0a9f27992d680be95.tar.gz"
 #BR2_LINUX_KERNEL_DEFCONFIG="starfive_jh7110"
 BR2_LINUX_KERNEL_DEFCONFIG="starfive_visionfive2"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/riscv/linux-defconfig-fragment.config $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/riscv/visionfive2/linux-defconfig-fragment.config"
@@ -30,7 +30,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="starfive/jh7110-visionfive-v2"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="starfive/jh7110-starfive-visionfive-2-v1.3b"
 
 # use blob + patched mesa
 BR2_PACKAGE_IMG_GPU_POWERVR=y
