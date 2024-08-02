@@ -15,6 +15,7 @@
   - Libretro-Melonds-Ds to v1.1.5
   - Libretro-Ecwolf to June 28 build
   - Libretro-Flycast to Jul 30 build
+  - Libretro-Freechaf to Jun 28 build
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
 - BigPEmu to v115
