@@ -13,12 +13,3 @@ index e9df9b1884..802ef834ad 100644
     ifeq ($(MESA), 1)
        GL_LIB := -lGLESv2
     else
-@@ -175,6 +179,8 @@ else ifneq (,$(findstring rpi,$(platform)))
-          CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a72
-          ARM_CPUFLAGS = -mfpu=neon-fp-armv8
-       endif
-+   else ifneq (,$(findstring rpi5_64,$(platform)))
-+      CPUFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
-    else ifneq (,$(findstring rpi,$(platform)))
-       CPUFLAGS += -mcpu=arm1176jzf-s
-       ARM_CPUFLAGS = -mfpu=vfp
