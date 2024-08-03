@@ -13,6 +13,7 @@
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-Melonds-Ds to v1.1.5
+  - Libretro-Ecwolf to June 28 build
   - Libretro-Flycast to Jul 30 build
 - Cemu to v2.0-91
 - Amiberry to v5.7.3
