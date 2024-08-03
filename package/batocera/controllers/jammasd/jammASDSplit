@@ -21,7 +21,9 @@ nohup evsieve --input "${1}" persist=exit \
 --map key:leftctrl  btn:west     \
 --map key:leftalt   btn:north    \
 --map key:space     btn:tl       \
---output name="ASD JammASD Player 1" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl \
+--map key:c         btn:tl2      \
+--map key:v         btn:tr2      \
+--output name="ASD JammASD Player 1" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl btn:tl2 btn:tr2 \
 --map key:6         btn:select   \
 --map key:2         btn:start    \
 --map key:r:1       abs:hat0y:-1 \
@@ -41,5 +43,7 @@ nohup evsieve --input "${1}" persist=exit \
 --map key:k         btn:tr       \
 --map key:a         btn:west     \
 --map key:s         btn:north    \
---map key:q         btn:tr       \
---output name="ASD JammASD Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl &
+--map key:q         btn:tl       \
+--map key:j         btn:tl2      \
+--map key:l         btn:tr2      \
+--output name="ASD JammASD Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl btn:tl2 btn:tr2 &
