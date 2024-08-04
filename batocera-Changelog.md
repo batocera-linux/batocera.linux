@@ -5,7 +5,9 @@
 - Khadis VIM4 optimizations and enhancements
 - Add Dockerpi Powerboard support initially for the RPi3
 ### Added
-- Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds) 
+- Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
+- Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
+  - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
 ### Fixed
 ### Changed / Improved
 - Added bezel & sinden border support for the RPi5 with Model 3 games
