@@ -1,0 +1,46 @@
+diff --git a/Source/Core/VideoCommon/OnScreenDisplay.cpp b/Source/Core/VideoCommon/OnScreenDisplay.cpp
+index cc7fa6e22b..d743528892 100644
+--- a/Source/Core/VideoCommon/OnScreenDisplay.cpp
++++ b/Source/Core/VideoCommon/OnScreenDisplay.cpp
+@@ -71,7 +71,7 @@ static float DrawMessage(int index, Message& msg, const ImVec2& position, int ti
+   const std::string window_name = fmt::format("osd_{}", index);
+ 
+   // The size must be reset, otherwise the length of old messages could influence new ones.
+-  ImGui::SetNextWindowPos(position);
++  ImGui::SetNextWindowPos(position, ImGuiCond_Always, ImVec2(0.5f, 0.0f)); // Center horizontally
+   ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f));
+ 
+   // Gradually fade old messages away (except in their first frame)
+@@ -155,13 +155,17 @@ void AddMessage(std::string message, u32 ms, u32 argb,
+ void DrawMessages()
+ {
+   const bool draw_messages = Config::Get(Config::MAIN_OSD_MESSAGES);
+-  const float current_x =
+-      LEFT_MARGIN * ImGui::GetIO().DisplayFramebufferScale.x + s_obscured_pixels_left;
+-  float current_y = TOP_MARGIN * ImGui::GetIO().DisplayFramebufferScale.y + s_obscured_pixels_top;
++  const ImGuiIO& io = ImGui::GetIO();
++  const float screen_width = io.DisplaySize.x;
++  const float screen_height = io.DisplaySize.y;
++  const float center_x = screen_width / 2.0f;
++  const float start_y = TOP_MARGIN * io.DisplayFramebufferScale.y + s_obscured_pixels_top;
+   int index = 0;
+ 
+   std::lock_guard lock{s_messages_mutex};
+ 
++  float current_y = start_y;
++
+   for (auto it = s_messages.begin(); it != s_messages.end();)
+   {
+     Message& msg = it->second;
+@@ -186,7 +190,10 @@ void DrawMessages()
+     }
+ 
+     if (draw_messages)
+-      current_y += DrawMessage(index++, msg, ImVec2(current_x, current_y), time_left);
++    {
++      float window_height = DrawMessage(index++, msg, ImVec2(center_x, current_y), time_left);
++      current_y += window_height;
++    }
+   }
+ }
+ 
