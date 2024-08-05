@@ -1,0 +1,5 @@
+# Wired
+ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Nintendo Co., Ltd. N64 Controller", RUN+="/usr/bin/nso-n64-calibration.sh"
+
+# Bluetooth
+ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="N64 Controller", RUN+="/usr/bin/nso-n64-calibration.sh"
