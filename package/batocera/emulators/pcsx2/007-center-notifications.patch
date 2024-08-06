@@ -1,0 +1,25 @@
+diff --git a/pcsx2/ImGui/ImGuiFullscreen.cpp b/pcsx2/ImGui/ImGuiFullscreen.cpp
+index 49b06a50bd..a351c6f08d 100644
+--- a/pcsx2/ImGui/ImGuiFullscreen.cpp
++++ b/pcsx2/ImGui/ImGuiFullscreen.cpp
+@@ -2640,6 +2640,10 @@ void ImGuiFullscreen::DrawNotifications(ImVec2& position, float spacing)
+ 	const u32 toast_title_color = s_light_theme ? IM_COL32(1, 1, 1, 255) : IM_COL32(0xff, 0xff, 0xff, 255);
+ 	const u32 toast_text_color = s_light_theme ? IM_COL32(0, 0, 0, 255) : IM_COL32(0xff, 0xff, 0xff, 255);
+ 
++	// Get the screen width and height
++	const ImGuiIO& io = ImGui::GetIO();
++	const float screen_width = io.DisplaySize.x;
++
+ 	for (u32 index = 0; index < static_cast<u32>(s_notifications.size());)
+ 	{
+ 		Notification& notif = s_notifications[index];
+@@ -2660,6 +2664,9 @@ void ImGuiFullscreen::DrawNotifications(ImVec2& position, float spacing)
+ 			(horizontal_padding * 2.0f) + badge_size + horizontal_spacing + std::max(title_size.x, text_size.x), min_width);
+ 		const float box_height =
+ 			std::max((vertical_padding * 2.0f) + title_size.y + vertical_spacing + text_size.y, min_height);
++		
++		// Center the notification horizontally
++		position.x = (screen_width - box_width) / 2.0f;
+ 
+ 		u8 opacity;
+ 		if (time_passed < NOTIFICATION_FADE_IN_TIME)
