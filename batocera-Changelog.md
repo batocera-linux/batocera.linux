@@ -59,6 +59,7 @@
 - FAudio to 24.08
 - FDK-AAC to 2.0.3
 - Intel Media Driver to 24.2.5
+- SOund Open Firmware to 2024.06
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
