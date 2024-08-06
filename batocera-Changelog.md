@@ -57,6 +57,7 @@
 - ALSA UCM configuration to 1.2.12
 - Chromebook Linux Audio to 31st of July
 - FAudio to 24.08
+- FDK-AAC to 2.0.3
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
