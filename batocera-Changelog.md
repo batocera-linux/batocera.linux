@@ -55,6 +55,7 @@
 - Pipewire to 1.2.2
 - ALSA stack to 1.2.12
 - ALSA UCM configuration to 1.2.12
+- Chromebook Linux Audio to 31st of July
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
