@@ -1,0 +1,107 @@
+diff --git a/src/cpu.cpp b/src/cpu.cpp
+index 51c2570..ac10658 100644
+--- a/src/cpu.cpp
++++ b/src/cpu.cpp
+@@ -514,6 +514,10 @@ bool CPUStats::GetCpuFile() {
+             if (!find_input(path, "temp", input, "Tdie"))
+                 find_input(path, "temp", input, "Tctl");
+             break;
++        } else if (name == "soc_thermal") {
++            // There is no label so set the input here
++            input = path + "/temp1_input";
++            break;
+         } else if (name == "atk0110") {
+             find_input(path, "temp", input, "CPU Temperature");
+             break;
+diff --git a/src/gpu.cpp b/src/gpu.cpp
+index 9a8c8f6..286db32 100644
+--- a/src/gpu.cpp
++++ b/src/gpu.cpp
+@@ -19,6 +19,7 @@ using namespace std::chrono_literals;
+ 
+ struct gpuInfo gpu_info {};
+ amdgpu_files amdgpu {};
++struct socgpu_files socgpu;
+ 
+ bool checkNvidia(const char *pci_dev){
+     bool nvSuccess = false;
+@@ -199,3 +200,30 @@ void getAmdGpuInfo(){
+     }
+ #endif
+ }
++
++void getSocGpuInfo(){
++#ifdef __linux__
++    int value = 0;
++    if (socgpu.core_clock) {
++        rewind(socgpu.core_clock);
++        fflush(socgpu.core_clock);
++        if (fscanf(socgpu.core_clock, "%d", &value) != 1)
++            value = 0;
++        gpu_info.CoreClock = value; // already in MHz
++    }
++    if (socgpu.temp) {
++        rewind(socgpu.temp);
++        fflush(socgpu.temp);
++        if (fscanf(socgpu.temp, "%d", &value) != 1)
++            value = 0;
++        gpu_info.temp = value / 1000;
++    }
++    if (socgpu.utilization) {
++        rewind(socgpu.utilization);
++        fflush(socgpu.utilization);
++        if (fscanf(socgpu.utilization, "%d", &value) != 1)
++            value = 0;
++        gpu_info.load = value;
++    }
++#endif
++}
+diff --git a/src/gpu.h b/src/gpu.h
+index c27a366..2b7d6e2 100644
+--- a/src/gpu.h
++++ b/src/gpu.h
+@@ -49,6 +49,14 @@ struct gpuInfo{
+ 
+ extern struct gpuInfo gpu_info;
+ 
++struct socgpu_files
++{
++    FILE *temp;
++    FILE *core_clock;
++    FILE *utilization;
++};
++extern struct socgpu_files socgpu;
++void getSocGpuInfo(void);
+ void getNvidiaGpuInfo(const struct overlay_params& params);
+ void getAmdGpuInfo(void);
+ void getIntelGpuInfo();
+diff --git a/src/overlay.cpp b/src/overlay.cpp
+index 0b8776d..093cba6 100644
+--- a/src/overlay.cpp
++++ b/src/overlay.cpp
+@@ -128,6 +128,8 @@ void update_hw_info(const struct overlay_params& params, uint32_t vendorID)
+ #endif
+    }
+    if (params.enabled[OVERLAY_PARAM_ENABLED_gpu_stats] || logger->is_active()) {
++      if (vendorID == 0x13b5)
++         getSocGpuInfo();
+       if (vendorID == 0x1002)
+          getAmdGpuInfo();
+ #ifdef __linux__
+@@ -799,6 +801,16 @@ void init_gpu_stats(uint32_t& vendorID, uint32_t reported_deviceID, overlay_para
+    }
+ 
+ #ifdef __linux__
++   // SOC
++   SPDLOG_DEBUG("vendor ID:{:X} device ID:{:X}", vendorID, reported_deviceID);
++   if (vendorID == 0x13b5) {
++      if (!socgpu.temp && fs::exists("/sys/class/hwmon/hwmon2/temp1_input"))
++         socgpu.temp = fopen("/sys/class/hwmon/hwmon2/temp1_input", "r");
++      if (!socgpu.core_clock && fs::exists("/sys/class/mpgpu/cur_freq"))
++         socgpu.core_clock = fopen("/sys/class/mpgpu/cur_freq", "r");
++      if (!socgpu.utilization && fs::exists("/sys/class/mpgpu/utilization"))
++         socgpu.utilization = fopen("/sys/class/mpgpu/utilization", "r");
++   }
+    // NVIDIA
+    if (vendorID == 0x10de)
+       if(checkNvidia(pci_dev))
