@@ -56,6 +56,7 @@
 - ALSA stack to 1.2.12
 - ALSA UCM configuration to 1.2.12
 - Chromebook Linux Audio to 31st of July
+- FAudio to 24.08
 
 # 2024/08/xx - batocera.linux 40 - Swallowtail
 ### Special Notes
