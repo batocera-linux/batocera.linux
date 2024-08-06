@@ -145,8 +145,8 @@ Add support for the Pironman 5 case with RPi5 devices.
 - GunCon3 default mapping (visit light gun page on official wiki)
   - Calibration now on C2 (press and hold it few seconds)
 - Sinden Lightgun drivers updated to 2.05 (firmware v1.9 now compatible)
-- Preferred vulkan driver name now listed in System Information
-- Start advisiong people on Vulkan GPU driver capabilities for Emualtors
+- Preferred vulkan driver & version now listed in System Information
+- Improve Vulkan GPU driver handling for Emualtors
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
 - We now record audio & use hardware encoding (x86_64 only) with Intel & AMD GPU's when using `batocera-record`.
