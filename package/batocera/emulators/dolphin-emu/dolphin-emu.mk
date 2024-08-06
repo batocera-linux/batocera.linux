@@ -3,10 +3,11 @@
 # dolphin-emu
 #
 ################################################################################
-# Version: 2407-103 (5.0 development) - Commits on Jul 26, 2024
-# Warning: update 1004-version-retroachievements.patch with the right version
-# Because otherwise RetroAchievements are blocked
-DOLPHIN_EMU_VERSION = 87b7009c126e7792627e2eb4e5a8be52a0bc4586
+# Version: Commits on Aug 4, 2024
+# Add major & minor version accordingly for any bump
+DOLPHIN_EMU_VERSION = 7645cbff9a263b9b77e14e0ea1ab46be34239469
+DOLPHIN_EMU_VERSION_MAJOR = 2407
+DOLPHIN_EMU_VERSION_MINOR = 130
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
@@ -57,6 +58,14 @@ define DOLPHIN_EMU_EVMAPY
         $(TARGET_DIR)/usr/share/evmapy
 endef
 
+define DOLPHIN_EMU_PRE_CONFIGURE_HOOK
+    sed -i 's/set(DOLPHIN_VERSION_MAJOR .*)/set(DOLPHIN_VERSION_MAJOR "$(DOLPHIN_EMU_VERSION_MAJOR)")/' \
+        $(@D)/CMake/ScmRevGen.cmake
+    sed -i 's/set(DOLPHIN_VERSION_MINOR .*)/set(DOLPHIN_VERSION_MINOR "$(DOLPHIN_EMU_VERSION_MINOR)")/' \
+        $(@D)/CMake/ScmRevGen.cmake
+endef
+
+DOLPHIN_EMU_PRE_CONFIGURE_HOOKS = DOLPHIN_EMU_PRE_CONFIGURE_HOOK
 DOLPHIN_EMU_POST_INSTALL_TARGET_HOOKS = DOLPHIN_EMU_EVMAPY
 
 $(eval $(cmake-package))
