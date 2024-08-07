@@ -17,7 +17,7 @@ CGENIUS_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 CGENIUS_CONF_OPTS += -DBUILD_COSMOS=1
 
 define CGENIUS_GET_COSMOS
-    cd $(@D); 
+    cd $(@D); \
         git clone https://gitlab.com/Dringgstein/cosmos.git src/engine/cosmos; \
         cd src/engine/cosmos; \
         git checkout 8497b5696c92b13ede4f5ad01dfb577b208404cb; \
