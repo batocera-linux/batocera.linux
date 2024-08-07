@@ -5035,6 +5035,8 @@ spectravideo:
   platform: spectravideo
   theme: spectravideo
   emulators:
+    libretro:
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
