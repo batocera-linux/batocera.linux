@@ -34,6 +34,7 @@
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
 - Flycast to Jul 30 build
+- Ikemen to August 1st 2024 build
 - PCSX2 to v2.1.62
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to Jul 28, 2024 build
