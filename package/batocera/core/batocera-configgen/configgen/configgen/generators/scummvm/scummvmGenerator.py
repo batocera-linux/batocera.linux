@@ -91,8 +91,6 @@ class ScummVMGenerator(Generator):
         # language
         if system.isOptSet("scumm_language"):
             commandArray.extend(["-q", f"{system.config['scumm_language']}"])
-        else:
-            commandArray.extend(["-q", "en"])
 
         # logging
         commandArray.append("--logfile=/userdata/system/logs/scummvm.log")
