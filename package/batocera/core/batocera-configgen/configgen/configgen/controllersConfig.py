@@ -252,6 +252,18 @@ def gunsBordersSizeName(guns, config):
             return bordersSize
     return None
 
+# returns None to follow the bezel overlay size by default
+def gunsBorderRatioType(guns, config):
+    # add emulator specific configs here
+    if "m3_wideScreen" in config and config["m3_wideScreen"] == "1":
+        eslog.debug("Model 3 set to widescreen")
+        return None
+    else:
+        # check the display esolution is already 4:3
+        eslog.debug("Setting gun border ratio to 4:3")
+        return "4:3"
+    return None
+
 def getMouseButtons(device):
   caps = device.capabilities()
   caps_keys = caps[evdev.ecodes.EV_KEY]
@@ -379,7 +391,7 @@ def getGamesMetaData(system, rom):
     # hardcoded list of system for arcade
     # this list can be found in es_system.yml
     # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
-    if system in ['naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'daphne', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
+    if system in ['naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'hypseus-singe', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
         targetSystem = 'arcade'
 
     for nodesystem in root.findall(".//system"):

@@ -11,7 +11,7 @@ then
     exit 0
 fi
 
-DELTANEW=$(batocera-resolution listOutputs | sort | diff -u /var/run/batocera-switch-screen-checker-status - | tail -n +3 | grep -E '^\+' | sed -e s/"^\+"//)
+DELTANEW=$(batocera-resolution listOutputs | sort | diff /var/run/batocera-switch-screen-checker-status - | grep -E '^> ' | sed -e s/"^> "// | head -1)
 NDELTANEW=$(echo "${DELTANEW}" | wc -l)
 
 # reinit status
@@ -36,15 +36,8 @@ else
     test $? != 0                 && exit 0
     test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle # don't exit when es is not idle, it could be scrapping. and some screen shuts down after some time.
 
-    # seems that when the screen is no more available, es exists automatically
-    SUPPOSED_OUTPUT=$(cat /var/run/switch_screen_current)
-    CURRENT_OUTPUT=$(batocera-resolution currentOutput)
-    # current output no more available ?
-    if test "${SUPPOSED_OUTPUT}" != "${CURRENT_OUTPUT}"
-    then
-	# in case the game is running, the restart will happen once the game is exited manually
-	# this is not perfect, but at least, it leaves a last chance to the user to replug the screen to save
-	touch /var/run/switch_screen_request # request to the default one
-    	curl http://localhost:1234/quit
-    fi
+    # in case the game is running, the restart will happen once the game is exited manually
+    # this is not perfect, but at least, it leaves a last chance to the user to replug the screen to save
+    touch /var/run/switch_screen_request # request to the default one
+    curl http://localhost:1234/quit
 fi

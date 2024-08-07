@@ -1,25 +1,44 @@
 #!/bin/bash
 
 BOOTCONF="/boot/batocera-boot.conf"
-log="/tmp/resize.log"
+LOG="/tmp/resize.log"
 
 # only at start
 test "$1" != "start" && exit 0
 
 # true if triggers are not available or not set to do so
-if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" && ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"
-then
+if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" && ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"; then
     exit 0
 fi
 
+# Remove the trigger(s)
+remove_trigger() {
+    local trigger="$1"
+    mount -o remount,rw /boot
+    sed -i -e "s/^[ ]*${trigger}/#${trigger}/g" "${BOOTCONF}"
+    mount -o remount,ro /boot
+}
+
 # UI Output with dialog, default colorset
-function dialogoutput()
-{
+function dialogoutput() {
     local percent="$1"
     local text="Do not switch off your device!"
 
-    dialog --backtitle "batocera.linux" --title " Resizing Partition " \
+    dialog --backtitle "batocera.linux" --title " Resizing & Formatting Partition " \
            --mixedgauge "$text" 18 50 "$percent" "${arr[@]}" &>/dev/tty1
+}
+
+# Display error with timeout
+function display_error() {
+    dialog --title "Resize Error" --timeout 10 --msgbox "\nPlease check the resize log at: /tmp/resize.log" 6 60 &>/dev/tty1
+    exit 1
+}
+
+# Partition size calculation
+get_partition_size_mb() {
+    local partition="$1"
+    local size_kb=$(blockdev --getsize64 "$partition")
+    echo $((size_kb / 1024 / 1024))
 }
 
 # Executing parameters and watch background pid
@@ -29,111 +48,146 @@ function textoutput()
     local cmd="$3"
     local percent="$2"
     local pid ret
-    echo "cmd:$cmd" >> $log
-    $cmd >> $log 2>&1 &
-    ret=$?
+    echo "cmd:$cmd" >> "$LOG"
+    $cmd >> "$LOG" 2>&1 &
     pid=$!
     arr[$1]=7 #msg: In Progress
     dialogoutput "$percent"
     wait $pid
-    code=$?
-    echo "cmd code:$code" >> $log
+    ret=$?
+    echo "cmd code:$ret" >> "$LOG"
     arr[$1]=$ret #msg: Depends from return value
+    if [ $ret -ne 0 ]; then
+        display_error
+    fi
+    return $ret
 }
 
 # only when resizing is wanted
-if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"
-then
+if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"; then
     # Preparing text arrays
     arr=(
-    "Aligning GPT table.........." "Pending"
-    "Resizing partition.........." "Pending"
-    "Informing the Kernel........" "Pending"
-    "Checking /userdata.........." "Pending"
-    "Resizing /userdata.........." "Pending"
-    "Syncing disk data..........." "Pending"
+        "Aligning GPT table............." "Pending"
+        "Resizing partition............." "Pending"
+        "Informing the Kernel..........." "Pending"
+        "Formatting resized /userdata..." "Pending"
+        "Checking /userdata integrity..." "Pending"
+        "Syncing disk data.............." "Pending"
+        "Removing trigger..............." "Pending"
     )
 
     # --- BEGIN RESIZE ---
-    # /userdata partition
+    
+    # Get /userdata partition details
     PART=$(batocera-part "share_internal")
     PARTNUM=$(batocera-part "share_internal_num")
-    echo "Partition name: $PART & number: $PARTNUM" >> $log
+    echo "Partition name: $PART & number: $PARTNUM" >> "$LOG"
+    
+    # Check the initial partition size
+    PARTSIZE=$(get_partition_size_mb "$PART")
+    echo "Initial partition size: ${PARTSIZE} MB" >> "$LOG"
+    
+    # Determine if we should format based on initial size
+    FORMAT_ALLOWED=false
+    if [ "$PARTSIZE" -eq 256 ] || [ "$PARTSIZE" -eq 512 ]; then
+        FORMAT_ALLOWED=true
+        echo "Initial partition size is $PARTSIZE, formatting will be allowed" >> "$LOG"
+    else
+        echo "Initial partition size is larger than initial image size, formatting will be skipped" >> "$LOG"
+    fi
+    
     # boot disk
     DISK=$(batocera-part prefix "${PART}")
-    echo "Disk = $DISK" >> $log
+    echo "Disk = $DISK" >> "$LOG"
+
+    TABLETYPE=$(parted -s ${DISK} print | grep 'Partition Table' | awk '{print $3}')
+    echo "Disk partition table type = $TABLETYPE" >> "$LOG"
 
     # only for ext4
     PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
     test "${PARTTYPE}" != "ext4" && exit 0
-    echo "Partition type = ${PARTTYPE}" >> $log
+    echo "Partition type = ${PARTTYPE}" >> "$LOG"
     
-    # remove the trigger
-    mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
-
     # textoutput "Message" "percentage" "command call" 
-    for i in 1 3 5 7 9 11; do
+    for i in 1 3 5 7 9 11 13; do
     case $i in
-        1) 
-           # move backup GPT data structures to the end of the disk
-           echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$log"
-           textoutput $i 10 "sgdisk -e ${DISK}";;
-        3) 
-           # resize the partition
-           echo "Step $i: Resizing the partition to 100%" >> "$log"
-           textoutput $i 50 "parted -s -m -f ${DISK} resizepart ${PARTNUM} 100%";;
-        
+        1)
+            # check for a GPT partition
+            if [ "${TABLETYPE}" = "gpt" ]; then
+                # move backup GPT data structures to the end of the disk
+                echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$LOG"
+                textoutput $i 10 "sgdisk -e ${DISK}"
+            else
+                echo "Step $i: Skipping GPT table move, disk is not GPT" >> "$LOG"
+                textoutput $i 10 ""
+            fi
+            ;;
+        3)
+            # resize the partition
+            echo "Step $i: Resizing the partition to 100%" >> "$LOG"
+            textoutput $i 30 "parted -s -m -f ${DISK} resizepart ${PARTNUM} 100%"
+            ;;
         5)
-           # update the kernel
-           echo "Step $i: Updating the kernel" >> "$log"
-           textoutput $i 60 "partprobe ${DISK}";;
+            # update the kernel
+            echo "Step $i: Updating the kernel" >> "$LOG"
+            textoutput $i 40 "partprobe ${DISK}"
+            ;;
         7)
-           # check & resize the ext4 file system
-           if test "${PARTTYPE}" = "ext4"
-           then
-	           echo "Step $i: Checking ext4 file system" >> "$log"
-	           textoutput $i 70 "e2fsck -f -p ${PART}"
-           fi
-           ;;
-        9) 
-           if test "${PARTTYPE}" = "ext4"
-           then
-               echo "Step $i: Expanding ext4 the file system" >> "$log"
-               textoutput $i 80 "resize2fs ${PART}"
-           fi
-           ;;
-        11) 
-           # finally disk sync
-           echo "Step $i: Final sync" >> "$log"
-           textoutput $i 90 "sync";;
+            if test "${PARTTYPE}" = "ext4" && "$FORMAT_ALLOWED" = true
+            then
+                echo "Step $i: Formatting the ext4 file system" >> "$LOG"
+                textoutput $i 60 "mkfs.ext4 -L SHARE -q -F -F ${PART}"
+            else
+                echo "Step $i: Skipping formatting due to partition size or type" >> "$LOG"
+                textoutput $i 60 "echo 'Formatting skipped'"
+            fi
+            ;;
+        9)
+            # check & resize the ext4 file system
+            if test "${PARTTYPE}" = "ext4"
+            then
+                echo "Step $i: Checking ext4 file system" >> "$LOG"
+                textoutput $i 70 "e2fsck -f -p ${PART}"
+            fi
+            ;;
+        11)
+            # finally disk sync
+            echo "Step $i: Final sync" >> "$LOG"
+            textoutput $i 80 "sync"
+            ;;
+        13)
+            # remove the trigger
+            textoutput $i 90 "remove_trigger autoresize"
+            ;;
     esac
     done
 
 else
     ###### format internal share #####
     FORMAT_INTERNAL_TYPE=$(grep -E '^[ ]*format-internal[ ]*=.*$' "${BOOTCONF}" | head -1 | sed -e s+"^[ ]*format-internal[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
-    if test -n "${FORMAT_INTERNAL_TYPE}"
-    then
-	# Preparing text arrays
-	arr=("Formatting /userdata.........." "Pending")
-	PART=$(batocera-part "share_internal")
+    if test -n "${FORMAT_INTERNAL_TYPE}"; then
+        # Preparing text arrays
+        arr=(
+            "Formatting /userdata.........." "Pending"
+            "Removing trigger.............." "Pending"
+        )
+        PART=$(batocera-part "share_internal")
 
-	# remove the trigger
-	mount -o remount,rw /boot && sed -i -e s+'^[ ]*format-internal'+'#format-internal'+ "${BOOTCONF}" && mount -o remount,ro /boot
-
-	case "${FORMAT_INTERNAL_TYPE}" in
-	    "btrfs")
-		textoutput 1 10 "mkfs.btrfs -L SHARE -f ${PART}" # what to do in case of error ? nothing.
-		;;
-	    "ext4")
-		textoutput 1 10 "mkfs.ext4 -L SHARE -q -F -F ${PART}" # what to do in case of error ? nothing.
-		;;
-	    "exfat")
-		textoutput 1 10 "mkfs.exfat -n SHARE ${PART}" # what to do in case of error ? nothing.
-		;;
-	    *)
-		# do nothing
-	esac
+        case "${FORMAT_INTERNAL_TYPE}" in
+            "btrfs")
+            textoutput 1 50 "mkfs.btrfs -L SHARE -f ${PART}"
+            ;;
+            "ext4")
+            textoutput 1 50 "mkfs.ext4 -L SHARE -q -F -F ${PART}"
+            ;;
+            "exfat")
+            textoutput 1 50 "mkfs.exfat -n SHARE ${PART}"
+            ;;
+            *)
+            # do nothing
+        esac
+        # remove the trigger
+        textoutput 2 90 "remove_trigger format-internal"
     fi
 fi
 

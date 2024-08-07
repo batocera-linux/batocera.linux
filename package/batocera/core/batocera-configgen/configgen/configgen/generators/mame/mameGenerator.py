@@ -10,6 +10,7 @@ from os import path
 from os import environ
 import configparser
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 import codecs
 import shutil
 import utils.bezels as bezelsUtil
@@ -33,6 +34,8 @@ class MameGenerator(Generator):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
+        (romName, romExt) = os.path.splitext(romBasename)
+
         softDir = "/var/run/mame_software/"
         softList = ""
         messModel = ""
@@ -82,12 +85,12 @@ class MameGenerator(Generator):
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
         if messMode == -1:
-            commandArray += [ "-rompath",      romDirname ]
+            commandArray += [ "-rompath",      romDirname + ";/userdata/bios/mame/;/userdata/bios/" ]
         else:
             if softList in subdirSoftList:
-                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/;/userdata/roms/mame/;/var/run/mame_software/" ]
+                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/;/var/run/mame_software/" ]
             else:
-                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/;/userdata/roms/mame/" ]
+                commandArray += [ "-rompath",      romDirname + ";/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/" ]
 
         # MAME various paths we can probably do better
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
@@ -374,6 +377,13 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop1" ]
                         else:
                             commandArray += [ "-cart1" ]
+                    elif system.name == "coco":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
+                        elif romExt.casefold() == ".dsk":
+                            commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
                     else:
                         commandArray += [ "-" + messRomType[messMode] ]
                 else:
@@ -458,6 +468,47 @@ class MameGenerator(Generator):
                     if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
                         autoRunCmd = 'LOADM”“,,R\\n'
                         autoRunDelay = 5
+            elif system.name == "coco":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = '/usr/bin/mame/hash/{}.xml'.format(softList)
+                    if os.path.exists(softListFile):
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib != {}:
+                                if software.get('name') == romName:
+                                    for info in software.iter('info'):
+                                        if info.get('name') == 'usage':
+                                            autoRunCmd = info.get('value') + '\\n'
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or (softList != "" and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'CLOAD:RUN\\n'
+                        else:
+                            autoRunCmd = 'CLOADM:EXEC\\n'
+                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "flop1") or (softList != "" and softList.endswith("flop")) or romExt.casefold() == ".dsk":
+                        romType = 'flop'
+                        if romName.casefold().endswith(".bas"):
+                            autoRunCmd = 'RUN \"{}\"\\n'.format(romName)
+                        else:
+                            autoRunCmd = 'LOADM \"{}\":EXEC\\n'.format(romName)
+
+                # check for a user override
+                autoRunFile = 'system/configs/mame/autoload/{}_{}_autoload.csv'.format(system.name, romType)
+                if os.path.exists(autoRunFile):
+                    openARFile = open(autoRunFile, 'r')
+                    with openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row and not row[0].startswith('#'):
+                                if row[0].casefold() == romName.casefold():
+                                    autoRunCmd = row[1] + "\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
@@ -493,9 +544,9 @@ class MameGenerator(Generator):
         buttonLayout = getMameControlScheme(system, romBasename)
 
         if messMode == -1:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
         else:
-            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse)
+            mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
@@ -697,7 +748,7 @@ class MameGenerator(Generator):
         if gunsBordersSize is not None:
             output_png_file = "/tmp/bezel_gunborders.png"
             innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, None, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:

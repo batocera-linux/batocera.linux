@@ -6,6 +6,8 @@ config BR2_PACKAGE_PYTHON_ADAFRUIT_BLINKA
 	select BR2_PACKAGE_PYTHON_RPI_WS281X
 	select BR2_PACKAGE_PYTHON_RPI_GPIO
 	select BR2_PACKAGE_PYTHON_SYSV_IPC
+	select BR2_PACKAGE_PYTHON_BINHO_HOST_ADAPTER
+    select BR2_PACKAGE_PYTHON_NUMPY
 	help
 	  CircuitPython APIs for non-CircuitPython versions of Python such as
 	  CPython on Linux and MicroPython.

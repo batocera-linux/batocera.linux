@@ -20,7 +20,7 @@ from PIL import Image, ImageOps
 
 eslog = get_logger(__name__)
 
-def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, guns, useWheels, wheels, useMouse, multiMouse):
+def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system):
     # config file
     config = minidom.Document()
     configFile = cfgPath + "default.cfg"
@@ -72,6 +72,19 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
     xml_system     = getSection(config, xml_mameconfig, "system")
     xml_system.setAttribute("name", "default")
+
+    # crosshairs
+    removeSection(config, xml_system, "crosshairs")
+    xml_crosshairs = config.createElement("crosshairs")
+    for p in range(0, 4):
+        xml_crosshair = config.createElement("crosshair")
+        xml_crosshair.setAttribute("player", str(p))
+        if system.isOptSet("mame_crosshair") and system.config["mame_crosshair"] == "1":
+            xml_crosshair.setAttribute("mode", "1")
+        else:
+            xml_crosshair.setAttribute("mode", "0")
+        xml_crosshairs.appendChild(xml_crosshair)
+    xml_system.appendChild(xml_crosshairs)
 
     removeSection(config, xml_system, "input")
     xml_input = config.createElement("input")
@@ -218,16 +231,27 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
 
         addCommonPlayerPorts(config, xml_input, nplayer)
 
+        ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
+        pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
+        pedalkey = None
+        pedalcname = "controllers.pedals{}".format(nplayer)
+        if pedalcname in system.config:
+            pedalkey = system.config[pedalcname]
+        else:
+            if nplayer in pedalsKeys:
+                pedalkey = pedalsKeys[nplayer]
+        ###
+
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings, mousemappings, multiMouse))
+                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings, mousemappings, multiMouse, pedalkey))
                 else:
-                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings, isWheel, mousemappings, multiMouse))
+                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey))
             else:
                 rmapping = reverseMapping(mappings_use[mapping])
                 if rmapping in pad.inputs:
-                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings, isWheel, mousemappings, multiMouse))
+                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey))
 
         #UI Mappings
         if nplayer == 1:
@@ -243,10 +267,10 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
                 if nplayer == thisControl['player']:
                     if thisControl['type'] == 'special':
                         xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default'], pedalkey))
                     elif thisControl['type'] == 'main':
                         xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default'], pedalkey))
                     elif thisControl['type'] == 'analog':
                         xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
                             mappings_use[thisControl['decMapping']], pad.inputs[mappings_use[thisControl['useMapping1']]], pad.inputs[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
@@ -260,9 +284,19 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
     # in case there are more guns than pads, configure them
     if useGuns and len(guns) > len(playersControllers):
         for gunnum in range(len(playersControllers)+1, len(guns)+1):
+            ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
+            pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
+            pedalkey = None
+            pedalcname = "controllers.pedals{}".format(gunnum)
+            if pedalcname in system.config:
+                pedalkey = system.config[pedalcname]
+            else:
+                if gunnum in pedalsKeys:
+                    pedalkey = pedalsKeys[gunnum]
+            ###
             addCommonPlayerPorts(config, xml_input, gunnum)
             for mapping in gunmappings:
-                xml_input.appendChild(generateGunPortElement(config, gunnum, mapping, gunmappings))
+                xml_input.appendChild(generateGunPortElement(config, gunnum, mapping, gunmappings, pedalkey))
 
     # save the config file
     #mameXml = open(configFile, "w")
@@ -291,7 +325,7 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings, isWheel, mousemappings, multiMouse):
+def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
@@ -301,6 +335,8 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
     keyval = input2definition(pad, key, input, padindex + 1, reversed, altButtons, False, isWheel)
     if mapping in gunmappings:
         keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+        if gunmappings[mapping] == "BUTTON2" and pedalkey is not None:
+            keyval += " OR KEYCODE_" + pedalkey.upper()
     if mapping in mousemappings:
         if multiMouse:
             keyval = keyval + " OR MOUSECODE_{}_{}".format(nplayer, mousemappings[mapping])
@@ -310,7 +346,7 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateGunPortElement(config, nplayer, mapping, gunmappings):
+def generateGunPortElement(config, nplayer, mapping, gunmappings, pedalkey):
     # Generic input
     xml_port = config.createElement("port")
     if mapping in ["START", "COIN"]:
@@ -323,13 +359,15 @@ def generateGunPortElement(config, nplayer, mapping, gunmappings):
     keyval = None
     if mapping in gunmappings:
         keyval = "GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+        if gunmappings[mapping] == "BUTTON2" and pedalkey is not None:
+            keyval += " OR KEYCODE_" + pedalkey.upper()
     if keyval is None:
         return None
     value = config.createTextNode(keyval)
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings, mousemappings, multiMouse):
+def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings, mousemappings, multiMouse, pedalkey):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -342,6 +380,8 @@ def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mappin
     keyval = input2definition(pad, key, input, padindex + 1, reversed, 0)
     if mapping in gunmappings:
         keyval = keyval + " OR GUNCODE_{}_{}".format(nplayer, gunmappings[mapping])
+        if gunmappings[mapping] == "BUTTON2" and pedalkey is not None:
+            keyval += " OR KEYCODE_" + pedalkey.upper()
     if mapping in mousemappings:
         if multiMouse:
             keyval = keyval + " OR MOUSECODE_{}_{}".format(nplayer, mousemappings[mapping])
@@ -351,7 +391,7 @@ def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mappin
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default):
+def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, pedalkey):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)

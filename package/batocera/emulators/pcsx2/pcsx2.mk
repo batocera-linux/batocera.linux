@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-#Version: Commits on Apr 1, 2024
-PCSX2_VERSION = v1.7.5663
+
+PCSX2_VERSION = v2.1.62
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -13,7 +13,7 @@ PCSX2_LICENSE_FILE = COPYING.GPLv3
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
-PCSX2_DEPENDENCIES += xorgproto alsa-lib freetype zlib libpng
+PCSX2_DEPENDENCIES += xorgproto alsa-lib freetype zlib libpng shaderc
 PCSX2_DEPENDENCIES += libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp
 PCSX2_DEPENDENCIES += libsamplerate fmt wxwidgets libgtk3 qt6base qt6tools qt6svg
 
@@ -42,7 +42,7 @@ else
     PCSX2_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     PCSX2_CONF_OPTS += -DUSE_VULKAN=ON
 else
     PCSX2_CONF_OPTS += -DUSE_VULKAN=OFF

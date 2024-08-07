@@ -1,7 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT
 	bool "libretro-mupen64plus-next"
 	depends on BR2_PACKAGE_RETROARCH
+	depends on (BR2_PACKAGE_HAS_LIBGLES  && !BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY) || \
+		   (BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)
 	  help
 	    Improved mupen64plus libretro core reimplementation
-		
+
 		https://github.com/libretro/mupen64plus-libretro-nx/tree/master

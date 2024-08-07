@@ -1,0 +1,11 @@
+config BR2_PACKAGE_RPI_EEPROM
+	bool "rpi-eeprom"
+	depends on BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_BINUTILS
+	select BR2_PACKAGE_BINUTILS_TARGET
+	select BR2_PACKAGE_RPI_UTILS
+	help
+	  Installation scripts and binaries for the Raspberry Pi 4
+	  and Raspberry Pi 5 bootloader EEPROMs.
+
+	  https://github.com/raspberrypi/rpi-eeprom

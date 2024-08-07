@@ -154,7 +154,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         else:
             gunsUtils.precalibration(systemName, system.config['emulator'], None, rom)
     else:
-        eslog.info("guns disabled.");
+        eslog.info("guns disabled.")
         guns = []
 
     # search wheels in case use_wheels is enabled for this game
@@ -268,7 +268,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             cmd = generator.generate(system, rom, playersControllers, metadata, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
-                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config))
+                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config), controllers.gunsBorderRatioType(guns, system.config))
                 if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
@@ -314,7 +314,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     # exit
     return exitCode
 
-def getHudBezel(system, generator, rom, gameResolution, bordersSize):
+def getHudBezel(system, generator, rom, gameResolution, bordersSize, bordersRatio):
     if generator.supportsInternalBezels():
         eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
         return None
@@ -445,9 +445,9 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize):
     if bordersSize is not None:
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
-
         innerSize, outerSize = bezelsUtil.gunBordersSize(bordersSize)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+        eslog.debug("Gun border ratio = {}".format(bordersRatio))
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, bordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     eslog.debug(f"applying bezel {overlay_png_file}")
@@ -539,7 +539,11 @@ def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
 def runCommand(command):
     global proc
 
-    command.env.update(os.environ)
+    # compute environment : first the current envs, then override by values set at generator level
+    envvars = dict(os.environ)
+    envvars.update(command.env)
+    command.env = envvars
+
     eslog.debug(f"command: {str(command)}")
     eslog.debug(f"command: {str(command.array)}")
     eslog.debug(f"env: {str(command.env)}")

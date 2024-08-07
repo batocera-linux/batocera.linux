@@ -8,6 +8,7 @@ config BR2_PACKAGE_VPINBALL
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_SDL2_IMAGE
     select BR2_PACKAGE_SDL2_TTF
+    select BR2_PACKAGE_FFMPEG
     help
       Visual Pinball.
       

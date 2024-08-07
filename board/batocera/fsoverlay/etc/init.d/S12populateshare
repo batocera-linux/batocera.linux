@@ -85,7 +85,7 @@ fi
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for FILE in music bios extractions kodi library saves screenshots splash \
+for FILE in music bios extractions kodi library saves screenshots recordings splash \
             system/.config/lirc/lircd.conf \
             system/configs/emulationstation/es_input.cfg \
             system/configs/emulationstation/es_settings.cfg \
@@ -108,7 +108,8 @@ for FILE in music bios extractions kodi library saves screenshots splash \
             bios/mame2003 \
             bios/dolphin-emu \
             roms/iortcw/main \
-            bios/ps2
+            bios/ps2 \
+            system/configs/pironman5
 do
     # Skip updating specific files
     if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/configs/emulationstation/es_input.cfg" ] || [ "$FILE" = "system/batocera.conf" ] || [ "$FILE" = "system/.kodi/userdata/guisettings.xml" ]; then

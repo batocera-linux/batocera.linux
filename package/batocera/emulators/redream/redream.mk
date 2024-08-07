@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-1124-g9c1dd35
+REDREAM_VERSION = 1.5.0-1131-gafdfc1a
 REDREAM_SITE = https://redream.io/download
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
@@ -14,7 +14,8 @@ REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz
 endif
 
 define REDREAM_EXTRACT_CMDS
-	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(REDREAM_DL_SUBDIR)/$(REDREAM_SOURCE)
+	mkdir -p $(@D)/target && cd $(@D)/target && \
+	    tar xf $(DL_DIR)/$(REDREAM_DL_SUBDIR)/$(REDREAM_SOURCE)
 endef
 
 define REDREAM_RPI4_RENAME_ELF
@@ -24,7 +25,8 @@ endef
 define REDREAM_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)

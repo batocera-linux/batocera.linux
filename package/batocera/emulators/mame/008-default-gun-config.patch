@@ -1,0 +1,22 @@
+diff --git a/src/emu/crsshair.cpp b/src/emu/crsshair.cpp
+index d90cc9a..903e784 100644
+--- a/src/emu/crsshair.cpp
++++ b/src/emu/crsshair.cpp
+@@ -455,7 +455,7 @@ void crosshair_manager::config_load(config_type cfg_type, config_level cfg_level
+ 	// Note: crosshair_load() is only registered if croshairs are used
+ 
+ 	// we only care about system-specific configuration
+-	if ((cfg_type != config_type::SYSTEM) || !parentnode)
++	if ((cfg_type != config_type::DEFAULT) || !parentnode)
+ 		return;
+ 
+ 	// loop and get player crosshair info
+@@ -506,7 +506,7 @@ void crosshair_manager::config_save(config_type cfg_type, util::xml::data_node *
+ 	// Note: crosshair_save() is only registered if crosshairs are used
+ 
+ 	// we only create system-specific configuration
+-	if (cfg_type != config_type::SYSTEM)
++	if (cfg_type != config_type::DEFAULT)
+ 		return;
+ 
+ 	for (int player = 0; player < MAX_PLAYERS; player++)

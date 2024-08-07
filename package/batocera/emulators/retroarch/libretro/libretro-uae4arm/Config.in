@@ -1,6 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_UAE4ARM
         bool "libretro-uae4arm"
 	depends on BR2_PACKAGE_RETROARCH
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_FLAC
+	select BR2_PACKAGE_MPG123
         help
           A libretro AMIGA emulator core optimized for ARM.
 

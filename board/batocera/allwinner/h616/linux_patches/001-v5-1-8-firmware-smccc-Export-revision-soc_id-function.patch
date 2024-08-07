@@ -1,0 +1,30 @@
+From: Martin Botka <martin.botka@somainline.org>
+
+The "SoC ID revision" as provided via the SMCCC SOCID interface can be
+valuable information for drivers, when certain functionality depends
+on a die revision, for instance.
+One example is the sun50i-cpufreq-nvmem driver, which needs this
+information to determine the speed bin of the SoC.
+
+Export the arm_smccc_get_soc_id_revision() function so that it can be
+called by any driver.
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+---
+ drivers/firmware/smccc/smccc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/firmware/smccc/smccc.c b/drivers/firmware/smccc/smccc.c
+index db818f9dcb8ee..d670635914ecb 100644
+--- a/drivers/firmware/smccc/smccc.c
++++ b/drivers/firmware/smccc/smccc.c
+@@ -69,6 +69,7 @@ s32 arm_smccc_get_soc_id_revision(void)
+ {
+ 	return smccc_soc_id_revision;
+ }
++EXPORT_SYMBOL_GPL(arm_smccc_get_soc_id_revision);
+
+ static int __init smccc_devices_init(void)
+ {

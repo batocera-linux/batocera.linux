@@ -1,0 +1,43 @@
+# Based on the source DTS work from Hardkernel and...
+# Tim Lunn <tim@feathertop.org>
+# Daniel Martin <dmanlfc@gmail.com>
+#
+diff --git a/arch/arm/dts/rk3566-odroid-m1s.dts b/arch/arm/dts/rk3566-odroid-m1s.dts
+index e9b02aa3d9..3e6c77544d 100644
+--- a/arch/arm/dts/rk3566-odroid-m1s.dts
++++ b/arch/arm/dts/rk3566-odroid-m1s.dts
+@@ -212,9 +212,9 @@
+ };
+ 
+ &gmac1 {
+-	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
+-	assigned-clock-rates = <0>, <125000000>;
+-	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>, <&gmac1_clkin>;
++	clock_in_out = "input";
+ 	clock_in_out = "output";
+ 	phy-handle = <&rgmii_phy1>;
+ 	phy-mode = "rgmii";
+@@ -226,10 +226,10 @@
+ 		     &gmac1m1_rgmii_clk
+ 		     &gmac1m1_rgmii_bus
+ 		     &gmac1m1_clkinout>;
+-	status = "okay";
+ 
+ 	tx_delay = <0x4f>;
+ 	rx_delay = <0x2d>;
++	status = "okay";
+ };
+ 
+ &gpu {
+@@ -508,6 +508,9 @@
+ 	rgmii_phy1: ethernet-phy@0 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <0x0>;
++		reset-assert-us = <20000>;
++		reset-deassert-us = <100000>;
++		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+ 	};
+ };
+ 

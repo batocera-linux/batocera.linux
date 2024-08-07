@@ -1,0 +1,11 @@
+--- a/src/core/cpu_code_cache.cpp	2024-07-14 02:39:15.241133011 +0200
++++ b/src/core/cpu_code_cache.cpp	2024-07-14 02:44:52.644844891 +0200
+@@ -142,6 +142,8 @@
+ #pragma clang section bss = ".jitstorage"
+ __attribute__((aligned(HOST_PAGE_SIZE))) static u8 s_code_buffer_ptr[RECOMPILER_CODE_CACHE_SIZE];
+ #pragma clang section bss = ""
++#else
++__attribute__ ((section (".jitstorage"))) __attribute__((aligned(HOST_PAGE_SIZE))) static u8 s_code_buffer_ptr[RECOMPILER_CODE_CACHE_SIZE];
+ #endif
+ #else
+ static u8* s_code_buffer_ptr = nullptr;

@@ -1,0 +1,13 @@
+diff --git a/CMakeModules/DuckStationUtils.cmake b/CMakeModules/DuckStationUtils.cmake.new
+index 7088df29e5..77514e0ef6 100644
+--- a/CMakeModules/DuckStationUtils.cmake
++++ b/CMakeModules/DuckStationUtils.cmake.new
+@@ -11,7 +11,7 @@ function(detect_operating_system)
+ 	message(STATUS "CMake System Name: ${CMAKE_SYSTEM_NAME}")
+ 
+ 	# LINUX wasn't added until CMake 3.25.
+-	if (CMAKE_VERSION VERSION_LESS 3.25.0 AND CMAKE_SYSTEM_NAME MATCHES "Linux")
++	if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+ 		# Have to make it visible in this scope as well for below.
+ 		set(LINUX TRUE PARENT_SCOPE)
+ 		set(LINUX TRUE)

@@ -21,6 +21,9 @@ cp -f  "${BINARIES_DIR}/"*.dtb              "${BATOCERA_BINARIES_DIR}/boot/" || 
 cp     "${BOARD_DIR}/boot/config.txt"       "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp     "${BOARD_DIR}/boot/cmdline.txt"      "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 
+# Pironman5 case overlay
+cp "${BINARIES_DIR}/pironman5/sunfounder-pironman5.dtbo" "${BATOCERA_BINARIES_DIR}/boot/overlays/" || exit 1
+
 cp "${BINARIES_DIR}/Image"          "${BATOCERA_BINARIES_DIR}/boot/boot/linux"            || exit 1
 cp "${BINARIES_DIR}/initrd.lz4"       "${BATOCERA_BINARIES_DIR}/boot/boot/"                || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1

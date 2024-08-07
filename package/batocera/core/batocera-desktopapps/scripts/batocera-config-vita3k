@@ -5,22 +5,10 @@ then
     export DISPLAY=:0.0
 fi
 
-CFGDIR=/userdata/system/configs/vita3k
-CFGFILE=$CFGDIR/config.yml
-
-# check the config folder exosts, if not create it & copy files
-if [[ ! -e $CFGDIR ]]
-then
-    mkdir $CFGDIR
-    cp -R /usr/bin/vita3k/* $CFGDIR
-fi
-
-# check a config files exists, if not make one
-if [[ ! -f $CFGFILE ]]
-then
-    mkdir -p $CFGDIR
-    touch $CFGFILE
-fi
-
+# set the environment variables
+XDG_CONFIG_HOME=$CFGDIR \
+XDG_CACHE_HOME=/userdata/system/cache \
+XDG_DATA_HOME=/userdata/saves \
+XDG_DATA_DIRS=/userdata/saves \
 # now run the emulator
-/usr/bin/vita3k/Vita3K -c $CFGFILE
+/usr/bin/vita3k/Vita3K -F

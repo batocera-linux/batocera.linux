@@ -1,0 +1,23 @@
+diff --git a/pm_dashboard/pm_dashboard.py b/pm_dashboard/pm_dashboard.py
+index a4c9c8e9a0..1d395ec1c2 100644
+--- a/pm_dashboard/pm_dashboard.py
++++ b/pm_dashboard/pm_dashboard.py
+@@ -6,7 +6,8 @@ from os import listdir
+ import flask
+ from flask import request, send_from_directory
+ from flask_cors import CORS, cross_origin
+-from pkg_resources import resource_filename
++import importlib.resources
++from pathlib import Path
+ from werkzeug.serving import make_server
+ 
+ from .data_logger import DataLogger
+@@ -17,7 +18,7 @@ DEBUG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+ 
+ __package_name__ = __name__.split('.')[0]
+ __log_path__ = '/var/log/pm_dashboard'
+-__www_path__ = resource_filename(__package_name__, 'www')
++__www_path__ = Path(importlib.resources.files(__package_name__)) / 'www'
+ __api_prefix__ = '/api/v1.0'
+ __host__ = '0.0.0.0'
+ __port__ = 34001

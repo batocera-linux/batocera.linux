@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.7.120
+XEMU_VERSION = v0.7.131
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -101,7 +101,7 @@ endef
 
 define XEMU_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/*.keys \
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 

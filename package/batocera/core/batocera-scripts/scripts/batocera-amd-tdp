@@ -17,59 +17,66 @@ if [[ $ryzenadj_output =~ "unsupported model" ]]; then
   exit 1
 fi
 
+# Add to the array with dmi name, marketing name, min & max TDP values
+# Of models we know of / support
+declare -A tdp_ranges
+tdp_ranges=(
+    ["Loki_Zero"]="AYN Loki Zero;5;20"
+    ["83E1"]="Lenovo Legion Go;5;30"
+    ["AYANEO_2S"]="Ayaneo 2S;5;30"
+    ["AIR_Plus"]="Ayaneo Air Plus;5;28"
+    ["Jupiter"]="Steam Deck LCD;3;15"
+    ["Galileo"]="Steam Deck OLED;3;15"
+)
+
 # Handle various AMD handhelds
 info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
 
-if [[ $info_output == "Loki_Zero" ]]; then
-    # Set the TDP range to 2-20w
-    # We need vendor guidance to get accurate values
-    TDP_MIN=5
-    TDP_MAX=20
-    echo "Handheld AYN Loki Zero detected. Minumum TDP: $TDP_MIN Watts. Maximum TDP: $TDP_MAX Watts" >> $log
-fi
-
-# Legion Go
-if [[ $info_output == "LNVNB161216" ]]; then
-    # Set the TDP range to 2-20w
-    # We need vendor guidance to get accurate values
-    TDP_MIN=5
-    TDP_MAX=30
-    echo "Handheld Lenovo Legion Go detected. Minumum TDP: $TDP_MIN Watts. Maximum TDP: $TDP_MAX Watts" >> $log
+# Get marketing name and TDP range for the detected device
+device_info="${tdp_ranges[$info_output]}"
+if [ -n "$device_info" ]; then
+    IFS=';' read -r -a info_array <<< "$device_info"
+    marketing_name=${info_array[0]}
+    tdp_min=${info_array[1]}
+    tdp_max=${info_array[2]}
+    echo "Device: $marketing_name detected. Minumum TDP: $tdp_min Watts. Maximum TDP: $tdp_max Watts" >> "$log"
+    TDP_MIN=$tdp_min
+    TDP_MAX=$tdp_max
+else
+    echo "Unknown device detected." >> "$log"
 fi
 
 # Check if TDP is null or not provided. If so, set to 10w
 if [ -z "$TDP" ]; then
     TDP=10
-    echo "No TDP detected, using TDP of $TDP Watts" >> $log
+    echo "No TDP detected, using TDP of $TDP Watts" >> "$log"
 fi
 
 # Align to the TDP_MIN if it's below it
 if (( TDP < TDP_MIN )); then
-    echo "Requested TDP of $TDP Watts is below the minimum" >> $log
+    echo "Requested TDP of $TDP Watts is below the minimum" >> "$log"
     TDP=$TDP_MIN
-    echo "Using TDP of $TDP" >> $log
+    echo "Using TDP of $TDP" >> "$log"
 fi
+
 # Cap TDP at TDP_MAX if it exceeds it
 if (( TDP > TDP_MAX )); then
-    echo "Requested TDP of $TDP Watts is above the maximum" >> $log
+    echo "Requested TDP of $TDP Watts is above the maximum" >> "$log"
     TDP=$TDP_MAX
-    echo "Using TDP of $TDP Watts" >> $log
+    echo "Using TDP of $TDP Watts" >> "$log"
 fi
 
-if (( TDP >= TDP_MIN && TDP <= TDP_MAX )); then
-    # Calculate WATTS based on TDP
-    WATTS=$((TDP * 1000))
-fi
+# Calculate WATTS based on TDP
+WATTS=$((TDP * 1000))
 
-if /usr/bin/ryzenadj --stapm-limit="${WATTS}" --fast-limit="${WATTS}" --slow-limit="${WATTS}" --tctl-temp=95; then
-    echo "TDP of $TDP Watts has been set" >> $log
+# Set TDP using ryzenadj
+if /usr/bin/ryzenadj --stapm-limit="${WATTS}" --fast-limit="${WATTS}" --slow-limit="$((WATTS * 80 / 100))" --tctl-temp=95; then
+    echo "TDP of $TDP Watts has been set" >> "$log"
 else
-    echo "Error setting TDP. Please check the logs for more information." >> $log
+    echo "Error setting TDP. Please check the logs for more information." >> "$log"
     exit 1
 fi
 
-echo "" >> $log
-echo "*** ------------------------------------- ***" >> $log
-echo "" >> $log
-
-batocera-settings-set amd.tdp ${TDP}
+echo "" >> "$log"
+echo "*** ------------------------------------- ***" >> "$log"
+echo "" >> "$log"

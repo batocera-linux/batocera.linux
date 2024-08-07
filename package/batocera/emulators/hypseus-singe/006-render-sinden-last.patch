@@ -1,0 +1,23 @@
+diff --git a/src/video/video.cpp b/src/video/video.cpp
+index c0fe131afb..a1484b8d75 100644
+--- a/src/video/video.cpp
++++ b/src/video/video.cpp
+@@ -1884,14 +1884,14 @@ void vid_blit () {
+     // If there's a subtitle overlay
+     if (g_bSubtitleShown) draw_subtitle(subchar, false, false);
+ 
+-    if (g_game->get_sinden_border())
+-        draw_border(g_game->get_sinden_border(),
+-            g_game->get_sinden_border_color());
+-
+     if (g_bezel_toggle) vid_render_bezels();
+ 
+     if (g_fRotateDegrees != 0) vid_render_rotate();
+ 
++    if (g_game->get_sinden_border())
++        draw_border(g_game->get_sinden_border(),
++            g_game->get_sinden_border_color());
++
+     SDL_RenderPresent(g_renderer);
+ 
+     if (g_softsboard_needs_update) {

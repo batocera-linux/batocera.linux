@@ -7,11 +7,6 @@
 PIBOY_VERSION = a93fe087307d676381c196ba8f098d07190cfcb0
 PIBOY_SITE = $(call github,hancock33,piboycontrols,$(PIBOY_VERSION))
 PIBOY_DEPENDENCIES = linux
-PIBOY_LINUX_VER = $(shell dirname $(TARGET_DIR)/lib/modules/*/build)
-
-define PIBOY_BUILD_CMDS
-        $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) KVERSION=$(PIBOY_LINUX_VER)
-endef
 
 define PIBOY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin

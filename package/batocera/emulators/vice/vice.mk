@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-VICE_VERSION = 3.7.1
+VICE_VERSION = 3.8
 VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
 VICE_SITE = https://sourceforge.net/projects/vice-emu/files/releases
 VICE_LICENSE = GPLv2
-VICE_DEPENDENCIES = ffmpeg sdl2 libpng giflib zlib lame alsa-lib jpeg host-xa host-dos2unix sdl2_image
+VICE_DEPENDENCIES = ffmpeg sdl2 libpng giflib zlib lame alsa-lib jpeg host-xa host-dos2unix sdl2_image libcurl
 
 VICE_CONF_OPTS += --disable-option-checking
 VICE_CONF_OPTS += --disable-pdf-docs

@@ -1,0 +1,13 @@
+diff --git a/Makefile.in b/Makefile.in
+index caf5a83b45..b9b5dbc704 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -11345,6 +11345,8 @@ install-confDATA: $(conf_DATA)
+ 	if test -n "$$list"; then \
+ 	  echo " $(MKDIR_P) '$(DESTDIR)$(confdir)'"; \
+ 	  $(MKDIR_P) "$(DESTDIR)$(confdir)" || exit 1; \
++	  echo " chmod 755 '$(DESTDIR)$(confdir)'"; \
++	  chmod 755 "$(DESTDIR)$(confdir)" || exit 1; \
+ 	fi; \
+ 	for p in $$list; do \
+ 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \

@@ -1,0 +1,46 @@
+{
+    "actions_player1": [
+	{
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_ESC" ],
+            "description": "Exit Emulator"
+	},
+	{
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F4" ],
+            "description": "Load State"
+	},
+	{
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F2" ],
+            "description": "Save State"
+	},
+	{
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": [ "KEY_F12" ],
+            "description": "Screenshot"
+	},
+	{
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": [ "KEY_PAGEDOWN" ],
+            "description": "Fast Forward"
+	},
+	{
+            "trigger": ["hotkey", "up"],
+            "type": "key",
+            "target": [ "KEY_LEFTSHIFT", "KEY_F7" ],
+            "description": "Slot +"
+	},
+	{
+            "trigger": ["hotkey", "down"],
+            "type": "key",
+            "target": [ "KEY_LEFTSHIFT", "KEY_F6" ],
+            "description": "Slot -"
+	}
+    ]
+}

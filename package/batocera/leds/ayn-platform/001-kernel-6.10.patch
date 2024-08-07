@@ -1,0 +1,28 @@
+diff --git a/ayn-platform.c b/ayn-platform.c
+index f88f93b5f6..3afea22adb 100644
+--- a/ayn-platform.c
++++ b/ayn-platform.c
+@@ -705,7 +705,7 @@ static int ayn_platform_probe(struct platform_device *pdev)
+ {
+         struct device *dev = &pdev->dev;
+         struct device *hwdev;
+-        int retval;
++        int retval, i;
+ 
+         retval = devm_led_classdev_multicolor_register(dev, &ayn_led_mc);
+         if (retval)
+@@ -713,9 +713,12 @@ static int ayn_platform_probe(struct platform_device *pdev)
+ 
+         struct led_classdev *led_cdev = &ayn_led_mc.led_cdev;
+ 
+-        retval = devm_device_add_groups(led_cdev->dev, ayn_led_mc_groups);
+-        if (retval)
++        // Register each group individually
++        for (i = 0; ayn_led_mc_groups[i]; i++) {
++                retval = devm_device_add_group(led_cdev->dev, ayn_led_mc_groups[i]);
++                if (retval)
+                 return retval;
++        }
+ 
+         retval = led_mode_write(AYN_LED_MODE_WRITE);
+         if (retval)

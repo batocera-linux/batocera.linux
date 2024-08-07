@@ -1,8 +1,7 @@
 #!/bin/bash
 
 ### full version (not on login, otherwise you can't log when OpenGL/Vulkan are out of order)
-if test "$1" = "--full"
-then
+if test "$1" = "--full"; then
 	FULL_DISPLAY=1
 else
 	FULL_DISPLAY=0
@@ -12,46 +11,54 @@ fi
 getCpu() {
     test -e "${1}/cpufreq/scaling_max_freq" || return 0
 
-    if test -e "${1}/online"
-    then
-	OL=$(cat "${CPU}/online")
-	test "${OL}" = 1 || return 0
+    if test -e "${1}/online"; then
+        OL=$(cat "${CPU}/online")
+        test "${OL}" = 1 || return 0
     fi
     cat "${CPU}/cpufreq/scaling_max_freq"
 }
 
 # Detect battery
-BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
-if ! test -n "${BATT}"
-then
-    NOW=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
-    MAX=$(cat /sys/class/power_supply/{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
-    if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]
-    then
-        BATT=$((200*$NOW/$MAX % 2 + 100*$NOW/$MAX))
+BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
+BATT=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+
+if [ -z "${BATT}" ]; then
+    BATTERY_DIR=$(ls -d /sys/class/power_supply/*{FUEL,fuel}* 2>/dev/null | head -1)
+    NOW=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e s+'^POWER_SUPPLY_CHARGE_NOW='++ | sort -rn | head -1)
+    MAX=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e s+'^POWER_SUPPLY_CHARGE_FULL='++ | sort -rn | head -1)
+    if [ -n "$NOW" ] && [ -n "$MAX" ] && [ "$MAX" -ne 0 ]; then
+        BATT=$((200 * $NOW / $MAX % 2 + 100 * $NOW / $MAX))
     fi
 fi
 
-BATTREMAINING=
-BATTREMAINING_CURRENT=$(cat /sys/class/power_supply/{BAT,bat}*/current_now 2>/dev/null)
-BATTREMAINING_CHARGE=$(cat /sys/class/power_supply/{BAT,bat}*/charge_now 2>/dev/null)
-if test -n "${BATTREMAINING_CURRENT}" -a -n "${BATTREMAINING_CHARGE}"
-then
-    if test "${BATTREMAINING_CURRENT}" -gt 0
-    then
-	BATTREMAINING_HOURS=$(expr ${BATTREMAINING_CHARGE} / ${BATTREMAINING_CURRENT})
-	BATTREMAINING_MINS=$(expr ${BATTREMAINING_CHARGE} '*' 60 / ${BATTREMAINING_CURRENT} - 60 '*' ${BATTREMAINING_HOURS})
-	test ${BATTREMAINING_MINS} -lt 10 && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
-	BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
+if [ -n "${BATTERY_DIR}" ]; then
+    BATTREMAINING=""
+    TIME_TO_EMPTY=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_TIME_TO_EMPTY_NOW=" | sed -e 's/^POWER_SUPPLY_TIME_TO_EMPTY_NOW=//')
+
+    if [ -n "${TIME_TO_EMPTY}" ] && [ "${TIME_TO_EMPTY}" -gt 0 ]; then
+        BATTREMAINING_HOURS=$(expr ${TIME_TO_EMPTY} / 3600)
+        BATTREMAINING_MINS=$(expr ${TIME_TO_EMPTY} % 3600 / 60)
+        [ ${BATTREMAINING_MINS} -lt 10 ] && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
+        BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
+    else
+        BATTREMAINING_CURRENT=$(cat ${BATTERY_DIR}/current_now 2>/dev/null)
+        BATTREMAINING_CHARGE=$(cat ${BATTERY_DIR}/charge_now 2>/dev/null)
+        if [ -n "${BATTREMAINING_CURRENT}" ] && [ -n "${BATTREMAINING_CHARGE}" ]; then
+            if [ "${BATTREMAINING_CURRENT}" -gt 0 ]; then
+                TIME_TO_EMPTY=$(expr ${BATTREMAINING_CHARGE} \* 3600 / ${BATTREMAINING_CURRENT})
+                BATTREMAINING_HOURS=$(expr ${TIME_TO_EMPTY} / 3600)
+                BATTREMAINING_MINS=$(expr ${TIME_TO_EMPTY} % 3600 / 60)
+                [ ${BATTREMAINING_MINS} -lt 10 ] && BATTREMAINING_MINS=0${BATTREMAINING_MINS}
+                BATTREMAINING=" (${BATTREMAINING_HOURS}:${BATTREMAINING_MINS})"
+            fi
+        fi
     fi
-fi
+fi	
 
 ### short version (for osd)
-if test "$1" = "--short"
-then
+if test "$1" = "--short"; then
     DT=$(date +%H:%M)
-    if test -n "${BATT}"
-    then
+    if test -n "${BATT}"; then
         echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
     else
         echo "${DT}"
@@ -61,8 +68,8 @@ fi
 ###
 
 V_BOARD=$(cat /boot/boot/batocera.board)
-V_CPUNB=$(lscpu | grep 'Core(s) per socket' | awk '{print $4}' | head -n 1)
-V_CPUMAXNB=$(lscpu | grep '^CPU(s):' | awk '{print $2}')
+V_CPUNB=$(LANG=C lscpu | grep 'Core(s) per socket' | awk '{print $4}' | head -n 1)
+V_CPUMAXNB=$(LANG=C lscpu | grep '^CPU(s):' | awk '{print $2}')
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
 # min freq : minimum freq among the max cpus ; consider only online cpus
@@ -72,18 +79,15 @@ let V_CPUMINFREQ=${V_CPUMINFREQ}/1000
 let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 
 V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-if test -z "${V_BOARD_MODEL}"
-then
+if test -z "${V_BOARD_MODEL}"; then
     # give an other chance with dmi
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-fi
-# 3rd time lucky
-if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"
-then
     V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 fi
-if test -n "${V_BOARD_MODEL}"
-then
+# 3rd time lucky
+if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"; then
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+if test -n "${V_BOARD_MODEL}"; then
     echo "Model: ${V_BOARD_MODEL}"
 fi
 echo "System: ${V_SYSTEM}"
@@ -93,22 +97,20 @@ if [ "$V_BOARD" != "$V_ARCH" ]; then
     echo "Board: ${V_BOARD}"
 fi
 
-if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"
-then
+if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"; then
     REVISION=$(grep -E $'^Revision\t:' /proc/cpuinfo | head -1 | sed -e s+'^Revision\t: '++)
     test -n "${REVISION}" && echo "Revision: ${REVISION}"
 fi
 
 [[ -z ${V_CPUMODEL1} ]] || echo "CPU Model: ${V_CPUMODEL1}"
 
-if test "${V_CPUMAXNB}" = "${V_CPUNB}"
-then
+if test "${V_CPUMAXNB}" = "${V_CPUNB}"; then
     echo "CPU Cores: ${V_CPUNB}"
 else
-        echo "CPU Cores: ${V_CPUNB} / CPU Threads: ${V_CPUMAXNB}"
+    echo "CPU Cores: ${V_CPUNB} / CPU Threads: ${V_CPUMAXNB}"
 fi
-if test "${V_CPUMINFREQ}" != "${V_CPUMAXFREQ}"
-then
+
+if test "${V_CPUMINFREQ}" != "${V_CPUMAXFREQ}"; then
     echo "CPU Frequency: ${V_CPUMINFREQ}/${V_CPUMAXFREQ} MHz"
 else
     echo "CPU Max Frequency: ${V_CPUMAXFREQ} MHz"
@@ -116,15 +118,13 @@ fi
 
 declare -a check_cpu_features=("avx2" "sse4_1")
 declare -a cpu_features=()
-for feature in "${check_cpu_features[@]}"
-do
-    if grep -q " ${feature}" /proc/cpuinfo
-    then
+for feature in "${check_cpu_features[@]}"; do
+    if grep -q " ${feature}" /proc/cpuinfo; then
         cpu_features+=("${feature}")
     fi
 done
-if [ "${#cpu_features[@]}" -gt 0 ]
-then
+
+if [ "${#cpu_features[@]}" -gt 0 ]; then
     echo "CPU Features: ${cpu_features[@]}"
 fi
 
@@ -138,8 +138,7 @@ fi
 # temperature
 # Unit: millidegree Celsius
 TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
-if test -n "${TEMPE}"
-then
+if test -n "${TEMPE}"; then
     echo "Temperature: ${TEMPE}°C"
 fi
 
@@ -153,10 +152,13 @@ echo "Available Memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 if test -z "${DISPLAY}"; then
     export DISPLAY=:0.0
 fi
+
 DISPLAYRES=$(batocera-resolution currentResolution)
-if [ ! -z "$WAYLAND_DISPLAY" ]; then
+if [ ! -z "$WAYLAND_DISPLAY" ]; then # wayland
     DISPLAYRATE=$(batocera-resolution currentMode | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
-else
+elif test -f /var/run/drmMode; then  # drm
+    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $4}')
+else # xorg
     DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
 fi
 echo "Display Resolution: ${DISPLAYRES}"
@@ -164,12 +166,10 @@ echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
 
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
-	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"
-	then
+	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"; then
 	    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
-	    if test -z "${V_OPENGLVERSION}"
-	    then
-		V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
+	    if test -z "${V_OPENGLVERSION}"; then
+            V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
 	    fi
 	    echo "OpenGL Driver Version: ${V_OPENGLVERSION}"
 	fi
@@ -202,6 +202,7 @@ else
     PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
     if [ -n "$PREFSRC" ]; then
         echo "Network IP Address: $PREFSRC"
+    fi
 fi
 
 # Boot information
@@ -217,25 +218,44 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 fi
 
 # battery
-if test -n "${BATT}"
-then
+if test -n "${BATT}"; then
     echo "Battery: ${BATT}%"
+fi
+
+# battery health
+design_energy_file="/sys/class/power_supply/BAT0/energy_full_design"
+current_energy_file="/sys/class/power_supply/BAT0/energy_full"
+
+if [ -e "$design_energy_file" ]; then
+    design_energy=$(cat "$design_energy_file")
+    current_energy=$(cat "$current_energy_file")
+    
+    battery_health=$(awk "BEGIN {
+        health = ($current_energy / $design_energy) * 100;
+        if (health > 100) 
+            health = 100;
+        printf \"%.0f\", health
+    }")
+
+    if [ ! -z "$battery_health" ]; then
+        echo "Battery Health: $battery_health%"
+    fi
 fi
 
 # PAD Battery
 for PADBAT in /sys/class/power_supply/*/device/uevent
 do
-    if test -e "${PADBAT}" # when nothing is found, the expression is return
-    then
-	# HID devices only
-	PADNAME=$(sed -nE 's/^HID_NAME=(.+)/\1/p' "${PADBAT}")
-	if test -n "${PADNAME}"
-	then
-	    # parent of parent / uevent
-	    BATTUEVENT=$(dirname "${PADBAT}")
-	    BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
-	    BATT="$(batocera-padsinfo "${BATTUEVENT}")"
-	    echo "${PADNAME}: ${BATT}%"
-	fi
+    if test -e "${PADBAT}"; then
+        # HID devices only
+        PADNAME=$(sed -nE 's/^HID_NAME=(.*)/\1/p' "${PADBAT}")
+        if test -n "${PADNAME}"; then
+            # Remove PID if it exists in the name
+            PADNAME=$(echo "${PADNAME}" | sed -E 's/ PID:[0-9]+//')
+            # parent of parent / uevent
+            BATTUEVENT=$(dirname "${PADBAT}")
+            BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
+            BATT="$(batocera-padsinfo "${BATTUEVENT}")"
+            echo "${PADNAME}: ${BATT}%"
+        fi
     fi
 done

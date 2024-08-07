@@ -11,6 +11,7 @@ FLATPAK_SITE = https://github.com/flatpak/flatpak/releases/download/$(FLATPAK_VE
 FLATPAK_DEPENDENCIES += appstream-glib glib-networking host-pkgconf host-python3-pyparsing
 FLATPAK_DEPENDENCIES += json-glib libarchive libcap libfuse libglib2 libgpgme libostree
 FLATPAK_DEPENDENCIES += libseccomp libsoup libsoup3 pkgconf polkit python3-pyparsing yaml-cpp
+FLATPAK_DEPENDENCIES += hicolor-icon-theme adwaita-icon-theme adwaita-icon-theme-light
 
 FLATPAK_CONF_OPTS += --with-sysroot="$(STAGING_DIR)"
 FLATPAK_CONF_OPTS += --with-gpgme-prefix="$(STAGING_DIR)/usr"

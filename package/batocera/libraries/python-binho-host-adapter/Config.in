@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_BINHO_HOST_ADAPTER
+	bool "python-binho-host-adapter"
+	select BR2_PACKAGE_PYTHON_SERIAL
+	help
+	  Cross-platform Python 3.x library for automated control of
+	  Binho Multi-Protocol USB Host Adapters.
+
+	  https://pypi.org/project/binho-host-adapter

@@ -2148,6 +2148,15 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('reicast_widescreen_hack',   '"enabled"')
         else:
             coreSettings.save('reicast_widescreen_hack',   '"disabled"')
+        # Bios
+        if system.isOptSet('reicast_language'):
+            coreSettings.save('reicast_language', '"' + system.config['reicast_language'] + '"')
+        else:
+            coreSettings.save('reicast_language', '"Default"')
+        if system.isOptSet('reicast_region'):
+            coreSettings.save('reicast_region', '"' + system.config['reicast_region'] + '"')
+        else:
+            coreSettings.save('reicast_region', '"Default"')
 
         ## Atomiswave / Naomi
 
@@ -2600,6 +2609,11 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('swanstation_GPU_ResolutionScale', '"' + system.config['swanstation_resolution_scale'] + '"')
         else:
             coreSettings.save('swanstation_GPU_ResolutionScale', '"1"')
+        # PGXP Geometry Correction
+        if system.isOptSet('swanstation_pgxp'):
+            coreSettings.save('swanstation_GPU_PGXPEnable', '"' + system.config['swanstation_pgxp'] + '"')
+        else:
+            coreSettings.save('swanstation_GPU_PGXPEnable', '"true"')
         # Anti-aliasing (MSAA/SSAA)
         if system.isOptSet('swanstation_antialiasing'):
             coreSettings.save('swanstation_GPU_MSAA', '"' + system.config['swanstation_antialiasing'] + '"')
@@ -2658,9 +2672,16 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
         else:
             coreSettings.save('pcsx_rearmed_frameskip', '"0"')
         # Enhanced resolution at the cost of lower performance
-        # Speed hack causes game glitches - turn it off.
-        coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
-        coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+        if system.isOptSet('neon_enhancement') and system.config['neon_enhancement'] != 'disabled':
+            if system.config['neon_enhancement'] == 'enabled':
+                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
+                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
+            elif system.config['neon_enhancement'] == 'enabled_with_speedhack':
+                coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"enabled"')
+                coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"enabled"')
+        else:
+            coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
+            coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
         # Multitap
         if system.isOptSet('pcsx_rearmed_multitap'):
             coreSettings.save('pcsx_rearmed_multitap', '"' + system.config['pcsx_rearmed_multitap'] + '"')
@@ -2757,11 +2778,6 @@ def generateCoreSettings(coreSettings, system, rom, guns, wheels):
             coreSettings.save('mrboom-aspect', '"' + system.config['mrboom-aspect'] + '"')
         else:
             coreSettings.save('mrboom-aspect', '"Native"')
-        # Monsters
-        if system.isOptSet('mrboom-nomonster'):
-            coreSettings.save('mrboom-nomonster', '"' + system.config['mrboom-nomonster'] + '"')
-        else:
-            coreSettings.save('mrboom-nomonster', '"ON"')
 
     # OpenLara
     if (system.config['core'] == 'openlara'):

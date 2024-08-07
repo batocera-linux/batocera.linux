@@ -70,11 +70,11 @@ ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
 endif
 
-# lemonade
-ifeq ($(BR2_PACKAGE_LEMONADE),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-lemonade
-  BATOCERA_DESKTOPAPPS_APPS    += lemonade-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += lemonade.png
+# citra
+ifeq ($(BR2_PACKAGE_CITRA),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
+  BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += citra.png
 endif
 
 # rpcs3
@@ -157,13 +157,6 @@ ifeq ($(BR2_PACKAGE_VITA3K),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-vita3k
   BATOCERA_DESKTOPAPPS_APPS    += vita3k-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
-endif
-
-# BigPEmu
-ifeq ($(BR2_PACKAGE_BIGPEMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-bigpemu
-  BATOCERA_DESKTOPAPPS_APPS    += bigpemu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += bigpemu.png
 endif
 
 # play!

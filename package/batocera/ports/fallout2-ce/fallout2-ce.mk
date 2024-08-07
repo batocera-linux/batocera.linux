@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FALLOUT2_CE_VERSION = v1.2.0
+FALLOUT2_CE_VERSION = v1.3.0 
 FALLOUT2_CE_SITE = $(call github,alexbatalov,fallout2-ce,$(FALLOUT2_CE_VERSION))
 FALLOUT2_CE_DEPENDENCIES = sdl2
 

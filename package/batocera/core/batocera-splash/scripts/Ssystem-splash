@@ -37,6 +37,18 @@ do_start ()
     if test "${V_BOARD_MODEL}" = "Loki_Zero"; then
         image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
     fi
+    
+    # don't display a rotate image if the screen is not horizontal
+    # we can't know if that's left or right, it depends on the device, so, just ignore
+    # maybe in some case we want the rotated image for some boards. add those boards here
+    if test $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+)
+    then
+	# just replace in case the basic image is displayed
+	if test "${image}" = "/usr/share/batocera/splash/boot-logo.png"
+	then
+            image="/usr/share/batocera/splash/boot-logo-half.png"
+	fi
+    fi
 
     FBV_OPTS="-f -e"
     # FBV_OPTS can be set differently for some boards to work

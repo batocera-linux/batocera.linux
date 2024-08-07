@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_DRIVER_VERSION = 550.67
+BATOCERA_NVIDIA_DRIVER_VERSION = 555.58.02
 BATOCERA_NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 BATOCERA_NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)/$(BATOCERA_NVIDIA_DRIVER_VERSION)
 BATOCERA_NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(BATOCERA_NVIDIA_DRIVER_SUFFIX)-$(BATOCERA_NVIDIA_DRIVER_VERSION).run
@@ -22,8 +22,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG),y)
 # way to do so is to make nvidia-driver depend on them.
 #batocera enable nvidia-driver and mesa3d to coexist in the same fs
 BATOCERA_NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd \
-    batocera-nvidia-legacy-driver batocera-nvidia390-legacy-driver
-#batocera-nvidia340-legacy-driver
+    batocera-nvidia340-legacy-driver batocera-nvidia390-legacy-driver batocera-nvidia-legacy-driver
 
 # BATOCERA_NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
 

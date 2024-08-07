@@ -1,0 +1,2 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0"
+

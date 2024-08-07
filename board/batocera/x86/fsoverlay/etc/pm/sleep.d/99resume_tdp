@@ -10,9 +10,15 @@ set_tdp() {
 handle_tdp() {
     TDP_PERCENTAGE=$1
     MAX_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
-    #round the value up or down to make bash happy
-    TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
-    set_tdp "${TDP_VALUE}"
+    # Check if MAX_TDP is defined and non-empty
+    if [ -n "$MAX_TDP" ]; then
+        # round the value up or down to make bash happy
+        TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
+        set_tdp "${TDP_VALUE}"
+    else
+        echo "Max TDP is not defined, cannot set TDP."
+        exit 1
+    fi
 }
 
 case "$1" in
@@ -24,14 +30,21 @@ case "$1" in
             echo "No CPU TDP value found."
             exit 0
         else
-            TDP_SETTING="$(/usr/bin/batocera-settings-get global.tdp)"
+            TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
             if [ -z "${TDP_SETTING}" ]; then
                 TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
-                set_tdp "${TDP_SETTING}"
-                exit 0
+                
+                if [ -n "${TDP_SETTING}" ]; then
+                    set_tdp "${TDP_SETTING}"
+                else
+                    echo "TDP setting is not defined, cannot set TDP."
+                    exit 1
+                fi
             else
                 handle_tdp "${TDP_SETTING}"
             fi
         fi
         ;;
 esac
+
+exit 0

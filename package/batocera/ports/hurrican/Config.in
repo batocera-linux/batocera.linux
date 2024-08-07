@@ -4,13 +4,12 @@ config BR2_PACKAGE_HURRICAN
 	select BR2_PACKAGE_SDL2_MIXER
 	select BR2_PACKAGE_SDL2_IMAGE
 	select BR2_PACKAGE_LIBEPOXY
-
 	depends on BR2_INSTALL_LIBSTDCPP
 	help
-	 A fork of Hurrican, freeware jump and shoot game created by Poke53280, with SDL2 enabled by default, support for libopenmpt and CRT simulation.
+	 A fork of Hurrican, freeware jump and shoot game created by Poke53280,
+	 with SDL2 enabled by default, support for libopenmpt and CRT simulation.
 
 	  https://github.com/drfiemost/Hurrican
 
 comment "BR2_PACKAGE_HURRICAN needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
-

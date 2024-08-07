@@ -147,14 +147,13 @@ class Emulator():
             return False
 
     def getOptBoolean(self, key):
-        if key in self.config:
-            if self.config[key] == '1':
-                return True
-            if self.config[key] == 'true':
-                return True
-            if self.config[key] == True:
-                return True
-        return False
+        true_values = {'1', 'true', 'on', 'enabled', True}
+        value = self.config.get(key)
+        
+        if isinstance(value, str):
+            value = value.lower()
+        
+        return value in true_values
 
     def getOptString(self, key):
         if key in self.config:

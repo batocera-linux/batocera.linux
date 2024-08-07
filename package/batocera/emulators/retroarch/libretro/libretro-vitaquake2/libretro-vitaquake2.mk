@@ -21,6 +21,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
 LIBRETRO_VITAQUAKE2_PLATFORM=rpi3_64
 
 else ifeq ($(BR2_arm)$(BR2_aarch64)$(BR2_riscv),y)
+
+LIBRETRO_VITAQUAKE2_DEPENDENCIES += libgles
 LIBRETRO_VITAQUAKE2_CONF_OPTS += GLES=1
 endif
 
@@ -43,6 +45,7 @@ define LIBRETRO_VITAQUAKE2_BUILD_CMDS
 endef
 
 define LIBRETRO_VITAQUAKE2_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/lib/libretro/
 	$(INSTALL) -D $(@D)/vitaquake2*.so \
 		$(TARGET_DIR)/usr/lib/libretro/
 endef

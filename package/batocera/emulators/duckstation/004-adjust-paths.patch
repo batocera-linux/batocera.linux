@@ -1,12 +1,6 @@
----
- src/core/settings.cpp | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/src/core/settings.cpp b/src/core/settings.cpp
-index e34d783..bcf2ebe 100644
---- a/src/core/settings.cpp
-+++ b/src/core/settings.cpp
-@@ -1547,19 +1547,19 @@ static std::string LoadPathFromSettings(SettingsInterface& si, const std::string
+--- a/src/core/settings.cpp	2024-07-13 18:39:08.641178072 +0200
++++ b/src/core/settings.cpp	2024-07-13 18:40:54.495500453 +0200
+@@ -1769,20 +1769,20 @@
  
  void EmuFolders::LoadConfig(SettingsInterface& si)
  {
@@ -15,6 +9,7 @@ index e34d783..bcf2ebe 100644
 -  Cheats = LoadPathFromSettings(si, DataRoot, "Folders", "Cheats", "cheats");
 -  Covers = LoadPathFromSettings(si, DataRoot, "Folders", "Covers", "covers");
 -  Dumps = LoadPathFromSettings(si, DataRoot, "Folders", "Dumps", "dump");
+-  GameIcons = LoadPathFromSettings(si, DataRoot, "Folders", "GameIcons", "gameicons");
 -  GameSettings = LoadPathFromSettings(si, DataRoot, "Folders", "GameSettings", "gamesettings");
 -  InputProfiles = LoadPathFromSettings(si, DataRoot, "Folders", "InputProfiles", "inputprofiles");
 -  MemoryCards = LoadPathFromSettings(si, DataRoot, "MemoryCards", "Directory", "memcards");
@@ -28,6 +23,7 @@ index e34d783..bcf2ebe 100644
 +  Cheats = "/userdata/cheats";
 +  Covers = "/userdata/system/configs/duckstation/covers";
 +  Dumps = "/userdata/system/configs/duckstation/dump";
++  GameIcons = "/userdata/system/configs/duckstation/gameicons";
 +  GameSettings = "/userdata/system/configs/duckstation/gamesettings";
 +  InputProfiles = "/userdata/system/configs/duckstation/inputprofiles";
 +  MemoryCards = "/userdata/saves/duckstation/memcards";
@@ -37,8 +33,5 @@ index e34d783..bcf2ebe 100644
 +  Textures = "/userdata/system/configs/duckstation/textures";
 +  UserResources = "/userdata/system/configs/duckstation/resources";
  
-   Log_DevFmt("BIOS Directory: {}", Bios);
-   Log_DevFmt("Cache Directory: {}", Cache);
--- 
-2.44.0
-
+   DEV_LOG("BIOS Directory: {}", Bios);
+   DEV_LOG("Cache Directory: {}", Cache);

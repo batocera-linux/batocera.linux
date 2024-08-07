@@ -70,7 +70,7 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
 --- a/src/common/platform/posix/unix/i_specialpaths.cpp	(revision 410a479505caa29b188d92f473174723771bf375)
 +++ b/src/common/platform/posix/unix/i_specialpaths.cpp	(date 1657611081245)
 @@ -45,59 +45,7 @@
-
+ 
  FString GetUserFile (const char *file)
  {
 -	FString path;
@@ -78,15 +78,15 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
 -
 -	path = NicePath("$HOME/" GAME_DIR "/");
 -
--	if (stat (path, &info) == -1)
+-	if (stat (path.GetChars(), &info) == -1)
 -	{
 -		struct stat extrainfo;
 -
 -		// Sanity check for $HOME/.config
 -		FString configPath = NicePath("$HOME/.config/");
--		if (stat (configPath, &extrainfo) == -1)
+-		if (stat (configPath.GetChars(), &extrainfo) == -1)
 -		{
--			if (mkdir (configPath, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-			if (mkdir (configPath.GetChars(), S_IRUSR | S_IWUSR | S_IXUSR) == -1)
 -			{
 -				I_FatalError ("Failed to create $HOME/.config directory:\n%s", strerror(errno));
 -			}
@@ -100,9 +100,9 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
 -		// Transfer the old zdoom directory to the new location
 -		bool moved = false;
 -		FString oldpath = NicePath("$HOME/." GAMENAMELOWERCASE "/");
--		if (stat (oldpath, &extrainfo) != -1)
+-		if (stat (oldpath.GetChars(), &extrainfo) != -1)
 -		{
--			if (rename(oldpath, path) == -1)
+-			if (rename(oldpath.GetChars(), path.GetChars()) == -1)
 -			{
 -				I_Error ("Failed to move old " GAMENAMELOWERCASE " directory (%s) to new location (%s).",
 -					oldpath.GetChars(), path.GetChars());
@@ -111,7 +111,7 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
 -				moved = true;
 -		}
 -
--		if (!moved && mkdir (path, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
+-		if (!moved && mkdir (path.GetChars(), S_IRUSR | S_IWUSR | S_IXUSR) == -1)
 -		{
 -			I_FatalError ("Failed to create %s directory:\n%s",
 -				path.GetChars(), strerror (errno));
@@ -126,9 +126,9 @@ diff --git a/src/common/platform/posix/unix/i_specialpaths.cpp b/src/common/plat
 -	}
 -	path += file;
 -	return path;
-+	return FString("/userdata/saves/gzdoom/") + file;
++    return FString("/userdata/saves/gzdoom/") + file;
  }
-
+ 
  //===========================================================================
 @@ -112,7 +60,7 @@
  {

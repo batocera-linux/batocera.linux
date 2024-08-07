@@ -15,14 +15,22 @@ case "$1" in
             echo "" >> $log
             echo "Supported Ryzen Mobile Processor found for TDP..." > $log
             MAX_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
-            echo "Maximum reported TDP is $MAX_TDP Watts" >> $log
-            /usr/bin/batocera-settings-set system.cpu.tdp "${MAX_TDP}"
-            # set the global TDP if set
-            TDP_PERCENTAGE="$(/usr/bin/batocera-settings-get global.tdp)"
-            if ! [ -z "${TDP_PERCENTAGE}" ] && [ "$TDP_PERCENTAGE" -ge 10 ]; then
-                TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
-                echo "Setting Ryzen Mobile Processor global TDP to $TDP_VALUE Watts" >> $log
-                /usr/bin/batocera-amd-tdp $TDP_VALUE
+            # Check if MAX_TDP is defined and non-empty
+            if [ -n "$MAX_TDP" ]; then
+                echo "Maximum reported TDP is $MAX_TDP Watts" >> $log
+                /usr/bin/batocera-settings-set system.cpu.tdp "${MAX_TDP}"
+                # set the global TDP if set
+                TDP_PERCENTAGE=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
+                if [ -n "$TDP_PERCENTAGE" ] && [ "$TDP_PERCENTAGE" -ge 10 ]; then
+                    TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
+                    echo "Setting Ryzen Mobile Processor global TDP to $TDP_VALUE Watts" >> $log
+                    /usr/bin/batocera-amd-tdp $TDP_VALUE
+                else
+                    echo "No global TDP value set, using detected maximum!" >> $log
+                fi
+            else
+                echo "Maximum TDP is not defined, exiting TDP..." >> $log
+                exit 1
             fi
         else
             echo "Supported AMD Processor NOT found for TDP..."

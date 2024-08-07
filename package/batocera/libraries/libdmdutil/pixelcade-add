@@ -1,0 +1,24 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+
+reportOnceConfigurationAvailable() {
+    STARTFILE="/var/run/virtual-events.started"
+    LOADERFILE="/var/run/virtual-events.waiting"
+
+    test -e "${STARTFILE}" && return # normal behavior
+    echo "pixelcade ${ACTION} ${DEVNAME} ${DEVPATH} pixelcade-add" >> "${LOADERFILE}"
+    exit 0
+}
+
+reportOnceConfigurationAvailable
+
+# add a way to use pixelweb (no dmd_real at plugging)
+USEDMDSERVER=$(batocera-settings-get dmd.pixelcade.dmdserver)
+test "${USEDMDSERVER}" == "0" && exit 0
+
+if /usr/bin/batocera-services list all | /bin/grep -qE "^dmd_real;-$"
+then
+    /usr/bin/batocera-services stop dmd_real
+    /usr/bin/batocera-services start dmd_real
+fi

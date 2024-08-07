@@ -71,13 +71,13 @@ def getGenerator(emulator):
         from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
         return PPSSPPGenerator()
 
-    if emulator == 'lemonade' :
-        from generators.lemonade.lemonadeGenerator import LemonadeGenerator
-        return LemonadeGenerator()
+    if emulator == 'citra' :
+        from generators.citra.citraGenerator import CitraGenerator
+        return CitraGenerator()
 
-    if emulator == 'daphne' :
-        from generators.daphne.daphneGenerator import DaphneGenerator
-        return DaphneGenerator()
+    if emulator == 'hypseus-singe' :
+        from generators.hypseus_singe.hypseusSingeGenerator import HypseusSingeGenerator
+        return HypseusSingeGenerator()
 
     if emulator == 'cannonball' :
         from generators.cannonball.cannonballGenerator import CannonballGenerator
@@ -358,6 +358,10 @@ def getGenerator(emulator):
     if emulator == "sonic-mania":
         from generators.sonic_mania.sonic_maniaGenerator import SonicManiaGenerator
         return SonicManiaGenerator()
+
+    if emulator == "uqm":
+        from generators.uqm.uqmGenerator import UqmGenerator
+        return UqmGenerator()
 
     if emulator == 'sh':
         from generators.sh.shGenerator import ShGenerator

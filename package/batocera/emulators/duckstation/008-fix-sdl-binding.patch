@@ -1,0 +1,19 @@
+diff --git a/src/util/sdl_input_source.cpp b/src/util/sdl_input_source.cpp
+index cb02602520..f47c87fc35 100644
+--- a/src/util/sdl_input_source.cpp
++++ b/src/util/sdl_input_source.cpp
+@@ -826,8 +826,13 @@ bool SDLInputSource::CloseDevice(int joystick_index)
+   if (it == m_controllers.end())
+     return false;
+ 
++  InputBindingKey binding_key = {
++    .source_type = InputSourceType::SDL,
++    .source_index = static_cast<u32>(it->player_id)
++  };
++
+   InputManager::OnInputDeviceDisconnected(
+-    InputBindingKey{{.source_type = InputSourceType::SDL, .source_index = static_cast<u32>(it->player_id)}},
++    binding_key,
+     fmt::format("SDL-{}", it->player_id));
+ 
+   if (it->haptic)

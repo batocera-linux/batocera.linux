@@ -1,0 +1,32 @@
+diff --git a/bin/pironman5 b/bin/pironman5
+index e68ccf122a..71080c975f 100644
+--- a/bin/pironman5
++++ b/bin/pironman5
+@@ -1,15 +1,15 @@
+ #!/bin/bash
+ 
+ start() {
+-    /opt/pironman5/venv/bin/pironman5-service start
++    /usr/bin/pironman5-service start
+ }
+ 
+ start-background() {
+-    /opt/pironman5/venv/bin/pironman5-service start 2>1 1>/dev/null &
++    /usr/bin/pironman5-service start 2>1 1>/dev/null &
+ }
+ 
+ stop() {
+-    /opt/pironman5/venv/bin/pironman5-service stop
++    /usr/bin/pironman5-service stop
+ }
+ 
+ restart() {
+@@ -28,7 +28,7 @@ elif [ "$1" == "stop" ]; then
+ elif [ "$1" == "restart" ]; then
+     restart
+ else
+-    /opt/pironman5/venv/bin/pironman5-service "$@"
++    /usr/bin/pironman5-service "$@"
+ fi
+ 
+ # Pass all arguments to the pironman5 script

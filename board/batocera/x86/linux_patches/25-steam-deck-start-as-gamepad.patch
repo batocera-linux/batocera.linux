@@ -2,25 +2,23 @@ diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
 index e9d9051040..2ebd9bc649 100644
 --- a/drivers/hid/hid-steam.c
 +++ b/drivers/hid/hid-steam.c
-@@ -583,7 +583,10 @@ static int steam_input_open(struct input_dev *dev)
- 	struct steam_device *steam = input_get_drvdata(dev);
- 	unsigned long flags;
- 	bool set_lizard_mode;
--
-+	
-+	/* Force the gamepad_mode on for Steam Deck */
-+	steam->gamepad_mode = true;
-+	
- 	/*
- 	 * Disabling lizard mode automatically is only done on the Steam
- 	 * Controller. On the Steam Deck, this is toggled manually by holding
-@@ -595,6 +598,9 @@ static int steam_input_open(struct input_dev *dev)
- 		spin_unlock_irqrestore(&steam->lock, flags);
- 		if (set_lizard_mode)
- 			steam_set_lizard_mode(steam, false);
-+	else
-+        /* Force the lizard_mode off for Steam Deck */
-+	    steam_set_lizard_mode(steam, false);
- 	}
+@@ -48,7 +48,7 @@
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Rodrigo Rivas Costa <rodrigorivascosta@gmail.com>");
  
- 	return 0;
+-static bool lizard_mode = true;
++static bool lizard_mode = false;
+ 
+ static DEFINE_MUTEX(steam_devices_lock);
+ static LIST_HEAD(steam_devices);
+@@ -1122,6 +1122,9 @@ static int steam_probe(struct hid_device *hdev,
+ 	INIT_LIST_HEAD(&steam->list);
+ 	INIT_WORK(&steam->rumble_work, steam_haptic_rumble_cb);
+ 	steam->sensor_timestamp_us = 0;
+ 
++    /* Force the gamepad_mode on for Steam Deck */
++	steam->gamepad_mode = true;
++
+ 	/*
+ 	 * With the real steam controller interface, do not connect hidraw.
+ 	 * Instead, create the client_hid and connect that.

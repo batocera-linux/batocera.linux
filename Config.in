@@ -52,11 +52,12 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-evb-rk3399/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rk3128-blobs/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-multiboard/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rock-5c/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-bananapi-m7/Config.in"
   endmenu
 
   menu "Toolchain"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/toolchain-optional-linaro-aarch64/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/toolchain/llvm-project/batocera-llvm/Config.in"
   endmenu
 
   menu "Fonts"
@@ -73,6 +74,8 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-radxa-rkwifibt/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-rk3588/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/sound-open-firmware/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-esp8089/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/ti-firmware/Config.in"
   endmenu
 
   menu "GPU"
@@ -89,7 +92,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-driver/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-legacy-driver/Config.in"
-    #source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia340-legacy-driver/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia340-legacy-driver/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia390-legacy-driver/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/rockchip-mpp/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/rockchip-rga/Config.in"
@@ -98,6 +101,10 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-lists/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-amd/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/gl4es/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/intel-clc/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-volk/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/nv-codec-headers/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/spirv-cross/Config.in"
   endmenu
 
   menu "Network"
@@ -111,10 +118,12 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/r8125/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtw89-temp/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/r8168/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/aic8800/Config.in"
   endmenu
 
   menu "LED"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayn-platform/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/leds/ayaneo-platform/Config.in"
   endmenu
 
   menu "Device trees"
@@ -167,6 +176,7 @@ menu "Controllers"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/joycond/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/jammasd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/new-lg4ff/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/nso-n64/Config.in"
 endmenu
 
 menu "Emulators"
@@ -336,8 +346,8 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/flycast/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/scummvm/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/vice/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lemonade/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/daphne/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/citra/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/hypseus-singe/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/duckstation/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor4432/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor6330/Config.in"
@@ -422,6 +432,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/etlegacy/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/sonic3-air/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/sonic-mania/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/uqm/Config.in"
   endmenu
 
   menu "mupen64plus"
@@ -457,6 +468,7 @@ endmenu
 
 menu "Looks"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/adwaita-icon-theme-light/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/hypseus-singe-bezels/Config.in"
 endmenu
 
 menu "Utils"
@@ -507,6 +519,8 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/mokutil/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wsdd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/zramswap/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/rpi-eeprom/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/rpi-utils/Config.in"
 endmenu
 
 menu "Cases"
@@ -515,10 +529,13 @@ menu "Cases"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/deskpipro-case/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/element14-pi-desktop/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/pironman/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/pironman5/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/cases/dockerpi-powerboard/Config.in"
 endmenu
 
 menu "Screens"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/dmd-simulator/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/batocera-backglass/Config.in"
 endmenu
 
 menu "Libraries"
@@ -568,6 +585,22 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python3-gpiod/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libgraphene/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libportmidi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/shaderc/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-proxy-tools/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pywebview/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg-python/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pm_auto/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pm_dashboard/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sf_rpi_status/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-neopixel-spi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-pixelbuf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-smbus2/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-connectionmanager/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-adafruit-circuitpython-requests/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/liblgpio/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-lgpio/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-binho-host-adapter/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/cpuinfo/Config.in"
 endmenu
 
 menu "Audio"
@@ -577,6 +610,13 @@ menu "Audio"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/alsa-topology-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/alsa-ucm-conf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/zmusic/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/libfreeaptx/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/libldac/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/liblc3/Config.in"
+endmenu
+
+menu "Database"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/database/influxdb/Config.in"
 endmenu
 
 endmenu

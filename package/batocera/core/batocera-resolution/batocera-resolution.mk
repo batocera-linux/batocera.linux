@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_RESOLUTION_VERSION = 1.1
+BATOCERA_RESOLUTION_VERSION = 1.2
 BATOCERA_RESOLUTION_LICENSE = GPL
 BATOCERA_RESOLUTION_DEPENDENCIES = pciutils
 BATOCERA_RESOLUTION_SOURCE=

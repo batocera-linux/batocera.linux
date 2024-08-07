@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# More options available here: https://github.com/irtimmer/moonlight-embedded/tree/master/docs
+# More options available here: https://github.com/moonlight-stream/moonlight-embedded/tree/master/docs
 #cd /userdata/roms/moonlight/
 moonlight_config_dir=/userdata/system/configs/moonlight
 moonlight_romsdir=/userdata/roms/moonlight
@@ -132,7 +132,7 @@ case $1 in
 
     clean)
         cmd="rm -rf $moonlight_config_dir/keydir" && echo "You can now pair again your batocera.linux with a PC" ;;
-        
+
     *)
         cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -fps ${moonlight_fps} -mapping ${moonlight_mapping} ${moonlight_ip}" ;;
 

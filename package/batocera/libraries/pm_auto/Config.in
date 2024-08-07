@@ -1,0 +1,15 @@
+config BR2_PACKAGE_PM_AUTO
+    bool "pm_auto"
+    select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_NEOPIXEL_SPI
+    select BR2_PACKAGE_PYTHON_SMBUS2
+    select BR2_PACKAGE_PYTHON_PSUTIL
+    select BR2_PACKAGE_PYTHON_INFLUXDB
+    select BR2_PACKAGE_PYTHON_PILLOW
+    select BR2_PACKAGE_PYTHON3_GPIOD
+    select BR2_PACKAGE_PYTHON_GPIOZERO
+    select BR2_PACKAGE_PYTHON_LGPIO
+    select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_REQUESTS
+    help
+      Library for monitoring Raspberry Pi system status.
+      
+      https://github.com/sunfounder/pm_auto

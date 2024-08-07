@@ -37,13 +37,14 @@ diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
 index a086197af544..1fb39bc4637b 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -58,5 +58,6 @@ obj-$(CONFIG_HABANA_AI)		+= habanalabs/
- obj-$(CONFIG_UACCE)		+= uacce/
+@@ -60,6 +60,7 @@ obj-$(CONFIG_UACCE)		+= uacce/
  obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+ obj-$(CONFIG_NTSYNC)		+= ntsync.o
 +obj-$(CONFIG_WINESYNC)		+= winesync.o
  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+ obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
 diff --git a/drivers/misc/winesync.c b/drivers/misc/winesync.c
 new file mode 100644
 index 000000000000..111f33c5676e
@@ -1816,14 +1817,14 @@ diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api
 index a61eac0c73f8..0bf697ddcb09 100644
 --- a/Documentation/userspace-api/index.rst
 +++ b/Documentation/userspace-api/index.rst
-@@ -34,6 +34,7 @@ place where this information is gathered.
-    tee
-    isapnp
-    dcdbas
+@@ -21,6 +21,7 @@ System calls
+    ebpf/index
+    ioctl/index
+    mseal
 +   winesync
  
- .. only::  subproject and html
- 
+ Security-related interfaces
+ ===========================
 diff --git a/Documentation/userspace-api/winesync.rst b/Documentation/userspace-api/winesync.rst
 new file mode 100644
 index 000000000000..34e54be229cf
@@ -2177,14 +2178,14 @@ diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
 index c852eb40c4f7..a366016d6254 100644
 --- a/tools/testing/selftests/Makefile
 +++ b/tools/testing/selftests/Makefile
-@@ -12,6 +12,7 @@ TARGETS += cpu-hotplug
- TARGETS += damon
+@@ -17,6 +17,7 @@ TARGETS += devices
+ TARGETS += dmabuf-heaps
  TARGETS += drivers/dma-buf
  TARGETS += drivers/s390x/uvdevice
 +TARGETS += drivers/winesync
+ TARGETS += drivers/net
  TARGETS += drivers/net/bonding
  TARGETS += drivers/net/team
- TARGETS += efivarfs
 diff --git a/tools/testing/selftests/drivers/winesync/Makefile b/tools/testing/selftests/drivers/winesync/Makefile
 new file mode 100644
 index 000000000000..43b39fdeea10

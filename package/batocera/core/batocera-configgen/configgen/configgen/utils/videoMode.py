@@ -34,28 +34,52 @@ def getCurrentMode():
     for val in out.decode().splitlines():
         return val # return the first line
 
-def getScreensInfos(config):
-    resolution1 = getCurrentResolution()
-    outputs = getScreens()
+def getRefreshRate():
+    proc = subprocess.Popen(["batocera-resolution refreshRate"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    for val in out.decode().splitlines():
+        return val # return the first line
 
+def getScreensInfos(config):
+    outputs = getScreens()
     res = []
+
+    # output 1
+    vo1 = getCurrentOutput()
+    resolution1 = getCurrentResolution()
     res.append({"width": resolution1["width"], "height": resolution1["height"], "x": 0, "y": 0})
 
-    if "videooutput2" not in config or len(outputs) <= 1:
-        eslog.debug("Screens:")
-        eslog.debug(res)
-        return res
+    # output2
+    vo2 = None
+    # find the configured one
+    if "videooutput2" in config and config["videooutput2"] in outputs and config["videooutput2"] != vo1:
+        vo2 = config["videooutput2"]
+    # find the first one
+    for x in outputs:
+        if x != vo1 and vo2 is None:
+            vo2 = x
+    if vo2 is not None:
+        try:
+            resolution2 = getCurrentResolution(vo2)
+            res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+        except:
+            pass # ignore bad information
 
-    resolution2 = getCurrentResolution(config["videooutput2"])
-    res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
-
-    if "videooutput3" not in config or len(outputs) <= 2:
-        eslog.debug("Screens:")
-        eslog.debug(res)
-        return res
-
-    resolution3 = getCurrentResolution(config["videooutput3"])
-    res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+    # output3
+    vo3 = None
+    # find the configured one
+    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput2"] != vo2:
+        vo3 = config["videooutput3"]
+    # find the first one
+    for x in outputs:
+        if x != vo1 and x != vo2 and vo3 is None:
+            vo3 = x
+    if vo3 is not None:
+        try:
+            resolution3 = getCurrentResolution(vo3)
+            res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+        except:
+            pass # ignore bad information
 
     eslog.debug("Screens:")
     eslog.debug(res)
@@ -79,6 +103,11 @@ def getCurrentResolution(name = None):
     (out, err) = proc.communicate()
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
+
+def getCurrentOutput():
+    proc = subprocess.Popen(["batocera-resolution currentOutput"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    return out.decode().strip()
 
 def supportSystemRotation():
     proc = subprocess.Popen(["batocera-resolution supportSystemRotation"], stdout=subprocess.PIPE, shell=True)

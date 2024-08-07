@@ -1,0 +1,7 @@
+config BR2_PACKAGE_SHADERC
+    bool "shaderc"
+    select BR2_PACKAGE_GLSLANG
+    help
+      A collection of tools, libraries, and tests for Vulkan shader compilation.
+      
+      https://github.com/google/shaderc

@@ -20,27 +20,6 @@ index 298067a547..2a5fd0a53c 100644
  #if defined(__linux__)
    static const char* exeFileName = "/proc/self/exe";
  
-diff --git a/src/duckstation-nogui/nogui_host.cpp b/src/duckstation-nogui/nogui_host.cpp
-index ec251fa278..d70202cbdc 100644
---- a/src/duckstation-nogui/nogui_host.cpp
-+++ b/src/duckstation-nogui/nogui_host.cpp
-@@ -150,14 +150,14 @@ void NoGUIHost::SetAppRoot()
-   const std::string program_path = FileSystem::GetProgramPath();
-   Log_InfoPrintf("Program Path: %s", program_path.c_str());
- 
--  EmuFolders::AppRoot = Path::Canonicalize(Path::GetDirectory(program_path));
-+  EmuFolders::AppRoot = "/usr/share/duckstation";
- }
- 
- void NoGUIHost::SetResourcesDirectory()
- {
- #ifndef __APPLE__NOT_USED // Not using bundles yet.
-   // On Windows/Linux, these are in the binary directory.
--  EmuFolders::Resources = Path::Combine(EmuFolders::AppRoot, "resources");
-+  EmuFolders::Resources = "/usr/share/duckstation/resources";
- #else
-   // On macOS, this is in the bundle resources directory.
-   EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
 diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
 index d6f644b722..67ebf77252 100644
 --- a/src/duckstation-qt/qthost.cpp

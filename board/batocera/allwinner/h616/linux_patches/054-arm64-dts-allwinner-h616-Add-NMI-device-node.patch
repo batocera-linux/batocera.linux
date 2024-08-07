@@ -1,0 +1,43 @@
+From fd46e5e136a83f61c1746d5a08686c0c4f4c0706 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Thu, 18 Apr 2024 13:16:15 -0500
+Subject: arm64: dts: allwinner: h616: Add NMI device node
+
+Add device node for the H616 Non Maskable Interrupt (NMI) controller.
+This controller is present on all H616 boards and derivatives such as
+the T507 and H700. Note that on the H616 no NMI pad is exposed.
+
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20240418181615.1370179-3-macroalpha82@gmail.com
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+(limited to 'arch/arm64/boot/dts/allwinner')
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index a061b69c07c2c3..f8ecd7db486864 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -775,6 +775,15 @@
+ 			#reset-cells = <1>;
+ 		};
+ 
++		nmi_intc: interrupt-controller@7010320 {
++			compatible = "allwinner,sun50i-h616-nmi",
++				     "allwinner,sun9i-a80-nmi";
++			reg = <0x07010320 0xc>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
+ 		r_pio: pinctrl@7022000 {
+ 			compatible = "allwinner,sun50i-h616-r-pinctrl";
+ 			reg = <0x07022000 0x400>;
+-- 
+cgit 1.2.3-korg
+

@@ -25,6 +25,8 @@
 #v2.3 - add ELEMENT14_PI_DESKTOP support - @dmanlfc
 #v2.4 - removed code duplicates @lala
 #v2.5 - add PIRONMAN case support (RPi4) - @dmanlfc
+#v2.6 - add PIRONMAN 5 case support (RPi5) - @dmanlfc
+#v2.7 - add Dockerpi Powerboard support - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -47,7 +49,9 @@ powerdevices=(
               PIBOY "Fan & power & pads for Piboy DMG" \
               PISTATION_LCD "Config.txt tweaks to get the display to work" \
               ELEMENT14_PI_DESKTOP "Adds on/off button support" \
-              PIRONMAN "Fan, OLED, RGB case support for the Pironman case with RPi4 devices"
+              PIRONMAN "Fan, OLED, RGB case support for the Pironman case with RPi4 devices" \
+              PIRONMAN5 "Fan, OLED, RGB case support for the Pironman 5 case with RPi5 devices" \
+              DOCKERPI_POWERBOARD "Dockerpi Powerboard Hat support for compatible Raspberry Pi boards"
              )
 
 #dialog for selecting your switch or power device
@@ -663,12 +667,12 @@ function pironman_start()
     # Check config.txt for spi
     if grep -q "dtparam=spi=" "/boot/config.txt"; then
         echo "*** Enabling Pironman spi config.txt parameter ***"
-        mount -o remount, rw /boot
-        sed -i 's/^\s*#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+        mount -o remount,rw /boot
+        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
     else
         echo "*** Adding Pironman spi config.txt parameter ***"
-        mount -o remount, rw /boot
-        echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+        mount -o remount,rw /boot
+        echo "dtparam=spi=on" >> /boot/config.txt
     fi
     # Check config.txt for core_freq
     if grep -q "core_freq=" "/boot/config.txt"; then
@@ -721,6 +725,91 @@ function pironman_stop()
 function pironman_config()
 {
     pironman_start $@
+}
+
+#https://github.com/sunfounder/pironman5
+function pironman5_start()
+{
+    echo "*** Starting Pironman 5 services ***"
+    #------ CONFIG SECTION ------
+    # Check config.txt for i2c
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+        echo "*** Adding Pironman i2c config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtparam=i2c_arm type configs to avoid conflicts
+        sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[Pironman 5]" >> "/boot/config.txt"
+        echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    # Check config.txt for spi
+    if grep -q "dtparam=spi=" "/boot/config.txt"; then
+        echo "*** Enabling Pironman spi config.txt parameter ***"
+        mount -o remount,rw /boot
+        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+    else
+        echo "*** Adding Pironman spi config.txt parameter ***"
+        mount -o remount,rw /boot
+        echo "dtparam=spi=on" >> /boot/config.txt
+    fi
+    # log location
+    mkdir -p /var/log/pironman5
+    # ensure i2c is running
+    modprobe i2c_dev
+    # setup user adjustable config file
+    site_packages_dir=$(python3 -c "import site; print(site.getsitepackages()[0])")
+    mkdir -p $site_packages_dir/pironman5
+    ln -sf /userdata/system/configs/pironman5/config.json $site_packages_dir/pironman5/config.json
+    # start
+    /usr/bin/pironman5 start --background
+}
+
+function pironman5_stop()
+{
+    echo "*** Stopping Pironman 5 services ***"
+    /usr/bin/pironman5 stop
+}
+
+function pironman5_config()
+{
+    pironman5_start $@
+}
+
+#https://wiki.52pi.com/index.php?title=EP-0104
+function powerboard_start()
+{
+    echo "*** Starting Pironman 5 services ***"
+    #------ CONFIG SECTION ------
+    # Check config.txt for i2c
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+        echo "*** Adding Pironman i2c config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtparam=i2c_arm type configs to avoid conflicts
+        sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[DockerPi]" >> "/boot/config.txt"
+        echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    # ensure i2c is running
+    modprobe i2c_dev
+    # start
+    arch=$(uname -m)
+    if [ "$arch" == "aarch64" ]; then
+        /usr/sbin/powerboard64 &
+    else
+        /usr/sbin/powerboard32 &
+    fi
+}
+
+function powerboard_stop()
+{
+    # Handled by the Hat
+    true
+}
+
+function powerboard_config()
+{
+    powerboard_start $@
 }
 
 #-----------------------------------------
@@ -797,6 +886,12 @@ case "$CONFVALUE" in
     ;;
     "PIRONMAN")
         pironman_$1
+    ;;
+    "PIRONMAN5")
+        pironman5_$1
+    ;;
+    "DOCKERPI_POWERBOARD")
+        powerboard_$1
     ;;
     "--DIALOG")
         # Go to selection dialog

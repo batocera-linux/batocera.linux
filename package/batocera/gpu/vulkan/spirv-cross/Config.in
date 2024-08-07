@@ -1,0 +1,9 @@
+config BR2_PACKAGE_SPIRV_CROSS
+  bool "spirv-cross"
+  select BR2_PACKAGE_VULKAN_HEADERS
+  select BR2_PACKAGE_VULKAN_LOADER
+  help
+    SPIRV-Cross is a practical tool and library for performing reflection on SPIR-V
+    and disassembling SPIR-V back to high level languages.
+    
+    https://github.com/KhronosGroup/SPIRV-Cross

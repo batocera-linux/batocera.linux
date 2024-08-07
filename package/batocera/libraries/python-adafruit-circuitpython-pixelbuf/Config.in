@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_PIXELBUF
+	bool "python-adafruit-circuitpython-pixelbuf"
+	select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON
+	help
+	  A pure Python implementation of adafruit_pixelbuf for smaller boards.
+
+	  https://pypi.org/project/adafruit-circuitpython-pixelbuf

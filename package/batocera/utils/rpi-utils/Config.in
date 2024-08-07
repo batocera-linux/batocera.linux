@@ -1,0 +1,7 @@
+config BR2_PACKAGE_RPI_UTILS
+	bool "rpi-utils"
+	select BR2_PACKAGE_DTC
+	help
+	  A collection of RPi scripts and simple applications.
+
+	  https://github.com/raspberrypi/utils

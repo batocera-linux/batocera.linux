@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RAZE_VERSION = 1.9.1
+RAZE_VERSION = 1.10.2
 RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
 RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic webp
@@ -31,24 +31,24 @@ RAZE_CONF_OPTS += -DFORCE_CROSSCOMPILE=ON
 RAZE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 RAZE_CONF_OPTS += -DIMPORT_EXECUTABLES="$(HOST_RAZE_BUILDDIR)/ImportExecutables.cmake"
 
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
-    RAZE_DEPENDENCIES += vulkan-headers vulkan-loader
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
-        RAZE_DEPENDENCIES += xlib_libX11
+        RAZE_DEPENDENCIES += xlib_libX11 vulkan-headers vulkan-loader
+        RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
     else ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
-        RAZE_DEPENDENCIES += wayland
+        RAZE_DEPENDENCIES += wayland vulkan-headers vulkan-loader
+        RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON
+    else
+        # no valid surface provider
+        RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
     endif
 else
     RAZE_CONF_OPTS += -DHAVE_VULKAN=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
-    RAZE_CONF_OPTS += -DHAVE_GLES2=ON
-    RAZE_DEPENDENCIES += libgles
-else ifeq ($(BR2_PACKAGE_BATOCERA_GLES2),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_GLES3)$(BR2_PACKAGE_BATOCERA_GLES2),y)
     RAZE_CONF_OPTS += -DHAVE_GLES2=ON
     RAZE_DEPENDENCIES += libgles
 else

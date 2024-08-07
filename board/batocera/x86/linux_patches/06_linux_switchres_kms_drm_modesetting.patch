@@ -1,7 +1,7 @@
-Index: linux-6.8/drivers/gpu/drm/drm_connector.c
+Index: linux-6.10/drivers/gpu/drm/drm_connector.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_connector.c
-+++ linux-6.8/drivers/gpu/drm/drm_connector.c
+--- linux-6.10.orig/drivers/gpu/drm/drm_connector.c
++++ linux-6.10/drivers/gpu/drm/drm_connector.c
 @@ -275,6 +275,7 @@ static int __drm_connector_init(struct d
  
  	INIT_LIST_HEAD(&connector->global_connector_list_entry);
@@ -22,10 +22,10 @@ Index: linux-6.8/drivers/gpu/drm/drm_connector.c
  	list_for_each_entry_safe(mode, t, &connector->modes, head)
  		drm_mode_remove(connector, mode);
  
-Index: linux-6.8/drivers/gpu/drm/drm_ioctl.c
+Index: linux-6.10/drivers/gpu/drm/drm_ioctl.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_ioctl.c
-+++ linux-6.8/drivers/gpu/drm/drm_ioctl.c
+--- linux-6.10.orig/drivers/gpu/drm/drm_ioctl.c
++++ linux-6.10/drivers/gpu/drm/drm_ioctl.c
 @@ -619,8 +619,8 @@ static const struct drm_ioctl_desc drm_i
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETGAMMA, drm_mode_gamma_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETENCODER, drm_mode_getencoder, 0),
@@ -37,10 +37,10 @@ Index: linux-6.8/drivers/gpu/drm/drm_ioctl.c
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPERTY, drm_mode_getproperty_ioctl, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETPROPERTY, drm_connector_property_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETPROPBLOB, drm_mode_getblob_ioctl, 0),
-Index: linux-6.8/drivers/gpu/drm/drm_mode_object.c
+Index: linux-6.10/drivers/gpu/drm/drm_mode_object.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_mode_object.c
-+++ linux-6.8/drivers/gpu/drm/drm_mode_object.c
+--- linux-6.10.orig/drivers/gpu/drm/drm_mode_object.c
++++ linux-6.10/drivers/gpu/drm/drm_mode_object.c
 @@ -143,6 +143,7 @@ struct drm_mode_object *__drm_mode_objec
  	obj = idr_find(&dev->mode_config.object_idr, id);
  	if (obj && type != DRM_MODE_OBJECT_ANY && obj->type != type)
@@ -49,10 +49,10 @@ Index: linux-6.8/drivers/gpu/drm/drm_mode_object.c
  	if (obj && obj->id != id)
  		obj = NULL;
  
-Index: linux-6.8/drivers/gpu/drm/drm_modes.c
+Index: linux-6.10/drivers/gpu/drm/drm_modes.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_modes.c
-+++ linux-6.8/drivers/gpu/drm/drm_modes.c
+--- linux-6.10.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.10/drivers/gpu/drm/drm_modes.c
 @@ -41,6 +41,7 @@
  #include <video/of_videomode.h>
  #include <video/videomode.h>
@@ -61,7 +61,7 @@ Index: linux-6.8/drivers/gpu/drm/drm_modes.c
  #include <drm/drm_crtc.h>
  #include <drm/drm_device.h>
  #include <drm/drm_edid.h>
-@@ -595,6 +596,168 @@ err_free_mode:
+@@ -596,6 +597,168 @@ err_free_mode:
  EXPORT_SYMBOL(drm_analog_tv_mode);
  
  /**
@@ -230,7 +230,7 @@ Index: linux-6.8/drivers/gpu/drm/drm_modes.c
   * drm_cvt_mode -create a modeline based on the CVT algorithm
   * @dev: drm device
   * @hdisplay: hdisplay size
-@@ -1885,7 +2048,7 @@ EXPORT_SYMBOL(drm_mode_sort);
+@@ -1883,7 +2046,7 @@ EXPORT_SYMBOL(drm_mode_sort);
   */
  void drm_connector_list_update(struct drm_connector *connector)
  {
@@ -239,7 +239,7 @@ Index: linux-6.8/drivers/gpu/drm/drm_modes.c
  
  	WARN_ON(!mutex_is_locked(&connector->dev->mode_config.mutex));
  
-@@ -1931,6 +2094,40 @@ void drm_connector_list_update(struct dr
+@@ -1929,6 +2092,40 @@ void drm_connector_list_update(struct dr
  			list_move_tail(&pmode->head, &connector->modes);
  		}
  	}
@@ -280,11 +280,11 @@ Index: linux-6.8/drivers/gpu/drm/drm_modes.c
  }
  EXPORT_SYMBOL(drm_connector_list_update);
  
-Index: linux-6.8/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.10/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.8/drivers/gpu/drm/drm_probe_helper.c
-@@ -374,6 +374,23 @@ retry:
+--- linux-6.10.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.10/drivers/gpu/drm/drm_probe_helper.c
+@@ -378,6 +378,23 @@ retry:
  	return ret;
  }
  
@@ -308,16 +308,16 @@ Index: linux-6.8/drivers/gpu/drm/drm_probe_helper.c
  /**
   * drm_helper_probe_detect - probe connector status
   * @connector: connector to probe
-@@ -567,6 +584,8 @@ int drm_helper_probe_single_connector_mo
+@@ -578,6 +595,8 @@ int drm_helper_probe_single_connector_mo
  
  	drm_modeset_acquire_init(&ctx, 0);
  
-+	DRM_DEBUG_KMS("[CONNECTOR:%d:%s] called by %ps\n", connector->base.id,
++	drm_dbg_kms(dev, "[CONNECTOR:%d:%s] called by %ps\n", connector->base.id,
 +			connector->name, __builtin_return_address(0));
- 	DRM_DEBUG_KMS("[CONNECTOR:%d:%s]\n", connector->base.id,
- 			connector->name);
+ 	drm_dbg_kms(dev, "[CONNECTOR:%d:%s]\n", connector->base.id,
+ 		    connector->name);
  
-@@ -584,6 +603,10 @@ retry:
+@@ -595,6 +614,10 @@ retry:
  
  	old_status = connector->status;
  
@@ -328,25 +328,25 @@ Index: linux-6.8/drivers/gpu/drm/drm_probe_helper.c
  	if (connector->force) {
  		if (connector->force == DRM_FORCE_ON ||
  		    connector->force == DRM_FORCE_ON_DIGITAL)
-@@ -696,7 +719,13 @@ exit:
+@@ -710,7 +733,13 @@ exit:
  
  	drm_mode_sort(&connector->modes);
  
--	DRM_DEBUG_KMS("[CONNECTOR:%d:%s] probed modes :\n", connector->base.id,
-+	DRM_DEBUG_KMS("[CONNECTOR:%d:%s] final user_modes :\n", connector->base.id,
-+			connector->name);
-+	list_for_each_entry(mode, &connector->user_modes, head) {
-+		drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
-+		drm_mode_debug_printmodeline(mode);
-+	}
-+	DRM_DEBUG_KMS("[CONNECTOR:%d:%s] final modes :\n", connector->base.id,
- 			connector->name);
+-	drm_dbg_kms(dev, "[CONNECTOR:%d:%s] probed modes:\n",
++        drm_dbg_kms(dev, "[CONNECTOR:%d:%s] final user_modes :\n",
++		    connector->base.id, connector->name);
++        list_for_each_entry(mode, &connector->user_modes, head) {
++                drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
++                drm_mode_debug_printmodeline(mode);
++        }
++        drm_dbg_kms(dev, "[CONNECTOR:%d:%s] final modes :\n", 
+ 		    connector->base.id, connector->name);
+ 
  	list_for_each_entry(mode, &connector->modes, head) {
- 		drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
-Index: linux-6.8/include/drm/drm_connector.h
+Index: linux-6.10/include/drm/drm_connector.h
 ===================================================================
---- linux-6.8.orig/include/drm/drm_connector.h
-+++ linux-6.8/include/drm/drm_connector.h
+--- linux-6.10.orig/include/drm/drm_connector.h
++++ linux-6.10/include/drm/drm_connector.h
 @@ -1628,6 +1628,14 @@ struct drm_connector {
  	struct list_head probed_modes;
  
@@ -362,10 +362,10 @@ Index: linux-6.8/include/drm/drm_connector.h
  	 * @display_info: Display information is filled from EDID information
  	 * when a display is detected. For non hot-pluggable displays such as
  	 * flat panels in embedded systems, the driver should initialize the
-Index: linux-6.8/include/drm/drm_modes.h
+Index: linux-6.10/include/drm/drm_modes.h
 ===================================================================
---- linux-6.8.orig/include/drm/drm_modes.h
-+++ linux-6.8/include/drm/drm_modes.h
+--- linux-6.10.orig/include/drm/drm_modes.h
++++ linux-6.10/include/drm/drm_modes.h
 @@ -460,6 +460,10 @@ int drm_mode_convert_umode(struct drm_de
  			   struct drm_display_mode *out,
  			   const struct drm_mode_modeinfo *in);

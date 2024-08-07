@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PM_DASHBOARD
+    bool "pm_dashboard"
+    select BR2_PACKAGE_PYTHON_INFLUXDB
+    select BR2_PACKAGE_PYTHON_FLASK
+    select BR2_PACKAGE_PYTHON_FLASK_CORS
+    select BR2_PACKAGE_INFLUXDB
+    help
+      Pironman Dashboard.
+      
+      https://github.com/sunfounder/pm_dashboard

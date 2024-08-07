@@ -3,8 +3,8 @@
 # gzdoom
 #
 ################################################################################
-# Version: Commits on Oct 26, 2023
-GZDOOM_VERSION = g4.11.3
+
+GZDOOM_VERSION = g4.12.2
 GZDOOM_SITE = https://github.com/ZDoom/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES
@@ -28,13 +28,18 @@ GZDOOM_CONF_OPTS += -DFORCE_CROSSCOMPILE=ON
 GZDOOM_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 GZDOOM_CONF_OPTS += -DIMPORT_EXECUTABLES="$(HOST_GZDOOM_BUILDDIR)/ImportExecutables.cmake"
 
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
-    GZDOOM_DEPENDENCIES += vulkan-headers vulkan-loader
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+        GZDOOM_DEPENDENCIES += xlib_libX11 vulkan-headers vulkan-loader
+        GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
         GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
-    else ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_SWAY),yy)
+    else ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
+        GZDOOM_DEPENDENCIES += wayland vulkan-headers vulkan-loader
+        GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
         GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON
+    else
+        # no valid surface provider
+        GZDOOM_CONF_OPTS += -DHAVE_VULKAN=OFF
     endif
 else
     GZDOOM_CONF_OPTS += -DHAVE_VULKAN=OFF

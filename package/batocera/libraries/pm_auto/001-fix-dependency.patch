@@ -1,0 +1,19 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 8f59e6ca3a..93ef9c3a13 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -28,11 +28,11 @@ dependencies = [
+ ]
+ 
+ [tool.setuptools]
+-packages = ["pm_auto"]
++packages = ["pm_auto", "pm_auto.fonts"]
+ 
+ [project.urls]
+ "Homepage" = "https://github.com/sunfounder/pm_auto"
+ "Bug Tracker" = "https://github.com/sunfounder/pm_auto/issues"
+ 
+ [tool.setuptools.dynamic]
+-version = {attr = "pm_auto.__version__"}
+\ No newline at end of file
++version = {attr = "pm_auto.__version__"}

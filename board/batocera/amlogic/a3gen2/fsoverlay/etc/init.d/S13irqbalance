@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Starts irqbalance
+#
+
+EXEC="/usr/sbin/irqbalance"
+ARGS=""
+PID="/var/run/irqbalance.pid"
+
+case "$1" in
+    start)
+	echo "Starting irqbalance:"
+	# ignore/ban irq(s) from irqbalance
+	for i in $(/usr/bin/awk -F':' '/rdma|vsync/{print $1}' </proc/interrupts | /bin/sed 's/\ //g'); do
+		ARGS="$ARGS --banirq=$i"
+	done
+	# for irqbalance socket /run/irqbalance/irqbalance<pid>.sock
+	mkdir -p /run/irqbalance
+	start-stop-daemon -S -q -x $EXEC -- $ARGS
+	if [ $? != 0 ]; then
+	    echo "FAILED"
+	    exit 1
+	else
+	    echo "OK"
+	fi
+	pidof irqbalance > $PID
+	;;
+    stop)
+	printf "Stopping irqbalance: "
+	start-stop-daemon -K -q -p $PID
+	echo "OK"
+	;;
+    restart|reload)
+	$0 stop
+	$0 start
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac

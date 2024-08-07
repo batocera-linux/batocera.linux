@@ -1,0 +1,33 @@
+Add a DT node for the Allwinner H616 LRADC describing the base address,
+interrupt, reset and clock gates.
+
+Signed-off-by: James McGregor <jamcgregor@protonmail.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Škrabec <jernej.skrabec@gmail.com>
+---
+V1 -> V2: Moved DT node to correct place in tree order
+
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index a061b69c07c2..1e8538ca7db0 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -594,6 +594,16 @@ ths: thermal-sensor@5070400 {
+ 			#thermal-sensor-cells = <1>;
+ 		};
+
++		lradc: lradc@5070800 {
++			compatible = "allwinner,sun50i-h616-lradc",
++				     "allwinner,sun50i-r329-lradc";
++			reg = <0x05070800 0x400>;
++			interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_KEYADC>;
++			resets = <&ccu RST_BUS_KEYADC>;
++			status = "disabled";
++		};
++
+ 		usbotg: usb@5100000 {
+ 			compatible = "allwinner,sun50i-h616-musb",
+ 				     "allwinner,sun8i-h3-musb";

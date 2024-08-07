@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-# Version : Apr 5, 2024
-# lrmame0264 + some fixes
-LIBRETRO_MAME_VERSION = 3aa1ff0d6c087ac35530572d09bc42a2591ff78f
+LIBRETRO_MAME_VERSION = lrmame0265
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
+
+LIBRETRO_MAME_DEPENDENCIES = alsa-lib
 
 # Limit number of jobs not to eat too much RAM....
 LIBRETRO_MAME_MAX_JOBS = 16
@@ -73,5 +73,13 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/mame
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 endef
+
+define LIBRETRO_MAME_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-mame/mame.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
+endef
+
+LIBRETRO_MAME_POST_INSTALL_TARGET_HOOKS += LIBRETRO_MAME_EVMAPY
 
 $(eval $(generic-package))

@@ -25,8 +25,10 @@ endef
 define MALI_G52_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/lib/pkgconfig
         cp -R $(@D)/etc/* $(TARGET_DIR)/etc/
-        cp -R $(@D)/usr/include/* $(TARGET_DIR)/usr/include/
         cp -R $(@D)/usr/lib/aarch64-linux-gnu/* $(TARGET_DIR)/usr/lib/
+        install -D -m 0755 \
+            $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-G52/mali_g52_gpu_launch_hooks.sh \
+            $(TARGET_DIR)/usr/share/batocera/configgen/scripts/mali_g52_gpu_launch_hooks.sh
 endef
 
 #MALI_G52_GPU = bifrost-g52

@@ -1,6 +1,6 @@
 config BR2_PACKAGE_DUCKSTATION
 	bool "duckstation"
-	select BR2_PACKAGE_BATOCERA_QT6      if BR2_x86_64
+	select BR2_PACKAGE_BATOCERA_QT6
 	select BR2_PACKAGE_FMT
 	select BR2_PACKAGE_BOOST
 	select BR2_PACKAGE_FFMPEG
@@ -10,6 +10,13 @@ config BR2_PACKAGE_DUCKSTATION
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_ECM
 	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_SHADERC
+	select BR2_PACKAGE_QT6WAYLAND    if BR2_PACKAGE_BATOCERA_WAYLAND
+	select BR2_PACKAGE_LIBBACKTRACE
+	select BR2_PACKAGE_WEBP
+	select BR2_PACKAGE_CPUINFO
+	select BR2_PACKAGE_SPIRV_CROSS
 	help
 		DuckStation - PlayStation 1, aka. PSX Emulator
+		
 		https://github.com/stenzek/duckstation

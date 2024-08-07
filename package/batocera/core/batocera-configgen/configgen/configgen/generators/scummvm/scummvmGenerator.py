@@ -5,13 +5,35 @@ from generators.Generator import Generator
 import controllersConfig
 import os.path
 import glob
+import configparser
+
+scummConfigDir = batoceraFiles.CONF + "/scummvm"
+scummConfigFile = scummConfigDir + "/scummvm.ini"
+scummExtra = "/userdata/bios/scummvm/extra"
 
 class ScummVMGenerator(Generator):  
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
-        if not os.path.exists('/userdata/bios/scummvm/extra'):
-            os.makedirs('/userdata/bios/scummvm/extra')
+        if not os.path.exists(scummExtra):
+            os.makedirs(scummExtra)
+        
+        # create / modify scummvm config file as needed
+        scummConfig = configparser.ConfigParser()
+        scummConfig.optionxform=str
+        if os.path.exists(scummConfigFile):
+            scummConfig.read(scummConfigFile)
+        
+        if not scummConfig.has_section("scummvm"):
+            scummConfig.add_section("scummvm")
+        # set gui_browser_native to false
+        scummConfig.set("scummvm", "gui_browser_native", "false")
+
+        # save the ini file
+        if not os.path.exists(os.path.dirname(scummConfigFile)):
+            os.makedirs(os.path.dirname(scummConfigFile))
+        with open(scummConfigFile, 'w') as configfile:
+            scummConfig.write(configfile)
         
         # Find rom path
         if os.path.isdir(rom):
@@ -69,23 +91,24 @@ class ScummVMGenerator(Generator):
         # language
         if system.isOptSet("scumm_language"):
             commandArray.extend(["-q", f"{system.config['scumm_language']}"])
-        else:
-            commandArray.extend(["-q", "en"])
 
         # logging
-        commandArray.append("--logfile=/userdata/system/logs")
+        commandArray.append("--logfile=/userdata/system/logs/scummvm.log")
 
         commandArray.extend(
             [f"--joystick={id}",
             "--screenshotspath="+batoceraFiles.screenshotsDir,
-            "--extrapath=/userdata/bios/scummvm/extra",
-            "--savepath="+batoceraFiles.scummvmSaves,
-            "--path=""{}""".format(romPath),
-            f"""{romName}"""]
+            "--extrapath="+scummExtra,
+            f"--path={romPath}",
+            f"{romName}"]
         )
 
         return Command.Command(
-            array=commandArray, env={
+            array=commandArray, 
+            env={
+                "XDG_CONFIG_HOME":batoceraFiles.CONF,
+                "XDG_DATA_HOME":batoceraFiles.SAVES,
+                "XDG_CACHE_HOME":batoceraFiles.CACHE,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )

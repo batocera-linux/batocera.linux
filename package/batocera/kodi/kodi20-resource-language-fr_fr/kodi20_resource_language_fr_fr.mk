@@ -6,7 +6,7 @@
 
 KODI20_RESOURCE_LANGUAGE_FR_FR_VERSION = 10.0.77
 KODI20_RESOURCE_LANGUAGE_FR_FR_SOURCE = resource.language.fr_fr-$(KODI20_RESOURCE_LANGUAGE_FR_FR_VERSION).zip
-KODI20_RESOURCE_LANGUAGE_FR_FR_SITE = http://mirrors.kodi.tv/addons/nexus/resource.language.fr_fr
+KODI20_RESOURCE_LANGUAGE_FR_FR_SITE = https://mirrors.kodi.tv/addons/nexus/resource.language.fr_fr
 KODI20_RESOURCE_LANGUAGE_FR_FR_PLUGINNAME=resource.language.fr_fr
 
 KODI20_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons
