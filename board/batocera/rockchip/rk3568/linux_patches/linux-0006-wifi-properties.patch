@@ -1,0 +1,33 @@
+From 6bc8e01c7284ea1f56c6506f38c2ba9474db497a Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Mon, 25 Mar 2024 09:37:26 -0500
+Subject: [PATCH] arm64: dts: rockchip: Add additional properties for WiFi on
+ Anbernic rgxx3
+
+Add additional properties for the SDMMC2 node. Based on user feedback
+these help correct some issues with probing the WiFi hardware.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Link: https://lore.kernel.org/r/20240325143729.83852-2-macroalpha82@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+index 18b8c2e7befa75..c8fdb1b817f5b3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+@@ -623,9 +623,12 @@
+ 	cap-sdio-irq;
+ 	keep-power-in-suspend;
+ 	mmc-pwrseq = <&sdio_pwrseq>;
++	no-mmc;
++	no-sd;
+ 	non-removable;
+ 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
+ 	pinctrl-names = "default";
++	sd-uhs-sdr50;
+ 	vmmc-supply = <&vcc_wifi>;
+ 	vqmmc-supply = <&vcca1v8_pmu>;
+ 	status = "okay";

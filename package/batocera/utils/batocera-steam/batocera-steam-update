@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log="/userdata/system/logs/steam.log"
+
 es_add_game_begin() {
     echo "<gameList>" > /tmp/batocera-steam-update.tmp || return 1
 }
@@ -35,51 +37,75 @@ EOF
 ) >> /tmp/batocera-steam-update.tmp || return 1
 }
 
-mkdir -p "/userdata/roms/steam" || exit 1
+# Start the game list
+es_add_game_begin || exit 1
 
-#if ! test -e "/userdata/roms/steam/Steam.steam"
-#then
-#   touch "/userdata/roms/steam/Steam.steam" || exit 1
-#fi
-
-# add applications
-find /userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications -name "*.desktop" |
-    (
-N=0
-es_add_game_begin || return 1
-while read STEAMAPP
-do
-    if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}" # game
-    then
-	BASEAPP=$(basename "${STEAMAPP}" | sed -e s+"\.desktop$"++)
-	if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"
-	then
-	    echo "adding ${BASEAPP}"
-	    GAMEID=$(cat "${STEAMAPP}" | grep -E '^Exec=' | sed -e s+"Exec="++ -e s+"[ ]*steam[ ]*"++ | head -1)
-
-	    # add image
-	    ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e s+"^Icon=steam_icon_"++)_logo.png
-	    IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
-	    IMGARG=
-	    if test -e "${IMGFILE}"
-	    then
-		IMGARG="./images/${BASEAPP}.png"
-		mkdir -p "/userdata/roms/steam/images" || return 1
-		cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
-	    fi
-	    # add game
-	    echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || return 1
-
-	    # add game in es
-	    if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
-	    then
-		echo "adding game in es failed" >&2
-		return 1
-	    fi
-	    let N++
-	fi
+# create steam application app
+steam_file="/userdata/roms/steam/Steam.steam"
+mkdir -p /userdata/roms/steam || exit 1
+if [ ! -f "$steam_file" ]; then
+    echo "com.valvesoftware.Steam" > "$steam_file"
+    echo "Steam.steam file created successfully." >> $log
+    mkdir -p /userdata/roms/steam/images
+    # take flatpak logo
+    steam_png="/userdata/roms/flatpak/images/Valve Corporation.png"
+    if [ -f "$steam_png" ]; then
+        cp "$steam_png" /userdata/roms/steam/images/Steam.png
+        echo "Steam logo copied successfully." >> $log
+    else
+        echo "Steam logo not found, could not copy." >> $log
     fi
-done
-test ${N} -gt 0 && es_add_game_end
-)
+    es_add_game "Steam.steam" "Steam" "./images/Steam.png"
+    echo "Steam app added to game list." >> $log
+fi
+
+# Check if the Steam applications directory exists
+steam_apps_dir="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications"
+if [ ! -d "$steam_apps_dir" ]; then
+    echo "Steam applications directory not found: $steam_apps_dir" >> $log
+else
+    # add applications
+    find "$steam_apps_dir" -name "*.desktop" |
+        (
+    N=0
+    while read STEAMAPP
+    do
+        if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}" # game
+        then
+        BASEAPP=$(basename "${STEAMAPP}" | sed -e s+"\.desktop$"++)
+        if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"
+        then
+            echo "adding ${BASEAPP}"
+            GAMEID=$(cat "${STEAMAPP}" | grep -E '^Exec=' | sed -e s+"Exec="++ -e s+"[ ]*steam[ ]*"++ | head -1)
+
+            # add image
+            ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e s+"^Icon=steam_icon_"++)_logo.png
+            IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
+            IMGARG=
+            if test -e "${IMGFILE}"
+            then
+            IMGARG="./images/${BASEAPP}.png"
+            mkdir -p "/userdata/roms/steam/images" || return 1
+            cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
+            fi
+            # add game
+            echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || return 1
+
+            # add game in es
+            if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
+            then
+            echo "adding game in es failed" >&2
+            return 1
+            fi
+            let N++
+        fi
+        fi
+    done
+    echo "${N} games added to the list." >> $log
+    )
+fi
+
+# End the game list
+es_add_game_end || exit 1
+
 exit 0

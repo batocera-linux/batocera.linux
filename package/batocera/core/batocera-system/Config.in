@@ -204,7 +204,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_UTIL_LINUX_SETTERM		# Set terminal attributes
 	select BR2_PACKAGE_OPENVPN			         # OpenVPN support
 	select BR2_PACKAGE_WIREGUARD_TOOLS           # WireGuard VPN support
-	select BR2_PACKAGE_WIREGUARD_LINUX_COMPAT    if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 # Kernel < 5.6 backwards compatibility
+	select BR2_PACKAGE_WIREGUARD_LINUX_COMPAT    if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 && \
+	                                                !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
+													!BR2_PACKAGE_BATOCERA_TARGET_S9GEN4 # Kernel < 5.6 backwards compatibility and not boards which already had it backported
 	select BR2_PACKAGE_OPENRESOLV                # DNS resolver
 	select BR2_PACKAGE_USB_MODESWITCH		# USB modeswitch support
 	select BR2_PACKAGE_UMTOOL			# command line tool for configuring Ultimarc arcade hardware
@@ -236,7 +238,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBCURL_CURL				# download tools
 	select BR2_PACKAGE_NGHTTP2				# required for curl http2
 	select BR2_PACKAGE_CA_CERTIFICATES			# ssl certificates
-	select BR2_PACKAGE_ROCKCHIP_RGA				if BR2_PACKAGE_BATOCERA_TARGET_RK3128 # Used for screen rotation (SDL, Retroarch, Moonlight)
+	select BR2_PACKAGE_ROCKCHIP_RGA				if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_RK3128 # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_LIBDRM				if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_BATOCERA_DRMINFO			if BR2_PACKAGE_LIBDRM
@@ -285,6 +287,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_HID_NX				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
 	select BR2_PACKAGE_JAMMASD
+	select BR2_PACKAGE_NSO_N64
 
 	select BR2_PACKAGE_UPOWER # required by some cemuhook servers
 
@@ -294,12 +297,17 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_ROSHAMBO_CASE		if BR2_PACKAGE_BATOCERA_TARGET_RK3399 # roshambo case
 	select BR2_PACKAGE_RPIGPIOSWITCH		if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio switchs
 	select BR2_PACKAGE_RETROGAME			if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
+	select BR2_PACKAGE_ANBERNIC_GPIO_PAD	if BR2_PACKAGE_BATOCERA_TARGET_RK3568 # Anbernic RG353 controller support
 	select BR2_PACKAGE_DESKPIPRO_CASE		if BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # deskpi pro case rpi4 only
 	select BR2_PACKAGE_PIBOY			if BR2_PACKAGE_BATOCERA_TARGET_BCM2836	|| \
 							   BR2_PACKAGE_BATOCERA_TARGET_BCM2837	|| \
 							   BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # piboy rpi3/rpi4
 	select BR2_PACKAGE_PICADE			if BR2_PACKAGE_BATOCERA_RPI_ANY # picade arcade case
 	select BR2_PACKAGE_PIRONMAN			if BR2_PACKAGE_BATOCERA_TARGET_BCM2711 # pironman case is rpi4 only
+	select BR2_PACKAGE_PIRONMAN5		if BR2_PACKAGE_BATOCERA_TARGET_BCM2712 # pironman 5 case is rpi5 only
+	
+	# Hats
+	select BR2_PACKAGE_DOCKERPI_POWERBOARD    if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 
 	# screens
 	select BR2_PACKAGE_DMD_SIMULATOR
@@ -355,6 +363,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 						   !BR2_PACKAGE_BATOCERA_TARGET_RK3588
 
 	select BR2_PACKAGE_RTL8822CS        	if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
+
+	select BR2_PACKAGE_AIC8800          	if BR2_PACKAGE_BATOCERA_TARGET_RK3588    # Rock 5c
 
 	# ethernet
 	#select BR2_PACKAGE_R8125		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -467,7 +477,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "broadcom/bcm2837"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 	default "broadcom/bcm2711"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 	default "broadcom/bcm2712"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
-	default "rockchip/rk3326"									if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"					if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"						if BR2_PACKAGE_BATOCERA_TARGET_RK3328
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"					if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"		if BR2_PACKAGE_BATOCERA_TARGET_RK3128
@@ -487,9 +497,9 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_S905
 	default "rockchip/rk3399/orangepi-800 rockchip/rk3399/rg552 rockchip/rk3399/rockpro64 rockchip/rk3399/rock960 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4 rockchip/rk3399/nanopi-m4v2 rockchip/rk3399/hugsun-x99" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-	default "rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
+	default "rockchip/rk3588/bananapi-m7 rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
-	default "rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
+	default "rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -1134,6 +1144,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# PSX
 	select BR2_PACKAGE_DUCKSTATION    if BR2_PACKAGE_BATOCERA_GLES3 && \
 	                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && \
+	                                     !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
 										 !BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
 										 # newer versions of duckstation are stricter on OpenGL 3.1
 										 # requires X11 or Sway. 2GB boards aren't great.
@@ -1696,6 +1707,7 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 
 	# audio
 	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_TI_FIRMWARE			        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	# x86 (maybe some firmware could be for all, to be checked)
 	select BR2_PACKAGE_WILINK_BT_FIRMWARE			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

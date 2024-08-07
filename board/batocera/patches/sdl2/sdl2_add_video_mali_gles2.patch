@@ -104,11 +104,11 @@ diff --git a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrm
 index 25d942e..a3c4bbd 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-@@ -41,7 +41,7 @@ KMSDRM_GLES_DefaultProfileConfig(_THIS, int *mask, int *major, int *minor)
+@@ -41,7 +41,7 @@
  {
      /* if SDL was _also_ built with the Raspberry Pi driver (so we're
         definitely a Pi device), default to GLES2. */
--#if SDL_VIDEO_DRIVER_RPI
+-#ifdef SDL_VIDEO_DRIVER_RPI
 +#if defined(SDL_VIDEO_DRIVER_RPI) || defined(SDL_VIDEO_DRIVER_MALI)
      *mask = SDL_GL_CONTEXT_PROFILE_ES;
      *major = 2;

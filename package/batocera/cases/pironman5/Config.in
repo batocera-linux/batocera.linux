@@ -1,0 +1,16 @@
+config BR2_PACKAGE_PIRONMAN5
+	bool "pironman5"
+	depends on BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_INFLUXDB
+	select BR2_PACKAGE_LIBJPEG
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_I2C_TOOLS
+	select BR2_PACKAGE_PYTHON_KMOD
+	select BR2_PACKAGE_PYTHON_GPIOZERO
+	select BR2_PACKAGE_PM_AUTO
+	select BR2_PACKAGE_SF_RPI_STATUS
+	select BR2_PACKAGE_RPI_EEPROM
+	help
+	  Enable OLED, fan, RGB & infrared for the Pironman 5 case.
+      
+	  https://github.com/sunfounder/pironman5

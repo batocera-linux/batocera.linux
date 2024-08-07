@@ -1,8 +1,8 @@
-Index: linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -5612,6 +5612,8 @@ static void fill_stream_properties_from_
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ linux-6.10/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -5699,6 +5699,8 @@ static void fill_stream_properties_from_
  			timing_out->flags.HSYNC_POSITIVE_POLARITY = 1;
  		if (mode_in->flags & DRM_MODE_FLAG_PVSYNC)
  			timing_out->flags.VSYNC_POSITIVE_POLARITY = 1;
@@ -11,7 +11,7 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  	}
  
  	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
-@@ -6205,6 +6207,8 @@ create_stream_for_sink(struct drm_connec
+@@ -6298,6 +6300,8 @@ create_stream_for_sink(struct drm_connec
  
  	if (recalculate_timing)
  		drm_mode_set_crtcinfo(&saved_mode, 0);
@@ -20,7 +20,7 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  
  	/*
  	 * If scaling is enabled and refresh rate didn't change
-@@ -6764,8 +6768,7 @@ enum drm_mode_status amdgpu_dm_connector
+@@ -6939,8 +6943,7 @@ enum drm_mode_status amdgpu_dm_connector
  	struct dc_stream_state *stream;
  	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
  
@@ -30,7 +30,7 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  		return result;
  
  	/*
-@@ -7472,7 +7475,7 @@ void amdgpu_dm_connector_init_helper(str
+@@ -7647,7 +7650,7 @@ void amdgpu_dm_connector_init_helper(str
  	aconnector->connector_id = link_index;
  	aconnector->bl_idx = -1;
  	aconnector->dc_link = link;
@@ -39,11 +39,11 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
  	aconnector->base.doublescan_allowed = false;
  	aconnector->base.stereo_allowed = false;
  	aconnector->base.dpms = DRM_MODE_DPMS_OFF;
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
-@@ -2700,6 +2700,9 @@ static void update_scaler(struct pipe_ct
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+@@ -2765,6 +2765,9 @@ static void update_scaler(struct pipe_ct
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = per_pixel_alpha;
  	pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_36BPP;
  	/* scaler configuration */
@@ -53,7 +53,7 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
  	pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
  			pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
  }
-@@ -3726,8 +3729,7 @@ int dcn10_get_vupdate_offset_from_vsync(
+@@ -3791,8 +3794,7 @@ int dcn10_get_vupdate_offset_from_vsync(
  
  	asic_blank_end = (patched_crtc_timing.v_total -
  			vesa_sync_start -
@@ -63,10 +63,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
  
  	return asic_blank_end -
  			pipe_ctx->pipe_dlg_param.vstartup_start + 1;
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
 @@ -608,10 +608,6 @@ bool optc1_validate_timing(
  		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
  		return false;
@@ -78,11 +78,11 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
  	/* Check maximum number of pixels supported by Timing Generator
  	 * (Currently will never fail, in order to fail needs display which
  	 * needs more than 8192 horizontal and
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
-@@ -1638,6 +1638,9 @@ static void dcn20_update_dchubp_dpp(
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
+@@ -1733,6 +1733,9 @@ static void dcn20_update_dchubp_dpp(
  		pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->plane_state->per_pixel_alpha;
  		ASSERT(pipe_ctx->plane_res.scl_data.lb_params.depth == LB_PIXEL_DEPTH_36BPP);
  		/* scaler configuration */
@@ -92,10 +92,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
  		pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
  				pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
  	}
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
 @@ -61,7 +61,8 @@ void scaler_settings_calculation(struct
  			v->v_ratio[k] = v->h_ratio[k];
  		}
@@ -106,10 +106,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
  		}
  		if (v->underscan_output[k] == 1.0) {
  			v->h_ratio[k] = v->h_ratio[k] * v->under_scan_factor;
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
 @@ -446,6 +446,7 @@ static void pipe_ctx_to_e2e_pipe_params
  	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
  	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
@@ -144,10 +144,10 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
  
  			pipe->pipe_dlg_param.vblank_start = asic_blank_start;
  			pipe->pipe_dlg_param.vblank_end = asic_blank_end;
-Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+Index: linux-6.10/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
-+++ linux-6.8/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+--- linux-6.10.orig/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
++++ linux-6.10/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
 @@ -592,9 +592,11 @@ static void fetch_pipe_params(struct dis
  		mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] = scl->vscl_ratio_c;
  		mode_lib->vba.ScalerEnabled[mode_lib->vba.NumberOfActivePlanes] = scl->scl_enable;
@@ -162,11 +162,11 @@ Index: linux-6.8/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
  		}
  		mode_lib->vba.htaps[mode_lib->vba.NumberOfActivePlanes] = taps->htaps;
  		mode_lib->vba.vtaps[mode_lib->vba.NumberOfActivePlanes] = taps->vtaps;
-Index: linux-6.8/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.10/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.8/drivers/gpu/drm/drm_probe_helper.c
-@@ -162,6 +162,9 @@ static int drm_helper_probe_add_cmdline_
+--- linux-6.10.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.10/drivers/gpu/drm/drm_probe_helper.c
+@@ -163,6 +163,9 @@ static int drm_helper_probe_add_cmdline_
  				continue;
  		}
  

@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ACTION=$1
+OVERRIDE_ENCODER=$2
 
 export DISPLAY=:0.0
 
@@ -8,13 +9,50 @@ RESOLUTION=$(batocera-resolution currentResolution)
 REFRESH_RATE=$(batocera-resolution refreshRate)
 OUTPUT="/userdata/recordings/capture-$(date +%Y.%m.%d-%Hh%M.%S).mkv"
 VAAPI_DEVICE="/dev/dri/renderD128"  # Default VAAPI device ?
-# look to add audio out from batocera.conf?
 PULSEAUDIO_MONITOR=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
 
 mkdir -p /userdata/recordings || exit 1
 
 # Check for VA-API hardware encoding support
 check_hardware_encoding() {
+    if [ -n "$OVERRIDE_ENCODER" ]; then
+        case "$OVERRIDE_ENCODER" in
+            hvenc)
+                ENCODER="hevc_vaapi"
+                echo "Using user-selected HEVC hardware encoding via VA-API."
+                ;;
+            h264)
+                ENCODER="h264_vaapi"
+                echo "Using user-selected H.264 hardware encoding via VA-API."
+                ;;
+            mpeg2)
+                ENCODER="mpeg2_vaapi"
+                echo "Using user-selected MPEG-2 hardware encoding via VA-API."
+                ;;
+            software)
+                ENCODER="libx264"
+                echo "Using user-selected software H.264 encoding."
+                ;;
+            *)
+                echo "Invalid encoder option. Using auto-detection."
+                auto_detect_encoder
+                ;;
+        esac
+    else
+        auto_detect_encoder
+    fi
+
+    echo "With an audio input source of: ${PULSEAUDIO_MONITOR}"
+    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
+        echo "A resolution of: ${RESOLUTION} and a framerate of: ${REFRESH_RATE}"
+    else
+        echo "A resolution of: ${RESOLUTION}"
+    fi
+    echo
+    echo "Recording to file: ${OUTPUT}"
+}
+
+auto_detect_encoder() {
     if vainfo 2>/dev/null | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
         ENCODER="hevc_vaapi"
         echo
@@ -33,22 +71,24 @@ check_hardware_encoding() {
         echo "Hardware encoding is not available."
         echo "Using: software encoder ${ENCODER}."
     fi
-    echo "With an audio input source of: ${PULSEAUDIO_MONITOR}"
-    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
-        echo "A resolution of: ${RESOLUTION} and a framerate of: ${REFRESH_RATE}"
-    else
-        echo "A resolution of: ${RESOLUTION}"
-    fi
-    echo
-    echo "Recording to file: ${OUTPUT}"
 }
 
 usage() {
-    echo "${1} --default"      >&2
-    echo "${1} --fast"         >&2
-    echo "${1} --compress"     >&2
-    echo "${1} --high-quality" >&2
-    echo "${1} --epic-mode"    >&2
+    echo "Usage: ${1} [OPTION] [ENCODER]"
+    echo "Options:"
+    echo "  --default"
+    echo "  --fast"
+    echo "  --compress"
+    echo "  --high-quality"
+    echo "  --epic-mode"
+    echo
+    echo "Encoder options:"
+    echo "  hvenc     - HEVC hardware encoding via VA-API"
+    echo "  h264      - H.264 hardware encoding via VA-API"
+    echo "  mpeg2     - MPEG-2 hardware encoding via VA-API"
+    echo "  software  - Software H.264 encoding"
+    echo
+    echo "Example: ${1} --default hvenc"
 }
 
 exit_info() {

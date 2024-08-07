@@ -70,7 +70,7 @@ index b416a53..70936a4 100644
  static int SDL_UDEV_load_syms(void)
  {
  /* cast funcs to char* first, to please GCC's strict aliasing rules. */
-@@ -200,6 +260,10 @@ SDL_UDEV_Scan(void)
+@@ -259,6 +259,10 @@
      struct udev_list_entry *devs = NULL;
      struct udev_list_entry *item = NULL;
  
@@ -78,25 +78,27 @@ index b416a53..70936a4 100644
 +    struct joypad_udev_entry sorted[64];
 +    int i;
 +
-     if (_this == NULL) {
+     if (!_this) {
          return;
      }
-@@ -220,11 +284,28 @@ SDL_UDEV_Scan(void)
+@@ -279,11 +283,29 @@
          const char *path = _this->syms.udev_list_entry_get_name(item);
          struct udev_device *dev = _this->syms.udev_device_new_from_syspath(_this->udev, path);
-         if (dev != NULL) {
+         if (dev) {
 -            device_event(SDL_UDEV_DEVICEADDED, dev);
 -            _this->syms.udev_device_unref(dev);
+-        }
 +         const char* devnode = _this->syms.udev_device_get_devnode(dev);
 +         if(devnode != NULL) {
-+	    sorted[sorted_count].devnode = devnode;
-+	    sorted[sorted_count].dev     = dev;
-+	    sorted[sorted_count].item = item;
-+	    sorted_count++;
++        sorted[sorted_count].devnode = devnode;
++        sorted[sorted_count].dev     = dev;
++        sorted[sorted_count].item = item;
++        sorted_count++;
 +         }
-         }
++       }
      }
  
++ 
 +   /* Sort the udev entries by devnode name so that they are
 +    * created in the proper order */
 +   qsort(sorted, sorted_count,

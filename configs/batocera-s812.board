@@ -23,7 +23,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_8=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/xdarklight/linux"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="meson-mx-integration-6.8-20240219"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="meson-mx-integration-6.8-20240310"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s812/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s812/linux-defconfig.config"
@@ -32,7 +32,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="meson8m2-mxiii meson8m2-mxiii-plus meson8m2-m8s meson8m2-wetek-core meson8-minix-neo-x8 meson8-tronsmart-s82"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson8m2-mxiii amlogic/meson8m2-mxiii-plus amlogic/meson8m2-m8s amlogic/meson8m2-wetek-core amlogic/meson8-minix-neo-x8 amlogic/meson8-tronsmart-s82"
 
 # S812 needed kernel changes
 BR2_LINUX_KERNEL_UIMAGE=y

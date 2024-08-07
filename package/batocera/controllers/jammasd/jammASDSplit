@@ -1,7 +1,6 @@
 #!/bin/sh
 
 nohup evsieve --input "${1}" persist=exit \
---map key:f2        btn:base     \
 --map key:5         btn:select   \
 --map key:1         btn:start    \
 --map key:up:1      abs:hat0y:-1 \
@@ -16,14 +15,16 @@ nohup evsieve --input "${1}" persist=exit \
 --map key:right:1   abs:hat0x:1  \
 --map key:right:0   abs:hat0x:0  \
 --block key:right:2              \
---map key:leftshift btn:north    \
---map key:z         btn:west     \
---map key:x         btn:tl       \
---map key:leftctrl  btn:south    \
---map key:leftalt   btn:east     \
---map key:space     btn:tr       \
---output name="ASD JammASD Player 1" btn:base btn:select btn:start abs:hat0y abs:hat0x btn:north btn:west btn:tl btn:south btn:east btn:tr \
---map key:9         btn:select   \
+--map key:leftshift btn:south    \
+--map key:z         btn:east     \
+--map key:x         btn:tr       \
+--map key:leftctrl  btn:west     \
+--map key:leftalt   btn:north    \
+--map key:space     btn:tl       \
+--map key:c         btn:tl2      \
+--map key:v         btn:tr2      \
+--output name="ASD JammASD Player 1" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl btn:tl2 btn:tr2 \
+--map key:6         btn:select   \
 --map key:2         btn:start    \
 --map key:r:1       abs:hat0y:-1 \
 --map key:r:0       abs:hat0y:0  \
@@ -37,10 +38,12 @@ nohup evsieve --input "${1}" persist=exit \
 --map key:g:1       abs:hat0x:1  \
 --map key:g:0       abs:hat0x:0  \
 --block key:g:2                  \
---map key:w         btn:north    \
---map key:i         btn:west     \
---map key:k         btn:tl       \
---map key:a         btn:south    \
---map key:s         btn:east     \
---map key:q         btn:tr       \
---output name="ASD JammASD Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:north btn:west btn:tl btn:south btn:east btn:tr &
+--map key:w         btn:south    \
+--map key:i         btn:east     \
+--map key:k         btn:tr       \
+--map key:a         btn:west     \
+--map key:s         btn:north    \
+--map key:q         btn:tl       \
+--map key:j         btn:tl2      \
+--map key:l         btn:tr2      \
+--output name="ASD JammASD Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl btn:tl2 btn:tr2 &

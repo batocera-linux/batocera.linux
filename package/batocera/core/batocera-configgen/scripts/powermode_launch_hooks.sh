@@ -62,9 +62,14 @@ set_epp() {
 }
 
 is_power_connected() {
+    # Detect battery
+    BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
+    BATT=$(cat ${BATTERY_DIR}/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
     PLUGGED=$(cat /sys/class/power_supply/*/online 2>/dev/null | grep -E "^1")
     if [ -n "${PLUGGED}" ]; then
         echo 1  # Power supply is connected
+    elif [ -z "${BATT}" ]; then
+        echo 1  # No battery detected, assume power supply is connected
     else
         echo 0  # Power supply is not connected
     fi
@@ -73,6 +78,8 @@ is_power_connected() {
 # Check for events
 EVENT=$1
 SYSTEM_NAME=$2
+GAME_NAME=$5
+GAME_NAME="${GAME_NAME##*/}"
 
 # Exit if the event is neither gameStart nor gameStop
 if [ "$EVENT" != "gameStart" ] && [ "$EVENT" != "gameStop" ]; then
@@ -101,8 +108,13 @@ if [ "$EVENT" == "gameStop" ]; then
     exit 0
 fi
 
-# Check for user set system specific setting
-if [ -n "${SYSTEM_NAME}" ]; then
+# Check for user set game specific setting
+if  [ -n "${GAME_NAME}" ]; then
+    POWER_MODE_SETTING="${SYSTEM_NAME}[\"${GAME_NAME}\"].powermode"
+    POWER_MODE="$(/usr/bin/batocera-settings-get-master "${POWER_MODE_SETTING}")"
+fi
+# If no user set game specific setting check for user set system specific setting
+if [ -z "${POWER_MODE}" ] && [ -n "${SYSTEM_NAME}" ]; then
     POWER_MODE_SETTING="${SYSTEM_NAME}.powermode"
     POWER_MODE="$(/usr/bin/batocera-settings-get-master "${POWER_MODE_SETTING}")"
 fi

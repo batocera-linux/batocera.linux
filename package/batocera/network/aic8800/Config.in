@@ -1,0 +1,10 @@
+comment "aic8800 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_AIC8800
+	bool "aic8800"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux Driver for the aicsemi aic8800 WiFi / BT Adapter.
+
+	  https://www.aicsemi.com/drivers/aic8800.tar.gz

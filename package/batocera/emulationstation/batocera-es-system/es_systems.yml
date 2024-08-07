@@ -25,7 +25,7 @@ snes-msu1:
   manufacturer: Nintendo
   release: 1991
   hardware: console
-  extensions: [smc, sfc]
+  extensions: [smc, sfc, squashfs]
   group:      snes
   emulators:
     libretro:
@@ -1116,7 +1116,7 @@ lynx:
   manufacturer: Atari
   release: 1989
   hardware: portable
-  extensions: [lnx, lyx, o, zip, 7z]
+  extensions: [lnx, lyx, o]
   theme: atarilynx
   platform: atarilynx
   emulators:
@@ -2114,7 +2114,7 @@ x1:
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [3ds, 3dsx, cxi, axf, elf, app]
+  extensions: [3ds, 3dsx, cxi, axf, elf, app, squashfs]
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
@@ -2147,7 +2147,7 @@ satellaview:
   manufacturer: Nintendo
   release: 1995
   hardware: console
-  extensions: [bs, smc, sfc, zip, 7z]
+  extensions: [bs, smc, sfc, zip, 7z, squashfs]
   group:      snes
   emulators:
     libretro:
@@ -2228,7 +2228,7 @@ daphne:
         |   tells emulationstation to add this to the menu,
         |   and "badlands" tells daphne to use that game engine)
         |
-        |-- badlands.daphne     
+        |-- badlands.daphne
         |   |-- badlands.commands (Optional extra command-
         |   |                      line parameters)
         |   |-- badlands.txt      (Framefile)
@@ -2239,7 +2239,7 @@ daphne:
         |   (All rom zips files go into this roms folder)
         |-- roms
             |-- badlands.zip
-    
+
     Singe games should now be run out of the singe rom directory.
 
     For more info: https://wiki.batocera.org/systems:daphne
@@ -2265,7 +2265,7 @@ singe:
 
     roms
     |-- singe
-        |-- maddog.daphne    
+        |-- maddog.daphne
             |-- maddog.singe      (Singe Game LUA)
             |-- maddog.txt        (Framefile)
             |-- maddog.m2v

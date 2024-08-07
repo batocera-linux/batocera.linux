@@ -21,14 +21,17 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 # Return value for es invertedbuttons    
-def getInvertButtonsValue():   
-    tree = ET.parse(batoceraFiles.esSettings)
-    root = tree.getroot()
-    # Find the InvertButtons element and return value
-    elem = root.find(".//bool[@name='InvertButtons']")
-    if elem is not None:
-        return elem.get('value') == 'true'
-    return False  # Return False if not found 
+def getInvertButtonsValue():
+    try:
+        tree = ET.parse(batoceraFiles.esSettings)
+        root = tree.getroot()
+        # Find the InvertButtons element and return value
+        elem = root.find(".//bool[@name='InvertButtons']")
+        if elem is not None:
+            return elem.get('value') == 'true'
+        return False  # Return False if not found
+    except:
+        return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
 def defined(key, dict):
@@ -876,7 +879,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
                                           "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" },
                                                              { "key": "reversedbuttons", "value": "true", "mapcorekey": "bsnes_touchscreen_lightgun_superscope_reverse", "mapcorevalue": "ON" } ] } },
         "mesen-s"       : { "default" : { "device": 262,          "p2": 0 } },
-        "mesen"         : { "default" : { "device": 262,          "p2": 0 } },
+        "mesen"         : { "default" : { "device": 262,          "p1": 0 } },
         "snes9x"        : { "default" : { "device": 260,          "p2": 0, "p3": 1,
                                           "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" },
                                                              { "key": "type", "value": "justifier", "mapkey": "device_p3", "mapvalue": "772" },
@@ -1342,7 +1345,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         eslog.debug("Draw gun borders")
         output_png_file = "/tmp/bezel_gunborders.png"
         innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, None, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")

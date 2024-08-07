@@ -31,7 +31,7 @@ index c8f6c54..bc72de2 100644
 -
 -    xdefault_resource = X11_XGetDefault(dpy, "Xft", "dpi");
 -
--    if (xdefault_resource == NULL) {
+-    if (!xdefault_resource) {
 -        return 0;
 -    }
 -
@@ -76,7 +76,7 @@ index c8f6c54..bc72de2 100644
      }
  }
  
--#if SDL_VIDEO_DRIVER_X11_XRANDR
+-#ifdef SDL_VIDEO_DRIVER_X11_XRANDR
 -/* This catches an error from XRRSetScreenSize, as a workaround for now. */
 -/* !!! FIXME: remove this later when we have a better solution. */
 -static int (*PreXRRSetScreenSizeErrorHandler)(Display *, XErrorEvent *) = NULL;

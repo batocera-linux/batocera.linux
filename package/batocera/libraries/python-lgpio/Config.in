@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_LGPIO
+	bool "python-lgpio"
+	select BR2_PACKAGE_LIBLGPIO
+	help
+	  lgpio is a module for Linux Single Board Computers (SBC)
+	  which allows control of the General Purpose Input Outputs (GPIO).
+
+	  https://pypi.org/project/lgpio

@@ -1,0 +1,51 @@
+diff --git a/pironman5/__init__.py b/pironman5/__init__.py
+index dda0886b5a..9c1a7dd9aa 100644
+--- a/pironman5/__init__.py
++++ b/pironman5/__init__.py
+@@ -8,12 +8,14 @@ def main():
+     from .pironman5 import Pironman5
+     from pm_auto.ws2812 import RGB_STYLES
+     from pm_auto.fan_control import GPIO_FAN_MODES
+-    from pkg_resources import resource_filename
++    import importlib.resources
++    from pathlib import Path
+     import json
+     import sys
+     from os import path
+ 
+-    CONFIG_PATH = resource_filename('pironman5', 'config.json')
++    with importlib.resources.path('pironman5', 'config.json') as config_path:
++        CONFIG_PATH = Path(config_path)
+ 
+     current_config = None
+     new_auto = {}
+@@ -178,4 +180,4 @@ def main():
+     Pironman5.update_config_file(new_config)
+     if args.command == "start":
+         pironman5 = Pironman5()
+-        pironman5.start()
+\ No newline at end of file
++        pironman5.start()
+diff --git a/pironman5/pironman5.py b/pironman5/pironman5.py
+index d1b838acd4..41e5f9dfcf 100644
+--- a/pironman5/pironman5.py
++++ b/pironman5/pironman5.py
+@@ -1,7 +1,7 @@
+ import json
+ import time
+ import os
+-from pkg_resources import resource_filename
++import importlib.resources
+ 
+ from pm_auto.pm_auto import PMAuto
+ from pm_dashboard.pm_dashboard import PMDashboard
+@@ -10,7 +10,8 @@ from .utils import merge_dict, log_error
+ 
+ get_child_logger = create_get_child_logger('pironman5')
+ __package_name__ = __name__.split('.')[0]
+-CONFIG_PATH = resource_filename(__package_name__, 'config.json')
++with importlib.resources.path(__package_name__, 'config.json') as config_path:
++    CONFIG_PATH = config_path
+ 
+ PERIPHERALS = [
+     'ws2812',

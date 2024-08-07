@@ -1,0 +1,22 @@
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index 99aaf06..308c311 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -624,7 +624,7 @@ class Multiplexer(object):
+             # Calculate time until the next delayed action triggers
+             now = time.time()
+             timeout = 0
+-            if 0 in self._delayed and 'when' in self._delayed[0]:
++            if len(self._delayed) > 0 and 'when' in self._delayed[0]:
+                 timeout = max(timeout, (self._delayed[0]['when'] - now) * 1000)
+ 
+             mouse_timeout = self._mouse_timeout(now)
+@@ -709,7 +709,7 @@ class Multiplexer(object):
+ 
+         :returns: None
+         """
+-        if 0 not in self._delayed:
++        if len(self._delayed) == 0:
+             return
+         action = self._delayed[0]
+         if action['type'] == 'key':

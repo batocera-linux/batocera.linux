@@ -34,6 +34,13 @@ function display_error() {
     exit 1
 }
 
+# Partition size calculation
+get_partition_size_mb() {
+    local partition="$1"
+    local size_kb=$(blockdev --getsize64 "$partition")
+    echo $((size_kb / 1024 / 1024))
+}
+
 # Executing parameters and watch background pid
 # Changes text messages parsed to dialog --mixedgauge
 function textoutput()
@@ -70,13 +77,31 @@ if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"; then
     )
 
     # --- BEGIN RESIZE ---
-    # /userdata partition
+    
+    # Get /userdata partition details
     PART=$(batocera-part "share_internal")
     PARTNUM=$(batocera-part "share_internal_num")
     echo "Partition name: $PART & number: $PARTNUM" >> "$LOG"
+    
+    # Check the initial partition size
+    PARTSIZE=$(get_partition_size_mb "$PART")
+    echo "Initial partition size: ${PARTSIZE} MB" >> "$LOG"
+    
+    # Determine if we should format based on initial size
+    FORMAT_ALLOWED=false
+    if [ "$PARTSIZE" -eq 256 ] || [ "$PARTSIZE" -eq 512 ]; then
+        FORMAT_ALLOWED=true
+        echo "Initial partition size is $PARTSIZE, formatting will be allowed" >> "$LOG"
+    else
+        echo "Initial partition size is larger than initial image size, formatting will be skipped" >> "$LOG"
+    fi
+    
     # boot disk
     DISK=$(batocera-part prefix "${PART}")
     echo "Disk = $DISK" >> "$LOG"
+
+    TABLETYPE=$(parted -s ${DISK} print | grep 'Partition Table' | awk '{print $3}')
+    echo "Disk partition table type = $TABLETYPE" >> "$LOG"
 
     # only for ext4
     PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
@@ -86,45 +111,54 @@ if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"; then
     # textoutput "Message" "percentage" "command call" 
     for i in 1 3 5 7 9 11 13; do
     case $i in
-        1) 
-           # move backup GPT data structures to the end of the disk
-           echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$LOG"
-           textoutput $i 10 "sgdisk -e ${DISK}"
-           ;;
-        3) 
-           # resize the partition
-           echo "Step $i: Resizing the partition to 100%" >> "$LOG"
-           textoutput $i 30 "parted -s -m -f ${DISK} resizepart ${PARTNUM} 100%"
-           ;;
+        1)
+            # check for a GPT partition
+            if [ "${TABLETYPE}" = "gpt" ]; then
+                # move backup GPT data structures to the end of the disk
+                echo "Step $i: Moving 2nd GPT table to the end of the disk" >> "$LOG"
+                textoutput $i 10 "sgdisk -e ${DISK}"
+            else
+                echo "Step $i: Skipping GPT table move, disk is not GPT" >> "$LOG"
+                textoutput $i 10 ""
+            fi
+            ;;
+        3)
+            # resize the partition
+            echo "Step $i: Resizing the partition to 100%" >> "$LOG"
+            textoutput $i 30 "parted -s -m -f ${DISK} resizepart ${PARTNUM} 100%"
+            ;;
         5)
-           # update the kernel
-           echo "Step $i: Updating the kernel" >> "$LOG"
-           textoutput $i 40 "partprobe ${DISK}"
-           ;;
+            # update the kernel
+            echo "Step $i: Updating the kernel" >> "$LOG"
+            textoutput $i 40 "partprobe ${DISK}"
+            ;;
         7)
-           if test "${PARTTYPE}" = "ext4"
-           then
-               echo "Step $i: Formatting the ext4 file system" >> "$LOG"
-               textoutput $i 60 "mkfs.ext4 -L SHARE -q -F -F ${PART}"
-           fi
-           ;;
-        9) 
-           # check & resize the ext4 file system
-           if test "${PARTTYPE}" = "ext4"
-           then
-	           echo "Step $i: Checking ext4 file system" >> "$LOG"
-	           textoutput $i 70 "e2fsck -f -p ${PART}"
-           fi
-           ;;
-        11) 
-           # finally disk sync
-           echo "Step $i: Final sync" >> "$LOG"
-           textoutput $i 80 "sync"
-           ;;
+            if test "${PARTTYPE}" = "ext4" && "$FORMAT_ALLOWED" = true
+            then
+                echo "Step $i: Formatting the ext4 file system" >> "$LOG"
+                textoutput $i 60 "mkfs.ext4 -L SHARE -q -F -F ${PART}"
+            else
+                echo "Step $i: Skipping formatting due to partition size or type" >> "$LOG"
+                textoutput $i 60 "echo 'Formatting skipped'"
+            fi
+            ;;
+        9)
+            # check & resize the ext4 file system
+            if test "${PARTTYPE}" = "ext4"
+            then
+                echo "Step $i: Checking ext4 file system" >> "$LOG"
+                textoutput $i 70 "e2fsck -f -p ${PART}"
+            fi
+            ;;
+        11)
+            # finally disk sync
+            echo "Step $i: Final sync" >> "$LOG"
+            textoutput $i 80 "sync"
+            ;;
         13)
-           # remove the trigger
-           textoutput $i 90 "remove_trigger autoresize"
-           ;;
+            # remove the trigger
+            textoutput $i 90 "remove_trigger autoresize"
+            ;;
     esac
     done
 

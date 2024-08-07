@@ -83,6 +83,10 @@ f_cp /userdata/system/configs/emulationstation/es_input.cfg    "${DSYSTEM}"
 f_cp /boot/batocera-boot.conf                                  "${DSYSTEM}"
 f_cp /var/log/Xorg.0.log                                       "${DSYSTEM}"
 f_cp /var/log/bluetooth-agent.log                              "${DSYSTEM}"
+# resize.log
+if [ -f /tmp/resize.log ]; then
+    f_cp /tmp/resize.log                                       "${DSYSTEM}"
+fi
 
 # clear passwords
 # filter some dangerous options (may include some path with /userdata)

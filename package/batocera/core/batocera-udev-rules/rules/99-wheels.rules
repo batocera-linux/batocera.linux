@@ -32,10 +32,13 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idV
 # DRIVING WHEEL SV200 (GAMEPAD MODE ONLY)
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="0079", ATTR{idProduct}=="189c", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="180"
 
+# HORI RACING WHEEL OVERDRIVE (MODE 2 ONLY)
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Microsoft X-Box One pad", ATTR{idVendor}=="0f0d", ATTR{idProduct}=="0121", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
+
 # PXN-V10 (X-INPUT MODE ONLY, HARDWARE SWITCH TO 270 DEGREES)
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="llff", ATTR{idProduct}=="f201", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
 
-#
+# MOZA R9 BASE STEERING WHEEL WITH CUSTOM PEDALS GUDSEN SRP
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA R9 Base", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA SRP pedals", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
 KERNEL=="event*", SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="MOZA R9 wheels", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1" , ENV{ID_INPUT_WHEEL}="1" , ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0"

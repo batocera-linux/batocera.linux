@@ -1,13 +1,77 @@
-# 2024/07/xx - batocera.linux 40 - Swallowtail
+# 2024/12/xx - batocera.linux 41 - xxx
 ### Special Notes
-Batocera now has a global battery mode option under Game Setting to determine the power mode when a handheld is unplugged.
+### Hardware
+- Add Blamcon Gun support
+- Khadis VIM4 optimizations and enhancements
+- Add Dockerpi Powerboard support initially for the RPi3
+### Added
+- Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
+- Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
+  - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
+### Fixed
+### Changed / Improved
+- Added bezel & sinden border support for the RPi5 with Model 3 games
+- Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
+- Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
+### Updated
+- RetroArch to v1.19.1
+  - Libretro-Melonds-Ds to v1.1.5
+  - Libretro-Ecwolf to June 28 build
+  - Libretro-Flycast to Jul 30 build
+  - Libretro-Freechaf to June 28 build
+  - Libretro-Minivac to July 1 build
+  - Libretro-MrBoom to v5.5
+  - Libretro-Mupen64plus-Next to July 19, 2024 build
+  - Libretro-NeoCD to June 22 build
+- Cemu to v2.0-91
+- Amiberry to v5.7.3
+- BigPEmu to v115
+- Citra to r518f723
+- Dolphin to 2407.130
+- Duckstaton to Jul 27, 2024 build
+- DXX-Rebirth to July 21 build
+- Eduke32 to Jul 25 build
+- Flycast to Jul 30 build
+- PCSX2 to v2.1.62
+- Redream to 1.5.0-1131-gafdfc1a
+- RPCS3 to Jul 28, 2024 build
+- Sonic Mania to Jul 21, 2024 build
+- The Force Engine to Jul 27, 2024 build
+- Vita3k to Jul 27 build
+- Xemu to v0.7.131
+- Xenia Canary to Jul 15, 2024 build
+### System
+- Nvidia Driver to 555.58.02
+- Nvidia Legacy Driver to 470.256.02
+- x86_64 Kernel to 6.10.3
+- Ayaneo Platform driver to Jul 17, 2024 build
+- Ayn Platform driver to Jul 17, 2024 build
+- MangoHud to Jun 15, 2024 build
+- SDL2 to 2.30.6
+- DXVK to 2.4
+- DXVK NVAPI to v0.7.1
+- VKD3D Proton to 2.13
+- Linux Firmware to 20240709
+- Pipewire to 1.2.2
+- ALSA stack to 1.2.12
+- ALSA UCM configuration to 1.2.12
+- Chromebook Linux Audio to 31st of July
+- FAudio to 24.08
+- FDK-AAC to 2.0.3
+- Intel Media Driver to 24.2.5
+- Sound Open Firmware to 2024.06
+- LibVA to 2.22.0
+
+# 2024/08/xx - batocera.linux 40 - Swallowtail
+### Special Notes
+Batocera now has a global battery mode option under Game Settings to determine the power mode when a handheld is unplugged.
 To potentially improve battery consumption, you can adjust the mode the handheld operates at when running on battery.
 By default the power mode will be set to `balanced` mode when unplugged. Other options are `highperformance` or `powersave`
 Note: The `powersave` mode will have the biggest impact on CPU performance whilst gaming to reduce battery consumption as much as possible.
 
-Singe games now have it's own system. Move any singe related games from roms/daphne to the roms/singe directory.
-Note: Singe games in the roms/daphne folder will no longer work.
-You can determine you have a Singe simulation game by the games folder contains a .singe file.
+Singe games now have their own system. Move any Singe related games from `roms/daphne` to the `roms/singe` directory.
+Note: Singe games in the `roms/daphne` folder will no longer work.
+You can determine you have a Singe simulation game when the game folder contains a .singe file.
 
 EmulationStation's Video Mode (resolution) is now under System Settings rather than under Frontend Developers.
 ### Hardware
@@ -18,7 +82,9 @@ Initial support for the Lenovo Legion Go
 Support for Nvidia cards requiring the legacy 340.108 driver.
 Add support for the Ayaneo 2S
 Add support for the Ayaneo Air Plus (6800U) model
-Add support for the Rock 5c
+Add support for the Radxa Rock 5c
+Add support for the Banana Pi BPI-M7
+Add support for the Pironman 5 case with RPi5 devices.
 ### Added
 - Support for Lexaloffle Voxatron (needs official engine, no emulator provided)
 - C64: support for REU (RAM Expansion Unit), .d71 and .g64 ROM format
@@ -37,7 +103,8 @@ Add support for the Rock 5c
   - Driving Wheel SV200
   - PNX-V10 (x-input only)
   - Logitech Driving Force Pro
-- Dolphin: support for Retroachievements (when they are enabled)
+  - HORI Racing Wheel Overdrive (mode 2 only)
+- Dolphin: support for Retroachievements
 - Color Computer (coco) now autoloads cassettes and disks based on MAME software lists with default fallbacks
   - uses "usage" info field in MAME software list
   - .cas/.dsk default autoload behaviors (.bas in rom basename uses CLOAD/RUN)
@@ -50,7 +117,11 @@ Add support for the Rock 5c
   - Bind key C for player 1; V for player 2; B for player 3; N for player 4
 - Nvidia cards using the latest production driver now has cuda hardware accelerated playback enabled for ffmpeg & mpv
 - Wireguard VPN tools to setup your PC for Wireguard VPN access. See the wiki here: https://wiki.batocera.org/vpn_client
+- Support for standalone MAME (MAME) and libretro-MAME (lr-mame) BIOS files in bios/mame/ subfolder
+  - BIOS files in /userdata/bios/mame have precendence over /userdata/bios (per MAME -rompath behavior)
+- Start and Select buttons on light guns for Hypseus Singe
 ### Fixed
+- RA menu confirm/cancel inputs now follows ES confirm/cancel setting.
 - RG552 Splash-screen rotation
 - RG552 Vibrator enabled
 - GameForce Vibrator enabled
@@ -76,14 +147,14 @@ Add support for the Rock 5c
 - Cuda hardware acceleration of the splash video for Nvidia cards using the production driver.
 - Kodi green screen with RK3588 boards
 ### Changed / Improved
-- RK3326 Replaced the mali-G31 driver with mesa3d
+- Organized dolphin ES settings.
 - Amiga BIOS files now go into the bios/amiga/ subfolder
 - RPCS3 upscaling now outputs properly
 - GunCon3 default mapping (visit light gun page on official wiki)
   - Calibration now on C2 (press and hold it few seconds)
-- Sinden Lightgun firmware updated to 1.9
-- Preferred vulkan driver name now listed in System Information
-- Start advisiong people on Vulkan GPU driver capabilities for Emualtors
+- Sinden Lightgun drivers updated to 2.05 (firmware v1.9 now compatible)
+- Preferred vulkan driver & version now listed in System Information
+- Improve Vulkan GPU driver handling for Emualtors
 - Added additional Atari Lynx extensions for Beetle Lynx & Handy
 - Name the Bluetooth connection based on the host system hardware name.
 - We now record audio & use hardware encoding (x86_64 only) with Intel & AMD GPU's when using `batocera-record`.
@@ -139,7 +210,7 @@ Add support for the Rock 5c
 - Fheroes2 to 1.0.13
 - PCSX2 to v1.7.5913
 - Play! & Libretro Play! to 0.66
-- Dolphin to 5.0-21543
+- Dolphin to 2407-76 (5.0 development version)
 - Libretro-Hatarib: bump to v0.3
 - Hatari to v2.5.0
 - Citra to r64e3e9f
@@ -176,16 +247,16 @@ Add support for the Rock 5c
 - Libretro-MrBoom to May 17, 2024 build
 - Libretro-Picodrive to Mar 27, 2024 build
 ### System
-- ARM mainline kernel to 6.6.23
+- ARM mainline kernel to 6.6.27
 - Nvidia Production driver to 550.90.07
 - Nvidia Legacy driver to 470.239.06
 - Wayland Protocols to 1.33
 - Wlroots to 0.17.1
 - Sway to 1.9
-- Mesa3D to 24.1.2
-- RPi kernel to 6.6.20
+- Mesa3D to 24.1.4
+- RPi kernel to 6.6.41
 - Pipewire to 1.0.4
-- X86_64 kernel to 6.9.5
+- X86_64 kernel to 6.9.10
 - Switchres 0.220
 - Btop to 1.3.2
 - Linux firmware to 20240513
@@ -202,6 +273,7 @@ Add support for the Rock 5c
 - DXVK-NVAPI to 0.7.0
 - VKD3D-Proton to v2.12
 - Vulkan headers to 1.3.286
+- Bluez to 5.76
 
 # 2024/03/04 - batocera.linux 39 - Painted Lady
 ### Special Notes

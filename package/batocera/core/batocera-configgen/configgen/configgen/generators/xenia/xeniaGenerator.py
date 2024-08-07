@@ -64,6 +64,9 @@ class XeniaGenerator(Generator):
         except subprocess.CalledProcessError:
             eslog.debug("Error executing batocera-vulkan script.")
         
+        # set to 64bit environment by default
+        os.environ['WINEARCH'] = 'win64'
+        
         # make system directories
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)

@@ -1,0 +1,48 @@
+Fixes: 65371a3f14e7 ("wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets")
+Signed-off-by: Larry Finger <Larry.Finger@gmail.com>
+Cc: stable@vger.kernel.org # v6.4+
+---
+ drivers/net/wireless/realtek/rtw88/sdio.c | 28 +++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/sdio.c b/drivers/net/wireless/realtek/rtw88/sdio.c
+index 0cae5746f540..eec0ad85be72 100644
+--- a/drivers/net/wireless/realtek/rtw88/sdio.c
++++ b/drivers/net/wireless/realtek/rtw88/sdio.c
+@@ -1325,6 +1325,34 @@ int rtw_sdio_probe(struct sdio_func *sdio_func,
+ 	rtwdev->hci.ops = &rtw_sdio_ops;
+ 	rtwdev->hci.type = RTW_HCI_TYPE_SDIO;
+ 
++	/* Insert a delay of 500 ms. Without the delay, the wifi part
++	 * and the UART that controls Bluetooth interfere with one
++	 * another resulting in the following being logged:
++	 *
++	 * Start of SDIO probe function.
++	 * Bluetooth: HCI UART driver ver 2.3
++	 * Bluetooth: HCI UART protocol Three-wire (H5) registered
++	 * of_dma_request_slave_channel: dma-names property of node '/serial@fe650000'
++	 *	 missing or empty
++	 * dw-apb-uart fe650000.serial: failed to request DMA
++`	 * rtw_8821cs mmc3:0001:1: Firmware version 24.8.0, H2C version 12
++	 * rtw_8821cs mmc3:0001:1: sdio read32 failed (0x11080): -110
++	 *
++	 * If the UART is finished initializing before the SDIO probe
++	 * function startw, the following is logged:
++	 *
++	 * Bluetooth: HCI UART protocol Three-wire (H5) registered
++	 * of_dma_request_slave_channel: dma-names property of node '/serial@fe650000'
++	 *	missing or empty
++	 * dw-apb-uart fe650000.serial: failed to request DMA
++	 * Start of SDIO probe function.
++	 * rtw_8821cs mmc3:0001:1: Firmware version 24.8.0, H2C version 12
++	 * Bluetooth: hci0: RTL: examining hci_ver=08 hci_rev=000c lmp_ver=08 lmp_subver=8821
++	 * SDIO wifi works correctly.
++	 *
++	 * No adverse effects are observed from the delay.
++	 */
++	mdelay(500);
+ 	ret = rtw_core_init(rtwdev);
+ 	if (ret)
+ 		goto err_release_hw;
+-- 
+2.44.0
