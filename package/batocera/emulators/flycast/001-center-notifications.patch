@@ -1,0 +1,65 @@
+diff --git a/core/ui/gui_achievements.cpp b/core/ui/gui_achievements.cpp
+index c60cf0a823..470d435727 100644
+--- a/core/ui/gui_achievements.cpp
++++ b/core/ui/gui_achievements.cpp
+@@ -178,7 +178,7 @@ bool Notification::draw()
+ 		const float hspacing = ImGui::GetStyle().ItemSpacing.x;
+ 		ImVec2 totalSize = padding * 2 + size;
+ 		totalSize.x += (size.x + hspacing) * (challenges.size() - 1);
+-		ImVec2 pos(insetLeft, ImGui::GetIO().DisplaySize.y - totalSize.y * (1.f - animY));
++		ImVec2 pos((ImGui::GetIO().DisplaySize.x - totalSize.x) / 2, ImGui::GetIO().DisplaySize.y - totalSize.y * (1.f - animY));
+ 		dl->AddRectFilled(pos, pos + totalSize, bg_col, 0.f);
+ 		dl->AddRect(pos, pos + totalSize, borderCol, 0.f);
+ 
+@@ -192,19 +192,31 @@ bool Notification::draw()
+ 	{
+ 		ImFont *font = ImGui::GetFont();
+ 		const ImVec2 padding = ImGui::GetStyle().FramePadding;
+-		// iterate from the end
+-		ImVec2 pos(insetLeft + padding.x, ImGui::GetIO().DisplaySize.y - padding.y);
++		
++		// Calculate total size
++		ImVec2 totalSize(0, 0);
+ 		for (auto it = leaderboards.rbegin(); it != leaderboards.rend(); ++it)
+ 		{
+-			const std::string& text = it->second;
+-			ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
+-			ImVec2 psize = size + padding * 2;
+-			pos.y -= psize.y;
+-			dl->AddRectFilled(pos, pos + psize, bg_col, 0.f);
+-			ImVec2 tpos = pos + padding;
+-			const ImU32 col = alphaOverride(0xffffff, alpha);
+-			dl->AddText(font, font->FontSize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
+-			pos.y -= padding.y;
++		    const std::string& text = it->second;
++		    ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
++		    ImVec2 psize = size + padding * 2;
++		    totalSize.x = std::max(totalSize.x, psize.x);
++		    totalSize.y += psize.y + padding.y;
++		}
++		
++		// Center horizontally, align to bottom
++		ImVec2 pos((ImGui::GetIO().DisplaySize.x - totalSize.x) / 2.f, ImGui::GetIO().DisplaySize.y - totalSize.y);
++		
++		for (auto it = leaderboards.rbegin(); it != leaderboards.rend(); ++it)
++		{
++		    const std::string& text = it->second;
++		    ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
++		    ImVec2 psize = size + padding * 2;
++		    dl->AddRectFilled(pos, pos + psize, bg_col, 0.f);
++		    ImVec2 tpos = pos + padding;
++		    const ImU32 col = alphaOverride(0xffffff, alpha);
++		    dl->AddText(font, font->FontSize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
++		    pos.y += psize.y + padding.y;
+ 		}
+ 	}
+ 	else
+@@ -244,7 +256,7 @@ bool Notification::draw()
+ 		// border
+ 		totalSize += ImVec2(2.f, 2.f);
+ 		// draw background, border
+-		ImVec2 pos(insetLeft, ImGui::GetIO().DisplaySize.y - totalSize.y * (1.f - animY));
++		ImVec2 pos((ImGui::GetIO().DisplaySize.x - totalSize.x) / 2, ImGui::GetIO().DisplaySize.y - totalSize.y * (1.f - animY));
+ 		dl->AddRectFilled(pos, pos + totalSize, bg_col, 0.f);
+ 		dl->AddRect(pos, pos + totalSize, borderCol, 0.f);
+ 
