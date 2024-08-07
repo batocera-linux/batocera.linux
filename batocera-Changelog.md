@@ -23,11 +23,12 @@
   - Libretro-MrBoom to v5.5
   - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to June 22 build
-- C-Dogs SDL to 2.1.0
-- Cemu to v2.0-91
 - Amiberry to v5.7.3
 - BigPEmu to v115
+- C-Dogs SDL to 2.1.0
+- Cemu to v2.0-91
 - Citra to r518f723
+- Commander Genius to v3.5.1
 - Dolphin to 2407.130
 - Duckstaton to Jul 27, 2024 build
 - DXX-Rebirth to July 21 build
