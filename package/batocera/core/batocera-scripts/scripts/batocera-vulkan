@@ -13,6 +13,16 @@ if [ ! -x "/usr/bin/vulkaninfo" ]; then
     exit 1
 fi
 
+# Get the index to the discrete gpu, fallback to integrated gpu
+get_gpu_index() {
+    gpu_type=$(vulkaninfo | grep deviceType)
+    gpu_index=$(echo "$gpu_type" | grep -n PHYSICAL_DEVICE_TYPE_DISCRETE_GPU | cut -d: -f1)
+    if [ -z "$gpu_index" ]; then
+        gpu_index=$(echo "$gpu_type" | grep -n PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU | cut -d: -f1)
+    fi
+    echo $gpu_index
+}
+
 # Function to list Vulkan GPU devices
 list_devices() {
     vulkaninfo | grep deviceName | awk -F'= ' '{print $2}'
@@ -25,7 +35,7 @@ num_devices() {
 
 # Function to check if a discrete GPU exists
 has_discrete() {
-    vulkaninfo | grep -q PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+    vulkaninfo | grep -q "PHYSICAL_DEVICE_TYPE_DISCRETE_GPU\|PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU"
     if [ $? -eq 0 ]; then
         echo "true"
     else
@@ -35,8 +45,7 @@ has_discrete() {
 
 # Function to retrieve the UUID of the discrete GPU
 discrete_uuid() {
-    device_type_output=$(vulkaninfo | grep deviceType)
-    discrete_gpu_index=$(echo "$device_type_output" | grep -n PHYSICAL_DEVICE_TYPE_DISCRETE_GPU | cut -d: -f1)
+    discrete_gpu_index=$(get_gpu_index)
     if [ -z "$discrete_gpu_index" ]; then
         echo "No discrete GPU found."
         exit 1
@@ -53,8 +62,7 @@ discrete_uuid() {
 
 # Function to retrieve the name of the discrete GPU
 discrete_name() {
-    device_type_output=$(vulkaninfo | grep deviceType)
-    discrete_gpu_index=$(echo "$device_type_output" | grep -n PHYSICAL_DEVICE_TYPE_DISCRETE_GPU | cut -d: -f1)
+    discrete_gpu_index=$(get_gpu_index)
     if [ -z "$discrete_gpu_index" ]; then
         echo "No discrete GPU found."
         exit 1
@@ -71,8 +79,7 @@ discrete_name() {
 
 # Function to retrieve the index (GPU number) of the discrete GPU
 discrete_index() {
-    device_type_output=$(vulkaninfo | grep deviceType)
-    discrete_gpu_index=$(echo "$device_type_output" | grep -n PHYSICAL_DEVICE_TYPE_DISCRETE_GPU | cut -d: -f1)
+    discrete_gpu_index=$(get_gpu_index)
     # Subtract 1 from the index to get the Vulkan GPU number
     discrete_gpu_index=$((discrete_gpu_index - 1))
     if [ -z "$discrete_gpu_index" ]; then

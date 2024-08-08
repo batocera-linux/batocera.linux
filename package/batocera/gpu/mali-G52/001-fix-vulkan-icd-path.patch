@@ -1,0 +1,11 @@
+--- a/etc/vulkan/icd.d/mali.json
++++ b/etc/vulkan/icd.d/mali.json
+@@ -1,7 +1,7 @@
+ {
+     "file_format_version": "1.0.0",
+     "ICD": {
+-        "library_path": "/usr/lib/aarch64-linux-gnu/libMali.so",
++        "library_path": "/usr/lib/libMali.so",
+         "api_version": "1.2.200"
+    }
+ }
