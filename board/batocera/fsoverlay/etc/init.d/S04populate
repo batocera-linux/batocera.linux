@@ -40,5 +40,10 @@ mkdir -p /var/opt
 
 # populate the ld cache
 mkdir -p /etc
-echo -e "/usr/lib\n/lib\n/lib32" | tee /etc/ld.so.conf
+cat << EOF > /etc/ld.so.conf
+/usr/lib
+/lib
+/lib32
+/usr/lib/mangohud
+EOF
 ldconfig

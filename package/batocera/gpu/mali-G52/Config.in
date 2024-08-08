@@ -9,6 +9,8 @@ config BR2_PACKAGE_MALI_G52
 	select BR2_PACKAGE_HAS_LIBGLES
 	select BR2_PACKAGE_HAS_LIBMALI
 	select BR2_PACKAGE_HAS_LIBGBM
+	select BR2_PACKAGE_LIBGBM_HAS_FEATURE_DMA_BUF
+	select BR2_PACKAGE_LIBGBM_HAS_FEATURE_FORMAT_MODIFIER_PLANE_COUNT
 	help
 	  Install the binary user-space libraries for the ARM Mali GPU
 	  suitable for Mali G52. This package requires a kernel with 
