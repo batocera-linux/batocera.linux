@@ -4,6 +4,7 @@
 - Add Blamcon Gun support
 - Khadis VIM4 optimizations and enhancements
 - Add Dockerpi Powerboard support initially for the RPi3
+- Add initial support for the OrangePi-5-Pro
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
