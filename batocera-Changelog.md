@@ -5,15 +5,20 @@
 - Khadis VIM4 optimizations and enhancements
 - Add Dockerpi Powerboard support initially for the RPi3
 - Add initial support for the OrangePi-5-Pro
+- Khadis VIM4, Vulkan support has now been added
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
 ### Fixed
+- Steam loading on a NAS drive
+- ScummVM forcing English which can prevent some non-english games from starting
 ### Changed / Improved
 - Added bezel & sinden border support for the RPi5 with Model 3 games
 - Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
+- Spectravideo system now has Libretro-BlueMSX as an emulator option
+- Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
