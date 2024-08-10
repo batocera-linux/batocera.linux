@@ -11,7 +11,7 @@ chown -R root:audio /var/run/pulse
 chmod -R g+rwX /var/run/pulse
 
 # remove steam root restriction
-file_path=$(find /userdata -name "bin_steam.sh" 2>/dev/null)
+file_path=$(find /userdata/saves/flatpak/binaries -name "bin_steam.sh" 2>/dev/null)
 if [ -n "$file_path" ]; then
     echo "File bin_steam.sh found at: $file_path" > $log
     # Check if the line "# Don't allow running as root" exists in the file
