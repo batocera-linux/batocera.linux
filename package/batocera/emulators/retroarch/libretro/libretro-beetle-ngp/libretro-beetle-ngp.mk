@@ -3,8 +3,8 @@
 # libretro-beetle-ngp
 #
 ################################################################################
-# Version: Commits on Nov 1, 2023
-LIBRETRO_BEETLE_NGP_VERSION = 673c3d924ff33d71c6a342b170eff5359244df1f
+# Version: Commits on Jun 29, 2024
+LIBRETRO_BEETLE_NGP_VERSION = 09869bb6032610714e22d09b95a81ea291937a8f
 LIBRETRO_BEETLE_NGP_SITE = $(call github,libretro,beetle-ngp-libretro,$(LIBRETRO_BEETLE_NGP_VERSION))
 LIBRETRO_BEETLE_NGP_LICENSE = GPLv2
 

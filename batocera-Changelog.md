@@ -16,9 +16,24 @@
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
 ### Updated
 - RetroArch to v1.19.1
+  - Libretro-81 to June 29, 2024 build
+  - Libretro-Atari800 to July 26, 2024 build
+  - Libretro-Beetle-Lynx to June 29, 2024 build
+  - Libretro-Beetle-NGP to June 29, 2024 build
+  - Libretro-Beetle-PCE to August 9, 2024 build
+  - Libretro-Beetle-PCE-Fast to August 9, 2024 build
+  - Libretro-Beetle-PCFX to August 8, 2024 build
+  - Libretro-Beetle-PSX to August 9, 2024 build
+  - Libretro-Beetle-Saturn to May 20, 2024 build
+  - Libretro-Beetle-Supergrafx to August 9, 2024 build
+  - Libretro-Beetle-VB to June 29, 2024 build
+  - Libretro-Beetle-WSwan to June 29, 2024 build
+  - Libretro-BlueMSX to August 8, 2024 build
+  - Libretro-BSnes to August 9, 2024 build
+  - Libretro-Cap32 to June 29, 2024 build
   - Libretro-Melonds-Ds to v1.1.5
   - Libretro-Ecwolf to June 28 build
-  - Libretro-Flycast to Jul 30 build
+  - Libretro-Flycast to July 30 build
   - Libretro-Freechaf to June 28 build
   - Libretro-Minivac to July 1 build
   - Libretro-MrBoom to v5.5
