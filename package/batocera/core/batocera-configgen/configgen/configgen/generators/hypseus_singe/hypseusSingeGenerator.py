@@ -62,7 +62,7 @@ class HypseusSingeGenerator(Generator):
             "astron": ["astron", "astronp"],
             "badlands": ["badlands", "badlandsp"],
             "bega": ["bega", "begar1"],
-            "cliffhanger": ["cliffhanger", "cliff", "cliffalt", "cliffalt2"],
+            "cliff": ["cliffhanger", "cliff", "cliffalt", "cliffalt2"],
             "cobra": ["cobra", "cobraab", "cobraconv", "cobram3"],
             "conan": ["conan", "future_boy"],
             "chantze_hd": ["chantze_hd", "triad_hd", "triadstone"],
