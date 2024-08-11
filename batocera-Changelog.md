@@ -21,6 +21,7 @@
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
 - Spectravideo system now has Libretro-BlueMSX as an emulator option
 - Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
+- You can now manually forget, connect or disconnect a bluetooth device
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
