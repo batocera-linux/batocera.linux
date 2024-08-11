@@ -13,6 +13,8 @@ do_help() {
     echo "${1} stop_live_devices" >&2
     echo "${1} enable" >&2
     echo "${1} disable" >&2
+    echo "${1} connect <device address>" >&2
+    echo "${1} disconnect <device address>" >&2
 }
 
 do_save() {
@@ -27,20 +29,28 @@ do_restore() {
 
 do_list() {
     find /var/lib/bluetooth/ -type f -name info |
-	while read FILE
-	do
-            if grep -qE '^Trusted=true$' "${FILE}"
-            then
-		DEVNAME=$(grep -E '^Name=' "${FILE}" | sed -e s+"^Name="++)
-		DEVCLASS=$(grep -E '^Class=' "${FILE}" | sed -e s+"^Class="++)
-		DEVADDR=$(basename $(dirname "${FILE}"))
+    while read FILE
+    do
+        if grep -qE '^Trusted=true$' "${FILE}"
+        then
+            DEVNAME=$(grep -E '^Name=' "${FILE}" | sed -e s+"^Name="++)
+            DEVCLASS=$(grep -E '^Class=' "${FILE}" | sed -e s+"^Class="++)
+            DEVADDR=$(basename $(dirname "${FILE}"))
 
-		DEVTYPE=
-		test "${DEVCLASS}" = "0x002508" && DEVTYPE="joystick"
-		test "${DEVCLASS}" = "0x000508" && DEVTYPE="joystick"
-		echo "<device id=\""${DEVADDR}"\" name=\""${DEVNAME}"\" type=\""${DEVTYPE}"\" />"
-	    fi
-	done
+            DEVTYPE=
+            test "${DEVCLASS}" = "0x002508" && DEVTYPE="joystick"
+            test "${DEVCLASS}" = "0x000508" && DEVTYPE="joystick"
+
+            # Check if the device is connected
+            if bluetoothctl -- info "${DEVADDR}" | grep -q "Connected: yes"; then
+                CONNECTED="yes"
+            else
+                CONNECTED="no"
+            fi
+
+            echo "<device id=\""${DEVADDR}"\" name=\""${DEVNAME}"\" type=\""${DEVTYPE}"\" connected=\""${CONNECTED}"\" />"
+        fi
+    done
 }
 
 do_remove() {
@@ -165,44 +175,105 @@ do_disable() {
   /etc/init.d/S31sixad stop
 }
 
+do_connect() {
+    DEV="${1}"
+    if ! echo "${DEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+        echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
+        return 1
+    fi
+
+    if bluetoothctl -- info "${DEV}" | grep -q "Connected: yes"; then
+        echo "Device ${DEV} is already connected." >&2
+        return 0
+    fi
+
+    echo "Attempting to connect to device ${DEV}..."
+    if bluetoothctl -- connect "${DEV}"; then
+        echo "Successfully connected to device ${DEV}"
+        return 0
+    else
+        echo "Failed to connect to device ${DEV}" >&2
+        return 1
+    fi
+}
+
+do_disconnect() {
+    DEV="${1}"
+    if ! echo "${DEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+        echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
+        return 1
+    fi
+
+    if ! bluetoothctl -- info "${DEV}" | grep -q "Connected: yes"; then
+        echo "Device ${DEV} is not connected." >&2
+        return 1
+    fi
+
+    if bluetoothctl -- disconnect "${DEV}"; then
+        echo "Successfully disconnected device ${DEV}"
+        return 0
+    else
+        echo "Failed to disconnect device ${DEV}" >&2
+        return 1
+    fi
+}
+
 case "${ACTION}" in
     "list")
-	do_list
-	;;
+        do_list
+        ;;
     "trust")
-	TRUSTDEV=$2
-	do_trust "${TRUSTDEV}"
-	;;
+        TRUSTDEV=$2
+        do_trust "${TRUSTDEV}"
+        ;;
     "remove")
-	if test $# = 2
-	then
-	    do_remove "${2}" || exit 1
-	else
-	    do_help "${0}"
-	    exit 1
-	fi
-	;;
+        if test $# = 2
+        then
+            do_remove "${2}" || exit 1
+        else
+            do_help "${0}"
+            exit 1
+        fi
+        ;;
     "save")
-	do_save
-	;;
+        do_save
+        ;;
     "restore")
-	do_restore
-	;;
+        do_restore
+        ;;
     "start_live_devices"|"live_devices")
-	do_devlist
-	;;
+        do_devlist
+        ;;
     "stop_live_devices")
-	do_stopdevlist
-	;;
+        do_stopdevlist
+        ;;
     "enable")
-	do_enable
-	;;
+        do_enable
+        ;;
     "disable")
-	do_disable
-	;;
+        do_disable
+        ;;
+    "connect")
+        if test $# = 2
+        then
+            do_connect "${2}" || exit 1
+        else
+            do_help "${0}"
+            exit 1
+        fi
+        ;;
+    "disconnect")
+        if test $# = 2
+        then
+            do_disconnect "${2}" || exit 1
+        else
+            do_help "${0}"
+            exit 1
+        fi
+        ;;
     *)
-	do_help "${0}"
-	exit 1
+        do_help "${0}"
+        exit 1
 esac
 
 exit 0
