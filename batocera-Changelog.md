@@ -14,6 +14,7 @@
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
+- Fixed right controller LED for the Ayaneo Air Plus, it's now functional
 ### Changed / Improved
 - Added bezel & sinden border support for the RPi5 with Model 3 games
 - Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
