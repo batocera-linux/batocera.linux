@@ -419,7 +419,7 @@ msgctxt "game_options"
 msgid "Use light guns instead of pads if light guns are connected."
 msgstr "Использовать световой пистолет вместо геймпадов, если оно подключено."
 
-#. TRANSLATION: shared, dolphin
+#. TRANSLATION: shared, dolphin/uzem
 msgctxt "game_options"
 msgid "LIGHT GUNS"
 msgstr "СВЕТОВЫЕ ПИСТОЛЕТЫ"
@@ -2090,7 +2090,7 @@ msgctxt "game_options"
 msgid "Wii NAND's language setting."
 msgstr "Wii NAND Настройка языка."
 
-#. TRANSLATION: libretro/dolphin, cemu, dolphin, play, suyu, ...
+#. TRANSLATION: libretro/dolphin, cemu, dolphin/uzem, play, suyu, ...
 msgctxt "game_options"
 msgid "Dutch"
 msgstr "Голландский"
@@ -2174,7 +2174,7 @@ msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "ЭКРАННЫЕ СООБЩЕНИЯ"
 
-#. TRANSLATION: libretro/dolphin, dolphin
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
 msgid ""
 "Wii NAND's aspect ratio setting. Most games support both ratios natively."
@@ -2182,12 +2182,12 @@ msgstr ""
 "Настройка соотношения сторон Wii NAND. Большинство игр изначально "
 "поддерживают оба соотношения."
 
-#. TRANSLATION: libretro/dolphin, dolphin
+#. TRANSLATION: libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
 msgid "WII TV MODE"
 msgstr "WII TV РЕЖИМ"
 
-#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin
+#. TRANSLATION: libretro/dolphin, libretro/dolphin, libretro/dolphin, libretro/dolphin, dolphin/uzem
 msgctxt "game_options"
 msgid "Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick."
 msgstr ""
@@ -3271,22 +3271,22 @@ msgctxt "game_options"
 msgid "Choose the Dreamcast console region."
 msgstr "Выберите регион консоли Dreamcast."
 
-#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/dolphin, suyu, ryujinx
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, suyu, ryujinx
 msgctxt "game_options"
 msgid "USA"
 msgstr "США"
 
-#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/dolphin, redream, suyu, ...
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
 msgctxt "game_options"
 msgid "Europe"
 msgstr "Европа"
 
-#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/dolphin, redream, suyu, ...
+#. TRANSLATION: libretro/flycast, libretro/neocd, flycast/uzem, redream, suyu, ...
 msgctxt "game_options"
 msgid "Japan"
 msgstr "Япония"
 
-#. TRANSLATION: libretro/flycast, flycast/dolphin
+#. TRANSLATION: libretro/flycast, flycast/uzem
 msgctxt "game_options"
 msgid ""
 "Dreamcast BIOS's language setting. Can change the language of some games. "
@@ -3295,17 +3295,17 @@ msgstr ""
 "Dreamcast BIOS настройка языка. Можно изменить язык некоторых игр. В "
 "некоторых играх по умолчанию используется японский язык."
 
-#. TRANSLATION: libretro/flycast, flycast/dolphin
+#. TRANSLATION: libretro/flycast, flycast/uzem
 msgctxt "game_options"
 msgid "BIOS LANGUAGE"
 msgstr "BIOS ЯЗЫК"
 
-#. TRANSLATION: libretro/flycast, libretro/quasi88, flycast/dolphin
+#. TRANSLATION: libretro/flycast, libretro/quasi88, flycast/uzem
 msgctxt "game_options"
 msgid "Required for some games."
 msgstr "Требуется для некоторых игр."
 
-#. TRANSLATION: libretro/flycast, flycast/dolphin
+#. TRANSLATION: libretro/flycast, flycast/uzem
 msgctxt "game_options"
 msgid "FORCE WINDOWS CE MODE"
 msgstr "ПРИНУДИТЕЛЬНЫЙ РЕЖИМ WINDOWS CE"
@@ -6428,21 +6428,6 @@ msgstr "Выкл безопаснее, Вкл для конкретных игр
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
-msgid "Double the rendering resolution."
-msgstr "Удвоенное разрешение рендеринга."
-
-#. TRANSLATION: libretro/pcsx_rearmed, drastic
-msgctxt "game_options"
-msgid "ENHANCED RENDERING RESOLUTION"
-msgstr "УЛУЧШЕННОЕ РАЗРЕШЕНИЕ РЕНДЕРИНГА"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
-msgid "On (Speed hack)"
-msgstr "Вкл (спидхак)"
-
-#. TRANSLATION: libretro/pcsx_rearmed
-msgctxt "game_options"
 msgid "Capcom VS games Expand Screen Width"
 msgstr "Capcom VS - расширить ширину экрана"
 
@@ -8794,16 +8779,141 @@ msgctxt "game_options"
 msgid "CUSTOM CONTROLLER"
 msgstr "ПОЛЬЗОВАТЕЛЬСКИЙ КОНТРОЛЛЕР"
 
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
+msgctxt "game_options"
+msgid "DISPLAY"
+msgstr "ЭКРАН"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid ""
+"Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in "
+"appropriate user directory)."
+msgstr ""
+"Включить анимацию загрузки Gamecube и доступ к BIOS (требуется IPL.bin BIOS "
+"в соответствующей папке)."
+
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin, dolphin, dolphin, ...
+msgctxt "game_options"
+msgid "EMULATION"
+msgstr "ЭМУЛЯЦИЯ"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "ENABLE BOOT ANIMATION"
+msgstr "ВКЛЮЧИТЬ АНИМАЦИЮ ЗАГРУЗКИ"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Change the Gamecube system language."
+msgstr "Изменить язык системы Gamecube."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "GAMECUBE LANGUAGE"
+msgstr "ЯЗЫК GAMECUBE"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "English/Japanese"
+msgstr "Английский/Японский"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Map your controller to an emulated Wiimote."
+msgstr "Сопоставьте свой контроллер с эмулируемым Wiimote."
+
+#. TRANSLATION: dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem, dolphin/uzem
+msgctxt "game_options"
+msgid "WII CONTROLLERS"
+msgstr "WII КОНТРОЛЛЕРЫ"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "EMULATE WIIMOTE"
+msgstr "ЭМУЛЯЦИЯ WIIMOTE"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "CUSTOMIZE EMULATED WIIMOTE & GAMEPAD"
+msgstr "НАСТРОЙКА ЭМУЛИРОВАННЫХ WIIMOTE И ГЕЙМПАДА"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Classic Controller"
+msgstr "Classic Controller"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Classic Controller Pro"
+msgstr "Classic Controller Pro"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Wiimote Sideway"
+msgstr "Wiimote Sideway"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Wiimote Sideway + Swing"
+msgstr "Wiimote Sideway + Swing"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Wiimote Sideway + Tilt"
+msgstr "Wiimote Sideway + Tilt"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Wiimote Sideway + Nunchuk"
+msgstr "Wiimote Sideway + Nunchuk"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Position of wii sensor bar relative to the disaply for real wiimotes."
+msgstr ""
+"Положение сенсорной панели wii относительно дисаплея для настоящих wiimotes."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "SENSOR BAR POSITION"
+msgstr "ПОЛОЖЕНИЕ СЕНСОРНОЙ ПАНЕЛИ"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Bottom (Default)"
+msgstr "Снизу (по умолчанию)"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Top"
+msgstr "Вверху"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
+msgstr "Эмуляция указателя Wiimote с помощью гироскопа DS4."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "DUALSHOCK MOTION CONTROL"
+msgstr "DUALSHOCK КОНТРОЛЬ ДВИЖЕНИЯ"
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "Emulate the Wiimote pointer with a mouse."
+msgstr "Эмуляция указателя Wiimote с помощью мыши."
+
+#. TRANSLATION: dolphin/uzem
+msgctxt "game_options"
+msgid "MOUSE AS WIIMOTE POINTER"
+msgstr "МЫШЬ КАК УКАЗАТЕЛЬ WIIMOTE"
+
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
 msgid "The final output image, unrelated to the Wii's emulated NAND setting."
 msgstr ""
 "Окончательное изображение, не связанное с настройкой эмулируемой NAND Wii."
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, dolphin, ...
-msgctxt "game_options"
-msgid "DISPLAY"
-msgstr "ЭКРАН"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -8876,11 +8986,6 @@ msgstr "РУЧНОЙ САМПЛИНГ ТЕКСТУР"
 msgctxt "game_options"
 msgid "Usually not much faster than single core mode."
 msgstr "Обычно не намного быстрее, чем одноядерный режим."
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, dolphin, ...
-msgctxt "game_options"
-msgid "EMULATION"
-msgstr "ЭМУЛЯЦИЯ"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -9040,13 +9145,26 @@ msgstr "GAMECUBE ТИП ПОРТА 4"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
-msgid "Moves South to West, West to North, etc. Standard controller type only."
+msgid ""
+"Use alternative input mappings. Only applies to Standard Controller type."
 msgstr ""
+"Использовать альт. сопоставления кнопок. Применяется только к типу "
+"\"Standard Controller\"."
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
-msgid "ROTATE FACE BUTTONS"
-msgstr ""
+msgid "ALT INPUT MAPPING"
+msgstr "АЛЬТ, СОПОСТАВЛЕНИЕ КНОПОК"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CW)"
+msgstr "Лицевые кнопки (по часовой стрелке)"
+
+#. TRANSLATION: dolphin, dolphin, dolphin, dolphin
+msgctxt "game_options"
+msgid "Face Buttons (CCW)"
+msgstr "Лицевые кнопки (против часовой стрелки)"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
@@ -9118,126 +9236,6 @@ msgstr "Отображать на экране сообщение (сохран�
 msgctxt "game_options"
 msgid "SHOW ON-SCREEN DISPLAY MESSAGES"
 msgstr "ОТОБРАЖАТЬ СООБЩЕНИЯ НА ЭКРАНЕ"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid ""
-"Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in "
-"appropriate user directory)."
-msgstr ""
-"Включить анимацию загрузки Gamecube и доступ к BIOS (требуется IPL.bin BIOS "
-"в соответствующей папке)."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "ENABLE BOOT ANIMATION"
-msgstr "ВКЛЮЧИТЬ АНИМАЦИЮ ЗАГРУЗКИ"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Change the Gamecube system language."
-msgstr "Изменить язык системы Gamecube."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "GAMECUBE LANGUAGE"
-msgstr "ЯЗЫК GAMECUBE"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "English/Japanese"
-msgstr "Английский/Японский"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Map your controller to an emulated Wiimote."
-msgstr "Сопоставьте свой контроллер с эмулируемым Wiimote."
-
-#. TRANSLATION: dolphin, dolphin, dolphin, dolphin, dolphin
-msgctxt "game_options"
-msgid "WII CONTROLLERS"
-msgstr "WII КОНТРОЛЛЕРЫ"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "EMULATE WIIMOTE"
-msgstr "ЭМУЛЯЦИЯ WIIMOTE"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "CUSTOMIZE EMULATED WIIMOTE & GAMEPAD"
-msgstr "НАСТРОЙКА ЭМУЛИРОВАННЫХ WIIMOTE И ГЕЙМПАДА"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Classic Controller"
-msgstr "Classic Controller"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Classic Controller Pro"
-msgstr "Classic Controller Pro"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Wiimote Sideway"
-msgstr "Wiimote Sideway"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Wiimote Sideway + Swing"
-msgstr "Wiimote Sideway + Swing"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Wiimote Sideway + Tilt"
-msgstr "Wiimote Sideway + Tilt"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Wiimote Sideway + Nunchuk"
-msgstr "Wiimote Sideway + Nunchuk"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Position of wii sensor bar relative to the disaply for real wiimotes."
-msgstr ""
-"Положение сенсорной панели wii относительно дисаплея для настоящих wiimotes."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "SENSOR BAR POSITION"
-msgstr "ПОЛОЖЕНИЕ СЕНСОРНОЙ ПАНЕЛИ"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Bottom (Default)"
-msgstr "Снизу (по умолчанию)"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Top"
-msgstr "Вверху"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a DS4's gyroscope."
-msgstr "Эмуляция указателя Wiimote с помощью гироскопа DS4."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "DUALSHOCK MOTION CONTROL"
-msgstr "DUALSHOCK КОНТРОЛЬ ДВИЖЕНИЯ"
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "Emulate the Wiimote pointer with a mouse."
-msgstr "Эмуляция указателя Wiimote с помощью мыши."
-
-#. TRANSLATION: dolphin
-msgctxt "game_options"
-msgid "MOUSE AS WIIMOTE POINTER"
-msgstr "МЫШЬ КАК УКАЗАТЕЛЬ WIIMOTE"
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -9620,57 +9618,57 @@ msgctxt "game_options"
 msgid "CROSSHAIR"
 msgstr "ПРИЦЕЛ"
 
-#. TRANSLATION: flycast/dolphin, flycast/dolphin
+#. TRANSLATION: flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Game's default"
 msgstr "По умолчанию игры"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "AUTO LOAD ON GAME LAUNCH"
 msgstr "АВТОЗАГРУЗКА ПРИ ЗАПУСКЕ ИГРЫ"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "AUTO SAVE ON GAME EXIT"
 msgstr "АВТОСОХРАНЕНИЕ ПРИ ВЫХОДЕ ИЗ ИГРЫ"
 
-#. TRANSLATION: flycast/dolphin, flycast/dolphin, flycast/dolphin, flycast/dolphin
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Choose second feature pack for the controller."
 msgstr "Выберите второй feature pack для контроллера."
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "CONTROLLER 1 FEATURE PACK"
 msgstr "КОТРОЛЛЕР 1 FEATURE PACK"
 
-#. TRANSLATION: flycast/dolphin, flycast/dolphin, flycast/dolphin, flycast/dolphin
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "2nd VMU (Default)"
 msgstr "2nd VMU (по умолчанию)"
 
-#. TRANSLATION: flycast/dolphin, flycast/dolphin, flycast/dolphin, flycast/dolphin
+#. TRANSLATION: flycast/uzem, flycast/uzem, flycast/uzem, flycast/uzem
 msgctxt "game_options"
 msgid "Purupuru Pack/Vibration Pack"
 msgstr "Purupuru Pack/Vibration Pack"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "CONTROLLER 2 FEATURE PACK"
 msgstr "КОТРОЛЛЕР 2 FEATURE PACK"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "CONTROLLER 3 FEATURE PACK"
 msgstr "КОТРОЛЛЕР 3 FEATURE PACK"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "CONTROLLER 4 FEATURE PACK"
 msgstr "КОТРОЛЛЕР 4 FEATURE PACK"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid ""
 "Enable the Dreamcast DSP for more accurate audio. Only recommended for fast "
@@ -9679,12 +9677,12 @@ msgstr ""
 "Включить DSP Dreamcast для более точного звука. Рекомендуется только для "
 "быстрых систем."
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/uzem
 msgctxt "game_options"
 msgid "DIGITAL SOUND PROCESSOR"
 msgstr "DIGITAL SOUND PROCESSOR"
 
-#. TRANSLATION: flycast/dolphin, flycast
+#. TRANSLATION: flycast/uzem, flycast
 msgctxt "game_options"
 msgid "Disbaled (Default)"
 msgstr "Отключить (по умолчанию)"
@@ -12624,6 +12622,11 @@ msgstr ""
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
+msgid "ENHANCED RENDERING RESOLUTION"
+msgstr "УЛУЧШЕННОЕ РАЗРЕШЕНИЕ РЕНДЕРИНГА"
+
+#. TRANSLATION: drastic
+msgctxt "game_options"
 msgid ""
 "Skip frames to improve performance, at the cost of choppy motion. Can cause "
 "visual glitches."
@@ -15272,7 +15275,7 @@ msgctxt "keys_files"
 msgid "Hide the bezel"
 msgstr "Скрыть рамку"
 
-#. TRANSLATION: xbox360.xenia.keys, triforce.dolphin_triforce.keys, ps2.pcsx2.keys, singe.hypseus-singe.keys, daphne.hypseus-singe.keys, ...
+#. TRANSLATION: xbox360.xenia.keys, triforce.dolphin_triforce.keys, singe.hypseus-singe.keys, daphne.hypseus-singe.keys, amigacdtv.fsuae.keys, ...
 msgctxt "keys_files"
 msgid "Exit emulator"
 msgstr "Выйти из эмулятора"
@@ -15587,11 +15590,6 @@ msgctxt "keys_files"
 msgid "Display the controller screen"
 msgstr "Показать экран контроллера"
 
-#. TRANSLATION: wii.dolphin.keys
-msgctxt "keys_files"
-msgid "Exit Dolphin"
-msgstr ""
-
 #. TRANSLATION: psp.ppsspp.keys
 msgctxt "keys_files"
 msgid "Pause / Menu"
@@ -15725,7 +15723,7 @@ msgstr "Перемотка"
 #. TRANSLATION: mame.keys
 msgctxt "keys_files"
 msgid "Exit Emulator"
-msgstr ""
+msgstr "Выйти из эмулятора"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
@@ -15741,25 +15739,6 @@ msgstr "Фильтрация графики вкл/выкл"
 msgctxt "keys_files"
 msgid "Configuration menu"
 msgstr "Меню настроек"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use alternative input mappings. Only applies to Standard Controller type."
-#~ msgstr ""
-#~ "Использовать альт. сопоставления кнопок. Применяется только к типу "
-#~ "\"Standard Controller\"."
-
-#~ msgctxt "game_options"
-#~ msgid "ALT INPUT MAPPING"
-#~ msgstr "АЛЬТ, СОПОСТАВЛЕНИЕ КНОПОК"
-
-#~ msgctxt "game_options"
-#~ msgid "Face Buttons (CW)"
-#~ msgstr "Лицевые кнопки (по часовой стрелке)"
-
-#~ msgctxt "game_options"
-#~ msgid "Face Buttons (CCW)"
-#~ msgstr "Лицевые кнопки (против часовой стрелки)"
 
 #~ msgctxt "game_options"
 #~ msgid "Enable or disable monsters in battle."
@@ -15993,6 +15972,14 @@ msgstr "Меню настроек"
 #~ msgctxt "game_options"
 #~ msgid "Emable or disable high score saving"
 #~ msgstr "Включить или отключить сохранение рекордов"
+
+#~ msgctxt "game_options"
+#~ msgid "Double the rendering resolution."
+#~ msgstr "Удвоенное разрешение рендеринга."
+
+#~ msgctxt "game_options"
+#~ msgid "On (Speed hack)"
+#~ msgstr "Вкл (спидхак)"
 
 #~ msgctxt "game_options"
 #~ msgid ""
