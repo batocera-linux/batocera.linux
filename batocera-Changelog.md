@@ -1,4 +1,4 @@
-# 2024/12/xx - batocera.linux 41 - xxx
+# 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
 ### Hardware
 - Add Blamcon Gun support
