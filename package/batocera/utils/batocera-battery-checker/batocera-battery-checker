@@ -15,7 +15,7 @@ getBattery() {
     BATT=$(cat /sys/class/power_supply/*{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e 's/^POWER_SUPPLY_CAPACITY=//' | sort -rn | head -1)
     if ! test -n "${BATT}"; then
         NOW=$(cat /sys/class/power_supply/*{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e 's/^POWER_SUPPLY_CHARGE_NOW=//' | sort -rn | head -1)
-        MAX=$(cat /sys/class/power_supply/*{FUEL,fuel}*/uevent 2>/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e 's/^POWER_SUPPLY_CHARGE_FULL=//' | sort -rn | head -1)
+        MAX=$(cat /sys/class/power_supply/*{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e 's/^POWER_SUPPLY_CHARGE_FULL=//' | sort -rn | head -1)
         if [ ! -z "$NOW" ] && [ ! -z "$MAX" ] && [ "$MAX" != 0 ]; then
             BATT=$((200 * $NOW / $MAX % 2 + 100 * $NOW / $MAX))
         fi
