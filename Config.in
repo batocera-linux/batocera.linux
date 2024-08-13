@@ -602,6 +602,8 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-lgpio/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-binho-host-adapter/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/cpuinfo/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg4/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libplacebo/Config.in"
 endmenu
 
 menu "Audio"

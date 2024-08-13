@@ -1,17 +1,14 @@
 config BR2_PACKAGE_WF_RECORDER
     bool "wf-recorder"
     depends on BR2_PACKAGE_WAYLAND
-
     select BR2_PACKAGE_FFMPEG
     select BR2_PACKAGE_FFMPEG_GPL
     select BR2_PACKAGE_FFMPEG_FFPROBE
-    select BR2_PACKAGE_FFMPEG_AVRESAMPLE
     select BR2_PACKAGE_FFMPEG_SWSCALE
     select BR2_PACKAGE_FFMPEG_POSTPROC
     select BR2_PACKAGE_X264
     select BR2_PACKAGE_X265
     select BR2_PACKAGE_PULSEAUDIO
-
     help
         wf-recorder is a utility program for screenrecording
         of wlroots-based compositors (more specifically, those
