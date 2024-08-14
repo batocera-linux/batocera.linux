@@ -1,0 +1,54 @@
+From 69f081af4d6bd629f48a6de74f4939a7303b6cf0 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Thu, 25 Jul 2024 10:05:59 +1200
+Subject: [PATCH] platform/x86: asus-wmi: Add quirk for ROG Ally X
+
+The new ROG Ally X functions the same as the previus model so we can use
+the same method to ensure the MCU USB devices wake and reconnect
+correctly.
+
+Given that two devices marks the start of a trend, this patch also adds
+a quirk table to make future additions easier if the MCU is the same.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/asus-wmi.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 2b968003cb9b7..97c07456e5d01 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -146,6 +146,20 @@ static const char * const ashs_ids[] = { "ATK4001", "ATK4002", NULL };
+ 
+ static int throttle_thermal_policy_write(struct asus_wmi *);
+ 
++static const struct dmi_system_id asus_ally_mcu_quirk[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "RC71L"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "RC72L"),
++		},
++	},
++	{ },
++};
++
+ static bool ashs_present(void)
+ {
+ 	int i = 0;
+@@ -4694,7 +4708,7 @@ static int asus_wmi_add(struct platform_device *pdev)
+ 	asus->dgpu_disable_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_DGPU);
+ 	asus->kbd_rgb_state_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_TUF_RGB_STATE);
+ 	asus->ally_mcu_usb_switch = acpi_has_method(NULL, ASUS_USB0_PWR_EC0_CSEE)
+-						&& dmi_match(DMI_BOARD_NAME, "RC71L");
++						&& dmi_check_system(asus_ally_mcu_quirk);
+ 
+ 	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_MINI_LED_MODE))
+ 		asus->mini_led_dev_id = ASUS_WMI_DEVID_MINI_LED_MODE;
+-- 
+GitLab
+

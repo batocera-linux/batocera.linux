@@ -1,0 +1,43 @@
+From 45e60f3191780674d4a880c48d3ccbaf543cd3ee Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Thu, 25 Jul 2024 09:23:57 +1200
+Subject: [PATCH] hid-asus: add ROG Ally X prod ID to quirk list
+
+The new ASUS ROG Ally X functions almost exactly the same as the previous
+model, so we can use the same quirks.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-asus.c | 3 +++
+ drivers/hid/hid-ids.h  | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index 9010f12a221ea..e5f6664bac0f2 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -1255,6 +1255,9 @@ static const struct hid_device_id asus_devices[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
+ 	    USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY),
+ 	  QUIRK_USE_KBD_BACKLIGHT | QUIRK_ROG_NKEY_KEYBOARD },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
++	    USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X),
++	  QUIRK_USE_KBD_BACKLIGHT | QUIRK_ROG_NKEY_KEYBOARD },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
+ 	    USB_DEVICE_ID_ASUSTEK_ROG_AZOTH_KEYBOARD),
+ 	  QUIRK_USE_KBD_BACKLIGHT | QUIRK_ROG_NKEY_KEYBOARD },
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index fdf2d480533bf..57f1f1bc5eb61 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -212,6 +212,7 @@
+ #define USB_DEVICE_ID_ASUSTEK_ROG_RAIKIRI_PAD		0x1abb
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY		0x1abe
+ #define USB_DEVICE_ID_ASUSTEK_ROG_AZOTH_KEYBOARD	0x1a83
++#define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X		0x1b4c
+ #define USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD	0x196b
+ #define USB_DEVICE_ID_ASUSTEK_FX503VD_KEYBOARD	0x1869
+ 
+-- 
+GitLab
+

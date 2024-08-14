@@ -1,0 +1,40 @@
+From a779cdb6dab5681f668acff6b462b01ada0bf66b Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Mon, 29 Jul 2024 11:04:43 +1200
+Subject: [PATCH] platform/x86/amd: pmf: Add quirk for ROG Ally X
+
+The ASUS ROG Ally X has the same issue as the G14 where it advertises
+SPS support but doesn't use it.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/amd/pmf/pmf-quirks.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/amd/pmf/pmf-quirks.c b/drivers/platform/x86/amd/pmf/pmf-quirks.c
+index 0b2eb0ae85feb..460444cda1b29 100644
+--- a/drivers/platform/x86/amd/pmf/pmf-quirks.c
++++ b/drivers/platform/x86/amd/pmf/pmf-quirks.c
+@@ -29,6 +29,14 @@ static const struct dmi_system_id fwbug_list[] = {
+ 		},
+ 		.driver_data = &quirk_no_sps_bug,
+ 	},
++	{
++		.ident = "ROG Ally X",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++			DMI_MATCH(DMI_PRODUCT_NAME, "RC72LA"),
++		},
++		.driver_data = &quirk_no_sps_bug,
++	},
+ 	{}
+ };
+ 
+@@ -48,4 +56,3 @@ void amd_pmf_quirks_init(struct amd_pmf_dev *dev)
+ 			dmi_id->ident);
+ 	}
+ }
+-
+-- 
+GitLab
+

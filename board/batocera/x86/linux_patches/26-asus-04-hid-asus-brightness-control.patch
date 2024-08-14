@@ -1,0 +1,110 @@
+From cc8e85eb8454a45633565d4a867919a9e17216e8 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Mon, 13 May 2024 19:20:04 +1200
+Subject: [PATCH] hid-asus: use hid for brightness control on keyboard
+
+On almost all ASUS ROG series laptops the MCU used for the USB keyboard
+also has a HID packet used for setting the brightness. This is usually
+the same as the WMI method. But in some laptops the WMI method either
+is missing or doesn't work, so we should default to the HID control.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-asus.c                     |  7 +++++
+ drivers/platform/x86/asus-wmi.c            |  3 +-
+ include/linux/platform_data/x86/asus-wmi.h | 36 ++++++++++++++++++++++
+ 3 files changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index 08ed87d74912c..9010f12a221ea 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -492,12 +492,19 @@ static void asus_kbd_backlight_work(struct work_struct *work)
+  */
+ static bool asus_kbd_wmi_led_control_present(struct hid_device *hdev)
+ {
++	struct asus_drvdata *drvdata = hid_get_drvdata(hdev);
+ 	u32 value;
+ 	int ret;
+ 
+ 	if (!IS_ENABLED(CONFIG_ASUS_WMI))
+ 		return false;
+ 
++	if (drvdata->quirks & QUIRK_ROG_NKEY_KEYBOARD &&
++			dmi_check_system(asus_use_hid_led_dmi_ids)) {
++		hid_info(hdev, "using HID for asus::kbd_backlight\n");
++		return false;
++	}
++
+ 	ret = asus_wmi_evaluate_method(ASUS_WMI_METHODID_DSTS,
+ 				       ASUS_WMI_DEVID_KBD_BACKLIGHT, 0, &value);
+ 	hid_dbg(hdev, "WMI backlight check: rc %d value %x", ret, value);
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 3f9b6285c9a66..799d928c7d3d0 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -1681,7 +1681,8 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
+ 			goto error;
+ 	}
+ 
+-	if (!kbd_led_read(asus, &led_val, NULL)) {
++	if (!kbd_led_read(asus, &led_val, NULL) && !dmi_check_system(asus_use_hid_led_dmi_ids)) {
++		pr_info("using asus-wmi for asus::kbd_backlight\n");
+ 		asus->kbd_led_wk = led_val;
+ 		asus->kbd_led.name = "asus::kbd_backlight";
+ 		asus->kbd_led.flags = LED_BRIGHT_HW_CHANGED;
+diff --git a/include/linux/platform_data/x86/asus-wmi.h b/include/linux/platform_data/x86/asus-wmi.h
+index 3eb5cd6773ad4..74b32e1d67350 100644
+--- a/include/linux/platform_data/x86/asus-wmi.h
++++ b/include/linux/platform_data/x86/asus-wmi.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/errno.h>
+ #include <linux/types.h>
++#include <linux/dmi.h>
+ 
+ /* WMI Methods */
+ #define ASUS_WMI_METHODID_SPEC	        0x43455053 /* BIOS SPECification */
+@@ -160,4 +161,39 @@ static inline int asus_wmi_evaluate_method(u32 method_id, u32 arg0, u32 arg1,
+ }
+ #endif
+ 
++/* To be used by both hid-asus and asus-wmi to determine which controls kbd_brightness */
++static const struct dmi_system_id asus_use_hid_led_dmi_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_FAMILY, "ROG Zephyrus"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_FAMILY, "ROG Strix"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_FAMILY, "ROG Flow"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GA403U"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GU605M"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "RC71L"),
++		},
++	},
++	{ },
++};
++
+ #endif	/* __PLATFORM_DATA_X86_ASUS_WMI_H */
+-- 
+GitLab
+
