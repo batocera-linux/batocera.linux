@@ -70,7 +70,7 @@
 ### System
 - Nvidia Driver to 555.58.02
 - Nvidia Legacy Driver to 470.256.02
-- x86_64 Kernel to 6.10.3
+- x86_64 Kernel to 6.10.4
 - Ayaneo Platform driver to Jul 17, 2024 build
 - Ayn Platform driver to Jul 17, 2024 build
 - MangoHud to Jun 15, 2024 build
