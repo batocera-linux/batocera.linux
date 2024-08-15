@@ -88,6 +88,7 @@
 - Intel Media Driver to 24.2.5
 - Sound Open Firmware to 2024.06
 - LibVA to 2.22.0
+- WF-Recorder to 14th of August build
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
