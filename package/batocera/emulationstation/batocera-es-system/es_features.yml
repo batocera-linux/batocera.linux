@@ -8698,6 +8698,18 @@ pcsx2:
       shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       features: [cheevos]
       cfeatures:
+        pcsx2_shaderset:
+            submenu: RENDERING
+            prompt: SHADER SET
+            description:
+            choices:
+               "scanlines":         1
+               "diagonal filter":   2
+               "triangular filter": 3
+               "wave filter":       4
+               "lottes crt":        5
+               "4xrgss":            6
+               "nxagss":            7
         pcsx2_osd_messages:
             submenu: DISPLAY
             prompt: OSD MESSAGES
@@ -8850,7 +8862,8 @@ pcsx2:
             choices:
                 "Off":                 0
                 "Unscaled (Default)":  1
-                "Basic (Recommended)": 2
+                "Scaled":              2
+                "Force 32bit":         3
         pcsx2_blending:
             submenu: RENDERING
             prompt: BLENDING ACCURACY
