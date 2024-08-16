@@ -2,6 +2,7 @@
 
 import batoceraFiles
 import os
+import pyudev
 import xml.etree.cElementTree as ET
 from os import path
 
@@ -20,11 +21,26 @@ def generateControllerConfig(system, playersControllers):
     WIIMOTE = "Wiimote"
 
     API_SDL = "SDLController"
+    API_WIIMOTE = "Wiimote"
+
+    # from https://github.com/cemu-project/Cemu/blob/main/src/input/emulated/WPADController.h
+    WIIMOTE_TYPE_CORE               = '0'
+    WIIMOTE_TYPE_NUNCHUK            = '1'
+    WIIMOTE_TYPE_CLASSIC            = '2'
+    WIIMOTE_TYPE_MOTIONPLUS         = '5'
+    WIIMOTE_TYPE_MOTIONPLUS_NUNCHUK = '6'
+    WIIMOTE_TYPE_MOTIONPLUS_CLASSIC = '7'
+
+    # from https://github.com/xwiimote/xwiimote/blob/master/lib/xwiimote.h
+    WIIMOTE_NAME            = 'Nintendo Wii Remote'
+    WIIMOTE_NAME_MOTIONPLUS = WIIMOTE_NAME + ' Motion Plus'
+    WIIMOTE_NAME_NUNCHUK    = WIIMOTE_NAME + ' Nunchuk'
+    WIIMOTE_NAME_CLASSIC    = WIIMOTE_NAME + ' Classic Controller'
 
     DEFAULT_DEADZONE       = '0.25'
     DEFAULT_RANGE          = '1'
 
-    buttonMappings = {
+    buttonMappingsSDL = {
         GAMEPAD: { # excludes show screen
             "1":  "1",
             "2":  "0",
@@ -104,7 +120,7 @@ def generateControllerConfig(system, playersControllers):
             "22": "46",
             "23": "40"
         },
-        WIIMOTE: { # with MotionPlus & Nunchuck, excludes Home button
+        WIIMOTE: { # with MotionPlus & Nunchuk, excludes Home button
             "1":  "0",
             "2":  "43",
             "3":  "2",
@@ -121,6 +137,28 @@ def generateControllerConfig(system, playersControllers):
             "14": "39",
             "15": "44",
             "16": "38"
+        }
+    }
+
+    buttonMappingsWiimote = {
+        WIIMOTE: {
+            "1":  "11",
+            "2":  "10",
+            "3":  "9",
+            "4":  "8",
+            "5":  "17",
+            "6":  "16",
+            "7":  "4",
+            "8":  "12",
+            "9":  "3",
+            "10": "2",
+            "11": "0",
+            "12": "1",
+            "13": "39",
+            "14": "45",
+            "15": "44",
+            "16": "38",
+            "17": "15"
         }
     }
 
@@ -142,6 +180,28 @@ def generateControllerConfig(system, playersControllers):
     def getConfigFileName(controller):
         return path.join(profilesDir, "controller{}.xml".format(controller))
 
+    def isWiimote(pad):
+        return WIIMOTE_NAME == pad.realName
+
+    def findWiimoteType(pad):
+        context = pyudev.Context()
+        device = pyudev.Devices.from_device_file(context, pad.dev)
+        names = []
+        for input_device in context.list_devices(parent=device.find_parent('hid')).match_subsystem('input'):
+            if 'NAME' in input_device.properties:
+                names += [input_device.properties['NAME'].strip('"')]
+        if WIIMOTE_NAME_MOTIONPLUS in names:
+            if WIIMOTE_NAME_NUNCHUK in names:
+                return WIIMOTE_TYPE_MOTIONPLUS_NUNCHUK
+            if WIIMOTE_NAME_CLASSIC in names:
+                return WIIMOTE_TYPE_MOTIONPLUS_CLASSIC
+            return WIIMOTE_TYPE_MOTIONPLUS
+        else:
+            if WIIMOTE_NAME_NUNCHUK in names:
+                return WIIMOTE_TYPE_NUNCHUK
+            if WIIMOTE_NAME_CLASSIC in names:
+                return WIIMOTE_TYPE_CLASSIC
+            return WIIMOTE_TYPE_CORE
 
     # Make controller directory if it doesn't exist
     if not path.isdir(profilesDir):
@@ -195,9 +255,16 @@ def generateControllerConfig(system, playersControllers):
                 type = PRO
         addTextElement(root, "type", type)
 
+        if isWiimote(pad):
+            api = API_WIIMOTE
+            deviceType = findWiimoteType(pad)
+            addTextElement(root, 'device_type', deviceType)
+        else:
+            api = API_SDL
+
         # Create controller configuration
         controllerNode = ET.SubElement(root, 'controller')
-        addTextElement(controllerNode, 'api', API_SDL)
+        addTextElement(controllerNode, 'api', api)
         addTextElement(controllerNode, 'uuid', "{}_{}".format(guid_n[pad.index], pad.guid)) # controller guid
         addTextElement(controllerNode, 'display_name', pad.realName) # controller name
         addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
@@ -207,7 +274,8 @@ def generateControllerConfig(system, playersControllers):
 
         # Apply the appropriate button mappings
         mappingsNode = ET.SubElement(controllerNode, "mappings")
-        for key, value in buttonMappings[type].items():
+        mapping = (buttonMappingsSDL,buttonMappingsWiimote)[isWiimote(pad)][type]
+        for key, value in mapping.items():
             entryNode = ET.SubElement(mappingsNode, "entry")
             addTextElement(entryNode, "mapping", key)
             addTextElement(entryNode, "button", value)
