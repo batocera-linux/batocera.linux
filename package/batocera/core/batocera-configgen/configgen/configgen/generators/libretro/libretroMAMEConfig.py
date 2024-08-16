@@ -201,7 +201,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
                     commandLine += [ os.path.basename(romDirname) ]
                 else:
                     commandLine += [ romDrivername ]
-                commandLine += [ "-rompath", softDir + ";/userdata/bios/" ]
+                commandLine += [ "-rompath", f'"{softDir};/userdata/bios/"' ]
                 commandLine += [ "-swpath", softDir ]
                 commandLine += [ "-verbose" ]
             else:
@@ -260,7 +260,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
                             commandLine += [ "-" + messRomType[messMode] ]
                 # Use the full filename for MESS non-softlist ROMs
                 commandLine += [ f'"{rom}"' ]
-                commandLine += [ "-rompath", romDirname + ";/userdata/bios/" ]
+                commandLine += [ "-rompath", f'"{romDirname};/userdata/bios/"' ]
 
                 # Boot disk for Macintosh
                 # Will use Floppy 1 or Hard Drive, depending on the disk.
