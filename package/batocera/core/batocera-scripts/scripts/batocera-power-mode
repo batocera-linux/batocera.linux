@@ -87,7 +87,7 @@ handle_powermode() {
                     set_epp "balance_performance"
                 fi
             else
-                set_governor "performance"
+                set_governor "powersave"
                 if epp_available; then
                     set_epp "balance_performance"
                 fi
