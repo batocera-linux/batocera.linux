@@ -71,7 +71,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
         else:
             commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', cfgPath ]
-        commandLine += [ '-rompath', romDirname + ';/userdata/bios/mame/;/userdata/bios/' ]
+        commandLine += [ '-rompath', f'"{romDirname};/userdata/bios/mame/;/userdata/bios/"' ]
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             pluginsToLoad += [ "hiscore" ]
@@ -129,7 +129,7 @@ def generateMAMEConfigs(playersControllers, system, rom, guns):
                 os.makedirs(cfgPath)
             commandLine += [ romDrivername ]
             commandLine += [ '-cfg_directory', cfgPath ]
-            commandLine += [ '-rompath', romDirname + ";/userdata/bios/" ]
+            commandLine += [ '-rompath', f'"{romDirname};/userdata/bios/"' ]
         else:
             # Command line for MESS consoles/computers
             # TI-99 32k RAM expansion & speech modules
