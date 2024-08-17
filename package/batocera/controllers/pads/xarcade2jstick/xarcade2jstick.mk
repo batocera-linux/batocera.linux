@@ -18,7 +18,7 @@ define XARCADE2JSTICK_INSTALL_TARGET_CMDS
 
     # config
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/xarcade2jstick
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/xarcade2jstick/config/* \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/pads/xarcade2jstick/config/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/xarcade2jstick
 endef
 

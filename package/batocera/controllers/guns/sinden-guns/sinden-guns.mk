@@ -18,12 +18,12 @@ define SINDEN_GUNS_EXTRACT_CMDS
 endef
 
 define SINDEN_GUNS_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/99-sinden.rules $(TARGET_DIR)/etc/udev/rules.d/99-sinden.rules
-	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/uvcvideo.conf $(TARGET_DIR)/etc/modprobe.d/uvcvideo.conf
-	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/virtual-sindenlightgun-add $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-add
-	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/virtual-sindenlightgun-remap $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-remap
+	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/99-sinden.rules $(TARGET_DIR)/etc/udev/rules.d/99-sinden.rules
+	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/uvcvideo.conf $(TARGET_DIR)/etc/modprobe.d/uvcvideo.conf
+	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/virtual-sindenlightgun-add $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-add
+	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/virtual-sindenlightgun-remap $(TARGET_DIR)/usr/bin/virtual-sindenlightgun-remap
 
-	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/sinden-guns/LightgunMono.exe.config.template $(TARGET_DIR)/usr/share/sinden/LightgunMono.exe.config
+	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/LightgunMono.exe.config.template $(TARGET_DIR)/usr/share/sinden/LightgunMono.exe.config
 
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/LightgunMono.exe      $(TARGET_DIR)/usr/share/sinden/LightgunMono.exe
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.Math.dll       $(TARGET_DIR)/usr/share/sinden/AForge.Math.dll

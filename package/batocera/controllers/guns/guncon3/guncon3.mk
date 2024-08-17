@@ -8,7 +8,7 @@ GUNCON3_SITE = $(call github,pcnimdock,guncon3_dkms,$(GUNCON3_VERSION))
 
 GUNCON3_MODULE_SUBDIRS = src
 
-GUNCON3_SOURCE_PATH = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guncon3
+GUNCON3_SOURCE_PATH = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/guncon3
 
 define GUNCON3_INSTALL_TARGET_CMDS
     $(INSTALL) -m 0644 -D $(GUNCON3_SOURCE_PATH)/99-guncon3.rules \

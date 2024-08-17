@@ -19,7 +19,7 @@ define UINPUT_JOYSTICK_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin $(TARGET_DIR)/etc/init.d
 	$(INSTALL) $(@D)/uinput_joystick $(TARGET_DIR)/usr/bin/uinput_joystick
 	$(INSTALL) $(@D)/fftest          $(TARGET_DIR)/usr/bin/fftest
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/uinput-joystick/S60uinput-joystick $(TARGET_DIR)/etc/init.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/pads/uinput-joystick/S60uinput-joystick $(TARGET_DIR)/etc/init.d
 endef
 
 $(eval $(generic-package))
