@@ -11,6 +11,7 @@
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
 - Steering wheel support for Microsoft SideWinder Precision Racing Wheel
+- Initial light gun support for Namco 2x6 (single light gun only)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
