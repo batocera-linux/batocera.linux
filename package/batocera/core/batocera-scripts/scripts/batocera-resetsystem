@@ -1,0 +1,36 @@
+#!/bin/bash
+
+SYSTEM="/userdata/system"
+OLD_SYSTEM="${SYSTEM}.old"
+
+kill_es() {
+	killall emulationstation 2>/dev/null
+	killall touchegg 2>/dev/null
+	if [ $? -eq 0 ]; then
+		sleep 20 &
+		watchdog=$!
+		while ! [ -z $(pidof emulationstation) ]; do
+			sleep 0.25
+			$(kill -0 $watchdog) || exit
+		done
+		kill -9 $watchdog
+	fi
+}
+
+kill_es
+
+if [ -d "$SYSTEM" ]; then
+    if [ -d "$OLD_SYSTEM" ]; then
+        rm -rf "$OLD_SYSTEM"
+        echo "Existing directory '$OLD_SYSTEM' found and has been deleted."
+    fi
+    
+    mv "$SYSTEM" "$OLD_SYSTEM"
+    echo "Directory '$SYSTEM' has been renamed to '$OLD_SYSTEM'."
+else
+    echo "Directory '$SYSTEM' does not exist."
+fi
+
+sync
+
+reboot
