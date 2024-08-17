@@ -10,7 +10,8 @@
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
-- Steering wheel support for Microsoft SideWinder Precision Racing Wheel
+  - Steering wheel support for Microsoft SideWinder Precision Racing Wheel
+  - Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
