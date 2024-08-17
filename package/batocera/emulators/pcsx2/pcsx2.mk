@@ -13,7 +13,7 @@ PCSX2_LICENSE_FILE = COPYING.GPLv3
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
-PCSX2_DEPENDENCIES += xorgproto alsa-lib freetype zlib libpng shaderc
+PCSX2_DEPENDENCIES += xorgproto alsa-lib freetype zlib libpng host-stenzek-shaderc
 PCSX2_DEPENDENCIES += libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp
 PCSX2_DEPENDENCIES += libsamplerate fmt wxwidgets libgtk3 qt6base qt6tools qt6svg
 
@@ -23,6 +23,8 @@ PCSX2_CONF_OPTS += -DENABLE_TESTS=OFF
 PCSX2_CONF_OPTS += -DUSE_SYSTEM_LIBS=AUTO
 # The following flag is misleading and *needed* ON to avoid doing -march=native
 PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
+PCSX2_CONF_OPTS += -DSHADERC_INCLUDE_DIR=$(HOST_DIR)/stenzek-shaderc/include
+PCSX2_CONF_OPTS += -DSHADERC_LIBRARY=$(HOST_DIR)/stenzek-shaderc/lib/libshaderc_shared.so
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
     PCSX2_CONF_OPTS += -DX11_API=ON
