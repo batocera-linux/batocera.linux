@@ -1,0 +1,8 @@
+config BR2_PACKAGE_STENZEK_SHADERC
+    bool "stenzek-shaderc"
+    select BR2_PACKAGE_GLSLANG
+    help
+      A collection of tools, libraries, and tests for Vulkan shader compilation.
+      Modified by Stenzek for Duckstation & PCSX2.
+      
+      https://github.com/google/shaderc
