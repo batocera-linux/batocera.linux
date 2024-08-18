@@ -1,0 +1,32 @@
+diff --git a/meson.build b/meson.build
+index 51329fd..85ea870 100644
+--- a/meson.build
++++ b/meson.build
+@@ -106,9 +106,9 @@ if dep_wayland_client.found()
+   vulkan_wsi_deps += dep_xkb
+ endif
+ 
+-if is_unixy and not dep_x11.found() and not dep_wayland_client.found()
+-  error('At least one of "with_x11" and "with_wayland" should be enabled')
+-endif
++#if is_unixy and not dep_x11.found() and not dep_wayland_client.found()
++#  error('At least one of "with_x11" and "with_wayland" should be enabled')
++#endif
+ 
+ inc_common = [
+     include_directories('include'),
+diff --git a/src/keybinds.h b/src/keybinds.h
+index 62d33ac..d810a15 100644
+--- a/src/keybinds.h
++++ b/src/keybinds.h
+@@ -69,6 +69,10 @@ static inline bool keys_are_pressed(const std::vector<KeySym>& keys) {
+ 
+     return false;
+ }
++#else
++static inline bool keys_are_pressed(const std::vector<KeySym>& keys) {
++  return false;
++}
+ #endif
+ 
+ #endif //MANGOHUD_KEYBINDS_H
