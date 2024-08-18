@@ -9821,8 +9821,9 @@ mame:
             prompt: CROSSHAIR
             description:
             choices:
-                "Disabled (Default)": "0"
-                "Enabled":            "1"
+                "Disabled (Default)": "disabled"
+                "Enabled":            "enabled"
+                "When moving":        "onmove"
   systems:
        adam:
             cfeatures:
