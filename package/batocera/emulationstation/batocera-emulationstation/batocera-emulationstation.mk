@@ -135,6 +135,9 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/controllers/es_input.cfg \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 
+	# savestates config
+	$(INSTALL) -m 0644 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/es_savestates.cfg $(TARGET_DIR)/usr/share/emulationstation
+
 	# hooks
 	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/batocera-preupdate-gamelists-hook \
 	    $(TARGET_DIR)/usr/bin/
