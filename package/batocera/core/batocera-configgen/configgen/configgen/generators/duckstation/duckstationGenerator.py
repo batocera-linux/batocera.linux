@@ -114,35 +114,22 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
         # Find & populate BIOS
-        USbios = [ "scph101.bin", "scph1001.bin", "scph5501.bin", "scph7001.bin", "scph7501.bin" ]
-        EUbios = [ "scph1002.bin", "scph5502.bin", "scph5552.bin", "scph7002.bin", "scph7502.bin", "scph9002.bin", "scph102a.bin", "scph102b.bin" ]
-        JPbios = [ "scph100.bin", "scph1000.bin", "scph3000.bin", "scph3500.bin", "scph5500.bin", "scph7000.bin", "scph7003.bin" ]
-        biosFound = False
-        USbiosFile = EUbiosFile = JPbiosFile = None
-        for bio in USbios:
-            if os.path.exists("/userdata/bios/" + bio):
-                USbiosFile = bio
-                biosFound = True
-                break
-        for bio in EUbios:
-            if os.path.exists("/userdata/bios/" + bio):
-                EUbiosFile = bio
-                biosFound = True
-                break
-        for bio in JPbios:
-            if os.path.exists("/userdata/bios/" + bio):
-                JPbiosFile = bio
-                biosFound = True
-                break
-        if not biosFound:
-            raise Exception("No PSX1 BIOS found")
-        if USbiosFile is not None:
-            settings.set("BIOS", "PathNTSCU", USbiosFile)
-        if EUbiosFile is not None:
-            settings.set("BIOS", "PathPAL", EUbiosFile)
-        if JPbiosFile is not None:
-            settings.set("BIOS", "PathNTSCJ", JPbiosFile)
+        found_bios = find_bios(bios_lists)
 
+        if not found_bios:
+            raise Exception("No PSX1 BIOS found")
+        
+        # Set BIOS paths
+        if "Uni" in found_bios:
+            uni_bios = found_bios["Uni"]
+            settings.set("BIOS", "PathNTSCU", uni_bios)
+            settings.set("BIOS", "PathPAL", uni_bios)
+            settings.set("BIOS", "PathNTSCJ", uni_bios)
+        else:
+            region_mapping = {"NTSCU": "PathNTSCU", "PAL": "PathPAL", "NTSCJ": "PathNTSCJ"}
+            for region, bios in found_bios.items():
+                settings.set("BIOS", region_mapping[region], bios)
+        
         ## [CPU]
         if not settings.has_section("CPU"):
             settings.add_section("CPU")
@@ -576,3 +563,29 @@ def rewriteM3uFullPath(m3u):                                                    
             f1.write(newpath)
 
     return initialfirstdisc                                                                      # Return the tempm3u pathfile written with valid fullpath
+
+def find_bios(bios_lists):
+    bios_dir = "/userdata/bios/"
+    found_bios = {}
+    
+    try:
+        actual_files = os.listdir(bios_dir)
+        files_lower = {f.lower(): f for f in actual_files}
+    except OSError:
+        raise Exception(f"Unable to read BIOS directory: {bios_dir}")
+
+    for region, bios_list in bios_lists.items():
+        for bios in bios_list:
+            if bios.lower() in files_lower:
+                found_bios[region] = files_lower[bios.lower()]
+                break
+    
+    return found_bios
+
+# Define BIOS lists
+bios_lists = {
+    "NTSCU": ["scph101.bin", "scph1001.bin", "scph5501.bin", "scph7001.bin", "scph7501.bin"],
+    "PAL": ["scph1002.bin", "scph5502.bin", "scph5552.bin", "scph7002.bin", "scph7502.bin", "scph9002.bin", "scph102a.bin", "scph102b.bin"],
+    "NTSCJ": ["scph100.bin", "scph1000.bin", "scph3000.bin", "scph3500.bin", "scph5500.bin", "scph7000.bin", "scph7003.bin"],
+    "Uni": ["psxonpsp660.bin", "ps1_rom.bin"]
+}
