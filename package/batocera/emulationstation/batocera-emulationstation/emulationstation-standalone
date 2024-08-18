@@ -153,6 +153,17 @@ do
     fi
     ###################
 
+    ### reflection ###
+    if batocera-resolution supportSystemReflection
+    then
+	display_reflection="$(/usr/bin/batocera-settings-get-master display.reflection)"
+	if test -n "${display_reflection}"
+	then
+            batocera-resolution setReflection "${display_reflection}"
+	fi
+    fi
+    ###################
+    
     ### resolution ###
     ## the resolution for the first screen is on the boot file so that it is easier to change it
     ## it is not needed for other screens

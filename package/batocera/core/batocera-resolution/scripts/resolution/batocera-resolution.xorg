@@ -306,6 +306,10 @@ case "${ACTION}" in
 	    exit 0
     ;;
 
+    "supportSystemReflection")
+	    exit 0
+    ;;
+
     "setRotation")
         TRIES=5
         COUNT=0
@@ -350,6 +354,12 @@ case "${ACTION}" in
 	    xrandr --currentRotation "${PSCREEN}"
     ;;
 
+    "setReflection")
+            OUTPUT=${PSCREEN}
+            REFLECTION=$1
+            xrandr --output "${OUTPUT}" --reflect "${REFLECTION}"
+    ;;
+    
     "getDisplayMode")
         echo "xorg"
     ;;
