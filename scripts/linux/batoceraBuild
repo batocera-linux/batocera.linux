@@ -108,6 +108,7 @@ buildAll() {
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
 	# cleaning system and splash package for timestamp regeneration
+	echo_msg "${NEXTITEM}" "removing build/batocera-system-* and build/batocera-splash-*"
 	if ! rm -rf "output/${arch}/build/batocera-system-"* "output/${arch}/build/batocera-splash-"* 2>/dev/null
 	then
 	    return 1
@@ -126,6 +127,8 @@ buildAll() {
 		    echo_msg "${NEXTITEM}" "unable to push"
 		fi
 	    fi
+	else
+	    echo_msg "${NEXTITEM}" "failed!"
 	fi
     done
 }
