@@ -140,6 +140,9 @@ case "${ACTION}" in
     "supportSystemRotation")
 	    exit 0
     ;;
+    "supportSystemReflection")
+	    exit 1
+    ;;
     "setRotation")
         ROTATE=$1
         OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')

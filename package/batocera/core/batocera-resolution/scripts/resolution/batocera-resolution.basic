@@ -28,6 +28,9 @@ case "${ACTION}" in
     "supportSystemRotation")
 	exit 1
     ;;
+    "supportSystemReflection")
+	exit 1
+    ;;
     "listModes")
     ;;
     "setMode")

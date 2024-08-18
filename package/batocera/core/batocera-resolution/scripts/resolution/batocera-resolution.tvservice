@@ -31,6 +31,9 @@ case "${ACTION}" in
     "supportSystemRotation")
 	exit 1
 	;;
+    "supportSystemReflection")
+	exit 1
+        ;;
     "listModes")
 	tvservice --list-modes | sed -e s+'^[^ ]*:\(.*\)$'+'\1'+
 	;;

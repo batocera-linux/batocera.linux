@@ -184,6 +184,9 @@ case "${ACTION}" in
     "supportSystemRotation")
 	exit 1
 	;;
+    "supportSystemReflection")
+	exit 1
+        ;;
     "setRotation")
 	# no possible rotation
 	exit 1
