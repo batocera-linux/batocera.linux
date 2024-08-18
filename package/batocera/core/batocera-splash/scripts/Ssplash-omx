@@ -73,13 +73,13 @@ do_videostart ()
 case "$1" in
     start)
         printf 'Starting %s: ' "$DAEMON"
-        if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf"
+        if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
-            echo "SKIPPED"
-            exit 0
+            do_start
+            echo "OK"
+	else
+	    echo "SKIPPED"
         fi
-        do_start
-        echo "OK"
         ;;
     stop)
         start-stop-daemon -K -q -p /var/run/user-splash.pid
