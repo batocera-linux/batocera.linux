@@ -1,0 +1,24 @@
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index a9fd388..9e34881 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -1754,18 +1754,7 @@ bool SaveStateBase::vmFreeze()
+ 
+ std::string VMManager::GetSaveStateFileName(const char* game_serial, u32 game_crc, s32 slot)
+ {
+-	std::string filename;
+-	if (std::strlen(game_serial) > 0)
+-	{
+-		if (slot < 0)
+-			filename = fmt::format("{} ({:08X}).resume.p2s", game_serial, game_crc);
+-		else
+-			filename = fmt::format("{} ({:08X}).{:02d}.p2s", game_serial, game_crc, slot);
+-
+-		filename = Path::Combine(EmuFolders::Savestates, filename);
+-	}
+-
+-	return filename;
++  return Path::Combine(EmuFolders::Savestates, std::string(Path::GetFileName(GetDiscPath())) + StringUtil::StdStringFromFormat(".%02d.p2s", slot));
+ }
+ 
+ std::string VMManager::GetSaveStateFileName(const char* filename, s32 slot)
