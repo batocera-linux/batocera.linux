@@ -67,7 +67,7 @@
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to Jul 28, 2024 build
 - Sonic Mania to Jul 21, 2024 build
-- The Force Engine to Jul 27, 2024 build
+- The Force Engine to Aug 19, 2024 build
 - Vita3k to Jul 27 build
 - Xemu to v0.7.131
 - Xenia Canary to August 18, 2024 build
