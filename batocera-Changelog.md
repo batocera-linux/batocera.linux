@@ -10,13 +10,16 @@
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
-  - Steering wheel support for Microsoft SideWinder Precision Racing Wheel
-  - Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
+- Steering wheel support for Microsoft SideWinder Precision Racing Wheel
+- Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
+- display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
+- emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
 - Fixed right controller LED for the Ayaneo Air Plus, it's now functional
 ### Changed / Improved
+- splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
 - Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
