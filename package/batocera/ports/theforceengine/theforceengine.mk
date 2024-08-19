@@ -3,8 +3,8 @@
 # theforceengine
 #
 ################################################################################
-# Version: Commits on Jul 27, 2024
-THEFORCEENGINE_VERSION = 6201060bd8e738d468514ba66c5255f2ca739f12
+# Version: Commits on Aug 19, 2024
+THEFORCEENGINE_VERSION = 75f99fb59ecb077183df60488226281fe4526ca4
 THEFORCEENGINE_SITE = https://github.com/luciusDXL/TheForceEngine.git
 THEFORCEENGINE_SITE_METHOD=git
 THEFORCEENGINE_GIT_SUBMODULES=YES
@@ -45,7 +45,7 @@ define THEFORCEENGINE_INSTALL_TARGET_CMDS
     rsync -arv $(@D)/TheForceEngine/Shaders $(THEFORCEENGINE_CONF_INIT)
     rsync -arv $(@D)/TheForceEngine/SoundFonts $(THEFORCEENGINE_CONF_INIT)
     rsync -arv $(@D)/TheForceEngine/Fonts $(THEFORCEENGINE_CONF_INIT)
-    rsync -arv $(@D)/TheForceEngine/Mods $(THEFORCEENGINE_CONF_INIT)
+    rsync -arv --exclude 'CMakeLists.txt' $(@D)/TheForceEngine/Mods $(THEFORCEENGINE_CONF_INIT)
 endef
 
 define THEFORCEENGINE_PATCH_ZIP
