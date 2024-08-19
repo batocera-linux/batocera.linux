@@ -65,7 +65,7 @@
 - Ikemen to August 1st 2024 build
 - PCSX2 to v2.1.62
 - Redream to 1.5.0-1131-gafdfc1a
-- RPCS3 to Jul 28, 2024 build
+- RPCS3 to 0.0.32-16843
 - Sonic Mania to Jul 21, 2024 build
 - The Force Engine to Aug 19, 2024 build
 - Vita3k to Jul 27 build
