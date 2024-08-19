@@ -498,6 +498,9 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
 
+        ## [UI]
+        settings.set("UI", "UnofficialBuildWarningConfirmed", "true")
+
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
