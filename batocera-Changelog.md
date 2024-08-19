@@ -284,7 +284,7 @@
 - Wlroots to 0.17.1
 - Sway to 1.9
 - Mesa3D to 24.1.4
-- RPi kernel to 6.6.41
+- RPi kernel to 6.6.45
 - Pipewire to 1.0.4
 - X86_64 kernel to 6.9.10
 - Switchres 0.220
