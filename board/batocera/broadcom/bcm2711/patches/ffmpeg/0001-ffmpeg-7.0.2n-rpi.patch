@@ -11075,7 +11075,7 @@ index 0000000000..089cc37753
 +{
 +    V4L2MediaReqDescriptor *rd = (V4L2MediaReqDescriptor*)frame->data[0];
 +
-+    fprintf(stderr, "<<< %s\n", __func__);
++    //fprintf(stderr, "<<< %s\n", __func__);
 +
 +//    av_log(NULL, AV_LOG_INFO, "%s\n", __func__);
 +    frame->flags &= ~AV_FRAME_FLAG_CORRUPT;
@@ -11109,7 +11109,7 @@ index 0000000000..089cc37753
 +    V4L2MediaReqDescriptor *const rd = (V4L2MediaReqDescriptor *)h->ref->frame->data[0];
 +    static int z = 0;
 +
-+    fprintf(stderr, "<<< %s: %d\n", __func__, ++z);
++    //fprintf(stderr, "<<< %s: %d\n", __func__, ++z);
 +//    av_log(NULL, AV_LOG_INFO, "%s\n", __func__);
 +    decode_q_add(&ctx->decode_q, &rd->decode_ent);
 +
@@ -11326,7 +11326,7 @@ index 0000000000..089cc37753
 +    int rv;
 +    struct slice_info * si;
 +
-+    fprintf(stderr, "<<< %s\n", __func__);
++    //fprintf(stderr, "<<< %s\n", __func__);
 +    // This looks dodgy but we know that FFmpeg has parsed this from a buffer
 +    // that contains the entire frame including the start code
 +    if (ctx->start_code == V4L2_STATELESS_HEVC_START_CODE_ANNEX_B) {
@@ -11402,7 +11402,7 @@ index 0000000000..089cc37753
 +static void v4l2_request_hevc_abort_frame(AVCodecContext * const avctx, V4L2RequestContextHEVC *const ctx)
 +{
 +    const HEVCContext * const h = avctx->priv_data;
-+    fprintf(stderr, "<<< %s\n", __func__);
++    //fprintf(stderr, "<<< %s\n", __func__);
 +    if (h->ref != NULL) {
 +        V4L2MediaReqDescriptor *const rd = (V4L2MediaReqDescriptor *)h->ref->frame->data[0];
 +
@@ -11484,7 +11484,7 @@ index 0000000000..089cc37753
 +    int rv;
 +    static int z = 0;
 +
-+    fprintf(stderr, "<<< %s: %d\n", __func__, ++z);
++    //fprintf(stderr, "<<< %s: %d\n", __func__, ++z);
 +
 +    // It is possible, though maybe a bug, to get an end_frame without
 +    // a previous start_frame.  If we do then give up.
@@ -11761,7 +11761,7 @@ index 0000000000..089cc37753
 +    AVHWFramesContext *hwfc = (AVHWFramesContext*)hw_frames_ctx->data;
 +    const struct v4l2_format *vfmt = mediabufs_dst_fmt(ctx->mbufs);
 +
-+    fprintf(stderr, "<<< %s\n", __func__);
++    //fprintf(stderr, "<<< %s\n", __func__);
 +
 +    hwfc->format = AV_PIX_FMT_DRM_PRIME;
 +    hwfc->sw_format = pixel_format_from_format(vfmt);
@@ -11801,7 +11801,7 @@ index 0000000000..089cc37753
 +{
 +    int rv;
 +
-+    fprintf(stderr, "<<< %s\n", __func__);
++    //fprintf(stderr, "<<< %s\n", __func__);
 +
 +    frame->buf[0] = v4l2_req_frame_alloc(avctx, sizeof(V4L2MediaReqDescriptor));
 +    if (!frame->buf[0])
@@ -14637,7 +14637,7 @@ index 0000000000..fb04096df0
 +static void
 +v4l2_request_free_frame_priv(FFRefStructOpaque hwctx, void *data)
 +{
-+    fprintf(stderr, "%s\n", __func__);
++    //fprintf(stderr, "%s\n", __func__);
 +}
 +
 +const FFHWAccel ff_hevc_v4l2request_hwaccel = {
