@@ -1,0 +1,30 @@
+From e132ddbd8321f069f025f1fa42260bf5a854e385 Mon Sep 17 00:00:00 2001
+Date: Wed, 1 Mar 2023 17:10:10 -0500
+Subject: [PATCH 3/3] fix flags
+
+---
+ configure | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/configure b/configure
+index 83383b0..d71e6b9 100755
+--- a/configure
++++ b/configure
+@@ -6533,11 +6533,9 @@ enabled mbedtls           && { check_pkg_config mbedtls mbedtls mbedtls/x509_crt
+                                die "ERROR: mbedTLS not found"; }
+ enabled mediacodec        && { enabled jni || die "ERROR: mediacodec requires --enable-jni"; }
+ ( enabled rpi ||
+-  enabled mmal )          && { check_lib mmal interface/mmal/mmal.h mmal_port_connect -lmmal_core -lmmal_util -lmmal_vc_client -lbcm_host ||
+-                               { ! enabled cross_compile &&
+-                                 add_cflags -isystem/opt/vc/include/ -isystem/opt/vc/include/interface/vmcs_host/linux -isystem/opt/vc/include/interface/vcos/pthreads -fgnu89-inline &&
+-                                 add_ldflags -L/opt/vc/lib/ &&
+-                                 check_lib mmal interface/mmal/mmal.h mmal_port_connect -lmmal_core -lmmal_util -lmmal_vc_client -lbcm_host -lvcos -lvcsm -lvchostif -lvchiq_arm; } ||
++  enabled mmal )          && { { add_cflags -isystem/opt/vc/include/ -isystem/opt/vc/include/interface/vmcs_host/linux -isystem/opt/vc/include/interface/vcos/pthreads -fgnu89-inline &&
++                               add_ldflags -L/opt/vc/lib/ &&
++                               check_lib mmal interface/mmal/mmal.h mmal_port_connect -lmmal_core -lmmal_util -lmmal_vc_client -lbcm_host -lvcsm -lvchostif -lvchiq_arm -lvcos; } ||
+                                die "ERROR: mmal not found" &&
+                                check_func_headers interface/mmal/mmal.h "MMAL_PARAMETER_VIDEO_MAX_NUM_CALLBACKS"; }
+ enabled openal            && { { for al_extralibs in "${OPENAL_LIBS}" "-lopenal" "-lOpenAL32"; do
+-- 
+2.39.2
+
