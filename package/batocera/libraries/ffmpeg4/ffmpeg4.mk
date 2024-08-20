@@ -303,7 +303,7 @@ FFMPEG4_CONF_OPTS += --disable-mmal --disable-omx --disable-omx-rpi
 endif
 
 # Required for hw decoding on raspberry pi boards
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+ifeq ($(BR2_PACKAGE_RPI_HEVC),y)
 FFMPEG4_CONF_OPTS += --disable-mmal
 FFMPEG4_CONF_OPTS += --enable-neon
 FFMPEG4_CONF_OPTS += --enable-v4l2-request
