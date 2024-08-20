@@ -11,4 +11,5 @@ fi
 export XDG_CONFIG_HOME=/userdata/system/configs
 export QT_QPA_PLATFORM=xcb
 
+LD_LIBRARY_PATH=/usr/stenzek-shaderc/lib:/usr/lib \
 /usr/pcsx2/bin/pcsx2-qt
