@@ -499,6 +499,8 @@ class DuckstationGenerator(Generator):
             settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
 
         ## [UI]
+        if not settings.has_section("UI"):
+            settings.add_section("UI")
         settings.set("UI", "UnofficialBuildWarningConfirmed", "true")
 
         # Save config
@@ -516,10 +518,12 @@ class DuckstationGenerator(Generator):
             qt_qpa_platform = "wayland"
         else:
             qt_qpa_platform = "xcb"
-
+        
+        # use their modified shaderc library
         return Command.Command(
             array=commandArray,
             env={
+                "LD_LIBRARY_PATH": "/usr/stenzek-shaderc/lib:/usr/lib",
                 "XDG_CONFIG_HOME": batoceraFiles.CONF,
                 "QT_QPA_PLATFORM": qt_qpa_platform,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
