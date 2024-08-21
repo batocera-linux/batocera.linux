@@ -14,6 +14,7 @@
 - Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
 - display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
 - emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
+- Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
