@@ -13,11 +13,11 @@ PROJECTM_INSTALL_STAGING = YES
 PROJECTM_DEPENDENCIES = freetype toolchain
 PROJECTM_CONF_OPTS = --disable-sdl --disable-qt --enable-preset-subdirs --with-pic 
 
-ifeq ($(BR2_PACKAGE_KODI20_RENDER_SYSTEM_GL),y)
+ifeq ($(BR2_PACKAGE_KODI21_RENDER_SYSTEM_GL),y)
 PROJECTM_DEPENDENCIES += libgl 
 endif
 
-ifeq ($(BR2_PACKAGE_KODI20_RENDER_SYSTEM_GLES),y)
+ifeq ($(BR2_PACKAGE_KODI21_RENDER_SYSTEM_GLES),y)
 PROJECTM_CONF_OPTS += --enable-gles
 PROJECTM_DEPENDENCIES += libegl 
 endif
