@@ -73,7 +73,7 @@
 - Xemu to v0.7.131
 - Xenia Canary to August 18, 2024 build
 ### System
-- Nvidia Driver to 555.58.02
+- Nvidia Driver to 560.35.03 (Open kernel modules)
 - Nvidia Legacy Driver to 470.256.02
 - x86_64 Kernel to 6.10.4
 - Ayaneo Platform driver to Jul 17, 2024 build
