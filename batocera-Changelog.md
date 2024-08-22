@@ -72,6 +72,7 @@
 - The Force Engine to Aug 19, 2024 build
 - Vita3k to Jul 27 build
 - Xemu to v0.7.131
+- Xenia to v1.0.2817
 - Xenia Canary to August 18, 2024 build
 ### System
 - Nvidia Driver to 560.35.03 (Open kernel modules)
