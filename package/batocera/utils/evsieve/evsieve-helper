@@ -4,9 +4,9 @@ import sys
 import pyudev
 import evdev
 import hashlib
-import re
 from os.path import basename
 from os.path import dirname
+import re
 
 def findParent(ctx, child, childtype, parenttype):
     for device in ctx.list_devices(subsystem=childtype):
@@ -37,7 +37,18 @@ def parent2hash(parent):
     return hashlib.md5(devicepathWithoutConf(parent.device_path).encode('utf-8')).hexdigest()
 
 def devicepathWithoutConf(path):
-    return dirname(path)
+    # 2 cases:
+    # usb : /devices/pci0000:00/0000:00:08.1/0000:04:00.4/usb3/3-3/3-3:1.2
+    # bt  : /devices/virtual/misc/uhid/0005:057E:0330.000C
+    # for usb, we must remove the last node, cause it includes the n-1 + the version, and it differs sometimes for the usb version
+    lastNode = basename(path)
+    previouslastNode = basename(dirname(path))
+
+    # if last node is like previous node + :number.number => usb
+    if lastNode[0:len(previouslastNode)+1] == previouslastNode+":" and re.search("^[0-9]+\.[0-9]+$", lastNode[len(previouslastNode)+1:]) is not None:
+        return dirname(path)
+    else:
+        return path
 
 def do_help():
     print("evsieve-helper parent   <object> <child type> <parent type>",  file=sys.stderr)
