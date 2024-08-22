@@ -25,6 +25,10 @@ class MupenGenerator(Generator):
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
         mupenControllers.setControllersConfig(iniConfig, playersControllers, system, wheels)
 
+        # state_slot option, AutoStateSlotIncrement could be set too depending on the es option
+        if system.isOptSet('state_slot'):
+            iniConfig.set("Core", "CurrentStateSlot", str(system.config["state_slot"]))
+
         # Save the ini file
         if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
             os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
@@ -34,7 +38,7 @@ class MupenGenerator(Generator):
         # Command
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']), "--configdir", batoceraFiles.mupenConf, "--datadir", batoceraFiles.mupenConf]
 
-        # state_slot option
+        # state_filename option
         if system.isOptSet('state_filename'):
             commandArray.extend(["--savestate", system.config['state_filename']])
 
