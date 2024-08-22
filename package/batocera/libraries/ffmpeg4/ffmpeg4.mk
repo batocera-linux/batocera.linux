@@ -58,7 +58,8 @@ FFMPEG4_CONF_OPTS = \
 	--disable-libilbc \
 	--disable-libvo-amrwbenc \
 	--disable-symver \
-	--disable-doc
+	--disable-doc \
+	--disable-programs # avoid overwriting ffmpeg 7
 
 # batocera - add pulse audio support for batocera-record
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
@@ -80,7 +81,7 @@ else
 FFMPEG4_CONF_OPTS += --disable-nonfree
 endif
 
-ifeq ($(BR2_PACKAGE_FFMPEG_FFMPEG),y)
+ifeq ($(BR2_PACKAGE_FFMPEG4_FFMPEG),y)
 FFMPEG4_CONF_OPTS += --enable-ffmpeg
 else
 FFMPEG4_CONF_OPTS += --disable-ffmpeg
@@ -107,7 +108,7 @@ else
 FFMPEG4_CONF_OPTS += --disable-avresample
 endif
 
-ifeq ($(BR2_PACKAGE_FFMPEG_FFPROBE),y)
+ifeq ($(BR2_PACKAGE_FFMPEG4_FFPROBE),y)
 FFMPEG4_CONF_OPTS += --enable-ffprobe
 else
 FFMPEG4_CONF_OPTS += --disable-ffprobe

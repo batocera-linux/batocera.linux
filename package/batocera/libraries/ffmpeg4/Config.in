@@ -39,9 +39,9 @@ config BR2_PACKAGE_FFMPEG_NONFREE
 	  allow use of nonfree code, the resulting libs and binaries
 	  will be unredistributable
 
-config BR2_PACKAGE_FFMPEG_FFMPEG
+config BR2_PACKAGE_FFMPEG4_FFMPEG
 	bool "Build ffmpeg (the command line application)"
-	default y
+	default n
 	help
 	  FFmpeg is a very fast video and audio converter.
 	  It can also grab from a live audio/video source.
@@ -62,7 +62,7 @@ config BR2_PACKAGE_FFMPEG_FFPLAY
 comment "ffplay needs a toolchain w/ dynamic library"
 	depends on BR2_STATIC_LIBS
 
-config BR2_PACKAGE_FFMPEG_FFPROBE
+config BR2_PACKAGE_FFMPEG4_FFPROBE
 	bool "Build ffprobe"
 	help
 	  FFprobe is a utility to determine the audio and video
