@@ -6,6 +6,7 @@
 - Add Dockerpi Powerboard support initially for the RPi3
 - Add initial support for the OrangePi-5-Pro
 - Khadis VIM4, Vulkan support has now been added
+- Added HyperX and Machenike Xbox360 compatible controllers
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
