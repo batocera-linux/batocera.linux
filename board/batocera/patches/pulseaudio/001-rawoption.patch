@@ -26,7 +26,7 @@ index 9af1fc5..9db1d6a 100644
 +
 +    int channel = 0; // first channel only
 +
-+    printf(_("sink=%u name=%s mute=%i volume=%i description=%s\n"),
++    printf(_("sink=\"%u\" name=\"%s\" mute=\"%i\" volume=\"%i\" description=\"%s\"\n"),
 +           i->index,
 +           i->name,
 +           i->mute,
