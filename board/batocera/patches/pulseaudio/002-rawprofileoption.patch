@@ -36,7 +36,7 @@ index 9db1d6a..2de5257 100644
 +	  if((*p)->n_sinks > 0) {
 +	    char *name = pa_proplist_gets(i->proplist, "alsa.card_name");
 +	    if(name == NULL) name = i->name;
-+	    printf(_("card=%u name=%s profile=%s available=%i active=%i description=%s %s\n"), i->index, i->name, (*p)->name, (*p)->available ? 1 : 0, isActive ? 1 : 0, name, (*p)->description);
++	    printf(_("card=\"%u\" name=\"%s\" profile=\"%s\" available=\"%i\" active=\"%i\" description=\"%s %s\"\n"), i->index, i->name, (*p)->name, (*p)->available ? 1 : 0, isActive ? 1 : 0, name, (*p)->description);
 +	  }
 +	}
 +    }
