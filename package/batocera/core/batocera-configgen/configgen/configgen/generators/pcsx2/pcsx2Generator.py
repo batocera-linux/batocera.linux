@@ -107,6 +107,9 @@ class Pcsx2Generator(Generator):
         if system.isOptSet('state_filename'):
             commandArray.extend(["-statefile", system.config['state_filename']])
 
+        if system.isOptSet('state_slot'):
+            commandArray.extend(["-stateindex", str(system.config['state_slot'])])
+
         return Command.Command(
             array=commandArray,
             env=envcmd
