@@ -1,0 +1,45 @@
+diff --git a/pcsx2-qt/QtHost.cpp b/pcsx2-qt/QtHost.cpp
+index 5587e92..43608c0 100644
+--- a/pcsx2-qt/QtHost.cpp
++++ b/pcsx2-qt/QtHost.cpp
+@@ -2123,6 +2123,11 @@ bool QtHost::ParseCommandLineOptions(const QStringList& args, std::shared_ptr<VM
+ 				AutoBoot(autoboot)->save_state = (++it)->toStdString();
+ 				continue;
+ 			}
++			else if (CHECK_ARG_PARAM(QStringLiteral("-stateindex")))
++			  {
++				AutoBoot(autoboot)->state_start_index = (++it)->toInt();
++				continue;
++			}
+ 			else if (CHECK_ARG_PARAM(QStringLiteral("-elf")))
+ 			{
+ 				AutoBoot(autoboot)->elf_override = (++it)->toStdString();
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index 12c5d93..3324fc5 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -1561,6 +1561,12 @@ bool VMManager::Initialize(VMBootParameters boot_params)
+ 
+ 	SetEmuThreadAffinities();
+ 
++	if (boot_params.state_start_index.has_value()) {
++	  for(int i=1; i<boot_params.state_start_index.value(); i++) {
++	    SaveStateSelectorUI::SelectNextSlot(false);
++	  }
++	}
++
+ 	// do we want to load state?
+ 	if (!GSDumpReplayer::IsReplayingDump() && !state_to_load.empty())
+ 	{
+diff --git a/pcsx2/VMManager.h b/pcsx2/VMManager.h
+index 5e73e51..f8455cc 100644
+--- a/pcsx2/VMManager.h
++++ b/pcsx2/VMManager.h
+@@ -32,6 +32,7 @@ struct VMBootParameters
+ 	std::string elf_override;
+ 	std::string save_state;
+ 	std::optional<s32> state_index;
++  	std::optional<s32> state_start_index;
+ 	std::optional<CDVD_SourceType> source_type;
+ 
+ 	std::optional<bool> fast_boot;
