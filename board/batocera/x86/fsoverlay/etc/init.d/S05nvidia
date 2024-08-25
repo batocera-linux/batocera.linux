@@ -8,25 +8,20 @@ echo "OS version: $(batocera-version)" >> $log
 echo  >> $log
 
 # detect the appropriate Nvidia driver
-if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
-then
-    echo "Manual setting to latest production driver" >> $log
-    batocera-nvidia production
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy[ ]*$" /boot/batocera-boot.conf
-then
-    echo "Manual setting to legacy 470 driver" >> $log
-    batocera-nvidia legacy
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf
-then
-    echo "Manual setting to legacy 390 driver" >> $log
+if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf; then
+    echo "Manually set to true, using automatic Nvidia driver detection" >> $log
+    batocera-nvidia auto
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*(legacy|legacy470)[ ]*$" /boot/batocera-boot.conf; then
+    echo "Manually set to legacy 470 driver" >> $log
+    batocera-nvidia legacy470
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy390[ ]*$" /boot/batocera-boot.conf; then
+    echo "Manually set to legacy 390 driver" >> $log
     batocera-nvidia legacy390
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf
-then
-    echo "Manual setting to legacy 340 driver, however it's broken, using nouveau" >> $log
-    batocera-nvidia nouveau
-elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
-then
-    echo "Manual setting to nouveau driver" >> $log
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*legacy340[ ]*$" /boot/batocera-boot.conf; then
+    echo "Manually set to legacy 340 driver" >> $log
+    batocera-nvidia legacy340
+elif grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf; then
+    echo "Manually set to nouveau driver" >> $log
     batocera-nvidia nouveau
 else
     echo "Using automatic Nvidia driver detection" >> $log
