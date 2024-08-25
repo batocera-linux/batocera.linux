@@ -2282,7 +2282,7 @@ thextech:
   manufacturer: Wohlstand
   release: 2020
   hardware: port
-  extensions: [smbx]
+  extensions: [smbx, squashfs]
   emulators:
     thextech:
       thextech:  { requireAnyOf: [BR2_PACKAGE_THEXTECH] }
