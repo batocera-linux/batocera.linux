@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_NVIDIA_VERSION = 1.3
+BATOCERA_NVIDIA_VERSION = 1.4
 BATOCERA_NVIDIA_SOURCE =
 
 define BATOCERA_NVIDIA_INSTALL_TARGET_CMDS

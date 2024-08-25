@@ -13,21 +13,23 @@
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
 - Steering wheel support for Microsoft SideWinder Precision Racing Wheel
 - Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
-- display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
-- emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
+- Display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
+- Emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
 - Fixed right controller LED for the Ayaneo Air Plus, it's now functional
 ### Changed / Improved
-- splash screen now disabled by default
+- Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
 - Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
 - Spectravideo system now has Libretro-BlueMSX as an emulator option
 - Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
 - You can now manually forget, connect or disconnect a bluetooth device
+- Udated Nvidia card detection
+  - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build

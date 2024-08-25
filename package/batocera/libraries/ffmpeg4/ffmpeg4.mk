@@ -400,7 +400,7 @@ FFMPEG4_CONF_OPTS += --disable-iconv
 endif
 
 # batocera - add cuda
-ifeq ($(BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_CUDA),y)
+ifeq ($(BR2_PACKAGE_NVIDIA_OPEN_DRIVER_CUDA),y)
 FFMPEG4_CONF_OPTS += --enable-cuda
 FFMPEG4_DEPENDENCIES += nv-codec-headers
 endif
