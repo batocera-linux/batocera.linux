@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-19 14:44+0100\n"
+"PO-Revision-Date: 2024-08-24 22:18+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -23,21 +23,23 @@ msgid ""
 "Adjust the cpu power frequency profile whilst in-game. Some systems will "
 "benefit from improved voltage handling."
 msgstr ""
+"Justera frekvensprofilen för cpu-effekt i spelet. Vissa system kommer att "
+"dra nytta av förbättrad spänningshantering."
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "POWER OPTIONS"
-msgstr ""
+msgstr "ENERGIALTERNATIV"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "POWER MODE"
-msgstr ""
+msgstr "ENERGILÄGE"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "High Performance"
-msgstr ""
+msgstr "Hög prestanda"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
@@ -47,7 +49,7 @@ msgstr "Balanserad"
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "Power Saver"
-msgstr ""
+msgstr "Strömsparare"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -55,11 +57,13 @@ msgid ""
 "Adjust the cpu power profile whist on battery. Overwrites previous Power "
 "Mode(s)."
 msgstr ""
+"Justera cpu:ns energiprofil medan batteriet är på. Skriver över tidigare "
+"energiläge(n)."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "BATTERY MODE"
-msgstr ""
+msgstr "BATTERILÄGE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -68,16 +72,19 @@ msgid ""
 "based on it's default max value. Caution, setting wattage too high could "
 "damage your device."
 msgstr ""
+"Justera procentandelen effekt (watt) som tillhandahålls till en Ryzen Mobile "
+"Series-processor baserat på dess maximala standardvärde. Varning, om du "
+"ställer in en för hög wattnivå kan det skada din enhet."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RYZEN THERMAL DESIGN POWER"
-msgstr ""
+msgstr "RYZEN TERMISK DESIGNEFFEKT"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
-msgstr ""
+msgstr "Ställ in skärmens upplösning. Påverkar inte renderingsupplösningen."
 
 #. TRANSLATION: shared, mame
 msgctxt "game_options"
@@ -90,6 +97,8 @@ msgid ""
 "Force the game to render in this aspect ratio. Not all systems support all "
 "ratios."
 msgstr ""
+"Tvinga spelet att renderas i detta bildförhållande. Alla system har inte "
+"stöd för alla förhållanden."
 
 #. TRANSLATION: shared, dolphin, flycast, mupen64plus, pcsx2, ...
 msgctxt "game_options"
@@ -99,12 +108,12 @@ msgstr "SPELBILDFÖRHÅLLANDE"
 #. TRANSLATION: shared, libretro/hatarib
 msgctxt "game_options"
 msgid "Full"
-msgstr ""
+msgstr "Full"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Config"
-msgstr ""
+msgstr "Konfig."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -114,22 +123,24 @@ msgstr "Fyrkantig pixel"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Core provided"
-msgstr ""
+msgstr "Tillhandahållen av kärna"
 
 #. TRANSLATION: shared, shared, libretro/mesen, libretro/gambatte
 msgctxt "game_options"
 msgid "Custom"
-msgstr ""
+msgstr "Anpassad"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Store past states to rewind to in realtime, if the core supports it."
 msgstr ""
+"Lagra tidigare tillstånd för att spola tillbaka till i realtid, om kärnan "
+"stöder det."
 
 #. TRANSLATION: shared, duckstation
 msgctxt "game_options"
 msgid "REWIND"
-msgstr ""
+msgstr "SPOLA TILLBAKA"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
@@ -145,21 +156,22 @@ msgstr "Av"
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
 msgstr ""
+"Ladda senaste sparläge vid spelstart och spara läge när du avslutar spelet."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTO SAVE/LOAD ON GAME LAUNCH"
-msgstr ""
+msgstr "SPARA AUTOMATISKT/LADDA VID SPELSTART"
 
 #. TRANSLATION: shared, shared, shared
 msgctxt "game_options"
 msgid "GAME RENDERING & SHADERS"
-msgstr ""
+msgstr "SPELRENDERING OCH SHADERS"
 
 #. TRANSLATION: shared, pcsx2
 msgctxt "game_options"
 msgid "SHADER SET"
-msgstr ""
+msgstr "SHADERUPPSÄTTNING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -167,31 +179,33 @@ msgid ""
 "Disabled if using a shader set or the output display matches the game's "
 "resolution."
 msgstr ""
+"Inaktiverad om du använder en shaderuppsättning eller om skärmen matchar "
+"spelets upplösning."
 
 #. TRANSLATION: shared, hypseus-singe, play
 msgctxt "game_options"
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
-msgstr ""
+msgstr "JÄMNA UT GRAFIKEN (BILINJÄR FILTRERING)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Only increase the image size in integer multiples."
-msgstr ""
+msgstr "Öka endast bildstorleken i heltalsmultiplar."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "INTEGER SCALING (PIXEL PERFECT)"
-msgstr ""
+msgstr "HELTALSSKALNING (PIXELTROGEN)"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "DECORATIONS"
-msgstr ""
+msgstr "DEKORATIONER"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "DECORATION SET"
-msgstr ""
+msgstr "DEKORATIONSUPPSÄTTNING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -201,7 +215,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Show context-sensitive info over the game."
-msgstr ""
+msgstr "Visa sammanhangsberoende information under spelets gång."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -2504,7 +2518,7 @@ msgstr "Kroatien"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Czech Republic"
-msgstr "Tjeckien "
+msgstr "Tjeckien"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
