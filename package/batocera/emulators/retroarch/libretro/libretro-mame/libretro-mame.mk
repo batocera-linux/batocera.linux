@@ -1,18 +1,21 @@
-##########################################################™™######################
+################################################################################
 #
 # libretro-mame
 #
 ################################################################################
 
-LIBRETRO_MAME_VERSION = lrmame0265
+LIBRETRO_MAME_VERSION = lrmame0268
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 
 LIBRETRO_MAME_DEPENDENCIES = alsa-lib
 
 # Limit number of jobs not to eat too much RAM....
-LIBRETRO_MAME_MAX_JOBS = 16
-LIBRETRO_MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(LIBRETRO_MAME_MAX_JOBS) ]; then echo $(LIBRETRO_MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)
+total_memory_kb := $(shell grep MemTotal /proc/meminfo | awk '{print $$2}')
+memory_based_jobs := $(shell echo $$(( $(total_memory_kb) / 1024 / 1024 / 2 + 1)))
+cpu_threads := $(shell nproc)
+jobs := $(shell echo $$(( $(memory_based_jobs) < $(cpu_threads) ? $(memory_based_jobs) : $(cpu_threads) )))
+LIBRETRO_MAME_JOBS := $(jobs)
 
 ifeq ($(BR2_x86_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
@@ -44,9 +47,9 @@ define LIBRETRO_MAME_BUILD_CMDS
 
 	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
-		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
-		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
-		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="mame" RETRO=1         \
+		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)" \
+		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" \
+		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="mame" RETRO=1 \
 		OSD="retro" DEBUG=0
 endef
 
@@ -57,12 +60,14 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 	cp -R $(@D)/hash $(TARGET_DIR)/usr/share/lr-mame
 
 	mkdir -p $(TARGET_DIR)/usr/share/mame
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns \
+	    $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 
 	# Copy coin drop plugin
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/
 	cp -R -u $(@D)/plugins $(TARGET_DIR)/usr/bin/mame/
-	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop $(TARGET_DIR)/usr/bin/mame/plugins
+	cp -R -u $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/coindrop \
+	    $(TARGET_DIR)/usr/bin/mame/plugins
 endef
 
 define LIBRETRO_MAME_INSTALL_STAGING_CMDS
@@ -71,7 +76,8 @@ define LIBRETRO_MAME_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/share/lr-mame/hash
 	cp -R $(@D)/hash $(STAGING_DIR)/usr/share/lr-mame
 	mkdir -p $(TARGET_DIR)/usr/share/mame
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns $(TARGET_DIR)/usr/share/mame/blank.fmtowns
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/blank.fmtowns \
+	    $(TARGET_DIR)/usr/share/mame/blank.fmtowns
 endef
 
 define LIBRETRO_MAME_EVMAPY
