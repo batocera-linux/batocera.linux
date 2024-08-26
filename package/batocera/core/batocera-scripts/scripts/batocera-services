@@ -1,15 +1,16 @@
-#!/bin/bash 
-#
-# start/stop/list/enable/disable services
-#
+#!/bin/bash
 
 do_help() {
-    echo "${0} list [all|system|user]"
-    echo "${0} enable service1"
-    echo "${0} disable service1"
-    echo "${0} stop service1"
-    echo "${0} start service1"
-    echo "${0} restart service1"
+    echo "Usage options for ${0}"
+    echo "(where \"myservice\" is the name of your service)"
+    echo "- list [all|system|user]"
+    echo "- enable myservice"
+    echo "- disable myservice"
+    echo "- start myservice"
+    echo "- stop myservice"
+    echo "- restart myservice"
+    echo "- status myservice"
+    echo "More info: https://wiki.batocera.org/launch_a_script#services"
 }
 
 is_valid_service_name() {
@@ -19,12 +20,10 @@ is_valid_service_name() {
 
 do_list() {
     enabled_services="$(/usr/bin/batocera-settings-get system.services)"
-    if test -n "${enabled_services}"
-    then
-	for SERVICE in ${enabled_services}
-	do
-	    export __SERVICE__${SERVICE}=1
-	done
+    if test -n "${enabled_services}"; then
+        for SERVICE in ${enabled_services}; do
+            export __SERVICE__${SERVICE}=1
+        done
     fi
 
     case "${1}" in
@@ -40,85 +39,51 @@ do_list() {
     esac
 
     find -L $service_folders -type f 2>/dev/null | sort -u |
-	while read SERVICE
-	do
-	    SNAME=$(basename "${SERVICE}")
-	    if ! is_valid_service_name "${SNAME}"
-	    then
-		echo "WARNING: Invalid service script name: ${SNAME}" 1>&2
-		continue
-	    fi
-	    SVAR=__SERVICE__${SNAME}
-	    if test "${!SVAR}" = 1
-	    then
-		if test -t 1
-		then
-		    printf "%-10s %s\n" "${SNAME}" "*"
-		else
-		    printf "%s;%s\n" "${SNAME}" "*"
-		fi
-	    else
-		if test -t 1
-		then
-		    printf "%-10s %s\n" "${SNAME}" "-"
-		else
-	    	    printf "%s;%s\n" "${SNAME}" "-"
-		fi
-	    fi
-	done
-}
-
-do_status() {
-    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
-	while read SERVICE
-	do
-	    bash "${SERVICE}" status
-	done
-}
-
-do_start() {
-    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
-	while read SERVICE
-	do
-	    bash "${SERVICE}" start
-	done
-}
-
-do_stop() {
-    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
-	while read SERVICE
-	do
-	    bash "${SERVICE}" stop
-	done
+        while read SERVICE; do
+            SNAME=$(basename "${SERVICE}")
+            if ! is_valid_service_name "${SNAME}"; then
+                echo "WARNING: Invalid service script name: ${SNAME}" 1>&2
+                continue
+            fi
+            SVAR=__SERVICE__${SNAME}
+            if test "${!SVAR}" = 1; then
+                if test -t 1; then
+                    printf "%-10s %s\n" "${SNAME}" "*"
+                else
+                    printf "%s;%s\n" "${SNAME}" "*"
+                fi
+            else
+                if test -t 1; then
+                    printf "%-10s %s\n" "${SNAME}" "-"
+                else
+                    printf "%s;%s\n" "${SNAME}" "-"
+                fi
+            fi
+        done
 }
 
 do_enable() {
-    if ! is_valid_service_name "${1}"
-    then
-	echo "ERROR: Invalid service name: ${1}" 1>&2
-	return
+    if ! is_valid_service_name "${1}"; then
+        echo "ERROR: Invalid service name: ${1}" 1>&2
+        return
     fi
 
     enabled_services="$(/usr/bin/batocera-settings-get system.services)"
 
     # check if already set
-    if test -n "${enabled_services}"
-    then
-	for SERVICE in ${enabled_services}
-	do
-	    if test "${SERVICE}" = "${1}"
-	    then
-		return
-	    fi
-	done
+    if test -n "${enabled_services}"; then
+        for SERVICE in ${enabled_services}; do
+            if test "${SERVICE}" = "${1}"; then
+                return
+            fi
+        done
     fi
 
     #
-    if test -n "${enabled_services}"
-    then
-	/usr/bin/batocera-settings-set system.services "${enabled_services} ${1}"
+    if test -n "${enabled_services}"; then
+        /usr/bin/batocera-settings-set system.services "${enabled_services} ${1}"
     else
-	/usr/bin/batocera-settings-set system.services "${1}"
+        /usr/bin/batocera-settings-set system.services "${1}"
     fi
 }
 
@@ -127,31 +92,47 @@ do_disable() {
 
     NEW_ENABLED_SERVICES=
     JDONE=0
-    
+
     # build new services
-    if test -n "${enabled_services}"
-    then
-	for SERVICE in ${enabled_services}
-	do
-	    if test "${SERVICE}" != "${1}"
-	    then
-		if test -n "${NEW_ENABLED_SERVICES}"
-		then
-		    NEW_ENABLED_SERVICES="${NEW_ENABLED_SERVICES} ${SERVICE}"
-		else
-		    NEW_ENABLED_SERVICES="${SERVICE}"
-		fi
-	    else
-		JDONE=1
-	    fi
-	done
+    if test -n "${enabled_services}"; then
+        for SERVICE in ${enabled_services}; do
+            if test "${SERVICE}" != "${1}"; then
+                if test -n "${NEW_ENABLED_SERVICES}"; then
+                    NEW_ENABLED_SERVICES="${NEW_ENABLED_SERVICES} ${SERVICE}"
+                else
+                    NEW_ENABLED_SERVICES="${SERVICE}"
+                fi
+            else
+                JDONE=1
+            fi
+        done
     fi
 
     #
-    if test "${JDONE}" = 1
-    then
-	/usr/bin/batocera-settings-set system.services "${NEW_ENABLED_SERVICES}"
+    if test "${JDONE}" = 1; then
+        /usr/bin/batocera-settings-set system.services "${NEW_ENABLED_SERVICES}"
     fi
+}
+
+do_start() {
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+        while read SERVICE; do
+            bash "${SERVICE}" start
+        done
+}
+
+do_stop() {
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+        while read SERVICE; do
+            bash "${SERVICE}" stop
+        done
+}
+
+do_status() {
+    find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
+        while read SERVICE; do
+            bash "${SERVICE}" status
+        done
 }
 
 ACTION=$1
@@ -159,29 +140,29 @@ shift
 
 case "${ACTION}" in
     list)
-	do_list "${1}"
-	;;
-    status)
-	do_status "${1}"
-	;;
-    start)
-	do_start "${1}"
-	;;
-    stop)
-	do_stop "${1}"
-	;;
-    restart)
-	do_stop "${1}"
-	sleep 2
-	do_start "${1}"
-	;;
+        do_list "${1}"
+        ;;
     enable)
-	do_enable "${1}"
-	;;
+        do_enable "${1}"
+        ;;
     disable)
-	do_disable "${1}"
-	;;
+        do_disable "${1}"
+        ;;
+    start)
+        do_start "${1}"
+        ;;
+    stop)
+        do_stop "${1}"
+        ;;
+    restart)
+        do_stop "${1}"
+        sleep 2
+        do_start "${1}"
+        ;;
+    status)
+        do_status "${1}"
+        ;;
     *)
-	do_help "${0}"
-	;;
+        do_help "${0}"
+        ;;
 esac
