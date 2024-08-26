@@ -49,5 +49,6 @@ then
 /lib32
 /usr/lib/mangohud
 EOF
-    ldconfig
+    # detached for perf issue (boot time)
+    ldconfig &
 fi
