@@ -172,6 +172,12 @@ def createPPSSPPConfig(iniConfig, system):
     # Don't check for a new version
     iniConfig.set("General", "CheckForNewVersion", "False")
 
+    # SaveState
+    if system.isOptSet('state_slot'):
+        iniConfig.set("General", "StateSlot", str(system.config["state_slot"]))
+    else:
+        iniConfig.set("General", "StateSlot", "0")
+
     ## [UPGRADE] - don't upgrade
     if not iniConfig.has_section("Upgrade"):
         iniConfig.add_section("Upgrade")
