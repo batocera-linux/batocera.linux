@@ -67,8 +67,9 @@
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
 - Flycast to Jul 30 build
-- Ikemen to August 1st 2024 build
 - GroovyMAME to 0.268
+- Ikemen to August 1st 2024 build
+- Kodi to 21.1
 - PCSX2 to v2.1.100
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to 0.0.32-16843
