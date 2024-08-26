@@ -27,6 +27,25 @@ class DolphinGenerator(Generator):
         # Generate the controller config(s)
         dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 
+        ## [ Qt.ini ] ##
+        qtIni = configparser.ConfigParser(interpolation=None)
+        # To prevent ConfigParser from converting to lower case
+        qtIni.optionxform = str
+        if os.path.exists(batoceraFiles.dolphinConfig + "/Qt.ini"):
+            qtIni.read(batoceraFiles.dolphinConfig + "/Qt.ini")
+
+        # Sections
+        if not qtIni.has_section("Emulation"):
+            qtIni.add_section("Emulation")
+        if system.isOptSet('state_slot'):
+            qtIni.set("Emulation", "StateSlot", str(system.config["state_slot"]))
+        else:
+            qtIni.set("Emulation", "StateSlot", "1")
+
+        # Save Qt.ini
+        with open(batoceraFiles.dolphinConfig + "/Qt.ini", 'w') as configfile:
+            qtIni.write(configfile)
+
         ## [ dolphin.ini ] ##
         dolphinSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
