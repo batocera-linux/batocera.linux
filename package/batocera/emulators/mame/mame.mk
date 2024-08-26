@@ -3,8 +3,8 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.265 - Switchres 2.220c
-MAME_VERSION = gm0265sr220c
+# Version: GroovyMAME 0.268 - Switchres 2.21d
+MAME_VERSION = gm0268sr221d
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -15,8 +15,11 @@ MAME_CFLAGS =
 MAME_LDFLAGS =
 
 # Limit number of jobs not to eat too much RAM....
-MAME_MAX_JOBS = 17
-MAME_JOBS = $(shell if [ $(PARALLEL_JOBS) -gt $(MAME_MAX_JOBS) ]; then echo $(MAME_MAX_JOBS); else echo $(PARALLEL_JOBS); fi)
+total_memory_kb := $(shell grep MemTotal /proc/meminfo | awk '{print $$2}')
+memory_based_jobs := $(shell echo $$(( $(total_memory_kb) / 1024 / 1024 / 2 + 1)))
+cpu_threads := $(shell nproc)
+jobs := $(shell echo $$(( $(memory_based_jobs) < $(cpu_threads) ? $(memory_based_jobs) : $(cpu_threads) )))
+MAME_JOBS := $(jobs)
 
 # Set PTR64 on/off according to architecture
 ifeq ($(BR2_ARCH_IS_64),y)

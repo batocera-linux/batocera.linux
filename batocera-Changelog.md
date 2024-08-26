@@ -51,6 +51,7 @@
   - Libretro-Ecwolf to June 28 build
   - Libretro-Flycast to July 30 build
   - Libretro-Freechaf to June 28 build
+  - Libretro-MAME to 0.268
   - Libretro-Minivac to July 1 build
   - Libretro-MrBoom to v5.5
   - Libretro-Mupen64plus-Next to July 19, 2024 build
@@ -67,6 +68,7 @@
 - Eduke32 to Jul 25 build
 - Flycast to Jul 30 build
 - Ikemen to August 1st 2024 build
+- GroovyMAME to 0.268
 - PCSX2 to v2.1.100
 - Redream to 1.5.0-1131-gafdfc1a
 - RPCS3 to 0.0.32-16843
@@ -98,6 +100,7 @@
 - Sound Open Firmware to 2024.06
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
+- Switchres to 2.2.1
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
