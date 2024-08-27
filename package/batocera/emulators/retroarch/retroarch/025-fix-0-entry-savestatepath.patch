@@ -1,0 +1,127 @@
+diff --git a/command.c b/command.c
+index 6cf74cc..cf044be 100644
+--- a/command.c
++++ b/command.c
+@@ -1272,8 +1272,6 @@ bool command_event_save_auto_state(void)
+    runloop_state_t *runloop_st = runloop_state_get_ptr();
+    char savestate_name_auto[PATH_MAX_LENGTH];
+ 
+-   if (runloop_st->entry_state_slot)
+-      return false;
+    if (!core_info_current_supports_savestate())
+       return false;
+    if (string_is_empty(path_basename(path_get(RARCH_PATH_BASENAME))))
+diff --git a/retroarch.c b/retroarch.c
+index a072a7a..bb9dd38 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -6840,6 +6840,9 @@ static bool retroarch_parse_input_and_config(
+             exit(EXIT_FAILURE);
+          }
+ 
++	 // initialize entrystate
++	 runloop_st->entry_state_slot = -1;
++
+          switch (c)
+          {
+             case 'h':
+@@ -7296,9 +7299,9 @@ static bool retroarch_parse_input_and_config(
+                break;
+             case 'e':
+                {
+-                  unsigned entry_state_slot = (unsigned)strtoul(optarg, NULL, 0);
++                  int entry_state_slot = (int)strtol(optarg, NULL, 0);
+ 
+-                  if (entry_state_slot)
++                  if (entry_state_slot != -1)
+                      runloop_st->entry_state_slot = entry_state_slot;
+                   else
+                      RARCH_WARN("--entryslot argument \"%s\" is not a valid "
+@@ -7387,18 +7390,18 @@ static bool retroarch_parse_input_and_config(
+        * command line interface */
+       cli_content_set = true;
+    }
+-   else if (runloop_st->entry_state_slot)
++   else if (runloop_st->entry_state_slot != -1)
+    {
+-      runloop_st->entry_state_slot = 0;
++      runloop_st->entry_state_slot = -1;
+       RARCH_WARN("Trying to load entry state without content. Ignoring.\n");
+    }
+    #ifdef HAVE_BSV_MOVIE
+-   if (runloop_st->entry_state_slot)
++   if (runloop_st->entry_state_slot != -1)
+    {
+      input_driver_state_t *input_st = input_state_get_ptr();
+      if (input_st->bsv_movie_state.flags & BSV_FLAG_MOVIE_START_PLAYBACK)
+      {
+-        runloop_st->entry_state_slot = 0;
++        runloop_st->entry_state_slot = -1;
+         RARCH_WARN("Trying to load entry state while replay playback is active. Ignoring entry state.\n");
+      }
+    }
+diff --git a/runloop.c b/runloop.c
+index cfd5d0e..f6c6a76 100644
+--- a/runloop.c
++++ b/runloop.c
+@@ -4307,11 +4307,11 @@ static bool event_init_content(
+      if (!(input_st->bsv_movie_state.flags & BSV_FLAG_MOVIE_START_PLAYBACK))
+ #endif
+       {
+-         if (      runloop_st->entry_state_slot
++         if (      runloop_st->entry_state_slot != -1
+                && !command_event_load_entry_state(settings))
+          {
+            /* loading the state failed, reset entry slot */
+-            runloop_st->entry_state_slot = 0;
++            runloop_st->entry_state_slot = -1;
+          }
+       }
+ #ifdef HAVE_BSV_MOVIE
+@@ -4319,7 +4319,7 @@ static bool event_init_content(
+      if (!(input_st->bsv_movie_state.flags & (BSV_FLAG_MOVIE_START_RECORDING | BSV_FLAG_MOVIE_START_PLAYBACK)))
+ #endif
+       {
+-        if (!runloop_st->entry_state_slot && settings->bools.savestate_auto_load)
++        if (!runloop_st->entry_state_slot != -1 && settings->bools.savestate_auto_load)
+           command_event_load_auto_state();
+       }
+    }
+@@ -7422,13 +7422,13 @@ bool runloop_get_replay_path(char *path, size_t len, unsigned slot)
+ }
+ 
+ 
+-bool runloop_get_entry_state_path(char *path, size_t len, unsigned slot)
++bool runloop_get_entry_state_path(char *path, size_t len, int slot)
+ {
+    size_t _len;
+    runloop_state_t *runloop_st = &runloop_state;
+    const char *name_savestate  = NULL;
+ 
+-   if (!path || !slot)
++   if (!path || slot == -1)
+       return false;
+ 
+    name_savestate              = runloop_st->name.savestate;
+diff --git a/runloop.h b/runloop.h
+index 9b66c39..6b7d04b 100644
+--- a/runloop.h
++++ b/runloop.h
+@@ -251,7 +251,7 @@ struct runloop
+    unsigned fastforward_after_frames;
+    unsigned perf_ptr_libretro;
+    unsigned subsystem_current_count;
+-   unsigned entry_state_slot;
++   int entry_state_slot;
+    unsigned video_swap_interval_auto;
+ 
+    fastmotion_overrides_t fastmotion_override; /* float alignment */
+@@ -424,7 +424,7 @@ void runloop_path_set_names(void);
+ 
+ uint32_t runloop_get_flags(void);
+ 
+-bool runloop_get_entry_state_path(char *path, size_t len, unsigned slot);
++bool runloop_get_entry_state_path(char *path, size_t len, int slot);
+ 
+ bool runloop_get_current_savestate_path(char *path, size_t len);
+ 

@@ -5,7 +5,6 @@ import batoceraFiles
 from . import libretroConfig
 from . import libretroRetroarchCustom
 from . import libretroControllers
-import shutil
 from generators.Generator import Generator
 import os
 import stat
@@ -369,7 +368,6 @@ class LibretroGenerator(Generator):
             # if the file ends by .auto, this is the auto loading, else it is the states
             # retroarch need the file be named with .entry at the end to load the state
             # a link would work, but on fat32, we need to copy
-            shutil.copy(system.config['state_filename'], system.config['state_filename']+".entry")
             commandArray.extend(["-e", system.config['state_slot']])
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
