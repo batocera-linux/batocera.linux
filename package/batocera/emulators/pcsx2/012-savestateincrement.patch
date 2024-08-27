@@ -1,0 +1,49 @@
+diff --git a/pcsx2/Config.h b/pcsx2/Config.h
+index 3b12a96..382b19b 100644
+--- a/pcsx2/Config.h
++++ b/pcsx2/Config.h
+@@ -1150,6 +1150,7 @@ struct Pcsx2Config
+ 		BackupSavestate : 1,
+ 		SavestateZstdCompression : 1,
+ 		McdFolderAutoManage : 1,
++	        AutoIncrementSlot : 1,
+ 
+ 		HostFs : 1,
+ 
+diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
+index 9a715c0..ef746da 100644
+--- a/pcsx2/Pcsx2Config.cpp
++++ b/pcsx2/Pcsx2Config.cpp
+@@ -1699,6 +1699,7 @@ Pcsx2Config::Pcsx2Config()
+ 	BackupSavestate = true;
+ 	SavestateZstdCompression = true;
+ 	WarnAboutUnsafeSettings = true;
++	AutoIncrementSlot = false;
+ 
+ 	// To be moved to FileMemoryCard pluign (someday)
+ 	for (uint slot = 0; slot < 8; ++slot)
+@@ -1734,6 +1735,7 @@ void Pcsx2Config::LoadSaveCore(SettingsWrapper& wrap)
+ 	SettingsWrapBitBool(EnableDiscordPresence);
+ 	SettingsWrapBitBool(InhibitScreensaver);
+ 	SettingsWrapBitBool(HostFs);
++	SettingsWrapBitBool(AutoIncrementSlot);
+ 
+ 	SettingsWrapBitBool(BackupSavestate);
+ 	SettingsWrapBitBool(SavestateZstdCompression);
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index 3324fc5..1fd7fe3 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -1817,6 +1817,12 @@ bool VMManager::DoSaveState(const char* filename, s32 slot_for_message, bool zip
+ 	if (GSDumpReplayer::IsReplayingDump())
+ 		return false;
+ 
++	// increment the slot before saving
++	if(EmuConfig.AutoIncrementSlot) {
++	  SaveStateSelectorUI::SelectNextSlot(false);
++	  slot_for_message = SaveStateSelectorUI::GetCurrentSlot();
++	}
++
+ 	std::string osd_key(fmt::format("SaveStateSlot{}", slot_for_message));
+ 	Error error;
+ 

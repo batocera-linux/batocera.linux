@@ -449,7 +449,12 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, met
     if system.isOptSet('pcsx2_shaderset'):
         pcsx2INIConfig.set("EmuCore", "TVShader", system.config["pcsx2_shaderset"])
     else:
-        pcsx2INIConfig.set("EmuCore", "TVShader", "0")    
+        pcsx2INIConfig.set("EmuCore", "TVShader", "0")
+
+    if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
+        pcsx2INIConfig.set("EmuCore", "AutoIncrementSlot", "false")
+    else:
+        pcsx2INIConfig.set("EmuCore", "AutoIncrementSlot", "true")
 
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
