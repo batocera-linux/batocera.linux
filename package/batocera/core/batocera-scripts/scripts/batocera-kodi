@@ -1,4 +1,5 @@
 #!/bin/sh
 
 # script to be called from es to call configgen + kodi
+sleep 5
 emulatorlauncher -system kodi -rom '' "$@"
