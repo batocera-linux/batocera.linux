@@ -20,6 +20,23 @@ snes:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:snes
 
+snesh:
+  name:       Super Nintendo Entertainment System Hacks + Homebrew
+  manufacturer: Nintendo
+  release: 1990
+  hardware: console
+  extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
+  theme:      snesh
+  group:      snes
+  emulators:
+    libretro:
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
+      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]    }
+      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]      }
+
 snes-msu1:
   name:       Super Disc System (MSU1)
   manufacturer: Nintendo
@@ -33,6 +50,23 @@ snes-msu1:
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]    }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
       bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
+
+sfc:
+  name:       Super Famicom
+  manufacturer: Nintendo
+  release: 1990
+  hardware: console
+  extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
+  theme:      sfc
+  group:      snes
+  emulators:
+    libretro:
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
+      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]    }
+      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]      }
 
 c64:
   name:       Commodore 64
@@ -209,6 +243,20 @@ nes:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:nes
 
+nesh:
+  name:       Nintendo Entertainment System Hacks + Homebrew
+  manufacturer: Nintendo
+  release: 1983
+  hardware: console
+  extensions: [nes, unif, unf, zip, 7z]
+  theme:      nesh
+  group:      nes
+  emulators:
+    libretro:
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
+
 n64:
   name:       Nintendo 64
   manufacturer: Nintendo
@@ -265,6 +313,19 @@ gba:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:gba
 
+gbah:
+  name:       Game Boy Advance Hacks + Homebrew
+  manufacturer: Nintendo
+  release: 2001
+  hardware: portable
+  extensions: [gba, zip, 7z]
+  theme:      gbah
+  emulators:
+    libretro:
+      mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP] }
+
 gbc:
   name:       Game Boy Color
   manufacturer: Nintendo
@@ -284,6 +345,20 @@ gbc:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:gbc
 
+gbch:
+  name:       Game Boy Color Hacks + Homebrew
+  manufacturer: Nintendo
+  release: 1998
+  hardware: portable
+  extensions: [gbc, zip, 7z]
+  theme:      gbch
+  emulators:
+    libretro:
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      mesen-s:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
+
 gb:
   name:       Game Boy
   manufacturer: Nintendo
@@ -302,6 +377,20 @@ gb:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:gb
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:gb
+
+gbh:
+  name:       Game Boy Hacks + Homebrew
+  manufacturer: Nintendo
+  release: 1989
+  hardware: portable
+  extensions: [gb, zip, 7z]
+  theme:      gbh
+  emulators:
+    libretro:
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      mesen-s:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
 
 sgb:
   name:       Super Game Boy
@@ -364,6 +453,19 @@ nds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
     drastic:
       drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
+
+famicom:
+  name:       Family Computer Disk System
+  manufacturer: Nintendo
+  release: 1983
+  hardware: console
+  extensions: [.nes .fc .zip .7z]
+  group:      nes
+  emulators:
+    libretro:
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 fds:
   name:       Family Computer Disk System
@@ -503,6 +605,66 @@ megadrive:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:megadrive
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:megadrive
+
+megadrivejp:
+  name:       Mega Drive
+  manufacturer: Sega
+  release: 1988
+  hardware: console
+  extensions: [bin, gen, md, sg, smd, zip, 7z]
+  theme:      megadrive-japan
+  platform:   genesis, megadrive
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:megadrive
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:megadrive
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:megadrive
+
+genesis:
+  name:       Genesis
+  manufacturer: Sega
+  release: 1989
+  hardware: console
+  extensions: [bin, gen, md, sg, smd, zip, 7z]
+  theme:      genesis
+  platform:   genesis, megadrive
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:megadrive
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:megadrive
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:megadrive
+
+genh:
+  name:       Genesis Hacks + Homebrew
+  manufacturer: Sega
+  release: 1989
+  hardware: console
+  extensions: [bin, gen, md, sg, smd, zip, 7z]
+  theme:      genh
+  platform:   genesis, megadrive
+  group:      megadrive
+  emulators:
+    libretro:
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx-wide: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
 
 segacd:
   name:       Sega CD
@@ -661,6 +823,30 @@ pcenginecd:
   hardware: console
   extensions: [pce, cue, ccd, iso, img, chd]
   theme:      pce-cd
+  emulators:
+    libretro:
+      pce:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
+      pce_fast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST] }
+
+tg16:
+  name:       TurboGrafx-16
+  manufacturer: NEC
+  release: 1989
+  hardware: console
+  extensions: [pce, bin, zip, 7z]
+  theme:      tg16
+  emulators:
+    libretro:
+      pce:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
+      pce_fast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST] }
+
+tg16cd:
+  name:       TurboGrafx-CD
+  manufacturer: NEC
+  release: 1988
+  hardware: console
+  extensions: [pce, cue, ccd, iso, img, chd]
+  theme:      tg-cd
   emulators:
     libretro:
       pce:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
@@ -5367,3 +5553,54 @@ chihiro:
     Pour plus d'informations consultez la documentation ici: https://wiki.batocera.org/systems:chihiro
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:chihiro
+
+arcade:
+  name:       Arcade
+  manufacturer: Arcade
+  release: 1997
+  hardware: arcade
+  extensions: [zip, 7z]
+  theme:      arcade
+  platform:   arcade
+  emulators:
+    libretro:
+      fbalpha:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]        }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+
+cps1:
+  name:       CPS-I
+  manufacturer: Arcade
+  release: 1988
+  hardware: arcade
+  extensions: [zip, 7z]
+  theme:      cps1
+  platform:   arcade
+  emulators:
+    libretro:
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+
+cps2:
+  name:       CPS-II
+  manufacturer: Arcade
+  release: 1993
+  hardware: arcade
+  extensions: [zip, 7z]
+  theme:      cps2
+  platform:   arcade
+  emulators:
+    libretro:
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+
+cps3:
+  name:       CPS-III
+  manufacturer: Arcade
+  release: 1996
+  hardware: arcade
+  extensions: [zip, 7z]
+  theme:      cps3
+  platform:   arcade
+  emulators:
+    libretro:
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }

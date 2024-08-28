@@ -54,6 +54,9 @@ apple2:
 apple2gs:
   emulator: gsplus
   core:     gsplus
+arcade:
+  emulator: libretro
+  core:     fbneo
 arcadia:
   emulator: libretro
   core:     mame
@@ -142,6 +145,15 @@ corsixth:
   core:     corsixth
   options:
     hud_support: false
+cps1:
+  emulator: libretro
+  core:     fbneo
+cps2:
+  emulator: libretro
+  core:     fbneo
+cps3:
+  emulator: libretro
+  core:     fbneo
 crvision:
   emulator: libretro
   core:     mame
@@ -186,6 +198,9 @@ fallout1-ce:
 fallout2-ce:
   emulator: fallout2-ce
   core:     fallout2-ce
+famicom:
+  emulator: libretro
+  core:     nestopia
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -237,18 +252,33 @@ gamepock:
 gb:
   emulator: libretro
   core:     gambatte
+gbh:
+  emulator: libretro
+  core:     gambatte
 gb2players:
   emulator: libretro
   core:     tgbdual
 gba:
   emulator: libretro
   core:     mgba
+gbah:
+  emulator: libretro
+  core:     mgba
 gbc:
+  emulator: libretro
+  core:     gambatte
+gbch:
   emulator: libretro
   core:     gambatte
 gbc2players:
   emulator: libretro
   core:     tgbdual
+genesis:
+  emulator: libretro
+  core:     genesisplusgx
+genh:
+  emulator: libretro
+  core:     genesisplusgx
 gmaster:
   emulator: libretro
   core:     mame
@@ -328,6 +358,9 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     genesisplusgx
+megadrivejp:
+  emulator: libretro
+  core:     genesisplusgx
 megaduck:
   emulator: libretro
   core:     sameduck
@@ -398,6 +431,9 @@ neogeocd:
   emulator: libretro
   core:     neocd
 nes:
+  emulator: libretro
+  core:     fceumm
+nesh:
   emulator: libretro
   core:     fceumm
 ngage:
@@ -537,6 +573,9 @@ sega32x:
 segacd:
   emulator: libretro
   core:     genesisplusgx
+sfc:
+  emulator: libretro
+  core:     snes9x
 sg1000:
   emulator: libretro
   core:     genesisplusgx
@@ -581,6 +620,9 @@ supracan:
 snes:
   emulator: libretro
   core:     snes9x
+snesh:
+  emulator: libretro
+  core:     snes9x
 snes-msu1:
   emulator: libretro
   core:     snes9x
@@ -601,6 +643,12 @@ systemsp:
 
 # T-Z
 
+tg16:
+  emulator: libretro
+  core:     pce_fast
+tg16cd:
+  emulator: libretro
+  core:     pce_fast
 theforceengine:
   emulator: theforceengine
   core:     theforceengine
