@@ -31,19 +31,19 @@ index 9a715c0..ef746da 100644
  	SettingsWrapBitBool(BackupSavestate);
  	SettingsWrapBitBool(SavestateZstdCompression);
 diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
-index 3324fc5..1fd7fe3 100644
+index 3324fc5..46e02c4 100644
 --- a/pcsx2/VMManager.cpp
 +++ b/pcsx2/VMManager.cpp
-@@ -1817,6 +1817,12 @@ bool VMManager::DoSaveState(const char* filename, s32 slot_for_message, bool zip
- 	if (GSDumpReplayer::IsReplayingDump())
- 		return false;
+@@ -2022,6 +2022,12 @@ bool VMManager::SaveState(const char* filename, bool zip_on_thread, bool backup_
  
-+	// increment the slot before saving
+ bool VMManager::SaveStateToSlot(s32 slot, bool zip_on_thread)
+ {
++	//increment the slot before saving
 +	if(EmuConfig.AutoIncrementSlot) {
 +	  SaveStateSelectorUI::SelectNextSlot(false);
-+	  slot_for_message = SaveStateSelectorUI::GetCurrentSlot();
++	  slot = SaveStateSelectorUI::GetCurrentSlot();
 +	}
 +
- 	std::string osd_key(fmt::format("SaveStateSlot{}", slot_for_message));
- 	Error error;
- 
+ 	const std::string filename(GetCurrentSaveStateFileName(slot));
+ 	if (filename.empty())
+ 		return false;
