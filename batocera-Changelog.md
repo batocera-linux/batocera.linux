@@ -60,7 +60,7 @@
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
 - Cemu to v2.1
-- Citra to r518f723
+- Citra to r5115f64
 - Commander Genius to v3.5.1
 - Dolphin to 2407.130
 - Duckstaton to Jul 27, 2024 build
