@@ -59,7 +59,7 @@
 - Amiberry to v5.7.3
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
-- Cemu to v2.0-91
+- Cemu to v2.1
 - Citra to r518f723
 - Commander Genius to v3.5.1
 - Dolphin to 2407.130
