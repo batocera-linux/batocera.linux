@@ -71,7 +71,7 @@
 - Ikemen to August 1st 2024 build
 - Kodi to 21.1
 - PCSX2 to v2.1.100
-- Redream to 1.5.0-1131-gafdfc1a
+- Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.32-16843
 - Sonic Mania to Jul 21, 2024 build
 - The Force Engine to Aug 19, 2024 build
