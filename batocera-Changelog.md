@@ -62,7 +62,7 @@
 - Cemu to v2.1
 - Citra to r5115f64
 - Commander Genius to v3.5.1
-- Dolphin to 2407.130
+- Dolphin to 2407.264
 - Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
