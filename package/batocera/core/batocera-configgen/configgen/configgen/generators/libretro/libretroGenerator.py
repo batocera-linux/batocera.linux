@@ -333,13 +333,17 @@ class LibretroGenerator(Generator):
             if "squashfs" in rom:
                 romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc')
                 rom = romsInDir[0]
+        elif system.name == 'msu-md':
+            if "squashfs" in rom:
+                romsInDir = glob.glob(glob.escape(rom) + '/*.md')
+                rom = romsInDir[0]
 
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName
             if os.stat(rom).st_size == 0:
                 # File is empty, run game directly
                 rom = rom[0:-8]
-        
+
         if system.name == 'reminiscence':
             with open(rom, 'r') as file:
                 first_line = file.readline().strip()
