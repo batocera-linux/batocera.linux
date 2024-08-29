@@ -1,0 +1,12 @@
+diff --git a/src/util/audio_stream.cpp b/src/util/audio_stream.cpp
+index 9841ce4761..d586dfc147 100644
+--- a/src/util/audio_stream.cpp
++++ b/src/util/audio_stream.cpp
+@@ -12,6 +12,7 @@
+ #include "common/settings_interface.h"
+ #include "common/timer.h"
+ 
++#define ST_NO_EXCEPTION_HANDLING 1
+ #include "soundtouch/SoundTouch.h"
+ #include "soundtouch/SoundTouchDLL.h"
+ 
