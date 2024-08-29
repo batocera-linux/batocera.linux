@@ -1,0 +1,14 @@
+--- a/src/util/gpu_device.cpp	2024-08-06 01:04:08.060538102 +0200
++++ b/src/util/gpu_device.cpp	2024-08-06 01:04:39.671958696 +0200
+@@ -1405,9 +1405,9 @@
+   dyn_libs::shaderc_compile_options_set_optimization_level(
+     options, optimization ? shaderc_optimization_level_performance : shaderc_optimization_level_zero);
+ 
+-  const shaderc_compilation_result_t result =
++  shaderc_compilation_result_t result = nullptr;
+     dyn_libs::shaderc_compile_into_spv(dyn_libs::s_shaderc_compiler, source.data(), source.length(),
+-                                       stage_kinds[static_cast<size_t>(stage)], "source", entry_point, options);
++                                       stage_kinds[static_cast<size_t>(stage)], "source", entry_point, options, &result);
+   const shaderc_compilation_status status =
+     result ? dyn_libs::shaderc_result_get_compilation_status(result) : shaderc_compilation_status_internal_error;
+   if (status != shaderc_compilation_status_success)

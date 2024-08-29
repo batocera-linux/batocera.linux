@@ -63,7 +63,7 @@
 - Citra to r5115f64
 - Commander Genius to v3.5.1
 - Dolphin to 2407.130
-- Duckstaton to Jul 27, 2024 build
+- Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
 - Flycast to Jul 30 build
