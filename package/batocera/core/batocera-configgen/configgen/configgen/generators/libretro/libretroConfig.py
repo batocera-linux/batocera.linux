@@ -825,6 +825,8 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
         if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" and system.config['netplay.relay'] != "none" :
             retroarchConfig['netplay_use_mitm_server'] = "true"
             retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
+            if system.config['netplay.relay'] == "custom" and system.isOptSet('netplay.customserver'):
+                retroarchConfig['netplay_custom_mitm_server'] = systemConfig.get('netplay.customserver', "")
         else:
             retroarchConfig['netplay_use_mitm_server'] = "false"
 

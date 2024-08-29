@@ -142,14 +142,14 @@ index 11f483aef58..b18f8692f8a 100644
     key->ge.opt.remove_streamout = vs->info.enabled_streamout_buffer_mask &&
                                    !sctx->streamout.enabled_mask;
  }
-@@ -2318,6 +2267,7 @@ static void si_clear_vs_key_outputs(struct si_context *sctx, struct si_shader_se
+@@ -2431,6 +2431,7 @@ static void si_clear_vs_key_outputs(struct si_context *sctx, struct si_shader_se
     key->ge.opt.remove_streamout = 0;
     key->ge.opt.ngg_culling = 0;
     key->ge.mono.u.vs_export_prim_id = 0;
 +   key->ge.opt.kill_pointsize = 0;
+    key->ge.mono.remove_streamout = 0;
  }
  
- void si_ps_key_update_framebuffer(struct si_context *sctx)
 @@ -2516,6 +2466,27 @@ void si_ps_key_update_dsa(struct si_context *sctx)
     key->ps.part.epilog.alpha_func = sctx->queued.named.dsa->alpha_func;
  }

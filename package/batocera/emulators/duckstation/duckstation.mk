@@ -3,27 +3,25 @@
 # duckstation
 #
 ################################################################################
-# Version: Commits on Jul 27, 2024
-DUCKSTATION_VERSION = a3acb0c5db597c8201e84e85a0a80cdfb2409f78
+
+DUCKSTATION_VERSION = v0.1-7294
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
 DUCKSTATION_LICENSE = GPLv2
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
-DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg libcurl ecm stenzek-shaderc webp
-DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg libbacktrace cpuinfo spirv-cross
+DUCKSTATION_DEPENDENCIES += fmt boost ffmpeg libcurl ecm stenzek-shaderc
+DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg libbacktrace cpuinfo
+DUCKSTATION_DEPENDENCIES += spirv-cross libsoundtouch webp
 
 DUCKSTATION_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON
 DUCKSTATION_CONF_OPTS += -DSHADERC_INCLUDE_DIR=$(STAGING_DIR)/stenzek-shaderc/include
 DUCKSTATION_CONF_OPTS += -DSHADERC_LIBRARY=$(STAGING_DIR)/stenzek-shaderc/lib/libshaderc_shared.so
-# Set the compiler to Clang at some stage (currently linker problems)
-#DUCKSTATION_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
-#DUCKSTATION_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
 
-ifeq ($(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_BATOCERA_WAYLAND),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_WAYLAND=ON
     DUCKSTATION_DEPENDENCIES += qt6wayland
 else
@@ -36,7 +34,7 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_X11=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
 else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF

@@ -5,7 +5,6 @@ import batoceraFiles
 from . import libretroConfig
 from . import libretroRetroarchCustom
 from . import libretroControllers
-import shutil
 from generators.Generator import Generator
 import os
 import stat
@@ -334,13 +333,17 @@ class LibretroGenerator(Generator):
             if "squashfs" in rom:
                 romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc')
                 rom = romsInDir[0]
+        elif system.name == 'msu-md':
+            if "squashfs" in rom:
+                romsInDir = glob.glob(glob.escape(rom) + '/*.md')
+                rom = romsInDir[0]
 
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName
             if os.stat(rom).st_size == 0:
                 # File is empty, run game directly
                 rom = rom[0:-8]
-        
+
         if system.name == 'reminiscence':
             with open(rom, 'r') as file:
                 first_line = file.readline().strip()
@@ -369,7 +372,6 @@ class LibretroGenerator(Generator):
             # if the file ends by .auto, this is the auto loading, else it is the states
             # retroarch need the file be named with .entry at the end to load the state
             # a link would work, but on fat32, we need to copy
-            shutil.copy(system.config['state_filename'], system.config['state_filename']+".entry")
             commandArray.extend(["-e", system.config['state_slot']])
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})

@@ -12,7 +12,7 @@ index 10be6d8..bab0f99 100644
  
  namespace ciface::evdev
  {
-@@ -89,15 +92,7 @@ protected:
+@@ -101,15 +101,7 @@ protected:
    {
      if (const char* code_name = libevdev_event_code_get_name(EV_KEY, m_code))
      {
@@ -20,7 +20,7 @@ index 10be6d8..bab0f99 100644
 -
 -      for (auto remove_prefix : {"BTN_", "KEY_"})
 -      {
--        if (name.find(remove_prefix) == 0)
+-        if (name.starts_with(remove_prefix))
 -          return std::string(name.substr(std::strlen(remove_prefix)));
 -      }
 -

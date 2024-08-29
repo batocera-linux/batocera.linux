@@ -59,18 +59,19 @@
 - Amiberry to v5.7.3
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
-- Cemu to v2.0-91
-- Citra to r518f723
+- Cemu to v2.1
+- Citra to r5115f64
 - Commander Genius to v3.5.1
-- Dolphin to 2407.130
-- Duckstaton to Jul 27, 2024 build
+- Dolphin to 2407.264
+- Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
 - Flycast to Jul 30 build
-- Ikemen to August 1st 2024 build
 - GroovyMAME to 0.268
+- Ikemen to August 1st 2024 build
+- Kodi to 21.1
 - PCSX2 to v2.1.100
-- Redream to 1.5.0-1131-gafdfc1a
+- Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.32-16843
 - Sonic Mania to Jul 21, 2024 build
 - The Force Engine to Aug 19, 2024 build
@@ -101,6 +102,7 @@
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
+- Mesa3D to 24.2.1
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
