@@ -1,5 +1,11 @@
 # Raspberry Pi 3B default values
 
+# max es resolution 720p
+es.resolution=max-1280x720
+
+# splash at 720p
+splash.screen.resize=1280x720
+
 # default audio output
 audio.device=alsa_output.platform-3f902000.hdmi.hdmi-stereo
 audio.profile=output:hdmi-stereo@alsa_card.platform-3f902000.hdmi
