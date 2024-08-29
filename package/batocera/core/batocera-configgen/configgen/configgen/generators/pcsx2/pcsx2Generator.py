@@ -456,6 +456,11 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, met
     else:
         pcsx2INIConfig.set("EmuCore", "AutoIncrementSlot", "true")
 
+    if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
+        pcsx2INIConfig.set("EmuCore", "SaveStateOnShutdown", "true")
+    else:
+        pcsx2INIConfig.set("EmuCore", "SaveStateOnShutdown", "false")
+
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
         pcsx2INIConfig.add_section("InputSources")
