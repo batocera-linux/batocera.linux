@@ -1,0 +1,15 @@
+diff --git a/src/gallium/drivers/v3d/v3d_resource.c b/src/gallium/drivers/v3d/v3d_resource.c
+index 937cc999a7..d5a0f69c48 100644
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -101,10 +101,6 @@ v3d_resource_bo_alloc(struct v3d_resource *rsc)
+         struct pipe_screen *pscreen = prsc->screen;
+         struct v3d_bo *bo;
+ 
+-        /* never replace a mapped bo */
+-        if (rsc->bo && rsc->bo->map)
+-                return false;
+-
+         /* Buffers may be read using ldunifa, which prefetches the next
+          * 4 bytes after a read. If the buffer's size is exactly a multiple
+          * of a page size and the shader reads the last 4 bytes with ldunifa

@@ -102,6 +102,7 @@
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
+- Mesa3D to 24.2.1
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
