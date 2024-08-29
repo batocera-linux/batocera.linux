@@ -10,10 +10,10 @@ DEVPATH=$(echo "$UDEV_INFO" | grep 'DEVPATH' | cut -d'=' -f2)
 
 if [[ "$DEVPATH" == *"$TARGET_VENDOR"* ]] && [[ "$DEVPATH" == *"$TARGET_PRODUCT"* ]]; then
     # Apply calibration for X-axis (axis 0)
-    EVDEV_JOYSTICK --e "$DEVNAME" --minimum -27767 --maximum 32767 --a 0 --d 500 --f 25
+    evdev-joystick --e "$DEVNAME" --minimum -27767 --maximum 32767 --a 0 --d 500 --f 25
 
     # Apply calibration for Y-axis (axis 1)
-    EVDEV_JOYSTICK --e "$DEVNAME" --minimum -32767 --maximum 27767 --a 1 --d 500 --f 25
+    evdev-joystick --e "$DEVNAME" --minimum -32767 --maximum 27767 --a 1 --d 500 --f 25
 else
     echo "Device not found, exiting."
     exit 1
