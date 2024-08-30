@@ -75,7 +75,7 @@
 - RPCS3 to 0.0.32-16843
 - Sonic Mania to Jul 21, 2024 build
 - The Force Engine to Aug 19, 2024 build
-- Vita3k to Jul 27 build
+- Vita3k to August 25, 2024 build
 - Xemu to v0.7.131
 - Xenia to v1.0.2817
 - Xenia Canary to August 18, 2024 build
@@ -103,6 +103,7 @@
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
 - Mesa3D to 24.2.1
+- Buildroot to the 2024.05.2 release base
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
