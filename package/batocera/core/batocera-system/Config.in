@@ -1813,10 +1813,13 @@ config BR2_PACKAGE_BATOCERA_XORG
 
 	# GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
 	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI			    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	# select BR2_PACKAGE_XDRIVER_XF86_VIDEO_INTEL			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # disabed due to issues with newer intel gpu's
 	# nvidia xorg packages are selected by batocera-nvidia package
+
+	# vendor neutral GL dispatch library
+	select BR2_PACKAGE_LIBGLVND			                    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	# applications
 	select BR2_PACKAGE_XAPP_SETXKBMAP
@@ -1837,11 +1840,6 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_OPENBOX			# window manager
 	select BR2_PACKAGE_UNCLUTTER			if !BR2_PACKAGE_BATOCERA_TARGET_X86 # hide mouse
 	select BR2_PACKAGE_TOUCHEGG			# touchscreen extended gestures
-
-	# vendor neutral GL dispatch library
-	# already set by nvidia for x86_64, but required on x86 for pcsx2
-	# required for RPi4 OpenGL stack
-	select BR2_PACKAGE_LIBGLVND			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 config BR2_PACKAGE_BATOCERA_GPU_X86
 	bool "batocera.linux GPU support for x86 platform"
