@@ -75,6 +75,12 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("General", "ISOPath1", "/userdata/roms/gamecube")
             dolphinSettings.set("General", "ISOPaths", "2")
 
+        # increment savestates
+        if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
+            dolphinSettings.set("General", "AutoIncrementSlot", "False")
+        else:
+            dolphinSettings.set("General", "AutoIncrementSlot", "True")
+
         # Don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
 
