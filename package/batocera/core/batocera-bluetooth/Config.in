@@ -1,12 +1,11 @@
 config BR2_PACKAGE_BATOCERA_BLUETOOTH
 	bool "batocera-bluetooth"
-
-    	select BR2_PACKAGE_BLUEZ5_UTILS
-    	select BR2_PACKAGE_BLUEZ5_UTILS_CLIENT
-    	select BR2_PACKAGE_BLUEZ5_UTILS_TEST
-    	select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS
-    	select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED
-        select BR2_PACKAGE_BLUEZ5_UTILS_TOOLS # needed for sixaxis
-        select BR2_PACKAGE_UTIL_LINUX_RFKILL
-    	help
+   	select BR2_PACKAGE_BLUEZ5_UTILS
+   	select BR2_PACKAGE_BLUEZ5_UTILS_CLIENT
+   	select BR2_PACKAGE_BLUEZ5_UTILS_TEST
+   	select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS
+   	select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED
+    select BR2_PACKAGE_BLUEZ5_UTILS_TOOLS # needed for sixaxis
+    select BR2_PACKAGE_UTIL_LINUX_RFKILL
+  	help
 	  Bluetooth support and scripts for batocera.linux
