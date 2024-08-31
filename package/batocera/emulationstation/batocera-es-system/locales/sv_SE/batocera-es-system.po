@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-08-24 22:18+0200\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2024-08-26 19:27+0200\n"
+"Last-Translator: iBibicus\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
@@ -225,17 +225,17 @@ msgstr ""
 #. TRANSLATION: shared, shared, libretro/mesen-s, libretro/mesen, libretro/mesen, ...
 msgctxt "game_options"
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Game info/art"
-msgstr ""
+msgstr "Spelinfo/-konst"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Performance"
-msgstr ""
+msgstr "Prestanda"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -245,67 +245,67 @@ msgstr ""
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP LEFT (NW)"
-msgstr ""
+msgstr "ÖVERST TILL VÄNSTER (NV)"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "TOP RIGHT (NE)"
-msgstr ""
+msgstr "ÖVERST TILL HÖGER (NÖ)"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM RIGHT (SE)"
-msgstr ""
+msgstr "NEDERST TILL HÖGER (SÖ)"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "BOTTOM LEFT (SW)"
-msgstr ""
+msgstr "NEDERST TILL VÄNSTER (SV)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Show an image overlaid on top of the bezel."
-msgstr ""
+msgstr "Visa en bild ovanpå ramen."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SHOW TATTOO OVER BEZEL"
-msgstr ""
+msgstr "VISA TATUERING ÖVER BEZEL"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
-msgstr ""
+msgstr "NEJ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "SYSTEM CONTROLLERS"
-msgstr ""
+msgstr "STYRENHETER FÖR SYSTEM"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "CUSTOM IMAGE"
-msgstr ""
+msgstr "ANPASSAD AVBILDNING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "TATTOO CORNER"
-msgstr ""
+msgstr "TATUERINGSHÖRNA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "CUSTOM .PNG IMAGE PATH"
-msgstr ""
+msgstr "ANPASSAD .PNG BILDSÖKVÄG"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Shrink/expand tattoo to fit within the bezel's border."
-msgstr ""
+msgstr "Krymp/expandera tatueringen så att den passar inom ramens kant."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RESIZE TATTOO"
-msgstr ""
+msgstr "ÄNDRA STORLEK PÅ TATUERING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -313,6 +313,8 @@ msgid ""
 "During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
 "libretro cores."
 msgstr ""
+"Under spelets gång trycker du på Hotkey + R1 för att översätta text på "
+"skärmen. Endast på libretro-kärnor."
 
 #. TRANSLATION: shared, shared, shared, shared
 msgctxt "game_options"
@@ -337,7 +339,7 @@ msgstr "VALT SPÅRK"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "If nothing is specified, will use ZTranslate by default."
-msgstr ""
+msgstr "Om inget anges används ZTranslate som standard."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -347,7 +349,7 @@ msgstr "URL TILL AI-ÖVERSÄTTNINGSTJÄNST"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "PAUSE ON TRANSLATED SCREEN"
-msgstr ""
+msgstr "PAUSA PÅ ÖVERSATT SKÄRM"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -355,26 +357,30 @@ msgid ""
 "Enables run-ahead. Doubles CPU requirements. High numbers can result in "
 "visible jitter."
 msgstr ""
+"Gör det möjligt att köra bildrutor i förväg. Fördubblar CPU-kraven. Höga "
+"siffror kan resultera i synliga bildskakningar."
 
 #. TRANSLATION: shared, shared, shared, shared, shared
 msgctxt "game_options"
 msgid "LATENCY REDUCTION"
-msgstr ""
+msgstr "MINSKNING AV LATENS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD FRAMES"
-msgstr ""
+msgstr "BILDRUTOR SOM KÖRS I FÖRVÄG"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Can prevent audio skips on button presses when using run-ahead."
 msgstr ""
+"Kan förhindra att ljudet hoppar över vid knapptryckningar när du använder "
+"möjligheten att köra bildrutor i förväg."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
-msgstr ""
+msgstr "ANVÄND DEN ANDRA INSTANSEN FÖR ATT KÖRA I FÖRVÄG"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -382,47 +388,50 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
+"Minska bildfördröjningen automatiskt tillfälligt för att förhindra att "
+"bildrutor faller. Kan introducera stamning."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
-msgstr ""
+msgstr "AUTOMATISK BILDRUTEFÖRDRÖJNING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid ""
 "Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR."
 msgstr ""
+"Avvik inte från den kärnbegärda tidpunkten. G-Sync, FreeSync, HDMI 2.1 VRR."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "VARIABLE REFRESH RATE"
-msgstr ""
+msgstr "VARIABEL UPPDATERINGSFREKVENS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Improves performance at the cost of latency and more video stuttering."
-msgstr ""
+msgstr "Förbättrar prestanda på bekostnad av latens och mer videostamning."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "THREADED VIDEO"
-msgstr ""
+msgstr "TRÅDAD VIDEO"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use light guns instead of pads if light guns are connected."
-msgstr ""
+msgstr "Använd ljuspistoler istället för knappar om ljuspistoler är anslutna."
 
 #. TRANSLATION: shared, dolphin
 msgctxt "game_options"
 msgid "LIGHT GUNS"
-msgstr ""
+msgstr "LJUSPISTOLER"
 
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "CONTROLS"
-msgstr ""
+msgstr "KONTROLLER"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -432,7 +441,7 @@ msgstr "ANVÄND LJUSPISTOL"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use wheels instead of pads if wheels are connected."
-msgstr ""
+msgstr "Använd hjul istället för knappar om det är hjul anslutna."
 
 #. TRANSLATION: shared, shared, shared, shared, pcsx2
 msgctxt "game_options"
@@ -447,7 +456,7 @@ msgstr "ANVÄND RATTAR"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Maximum wheel rotation from left to right (in degrees)"
-msgstr ""
+msgstr "Maximal hjulrotation från vänster till höger (i grader)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -457,12 +466,12 @@ msgstr "RATTROTATION"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Zone for which the game doesn't react to the wheel (in degrees)"
-msgstr ""
+msgstr "Zon som spelet inte reagerar på hjulet för (i grader)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "WHEEL DEADZONE"
-msgstr ""
+msgstr "DÖDZON FÖR HJUL"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -470,16 +479,17 @@ msgid ""
 "Reserve a non dead zone at the center of the wheel to go straight ahead (in "
 "degrees)"
 msgstr ""
+"Reservera en icke död zon i mitten av hjulet för att gå rakt fram (i grader)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "WHEEL MIDZONE"
-msgstr ""
+msgstr "HJULETS MITTZON"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
-msgstr ""
+msgstr "För emulatorer och styrenheter som stöder vibrationer."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -489,22 +499,22 @@ msgstr "SKAKNIVÅ"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set game audio level gain in dB."
-msgstr ""
+msgstr "Ställ in spelets ljudnivåförstärkning i dB."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUDIO VOLUME GAIN"
-msgstr ""
+msgstr "FÖRSTÄRKNING AV LJUDVOLYM"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "0 (No gain)"
-msgstr ""
+msgstr "0 (Ingen förstärkning)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Show/Hide guns borders for specific systems"
-msgstr ""
+msgstr "Visa/dölj vapenkanter för specifika system"
 
 #. TRANSLATION: shared, libretro/beetle-saturn, libretro/swanstation, libretro/fbneo, libretro/fceumm, ...
 msgctxt "game_options"
@@ -514,22 +524,22 @@ msgstr "LJUSPISTOL"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "BORDER MODE"
-msgstr ""
+msgstr "KANTLÄGE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "normal"
-msgstr ""
+msgstr "normal"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "hidden"
-msgstr ""
+msgstr "dold"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
-msgstr ""
+msgstr "Emulera Chroma 81-gränssnittet (färgläggning)."
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/atari800, libretro/atari800, libretro/atari800, ...
 msgctxt "game_options"
@@ -539,37 +549,37 @@ msgstr "AVANCERADE INSTÄLLNINGAR"
 #. TRANSLATION: libretro/81, libretro/gambatte
 msgctxt "game_options"
 msgid "COLORIZATION"
-msgstr ""
+msgstr "FÄRGLÄGGNING"
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/fceumm, libretro/fceumm, libretro/genesisplusgx, ...
 msgctxt "game_options"
 msgid "Autodetect"
-msgstr ""
+msgstr "Identifiera automatiskt"
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/genesisplusgx
 msgctxt "game_options"
 msgid "On (forced)"
-msgstr ""
+msgstr "På (tvingad)"
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Required for some homebrew."
-msgstr ""
+msgstr "Krävs för en del \"homebrew\"."
 
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "WRX HIGH RESOLUTION"
-msgstr ""
+msgstr "WRX HÖG UPPLÖSNING"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "ATARI SYSTEM"
-msgstr ""
+msgstr "ATARI-SYSTEMET"
 
 #. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "VIDEO FORMAT STANDARD"
-msgstr ""
+msgstr "STANDARD FÖR VIDEOFORMAT"
 
 #. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -584,52 +594,52 @@ msgstr "PAL 288x576px 50Hz"
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Speeds up file loading. Some games won't load with this."
-msgstr ""
+msgstr "Påskyndar inläsningen av filer. Vissa spel laddas inte med detta."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "SIO ACCELERATION"
-msgstr ""
+msgstr "SIO-ACCELERERING"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Emulate NTSC quirks to show more colors in hi-res mode."
-msgstr ""
+msgstr "Emulera NTSC-egenheter för att visa fler färger i högupplöst läge."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "HI-RES ARTIFACTING"
-msgstr ""
+msgstr "HÖGUPPLÖSTA ARTEFAKTER"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
-msgstr ""
+msgstr "Använd en alternativ upplösning. Vissa spel behöver detta."
 
 #. TRANSLATION: libretro/atari800, libretro/melondsds
 msgctxt "game_options"
 msgid "INTERNAL RESOLUTION"
-msgstr ""
+msgstr "INTERN UPPLÖSNING"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Enable the BASIC interpreter. Some games need this."
-msgstr ""
+msgstr "Aktivera BASIC-tolken. Vissa spel behöver detta."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "INTERNAL BASIC INTERPRETER"
-msgstr ""
+msgstr "INTERN BASIC-TOLK"
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Treats the right analog stick as the second joystick."
-msgstr ""
+msgstr "Behandlar den högra analoga spaken som den andra styrspaken."
 
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "JOYSTICK HACK (FOR ROBOTRON 2084)"
-msgstr ""
+msgstr "JOYSTICKHACK (FÖR ROBOTRON 2084)"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
