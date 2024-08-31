@@ -27,6 +27,7 @@
 #v2.5 - add PIRONMAN case support (RPi4) - @dmanlfc
 #v2.6 - add PIRONMAN 5 case support (RPi5) - @dmanlfc
 #v2.7 - add Dockerpi Powerboard support - @dmanlfc
+#v2.8 - add Argon One RPi5 - @lbrpdx
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -34,7 +35,7 @@ powerdevices=(
               RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_ADV "Advanced script for Retroflag housings" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
-              ARGONONE "Fan control for RPi4 Argon One case" \
+              ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
               KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
               MAUSBERRY "A neat power device from Mausberry circuits" \
               ONOFFSHIM "The cheapest power device from Pimoroni" \
@@ -396,22 +397,37 @@ function retroflag_config()
     retroflag_start $@
 }
 
-#https://www.argon40.com/argon-one-raspberry-pi-4-case.html
+# Pi4: https://argon40.com/products/argon-one-v2-case-for-raspberry-pi-4 (but tested on V1 which is EOL now)
+# Pi5: https://argon40.com/products/argon-one-v3-case-for-raspberry-pi-5
 function argonone_start()
 {
     #------ CONFIG SECTION ------
-    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
-         mount -o remount, rw /boot
-         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
-    fi
-    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
-         mount -o remount, rw /boot
-         echo "dtparam=i2c-1=on" >> "/boot/config.txt"
-    fi
-    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
-         mount -o remount, rw /boot
-         echo "enable_uart=1" >> "/boot/config.txt"
-    fi
+    case $(cat /usr/share/batocera/batocera.arch) in
+        bcm2711)
+	    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+		 mount -o remount, rw /boot
+		 echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+	    fi
+	    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
+		 mount -o remount, rw /boot
+		 echo "dtparam=i2c-1=on" >> "/boot/config.txt"
+	    fi
+	    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
+		 mount -o remount, rw /boot
+		 echo "enable_uart=1" >> "/boot/config.txt"
+	    fi
+        ;;
+        bcm2712)
+	    if ! grep -q "^dtparam=i2c=on" "/boot/config.txt"; then
+		 mount -o remount, rw /boot
+		 echo "dtparam=i2c=on" >> "/boot/config.txt"
+	    fi
+	    if ! grep -q "^dtparam=uart0=on" "/boot/config.txt"; then
+		 mount -o remount, rw /boot
+		 echo "dtparam=uart0=on" >> "/boot/config.txt"
+	    fi
+        ;;
+    esac
     [ $CONF -eq 1 ] && return
     #------ CONFIG SECTION ------
 
