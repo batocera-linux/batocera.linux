@@ -27,6 +27,14 @@ IMAGE_NAME  := batocera.linux-build
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*' | sed -n 's/.*\/batocera-\(.*\).board/\1/p'))
 UID  := $(shell id -u)
 GID  := $(shell id -g)
+OS := $(shell uname)
+
+ifeq ($(OS),Darwin)
+$(if $(shell which gfind 2>/dev/null),,$(error "gfind not found! Please install findutils from Homebrew."))
+FIND ?= gfind
+else
+FIND ?= find
+endif
 
 $(if $(shell which $(DOCKER) 2>/dev/null),, $(error "$(DOCKER) not found!"))
 
@@ -102,6 +110,7 @@ dl-dir:
 
 %-build: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -115,6 +124,7 @@ dl-dir:
 
 %-source: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -128,6 +138,7 @@ dl-dir:
 
 %-show-build-order: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -141,6 +152,7 @@ dl-dir:
 
 %-kernel: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -154,6 +166,7 @@ dl-dir:
 
 %-graph-depends: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -it --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -168,6 +181,7 @@ dl-dir:
 %-shell: batocera-docker-image output-dir-%
 	$(if $(BATCH_MODE),$(if $(CMD),,$(error "not suppoorted in BATCH_MODE if CMD not specified!")),)
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -182,6 +196,7 @@ dl-dir:
 
 %-ccache-stats: batocera-docker-image %-config ccache-dir dl-dir
 	@$(DOCKER) run -t --init --rm \
+		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
@@ -256,7 +271,7 @@ endif
 	@$(MAKE) $*-snapshot
 
 %-find-build-dups: %-supported
-	@find $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
+	@$(FIND) $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
 
 %-remove-build-dups: %-supported
 	@while [ -n "`find $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ]; do \
@@ -264,7 +279,7 @@ endif
 	done
 
 find-dl-dups:
-	@find $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
+	@$(FIND) $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -print0 -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
 
 remove-dl-dups:
 	@while [ -n "`find $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ] ; do \
