@@ -24,7 +24,9 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Precisi
 ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b671", RUN+="/sbin/modprobe xpad"
 
 # G920 Driving Force Racing Wheel for Xbox One & Logitech G920 Driving Force Racing Wheel (2 names, same steering wheel)
+# Old (c261) and new revision (c262)
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
+ATTR{idVendor}=="046d", ATTR{idProduct}=="c262", RUN+="usb_modeswitch '%b/%k'"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G920 Driving Force Racing Wheel", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 
