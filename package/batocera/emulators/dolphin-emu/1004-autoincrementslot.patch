@@ -1,0 +1,39 @@
+diff --git a/Source/Core/Core/Config/MainSettings.cpp b/Source/Core/Core/Config/MainSettings.cpp
+index 775e6b1..b4f4dae 100644
+--- a/Source/Core/Core/Config/MainSettings.cpp
++++ b/Source/Core/Core/Config/MainSettings.cpp
+@@ -308,6 +308,7 @@ const Info<int> MAIN_GDB_PORT{{System::Main, "General", "GDBPort"}, -1};
+ const Info<int> MAIN_ISO_PATH_COUNT{{System::Main, "General", "ISOPaths"}, 0};
+ const Info<std::string> MAIN_SKYLANDERS_PATH{{System::Main, "General", "SkylandersCollectionPath"},
+                                              ""};
++const Info<bool> MAIN_AUTO_INCREMENT_SLOT_COUNT{{System::Main, "General", "AutoIncrementSlot"}, false};
+ 
+ static Info<std::string> MakeISOPathConfigInfo(size_t idx)
+ {
+diff --git a/Source/Core/Core/Config/MainSettings.h b/Source/Core/Core/Config/MainSettings.h
+index a4bea44..c7c65d3 100644
+--- a/Source/Core/Core/Config/MainSettings.h
++++ b/Source/Core/Core/Config/MainSettings.h
+@@ -203,6 +203,8 @@ extern const Info<std::string> MAIN_GDB_SOCKET;
+ extern const Info<int> MAIN_GDB_PORT;
+ extern const Info<int> MAIN_ISO_PATH_COUNT;
+ extern const Info<std::string> MAIN_SKYLANDERS_PATH;
++extern const Info<bool> MAIN_AUTO_INCREMENT_SLOT_COUNT;
++
+ std::vector<std::string> GetIsoPaths();
+ void SetIsoPaths(const std::vector<std::string>& paths);
+ 
+diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
+index 06a98b1..7339f9c 100644
+--- a/Source/Core/DolphinQt/MainWindow.cpp
++++ b/Source/Core/DolphinQt/MainWindow.cpp
+@@ -1452,6 +1452,9 @@ void MainWindow::StateLoadSlot()
+ 
+ void MainWindow::StateSaveSlot()
+ {
++  if (Config::Get(Config::MAIN_AUTO_INCREMENT_SLOT_COUNT)) {
++    m_state_slot++;
++  }
+   State::Save(Core::System::GetInstance(), m_state_slot);
+ }
+ 

@@ -1,0 +1,24 @@
+diff --git a/src/main/savestates.c b/src/main/savestates.c
+index 5a957c3..4b5886e 100644
+--- a/src/main/savestates.c
++++ b/src/main/savestates.c
+@@ -1541,9 +1541,6 @@ static int savestates_save_m64p(const struct device* dev, char *filepath)
+ 
+     save->filepath = strdup(filepath);
+ 
+-    if(autoinc_save_slot)
+-        savestates_inc_slot();
+-
+     save_eventqueue_infos(&dev->r4300.cp0, queue);
+ 
+     // Allocate memory for the save state data
+@@ -2176,6 +2173,9 @@ int savestates_save(void)
+     else if (fname == NULL) // Always save slots in M64P format
+         type = savestates_type_m64p;
+ 
++    if(autoinc_save_slot)
++      savestates_inc_slot();
++
+     filepath = savestates_generate_path(type);
+     if (filepath != NULL)
+     {

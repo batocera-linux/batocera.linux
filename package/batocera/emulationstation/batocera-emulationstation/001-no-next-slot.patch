@@ -1,5 +1,5 @@
 diff --git a/es-app/src/SaveState.cpp b/es-app/src/SaveState.cpp
-index aef374d..67c2e29 100644
+index aef374d..ac2f337 100644
 --- a/es-app/src/SaveState.cpp
 +++ b/es-app/src/SaveState.cpp
 @@ -80,20 +80,6 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
@@ -23,7 +23,7 @@ index aef374d..67c2e29 100644
  	bool incrementalSaveStates = SystemConf::getIncrementalSaveStates() && /*hasAutosave && */supportsIncremental;
  
  	std::string path = Utils::FileSystem::getParent(fileName);
-@@ -101,28 +87,28 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
+@@ -101,28 +87,29 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
  	if (slot == -1) // Run current AutoSave
  	{
  		if (racommands || fileName.empty())
@@ -38,7 +38,7 @@ index aef374d..67c2e29 100644
  		if (slot == -2) // Run new game without AutoSave
  		{
 -			cmd = cmd + " -autosave 0 -state_slot " + std::to_string(nextSlot);
-+			cmd = cmd + " -autosave 0 -state_slot " + std::to_string(slot);
++			cmd = cmd + " -autosave 0";
  		}
  		else if (incrementalSaveStates)
  		{
@@ -53,11 +53,22 @@ index aef374d..67c2e29 100644
  			}
  			else
 -				cmd = cmd + " -state_slot " + std::to_string(nextSlot) + " -state_file \"" + fileName + "\"";
-+				cmd = cmd + " -state_slot " + std::to_string(slot) + " -state_file \"" + fileName + "\"";
++			  if (!fileName.empty())
++			    cmd = cmd + " -state_slot " + std::to_string(slot) + " -state_file \"" + fileName + "\"";
  		}
  		else
  		{
-@@ -163,10 +149,10 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
+@@ -135,7 +122,8 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
+ 					cmd = cmd + " -autosave 1";
+ 			}
+ 			else
+-				cmd = cmd + " -state_slot " + std::to_string(slot) + " -state_file \"" + fileName + "\"";
++			  if (!fileName.empty())
++			    cmd = cmd + " -state_slot " + std::to_string(slot) + " -state_file \"" + fileName + "\"";
+ 		}
+ 
+ 		if (racommands) 
+@@ -163,10 +151,10 @@ std::string SaveState::setupSaveState(FileData* game, const std::string& command
  			{
  				Utils::FileSystem::copyFile(fileName, autoFilename);
  
