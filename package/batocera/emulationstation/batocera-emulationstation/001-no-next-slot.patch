@@ -81,3 +81,15 @@ index aef374d..ac2f337 100644
  					Utils::FileSystem::removeFile(mNewSlotFile);
  					if (Utils::FileSystem::copyFile(fileName, mNewSlotFile))
  						mNewSlotCheckSum = ApiSystem::getInstance()->getMD5(fileName, false);
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+index 1e2e270..c6f1a64 100644
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -2543,7 +2543,6 @@ void GuiMenu::openGamesSettings()
+ 	auto incrementalSaveStates = std::make_shared<OptionListComponent<std::string>>(mWindow, _("INCREMENTAL SAVESTATES"));
+ 	incrementalSaveStates->addRange({
+ 		{ _("INCREMENT PER SAVE"), _("Never overwrite old savestates, always make new ones."), "" }, // Don't use 1 -> 1 is YES, auto too
+-		{ _("INCREMENT SLOT"), _("Increment slot on a new game."), "0" },
+ 		{ _("DO NOT INCREMENT"), _("Use current slot on a new game."), "2" } },
+ 		SystemConf::getInstance()->get("global.incrementalsavestates"));
+ 
