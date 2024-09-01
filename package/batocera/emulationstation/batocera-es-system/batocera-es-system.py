@@ -120,7 +120,7 @@ class EsSystemConf:
         with open(configFile) as fp:
             line = fp.readline()
             while line:
-                m = re.search("^([^ ]+)=y$", line)
+                m = re.search("^([^#][^ ]*)=y$", line)
                 if m:
                     config[m.group(1)] = 1
                 line = fp.readline()
