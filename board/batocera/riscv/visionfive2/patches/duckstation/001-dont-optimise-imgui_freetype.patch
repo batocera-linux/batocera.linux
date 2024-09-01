@@ -1,0 +1,23 @@
+diff --git a/dep/imgui/src/imgui_freetype.cpp b/dep/imgui/src/imgui_freetype.cpp
+index a78bd5e31a..69fad41425 100644
+--- a/dep/imgui/src/imgui_freetype.cpp
++++ b/dep/imgui/src/imgui_freetype.cpp
+@@ -430,6 +430,9 @@ struct ImFontBuildDstDataFT
+     ImBitVector         GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
+ };
+ 
++#pragma GCC push_options
++#pragma GCC optimize ("O0")
++
+ bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, unsigned int extra_flags)
+ {
+     IM_ASSERT(atlas->ConfigData.Size > 0);
+@@ -750,6 +753,8 @@ bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, u
+     return true;
+ }
+ 
++#pragma GCC pop_options
++
+ // FreeType memory allocation callbacks
+ static void* FreeType_Alloc(FT_Memory /*memory*/, long size)
+ {
