@@ -189,7 +189,7 @@ class XeniaGenerator(Generator):
         # add node D3D12
         if 'D3D12' not in config:
             config['D3D12'] = {}
-        config['D3D12'] = {'d3d12_readback_resolve': True}
+        config['D3D12'] = {'d3d12_readback_resolve': False}
         # add node Display
         if 'Display' not in config:
             config['Display'] = {}
@@ -210,7 +210,7 @@ class XeniaGenerator(Generator):
                 'depth_float24_convert_in_pixel_shader': True,
                 'gpu': 'vulkan',
                 'gpu_allow_invalid_fetch_constants': True,
-                'render_target_path_vulkan': 'any'
+                'render_target_path_vulkan': 'fbo'
             }
         else:
             config['GPU'] = {
@@ -221,7 +221,7 @@ class XeniaGenerator(Generator):
             }
         # vsync
         config['GPU']['vsync'] = system.config.get('xenia_vsync', False)
-        config['GPU']['vsync_fps'] = int(system.config.get('xenia_vsync_fps', 60))
+        config['GPU']['framerate_limit'] = int(system.config.get('xenia_vsync_fps', 0))
         # page state
         config['GPU']['clear_memory_page_state'] = system.config.get('xenia_page_state', False)
         # render target path
@@ -273,7 +273,7 @@ class XeniaGenerator(Generator):
             'storage_root': xeniaConfig
             }
         # mount cache
-        config['Storage']['mount_cache'] = system.config.get('xenia_cache', False)
+        config['Storage']['mount_cache'] = system.config.get('xenia_cache', True)
 
         # add node UI
         if 'UI' not in config:
