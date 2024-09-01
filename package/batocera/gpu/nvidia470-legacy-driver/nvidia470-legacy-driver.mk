@@ -14,6 +14,7 @@ NVIDIA470_LEGACY_DRIVER_LICENSE = NVIDIA Software License
 NVIDIA470_LEGACY_DRIVER_LICENSE_FILES = LICENSE
 NVIDIA470_LEGACY_DRIVER_REDISTRIBUTE = NO
 NVIDIA470_LEGACY_DRIVER_INSTALL_STAGING = YES
+NVIDIA470_LEGACY_DRIVER_EXTRACT_DEPENDENCIES = host-xz
 
 ifeq ($(BR2_PACKAGE_NVIDIA470_LEGACY_DRIVER_XORG),y)
 
@@ -146,8 +147,8 @@ endif # NVIDIA470_LEGACY_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA470_LEGACY_DRIVER_EXTRACT_CMDS
-	$(SHELL) $(NVIDIA470_LEGACY_DRIVER_DL_DIR)/$(NVIDIA470_LEGACY_DRIVER_SOURCE) --extract-only --target \
-		$(@D)/tmp-extract
+	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA470_LEGACY_DRIVER_DL_DIR)/$(NVIDIA470_LEGACY_DRIVER_SOURCE) \
+		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
 	rm -rf $(@D)/tmp-extract
@@ -246,7 +247,7 @@ define NVIDIA470_LEGACY_DRIVER_RENAME_KERNEL_MODULES
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia470-modeset-legacy.ko
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
-	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia470-drm-legacy.ko	
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia470-drm-legacy.ko
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia470-uvm-legacy.ko
 	# set the driver version file

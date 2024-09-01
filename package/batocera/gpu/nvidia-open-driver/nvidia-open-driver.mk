@@ -14,6 +14,7 @@ NVIDIA_OPEN_DRIVER_LICENSE = NVIDIA Software License
 NVIDIA_OPEN_DRIVER_LICENSE_FILES = LICENSE
 NVIDIA_OPEN_DRIVER_REDISTRIBUTE = NO
 NVIDIA_OPEN_DRIVER_INSTALL_STAGING = YES
+NVIDIA_OPEN_DRIVER_EXTRACT_DEPENDENCIES = host-zstd
 
 ifeq ($(BR2_PACKAGE_NVIDIA_OPEN_DRIVER_XORG),y)
 
@@ -166,8 +167,8 @@ endif # BR2_PACKAGE_NVIDIA_OPEN_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA_OPEN_DRIVER_EXTRACT_CMDS
-	$(SHELL) $(NVIDIA_OPEN_DRIVER_DL_DIR)/$(NVIDIA_OPEN_DRIVER_SOURCE) --extract-only --target \
-		$(@D)/tmp-extract
+	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA_OPEN_DRIVER_DL_DIR)/$(NVIDIA_OPEN_DRIVER_SOURCE) \
+		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
 	rm -rf $(@D)/tmp-extract
@@ -322,7 +323,7 @@ define NVIDIA_OPEN_DRIVER_RENAME_KERNEL_MODULES
 	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-modeset-production.ko
 	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
-	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-production.ko	
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-drm-production.ko
 	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia-uvm-production.ko
 	# set the driver version file
