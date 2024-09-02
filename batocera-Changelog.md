@@ -17,6 +17,7 @@
 - Display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
 - Emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
+- Nvidia Encoding support with `batocera-record` for Production driver systems
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
