@@ -118,12 +118,13 @@ ifeq ($(BR2_PACKAGE_NVIDIA_OPEN_DRIVER_CUDA),y)
 NVIDIA_OPEN_DRIVER_LIBS += \
 	libcuda.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvcuvid.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
+	libnvidia-encode.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	# libnvidia-ptxjitcompiler.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
-	#libnvidia-encode.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	#libnvidia-nvvm.so.$(NVIDIA_OPEN_DRIVER_VERSION)
 NVIDIA_OPEN_DRIVER_32 += \
 	libcuda.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
-	libnvcuvid.so.$(NVIDIA_OPEN_DRIVER_VERSION)
+	libnvcuvid.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
+	libnvidia-encode.so.$(NVIDIA_OPEN_DRIVER_VERSION)
 ifeq ($(BR2_PACKAGE_NVIDIA_OPEN_DRIVER_CUDA_PROGS),y)
 NVIDIA_OPEN_DRIVER_PROGS = nvidia-cuda-mps-control nvidia-cuda-mps-server
 endif

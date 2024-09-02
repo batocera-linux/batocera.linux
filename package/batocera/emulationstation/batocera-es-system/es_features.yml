@@ -7191,6 +7191,7 @@ dolphin:
                     prompt: GAME ASPECT RATIO
                     description: The final output image, unrelated to the Wii's emulated NAND setting.
                     choices:
+                        "Automatic ratio":   0
                         "Force 16:9":        1
                         "Force 4:3":         2
                         "Stretch to window": 3
@@ -8003,7 +8004,7 @@ duckstation:
             description:
             choices:
                 "Disabled (Default)": "0"
-                "Enabled":            "100"
+                "Enabled":            "1"
 
 flycast:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]

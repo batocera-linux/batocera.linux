@@ -1,0 +1,24 @@
+diff --git a/src/gui/util/qgridlayoutengine.cpp b/src/gui/util/qgridlayoutengine.cpp
+index 83def02f7e..0c79c7c9d6 100644
+--- a/src/gui/util/qgridlayoutengine.cpp
++++ b/src/gui/util/qgridlayoutengine.cpp
+@@ -169,6 +169,10 @@ static inline qreal qround(qreal f)
+ }
+ 
+ }
++
++#pragma GCC push_options
++#pragma GCC optimize ("O0")
++
+ void QGridLayoutRowData::calculateGeometries(int start, int end, qreal targetSize, qreal *positions,
+                                              qreal *sizes, qreal *descents,
+                                              const QGridLayoutBox &totalBox,
+@@ -416,6 +420,8 @@ void QGridLayoutRowData::calculateGeometries(int start, int end, qreal targetSiz
+     }
+ }
+ 
++#pragma GCC pop_options
++
+ QGridLayoutBox QGridLayoutRowData::totalBox(int start, int end) const
+ {
+     QGridLayoutBox result;

@@ -13,21 +13,48 @@ PULSEAUDIO_MONITOR=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^
 
 mkdir -p /userdata/recordings || exit 1
 
-# Check for VA-API hardware encoding support
+# Check for a NVIDIA GPU in the system
+has_nvidia_gpu() {
+    NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
+    
+    if [ -n "$NVIDIA_DEV" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Check for hardware encoding support
 check_hardware_encoding() {
     if [ -n "$OVERRIDE_ENCODER" ]; then
         case "$OVERRIDE_ENCODER" in
             hevc)
-                ENCODER="hevc_vaapi"
-                echo "Using user-selected HEVC hardware encoding via VA-API."
+                if has_nvidia_gpu; then
+                    ENCODER="hevc_nvenc"
+                    echo "Using user-selected HEVC hardware encoding via NVENC."
+                else
+                    ENCODER="hevc_vaapi"
+                    echo "Using user-selected HEVC hardware encoding via VA-API."
+                fi
                 ;;
             h264)
-                ENCODER="h264_vaapi"
-                echo "Using user-selected H.264 hardware encoding via VA-API."
+                if has_nvidia_gpu; then
+                    ENCODER="h264_nvenc"
+                    echo "Using user-selected H.264 hardware encoding via NVENC."
+                else
+                    ENCODER="h264_vaapi"
+                    echo "Using user-selected H.264 hardware encoding via VA-API."
+                fi
                 ;;
             mpeg2)
-                ENCODER="mpeg2_vaapi"
-                echo "Using user-selected MPEG-2 hardware encoding via VA-API."
+                if has_nvidia_gpu; then
+                    echo "Nvidia GPU's don't support hardware MPEG-2 encoding."
+                    echo "Falling back to software H.264 encoding."
+                    ENCODER="libx264"
+                else
+                    ENCODER="mpeg2_vaapi"
+                    echo "Using user-selected MPEG-2 hardware encoding via VA-API."
+                fi
                 ;;
             software)
                 ENCODER="libx264"
@@ -43,24 +70,33 @@ check_hardware_encoding() {
     fi
 
     echo "With an audio input source of: ${PULSEAUDIO_MONITOR}"
-    if [ "$ENCODER" = "hevc_vaapi" ] || [ "$ENCODER" = "h264_vaapi" ] || [ "$ENCODER" = "mpeg2_vaapi" ]; then
-        echo "A resolution of: ${RESOLUTION} and a framerate of: ${REFRESH_RATE}"
-    else
+    if [ "$ENCODER" = "libx264" ]; then
         echo "A resolution of: ${RESOLUTION}"
+    else
+        echo "A resolution of: ${RESOLUTION} and a framerate of: ${REFRESH_RATE}"       
     fi
     echo
     echo "Recording to file: ${OUTPUT}"
 }
 
+# Auto detect the encoder type, prefer VA-API
 auto_detect_encoder() {
     if vainfo 2>/dev/null | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
         ENCODER="hevc_vaapi"
         echo
         echo "Using: HEVC hardware encoding via VA-API."
+    elif has_nvidia_gpu; then
+        ENCODER="hevc_nvenc"
+        echo
+        echo "Using: HEVC hardware encoding via NVENC."
     elif vainfo 2>/dev/null | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
         ENCODER="h264_vaapi"
         echo
         echo "Using: H.264 hardware encoding via VA-API."
+    elif has_nvidia_gpu; then
+        ENCODER="h264_nvenc"
+        echo
+        echo "Using: H.264 hardware encoding via NVENC."    
     elif vainfo 2>/dev/null | grep -q "VAProfileMPEG2Main.*VAEntrypointEncSlice"; then
         ENCODER="mpeg2_vaapi"
         echo
@@ -83,9 +119,9 @@ usage() {
     echo "  --epic-mode"
     echo
     echo "Encoder options:"
-    echo "  hevc      - HEVC hardware encoding via VA-API"
-    echo "  h264      - H.264 hardware encoding via VA-API"
-    echo "  mpeg2     - MPEG-2 hardware encoding via VA-API"
+    echo "  hevc      - HEVC hardware encoding"
+    echo "  h264      - H.264 hardware encoding"
+    echo "  mpeg2     - MPEG-2 hardware encoding (Non-Nvidia cards)"
     echo "  software  - Software H.264 encoding"
     echo
     echo "Example: ${1} --default hevc"
@@ -109,6 +145,12 @@ default_record(){
                -vaapi_device "${VAAPI_DEVICE}" \
                -vf 'format=nv12,hwupload' -c:v ${ENCODER} -b:v 5000k -c:a aac -async 1 "${OUTPUT}" \
                -loglevel warning
+    elif [ "$ENCODER" = "hevc_nvenc" ] || [ "$ENCODER" = "h264_nvenc" ] || [ "$ENCODER" = "mpeg2_nvenc" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0+0,0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vf 'format=nv12' -c:v ${ENCODER} -b:v 5000k -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
     else
         ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 25 \
                -thread_queue_size 1024 -f x11grab -i :0.0+0,0 \
@@ -127,6 +169,12 @@ fast_record(){
                -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
                -vaapi_device "${VAAPI_DEVICE}" \
                -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 0 -preset ultrafast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
+    elif [ "$ENCODER" = "hevc_nvenc" ] || [ "$ENCODER" = "h264_nvenc" ] || [ "$ENCODER" = "mpeg2_nvenc" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vf 'format=nv12' -c:v ${ENCODER} -qp 0 -preset ultrafast -c:a aac -async 1 "${OUTPUT}" \
                -loglevel warning
     else
         ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 30 \
@@ -147,6 +195,12 @@ compress_record(){
                -vaapi_device "${VAAPI_DEVICE}" \
                -vf 'format=nv12,hwupload' -c:v ${ENCODER} -crf 20 -preset veryfast -c:a aac -async 1 "${OUTPUT}" \
                -loglevel warning
+    elif [ "$ENCODER" = "hevc_nvenc" ] || [ "$ENCODER" = "h264_nvenc" ] || [ "$ENCODER" = "mpeg2_nvenc" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vf 'format=nv12' -c:v ${ENCODER} -crf 20 -preset veryfast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
     else
         ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 30 \
                -thread_queue_size 1024 -f x11grab -i :0.0 \
@@ -166,6 +220,12 @@ high_quality_record(){
                -vaapi_device "${VAAPI_DEVICE}" \
                -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
                -loglevel warning
+    elif [ "$ENCODER" = "hevc_nvenc" ] || [ "$ENCODER" = "h264_nvenc" ] || [ "$ENCODER" = "mpeg2_nvenc" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vf 'format=nv12' -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning
     else
         ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 60 \
                -thread_queue_size 1024 -f x11grab -i :0.0 \
@@ -183,8 +243,14 @@ epic_mode_record(){
                -thread_queue_size 1024 -f x11grab -i :0.0 \
                -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
                -vaapi_device "${VAAPI_DEVICE}" \
-               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 23 -preset fast -c:a aac -async 1 "${OUTPUT}" \
+               -vf 'format=nv12,hwupload' -c:v ${ENCODER} -qp 18 -preset medium -c:a aac -async 1 "${OUTPUT}" \
                -loglevel warning
+    elif [ "$ENCODER" = "hevc_nvenc" ] || [ "$ENCODER" = "h264_nvenc" ] || [ "$ENCODER" = "mpeg2_nvenc" ]; then
+        ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate "${REFRESH_RATE}" \
+               -thread_queue_size 1024 -f x11grab -i :0.0 \
+               -f pulse -ac 2 -channel_layout stereo -i "${PULSEAUDIO_MONITOR}" \
+               -vf 'format=nv12' -c:v ${ENCODER} -qp 18 -preset medium -c:a aac -async 1 "${OUTPUT}" \
+               -loglevel warning    
     else
         ffmpeg -probesize 20M -video_size "${RESOLUTION}" -framerate 60 \
                -thread_queue_size 1024 -f x11grab -i :0.0 \
