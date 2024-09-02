@@ -2192,7 +2192,7 @@ daphne:
   release: 1983
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform: daphne, arcade
+  platform: alg, daphne, arcade
   emulators:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
@@ -2254,7 +2254,7 @@ singe:
   release: 1990
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform: daphne, arcade
+  platform: alg, daphne, arcade
   emulators:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
