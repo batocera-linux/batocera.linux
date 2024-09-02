@@ -21,6 +21,8 @@
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
 - Fixed right controller LED for the Ayaneo Air Plus, it's now functional
+- ES: RetroAchievements displayed for Gamecube and Uzebox
+- ES: Fixed a crash when selecting "descending order" for several parameters
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
