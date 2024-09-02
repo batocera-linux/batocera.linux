@@ -8,8 +8,9 @@ PYTHON_PYXEL_VERSION = v1.9.18
 PYTHON_PYXEL_SITE =  $(call github,kitao,pyxel,$(PYTHON_PYXEL_VERSION))
 PYTHON_PYXEL_SETUP_TYPE = setuptools
 PYTHON_PYXEL_LICENSE = MIT
-PYTHON_PYXEL_SETUP_TYPE = pep517
-PYTHON_PYXEL_DEPENDENCIES = host-rustc host-rust-bin sdl2 host-python-maturin
+PYTHON_PYXEL_SETUP_TYPE = maturin
+PYTHON_PYXEL_CARGO_MANIFEST_PATH = crates/pyxel-extension/Cargo.toml
+PYTHON_PYXEL_DEPENDENCIES = host-rust-bin sdl2
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	PYXEL_CARGO_TARGET=x86_64-unknown-linux-gnu
@@ -37,3 +38,6 @@ PYTHON_PYXEL_PRE_INSTALL_TARGET_HOOKS += PYTHON_PYXEL_REMOVE_PREVIOUS
 PYTHON_PYXEL_POST_INSTALL_TARGET_HOOKS += PYTHON_PYXEL_SAMPLE_AND_KEYS
 
 $(eval $(python-package))
+
+# python-package sets this to run cargo after download, but we want to let maturin do that
+PYTHON_PYXEL_DOWNLOAD_POST_PROCESS =
