@@ -57,7 +57,7 @@
   - Libretro-MrBoom to v5.5
   - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to June 22 build
-- Amiberry to v5.7.3
+- Amiberry to v5.7.4
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
 - Cemu to v2.1
