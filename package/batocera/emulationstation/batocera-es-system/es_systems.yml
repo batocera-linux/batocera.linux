@@ -237,7 +237,7 @@ n64dd:
   manufacturer: Nintendo
   release: 1999
   hardware: console
-  extensions: [z64, n64, zip, 7z] # ndd, d64 : Not supported yet
+  extensions: [z64, n64, ndd, zip, 7z] # d64 : Not supported yet
   emulators:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
