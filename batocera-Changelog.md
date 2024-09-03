@@ -18,6 +18,7 @@
 - Emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
 - Nvidia Encoding support with `batocera-record` for Production driver systems
+- N64DD: support for standalone .ndd disk format (with libretro-paralleln64)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
