@@ -34,7 +34,9 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_X11=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
+# currently duckstation build fails if you set vulkan off when headers & loader are present
+#ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
 else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF

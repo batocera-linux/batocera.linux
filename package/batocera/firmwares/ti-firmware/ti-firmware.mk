@@ -14,6 +14,12 @@ define TI_FIRMWARE_INSTALL_TARGET_CMDS
 	mkdir -p $(TI_FIRMWARE_TARGET_DIR)
 	cp -a $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/ti-firmware/*.bin \
 	    $(TI_FIRMWARE_TARGET_DIR)
+	ln -sf /lib/firmware/ti/tas2781/TAS2XXX1EB30.bin \
+	    $(TARGET_DIR)/lib/firmware/TAS2XXX1EB3.bin
+	ln -sf /lib/firmware/ti/tas2781/TAS2XXX1EB30.bin \
+	    $(TARGET_DIR)/lib/firmware/TAS2XXX1EB30.bin
+	ln -sf /lib/firmware/ti/tas2781/TAS2XXX1EB31.bin \
+	    $(TARGET_DIR)/lib/firmware/TAS2XXX1EB31.bin
 endef
 
 $(eval $(generic-package))

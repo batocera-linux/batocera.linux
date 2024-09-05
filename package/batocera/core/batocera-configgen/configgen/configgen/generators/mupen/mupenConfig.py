@@ -27,6 +27,16 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     else:
         iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
 
+    # state_slot option, AutoStateSlotIncrement could be set too depending on the es option
+    if system.isOptSet('state_slot'):
+        iniConfig.set("Core", "CurrentStateSlot", str(system.config["state_slot"]))
+
+    # increment savestates
+    if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
+        iniConfig.set("Core", "AutoStateSlotIncrement", "False")
+    else:
+        iniConfig.set("Core", "AutoStateSlotIncrement", "True")
+        
     # Create section for Audio-SDL
     if not iniConfig.has_section("Audio-SDL"):
         iniConfig.add_section("Audio-SDL")

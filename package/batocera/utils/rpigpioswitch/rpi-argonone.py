@@ -2,14 +2,20 @@
 """
 Argon One Fan Service Daemon
 Original source: https://github.com/Elrondo46/argonone
-@lbrpdx - Modified to run on Batocera
+@lbrpdx - Modified to run on Batocera (now both RPi4 and RPi5)
 
+RPI4:
 Make sure to add in /boot/config.txt:
  dtparam=i2c_arm=on
  dtparam=i2c-1=on
 
+RPI5:
+Make sure to add in /boot/config.txt:
+ dtparam=i2c=on
+ dtparam=uart0=on
+
 (it should be installed by Batocera when you enable 
-Argon One support case)
+Argon One support case through S92switch setup)
 
 This daemon is launched through /etc/init.d/S92switch
 
@@ -33,31 +39,34 @@ EmulationStation menu)
 """
 import smbus
 import RPi.GPIO as GPIO
+import gpiod
+from gpiod.line import Edge
 import os
 import time
 import sys
 from threading import Thread
 
 # Choose 0 (kill emulator) or 1 (force reboot) on double click
-FORCE_REBOOT=0
+FORCE_REBOOT = 0
+DEBUG = 0
 
 config_file='/userdata/system/configs/argonone.conf'
-rev = GPIO.RPI_REVISION
-if rev == 2 or rev == 3:
-    try:
-        bus = smbus.SMBus(1)
-    except:
-        print("Fatal error: No Argon One case or kernel modules not loaded. Exiting now.")
-        exit()
-else:
-    bus = smbus.SMBus(0)
+
+if not os.path.exists('/dev/i2c-1'):
+    print("Fatal error: i2c bus can't be initialized, verify your /boot/config.txt")
+    exit()
+
+try:
+    bus = smbus.SMBus(1)
+except Exception as e:
+    print(f"Fatal error: {e} ")
+    exit()
 
 address = 0x1a
-shutdown_pin=4
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(shutdown_pin, GPIO.IN,  pull_up_down=GPIO.PUD_DOWN)
+shutdown_pin = 4
+rpi_reg = 0x80
 
+# Read fan % speed from the config file
 def get_fanspeed(tempval, configlist):
     for curconfig in configlist:
         curpair = curconfig.split("=")
@@ -67,6 +76,7 @@ def get_fanspeed(tempval, configlist):
             return fancfg
     return 0
 
+# Load the config file to memory
 def load_config(fname):
     newconfig = []
     try:
@@ -103,10 +113,10 @@ def load_config(fname):
         return []
     return newconfig
 
-
+# Check the current temperature and adjust fan speed
 def temp_check():
-    check_interval=15 # seconds between two temp changes
-    fanconfig =  ["65=100", "60=55", "55=10", "45=0"] # Default values when no config file
+    check_interval = 15 # seconds between two temp changes
+    fanconfig = ["65=100", "60=55", "55=10", "45=0"] # Default values when no config file
     tmpconfig = load_config(config_file)
     if len(tmpconfig) > 0:
         fanconfig = tmpconfig
@@ -114,42 +124,36 @@ def temp_check():
     while True:
         temp = open("/sys/class/thermal/thermal_zone0/temp","r").readline()
         val = float(int(temp)/1000)
-        # print (val)
         block = get_fanspeed(val, fanconfig)
         if block < prevblock:
             time.sleep(check_interval)
         prevblock = block
         try:
-            bus.write_byte(address, block)
+            if DEBUG:
+                print(f"Set fan speed {block}% for temp {val}C ")
+            bus.write_byte_data(address, rpi_reg, block)
         except IOError:
             temp = ""
         time.sleep(check_interval)
 
+# Thread for the button for quitting an emulator (double click)
 def shutdown_check():
+    chip = "/dev/gpiochip0"
+    request = gpiod.request_lines(chip, consumer="watch-line-falling",
+                                      config={shutdown_pin: gpiod.LineSettings(edge_detection=Edge.FALLING)})
     while True:
-        pulsetime = 1
-        GPIO.wait_for_edge(shutdown_pin, GPIO.RISING)
-        time.sleep(0.01)
-        while GPIO.input(shutdown_pin) == GPIO.HIGH:
-            time.sleep(0.01)
-            pulsetime += 1
-        if pulsetime >=2 and pulsetime <=3:
+        for event in request.read_edge_events():
+            if DEBUG:
+                print(f"Double click #{event.line_seqno}")
             if FORCE_REBOOT == 1:
                 try:
                     # force fan stop (but not board power off)
-                    bus.write_byte(address, 0x00)
-                except:
-                    print ("Could not stop fan")
+                    bus.write_byte_data(address, rpi_reg, 0x00)
+                except Exception as e:
+                    print (f"Could not stop fan: {e}")
                 os.system("/usr/bin/batocera-es-swissknife --reboot" )
             else:
                 os.system("/usr/bin/batocera-es-swissknife --emukill" )
-        elif pulsetime >=4 and pulsetime <=5:
-            try:
-                # full power off
-                bus.write_byte(address, 0xFF)
-            except:
-                print ("Could not power off")
-            os.system("/usr/bin/batocera-es-swissknife --shutdown" )
 
 # argument: start, stop, or no argument = show temp
 if len(sys.argv)>1:
@@ -159,24 +163,25 @@ if len(sys.argv)>1:
             t2 = Thread(target=shutdown_check)
             t.start()
             t2.start()
-        except:
-            print ("Could not launch daemon")
+        except Exception as e:
+            print (f"Could not launch daemon: {e}")
             t.stop()
             t2.stop()
     elif str(sys.argv[1]) == "stop":
         try:
             # force fan stop (but not board power off)
             bus.write_byte(address, 0x00)
-        except:
-            print ("Could not stop fan")
+        except Exception as e:
+            print (f"Could not stop fan: {e}")
     elif str(sys.argv[1]) == "halt":
         try:
             # full power off
             bus.write_byte(address, 0xFF)
-        except:
-            print ("Could not power off")
+        except Exception as e:
+            print (f"Could not power off: {e}")
 else:
-        temp = open("/sys/class/thermal/thermal_zone0/temp","r").readline()
+    with open("/sys/class/thermal/thermal_zone0/temp","r") as tp:
+        temp = tp.readline().strip()
         val = float(int(temp)/1000)
-        print ("Temp: {}C".format(val))
+        print ("Temp: {:5.1f}C".format(val))
 

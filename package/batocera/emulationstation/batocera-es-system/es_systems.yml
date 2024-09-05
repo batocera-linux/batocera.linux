@@ -237,7 +237,7 @@ n64dd:
   manufacturer: Nintendo
   release: 1999
   hardware: console
-  extensions: [z64, n64, zip, 7z] # ndd, d64 : Not supported yet
+  extensions: [z64, n64, ndd, zip, 7z] # d64 : Not supported yet
   emulators:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
@@ -2192,7 +2192,7 @@ daphne:
   release: 1983
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform: daphne, arcade
+  platform: alg, daphne, arcade
   emulators:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
@@ -2254,7 +2254,7 @@ singe:
   release: 1990
   hardware: arcade
   extensions: [daphne, squashfs]
-  platform: daphne, arcade
+  platform: alg, daphne, arcade
   emulators:
     hypseus-singe:
       hypseus-singe: { requireAnyOf: [BR2_PACKAGE_HYPSEUS_SINGE] }
@@ -4917,7 +4917,7 @@ namco2x6:
   release: 2000
   hardware: arcade
   extensions: [zip]
-  platform: namco2x6, arcade
+  platform: namco, sega, arcade
   emulators:
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
