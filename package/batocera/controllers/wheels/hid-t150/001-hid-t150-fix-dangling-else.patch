@@ -1,0 +1,22 @@
+--- a/hid-t150/hid-t150.c
++++ b/hid-t150/hid-t150.c
+@@ -58,17 +58,18 @@
+ 	strlcat(t150->dev_path, "/input0", sizeof(t150->dev_path));
+ 
+ 	// From xpad.c
+ 	for (i = 0; i < 2; i++) {
+ 		ep = &interface->cur_altsetting->endpoint[i].desc;
+ 
+-		if (usb_endpoint_xfer_int(ep))
++		if (usb_endpoint_xfer_int(ep)) {
+ 			if (usb_endpoint_dir_in(ep))
+ 				ep_irq_in = ep;
+ 			else
+ 				ep_irq_out = ep;
++		}
+ 	}
+ 
+ 	if (!ep_irq_in || !ep_irq_out) {
+ 		error_code = -ENODEV;
+ 		goto error3;
+ 	}
