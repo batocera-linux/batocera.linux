@@ -12,6 +12,7 @@ NVIDIA390_LEGACY_DRIVER_LICENSE = NVIDIA Software License
 NVIDIA390_LEGACY_DRIVER_LICENSE_FILES = LICENSE
 NVIDIA390_LEGACY_DRIVER_REDISTRIBUTE = NO
 NVIDIA390_LEGACY_DRIVER_INSTALL_STAGING = YES
+NVIDIA390_LEGACY_DRIVER_EXTRACT_DEPENDENCIES = host-xz
 
 ifeq ($(BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_XORG),y)
 
@@ -102,8 +103,8 @@ endif # BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA390_LEGACY_DRIVER_EXTRACT_CMDS
-	$(SHELL) $(NVIDIA390_LEGACY_DRIVER_DL_DIR)/$(NVIDIA390_LEGACY_DRIVER_SOURCE) --extract-only --target \
-		$(@D)/tmp-extract
+	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA390_LEGACY_DRIVER_DL_DIR)/$(NVIDIA390_LEGACY_DRIVER_SOURCE) \
+		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
 	rm -rf $(@D)/tmp-extract
@@ -139,7 +140,7 @@ define NVIDIA390_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/libglx.so.$(NVIDIA390_LEGACY_DRIVER_VERSION) \
 	        $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(NVIDIA390_LEGACY_DRIVER_VERSION)
 	$(NVIDIA390_LEGACY_DRIVER_INSTALL_KERNEL_MODULE)
-	
+
 	# batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia390_legacy.json
@@ -161,7 +162,7 @@ define NVIDIA390_LEGACY_DRIVER_RENAME_KERNEL_MODULES
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-modeset-legacy.ko
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
-	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-drm-legacy.ko	
+	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-drm-legacy.ko
 	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia390-uvm-legacy.ko
 	mv -f $(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglx.so.$(NVIDIA390_LEGACY_DRIVER_VERSION) \

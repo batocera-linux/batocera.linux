@@ -14,6 +14,7 @@ NVIDIA340_LEGACY_DRIVER_LICENSE = NVIDIA Software License
 NVIDIA340_LEGACY_DRIVER_LICENSE_FILES = LICENSE
 NVIDIA340_LEGACY_DRIVER_REDISTRIBUTE = NO
 NVIDIA340_LEGACY_DRIVER_INSTALL_STAGING = YES
+NVIDIA340_LEGACY_DRIVER_EXTRACT_DEPENDENCIES = host-xz
 
 ifeq ($(BR2_PACKAGE_NVIDIA340_LEGACY_DRIVER_XORG),y)
 
@@ -143,8 +144,8 @@ endif # BR2_PACKAGE_NVIDIA340_LEGACY_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA340_LEGACY_DRIVER_EXTRACT_CMDS
-	$(SHELL) $(NVIDIA340_LEGACY_DRIVER_DL_DIR)/$(NVIDIA340_LEGACY_DRIVER_SOURCE) \
-	    --extract-only --target $(@D)/tmp-extract
+	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA340_LEGACY_DRIVER_DL_DIR)/$(NVIDIA340_LEGACY_DRIVER_SOURCE) \
+		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
 	rm -rf $(@D)/tmp-extract
