@@ -7,9 +7,9 @@ config BR2_PACKAGE_BATOCERA_LUAJIT_ARCH_SUPPORTS
 	default y if BR2_powerpc
 	# -m32 flag is used for 32bit builds and host-luajit has
 	# limited architecture support
-	depends on BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "x86"
+	depends on BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "x86" || BR2_HOSTARCH = "aarch64"
 	# Building for 64-bit target requires a 64-bit host
-	depends on !BR2_ARCH_IS_64 || BR2_HOSTARCH = "x86_64"
+	depends on !BR2_ARCH_IS_64 || BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "aarch64"
 
 config BR2_PACKAGE_BATOCERA_LUAJIT
 	bool "batocera-luajit"
