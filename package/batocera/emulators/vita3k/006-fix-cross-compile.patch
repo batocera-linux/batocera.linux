@@ -1,0 +1,24 @@
+diff --git a/external/xxHash/cmake_unofficial/CMakeLists.txt b/external/xxHash/cmake_unofficial/CMakeLists.txt
+index e8fbb53..52351a5 100644
+--- a/external/xxHash/cmake_unofficial/CMakeLists.txt
++++ b/external/xxHash/cmake_unofficial/CMakeLists.txt
+@@ -75,17 +75,10 @@ mark_as_advanced(XXHASH_BUNDLED_MODE)
+ include(CMakeDependentOption)
+ CMAKE_DEPENDENT_OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON "NOT XXHASH_BUNDLED_MODE" OFF)
+ 
+-if("${CMAKE_VERSION}" VERSION_LESS "3.10")
+-  # Can not enable DISPATCH mode since it fails to recognize architecture.
+-else()
+-  CMAKE_HOST_SYSTEM_INFORMATION(RESULT PLATFORM QUERY OS_PLATFORM)
+-  message(STATUS "Architecture: ${PLATFORM}")
+-endif()
+-
+ # libxxhash
+-if((DEFINED DISPATCH) AND (DEFINED PLATFORM))
++if((DEFINED DISPATCH))
+   # Only support DISPATCH option on x86_64.
+-  if(("${PLATFORM}" STREQUAL "x86_64") OR ("${PLATFORM}" STREQUAL "AMD64"))
++  if(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64") OR ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64"))
+     set(XXHSUM_DISPATCH ON)
+     message(STATUS "Enable xxHash dispatch mode")
+     add_library(xxhash "${XXHASH_DIR}/xxh_x86dispatch.c"
