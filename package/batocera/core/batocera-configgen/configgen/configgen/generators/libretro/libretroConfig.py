@@ -618,6 +618,10 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
         else:
             retroarchConfig['input_libretro_device_p3'] = '259'
 
+    ## Mr. Boom
+    if system.config['core'] == 'mrboom':
+        bezel = None
+
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
