@@ -202,6 +202,13 @@ shared:
       choices:
         "On": 1
         "Off": 0
+    preemptiveframes:
+       submenu:     LATENCY REDUCTION
+       prompt:      USE PRE-EMPTIVE FRAMES
+       description: Use preemptive frames instead of run-ahead. Only runs ahead when controller state changes.
+       choices:
+         "On": "true"
+         "Off": "false"
     video_frame_delay_auto:
       submenu:     LATENCY REDUCTION
       prompt:      AUTOMATIC FRAME DELAY
@@ -327,10 +334,10 @@ shared:
         "hidden": "hidden"
 
 global:
-  shared: [powermode, batterymode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
+  shared: [powermode, batterymode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
-  shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
+  shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
