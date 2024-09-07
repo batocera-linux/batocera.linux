@@ -170,7 +170,7 @@ amigacd32:
     fsuae:
       CD32:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      CD32:     { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
+      CD32:     { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
     libretro:
       puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
@@ -185,6 +185,8 @@ amigacdtv:
   emulators:
     fsuae:
       CDTV:     { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+    amiberry:
+      CDTV:     { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
     libretro:
       puae:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
       puae2021: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE2021] }
