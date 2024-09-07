@@ -1,4 +1,4 @@
-#define DEFAULT_RECV_WINDOW 10485760
+#define DEFAULT_RECV_WINDOW 204800
 
 #define DSS_PRIV_FILENAME "/userdata/system/ssh/dropbear_dss_host_key"
 #define RSA_PRIV_FILENAME "/userdata/system/ssh/dropbear_rsa_host_key"
