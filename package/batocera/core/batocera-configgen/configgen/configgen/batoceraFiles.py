@@ -112,6 +112,7 @@ overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
 amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
+amiberryConf = amiberryRoot + '/conf/amiberry.conf'
 
 hatariConf = CONF + '/hatari/hatari.cfg'
 
