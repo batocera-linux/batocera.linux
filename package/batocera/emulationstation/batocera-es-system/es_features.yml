@@ -142,12 +142,12 @@ shared:
       prompt: RESIZE TATTOO
       description: Shrink/expand tattoo to fit within the bezel's border.
       submenu: DECORATIONS
-      preset: switchon
+      preset: switchauto
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
       description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
       submenu: AI GAME TRANSLATION
-      preset: switch
+      preset: switchauto
     ai_target_lang:
       prompt: TARGET LANGUAGE
       description: The language to translate into.
@@ -182,7 +182,7 @@ shared:
     ai_service_pause:
       prompt: PAUSE ON TRANSLATED SCREEN
       submenu: AI GAME TRANSLATION
-      preset: switch
+      preset: switchauto
     runahead:
       submenu:     LATENCY REDUCTION
       prompt:      RUN-AHEAD FRAMES
@@ -7117,10 +7117,10 @@ hypseus-singe:
         hypseus_bezels:
             prompt: BEZELS
             description: Enable or disable bezels being added when content is a 4:3 aspect with a widescreen display.
-            preset: switchon
+            preset: switchauto
         hypseus_filter:
             prompt: SMOOTH GAMES (BILINEAR FILTERING)
-            preset: switchoff
+            preset: switchauto
         hypseus_scanlines:
             archs_include: [x86, x86_64]
             group: ADVANCED OPTIONS
@@ -7139,17 +7139,17 @@ hypseus-singe:
         hypseus_axis:
             prompt: INVERT AXIS
             description: Invert the vertical joystick axis on flight games.
-            preset: switchoff
+            preset: switchauto
         hypseus_texturestream:
             group: ADVANCED OPTIONS
             prompt: SDL TEXTURE ACCESS STREAMING
             description: Can improve video performance. Do not use with ActionMax games or scanlines.
-            preset: switchoff
+            preset: switchauto
         hypseus_joy:
             group: ADVANCED OPTIONS
             prompt: CUSTOM CONTROLLER
             description: Use controller settings manually defined in custom.ini.
-            preset: switchoff
+            preset: switchauto
   systems:
     singe:
       cfeatures:
@@ -7206,7 +7206,7 @@ dolphin:
                     submenu: DISPLAY
                     prompt: VSYNC
                     description: Fix screen tearing. CPU heavy.
-                    preset: switchon
+                    preset: switchauto
                 gfxbackend:
                     archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
                     submenu: RENDERING
@@ -7241,7 +7241,7 @@ dolphin:
                     submenu: RENDERING
                     prompt: PRE-CACHE SHADERS
                     description: Compile shaders on next launch of game (one time). Reduces micro-freezes. Vulkan only.
-                    preset: switchoff
+                    preset: switchauto
                 anisotropic_filtering:
                     submenu: RENDERING
                     prompt: ANISOTROPIC FILTERING
@@ -7265,61 +7265,61 @@ dolphin:
                     submenu: RENDERING
                     prompt: ANTI-ALIASING MODE
                     description: Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a higher performance cost.
-                    preset: switchoff
+                    preset: switchauto
                 hires_textures:
                     submenu: RENDERING
                     prompt: LOAD CUSTOM TEXTURES
-                    preset: switchoff
+                    preset: switchauto
                 manual_texture_sampling:
                     submenu: RENDERING
                     prompt: MANUAL TEXTURE SAMPLING
                     description: Enabling will allow for correct emulation of texture wrapping. This comes at a cost of potential worse performance.
-                    preset: switchoff
+                    preset: switchauto
                 dual_core:
                     submenu: EMULATION
                     prompt: DUAL CORE MODE
                     description: Usually not much faster than single core mode.
-                    preset: switchoff
+                    preset: switchauto
                 gpu_sync:
                     submenu: EMULATION
                     prompt: GPU SYNC
                     description: Speed hack for dual core mode to fix some glitches.
-                    preset: switchoff
+                    preset: switchauto
                 perf_hacks:
                     submenu: EMULATION
                     prompt: PERFORMANCE HACKS
                     description: Increase emulator performance, at the cost of accuracy/stability.
-                    preset: switchoff
+                    preset: switchauto
                 enable_cheats:
                     submenu: EMULATION
                     prompt: ENABLE CHEATS
                     description: To use game cheats or 16/9 Aspect Ratio Fix codes.
-                    preset: switchoff
+                    preset: switchauto
                 enable_mmu:
                     submenu: EMULATION
                     prompt: MEMORY MANAGEMENT UNIT
                     description: Required by some games.
-                    preset: switchoff
+                    preset: switchauto
                 enable_fastdisc:
                     submenu: EMULATION
                     prompt: FAST DISK TRANSFER RATE
                     description: Enhancement. Removes disc loading.
-                    preset: switchoff
+                    preset: switchauto
                 vbi_hack:
                     submenu: EMULATION
                     prompt: VBI SKIP
                     description: Skips Vertical Blank Interrupts when lag is detected, allowing for smooth audio playback when emulation speed is not 100%.
-                    preset: switchoff
+                    preset: switchauto
                 use_pad_profiles:
                     group: CONTROLS
                     prompt: USE PAD PROFILES
                     description: Search for custom configured joystick profiles.
-                    preset: switchoff
+                    preset: switchauto
                 rumble:
                     group: CONTROLS
                     prompt: RUMBLE
                     description: Enable controller rumble capabilities if supported by the controller.
-                    preset: switchoff
+                    preset: switchauto
                 dolphin_port_1_type:
                     group: CONTROLS
                     submenu: GAMECUBE CONTROLLER 1
@@ -7385,25 +7385,25 @@ dolphin:
                     submenu: GAMECUBE CONTROLLER 1
                     prompt: ROTATE FACE BUTTONS
                     description: Moves South to West, West to North, etc. Standard controller type only.
-                    preset: switchoff
+                    preset: switchauto
                 alt_mappings_2:
                     group: CONTROLS
                     submenu: GAMECUBE CONTROLLER 2
                     prompt: ROTATE FACE BUTTONS
                     description: Moves South to West, West to North, etc. Standard controller type only.
-                    preset: switchoff
+                    preset: switchauto
                 alt_mappings_3:
                     group: CONTROLS
                     submenu: GAMECUBE CONTROLLER 3
                     prompt: ROTATE FACE BUTTONS
                     description: Moves South to West, West to North, etc. Standard controller type only.
-                    preset: switchoff
+                    preset: switchauto
                 alt_mappings_4:
                     group: CONTROLS
                     submenu: GAMECUBE CONTROLLER 4
                     prompt: ROTATE FACE BUTTONS
                     description: Moves South to West, West to North, etc. Standard controller type only.
-                    preset: switchoff
+                    preset: switchauto
                 deadzone_1:
                     group: CONTROLS
                     submenu: GAMECUBE CONTROLLER 1
@@ -7496,12 +7496,12 @@ dolphin:
                     group: AUDIO
                     prompt: DOLBY PRO LOGIC II
                     description: Enables Dolby Pro Logic II for surround sound. May impact performance.
-                    preset: switchoff
+                    preset: switchauto
                 ShowDpMsg:
                     submenu: DISPLAY
                     prompt: SHOW ON-SCREEN DISPLAY MESSAGES
                     description: Show on screen display messages (memory card saves..).
-                    preset: switchoff
+                    preset: switchauto
         systems:
             gamecube:
                 cfeatures:
@@ -7509,12 +7509,12 @@ dolphin:
                         submenu: DISPLAY
                         prompt: WIDESCREEN HACK (GLITCHY)
                         description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
-                        preset: switchoff
+                        preset: switchauto
                     dolphin_SkipIPL:
                         submenu: EMULATION
                         prompt: ENABLE BOOT ANIMATION
                         description: Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in appropriate user directory).
-                        preset: switchoff
+                        preset: switchauto
                     gamecube_language:
                         submenu: EMULATION
                         prompt: GAMECUBE LANGUAGE
@@ -7541,7 +7541,7 @@ dolphin:
                         submenu: WII CONTROLLERS
                         prompt: EMULATE WIIMOTE
                         description: Map your controller to an emulated Wiimote.
-                        preset: switchoff
+                        preset: switchauto
                     controller_mode:
                         group: CONTROLS
                         submenu: WII CONTROLLERS
@@ -7568,19 +7568,19 @@ dolphin:
                         submenu: WII CONTROLLERS
                         prompt: DUALSHOCK MOTION CONTROL
                         description: Emulate the Wiimote pointer with a DS4's gyroscope.
-                        preset: switchoff
+                        preset: switchauto
                     mouseir:
                         group: CONTROLS
                         submenu: WII CONTROLLERS
                         prompt: MOUSE AS WIIMOTE POINTER
                         description: Emulate the Wiimote pointer with a mouse.
-                        preset: switchoff
+                        preset: switchauto
                     dolphin-lightgun-hide-crosshair:
                         order: 99
                         group: CONTROLS
                         submenu: LIGHT GUNS
                         prompt: SHOW LIGHT GUN CROSSHAIRS
-                        preset: switchoff
+                        preset: switchauto
 
 dolphin_triforce:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -12335,19 +12335,19 @@ vita3k:
     vita3k_surface:
       prompt: DISABLE SURFACE SYNC
       description: Speed hack, enable to disable surface syncing between CPU and GPU. Surface syncing is needed by a few games.
-      preset: switchoff
+      preset: switchauto
     vita3k_linear:
       prompt: LINEAR FILTERING
       description: The image will be softer which could help with aliasing.
-      preset: switchoff
+      preset: switchauto
     vita3k_fxaa:
       prompt: FXAA
       description: Anti-aliasing is a technique for smoothing out jagged edges.
-      preset: switchoff
+      preset: switchauto
     vita3k_vsync:
       prompt: VSYNC
       description: Fix screen tearing.
-      preset: switchon
+      preset: switchauto
     vita3k_anisotropic:
       prompt:      ANISOTROPIC FILTERING
       description: Improves clarity of distant textures.
@@ -12360,7 +12360,7 @@ vita3k:
     vita3k_show_pointer:
       prompt: SHOW POINTER
       description: You can hide the pointer on touchscreen devices.
-      preset: switchon
+      preset: switchauto
 
 bigpemu:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
@@ -12423,7 +12423,7 @@ vpinball:
       group: EXPERT SETTINGS
       prompt: PER TABLE FOLDER
       description: Per Table Folder requires all files to be in the associated rom table folder. If disabled, consult the Wiki for further details.
-      preset: switchon
+      preset: switchauto
     vpinball_balltrail:
       group: DISPLAY
       prompt: BALL TRAIL STRENGTH
@@ -12477,7 +12477,7 @@ vpinball:
       group: DISPLAY
       prompt: ALTCOLOR
       description: Alternative Coloured Dot Matrix Display (needs additional file).
-      preset: switchon
+      preset: switchauto
     vpinball_playfield:
       group: WINDOWS POSITIONS
       prompt: PLAYFIELD
@@ -12532,12 +12532,12 @@ vpinball:
       group: WINDOWS POSITIONS
       prompt: DISPLAY BACKGLASS DMD
       description: When the Backglass is activated, display the small additional part with the scores.
-      preset: switchon
+      preset: switchauto
     vpinball_b2sgrill:
       group: WINDOWS POSITIONS
       prompt: DISPLAY BACKGLASS GRILL
       description: When the Backglass is activated, display the grill.
-      preset: switchon
+      preset: switchauto
     vpinball_dmdsize:
       group: WINDOWS POSITIONS
       prompt: DMD SIZE
@@ -12566,7 +12566,7 @@ vpinball:
       group: DISPLAY PHYSICAL SETUP
       prompt: ENABLE CUSTOM DISPLAY PHYSICAL SETUP
       description: Enable the custom values below.
-      preset: switch
+      preset: switchauto
     vpinball_screenwidth:
       group: DISPLAY PHYSICAL SETUP
       prompt: SCREEN WIDTH
@@ -12635,12 +12635,12 @@ vpinball:
       group: AUDIO
       prompt: ALTERNATIVE SOUND
       description: Alternative sounds for the table (needs additional files).
-      preset: switchon
+      preset: switchauto
     vpinball_pad_add_credit:
       prompt: USE JOYPAD SOUTH BUTTON TO ADD CREDIT
       group: EXPERT SETTINGS
       description: This should not be necessary, unless you are not using the default pad2key mapping.
-      preset: switch
+      preset: switchauto
 
 theforceengine:
   features: [padtokeyboard]
