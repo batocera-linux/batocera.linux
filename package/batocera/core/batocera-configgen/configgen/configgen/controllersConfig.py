@@ -255,7 +255,7 @@ def gunsBordersSizeName(guns, config):
 # returns None to follow the bezel overlay size by default
 def gunsBorderRatioType(guns, config):
     if "controllers.guns.borderratio" in config:
-        return config["controllers.guns.borderratio"] # "4:3"
+        return config["controllers.guns.bordersratio"] # "4:3"
     return None
 
 def getMouseButtons(device):
