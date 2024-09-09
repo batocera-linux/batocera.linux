@@ -19,6 +19,20 @@ class AmiberryGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         retroconfig = UnixSettings(batoceraFiles.amiberryRetroarchCustom, separator=' ')
+        amiberryconf = UnixSettings(batoceraFiles.amiberryConf, separator=' ')
+        amiberryconf.save('saveimage_dir', '/userdata/saves/amiga/')
+        amiberryconf.save('savestate_dir', '/userdata/saves/amiga/')
+        amiberryconf.save('screenshot_dir', '/userdata/screenshots/')
+        amiberryconf.save('rom_path', '/userdata/bios/amiga/')
+        amiberryconf.save('whdboot_path', '/usr/share/amiberry/whdboot/')
+        amiberryconf.save('logfile_path', '/userdata/system/logs/amiberry.log')
+        amiberryconf.save('controllers_path', '/userdata/system/configs/amiberry/conf/retroarch/inputs/')
+        amiberryconf.save('retroarch_config', batoceraFiles.amiberryRetroarchCustom)
+        amiberryconf.save('default_vkbd_enabled', 'yes')
+        amiberryconf.save('default_vkbd_hires', 'yes') # TODO: make an option in ES
+        amiberryconf.save('default_vkbd_transparency', '60') # TODO: make an option in ES
+        amiberryconf.save('default_vkbd_toggle', 'leftstick')
+        amiberryconf.write()
         if not os.path.exists(dirname(batoceraFiles.amiberryRetroarchCustom)):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))
         
@@ -172,8 +186,9 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("sound_frequency=48000")
 
-            os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray,env={
+                "AMIBERRY_DATA_DIR": "/usr/share/amiberry/",
+                "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry/",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
         # otherwise, unknown format
         return Command.Command(array=[])
@@ -226,7 +241,7 @@ class AmiberryGenerator(Generator):
             return 'WHDL'
         elif extension == 'hdf' :
             return 'HDF'
-        elif extension in ['iso','cue'] :
+        elif extension in ['iso','cue', 'chd'] :
             return 'CD'
         elif extension in ['adf','ipf']:
             return 'DISK'

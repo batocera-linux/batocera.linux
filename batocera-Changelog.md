@@ -19,6 +19,7 @@
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
 - Nvidia Encoding support with `batocera-record` for Production driver systems
 - N64DD: support for standalone .ndd disk format (with libretro-paralleln64)
+- Amiberry: virtual keyboard (click on left stick)
 - Arcade games: automatically switch to vertical bezels (default 'consoles' decorations)
 ### Fixed
 - Steam loading on a NAS drive

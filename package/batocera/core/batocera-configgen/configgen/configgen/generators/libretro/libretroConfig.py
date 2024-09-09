@@ -618,6 +618,10 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
         else:
             retroarchConfig['input_libretro_device_p3'] = '259'
 
+    ## Mr. Boom
+    if system.config['core'] == 'mrboom':
+        bezel = None
+
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
@@ -661,11 +665,15 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
 
     # Run-ahead option (latency reduction)
     retroarchConfig['run_ahead_enabled'] = 'false'
+    retroarchConfig['preemptive_frames_enable'] = 'false'
     retroarchConfig['run_ahead_frames'] = '0'
     retroarchConfig['run_ahead_secondary_instance'] = 'false'
     if system.isOptSet('runahead') and int(system.config['runahead']) >0:
        if (not system.name in systemNoRunahead):
-          retroarchConfig['run_ahead_enabled'] = 'true'
+          if system.isOptSet('preemptiveframes') and system.getOptBoolean('preemptiveframes') == True:
+             retroarchConfig['preemptive_frames_enable'] = 'true'
+          else:
+             retroarchConfig['run_ahead_enabled'] = 'true'
           retroarchConfig['run_ahead_frames'] = system.config['runahead']
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'

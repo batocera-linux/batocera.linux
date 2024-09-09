@@ -105,6 +105,11 @@ class Model2EmuGenerator(Generator):
         # for existing bottles we want to ensure files are updated as necessary
         copy_updated_files("/usr/model2emu/scripts", emupath + "/scripts")
 
+        if not os.path.exists(wineprefix + "/xinput_cfg.done"):
+            copy_updated_files("/usr/model2emu/CFG", emupath + "/CFG")
+            with open(wineprefix + "/xinput_cfg.done", "w") as f:
+                f.write("done")
+
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
 
@@ -232,7 +237,15 @@ class Model2EmuGenerator(Generator):
                     Config.set("Renderer","DrawCross", "1")
                 else:
                     Config.set("Renderer","DrawCross", "0")
-        
+
+        Config.set("Input","XInput", "1")
+
+        # force feedback
+        if system.isOptSet("model2_forceFeedback") and system.getOptBoolean("model2_forceFeedback"):
+            Config.set("Input","EnableFF", "1")
+        else:
+            Config.set("Input","EnableFF", "0")
+
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
         
@@ -242,7 +255,9 @@ class Model2EmuGenerator(Generator):
             "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3",
+            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_JOYSTICK_HIDAPI": "0"
         }
 
         # check if software render option is chosen

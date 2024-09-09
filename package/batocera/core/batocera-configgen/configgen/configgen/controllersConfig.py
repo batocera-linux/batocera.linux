@@ -254,14 +254,8 @@ def gunsBordersSizeName(guns, config):
 
 # returns None to follow the bezel overlay size by default
 def gunsBorderRatioType(guns, config):
-    # add emulator specific configs here
-    if "m3_wideScreen" in config and config["m3_wideScreen"] == "1":
-        eslog.debug("Model 3 set to widescreen")
-        return None
-    else:
-        # check the display esolution is already 4:3
-        eslog.debug("Setting gun border ratio to 4:3")
-        return "4:3"
+    if "controllers.guns.borderratio" in config:
+        return config["controllers.guns.bordersratio"] # "4:3"
     return None
 
 def getMouseButtons(device):
