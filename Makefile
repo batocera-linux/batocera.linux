@@ -33,20 +33,17 @@ UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
-	# override with default directories (as we cannot bind mount them)
-	DL_DIR         := $(PROJECT_DIR)/buildroot/dl
-	CCACHE_DIR     := $(HOME)/.buildroot-ccache
+	# let buildroot know about our overrides
+	BR2_DL_DIR     := $(DL_DIR)
+	BR2_CCACHE_DIR := $(CCACHE_DIR)
 
-	# null docker command results in direct make command
-	undefine DOCKER_CMD
-define MAKE_CMD
-	@make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$* \
+define MAKE_BUILDROOT
+	make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$* \
 		BR2_EXTERNAL=$(PROJECT_DIR) \
 		-C $(PROJECT_DIR)/buildroot
 endef
-	# null target will not check for batocera docker image
-	CHK_IMG_IF_DKR :=
-else
+
+else # DIRECT_BUILD
 	DOCKER         ?= docker
 
 	ifndef BATCH_MODE
@@ -56,9 +53,8 @@ else
 	DOCKER_REPO    ?= batoceralinux
 	IMAGE_NAME     ?= batocera.linux-build
 
-	CHK_IMG_IF_DKR := batocera-docker-image
-define DOCKER_CMD
-	@$(DOCKER) run -t --init --rm \
+define RUN_DOCKER
+	$(DOCKER) run -t --init --rm \
 		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -71,14 +67,14 @@ define DOCKER_CMD
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME)
 endef
-define MAKE_CMD
-			make $(MAKE_OPTS) O=/$* \
-				BR2_EXTERNAL=/build -C \
-				/build/buildroot
+
+define MAKE_BUILDROOT
+	$(RUN_DOCKER) make $(MAKE_OPTS) O=/$* \
+			BR2_EXTERNAL=/build -C \
+			/build/buildroot
 endef
 
-        $(if $(shell which $(DOCKER) 2>/dev/null),, $(error "$(DOCKER) not found!"))
-endif
+endif # DIRECT_BUILD
 
 vars:
 	@echo "Supported targets:  $(TARGETS)"
@@ -93,24 +89,25 @@ ifndef DIRECT_BUILD
 endif
 	@echo "Make options:       $(MAKE_OPTS)"
 
-_docker:
+_check_docker:
+	$(if $(shell which $(DOCKER) 2>/dev/null),, $(error "$(DOCKER) not found!"))
 	$(if $(DIRECT_BUILD),$(error "Not a docker environment!"))
 
-build-docker-image: _docker
+build-docker-image: _check_docker
 	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-.ba-docker-image-available: _docker
+.ba-docker-image-available: _check_docker
 	@$(DOCKER) pull $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-batocera-docker-image: .ba-docker-image-available
+batocera-docker-image: $(if $(DIRECT_BUILD),,$(.ba-docker-image-available))
 
-update-docker-image: _docker
+update-docker-image: _check_docker
 	-@rm .ba-docker-image-available > /dev/null
 	@$(MAKE) batocera-docker-image
 
-publish-docker-image: _docker
+publish-docker-image: _check_docker
 	@$(DOCKER) push $(DOCKER_REPO)/$(IMAGE_NAME):latest
 
 output-dir-%: %-supported
@@ -125,49 +122,47 @@ dl-dir:
 %-supported:
 	$(if $(findstring $*, $(TARGETS)),,$(error "$* not supported!"))
 
-%-clean: $(CHK_IMG_IF_DKR) output-dir-%
-	$(DOCKER_CMD) $(MAKE_CMD) clean
+%-clean: batocera-docker-image output-dir-%
+	@$(MAKE_BUILDROOT) clean
 
-%-config: $(CHK_IMG_IF_DKR) output-dir-%
+%-config: batocera-docker-image output-dir-%
 	@$(PROJECT_DIR)/configs/createDefconfig.sh $(PROJECT_DIR)/configs/batocera-$*
 	@for opt in $(EXTRA_OPTS); do \
 		echo $$opt >> $(PROJECT_DIR)/configs/batocera-$*_defconfig ; \
 	done
-	$(DOCKER_CMD) $(MAKE_CMD) batocera-$*_defconfig
+	@$(MAKE_BUILDROOT) batocera-$*_defconfig
 
-%-build: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) $(CMD)
+%-build: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) $(CMD)
 
-%-source: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) source
+%-source: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) source
 
-%-show-build-order: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) show-build-order
+%-show-build-order: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) show-build-order
 
-%-kernel: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) linux-menuconfig
+%-kernel: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) linux-menuconfig
 
 # force -j1 or graph-depends python script will bail
-%-graph-depends: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) -j1 BR2_GRAPH_OUT=svg graph-depends
+%-graph-depends: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) -j1 BR2_GRAPH_OUT=svg graph-depends
 
-%-shell: $(CHK_IMG_IF_DKR) output-dir-% _docker
+%-shell: batocera-docker-image output-dir-% _check_docker
 	$(if $(BATCH_MODE),$(if $(CMD),,$(error "not supported in BATCH_MODE if CMD not specified!")),)
-	$(DOCKER_CMD) $(CMD)
+	@$(RUN_DOCKER) $(CMD)
 
-%-ccache-stats: $(CHK_IMG_IF_DKR) %-config ccache-dir dl-dir
-	$(DOCKER_CMD) $(MAKE_CMD) ccache-stats
+%-ccache-stats: batocera-docker-image %-config ccache-dir dl-dir
+	@$(MAKE_BUILDROOT) ccache-stats
 
 %-build-cmd:
-	@echo $(DOCKER_CMD) $(MAKE_CMD)
+	@echo $(MAKE_BUILDROOT)
 
 %-cleanbuild: %-clean %-build
 	@echo
 
-# $$$ buildroot somehow looses the name of PKG when recursively calling make in a direct build (works fine in docker)
 %-pkg:
 	$(if $(PKG),,$(error "PKG not specified!"))
-	$(if $(DIRECT_BUILD),$(error "Please use: $(MAKE) $*-build CMD=$(PKG)"))
 
 	@$(MAKE) $*-build CMD=$(PKG)
 
