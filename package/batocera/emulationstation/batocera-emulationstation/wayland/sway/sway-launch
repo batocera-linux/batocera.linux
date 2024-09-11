@@ -1,4 +1,13 @@
 #!/bin/sh
 
+# If a device exists with the render prefix, assign it to a variable
+for RD in /dev/dri/render*; do
+    if test -e "${RD}"
+    then
+	export WLR_RENDER_DRM_DEVICE=${RD}
+        break
+    fi
+done
+
 SWAY_LOG_FILE=/userdata/system/logs/sway.log
 WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway -d > ${SWAY_LOG_FILE} 2>&1
