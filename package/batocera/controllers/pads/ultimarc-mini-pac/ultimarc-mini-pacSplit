@@ -1,0 +1,81 @@
+#!/bin/sh
+
+# "Ultimarc Mini-PAC" could be used for several controllers
+# so, we may add an extra parameters in batocera.conf to switch the target. For now, we've only one target, so no option.
+
+set > /tmp/nae.log
+
+# Xtension 2 Player Plus Controller “Emulator Edition PLUS”
+nohup evsieve --input "${1}" persist=exit \
+--block     key:up:2                   \
+--map yield key:up:1      abs:hat0y:-1 \
+--map yield key:up:0      abs:hat0y:0  \
+--block     key:down:2                 \
+--map yield key:down:1    abs:hat0y:1  \
+--map yield key:down:0    abs:hat0y:0  \
+--block     key:left:2                 \
+--map yield key:left:1    abs:hat0x:-1 \
+--map yield key:left:0    abs:hat0x:0  \
+--block     key:right:2                \
+--map yield key:right:1   abs:hat0x:1  \
+--map yield key:right:0   abs:hat0x:0  \
+--block     key:leftshift:2            \
+--map yield key:leftshift btn:south    \
+--block     key:z:2                    \
+--map yield key:z         btn:east     \
+--block     key:leftctrl:2             \
+--map yield key:leftctrl  btn:west     \
+--block     key:leftalt:2              \
+--map yield key:leftalt   btn:north    \
+--block     key:space:2                \
+--map yield key:space     btn:tl       \
+--block     key:x:2                    \
+--map yield key:x         btn:tr       \
+--block     key:c:2                    \
+--map yield key:c         btn:start    \
+--block     key:1:2                    \
+--map yield key:1         btn:start    \
+--block     key:v:2                    \
+--map yield key:v         btn:select   \
+--block     key:5:2                    \
+--map yield key:5         btn:select   \
+--block     key:enter:2                \
+--map yield key:enter     btn:select   \
+--output name="Xtension Player 1" abs:hat0y abs:hat0x btn:north btn:south btn:east btn:west btn:tl btn:tr btn:select btn:start \
+--block     key:r:2                    \
+--map yield key:r:1       abs:hat0y:-1 \
+--map yield key:r:0       abs:hat0y:0  \
+--block     key:f:2                    \
+--map yield key:f:1       abs:hat0y:1  \
+--map yield key:f:0       abs:hat0y:0  \
+--block     key:d:2                    \
+--map yield key:d:1       abs:hat0x:-1 \
+--map yield key:d:0       abs:hat0x:0  \
+--block     key:g:2                    \
+--map yield key:g:1       abs:hat0x:1  \
+--map yield key:g:0       abs:hat0x:0  \
+--block     key:i:2                    \
+--map yield key:w         btn:south    \
+--block     key:w:2                    \
+--map yield key:i         btn:east     \
+--block     key:a:2                    \
+--map yield key:a         btn:west     \
+--block     key:s:2                    \
+--map yield key:s         btn:north    \
+--block     key:q:2                    \
+--map yield key:q         btn:tl       \
+--block     key:k:2                    \
+--map yield key:k         btn:tr       \
+--block     key:j:2                    \
+--map yield key:j         btn:start    \
+--block     key:2:2                    \
+--map yield key:2         btn:start    \
+--block     key:esc:2                  \
+--map yield key:esc       btn:start    \
+--block     key:l:2                    \
+--map yield key:l         btn:select   \
+--block     key:6:2                    \
+--map yield key:6         btn:select   \
+--block     key:p:2                    \
+--map yield key:p         btn:select   \
+--output name="Xtension Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl &

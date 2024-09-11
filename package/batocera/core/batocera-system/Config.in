@@ -289,6 +289,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_HID_NX				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
 	select BR2_PACKAGE_JAMMASD
+	select BR2_PACKAGE_ULTIMARC_MINI_PAC
 	select BR2_PACKAGE_NSO_N64
 
 	select BR2_PACKAGE_UPOWER # required by some cemuhook servers
