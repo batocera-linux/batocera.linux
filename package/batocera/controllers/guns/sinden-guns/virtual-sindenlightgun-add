@@ -160,6 +160,21 @@ then
 	sed -i -e s+'\(key="CameraBrightness"[ ]*value="\)[^"]*"'+'\1'${OPT_BRIGHTNESS}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="CameraExposure"[ ]*value="\)[^"]*"'+'\1'${OPT_EXPOSURE}'"'+ "${CONFIGFILE}" # no exit for that
 
+	# border ratio
+	OPT_RATIO=$(batocera-settings-get controllers.guns.bordersratio)
+	if test "${OPT_RATIO}" = "4:3"
+	then
+	    sed -i -e s+'\(key="OffsetX"[ ]*value="\)[^"]*"'+'\1012.5"'+     "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetXRatio"[ ]*value="\)[^"]*"'+'\10.75"'+ "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetY"[ ]*value="\)[^"]*"'+'\100"'+        "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetYRatio"[ ]*value="\)[^"]*"'+'\101"'+   "${CONFIGFILE}" || unlockAndExit 1
+	else # full
+	    sed -i -e s+'\(key="OffsetX"[ ]*value="\)[^"]*"'+'\100"'+      "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetXRatio"[ ]*value="\)[^"]*"'+'\101"'+ "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetY"[ ]*value="\)[^"]*"'+'\100"'+      "${CONFIGFILE}" || unlockAndExit 1
+	    sed -i -e s+'\(key="OffsetYRatio"[ ]*value="\)[^"]*"'+'\101"'+ "${CONFIGFILE}" || unlockAndExit 1
+	fi
+
 	sed -i -e s+'\(key="SerialPortWrite"[ ]*value="\)[^"]*"'+'\1'${ACMDEV}'"'+ "${CONFIGFILE}" || unlockAndExit 1
 	rm -f "/var/run/sinden/p${PARENTHASH}/lockfile"
 
