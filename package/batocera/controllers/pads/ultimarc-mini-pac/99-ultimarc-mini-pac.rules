@@ -1,4 +1,11 @@
 # filter on ID_INPUT_KEYBOARD, cause the mouse and the leds have the same name/vid/pid...
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc Mini-PAC", ATTRS{id/vendor}=="0b9a", ATTRS{id/product}=="0800", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/ultimarc-mini-pacSplit $env{DEVNAME}"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension Player 2", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 2P Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 2P Player 2", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+
+# filter on ID_INPUT_KEYBOARD, cause the mouse and the leds have the same name/vid/pid...
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc I-PAC 4", ATTRS{id/vendor}=="d209", ATTRS{id/product}=="0430", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/ultimarc-ipac4Split $env{DEVNAME}"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 4P Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 4P Player 2", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 4P Player 3", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 4P Player 4", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
