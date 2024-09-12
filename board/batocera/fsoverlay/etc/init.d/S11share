@@ -272,6 +272,9 @@ mountDevicesOrNetwork() {
     return 0
 }
 
+# call user script (for nas wakeonlan for example)
+test -e /boot/preshare.sh && bash /boot/preshare.sh start
+
 RMODE="$SHAREDEVICE"
 
 if echo "${RMODE}" | grep -qE '^DEV '
