@@ -1,0 +1,32 @@
+--- a/drivers/clk/clk-divider.c
++++ b/drivers/clk/clk-divider.c
+@@ -266,13 +266,13 @@
+ static bool _is_best_div(unsigned long rate, unsigned long now,
+ 			 unsigned long best, unsigned long flags)
+ {
+ 	if (flags & CLK_DIVIDER_ROUND_CLOSEST)
+ 		return abs(rate - now) < abs(rate - best);
+ 
+-	return now <= rate && now > best;
++	return now <= rate && now >= best;
+ }
+ 
+ static int _next_div(const struct clk_div_table *table, int div,
+ 		     unsigned long flags)
+ {
+ 	div++;
+@@ -468,13 +468,13 @@
+ 		void __iomem *reg, u8 shift, u8 width,
+ 		u8 clk_divider_flags, const struct clk_div_table *table,
+ 		spinlock_t *lock)
+ {
+ 	struct clk_divider *div;
+ 	struct clk_hw *hw;
+-	struct clk_init_data init;
++	struct clk_init_data init = {};
+ 	int ret;
+ 
+ 	if (clk_divider_flags & CLK_DIVIDER_HIWORD_MASK) {
+ 		if (width + shift > 16) {
+ 			pr_warn("divider value exceeds LOWORD field\n");
+ 			return ERR_PTR(-EINVAL);
