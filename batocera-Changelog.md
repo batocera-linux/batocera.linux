@@ -8,6 +8,8 @@
 - Khadis VIM4, Vulkan support has now been added
 - Added HyperX and Machenike Xbox360 compatible controllers
 - Support for Argon One v3 case for RPi5
+- wayland multi screens support (including rpi*)
+- Xtension 2 Players Controller and Xtension 4 Players Controller
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
@@ -21,6 +23,8 @@
 - N64DD: support for standalone .ndd disk format (with libretro-paralleln64)
 - Amiberry: virtual keyboard (click on left stick)
 - Arcade games: automatically switch to vertical bezels (default 'consoles' decorations)
+- /boot/preshare.sh script (to be able to wake up a nas for example)
+- sinden ratio option
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
@@ -36,7 +40,7 @@
 - Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
 - You can now manually forget, connect or disconnect a bluetooth device
 - Udated Nvidia card detection
-  - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
+- Modern Nvidia cards will now use the OpenSource kernel modules when possible.
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
