@@ -24,7 +24,7 @@ f_minTomaxResolution() {
         MAXWIDTH=1920
         MAXHEIGHT=1080
     fi
-    CURRENT_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height)"')
+    CURRENT_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").current_mode | "\(.width)x\(.height)"')
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
 
@@ -35,15 +35,14 @@ f_minTomaxResolution() {
     # select a new one
     # select the first one valid
     # is it the best ? or should we loop to search the first with the same ratio ?
-    swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height)"' |
+    swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").modes[] | "\(.width)x\(.height)"' |
     while read SUGGRESOLUTIONRATE SUGGMODE
     do
         SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
         SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
         SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
         if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"; then
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
-            swaymsg output "${OUTPUT}" mode "${SUGGRESOLUTION}"
+            swaymsg output "${PSCREEN}" mode "${SUGGRESOLUTION}"
             exit 0
         fi
     done
@@ -54,13 +53,18 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# use for syntax only
 PSCREEN=
 if test "${1}" = "--screen"
 then
     shift
     PSCREEN=$1
     shift
+fi
+
+# set default screen, the first one
+if test -z "${PSCREEN}"
+then
+    PSCREEN=$(swaymsg -t get_outputs | jq -r '.[].name' | head -1)
 fi
 
 ACTION=$1
@@ -70,7 +74,7 @@ case "${ACTION}" in
     "listModes")
         echo "max-1920x1080:maximum 1920x1080"
         echo "max-640x480:maximum 640x480"
-        swaymsg -t get_outputs | jq -r '.[] | select (.focused).modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh / 1000) Hz"' | uniq
+        swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").modes[] | "\(.width)x\(.height).\(.refresh):\(.width)x\(.height) \(.refresh / 1000) Hz"' | uniq
     ;;
     "setMode")
         MODE=$1
@@ -78,45 +82,69 @@ case "${ACTION}" in
             SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
             f_minTomaxResolution "${SPMODE}"
         else # normal mode
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
-
             # let the old format widthxheight and the new one widthxheight.hz
             if echo "${MODE}" | grep "\."; then
                 PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
                 PARTHZ=$(echo "${MODE}" | cut -d'.' -f2- | awk '{ printf "%.3f", $0 / 1000 }')
-                swaymsg output "${OUTPUT}" mode "${PARTRES}"@"${PARTHZ}"Hz
+                swaymsg output "${PSCREEN}" mode "${PARTRES}"@"${PARTHZ}"Hz
             else
-                swaymsg output "${OUTPUT}" mode "${MODE}"
+                swaymsg output "${PSCREEN}" mode "${MODE}"
             fi
         fi
     ;;
     "currentMode")
-        swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height).\(.refresh)"'
+        swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").current_mode | "\(.width)x\(.height).\(.refresh)"'
     ;;
     "currentResolution")
-        swaymsg -t get_outputs | jq -r '.[] | select (.focused).current_mode | "\(.width)x\(.height)"'
+	# to get the current resolution in case of rotation, change width and height
+	# don't exchange for mode while mode is more a technical value
+        RAW_RESOLUTION=$(swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").current_mode | "\(.width)x\(.height)"')
+	RAW_ROTATION=$(swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").transform')
+	if test "${RAW_ROTATION}" = "90" -o "${RAW_ROTATION}" = "270"
+	then
+	    echo "${RAW_RESOLUTION}" | sed -e s+'^\([0-9]*\)x\([0-9]*\)$'+'\2x\1'+
+	else
+	    echo "${RAW_RESOLUTION}"
+	fi
     ;;
     "listOutputs")
 	    swaymsg -t get_outputs | jq -r '.[].name'
     ;;
     "currentOutput")
-	    swaymsg -t get_outputs | jq -r '.[] | select (.focused).name'
+	    swaymsg -t get_outputs | jq -r '.[] | select (.name == "'${PSCREEN}'").name'
     ;;
     "setOutput")
-        MODE=$1
-        if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE}$"
-        then
-            # enable (in case of reboot of es)
-            echo "set ${MODE} as primary" >&2
-            swaymsg output "${MODE}" enable
 
+	# not yet able to switch screen
+	swaymsg assign [app_id="^batocera-backglass-window$"] 2
+	
+        MODE1=$1
+	MODE2=$2 # screen 2 (facultativ)
+	MODE3=$3 # screen 3 (facultativ) # not yet supported
+        if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE1}$"
+        then
             # disable all other outputs
-            swaymsg -t get_outputs | jq -r '.[].name' | grep -vE "^${MODE}$" |
+            swaymsg -t get_outputs | jq -r '.[].name' | grep -vE "^${MODE1}$|^${MODE2}$|^${MODE3}$" |
             while read OUTP
             do
                 echo "set ${OUTP} off" >&2
                 swaymsg output "${OUTP}" disable
             done
+
+	    # enable (in case of reboot of es)
+            echo "set ${MODE1} as primary" >&2
+            swaymsg output "${MODE1}" enable
+	    PREVIOUS_SCREEN="${MODE1}"
+
+	    # screen 2
+	    if test -n "${MODE2}"
+	    then
+		if swaymsg -t get_outputs | jq -r '.[].name' | grep -qE "^${MODE2}$"; then # if there is at least the screen 2
+		    echo "set user output: ${MODE2} as right of ${PREVIOUS_SCREEN}" >&2
+		    swaymsg output "${MODE2}" enable
+		    PREVIOUS_SCREEN="${MODE2}"
+		fi
+	    fi
         else
             # disable all except the first one
             swaymsg -t get_outputs | jq -r '.[].name' |
@@ -145,29 +173,27 @@ case "${ACTION}" in
     ;;
     "setRotation")
         ROTATE=$1
-        OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
 
         case "${ROTATE}" in
             "1")
-                swaymsg output "${OUTPUT}" transform 90
+                swaymsg output "${PSCREEN}" transform 90
             ;;
             "2")
-                swaymsg output "${OUTPUT}" transform 180
+                swaymsg output "${PSCREEN}" transform 180
             ;;
             "3")
-                swaymsg output "${OUTPUT}" transform 270
+                swaymsg output "${PSCREEN}" transform 270
             ;;
             *)
                 # in case of reboot of es
-                swaymsg output "${OUTPUT}" transform normal
+                swaymsg output "${PSCREEN}" transform normal
         esac
     ;;
     "mapTouchScreen")
         # Mapping touch screen
-        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type == "touch") | .identifier')
+        TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select (.name == "'${PSCREEN}'") | select(.type == "touch") | .identifier')
         if [ ! -z "${TOUCHSCREEN}" ]; then
-            OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select (.focused).name')
-            swaymsg input "${TOUCHSCREEN}" map_to_output "${OUTPUT}"
+            swaymsg input "${TOUCHSCREEN}" map_to_output "${PSCREEN}"
         fi
     ;;
     "getDisplayMode")
