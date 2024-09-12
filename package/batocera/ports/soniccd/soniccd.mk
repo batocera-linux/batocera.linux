@@ -9,7 +9,7 @@ SONICCD_SITE_METHOD = git
 SONICCD_GIT_SUBMODULES = YES
 SONICCD_LICENSE = Custom
 
-SONICCD_DEPENDENCIES = sdl2 libogg libvorbis libtheora
+SONICCD_DEPENDENCIES = sdl2 libogg libvorbis libtheora libglu
 
 ifneq ($(BR2_PACKAGE_LIBGLEW),y)
     SONICCD_VERSION = 222caf6

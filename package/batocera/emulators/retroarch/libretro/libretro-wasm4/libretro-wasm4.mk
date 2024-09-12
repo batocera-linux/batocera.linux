@@ -14,6 +14,14 @@ LIBRETRO_WASM4_SUBDIR = runtimes/native
 
 LIBRETRO_WASM4_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release
 
+ifeq ($(BR2_PACKAGE_XORG7),y)
+LIBRETRO_WASM4_DEPENDENCIES += libglvnd
+endif
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+LIBRETRO_WASM4_DEPENDENCIES += libxkbcommon
+endif
+
 define LIBRETRO_WASM4_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/runtimes/native/wasm4_libretro.so \
 	    $(TARGET_DIR)/usr/lib/libretro/wasm4_libretro.so

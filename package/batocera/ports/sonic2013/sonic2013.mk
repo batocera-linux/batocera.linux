@@ -19,6 +19,10 @@ else
     SONIC2013_DEPENDENCIES += libglew
 endif
 
+ifeq ($(BR2_PACKAGE_LIBGLU),y)
+SONIC2013_DEPENDENCIES += libglu
+endif
+
 define SONIC2013_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef

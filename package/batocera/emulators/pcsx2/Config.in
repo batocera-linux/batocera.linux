@@ -21,6 +21,9 @@ config BR2_PACKAGE_PCSX2
     select BR2_PACKAGE_BATOCERA_QT6
     select BR2_PACKAGE_WXWIDGETS
     select BR2_PACKAGE_STENZEK_SHADERC
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBBACKTRACE
+    select BR2_PACKAGE_WEBP
     help
       PCSX2 is a free and open-source PlayStation 2 (PS2) emulator.
       

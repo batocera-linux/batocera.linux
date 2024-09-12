@@ -9,6 +9,7 @@ config BR2_PACKAGE_DOSBOX
         select BR2_PACKAGE_LIBPNG
         select BR2_PACKAGE_LIBOGG
         select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_LIBGLEW
 
 	help
 	  DOSBox is a DOS-emulator that uses the SDL-library

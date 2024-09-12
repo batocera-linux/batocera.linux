@@ -11,6 +11,7 @@ config BR2_PACKAGE_RAZE
     select BR2_PACKAGE_WEBP
     select BR2_PACKAGE_WEBP_MUX
     select BR2_PACKAGE_WEBP_DEMUX
+    select BR2_PACKAGE_LIBVPX
     help
       Raze is a source port, powered by GZDoom tech, for playing classic Build Engine games like Duke Nukem 3D.
 

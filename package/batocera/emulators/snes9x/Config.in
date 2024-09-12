@@ -1,6 +1,7 @@
 config BR2_PACKAGE_SNES9X
 	bool "snes9x"
 	select BR2_PACKAGE_BATOCERA_QT6
+	select BR2_PACKAGE_SDL2		if BR2_x86_64
 
 	help
 	  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator

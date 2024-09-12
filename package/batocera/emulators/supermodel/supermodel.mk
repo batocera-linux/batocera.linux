@@ -6,7 +6,7 @@
 # Version: Commits on May 8, 2023
 SUPERMODEL_VERSION = ac0e6407b414d05e55efa4cafe1644c899d62d66
 SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
-SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net
+SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net libglu
 SUPERMODEL_LICENSE = GPLv3
 
 ifeq ($(BR2_PACKAGE_LIBGLEW),y)

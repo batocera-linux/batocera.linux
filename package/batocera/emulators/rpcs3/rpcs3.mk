@@ -9,7 +9,7 @@ RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
 RPCS3_LICENSE = GPLv2
-RPCS3_DEPENDENCIES += alsa-lib llvm faudio ffmpeg libevdev libxml2
+RPCS3_DEPENDENCIES += alsa-lib llvm faudio ffmpeg libevdev libxml2 libcurl
 RPCS3_DEPENDENCIES += libglew libglu libpng libusb mesa3d ncurses openal rtmpdump
 RPCS3_DEPENDENCIES += qt6base qt6declarative qt6multimedia qt6svg wolfssl 
 

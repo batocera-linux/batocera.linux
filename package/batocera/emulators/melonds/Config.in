@@ -5,6 +5,9 @@ config BR2_PACKAGE_MELONDS
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_SLIRP
     select BR2_PACKAGE_BATOCERA_QT6
+    select BR2_PACKAGE_ECM
+    select BR2_PACKAGE_LIBEGL
+
     help
       Ninteno DS emulator, sorta
       http://melonds.kuribo64.net/

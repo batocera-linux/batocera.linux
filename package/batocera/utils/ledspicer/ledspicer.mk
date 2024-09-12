@@ -7,7 +7,7 @@
 LEDSPICER_VERSION = 7e8957edebe9fd6e209ac824dfe109edb3de36d9
 LEDSPICER_SITE = $(call github,meduzapat,LEDSpicer,$(LEDSPICER_VERSION))
 LEDSPICER_LICENSE = GPLv3
-LEDSPICER_DEPENDENCIES = tinyxml2 libusb libtool udev
+LEDSPICER_DEPENDENCIES = tinyxml2 libusb libtool udev libpthread-stubs
 LEDSPICER_AUTORECONF = YES
 LEDSPICER_CONF_OPTS = CXXFLAGS='-g0 -O3' --enable-nanoled --enable-pacdrive --enable-pacled64
 LEDSPICER_CONF_OPTS += --enable-ultimateio --enable-ledwiz32 --enable-howler --enable-adalight

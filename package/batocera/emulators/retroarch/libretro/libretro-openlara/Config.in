@@ -2,6 +2,7 @@ config BR2_PACKAGE_LIBRETRO_OPENLARA
     bool "libretro-openlara"
     depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_LIBGLVND     if BR2_PACKAGE_XORG7
     help
       A libretro core using the classic Tomb Raider open-source engine.
       
