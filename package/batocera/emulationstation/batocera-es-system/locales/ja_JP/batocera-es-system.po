@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v40r(2024/08/18)\n"
+"Project-Id-Version: batocera-es v41b(2024/09/06)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-08-18 23:16+0900\n"
+"PO-Revision-Date: 2024-09-08 13:12+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -69,7 +69,7 @@ msgid ""
 "damage your device."
 msgstr ""
 "Ryzen Mobile シリーズ CPU に提供される電力 (ワット) の割合を調整します\n"
-"ワット数の設定が高すぎるとデバイスが損傷する可能性があります"
+"設定が高すぎるとデバイスが損傷する可能性があります"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -377,11 +377,13 @@ msgid ""
 "Use preemptive frames instead of run-ahead. Only runs ahead when controller "
 "state changes."
 msgstr ""
+"先読みの代わりにプリエンプティブフレームを使用します。 コントローラの状態変化"
+"時にのみ先に実行されます。"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE PRE-EMPTIVE FRAMES"
-msgstr ""
+msgstr "プリエンプティブフレームを使用"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -488,7 +490,7 @@ msgstr "ホイール(ハンドル)中間幅"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
-msgstr "フォースフィードバック(振動)可能なエミュレーターおよびコントローラー用"
+msgstr "フォースフィードバック(振動)可能時の設定"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -1360,7 +1362,7 @@ msgstr "ハイブリッド下/上比率3"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "Select the input type to navigate the touch screen"
-msgstr "入力タイプを選択してタッチスクリーンをナビゲートします"
+msgstr "入力タイプを選択してタッチスクリーンを操作します"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -2006,8 +2008,8 @@ msgctxt "game_options"
 msgid ""
 "Enable to display an on-screen message if trying to use unsupported features."
 msgstr ""
-"サポートしていない機能を使用しようとした場合に画面にメッセージを表示するよう"
-"にします"
+"サポートしていない機能を使おうとした場合に画面にメッセージを表示するようにし"
+"ます"
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, ...
 msgctxt "game_options"
@@ -3664,7 +3666,7 @@ msgid ""
 "Use Megadrive to automap inputs for a Megadrive style controller with a 6 "
 "button layout."
 msgstr ""
-"6 ボタン の メガドライブ コントローラーのボタンの割り当てを自動で設定します"
+"6 ボタンのメガドライブ コントローラーのボタンの割り当てを自動で設定します"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx, libretro/genesisplusgx, libretro/genesisplusgx, libretro/genesisplusgx, ...
 msgctxt "game_options"
@@ -6806,7 +6808,7 @@ msgctxt "game_options"
 msgid ""
 "Manually define which resolution to use.&#x0a;Auto defaults to High and "
 "switches to Super-High when needed."
-msgstr "使用する解像度を設定します。(自動は[720p]、必要に応じて[1440p]に切替)"
+msgstr "使用する解像度を設定します(自動は[720p]、必要に応じて[1440p]に切替)"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021, amiberry
 msgctxt "game_options"
@@ -7409,7 +7411,8 @@ msgctxt "game_options"
 msgid ""
 "Sync GB2Player/GBC2Player saves with saves in \"saves/gb\" or \"saves/gbc\"."
 msgstr ""
-"GB2Player / GBC2Playerのセーブデータを、[gb]または[gbc]のデータと同期します"
+"GB2Player/GBC2Playerのセーブデータを、「saves/gb」または「saves/gbc」のデータ"
+"と同期します"
 
 #. TRANSLATION: libretro/tgbdual
 msgctxt "game_options"
@@ -8058,7 +8061,7 @@ msgid ""
 "Changing driver can improve audio performance and reduce distortion. "
 "Alsathread is recommended for low-end systems."
 msgstr ""
-"ドライバーを変更すると、音声再生能力が向上し、歪みが軽減されます\n"
+"ドライバー変更で、音声再生能力が向上し、歪みが軽減されます\n"
 "Alsathread はローエンド システムに推奨されます"
 
 #. TRANSLATION: libretro
@@ -8757,7 +8760,7 @@ msgstr "表示系設定"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Automatic ratio"
-msgstr ""
+msgstr "自動比率"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -9315,8 +9318,8 @@ msgid ""
 "Fills the screen regardless of the aspect ratio. Doesn't work with Integer "
 "Upscaling."
 msgstr ""
-"アスペクト比に関係なく、画面いっぱいに表示します(整数アップスケーリングでは機"
-"能しません)"
+"アスペクト比に関係なく、画面全体に表示します(整数アップスケーリングでは機能し"
+"ません)"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -10813,8 +10816,8 @@ msgid ""
 "Necessary for some guns to replace fog textures as a workaround in Time "
 "Crisis - Crisis Zone."
 msgstr ""
-"一部の銃では、タイム クライシス - クライシス ゾーンの回避策としてフォグ テク"
-"スチャを置き換える必要があります。"
+"一部の銃では、タイムクライシス-クライシスゾーンの回避策としてフォグ テクス"
+"チャを置き換える必要があります。"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -11385,8 +11388,8 @@ msgid ""
 "Stream texture to GPU in parrallel. Can improve performance on more powerful "
 "GPU's that have spare headroom."
 msgstr ""
-"テクスチャを GPU に並行してストリーミングします。性能が高い、より強力な GPU "
-"ではパフォーマンスを向上させることができます"
+"テクスチャを GPU に並行してストリーミングします。より強力な GPU ではパフォー"
+"マンスを向上させることができます"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -13160,8 +13163,8 @@ msgid ""
 "GPU emulation accuracy. Most games render fine with Normal. High is required "
 "to ensure particles render correctly."
 msgstr ""
-"GPUエミュレーションの精度。ほとんどのゲームはノーマルで問題なくレンダリングさ"
-"れます。\n"
+"GPUエミュレーションの精度。ほとんどのゲームは通常で問題なくレンダリングされま"
+"す。\n"
 "パーティクルが正しくレンダリングされるようにするには、高い値が必要です"
 
 #. TRANSLATION: suyu
@@ -13172,7 +13175,7 @@ msgstr "精度レベル"
 #. TRANSLATION: suyu
 msgctxt "game_options"
 msgid "Extreme"
-msgstr "極端"
+msgstr "エクストリーム"
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -14148,8 +14151,8 @@ msgid ""
 "Per Table Folder requires all files to be in the associated rom table "
 "folder. If disabled, consult the Wiki for further details."
 msgstr ""
-"[テーブル フォルダーごと] では、すべてのファイルを関連する テーブル romフォル"
-"ダーに置く必要があります。無効の場合、詳細については Wiki を参照してください"
+"[テーブル フォルダごと] では、すべてのファイルを関連する テーブル romフォルダ"
+"に置く必要があります。無効の場合、詳細については Wiki を参照してください"
 
 #. TRANSLATION: vpinball, vpinball
 msgctxt "game_options"
@@ -14159,7 +14162,7 @@ msgstr "エキスパート設定"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PER TABLE FOLDER"
-msgstr "テーブルフォルダーごと"
+msgstr "テーブルフォルダごと"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -15670,62 +15673,5 @@ msgctxt "keys_files"
 msgid "Exit Steam"
 msgstr "Steamを終了"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use alternative input mappings. Only applies to Standard Controller type."
-#~ msgstr ""
-#~ "代替の入力マッピングを使用します。標準コントローラ タイプにのみ適用されま"
-#~ "す"
-
-#~ msgctxt "game_options"
-#~ msgid "ALT INPUT MAPPING"
-#~ msgstr "ALT 入力マッピング"
-
-#~ msgctxt "game_options"
-#~ msgid "Face Buttons (CW)"
-#~ msgstr "表ボタン（時計回り)"
-
-#~ msgctxt "game_options"
-#~ msgid "Face Buttons (CCW)"
-#~ msgstr "表ボタン（反時計回り）"
-
-#~ msgctxt "game_options"
-#~ msgid "Enable or disable monsters in battle."
-#~ msgstr "戦闘中のモンスターを有効/無効にします"
-
-#~ msgctxt "game_options"
-#~ msgid "MONSTERS"
-#~ msgstr "モンスター"
-
-#~ msgctxt "game_options"
-#~ msgid "Hidden"
-#~ msgstr "非表示"
-
-#~ msgctxt "game_options"
-#~ msgid "Shown"
-#~ msgstr "表示"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use with the stretch aspect ratio and adjust joystick sensitivity as "
-#~ "required."
-#~ msgstr ""
-#~ "ストレッチ アスペクト比を使用し、必要あればジョイスティック感度を調整しま"
-#~ "す"
-
-#~ msgctxt "game_options"
-#~ msgid "Off (default)"
-#~ msgstr "使用しない (標準)"
-
-#~ msgctxt "game_options"
-#~ msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
-#~ msgstr ""
-#~ "MSAA / SSAAを切り替えます。アンチエイリアシングの有効/無効に依存します"
-
-#~ msgctxt "game_options"
-#~ msgid "MSAA (default)"
-#~ msgstr "MSAA (標準)"
-
-#~ msgctxt "game_options"
-#~ msgid "SSAA"
-#~ msgstr "SSAA"
+#~ msgid "FORGET A BLUETOOTH DEVICE"
+#~ msgstr "BLUETOOTH デバイスの削除"
