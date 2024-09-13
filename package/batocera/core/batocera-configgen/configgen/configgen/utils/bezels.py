@@ -278,7 +278,7 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
     # outer border
     outerBorderSize = h * outerBorderSizePer // 100 # use only h to have homogen border size
     if outerBorderSize < 1: # minimal size
-        outerBorderSize = 1
+        outerBorderSize = 0
     outerShapes = [
         [(offset_x, 0), (offset_x + new_w, outerBorderSize)],
         [(offset_x + new_w - outerBorderSize, 0), (offset_x + new_w, h)],
