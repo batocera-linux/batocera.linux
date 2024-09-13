@@ -205,12 +205,17 @@ endif
 %-upgrade: %-supported
 	$(if $(DEV),,$(error "DEV not specified!"))
 	-@sudo umount /tmp/mount
-	-@mkdir /tmp/mount
+	-@mkdir -p /tmp/mount
 	@sudo mount $(DEV)1 /tmp/mount
+	@lsblk
+	@ls /tmp/mount
+	@echo "continue BATOCERA upgrade $(DEV)1 with $* build? [y/N]"
+	@read line; if [ "$$line" != "y" ]; then echo aborting; exit 1 ; fi
 	-@sudo rm /tmp/mount/boot/batocera
-	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/boot.tar.xz -C /tmp/mount --no-same-owner
+	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/images/$*/boot.tar.xz -C /tmp/mount --no-same-owner --exclude=batocera-boot.conf --exclude=config.txt
 	@sudo umount /tmp/mount
 	-@rmdir /tmp/mount
+	@sudo fatlabel $(DEV)1 BATOCERA
 
 %-toolchain: %-supported
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
