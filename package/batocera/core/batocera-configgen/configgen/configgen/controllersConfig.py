@@ -56,32 +56,36 @@ class Controller:
 # Load all controllers from the es_input.cfg
 def loadAllControllersConfig():
     controllers = dict()
-    tree = ET.parse(batoceraFiles.esInputs)
-    root = tree.getroot()
-    for controller in root.findall(".//inputConfig"):
-        controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
-                                        controller.get("deviceGUID"), None, None)
-        uidname = controller.get("deviceGUID") + controller.get("deviceName")
-        controllers[uidname] = controllerInstance
-        for input in controller.findall("input"):
-            inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
-            controllerInstance.inputs[input.get("name")] = inputInstance
+    for conffile in ["/usr/share/emulationstation/es_input.cfg", batoceraFiles.CONF + '/emulationstation/es_input.cfg']:
+      if os.path.exists(conffile):
+          tree = ET.parse(conffile)
+          root = tree.getroot()
+          for controller in root.findall(".//inputConfig"):
+              controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
+                                              controller.get("deviceGUID"), None, None)
+              uidname = controller.get("deviceGUID") + controller.get("deviceName")
+              controllers[uidname] = controllerInstance
+              for input in controller.findall("input"):
+                  inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
+                  controllerInstance.inputs[input.get("name")] = inputInstance
     return controllers
 
 
 # Load all controllers from the es_input.cfg
 def loadAllControllersByNameConfig():
     controllers = dict()
-    tree = ET.parse(batoceraFiles.esInputs)
-    root = tree.getroot()
-    for controller in root.findall(".//inputConfig"):
-        controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
-                                        controller.get("deviceGUID"), None, None)
-        deviceName = controller.get("deviceName")
-        controllers[deviceName] = controllerInstance
-        for input in controller.findall("input"):
-            inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
-            controllerInstance.inputs[input.get("name")] = inputInstance
+    for conffile in ["/usr/share/emulationstation/es_input.cfg", batoceraFiles.CONF + '/emulationstation/es_input.cfg']:
+        if os.path.exists(conffile):
+            tree = ET.parse(conffile)
+            root = tree.getroot()
+            for controller in root.findall(".//inputConfig"):
+                controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
+                                                controller.get("deviceGUID"), None, None)
+                deviceName = controller.get("deviceName")
+                controllers[deviceName] = controllerInstance
+                for input in controller.findall("input"):
+                    inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
+                    controllerInstance.inputs[input.get("name")] = inputInstance
     return controllers
 
 

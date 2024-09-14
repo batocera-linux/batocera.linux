@@ -87,7 +87,6 @@ fi
 # the user can delete files, files will not be recreated
 for FILE in music bios extractions kodi library saves screenshots recordings splash \
             system/.config/lirc/lircd.conf \
-            system/configs/emulationstation/es_input.cfg \
             system/configs/emulationstation/es_settings.cfg \
             system/.kodi \
             system/configs/amiberry \
@@ -112,7 +111,7 @@ for FILE in music bios extractions kodi library saves screenshots recordings spl
             system/configs/pironman5
 do
     # Skip updating specific files
-    if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/configs/emulationstation/es_input.cfg" ] || [ "$FILE" = "system/batocera.conf" ] || [ "$FILE" = "system/.kodi/userdata/guisettings.xml" ]; then
+    if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/batocera.conf" ] || [ "$FILE" = "system/.kodi/userdata/guisettings.xml" ]; then
         # Check if the file doesn't exist, then create it
         if [ ! -e "${OUT}/${FILE}" ]; then
             mkdir -p "$(dirname "${OUT}/${FILE}")"
