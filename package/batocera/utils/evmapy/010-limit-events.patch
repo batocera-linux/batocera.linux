@@ -1,0 +1,110 @@
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index 817bdb2..8c2e18c 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -34,7 +34,7 @@ import evmapy.config
+ import evmapy.controller
+ import evmapy.source
+ import evmapy.util
+-
++from evdev import ecodes
+ 
+ class SIGHUPReceivedException(Exception):
+     """
+@@ -67,7 +67,6 @@ class Multiplexer(object):
+         self._logger = logging.getLogger()
+         self._poll = None
+         self._uinput = None
+-
+         self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.05, "speed": 4.0 }
+         global_config_filepath = "/etc/evmapy.json"
+         # { "mouse_config": { "every": 0.005, "deadzone": 0.06 } }
+@@ -85,16 +84,25 @@ class Multiplexer(object):
+             app_with_user = (info['name'], "root")
+             # Create the control socket
+             self._controller = evmapy.controller.Controller(self)
++            # Start processing events from all configured devices
++            self._poll = select.poll()
++            target_keys = self._scan_devices()
++            valid_events={
++                ecodes.EV_REL: [],
++                ecodes.EV_KEY: []
++            }
++            for x in target_keys["rel"]:
++                valid_events[ecodes.EV_REL].append(evdev.ecodes.ecodes[x])
++            for x in target_keys["key"]:
++                valid_events[ecodes.EV_KEY].append(evdev.ecodes.ecodes[x])
++
+             # Try to open /dev/uinput, failing gracefully
+             try:
+-                self._uinput = evdev.UInput(name='evmapy')
++                self._uinput = evdev.UInput(name='evmapy', events=valid_events)
+             except evdev.uinput.UInputError as exc:
+                 self._logger.warning(
+                     "injecting keypresses will not be possible: %s", str(exc)
+                 )
+-            # Start processing events from all configured devices
+-            self._poll = select.poll()
+-            self._scan_devices()
+             # Start monitoring the control socket
+             self._fds[self._controller.fileno()] = self._controller
+             self._poll.register(self._controller, select.POLLIN)
+@@ -139,10 +147,14 @@ class Multiplexer(object):
+         """
+         self._logger.info("scanning devices...")
+         processed_devices = [source.device['path'] for source in self.devices]
++        target_keys = { "rel": {}, "key": {} }
+         for dev_path in evdev.list_devices():
+             if dev_path not in processed_devices:
+-                self._add_device(dev_path)
++                target_keys_dev = self._add_device(dev_path)
++                target_keys["rel"] = target_keys["rel"] | target_keys_dev["rel"]
++                target_keys["key"] = target_keys["key"] | target_keys_dev["key"]
+         self._log_device_count()
++        return target_keys
+ 
+     def _add_device(self, path):
+         """
+@@ -156,12 +168,14 @@ class Multiplexer(object):
+         device = evdev.InputDevice(path)
+         self._logger.debug("trying to add %s (%s)", device.fn, device.name)
+         try:
+-            source = evmapy.source.Source(device)
++            source = evmapy.source.Source(device)           
+             self._fds[source.device['fd']] = source
+             self._poll.register(source.device['fd'], select.POLLIN)
++            return source.getTargetKeys()
+         except evmapy.config.ConfigError as exc:
+             if not exc.not_found:
+                 self._logger.error(str(exc))
++            return { "rel":{}, "key": {} }
+ 
+     def _remove_device(self, source, quiet=False):
+         """
+diff --git a/evmapy/source.py b/evmapy/source.py
+index fe29d1d..9d00b51 100644
+--- a/evmapy/source.py
++++ b/evmapy/source.py
+@@ -62,6 +62,22 @@ class Source(object):
+         self._logger = logging.getLogger()
+         self.load_config()
+ 
++    def getTargetKeys(self):
++        target_keys = { "rel": {}, "key": {} }
++        for x in self._config["map"]:
++            for y in self._config["map"][x]:
++                if y["type"] == "key":
++                    if type(y["target"]) is list:
++                        for z in y["target"]:
++                            target_keys["key"][z] = True
++                    else:
++                        target_keys["key"][y["target"]] = True
++                elif y["type"] == "mouse":
++                    target_keys["rel"]["REL_X"] = True
++                    target_keys["rel"]["REL_Y"] = True
++                    target_keys["rel"]["REL_WHEEL"] = True
++        return target_keys
++
+     def load_config(self, name=None):
+         """
+         Load configuration from the given path.
