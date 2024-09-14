@@ -1,5 +1,5 @@
 diff --git a/evmapy/config.py b/evmapy/config.py
-index 98e8be7..2f7197a 100644
+index d9494d0..cf0d8f4 100644
 --- a/evmapy/config.py
 +++ b/evmapy/config.py
 @@ -286,7 +286,7 @@ def parse(config_input):
@@ -21,7 +21,7 @@ index 98e8be7..2f7197a 100644
      if action['mode'] not in ('all', 'any', 'sequence'):
          raise ConfigError("invalid action mode '%s'" % action['mode'])
 diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
-index a9f0730..c0e0153 100644
+index 5a34030..19dd13c 100644
 --- a/evmapy/multiplexer.py
 +++ b/evmapy/multiplexer.py
 @@ -28,6 +28,7 @@ import signal
@@ -32,12 +32,11 @@ index a9f0730..c0e0153 100644
  
  import evmapy.config
  import evmapy.controller
-@@ -66,8 +67,27 @@ class Multiplexer(object):
+@@ -66,6 +67,18 @@ class Multiplexer(object):
          self._logger = logging.getLogger()
          self._poll = None
          self._uinput = None
--
--        valid_events={ecodes.EV_KEY: [
++
 +        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.05, "speed": 4.0 }
 +        global_config_filepath = "/etc/evmapy.json"
 +        # { "mouse_config": { "every": 0.005, "deadzone": 0.06 } }
@@ -49,20 +48,19 @@ index a9f0730..c0e0153 100644
 +                        if key in global_config["mouse_config"]:
 +                            self._mousePosition[key] =  global_config["mouse_config"][key]
 +
-+        valid_events={
-+            ecodes.EV_REL: [
-+            evdev.ecodes.REL_X,
-+            evdev.ecodes.REL_Y,
-+            evdev.ecodes.REL_WHEEL
-+            ],
-+            ecodes.EV_KEY: [
-+            evdev.ecodes.BTN_LEFT,
-+            evdev.ecodes.BTN_RIGHT,
-+            evdev.ecodes.BTN_MIDDLE,
-             evdev.ecodes.KEY_ESC,
-             evdev.ecodes.KEY_1,
-             evdev.ecodes.KEY_2,
-@@ -602,11 +622,18 @@ class Multiplexer(object):
+         try:
+             signal.signal(signal.SIGHUP, signal.SIG_IGN)
+             info = evmapy.util.get_app_info()
+@@ -74,7 +87,7 @@ class Multiplexer(object):
+             self._controller = evmapy.controller.Controller(self)
+             # Try to open /dev/uinput, failing gracefully
+             try:
+-                self._uinput = evdev.UInput(name='%s (%s)' % app_with_user)
++                self._uinput = evdev.UInput(name='evmapy')
+             except evdev.uinput.UInputError as exc:
+                 self._logger.warning(
+                     "injecting keypresses will not be possible: %s", str(exc)
+@@ -221,11 +234,18 @@ class Multiplexer(object):
          signal.signal(signal.SIGTERM, raise_signal_exception)
          while True:
              # Calculate time until the next delayed action triggers
@@ -85,7 +83,7 @@ index a9f0730..c0e0153 100644
              # Wait for either an input event or the moment when the next
              # delayed action should be triggered, whichever comes first
              try:
-@@ -628,6 +655,9 @@ class Multiplexer(object):
+@@ -247,6 +267,9 @@ class Multiplexer(object):
                  # It's time for the next delayed action
                  self._perform_delayed_actions()
  
@@ -95,7 +93,7 @@ index a9f0730..c0e0153 100644
      def _perform_normal_actions(self, actions):
          """
          Start/stop actions requested by a source in response to the
-@@ -639,7 +669,7 @@ class Multiplexer(object):
+@@ -258,7 +281,7 @@ class Multiplexer(object):
          :type actions: list
          :returns: None
          """
@@ -104,7 +102,7 @@ index a9f0730..c0e0153 100644
              self._logger.debug("action=%s, start=%s", action, start)
              if action['hold'] == 0:
                  if start:
-@@ -647,9 +677,13 @@ class Multiplexer(object):
+@@ -266,9 +289,13 @@ class Multiplexer(object):
                          self._uinput_synthesize(action, press=True)
                      elif action['type'] == 'exec':
                          self._execute_program(action)
@@ -118,7 +116,7 @@ index a9f0730..c0e0153 100644
              else:
                  if start:
                      # Schedule delayed action to trigger after hold time
-@@ -675,6 +709,8 @@ class Multiplexer(object):
+@@ -294,6 +321,8 @@ class Multiplexer(object):
  
          :returns: None
          """
@@ -127,7 +125,7 @@ index a9f0730..c0e0153 100644
          action = self._delayed[0]
          if action['type'] == 'key':
              if action['direction'] == 'down':
-@@ -715,6 +751,44 @@ class Multiplexer(object):
+@@ -334,6 +363,44 @@ class Multiplexer(object):
              self._logger.debug("writing: code 00, type 00, val 00")
              self._uinput.syn()
  
@@ -173,7 +171,7 @@ index a9f0730..c0e0153 100644
          """
          Run external program(s) associated with the given action.
 diff --git a/evmapy/source.py b/evmapy/source.py
-index ea80351..55d73a5 100644
+index a15e21e..fe29d1d 100644
 --- a/evmapy/source.py
 +++ b/evmapy/source.py
 @@ -101,7 +101,7 @@ class Source(object):
