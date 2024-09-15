@@ -1,0 +1,88 @@
+--- a/gfx/drivers_context/khr_display_ctx.c
++++ b/gfx/drivers_context/khr_display_ctx.c
+@@ -16,12 +16,15 @@
+ #include <compat/strl.h>
+ #include <string/stdstring.h>
+ #include <retro_timers.h>
++#include <unistd.h>
++#include <fcntl.h>
+ 
+ #ifdef HAVE_CONFIG_H
+ #include "../../config.h"
+ #endif
+ 
+ #include "../../frontend/frontend_driver.h"
++#include "../common/drm_common.h"
+ #include "../common/vulkan_common.h"
+ #include "../../verbosity.h"
+ #include "../../configuration.h"
+@@ -35,6 +38,53 @@
+    unsigned refresh_rate_x1000;
+ } khr_display_ctx_data_t;
+ 
++/* Restore original CRTC. */
++static void gfx_ctx_khr_restore_crtc(void)
++{
++   if (g_orig_crtc) {
++      g_drm_fd = open("/dev/dri/card0", O_RDWR);
++      if (g_drm_fd < 0)
++      {
++         RARCH_WARN("[Vulkan]: Couldn't open DRM device to restore CRTC.\n");
++         return;
++      }
++      RARCH_DBG("[Vulkan]: Restore DRM crtc id %d, buff. id %d, conn. id %d\n",
++            g_orig_crtc->crtc_id, g_orig_crtc->buffer_id, g_connector_id);
++      drm_restore_crtc();
++      close(g_drm_fd);
++      g_drm_fd = -1;
++   }
++}
++
++/* Save original CRTC. */
++static void gfx_ctx_khr_save_crtc(void)
++{
++   int fd;
++   settings_t *settings           = config_get_ptr();
++   unsigned video_monitor_index   = settings->uints.video_monitor_index;
++
++   gfx_ctx_khr_restore_crtc();
++   fd = open("/dev/dri/card0", O_RDWR);
++   if (fd < 0)
++   {
++      RARCH_WARN("[Vulkan]: Couldn't open DRM device to save CRTC.\n");
++      return;
++   }
++   if (!drm_get_resources(fd))
++      goto error;
++   if (!drm_get_connector(fd, video_monitor_index))
++      goto error;
++   if (!drm_get_encoder(fd))
++      goto error;
++   drm_setup(fd);
++   RARCH_DBG("[Vulkan]: Save DRM crtc id %d, buff. id %d, conn. id %d\n",
++         g_orig_crtc->crtc_id, g_orig_crtc->buffer_id, g_connector_id);
++
++error:
++   drm_free();
++   close(fd);
++}
++
+ static void gfx_ctx_khr_display_destroy(void *data)
+ {
+    khr_display_ctx_data_t *khr = (khr_display_ctx_data_t*)data;
+@@ -47,6 +97,7 @@
+       slock_free(khr->vk.context.queue_lock);
+ #endif
+    free(khr);
++   gfx_ctx_khr_restore_crtc();
+ }
+ 
+ static void gfx_ctx_khr_display_get_video_size(void *data,
+@@ -76,6 +127,7 @@
+    if (!khr)
+        return NULL;
+ 
++   gfx_ctx_khr_save_crtc();
+    if (!vulkan_context_init(&khr->vk, VULKAN_WSI_DISPLAY))
+    {
+       RARCH_ERR("[Vulkan]: Failed to create Vulkan context.\n");
