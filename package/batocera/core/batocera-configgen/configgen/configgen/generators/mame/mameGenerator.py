@@ -535,11 +535,11 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
         except:
-            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config))
+            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
 
         buttonLayout = getMameControlScheme(system, romBasename)
 
@@ -585,7 +585,7 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsBordersSize):
+    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsBordersSize, gunsBordersRatio):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         if messSys == "":
@@ -748,7 +748,7 @@ class MameGenerator(Generator):
         if gunsBordersSize is not None:
             output_png_file = "/tmp/bezel_gunborders.png"
             innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, None, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
                 os.remove(tmpZipDir + "/" + pngFile)
             except:
