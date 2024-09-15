@@ -99,7 +99,7 @@ def reconfigureControllers(playersControllers, system, rom, metadata, deviceList
 
     eslog.info("before wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllers.items()):
-        eslog.info("  " + playercontroller + ". index:" + str(pad.index) + " dev:" + pad.dev + " name:" + pad.realName)
+        eslog.info("  {}. index:{} dev:{} name:{}".format(playercontroller, str(pad.index), pad.dev,pad.realName))
 
     # reconfigure wheel buttons
     # no need to sort, but i like keeping the same loop (sorted by players)
@@ -223,7 +223,7 @@ def reconfigureControllers(playersControllers, system, rom, metadata, deviceList
 
     eslog.info("after wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllersNew.items()):
-        eslog.info("  " + playercontroller + ". index:" + str(pad.index) + " dev:" + pad.dev + " name:" + pad.realName)
+        eslog.info("  {}. index:{} dev:{} name:{}".format(playercontroller, str(pad.index), pad.dev,pad.realName))
 
     return (procs, playersControllersNew, deviceList)
 
