@@ -39,7 +39,7 @@
 - Spectravideo system now has Libretro-BlueMSX as an emulator option
 - Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
 - You can now manually forget, connect or disconnect a bluetooth device
-- Udated Nvidia card detection
+- Updated Nvidia card detection
 - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
 ### Updated
 - RetroArch to v1.19.1
