@@ -1161,7 +1161,8 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
 
         w = gameResolution["width"]
         h = gameResolution["height"]
-        h5 = bezelsUtil.gunsBorderSize(w, h)
+        innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
+        h5 = bezelsUtil.gunsBorderSize(w, h, innerSize, outerSize)
 
         # could be better to compute the ratio while on ra it is forced to 4/3...
         ratio = generator.getInGameRatio(system.config, gameResolution, rom)
@@ -1170,7 +1171,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         bottom = h5
         right  = h5
         if ratio == 4/3:
-            left = (w - (h-2*h5)*4/3)//2
+            left = (w-(h*4/3)) // 2 + h5
             right = left
 
         with open(gunBezelInfoFile, "w") as fd:

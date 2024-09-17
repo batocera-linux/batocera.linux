@@ -276,7 +276,7 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
     offset_x = (w - new_w) // 2
 
     # outer border
-    outerBorderSize = h * outerBorderSizePer // 100 # use only h to have homogen border size
+    outerBorderSize = w * outerBorderSizePer // 100 # use only h to have homogen border size
     if outerBorderSize < 1: # minimal size
         outerBorderSize = 0
     outerShapes = [
@@ -287,7 +287,7 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
     ]
 
     # inner border
-    innerBorderSize = new_w * innerBorderSizePer // 100 # use only h to have homogen border size
+    innerBorderSize = w * innerBorderSizePer // 100 # use only h to have homogen border size
     if innerBorderSize < 1: # minimal size
         innerBorderSize = 1
     innerShapes = [
@@ -310,7 +310,7 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
     return outerBorderSize + innerBorderSize
 
 def gunsBorderSize(w, h, innerBorderSizePer = 2, outerBorderSizePer = 3):
-    return (h * (innerBorderSizePer + outerBorderSizePer)) // 100
+    return (w * (innerBorderSizePer + outerBorderSizePer)) // 100
 
 def gunsBordersColorFomConfig(config):
     if "controllers.guns.borderscolor" in config:
