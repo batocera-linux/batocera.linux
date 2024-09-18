@@ -24,13 +24,15 @@
 - Amiberry: virtual keyboard (click on left stick)
 - Arcade games: automatically switch to vertical bezels (default 'consoles' decorations)
 - /boot/preshare.sh script (to be able to wake up a nas for example)
-- sinden ratio option
+- Sinden light gun ratio option (you can select 4:3 ratio instead of fullscreen)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
 - Fixed right controller LED for the Ayaneo Air Plus, it's now functional
 - ES: RetroAchievements displayed for Gamecube and Uzebox
 - ES: Fixed a crash when selecting "descending order" for several parameters
+- DuckStation light gun crosshair
+- ES: Sinden light gun border now have the exact same size in-game
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
