@@ -117,6 +117,7 @@
 - Mesa3D to 24.2.1
 - Buildroot to the 2024.05.2 release base
 - GStreamer codecs to 1.24.7
+- shim-signed ia32 EFI bootloader to 1.44~1+deb12u1+15.8-1~deb12u1
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
