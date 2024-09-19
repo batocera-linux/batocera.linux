@@ -5,7 +5,7 @@
 ################################################################################
 
 BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_VERSION = 1+15.7+1
-BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_SITE = https://ftp.debian.org/debian/pool/main/s/shim-helpers-i386-signed
+BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_SITE = https://mirror.ufam.edu.br/debian/pool/main/s/shim-helpers-i386-signed
 BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_SOURCE = shim-helpers-i386-signed_$(BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_VERSION)_i386.deb
 
 define BATOCERA_SHIM_SIGNED_EFI_HELPERS_IA32_EXTRACT_CMDS
