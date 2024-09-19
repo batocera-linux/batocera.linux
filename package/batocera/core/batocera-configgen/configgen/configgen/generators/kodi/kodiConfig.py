@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-
-import controllersConfig as controllers
-import signal
 import os
-import batoceraFiles
 from xml.dom import minidom
 import hashlib
 
-# TODO: python3 - delete me!
-import codecs
+from ... import batoceraFiles
 
 def writeKodiConfigs(kodiJoystick, currentControllers, provider):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}

@@ -1,17 +1,16 @@
 import os
 from os import path
-import Command
-import batoceraFiles
-import shutil
-from generators.Generator import Generator
-import controllersConfig
+from os.path import dirname
 import os.path
 import zipfile
-import configparser
-from settings.unixSettings import UnixSettings
-from generators.libretro import libretroControllers
-from os.path import dirname
-from utils.logger import get_logger
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ...settings.unixSettings import UnixSettings
+from ...utils.logger import get_logger
+from ..Generator import Generator
+from ..libretro import libretroControllers
 
 eslog = get_logger(__name__)
 
@@ -35,15 +34,15 @@ class AmiberryGenerator(Generator):
         amiberryconf.write()
         if not os.path.exists(dirname(batoceraFiles.amiberryRetroarchCustom)):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))
-        
+
         romType = self.getRomType(rom)
         eslog.debug("romType: "+romType)
-        if romType != 'UNKNOWN' :           
+        if romType != 'UNKNOWN' :
             commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-G" ]
             if romType != 'WHDL' :
                 commandArray.append("--model")
                 commandArray.append(system.config['core'])
-            
+
             if romType == 'WHDL' :
                 commandArray.append("--autoload")
                 commandArray.append(rom)
@@ -195,13 +194,13 @@ class AmiberryGenerator(Generator):
 
     def floppiesFromRom(self, rom):
         floppies = []
-        
+
         # split path and extension
         filepath, fileext = path.splitext(rom)
-        
+
         #
         indexDisk = filepath.rfind("(Disk 1")
-        
+
         # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
         # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
         if filepath[-1:].isdigit():
@@ -227,16 +226,16 @@ class AmiberryGenerator(Generator):
                 n = 2
                 while path.isfile(prefix+str(n)+postfix+fileext):
                     floppies.append(prefix+str(n)+postfix+fileext)
-                    n += 1                               
-        else :        
+                    n += 1
+        else :
            #Single ADF
            return [rom]
-        
+
         return floppies
-    
-    def getRomType(self,filepath) :        
+
+    def getRomType(self,filepath) :
         extension = os.path.splitext(filepath)[1][1:].lower()
-        
+
         if extension == "lha":
             return 'WHDL'
         elif extension == 'hdf' :
@@ -260,5 +259,5 @@ class AmiberryGenerator(Generator):
                             return 'DISK'
             # no info or adf file found
             return 'UNKNOWN'
-        
+
         return 'UNKNOWN'

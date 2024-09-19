@@ -1,20 +1,17 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import batoceraFiles
-import Command
 import os
-from settings.unixSettings import UnixSettings
-from utils.logger import get_logger
 import re
 import configparser
-import io
-import controllersConfig
 import json
 import httplib2
 import time
 import shutil
 import subprocess
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
@@ -347,14 +344,14 @@ def configureINI(config_directory, bios_directory, system, rom, controllers, met
                         eslog.debug("Error checking for discrete GPU: {}".format(e))
             else:
                 eslog.debug("User selected or defaulting to OpenGL")
-            
+
             pcsx2INIConfig.set("EmuCore/GS", "Renderer", renderer)
         else:
             eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
             pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
     except subprocess.CalledProcessError as e:
         eslog.debug("Error checking for Vulkan driver: {}".format(e))
-    
+
     # Ratio
     if system.isOptSet('pcsx2_ratio'):
         pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", system.config["pcsx2_ratio"])

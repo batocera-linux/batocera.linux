@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-import Command
-import batoceraFiles
-from generators.Generator import Generator
-from settings.unixSettings import UnixSettings
-import controllersConfig
 import os
-from utils.logger import get_logger
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ...settings.unixSettings import UnixSettings
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 CONFIGDIR  = batoceraFiles.CONF + '/applewin'

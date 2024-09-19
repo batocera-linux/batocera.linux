@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import os
+
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class OpenJazzGenerator(Generator):
 

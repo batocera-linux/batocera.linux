@@ -1,8 +1,8 @@
-#!/usr/bin/env python
 import os
-import controllersConfig
-from generators.Generator import Generator
-from Command import Command
+
+from ... import controllersConfig
+from ...Command import Command
+from ..Generator import Generator
 
 class IORTCWGenerator(Generator):
 
@@ -40,7 +40,7 @@ class IORTCWGenerator(Generator):
             "bind PAD0_LEFTTRIGGER": '+speed',
             "bind PAD0_RIGHTTRIGGER": '+attack'
         }
-        
+
         ## ES options
         # Graphics API
         if system.isOptSet("iortcw_api"):
@@ -77,13 +77,13 @@ class IORTCWGenerator(Generator):
             options_to_set["seta com_introplayed"] = "1"
         else:
             options_to_set["seta com_introplayed"] = "0"
-        
+
         # Set language
         if system.isOptSet("iortcw_language"):
             options_to_set["seta cl_language"] = system.config["iortcw_language"]
         else:
             options_to_set["seta cl_language"] = "0"
-        
+
         # Check if the file exists
         if os.path.isfile(config_file_path):
             with open(config_file_path, 'r') as config_file:
@@ -107,7 +107,7 @@ class IORTCWGenerator(Generator):
             with open(config_file_path, 'w') as config_file:
                 for key, value in options_to_set.items():
                     config_file.write(f"{key} \"{value}\"\n")
-                
+
         # Single Player for now
         commandArray = ["/usr/bin/iortcw/iowolfsp"]
 

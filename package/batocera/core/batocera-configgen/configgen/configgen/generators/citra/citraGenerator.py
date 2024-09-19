@@ -1,16 +1,14 @@
-#!/usr/bin/env python
-
-import Command
-import batoceraFiles # GLOBAL VARIABLES
-from generators.Generator import Generator
-import shutil
 import os
 from os import environ
 import configparser
-import controllersConfig
 import subprocess
 
-from utils.logger import get_logger
+from ... import batoceraFiles # GLOBAL VARIABLES
+from ... import Command
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
+
 eslog = get_logger(__name__)
 
 class CitraGenerator(Generator):
@@ -23,7 +21,7 @@ class CitraGenerator(Generator):
             commandArray = ['/usr/bin/citra-qt', rom]
         else:
             commandArray = ['/usr/bin/citra', rom]
-        return Command.Command(array=commandArray, env={ 
+        return Command.Command(array=commandArray, env={
             "XDG_CONFIG_HOME":batoceraFiles.CONF,
             "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds",
             "XDG_CACHE_HOME":batoceraFiles.CACHE,
@@ -40,7 +38,7 @@ class CitraGenerator(Generator):
             return False
         else:
             return True
-    
+
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):
         # Pads
@@ -104,7 +102,7 @@ class CitraGenerator(Generator):
 
         ## [UI]
         if not citraConfig.has_section("UI"):
-            citraConfig.add_section("UI")       
+            citraConfig.add_section("UI")
         # Start Fullscreen
         citraConfig.set("UI", "fullscreen", "true")
         citraConfig.set("UI", "fullscreen\default", "false")
@@ -196,7 +194,7 @@ class CitraGenerator(Generator):
             citraConfig.set("Renderer", "use_frame_limit", "false")
         else:
             citraConfig.set("Renderer", "use_frame_limit", "true")
-        
+
         ## [WEB SERVICE]
         if not citraConfig.has_section("WebService"):
             citraConfig.add_section("WebService")
@@ -227,7 +225,7 @@ class CitraGenerator(Generator):
         citraConfig.set("Utility", "async_custom_loading\\default", "true")
         citraConfig.set("Utility", "custom_textures\\default", "false")
         citraConfig.set("Utility", "preload_textures\\default", "false")
-        
+
         ## [CONTROLS]
         if not citraConfig.has_section("Controls"):
             citraConfig.add_section("Controls")
@@ -235,7 +233,7 @@ class CitraGenerator(Generator):
         # Options required to load the functions when the configuration file is created
         if not citraConfig.has_option("Controls", "profiles\\size"):
             citraConfig.set("Controls", "profile", 0)
-            citraConfig.set("Controls", "profile\\default", "true")    
+            citraConfig.set("Controls", "profile\\default", "true")
             citraConfig.set("Controls", "profiles\\1\\name", "default")
             citraConfig.set("Controls", "profiles\\1\\name\\default", "true")
             citraConfig.set("Controls", "profiles\\size", 1)

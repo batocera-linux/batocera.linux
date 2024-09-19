@@ -1,10 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import batoceraFiles
 import os
-from Emulator import Emulator
-import configparser
 
 # inputtype:
 # 0      axis
@@ -50,7 +46,7 @@ def generateControllerConfig(system, viceConfigFile, playersControllers):
         joy_port = "0"
     else:
         joy_port = "1"
-                
+
     if not os.path.exists(os.path.dirname(viceFile)):
         os.makedirs(os.path.dirname(viceFile))
 

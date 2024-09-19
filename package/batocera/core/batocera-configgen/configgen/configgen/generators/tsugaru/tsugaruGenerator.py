@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import os
-import configparser
-import batoceraFiles
+
+from ... import Command
+from ..Generator import Generator
 
 class TsugaruGenerator(Generator):
 

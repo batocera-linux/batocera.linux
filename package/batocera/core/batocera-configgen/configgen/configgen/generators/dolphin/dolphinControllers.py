@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import batoceraFiles
 import os
 import codecs
-from Emulator import Emulator
-from utils.logger import get_logger
 import glob
 import configparser
 import re
-import controllersConfig
+
+from ... import batoceraFiles
+from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
@@ -150,7 +148,7 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, wheels
         wiiMapping['b'] = 'Classic/Buttons/B'
         wiiMapping['a'] = 'Classic/Buttons/A'
         wiiMapping['select'] = 'Classic/Buttons/-'
-        wiiMapping['start'] = 'Classic/Buttons/+'     
+        wiiMapping['start'] = 'Classic/Buttons/+'
         wiiMapping['up'] = 'Classic/D-Pad/Up'
         wiiMapping['down'] = 'Classic/D-Pad/Down'
         wiiMapping['left'] = 'Classic/D-Pad/Left'
@@ -158,8 +156,8 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, wheels
         wiiMapping['joystick1up'] = 'Classic/Left Stick/Up'
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
-        wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'               
-        if (".cc." in rom or system.config['controller_mode'] == 'cc'): 
+        wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
+        if (".cc." in rom or system.config['controller_mode'] == 'cc'):
             wiiMapping['pageup'] = 'Classic/Buttons/ZL'
             wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
             wiiMapping['l2'] = 'Classic/Triggers/L'
@@ -194,7 +192,7 @@ def generateControllerConfig_gamecube(system, playersControllers, wheels, rom):
         'y':             'Buttons/Y',
         'x':             'Buttons/X',
         'pagedown':      'Buttons/Z',
-        'pageup':        None, 
+        'pageup':        None,
         'start':         'Buttons/Start',
         'l2':            'Triggers/L',
         'r2':            'Triggers/R',
@@ -448,7 +446,7 @@ def generateHotkeys(playersControllers):
                 # Write the configuration for this key
                 if keyname is not None:
                     write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id, None)
-                    
+
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
 
@@ -458,12 +456,12 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def get_AltMapping(system, nplayer, anyMapping):
-    mapping = anyMapping.copy()   
+    mapping = anyMapping.copy()
     # Fixes default gamecube style controller mapping for ES from es_input (gc A confirm/gc B cancel)
     if system.isOptSet(f"dolphin_port_{nplayer}_type") and system.config[f'dolphin_port_{nplayer}_type'] == '6b':
         mapping['a'] = 'Buttons/B'
         mapping['b'] = 'Buttons/A'
-        
+
     # Only rotate inputs for standard controller type so it doesn't effect other controller types.
     if not system.isOptSet(f"dolphin_port_{nplayer}_type") or system.config.get(f'dolphin_port_{nplayer}_type') == '6a':
         # Check for rotate mappings settings and adjust
@@ -473,7 +471,7 @@ def get_AltMapping(system, nplayer, anyMapping):
             mapping['b'] = 'Buttons/A'
             mapping['y'] = 'Buttons/B'
             mapping['x'] = 'Buttons/Y'
-    
+
     return mapping
 
 def generateControllerConfig_any(system, playersControllers, wheels, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
@@ -530,7 +528,7 @@ def generateControllerConfig_wheel(f, pad, nplayer):
     }
 
     eslog.debug("configuring wheel for pad {}".format(pad.realName))
-    
+
     f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
     f.write(f"Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
     f.write(f"Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
@@ -546,7 +544,7 @@ def generateControllerConfig_wheel(f, pad, nplayer):
 def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad):
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
-    
+
     # Check for alt input mappings
     currentMapping = get_AltMapping(system, nplayer, anyMapping)
     # Apply replacements
@@ -562,14 +560,14 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
                     currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
                 if x == "joystick2left":
                     currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
-    
+
     for x in pad.inputs:
         input = pad.inputs[x]
-    
+
         keyname = None
         if input.name in currentMapping:
             keyname = currentMapping[input.name]
-    
+
         # Write the configuration for this key
         if keyname is not None:
             write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, None)
@@ -578,10 +576,10 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
             if 'Buttons/Z' in keyname and "pageup" in pad.inputs:
                 # Create dictionary for both L1/R1 to pass to write_key
                 gcz_ids = {
-                    "pageup": pad.inputs["pageup"].id, 
+                    "pageup": pad.inputs["pageup"].id,
                     "pagedown": pad.inputs["pagedown"].id
                 }
-                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, gcz_ids)               
+                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, gcz_ids)
         # Write the 2nd part
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None, None)
@@ -615,8 +613,8 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
             f.write(f"C-Stick/Dead Zone = {system.config['deadzone_' + str(nplayer)]}\n")
         else:
             f.write(f"Main Stick/Dead Zone = 5.0\n")
-            f.write(f"C-Stick/Dead Zone = 5.0\n")    
-        # JS gate size    
+            f.write(f"C-Stick/Dead Zone = 5.0\n")
+        # JS gate size
         if system.isOptSet(f"jsgate_size_{nplayer}") and system.config[f'jsgate_size_{nplayer}'] != 'normal':
             if system.config[f'jsgate_size_{nplayer}'] == 'smaller':
                 f.write(f"Main Stick/Gate Size = 64.0\n")
@@ -624,7 +622,7 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
             if system.config[f'jsgate_size_{nplayer}'] == 'larger':
                 f.write(f"Main Stick/Gate Size = 95.0\n")
                 f.write(f"C-Stick/Gate Size = 88.0\n")
-                
+
 def generateControllerConfig_any_from_profiles(f, pad, system):
     globsearch = ""
     if system.name == "gamecube":
@@ -655,7 +653,7 @@ def generateControllerConfig_any_from_profiles(f, pad, system):
 
     return False
 
-def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id, gcz_ids):   
+def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id, gcz_ids):
     f.write(keyname + " = ")
     if hotkey_id is not None:
         f.write("`Button " + str(hotkey_id) + "` & ")

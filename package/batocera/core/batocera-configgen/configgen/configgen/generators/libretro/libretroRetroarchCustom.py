@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-import sys
 import os
-import batoceraFiles
-import configparser
-from settings.unixSettings import UnixSettings
+
+from ... import batoceraFiles
+from ...settings.unixSettings import UnixSettings
 
 def generateRetroarchCustom():
     # retroarchcustom.cfg
@@ -47,17 +45,17 @@ def generateRetroarchCustom():
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
     retroarchSettings.save('aspect_ratio_index',                '"22"')
-    
+
     # Audio
     retroarchSettings.save('audio_volume',                       '"2.0"')
-    
+
     # Settings
     retroarchSettings.save('global_core_options',               '"true"')
     retroarchSettings.save('config_save_on_exit',               '"false"')
     retroarchSettings.save('savestate_auto_save',               '"false"')
     retroarchSettings.save('savestate_auto_load',               '"false"')
     retroarchSettings.save('menu_swap_ok_cancel_buttons',       '"true"')
-    
+
     # Accentuation
     retroarchSettings.save('rgui_extended_ascii',               '"true"')
 
@@ -78,10 +76,10 @@ def generateRetroarchCustom():
 
     # Disable builtin image viewer (done in ES, and prevents from loading pico-8 .png carts)
     retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
-    
+
     # Set fps counter interval (in frames)
     retroarchSettings.save('fps_update_interval',               '"30"')
-    
+
 
     retroarchSettings.write()
 

@@ -1,19 +1,18 @@
-#!/usr/bin/env python
-import Command
-import batoceraFiles
-from generators.Generator import Generator
 import os.path
-import glob
+import zipfile
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 from . import viceConfig
 from . import viceControllers
-import controllersConfig
-import zipfile
 
 class ViceGenerator(Generator):
 
     def getResolutionMode(self, config):
         return 'default'
-    
+
     # Main entry of the module
     # Return command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -35,9 +34,9 @@ class ViceGenerator(Generator):
             with zipfile.ZipFile(rom, "r") as zip_file:
                 for zip_info in zip_file.infolist():
                     rom_extension = os.path.splitext(zip_info.filename)[1]
-        
+
         # TODO - add some logic for various extension types
-        
+
         commandArray.append(rom)
 
         return Command.Command(

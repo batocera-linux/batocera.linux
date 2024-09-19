@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
 import os
+
+from ... import Command
+from ..Generator import Generator
 
 class SteamGenerator(Generator):
 

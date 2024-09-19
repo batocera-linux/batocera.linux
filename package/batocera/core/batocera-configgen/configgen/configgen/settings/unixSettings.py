@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-
 import configparser
 import os
 import re
 import io
-from configgen.utils.logger import get_logger
+
+from ..utils.logger import get_logger
 
 eslog = get_logger(__name__)
 __source__ = os.path.basename(__file__)

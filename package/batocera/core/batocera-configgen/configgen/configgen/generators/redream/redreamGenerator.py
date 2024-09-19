@@ -1,13 +1,12 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
 from shutil import copyfile
 import os
-import batoceraFiles
 import filecmp
 import codecs
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 redream_file = "/usr/bin/redream"
 redreamConfig = batoceraFiles.CONF + "/redream"
@@ -23,7 +22,7 @@ class RedreamGenerator(Generator):
         if not os.path.exists(redream_exec) or not filecmp.cmp(redream_file, redream_exec):
             copyfile(redream_file, redream_exec)
             os.chmod(redream_exec, 0o0775)
-        
+
         configFileName = redreamConfig + "/redream.cfg"
         f = codecs.open(configFileName, "w")
         # set the roms path
@@ -97,7 +96,7 @@ class RedreamGenerator(Generator):
                         if input.name == "joystick1up":
                             fullprofile = fullprofile + "ljoy_up:-axis{},".format(axisid)
                             fullprofile = fullprofile + "ljoy_down:+axis{},".format(axisid)
-                
+
                 # special nintendo workaround since redream makes no sense...
                 if controller.guid == "030000007e0500000920000011810000":
                     fullprofile = ctrlprofile + "b:joy1,a:joy0,dpad_down:hat1,ljoy_left:-axis0,ljoy_right:+axis0,ljoy_up:-axis1,ljoy_down:+axis1,ltrig:joy6,dpad_left:hat2,rtrig:joy7,dpad_right:hat3,turbo:joy8,start:joy9,dpad_up:hat0,y:joy2,x:joy3,"
@@ -108,7 +107,7 @@ class RedreamGenerator(Generator):
                     written_guids.add(controller.guid)
                     f.write((fullprofile)+ "\n")
                 nplayer = nplayer + 1
-        
+
         # change settings as per users options
         # [video]
         f.write("width={}\n".format(gameResolution["width"]))
@@ -152,7 +151,7 @@ class RedreamGenerator(Generator):
             f.write("cable={}".format(system.config["redreamCable"]) + "\n")
         else:
             f.write("cable=vga\n")
-        
+
         f.write
         f.close()
 
@@ -170,6 +169,6 @@ class RedreamGenerator(Generator):
             if config['redreamRatio'] == "16:9" or config['redreamRatio'] == "stretch":
                 return 16/9
             else:
-                return 4/3      
+                return 4/3
         else:
             return 4/3

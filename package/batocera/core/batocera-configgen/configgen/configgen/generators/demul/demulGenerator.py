@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
-
-from generators.Generator import Generator
-import Command
 import os
-import batoceraFiles
-from utils.logger import get_logger
-import subprocess
-import sys
 import shutil
-import stat
 import configparser
 from pathlib import Path, PureWindowsPath
 from distutils.dir_util import copy_tree
+
+from ..Generator import Generator
+from ... import Command
+from ... import batoceraFiles
+from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
@@ -20,7 +16,7 @@ class DemulGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         wineprefix = batoceraFiles.SAVES + "/demul"
         emupath = wineprefix + "/demul"
-        bottlewinpath = wineprefix + "/drive_c/windows" 
+        bottlewinpath = wineprefix + "/drive_c/windows"
 
         if not os.path.exists(wineprefix):
             os.makedirs(wineprefix)
@@ -31,7 +27,7 @@ class DemulGenerator(Generator):
             # add dxvk dll's
             copy_tree("/usr/wine/dxvk/x64/", bottlewinpath + "/system32/")
             copy_tree("/usr/wine/dxvk/x32/", bottlewinpath + "/syswow64/")
-                            
+
         # determine what system to define for demul
         # -run=<name>		run specified system (dc, naomi, awave, hikaru, gaelco, cave3rd)
         if "naomi" in rom:
@@ -76,7 +72,7 @@ class DemulGenerator(Generator):
                     Config.read_file(fp)
             except:
                 pass
-        
+
         # add rom & bios paths to Demul.ini
         nvram = Path("/userdata/saves/demul/demul/nvram/")
         nvram_path_on_windows = PureWindowsPath(nvram)
@@ -98,7 +94,7 @@ class DemulGenerator(Generator):
         roms7_path_on_windows = PureWindowsPath(roms7)
         plugins = Path("/userdata/saves/demul/demul/plugins/")
         plugins_path_on_windows = PureWindowsPath(plugins)
-            
+
         if not Config.has_section("files"):
             Config.add_section("files")
         Config.set("files", "nvram", f"Z:{nvram_path_on_windows}")
@@ -161,7 +157,7 @@ class DemulGenerator(Generator):
                     Config.read_file(fp)
             except:
                 pass
-        
+
         # set to be always fullscreen
         if not Config.has_section("main"):
             Config.add_section("main")
@@ -187,10 +183,10 @@ class DemulGenerator(Generator):
             Config.set("main", "Vsync", format(system.config["demulVSync"]))
         else:
             Config.set("main", "Vsync", "0")
-     
+
         with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
             Config.write(configfile)
-              
+
         # now setup the command array for the emulator
         commandArray = ["/usr/wine/proton/bin/wine", "/userdata/saves/demul/demul/demul.exe"]
         # add system to command array

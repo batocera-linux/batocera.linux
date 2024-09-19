@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import os
 import shutil
-import batoceraFiles
 import json
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class Sonic3AIRGenerator(Generator):
 
@@ -30,11 +30,11 @@ class Sonic3AIRGenerator(Generator):
             if not os.path.exists(s2_config_folder):
                 os.makedirs(s2_config_folder)
             shutil.copy(oxygen_file, oxygen_dest_file)
-        
+
         # saves dir
         if not os.path.exists(saves_folder):
                 os.makedirs(saves_folder)
-        
+
         # read the json file
         # can't use `import json` as the file is not compliant
         with open(config_dest_file, 'r') as file:
@@ -47,10 +47,10 @@ class Sonic3AIRGenerator(Generator):
         # replace the resolution with new values
         new_resolution = str(gameResolution["width"]) + " x " + str(gameResolution["height"])
         json_text = json_text.replace(f'"WindowSize": "{current_resolution}"', f'"WindowSize": "{new_resolution}"')
-        
+
         with open(config_dest_file, 'w') as file:
             file.write(json_text)
-        
+
         # settings json - compliant
         # ensure fullscreen
         if os.path.exists(settings_file):
@@ -59,13 +59,13 @@ class Sonic3AIRGenerator(Generator):
                 settings_data["Fullscreen"] = 1
         else:
             settings_data = {"Fullscreen": 1}
-        
+
         with open(settings_file, 'w') as file:
             json.dump(settings_data, file, indent=4)
-        
+
         # now run
         commandArray = ["/usr/bin/sonic3-air/sonic3air_linux"]
-        
+
         return Command.Command(
             array=commandArray,
             env={
@@ -74,7 +74,7 @@ class Sonic3AIRGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
-    
+
     # Show mouse for menu / play actions
     def getMouseMode(self, config, rom):
         return False

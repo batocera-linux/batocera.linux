@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import os
 import configparser
 import io
@@ -10,17 +5,21 @@ import re
 import shutil
 from shutil import copyfile
 
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
+
 class SupermodelGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         commandArray = ["supermodel", "-fullscreen", "-channels=2"]
-        
+
         # legacy3d
         if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
             commandArray.append("-new3d")
         else:
              commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
-        
+
         # widescreen
         if system.isOptSet("m3_wideScreen") and system.getOptBoolean("m3_wideScreen"):
             commandArray.append("-wide-screen")
@@ -54,7 +53,7 @@ class SupermodelGenerator(Generator):
             drivingGame = 1
         else:
             drivingGame = 0
-        
+
         #driving sensitivity
         if system.isOptSet("joystickSensitivity"):
             sensitivity = system.config["joystickSensitivity"]
@@ -331,7 +330,7 @@ def transformElement(elt, playersControllers, mapping, mapping_fallback):
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        # check joystick type if it's hat or axis 
+        # check joystick type if it's hat or axis
         joy_type = hatOrAxis(playersControllers, matches.group(1))
         if joy_type == "hat":
             key_up = "up"

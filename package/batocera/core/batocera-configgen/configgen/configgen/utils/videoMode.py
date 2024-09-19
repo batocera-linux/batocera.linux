@@ -1,12 +1,10 @@
-#!/usr/bin/env python
 import os
 import sys
-import batoceraFiles
 import re
 import time
 import subprocess
-import json
 import csv
+
 from .logger import get_logger
 
 eslog = get_logger(__name__)
@@ -85,7 +83,7 @@ def getScreensInfos(config):
     eslog.debug(res)
     return res
 
-def getScreens():    
+def getScreens():
     proc = subprocess.Popen(["batocera-resolution listOutputs"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     return out.decode().splitlines()

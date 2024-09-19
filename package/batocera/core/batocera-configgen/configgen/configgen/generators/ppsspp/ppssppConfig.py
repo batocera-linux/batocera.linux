@@ -1,15 +1,11 @@
-#!/usr/bin/env python
-
-import sys
 import os
 import io
-import batoceraFiles
-import settings
-from Emulator import Emulator
 import configparser
 import subprocess
 
-from utils.logger import get_logger
+from ... import batoceraFiles
+from ...utils.logger import get_logger
+
 eslog = get_logger(__name__)
 
 ppssppConf     = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
@@ -74,7 +70,7 @@ def createPPSSPPConfig(iniConfig, system):
                 iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
         except subprocess.CalledProcessError:
             eslog.debug("Error executing batocera-vulkan script.")
-    
+
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
         iniConfig.set("Graphics", "ShowFPSCounter", "3") # 1 for Speed%, 2 for FPS, 3 for both
@@ -152,7 +148,7 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("SystemParam", "NickName", "Batocera")
     # Disable Encrypt Save (permit to exchange save with different machines)
-    iniConfig.set("SystemParam", "EncryptSave", "False")   
+    iniConfig.set("SystemParam", "EncryptSave", "False")
 
 
     ## [GENERAL]

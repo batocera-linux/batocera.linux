@@ -1,17 +1,16 @@
-#!/usr/bin/env python
-import Command
-import batoceraFiles
-from generators.Generator import Generator
-import shutil
 import os.path
 from os import environ
 import configparser
-from . import dolphinControllers
-from . import dolphinSYSCONF
-import controllersConfig
 import subprocess
 
-from utils.logger import get_logger
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
+from . import dolphinControllers
+from . import dolphinSYSCONF
+
 eslog = get_logger(__name__)
 
 class DolphinGenerator(Generator):
@@ -23,7 +22,7 @@ class DolphinGenerator(Generator):
         # Dir required for saves
         if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
             os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
-        
+
         # Generate the controller config(s)
         dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 
@@ -86,7 +85,7 @@ class DolphinGenerator(Generator):
 
         # PanicHandlers displaymessages
         dolphinSettings.set("Interface", "UsePanicHandlers", "False")
-        
+
         # Display message in game (Memory card save and many more...)
         if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg"):
             dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
@@ -149,7 +148,7 @@ class DolphinGenerator(Generator):
                 eslog.debug("Error checking for discrete GPU.")
         else:
             dolphinSettings.set("Core", "GFXBackend", "OGL")
-        
+
         # Wiimote scanning
         dolphinSettings.set("Core", "WiimoteContinuousScanning", "True")
 
@@ -194,10 +193,10 @@ class DolphinGenerator(Generator):
                 dolphinSettings.set("Core", "SkipIPL", "True")
         else:
             dolphinSettings.set("Core", "SkipIPL", "True")
-        
+
         # Set audio backend
         dolphinSettings.set("DSP", "Backend", "Cubeb")
-        
+
         # Dolby Pro Logic II for surround sound
         # DPL II requires DSPHLE to be disabled
         if system.isOptSet("dplii") and system.getOptBoolean("dplii"):
@@ -207,8 +206,8 @@ class DolphinGenerator(Generator):
         else:
             dolphinSettings.set("Core", "DPL2Decoder", "False")
             dolphinSettings.set("Core", "DSPHLE", "True")
-            dolphinSettings.set("DSP", "EnableJIT", "False")   
-        
+            dolphinSettings.set("DSP", "EnableJIT", "False")
+
         # Save dolphin.ini
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
@@ -228,7 +227,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.add_section("Enhancements")
         if not dolphinGFXSettings.has_section("Hardware"):
             dolphinGFXSettings.add_section("Hardware")
-        
+
         # Set Vulkan adapter
         try:
             have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
@@ -253,7 +252,7 @@ class DolphinGenerator(Generator):
                     eslog.debug("Error checking for discrete GPU.")
         except subprocess.CalledProcessError:
             eslog.debug("Error executing batocera-vulkan script.")
-        
+
         # Graphics setting Aspect Ratio
         if system.isOptSet('dolphin_aspect_ratio'):
             dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
@@ -333,7 +332,7 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")
-        
+
         if system.isOptSet('vbi_hack') and system.getOptBoolean("vbi_hack"):
             dolphinGFXSettings.set("Hacks", "VISkip", "True")
         else:
@@ -368,13 +367,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "SSAA", "True")
         else:
             dolphinGFXSettings.set("Settings", "SSAA", "False")
-        
+
         # Manual texture sampling
         # Setting on = speed hack off. Setting off = speed hack on
         if system.isOptSet('manual_texture_sampling') and system.getOptBoolean('manual_texture_sampling'):
             dolphinGFXSettings.set("Hacks", "FastTextureSampling", "False")
         else:
-            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "True")        
+            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "True")
 
         # Save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
@@ -471,7 +470,7 @@ class DolphinGenerator(Generator):
         rac_path = '/userdata/system/configs/dolphin-emu/RetroAchievements.ini'
         with open(rac_path, 'w') as rac_configfile:
             RacConfig.write(rac_configfile)
-        
+
         # Update SYSCONF
         try:
             dolphinSYSCONF.update(system.config, batoceraFiles.dolphinSYSCONF, gameResolution)

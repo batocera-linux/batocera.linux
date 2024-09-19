@@ -1,11 +1,12 @@
 import os
-import batoceraFiles
-from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import yaml
 import collections
 
-from utils.logger import get_logger
+from . import batoceraFiles
+from .settings.unixSettings import UnixSettings
+from .utils.logger import get_logger
+
 eslog = get_logger(__name__)
 
 class Emulator():
@@ -78,8 +79,8 @@ class Emulator():
 
         rom = os.path.basename(rom)
 
-        # sanitize rule by EmulationStation 
-        # see FileData::getConfigurationName() on batocera-emulationstation 
+        # sanitize rule by EmulationStation
+        # see FileData::getConfigurationName() on batocera-emulationstation
         rom = rom.replace('=','')
         rom = rom.replace('#','')
         eslog.info("game settings name: "+rom)
@@ -149,10 +150,10 @@ class Emulator():
     def getOptBoolean(self, key):
         true_values = {'1', 'true', 'on', 'enabled', True}
         value = self.config.get(key)
-        
+
         if isinstance(value, str):
             value = value.lower()
-        
+
         return value in true_values
 
     def getOptString(self, key):

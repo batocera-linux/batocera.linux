@@ -1,8 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import batoceraFiles
 import os.path
+
+from ... import batoceraFiles
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers):

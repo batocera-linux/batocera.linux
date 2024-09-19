@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-import Command
-import batoceraFiles
-from generators.Generator import Generator
 import shutil
 import os.path
-import configparser
-import controllersConfig
-from shutil import copyfile
+
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 from . import ioquake3Config
 
 class IOQuake3Generator(Generator):
@@ -22,14 +19,14 @@ class IOQuake3Generator(Generator):
         # therefore copy latest ioquake3 file to rom directory
         if not os.path.isfile(destination_file) or os.path.getmtime(source_file) > os.path.getmtime(destination_file):
             shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
-        
+
         commandArray = ["/userdata/roms/quake3/ioquake3"]
 
         # get the game / mod to launch
         with open(rom, "r") as file:
             command_line = file.readline().strip()
             command_line_words = command_line.split()
-            
+
         commandArray.extend(command_line_words)
 
         environment = {

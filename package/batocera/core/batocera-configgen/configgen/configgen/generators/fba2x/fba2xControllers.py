@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 
 # Map an emulationstation button name to the corresponding fba2x name

@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
-from utils.logger import get_logger
 import os
 import configparser
-import batoceraFiles
+
+from ... import Command
+from ... import batoceraFiles
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
@@ -26,17 +24,17 @@ class HatariGenerator(Generator):
             "megaste_205":  { "machine": "megaste", "tos": "205"  },
             "megaste_206":  { "machine": "megaste", "tos": "206"  },
         }
-        
+
         # Start emulator fullscreen
         commandArray = ["hatari", "--fullscreen"]
-        
+
         # Machine can be st (default), ste, megaste, tt, falcon
         # st should use TOS 1.00 to TOS 1.04 (tos100 / tos102 / tos104)
         # ste should use TOS 1.06 at least (tos106 / tos162 / tos206)
         # megaste should use TOS 2.XX series (tos206)
         # tt should use tos 3.XX
         # falcon should use tos 4.XX
-        
+
         machine = "st"
         tosversion = "auto"
         if system.isOptSet("model") and system.config["model"] in model_mapping:
@@ -50,13 +48,13 @@ class HatariGenerator(Generator):
         biosdir = "/userdata/bios"
         tos = HatariGenerator.findBestTos(biosdir, machine, tosversion, toslang)
         commandArray += [ "--tos", f"{biosdir}/{tos}"]
-        
+
         # RAM (ST Ram) options (0 for 512k, 1 for 1MB)
         memorysize = 0
         if system.isOptSet("ram"):
             memorysize = system.config["ram"]
         commandArray += ["--memsize", str(memorysize)]
-        
+
         rom_extension = os.path.splitext(rom)[1].lower()
         if rom_extension == ".hd":
             if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ASCI":
@@ -74,7 +72,7 @@ class HatariGenerator(Generator):
             commandArray += ["--disk-a", rom]
             # Floppy (B) options
             commandArray += ["--drive-b", "off"]
-        
+
         # config file
         HatariGenerator.generateConfig(system, playersControllers)
 
@@ -157,7 +155,7 @@ class HatariGenerator(Generator):
             "ste":     ["162", "106"],
             "megaste": ["206", "205"]
         }
-        
+
         if machine in all_machines_bios:
             l_tos = []
             if tos_version != "auto":

@@ -1,16 +1,13 @@
-#!/usr/bin/env python
-import Command
-#~ import flycastControllers
-import batoceraFiles
-from generators.Generator import Generator
-import shutil
 import os.path
 import configparser
-import controllersConfig
 from shutil import copyfile
-from os.path import dirname
 from os.path import isdir
 from os.path import isfile
+
+from ... import Command
+from ... import batoceraFiles
+from ... import controllersConfig
+from ..Generator import Generator
 from . import flycastControllers
 
 class FlycastGenerator(Generator):
@@ -156,11 +153,11 @@ class FlycastGenerator(Generator):
             Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor4", "0")
-        
+
         # Retroachievements
         if not Config.has_section("achievements"):
             Config.add_section("achievements")
-        
+
         if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
             headers   = {"Content-type": "text/plain", "User-Agent": "Batocera.linux"}
             login_url = "https://retroachievements.org/"
@@ -168,7 +165,7 @@ class FlycastGenerator(Generator):
             password  = system.config.get('retroachievements.password', "")
             hardcore  = system.config.get('retroachievements.hardcore', "")
             token     = system.config.get('retroachievements.token', "")
-            # apply config            
+            # apply config
             Config.set("achievements", "Enabled", "yes")
             if hardcore == '1':
                 Config.set("achievements", "HardcoreMode", "yes")
@@ -178,7 +175,7 @@ class FlycastGenerator(Generator):
             Config.set("achievements", "UserName" , username)
         else:
             Config.set("achievements", "Enabled", "no")
-        
+
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:
             if user_config[:8] == "flycast.":

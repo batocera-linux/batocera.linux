@@ -1,15 +1,11 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
-import controllersConfig
-import batoceraFiles
 import os
 import subprocess
-import sys
 import shutil
-from pathlib import Path, PureWindowsPath
-from utils.logger import get_logger
+from pathlib import PureWindowsPath
+
+from ... import Command
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
@@ -43,13 +39,13 @@ class FpinballGenerator(Generator):
         # create dir & copy fpinball files to wine bottle as necessary
         if not os.path.exists(emupath):
             shutil.copytree('/usr/fpinball', emupath)
-        
+
         # copy updated folder if we have a new BAM FPLoader.exe file
         src_file = "/usr/fpinball/BAM/FPLoader.exe"
         dest_file = emupath + "/BAM/FPLoader.exe"
         if os.path.getmtime(src_file) > os.path.getmtime(dest_file):
             shutil.copytree('/usr/fpinball', emupath)
-        
+
         # convert rom path
         rompath = PureWindowsPath(rom)
         rom = f"Z:{rompath}"
@@ -69,11 +65,11 @@ class FpinballGenerator(Generator):
                 gameResolution["height"]),
                 emupath +"/BAM/FPLoader.exe",
                 "/open", rom, "/play", "/exit" ]
-        
+
         # config
         if not os.path.exists("/userdata/system/configs/fpinball"):
             os.makedirs("/userdata/system/configs/fpinball")
-        
+
         with open("/userdata/system/configs/fpinball/batocera.confg.reg", "w") as f:
             f.write("Windows Registry Editor Version 5.00\r\n\r\n")
             f.write("[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer]\r\n")
@@ -189,14 +185,14 @@ class FpinballGenerator(Generator):
             for variable_name in variables_to_remove:
                 if variable_name in os.environ:
                     del os.environ[variable_name]
-            
+
             environment.update(
                 {
                     'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
                     'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
                 }
             )
-        
+
         return Command.Command(
             array=commandArray,
             env=environment

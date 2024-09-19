@@ -1,13 +1,12 @@
-#!/usr/bin/env python
-
 import xml.etree.ElementTree as ET
-import batoceraFiles
 import os
 import pyudev
 import evdev
 import re
 
-from utils.logger import get_logger
+from . import batoceraFiles
+from .utils.logger import get_logger
+
 eslog = get_logger(__name__)
 
 

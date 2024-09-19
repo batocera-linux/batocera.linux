@@ -1,15 +1,12 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
-import batoceraFiles
-import controllersConfig
 import configparser
 import os.path
-import httplib2
-import json
-from utils.logger import get_logger
 from os import environ
+
+from ... import Command
+from ... import batoceraFiles
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
@@ -92,7 +89,7 @@ class DuckstationLegacyGenerator(Generator):
         settings.set("ControllerPorts", "PointerYScale", "8")
         settings.set("ControllerPorts", "PointerXInvert", "false")
         settings.set("ControllerPorts", "PointerYInvert", "false")
-        
+
         ## [Console]
         if not settings.has_section("Console"):
             settings.add_section("Console")
@@ -101,7 +98,7 @@ class DuckstationLegacyGenerator(Generator):
             settings.set("Console", "Region", system.config["duckstation_region"])
         else:
             settings.set("Console", "Region", "Auto")
-        
+
         ## [BIOS]
         if not settings.has_section("BIOS"):
             settings.add_section("BIOS")
@@ -131,7 +128,7 @@ class DuckstationLegacyGenerator(Generator):
             if os.path.exists("/userdata/bios/" + bio):
                 JPbiosFile = bio
                 biosFound = True
-                break      
+                break
         if not biosFound:
             raise Exception("No PSX1 BIOS found")
         if USbiosFile is not None:
@@ -222,7 +219,7 @@ class DuckstationLegacyGenerator(Generator):
             else:
                 settings.set("GPU", "Multisamples", system.config["duckstation_antialiasing"])
                 settings.set("GPU", "PerSampleShading", "false")
-        
+
         ## [Display]
         if not settings.has_section("Display"):
             settings.add_section("Display")
@@ -272,7 +269,7 @@ class DuckstationLegacyGenerator(Generator):
                 system.config['bezel'] = "none"
         else:
             settings.set("Display","Stretch", "false")
-        
+
         ## [Audio]
         if not settings.has_section("Audio"):
             settings.add_section("Audio")
@@ -280,7 +277,7 @@ class DuckstationLegacyGenerator(Generator):
             settings.set("Audio","StretchMode", system.config["duckstation_audio_mode"])
         else:
             settings.set("Audio","StretchMode", "TimeStretch")
-                
+
         ## [GameList]
         if not settings.has_section("GameList"):
             settings.add_section("GameList")
@@ -328,7 +325,7 @@ class DuckstationLegacyGenerator(Generator):
         if not settings.has_section("ControllerPorts"):
             settings.add_section("ControllerPorts")
         # setting get applied later
-        
+
         ## [TextureReplacements]
         if not settings.has_section("TextureReplacements"):
             settings.add_section("TextureReplacements")
@@ -365,7 +362,7 @@ class DuckstationLegacyGenerator(Generator):
         settings.set("Folders", "Screenshots", "../../../screenshots")
         settings.set("Folders", "SaveStates", "../../../saves/duckstation")
         settings.set("Folders", "Cheats", "../../../cheats/duckstation")
-        
+
         ## [Pad]
         # Clear existing Pad(x) configs
         for i in range(1, 9):
@@ -451,7 +448,7 @@ class DuckstationLegacyGenerator(Generator):
                     settings.set(pad_num, "RelativeMouseMode", sdl_num+"true")
             # Next controller
             nplayer += 1
-        
+
         ## [Hotkeys]
         if not settings.has_section("Hotkeys"):
             settings.add_section("Hotkeys")
@@ -468,7 +465,7 @@ class DuckstationLegacyGenerator(Generator):
         settings.set("Hotkeys", "ChangeDisc",                  "Keyboard/F8")
         if settings.has_option('Hotkeys', 'OpenQuickMenu'):
             settings.remove_option('Hotkeys', 'OpenQuickMenu')
-        
+
         ## [CDROM]
         if not settings.has_section("CDROM"):
             settings.add_section("CDROM")
@@ -482,11 +479,11 @@ class DuckstationLegacyGenerator(Generator):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        
+
         # write our own gamecontrollerdb.txt file before launching the game
         dbfile = "/usr/share/duckstation/resources/gamecontrollerdb.txt"
         controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
-         
+
         return Command.Command(
             array=commandArray,
             env={

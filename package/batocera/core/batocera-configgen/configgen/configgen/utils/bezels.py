@@ -1,10 +1,11 @@
 import os
-import batoceraFiles
 import struct
 from PIL import Image, ImageOps
-from .videoMode import getAltDecoration
 
+from .. import batoceraFiles
+from .videoMode import getAltDecoration
 from .logger import get_logger
+
 eslog = get_logger(__name__)
 
 def getBezelInfos(rom, bezel, systemName, emulator):
@@ -246,18 +247,18 @@ def gunBordersSize(bordersSize):
 
 def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, outerBorderSizePer=3, innerBorderColor="#ffffff", outerBorderColor="#000000"):
     # good default border that works in most circumstances is:
-    # 
+    #
     # 2% of the screen width in white.  Surrounded by 3% screen width of
     # black.  I have attached an example.  The black helps the lightgun detect
     # the border against a bright background behind the tv.
-    # 
+    #
     # The ideal solution is to draw the games inside the border rather than
     # overlap.  Then you can see the whole game.  The lightgun thinks that the
     # outer edge of the border is the edge of the game screen.  So you have to
     # make some adjustments in the lightgun settings to keep it aligned.  This
     # is why normally the border overlaps as it means that people do not need
     # to calculate an adjustment and is therefore easier.
-    # 
+    #
     # If all the games are drawn with the border this way then the settings
     # are static and the adjustment only needs to be calculated once.
 
@@ -296,7 +297,7 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
         [(offset_x + outerBorderSize, h - outerBorderSize - innerBorderSize), (offset_x + new_w - outerBorderSize, h - outerBorderSize)],
         [(offset_x + outerBorderSize, outerBorderSize), (offset_x + outerBorderSize + innerBorderSize, h - outerBorderSize)]
     ]
-    
+
     back = Image.open(input_png)
     imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
     imgnew.paste(back, (0,0,w,h))

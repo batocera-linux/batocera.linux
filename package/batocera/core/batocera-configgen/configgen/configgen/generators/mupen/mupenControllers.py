@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-
 import os
-import configparser
-import controllersConfig
-from controllersConfig import Input
 from xml.dom import minidom
 
-import batoceraFiles
+from ... import batoceraFiles
+from ...controllersConfig import Input
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters
@@ -23,7 +19,7 @@ valid_n64_controller_guids = [
     "05000000c82d00006928000000010000",
     "030000007e0500001920000011810000",
 ]
-        
+
 valid_n64_controller_names = [
     "N64 Controller",
     "Nintendo Co., Ltd. N64 Controller",
@@ -61,7 +57,7 @@ def setControllersConfig(iniConfig, controllers, system, wheels):
         section = "Input-SDL-Control"+str(x)
         if iniConfig.has_section(section):
             cleanPlayer(nplayer, iniConfig)
-         
+
 def getJoystickPeak(start_value, config_value, system):
     default_value = int(start_value.split(',')[0])
     if config_value in system.config:
@@ -73,7 +69,7 @@ def getJoystickPeak(start_value, config_value, system):
     if multiplier != 1.0:
         adjusted_value = default_value * multiplier
         difference = abs(adjusted_value - default_value)
-    
+
         # Figure out if we need to add or subtract the starting peak value
         if adjusted_value < default_value:
             peak = int(round(default_value + difference))
@@ -83,30 +79,30 @@ def getJoystickPeak(start_value, config_value, system):
         peak = default_value
 
     return f"{peak},{peak}"
-    
+
 def getJoystickDeadzone(default_peak, config_value, system):
     default_value = int(default_peak.split(',')[0])
     if config_value in system.config:
         deadzone_multiplier = float(system.config[config_value])
     else:
         deadzone_multiplier = 0.01
-    
+
     deadzone = int(round(default_value * deadzone_multiplier))
-        
+
     return f"{deadzone},{deadzone}"
-    
+
 def defineControllerKeys(nplayer, controller, system, isWheel):
         # check for auto-config inputs by guid and name, or es settings
         if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
-        else:    
+        else:
             mupenmapping = getMupenMapping(False)
 
         # config holds the final pad configuration in the mupen style
         # ex: config['DPad U'] = "button(1)"
         config = dict()
 
-        # determine joystick deadzone and peak       
+        # determine joystick deadzone and peak
         config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
 
         # Analog Deadzone
@@ -114,7 +110,7 @@ def defineControllerKeys(nplayer, controller, system, isWheel):
             config['AnalogDeadzone'] = f"0,0"
         else:
             config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
-        
+
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
         if 'l2' not in controller.inputs:

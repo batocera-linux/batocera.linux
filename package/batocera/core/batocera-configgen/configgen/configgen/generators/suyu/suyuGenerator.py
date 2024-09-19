@@ -1,14 +1,13 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
 import os
-import batoceraFiles
 import configparser
 from os import environ
 import subprocess
 
-from utils.logger import get_logger
+from ... import batoceraFiles
+from ... import Command
+from ...utils.logger import get_logger
+from ..Generator import Generator
+
 eslog = get_logger(__name__)
 
 class SuyuGenerator(Generator):
@@ -306,7 +305,7 @@ class SuyuGenerator(Generator):
             suyuConfig.set("Controls", "time_zone_index", system.config["suyu_timezone"])
         else:
             suyuConfig.set("Controls", "time_zone_index", "0")
-        suyuConfig.set("Controls", "time_zone_index\\default", "false")        
+        suyuConfig.set("Controls", "time_zone_index\\default", "false")
 
         # controllers
         nplayer = 1

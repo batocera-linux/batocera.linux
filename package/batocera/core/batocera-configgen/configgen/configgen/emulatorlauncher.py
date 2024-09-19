@@ -16,23 +16,22 @@ if os.path.exists("/var/run/emulatorlauncher.perf"):
 
 ### import always needed ###
 import argparse
-import GeneratorImporter
 import signal
 import time
 from sys import exit
 import subprocess
-import batoceraFiles
-import utils.videoMode as videoMode
-import utils.gunsUtils as gunsUtils
-import utils.wheelsUtils as wheelsUtils
-############################
-from utils.logger import get_logger
-eslog = get_logger(__name__)
-############################
 
-from Emulator import Emulator
-import controllersConfig as controllers
-import utils.bezels as bezelsUtil
+from . import batoceraFiles
+from . import controllersConfig as controllers
+from . import GeneratorImporter
+from .Emulator import Emulator
+from .utils import bezels as bezelsUtil
+from .utils import videoMode
+from .utils import gunsUtils
+from .utils import wheelsUtils
+from .utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 def squashfs_begin(rom):
     eslog.debug(f"squashfs_begin({rom})")
@@ -258,7 +257,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
         # run the emulator
         try:
-            from Evmapy import Evmapy
+            from .Evmapy import Evmapy
             Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)

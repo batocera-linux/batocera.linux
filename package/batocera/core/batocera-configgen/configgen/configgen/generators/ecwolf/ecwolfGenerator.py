@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-
-import Command
-import batoceraFiles
-from generators.Generator import Generator
-import controllersConfig
 import os
 from os import path
 import codecs
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class ECWolfGenerator(Generator):
 
@@ -30,7 +29,7 @@ class ECWolfGenerator(Generator):
             f.write('FullScreenWidth = {};\n'.format(gameResolution["width"]))
             f.write('FullScreenHeight = {};\n'.format(gameResolution["height"]))
             f.close()
-        
+
         # Set the resolution and some other defaults
         if path.isfile(ecwolfConfigFile):
             #We ignore some options in default config with py-dictonary...
@@ -43,7 +42,7 @@ class ECWolfGenerator(Generator):
                 for line in lines:
                     if not IgnoreConfigKeys.intersection(line.split()):
                         f.write(line)
- 
+
             # ... and append the ignored keys with default values now ;)
             f = codecs.open(ecwolfConfigFile, "a")
             f.write('JoystickEnabled = 1;\n')
@@ -84,9 +83,9 @@ class ECWolfGenerator(Generator):
 
             if fextension == ".pk3":
                 ecwolfArray += ["--file", path.basename(rom)]
- 
+
         ecwolfArray += [
-                 #Use values according ecwolf --help, do not miss any parameter  
+                 #Use values according ecwolf --help, do not miss any parameter
                  "--savedir", ecwolfSaves
         ]
 

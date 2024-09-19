@@ -1,19 +1,16 @@
-#!/usr/bin/env python3
-
-from generators.Generator import Generator
-import Command
 import os
-import batoceraFiles
 import subprocess
-import sys
 import shutil
 import stat
-from pathlib import Path, PureWindowsPath
+from pathlib import PureWindowsPath
 import configparser
 import filecmp
-import controllersConfig
 
-from utils.logger import get_logger
+from ... import Command
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
+
 eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
@@ -30,7 +27,7 @@ class Model2EmuGenerator(Generator):
         if not os.path.exists(emupath):
             shutil.copytree("/usr/model2emu", emupath)
             os.chmod(emupath + "/EMULATOR.INI", stat.S_IRWXO)
-        
+
         # install windows libraries required
         if not os.path.exists(wineprefix + "/d3dx9.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dx9"]
@@ -45,7 +42,7 @@ class Model2EmuGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/d3dx9.done", "w") as f:
                 f.write("done")
-        
+
         if not os.path.exists(wineprefix + "/d3dcompiler_42.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dcompiler_42"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
@@ -59,7 +56,7 @@ class Model2EmuGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/d3dcompiler_42.done", "w") as f:
                 f.write("done")
-        
+
         if not os.path.exists(wineprefix + "/d3dx9_42.done"):
             cmd = ["/usr/wine/winetricks", "-q", "d3dx9_42"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
@@ -73,7 +70,7 @@ class Model2EmuGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/d3dx9_42.done", "w") as f:
                 f.write("done")
-        
+
         if not os.path.exists(wineprefix + "/xact.done"):
             cmd = ["/usr/wine/winetricks", "-q", "xact"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
@@ -87,7 +84,7 @@ class Model2EmuGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/xact.done", "w") as f:
                 f.write("done")
-        
+
         if not os.path.exists(wineprefix + "/xact_x64.done"):
             cmd = ["/usr/wine/winetricks", "-q", "xact_x64"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
@@ -101,7 +98,7 @@ class Model2EmuGenerator(Generator):
             eslog.error(err.decode())
             with open(wineprefix + "/xact_x64.done", "w") as f:
                 f.write("done")
-        
+
         # for existing bottles we want to ensure files are updated as necessary
         copy_updated_files("/usr/model2emu/scripts", emupath + "/scripts")
 
@@ -128,7 +125,7 @@ class Model2EmuGenerator(Generator):
         Config.optionxform = str
         if os.path.isfile(configFileName):
             Config.read(configFileName)
-        
+
         # add subdirectories
         dirnum = 1 # existing rom path
         for x in os.listdir(rompath):
@@ -139,7 +136,7 @@ class Model2EmuGenerator(Generator):
                 subdir = PureWindowsPath(possibledir)
                 # add path to ini file
                 Config.set("RomDirs",f"Dir{dirnum}", f"Z:{subdir}")
-        
+
         # set ini to use chosen resolution and automatically start in fullscreen
         Config.set("Renderer","FullScreenWidth", str(gameResolution["width"]))
         Config.set("Renderer","FullScreenHeight", str(gameResolution["height"]))
@@ -187,7 +184,7 @@ class Model2EmuGenerator(Generator):
                                     thickness = "2"
                                 else:
                                     thickness = "3"
-                            
+
                             modify_lua_sinden(lua_file_path, "true", thickness)
                     else:
                         modify_lua_sinden(lua_file_path, "false", "0")
@@ -248,7 +245,7 @@ class Model2EmuGenerator(Generator):
 
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
-        
+
         # set the environment variables
         environment = {
             "WINEPREFIX": wineprefix,
@@ -274,22 +271,22 @@ class Model2EmuGenerator(Generator):
             for variable_name in variables_to_remove:
                 if variable_name in os.environ:
                     del os.environ[variable_name]
-            
+
             environment.update(
                 {
                     'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
                     'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
                 }
             )
-        
-        # now run the emulator        
+
+        # now run the emulator
         return Command.Command(array=commandArray, env=environment)
 
 
 def modify_lua_widescreen(file_path, condition):
     with open(file_path, 'r') as lua_file:
         lines = lua_file.readlines()
-        
+
     modified_lines = []
     for line in lines:
         if condition == "True":
@@ -304,7 +301,7 @@ def modify_lua_widescreen(file_path, condition):
             else:
                 modified_line = line  # No change
             modified_lines.append(modified_line)
-    
+
     with open(file_path, 'w') as lua_file:
         lua_file.writelines(modified_lines)
 
@@ -359,12 +356,12 @@ def modify_lua_sinden(file_path, condition, thickness):
 
 def copy_updated_files(source_path, destination_path):
     dcmp = filecmp.dircmp(source_path, destination_path)
-    
+
     # Copy missing files and files needing updates from source to destination
     for name in dcmp.left_only + dcmp.diff_files:
         src = os.path.join(source_path, name)
         dst = os.path.join(destination_path, name)
-        
+
         if os.path.isdir(src):
             shutil.copytree(src, dst)
             eslog.debug(f"Copying directory {src} to {dst}")

@@ -1,26 +1,24 @@
-#!/usr/bin/env python
 import sys
 import os
-import batoceraFiles
-from . import libretroOptions
-from . import libretroMAMEConfig
-from Emulator import Emulator
-import settings
-from settings.unixSettings import UnixSettings
 import json
 import subprocess
-from utils.logger import get_logger
 from PIL import Image, ImageOps
-import utils.bezels as bezelsUtil
-import utils.videoMode as videoMode
-import controllersConfig
 import xml.etree.ElementTree as ET
+
+from ... import batoceraFiles
+from ... import controllersConfig
+from ...settings.unixSettings import UnixSettings
+from ...utils.logger import get_logger
+from ...utils import bezels as bezelsUtil
+from ...utils import videoMode as videoMode
+from . import libretroOptions
+from . import libretroMAMEConfig
 
 eslog = get_logger(__name__)
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-# Return value for es invertedbuttons    
+# Return value for es invertedbuttons
 def getInvertButtonsValue():
     try:
         tree = ET.parse(batoceraFiles.esSettings)
@@ -955,12 +953,12 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
             # override core settings
             for key in raguncoreconf:
                 coreSettings.save(key, '"' + raguncoreconf[key] + '"')
-            
+
             # hide the mouse pointer with gun games
             retroarchConfig['input_overlay_show_mouse_cursor'] = "false"
     else:
         retroarchConfig['input_overlay_show_mouse_cursor'] = "true"
-    
+
     # write coreSettings a bit late while guns configs can modify it
     coreSettings.write()
 

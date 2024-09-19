@@ -1,9 +1,4 @@
-#!/usr/bin/env python
-import os, sys
-import batoceraFiles
-import settings
-import subprocess
-import json
+from ... import batoceraFiles
 
 def setMupenConfig(iniConfig, system, controllers, gameResolution):
 
@@ -36,7 +31,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         iniConfig.set("Core", "AutoStateSlotIncrement", "False")
     else:
         iniConfig.set("Core", "AutoStateSlotIncrement", "True")
-        
+
     # Create section for Audio-SDL
     if not iniConfig.has_section("Audio-SDL"):
         iniConfig.add_section("Audio-SDL")
@@ -239,10 +234,10 @@ def setHotKeyConfig(iniConfig, controllers, system):
                     iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
                 if 'a' in controllers['1'].inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
-                if 'b' in controllers['1'].inputs:                   
+                if 'b' in controllers['1'].inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
                 return
-               
+
             if 'y' in controllers['1'].inputs:
                 iniConfig.set("CoreEvents", "Joy Mapping Save State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['y'])))
             if 'x' in controllers['1'].inputs:

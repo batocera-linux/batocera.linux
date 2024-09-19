@@ -1,15 +1,12 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
-import batoceraFiles
-import controllersConfig
 import configparser
 import os.path
-import httplib2
-import json
-from utils.logger import get_logger
 from os import environ
+
+from ... import Command
+from ... import batoceraFiles
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
@@ -118,7 +115,7 @@ class DuckstationGenerator(Generator):
 
         if not found_bios:
             raise Exception("No PSX1 BIOS found")
-        
+
         # Set BIOS paths
         if "Uni" in found_bios:
             uni_bios = found_bios["Uni"]
@@ -129,7 +126,7 @@ class DuckstationGenerator(Generator):
             region_mapping = {"NTSCU": "PathNTSCU", "PAL": "PathPAL", "NTSCJ": "PathNTSCJ"}
             for region, bios in found_bios.items():
                 settings.set("BIOS", region_mapping[region], bios)
-        
+
         ## [CPU]
         if not settings.has_section("CPU"):
             settings.add_section("CPU")
@@ -518,7 +515,7 @@ class DuckstationGenerator(Generator):
             qt_qpa_platform = "wayland"
         else:
             qt_qpa_platform = "xcb"
-        
+
         # use their modified shaderc library
         return Command.Command(
             array=commandArray,
@@ -574,7 +571,7 @@ def rewriteM3uFullPath(m3u):                                                    
 def find_bios(bios_lists):
     bios_dir = "/userdata/bios/"
     found_bios = {}
-    
+
     try:
         actual_files = os.listdir(bios_dir)
         files_lower = {f.lower(): f for f in actual_files}
@@ -586,7 +583,7 @@ def find_bios(bios_lists):
             if bios.lower() in files_lower:
                 found_bios[region] = files_lower[bios.lower()]
                 break
-    
+
     return found_bios
 
 # Define BIOS lists

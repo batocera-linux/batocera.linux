@@ -1,17 +1,15 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import sys
 import os
 import configparser
-import batoceraFiles
-from utils.logger import get_logger
+from ... import batoceraFiles
+from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-import batoceraFiles
 
 flycastMapping = { # Directions
                    # The DPAD can be an axis (for gpio sticks for example) or a hat
@@ -82,7 +80,7 @@ def generateControllerConfig(controller, type):
 
     if not os.path.exists(os.path.dirname(configFileName)):
         os.makedirs(os.path.dirname(configFileName))
-         
+
     cfgfile = open(configFileName,'w+')
     # create ini sections
     for section in sections:
@@ -125,7 +123,7 @@ def generateControllerConfig(controller, type):
             digitalbind = digitalbind +1
             val = "{}:{}".format(code, var)
             Config.set(section, option, val)
-        
+
         if input.type == 'button':
             section = 'digital'
             option = "bind{}".format(digitalbind)
@@ -133,7 +131,7 @@ def generateControllerConfig(controller, type):
             code = input.id
             val = "{}:{}".format(code, var)
             Config.set(section, option, val)
-        
+
         if input.type == 'axis':
             section = 'analog'
             if input.name == 'l2' or input.name == 'r2':
@@ -189,6 +187,6 @@ def generateControllerConfig(controller, type):
         Config.set("emulator", "mapping_name", "Default") #controller.realName)
         Config.set("emulator", "rumble_power", "100")
         Config.set("emulator", "version", "3")
-    
+
     Config.write(cfgfile)
     cfgfile.close()

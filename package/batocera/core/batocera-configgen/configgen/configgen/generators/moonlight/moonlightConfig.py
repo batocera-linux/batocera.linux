@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-
-import batoceraFiles
 import os
 import shutil
-from Emulator import Emulator
-from settings.unixSettings import UnixSettings
+
+from ... import batoceraFiles
+from ...settings.unixSettings import UnixSettings
 
 def generateMoonlightConfig(system):
 
@@ -35,13 +33,13 @@ def generateMoonlightConfig(system):
         else:
             moonlightConfig.save('width', '1280')
             moonlightConfig.save('height', '720')
-        
+
         # rotate
         if system.isOptSet('moonlight_rotate'):
             moonlightConfig.save('rotate', system.config["moonlight_rotate"])
         else:
             moonlightConfig.save('rotate', '0')
-        
+
         # framerate
         if system.isOptSet('moonlight_framerate'):
             if system.config["moonlight_framerate"] == "0":
@@ -83,7 +81,7 @@ def generateMoonlightConfig(system):
             moonlightConfig.save('quitappafter', system.config["moonlight_quitapp"].lower())
         else:
             moonlightConfig.save('quitappafter', 'false')
-        
+
         # view only
         if system.isOptSet('moonlight_viewonly'):
             moonlightConfig.save('viewonly', system.config["moonlight_viewonly"].lower())
@@ -102,7 +100,7 @@ def generateMoonlightConfig(system):
             moonlightConfig.save('remote', system.config["moonlight_remote"])
         else:
             moonlightConfig.save('remote', 'no')
-        
+
         ## Enable 5.1/7.1 surround sound
         if system.isOptSet('moonlight_surround'):
             moonlightConfig.save('surround', system.config["moonlight_surround"])
