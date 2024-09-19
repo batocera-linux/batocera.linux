@@ -402,7 +402,7 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize, bordersRati
             if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
                 eslog.debug(f"bezel left covers too much the game image : {infos_left  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
                 return None
-        
+
     if "right" not in infos:
         eslog.debug(f"bezel has no right info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
@@ -573,7 +573,8 @@ def signal_handler(signal, frame):
         eslog.debug('killing proc')
         proc.kill()
 
-if __name__ == '__main__':
+def launch():
+    global proc
     proc = None
     signal.signal(signal.SIGINT, signal_handler)
     parser = argparse.ArgumentParser(description='emulator-launcher script')
@@ -622,6 +623,9 @@ if __name__ == '__main__':
     eslog.debug(f"Exiting configgen with status {str(exitcode)}")
 
     exit(exitcode)
+
+if __name__ == '__main__':
+    launch()
 
 # Local Variables:
 # tab-width:4
