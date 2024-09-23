@@ -33,6 +33,7 @@
 - ES: Fixed a crash when selecting "descending order" for several parameters
 - DuckStation light gun crosshair
 - ES: Sinden light gun border now have the exact same size in-game
+- Custom boot splash image now displays when intended
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games

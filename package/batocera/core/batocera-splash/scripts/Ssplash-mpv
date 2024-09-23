@@ -58,7 +58,7 @@ do_imagestart()
     printf 'Image: %s: ' "$image"
     if test -e /dev/fb0
     then
-        start-stop-daemon -S -b -q -m -p /var/run/user-splash-image.pid --exec fbv -- -f -i "$image"
+        start-stop-daemon -S -b -q -m -p /var/run/user-splash-image.pid --exec /usr/bin/fbv -- -f -i "$image"
     fi
 }
 
