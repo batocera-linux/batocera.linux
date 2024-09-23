@@ -1,27 +1,23 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import batoceraFiles
-import Command
 import shutil
 import os
-from utils.logger import get_logger
 from os import path
-from os import environ
-import configparser
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
-import codecs
 import shutil
-import utils.bezels as bezelsUtil
 import subprocess
 from xml.dom import minidom
-from PIL import Image, ImageOps
-from . import mameControllers
+from PIL import Image
 from pathlib import Path
 import csv
-import controllersConfig
-import utils.videoMode as videoMode
+
+from ...import batoceraFiles
+from ...import Command
+from ...import controllersConfig
+from ...utils.logger import get_logger
+from ...utils import bezels as bezelsUtil
+from ...utils import videoMode as videoMode
+from ..Generator import Generator
+from . import mameControllers
 
 eslog = get_logger(__name__)
 
@@ -61,7 +57,7 @@ class MameGenerator(Generator):
                 messSysName.append(row[1])
                 messRomType.append(row[2])
                 messAutoRun.append(row[3])
-        
+
         # Identify the current system
         try:
             messMode = messSystems.index(system.name)
@@ -91,7 +87,7 @@ class MameGenerator(Generator):
                 commandArray += [ "-rompath", f"{romDirname};/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/;/var/run/mame_software/" ]
             else:
                 commandArray += [ "-rompath", f"{romDirname};/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/" ]
-        
+
         # MAME various paths we can probably do better
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
         commandArray += [ "-fontpath",     "/usr/bin/mame/" ]               # Fonts can be left on ROM filesystem
@@ -804,7 +800,7 @@ def getMameControlScheme(system, romBasename):
         neogeoList = set(open(mameNeogeo).read().split())
         twinstickList = set(open(mameTwinstick).read().split())
         qbertList = set(open(mameRotatedstick).read().split())
-            
+
         romName = os.path.splitext(romBasename)[0]
         if romName in capcomList:
             if controllerType in [ "auto", "snes" ]:

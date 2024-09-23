@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import shutil
 import os
 

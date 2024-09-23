@@ -1,14 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import batoceraFiles
 import os
 import codecs
-from Emulator import Emulator
-from utils.logger import get_logger
 import glob
 import configparser
 import re
+
+from ... import batoceraFiles
+from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
@@ -104,7 +103,7 @@ def generateHotkeys(playersControllers):
                 # Write the configuration for this key
                 if keyname is not None:
                     write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id)
-                    
+
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
 
@@ -146,7 +145,7 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
 def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
-    
+
     # Recompute the mapping according to available buttons on the pads and the available replacements
     currentMapping = anyMapping
     # Apply replacements
@@ -162,14 +161,14 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
                     currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
                 if x == "joystick2left":
                     currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
-    
+
     for x in pad.inputs:
         input = pad.inputs[x]
-    
+
         keyname = None
         if input.name in currentMapping:
             keyname = currentMapping[input.name]
-    
+
         # Write the configuration for this key
         if keyname is not None:
             write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)

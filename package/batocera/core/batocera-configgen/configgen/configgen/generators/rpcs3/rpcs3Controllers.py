@@ -1,18 +1,19 @@
 import os
-import batoceraFiles
 from os import path
 import codecs
-from utils.logger import get_logger
+
+from ... import batoceraFiles
+from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
 rpcs3_input_dir = batoceraFiles.CONF + "/rpcs3/input_configs/global"
 
 def generateControllerConfig(system, controllers, rom):
-    
+
     if not path.isdir(rpcs3_input_dir):
         os.makedirs(rpcs3_input_dir)
-        
+
     valid_sony_guids = [
         # ds3
         "030000004c0500006802000011010000",
@@ -32,7 +33,7 @@ def generateControllerConfig(system, controllers, rom):
         "030000004c050000e60c000011810000",
         "050000004c050000e60c000000810000"
     ]
-    
+
     # may need to expand this to support more controllers
     # from evdev_joystick_handler.h
     input_mapping = [
@@ -51,14 +52,14 @@ def generateControllerConfig(system, controllers, rom):
         ("joystick2up", "Right Stick Up", [("ABS_RY", "RY-")]),
         ("joystick2left", "Right Stick Left", [("ABS_RX", "RX-")])
     ]
-    
+
     mapping_dict = {}
     for input_name, config_name, event_variations in input_mapping:
         mapping_dict[input_name] = {
             "config_name": config_name,
             "event_variations": event_variations,
         }
-    
+
     nplayer, ds3player, ds4player, dsplayer = 1, 1, 1, 1
     controller_counts = {}
 

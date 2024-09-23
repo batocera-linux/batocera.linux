@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-import utils.videoMode as videoMode
+from ...utils import videoMode
 
 def configureWindowing(vpinballSettings, system, gameResolution, hasDmd):
     screens = videoMode.getScreensInfos(system.config)

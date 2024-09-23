@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-
-import batoceraFiles
 import os
 import pyudev
 import xml.etree.cElementTree as ET
 from os import path
+
+from ... import batoceraFiles
 
 profilesDir = path.join(batoceraFiles.CONF, 'cemu', 'controllerProfiles')
 

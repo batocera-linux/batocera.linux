@@ -1,13 +1,11 @@
-#!/usr/bin/env python
-
 import subprocess
 import json
-import re
 import os
 import evdev
-import controllersConfig as controllers
 
-from utils.logger import get_logger
+from . import controllersConfig as controllers
+from .utils.logger import get_logger
+
 eslog = get_logger(__name__)
 
 class Evmapy():
@@ -65,16 +63,16 @@ class Evmapy():
                     mergedValues[action] = values[action]
         with open(mergedFile, "w") as fd:
             fd.write(json.dumps(mergedValues, indent=2))
-        
+
         return mergedFile
-            
+
     @staticmethod
     def __prepare(system, emulator, core, rom, playersControllers, guns):
         keysfile = Evmapy.__buildMergedEvmappy(system, emulator, core, rom, playersControllers, guns)
         if keysfile is not None:
             eslog.debug(f"evmapy on {keysfile}")
             subprocess.call(["batocera-evmapy", "clear"])
-    
+
             padActionConfig = json.load(open(keysfile))
 
             # configure guns
@@ -113,7 +111,7 @@ class Evmapy():
                 if "actions_player"+str(nplayer) in padActionConfig:
                     configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.dev))
                     eslog.debug("config file for keysfile is {} (from {})" .format (configfile, keysfile))
-    
+
                     # create mapping
                     padConfig = {}
                     padConfig["axes"] = []
@@ -121,7 +119,7 @@ class Evmapy():
                     padConfig["grab"] = False
                     absbasex_positive = True
                     absbasey_positive = True
-    
+
                     # define buttons / axes
                     known_buttons_names = {}
                     known_buttons_codes = {}
@@ -148,7 +146,7 @@ class Evmapy():
                                     isYAsInt = 0
                                 else:
                                     name = "Y"
-                                    isYAsInt =  1 
+                                    isYAsInt =  1
                                 known_buttons_names["HAT" + input.id + name + ":min"] = True
                                 known_buttons_names["HAT" + input.id + name + ":max"] = True
                                 padConfig["axes"].append({
@@ -284,13 +282,13 @@ class Evmapy():
                     # save config file
                     with open(configfile, "w") as fd:
                         fd.write(json.dumps(padConfig, indent=2))
-    
+
                 nplayer += 1
             return True
         # otherwise, preparation did nothing
         eslog.debug("no evmapy config file found for system={}, emulator={}".format(system, emulator))
         return False
-    
+
     # remap evmapy trigger (aka up become HAT0Y:max)
     @staticmethod
     def __trigger_mapper(trigger, known_buttons_alias, known_buttons_names, absbasex_positive, absbasey_positive):

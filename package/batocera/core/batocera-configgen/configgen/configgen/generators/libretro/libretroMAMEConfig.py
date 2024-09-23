@@ -1,19 +1,10 @@
-#!/usr/bin/env python
-from PIL import Image, ImageOps
 from pathlib import Path
-from settings.unixSettings import UnixSettings
-from utils.logger import get_logger
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
-import Command
-import batoceraFiles
 import codecs
-import configparser
 import csv
 import os
 import shutil
-import subprocess
-import sys
 import zipfile
 
 # Define RetroPad inputs for mapping

@@ -7,13 +7,25 @@
 BATOCERA_CONFIGGEN_VERSION = 1.4
 BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
-BATOCERA_CONFIGGEN_DEPENDENCIES = python3 python-pyyaml
+BATOCERA_CONFIGGEN_SETUP_TYPE = pep517
+BATOCERA_CONFIGGEN_DEPENDENCIES = \
+	host-python-hatchling \
+	python-pyyaml \
+	python-toml \
+	python-evdev \
+	python-pyudev \
+	python3-configobj \
+	python-httplib2 \
+	ffmpeg-python \
+	python-pillow \
+	python-ruamel-yaml
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 CONFIGGEN_DIR = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen
 
 define BATOCERA_CONFIGGEN_EXTRACT_CMDS
 	cp -avf $(CONFIGGEN_DIR)/configgen/* $(@D)
+	echo "__version__ = '$(BATOCERA_CONFIGGEN_VERSION)'" > $(@D)/configgen/__version__.py
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
@@ -94,12 +106,6 @@ define BATOCERA_CONFIGGEN_CONFIGS
 	    $(TARGET_DIR)/usr/share/batocera/configgen/
 endef
 
-define BATOCERA_CONFIGGEN_BINS
-    chmod a+x $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/configgen/emulatorlauncher.py
-	(mkdir -p $(TARGET_DIR)/usr/bin/ && cd $(TARGET_DIR)/usr/bin/ && \
-	    ln -sf /usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/configgen/emulatorlauncher.py emulatorlauncher)
-endef
-
 define BATOCERA_CONFIGGEN_ES_HOOKS
 	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/powermode_launch_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/powermode_launch_hooks.sh
@@ -114,13 +120,10 @@ define BATOCERA_CONFIGGEN_X86_HOOKS
 endef
 
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS = BATOCERA_CONFIGGEN_CONFIGS
-BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_BINS
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_ES_HOOKS
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_X86_HOOKS
 endif
-
-BATOCERA_CONFIGGEN_SETUP_TYPE = setuptools
 
 $(eval $(python-package))

@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-import Command
-from generators.Generator import Generator
-import controllersConfig
-import os
-import batoceraFiles
-import subprocess
+from ... import Command
+from ... import controllersConfig
+from ...utils.logger import get_logger
+from ..Generator import Generator
 
-from utils.logger import get_logger
 eslog = get_logger(__name__)
 
 class StellaGenerator(Generator):

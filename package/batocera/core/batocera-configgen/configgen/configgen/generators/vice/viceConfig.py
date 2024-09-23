@@ -1,13 +1,8 @@
-#!/usr/bin/env python
-
-import batoceraFiles
 import os
-from Emulator import Emulator
 import configparser
-import controllersConfig
 
 def setViceConfig(viceConfigFile, system, metadata, guns, rom):
-    
+
     # Path
     viceController = viceConfigFile + "/sdl-joymap.vjm"
     viceConfigRC   = viceConfigFile + "/sdl-vicerc"
@@ -18,22 +13,22 @@ def setViceConfig(viceConfigFile, system, metadata, guns, rom):
     # config file
     viceConfig = configparser.RawConfigParser(interpolation=None)
     viceConfig.optionxform=str
-    
+
     if os.path.exists(viceConfigRC):
         viceConfig.read(viceConfigRC)
 
     if(system.config['core'] == 'x64'):
-        systemCore = "C64"    
+        systemCore = "C64"
     elif(system.config['core'] == 'x64dtv'):
-        systemCore = "C64DTV"    
+        systemCore = "C64DTV"
     elif(system.config['core'] == 'xplus4'):
-        systemCore = "PLUS4"    
+        systemCore = "PLUS4"
     elif(system.config['core'] == 'xscpu64'):
-        systemCore = "SCPU64"    
+        systemCore = "SCPU64"
     elif(system.config['core'] == 'xvic'):
-       systemCore = "VIC20"    
+       systemCore = "VIC20"
     elif(system.config['core'] == 'xpet'):
-       systemCore = "PET"    
+       systemCore = "PET"
     else:
         systemCore = "C128"
 

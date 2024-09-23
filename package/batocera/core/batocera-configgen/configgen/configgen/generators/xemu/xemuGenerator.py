@@ -1,14 +1,10 @@
-#!/usr/bin/env python
-import Command
-import batoceraFiles
-from generators.Generator import Generator
-import shutil
 import os.path
-import configparser
-# TODO: python3 - delete me!
-import codecs
-import controllersConfig
 from shutil import copyfile
+
+from ... import batoceraFiles
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 from . import xemuConfig
 
 class XemuGenerator(Generator):
@@ -34,7 +30,7 @@ class XemuGenerator(Generator):
         }
 
         return Command.Command(array=commandArray, env=environment)
-    
+
     def getInGameRatio(self, config, gameResolution, rom):
         if ("xemu_scaling" in config and config["xemu_scaling"] == "stretch") or ("xemu_aspect" in config and config["xemu_aspect"] == "16x9"):
             return 16/9

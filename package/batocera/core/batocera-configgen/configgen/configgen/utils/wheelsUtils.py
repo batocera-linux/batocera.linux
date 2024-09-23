@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-import controllersConfig
 import evdev
 import subprocess
 import os
@@ -8,7 +5,9 @@ import signal
 import re
 import math
 
-from utils.logger import get_logger
+from .. import controllersConfig
+from .logger import get_logger
+
 eslog = get_logger(__name__)
 
 wheelMapping = {

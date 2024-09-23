@@ -1,9 +1,9 @@
-#!/usr/bin/env python
-from generators.Generator import Generator
-import Command
-import os
-import controllersConfig
 import re
+import os
+
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class MugenGenerator(Generator):
 

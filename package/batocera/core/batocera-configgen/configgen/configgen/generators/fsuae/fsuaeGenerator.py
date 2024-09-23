@@ -1,13 +1,12 @@
-#!/usr/bin/env python
-
-import Command
-import batoceraFiles
 import zipfile
-import shutil
-from generators.Generator import Generator
 from os import path
+import shutil
+
+from ... import Command
+from ... import batoceraFiles
+from ...utils.logger import get_logger
+from ..Generator import Generator
 from . import fsuaeControllers
-from utils.logger import get_logger
 
 eslog = get_logger(__name__)
 

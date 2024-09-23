@@ -1,11 +1,10 @@
-#!/usr/bin/env python
-
-import Command
-import batoceraFiles
-from generators.Generator import Generator
 import os
 from os import path
 import xml.etree.ElementTree as ET
+
+from ... import Command
+from ... import batoceraFiles
+from ..Generator import Generator
 
 playConfig = batoceraFiles.CONF + '/play'
 playSaves = batoceraFiles.SAVES + '/play'
@@ -23,10 +22,10 @@ class PlayGenerator(Generator):
         # Create save folder
         if not path.isdir(playSaves):
             os.makedirs(playSaves)
-        
+
         ## Work with the config.xml file
         root = ET.Element('Config')
-        
+
         # Dictionary of preferences and defaults
         preferences = {
             'ps2.arcaderoms.directory': {
@@ -72,7 +71,7 @@ class PlayGenerator(Generator):
             'renderer.opengl.forcebilineartextures': {
                 'Type': 'boolean',
                 'Value': 'false'
-            }                          
+            }
         }
 
         # Check if the file exists
@@ -104,10 +103,10 @@ class PlayGenerator(Generator):
                     pref_element.attrib['Value'] = system.config['play_mode']
                 if pref_name == 'renderer.opengl.forcebilineartextures' and system.isOptSet('play_filter'):
                     pref_element.attrib['Value'] = system.config['play_filter']
-                 
+
         # Create the tree and write to the file
         tree = ET.ElementTree(root)
-        
+
         # Handle the case when the file doesn't exist
         if not os.path.exists(playConfigFile):
             # Create the directory if it doesn't exist
@@ -119,9 +118,9 @@ class PlayGenerator(Generator):
             # File exists, write the XML to the existing file
             with open(playConfigFile, "wb") as file:
                 tree.write(file)
-        
+
         commandArray = ["/usr/bin/Play", "--fullscreen"]
-        
+
         if rom != "config":
             # if zip, it's a namco arcade game
             if (rom.lower().endswith("zip")):
@@ -131,7 +130,7 @@ class PlayGenerator(Generator):
                 commandArray.extend(["--arcade", rom])
             else:
                 commandArray.extend(["--disc", rom])
-        
+
         return Command.Command(
             array=commandArray,
             env={

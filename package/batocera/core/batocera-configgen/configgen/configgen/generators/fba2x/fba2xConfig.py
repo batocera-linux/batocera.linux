@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # return true if the option is considered defined
 def defined(key, dict):
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0

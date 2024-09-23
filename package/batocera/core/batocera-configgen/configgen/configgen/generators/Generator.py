@@ -1,9 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class Generator(object):
-    __metaclass__ = ABCMeta
-
+class Generator(metaclass=ABCMeta):
     @abstractmethod
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         pass

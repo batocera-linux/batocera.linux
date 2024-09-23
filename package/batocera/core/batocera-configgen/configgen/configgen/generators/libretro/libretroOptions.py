@@ -1,12 +1,5 @@
-#!/usr/bin/env python
-import sys
 import os
 import configparser
-from settings.unixSettings import UnixSettings
-import batoceraFiles
-import csv
-from pathlib import Path
-import controllersConfig
 
 def generateCoreSettings(coreSettings, system, rom, guns, wheels):
 

@@ -1,7 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from . import cannonballGenerator
 
 cannonballJoystick = {
     "b": "acc",
@@ -17,17 +14,18 @@ cannonballJoystick = {
 
 # Create the controller configuration file
 def generateControllerConfig(config, xml_root, playersControllers):
-    xml_controls = cannonballGenerator.CannonballGenerator.getSection(config, xml_root, "controls")
-    
+    from .cannonballGenerator import CannonballGenerator
+    xml_controls = CannonballGenerator.getSection(config, xml_root, "controls")
+
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
-            cannonballGenerator.CannonballGenerator.setSectionConfig(config, xml_controls, "pad_id", str(pad.index))
-            xml_padconfig = cannonballGenerator.CannonballGenerator.getSection(config, xml_controls, "padconfig")
+            CannonballGenerator.setSectionConfig(config, xml_controls, "pad_id", str(pad.index))
+            xml_padconfig = CannonballGenerator.getSection(config, xml_controls, "padconfig")
 
             for x in pad.inputs:
                 input = pad.inputs[x]
                 if input.type == "button":
                     if input.name in cannonballJoystick:
-                        cannonballGenerator.CannonballGenerator.setSectionConfig(config, xml_padconfig, cannonballJoystick[input.name], input.id)
+                        CannonballGenerator.setSectionConfig(config, xml_padconfig, cannonballJoystick[input.name], input.id)
         nplayer += 1

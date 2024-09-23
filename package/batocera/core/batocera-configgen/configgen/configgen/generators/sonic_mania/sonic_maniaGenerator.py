@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import os
 import shutil
 import configparser
+
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class SonicManiaGenerator(Generator):
 
@@ -15,7 +15,7 @@ class SonicManiaGenerator(Generator):
         destination_file = rom_directory + '/sonic-mania'
         if not os.path.exists(destination_file):
             shutil.copy(source_file, destination_file)
-        
+
         ## Configuration
 
         # VSync
@@ -33,7 +33,7 @@ class SonicManiaGenerator(Generator):
             selected_language = system.config['smania_language']
         else:
             selected_language = '0'
-        
+
         ## Create the Settings.ini file
         config = configparser.ConfigParser()
         config.optionxform = str
@@ -69,11 +69,11 @@ class SonicManiaGenerator(Generator):
         # Save the ini file
         with open( rom_directory + '/Settings.ini', 'w') as configfile:
             config.write(configfile)
-        
+
         # Now run
         os.chdir(rom_directory)
         commandArray = [destination_file]
-        
+
         return Command.Command(
             array=commandArray,
             env={
@@ -81,7 +81,7 @@ class SonicManiaGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
-    
+
     # Show mouse for menu / play actions
     def getMouseMode(self, config, rom):
         return False

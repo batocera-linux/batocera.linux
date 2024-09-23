@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-
-from generators.Generator import Generator
-import Command
-import controllersConfig
 import glob
+
+from ... import Command
+from ... import controllersConfig
+from ..Generator import Generator
 
 class ShGenerator(Generator):
 

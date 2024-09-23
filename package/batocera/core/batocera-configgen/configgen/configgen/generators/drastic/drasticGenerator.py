@@ -1,18 +1,12 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
 import shutil
-from shutil import copyfile
-import subprocess
-from subprocess import Popen
 import filecmp
-import configparser
 import os
-import sys
-import settings
 from os import environ
+
+from ... import Command
+from ... import controllersConfig
+from ... import settings
+from ..Generator import Generator
 
 class DrasticGenerator(Generator):
 
@@ -36,17 +30,17 @@ class DrasticGenerator(Generator):
             esvaluedrastichires = 1
         else:
             esvaluedrastichires = 0
-        
+
         if system.isOptSet("drastic_threaded") and system.config["drastic_threaded"] == '1':
             esvaluedrasticthreaded = 1
         else:
-            esvaluedrasticthreaded = 0    
-        
+            esvaluedrasticthreaded = 0
+
         if system.isOptSet("drastic_fix2d") and system.config["drastic_fix2d"] == '1':
             esvaluedrasticfix2d = 1
         else:
-            esvaluedrasticfix2d = 0 
-        
+            esvaluedrasticfix2d = 0
+
         if system.isOptSet("drastic_screen_orientation"):
             esvaluedrasticscreenorientation = system.config["drastic_screen_orientation"]
         else:
@@ -87,7 +81,7 @@ class DrasticGenerator(Generator):
         "screen_scaling"               + " = 0",                                        #No Scaling/Stretch Aspect/1x2x/2x1x/TvSplit
         "screen_swap "                 + " = 0"
         ]
-        
+
         # Write the cfg file
         for line in textList:
             f.write(line)
@@ -136,7 +130,7 @@ def configurePads(settings, system, drastic_conf):
     "controls_a[CONTROL_INDEX_TOUCH_CURSOR_DOWN]            = 65535        # PAD2KEY MOUSE   \n",
     "controls_a[CONTROL_INDEX_TOUCH_CURSOR_LEFT]            = 65535        # PAD2KEY MOUSE   \n",
     "controls_a[CONTROL_INDEX_TOUCH_CURSOR_RIGHT]           = 65535        # PAD2KEY MOUSE   \n",
-    "controls_a[CONTROL_INDEX_TOUCH_CURSOR_PRESS]           = 360          # Left Click      \n", 
+    "controls_a[CONTROL_INDEX_TOUCH_CURSOR_PRESS]           = 360          # Left Click      \n",
     "controls_a[CONTROL_INDEX_MENU]                         = 314          # F1              \n",
     "controls_a[CONTROL_INDEX_SAVE_STATE]                   = 318          # F5              \n",
     "controls_a[CONTROL_INDEX_LOAD_STATE]                   = 320          # F7              \n",
@@ -176,7 +170,7 @@ def configurePads(settings, system, drastic_conf):
     "controls_b[CONTROL_INDEX_TOUCH_CURSOR_DOWN]            = 65535   \n",
     "controls_b[CONTROL_INDEX_TOUCH_CURSOR_LEFT]            = 65535   \n",
     "controls_b[CONTROL_INDEX_TOUCH_CURSOR_RIGHT]           = 65535   \n",
-    "controls_b[CONTROL_INDEX_TOUCH_CURSOR_PRESS]           = 65535   \n", 
+    "controls_b[CONTROL_INDEX_TOUCH_CURSOR_PRESS]           = 65535   \n",
     "controls_b[CONTROL_INDEX_MENU]                         = 65535   \n",
     "controls_b[CONTROL_INDEX_SAVE_STATE]                   = 65535   \n",
     "controls_b[CONTROL_INDEX_LOAD_STATE]                   = 65535   \n",
@@ -200,8 +194,8 @@ def configurePads(settings, system, drastic_conf):
 
     f = open(drastic_conf, "a", encoding="ascii")
     f.write(keyboardpart)
-    f.write("\n")    
-    f.write("\n")    
+    f.write("\n")
+    f.write("\n")
     f.write(padpart)
     f.close()
 

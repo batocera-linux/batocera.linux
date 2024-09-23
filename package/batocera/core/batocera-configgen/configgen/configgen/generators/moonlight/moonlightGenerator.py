@@ -1,17 +1,16 @@
-#!/usr/bin/env python
-import Command
-import controllersConfig
-import batoceraFiles
-from . import moonlightConfig
-from generators.Generator import Generator
-import shutil
 import os.path
+
+from ... import Command
+from ... import controllersConfig
+from ... import batoceraFiles
+from ..Generator import Generator
+from . import moonlightConfig
 
 class MoonlightGenerator(Generator):
 
     def getResolutionMode(self, config):
         return 'default'
-    
+
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

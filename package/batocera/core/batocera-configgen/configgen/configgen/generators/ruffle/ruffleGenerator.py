@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-
-import Command
-from generators.Generator import Generator
-import controllersConfig
+from ... import Command
+from ..Generator import Generator
 
 
 class RuffleGenerator(Generator):

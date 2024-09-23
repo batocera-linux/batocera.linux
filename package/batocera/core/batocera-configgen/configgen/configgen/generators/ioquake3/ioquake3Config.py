@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-
-import sys
 import os
 
 def writeCfgFile(system, filename, init_line, defaults_to_add, controls_to_add, gameResolution):
     if not os.path.isfile(filename):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-        
+
         with open(filename, 'w') as file:
             file.write(init_line)
             for line in defaults_to_add:
@@ -34,14 +31,14 @@ def writeCfgFile(system, filename, init_line, defaults_to_add, controls_to_add, 
                 # network downloads
                 elif line.startswith('seta cl_allowdownload'):
                     line = 'seta cl_allowDownload "1"\n'
-                
+
                 ## User options
                 elif line.startswith('seta com_hunkMegs'):
                     if system.isOptSet('ioquake3_mem'):
                         line = f"seta com_hunkMegs \"{system.config['ioquake3_mem']}\"\n"
                     else:
                         line = 'seta com_hunkMegs "256"\n'
-                
+
                 file.write(line)
 
             # Add the missing lines at the end of the file
@@ -96,6 +93,6 @@ def writeCfgFiles(system, rom, playersControllers, gameResolution):
         'bind PAD0_LEFTTRIGGER "+speed"\n',
         'bind PAD0_RIGHTTRIGGER "+attack"\n'
     ]
-    
+
     for filename in files:
         writeCfgFile(system, filename, init_line, defaults_to_add, controls_to_add, gameResolution)

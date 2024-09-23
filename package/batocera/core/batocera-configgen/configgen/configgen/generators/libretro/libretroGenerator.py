@@ -1,19 +1,16 @@
-#!/usr/bin/env python
-import sys
-import Command
-import batoceraFiles
+import os
+import shutil
+import glob
+
+from ... import Command
+from ... import batoceraFiles
+from ...settings.unixSettings import UnixSettings
+from ...utils.logger import get_logger
+from ...utils import videoMode as videoMode
+from ..Generator import Generator
 from . import libretroConfig
 from . import libretroRetroarchCustom
 from . import libretroControllers
-from generators.Generator import Generator
-import os
-import stat
-import subprocess
-from settings.unixSettings import UnixSettings
-from utils.logger import get_logger
-import utils.videoMode as videoMode
-import shutil
-import glob
 
 eslog = get_logger(__name__)
 

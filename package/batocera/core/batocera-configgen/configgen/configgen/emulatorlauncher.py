@@ -16,23 +16,22 @@ if os.path.exists("/var/run/emulatorlauncher.perf"):
 
 ### import always needed ###
 import argparse
-import GeneratorImporter
 import signal
 import time
 from sys import exit
 import subprocess
-import batoceraFiles
-import utils.videoMode as videoMode
-import utils.gunsUtils as gunsUtils
-import utils.wheelsUtils as wheelsUtils
-############################
-from utils.logger import get_logger
-eslog = get_logger(__name__)
-############################
 
-from Emulator import Emulator
-import controllersConfig as controllers
-import utils.bezels as bezelsUtil
+from . import batoceraFiles
+from . import controllersConfig as controllers
+from . import GeneratorImporter
+from .Emulator import Emulator
+from .utils import bezels as bezelsUtil
+from .utils import videoMode
+from .utils import gunsUtils
+from .utils import wheelsUtils
+from .utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 def squashfs_begin(rom):
     eslog.debug(f"squashfs_begin({rom})")
@@ -258,7 +257,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
         # run the emulator
         try:
-            from Evmapy import Evmapy
+            from .Evmapy import Evmapy
             Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns)
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
@@ -402,7 +401,7 @@ def getHudBezel(system, generator, rom, gameResolution, bordersSize, bordersRati
             if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
                 eslog.debug(f"bezel left covers too much the game image : {infos_left  - ((bezel_width-img_width)/2.0)} / {img_width} > {max_cover}")
                 return None
-        
+
     if "right" not in infos:
         eslog.debug(f"bezel has no right info in {overlay_info_file}")
         # assume default is 4/3 over 16/9
@@ -573,7 +572,8 @@ def signal_handler(signal, frame):
         eslog.debug('killing proc')
         proc.kill()
 
-if __name__ == '__main__':
+def launch():
+    global proc
     proc = None
     signal.signal(signal.SIGINT, signal_handler)
     parser = argparse.ArgumentParser(description='emulator-launcher script')
@@ -622,6 +622,9 @@ if __name__ == '__main__':
     eslog.debug(f"Exiting configgen with status {str(exitcode)}")
 
     exit(exitcode)
+
+if __name__ == '__main__':
+    launch()
 
 # Local Variables:
 # tab-width:4

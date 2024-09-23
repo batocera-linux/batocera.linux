@@ -1,0 +1,22 @@
+[project]
+name = "batocera-configgen"
+requires-python = ">= 3.11"
+dynamic = ["version"]
+dependencies = [
+    "PyYAML==6.0.1",
+]
+
+[project.scripts]
+emulatorlauncher = "configgen.emulatorlauncher:launch"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "configgen/__version__.py"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/configgen",
+]
