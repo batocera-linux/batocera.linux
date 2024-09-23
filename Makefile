@@ -33,13 +33,12 @@ UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
-	# let buildroot know about our overrides
-	BR2_DL_DIR     := $(DL_DIR)
-	BR2_CCACHE_DIR := $(CCACHE_DIR)
 
 define MAKE_BUILDROOT
 	make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$* \
 		BR2_EXTERNAL=$(PROJECT_DIR) \
+		BR2_DL_DIR=$(DL_DIR) \
+		BR2_CCACHE_DIR=$(CCACHE_DIR) \
 		-C $(PROJECT_DIR)/buildroot
 endef
 
@@ -70,8 +69,8 @@ endef
 
 define MAKE_BUILDROOT
 	$(RUN_DOCKER) make $(MAKE_OPTS) O=/$* \
-			BR2_EXTERNAL=/build -C \
-			/build/buildroot
+			BR2_EXTERNAL=/build \
+			-C /build/buildroot
 endef
 
 endif # DIRECT_BUILD
@@ -90,8 +89,8 @@ endif
 	@echo "Make options:       $(MAKE_OPTS)"
 
 _check_docker:
+	$(if $(DIRECT_BUILD),$(error "This is a direct build environment"))
 	$(if $(shell which $(DOCKER) 2>/dev/null),, $(error "$(DOCKER) not found!"))
-	$(if $(DIRECT_BUILD),$(error "Not a docker environment!"))
 
 build-docker-image: _check_docker
 	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
