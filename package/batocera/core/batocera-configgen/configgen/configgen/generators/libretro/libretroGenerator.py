@@ -19,6 +19,12 @@ class LibretroGenerator(Generator):
     def supportsInternalBezels(self):
         return True
 
+    def getHotkeysContext(self):
+        return {
+            "name": "retroarch",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
