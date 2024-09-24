@@ -1,6 +1,9 @@
 import os
 import configparser
 
+from ... import batoceraFiles
+from ... import controllersConfig
+
 def generateCoreSettings(coreSettings, system, rom, guns, wheels):
 
     # Amstrad CPC / GX4000
