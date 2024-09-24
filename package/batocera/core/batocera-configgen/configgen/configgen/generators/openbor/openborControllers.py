@@ -1,8 +1,9 @@
+from ...settings.unixSettings import UnixSettings
 from ...utils.logger import get_logger
 
 eslog = get_logger(__name__)
 
-def generateControllerConfig(config, playersControllers, core):
+def generateControllerConfig(config: UnixSettings, playersControllers, core):
     if core == "openbor4432":
         setupControllers(config, playersControllers, 32, False)
     elif core == "openbor7142":
@@ -53,7 +54,7 @@ def JoystickValue(key, pad, joy_max_inputs, new_axis_vals, invertAxis = False):
     #eslog.debug("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
     return value
 
-def setupControllers(config, playersControllers, joy_max_inputs, new_axis_vals):
+def setupControllers(config: UnixSettings, playersControllers, joy_max_inputs, new_axis_vals):
     idx = 0
     for playercontroller, pad in sorted(playersControllers.items()):
         config.save("keys." + str(idx) + ".0" , JoystickValue("up",       pad, joy_max_inputs, new_axis_vals)) # MOVEUP

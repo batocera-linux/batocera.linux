@@ -3,7 +3,7 @@ import os
 from ... import batoceraFiles
 from ...settings.unixSettings import UnixSettings
 
-def generateRetroarchCustom():
+def generateRetroarchCustom() -> None:
     # retroarchcustom.cfg
     if not os.path.exists(os.path.dirname(batoceraFiles.retroarchCustom)):
         os.makedirs(os.path.dirname(batoceraFiles.retroarchCustom))
@@ -83,7 +83,7 @@ def generateRetroarchCustom():
 
     retroarchSettings.write()
 
-def generateRetroarchCustomPathes(retroarchSettings):
+def generateRetroarchCustomPathes(retroarchSettings: UnixSettings) -> None:
     # Path Retroarch
     retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')
     retroarchSettings.save('assets_directory',              '"/usr/share/libretro/assets"')
