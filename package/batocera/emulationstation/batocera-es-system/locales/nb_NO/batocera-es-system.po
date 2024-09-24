@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Batocera_options\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-05-15 08:57+0200\n"
+"PO-Revision-Date: 2024-09-24 10:59+0200\n"
 "Last-Translator: Svein Jakobsen <svein.jakobsen@gmail.com>\n"
 "Language-Team: nb_NO\n"
 "Language: nb\n"
@@ -363,17 +363,17 @@ msgstr "REDUKSJON AV VENTETID"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD FRAMES"
-msgstr "RUN-AHEAD BILDER"
+msgstr "FORHÅNDSKJØRINGS-BILDER"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Can prevent audio skips on button presses when using run-ahead."
-msgstr "Kan forhindre lydhopp ved knappetrykk og bruk av run-ahead."
+msgstr "Kan forhindre lydhopp ved knappetrykk og bruk av forhåndskjøring."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
-msgstr "BRUKE DEN ANDRE INSTANSEN FOR RUN-AHEAD"
+msgstr "BRUKE DEN ANDRE INSTANSEN FOR FORHÅNDSKJØRING"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -381,11 +381,13 @@ msgid ""
 "Use preemptive frames instead of run-ahead. Only runs ahead when controller "
 "state changes."
 msgstr ""
+"Bruk forebyggende rammer i stedet for forhåndskjøring. Bruker bare "
+"forhåndskjøring når kontrollerens tilstand endres."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE PRE-EMPTIVE FRAMES"
-msgstr ""
+msgstr "BRUK FOREBYGGENDE RAMMER"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -437,7 +439,7 @@ msgstr "LYSPISTOL"
 #. TRANSLATION: shared, shared, shared, shared, shared, ...
 msgctxt "game_options"
 msgid "CONTROLS"
-msgstr ""
+msgstr "KONTROLLER"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -4841,7 +4843,7 @@ msgstr "Philips CD-i CD-ROM-er"
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Tandy Radio Shack Color Computer cassettes"
-msgstr ""
+msgstr "Tandy Radio Shack Color Computer kassetter"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -6432,7 +6434,7 @@ msgstr "Av er tryggere, På for spesifikke spill."
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "Double the rendering resolution."
-msgstr ""
+msgstr "Doble gjengivelsesoppløsningen."
 
 #. TRANSLATION: libretro/pcsx_rearmed, drastic
 msgctxt "game_options"
@@ -6442,7 +6444,7 @@ msgstr "FORBEDRET GJENGIVELSESOPPLØSNING"
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "On (Speed hack)"
-msgstr ""
+msgstr "På (hastighetshack)"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
@@ -8711,56 +8713,58 @@ msgid ""
 "Enable or disable bezels being added when content is a 4:3 aspect with a "
 "widescreen display."
 msgstr ""
+"Aktiver eller deaktiver rammer som legges til når innholdet er 4:3-format "
+"med bredskjerm."
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "BEZELS"
-msgstr ""
+msgstr "RAMMER"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 2"
-msgstr ""
+msgstr "Shunt 2"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 3"
-msgstr ""
+msgstr "Shunt 3"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 4"
-msgstr ""
+msgstr "Shunt 4"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 5"
-msgstr ""
+msgstr "Shunt 5"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 6"
-msgstr ""
+msgstr "Shunt 6"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 7"
-msgstr ""
+msgstr "Shunt 7"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 8"
-msgstr ""
+msgstr "Shunt 8"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 9"
-msgstr ""
+msgstr "Shunt 9"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
 msgid "Shunt 10"
-msgstr ""
+msgstr "Shunt 10"
 
 #. TRANSLATION: hypseus-singe
 msgctxt "game_options"
@@ -8810,7 +8814,7 @@ msgstr "VISNING"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Automatic ratio"
-msgstr ""
+msgstr "Automatisk forhold"
 
 #. TRANSLATION: dolphin, dolphin_triforce
 msgctxt "game_options"
@@ -8838,6 +8842,8 @@ msgid ""
 "Compile shaders on next launch of game (one time). Reduces micro-freezes. "
 "Vulkan only."
 msgstr ""
+"Kompiler shaders ved neste lansering av spillet (én gang). Reduserer "
+"mikrofrys. Kun Vulkan."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8855,6 +8861,8 @@ msgid ""
 "Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
 "higher performance cost."
 msgstr ""
+"Bruk SSAA i stedet for MSAA for kantutjevnelse. SSAA kan se bedre ut, men "
+"har en høyere ytelseskostnad."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -8978,7 +8986,7 @@ msgstr "Endre hva som er koblet til de virtuelle GameCube-portene."
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 1"
-msgstr ""
+msgstr "GAMECUBE KONTROLLER 1"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9013,7 +9021,7 @@ msgstr "DK Bongos"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 2"
-msgstr ""
+msgstr "GAMECUBE KONTROLLER 2"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9023,7 +9031,7 @@ msgstr "GAMECUBE PORT 2 TYPE"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 3"
-msgstr ""
+msgstr "GAMECUBE KONTROLLER 3"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9033,7 +9041,7 @@ msgstr "GAMECUBE PORT 3 TYPE"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "GAMECUBE CONTROLLER 4"
-msgstr ""
+msgstr "GAMECUBE KONTROLLER 4"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -9043,12 +9051,12 @@ msgstr "GAMECUBE PORT 4 TYPE"
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "Moves South to West, West to North, etc. Standard controller type only."
-msgstr ""
+msgstr "Flytter Sør til Vest, Vest til Nord osv. Kun standard kontrollertype."
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "ROTATE FACE BUTTONS"
-msgstr ""
+msgstr "ROTÉR KNAPPENE"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
@@ -9156,7 +9164,7 @@ msgstr "Tilordne kontrolleren din til en emulert Wiimote."
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
 msgid "WII CONTROLLERS"
-msgstr ""
+msgstr "WII KONTROLLERE"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10415,37 +10423,37 @@ msgstr "Enkel 2x"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "scanlines"
-msgstr ""
+msgstr "skannelinjer"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "diagonal filter"
-msgstr ""
+msgstr "diagonalt filter"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "triangular filter"
-msgstr ""
+msgstr "triangulært filter"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "wave filter"
-msgstr ""
+msgstr "bølgefilter"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "lottes crt"
-msgstr ""
+msgstr "Lottes crt-filter"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "4xrgss"
-msgstr ""
+msgstr "4xrgss"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "nxagss"
-msgstr ""
+msgstr "nxagss"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -10746,12 +10754,12 @@ msgstr "Ikke skalert (standard)"
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Scaled"
-msgstr ""
+msgstr "Skalert"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Force 32bit"
-msgstr ""
+msgstr "Tving 32 bit"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -12072,11 +12080,14 @@ msgid ""
 "use a value larger than 100%% so that the steering feels less sensitive on a "
 "thumbstick."
 msgstr ""
+"For å spille kjørespill med en gamepad er det noen ganger lurt å bruke en "
+"verdi som er større enn 100 %% slik at styringen føles mindre følsom med en "
+"tommelstikke."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "STEERING SENSITIVITY"
-msgstr ""
+msgstr "RATT-FØLSOMHET"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -12395,7 +12406,7 @@ msgstr "DATA PLUGIN"
 #. TRANSLATION: mame
 msgctxt "game_options"
 msgid "When moving"
-msgstr ""
+msgstr "Under bevegelse"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -15225,7 +15236,7 @@ msgstr "Sett til fullskjerm"
 #. TRANSLATION: wii.dolphin.keys
 msgctxt "keys_files"
 msgid "Exit Dolphin"
-msgstr ""
+msgstr "Avslutt Dolphin"
 
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
@@ -15450,7 +15461,7 @@ msgstr "Pause / Meny"
 #. TRANSLATION: mame.keys
 msgctxt "keys_files"
 msgid "Exit Emulator"
-msgstr ""
+msgstr "Avslutt Emulatoren"
 
 #. TRANSLATION: scummvm.keys
 msgctxt "keys_files"
