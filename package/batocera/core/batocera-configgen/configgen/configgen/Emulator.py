@@ -26,14 +26,14 @@ class Emulator():
 
         # load configuration from batocera.conf
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
-        globalSettings = recalSettings.loadAll('global')
-        controllersSettings = recalSettings.loadAll('controllers', True)
-        systemSettings = recalSettings.loadAll(self.name)
-        folderSettings = recalSettings.loadAll(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
-        gameSettings = recalSettings.loadAll(self.name + "[\"" + gsname + "\"]")
+        globalSettings = recalSettings.load_all('global')
+        controllersSettings = recalSettings.load_all('controllers', True)
+        systemSettings = recalSettings.load_all(self.name)
+        folderSettings = recalSettings.load_all(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
+        gameSettings = recalSettings.load_all(self.name + "[\"" + gsname + "\"]")
 
         # add some other options
-        displaySettings = recalSettings.loadAll('display')
+        displaySettings = recalSettings.load_all('display')
         for opt in displaySettings:
             self.config["display." + opt] = displaySettings[opt]
 
@@ -68,8 +68,8 @@ class Emulator():
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
         # so that we can fetch them from system.shader without -renderer
-        systemSettings = recalSettings.loadAll(self.name + "-renderer")
-        gameSettings = recalSettings.loadAll(self.name + "[\"" + gsname + "\"]" + "-renderer")
+        systemSettings = recalSettings.load_all(self.name + "-renderer")
+        gameSettings = recalSettings.load_all(self.name + "[\"" + gsname + "\"]" + "-renderer")
 
         # es only allow to update systemSettings and gameSettings in fact for the moment
         Emulator.updateConfiguration(self.renderconfig, systemSettings)

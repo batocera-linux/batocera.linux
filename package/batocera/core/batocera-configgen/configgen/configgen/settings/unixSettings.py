@@ -1,78 +1,87 @@
+from __future__ import annotations
+
 import configparser
-import os
+from dataclasses import dataclass, InitVar, field
+from pathlib import Path
 import re
 import io
+import typing
 
 from ..utils.logger import get_logger
 
+if typing.TYPE_CHECKING:
+    from _typeshed import StrPath
+
 eslog = get_logger(__name__)
-__source__ = os.path.basename(__file__)
 
-class UnixSettings():
+def _protect_string(string: str) -> str:
+    return re.sub(r'[^A-Za-z0-9-\.]+', '_', string)
 
-    def __init__(self, settingsFile, separator='', defaultComment='#'):
-        self.settingsFile = settingsFile
-        self.separator = separator
-        # unused. left for compatibility with previous implementation
-        self.comment = defaultComment
+@dataclass(slots=True)
+class UnixSettings:
+    filename_or_path: InitVar[StrPath]
+    separator: str = field(default='', kw_only=True)
+    settings_path: Path = field(init=False)
+    config: configparser.ConfigParser = field(init=False)
+
+    def __post_init__(self, filename_or_path: StrPath) -> None:
+        self.settings_path = Path(filename_or_path)
 
         # use ConfigParser as backend.
-        eslog.debug(f"Creating parser for {self.settingsFile}")
+        eslog.debug(f"Creating parser for {self.settings_path!s}")
         self.config = configparser.ConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
         # To prevent ConfigParser from converting to lower case
-        self.config.optionxform = str
+        self.config.optionxform = lambda optionstr: str(optionstr)
 
         try:
-            # TODO: remove me when we migrate to Python 3
+            # TODO: remove me when we migrate to Python 3.13 and can use allow_unnamed_section=True
             # pretend where have a [DEFAULT] section
             file = io.StringIO()
             file.write('[DEFAULT]\n')
-            file.write(open(self.settingsFile, encoding='utf_8_sig').read())
-            file.seek(0, os.SEEK_SET)
 
-            self.config.readfp(file)
+            with self.settings_path.open(encoding='utf_8_sig') as f:
+                file.write(f.read())
+
+            file.seek(0)
+
+            self.config.read_file(file)
         except IOError as e:
             eslog.error(str(e))
 
-    def write(self):
-        fp = open(self.settingsFile, 'w')
-        try:
-            for (key, value) in self.config.items('DEFAULT'):
-                fp.write("{0}{2}={2}{1}\n".format(key, str(value), self.separator))
-        except:
-            # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
-            # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
-            # TODO: clean that up when porting to Python 3
-            eslog.error("Wrong value detected (after % char maybe?), ignoring.")
-        fp.close()
+    def write(self) -> None:
+        with self.settings_path.open('w') as fp:
+            try:
+                for key, value in self.config.items('DEFAULT'):
+                    fp.write(f"{key}{self.separator}={self.separator}{value!s}\n")
+            except:
+                # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
+                # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
+                # TODO: clean that up when porting to Python 3
+                eslog.error("Wrong value detected (after % char maybe?), ignoring.")
 
-    def save(self, name, value):
+    def save(self, name: str, value: object) -> None:
         # at least for cheevos_password
         if "password" in name.lower():
-            eslog.debug(f"Writing {name} = ******** to {self.settingsFile}")
+            eslog.debug(f"Writing {name} = ******** to {self.settings_path!s}")
         else:
-            eslog.debug(f"Writing {name} = {value} to {self.settingsFile}")
+            eslog.debug(f"Writing {name} = {value!s} to {self.settings_path!s}")
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
 
-    def disableAll(self, name):
-        eslog.debug(f"Disabling {name} from {self.settingsFile}")
-        for (key, value) in self.config.items('DEFAULT'):
+    def disable_all(self, name: str) -> None:
+        eslog.debug(f"Disabling {name} from {self.settings_path!s}")
+        for key, _ in self.config.items('DEFAULT'):
             if key[0:len(name)] == name:
                 self.config.remove_option('DEFAULT', key)
 
-    def remove(self, name):
+    def remove(self, name: str) -> None:
         self.config.remove_option('DEFAULT', name)
 
-    @staticmethod
-    def protectString(str):
-        return re.sub(r'[^A-Za-z0-9-\.]+', '_', str)
-
-    def loadAll(self, name, includeName = False):
-        eslog.debug(f"Looking for {name}.* in {self.settingsFile}")
-        res = dict()
-        for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + UnixSettings.protectString(name) + r"\.(.+)", UnixSettings.protectString(key))
+    def load_all(self, name: str, includeName: bool = False) -> dict[str, str]:
+        eslog.debug(f"Looking for {name}.* in {self.settings_path!s}")
+        res: dict[str, str] = {}
+        for key, value in self.config.items('DEFAULT'):
+            m = re.match(rf"^{_protect_string(name)}\.(.+)", _protect_string(key))
             if m:
                 if includeName:
                     res[name + "." + m.group(1)] = value;

@@ -89,7 +89,7 @@ def connected_to_internet():
             eslog.error("Not connected to the internet")
             return False
 
-def writeLibretroConfig(generator, retroconfig, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def writeLibretroConfig(generator, retroconfig: UnixSettings, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
@@ -1129,7 +1129,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
                         retroarchConfig['input_player{}_{}_axis'.format(n, m)] = aval + pad.inputs[mapping[m]].id
         nplayer += 1
 
-def writeLibretroConfigToFile(retroconfig, config):
+def writeLibretroConfigToFile(retroconfig: UnixSettings, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
