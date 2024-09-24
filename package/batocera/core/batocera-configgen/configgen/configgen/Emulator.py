@@ -1,9 +1,10 @@
 import os
+from pathlib import Path
 import xml.etree.ElementTree as ET
 import yaml
 import collections
 
-from . import batoceraFiles
+from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
 from .settings.unixSettings import UnixSettings
 from .utils.logger import get_logger
 
@@ -14,7 +15,11 @@ class Emulator():
         self.name = name
 
         # read the configuration from the system name
-        self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml")
+        self.config = Emulator.get_system_config(
+            self.name,
+            DEFAULTS_DIR / "configgen-defaults.yml",
+            DEFAULTS_DIR / "configgen-defaults-arch.yml"
+        )
         if "emulator" not in self.config or self.config["emulator"] == "":
             eslog.error("no emulator defined. exiting.")
             raise Exception("No emulator found")
@@ -25,7 +30,7 @@ class Emulator():
         gsname = self.game_settings_name(rom)
 
         # load configuration from batocera.conf
-        recalSettings = UnixSettings(batoceraFiles.batoceraConf)
+        recalSettings = UnixSettings(BATOCERA_CONF)
         globalSettings = recalSettings.load_all('global')
         controllersSettings = recalSettings.load_all('controllers', True)
         systemSettings = recalSettings.load_all(self.name)
@@ -58,12 +63,27 @@ class Emulator():
         self.renderconfig = {}
         if "shaderset" in self.config:
             if self.config["shaderset"] != "none":
-                if os.path.exists("/userdata/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults.yml"):
-                    self.renderconfig = Emulator.get_generic_config(self.name, "/userdata/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults.yml", "/userdata/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults-arch.yml")
+                rendering_defaults = USER_SHADERS / "configs" / str(self.config["shaderset"]) / "rendering-defaults.yml"
+                if rendering_defaults.exists():
+                    self.renderconfig = Emulator.get_generic_config(
+                        self.name,
+                        rendering_defaults,
+                        rendering_defaults.with_name("rendering-defaults-arch.yml")
+                    )
                 else:
-                    self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults-arch.yml")
+                    rendering_defaults = BATOCERA_SHADERS / "configs" / str(self.config["shaderset"]) / "rendering-defaults.yml"
+                    self.renderconfig = Emulator.get_generic_config(
+                        self.name,
+                        rendering_defaults,
+                        rendering_defaults.with_name("rendering-defaults-arch.yml")
+                    )
             elif self.config["shaderset"] == "none":
-                self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
+                rendering_defaults = BATOCERA_SHADERS / "configs" / "rendering-defaults.yml"
+                self.renderconfig = Emulator.get_generic_config(
+                    self.name,
+                    rendering_defaults,
+                    rendering_defaults.with_name("rendering-defaults-arch.yml")
+                )
 
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
@@ -104,13 +124,13 @@ class Emulator():
                 dct[k] = merge_dct[k]
 
     @staticmethod
-    def get_generic_config(system, defaultyml, defaultarchyml):
-        with open(defaultyml, 'r') as f:
+    def get_generic_config(system: str, defaultyml: Path, defaultarchyml: Path):
+        with defaultyml.open('r') as f:
             systems_default = yaml.load(f, Loader=yaml.CLoader)
 
         systems_default_arch = {}
-        if os.path.exists(defaultarchyml):
-            with open(defaultarchyml, 'r') as f:
+        if defaultarchyml.exists():
+            with defaultarchyml.open('r') as f:
                 systems_default_arch = yaml.load(f, Loader=yaml.CLoader)
                 if systems_default_arch is None:
                     systems_default_arch = {}
@@ -131,7 +151,7 @@ class Emulator():
         return dict_all
 
     @staticmethod
-    def get_system_config(system, defaultyml, defaultarchyml):
+    def get_system_config(system: str, defaultyml: Path, defaultarchyml: Path):
         dict_all = Emulator.get_generic_config(system, defaultyml, defaultarchyml)
 
         # options are in the yaml, not in the system structure
@@ -175,7 +195,7 @@ class Emulator():
     # fps value is from es
     def updateFromESSettings(self):
         try:
-            esConfig = ET.parse(batoceraFiles.esSettings)
+            esConfig = ET.parse(ES_SETTINGS)
 
             # showFPS
             try:

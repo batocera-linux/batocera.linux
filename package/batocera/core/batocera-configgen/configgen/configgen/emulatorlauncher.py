@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import os
+from pathlib import Path
+
 profiler = None
 
 # 1) touch /var/run/emulatorlauncher.perf
@@ -21,9 +23,9 @@ import time
 from sys import exit
 import subprocess
 
-from . import batoceraFiles
 from . import controllersConfig as controllers
 from . import GeneratorImporter
+from .batoceraPaths import SAVES
 from .Emulator import Emulator
 from .utils import bezels as bezelsUtil
 from .utils import videoMode
@@ -206,9 +208,9 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         eslog.debug("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done
-        dirname = os.path.join(batoceraFiles.savesDir, system.name)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        dirname = SAVES / system.name
+        if not dirname.exists():
+            dirname.mkdir(parents=True)
 
         # core
         effectiveCore = ""
