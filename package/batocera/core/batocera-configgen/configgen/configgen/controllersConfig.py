@@ -1,10 +1,11 @@
+from pathlib import Path
 import xml.etree.ElementTree as ET
 import os
 import pyudev
 import evdev
 import re
 
-from . import batoceraFiles
+from .batoceraPaths import ES_GAMES_METADATA, BATOCERA_ES_DIR, USER_ES_DIR
 from .utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -55,8 +56,8 @@ class Controller:
 # Load all controllers from the es_input.cfg
 def loadAllControllersConfig():
     controllers = dict()
-    for conffile in ["/usr/share/emulationstation/es_input.cfg", batoceraFiles.CONF + '/emulationstation/es_input.cfg']:
-      if os.path.exists(conffile):
+    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
+      if conffile.exists():
           tree = ET.parse(conffile)
           root = tree.getroot()
           for controller in root.findall(".//inputConfig"):
@@ -73,8 +74,8 @@ def loadAllControllersConfig():
 # Load all controllers from the es_input.cfg
 def loadAllControllersByNameConfig():
     controllers = dict()
-    for conffile in ["/usr/share/emulationstation/es_input.cfg", batoceraFiles.CONF + '/emulationstation/es_input.cfg']:
-        if os.path.exists(conffile):
+    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
+        if conffile.exists():
             tree = ET.parse(conffile)
             root = tree.getroot()
             for controller in root.findall(".//inputConfig"):
@@ -208,7 +209,7 @@ def generateSdlGameControllerConfig(controllers):
     return "\n".join(configs)
 
 
-def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerdb.txt"):
+def writeSDLGameDBAllControllers(controllers, outputFile: str | Path = "/tmp/gamecontrollerdb.txt"):
     with open(outputFile, "w") as text_file:
         text_file.write(generateSdlGameControllerConfig(controllers))
     return outputFile
@@ -378,7 +379,7 @@ def shortNameFromPath(path):
 
 def getGamesMetaData(system, rom):
     # load the database
-    tree = ET.parse(batoceraFiles.esGamesMetadata)
+    tree = ET.parse(ES_GAMES_METADATA)
     root = tree.getroot()
     game = shortNameFromPath(rom)
     res = {}

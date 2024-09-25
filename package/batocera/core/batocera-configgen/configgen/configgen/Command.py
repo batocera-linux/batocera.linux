@@ -1,15 +1,20 @@
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+
 class Command:
-    def __init__(self, array, env=dict()):
-        self.array = array
-        self.env = env
+    def __init__(self, array: Sequence[str | Path], env: Mapping[str, str | Path] = dict()):
+        self.array = list(array)
+        self.env = dict(env)
 
     def __str__(self):
-        str = list()
+        strings: list[str] = []
 
         for varName, varValue in self.env.items():
-            str.append("%s=%s" % (varName, varValue))
+            strings.append(f"{varName}={varValue}")
 
         for value in self.array:
-            str.append(value)
+            strings.append(str(value))
 
-        return " ".join(str)
+        return " ".join(strings)
