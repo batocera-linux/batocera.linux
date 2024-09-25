@@ -11,6 +11,12 @@ from ..Generator import Generator
 
 class SupermodelGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "supermodel",
+            "keys": { "exit": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         commandArray = ["supermodel", "-fullscreen", "-channels=2"]
 

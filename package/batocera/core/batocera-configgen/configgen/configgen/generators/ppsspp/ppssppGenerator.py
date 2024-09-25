@@ -9,6 +9,12 @@ from . import ppssppControllers
 
 class PPSSPPGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "ppsspp",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F3", "restore_state": "KEY_F4", "menu": "KEY_F9", "next_slot": "KEY_F6", "previous_slot": "KEY_F5" }
+        }
+
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

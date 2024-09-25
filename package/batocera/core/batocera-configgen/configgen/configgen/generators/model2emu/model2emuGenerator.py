@@ -15,6 +15,12 @@ eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "model2emu",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         wineprefix = "/userdata/system/wine-bottles/model2"
         emupath = wineprefix + "/model2emu"

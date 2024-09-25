@@ -8,6 +8,12 @@ from ..Generator import Generator
 
 class SolarusGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "solarus",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # basis

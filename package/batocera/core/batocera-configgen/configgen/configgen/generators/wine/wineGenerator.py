@@ -7,6 +7,12 @@ from ..Generator import Generator
 
 class WineGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "wine",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if system.name == "windows_installers":
             commandArray = ["batocera-wine", "windows", "install", rom]
