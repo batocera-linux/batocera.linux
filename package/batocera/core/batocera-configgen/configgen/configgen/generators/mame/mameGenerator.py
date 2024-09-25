@@ -26,6 +26,12 @@ class MameGenerator(Generator):
     def supportsInternalBezels(self):
         return True
 
+    def getHotkeysContext(self):
+        return {
+            "name": "mame",
+            "keys": { "exit": ["KEY_ESC"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Extract "<romfile.zip>"
         romBasename = path.basename(rom)

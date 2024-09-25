@@ -26,3 +26,9 @@ class Generator(metaclass=ABCMeta):
     def getInGameRatio(self, config, gameResolution, rom):
         # put a default value, but it should be overriden by generators
         return 4/3
+
+    def getHotkeysContext(self):
+        return {
+            "name": "configgen",
+            "keys": {}
+        }

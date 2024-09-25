@@ -532,6 +532,12 @@ class DolphinGenerator(Generator):
 
         return 4/3
 
+    def getHotkeysContext(self):
+        return {
+            "name": "dolphin",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
 # Get the language from the environment if user didn't set it in ES.
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
 # It may be used for something else, so set it anyway
