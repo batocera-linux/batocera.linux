@@ -22,6 +22,12 @@ cemuDatadir = '/usr/bin/cemu'
 
 class CemuGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "cemu",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     # disable hud & bezels for now - causes game issues
     def hasInternalMangoHUDCall(self):
         return True

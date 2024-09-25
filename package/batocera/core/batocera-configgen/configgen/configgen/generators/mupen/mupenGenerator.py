@@ -9,6 +9,12 @@ from . import mupenControllers
 
 class MupenGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "mupen64",
+            "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_P" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Read the configuration file

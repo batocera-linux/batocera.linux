@@ -23,6 +23,12 @@ class Pcsx2Generator(Generator):
         "GTForce":         "3"
     }
 
+    def getHotkeysContext(self):
+        return {
+            "name": "pcsx2",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def getInGameRatio(self, config, gameResolution, rom):
         if getGfxRatioFromConfig(config, gameResolution) == "16:9" or (getGfxRatioFromConfig(config, gameResolution) == "Stretch" and gameResolution["width"] / float(gameResolution["height"]) > ((16.0 / 9.0) - 0.1)):
             return 16/9

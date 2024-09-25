@@ -11,6 +11,13 @@ from ..Generator import Generator
 eslog = get_logger(__name__)
 
 class DuckstationGenerator(Generator):
+
+    def getHotkeysContext(self):
+        return {
+            "name": "duckstation",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":

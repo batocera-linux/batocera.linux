@@ -17,6 +17,12 @@ eslog = get_logger(__name__)
 
 class Rpcs3Generator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "rpcs3",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)

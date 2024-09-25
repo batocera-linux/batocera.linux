@@ -12,6 +12,12 @@ from . import flycastControllers
 
 class FlycastGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "flycast",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

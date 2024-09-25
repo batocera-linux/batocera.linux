@@ -14,6 +14,12 @@ playInputFile = playConfig + '/Play Data Files/inputprofiles/default.xml'
 
 class PlayGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "play",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Create config folder

@@ -13,6 +13,12 @@ eslog = get_logger(__name__)
 
 class CitraGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "citra",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)

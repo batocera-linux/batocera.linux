@@ -33,6 +33,7 @@ def getDefaultContext():
         "name": "emulationstation",
         "keys": {
             "exit": ecodes.KEY_ESC,
+            "menu": ecodes.KEY_SPACE,
             "files": ecodes.KEY_F1
         }
     }

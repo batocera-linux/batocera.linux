@@ -6,6 +6,12 @@ from ..Generator import Generator
 
 class ShGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "shell",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # in case of squashfs, the root directory is passed
