@@ -20,3 +20,8 @@ path = "configgen/__version__.py"
 include = [
     "/configgen",
 ]
+
+[tool.pyright]
+include = ["configgen"]
+
+pythonVersion = "3.11"

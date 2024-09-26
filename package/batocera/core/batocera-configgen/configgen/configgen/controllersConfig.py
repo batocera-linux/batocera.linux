@@ -1,12 +1,19 @@
-from pathlib import Path
-import xml.etree.ElementTree as ET
-import os
-import pyudev
-import evdev
-import re
+from __future__ import annotations
 
-from .batoceraPaths import ES_GAMES_METADATA, BATOCERA_ES_DIR, USER_ES_DIR
+import os
+import re
+import xml.etree.ElementTree as ET
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, TypeAlias
+
+import evdev
+import pyudev
+
+from .batoceraPaths import BATOCERA_ES_DIR, ES_GAMES_METADATA, USER_ES_DIR
 from .utils.logger import get_logger
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 eslog = get_logger(__name__)
 
@@ -24,17 +31,32 @@ _DEFAULT_SDL_MAPPING = {
     'joystick2up': 'righty', 'joystick2left': 'rightx', 'hotkey': 'guide'
 }
 
+
 class Input:
-    def __init__(self, name, type, id, value, code):
+    def __init__(self, name: str, type: str, id: str, value: str, code: str) -> None:
         self.name = name
         self.type = type
         self.id = id
         self.value = value
         self.code = code
 
+InputMapping: TypeAlias = Mapping[str, Input]
+InputDict: TypeAlias = dict[str, Input]
+
 
 class Controller:
-    def __init__(self, configName, type, guid, player, index="-1", realName="", inputs=None, dev=None, nbbuttons=None, nbhats=None, nbaxes=None):
+    def __init__(
+        self,
+        configName: str,
+        type: str,
+        guid: str,
+        player: str | None,
+        index: int | str ="-1",
+        realName: str = "",
+        inputs: InputMapping | None = None,
+        dev: str | None = None,
+        nbbuttons: int | None = None, nbhats: int | None = None, nbaxes: int | None = None
+    ) -> None:
         self.type = type
         self.configName = configName
         self.index = index
@@ -45,13 +67,14 @@ class Controller:
         self.nbbuttons = nbbuttons
         self.nbhats = nbhats
         self.nbaxes = nbaxes
-        if inputs == None:
-            self.inputs = dict()
-        else:
-            self.inputs = inputs
+        self.inputs: InputDict = dict(inputs) if inputs is not None else dict()
 
     def generateSDLGameDBLine(self):
         return _generateSdlGameControllerConfig(self)
+
+ControllerMapping: TypeAlias = Mapping[str, Controller]
+ControllerDict: TypeAlias = dict[str, Controller]
+
 
 # Load all controllers from the es_input.cfg
 def loadAllControllersConfig():
@@ -318,8 +341,9 @@ def mouseButtonToCode(button):
     return None
 
 def getGuns():
-    import pyudev
     import re
+
+    import pyudev
 
     guns = {}
     context = pyudev.Context()
