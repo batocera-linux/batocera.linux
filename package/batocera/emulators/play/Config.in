@@ -10,6 +10,7 @@ config BR2_PACKAGE_PLAY
     select BR2_PACKAGE_VULKAN_HEADERS	           if BR2_PACKAGE_BATOCERA_VULKAN
     select BR2_PACKAGE_VULKAN_LOADER	           if BR2_PACKAGE_BATOCERA_VULKAN
     select BR2_PACKAGE_ECM
+    select BR2_PACKAGE_LIBGLU
 
     help
       Play! is a PlayStation2 emulator.

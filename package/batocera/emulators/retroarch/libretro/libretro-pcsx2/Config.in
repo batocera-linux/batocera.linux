@@ -4,6 +4,7 @@ config BR2_PACKAGE_LIBRETRO_PCSX2
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_LIBAIO
 	select BR2_PACKAGE_XZ
+	select BR2_PACKAGE_LIBGLVND     if BR2_PACKAGE_XORG7
       help
         A libretro core for PS2
 

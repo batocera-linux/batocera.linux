@@ -1,6 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_WASM4
 	bool "libretro-wasm4"
 	depends on BR2_PACKAGE_RETROARCH
+	select BR2_PACKAGE_LIBGLVND	if BR_PACKAGE_XORG7
+	select BR2_PACKAGE_LIBXKBCOMMON	if BR_PACKAGE_WAYLAND
 	help
 	  Fantasy console using WebAssembly.
 

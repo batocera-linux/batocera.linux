@@ -10,5 +10,7 @@ CABEXTRACT_SITE = https://www.cabextract.org.uk
 
 CABEXTRACT_CONF_OPTS = --with-external-libmspack
 
+CABEXTRACT_DEPENDENCIES = libmspack
+
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

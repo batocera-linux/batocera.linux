@@ -5,6 +5,7 @@ config BR2_PACKAGE_VKD3D_PROTON
 	depends on !BR2_STATIC_LIBS
 	depends on BR2_PACKAGE_SPIRV_HEADERS
 	depends on BR2_PACKAGE_DXVK
+	depends on BR2_PACKAGE_HOST_ZSTD
 	help
       A Vulkan-based translation layer for Direct3D 12 which allows running 3D applications on Linux using Wine.
 

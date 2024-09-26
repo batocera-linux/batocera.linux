@@ -5,6 +5,7 @@ config BR2_PACKAGE_ZMUSIC
     select BR2_PACKAGE_LIBSNDFILE
     select BR2_PACKAGE_MPG123
     select BR2_PACKAGE_ZLIB
+    select BR2_PACKAGE_LIBGLIB2
     help
       ZMusic is a music system as a standalone library.
 

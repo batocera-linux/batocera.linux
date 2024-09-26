@@ -22,6 +22,10 @@ ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_XORG7), y)
+	LIBRETRO_OPENLARA_DEPENDENCIES += libglvnd
+endif
+
 define LIBRETRO_OPENLARA_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	    -C $(@D)/src/platform/libretro -f Makefile $(LIBRETRO_OPENLARA_EXTRA_ARGS) \

@@ -30,6 +30,7 @@ define PYTHON_PYXEL_SAMPLE_AND_KEYS
 	cp -rf $(@D)/python/pyxel $(TARGET_DIR)/usr/lib/python*/site-packages/
 	rm -rf $(TARGET_DIR)/usr/lib/python*/site-packages/pyxel/examples
 	cd $(TARGET_DIR)/usr/lib/python*/site-packages/pyxel && ln -sf ../pyxel_extension .
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy/
 	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/python-pyxel/pyxel.keys $(TARGET_DIR)/usr/share/evmapy/
 endef
 

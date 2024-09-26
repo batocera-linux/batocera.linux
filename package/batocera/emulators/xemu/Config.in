@@ -4,6 +4,10 @@ config BR2_PACKAGE_XEMU
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_LIBSAMPLERATE
     select BR2_PACKAGE_SLIRP
+    select BR2_PACKAGE_LIBEPOXY
+    select BR2_PACKAGE_LIBGTK3
+    select BR2_PACKAGE_LIBPCAP
+    select BR2_PACKAGE_PIXMAN
     help
         Xbox (og) emulator based on QEMU
         

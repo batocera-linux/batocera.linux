@@ -3,6 +3,8 @@ config BR2_PACKAGE_APPSTREAM_GLIB
 	select BR2_PACKAGE_LIBGTK3
 	select BR2_PACKAGE_LIBYAML
 	select BR2_PACKAGE_JSON_GLIB
+	select BR2_PACKAGE_LIBARCHIVE
+	select BR2_PACKAGE_LIBCURL
 
 	help 
 	    This library provides objects and helper methods to help reading and writing AppStream metadata.

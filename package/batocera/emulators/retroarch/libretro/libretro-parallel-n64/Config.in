@@ -2,6 +2,7 @@ config BR2_PACKAGE_LIBRETRO_PARALLEL_N64
     bool "libretro-parallel-n64"
     depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_LIBGLVND     if BR2_PACKAGE_XORG7
       help
         Optimized/rewritten Nintendo 64 emulator made specifically for Libretro.
         Originally based on Mupen64 Plus.
