@@ -11,6 +11,12 @@ eslog = get_logger(__name__)
 
 class FpinballGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "fpinball",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         wineprefix = "/userdata/system/wine-bottles/fpinball"
         emupath = wineprefix + "/fpinball"

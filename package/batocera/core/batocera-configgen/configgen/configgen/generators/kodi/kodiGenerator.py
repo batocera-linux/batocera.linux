@@ -11,3 +11,9 @@ class KodiGenerator(Generator):
         kodiConfig.writeKodiConfig(playersControllers)
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         return Command.Command(array=commandArray)
+
+    def getHotkeysContext(self):
+        return {
+            "name": "kodi",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }

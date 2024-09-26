@@ -48,3 +48,9 @@ class DosBoxxGenerator(Generator):
                         f"-conf {customConfFile}"]
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
+
+    def getHotkeysContext(self):
+        return {
+            "name": "dosboxx",
+            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F9"] }
+        }

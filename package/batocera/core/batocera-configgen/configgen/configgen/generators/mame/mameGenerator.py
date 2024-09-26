@@ -29,7 +29,7 @@ class MameGenerator(Generator):
     def getHotkeysContext(self):
         return {
             "name": "mame",
-            "keys": { "exit": ["KEY_ESC"] }
+            "keys": { "exit": "KEY_ESC", "menu": "KEY_TAB", "coin": "KEY_5" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
