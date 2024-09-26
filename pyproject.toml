@@ -1,0 +1,21 @@
+[tool.pyright]
+exclude = [".venv*", "buildroot*", "output", "dl"]
+stubPath = "python-stubs"
+
+pythonVersion = "3.11"
+pythonPlatform = "Linux"
+
+reportMissingModuleSource = "none"
+
+[tool.ruff]
+extend-exclude = [".venv*", "buildroot*", "output", "dl"]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["TCH", "PYI", "I"]
+
+[tool.ruff.lint.isort]
+extra-standard-library = ["typing_extensions", "_typeshed"]
+known-first-party = ["configgen"]
+combine-as-imports = true
