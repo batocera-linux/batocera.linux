@@ -10,6 +10,12 @@ from . import viceControllers
 
 class ViceGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "vice",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def getResolutionMode(self, config):
         return 'default'
 

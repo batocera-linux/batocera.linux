@@ -29,3 +29,9 @@ class DosBoxGenerator(Generator):
             commandArray.append(f"""{batoceraFiles.dosboxConfig}""")
 
         return Command.Command(array=commandArray)
+
+    def getHotkeysContext(self):
+        return {
+            "name": "dosbox",
+            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F9"] }
+        }

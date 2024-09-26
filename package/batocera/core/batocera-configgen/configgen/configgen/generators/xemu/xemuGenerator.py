@@ -35,3 +35,9 @@ class XemuGenerator(Generator):
         if ("xemu_scaling" in config and config["xemu_scaling"] == "stretch") or ("xemu_aspect" in config and config["xemu_aspect"] == "16x9"):
             return 16/9
         return 4/3
+
+    def getHotkeysContext(self):
+        return {
+            "name": "xemu",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }

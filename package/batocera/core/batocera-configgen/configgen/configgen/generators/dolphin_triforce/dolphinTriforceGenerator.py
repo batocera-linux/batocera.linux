@@ -9,6 +9,12 @@ from . import dolphinTriforceControllers
 
 class DolphinTriforceGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "dolphin",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinTriforceIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinTriforceIni))

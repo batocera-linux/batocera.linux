@@ -794,7 +794,10 @@ def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(input2definition(pad, key, input, padindex + 1, reversed, 0))
+    txt = input2definition(pad, key, input, padindex + 1, reversed, 0)
+    if mapping == "COIN" + str(nplayer) and nplayer == 1:
+        txt = txt + " OR KEYCODE_{}_F{}".format(nplayer, str(nplayer + 11)) # f12 for player 1
+    value = config.createTextNode(txt)
     xml_newseq.appendChild(value)
     return xml_port
 

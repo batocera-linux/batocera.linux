@@ -75,6 +75,12 @@ ryujinxCtrl = {
 
 class RyujinxGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "ryujinx",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(ryujinxConf):
             os.makedirs(ryujinxConf)
