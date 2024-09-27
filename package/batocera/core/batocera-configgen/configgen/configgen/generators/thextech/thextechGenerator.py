@@ -27,3 +27,9 @@ class TheXTechGenerator(Generator):
         commandArray.extend(["-c", rom])
 
         return Command.Command(array=commandArray)
+
+    def getHotkeysContext(self):
+        return {
+            "name": "thextech",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ENTER" }
+        }

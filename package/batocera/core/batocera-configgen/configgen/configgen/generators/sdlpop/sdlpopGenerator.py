@@ -8,6 +8,12 @@ from ..Generator import Generator
 
 class SdlPopGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "sdlpop",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F9" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         commandArray = ["SDLPoP"]
 

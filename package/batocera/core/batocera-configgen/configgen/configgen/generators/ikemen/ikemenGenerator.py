@@ -168,6 +168,12 @@ Joymapping =[
 
 class IkemenGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "ikemen",
+            "keys": { "exit": "KEY_Q", "menu": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         try:
             conf = json.load(open(rom+"/save/config.json", "r"))
