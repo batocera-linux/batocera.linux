@@ -8,6 +8,13 @@ from ... import controllersConfig
 from ..Generator import Generator
 
 class CGeniusGenerator(Generator):
+
+    def getHotkeysContext(self):
+        return {
+            "name": "cgenius",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         cgeniusCtrl = {

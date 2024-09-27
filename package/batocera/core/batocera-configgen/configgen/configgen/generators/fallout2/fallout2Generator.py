@@ -18,6 +18,12 @@ fout2SourceFile = '/usr/bin/fallout2-ce'
 
 class Fallout2Generator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "fallout2",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Check if the directories exist, if not create them

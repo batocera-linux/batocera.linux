@@ -8,6 +8,12 @@ from ..Generator import Generator
 
 class CannonballGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "cannonball",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         configFile = batoceraFiles.CONF + '/cannonball/config.xml'
 

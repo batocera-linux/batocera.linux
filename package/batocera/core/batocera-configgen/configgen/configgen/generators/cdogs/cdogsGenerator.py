@@ -9,6 +9,12 @@ eslog = get_logger(__name__)
 
 class CdogsGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "cdogs",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         romdir = "/userdata/roms/cdogs"

@@ -8,6 +8,12 @@ from ..Generator import Generator
 
 class ETLegacyGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "etlegacy",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         etLegacyDir = "/userdata/roms/etlegacy/legacy"

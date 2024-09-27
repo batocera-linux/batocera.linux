@@ -6,6 +6,12 @@ from ..Generator import Generator
 
 class EasyRPGGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "cgenius",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         commandArray = ["easyrpg-player"]
 
