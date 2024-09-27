@@ -8,6 +8,12 @@ from ..Generator import Generator
 
 class SonicRetroGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "sonicretro",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ENTER" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Determine the emulator to use

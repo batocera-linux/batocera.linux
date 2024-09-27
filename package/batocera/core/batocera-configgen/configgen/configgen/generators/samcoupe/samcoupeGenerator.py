@@ -12,3 +12,9 @@ class SamcoupeGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
+
+    def getHotkeysContext(self):
+        return {
+            "name": "samcoupe",
+            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F12"], "menu": "KEY_F10" }
+        }

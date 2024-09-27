@@ -10,3 +10,9 @@ class OdcommanderGenerator(Generator):
         return Command.Command(array=commandArray,env={
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         })
+
+    def getHotkeysContext(self):
+        return {
+            "name": "odcommander",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }

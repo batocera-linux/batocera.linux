@@ -13,3 +13,9 @@ class AbuseGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
+
+    def getHotkeysContext(self):
+        return {
+            "name": "abuse",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
