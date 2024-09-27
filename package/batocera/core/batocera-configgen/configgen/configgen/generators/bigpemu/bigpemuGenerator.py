@@ -214,6 +214,12 @@ def generate_keyb_bindings(keyb_id):
 
 class BigPEmuGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "bigpemu",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         directory = os.path.dirname(bigPemuConfig)

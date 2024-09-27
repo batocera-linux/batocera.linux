@@ -16,6 +16,12 @@ eslog = get_logger(__name__)
 
 class XeniaGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "xenia",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     @staticmethod
     def sync_directories(source_dir, dest_dir):
         dcmp = filecmp.dircmp(source_dir, dest_dir)

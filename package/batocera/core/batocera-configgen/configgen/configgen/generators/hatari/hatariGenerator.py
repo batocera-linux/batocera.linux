@@ -10,6 +10,12 @@ eslog = get_logger(__name__)
 
 class HatariGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "hatari",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         model_mapping = {
