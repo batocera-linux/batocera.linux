@@ -6,6 +6,12 @@ from ..Generator import Generator
 
 class IORTCWGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "iortcw",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F9" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Config file path

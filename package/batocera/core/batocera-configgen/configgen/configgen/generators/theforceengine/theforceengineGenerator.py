@@ -14,6 +14,12 @@ forceConfigFile = forceConfigDir + "/settings.ini"
 
 class TheForceEngineGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "theforceengine",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Check if the directories exist, if not create them

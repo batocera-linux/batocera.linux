@@ -15,6 +15,13 @@ vitaConfigFile = vitaConfig + '/config.yml'
 
 class Vita3kGenerator(Generator):
 
+
+    def getHotkeysContext(self):
+        return {
+            "name": "vita3k",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ENTER" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Create save folder

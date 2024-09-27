@@ -12,6 +12,13 @@ CONFIGDIR  = batoceraFiles.CONF + '/GSplus'
 CONFIGFILE = CONFIGDIR + '/config.txt'
 
 class GSplusGenerator(Generator):
+
+    def getHotkeysContext(self):
+        return {
+            "name": "gsplus",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F4" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if not os.path.exists(CONFIGDIR):
             os.makedirs(CONFIGDIR)

@@ -7,6 +7,12 @@ from ..Generator import Generator
 
 class MugenGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "mugen",
+            "keys": { "exit": ["KEY_ESC"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         settings_path = rom + "/data/mugen.cfg"

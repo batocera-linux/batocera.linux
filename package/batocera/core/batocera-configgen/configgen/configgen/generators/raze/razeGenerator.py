@@ -12,6 +12,12 @@ eslog = get_logger(__name__)
 
 class RazeGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "raze",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F6", "restore_state": "KEY_F9" }
+        }
+
     config_dir = f"{batoceraFiles.CONF}/raze"
     saves_dir = f"{batoceraFiles.SAVES}/raze"
     # The main config file, which is emitted with duplicate keys and makes working with ConfigParser very annoying
