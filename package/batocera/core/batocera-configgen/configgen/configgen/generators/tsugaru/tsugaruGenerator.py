@@ -31,3 +31,9 @@ class TsugaruGenerator(Generator):
             commandArray += ["-FD0", rom]
 
         return Command.Command(array=commandArray)
+
+    def getHotkeysContext(self):
+        return {
+            "name": "tsugaru",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
