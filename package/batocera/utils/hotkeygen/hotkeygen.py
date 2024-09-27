@@ -9,6 +9,7 @@ import re
 import select
 import signal
 import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, TypedDict
 
@@ -38,7 +39,6 @@ GSYSTEM_DIR: Final   = Path("/usr/share/hotkeygen")
 GUSER_DIR: Final     = Path("/userdata/system/configs/hotkeygen")
 
 gdebug = False
-gcontext: HotkeysContext | None = None
 
 ECODES_NAMES: Final[dict[int, str]] = {
     key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_")
@@ -203,44 +203,6 @@ def print_mapping(
                 else:
                     print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:15}")
 
-def handle_actions(
-    devices: dict[str, evdev.InputDevice],
-    nodes_by_fd: dict[int, str],
-    mappings: dict[int, dict[int, str]],
-    poll: select.poll,
-    action: str,
-    device: pyudev.Device
-) -> None:
-    if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
-        if action == "add":
-            dev = evdev.InputDevice(device.device_node)
-            if dev.name != DEVICE_NAME:
-                caps = dev.capabilities()
-                if ecodes.EV_KEY in caps:
-                    mapping = get_mapping(dev)
-                    associations = get_mapping_associations(mapping, caps)
-                    if associations:
-                        if gdebug:
-                            print(f"Adding device {device.device_node}: {dev.name}")
-                            print_mapping(mapping, associations)
-                        devices[device.device_node] = dev
-                        nodes_by_fd[dev.fileno()] = device.device_node
-                        mappings[dev.fileno()] = mapping
-                        poll.register(dev, select.POLLIN)
-        elif action == "remove":
-            if device.device_node in devices:
-                if gdebug:
-                    print(f"Removing device {device.device_node}: {devices[device.device_node].name}")
-                poll.unregister(devices[device.device_node])
-                del nodes_by_fd[devices[device.device_node].fileno()]
-                del mappings[devices[device.device_node].fileno()]
-                del devices[device.device_node]
-
-def handle_event(target: evdev.UInput, event: evdev.InputEvent, action: str, context: HotkeysContext | None) -> None:
-    if context is not None and action in context["keys"]:
-        if gdebug:
-            print(f"code:{event.code}, value:{event.value}, action:{action}")
-        send_keys(target, context["keys"][action])
 
 def send_keys(target: evdev.UInput, keys: int | list[int]) -> None:
     if isinstance(keys, list):
@@ -283,10 +245,6 @@ def read_pid() -> str:
     with GPID_FILE.open() as fd:
         return fd.read().replace('\n', '')
 
-def write_pid() -> None:
-    with GPID_FILE.open("w") as fd:
-        fd.write(str(os.getpid()))
-
 def do_new_context(context_name: str | None = None, context_json: str | None = None) -> None:
     if context_name is not None and context_json is not None:
         context = load_context({
@@ -303,21 +261,16 @@ def do_new_context(context_name: str | None = None, context_json: str | None = N
     pid = int(read_pid())
     os.kill(pid, signal.SIGHUP)
 
-def signal_sigup(signum: int, frame: FrameType | None) -> None:
-    global gcontext
-    gcontext = get_context()
 
 def do_list() -> None:
-    gcontext = get_context()
+    context = get_context()
 
-    context = pyudev.Context()
-    monitor = pyudev.Monitor.from_netlink(context)
-    monitor.filter_by(subsystem='input')
+    udev_context = pyudev.Context()
 
-    if gcontext is not None:
-        print_context(gcontext)
+    if context is not None:
+        print_context(context)
 
-    for device in context.list_devices(subsystem='input'):
+    for device in udev_context.list_devices(subsystem='input'):
         if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
             dev = evdev.InputDevice(device.device_node)
             if dev.name != DEVICE_NAME:
@@ -332,62 +285,124 @@ def do_list() -> None:
                             print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
                         else:
                             print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
-                        print_mapping(mapping, associations, gcontext)
+                        print_mapping(mapping, associations, context)
 
-def run(args: argparse.Namespace) -> None:
-    global gcontext
 
-    devices: dict[str, evdev.InputDevice] = {}
-    nodes_by_fd: dict[int, str] = {}
-    mappings: dict[int, dict[int, str]] = {}
+@dataclass(slots=True)
+class Daemon:
+    permanent: bool = field(kw_only=True)
 
-    gcontext = get_context()
+    context: HotkeysContext | None = field(init=False, default=None)
+    running: bool = field(init=False, default=False)
+    input_devices: dict[str, evdev.InputDevice] = field(init=False, default_factory=dict)
+    input_devices_by_fd: dict[int, evdev.InputDevice] = field(init=False, default_factory=dict)
+    mappings_by_fd: dict[int, dict[int, str]] = field(init=False, default_factory=dict)
+    udev_context: pyudev.Context = field(init=False)
+    monitor: pyudev.Monitor = field(init=False)
+    poll: select.poll = field(init=False)
+    target: evdev.UInput = field(init=False)
 
-    # permanent : write a pid so that new configuration can apply
-    if args.permanent:
-        write_pid()
+    def __post_init__(self) -> None:
+        self.udev_context = pyudev.Context()
+        self.monitor = pyudev.Monitor.from_netlink(self.udev_context)
+        self.monitor.filter_by(subsystem='input')
 
-    # monitor all udev devices
-    context = pyudev.Context()
-    monitor = pyudev.Monitor.from_netlink(context)
-    monitor.filter_by(subsystem='input')
-    monitor.start()
+        self.poll = select.poll()
 
-    poll = select.poll()
-    poll.register(monitor, select.POLLIN)
+        # target virtual keyboard
+        self.target = evdev.UInput(
+            name=DEVICE_NAME, events={ ecodes.EV_KEY: [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES] }
+        )
 
-    # adding existing devices in the poll
-    for device in context.list_devices(subsystem='input'):
-        handle_actions(devices, nodes_by_fd, mappings, poll, "add", device)
+    def __handle_actions(self, action: str, device: pyudev.Device) -> None:
+        if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
+            if action == "add":
+                input_device = evdev.InputDevice(device.device_node)
 
-    # target virtual keyboard
-    target_keys = [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES]
-    target = evdev.UInput(name=DEVICE_NAME, events={ ecodes.EV_KEY: target_keys })
+                if input_device.name != DEVICE_NAME:
+                    capabilities = input_device.capabilities()
 
-    # to read new contexts
-    signal.signal(signal.SIGHUP, signal_sigup)
+                    if ecodes.EV_KEY in capabilities:
+                        mapping = get_mapping(input_device)
+                        associations = get_mapping_associations(mapping, capabilities)
 
-    # read all devices
-    while True:
-        for fd, _ in poll.poll():
-            try:
-                if fd == monitor.fileno():
-                    (action, device) = monitor.receive_device()
-                    handle_actions(devices, nodes_by_fd, mappings, poll, action, device)
-                else:
-                    event = devices[nodes_by_fd[fd]].read_one()
-                    if (
-                        event is not None and
-                        event.type == ecodes.EV_KEY and
-                        event.value == 0 and  # limit to key down
-                        event.code in mappings[fd]
-                    ):
-                        handle_event(target, event, mappings[fd][event.code], gcontext)
-            except (OSError, KeyError):
-                pass # ok, error on the device
-            except:
-                target.close()
-                raise
+                        if associations:
+                            if gdebug:
+                                print(f"Adding device {device.device_node}: {input_device.name}")
+                                print_mapping(mapping, associations)
+
+                            self.input_devices[device.device_node] = input_device
+                            self.input_devices_by_fd[input_device.fileno()] = input_device
+                            self.mappings_by_fd[input_device.fileno()] = mapping
+                            self.poll.register(input_device, select.POLLIN)
+            elif action == "remove":
+                input_device = self.input_devices.get(device.device_node)
+
+                if input_device is not None:
+                    if gdebug:
+                        print(f"Removing device {device.device_node}: {input_device.name}")
+
+                    self.poll.unregister(input_device)
+                    del self.mappings_by_fd[input_device.fileno()]
+                    del self.input_devices_by_fd[input_device.fileno()]
+                    del self.input_devices[device.device_node]
+
+    def __handle_event(self, event: evdev.InputEvent, action: str) -> None:
+        if self.context is not None and action in self.context["keys"]:
+            if gdebug:
+                print(f"code:{event.code}, value:{event.value}, action:{action}")
+            send_keys(self.target, self.context["keys"][action])
+
+    def __write_pid(self) -> None:
+        with GPID_FILE.open("w") as fd:
+            fd.write(str(os.getpid()))
+
+    def __handle_sighup(self, signum: int, frame: FrameType | None) -> None:
+        self.context = get_context()
+
+    def run(self) -> None:
+        if self.running:
+            raise Exception("already running!")
+
+        self.running = True
+        self.context = get_context()
+
+        # permanent : write a pid so that new configuration can apply
+        if self.permanent:
+            self.__write_pid()
+
+        # monitor all udev devices
+        self.monitor.start()
+        self.poll.register(self.monitor, select.POLLIN)
+
+        # adding existing devices in the poll
+        for device in self.udev_context.list_devices(subsystem='input'):
+            self.__handle_actions('add', device)
+
+        # to read new contexts
+        signal.signal(signal.SIGHUP, self.__handle_sighup)
+
+        # read all devices
+        while True:
+            for fd, _ in self.poll.poll():
+                try:
+                    if fd == self.monitor.fileno():
+                        (action, device) = self.monitor.receive_device()
+                        self.__handle_actions(action, device)
+                    else:
+                        event = self.input_devices_by_fd[fd].read_one()
+                        if (
+                            event is not None and
+                            event.type == ecodes.EV_KEY and
+                            event.value == 0 and  # limit to key down
+                            event.code in self.mappings_by_fd[fd]
+                        ):
+                            self.__handle_event(event, self.mappings_by_fd[fd][event.code])
+                except (OSError, KeyError):
+                    pass  # ok, error on the device
+                except:
+                    self.target.close()
+                    raise
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="hotkeygen")
@@ -411,5 +426,5 @@ if __name__ == "__main__":
     elif args.default_context:
         do_new_context()
     else:
-        run(args)
+        Daemon(permanent=args.permanent).run()
 #####
