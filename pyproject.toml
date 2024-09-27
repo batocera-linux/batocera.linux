@@ -13,7 +13,7 @@ line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["TCH", "PYI", "I"]
+select = ["TCH", "PYI", "I", "UP", "F", "E", "W", "B", "C4", "SIM", "PTH", "RUF"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
