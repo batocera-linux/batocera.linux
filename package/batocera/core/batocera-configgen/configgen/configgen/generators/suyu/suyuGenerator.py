@@ -12,6 +12,12 @@ eslog = get_logger(__name__)
 
 class SuyuGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "suyu",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         if not os.path.exists(batoceraFiles.CONF+"/suyu"):

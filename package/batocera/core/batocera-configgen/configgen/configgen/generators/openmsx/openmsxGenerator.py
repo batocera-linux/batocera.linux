@@ -20,6 +20,12 @@ class OpenmsxGenerator(Generator):
     def hasInternalMangoHUDCall(self):
         return True
 
+    def getHotkeysContext(self):
+        return {
+            "name": "openmsx",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         share_dir = openMSX_Homedir + "/share"

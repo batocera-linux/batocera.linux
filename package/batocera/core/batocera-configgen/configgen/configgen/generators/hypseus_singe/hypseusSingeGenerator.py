@@ -13,6 +13,12 @@ eslog = get_logger(__name__)
 
 class HypseusSingeGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "hypseus-singe",
+            "keys": { "exit": "KEY_ESC" }
+        }
+
     @staticmethod
     def find_m2v_from_txt(txt_file):
         with open(txt_file, 'r') as file:
