@@ -16,6 +16,13 @@ VOX_CONTROLLERS="/userdata/system/.lexaloffle/Voxatron/sdl_controllers.txt"
 
 # Generator for the official pico8 binary from Lexaloffle
 class LexaloffleGenerator(Generator):
+
+    def getHotkeysContext(self):
+        return {
+            "name": "lexaloffle",
+            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if (system.name == "pico8"):
             BIN_PATH=PICO8_BIN_PATH
