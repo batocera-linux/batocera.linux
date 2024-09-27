@@ -7,6 +7,12 @@ from ..Generator import Generator
 
 class DXX_RebirthGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "dxx_rebirth",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F2", "save_state": ["KEY_LEFTALT", "KEY_F2"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_F2"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         directory = os.path.dirname(rom)

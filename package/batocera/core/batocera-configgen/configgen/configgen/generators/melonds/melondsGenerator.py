@@ -11,6 +11,12 @@ eslog = get_logger(__name__)
 
 class MelonDSGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "melonds",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         romBasename = path.basename(rom)
 
