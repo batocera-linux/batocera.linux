@@ -11,3 +11,9 @@ class LightsparkGenerator(Generator):
 
     def getMouseMode(self, config, rom):
         return True
+
+    def getHotkeysContext(self):
+        return {
+            "name": "lightspark",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
