@@ -31,10 +31,6 @@ nohup evsieve --input "${1}" persist=exit \
 --map yield key:x         btn:tr       \
 --block     key:1:2                    \
 --map yield key:1         btn:start    \
---block     key:tab:2                  \
---map yield key:tab       btn:start    \
---block     key:5:2                    \
---map yield key:5         btn:select   \
 --block     key:enter:2                \
 --map yield key:enter     btn:select   \
 --output name="Xtension 4P Player 1" abs:hat0y abs:hat0x btn:north btn:south btn:east btn:west btn:tl btn:tr btn:select btn:start \
@@ -64,12 +60,8 @@ nohup evsieve --input "${1}" persist=exit \
 --map yield key:k         btn:tr       \
 --block     key:2:2                    \
 --map yield key:2         btn:start    \
---block     key:esc:2                  \
---map yield key:esc       btn:start    \
 --block     key:6:2                    \
 --map yield key:6         btn:select   \
---block     key:p:2                    \
---map yield key:p         btn:select   \
 --output name="Xtension 4P Player 2" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl \
 --block     key:9:2                    \
 --map yield key:9:1       abs:hat0y:-1 \
@@ -120,4 +112,13 @@ nohup evsieve --input "${1}" persist=exit \
 --map yield key:4         btn:start    \
 --block     key:8:2                    \
 --map yield key:8         btn:select   \
---output name="Xtension 4P Player 4" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl &
+--output name="Xtension 4P Player 4" btn:select btn:start abs:hat0y abs:hat0x btn:south btn:east btn:tr btn:west btn:north btn:tl \
+--block     key:5:2                    \
+--map yield key:5         key:euro     \
+--block     key:tab:2                  \
+--map yield key:tab       key:menu     \
+--block     key:p:2                    \
+--map yield key:p         key:menu     \
+--block     key:esc:2                  \
+--map yield key:esc       key:exit     \
+--output name="Xtension hotkeys" key:menu key:exit key:euro &

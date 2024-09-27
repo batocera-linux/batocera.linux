@@ -3,6 +3,9 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc Mini
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 2P Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 2P Player 2", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
 
+# hide this one, hotkeys will be found by hotgenkey
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension hotkeys", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+
 # filter on ID_INPUT_KEYBOARD, cause the mouse and the leds have the same name/vid/pid...
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc I-PAC 4", ATTRS{id/vendor}=="d209", ATTRS{id/product}=="0430", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/ultimarc-ipac4Split $env{DEVNAME}"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Xtension 4P Player 1", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
