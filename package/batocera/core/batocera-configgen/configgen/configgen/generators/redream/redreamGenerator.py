@@ -13,6 +13,12 @@ redreamConfig = batoceraFiles.CONF + "/redream"
 
 class RedreamGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "redream",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         redream_exec = redreamConfig + "/redream"
 
