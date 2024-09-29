@@ -8,8 +8,8 @@
 ifeq ($(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_4)$(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_10),y)
     XONE_VERSION = bbf0dcc484c3f5611f4e375da43e0e0ef08f3d18
 else
-    # Version: Commits on Mar 30, 2024
-    XONE_VERSION = 12074ae20e8d4d2e35940f9de9688c150eeaa90c
+    # Version: Commits on Apr 25, 2024
+    XONE_VERSION = 29ec3577e52a50f876440c81267f609575c5161e
 endif
 
 XONE_SITE = $(call github,medusalix,xone,$(XONE_VERSION))
