@@ -112,7 +112,8 @@
 - Chromebook Linux Audio to 31st of July
 - FAudio to 24.08
 - FDK-AAC to 2.0.3
-- Intel Media Driver to 24.2.5
+- Intel Media Driver to 24.3.4
+- Intel Graphics Memory Management Library to 22.5.2
 - Sound Open Firmware to 2024.09
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
