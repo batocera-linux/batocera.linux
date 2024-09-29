@@ -113,7 +113,7 @@
 - FAudio to 24.08
 - FDK-AAC to 2.0.3
 - Intel Media Driver to 24.2.5
-- Sound Open Firmware to 2024.06
+- Sound Open Firmware to 2024.09
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
