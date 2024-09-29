@@ -1,14 +1,14 @@
 config BR2_PACKAGE_DXVK
 	bool "dxvk"
-        depends on BR2_i386 || BR2_x86_64
+    depends on BR2_i386 || BR2_x86_64
 	# Wine unconditionally builds shared libraries
 	depends on !BR2_STATIC_LIBS
 	depends on BR2_PACKAGE_SPIRV_HEADERS
 	help
-          DXVK
-          A Vulkan-based translation layer for Direct3D 9/10/11 which allows running 3D applications on Linux using Wine.
+      DXVK is a Vulkan-based translation layer for Direct3D 9/10/11
+	  which allows running 3D applications on Linux using Wine.
 
-          https://github.com/doitsujin/dxvk
+	  https://github.com/doitsujin/dxvk
 
 comment "dxvk needs a toolchain w/ dynamic library"
 	depends on BR2_STATIC_LIBS
