@@ -9,6 +9,12 @@ eslog = get_logger(__name__)
 
 class HclGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "hcl",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         try:
             os.chdir("/userdata/roms/hcl/data/map")

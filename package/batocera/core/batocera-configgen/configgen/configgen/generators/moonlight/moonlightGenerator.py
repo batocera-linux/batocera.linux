@@ -8,6 +8,12 @@ from . import moonlightConfig
 
 class MoonlightGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "moonlight",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def getResolutionMode(self, config):
         return 'default'
 

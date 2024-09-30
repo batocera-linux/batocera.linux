@@ -49,8 +49,6 @@ class Generator(metaclass=ABCMeta):
         # put a default value, but it should be overriden by generators
         return 4/3
 
+    @abstractmethod
     def getHotkeysContext(self) -> HotkeysContext:
-        return {
-            "name": "configgen",
-            "keys": {}
-        }
+        ...
