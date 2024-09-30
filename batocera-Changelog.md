@@ -91,7 +91,7 @@
 - Syncthing to 1.27.10
 - The Force Engine to Aug 19, 2024 build
 - Vita3k to August 25, 2024 build
-- Xemu to v0.7.131
+- Xemu to v0.7.130
 - Xenia to v1.0.2817
 - Xenia Canary to August 31, 2024 build
 ### System
