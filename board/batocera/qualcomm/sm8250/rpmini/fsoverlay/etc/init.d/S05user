@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+
+start_services()
+{
+    #QIPCRTR Name Service - dependency of following services
+	printf "Starting QIPCRTR Name Service: "
+	start-stop-daemon -S -b -m -p /var/run/qrtr-ns.pid --exec /usr/bin/qrtr-ns -- -f 1
+	if [ $? != 0 ]; then
+	    echo "Starting QIPCRTR Name Service: FAILED"
+	    exit 1
+	else
+	    echo "OK"
+	fi
+    #Qualcomm PD mapper service
+    printf "Starting Qualcomm PD mapper service: "
+	start-stop-daemon -S -b -m -p /var/run/pd-mapper.pid --exec /usr/bin/pd-mapper
+	if [ $? != 0 ]; then
+	    echo "Starting Qualcomm PD mapper service: FAILED"
+	    exit 1
+	else
+	    echo "OK"
+	fi
+    #QRTR TFTP service
+    printf "Starting QRTR TFTP service: "
+	start-stop-daemon -S -b -m -p /var/run/tqftpserv.pid --exec /usr/bin/tqftpserv
+	if [ $? != 0 ]; then
+	    echo "Starting QRTR TFTP service: FAILED"
+	    exit 1
+	else
+	    echo "OK"
+	fi
+	#Qualcomm remotefs service
+    printf "Starting Qualcomm remotefs service: "
+	start-stop-daemon -S -b -m -p /var/run/rmtfs.pid --exec /usr/bin/rmtfs -- -r -P -s
+	if [ $? != 0 ]; then
+	    echo "Starting Qualcomm remotefs service: FAILED"
+	    exit 1
+	else
+	    echo "OK"
+	fi
+}
+
+stop_services()
+{
+	printf "Stopping QIPCRTR Name Service: "
+	start-stop-daemon -K -q -p /var/run/qrtr-ns.pid
+	killall qrtr-ns
+	start-stop-daemon -K -q -p /var/run/pd-mapper.pid
+	killall pd-mapper
+	start-stop-daemon -K -q -p /var/run/tqftpserv.pid
+	killall tqftpserv
+	start-stop-daemon -K -q -p /var/run/rmtfs.pid
+	killall rmtfs
+	echo "OK"
+}
+
+case "$1" in
+	start)
+		start_services
+		;;
+	stop)
+		stop_services
+		;;
+	restart|reload)
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac

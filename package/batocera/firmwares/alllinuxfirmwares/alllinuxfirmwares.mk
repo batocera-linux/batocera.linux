@@ -28,8 +28,8 @@ ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_EXTRALINUXFIRMWARES
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/brcm
 endif
 
-# Remove qualcomm firmware if not buidling Ayn ODIN
-ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN),y)
+# Remove qualcomm firmware if not buidling Ayn ODIN or RPMini
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN)$(BR2_PACKAGE_BATOCERA_TARGET_RPMINI),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/qcom
 endif
 
@@ -38,7 +38,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 
     # exclude some dirs not required on batocera
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
-    
+
     if [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)" = "y" ]; then \
         find $(@D)/intel -type f ! -name 'ibt-*' -delete; \
     fi

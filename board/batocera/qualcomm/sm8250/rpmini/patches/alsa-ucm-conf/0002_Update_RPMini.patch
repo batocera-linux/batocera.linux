@@ -1,0 +1,123 @@
+From 4809c9b2b7b0c39508253dc4f9b9f39ede4692ae Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Sun, 8 Sep 2024 06:54:00 +0800
+Subject: [PATCH] Update RPMini
+
+---
+ ucm2/Qualcomm/sm8250/HiFi-RP.conf             | 38 +++++++++----------
+ ucm2/Qualcomm/sm8250/RPMini.conf              |  7 ++--
+ .../wcd938x/HeadphoneMicDisableSeq.conf       |  2 +-
+ .../codecs/wcd938x/HeadphoneMicEnableSeq.conf |  2 +-
+ 4 files changed, 25 insertions(+), 24 deletions(-)
+
+diff --git a/ucm2/Qualcomm/sm8250/HiFi-RP.conf b/ucm2/Qualcomm/sm8250/HiFi-RP.conf
+index 9c4315d..851b4fc 100644
+--- a/ucm2/Qualcomm/sm8250/HiFi-RP.conf
++++ b/ucm2/Qualcomm/sm8250/HiFi-RP.conf
+@@ -16,24 +16,8 @@ SectionVerb {
+ 	}
+ }
+ 
+-SectionDevice."Speaker" {
+-	Comment "Speaker playback"
+-
+-	Include.wsamspke.File "/codecs/qcom-lpass/wsa-macro/SpeakerEnableSeq.conf"
+-	Include.wsamspkd.File "/codecs/qcom-lpass/wsa-macro/SpeakerDisableSeq.conf"
+-	Include.wsaspke.File "/codecs/wsa881x/SpeakerEnableSeq.conf"
+-	Include.wsaspkd.File "/codecs/wsa881x/SpeakerDisableSeq.conf"
+-
+-	Value {
+-		PlaybackPriority 100
+-		PlaybackPCM "hw:${CardId},1"
+-		PlaybackMixer "default:${CardId}"
+-		PlaybackMixerElem "Speakers"
+-	}
+-}
+-
+ SectionDevice."Headphones" {
+-	Comment "Headphones playback"
++	Comment "Headphones Playback"
+ 
+ 	Include.wcdhpe.File "/codecs/wcd938x/HeadphoneEnableSeq.conf"
+ 	Include.wcdhpd.File "/codecs/wcd938x/HeadphoneDisableSeq.conf"
+@@ -50,12 +34,28 @@ SectionDevice."Headphones" {
+ 	}
+ }
+ 
++SectionDevice."Speaker" {
++	Comment "Speaker Playback"
++
++	Include.wsamspke.File "/codecs/qcom-lpass/wsa-macro/SpeakerEnableSeq.conf"
++	Include.wsamspkd.File "/codecs/qcom-lpass/wsa-macro/SpeakerDisableSeq.conf"
++	Include.wsaspke.File "/codecs/wsa881x/SpeakerEnableSeq.conf"
++	Include.wsaspkd.File "/codecs/wsa881x/SpeakerDisableSeq.conf"
++
++	Value {
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "Speakers"
++	}
++}
++
+ SectionDevice."Mic" {
+-	Comment "Mic"
++	Comment "Headphone Microphone"
+ 
+ 	Include.wcdmice.File "/codecs/wcd938x/HeadphoneMicEnableSeq.conf"
+ 	Include.wcdmicd.File "/codecs/wcd938x/HeadphoneMicDisableSeq.conf"
+-	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicEnableSeq.conf"
++	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/SoundwireMic1EnableSeq.conf"
+ 	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicDisableSeq.conf"
+ 
+ 	Value {
+diff --git a/ucm2/Qualcomm/sm8250/RPMini.conf b/ucm2/Qualcomm/sm8250/RPMini.conf
+index 21a5f33..387d5a5 100644
+--- a/ucm2/Qualcomm/sm8250/RPMini.conf
++++ b/ucm2/Qualcomm/sm8250/RPMini.conf
+@@ -6,10 +6,12 @@ SectionUseCase."HiFi" {
+ }
+ 
+ BootSequence [
++	cset "name='WSA_RX0 Digital Volume' 120"
++	cset "name='WSA_RX1 Digital Volume' 120"
+ 	cset "name='SpkrLeft PA Volume' 12"
+ 	cset "name='SpkrRight PA Volume' 12"
+-	cset "name='HPHL Volume' 2"
+-	cset "name='HPHR Volume' 2"
++	cset "name='HPHL Volume' 20"
++	cset "name='HPHR Volume' 20"
+ 	cset "name='ADC2 Volume' 10"
+ ]
+ 
+@@ -17,5 +19,4 @@ Include.card-init.File "/lib/card-init.conf"
+ Include.ctl-remap.File "/lib/ctl-remap.conf"
+ Include.wcd-init.File "/codecs/wcd938x/init.conf"
+ Include.wsa-init.File "/codecs/wsa881x/init.conf"
+-Include.wsam-init.File "/codecs/qcom-lpass/wsa-macro/init.conf"
+ Include.rxm-init.File "/codecs/qcom-lpass/rx-macro/init.conf"
+diff --git a/ucm2/codecs/wcd938x/HeadphoneMicDisableSeq.conf b/ucm2/codecs/wcd938x/HeadphoneMicDisableSeq.conf
+index 9021b92..47f242d 100644
+--- a/ucm2/codecs/wcd938x/HeadphoneMicDisableSeq.conf
++++ b/ucm2/codecs/wcd938x/HeadphoneMicDisableSeq.conf
+@@ -1,5 +1,5 @@
+ DisableSequence [
+ 	cset "name='ADC2_MIXER Switch' 0"
+ 	cset "name='ADC2 Switch' 0"
+-	set "name='TX1 MODE' ADC_INVALID"
++	cset "name='TX1 MODE' ADC_INVALID"
+ ]
+diff --git a/ucm2/codecs/wcd938x/HeadphoneMicEnableSeq.conf b/ucm2/codecs/wcd938x/HeadphoneMicEnableSeq.conf
+index f3a7807..de5a759 100644
+--- a/ucm2/codecs/wcd938x/HeadphoneMicEnableSeq.conf
++++ b/ucm2/codecs/wcd938x/HeadphoneMicEnableSeq.conf
+@@ -3,5 +3,5 @@ EnableSequence [
+ 	cset "name='HDR12 MUX' NO_HDR12"
+ 	cset "name='ADC2 MUX' INP2"
+ 	cset "name='ADC2 Switch' 1"
+-	set "name='TX1 MODE' ADC_NORMAL"
++	cset "name='TX1 MODE' ADC_NORMAL"
+ ]
+-- 
+2.34.1
+
