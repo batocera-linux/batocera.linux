@@ -4,12 +4,14 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.7.131
+# currently v0.7.131 or higher has a memory allocation bug
+XEMU_VERSION = v0.7.130
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES = sdl2 libsamplerate slirp
+XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl2 libgbm libopenssl
+XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
 
 XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
@@ -92,11 +94,17 @@ define XEMU_INSTALL_TARGET_CMDS
 	# Binaries
 	cp $(@D)/build/qemu-system-i386 $(TARGET_DIR)/usr/bin/xemu
 
-	# XEmu app data
+	# Xemu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
 	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d \
 	    $(TARGET_DIR)/usr/share/xemu/data
+endef
+
+define XEMU_VERSION_DETAILS
+    $(GIT) -C $(XEMU_DL_DIR)/git rev-parse HEAD 2>/dev/null | tr -d '\n' > $(@D)/XEMU_COMMIT
+    $(GIT) -C $(XEMU_DL_DIR)/git symbolic-ref --short HEAD | cut -d'/' -f2- > $(@D)/XEMU_BRANCH
+    $(GIT) -C $(XEMU_DL_DIR)/git describe --tags --match 'v*' | cut -c 2- | tr -d '\n' > $(@D)/XEMU_VERSION
 endef
 
 define XEMU_EVMAPY
@@ -105,6 +113,7 @@ define XEMU_EVMAPY
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
+XEMU_PRE_CONFIGURE_HOOKS = XEMU_VERSION_DETAILS
 XEMU_POST_INSTALL_TARGET_HOOKS += XEMU_EVMAPY
 
 $(eval $(autotools-package))
