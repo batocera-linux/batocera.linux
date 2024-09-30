@@ -6,6 +6,12 @@ from ..Generator import Generator
 
 class UqmGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "uqm",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         directories = [
             '/userdata/saves/uqm',

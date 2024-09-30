@@ -11,6 +11,13 @@ fbaRoot = batoceraFiles.CONF + '/fba/'
 fbaCustom = fbaRoot + 'fba2x.cfg'
 
 class Fba2xGenerator(Generator):
+
+    def getHotkeysContext(self):
+        return {
+            "name": "fba2x",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         iniConfig = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
