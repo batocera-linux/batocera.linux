@@ -95,20 +95,24 @@ index bf3926d..5a957c3 100644
  
      /* Can only save PJ64 savestates on VI / COMPARE interrupt.
         Otherwise try again in a little while. */
-@@ -2179,9 +2186,13 @@ int savestates_save(void)
+@@ -2195,6 +2195,8 @@ int savestates_save(void)
              case savestates_type_pj64_unc: ret = savestates_save_pj64_unc(dev, filepath); break;
-             default: ret = 0; break;
+             default: ret = 0; StateChanged(M64CORE_STATE_SAVECOMPLETE, ret); break;
          }
 +        strncpy(ScreenshotFileName, filepath, 251);
 +        strncat(ScreenshotFileName, ".png", 4);
          free(filepath);
      }
+     else
+@@ -2202,6 +2204,8 @@ int savestates_save(void)
+         StateChanged(M64CORE_STATE_SAVECOMPLETE, ret);
+     }
  
 +    TakeScreenshotToFile(ScreenshotFileName, 0);
 +    
-     // deliver callback to indicate completion of state saving operation
-     StateChanged(M64CORE_STATE_SAVECOMPLETE, ret);
- 
+     savestates_clear_job();
+     return ret;
+ }
 diff --git a/src/main/screenshot.c b/src/main/screenshot.c
 index a831571..12a184b 100644
 --- a/src/main/screenshot.c

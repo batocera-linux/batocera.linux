@@ -84,6 +84,7 @@
 - GroovyMAME to 0.268
 - Ikemen to August 1st 2024 build
 - Kodi to 21.1
+- Mupen64 core & plugins to v2.6.0
 - PCSX2 to v2.1.100
 - Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.33 (alpha on Aug 31, 2024)
