@@ -10,6 +10,12 @@ from ..Generator import Generator
 
 class DrasticGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "drastic",
+            "keys": { "exit": "KEY_ESC" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         drastic_root = "/userdata/system/configs/drastic"

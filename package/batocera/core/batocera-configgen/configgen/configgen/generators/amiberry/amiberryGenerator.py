@@ -16,9 +16,16 @@ eslog = get_logger(__name__)
 
 class AmiberryGenerator(Generator):
 
+    def getHotkeysContext(self):
+        return {
+            "name": "amiberry",
+            "keys": { "exit": "KEY_F10" }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         retroconfig = UnixSettings(batoceraFiles.amiberryRetroarchCustom, separator=' ')
         amiberryconf = UnixSettings(batoceraFiles.amiberryConf, separator=' ')
+        amiberryconf.save('default_quit_key', 'F10')
         amiberryconf.save('saveimage_dir', '/userdata/saves/amiga/')
         amiberryconf.save('savestate_dir', '/userdata/saves/amiga/')
         amiberryconf.save('screenshot_dir', '/userdata/screenshots/')
