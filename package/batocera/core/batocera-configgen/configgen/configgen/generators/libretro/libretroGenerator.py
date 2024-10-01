@@ -336,11 +336,11 @@ class LibretroGenerator(Generator):
         commandArray.extend(['--verbose'])
 
         if system.name == 'snes-msu1' or system.name == 'satellaview':
-            if "squashfs" in rom:
+            if "squashfs" in rom and os.path.isdir(rom):
                 romsInDir = glob.glob(glob.escape(rom) + '/*.sfc') + glob.glob(glob.escape(rom) + '/*.smc')
                 rom = romsInDir[0]
         elif system.name == 'msu-md':
-            if "squashfs" in rom:
+            if "squashfs" in rom and os.path.isdir(rom):
                 romsInDir = glob.glob(glob.escape(rom) + '/*.md')
                 rom = romsInDir[0]
 
