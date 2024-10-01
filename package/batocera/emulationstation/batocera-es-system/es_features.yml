@@ -9610,6 +9610,25 @@ supermodel:
             choices:
                 "Off":      0
                 "On":       1
+        crt_colour:
+            group: ADVANCED OPTIONS
+            prompt: CRT COLOUR
+            description: CRT-like colour adaption. Requires New 3D engine.
+            choices:
+                "None (Default)":                                              0
+                "ARI/D93 (recommended for all JP developed games)":            1
+                "PVM_20M2U/D93":                                               2
+                "BT601_525/D93":                                               3
+                "BT601_525/D65 (recommended for all US developed games)":      4
+                "BT601_625/D65 (recommended for all EUR/AUS developed games)": 5
+        upscale_mode:
+            prompt: UPSCALE MODE
+            description: Upscale filter used for the 2D layers. Requires New 3D engine.
+            choices:
+                "None/Sharp Pixels":  0
+                "Biquintic":          1
+                "Bilinear (Default)": 2
+                "Bicubic":            3
         crosshairs:
             group:       LIGHT GUN
             prompt:      SHOW LIGHT GUN CROSSHAIRS

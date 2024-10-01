@@ -24,7 +24,7 @@ class SupermodelGenerator(Generator):
         if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
             commandArray.append("-new3d")
         else:
-             commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
+            commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
 
         # widescreen
         if system.isOptSet("m3_wideScreen") and system.getOptBoolean("m3_wideScreen"):
@@ -53,7 +53,15 @@ class SupermodelGenerator(Generator):
         # powerpc frequesncy
         if system.isOptSet("ppcFreq"):
             commandArray.append("-ppc-frequency={}".format(system.config["ppcFreq"]))
-
+        
+        # crt colour
+        if system.isOptSet("crt_colour"):
+            commandArray.append("-crtcolors={}".format(system.config["crt_colour"]))
+        
+        # upscale mode
+        if system.isOptSet("upscale_mode"):
+            commandArray.append("-upscalemode={}".format(system.config["upscale_mode"]))
+        
         #driving controls
         if system.isOptSet("pedalSwap") and system.getOptBoolean("pedalSwap"):
             drivingGame = 1
@@ -81,7 +89,7 @@ class SupermodelGenerator(Generator):
         # copy xml
         copy_xml()
 
-        # config
+        # controller config
         configPadsIni(system, rom, playersControllers, guns, drivingGame, sensitivity)
 
         return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
