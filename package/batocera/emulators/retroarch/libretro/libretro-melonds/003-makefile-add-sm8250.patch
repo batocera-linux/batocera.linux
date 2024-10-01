@@ -6,8 +6,8 @@ index 77d951b..f2d58b9 100644
     HAVE_THREADS = 1
     JIT_ARCH = aarch64
 
-+# RPMini
-+else ifeq ($(platform), rpmini)
++# SM8250
++else ifeq ($(platform), sm8250)
 +   EXT ?= so
 +   CPUFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
 +   HAVE_NEON = 1

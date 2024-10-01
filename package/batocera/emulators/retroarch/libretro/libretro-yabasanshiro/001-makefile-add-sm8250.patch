@@ -6,8 +6,8 @@ index 1c0e809..a5916d1 100644
  	DYNAREC_DEVMIYAX = 1
  	FLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
 
-+# RPMini (64-bit)
-+else ifneq (,$(findstring rpmini,$(platform)))
++# SM8250 (64-bit)
++else ifneq (,$(findstring sm8250,$(platform)))
 +	override platform += unix
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
