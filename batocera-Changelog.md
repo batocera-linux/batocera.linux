@@ -63,7 +63,7 @@
   - Libretro-Cap32 to June 29, 2024 build
   - Libretro-Melonds-Ds to v1.1.5
   - Libretro-Ecwolf to June 28 build
-  - Libretro-Flycast to July 30 build
+  - Libretro-Flycast to September 29, 2024 build
   - Libretro-Freechaf to June 28 build
   - Libretro-MAME to 0.268
   - Libretro-Minivac to July 1 build
@@ -80,7 +80,7 @@
 - Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
-- Flycast to Jul 30 build
+- Flycast to September 29, 2024 build
 - GroovyMAME to 0.268
 - Ikemen to August 1st 2024 build
 - Kodi to 21.1
