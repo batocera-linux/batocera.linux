@@ -97,7 +97,7 @@
 - Vita3k to August 25, 2024 build
 - Xemu to v0.7.130
 - Xenia to v1.0.2817
-- Xenia Canary to August 31, 2024 build
+- Xenia Canary to October 1, 2024 build
 ### System
 - Nvidia Driver to 560.35.03 (Open kernel modules)
 - Nvidia Legacy Driver to 470.256.02
