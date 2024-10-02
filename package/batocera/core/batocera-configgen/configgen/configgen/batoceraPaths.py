@@ -1,5 +1,13 @@
+from __future__ import annotations
+
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Final
+from typing import IO, TYPE_CHECKING, Any, Final, overload
+
+if TYPE_CHECKING:
+    from _typeshed import OpenBinaryModeUpdating, OpenBinaryModeWriting, OpenTextModeUpdating, OpenTextModeWriting
+    from collections.abc import Iterator
+    from io import BufferedRandom, BufferedWriter, TextIOWrapper
 
 BATOCERA_SHARE_DIR: Final = Path('/usr/share/batocera')
 DATAINIT_DIR: Final = BATOCERA_SHARE_DIR / 'datainit'
@@ -18,6 +26,7 @@ BIOS: Final = USERDATA / 'bios'
 OVERLAYS: Final = USERDATA / 'overlays'
 CACHE: Final = HOME / 'cache'
 ROMS: Final = USERDATA / 'roms'
+CHEATS: Final = USERDATA / 'cheats'
 LOGS: Final = HOME / 'logs'
 BATOCERA_CONF: Final = HOME / 'batocera.conf'
 
@@ -38,3 +47,50 @@ BATOCERA_SHADERS: Final = BATOCERA_SHARE_DIR / 'shaders'
 
 USER_DECORATIONS: Final = USERDATA / 'decorations'
 SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
+
+
+def mkdir_if_not_exists(dir: Path, /) -> None:
+    if not dir.exists():
+        dir.mkdir(parents=True)
+
+@overload
+@contextmanager
+def ensure_parents_and_open(file: Path, mode: OpenTextModeWriting | OpenTextModeUpdating) -> Iterator[TextIOWrapper]:
+    ...
+
+@overload
+@contextmanager
+def ensure_parents_and_open(file: Path, mode: OpenBinaryModeUpdating) -> Iterator[BufferedRandom]:
+    ...
+
+@overload
+@contextmanager
+def ensure_parents_and_open(file: Path, mode: OpenBinaryModeWriting) -> Iterator[BufferedWriter]:
+    ...
+
+@contextmanager
+def ensure_parents_and_open(file: Path, mode: str) -> Iterator[IO[Any]]:
+    mkdir_if_not_exists(file.parent)
+    with file.open(mode) as f:
+        yield f
+
+@overload
+@contextmanager
+def open_if_not_exists(file: Path, mode: OpenTextModeWriting | OpenTextModeUpdating) -> Iterator[TextIOWrapper]:
+    ...
+
+@overload
+@contextmanager
+def open_if_not_exists(file: Path, mode: OpenBinaryModeUpdating) -> Iterator[BufferedRandom]:
+    ...
+
+@overload
+@contextmanager
+def open_if_not_exists(file: Path, mode: OpenBinaryModeWriting) -> Iterator[BufferedWriter]:
+    ...
+
+@contextmanager
+def open_if_not_exists(file: Path, mode: str) -> Iterator[IO[Any]]:
+    if not file.exists():
+        with file.open(mode) as f:
+            yield f

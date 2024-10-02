@@ -1,19 +1,26 @@
-import os
-from os import environ
+from __future__ import annotations
+
 import configparser
 import subprocess
+from os import environ
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles # GLOBAL VARIABLES
-from ... import Command
-from ... import controllersConfig
+from ... import Command, controllersConfig
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
 from ...utils.logger import get_logger
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...Emulator import Emulator
+    from ...types import HotkeysContext
+
 
 eslog = get_logger(__name__)
 
 class CitraGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "citra",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -21,17 +28,17 @@ class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
+        CitraGenerator.writeCITRAConfig(CONFIGS / "citra-emu" / "qt-config.ini", system, playersControllers)
 
-        if os.path.exists('/usr/bin/citra-qt'):
+        if Path('/usr/bin/citra-qt').exists():
             commandArray = ['/usr/bin/citra-qt', rom]
         else:
             commandArray = ['/usr/bin/citra', rom]
         return Command.Command(array=commandArray, env={
-            "XDG_CONFIG_HOME":batoceraFiles.CONF,
-            "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds",
-            "XDG_CACHE_HOME":batoceraFiles.CACHE,
-            "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu",
+            "XDG_CONFIG_HOME":CONFIGS,
+            "XDG_DATA_HOME":SAVES / "3ds",
+            "XDG_CACHE_HOME":CACHE,
+            "XDG_RUNTIME_DIR":SAVES / "3ds" / "citra-emu",
             "QT_QPA_PLATFORM":"xcb",
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
@@ -46,7 +53,11 @@ class CitraGenerator(Generator):
             return True
 
     @staticmethod
-    def writeCITRAConfig(citraConfigFile, system, playersControllers):
+    def writeCITRAConfig(
+        citraConfigFile: Path,
+        system: Emulator,
+        playersControllers: controllersConfig.ControllerMapping
+    ) -> None:
         # Pads
         citraButtons = {
             "button_a":      "a",
@@ -74,7 +85,7 @@ class CitraGenerator(Generator):
         # ini file
         citraConfig = configparser.RawConfigParser(strict=False)
         citraConfig.optionxform=str             # Add Case Sensitive comportement
-        if os.path.exists(citraConfigFile):
+        if citraConfigFile.exists():
             citraConfig.read(citraConfigFile)
 
         ## [LAYOUT]
@@ -256,9 +267,7 @@ class CitraGenerator(Generator):
             break
 
         ## Update the configuration file
-        if not os.path.exists(os.path.dirname(citraConfigFile)):
-            os.makedirs(os.path.dirname(citraConfigFile))
-        with open(citraConfigFile, 'w') as configfile:
+        with ensure_parents_and_open(citraConfigFile, 'w') as configfile:
             citraConfig.write(configfile)
 
     @staticmethod

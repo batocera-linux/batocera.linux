@@ -1,30 +1,36 @@
-import os
-from xml.dom import minidom
-import codecs
+from __future__ import annotations
 
-from ... import batoceraFiles
+import codecs
+import os
+from typing import TYPE_CHECKING
+from xml.dom import minidom
+
 from ... import Command
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class CannonballGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cannonball",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        configFile = batoceraFiles.CONF + '/cannonball/config.xml'
+        configFile = CONFIGS / 'cannonball' / 'config.xml'
 
-        if not os.path.exists(os.path.dirname(configFile)):
-            os.makedirs(os.path.dirname(configFile))
+        mkdir_if_not_exists(configFile.parent)
 
         # config file
         config = minidom.Document()
-        if os.path.exists(configFile):
+        if configFile.exists():
             try:
-                config = minidom.parse(configFile)
+                config = minidom.parse(str(configFile))
             except:
                 pass # reinit the file
 
@@ -59,7 +65,7 @@ class CannonballGenerator(Generator):
         # save the config file
         #cannonballXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
-        cannonballXml = codecs.open(configFile, "w", "utf-8")
+        cannonballXml = codecs.open(str(configFile), "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         cannonballXml.write(dom_string)
 

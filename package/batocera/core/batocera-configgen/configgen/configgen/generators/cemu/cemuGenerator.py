@@ -1,28 +1,29 @@
-import os
-from os import path
-from os import environ
-from xml.dom import minidom
-import codecs
-import subprocess
-import glob
+from __future__ import annotations
 
-from ... import Command
-from ... import batoceraFiles
-from ... import controllersConfig
+import codecs
+import os
+import subprocess
+from os import environ
+from pathlib import Path
+from typing import TYPE_CHECKING
+from xml.dom import minidom
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import cemuControllers
+from .cemuPaths import CEMU_BIOS, CEMU_CONFIG, CEMU_CONTROLLER_PROFILES, CEMU_ROMDIR, CEMU_SAVES
+
+if TYPE_CHECKING:
+    from ...Emulator import Emulator
+    from ...types import HotkeysContext
 
 eslog = get_logger(__name__)
 
-cemuConfig  = batoceraFiles.CONF + '/cemu'
-cemuRomdir = '/userdata/roms/wiiu'
-cemuSaves = '/userdata/saves/wiiu'
-cemuDatadir = '/usr/bin/cemu'
-
 class CemuGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cemu",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -33,26 +34,22 @@ class CemuGenerator(Generator):
         return True
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        rom_path = Path(rom)
 
         # in case of squashfs, the root directory is passed
-        rpxrom = rom
-        paths = list(glob.iglob(os.path.join(glob.escape(rom), '**/code/*.rpx'), recursive=True))
+        paths = list(rom_path.glob('**/code/*.rpx'))
         if len(paths) >= 1:
-            rpxrom = paths[0]
+            rom_path = paths[0]
 
-        cemu_exe = cemuConfig + "/cemu"
-        if not path.isdir(batoceraFiles.BIOS + "/cemu"):
-            os.mkdir(batoceraFiles.BIOS + "/cemu")
-        if not path.isdir(cemuConfig):
-            os.mkdir(cemuConfig)
+        mkdir_if_not_exists(CEMU_BIOS)
+        mkdir_if_not_exists(CEMU_CONFIG)
+
         #graphic packs
-        if not path.isdir(cemuSaves + "/graphicPacks"):
-            os.mkdir(cemuSaves + "/graphicPacks")
-        if not path.isdir(cemuConfig + "/controllerProfiles"):
-            os.mkdir(cemuConfig + "/controllerProfiles")
+        mkdir_if_not_exists(CEMU_SAVES / "graphicPacks")
+        mkdir_if_not_exists(CEMU_CONTROLLER_PROFILES)
 
         # Create the settings file
-        CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
+        CemuGenerator.CemuConfig(CEMU_CONFIG / "settings.xml", system)
 
         # Set-up the controllers
         cemuControllers.generateControllerConfig(system, playersControllers)
@@ -60,33 +57,33 @@ class CemuGenerator(Generator):
         if rom == "config":
             commandArray = ["/usr/bin/cemu/cemu"]
         else:
-            commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rpxrom]
+            commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rom_path]
             # force no menubar
             commandArray.append("--force-no-menubar")
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.CACHE,
-                "XDG_DATA_HOME":batoceraFiles.SAVES,
+            env={"XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":CACHE,
+                "XDG_DATA_HOME":SAVES,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
 
     @staticmethod
-    def CemuConfig(configFile, system):
+    def CemuConfig(configFile: Path, system: Emulator) -> None:
         # Config file
         config = minidom.Document()
-        if os.path.exists(configFile):
+        if configFile.exists():
             try:
-                config = minidom.parse(configFile)
+                config = minidom.parse(str(configFile))
             except:
                 pass # reinit the file
 
         ## [ROOT]
         xml_root = CemuGenerator.getRoot(config, "content")
         # Default mlc path
-        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuSaves)
+        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", str(CEMU_SAVES))
         # Remove auto updates
         CemuGenerator.setSectionConfig(config, xml_root, "check_update", "false")
         # Avoid the welcome window
@@ -136,7 +133,7 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, xml_root, "GamePaths", "")
         game_root = CemuGenerator.getRoot(config, "GamePaths")
         # Default games path
-        CemuGenerator.setSectionConfig(config, game_root, "Entry", cemuRomdir)
+        CemuGenerator.setSectionConfig(config, game_root, "Entry", str(CEMU_ROMDIR))
 
         ## [GRAPHICS]
         CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
@@ -278,7 +275,7 @@ class CemuGenerator(Generator):
         xml = open(configFile, "w")
 
         # TODO: python 3 - workaround to encode files in utf-8
-        xml = codecs.open(configFile, "w", "utf-8")
+        xml = codecs.open(str(configFile), "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         xml.write(dom_string)
 
@@ -290,7 +287,7 @@ class CemuGenerator(Generator):
             return False
 
     @staticmethod
-    def getRoot(config, name):
+    def getRoot(config: minidom.Document, name: str) -> minidom.Element:
         xml_section = config.getElementsByTagName(name)
 
         if len(xml_section) == 0:
@@ -302,7 +299,7 @@ class CemuGenerator(Generator):
         return xml_section
 
     @staticmethod
-    def setSectionConfig(config, xml_section, name, value):
+    def setSectionConfig(config: minidom.Document, xml_section: minidom.Element, name: str, value: str) -> None:
         xml_elt = xml_section.getElementsByTagName(name)
         if len(xml_elt) == 0:
             xml_elt = config.createElement(name)
@@ -316,13 +313,13 @@ class CemuGenerator(Generator):
             xml_elt.appendChild(config.createTextNode(value))
 
 # Language setting
-def getLangFromEnvironment():
+def getLangFromEnvironment() -> str:
     if 'LANG' in environ:
         return environ['LANG'][:5]
     else:
         return "en_US"
 
-def getCemuLang(lang):
+def getCemuLang(lang: str) -> int:
     availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "nl_NL": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
         return availableLanguages[lang]

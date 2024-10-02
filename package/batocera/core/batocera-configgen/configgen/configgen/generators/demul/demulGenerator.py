@@ -1,32 +1,33 @@
+from __future__ import annotations
+
+import configparser
 import os
 import shutil
-import configparser
-from pathlib import Path, PureWindowsPath
 from distutils.dir_util import copy_tree
+from pathlib import Path, PureWindowsPath
 
-from ..Generator import Generator
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...utils.logger import get_logger
+from ..Generator import Generator
 
 eslog = get_logger(__name__)
 
 class DemulGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        wineprefix = batoceraFiles.SAVES + "/demul"
-        emupath = wineprefix + "/demul"
-        bottlewinpath = wineprefix + "/drive_c/windows"
+        wineprefix = SAVES / "demul"
+        emupath = wineprefix / "demul"
+        bottlewinpath = wineprefix / "drive_c" / "windows"
 
-        if not os.path.exists(wineprefix):
-            os.makedirs(wineprefix)
+        mkdir_if_not_exists(wineprefix)
 
         # copy demulemu to /userdata for rw & emulator directory creation reasons
-        if not os.path.exists(emupath):
+        if not emupath.exists():
             shutil.copytree("/usr/demul", emupath)
             # add dxvk dll's
-            copy_tree("/usr/wine/dxvk/x64/", bottlewinpath + "/system32/")
-            copy_tree("/usr/wine/dxvk/x32/", bottlewinpath + "/syswow64/")
+            copy_tree("/usr/wine/dxvk/x64/", str(bottlewinpath / "system32"))
+            copy_tree("/usr/wine/dxvk/x32/", str(bottlewinpath / "syswow64"))
 
         # determine what system to define for demul
         # -run=<name>		run specified system (dc, naomi, awave, hikaru, gaelco, cave3rd)
@@ -62,13 +63,13 @@ class DemulGenerator(Generator):
 
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
-        configFileName = emupath + "/Demul.ini"
+        configFileName = emupath / "Demul.ini"
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
 
-        if os.path.exists(configFileName):
+        if configFileName.exists():
             try:
-                with open(configFileName, 'r', encoding='utf_8_sig') as fp:
+                with configFileName.open('r', encoding='utf_8_sig') as fp:
                     Config.read_file(fp)
             except:
                 pass
@@ -135,7 +136,7 @@ class DemulGenerator(Generator):
             smplromname = romname.replace(".7z", "")
             Config.set("plugins", "gdr", "gdrImage.dll")
 
-        with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
+        with configFileName.open('w', encoding='utf_8_sig') as configfile:
             Config.write(configfile)
 
         # add the windows rom path if dreamcast
@@ -146,14 +147,14 @@ class DemulGenerator(Generator):
 
         # adjust fullscreen & resolution to gpuDX11.ini
         if demulsystem == "gaelco":
-            configFileName = emupath + "/gpuDX11old.ini"
+            configFileName = emupath / "gpuDX11old.ini"
         else:
-            configFileName = emupath + "/gpuDX11.ini"
+            configFileName = emupath / "gpuDX11.ini"
         Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
-        if os.path.exists(configFileName):
+        if configFileName.exists():
             try:
-                with open(configFileName, 'r', encoding='utf_8_sig') as fp:
+                with configFileName.open('r', encoding='utf_8_sig') as fp:
                     Config.read_file(fp)
             except:
                 pass
@@ -184,7 +185,7 @@ class DemulGenerator(Generator):
         else:
             Config.set("main", "Vsync", "0")
 
-        with open(configFileName, 'w', encoding='utf_8_sig') as configfile:
+        with configFileName.open('w', encoding='utf_8_sig') as configfile:
             Config.write(configfile)
 
         # now setup the command array for the emulator
