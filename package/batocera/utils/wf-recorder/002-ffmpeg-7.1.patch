@@ -1,0 +1,28 @@
+diff --git a/src/frame-writer.cpp b/src/frame-writer.cpp.new
+index 2a5ba17714..5000d9c9f9 100644
+--- a/src/frame-writer.cpp
++++ b/src/frame-writer.cpp.new
+@@ -365,17 +365,19 @@ void FrameWriter::init_video_filters(const AVCodec *codec)
+ 
+ 
+     // The (input of the) sink is the output of the whole filter.
+-    AVFilterLink * filter_output = this->videoFilterSinkCtx->inputs[0] ;
++    AVFilterLink *filter_output = this->videoFilterSinkCtx->inputs[0];
+ 
+     this->videoCodecCtx->width  = filter_output->w;
+     this->videoCodecCtx->height = filter_output->h;
+     this->videoCodecCtx->pix_fmt = (AVPixelFormat)filter_output->format;
+     this->videoCodecCtx->time_base = filter_output->time_base;
+-    this->videoCodecCtx->framerate = filter_output->frame_rate; // can be 1/0 if unknown
++
++    this->videoCodecCtx->framerate = av_buffersink_get_frame_rate(this->videoFilterSinkCtx);
++
+     this->videoCodecCtx->sample_aspect_ratio = filter_output->sample_aspect_ratio;
+ 
+-    this->hw_frame_context = av_buffersink_get_hw_frames_ctx(
+-        this->videoFilterSinkCtx);
++    this->hw_frame_context = av_buffersink_get_hw_frames_ctx(this->videoFilterSinkCtx);
++
+     avfilter_inout_free(&inputs);
+     avfilter_inout_free(&outputs);
+ }
