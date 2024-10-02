@@ -13,13 +13,15 @@ index 49b06a50bd..a351c6f08d 100644
  	for (u32 index = 0; index < static_cast<u32>(s_notifications.size());)
  	{
  		Notification& notif = s_notifications[index];
-@@ -2660,6 +2664,9 @@ void ImGuiFullscreen::DrawNotifications(ImVec2& position, float spacing)
- 			(horizontal_padding * 2.0f) + badge_size + horizontal_spacing + std::max(title_size.x, text_size.x), min_width);
+@@ -2696,7 +2696,10 @@ void ImGuiFullscreen::DrawNotifications(ImVec2& position, float spacing)
+ 			min_width);
  		const float box_height =
- 			std::max((vertical_padding * 2.0f) + title_size.y + vertical_spacing + text_size.y, min_height);
+ 			std::max((vertical_padding * 2.0f) + ImCeil(title_size.y) + vertical_spacing + ImCeil(text_size.y), min_height);
+-
 +		
 +		// Center the notification horizontally
 +		position.x = (screen_width - box_width) / 2.0f;
- 
++		
  		u8 opacity;
  		if (time_passed < NOTIFICATION_FADE_IN_TIME)
+ 			opacity = static_cast<u8>((time_passed / NOTIFICATION_FADE_IN_TIME) * 255.0f);
