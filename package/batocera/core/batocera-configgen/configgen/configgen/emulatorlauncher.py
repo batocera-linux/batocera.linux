@@ -70,6 +70,14 @@ def squashfs_begin(rom):
         eslog.debug(f"squashfs: single rom {romsingle}")
         return True, rommountpoint, romsingle
 
+    # If a .ROM symlink is present, use the linked file as the ROM.
+    try:
+        romlinked = os.path.realpath(os.path.join(rommountpoint, ".ROM"), strict=True)
+        eslog.debug(f"squashfs: linked rom {romlinked}")
+        return True, rommountpoint, romlinked
+    except:
+        pass
+
     return True, rommountpoint, rommountpoint
 
 def squashfs_end(rommountpoint):
