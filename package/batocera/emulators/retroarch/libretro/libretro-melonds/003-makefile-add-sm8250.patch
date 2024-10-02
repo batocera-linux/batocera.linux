@@ -1,0 +1,25 @@
+diff --git a/Makefile b/Makefile
+index 77d951b..f2d58b9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -333,6 +333,20 @@ else ifeq ($(platform), orangepizero2)
+    HAVE_THREADS = 1
+    JIT_ARCH = aarch64
+
++# SM8250
++else ifeq ($(platform), sm8250)
++   EXT ?= so
++   CPUFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++   HAVE_NEON = 1
++   TARGET := $(TARGET_NAME)_libretro.$(EXT)
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++   LIBS += -lpthread
++   HAVE_OPENGLES3 = 1
++   HAVE_OPENGL = 0
++   HAVE_THREADS = 1
++   JIT_ARCH = aarch64
++
+ # Windows MSVC 2017 all architectures
+ else ifneq (,$(findstring windows_msvc2017,$(platform)))
+

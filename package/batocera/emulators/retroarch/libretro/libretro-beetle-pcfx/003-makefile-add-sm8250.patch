@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index e1fa9a8..3d827ca 100644
+--- a/Makefile
++++ b/Makefile
+@@ -189,6 +189,17 @@ else ifneq (,$(findstring odin,$(platform)))
+    FLAGS += -mcpu=cortex-a75
+    ASFLAGS += -mcpu=cortex-a75
+
++else ifneq (,$(findstring sm8250,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC ?= gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a76
++   ASFLAGS += -mcpu=cortex-a76
++
+ # iOS
+ else ifneq (,$(findstring ios,$(platform)))
+

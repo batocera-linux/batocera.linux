@@ -1,0 +1,23 @@
+diff --git a/Makefile b/Makefile
+index 0a8c2d4..0fcce7d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -429,6 +429,18 @@ else ifneq (,$(findstring odin,$(platform)))
+    COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
+    ASFLAGS = -f elf -d ELF_TYPE
+
++# SM8250
++else ifneq (,$(findstring sm8250,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a76.cortex-a55
++   GLES3= 1
++   GL_LIB := -lGLESv2
++   COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
++   ASFLAGS = -f elf -d ELF_TYPE
++
+ # Generic AArch64 Cortex-A53 GLES 2.0 target
+ else ifneq (,$(findstring arm64_cortex_a53_gles2,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so

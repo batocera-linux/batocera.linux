@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if test "$1" != "start"
+then
+  exit 0
+fi
+
+printf "Set Bluetooth Address to MAC: "
+
+mac="$(echo $(cat /userdata/system/machine-id; echo bluetooth)| sha256sum -)"
+bt_mac=$(echo "42:${mac:0:2}:${mac:4:2}:${mac:8:2}:${mac:12:2}:${mac:16:2}")
+echo $bt_mac
+/usr/bin/bluetoothctl mgmt.public-addr $bt_mac
+
+echo " OK"

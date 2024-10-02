@@ -38,6 +38,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
 	BATOCERA_GPU_SYSTEM=mali-g610
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN),y)
 	BATOCERA_GPU_SYSTEM=adreno-630
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+	BATOCERA_GPU_SYSTEM=adreno-650
 endif
 
 BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs

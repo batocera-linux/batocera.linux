@@ -1,0 +1,26 @@
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+index 1c0e809..a5916d1 100644
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -157,6 +157,21 @@ else ifneq (,$(findstring RK3588,$(platform)))
+ 	DYNAREC_DEVMIYAX = 1
+ 	FLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
+
++# SM8250 (64-bit)
++else ifneq (,$(findstring sm8250,$(platform)))
++	override platform += unix
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
++	FLAGS += -DAARCH64
++	ARCH_IS_LINUX = 1
++	HAVE_SSE = 0
++	FORCE_GLES = 1
++	USE_AARCH64_DRC = 1
++	DYNAREC_DEVMIYAX = 1
++	FLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++
+ # Rockchip RK3288 / RK3399 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
+ 	override platform += unix
