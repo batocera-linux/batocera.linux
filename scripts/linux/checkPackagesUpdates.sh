@@ -235,8 +235,7 @@ PACKAGES_PORTS="abuse
                 hlsdk-xash3d-opfor
                 xash3d-fwgs"
 
-PACKAGES_WINE="d8vk
-               dxvk
+PACKAGES_WINE="dxvk
                dxvk-nvapi
                faudio
                mf
