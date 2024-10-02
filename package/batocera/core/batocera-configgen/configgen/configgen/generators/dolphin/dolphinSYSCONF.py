@@ -1,10 +1,19 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from struct import pack
-from struct import unpack
-from os     import environ
+from __future__ import annotations
+
+from os import environ
+from struct import pack, unpack
+from typing import TYPE_CHECKING, Any
+
 from ...utils.logger import get_logger
+from .dolphinPaths import DOLPHIN_SAVES
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...types import Resolution
+
 
 eslog = get_logger(__name__)
 
@@ -78,12 +87,12 @@ def readWriteEntry(f, setval):
     if not setval or itemName in setval:
         eslog.debug(f'{itemName:12s} = {itemValue}')
 
-def readWriteFile(filepath, setval):
+def readWriteFile(filepath: Path, setval):
     # open in read read/write depending of the action
     if not setval:
-        f = open(filepath, "rb")
+        f = filepath.open("rb")
     else:
-        f = open(filepath, "r+b")
+        f = filepath.open("r+b")
 
     try:
         version    = readString(f, 4) # read SCv0
@@ -128,9 +137,13 @@ def getSensorBarPosition(config):
     else:
         return 0
 
-def update(config, filepath, gameResolution):
-    arg_setval = { "IPL.LNG": getWiiLangFromEnvironment(), "IPL.AR": getRatioFromConfig(config, gameResolution), "BT.BAR": getSensorBarPosition(config) }
+def update(config: dict[str, Any], filepath: Path, gameResolution: Resolution) -> None:
+    arg_setval = {
+        "IPL.LNG": getWiiLangFromEnvironment(),
+        "IPL.AR": getRatioFromConfig(config, gameResolution),
+        "BT.BAR": getSensorBarPosition(config)
+    }
     readWriteFile(filepath, arg_setval)
 
 if __name__ == '__main__':
-    readWriteFile("/userdata/saves/dolphin-emu/Wii/shared2/sys/SYSCONF", {})
+    readWriteFile(DOLPHIN_SAVES / "Wii" / "shared2" / "sys" / "SYSCONF", {})

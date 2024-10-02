@@ -1,38 +1,46 @@
-import configparser
-import os.path
-from os import environ
+from __future__ import annotations
 
-from ... import Command
-from ... import batoceraFiles
-from ... import controllersConfig
+import configparser
+from os import environ
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
 from ...utils.logger import get_logger
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 eslog = get_logger(__name__)
 
 class DuckstationLegacyGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "duckstation",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # Test if it's a m3u file
-        if os.path.splitext(rom)[1] == ".m3u":
-            rom = rewriteM3uFullPath(rom)
+        rom_path = Path(rom)
 
-        if os.path.exists('/usr/bin/duckstation-qt'):
-            commandArray = ["duckstation-qt", "-batch", "-nogui", "--", rom ]
+        # Test if it's a m3u file
+        if rom_path.suffix == ".m3u":
+            rom_path = rewriteM3uFullPath(rom_path)
+
+        if Path('/usr/bin/duckstation-qt').exists():
+            commandArray = ["duckstation-qt", "-batch", "-nogui", "--", rom_path ]
         else:
-            commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom ]
+            commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom_path ]
 
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
-        settings_path = batoceraFiles.CONF + "/duckstation/settings.ini"
-        if os.path.exists(settings_path):
+        settings_path = CONFIGS / "duckstation" / "settings.ini"
+        if settings_path.exists():
             settings.read(settings_path)
 
         ## [Main]
@@ -122,17 +130,17 @@ class DuckstationLegacyGenerator(Generator):
         biosFound = False
         USbiosFile = EUbiosFile = JPbiosFile = None
         for bio in USbios:
-            if os.path.exists("/userdata/bios/" + bio):
+            if (BIOS / bio).exists():
                 USbiosFile = bio
                 biosFound = True
                 break
         for bio in EUbios:
-            if os.path.exists("/userdata/bios/" + bio):
+            if (BIOS / bio).exists():
                 EUbiosFile = bio
                 biosFound = True
                 break
         for bio in JPbios:
-            if os.path.exists("/userdata/bios/" + bio):
+            if (BIOS / bio).exists():
                 JPbiosFile = bio
                 biosFound = True
                 break
@@ -482,9 +490,7 @@ class DuckstationLegacyGenerator(Generator):
             settings.set("CDROM", "AllowBootingWithoutSBIFile", "false")
 
         # Save config
-        if not os.path.exists(os.path.dirname(settings_path)):
-            os.makedirs(os.path.dirname(settings_path))
-        with open(settings_path, 'w') as configfile:
+        with ensure_parents_and_open(settings_path, 'w') as configfile:
             settings.write(configfile)
 
         # write our own gamecontrollerdb.txt file before launching the game
@@ -494,7 +500,7 @@ class DuckstationLegacyGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME": batoceraFiles.CONF,
+                "XDG_CONFIG_HOME": CONFIGS,
                 "QT_QPA_PLATFORM": "xcb",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
@@ -521,22 +527,27 @@ def getLangFromEnvironment():
         return availableLanguages[lang]
     return availableLanguages["en_US"]
 
-def rewriteM3uFullPath(m3u):                                                                    # Rewrite a clean m3u file with valid fullpath
+def rewriteM3uFullPath(m3u: Path) -> Path:
+    # Rewrite a clean m3u file with valid fullpath
+
     # get initialm3u
-    firstline = open(m3u).readline().rstrip()                                                   # Get first line in m3u
-    initialfirstdisc = "/tmp/" + os.path.splitext(os.path.basename(firstline))[0] + ".m3u"      # Generating a temp path with the first iso filename in m3u
+    with m3u.open() as f:
+        firstline = f.readline().rstrip()  # Get first line in m3u
+
+    initialfirstdisc = Path("/tmp") / Path(firstline).with_suffix(".m3u").name  # Generating a temp path with the first iso filename in m3u
 
     # create a temp m3u to bypass Duckstation m3u bad pathfile
-    fulldirname = os.path.dirname(m3u)
-    readtempm3u = open(initialfirstdisc, "w")
+    fulldirname = m3u.parent
+    with initialfirstdisc.open("w"):
+        pass
 
-    initialm3u = open(m3u, "r")
-    with open(initialfirstdisc, 'a') as f1:
+    with m3u.open() as initialm3u, initialfirstdisc.open('a') as f1:
         for line in initialm3u:
-            if line[0] == "/":                          # for /MGScd1.chd
-                newpath = fulldirname + line
+            # handle both "/MGScd1.chd" and "MGScd1.chd"
+            if line[0] == "/":
+                newpath = fulldirname / line[1:]
             else:
-                newpath = fulldirname + "/" + line      # for MGScd1.chd
-            f1.write(newpath)
+                newpath = fulldirname / line
+            f1.write(str(newpath))
 
-    return initialfirstdisc                                                                      # Return the tempm3u pathfile written with valid fullpath
+    return initialfirstdisc  # Return the tempm3u pathfile written with valid fullpath

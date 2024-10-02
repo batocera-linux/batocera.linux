@@ -1,23 +1,29 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
 
-import os
 import codecs
-import glob
 import configparser
 import re
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
 from ...utils.logger import get_logger
+from .dolphinTriforcePaths import DOLPHIN_TRIFORCE_CONFIG
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from pathlib import Path
+
+    from ...controllersConfig import Controller, ControllerMapping
+    from ...Emulator import Emulator
 
 eslog = get_logger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system, playersControllers, rom):
+def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, rom: Path) -> None:
 
     generateHotkeys(playersControllers)
     generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
 
-def generateControllerConfig_gamecube(system, playersControllers,rom):
+def generateControllerConfig_gamecube(system: Emulator, playersControllers: ControllerMapping, rom: Path) -> None:
     # Exclude Buttons/Y from mapping as that just resets the system. Buttons/Z is used to insert credit. Therefore it is set to Select.
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
@@ -46,10 +52,10 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
     }
 
     # This section allows a per ROM override of the default key options.
-    configname = rom + ".cfg"       # Define ROM configuration name
-    if os.path.isfile(configname):  # File exists
+    configname = rom.with_name(rom.name + ".cfg")       # Define ROM configuration name
+    if configname.is_file():  # File exists
         import ast
-        with open(configname) as cconfig:
+        with configname.open() as cconfig:
             line = cconfig.readline()
             while line:
                 entry = "{" + line + "}"
@@ -59,14 +65,14 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
 
     generateControllerConfig_any(system, playersControllers, "Config/GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
-def removeControllerConfig_gamecube():
-    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, "Config/GCPadNew.ini")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)
+def removeControllerConfig_gamecube() -> None:
+    configFileName = DOLPHIN_TRIFORCE_CONFIG / "Config" / "GCPadNew.ini"
+    if configFileName.is_file():
+        configFileName.unlink()
 
-def generateHotkeys(playersControllers):
-    configFileName = "{}/{}".format(batoceraFiles.dolphinTriforceConfig, "Config/Hotkeys.ini")
-    f = codecs.open(configFileName, "w", encoding="utf_8")
+def generateHotkeys(playersControllers: ControllerMapping) -> None:
+    configFileName = DOLPHIN_TRIFORCE_CONFIG / "Config" / "Hotkeys.ini"
+    f = codecs.open(str(configFileName), "w", encoding="utf_8")
 
     hotkeysMapping = {
         'a':           'Keys/Reset',                    'b': 'Keys/Toggle Pause',
@@ -112,9 +118,9 @@ def generateHotkeys(playersControllers):
     f.write
     f.close()
 
-def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
-    configFileName = f"{batoceraFiles.dolphinTriforceConfig}/{filename}"
-    f = codecs.open(configFileName, "w", encoding="utf_8")
+def generateControllerConfig_any(system: Emulator, playersControllers: ControllerMapping, filename: str, anyDefKey: str, anyMapping: dict[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
+    configFileName = DOLPHIN_TRIFORCE_CONFIG / filename
+    f = codecs.open(str(configFileName), "w", encoding="utf_8")
     nplayer = 1
     nsamepad = 0
 
@@ -142,7 +148,7 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
     f.write
     f.close()
 
-def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
+def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: dict[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator) -> None:
     for opt in extraOptions:
         f.write(opt + " = " + extraOptions[opt] + "\n")
 
@@ -181,8 +187,8 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
         if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
             f.write("Rumble/Motor = Weak\n")
 
-def generateControllerConfig_any_from_profiles(f, pad):
-    for profileFile in glob.glob("/userdata/system/configs/dolphin-triforce/Config/Profiles/GCPad/*.ini"):
+def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad: Controller) -> bool:
+    for profileFile in (DOLPHIN_TRIFORCE_CONFIG / "Config" / "Profiles" / "GCPad").glob("*.ini"):
         try:
             eslog.debug(f"Looking profile : {profileFile}")
             profileConfig = configparser.ConfigParser(interpolation=None)
@@ -205,7 +211,7 @@ def generateControllerConfig_any_from_profiles(f, pad):
 
     return False
 
-def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):
+def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int | None, reverse: bool, hotkey_id: str | None) -> None:
     f.write(keyname + " = ")
     if hotkey_id is not None:
         f.write("`Button " + str(hotkey_id) + "` & ")
