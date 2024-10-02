@@ -1,25 +1,23 @@
-import os
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from typing import Final
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
 eslog = get_logger(__name__)
-CONFIGDIR  = batoceraFiles.CONF + '/applewin'
-CONFIGFILE = CONFIGDIR + '/config.txt'
+
+_CONFIG_DIR: Final = CONFIGS / 'applewin'
+_CONFIG_FILE: Final = _CONFIG_DIR / 'config.txt'
 
 class AppleWinGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        if not os.path.exists(CONFIGDIR):
-            os.makedirs(CONFIGDIR)
+        mkdir_if_not_exists(_CONFIG_DIR)
 
-        config = UnixSettings(CONFIGFILE, separator=' ')
-
-        rombase=os.path.basename(rom)
-        romext=os.path.splitext(rombase)[1]
+        config = UnixSettings(_CONFIG_FILE, separator=' ')
 
         config.write()
         commandArray = ["applewin" ]

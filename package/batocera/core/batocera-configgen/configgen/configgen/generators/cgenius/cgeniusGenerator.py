@@ -1,15 +1,22 @@
-import os
-from configobj import ConfigObj
-import shutil
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from configobj import ConfigObj
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class CGeniusGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cgenius",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6" }
@@ -31,27 +38,25 @@ class CGeniusGenerator(Generator):
         }
 
         # Define the directory and file name for the config file
-        config_dir = batoceraFiles.CONF + "/cgenius"
-        alt_config_dir = "/userdata/roms/cgenius"
-        config_file = "cgenius.cfg"
-        config_path = os.path.join(config_dir, config_file)
+        config_dir = CONFIGS / "cgenius"
+        alt_config_dir = ROMS / "cgenius"
+        config_path = config_dir / "cgenius.cfg"
 
         # Create the config directory if it doesn't exist
-        if not os.path.exists(config_dir):
-            os.makedirs(config_dir)
+        mkdir_if_not_exists(config_dir)
 
-        if not os.path.exists(config_path):
+        if not config_path.exists():
             config = ConfigObj()
-            config.filename = config_path
+            config.filename = str(config_path)
         else:
-            config = ConfigObj(infile=config_path)
+            config = ConfigObj(infile=str(config_path))
 
         # Now setup the options we want...
         if "FileHandling" not in config:
             config["FileHandling"] = {}
         config["FileHandling"]["EnableLogfile"] = "false"
-        config["FileHandling"]["SearchPath1"] = "/userdata/roms/cgenius"
-        config["FileHandling"]["SearchPath2"] = "/userdata/roms/cgenius/games"
+        config["FileHandling"]["SearchPath1"] = str(alt_config_dir)
+        config["FileHandling"]["SearchPath2"] = str(alt_config_dir / "games")
 
         if "Video" not in config:
             config["Video"] = {}
@@ -120,10 +125,9 @@ class CGeniusGenerator(Generator):
         # now setup to run the rom
         commandArray = ["CGeniusExe"]
         # get rom path
-        rom_path = os.path.dirname(rom)
-        rom_path = rom_path.replace("/userdata/roms/cgenius/", "")
-        dir_string = "dir=\"" + rom_path + "\""
-        commandArray.append(dir_string)
+        rom_path = Path(rom).parent
+        rom_path = rom_path.relative_to(alt_config_dir) if rom_path.is_relative_to(alt_config_dir) else rom_path
+        commandArray.append(f'dir="{rom_path}"')
 
         return Command.Command(
             array=commandArray,

@@ -1,24 +1,29 @@
+from __future__ import annotations
+
 import os
 import subprocess
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS, SAVES, SCREENSHOTS, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
-corsixthConfigPath = batoceraFiles.CONF + "/corsixth"
-corsixthConfigFile = corsixthConfigPath + "/config.txt"
-corsixthSavesPath = "/userdata/saves/corsixth"
-corsixthDataPath = "/userdata/roms/corsixth"
-corsixthFontPath = "/usr/share/fonts/dejavu/DejaVuSans.ttf"
-corsixthScreenshotsPath = "/userdata/screenshots"
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+corsixthConfigPath = CONFIGS / "corsixth"
+corsixthConfigFile = corsixthConfigPath / "config.txt"
+corsixthSavesPath = SAVES / "corsixth"
+corsixthDataPath = ROMS / "corsixth"
+corsixthFontPath = Path("/usr/share/fonts/dejavu/DejaVuSans.ttf")
 
 eslog = get_logger(__name__)
 
 class CorsixTHGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "corsixth",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_S"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_L"] }
@@ -26,34 +31,32 @@ class CorsixTHGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Create corsixth config directory if needed
-        if not os.path.exists(corsixthConfigPath):
-            os.makedirs(corsixthConfigPath)
+        mkdir_if_not_exists(corsixthConfigPath)
 
         # Create corsixth savesg directory if needed
-        if not os.path.exists(corsixthSavesPath):
-            os.makedirs(corsixthSavesPath)
+        mkdir_if_not_exists(corsixthSavesPath)
 
         # Check game data is installed
         try:
-            os.chdir("/userdata/roms/corsixth/ANIMS/")
-            os.chdir("/userdata/roms/corsixth/DATA/")
-            os.chdir("/userdata/roms/corsixth/INTRO/")
-            os.chdir("/userdata/roms/corsixth/LEVELS/")
-            os.chdir("/userdata/roms/corsixth/QDATA/")
+            os.chdir(corsixthDataPath / "ANIMS")
+            os.chdir(corsixthDataPath / "DATA")
+            os.chdir(corsixthDataPath / "INTRO")
+            os.chdir(corsixthDataPath / "LEVELS")
+            os.chdir(corsixthDataPath / "QDATA")
         except:
             eslog.error("ERROR: Game assets not installed. You can get them from the game Theme Hospital.")
 
         # If config file already exists, delete it
-        if os.path.exists(corsixthConfigFile):
-            os.unlink(corsixthConfigFile)
+        if corsixthConfigFile.exists():
+            corsixthConfigFile.unlink()
 
         # Create the config file and fill it with basic data
-        source_config_file = open(corsixthConfigFile, "w")
+        source_config_file = corsixthConfigFile.open("w")
         source_config_file.write("check_for_updates = false\n")
-        source_config_file.write("theme_hospital_install = [[" + corsixthDataPath +"]]\n")
-        source_config_file.write("unicode_font = [[" + corsixthFontPath + "]]\n")
-        source_config_file.write("savegames = [[" + corsixthSavesPath + "]]\n")
-        source_config_file.write("screenshots = [[" + corsixthScreenshotsPath +"]]\n")
+        source_config_file.write(f"theme_hospital_install = [[{corsixthDataPath!s}]]\n")
+        source_config_file.write(f"unicode_font = [[{corsixthFontPath!s}]]\n")
+        source_config_file.write(f"savegames = [[{corsixthSavesPath!s}]]\n")
+        source_config_file.write(f"screenshots = [[{SCREENSHOTS!s}]]\n")
 
         # Values coming from ES configuration : Resolution
         source_config_file.write("fullscreen = true\n")
@@ -115,8 +118,8 @@ class CorsixTHGenerator(Generator):
 
         # Check custom music is installed
         try:
-            os.chdir(corsixthDataPath +"/MP3")
-            source_config_file.write("audio_music = [[" + corsixthDataPath + "/MP3" +"]]\n")
+            os.chdir(corsixthDataPath / "MP3")
+            source_config_file.write(f"audio_music = [[{corsixthDataPath / "MP3"}]]\n")
         except:
             eslog.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
@@ -125,7 +128,7 @@ class CorsixTHGenerator(Generator):
         source_config_file.close()
 
         # Launch engine with config file path
-        commandArray = ["corsix-th", "--config-file=" + corsixthConfigFile]
+        commandArray = ["corsix-th", f"--config-file={corsixthConfigFile}"]
 
         return Command.Command(
             array=commandArray,

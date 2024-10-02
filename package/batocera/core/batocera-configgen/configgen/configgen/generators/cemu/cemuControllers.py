@@ -1,17 +1,24 @@
-import os
-import pyudev
+from __future__ import annotations
+
 import xml.etree.cElementTree as ET
-from os import path
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
+import pyudev
 
-profilesDir = path.join(batoceraFiles.CONF, 'cemu', 'controllerProfiles')
+from ...batoceraPaths import mkdir_if_not_exists
+from .cemuPaths import CEMU_CONTROLLER_PROFILES
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...controllersConfig import ControllerMapping
+    from ...Emulator import Emulator
 
 # Create the controller configuration file
 # First controller will ALWAYS be a Gamepad
 # Additional controllers will either be a Pro Controller or Wiimote
 
-def generateControllerConfig(system, playersControllers):
+def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping) -> None:
 
     # -= Wii U controller types =-
     GAMEPAD = "Wii U GamePad"
@@ -176,8 +183,8 @@ def generateControllerConfig(system, playersControllers):
         addTextElement(element, "deadzone", DEFAULT_DEADZONE)
         addTextElement(element, "range", DEFAULT_RANGE)
 
-    def getConfigFileName(controller):
-        return path.join(profilesDir, "controller{}.xml".format(controller))
+    def getConfigFileName(controller: int) -> Path:
+        return CEMU_CONTROLLER_PROFILES / f"controller{controller}.xml"
 
     def isWiimote(pad):
         return WIIMOTE_NAME == pad.realName
@@ -203,14 +210,13 @@ def generateControllerConfig(system, playersControllers):
             return WIIMOTE_TYPE_CORE
 
     # Make controller directory if it doesn't exist
-    if not path.isdir(profilesDir):
-        os.mkdir(profilesDir)
+    mkdir_if_not_exists(CEMU_CONTROLLER_PROFILES)
 
     # Purge old controller files
     for counter in range(0,8):
         configFileName = getConfigFileName(counter)
-        if path.isfile(configFileName):
-            os.remove(configFileName)
+        if configFileName.is_file():
+            configFileName.unlink()
 
     ## CONTROLLER: Create the config xml files
     nplayer = 0
@@ -280,7 +286,7 @@ def generateControllerConfig(system, playersControllers):
             addTextElement(entryNode, "button", value)
 
         # Save to file
-        with open(getConfigFileName(nplayer), 'wb') as handle:
+        with getConfigFileName(nplayer).open('wb') as handle:
             tree = ET.ElementTree(root)
             ET.indent(tree, space="  ", level=0)
             tree.write(handle, encoding='UTF-8', xml_declaration=True)

@@ -3,15 +3,13 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from configgen.types import HotkeysContext
-
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ..Command import Command
     from ..controllersConfig import ControllerMapping
     from ..Emulator import Emulator
-    from ..types import DeviceInfoMapping, GunMapping, Resolution
+    from ..types import DeviceInfoMapping, GunMapping, HotkeysContext, Resolution
 
 
 class Generator(metaclass=ABCMeta):

@@ -1,15 +1,22 @@
-import os
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
+import os
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import ROMS
 from ...utils.logger import get_logger
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 eslog = get_logger(__name__)
 
 class CdogsGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cdogs",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
@@ -17,7 +24,7 @@ class CdogsGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        romdir = "/userdata/roms/cdogs"
+        romdir = ROMS / "cdogs"
         assetdirs = [
             "music/briefing",
             "music/end",
@@ -219,7 +226,7 @@ class CdogsGenerator(Generator):
 
         try:
             for assetdir in assetdirs:
-                os.chdir(f"{romdir}/{assetdir}")
+                os.chdir(romdir / assetdir)
             os.chdir(romdir)
         except FileNotFoundError:
             eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")

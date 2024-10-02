@@ -1,15 +1,21 @@
-import os
-import json
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
+import json
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import HOME, mkdir_if_not_exists, open_if_not_exists
 from ...utils import videoMode
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+
 eslog = get_logger(__name__)
 
-bigPemuConfig = "/userdata/system/.bigpemu_userdata/BigPEmuConfig.bigpcfg"
+bigPemuConfig = HOME / ".bigpemu_userdata" / "BigPEmuConfig.bigpcfg"
 
 # BigPEmu controller sequence, P1 only requires keyboard inputs
 # default standard bindings
@@ -214,7 +220,7 @@ def generate_keyb_bindings(keyb_id):
 
 class BigPEmuGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "bigpemu",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -222,24 +228,20 @@ class BigPEmuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        directory = os.path.dirname(bigPemuConfig)
-        # Create the directory if it doesn't exist
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        mkdir_if_not_exists(bigPemuConfig.parent)
 
         # Delete the config file to update controllers
         # As it doesn't like to be updated
         # ¯\_(ツ)_/¯
-        if os.path.exists(bigPemuConfig):
-            os.remove(bigPemuConfig)
+        if bigPemuConfig.exists():
+            bigPemuConfig.unlink()
 
         # Create the config file as it doesn't exist
-        if not os.path.exists(bigPemuConfig):
-            with open(bigPemuConfig, "w") as file:
-                json.dump({}, file)
+        with open_if_not_exists(bigPemuConfig, 'w') as file:
+            json.dump({}, file)
 
         # Load or initialize the configuration
-        with open(bigPemuConfig, "r") as file:
+        with bigPemuConfig.open() as file:
             try:
                 config = json.load(file)
             except json.decoder.JSONDecodeError:
@@ -396,7 +398,7 @@ class BigPEmuGenerator(Generator):
         config["BigPEmuConfig"]["Input"]["InputVer"] = 2
         config["BigPEmuConfig"]["Input"]["InputPluginVer"] = 666
 
-        with open(bigPemuConfig, "w") as file:
+        with bigPemuConfig.open("w") as file:
             json.dump(config, file, indent=4)
 
         # Run the emulator
