@@ -74,7 +74,7 @@
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
 - Cemu to v2.1
-- Citra to r5115f64
+- Citra to r608383e
 - Commander Genius to v3.5.1
 - Dolphin to 2407.264
 - Duckstation to v0.1-7294
