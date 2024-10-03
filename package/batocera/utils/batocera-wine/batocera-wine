@@ -252,7 +252,7 @@ redist_install() {
                 ;;
 
             "${USER_DIR}/exe/vcredist_x64_2008.exe" | "${USER_DIR}/exe/vcredist_x86_2008.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /q &>/dev/null || return 1
                 "${WINESERVER}" -w
                 ;;
 
