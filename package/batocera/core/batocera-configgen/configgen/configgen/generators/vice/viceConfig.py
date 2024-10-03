@@ -1,20 +1,31 @@
-import os
-import configparser
+from __future__ import annotations
 
-def setViceConfig(viceConfigFile, system, metadata, guns, rom):
+import configparser
+from typing import TYPE_CHECKING
+
+from ...batoceraPaths import mkdir_if_not_exists
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from pathlib import Path
+
+    from ...Emulator import Emulator
+    from ...types import GunMapping
+
+
+def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str, str], guns: GunMapping, rom: str) -> None:
 
     # Path
-    viceController = viceConfigFile + "/sdl-joymap.vjm"
-    viceConfigRC   = viceConfigFile + "/sdl-vicerc"
+    viceController = vice_config_dir / "sdl-joymap.vjm"
+    viceConfigRC   = vice_config_dir / "sdl-vicerc"
 
-    if not os.path.exists(os.path.dirname(viceConfigRC)):
-            os.makedirs(os.path.dirname(viceConfigRC))
+    mkdir_if_not_exists(viceConfigRC.parent)
 
     # config file
     viceConfig = configparser.RawConfigParser(interpolation=None)
     viceConfig.optionxform=str
 
-    if os.path.exists(viceConfigRC):
+    if viceConfigRC.exists():
         viceConfig.read(viceConfigRC)
 
     if(system.config['core'] == 'x64'):
@@ -55,7 +66,7 @@ def setViceConfig(viceConfigFile, system, metadata, guns, rom):
     viceConfig.set(systemCore, "JoyDevice1",             "4")
     if not systemCore == "VIC20":
         viceConfig.set(systemCore, "JoyDevice2",             "4")
-    viceConfig.set(systemCore, "JoyMapFile",  viceController)
+    viceConfig.set(systemCore, "JoyMapFile",  str(viceController))
 
     # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value
     for user_config in system.config:
@@ -69,7 +80,7 @@ def setViceConfig(viceConfigFile, system, metadata, guns, rom):
             viceConfig.set(custom_section, custom_option, system.config[user_config])
 
     # update the configuration file
-    with open(viceConfigRC, 'w') as configfile:
+    with viceConfigRC.open('w') as configfile:
         viceConfig.write(EqualsSpaceRemover(configfile))
 
 class EqualsSpaceRemover:

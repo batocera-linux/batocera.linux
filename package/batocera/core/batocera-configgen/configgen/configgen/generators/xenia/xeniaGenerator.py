@@ -1,46 +1,55 @@
-import os
-import sys
-import shutil
-import filecmp
-import subprocess
-import toml
-import glob
-import re
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
+import filecmp
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import toml
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 eslog = get_logger(__name__)
 
 class XeniaGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "xenia",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     @staticmethod
-    def sync_directories(source_dir, dest_dir):
+    def sync_directories(source_dir: Path, dest_dir: Path):
         dcmp = filecmp.dircmp(source_dir, dest_dir)
         # Files that are only in the source directory or are different
         differing_files = dcmp.diff_files + dcmp.left_only
         for file in differing_files:
-            src_path = os.path.join(source_dir, file)
-            dest_path = os.path.join(dest_dir, file)
+            src_path = source_dir / file
+            dest_path = dest_dir / file
             # Copy and overwrite the files from source to destination
             shutil.copy2(src_path, dest_path)
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        wineprefix = '/userdata/system/wine-bottles/xbox360'
-        wineBinary = '/usr/wine/ge-custom/bin/wine64'
-        xeniaConfig = '/userdata/system/configs/xenia'
-        xeniaCache = '/userdata/system/cache/xenia'
-        xeniaSaves = '/userdata/saves/xbox360'
-        emupath = wineprefix + '/xenia'
-        canarypath = wineprefix + '/xenia-canary'
+        rom_path = Path(rom)
+
+        wineprefix = HOME / 'wine-bottles' / 'xbox360'
+        wineBinary = Path('/usr/wine/ge-custom/bin/wine64')
+        xeniaConfig = CONFIGS / 'xenia'
+        xeniaCache = CACHE / 'xenia'
+        xeniaSaves = SAVES / 'xbox360'
+        emupath = wineprefix / 'xenia'
+        canarypath = wineprefix / 'xenia-canary'
 
         core = system.config['core']
 
@@ -72,38 +81,35 @@ class XeniaGenerator(Generator):
         os.environ['WINEARCH'] = 'win64'
 
         # make system directories
-        if not os.path.exists(wineprefix):
-            os.makedirs(wineprefix)
-        if not os.path.exists(xeniaConfig):
-            os.makedirs(xeniaConfig)
-        if not os.path.exists(xeniaCache):
-            os.makedirs(xeniaCache)
-        if not os.path.exists(xeniaSaves):
-            os.makedirs(xeniaSaves)
+        mkdir_if_not_exists(wineprefix)
+        mkdir_if_not_exists(xeniaConfig)
+        mkdir_if_not_exists(xeniaCache)
+        mkdir_if_not_exists(xeniaSaves)
 
         # create dir & copy xenia exe to wine bottle as necessary
-        if not os.path.exists(emupath):
+        if not emupath.exists():
             shutil.copytree('/usr/xenia', emupath)
-        if not os.path.exists(canarypath):
+        if not canarypath.exists():
             shutil.copytree('/usr/xenia-canary', canarypath)
         # check binary then copy updated xenia exe's as necessary
-        if not filecmp.cmp('/usr/xenia/xenia.exe', emupath + '/xenia.exe'):
+        if not filecmp.cmp('/usr/xenia/xenia.exe', emupath / 'xenia.exe'):
             shutil.copytree('/usr/xenia', emupath, dirs_exist_ok=True)
         # xenia canary - copy patches directory also
-        if not filecmp.cmp('/usr/xenia-canary/xenia_canary.exe', canarypath + '/xenia_canary.exe'):
+        if not filecmp.cmp('/usr/xenia-canary/xenia_canary.exe', canarypath / 'xenia_canary.exe'):
             shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
-        if not os.path.exists(canarypath + '/patches'):
+        if not (canarypath / 'patches').exists():
             shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
 
         # create portable txt file to try & stop file spam
-        if not os.path.exists(emupath + '/portable.txt'):
-            with open(emupath + '/portable.txt', 'w') as fp:
+        if not (emupath / 'portable.txt').exists():
+            with (emupath / 'portable.txt').open('w'):
                 pass
-        if not os.path.exists(canarypath + '/portable.txt'):
-            with open(canarypath + '/portable.txt', 'w') as fp:
+        if not (canarypath / 'portable.txt').exists():
+            with (canarypath / 'portable.txt').open('w'):
                 pass
 
-        if not os.path.exists(wineprefix + "/vkd3d.done"):
+        vkd3d_done = wineprefix / "vkd3d.done"
+        if not vkd3d_done.exists():
             cmd = ["/usr/wine/winetricks", "-q", "vkd3d"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
@@ -114,10 +120,11 @@ class XeniaGenerator(Generator):
             exitcode = proc.returncode
             eslog.debug(out.decode())
             eslog.error(err.decode())
-            with open(wineprefix + "/vkd3d.done", "w") as f:
+            with vkd3d_done.open("w") as f:
                 f.write("done")
 
-        if not os.path.exists(wineprefix + "/vcrun2019.done"):
+        vcrun2019_done = wineprefix / "vcrun2019.done"
+        if not vcrun2019_done.exists():
             cmd = ["/usr/wine/winetricks", "-q", "vcrun2019"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
@@ -128,10 +135,11 @@ class XeniaGenerator(Generator):
             exitcode = proc.returncode
             eslog.debug(out.decode())
             eslog.error(err.decode())
-            with open(wineprefix + "/vcrun2019.done", "w") as f:
+            with vcrun2019_done.open("w") as f:
                 f.write("done")
 
-        if not os.path.exists(wineprefix + "/dxvk.done"):
+        dxvk_done = wineprefix / "dxvk.done"
+        if not dxvk_done.exists():
             cmd = ["/usr/wine/winetricks", "-q", "dxvk"]
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
@@ -142,38 +150,38 @@ class XeniaGenerator(Generator):
             exitcode = proc.returncode
             eslog.debug(out.decode())
             eslog.error(err.decode())
-            with open(wineprefix + "/dxvk.done", "w") as f:
+            with dxvk_done.open("w") as f:
                 f.write("done")
 
         # check & copy newer dxvk files
-        self.sync_directories("/usr/wine/dxvk/x64", wineprefix + "/drive_c/windows/system32")
+        self.sync_directories(Path("/usr/wine/dxvk/x64"), wineprefix / "drive_c/windows/system32")
 
         # are we loading a digital title?
-        if os.path.splitext(rom)[1] == '.xbox360':
+        if rom_path.suffix == '.xbox360':
             eslog.debug(f'Found .xbox360 playlist: {rom}')
-            pathLead = os.path.dirname(rom)
-            openFile = open(rom, 'r')
-            # Read only the first line of the file.
-            firstLine = openFile.readlines(1)[0]
-            # Strip of any new line characters.
-            firstLine = firstLine.strip('\n').strip('\r')
-            eslog.debug(f'Checking if specified disc installation / XBLA file actually exists...')
-            xblaFullPath = pathLead + '/' + firstLine
-            if os.path.exists(xblaFullPath):
-                eslog.debug(f'Found! Switching active rom to: {firstLine}')
-                rom = xblaFullPath
-            else:
-                eslog.error(f'Disc installation/XBLA title {firstLine} from {rom} not found, check path or filename.')
-            openFile.close()
+            pathLead = rom_path.parent
+            with rom_path.open() as openFile:
+                # Read only the first line of the file.
+                firstLine = openFile.readlines(1)[0]
+                # Strip of any new line characters.
+                firstLine = firstLine.strip('\n').strip('\r')
+                eslog.debug(f'Checking if specified disc installation / XBLA file actually exists...')
+                xblaFullPath = pathLead / firstLine
+                if xblaFullPath.exists():
+                    eslog.debug(f'Found! Switching active rom to: {firstLine}')
+                    rom_path = xblaFullPath
+                    rom = str(xblaFullPath)
+                else:
+                    eslog.error(f'Disc installation/XBLA title {firstLine} from {rom} not found, check path or filename.')
 
         # adjust the config toml file accordingly
         config = {}
         if core == 'xenia-canary':
-            toml_file = canarypath + '/xenia-canary.config.toml'
+            toml_file = canarypath / 'xenia-canary.config.toml'
         else:
-            toml_file = emupath + '/xenia.config.toml'
-        if os.path.isfile(toml_file):
-            with open(toml_file) as f:
+            toml_file = emupath / 'xenia.config.toml'
+        if toml_file.is_file():
+            with toml_file.open() as f:
                 config = toml.load(f)
 
         # [ Now adjust the config file defaults & options we want ]
@@ -301,30 +309,30 @@ class XeniaGenerator(Generator):
             config['XConfig'] = {'user_language': 1}
 
         # now write the updated toml
-        with open(toml_file, 'w') as f:
+        with toml_file.open('w') as f:
             toml.dump(config, f)
 
         # handle patches files to set all matching toml files keys to true
-        rom_name = os.path.splitext(os.path.basename(rom))[0]
+        rom_name = rom_path.stem
         # simplify the name for matching
         rom_name = re.sub(r'\[.*?\]', '', rom_name)
         rom_name = re.sub(r'\(.*?\)', '', rom_name)
         if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':
             # pattern to search for matching .patch.toml files
-            pattern = os.path.join(canarypath, 'patches', '*' + rom_name + '*.patch.toml')
-            matching_files = [file_path for file_path in glob.glob(pattern) if re.search(rom_name, os.path.basename(file_path), re.IGNORECASE)]
+            pattern = canarypath / 'patches' / f'*{rom_name}*.patch.toml'
+            matching_files = [file_path for file_path in (canarypath / 'patches').glob(f'*{rom_name}*.patch.toml') if re.search(rom_name, file_path.name, re.IGNORECASE)]
             if matching_files:
                 for file_path in matching_files:
                     eslog.debug(f'Enabling patches for: {file_path}')
                     # load the matchig .patch.toml file
-                    with open(file_path, 'r') as f:
+                    with file_path.open('r') as f:
                         patch_toml = toml.load(f)
                     # modify all occurrences of the `is_enabled` key to `true`
                     for patch in patch_toml.get('patch', []):
                         if 'is_enabled' in patch:
                             patch['is_enabled'] = True
                     # save the updated .patch.toml file
-                    with open(file_path, 'w') as f:
+                    with file_path.open('w') as f:
                         toml.dump(patch_toml, f)
             else:
                 eslog.debug(f'No patch file found for {rom_name}')
@@ -332,14 +340,14 @@ class XeniaGenerator(Generator):
         # now setup the command array for the emulator
         if rom == 'config':
             if core == 'xenia-canary':
-                commandArray = [wineBinary, canarypath + '/xenia_canary.exe']
+                commandArray = [wineBinary, canarypath / 'xenia_canary.exe']
             else:
-                commandArray = [wineBinary, emupath + '/xenia.exe']
+                commandArray = [wineBinary, emupath / 'xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = [wineBinary, canarypath + '/xenia_canary.exe', 'z:' + rom]
+                commandArray = [wineBinary, canarypath / 'xenia_canary.exe', 'z:' + rom]
             else:
-                commandArray = [wineBinary, emupath + '/xenia.exe', 'z:' + rom]
+                commandArray = [wineBinary, emupath / 'xenia.exe', 'z:' + rom]
 
         environment={
                 'WINEPREFIX': wineprefix,
@@ -355,7 +363,7 @@ class XeniaGenerator(Generator):
             }
 
         # ensure nvidia driver used for vulkan
-        if os.path.exists('/var/tmp/nvidia.prime'):
+        if Path('/var/tmp/nvidia.prime').exists():
             variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
             for variable_name in variables_to_remove:
                 if variable_name in os.environ:

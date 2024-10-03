@@ -1,14 +1,28 @@
-import os
-import shutil
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, SCREENSHOTS, mkdir_if_not_exists
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+CONFIG_DIR: Final = CONFIGS / 'sdlpop'
+SCREENSHOTS_DIR: Final = SCREENSHOTS / 'sdlpop'
+SYSTEM_DIR: Final = Path('/usr/share/sdlpop')
+
+USER_CONFIG: Final = CONFIG_DIR / 'SDLPoP.cfg'
+USER_INI: Final = CONFIG_DIR / 'SDLPoP.ini'
+SYSTEM_CONFIG: Final = SYSTEM_DIR / 'SDLPoP.cfg'
+SYSTEM_INI: Final = SYSTEM_DIR / 'SDLPoP.ini'
 
 class SdlPopGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "sdlpop",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F9" }
@@ -18,21 +32,20 @@ class SdlPopGenerator(Generator):
         commandArray = ["SDLPoP"]
 
         # create sdlpop config directory
-        if not os.path.exists(batoceraFiles.sdlpopConfigDir):
-            os.makedirs(batoceraFiles.sdlpopConfigDir)
-        if not os.path.exists(batoceraFiles.sdlpopSrcCfg):
-            shutil.copyfile('/usr/share/sdlpop/cfg/SDLPoP.cfg', batoceraFiles.sdlpopSrcCfg)
-        if not os.path.exists(batoceraFiles.sdlpopSrcIni):
-            shutil.copyfile('/usr/share/sdlpop/cfg/SDLPoP.ini', batoceraFiles.sdlpopSrcIni)
+        mkdir_if_not_exists(CONFIG_DIR)
+        if not USER_CONFIG.exists():
+            shutil.copyfile(SYSTEM_DIR / 'cfg' / 'SDLPoP.cfg', USER_CONFIG)
+        if not USER_INI.exists():
+            shutil.copyfile(SYSTEM_DIR / 'cfg' / 'SDLPoP.ini', USER_INI)
         # symbolic link cfg files
-        if not os.path.exists(batoceraFiles.sdlpopDestCfg):
-            os.symlink(batoceraFiles.sdlpopSrcCfg, batoceraFiles.sdlpopDestCfg)
-        if not os.path.exists(batoceraFiles.sdlpopDestIni):
-            os.symlink(batoceraFiles.sdlpopSrcIni, batoceraFiles.sdlpopDestIni)
+        if not SYSTEM_CONFIG.exists():
+            SYSTEM_CONFIG.symlink_to(USER_CONFIG)
+        if not SYSTEM_INI.exists():
+            SYSTEM_INI.symlink_to(USER_INI)
         # symbolic link screenshot folder too
-        if not os.path.exists('/userdata/screenshots/sdlpop'):
-            os.makedirs('/userdata/screenshots/sdlpop')
-            os.symlink('/userdata/screenshots/sdlpop', '/usr/share/sdlpop/screenshots', target_is_directory = True)
+        if not SCREENSHOTS_DIR.exists():
+            SCREENSHOTS_DIR.mkdir(parents=True)
+            (SYSTEM_DIR / 'screenshots').symlink_to(SCREENSHOTS_DIR, target_is_directory=True)
 
         # pad number
         nplayer = 1

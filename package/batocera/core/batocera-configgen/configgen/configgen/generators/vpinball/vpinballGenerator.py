@@ -1,21 +1,25 @@
-import os
+from __future__ import annotations
+
 import configparser
 import shutil
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
-from ...utils.logger import get_logger
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...utils.batoceraServices import batoceraServices
+from ...utils.logger import get_logger
 from ..Generator import Generator
-from . import vpinballWindowing
-from . import vpinballOptions
+from . import vpinballOptions, vpinballWindowing
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 eslog = get_logger(__name__)
 
 class VPinballGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "vpinball",
             "keys": { "exit": "KEY_Q", "coin": "KEY_5", "menu": "KEY_ESC" }
@@ -23,20 +27,18 @@ class VPinballGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # files
-        vpinballConfigPath     = batoceraFiles.CONF + "/vpinball"
-        vpinballConfigFile     = vpinballConfigPath + "/VPinballX.ini"
-        vpinballLogFile        = vpinballConfigPath + "/vpinball.log"
-        vpinballPinmameIniPath = batoceraFiles.CONF + "/vpinball/pinmame/ini"
+        vpinballConfigPath     = CONFIGS / "vpinball"
+        vpinballConfigFile     = vpinballConfigPath  / "VPinballX.ini"
+        vpinballLogFile        = vpinballConfigPath / "vpinball.log"
+        vpinballPinmameIniPath = vpinballConfigPath / "pinmame" / "ini"
 
         # create vpinball config directory and default config file if they don't exist
-        if not os.path.exists(vpinballConfigPath):
-            os.makedirs(vpinballConfigPath)
-        if not os.path.exists(vpinballConfigFile):
+        mkdir_if_not_exists(vpinballConfigPath)
+        if not vpinballConfigFile.exists():
             shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFile)
-        if not os.path.exists(vpinballPinmameIniPath):
-            os.makedirs(vpinballPinmameIniPath)
-        if os.path.exists(vpinballLogFile):
-            os.rename(vpinballLogFile, vpinballLogFile + ".1")
+        mkdir_if_not_exists(vpinballPinmameIniPath)
+        if vpinballLogFile.exists():
+            vpinballLogFile.rename(vpinballLogFile.with_suffix(f"{vpinballLogFile.suffix}.1"))
 
         ## [ VPinballX.ini ] ##
         try:
@@ -75,7 +77,7 @@ class VPinballGenerator(Generator):
             vpinballSettings.set("Standalone", "DMDServer","0")
 
         # Save VPinballX.ini
-        with open(vpinballConfigFile, 'w') as configfile:
+        with vpinballConfigFile.open('w') as configfile:
             vpinballSettings.write(configfile)
 
         # set the config path to be sure
