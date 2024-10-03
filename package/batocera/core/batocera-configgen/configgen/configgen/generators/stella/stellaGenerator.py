@@ -1,5 +1,6 @@
-from ... import Command
-from ... import controllersConfig
+from __future__ import annotations
+
+from ... import Command, controllersConfig
 from ...utils.logger import get_logger
 from ..Generator import Generator
 

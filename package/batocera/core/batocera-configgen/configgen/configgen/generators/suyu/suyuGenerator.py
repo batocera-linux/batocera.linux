@@ -1,18 +1,29 @@
-import os
-import configparser
-from os import environ
-import subprocess
+from __future__ import annotations
 
-from ... import batoceraFiles
+import configparser
+import subprocess
+from os import environ
+from typing import TYPE_CHECKING, Final
+
 from ... import Command
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...controllersConfig import ControllerMapping
+    from ...Emulator import Emulator
+    from ...types import HotkeysContext
+
 eslog = get_logger(__name__)
+
+SUYU_CONFIG: Final = CONFIGS / 'suyu'
 
 class SuyuGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "suyu",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -20,19 +31,19 @@ class SuyuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        if not os.path.exists(batoceraFiles.CONF+"/suyu"):
-            os.makedirs(batoceraFiles.CONF+"/suyu")
+        mkdir_if_not_exists(SUYU_CONFIG)
 
-        SuyuGenerator.writeSuyuConfig(batoceraFiles.CONF + "/suyu/qt-config.ini", system, playersControllers)
+        SuyuGenerator.writeSuyuConfig(SUYU_CONFIG / "qt-config.ini", system, playersControllers)
 
         commandArray = ["/usr/bin/suyu", "-f", "-g", rom ]
         return Command.Command(array=commandArray, env={
-            "XDG_CONFIG_HOME":batoceraFiles.CONF, \
-            "XDG_DATA_HOME":batoceraFiles.SAVES + "/switch", \
-            "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+            "XDG_CONFIG_HOME":CONFIGS, \
+            "XDG_DATA_HOME":SAVES / "switch", \
+            "XDG_CACHE_HOME":CACHE, \
             "QT_QPA_PLATFORM":"xcb"})
 
-    def writeSuyuConfig(suyuConfigFile, system, playersControllers):
+    @staticmethod
+    def writeSuyuConfig(suyuConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
         # pads
         suyuButtonsMapping = {
             "button_a":      "a",
@@ -64,7 +75,7 @@ class SuyuGenerator(Generator):
         # ini file
         suyuConfig = configparser.RawConfigParser()
         suyuConfig.optionxform=str
-        if os.path.exists(suyuConfigFile):
+        if suyuConfigFile.exists():
             suyuConfig.read(suyuConfigFile)
 
         # UI section
@@ -354,9 +365,7 @@ class SuyuGenerator(Generator):
         suyuConfig.set("Services", "bcat_backend\\default", "none")
 
         ### update the configuration file
-        if not os.path.exists(os.path.dirname(suyuConfigFile)):
-            os.makedirs(os.path.dirname(suyuConfigFile))
-        with open(suyuConfigFile, 'w') as configfile:
+        with ensure_parents_and_open(suyuConfigFile, 'w') as configfile:
             suyuConfig.write(configfile)
 
     @staticmethod

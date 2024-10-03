@@ -1,20 +1,25 @@
-import configparser
-import os
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import configparser
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ensure_parents_and_open, mkdir_if_not_exists
 from ..Generator import Generator
 
-forceConfigDir = batoceraFiles.CONF + "/theforceengine"
-forceModsDir = forceConfigDir + "/Mods"
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+forceConfigDir = CONFIGS / "theforceengine"
+forceModsDir = forceConfigDir / "Mods"
 forcePatchFile = "v3.zip" # current patch version
-forceModFile = forceModsDir + "/" + forcePatchFile
-forceConfigFile = forceConfigDir + "/settings.ini"
+forceModFile = forceModsDir / forcePatchFile
+forceConfigFile = forceConfigDir / "settings.ini"
 
 class TheForceEngineGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "theforceengine",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -23,18 +28,18 @@ class TheForceEngineGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Check if the directories exist, if not create them
-        if not os.path.exists(forceConfigDir):
-            os.makedirs(forceConfigDir)
-        if not os.path.exists(forceModsDir):
-            os.makedirs(forceModsDir)
+        mkdir_if_not_exists(forceConfigDir)
+        mkdir_if_not_exists(forceModsDir)
 
         mod_name = None
         # use the patch file if available
-        if os.path.exists(forceModFile):
+        if forceModFile.exists():
             mod_name = forcePatchFile
 
+        rom_path = Path(rom)
+
         # Open the .tfe rom file for user mods
-        with open(rom, 'r') as file:
+        with rom_path.open() as file:
             # Read the first line and store it as 'first_line'
             first_line = file.readline().strip()
             # use the first_line as mod if the file isn't empty
@@ -44,7 +49,7 @@ class TheForceEngineGenerator(Generator):
         ## Configure
         forceConfig = configparser.ConfigParser()
         forceConfig.optionxform=str
-        if os.path.exists(forceConfigFile):
+        if forceConfigFile.exists():
             forceConfig.read(forceConfigFile)
 
         # Windows
@@ -209,9 +214,7 @@ class TheForceEngineGenerator(Generator):
             forceConfig.add_section("CVar")
 
         ## Update the configuration file
-        if not os.path.exists(os.path.dirname(forceConfigFile)):
-            os.makedirs(os.path.dirname(forceConfigFile))
-        with open(forceConfigFile, 'w') as configfile:
+        with ensure_parents_and_open(forceConfigFile, 'w') as configfile:
             forceConfig.write(configfile)
 
         ## Setup the command

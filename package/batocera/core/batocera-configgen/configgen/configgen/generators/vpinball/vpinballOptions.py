@@ -1,4 +1,14 @@
-def configureOptions(vpinballSettings, system):
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from configparser import ConfigParser
+
+    from ...Emulator import Emulator
+
+
+def configureOptions(vpinballSettings: ConfigParser, system: Emulator) -> None:
     # Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...
     # We keep a switch to allow users with the old unique pinmame to be able to continue using vpinball (switchon)
     if system.isOptSet("vpinball_folders") and system.getOptBoolean("vpinball_folders") == False:
