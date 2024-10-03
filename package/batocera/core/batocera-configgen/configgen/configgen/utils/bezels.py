@@ -1,14 +1,26 @@
 import os
 import struct
+from pathlib import Path
+from typing import TypedDict
+
 from PIL import Image, ImageOps
 
+from configgen.Emulator import Emulator
+
 from ..batoceraPaths import SYSTEM_DECORATIONS, USER_DECORATIONS
-from .videoMode import getAltDecoration
 from .logger import get_logger
+from .videoMode import getAltDecoration
 
 eslog = get_logger(__name__)
 
-def getBezelInfos(rom: str, bezel: str, systemName: str, emulator: str):
+class BezelInfos(TypedDict):
+    png: Path
+    info: Path
+    layout: Path
+    mamezip: Path
+    specific_to_game: bool
+
+def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -> BezelInfos | None:
     # by order choose :
     # rom name in the system subfolder of the user directory (gb/mario.png)
     # rom name in the system subfolder of the system directory (gb/mario.png)
@@ -21,8 +33,8 @@ def getBezelInfos(rom: str, bezel: str, systemName: str, emulator: str):
     # default name (default.png)
     # else return
     # mamezip files are for MAME-specific advanced artwork (bezels with overlays and backdrops, animated LEDs, etc)
-    altDecoration = getAltDecoration(systemName, rom, emulator)
-    romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
+    altDecoration = getAltDecoration(systemName, str(rom), emulator)
+    romBase = Path(rom).stem # filename without extension
     overlay_info_file = USER_DECORATIONS / bezel / "games" / systemName / f"{romBase}.info"
     overlay_png_file  = USER_DECORATIONS / bezel / "games" / systemName / f"{romBase}.png"
     overlay_layout_file  = USER_DECORATIONS / bezel / "games" / systemName / f"{romBase}.lay"
@@ -102,10 +114,11 @@ def getBezelInfos(rom: str, bezel: str, systemName: str, emulator: str):
     return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "mamezip": overlay_mamezip_file, "specific_to_game": bezel_game }
 
 # Much faster than PIL Image.size
-def fast_image_size(image_file):
-    if not os.path.exists(image_file):
+def fast_image_size(image_file: str | Path):
+    image_file = Path(image_file)
+    if not image_file.exists():
         return -1, -1
-    with open(image_file, 'rb') as fhandle:
+    with image_file.open('rb') as fhandle:
         head = fhandle.read(32)
         if len(head) != 32:
            # corrupted header, or not a PNG
@@ -139,7 +152,7 @@ def padImage(input_png, output_png, screen_width, screen_height, bezel_width, be
           imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
         imgout.save(output_png, mode="RGBA", format="PNG")
 
-def tatooImage(input_png, output_png, system):
+def tatooImage(input_png: Path, output_png: Path, system: Emulator):
   if system.config['bezel.tattoo'] == 'system':
       try:
           tattoo_file = '/usr/share/batocera/controller-overlays/'+system.name+'.png'
@@ -245,7 +258,7 @@ def gunBordersSize(bordersSize):
         return 2, 1
     return 0, 0
 
-def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, outerBorderSizePer=3, innerBorderColor="#ffffff", outerBorderColor="#000000"):
+def gunBorderImage(input_png: str | Path, output_png: str | Path, aspect_ratio, innerBorderSizePer=2, outerBorderSizePer=3, innerBorderColor="#ffffff", outerBorderColor="#000000"):
     # good default border that works in most circumstances is:
     #
     # 2% of the screen width in white.  Surrounded by 3% screen width of
@@ -261,6 +274,9 @@ def gunBorderImage(input_png, output_png, aspect_ratio, innerBorderSizePer=2, ou
     #
     # If all the games are drawn with the border this way then the settings
     # are static and the adjustment only needs to be calculated once.
+
+    input_png = Path(input_png)
+    output_png = Path(output_png)
 
     from PIL import ImageDraw
     w,h = fast_image_size(input_png)
@@ -325,7 +341,7 @@ def gunsBordersColorFomConfig(config):
             return "#ffffff"
     return "#ffffff"
 
-def createTransparentBezel(output_png, width, height):
+def createTransparentBezel(output_png: Path, width: int, height: int):
     from PIL import ImageDraw
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
     imgnewdraw = ImageDraw.Draw(imgnew)

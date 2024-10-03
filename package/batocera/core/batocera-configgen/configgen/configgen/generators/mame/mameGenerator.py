@@ -1,62 +1,90 @@
-import shutil
+from __future__ import annotations
+
+import csv
 import os
-from os import path
-from xml.dom import minidom
-import xml.etree.ElementTree as ET
 import shutil
 import subprocess
-from xml.dom import minidom
-from PIL import Image
+import xml.etree.ElementTree as ET
 from pathlib import Path
-import csv
+from typing import TYPE_CHECKING
+from xml.dom import minidom
 
-from ...import batoceraFiles
-from ...import Command
-from ...import controllersConfig
+from PIL import Image
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import (
+    BATOCERA_SHARE_DIR,
+    BIOS,
+    CONFIGS,
+    DEFAULTS_DIR,
+    ROMS,
+    SAVES,
+    SCREENSHOTS,
+    USER_DECORATIONS,
+    mkdir_if_not_exists,
+)
+from ...utils import bezels as bezelsUtil, videoMode as videoMode
 from ...utils.logger import get_logger
-from ...utils import bezels as bezelsUtil
-from ...utils import videoMode as videoMode
 from ..Generator import Generator
 from . import mameControllers
+from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, MAME_ROMS, MAME_SAVES
+
+if TYPE_CHECKING:
+    from ...Emulator import Emulator
+    from ...types import HotkeysContext, Resolution
 
 eslog = get_logger(__name__)
+
 
 class MameGenerator(Generator):
 
     def supportsInternalBezels(self):
         return True
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "mame",
             "keys": { "exit": "KEY_ESC", "menu": "KEY_TAB", "coin": "KEY_5" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        rom_path = Path(rom)
         # Extract "<romfile.zip>"
-        romBasename = path.basename(rom)
-        romDirname  = path.dirname(rom)
-        (romName, romExt) = os.path.splitext(romBasename)
+        romBasename = rom_path.name
+        romDirname  = rom_path.parent
+        romName = rom_path.stem
+        romExt = rom_path.suffix
 
-        softDir = "/var/run/mame_software/"
+        softDir = Path("/var/run/mame_software/")
         softList = ""
         messModel = ""
         specialController = "none"
         subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
 
         # Generate userdata folders if needed
-        mamePaths = [ "system/configs/mame", "saves/mame", "saves/mame/nvram", "saves/mame/cfg", "saves/mame/input", "saves/mame/state", "saves/mame/diff", "saves/mame/comments", "bios/mame", "bios/mame/artwork", "cheats/mame", "saves/mame/plugins", "system/configs/mame/ctrlr", "system/configs/mame/ini", "bios/mame/artwork/crosshairs" ]
+        mamePaths = [
+            MAME_CONFIG,
+            MAME_SAVES / "nvram",
+            MAME_SAVES / "cfg",
+            MAME_SAVES / "input",
+            MAME_SAVES / "state",
+            MAME_SAVES / "diff",
+            MAME_SAVES / "comments",
+            MAME_BIOS / "artwork" / "crosshairs",
+            MAME_CHEATS,
+            MAME_SAVES / "plugins",
+            MAME_CONFIG / "ctrlr",
+            MAME_CONFIG / "ini",
+        ]
         for checkPath in mamePaths:
-            if not os.path.exists("/userdata/" + checkPath + "/"):
-                os.makedirs("/userdata/" + checkPath + "/")
+            mkdir_if_not_exists(checkPath)
 
-        messDataFile = '/usr/share/batocera/configgen/data/mame/messSystems.csv'
-        openFile = open(messDataFile, 'r')
-        messSystems = []
-        messSysName = []
-        messRomType = []
-        messAutoRun = []
-        with openFile:
+        messSystems: list[str] = []
+        messSysName: list[str] = []
+        messRomType: list[str] = []
+        messAutoRun: list[str] = []
+
+        with (DEFAULTS_DIR / 'data' / 'mame' / 'messSystems.csv').open() as openFile:
             messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
             for row in messDataList:
                 messSystems.append(row[0])
@@ -78,39 +106,38 @@ class MameGenerator(Generator):
         # Auto softlist for FM Towns if there is a zip that matches the folder name
         # Used for games that require a CD and floppy to both be inserted
         if system.name == 'fmtowns' and softList == '':
-            romParentPath = path.basename(romDirname)
-            if os.path.exists('/userdata/roms/fmtowns/{}.zip'.format(romParentPath)):
+            if (ROMS / "fmtowns" / f"{romDirname.name}.zip").exists():
                 softList = 'fmtowns_cd'
 
-        commandArray =  [ "/usr/bin/mame/mame" ]
+        commandArray: list[str | Path] =  [ "/usr/bin/mame/mame" ]
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
         if messMode == -1:
-            commandArray += [ "-rompath", f"{romDirname};/userdata/bios/mame/;/userdata/bios/" ]
+            commandArray += [ "-rompath", f"{romDirname};{MAME_BIOS};{BIOS}" ]
         else:
             if softList in subdirSoftList:
-                commandArray += [ "-rompath", f"{romDirname};/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/;/var/run/mame_software/" ]
+                commandArray += [ "-rompath", f"{romDirname};{MAME_BIOS};{BIOS};{MAME_ROMS};{softDir}" ]
             else:
-                commandArray += [ "-rompath", f"{romDirname};/userdata/bios/mame/;/userdata/bios/;/userdata/roms/mame/" ]
+                commandArray += [ "-rompath", f"{romDirname};{MAME_BIOS};{BIOS};{MAME_ROMS}" ]
 
         # MAME various paths we can probably do better
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
         commandArray += [ "-fontpath",     "/usr/bin/mame/" ]               # Fonts can be left on ROM filesystem
         commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
-        commandArray += [ "-pluginspath", "/usr/bin/mame/plugins/;/userdata/saves/mame/plugins" ]
-        commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
-        commandArray += [ "-artpath",       "/var/run/mame_artwork/;/usr/bin/mame/artwork/;/userdata/bios/mame/artwork/;/userdata/decorations/" ] # first for systems ; second for overlays
+        commandArray += [ "-pluginspath", f"/usr/bin/mame/plugins/;{MAME_SAVES / 'plugins'}" ]
+        commandArray += [ "-samplepath",  MAME_BIOS / "samples" ] # Current batocera storage location for MAME samples
+        commandArray += [ "-artpath",     f"/var/run/mame_artwork/;/usr/bin/mame/artwork/;{MAME_BIOS / 'artwork'};{USER_DECORATIONS}" ] # first for systems ; second for overlays
 
         # Enable cheats
         commandArray += [ "-cheat" ]
-        commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path containing the cheat.7z file
+        commandArray += [ "-cheatpath",    MAME_CHEATS ]       # Should this point to path containing the cheat.7z file
 
         # logs
         commandArray += [ "-verbose" ]
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
-        commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
+        commandArray += [ "-nvram_directory" ,    MAME_SAVES / "nvram" ]
 
         # Set custom config path if option is selected or default path if not
         if system.isOptSet("customcfg"):
@@ -120,44 +147,40 @@ class MameGenerator(Generator):
 
         if system.name == "mame":
             if customCfg:
-                cfgPath = "/userdata/system/configs/mame/custom/"
+                cfgPath = MAME_CONFIG / "custom"
             else:
-                cfgPath = "/userdata/system/configs/mame/"
-            if not os.path.exists("/userdata/system/configs/mame/"):
-                os.makedirs("/userdata/system/configs/mame/")
+                cfgPath = MAME_CONFIG
+            mkdir_if_not_exists(MAME_CONFIG)
         else:
             if customCfg:
-                cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/custom/"
+                cfgPath = MAME_CONFIG / messSysName[messMode] / "custom"
             else:
-                cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode] + "/"
-            if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
-                os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode] + "/")
-        if not os.path.exists(cfgPath):
-            os.makedirs(cfgPath)
+                cfgPath = MAME_CONFIG / messSysName[messMode]
+            mkdir_if_not_exists(MAME_CONFIG / messSysName[messMode])
+        mkdir_if_not_exists(cfgPath)
 
         # MAME will create custom configs per game for MAME ROMs and MESS ROMs with no system attached (LCD games, TV games, etc.)
         # This will allow an alternate config path per game for MESS console/computer ROMs that may need additional config.
         if system.isOptSet("pergamecfg") and system.getOptBoolean("pergamecfg"):
             if not messMode == -1:
                 if not messSysName[messMode] == "":
-                    if not os.path.exists("/userdata/system/configs/mame/" + messSysName[messMode] + "/"):
-                        os.makedirs("/userdata/system/configs/mame/" + messSysName[messMode]+ "/")
-                    cfgPath = "/userdata/system/configs/mame/" + messSysName[messMode]+ "/" + romBasename + "/"
-                    if not os.path.exists(cfgPath):
-                        os.makedirs(cfgPath)
+                    base_path = MAME_CONFIG / messSysName[messMode]
+                    mkdir_if_not_exists(base_path)
+                    cfgPath = base_path / romBasename
+                    mkdir_if_not_exists(cfgPath)
         commandArray += [ "-cfg_directory"   ,    cfgPath ]
-        commandArray += [ "-input_directory" ,    "/userdata/saves/mame/input/" ]
-        commandArray += [ "-state_directory" ,    "/userdata/saves/mame/state/" ]
-        commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
-        commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
-        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
-        commandArray += [ "-homepath" ,           "/userdata/saves/mame/plugins/" ]
-        commandArray += [ "-ctrlrpath" ,          "/userdata/system/configs/mame/ctrlr/" ]
-        commandArray += [ "-inipath" ,            "/userdata/system/configs/mame/;/userdata/system/configs/mame/ini/" ]
-        commandArray += [ "-crosshairpath" ,      "/userdata/bios/mame/artwork/crosshairs/" ]
+        commandArray += [ "-input_directory" ,    MAME_SAVES / "input" ]
+        commandArray += [ "-state_directory" ,    MAME_SAVES / "state" ]
+        commandArray += [ "-snapshot_directory" , SCREENSHOTS ]
+        commandArray += [ "-diff_directory" ,     MAME_SAVES / "diff" ]
+        commandArray += [ "-comment_directory",   MAME_SAVES / "comments" ]
+        commandArray += [ "-homepath" ,           MAME_SAVES / "plugins" ]
+        commandArray += [ "-ctrlrpath" ,          MAME_CONFIG / "ctrlr" ]
+        commandArray += [ "-inipath" ,            f"{MAME_CONFIG};{MAME_CONFIG / 'ini'}" ]
+        commandArray += [ "-crosshairpath" ,      MAME_BIOS / "artwork" / "crosshairs" ]
         if softList != "":
             commandArray += [ "-swpath" ,        softDir ]
-            commandArray += [ "-hashpath" ,      softDir + "hash/" ]
+            commandArray += [ "-hashpath" ,      softDir / "hash" ]
 
         # TODO These paths are not handled yet
         # TODO -swpath              path to loose software - might use if we want software list MESS support
@@ -372,7 +395,7 @@ class MameGenerator(Generator):
                             commandArray += [ "-" + system.config["altromtype"] ]
                     elif system.name == "adam":
                         # add some logic based on the rom extension
-                        rom_extension = os.path.splitext(rom)[1].lower()
+                        rom_extension = rom_path.suffix
                         if rom_extension == ".ddp":
                             commandArray += [ "-cass1" ]
                         elif rom_extension == ".dsk":
@@ -406,40 +429,35 @@ class MameGenerator(Generator):
             else:
                 # Prepare software lists
                 if softList != "":
-                    if not os.path.exists(softDir):
-                        os.makedirs(softDir)
-                    for fileName in os.listdir(softDir):
-                        checkFile = os.path.join(softDir, fileName)
-                        if os.path.islink(checkFile):
-                            os.unlink(checkFile)
-                        if os.path.isdir(checkFile):
+                    mkdir_if_not_exists(softDir)
+                    for checkFile in softDir.iterdir():
+                        if checkFile.is_symlink():
+                            checkFile.unlink()
+                        if checkFile.is_dir():
                             shutil.rmtree(checkFile)
-                    if not os.path.exists(softDir + "hash/"):
-                        os.makedirs(softDir + "hash/")
+                    mkdir_if_not_exists(softDir / "hash")
                     # Clear existing hashfile links
-                    for hashFile in os.listdir(softDir + "hash/"):
-                        if hashFile.endswith('.xml'):
-                            os.unlink(softDir + "hash/" + hashFile)
-                    os.symlink("/usr/bin/mame/hash/" + softList + ".xml", softDir + "hash/" + softList + ".xml")
+                    for hashFile in (softDir / "hash").iterdir():
+                        if hashFile.suffix == '.xml':
+                            hashFile.unlink()
+                    (softDir / "hash" / f"{softList}.xml").symlink_to(f"/usr/bin/mame/hash/{softList}.xml")
                     if softList in subdirSoftList:
-                        romPath = Path(romDirname)
-                        os.symlink(str(romPath.parents[0]), softDir + softList, True)
-                        commandArray += [ path.basename(romDirname) ]
+                        (softDir / softList).symlink_to(romDirname.parents[0], target_is_directory=True)
+                        commandArray += [ romDirname.name ]
                     else:
-                        os.symlink(romDirname, softDir + softList, True)
-                        commandArray += [ os.path.splitext(romBasename)[0] ]
+                        (softDir / softList).symlink_to(romDirname, target_is_directory=True)
+                        commandArray += [ romName ]
 
             # Create & add a blank disk if needed, insert into drive 2
             # or drive 1 if drive 2 is selected manually or FM Towns Marty.
             if system.isOptSet('addblankdisk') and system.getOptBoolean('addblankdisk'):
                 if system.name == 'fmtowns':
-                    blankDisk = '/usr/share/mame/blank.fmtowns'
-                    targetFolder = '/userdata/saves/mame/{}'.format(system.name)
-                    targetDisk = '{}/{}.fmtowns'.format(targetFolder, os.path.splitext(romBasename)[0])
+                    blankDisk = Path('/usr/share/mame/blank.fmtowns')
+                    targetFolder = MAME_SAVES / system.name
+                    targetDisk = targetFolder / romName
                 # Add elif statements here for other systems if enabled
-                if not os.path.exists(targetFolder):
-                    os.makedirs(targetFolder)
-                if not os.path.exists(targetDisk):
+                mkdir_if_not_exists(targetFolder)
+                if not targetDisk.exists():
                     shutil.copy2(blankDisk, targetDisk)
                 # Add other single floppy systems to this if statement
                 if messModel == "fmtmarty":
@@ -476,8 +494,8 @@ class MameGenerator(Generator):
 
                 # if using software list, use "usage" for autoRunCmd (if provided)
                 if softList != "":
-                    softListFile = '/usr/bin/mame/hash/{}.xml'.format(softList)
-                    if os.path.exists(softListFile):
+                    softListFile = Path('/usr/bin/mame/hash') / f'{softList}.xml'
+                    if softListFile.exists():
                         softwarelist = ET.parse(softListFile)
                         for software in softwarelist.findall('software'):
                             if software.attrib != {}:
@@ -502,10 +520,9 @@ class MameGenerator(Generator):
                             autoRunCmd = 'LOADM \"{}\":EXEC\\n'.format(romName)
 
                 # check for a user override
-                autoRunFile = 'system/configs/mame/autoload/{}_{}_autoload.csv'.format(system.name, romType)
-                if os.path.exists(autoRunFile):
-                    openARFile = open(autoRunFile, 'r')
-                    with openARFile:
+                autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'
+                if autoRunFile.exists():
+                    with autoRunFile.open() as openARFile:
                         autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
                         for row in autoRunList:
                             if row and not row[0].startswith('#'):
@@ -514,13 +531,12 @@ class MameGenerator(Generator):
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
-                autoRunFile = '/usr/share/batocera/configgen/data/mame/{}_autoload.csv'.format(softList)
-                if os.path.exists(autoRunFile):
-                    openARFile = open(autoRunFile, 'r')
-                    with openARFile:
+                autoRunFile = MAME_DEFAULT_DATA / f'{softList}_autoload.csv'
+                if autoRunFile.exists():
+                    with autoRunFile.open() as openARFile:
                         autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
                         for row in autoRunList:
-                            if row[0].casefold() == os.path.splitext(romBasename)[0].casefold():
+                            if row[0].casefold() == romName.casefold():
                                 autoRunCmd = row[1] + "\\n"
                                 autoRunDelay = 3
             if autoRunCmd != "":
@@ -537,13 +553,13 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom_path, messSysName[messMode], gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom_path, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
         except:
-            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
+            MameGenerator.writeBezelConfig(None, system, rom_path, "", gameResolution, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
 
-        buttonLayout = getMameControlScheme(system, romBasename)
+        buttonLayout = getMameControlScheme(system, rom_path)
 
         if messMode == -1:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
@@ -552,7 +568,7 @@ class MameGenerator(Generator):
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
-        return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
+        return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":SAVES})
 
     @staticmethod
     def getRoot(config, name):
@@ -587,22 +603,20 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def writeBezelConfig(bezelSet, system, rom, messSys, gameResolution, gunsBordersSize, gunsBordersRatio):
-        romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-
+    def writeBezelConfig(bezelSet: str | None, system: Emulator, rom: Path, messSys: str, gameResolution: Resolution, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:
         if messSys == "":
-            tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
+            tmpZipDir = Path("/var/run/mame_artwork") / rom.stem # ok, no need to zip, a folder is taken too
         else:
-            tmpZipDir = "/var/run/mame_artwork/" + messSys # ok, no need to zip, a folder is taken too
+            tmpZipDir = Path("/var/run/mame_artwork") / messSys # ok, no need to zip, a folder is taken too
         # clean, in case no bezel is set, and in case we want to recreate it
-        if os.path.exists(tmpZipDir):
+        if tmpZipDir.exists():
             shutil.rmtree(tmpZipDir)
 
         if bezelSet is None and gunsBordersSize is None:
             return
 
         # let's generate the zip file
-        os.makedirs(tmpZipDir)
+        tmpZipDir.mkdir(parents=True)
 
         # bezels infos
         if bezelSet is None:
@@ -618,33 +632,29 @@ class MameGenerator(Generator):
 
         # create an empty bezel
         if bz_infos is None:
-            overlay_png_file = "/tmp/bezel_transmame_black.png"
+            overlay_png_file = Path("/tmp/bezel_transmame_black.png")
             bezelsUtil.createTransparentBezel(overlay_png_file, gameResolution["width"], gameResolution["height"])
             bz_infos = { "png": overlay_png_file }
 
         # copy the png inside
-        if "mamezip" in bz_infos and os.path.exists(bz_infos["mamezip"]):
+        if "mamezip" in bz_infos and bz_infos["mamezip"].exists():
             if messSys == "":
-                artFile = "/var/run/mame_artwork/" + romBase + ".zip"
+                artFile = Path("/var/run/mame_artwork") / f"{rom.stem}.zip"
             else:
-                artFile = "/var/run/mame_artwork/" + messSys + ".zip"
-            if os.path.exists(artFile):
-                if os.islink(artFile):
-                    os.unlink(artFile)
-                else:
-                    os.remove(artFile)
-            os.symlink(bz_infos["mamezip"], artFile)
+                artFile = Path("/var/run/mame_artwork") / f"{messSys}.zip"
+            if artFile.exists():
+                artFile.unlink()
+            artFile.symlink_to(bz_infos["mamezip"])
             # hum, not nice if guns need borders
             return
-        elif "layout" in bz_infos and os.path.exists(bz_infos["layout"]):
-            os.symlink(bz_infos["layout"], tmpZipDir + "/default.lay")
-            pngFile = os.path.split(bz_infos["png"])[1]
-            os.symlink(bz_infos["png"], tmpZipDir + "/" + pngFile)
+        elif "layout" in bz_infos and bz_infos["layout"].exists():
+            (tmpZipDir / 'default.lay').symlink_to(bz_infos["layout"])
+            (tmpZipDir / bz_infos["png"].name).symlink_to(bz_infos["png"])
         else:
-            pngFile = "default.png"
-            os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
-            if "info" in bz_infos and os.path.exists(bz_infos["info"]):
-                bzInfoFile = open(bz_infos["info"], "r")
+            pngFile = tmpZipDir / "default.png"
+            pngFile.symlink_to(bz_infos["png"])
+            if "info" in bz_infos and bz_infos["info"].exists():
+                bzInfoFile = bz_infos["info"].open("r")
                 bzInfoText = bzInfoFile.readlines()
                 bz_alpha = 1.0 # Just in case it's not set in the info file
                 for infoLine in bzInfoText:
@@ -670,7 +680,7 @@ class MameGenerator(Generator):
                 bz_height = img_height - bz_y - bz_bottom
             else:
                 img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
-                _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
+                _, _, rotate = MameGenerator.getMameMachineSize(rom.stem, tmpZipDir)
 
                 # assumes that all bezels are setup for 4:3H or 3:4V aspects
                 if rotate == 270 or rotate == 90:
@@ -682,7 +692,7 @@ class MameGenerator(Generator):
                 bz_y = 0
                 bz_alpha = 1.0
 
-            f = open(tmpZipDir + "/default.lay", 'w')
+            f = (tmpZipDir / "default.lay").open('w')
             f.write("<mamelayout version=\"2\">\n")
             f.write("<element name=\"bezel\"><image file=\"default.png\" /></element>\n")
             f.write("<view name=\"bezel\">\n")
@@ -695,26 +705,26 @@ class MameGenerator(Generator):
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
             if system.config['bezel.tattoo'] == 'system':
                 try:
-                    tattoo_file = '/usr/share/batocera/controller-overlays/'+system.name+'.png'
-                    if not os.path.exists(tattoo_file):
-                        tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                    tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
+                    if not tattoo_file.exists():
+                        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                     tattoo = Image.open(tattoo_file)
                 except Exception as e:
                     eslog.error(f"Error opening controller overlay: {tattoo_file}")
-            elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
+            elif system.config['bezel.tattoo'] == 'custom' and Path(system.config['bezel.tattoo_file']).exists():
                 try:
-                    tattoo_file = system.config['bezel.tattoo_file']
+                    tattoo_file = Path(system.config['bezel.tattoo_file'])
                     tattoo = Image.open(tattoo_file)
                 except:
                     eslog.error("Error opening custom file: {}".format('tattoo_file'))
             else:
                 try:
-                    tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                    tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                     tattoo = Image.open(tattoo_file)
                 except:
                     eslog.error("Error opening custom file: {}".format('tattoo_file'))
-            output_png_file = "/tmp/bezel_tattooed.png"
-            back = Image.open(tmpZipDir + "/" + pngFile)
+            output_png_file = Path("/tmp/bezel_tattooed.png")
+            back = Image.open(pngFile)
             tattoo = tattoo.convert("RGBA")
             back = back.convert("RGBA")
             tw,th = bezelsUtil.fast_image_size(tattoo_file)
@@ -741,24 +751,25 @@ class MameGenerator(Generator):
             imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
             try:
-                os.remove(tmpZipDir + "/" + pngFile)
+                pngFile.unlink()
             except:
                 pass
-            os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
+
+            pngFile.symlink_to(output_png_file)
 
         # borders for guns
         if gunsBordersSize is not None:
-            output_png_file = "/tmp/bezel_gunborders.png"
+            output_png_file = Path("/tmp/bezel_gunborders.png")
             innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-            borderSize = bezelsUtil.gunBorderImage(tmpZipDir + "/" + pngFile, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+            borderSize = bezelsUtil.gunBorderImage(pngFile, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
-                os.remove(tmpZipDir + "/" + pngFile)
+                pngFile.unlink()
             except:
                 pass
-            os.symlink(output_png_file, tmpZipDir + "/" + pngFile)
+            pngFile.symlink_to(output_png_file)
 
     @staticmethod
-    def getMameMachineSize(machine, tmpdir):
+    def getMameMachineSize(machine: str, tmpdir: Path):
         proc = subprocess.Popen(["/usr/bin/mame/mame", "-listxml", machine], stdout=subprocess.PIPE)
         (out, err) = proc.communicate()
         exitcode = proc.returncode
@@ -766,12 +777,12 @@ class MameGenerator(Generator):
         if exitcode != 0:
             raise Exception("mame -listxml " + machine + " failed")
 
-        infofile = tmpdir + "/infos.xml"
-        f = open(infofile, "w")
+        infofile = tmpdir / "infos.xml"
+        f = infofile.open("w")
         f.write(out.decode())
         f.close()
 
-        infos = minidom.parse(infofile)
+        infos = minidom.parse(str(infofile))
         display = infos.getElementsByTagName('display')
 
         for element in display:
@@ -782,14 +793,14 @@ class MameGenerator(Generator):
 
         raise Exception("display element not found")
 
-def getMameControlScheme(system, romBasename):
+def getMameControlScheme(system: Emulator, rom_path: Path) -> str:
     # Game list files
-    mameCapcom = '/usr/share/batocera/configgen/data/mame/mameCapcom.txt'
-    mameKInstinct = '/usr/share/batocera/configgen/data/mame/mameKInstinct.txt'
-    mameMKombat = '/usr/share/batocera/configgen/data/mame/mameMKombat.txt'
-    mameNeogeo = '/usr/share/batocera/configgen/data/mame/mameNeogeo.txt'
-    mameTwinstick = '/usr/share/batocera/configgen/data/mame/mameTwinstick.txt'
-    mameRotatedstick = '/usr/share/batocera/configgen/data/mame/mameRotatedstick.txt'
+    mameCapcom = MAME_DEFAULT_DATA / 'mameCapcom.txt'
+    mameKInstinct = MAME_DEFAULT_DATA / 'mameKInstinct.txt'
+    mameMKombat = MAME_DEFAULT_DATA / 'mameMKombat.txt'
+    mameNeogeo = MAME_DEFAULT_DATA / 'mameNeogeo.txt'
+    mameTwinstick = MAME_DEFAULT_DATA / 'mameTwinstick.txt'
+    mameRotatedstick = MAME_DEFAULT_DATA / 'mameRotatedstick.txt'
 
     # Controls for games with 5-6 buttons or other unusual controls
     if system.isOptSet("altlayout"):
@@ -800,14 +811,14 @@ def getMameControlScheme(system, romBasename):
     if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
         return controllerType
     else:
-        capcomList = set(open(mameCapcom).read().split())
-        mkList = set(open(mameMKombat).read().split())
-        kiList = set(open(mameKInstinct).read().split())
-        neogeoList = set(open(mameNeogeo).read().split())
-        twinstickList = set(open(mameTwinstick).read().split())
-        qbertList = set(open(mameRotatedstick).read().split())
+        capcomList = set(mameCapcom.read_text().split())
+        mkList = set(mameMKombat.read_text().split())
+        kiList = set(mameKInstinct.read_text().split())
+        neogeoList = set(mameNeogeo.read_text().split())
+        twinstickList = set(mameTwinstick.read_text().split())
+        qbertList = set(mameRotatedstick.read_text().split())
 
-        romName = os.path.splitext(romBasename)[0]
+        romName = rom_path.stem
         if romName in capcomList:
             if controllerType in [ "auto", "snes" ]:
                 return "sfsnes"

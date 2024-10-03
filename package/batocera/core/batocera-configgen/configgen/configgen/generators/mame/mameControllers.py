@@ -1,32 +1,40 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
 
-import os
 import codecs
 import csv
-from xml.dom import minidom
+import os
+from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...utils.logger import get_logger
+from .mamePaths import MAME_CONFIG, MAME_DEFAULT_DATA
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...controllersConfig import ControllerMapping
+    from ...Emulator import Emulator
+    from ...types import DeviceInfoMapping, GunMapping
 
 eslog = get_logger(__name__)
 
-def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customCfg, specialController, decorations, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system):
+def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
     config = minidom.Document()
-    configFile = cfgPath + "default.cfg"
-    if os.path.exists(configFile):
+    configFile = cfgPath / "default.cfg"
+    if configFile.exists():
         try:
-            config = minidom.parse(configFile)
+            config = minidom.parse(str(configFile))
         except:
             pass # reinit the file
-    if os.path.exists(configFile) and customCfg:
+    if configFile.exists() and customCfg:
         overwriteMAME = False
     else:
         overwriteMAME = True
 
     # Load standard controls from csv
-    controlFile = '/usr/share/batocera/configgen/data/mame/mameControls.csv'
-    openFile = open(controlFile, 'r')
+    controlFile = MAME_DEFAULT_DATA / 'mameControls.csv'
+    openFile = controlFile.open('r')
     controlDict = {}
     with openFile:
         controlList = csv.reader(openFile)
@@ -103,8 +111,8 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
         "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if sysName in specialControlList:
         # Load mess controls from csv
-        messControlFile = '/usr/share/batocera/configgen/data/mame/messControls.csv'
-        openMessFile = open(messControlFile, 'r')
+        messControlFile = MAME_DEFAULT_DATA / 'messControls.csv'
+        openMessFile = messControlFile.open('r')
         with openMessFile:
             controlList = csv.reader(openMessFile, delimiter=';')
             for row in controlList:
@@ -145,22 +153,22 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
                     currentEntry['reversed'] == True
 
         config_alt = minidom.Document()
-        configFile_alt = cfgPath + sysName + ".cfg"
-        if os.path.exists(configFile_alt) and cfgPath == "/userdata/system/configs/mame/" + sysName + "/":
+        configFile_alt = cfgPath / f"{sysName}.cfg"
+        if configFile_alt.exists() and cfgPath == (MAME_CONFIG / sysName):
             try:
-                config_alt = minidom.parse(configFile_alt)
+                config_alt = minidom.parse(str(configFile_alt))
             except:
                 pass # reinit the file
-        elif os.path.exists(configFile_alt):
+        elif configFile_alt.exists():
             try:
-                config_alt = minidom.parse(configFile_alt)
+                config_alt = minidom.parse(str(configFile_alt))
             except:
                 pass # reinit the file
-        if cfgPath == "/userdata/system/configs/mame/" + sysName + "/":
+        if cfgPath == (MAME_CONFIG / sysName):
             perGameCfg = False
         else:
             perGameCfg = True
-        if os.path.exists(configFile_alt) and (customCfg or perGameCfg):
+        if configFile_alt.exists() and (customCfg or perGameCfg):
             overwriteSystem = False
         else:
             overwriteSystem = True
@@ -295,14 +303,14 @@ def generatePadsConfig(cfgPath, playersControllers, sysName, altButtons, customC
     # TODO: python 3 - workawround to encode files in utf-8
     if overwriteMAME:
         eslog.debug(f"Saving {configFile}")
-        mameXml = codecs.open(configFile, "w", "utf-8")
+        mameXml = codecs.open(str(configFile), "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         mameXml.write(dom_string)
 
     # Write alt config (if used, custom config is turned off or file doesn't exist yet)
     if sysName in specialControlList and overwriteSystem:
         eslog.debug(f"Saving {configFile_alt}")
-        mameXml_alt = codecs.open(configFile_alt, "w", "utf-8")
+        mameXml_alt = codecs.open(str(configFile_alt), "w", "utf-8")
         dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         mameXml_alt.write(dom_string_alt)
 

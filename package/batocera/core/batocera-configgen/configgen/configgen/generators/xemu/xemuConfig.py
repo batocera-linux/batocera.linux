@@ -1,28 +1,34 @@
-import os
-import io
+from __future__ import annotations
+
 import configparser
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
+from ...batoceraPaths import ensure_parents_and_open
+from .xemuPaths import XEMU_CONFIG
 
-def writeIniFile(system, rom, playersControllers, gameResolution):
+if TYPE_CHECKING:
+    from ...controllersConfig import ControllerMapping
+    from ...Emulator import Emulator
+    from ...types import Resolution
+
+
+def writeIniFile(system: Emulator, rom: str, playersControllers: ControllerMapping, gameResolution: Resolution) -> None:
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
-    if os.path.exists(batoceraFiles.xemuConfig):
+    if XEMU_CONFIG.exists():
         try:
-            with io.open(batoceraFiles.xemuConfig, 'r', encoding='utf_8_sig') as fp:
+            with XEMU_CONFIG.open(encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
         except:
             pass
 
     createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)
     # save the ini file
-    if not os.path.exists(os.path.dirname(batoceraFiles.xemuConfig)):
-        os.makedirs(os.path.dirname(batoceraFiles.xemuConfig))
-    with open(batoceraFiles.xemuConfig, 'w') as configfile:
+    with ensure_parents_and_open(XEMU_CONFIG, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution):
+def createXemuConfig(iniConfig: configparser.ConfigParser, system: Emulator, rom: str, playersControllers: ControllerMapping, gameResolution: Resolution) -> None:
     # Create INI sections
     if not iniConfig.has_section("general"):
         iniConfig.add_section("general")
