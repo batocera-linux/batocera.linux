@@ -4,6 +4,7 @@ import json
 import subprocess
 from PIL import Image, ImageOps
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from ... import batoceraFiles
 from ... import controllersConfig
@@ -968,7 +969,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
     except Exception as e:
         # error with bezels, disabling them
         writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
-        eslog.error(f"Error with bezel {bezel}: {e}")
+        eslog.error(f"Error with bezel {bezel}: {e}", exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
@@ -1387,10 +1388,10 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
 def isLowResolution(gameResolution):
     return gameResolution["width"] < 480 or gameResolution["height"] < 480
 
-def writeBezelCfgConfig(cfgFile, overlay_png_file):
+def writeBezelCfgConfig(cfgFile, overlay_png_file: str | Path):
     fd = open(cfgFile, "w")
     fd.write("overlays = 1\n")
-    fd.write("overlay0_overlay = \"" + overlay_png_file + "\"\n")
+    fd.write(f'overlay0_overlay = "{overlay_png_file}"\n')
     fd.write("overlay0_full_screen = true\n")
     fd.write("overlay0_descs = 0\n")
     fd.close()
