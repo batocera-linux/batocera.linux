@@ -1,13 +1,19 @@
-import os
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class DXX_RebirthGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "dxx_rebirth",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F2", "save_state": ["KEY_LEFTALT", "KEY_F2"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_F2"] }
@@ -15,24 +21,23 @@ class DXX_RebirthGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        directory = os.path.dirname(rom)
+        rom_path = Path(rom)
 
-        if os.path.splitext(rom)[1] == ".d1x":
+        if rom_path.suffix == ".d1x":
             dxx_rebirth = "d1x-rebirth"
-        elif os.path.splitext(rom)[1] == ".d2x":
+        elif rom_path.suffix == ".d2x":
             dxx_rebirth = "d2x-rebirth"
 
         ## Configuration
-        rebirthConfigDir = batoceraFiles.CONF + "/" + dxx_rebirth
-        rebirthConfigFile = rebirthConfigDir + "/descent.cfg"
+        rebirthConfigDir = CONFIGS / dxx_rebirth
+        rebirthConfigFile = rebirthConfigDir / "descent.cfg"
 
-        if not os.path.exists(rebirthConfigDir):
-            os.makedirs(rebirthConfigDir)
+        mkdir_if_not_exists(rebirthConfigDir)
 
         # Check if the file exists
-        if os.path.isfile(rebirthConfigFile):
+        if rebirthConfigFile.is_file():
             # Read the contents of the file
-            with open(rebirthConfigFile, 'r') as file:
+            with rebirthConfigFile.open('r') as file:
                 lines = file.readlines()
 
             for i, line in enumerate(lines):
@@ -69,12 +74,12 @@ class DXX_RebirthGenerator(Generator):
                     else:
                         lines[i] = f'Multisample=0\n'
 
-            with open(rebirthConfigFile, 'w') as file:
+            with rebirthConfigFile.open('w') as file:
                 file.writelines(lines)
 
         else:
             # File doesn't exist, create it with some default values
-            with open(rebirthConfigFile, 'w') as file:
+            with rebirthConfigFile.open('w') as file:
                 file.write(f'ResolutionX={gameResolution["width"]}\n')
                 file.write(f'ResolutionY={gameResolution["height"]}\n')
                 file.write(f'WindowMode=0\n')
@@ -83,7 +88,7 @@ class DXX_RebirthGenerator(Generator):
                 file.write(f'TexAnisotropy=0\n')
                 file.write(f'Multisample=0\n')
 
-        commandArray = [dxx_rebirth, "-hogdir", directory]
+        commandArray = [dxx_rebirth, "-hogdir", rom_path.parent]
 
         return Command.Command(
             array=commandArray,

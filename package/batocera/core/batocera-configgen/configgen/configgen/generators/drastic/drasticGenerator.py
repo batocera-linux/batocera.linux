@@ -1,16 +1,24 @@
-import shutil
+from __future__ import annotations
+
 import filecmp
 import os
+import shutil
 from os import environ
+from typing import TYPE_CHECKING
 
-from ... import Command
-from ... import controllersConfig
-from ... import settings
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...types import HotkeysContext
+
 
 class DrasticGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "drastic",
             "keys": { "exit": "KEY_ESC" }
@@ -18,18 +26,19 @@ class DrasticGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        drastic_root = "/userdata/system/configs/drastic"
-        drastic_bin = "/userdata/system/configs/drastic/drastic"
-        drastic_conf = "/userdata/system/configs/drastic/config/drastic.cfg"
-        if not os.path.exists(drastic_root):
+        drastic_root = CONFIGS / "drastic"
+        drastic_bin = drastic_root / "drastic"
+        drastic_conf = drastic_root / "config" / "drastic.cfg"
+
+        if not drastic_root.exists():
             shutil.copytree("/usr/share/drastic", drastic_root)
 
-        if not os.path.exists(drastic_bin) or not filecmp.cmp("/usr/bin/drastic", drastic_bin):
+        if not drastic_bin.exists() or not filecmp.cmp("/usr/bin/drastic", drastic_bin):
             shutil.copyfile("/usr/bin/drastic", drastic_bin)
-            os.chmod(drastic_bin, 0o0775)
+            drastic_bin.chmod(0o0775)
 
         # Settings, Language and ConfirmPowerOff
-        f = open(drastic_conf, "w", encoding="ascii")
+        f = drastic_conf.open("w", encoding="ascii")
 
         #Getting Values from ES
         if system.isOptSet("drastic_hires") and system.config["drastic_hires"] == '1':
@@ -95,7 +104,7 @@ class DrasticGenerator(Generator):
         f.close()
 
         #Configuring Pad in the cfg
-        configurePads(settings, system, drastic_conf)
+        configurePads(drastic_conf)
 
         os.chdir(drastic_root)
         commandArray = [drastic_bin, rom]
@@ -117,7 +126,7 @@ def getDrasticLangFromEnvironment():
     else:
         return availableLanguages["en_US"]
 
-def configurePads(settings, system, drastic_conf):
+def configurePads(drastic_conf: Path):
     keyboardpart =''.join((
     "controls_a[CONTROL_INDEX_UP]                           = 338          # Arrow Up        \n",
     "controls_a[CONTROL_INDEX_DOWN]                         = 337          # Arrow Down      \n",
@@ -198,12 +207,11 @@ def configurePads(settings, system, drastic_conf):
     "controls_b[CONTROL_INDEX_UI_PAGE_DOWN]                 = 65535   \n",
     "controls_b[CONTROL_INDEX_UI_SWITCH]                    = 65535     "))
 
-    f = open(drastic_conf, "a", encoding="ascii")
-    f.write(keyboardpart)
-    f.write("\n")
-    f.write("\n")
-    f.write(padpart)
-    f.close()
+    with drastic_conf.open("a", encoding="ascii") as f:
+        f.write(keyboardpart)
+        f.write("\n")
+        f.write("\n")
+        f.write(padpart)
 
 #    def executionDirectory(self, config, rom):
 #        return os.path.dirname(drastic_root)

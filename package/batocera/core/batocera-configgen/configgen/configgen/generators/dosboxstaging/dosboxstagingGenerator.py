@@ -1,8 +1,14 @@
-import os.path
+from __future__ import annotations
+
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import CONFIGS
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 
 class DosBoxStagingGenerator(Generator):
@@ -11,26 +17,28 @@ class DosBoxStagingGenerator(Generator):
     # Return command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
-        gameDir = rom
-        batFile = gameDir + "/dosbox.bat"
-        gameConfFile = gameDir + "/dosbox.cfg"
+        gameDir = Path(rom)
+        batFile = gameDir / "dosbox.bat"
+        gameConfFile = gameDir / "dosbox.cfg"
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
-			"-fullscreen",
-			"-userconf",
-			"-exit",
-			f"""{batFile}""",
-			"-c", f"""set ROOT={gameDir}"""]
-        if os.path.isfile(gameConfFile):
+        commandArray: list[str | Path] = [
+            '/usr/bin/dosbox-staging',
+            "-fullscreen",
+            "-userconf",
+            "-exit",
+            batFile,
+            "-c", f"""set ROOT={gameDir!s}"""
+        ]
+        if gameConfFile.is_file():
             commandArray.append("-conf")
-            commandArray.append(f"""{gameConfFile}""")
+            commandArray.append(gameConfFile)
         else:
             commandArray.append("-conf")
-            commandArray.append(f"""{batoceraFiles.dosboxStagingConfig}""")
+            commandArray.append(CONFIGS / 'dosbox' / 'dosbox.conf')
 
         return Command.Command(array=commandArray)
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "dosboxstaging",
             "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F9"] }

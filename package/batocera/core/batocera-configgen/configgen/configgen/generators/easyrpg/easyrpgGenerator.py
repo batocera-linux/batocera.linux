@@ -1,19 +1,30 @@
-import os
+from __future__ import annotations
+
 import codecs
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
+from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...controllersConfig import ControllerMapping
+    from ...types import HotkeysContext
+
 
 class EasyRPGGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cgenius",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        commandArray = ["easyrpg-player"]
+        rom_path = Path(rom)
+
+        commandArray: list[str | Path] = ["easyrpg-player"]
 
         # FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
@@ -30,15 +41,13 @@ class EasyRPGGenerator(Generator):
             commandArray.extend(["--encoding", "auto"])
 
         # Save directory
-        savePath = f"/userdata/saves/easyrpg/{os.path.basename(rom)}"
-        if not os.path.exists(savePath):
-            os.makedirs(savePath)
+        savePath = SAVES / "easyrpg" / rom_path.name
+        mkdir_if_not_exists(savePath)
         commandArray.extend(["--save-path", savePath])
 
         # Dir for logs and conf
-        configdir = "/userdata/system/configs/easyrpg"
-        if not os.path.exists(configdir):
-            os.makedirs(configdir)
+        configdir = CONFIGS / "easyrpg"
+        mkdir_if_not_exists(configdir)
 
         commandArray.extend(["--project-path", rom])
 
@@ -47,7 +56,7 @@ class EasyRPGGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def padConfig(configdir, playersControllers):
+    def padConfig(configdir: Path, playersControllers: ControllerMapping) -> None:
         keymapping = {
             "button_up": None,
             "button_down": None,
@@ -75,17 +84,16 @@ class EasyRPGGenerator(Generator):
             "button_debug_through": None
         }
 
-        configFileName = "{}/{}".format(configdir, "config.ini")
-        f = codecs.open(configFileName, "w", encoding="ascii")
-        f.write("[Joypad]\n");
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer == 1:
-                f.write("number={}\n" .format(pad.index))
-                for key in keymapping:
-                    button = -1
-                    if keymapping[key] is not None:
-                        if pad.inputs[keymapping[key]].type == "button":
-                            button = pad.inputs[keymapping[key]].id
-                    f.write(f"{key}={button}\n")
-            nplayer += 1
+        with codecs.open(str(configdir / "config.ini"), "w", encoding="ascii") as f:
+            f.write("[Joypad]\n")
+            nplayer = 1
+            for playercontroller, pad in sorted(playersControllers.items()):
+                if nplayer == 1:
+                    f.write("number={}\n" .format(pad.index))
+                    for key in keymapping:
+                        button = -1
+                        if keymapping[key] is not None:
+                            if pad.inputs[keymapping[key]].type == "button":
+                                button = pad.inputs[keymapping[key]].id
+                        f.write(f"{key}={button}\n")
+                nplayer += 1

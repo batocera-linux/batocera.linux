@@ -1,17 +1,23 @@
-import os
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, SAVES
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 
 class DevilutionXGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        configDir = '/userdata/system/configs/devilutionx'
-        saveDir = '/userdata/saves/devilutionx'
-        os.makedirs(configDir, exist_ok=True)
-        os.makedirs(saveDir, exist_ok=True)
+        configDir = CONFIGS / 'devilutionx'
+        saveDir = SAVES / 'devilutionx'
+
+        configDir.mkdir(parents=True, exist_ok=True)
+        saveDir.mkdir(parents=True, exist_ok=True)
 
         commandArray = ['devilutionx', '--data-dir', '/userdata/roms/devilutionx',
                         '--config-dir', configDir, '--save-dir', saveDir]
@@ -30,7 +36,7 @@ class DevilutionXGenerator(Generator):
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "devilutionx",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F2", "restore_state": "KEY_F3" }
