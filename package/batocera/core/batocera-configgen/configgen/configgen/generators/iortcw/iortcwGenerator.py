@@ -1,22 +1,29 @@
-import os
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Final
 
 from ... import controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS
 from ...Command import Command
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+
+_IORTCW_CONFIG: Final = CONFIGS / "iortcw"
+_IORTCW_CONFIG_FILE: Final = _IORTCW_CONFIG / "main" / "wolfconfig.cfg"
+
+
 class IORTCWGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "iortcw",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F9" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-
-        # Config file path
-        config_file_path = "/userdata/roms/iortcw/main/wolfconfig.cfg"
-
         # Define the options to add or modify
         options_to_set = {
             "seta r_mode": "-1",
@@ -91,8 +98,8 @@ class IORTCWGenerator(Generator):
             options_to_set["seta cl_language"] = "0"
 
         # Check if the file exists
-        if os.path.isfile(config_file_path):
-            with open(config_file_path, 'r') as config_file:
+        if _IORTCW_CONFIG_FILE.is_file():
+            with _IORTCW_CONFIG_FILE.open('r') as config_file:
                 lines = config_file.readlines()
 
             # Loop through the options and update the lines
@@ -106,11 +113,11 @@ class IORTCWGenerator(Generator):
                             lines[i] = f"{key} \"{value}\"\n"
 
             # Write the modified content back to the file
-            with open(config_file_path, 'w') as config_file:
+            with _IORTCW_CONFIG_FILE.open('w') as config_file:
                 config_file.writelines(lines)
         else:
             # File doesn't exist, create it and add the options
-            with open(config_file_path, 'w') as config_file:
+            with _IORTCW_CONFIG_FILE.open('w') as config_file:
                 for key, value in options_to_set.items():
                     config_file.write(f"{key} \"{value}\"\n")
 
@@ -121,7 +128,7 @@ class IORTCWGenerator(Generator):
         return Command(
             array=commandArray,
             env={
-                "XDG_DATA_HOME": "/userdata/roms",
+                "XDG_DATA_HOME": ROMS,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )

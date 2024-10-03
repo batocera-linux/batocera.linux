@@ -1,10 +1,20 @@
-import os
-from xml.dom import minidom
+from __future__ import annotations
+
 import hashlib
+from typing import TYPE_CHECKING, Final
+from xml.dom import minidom
 
-from ... import batoceraFiles
+from ...batoceraPaths import HOME, ensure_parents_and_open, mkdir_if_not_exists
 
-def writeKodiConfigs(kodiJoystick, currentControllers, provider):
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...controllersConfig import ControllerMapping
+
+_KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
+
+
+def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, provider: str):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
     kodireversepositions = {'joystick1up': 'joystick1down', 'joystick1left': 'joystick1right', 'joystick2up': 'joystick2down', 'joystick2left': 'joystick2right' }
     kodiaxes             = { 'joystick1up': True, 'joystick1down': True, 'joystick1left': True, 'joystick1right': True,
@@ -37,11 +47,11 @@ def writeKodiConfigs(kodiJoystick, currentControllers, provider):
 
         # skip duplicates
         if cur.realName in controllersDone:
-            continue;
+            continue
         controllersDone[cur.realName] = True
 
         # initialized the file
-        kodiJoy = open(kodiJoystick.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest()), "w") # because 2 pads with a different name have sometimes the same vid/pid...
+        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
@@ -114,8 +124,7 @@ def writeKodiConfigs(kodiJoystick, currentControllers, provider):
         kodiJoy.write(config.toprettyxml())
         kodiJoy.close()
 
-
-def writeKodiConfig(controllersFromES):
+def writeKodiConfig(controllersFromES: ControllerMapping) -> None:
     # if there is no controller, don't remove the current generated one
     # it allows people to start kodi at startup when having only bluetooth joysticks
     # or this allows people to plug the last used joystick
@@ -123,17 +132,12 @@ def writeKodiConfig(controllersFromES):
         return
     #provider = "linux"
     provider = "udev"
-    kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/' + provider + '/batocera_{}.xml'
-    directory = os.path.dirname(kodiJoystick)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    kodiJoystick = _KODI_USERDATA / 'addon_data' / 'peripheral.joystick' / 'resources' / 'buttonmaps' / 'xml' / provider / 'batocera_{}.xml'
+    mkdir_if_not_exists(kodiJoystick.parent)
     writeKodiConfigs(kodiJoystick, controllersFromES, provider)
 
     # force the udev plugin
-    directory = batoceraFiles.HOME + "/.kodi/userdata/addon_data/peripheral.joystick"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    with open(directory + "/settings.xml", "w") as f:
+    with ensure_parents_and_open(_KODI_USERDATA / "addon_data" / "peripheral.joystick" / "settings.xml", "w") as f:
         f.write("<settings version=\"2\">")
 
         if provider == "linux":
@@ -144,12 +148,10 @@ def writeKodiConfig(controllersFromES):
         f.write("</settings>")
 
     # disable the kodi splash by default (nicer integration)
-    advxml = "/userdata/system/.kodi/userdata/advancedsettings.xml"
-    if not os.path.exists(advxml):
-        if not os.path.exists(os.path.dirname(advxml)):
-            os.makedirs(os.path.dirname(advxml))
-        with open(advxml, "w") as f:
+    advxml = _KODI_USERDATA / "advancedsettings.xml"
+    if not advxml.exists():
+        with ensure_parents_and_open(advxml, "w") as f:
             f.write("<advancedsettings><splash>false</splash></advancedsettings>")
 
-def vidpid(guid):
+def vidpid(guid: str) -> tuple[str, str]:
   return guid[10:12]+guid[8:10], guid[18:20]+guid[16:18]
