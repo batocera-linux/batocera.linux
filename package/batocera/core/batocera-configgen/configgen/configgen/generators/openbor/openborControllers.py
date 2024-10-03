@@ -1,9 +1,17 @@
-from ...settings.unixSettings import UnixSettings
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ...utils.logger import get_logger
+
+if TYPE_CHECKING:
+    from ...controllersConfig import Controller, ControllerMapping
+    from ...settings.unixSettings import UnixSettings
+
 
 eslog = get_logger(__name__)
 
-def generateControllerConfig(config: UnixSettings, playersControllers, core):
+def generateControllerConfig(config: UnixSettings, playersControllers: ControllerMapping, core: str):
     if core == "openbor4432":
         setupControllers(config, playersControllers, 32, False)
     elif core == "openbor7142":
@@ -11,7 +19,7 @@ def generateControllerConfig(config: UnixSettings, playersControllers, core):
     else:
         setupControllers(config, playersControllers, 64, False)
 
-def JoystickValue(key, pad, joy_max_inputs, new_axis_vals, invertAxis = False):
+def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals: bool, invertAxis: bool = False) -> int:
     if key not in pad.inputs:
         return 0
 
@@ -54,7 +62,7 @@ def JoystickValue(key, pad, joy_max_inputs, new_axis_vals, invertAxis = False):
     #eslog.debug("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
     return value
 
-def setupControllers(config: UnixSettings, playersControllers, joy_max_inputs, new_axis_vals):
+def setupControllers(config: UnixSettings, playersControllers: ControllerMapping, joy_max_inputs: int, new_axis_vals: bool) -> None:
     idx = 0
     for playercontroller, pad in sorted(playersControllers.items()):
         config.save("keys." + str(idx) + ".0" , JoystickValue("up",       pad, joy_max_inputs, new_axis_vals)) # MOVEUP

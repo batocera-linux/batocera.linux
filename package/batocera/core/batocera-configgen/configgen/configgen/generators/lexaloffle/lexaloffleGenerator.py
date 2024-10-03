@@ -1,29 +1,39 @@
-import os
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
+import os
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import BIOS, HOME, ROMS, SCREENSHOTS, ensure_parents_and_open
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 eslog = get_logger(__name__)
-PICO8_BIN_PATH="/userdata/bios/pico-8/pico8"
-PICO8_ROOT_PATH="/userdata/roms/pico8/"
-PICO8_CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
-VOX_BIN_PATH="/userdata/bios/voxatron/vox"
-VOX_ROOT_PATH="/userdata/roms/voxatron/"
-VOX_CONTROLLERS="/userdata/system/.lexaloffle/Voxatron/sdl_controllers.txt"
+
+PICO8_BIN_PATH: Final = BIOS / "pico-8" / "pico8"
+PICO8_ROOT_PATH: Final = ROMS / "pico8"
+PICO8_CONTROLLERS: Final = HOME / ".lexaloffle" / "pico-8" / "sdl_controllers.txt"
+VOX_BIN_PATH: Final = BIOS / "voxatron" / "vox"
+VOX_ROOT_PATH: Final = ROMS / "voxatron"
+VOX_CONTROLLERS: Final = HOME / ".lexaloffle" / "Voxatron" / "sdl_controllers.txt"
 
 
 # Generator for the official pico8 binary from Lexaloffle
 class LexaloffleGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "lexaloffle",
             "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        rom_path = Path(rom)
+
         if (system.name == "pico8"):
             BIN_PATH=PICO8_BIN_PATH
             CONTROLLERS=PICO8_CONTROLLERS
@@ -35,7 +45,7 @@ class LexaloffleGenerator(Generator):
         else:
             eslog.error(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
             return -1
-        if not os.path.exists(BIN_PATH):
+        if not BIN_PATH.exists():
             eslog.error(f"Lexaloffle official binary not found at {BIN_PATH}")
             return -1
         if not os.access(BIN_PATH, os.X_OK):
@@ -43,8 +53,8 @@ class LexaloffleGenerator(Generator):
             return -1
 
         # the command to run
-        commandArray = [BIN_PATH]
-        commandArray.extend(["-desktop", "/userdata/screenshots"])  # screenshots
+        commandArray: list[str | Path] = [BIN_PATH]
+        commandArray.extend(["-desktop", SCREENSHOTS])  # screenshots
         commandArray.extend(["-windowed", "0"])                     # full screen
         # Display FPS
         if system.config['showFPS'] == 'true':
@@ -52,17 +62,15 @@ class LexaloffleGenerator(Generator):
         else:
                 commandArray.extend(["-show_fps", "0"])
 
-        basename = os.path.basename(rom)
-        rombase, romext = os.path.splitext(basename)
+        rombase = rom_path.stem
 
         # .m3u support for multi-cart pico-8
-        if (romext.lower() == ".m3u"):
-            with open(rom, "r") as fpin:
+        if rom_path.suffix.lower() == ".m3u":
+            with rom_path.open() as fpin:
                 lines = fpin.readlines()
-            fullpath = os.path.dirname(os.path.abspath(rom)) + '/' + lines[0].strip()
-            localpath, localrom = os.path.split(fullpath)
-            commandArray.extend(["-root_path", localpath])
-            rom = fullpath
+            fullpath = rom_path.absolute().parent / lines[0].strip()
+            commandArray.extend(["-root_path", fullpath.parent])
+            rom_path = fullpath
         else:
             commandArray.extend(["-root_path", ROOT_PATH]) # store carts from splore
 
@@ -71,11 +79,8 @@ class LexaloffleGenerator(Generator):
         else:
             commandArray.extend(["-run", rom])
 
-        controllersdir = os.path.dirname(CONTROLLERS)
-        if not os.path.exists(controllersdir):
-                os.makedirs(controllersdir)
         controllersconfig = controllersConfig.generateSdlGameControllerConfig(playersControllers)
-        with open(CONTROLLERS, "w") as file:
+        with ensure_parents_and_open(CONTROLLERS, "w") as file:
                file.write(controllersconfig)
 
         return Command.Command(array=commandArray, env={})

@@ -1,8 +1,17 @@
-import os
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ... import batoceraFiles
-from ...controllersConfig import Input
+from ...controllersConfig import Controller, ControllerMapping, Input, InputMapping
+from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from configparser import ConfigParser
+
+    from ...Emulator import Emulator
+    from ...types import DeviceInfoMapping
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters
@@ -26,12 +35,12 @@ valid_n64_controller_names = [
     "8BitDo N64 Modkit",
 ]
 
-def getMupenMapping(use_n64_inputs):
+def getMupenMapping(use_n64_inputs: bool) -> dict[str, str]:
     # load system values and override by user values in case some user values are missing
-    map = dict()
-    for file in [batoceraFiles.mupenMappingSystem, batoceraFiles.mupenMappingUser]:
-        if os.path.exists(file):
-            dom = minidom.parse(file)
+    map: dict[str, str] = {}
+    for file in [MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING]:
+        if file.exists():
+            dom = minidom.parse(str(file))
             list_name = 'n64InputList' if use_n64_inputs else 'defaultInputList'
             for inputs in dom.getElementsByTagName(list_name):
                 for input in inputs.childNodes:
@@ -41,7 +50,7 @@ def getMupenMapping(use_n64_inputs):
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig, controllers, system, wheels):
+def setControllersConfig(iniConfig: ConfigParser, controllers: ControllerMapping, system: Emulator, wheels: DeviceInfoMapping) -> None:
     nplayer = 1
 
     for playercontroller, pad in sorted(controllers.items()):
@@ -58,7 +67,7 @@ def setControllersConfig(iniConfig, controllers, system, wheels):
         if iniConfig.has_section(section):
             cleanPlayer(nplayer, iniConfig)
 
-def getJoystickPeak(start_value, config_value, system):
+def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> str:
     default_value = int(start_value.split(',')[0])
     if config_value in system.config:
         multiplier = float(system.config[config_value])
@@ -80,7 +89,7 @@ def getJoystickPeak(start_value, config_value, system):
 
     return f"{peak},{peak}"
 
-def getJoystickDeadzone(default_peak, config_value, system):
+def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) -> str:
     default_value = int(default_peak.split(',')[0])
     if config_value in system.config:
         deadzone_multiplier = float(system.config[config_value])
@@ -91,7 +100,7 @@ def getJoystickDeadzone(default_peak, config_value, system):
 
     return f"{deadzone},{deadzone}"
 
-def defineControllerKeys(nplayer, controller, system, isWheel):
+def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool) -> dict[str, str]:
         # check for auto-config inputs by guid and name, or es settings
         if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
@@ -100,7 +109,7 @@ def defineControllerKeys(nplayer, controller, system, isWheel):
 
         # config holds the final pad configuration in the mupen style
         # ex: config['DPad U'] = "button(1)"
-        config = dict()
+        config: dict[str, str] = {}
 
         # determine joystick deadzone and peak
         config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
@@ -149,7 +158,7 @@ def defineControllerKeys(nplayer, controller, system, isWheel):
                                 config[mupenmapping[input.name]] += " " + value
         return config
 
-def setControllerLine(mupenmapping, input, mupenSettingName, allinputs):
+def setControllerLine(mupenmapping: Mapping[str, str], input: Input, mupenSettingName: str, allinputs: InputMapping) -> str:
         value = ''
         inputType = input.type
         if inputType == 'button':
@@ -196,7 +205,7 @@ def setControllerLine(mupenmapping, input, mupenSettingName, allinputs):
                                 value = f"axis({input.id}-)"
         return value
 
-def fillIniPlayer(nplayer, iniConfig, controller, config):
+def fillIniPlayer(nplayer: int, iniConfig: ConfigParser, controller: Controller, config: dict[str, str]) -> None:
         section = "Input-SDL-Control"+str(nplayer)
 
         # set static config
@@ -240,7 +249,7 @@ def fillIniPlayer(nplayer, iniConfig, controller, config):
         for inputName in sorted(config):
                 iniConfig.set(section, inputName, config[inputName])
 
-def cleanPlayer(nplayer, iniConfig):
+def cleanPlayer(nplayer: int, iniConfig: ConfigParser) -> None:
         section = "Input-SDL-Control"+str(nplayer)
 
         # set static config

@@ -1,23 +1,28 @@
-import os
+from __future__ import annotations
+
 import shutil
+from typing import TYPE_CHECKING
 
-from ... import batoceraFiles
+from ...batoceraPaths import mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
+from .moonlightPaths import MOONLIGHT_CONFIG, MOONLIGHT_CONFIG_DIR, MOONLIGHT_STAGING_CONFIG, MOONLIGHT_STAGING_DIR
 
-def generateMoonlightConfig(system):
+if TYPE_CHECKING:
+    from ...Emulator import Emulator
 
-    moonlightStagingConfigFile = batoceraFiles.moonlightStagingConfigFile
-    if not os.path.exists(batoceraFiles.moonlightCustom + '/staging'):
-        os.makedirs(batoceraFiles.moonlightCustom + '/staging')
+
+def generateMoonlightConfig(system: Emulator):
+
+    mkdir_if_not_exists(MOONLIGHT_STAGING_DIR)
 
     # If user made config file exists, copy to staging directory for use
-    if os.path.exists(batoceraFiles.moonlightConfigFile):
-        shutil.copy(batoceraFiles.moonlightConfigFile, batoceraFiles.moonlightStagingConfigFile)
+    if MOONLIGHT_CONFIG.exists():
+        shutil.copy(MOONLIGHT_CONFIG, MOONLIGHT_STAGING_CONFIG)
     else:
         # truncate existing config and create new one
-        f = open(moonlightStagingConfigFile, "w").close()
+        MOONLIGHT_STAGING_CONFIG.open("w").close()
 
-        moonlightConfig = UnixSettings(moonlightStagingConfigFile, separator=' ')
+        moonlightConfig = UnixSettings(MOONLIGHT_STAGING_CONFIG, separator=' ')
 
         # resolution
         if system.isOptSet('moonlight_resolution'):
@@ -93,7 +98,7 @@ def generateMoonlightConfig(system):
         moonlightConfig.save('platform', 'sdl')
 
         ## Directory to store encryption keys
-        moonlightConfig.save('keydir', batoceraFiles.moonlightCustom + '/keydir')
+        moonlightConfig.save('keydir', MOONLIGHT_CONFIG_DIR / 'keydir')
 
         # lan or wan streaming - ideally lan
         if system.isOptSet('moonlight_remote'):

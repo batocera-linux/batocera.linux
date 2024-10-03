@@ -1,10 +1,13 @@
-import os.path
+from __future__ import annotations
 
-from ... import Command
-from ... import controllersConfig
-from ... import batoceraFiles
+from pathlib import Path
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS
 from ..Generator import Generator
 from . import moonlightConfig
+from .moonlightPaths import MOONLIGHT_GAME_LIST, MOONLIGHT_STAGING_CONFIG
+
 
 class MoonlightGenerator(Generator):
 
@@ -21,8 +24,8 @@ class MoonlightGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         moonlightConfig.generateMoonlightConfig(system)
-        gameName,confFile = self.getRealGameNameAndConfigFile(rom)
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 'stream','-config',  confFile]
+        gameName, confFile = self.getRealGameNameAndConfigFile(Path(rom))
+        commandArray = ['/usr/bin/moonlight', 'stream','-config',  confFile]
         commandArray.append('-app')
         commandArray.append(gameName)
         commandArray.append('-debug')
@@ -34,29 +37,28 @@ class MoonlightGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_DATA_DIRS": batoceraFiles.CONF,
+                "XDG_DATA_DIRS": CONFIGS,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
 
-    def getRealGameNameAndConfigFile(self, rom):
-        # Rom's basename without extension
-        romName = os.path.splitext(os.path.basename(rom))[0]
+    def getRealGameNameAndConfigFile(self, rom: Path) -> tuple[str | None, Path]:
         # find the real game name
-        f = open(batoceraFiles.moonlightGamelist, 'r')
+        f = MOONLIGHT_GAME_LIST.open()
         gfeGame = None
         for line in f:
             try:
-                gfeRom, gfeGame, confFile = line.rstrip().split(';')
+                gfeRom, gfeGame, confFileString = line.rstrip().split(';')
+                confFile = Path(confFileString)
                 #confFile = confFile.rstrip()
             except:
                 gfeRom, gfeGame = line.rstrip().split(';')
-                confFile = batoceraFiles.moonlightStagingConfigFile
+                confFile = MOONLIGHT_STAGING_CONFIG
             #If found
-            if gfeRom == romName:
+            if gfeRom == rom.stem:
                 # return it
                 f.close()
-                return [gfeGame, confFile]
+                return gfeGame, confFile
         # If nothing is found (old gamelist file format ?)
-        return [gfeGame, batoceraFiles.moonlightStagingConfigFile]
+        return gfeGame, MOONLIGHT_STAGING_CONFIG
