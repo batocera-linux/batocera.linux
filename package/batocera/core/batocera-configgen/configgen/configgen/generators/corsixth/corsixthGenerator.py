@@ -119,7 +119,7 @@ class CorsixTHGenerator(Generator):
         # Check custom music is installed
         try:
             os.chdir(corsixthDataPath / "MP3")
-            source_config_file.write(f"audio_music = [[{{corsixthDataPath / 'MP3'}}]]\n")
+            source_config_file.write(f"audio_music = [[{corsixthDataPath / 'MP3'}]]\n")
         except:
             eslog.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
