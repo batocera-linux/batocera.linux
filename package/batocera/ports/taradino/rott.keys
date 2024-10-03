@@ -1,0 +1,136 @@
+{
+    "actions_player1": [
+    	{
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "description": "Exit the emulator"
+	    },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "Open door"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Toggle weapon"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_DELETE",
+            "description": "Drop weapon"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": "KEY_HOME",
+            "description": "Aim up"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": "KEY_END",
+            "description": "Aim down"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_COMMA",
+            "description": "Strafe left"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_DOT",
+            "description": "Strafe right"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_RIGHTSHIFT",
+            "description": "Run"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_LEFTCTRL",
+            "description": "Fire"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Menu back"
+        },
+        {
+            "trigger": "joystick2left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move left"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Move forward"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Move backward"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move left"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Move forward"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Move backward"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move left"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_CAPSLOCK",
+            "description": "Toggle run"
+        }
+    ]
+}

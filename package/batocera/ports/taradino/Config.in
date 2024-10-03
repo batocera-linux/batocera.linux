@@ -1,0 +1,8 @@
+config BR2_PACKAGE_TARADINO
+    bool "taradino"
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_MIXER
+    help
+      SDL2 port of Rise of the Triad.
+      
+      https://github.com/fabiangreffrath/taradino

@@ -5369,3 +5369,31 @@ chihiro:
     Pour plus d'informations consultez la documentation ici: https://wiki.batocera.org/systems:chihiro
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:chihiro
+
+rott:
+  name: Rise of the Triad
+  manufacturer: Ports
+  release: 1994
+  hardware: port
+  extensions: [rott]
+  platform: pc
+  group: ports
+  emulators:
+    taradino:
+      taradino: { requireAnyOf: [BR2_PACKAGE_TARADINO] }
+  comment_en: |
+    Place your commercial version of Rise of the Triad installation files in here.
+
+    You should include DARKWAR.WAD, DARKWAR.RTL, DARKWAR.RTC & REMOTE1.RTS as a minimum.
+    File names can be upper or lower case.
+
+    Then create the file `Rise of the Triad.rott`. This will enable EmulationStation to launch the game.
+
+    You do not need to enable the joystick or gamepad as compatiblity doesn't work well yet.
+    We have mapped the controller to keyboard events as a result.
+
+    For more info: https://wiki.batocera.org/systems:taradino
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:taradino
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:taradino

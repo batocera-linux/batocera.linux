@@ -1,0 +1,22 @@
+diff --git a/rott/rt_datadir.c b/rott/rt_datadir.c
+index 36442bc557..6d49150e27 100644
+--- a/rott/rt_datadir.c
++++ b/rott/rt_datadir.c
+@@ -221,7 +221,7 @@ static void AddXdgDirs(void)
+         env = tmp_env;
+     }
+ 
+-    AddDataDir(M_StringJoin(env, "/games/rott", NULL));
++    AddDataDir(env);
+     free(tmp_env);
+ 
+     env = getenv("XDG_DATA_DIRS");
+@@ -230,7 +230,7 @@ static void AddXdgDirs(void)
+         env = "/usr/local/share:/usr/share";
+     }
+ 
+-    AddDataPath(env, "/games/rott");
++    AddDataPath(env, NULL);
+ }
+ #endif
+ 
