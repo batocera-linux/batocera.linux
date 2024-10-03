@@ -73,24 +73,3 @@ def ensure_parents_and_open(file: Path, mode: str) -> Iterator[IO[Any]]:
     mkdir_if_not_exists(file.parent)
     with file.open(mode) as f:
         yield f
-
-@overload
-@contextmanager
-def open_if_not_exists(file: Path, mode: OpenTextModeWriting | OpenTextModeUpdating) -> Iterator[TextIOWrapper]:
-    ...
-
-@overload
-@contextmanager
-def open_if_not_exists(file: Path, mode: OpenBinaryModeUpdating) -> Iterator[BufferedRandom]:
-    ...
-
-@overload
-@contextmanager
-def open_if_not_exists(file: Path, mode: OpenBinaryModeWriting) -> Iterator[BufferedWriter]:
-    ...
-
-@contextmanager
-def open_if_not_exists(file: Path, mode: str) -> Iterator[IO[Any]]:
-    if not file.exists():
-        with file.open(mode) as f:
-            yield f

@@ -1,15 +1,17 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
 
-import sys
-import os
 import configparser
-from ... import batoceraFiles
+from typing import TYPE_CHECKING, Literal
+
+from ...batoceraPaths import mkdir_if_not_exists
 from ...utils.logger import get_logger
+from .flycastPaths import FLYCAST_MAPPING
+
+if TYPE_CHECKING:
+    from ...controllersConfig import Controller
 
 eslog = get_logger(__name__)
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 flycastMapping = { # Directions
                    # The DPAD can be an axis (for gpio sticks for example) or a hat
@@ -68,20 +70,19 @@ flycastArcadeMapping = { # Directions
 sections = { 'analog', 'digital', 'emulator' }
 
 # Create the controller configuration file
-def generateControllerConfig(controller, type):
+def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 'arcade']):
     # Set config file name
     if type == 'dreamcast':
         eslog.debug("-=[ Dreamcast Controller Settings ]=-")
-        configFileName = "{}/SDL_{}.cfg".format(batoceraFiles.flycastMapping, controller.realName)
-    if type == 'arcade':
+        configFileName = FLYCAST_MAPPING / f"SDL_{controller.realName}.cfg"
+    else: # 'arcade'
         eslog.debug("-=[ Arcade Controller Settings ]=-")
-        configFileName = "{}/SDL_{}_arcade.cfg".format(batoceraFiles.flycastMapping, controller.realName)
+        configFileName = FLYCAST_MAPPING / f"SDL_{controller.realName}_arcade.cfg"
+
     Config = configparser.ConfigParser(interpolation=None)
 
-    if not os.path.exists(os.path.dirname(configFileName)):
-        os.makedirs(os.path.dirname(configFileName))
+    mkdir_if_not_exists(configFileName.parent)
 
-    cfgfile = open(configFileName,'w+')
     # create ini sections
     for section in sections:
         Config.add_section(section)
@@ -188,5 +189,5 @@ def generateControllerConfig(controller, type):
         Config.set("emulator", "rumble_power", "100")
         Config.set("emulator", "version", "3")
 
-    Config.write(cfgfile)
-    cfgfile.close()
+    with configFileName.open('w+') as cfgfile:
+        Config.write(cfgfile)

@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-import os
-from typing import Dict, List
+from pathlib import Path
 
 from .logger import get_logger
 
@@ -36,9 +37,9 @@ class BuildEngineArg:
     only_one_allowed: bool
 
 
-def parse_args(launch_args: List[str], rom_path: str) -> Result:
+def parse_args(launch_args: list[str | Path], rom_path: Path) -> Result:
     # These arguments are all shared by EDuke32 and Raze, with noted differences
-    build_args: Dict[str, BuildEngineArg] = {e.arg_key: e for e in [
+    build_args: dict[str, BuildEngineArg] = {e.arg_key: e for e in [
         BuildEngineArg("DIR", "-j", False),  # Adds directory to search list
         # The main game file to load: EDuke32 and Raze can load .grp, .zip, .ssi, .pk3, .pk4; Raze can also load .7z
         BuildEngineArg("FILE", "-gamegrp", True),
@@ -51,7 +52,7 @@ def parse_args(launch_args: List[str], rom_path: str) -> Result:
         BuildEngineArg("DEF+", "-mh", False),  # Append DEF after main DEF module
         BuildEngineArg("MAP", "-map", True),  # Start specified MAP on launch
     ]}
-    with open(rom_path, "r") as file:
+    with rom_path.open("r") as file:
         lines = file.readlines()
     errors = []
     for i, line in enumerate(lines):
@@ -76,10 +77,10 @@ def parse_args(launch_args: List[str], rom_path: str) -> Result:
         # Paths that begin with "/" denote absolute path from emulator roms directory e.g. /userdata/roms/raze
         # These paths are expected to exist on physical filesystem
         # Otherwise, no "/", they are expected to exist on the virtual filesystem
-        val_path = (os.path.dirname(rom_path) + val) if val.startswith("/") else val
+        val_path = (rom_path.parent / val[1:]) if val.startswith("/") else val
         build_arg = build_args[key]
         # We will check physical paths exist to be helpful, but virtual paths... who knows
-        if val_path.startswith("/") and not os.path.exists(val_path):
+        if isinstance(val_path, Path) and not val_path.exists():
             errors += [ParseError(i, f"{val_path} does not exist")]
             continue
         # Check obvious duplicates; there is never a reason the user would want to do this

@@ -1,18 +1,24 @@
-import zipfile
-from os import path
+from __future__ import annotations
+
 import shutil
+import zipfile
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ... import batoceraFiles
 from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import fsuaeControllers
+from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 eslog = get_logger(__name__)
 
 class FsuaeGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "fsuae",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -20,48 +26,46 @@ class FsuaeGenerator(Generator):
 
     # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
     # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
-    def floppiesFromRom(self, rom):
-        floppies = []
-
-        # split path and extension
-        filepath, fileext = path.splitext(rom)
+    def floppiesFromRom(self, rom: Path):
+        floppies: list[Path] = []
 
         # if the last char is not a digit, only 1 file
-        if not filepath[-1:].isdigit():
+        if not rom.stem[-1:].isdigit():
             floppies.append(rom)
             return floppies
 
         # path without the number
-        fileprefix=filepath[:-1]
+        fileprefix=rom.stem[:-1]
 
         # special case for 0 while numerotation can start at 1
-        n = 0
-        if path.isfile(fileprefix + str(n) + fileext):
-            floppies.append(fileprefix + str(n) + fileext)
+        zero_file = rom.with_name(f'{fileprefix}0{rom.suffix}')
+        if zero_file.is_file():
+            floppies.append(zero_file)
 
         # adding all other files
         n = 1
-        while path.isfile(fileprefix + str(n) + fileext):
-            floppies.append(fileprefix + str(n) + fileext)
+        while (floppy := rom.with_name(f'{fileprefix}{n}{rom.suffix}')).is_file():
+            floppies.append(floppy)
             n += 1
 
         return floppies
 
-    def filePrefix(self, rom):
-        filename, fileext = path.splitext(path.basename(rom))
-        if not filename[-1:].isdigit():
-            return filename
-        return filename[:-1]
+    def filePrefix(self, rom: Path):
+        if not rom.stem[-1:].isdigit():
+            return rom.stem
+        return rom.stem[:-1]
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        rom_path = Path(rom)
+
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--fullscreen",
-                                                                               "--amiga-model="     + system.config['core'],
-                                                                               "--base_dir="        + batoceraFiles.fsuaeConfig,
-                                                                               "--kickstarts_dir="  + batoceraFiles.fsuaeBios,
-                                                                               "--save_states_dir=" + batoceraFiles.fsuaeSaves + "/" + system.config['core'] + "/" + self.filePrefix(rom),
-                                                                               "--zoom=auto"
+        commandArray = ['/usr/bin/fs-uae', "--fullscreen",
+                                           "--amiga-model="     + system.config['core'],
+                                           f"--base_dir={FSUAE_CONFIG_DIR!s}",
+                                           f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
+                                           f"--save_states_dir={FSUAE_SAVES / system.config['core'] / self.filePrefix(rom_path)}",
+                                           "--zoom=auto"
                        ]
 
         device_type = "floppy"
@@ -69,8 +73,8 @@ class FsuaeGenerator(Generator):
             device_type = "cdrom"
 
         # extract zip here
-        TEMP_DIR="/tmp/fsuae/" # with trailing slash!
-        diskNames = []
+        TEMP_DIR = Path("/tmp/fsuae")
+        diskNames: list[str] = []
 
         # read from zip
         if (rom.lower().endswith("zip")):
@@ -90,17 +94,17 @@ class FsuaeGenerator(Generator):
 
             n = 0
             for disk in diskNames:
-                commandArray.append("--" + device_type + "_image_" + str(n) + "=" + TEMP_DIR + disk + "")
+                commandArray.append(f"--{device_type}_image_{n}={TEMP_DIR / disk}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
-                    commandArray.append("--" + device_type + "_drive_" + str(n) + "=" + TEMP_DIR + disk + "")
+                    commandArray.append(f"--{device_type}_drive_{n}={TEMP_DIR / disk}")
                 n += 1
 
         else:
             n = 0
-            for img in self.floppiesFromRom(rom):
-                commandArray.append("--" + device_type + "_image_" + str(n) + "=" + img + "")
+            for img in self.floppiesFromRom(rom_path):
+                commandArray.append(f"--{device_type}_image_{n}={img}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
-                    commandArray.append("--" + device_type + "_drive_" + str(n) + "=" + img + "")
+                    commandArray.append(f"--{device_type}_drive_{n}={img}")
                 n += 1
 
         # controllers
