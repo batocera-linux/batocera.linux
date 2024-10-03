@@ -1,38 +1,43 @@
-from shutil import copyfile
-import os
-import filecmp
-import codecs
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import codecs
+import filecmp
+from pathlib import Path
+from shutil import copyfile
+from typing import TYPE_CHECKING, Final
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
 from ..Generator import Generator
 
-redream_file = "/usr/bin/redream"
-redreamConfig = batoceraFiles.CONF + "/redream"
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+redream_file: Final = Path("/usr/bin/redream")
+redreamConfig: Final = CONFIGS / "redream"
+redreamRoms: Final = ROMS / "dreamcast"
 
 class RedreamGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "redream",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        redream_exec = redreamConfig + "/redream"
+        redream_exec = redreamConfig / "redream"
 
-        if not os.path.exists(redreamConfig):
-            os.makedirs(redreamConfig)
+        mkdir_if_not_exists(redreamConfig)
 
-        if not os.path.exists(redream_exec) or not filecmp.cmp(redream_file, redream_exec):
+        if not redream_exec.exists() or not filecmp.cmp(redream_file, redream_exec):
             copyfile(redream_file, redream_exec)
-            os.chmod(redream_exec, 0o0775)
+            redream_exec.chmod(0o0775)
 
-        configFileName = redreamConfig + "/redream.cfg"
-        f = codecs.open(configFileName, "w")
+        configFileName = redreamConfig / "redream.cfg"
+        f = codecs.open(str(configFileName), "w")
         # set the roms path
-        f.write("gamedir=/userdata/roms/dreamcast\n")
+        f.write(f"gamedir={redreamRoms}\n")
         # force fullscreen
         f.write("mode=exclusive fullscreen\n")
         f.write("fullmode=exclusive fullscreen\n")

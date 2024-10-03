@@ -1,18 +1,23 @@
-import os
-from os import path
-import codecs
+from __future__ import annotations
 
-from ... import batoceraFiles
+import codecs
+from typing import TYPE_CHECKING, Final
+
+from ...batoceraPaths import mkdir_if_not_exists
 from ...utils.logger import get_logger
+from .rpcs3Paths import RPCS3_CONFIG_DIR
+
+if TYPE_CHECKING:
+    from ...controllersConfig import ControllerMapping
+    from ...Emulator import Emulator
 
 eslog = get_logger(__name__)
 
-rpcs3_input_dir = batoceraFiles.CONF + "/rpcs3/input_configs/global"
+_RPCS3_INPUT_DIR: Final = RPCS3_CONFIG_DIR / "input_configs" / "global"
 
-def generateControllerConfig(system, controllers, rom):
+def generateControllerConfig(system: Emulator, controllers: ControllerMapping, rom: str):
 
-    if not path.isdir(rpcs3_input_dir):
-        os.makedirs(rpcs3_input_dir)
+    mkdir_if_not_exists(_RPCS3_INPUT_DIR)
 
     valid_sony_guids = [
         # ds3
@@ -63,8 +68,8 @@ def generateControllerConfig(system, controllers, rom):
     nplayer, ds3player, ds4player, dsplayer = 1, 1, 1, 1
     controller_counts = {}
 
-    configFileName = f"{rpcs3_input_dir}/Default.yml"
-    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+    configFileName = _RPCS3_INPUT_DIR / "Default.yml"
+    f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
     for controller, pad in sorted(controllers.items()):
         if nplayer <= 7:
             eslog.debug(f"Controller #{nplayer} - {pad.guid}")

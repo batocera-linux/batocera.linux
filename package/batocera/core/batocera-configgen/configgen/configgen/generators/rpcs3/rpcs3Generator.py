@@ -1,23 +1,29 @@
-import shutil
-import os
-from os import path
-import configparser
-import ruamel.yaml as yaml
-import re
-import subprocess
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import configparser
+import re
+import shutil
+import subprocess
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import ruamel.yaml as yaml
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import rpcs3Controllers
+from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 eslog = get_logger(__name__)
 
 class Rpcs3Generator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "rpcs3",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -28,16 +34,15 @@ class Rpcs3Generator(Generator):
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
 
         # Taking care of the CurrentSettings.ini file
-        if not os.path.exists(os.path.dirname(batoceraFiles.rpcs3CurrentConfig)):
-            os.makedirs(os.path.dirname(batoceraFiles.rpcs3CurrentConfig))
+        mkdir_if_not_exists(RPCS3_CURRENT_CONFIG.parent)
 
         # Generates CurrentSettings.ini with values to disable prompts on first run
 
         rpcsCurrentSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         rpcsCurrentSettings.optionxform = str
-        if os.path.exists(batoceraFiles.rpcs3CurrentConfig):
-            rpcsCurrentSettings.read(batoceraFiles.rpcs3CurrentConfig)
+        if RPCS3_CURRENT_CONFIG.exists():
+            rpcsCurrentSettings.read(RPCS3_CURRENT_CONFIG)
 
         # Sets Gui Settings to close completely and disables some popups
         if not rpcsCurrentSettings.has_section("main_window"):
@@ -47,16 +52,15 @@ class Rpcs3Generator(Generator):
         rpcsCurrentSettings.set("main_window", "infoBoxEnabledInstallPUP","false")
         rpcsCurrentSettings.set("main_window", "infoBoxEnabledWelcome","false")
 
-        with open(batoceraFiles.rpcs3CurrentConfig, "w") as configfile:
+        with RPCS3_CURRENT_CONFIG.open("w") as configfile:
             rpcsCurrentSettings.write(configfile)
 
-        if not os.path.exists(os.path.dirname(batoceraFiles.rpcs3config)):
-            os.makedirs(os.path.dirname(batoceraFiles.rpcs3config))
+        mkdir_if_not_exists(RPCS3_CONFIG.parent)
 
         # Generate a default config if it doesn't exist otherwise just open the existing
         rpcs3ymlconfig = {}
-        if os.path.isfile(batoceraFiles.rpcs3config):
-            with open(batoceraFiles.rpcs3config, "r") as stream:
+        if RPCS3_CONFIG.is_file():
+            with RPCS3_CONFIG.open("r") as stream:
                 rpcs3ymlconfig = yaml.safe_load(stream)
 
         if rpcs3ymlconfig is None: # in case the file is empty
@@ -321,51 +325,51 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Miscellaneous"]["Prevent display sleep while running games"] = True
         rpcs3ymlconfig["Miscellaneous"]["Show trophy popups"] = False
 
-        with open(batoceraFiles.rpcs3config, "w") as file:
+        with RPCS3_CONFIG.open("w") as file:
             yaml.dump(rpcs3ymlconfig, file, default_flow_style=False)
 
         # copy icon files to config
-        icon_source = '/usr/share/rpcs3/Icons/'
-        icon_target = batoceraFiles.CONF + '/rpcs3/Icons'
-        if not os.path.exists(icon_target):
-            os.makedirs(icon_target)
-        shutil.copytree(icon_source, icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
+        icon_target = RPCS3_CONFIG_DIR / 'Icons'
+        mkdir_if_not_exists(icon_target)
+        shutil.copytree('/usr/share/rpcs3/Icons/', icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
+
+        rom_path = Path(rom)
 
         # determine the rom name
-        if rom.endswith(".psn"):
-            with open(rom) as fp:
+        if rom_path.suffix == ".psn":
+            with rom_path.open() as fp:
                 for line in fp:
                     if len(line) >= 9:
-                        romName = "/userdata/system/configs/rpcs3/dev_hdd0/game/" + line.strip().upper() + "/USRDIR/EBOOT.BIN"
+                        romName = RPCS3_CONFIG_DIR / "dev_hdd0" / "game" / line.strip().upper() / "USRDIR" / "EBOOT.BIN"
         else:
-            romBasename = path.basename(rom)
-            romName = rom + "/PS3_GAME/USRDIR/EBOOT.BIN"
+            romName = rom_path / "PS3_GAME" / "USRDIR" / "EBOOT.BIN"
 
         # write our own gamecontrollerdb.txt file before launching the game
-        dbfile = "/userdata/system/configs/rpcs3/input_configs/gamecontrollerdb.txt"
+        dbfile = RPCS3_CONFIG_DIR / "input_configs" / "gamecontrollerdb.txt"
         controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
 
-        commandArray = [batoceraFiles.batoceraBins[system.config["emulator"]], romName]
+        commandArray = [RPCS3_BIN, romName]
 
         if not (system.isOptSet("rpcs3_gui") and system.getOptBoolean("rpcs3_gui")):
             commandArray.append("--no-gui")
 
         # firmware not installed and available : instead of starting the game, install it
         if Rpcs3Generator.getFirmwareVersion() is None:
-          if os.path.exists("/userdata/bios/PS3UPDAT.PUP"):
-            commandArray = [batoceraFiles.batoceraBins[system.config["emulator"]], "--installfw", "/userdata/bios/PS3UPDAT.PUP"]
+          if (BIOS / "PS3UPDAT.PUP").exists():
+            commandArray = [RPCS3_BIN, "--installfw", BIOS / "PS3UPDAT.PUP"]
 
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":batoceraFiles.CONF,
-                "XDG_CACHE_HOME":batoceraFiles.CACHE,
+                "XDG_CONFIG_HOME":CONFIGS,
+                "XDG_CACHE_HOME":CACHE,
                 "QT_QPA_PLATFORM":"xcb",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
 
+    @staticmethod
     def getClosestRatio(gameResolution):
         screenRatio = gameResolution["width"] / gameResolution["height"]
         if screenRatio < 1.6:
@@ -376,9 +380,10 @@ class Rpcs3Generator(Generator):
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
 
+    @staticmethod
     def getFirmwareVersion():
         try:
-            with open("/userdata/system/configs/rpcs3/dev_flash/vsh/etc/version.txt", "r") as stream:
+            with (RPCS3_CONFIG_DIR / "dev_flash" / "vsh" / "etc" / "version.txt").open("r") as stream:
                 lines = stream.readlines()
             for line in lines:
                 matches = re.match("^release:(.*):", line)

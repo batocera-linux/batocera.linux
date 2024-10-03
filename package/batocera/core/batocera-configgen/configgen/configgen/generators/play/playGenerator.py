@@ -1,20 +1,24 @@
-import os
-from os import path
+from __future__ import annotations
+
 import xml.etree.ElementTree as ET
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ..Generator import Generator
 
-playConfig = batoceraFiles.CONF + '/play'
-playSaves = batoceraFiles.SAVES + '/play'
-playHome = batoceraFiles.CONF
-playConfigFile = playConfig + '/Play Data Files/config.xml'
-playInputFile = playConfig + '/Play Data Files/inputprofiles/default.xml'
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+playConfig: Final = CONFIGS / 'play'
+playSaves: Final = SAVES / 'play'
+playConfigFile: Final = playConfig / 'Play Data Files' / 'config.xml'
+playInputFile: Final = playConfig / 'Play Data Files' / 'inputprofiles' / 'default.xml'
 
 class PlayGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "play",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -23,11 +27,9 @@ class PlayGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Create config folder
-        if not path.isdir(playConfig):
-            os.makedirs(playConfig)
+        mkdir_if_not_exists(playConfig)
         # Create save folder
-        if not path.isdir(playSaves):
-            os.makedirs(playSaves)
+        mkdir_if_not_exists(playSaves)
 
         ## Work with the config.xml file
         root = ET.Element('Config')
@@ -81,7 +83,7 @@ class PlayGenerator(Generator):
         }
 
         # Check if the file exists
-        if os.path.exists(playConfigFile):
+        if playConfigFile.exists():
             tree = ET.parse(playConfigFile)
             root = tree.getroot()
         # Add or update preferences
@@ -114,15 +116,14 @@ class PlayGenerator(Generator):
         tree = ET.ElementTree(root)
 
         # Handle the case when the file doesn't exist
-        if not os.path.exists(playConfigFile):
+        if not playConfigFile.exists():
             # Create the directory if it doesn't exist
-            directory = os.path.dirname(playConfigFile)
-            os.makedirs(directory, exist_ok=True)
+            playConfigFile.parent.mkdir(parents=True, exist_ok=True)
             # Write the XML to the file
             tree.write(playConfigFile)
         else:
             # File exists, write the XML to the existing file
-            with open(playConfigFile, "wb") as file:
+            with playConfigFile.open("wb") as file:
                 tree.write(file)
 
         commandArray = ["/usr/bin/Play", "--fullscreen"]
@@ -131,9 +132,7 @@ class PlayGenerator(Generator):
             # if zip, it's a namco arcade game
             if (rom.lower().endswith("zip")):
                 # strip path & extension
-                rom = os.path.basename(rom)
-                rom = os.path.splitext(rom)[0]
-                commandArray.extend(["--arcade", rom])
+                commandArray.extend(["--arcade", Path(rom).stem])
             else:
                 commandArray.extend(["--disc", rom])
 
@@ -142,7 +141,7 @@ class PlayGenerator(Generator):
             env={
                 "XDG_CONFIG_HOME":playConfig,
                 "XDG_DATA_HOME":playConfig,
-                "XDG_CACHE_HOME":batoceraFiles.CACHE,
+                "XDG_CACHE_HOME":CACHE,
                 "QT_QPA_PLATFORM":"xcb",
             }
         )
