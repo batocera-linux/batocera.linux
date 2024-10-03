@@ -1,18 +1,25 @@
+from __future__ import annotations
+
 import os
 import re
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
 from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import openborControllers
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 eslog = get_logger(__name__)
 
 class OpenborGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "openbor",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -20,16 +27,12 @@ class OpenborGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        configDir = batoceraFiles.CONF + '/openbor'
-        if not os.path.exists(configDir):
-            os.makedirs(configDir)
-
-        savesDir = batoceraFiles.SAVES + '/openbor'
-        if not os.path.exists(savesDir):
-            os.makedirs(savesDir)
+        configDir = CONFIGS / 'openbor'
+        mkdir_if_not_exists(configDir)
+        mkdir_if_not_exists(SAVES / 'openbor')
 
         # guess the version to run
-        core = system.config['core']
+        core: str = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
         eslog.debug(f"core taken is {core}")
@@ -45,7 +48,7 @@ class OpenborGenerator(Generator):
         elif core == "openbor7530":
             configfilename = "config7530.ini"
 
-        config = UnixSettings(configDir + "/" + configfilename, separator='')
+        config = UnixSettings(configDir / configfilename, separator='')
 
         # general
         config.save("fullscreen", "1")
@@ -91,12 +94,12 @@ class OpenborGenerator(Generator):
         config.write()
 
         # change directory for wider compatibility
-        os.chdir("/userdata/roms/openbor")
+        os.chdir(ROMS / "openbor")
 
         return OpenborGenerator.executeCore(core, rom)
 
     @staticmethod
-    def executeCore(core, rom):
+    def executeCore(core: str, rom: str) -> Command.Command:
         if core == "openbor4432":
             commandArray = ["OpenBOR4432", rom]
         elif core == "openbor6412":
@@ -110,8 +113,8 @@ class OpenborGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def guessCore(rom):
-        versionstr = re.search(r'\[.*([0-9]{4})\]+', os.path.basename(rom))
+    def guessCore(rom: str) -> str:
+        versionstr = re.search(r'\[.*([0-9]{4})\]+', Path(rom).name)
         if versionstr == None:
             return "openbor7530"
         version = int(versionstr.group(1))

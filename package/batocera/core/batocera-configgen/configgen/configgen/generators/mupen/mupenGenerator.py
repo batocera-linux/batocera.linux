@@ -1,15 +1,23 @@
+from __future__ import annotations
+
 import configparser
-import os
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import ensure_parents_and_open, mkdir_if_not_exists
 from ..Generator import Generator
-from . import mupenConfig
-from . import mupenControllers
+from . import mupenConfig, mupenControllers
+from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_CUSTOM
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...types import HotkeysContext
+
 
 class MupenGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "mupen64",
             "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_P" }
@@ -21,24 +29,21 @@ class MupenGenerator(Generator):
         iniConfig = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str
-        if os.path.exists(batoceraFiles.mupenCustom):
-            iniConfig.read(batoceraFiles.mupenCustom)
+        if MUPEN_CUSTOM.exists():
+            iniConfig.read(MUPEN_CUSTOM)
         else:
-            if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
-                os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
-            iniConfig.read(batoceraFiles.mupenCustom)
+            mkdir_if_not_exists(MUPEN_CUSTOM.parent)
+            iniConfig.read(MUPEN_CUSTOM)
 
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
         mupenControllers.setControllersConfig(iniConfig, playersControllers, system, wheels)
 
         # Save the ini file
-        if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
-            os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
-        with open(batoceraFiles.mupenCustom, 'w') as configfile:
+        with ensure_parents_and_open(MUPEN_CUSTOM, 'w') as configfile:
             iniConfig.write(configfile)
 
         # Command
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']), "--configdir", batoceraFiles.mupenConf, "--datadir", batoceraFiles.mupenConf]
+        commandArray: list[str | Path] = ['/usr/bin/mupen64plus', "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']), "--configdir", MUPEN_CONFIG_DIR, "--datadir", MUPEN_CONFIG_DIR]
 
         # state_filename option
         if system.isOptSet('state_filename'):

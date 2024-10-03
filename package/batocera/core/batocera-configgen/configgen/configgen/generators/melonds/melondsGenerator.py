@@ -1,38 +1,41 @@
-import os
-from os import path
+from __future__ import annotations
+
 import codecs
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ... import batoceraFiles
+from ...batoceraPaths import BIOS, CHEATS, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 eslog = get_logger(__name__)
+
+_MELONDS_SAVES: Final = SAVES / "melonds"
+_MELONDS_ROMS: Final = ROMS / "nds"
+_MELONDS_CHEATS: Final = CHEATS / "melonDS"
+_MELONDS_CONFIG: Final = CONFIGS / "melonDS"
 
 class MelonDSGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "melonds",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romBasename = path.basename(rom)
-
         # Verify the save path exists
-        if not os.path.exists("/userdata/saves/melonds"):
-            os.mkdir("/userdata/saves/melonds")
+        mkdir_if_not_exists(_MELONDS_SAVES)
         # Verify the cheat path exist
-        if not os.path.exists("/userdata/cheats/melonDS"):
-            os.mkdir("/userdata/cheats/melonDS")
+        mkdir_if_not_exists(_MELONDS_CHEATS)
         # Config path
-        configdir = "{}/{}".format(batoceraFiles.CONF, "melonDS")
-        if not os.path.exists(configdir):
-            os.makedirs(configdir)
+        mkdir_if_not_exists(_MELONDS_CONFIG)
         # Config file
-        configFileName = "{}/{}".format(configdir, "melonDS.ini")
-        f = codecs.open(configFileName, "w", encoding="utf_8_sig")
+        configFileName = _MELONDS_CONFIG / "melonDS.ini"
+        f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
 
         # [Set config defaults]
         f.write("WindowWidth={}\n".format(gameResolution["width"]))
@@ -43,23 +46,23 @@ class MelonDSGenerator(Generator):
         f.write("MouseHideSeconds=5\n")
         # Set bios locations
         f.write("ExternalBIOSEnable=1\n")
-        f.write("BIOS9Path=/userdata/bios/bios9.bin\n")
-        f.write("BIOS7Path=/userdata/bios/bios7.bin\n")
-        f.write("FirmwarePath=/userdata/bios/firmware.bin\n")
-        f.write("DSiBIOS9Path=/userdata/bios/dsi_bios9.bin\n")
-        f.write("DSiBIOS7Path=/userdata/bios/dsi_bios7.bin\n")
-        f.write("DSiFirmwarePath=/userdata/bios/dsi_firmware.bin\n")
-        f.write("DSiNANDPath=/userdata/bios/dsi_nand.bin\n")
+        f.write(f"BIOS9Path={BIOS / 'bios9.bin'}\n")
+        f.write(f"BIOS7Path={BIOS / 'bios7.bin'}\n")
+        f.write(f"FirmwarePath={BIOS / 'firmware.bin'}\n")
+        f.write(f"DSiBIOS9Path={BIOS / 'dsi_bios9.bin'}\n")
+        f.write(f"DSiBIOS7Path={BIOS / 'dsi_bios7.bin'}\n")
+        f.write(f"DSiFirmwarePath={BIOS / 'dsi_firmware.bin'}\n")
+        f.write(f"DSiNANDPath={BIOS / 'dsi_nand.bin'}\n")
         # Set save locations
-        f.write("DLDIFolderPath=/userdata/saves/melonds\n")
-        f.write("DSiSDFolderPath=/userdata/saves/melonds\n")
-        f.write("MicWavPath=/userdata/saves/melonds\n")
-        f.write("SaveFilePath=/userdata/saves/melonds\n")
-        f.write("SavestatePath=/userdata/saves/melonds\n")
+        f.write(f"DLDIFolderPath={_MELONDS_SAVES}\n")
+        f.write(f"DSiSDFolderPath={_MELONDS_SAVES}\n")
+        f.write(f"MicWavPath={_MELONDS_SAVES}\n")
+        f.write(f"SaveFilePath={_MELONDS_SAVES}\n")
+        f.write(f"SavestatePath={_MELONDS_SAVES}\n")
         # Cheater!
-        f.write("CheatFilePath=/userdata/cheats/melonDS\n")
+        f.write(f"CheatFilePath={_MELONDS_CHEATS}\n")
         # Roms
-        f.write("LastROMFolder=/userdata/roms/nds\n")
+        f.write(f"LastROMFolder={_MELONDS_ROMS}\n")
         # Audio
         f.write("AudioInterp=1\n")
         f.write("AudioBitrate=2\n")
@@ -165,5 +168,5 @@ class MelonDSGenerator(Generator):
         f.close()
 
         commandArray = ["/usr/bin/melonDS", "-f", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, \
-            "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS, \
+            "XDG_DATA_HOME":SAVES, "QT_QPA_PLATFORM":"xcb"})
