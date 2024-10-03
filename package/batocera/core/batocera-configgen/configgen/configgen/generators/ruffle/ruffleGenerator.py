@@ -1,5 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ... import Command
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 
 class RuffleGenerator(Generator):
@@ -12,7 +19,7 @@ class RuffleGenerator(Generator):
     def getMouseMode(self, config, rom):
         return True
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ruffle",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }

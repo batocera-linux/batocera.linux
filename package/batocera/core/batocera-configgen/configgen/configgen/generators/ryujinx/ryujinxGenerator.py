@@ -1,20 +1,27 @@
-import os
-from os import environ
+from __future__ import annotations
+
 import filecmp
 import json
 import shutil
+from os import environ
+from typing import TYPE_CHECKING, Final
+
 import evdev
 from evdev import InputDevice
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from ... import Command, controllersConfig
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ..Generator import Generator
 
-ryujinxConf = batoceraFiles.CONF + "/Ryujinx"
-ryujinxConfFile = ryujinxConf + "/Config.json"
-ryujinxKeys = batoceraFiles.BIOS + "/switch/prod.keys"
-ryujinxExec = ryujinxConf + "/ryujinx"
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...types import HotkeysContext
+
+ryujinxConf: Final = CONFIGS / "Ryujinx"
+ryujinxConfFile: Final = ryujinxConf / "Config.json"
+ryujinxKeys: Final = BIOS / "switch" / "prod.keys"
+ryujinxExec: Final = ryujinxConf / "ryujinx"
 
 ryujinxCtrl = {
         "left_joycon_stick": {
@@ -75,39 +82,35 @@ ryujinxCtrl = {
 
 class RyujinxGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ryujinx",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        if not os.path.exists(ryujinxConf):
-            os.makedirs(ryujinxConf)
-        if not os.path.exists(ryujinxConf + "/system"):
-            os.makedirs(ryujinxConf + "/system")
+        mkdir_if_not_exists(ryujinxConf / "system")
 
         # Copy file & make executable (workaround)
         files_to_copy = [
             ("/usr/ryujinx/Ryujinx", ryujinxExec, 0o0775),
-            ("/usr/ryujinx/libSkiaSharp.so", os.path.join(ryujinxConf, "libSkiaSharp.so"), 0o0644),
-            ("/usr/ryujinx/libHarfBuzzSharp.so", os.path.join(ryujinxConf, "libHarfBuzzSharp.so"), 0o0644)
+            ("/usr/ryujinx/libSkiaSharp.so", ryujinxConf / "libSkiaSharp.so", 0o0644),
+            ("/usr/ryujinx/libHarfBuzzSharp.so", ryujinxConf / "libHarfBuzzSharp.so", 0o0644)
         ]
 
         for src, dest, mode in files_to_copy:
-            if not os.path.exists(dest) or not filecmp.cmp(src, dest):
+            if not dest.exists() or not filecmp.cmp(src, dest):
                 shutil.copyfile(src, dest)
-                os.chmod(dest, mode)
+                dest.chmod(mode)
 
         # Copy the prod.keys file to where ryujinx reads it
-        if os.path.exists(ryujinxKeys):
-            shutil.copyfile(ryujinxKeys, ryujinxConf + "/system/prod.keys")
+        if ryujinxKeys.exists():
+            shutil.copyfile(ryujinxKeys, ryujinxConf / "system" / "prod.keys")
 
         # [Configuration]
-        if not os.path.exists(os.path.dirname(ryujinxConfFile)):
-            os.makedirs(os.path.dirname(ryujinxConfFile))
+        mkdir_if_not_exists(ryujinxConfFile.parent)
         try:
-            conf = json.load(open(ryujinxConfFile, "r"))
+            conf = json.load(ryujinxConfFile.open("r"))
         except:
             conf = {}
 
@@ -116,7 +119,7 @@ class RyujinxGenerator(Generator):
         conf["check_updates_on_start"] = False
         conf["show_confirm_exit"] = False
         conf["hide_cursor_on_idle"] = True
-        conf["game_dirs"] = ["/userdata/roms/switch"]
+        conf["game_dirs"] = [str(ROMS / "switch")]
         conf["start_fullscreen"] = True
         conf["docked_mode"] = True
         conf["audio_backend"] = "OpenAl"
@@ -166,7 +169,7 @@ class RyujinxGenerator(Generator):
 
         # write / update the config file
         js_out = json.dumps(conf, indent=2)
-        with open(ryujinxConfFile, "w") as jout:
+        with ryujinxConfFile.open("w") as jout:
             jout.write(js_out)
 
         # Now add Controllers
@@ -213,14 +216,14 @@ class RyujinxGenerator(Generator):
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":batoceraFiles.CONF, \
-            "XDG_DATA_HOME":batoceraFiles.SAVES + "/switch", \
-            "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+            env={"XDG_CONFIG_HOME":CONFIGS, \
+            "XDG_DATA_HOME":SAVES / "switch", \
+            "XDG_CACHE_HOME":CACHE, \
             "QT_QPA_PLATFORM":"xcb", \
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
 
-def writeControllerIntoJson(new_controller, filename=ryujinxConfFile):
-    with open(filename,'r+') as file:
+def writeControllerIntoJson(new_controller, filename: Path = ryujinxConfFile):
+    with filename.open('r+') as file:
         file_data = json.load(file)
         file_data["input_config"].append(new_controller)
         file.seek(0)

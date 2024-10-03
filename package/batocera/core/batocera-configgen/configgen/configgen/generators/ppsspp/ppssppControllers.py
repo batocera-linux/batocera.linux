@@ -1,15 +1,19 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
 
-import os
 import configparser
+from typing import TYPE_CHECKING, Final
 
-from ... import batoceraFiles
+from ...batoceraPaths import mkdir_if_not_exists
 from ...utils.logger import get_logger
+from .ppssppPaths import PPSSPP_CONFIG_INIT, PPSSPP_PSP_SYSTEM_DIR
+
+if TYPE_CHECKING:
+    from ...controllersConfig import Controller
 
 eslog = get_logger(__name__)
 
-ppssppControlsIni  = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM/controls.ini'
-ppssppControlsInit = batoceraFiles.HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
+ppssppControlsIni: Final  = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'
+ppssppControlsInit: Final = PPSSPP_CONFIG_INIT / 'controls.ini'
 
 # This configgen is based on PPSSPP 1.5.4.
 # Therefore, all code/github references are valid at this version, and may not be valid with later updates
@@ -124,7 +128,7 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 }
 
 # Create the controller configuration file
-def generateControllerConfig(controller):
+def generateControllerConfig(controller: Controller):
     # Set config file name
     configFileName = ppssppControlsIni
     Config = configparser.ConfigParser(interpolation=None)
@@ -185,8 +189,7 @@ def generateControllerConfig(controller):
             val = optionValue(Config, section, var, val)
             Config.set(section, var, val)
 
-        if not os.path.exists(os.path.dirname(configFileName)):
-                os.makedirs(os.path.dirname(configFileName))
+        mkdir_if_not_exists(configFileName.parent)
 
     # hotkey controls are called via evmapy.
     # configuring specific hotkey in ppsspp is not simple without patching
@@ -199,9 +202,8 @@ def generateControllerConfig(controller):
     Config.set(section, "Screenshot",    "1-137")
     Config.set(section, "Pause",         "1-139")
 
-    cfgfile = open(configFileName,'w+')
-    Config.write(cfgfile)
-    cfgfile.close()
+    with configFileName.open('w+') as cfgfile:
+        Config.write(cfgfile)
     return configFileName
 
 def axisToCode(axisId, direction) :

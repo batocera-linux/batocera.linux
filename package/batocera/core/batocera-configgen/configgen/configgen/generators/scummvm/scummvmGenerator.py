@@ -1,33 +1,38 @@
-import os.path
-import glob
-import configparser
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+import configparser
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, SAVES, SCREENSHOTS, ensure_parents_and_open, mkdir_if_not_exists
 from ..Generator import Generator
 
-scummConfigDir = batoceraFiles.CONF + "/scummvm"
-scummConfigFile = scummConfigDir + "/scummvm.ini"
-scummExtra = "/userdata/bios/scummvm/extra"
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+scummConfigDir: Final = CONFIGS / "scummvm"
+scummConfigFile: Final = scummConfigDir / "scummvm.ini"
+scummExtra: Final = BIOS / "scummvm" / "extra"
 
 class ScummVMGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "scummvm",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        rom_path = Path(rom)
+
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
-        if not os.path.exists(scummExtra):
-            os.makedirs(scummExtra)
+        mkdir_if_not_exists(scummExtra)
 
         # create / modify scummvm config file as needed
         scummConfig = configparser.ConfigParser()
         scummConfig.optionxform=str
-        if os.path.exists(scummConfigFile):
+        if scummConfigFile.exists():
             scummConfig.read(scummConfigFile)
 
         if not scummConfig.has_section("scummvm"):
@@ -36,22 +41,19 @@ class ScummVMGenerator(Generator):
         scummConfig.set("scummvm", "gui_browser_native", "false")
 
         # save the ini file
-        if not os.path.exists(os.path.dirname(scummConfigFile)):
-            os.makedirs(os.path.dirname(scummConfigFile))
-        with open(scummConfigFile, 'w') as configfile:
+        with ensure_parents_and_open(scummConfigFile, 'w') as configfile:
             scummConfig.write(configfile)
 
         # Find rom path
-        if os.path.isdir(rom):
+        if rom_path.is_dir():
           # rom is a directory: must contains a <game name>.scummvm file
-          romPath = rom
-          romFile = glob.glob(romPath + "/*.scummvm")[0]
-          romName = os.path.splitext(os.path.basename(romFile))[0]
+          romPath = rom_path
+          romName = next(rom_path.glob("*.scummvm")).stem
         else:
           # rom is a file: split in directory and file name
-          romPath = os.path.dirname(rom)
+          romPath = rom_path.parent
           # Get rom name without extension
-          romName = os.path.splitext(os.path.basename(rom))[0]
+          romName = rom_path.stem
 
         # pad number
         nplayer = 1
@@ -61,7 +63,7 @@ class ScummVMGenerator(Generator):
                 id=pad.index
             nplayer += 1
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-f"]
+        commandArray = ["/usr/bin/scummvm", "-f"]
 
         # set the resolution
         window_width = str(gameResolution["width"])
@@ -103,8 +105,8 @@ class ScummVMGenerator(Generator):
 
         commandArray.extend(
             [f"--joystick={id}",
-            "--screenshotspath="+batoceraFiles.screenshotsDir,
-            "--extrapath="+scummExtra,
+            f"--screenshotspath={SCREENSHOTS}",
+            f"--extrapath={scummExtra}",
             f"--path={romPath}",
             f"{romName}"]
         )
@@ -112,9 +114,9 @@ class ScummVMGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":batoceraFiles.CONF,
-                "XDG_DATA_HOME":batoceraFiles.SAVES,
-                "XDG_CACHE_HOME":batoceraFiles.CACHE,
+                "XDG_CONFIG_HOME":CONFIGS,
+                "XDG_DATA_HOME":SAVES,
+                "XDG_CACHE_HOME":CACHE,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )

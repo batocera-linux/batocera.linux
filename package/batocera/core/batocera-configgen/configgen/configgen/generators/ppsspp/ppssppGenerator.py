@@ -1,15 +1,20 @@
-import os
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, SAVES
 from ..Generator import Generator
-from . import ppssppConfig
-from . import ppssppControllers
+from . import ppssppConfig, ppssppControllers
+from .ppssppPaths import PPSSPP_CONFIG_DIR
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class PPSSPPGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ppsspp",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F3", "restore_state": "KEY_F4", "menu": "KEY_F9", "next_slot": "KEY_F6", "previous_slot": "KEY_F5" }
@@ -21,9 +26,9 @@ class PPSSPPGenerator(Generator):
         ppssppConfig.writePPSSPPConfig(system)
 
         # Remove the old gamecontrollerdb.txt file
-        dbpath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt"
-        if os.path.exists(dbpath):
-            os.remove(dbpath)
+        dbpath = PPSSPP_CONFIG_DIR / "gamecontrollerdb.txt"
+        if dbpath.exists():
+            dbpath.unlink()
 
         # Generate the controls.ini
         for index in playersControllers :
@@ -61,8 +66,8 @@ class PPSSPPGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":batoceraFiles.CONF,
-                "XDG_DATA_HOME":batoceraFiles.SAVES,
+                "XDG_CONFIG_HOME":CONFIGS,
+                "XDG_DATA_HOME":SAVES,
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
             }
         )

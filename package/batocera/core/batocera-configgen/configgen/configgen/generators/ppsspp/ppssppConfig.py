@@ -1,33 +1,36 @@
-import os
-import io
+from __future__ import annotations
+
 import configparser
 import subprocess
+from typing import TYPE_CHECKING, Final
 
-from ... import batoceraFiles
+from ...batoceraPaths import ensure_parents_and_open
 from ...utils.logger import get_logger
+from .ppssppPaths import PPSSPP_PSP_SYSTEM_DIR
+
+if TYPE_CHECKING:
+    from ...Emulator import Emulator
+
 
 eslog = get_logger(__name__)
 
-ppssppConf     = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
-ppssppConfig   = ppssppConf + '/ppsspp.ini'
-ppssppControls = ppssppConf + '/controls.ini'
+ppssppConfig: Final   = PPSSPP_PSP_SYSTEM_DIR / 'ppsspp.ini'
+ppssppControls: Final = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'
 
-def writePPSSPPConfig(system):
+def writePPSSPPConfig(system: Emulator):
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
-    if os.path.exists(ppssppConfig):
+    if ppssppConfig.exists():
         try:
-            with io.open(ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+            with ppssppConfig.open('r', encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
         except:
             pass
 
     createPPSSPPConfig(iniConfig, system)
     # Save the ini file
-    if not os.path.exists(os.path.dirname(ppssppConfig)):
-        os.makedirs(os.path.dirname(ppssppConfig))
-    with open(ppssppConfig, 'w') as configfile:
+    with ensure_parents_and_open(ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
 def createPPSSPPConfig(iniConfig, system):

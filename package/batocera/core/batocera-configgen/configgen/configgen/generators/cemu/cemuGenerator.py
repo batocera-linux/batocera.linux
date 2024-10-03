@@ -272,7 +272,7 @@ class CemuGenerator(Generator):
             CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
 
         # Save the config file
-        xml = open(configFile, "w")
+        xml = configFile.open("w")
 
         # TODO: python 3 - workaround to encode files in utf-8
         xml = codecs.open(str(configFile), "w", "utf-8")
