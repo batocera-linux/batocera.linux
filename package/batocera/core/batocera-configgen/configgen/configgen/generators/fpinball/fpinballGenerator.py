@@ -1,30 +1,40 @@
+from __future__ import annotations
+
 import os
-import subprocess
 import shutil
-from pathlib import PureWindowsPath
+import subprocess
+from pathlib import Path, PureWindowsPath
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
+from ...batoceraPaths import CONFIGS, HOME, mkdir_if_not_exists
 from ...utils.logger import get_logger
 from ..Generator import Generator
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 eslog = get_logger(__name__)
+
+_FPINBALL_CONFIG: Final = CONFIGS / "fpinball"
+_FPINBALL_CONFIG_REG: Final = _FPINBALL_CONFIG / "batocera.confg.reg"
 
 class FpinballGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "fpinball",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        wineprefix = "/userdata/system/wine-bottles/fpinball"
-        emupath = wineprefix + "/fpinball"
+        wineprefix = HOME / "wine-bottles" / "fpinball"
+        emupath = wineprefix / "fpinball"
 
-        if not os.path.exists(wineprefix):
-            os.makedirs(wineprefix)
+        mkdir_if_not_exists(wineprefix)
 
-        if not os.path.exists(wineprefix + "/wsh57.done"):
+        wsh57_done = wineprefix / "wsh57.done"
+        if not wsh57_done.exists():
             cmd = ["/usr/wine/winetricks", "-q", "wsh57"]
             env = {
                 "W_CACHE": "/userdata/bios",
@@ -39,17 +49,17 @@ class FpinballGenerator(Generator):
             exitcode = proc.returncode
             eslog.debug(out.decode())
             eslog.error(err.decode())
-            with open(wineprefix + "/wsh57.done", "w") as f:
+            with wsh57_done.open("w") as f:
                 f.write("done")
 
         # create dir & copy fpinball files to wine bottle as necessary
-        if not os.path.exists(emupath):
+        if not emupath.exists():
             shutil.copytree('/usr/fpinball', emupath)
 
         # copy updated folder if we have a new BAM FPLoader.exe file
-        src_file = "/usr/fpinball/BAM/FPLoader.exe"
-        dest_file = emupath + "/BAM/FPLoader.exe"
-        if os.path.getmtime(src_file) > os.path.getmtime(dest_file):
+        src_file = Path("/usr/fpinball/BAM/FPLoader.exe")
+        dest_file = emupath / "BAM" / "FPLoader.exe"
+        if src_file.stat().st_mtime > dest_file.stat().st_mtime:
             shutil.copytree('/usr/fpinball', emupath)
 
         # convert rom path
@@ -62,21 +72,20 @@ class FpinballGenerator(Generator):
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
-                emupath +"/BAM/FPLoader.exe" ]
+                emupath / "BAM" / "FPLoader.exe" ]
         else:
             commandArray = [
                 "/usr/wine/ge-custom/bin/wine",
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
-                emupath +"/BAM/FPLoader.exe",
+                emupath / "BAM" / "FPLoader.exe",
                 "/open", rom, "/play", "/exit" ]
 
         # config
-        if not os.path.exists("/userdata/system/configs/fpinball"):
-            os.makedirs("/userdata/system/configs/fpinball")
+        mkdir_if_not_exists(_FPINBALL_CONFIG)
 
-        with open("/userdata/system/configs/fpinball/batocera.confg.reg", "w") as f:
+        with _FPINBALL_CONFIG_REG.open("w") as f:
             f.write("Windows Registry Editor Version 5.00\r\n\r\n")
             f.write("[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer]\r\n")
             f.write("\"AspectRatio\"=dword:{:08x}\r\n".format(FpinballGenerator.getGfxRatioFromConfig(system.config, gameResolution)))
@@ -165,7 +174,7 @@ class FpinballGenerator(Generator):
                         f.write("\"JoypadVolumeUp\"=dword:ffffffff\r\n")
                         f.write("\r\n")
 
-        cmd = ["wine", "regedit", "/userdata/system/configs/fpinball/batocera.confg.reg"]
+        cmd = ["wine", "regedit", _FPINBALL_CONFIG_REG]
         env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
         env.update(os.environ)
         env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
@@ -186,7 +195,7 @@ class FpinballGenerator(Generator):
         }
 
         # ensure nvidia driver used for vulkan
-        if os.path.exists('/var/tmp/nvidia.prime'):
+        if Path('/var/tmp/nvidia.prime').exists():
             variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
             for variable_name in variables_to_remove:
                 if variable_name in os.environ:
@@ -204,6 +213,7 @@ class FpinballGenerator(Generator):
             env=environment
         )
 
+    @staticmethod
     def getGfxRatioFromConfig(config, gameResolution):
         # 2: 4:3 ; 1: 16:9  ; 0: auto
         if "ratio" in config:

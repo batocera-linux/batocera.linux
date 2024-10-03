@@ -1,24 +1,30 @@
+from __future__ import annotations
+
 import configparser
 import os
 import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
-from ... import Command
-from ... import controllersConfig
-from ... import batoceraFiles
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
 from ..Generator import Generator
 
-fout1ConfigDir = batoceraFiles.CONF + "/fallout1"
-fout1ConfigFile = fout1ConfigDir + "/fallout.cfg"
-fout1IniFile = fout1ConfigDir + "/f1_res.ini"
-fout1RomDir = "/userdata/roms/fallout1-ce"
-fout1SrcConfig = fout1RomDir + "/fallout.cfg"
-fout1SrcIni = fout1RomDir + "/f1_res.ini"
-fout1ExeFile = fout1RomDir + "/fallout1-ce"
-fout1SourceFile = '/usr/bin/fallout1-ce'
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
+fout1ConfigDir: Final = CONFIGS / "fallout1"
+fout1ConfigFile: Final = fout1ConfigDir / "fallout.cfg"
+fout1IniFile: Final = fout1ConfigDir / "f1_res.ini"
+fout1RomDir: Final = ROMS / "fallout1-ce"
+fout1SrcConfig: Final = fout1RomDir / "fallout.cfg"
+fout1SrcIni: Final = fout1RomDir / "f1_res.ini"
+fout1ExeFile: Final = fout1RomDir / "fallout1-ce"
+fout1SourceFile: Final = Path('/usr/bin/fallout1-ce')
 
 class Fallout1Generator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "fallout1",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
@@ -27,26 +33,23 @@ class Fallout1Generator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Check if the directories exist, if not create them
-        if not os.path.exists(fout1ConfigDir):
-            os.makedirs(fout1ConfigDir)
+        mkdir_if_not_exists(fout1ConfigDir)
 
         # Copy latest binary to the rom directory
-        if not os.path.exists(fout1ExeFile):
+        if not fout1ExeFile.exists():
             shutil.copy(fout1SourceFile, fout1ExeFile)
         else:
-            source_version = os.path.getmtime(fout1SourceFile)
-            destination_version = os.path.getmtime(fout1ExeFile)
-            if source_version > destination_version:
+            if fout1SourceFile.stat().st_mtime > fout1ExeFile.stat().st_mtime:
                 shutil.copy(fout1SourceFile, fout1ExeFile)
 
         # Copy cfg file to the config directory
-        if not os.path.exists(fout1ConfigFile):
-            if os.path.exists(fout1SrcConfig):
+        if not fout1ConfigFile.exists():
+            if fout1SrcConfig.exists():
                 shutil.copy(fout1SrcConfig , fout1ConfigFile)
 
         # Now copy the ini file to the config directory
-        if not os.path.exists(fout1IniFile):
-            if os.path.exists(fout1SrcIni):
+        if not fout1IniFile.exists():
+            if fout1SrcIni.exists():
                 shutil.copy(fout1SrcIni , fout1IniFile)
 
         ## Configure
@@ -54,7 +57,7 @@ class Fallout1Generator(Generator):
         ## CFG Configuration
         fout1Cfg = configparser.ConfigParser()
         fout1Cfg.optionxform = str
-        if os.path.exists(fout1ConfigFile):
+        if fout1ConfigFile.exists():
             fout1Cfg.read(fout1ConfigFile)
 
         if not fout1Cfg.has_section("debug"):
@@ -100,13 +103,13 @@ class Fallout1Generator(Generator):
         else:
             fout1Cfg.set("system", "language", "english")
 
-        with open(fout1ConfigFile, "w") as configfile:
+        with fout1ConfigFile.open("w") as configfile:
             fout1Cfg.write(configfile)
 
         ## INI Configuration
         fout1Ini = configparser.ConfigParser()
         fout1Ini.optionxform = str
-        if os.path.exists(fout1IniFile):
+        if fout1IniFile.exists():
             fout1Ini.read(fout1IniFile)
 
         # [MAIN]
@@ -124,7 +127,7 @@ class Fallout1Generator(Generator):
         # fullscreen
         fout1Ini.set("MAIN", "WINDOWED", "0")
 
-        with open(fout1IniFile, "w") as configfile:
+        with fout1IniFile.open("w") as configfile:
             fout1Ini.write(configfile)
 
         # IMPORTANT: Move dir before executing

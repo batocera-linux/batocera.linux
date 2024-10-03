@@ -4,7 +4,7 @@ import json
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
-from ...batoceraPaths import HOME, mkdir_if_not_exists, open_if_not_exists
+from ...batoceraPaths import HOME, mkdir_if_not_exists
 from ...utils import videoMode
 from ...utils.logger import get_logger
 from ..Generator import Generator
@@ -237,8 +237,9 @@ class BigPEmuGenerator(Generator):
             bigPemuConfig.unlink()
 
         # Create the config file as it doesn't exist
-        with open_if_not_exists(bigPemuConfig, 'w') as file:
-            json.dump({}, file)
+        if not bigPemuConfig.exists():
+            with bigPemuConfig.open('w') as file:
+                json.dump({}, file)
 
         # Load or initialize the configuration
         with bigPemuConfig.open() as file:

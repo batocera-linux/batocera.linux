@@ -1,8 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from configparser import ConfigParser
+
+    from ...Emulator import Emulator
+
+
 # return true if the option is considered defined
-def defined(key, dict):
+def defined(key: str, dict: dict[str, Any]) -> bool:
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
-def updateFBAConfig(iniConfig, system):
+def updateFBAConfig(iniConfig: ConfigParser, system: Emulator) -> None:
     ratioIndexes = {'4/3': '0', '16/9': '1'}
 
     if not iniConfig.has_section("Graphics"):
