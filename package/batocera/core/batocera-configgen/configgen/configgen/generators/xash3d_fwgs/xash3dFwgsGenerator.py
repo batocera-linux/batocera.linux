@@ -1,46 +1,52 @@
-import glob
-import os
+from __future__ import annotations
+
 import re
 import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
-from ... import Command
-from ... import controllersConfig
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, ROMS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ..Generator import Generator
 
-_ROMS_DIR = '/userdata/roms/xash3d_fwgs'
-
-_HLSDK_LIBS_DIR = '/usr/lib/xash3d/hlsdk'
-
-_DEFAULT_SERVER_LIB = 'hl'
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
 
 
-def _rom_dir(game):
-    return _ROMS_DIR + '/' + game
+_CONFIG_DIR: Final = CONFIGS / 'xash3d_fwgs'
+_ROMS_DIR: Final = ROMS / 'xash3d_fwgs'
+_SAVES_DIR: Final = SAVES / 'xash3d_fwgs'
+_HLSDK_LIBS_DIR: Final = Path('/usr/lib/xash3d/hlsdk')
+_DEFAULT_SERVER_LIB: Final = 'hl'
 
 
-def _config_dir(game):
-    return '/userdata/system/configs/xash3d_fwgs/' + game
+def _rom_dir(game: str) -> Path:
+    return _ROMS_DIR / game
 
 
-def _save_dir(game):
-    return '/userdata/saves/xash3d_fwgs/' + game
+def _config_dir(game: str) -> Path:
+    return _CONFIG_DIR / game
 
 
-def _client_lib_path(server_lib, arch_suffix):
-    return _HLSDK_LIBS_DIR + '/' + server_lib + '/cl_dlls/client' + arch_suffix + '.so'
+def _save_dir(game: str) -> Path:
+    return _SAVES_DIR / game
 
 
-def _server_lib_path(server_lib, arch_suffix):
-    return _HLSDK_LIBS_DIR + '/' + server_lib + '/dlls/' + server_lib + arch_suffix + '.so'
+def _client_lib_path(server_lib: str, arch_suffix: str) -> Path:
+    return _HLSDK_LIBS_DIR / server_lib / 'cl_dlls' / f'client{arch_suffix}.so'
 
 
-def _get_server_lib_basename_from_liblist_gam(game):
+def _server_lib_path(server_lib: str, arch_suffix: str) -> Path:
+    return _HLSDK_LIBS_DIR / server_lib / 'dlls' / f'{server_lib}{arch_suffix}.so'
+
+
+def _get_server_lib_basename_from_liblist_gam(game: str) -> str | None:
     """Gets the base name of the server library from liblist.gam in the game directory."""
-    path = _rom_dir(game) + '/liblist.gam'
-    if not os.path.exists(path):
+    path = _rom_dir(game) / 'liblist.gam'
+    if not path.exists():
         return None
     pattern = re.compile(r'gamedll\w*\s+"(?:dlls[/\\])?([^.]*)')
-    with open(path, 'r') as f:
+    with path.open('r') as f:
         for line in f:
             m = pattern.match(line)
             if m:
@@ -48,48 +54,48 @@ def _get_server_lib_basename_from_liblist_gam(game):
     return None
 
 
-def _find_server_lib(server_lib, arch_suffix):
+def _find_server_lib(server_lib: str, arch_suffix: str) -> Path:
     """Finds and returns the server library.
 
     Falls back to _DEFAULT_SERVER_LIB if none is found.
     """
     if server_lib:
         path = _server_lib_path(server_lib, arch_suffix)
-        if os.path.exists(path):
+        if path.exists():
             return path
 
     return _server_lib_path(_DEFAULT_SERVER_LIB, arch_suffix)
 
 
-def _find_client_lib(server_lib, arch_suffix):
+def _find_client_lib(server_lib: str, arch_suffix: str) -> Path:
     """Finds and returns the client library.
 
     Falls back to the client library for _DEFAULT_SERVER_LIB if none is found.
     """
     if server_lib:
         path = _client_lib_path(server_lib, arch_suffix)
-        if os.path.exists(path):
+        if path.exists():
             return path
 
     return _client_lib_path(_DEFAULT_SERVER_LIB, arch_suffix)
 
 
-def _get_arch_suffix():
+def _get_arch_suffix() -> str:
     """Returns the architecture suffix, e.g. _amd64, based on a known server library."""
-    path_prefix = _HLSDK_LIBS_DIR + '/hl/dlls/hl'
-    return glob.glob(path_prefix + '*.so')[0][len(path_prefix):-3]
+    path_prefix = _HLSDK_LIBS_DIR / 'hl' / 'dlls'
+    return next(path_prefix.glob('hl*.so')).stem[2:]
 
 
 class Xash3dFwgsGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "xash3dFwgs",
             "keys": { "exit": "KEY_F10", "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        game = os.path.splitext(os.path.basename(rom))[0]
+        game = Path(rom).stem
 
         arch_suffix = _get_arch_suffix()
         server_lib = _get_server_lib_basename_from_liblist_gam(game)
@@ -127,30 +133,31 @@ class Xash3dFwgsGenerator(Generator):
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
 
-    def _maybeInitConfig(self, game):
+    def _maybeInitConfig(self, game: str) -> None:
         rom_dir = _rom_dir(game)
-        if not os.path.exists(rom_dir + '/userconfig.cfg'):
-            with open(rom_dir + '/userconfig.cfg', 'w') as f:
+        user_config = rom_dir / 'userconfig.cfg'
+        if not user_config.exists():
+            with user_config.open('w') as f:
                 f.write('exec gamepad.cfg\nexec custom.cfg\n')
 
-        if not os.path.exists(rom_dir + '/gamepad.cfg'):
-            shutil.copy(os.path.dirname(os.path.abspath(__file__)) +
-                        '/gamepad.cfg', rom_dir + '/gamepad.cfg')
+        gamepad_config = rom_dir / 'gamepad.cfg'
+        if not gamepad_config.exists():
+            shutil.copy(Path(__file__).absolute().parent / 'gamepad.cfg', gamepad_config)
 
         config_dir = _config_dir(game)
-        if not os.path.exists(config_dir + '/custom.cfg'):
-            if not os.path.exists(config_dir):
-                os.makedirs(config_dir)
-            with open(config_dir + '/custom.cfg', 'w') as f:
+        custom_config = config_dir / 'custom.cfg'
+        custom_rom_config = rom_dir / 'custom.cfg'
+        if not custom_config.exists():
+            with ensure_parents_and_open(custom_config, 'w') as f:
                 f.write('\n')
-            if not os.path.exists(rom_dir + '/custom.cfg'):
-                os.symlink(config_dir + '/custom.cfg', rom_dir + '/custom.cfg')
+            if not custom_rom_config.exists():
+                custom_rom_config.symlink_to(custom_config)
 
-    def _maybeInitSaveDir(self, game):
+    def _maybeInitSaveDir(self, game: str) -> None:
         rom_dir = _rom_dir(game)
-        if not os.path.isdir(rom_dir + '/save'):
+        rom_save_dir = rom_dir / 'save'
+        if not rom_save_dir.is_dir():
             save_dir = _save_dir(game)
-            if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
-            if not os.path.exists(rom_dir + '/save'):
-                os.symlink(save_dir, rom_dir + '/save')
+            mkdir_if_not_exists(save_dir)
+            if not rom_save_dir.exists():
+                rom_save_dir.symlink_to(save_dir)

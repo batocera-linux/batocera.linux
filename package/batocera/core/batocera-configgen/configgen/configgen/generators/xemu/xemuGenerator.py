@@ -1,11 +1,19 @@
-import os.path
-from shutil import copyfile
+from __future__ import annotations
 
-from ... import batoceraFiles
-from ... import Command
-from ... import controllersConfig
+from shutil import copyfile
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
 from . import xemuConfig
+from .xemuPaths import XEMU_BIN, XEMU_CONFIG, XEMU_SAVES
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ...types import HotkeysContext
+
 
 class XemuGenerator(Generator):
 
@@ -15,17 +23,16 @@ class XemuGenerator(Generator):
         xemuConfig.writeIniFile(system, rom, playersControllers, gameResolution)
 
         # copy the hdd if it doesn't exist
-        if not os.path.exists("/userdata/saves/xbox/xbox_hdd.qcow2"):
-            if not os.path.exists("/userdata/saves/xbox"):
-                os.makedirs("/userdata/saves/xbox")
-            copyfile("/usr/share/xemu/data/xbox_hdd.qcow2", "/userdata/saves/xbox/xbox_hdd.qcow2")
+        if not (XEMU_SAVES / "xbox_hdd.qcow2").exists():
+            mkdir_if_not_exists(XEMU_SAVES)
+            copyfile("/usr/share/xemu/data/xbox_hdd.qcow2", XEMU_SAVES / "xbox_hdd.qcow2")
 
         # the command to run
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
-        commandArray.extend(["-config_path", batoceraFiles.xemuConfig])
+        commandArray: list[str | Path] = [XEMU_BIN]
+        commandArray.extend(["-config_path", XEMU_CONFIG])
 
         environment = {
-            "XDG_CONFIG_HOME": batoceraFiles.CONF,
+            "XDG_CONFIG_HOME": CONFIGS,
             "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
         }
 
@@ -36,7 +43,7 @@ class XemuGenerator(Generator):
             return 16/9
         return 4/3
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "xemu",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
