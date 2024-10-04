@@ -1,16 +1,28 @@
-import os
-import sys
-import re
-import time
-import subprocess
-import csv
+from __future__ import annotations
 
+import csv
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
+
+from ..batoceraPaths import DEFAULTS_DIR
 from .logger import get_logger
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ..types import Resolution, ScreenInfo
 
 eslog = get_logger(__name__)
 
+_ROTATION_FILE: Final = Path("/var/run/rk-rotation")
+_GLXINFO_BIN: Final = Path("/usr/bin/glxinfo")
+
 # Set a specific video mode
-def changeMode(videomode):
+def changeMode(videomode: str) -> None:
     if checkModeExists(videomode):
         cmd = ["batocera-resolution", "setMode", videomode]
         eslog.debug(f"setVideoMode({videomode}): {cmd}")
@@ -26,21 +38,21 @@ def changeMode(videomode):
                     raise
                 time.sleep(1)
 
-def getCurrentMode():
+def getCurrentMode() -> str | None:
     proc = subprocess.Popen(["batocera-resolution currentMode"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     for val in out.decode().splitlines():
         return val # return the first line
 
-def getRefreshRate():
+def getRefreshRate() -> str | None:
     proc = subprocess.Popen(["batocera-resolution refreshRate"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     for val in out.decode().splitlines():
         return val # return the first line
 
-def getScreensInfos(config):
+def getScreensInfos(config: Mapping[str, object]) -> list[ScreenInfo]:
     outputs = getScreens()
-    res = []
+    res: list[ScreenInfo] = []
 
     # output 1
     vo1 = getCurrentOutput()
@@ -83,43 +95,43 @@ def getScreensInfos(config):
     eslog.debug(res)
     return res
 
-def getScreens():
+def getScreens() -> list[str]:
     proc = subprocess.Popen(["batocera-resolution listOutputs"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     return out.decode().splitlines()
 
-def minTomaxResolution():
+def minTomaxResolution() -> None:
     proc = subprocess.Popen(["batocera-resolution minTomaxResolution"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 
-def getCurrentResolution(name = None):
+def getCurrentResolution(name: str | None = None) -> Resolution:
     if name is None:
         proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
     else:
-        proc = subprocess.Popen(["batocera-resolution --screen {} currentResolution".format(name)], stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([f"batocera-resolution --screen {name} currentResolution"], stdout=subprocess.PIPE, shell=True)
 
     (out, err) = proc.communicate()
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
 
-def getCurrentOutput():
+def getCurrentOutput() -> str:
     proc = subprocess.Popen(["batocera-resolution currentOutput"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     return out.decode().strip()
 
-def supportSystemRotation():
+def supportSystemRotation() -> bool:
     proc = subprocess.Popen(["batocera-resolution supportSystemRotation"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     return proc.returncode == 0
 
 def isResolutionReversed():
-    return os.path.exists("/var/run/rk-rotation")
+    return _ROTATION_FILE.exists()
 
-def checkModeExists(videomode):
+def checkModeExists(videomode: str) -> bool:
     # max resolution given
     if videomode[0:4] == "max-":
         matches = re.match(r"^max-[0-9]*x[0-9]*$", videomode)
-        if matches != None:
+        if matches is not None:
             return True
 
     # specific resolution given
@@ -133,19 +145,15 @@ def checkModeExists(videomode):
     eslog.error(f"invalid video mode {videomode}")
     return False
 
-def changeMouse(mode):
+def changeMouse(mode: bool) -> None:
     eslog.debug(f"changeMouseMode({mode})")
-    if mode:
-        cmd = "batocera-mouse show"
-    else:
-        cmd = "batocera-mouse hide"
-    proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([f"batocera-mouse {'show' if mode else 'hide'}"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
 
-def getGLVersion():
+def getGLVersion() -> float:
     try:
         # optim for most sbc having not glxinfo
-        if os.path.exists("/usr/bin/glxinfo") == False:
+        if not _GLXINFO_BIN.exists():
             return 0
 
         glxVerCmd = 'glxinfo | grep "OpenGL version"'
@@ -159,10 +167,10 @@ def getGLVersion():
     except:
         return 0
 
-def getGLVendor():
+def getGLVendor() -> str:
     try:
         # optim for most sbc having not glxinfo
-        if os.path.exists("/usr/bin/glxinfo") == False:
+        if not _GLXINFO_BIN.exists():
             return "unknown"
 
         glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
@@ -173,30 +181,28 @@ def getGLVendor():
     except:
         return "unknown"
 
-def getAltDecoration(systemName, rom, emulator):
+def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
     # Returns an ID for games that need rotated bezels/shaders or have special art
     # Vectrex will actually return an abbreviated game name for overlays, all others will return 0, 90, or 270 for rotation angle
     # 0 will be ignored.
     # Currently in use with bezels & libretro shaders
-    if not emulator in [ 'mame', 'retroarch' ]:
+    if emulator not in [ 'mame', 'retroarch' ]:
         return "standalone"
 
-    if not systemName in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex' ]:
+    if systemName not in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex' ]:
         return "0"
 
     # Look for external file, exit if not set up
-    specialFile = '/usr/share/batocera/configgen/data/special/' + systemName + '.csv'
-    if not os.path.exists(specialFile):
+    specialFile = DEFAULTS_DIR / 'data' / 'special' / f'{systemName}.csv'
+    if not specialFile.exists():
         return "0"
 
-    romBasename = os.path.basename(rom)
-    romName = os.path.splitext(romBasename)[0]
-    romCompare = romName.casefold()
+    romCompare = Path(rom).stem.casefold()
 
     # Load the file, read it in
     # Each file will be a csv with each row being the standard (ie No-Intro) filename, angle of rotation (90 or 270)
     # Case indifferent, rom file name and filenames in list will be folded
-    openFile = open(specialFile, 'r')
+    openFile = specialFile.open('r')
     with openFile:
         specialList = csv.reader(openFile, delimiter=';')
         for row in specialList:

@@ -1,14 +1,19 @@
-import configparser
-import os
+from __future__ import annotations
 
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS
-from ... import Command
-from ... import controllersConfig
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class X16emuGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "x16emu",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
@@ -17,9 +22,10 @@ class X16emuGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # set the file system path
-        romdir = os.path.dirname(rom)
+        romdir = Path(rom).parent
+
         # default options
-        commandArray = [
+        commandArray: list[str | Path] = [
             "x16emu",
             "-rom", "/userdata/bios/commanderx16/rom.bin", # bios
             "-fsroot", romdir, # file system
@@ -34,13 +40,13 @@ class X16emuGenerator(Generator):
             commandArray.extend(["-scale", system.config["x16emu_scale"]])
         else:
             commandArray.extend(["-scale", "2"]) # 1280 x 960
-        
+
         if system.isOptSet("x16emu_quality"):
             commandArray.extend(["-quality", system.config["x16emu_quality"]])
-        
+
         if system.isOptSet("x16emu_ratio") and system.config["x16emu_ratio"] == "16:9":
             commandArray.extend(["-widescreen"])
-        
+
         # Now add Controllers
         nplayer = 1
         for controller, pad in sorted(playersControllers.items()):

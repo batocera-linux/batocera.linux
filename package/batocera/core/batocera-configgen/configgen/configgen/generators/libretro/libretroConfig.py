@@ -1,28 +1,38 @@
-import sys
-import os
+from __future__ import annotations
+
 import json
 import subprocess
-from PIL import Image, ImageOps
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
-from ... import batoceraFiles
 from ... import controllersConfig
+from ...batoceraPaths import DEFAULTS_DIR, ES_SETTINGS, SAVES, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
+from ...utils import bezels as bezelsUtil, videoMode as videoMode
 from ...utils.logger import get_logger
-from ...utils import bezels as bezelsUtil
-from ...utils import videoMode as videoMode
-from . import libretroOptions
-from . import libretroMAMEConfig
+from ..hatari.hatariGenerator import HATARI_CONFIG
+from . import libretroMAMEConfig, libretroOptions
+from .libretroPaths import (
+    RETROARCH_CONFIG,
+    RETROARCH_CORE_CUSTOM,
+    RETROARCH_OVERLAY_CONFIG,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ...Emulator import Emulator
+    from ...generators.Generator import Generator
+    from ...types import DeviceInfoMapping, GunMapping, Resolution
 
 eslog = get_logger(__name__)
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 
 # Return value for es invertedbuttons
-def getInvertButtonsValue():
+def getInvertButtonsValue() -> bool:
     try:
-        tree = ET.parse(batoceraFiles.esSettings)
+        tree = ET.parse(ES_SETTINGS)
         root = tree.getroot()
         # Find the InvertButtons element and return value
         elem = root.find(".//bool[@name='InvertButtons']")
@@ -33,7 +43,7 @@ def getInvertButtonsValue():
         return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
-def defined(key, dict):
+def defined(key: str, dict: Mapping[str, Any]) -> bool:
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
 
@@ -70,7 +80,7 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 # Cores that require .slang shaders (even on OpenGL, not only Vulkan)
 coreForceSlangShaders = { 'mupen64plus-next' }
 
-def connected_to_internet():
+def connected_to_internet() -> bool:
     # Try 1.1.1.1 first
     cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "1.1.1.1"]
     process = subprocess.Popen(cmd)
@@ -90,36 +100,34 @@ def connected_to_internet():
             eslog.error("Not connected to the internet")
             return False
 
-def writeLibretroConfig(generator, retroconfig: UnixSettings, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend):
+def createLibretroConfig(generator: Generator, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
 
     # retroarch-core-options.cfg
-    retroarchCore = batoceraFiles.retroarchCoreCustom
-    if not os.path.exists(os.path.dirname(retroarchCore)):
-        os.makedirs(os.path.dirname(retroarchCore))
+    mkdir_if_not_exists(RETROARCH_CORE_CUSTOM.parent)
 
     try:
-        coreSettings = UnixSettings(retroarchCore, separator=' ')
+        coreSettings = UnixSettings(RETROARCH_CORE_CUSTOM, separator=' ')
     except UnicodeError:
         # invalid retroarch-core-options.cfg
         # remove it and try again
-        os.remove(retroarchCore)
-        coreSettings = UnixSettings(retroarchCore, separator=' ')
+        RETROARCH_CORE_CUSTOM.unlink()
+        coreSettings = UnixSettings(RETROARCH_CORE_CUSTOM, separator=' ')
 
     # Create/update retroarch-core-options.cfg
     libretroOptions.generateCoreSettings(coreSettings, system, rom, guns, wheels)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
-        libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
+        libretroOptions.generateHatariConf(HATARI_CONFIG)
 
     if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom, guns)
 
-    retroarchConfig = dict()
+    retroarchConfig: dict[str, object] = {}
     systemConfig = system.config
     renderConfig = system.renderconfig
     systemCore = system.config['core']
@@ -207,9 +215,8 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
 
-    if not os.path.exists(batoceraFiles.CONF + '/retroarch/cache'):
-        os.makedirs(batoceraFiles.CONF + '/retroarch/cache')
-    retroarchConfig['cache_directory'] = batoceraFiles.CONF + '/retroarch/cache'
+    mkdir_if_not_exists(RETROARCH_CONFIG / 'cache')
+    retroarchConfig['cache_directory'] = RETROARCH_CONFIG / 'cache'
 
     # require for core informations
     retroarchConfig['libretro_directory'] = '/usr/lib/libretro'
@@ -219,8 +226,8 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
 
     retroarchConfig['sort_savefiles_enable'] = 'false'     # ensure we don't save system.name + core
     retroarchConfig['sort_savestates_enable'] = 'false'    # ensure we don't save system.name + core
-    retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
-    retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
+    retroarchConfig['savestate_directory'] = SAVES / system.name
+    retroarchConfig['savefile_directory'] = SAVES / system.name
 
     # Forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
@@ -730,7 +737,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
             retroarchConfig['cheevos_enable'] = 'true'
             retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
             retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
-            retroarchConfig['cheevos_cmd'] = "/usr/share/batocera/configgen/call_achievements_hooks.sh"
+            retroarchConfig['cheevos_cmd'] = DEFAULTS_DIR / "call_achievements_hooks.sh"
             retroarchConfig['cheevos_token'] = "" # clear the token, otherwise, it may fail (possibly a ra bug)
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
@@ -978,7 +985,7 @@ def createLibretroConfig(generator, system, controllers, metadata, guns, wheels,
 
     return retroarchConfig
 
-def clearGunInputsForPlayer(n, retroarchConfig):
+def clearGunInputsForPlayer(n: int, retroarchConfig: dict[str, object]) -> None:
     # mapping
     keys = [ "gun_trigger", "gun_offscreen_shot", "gun_aux_a", "gun_aux_b", "gun_aux_c", "gun_start", "gun_select", "gun_dpad_up", "gun_dpad_down", "gun_dpad_left", "gun_dpad_right" ]
     for key in keys:
@@ -1130,15 +1137,14 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
                         retroarchConfig['input_player{}_{}_axis'.format(n, m)] = aval + pad.inputs[mapping[m]].id
         nplayer += 1
 
-def writeLibretroConfigToFile(retroconfig: UnixSettings, config):
+def writeLibretroConfigToFile(retroconfig: UnixSettings, config: Mapping[str, object]) -> None:
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, gunsBordersSize, gunsBordersRatio):
+def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool, retroarchConfig: dict[str, object], rom: Path, gameResolution: Resolution, system: Emulator, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
-    overlay_cfg_file  = batoceraFiles.overlayConfigFile
 
     # bezel are disabled
     # default values in case something wrong append
@@ -1155,8 +1161,8 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     # create a fake bezel if guns need it
     if bezel is None and gunsBordersSize is not None:
         eslog.debug("guns need border")
-        gunBezelFile     = "/tmp/bezel_gun_black.png"
-        gunBezelInfoFile = "/tmp/bezel_gun_black.info"
+        gunBezelFile     = Path("/tmp/bezel_gun_black.png")
+        gunBezelInfoFile = Path("/tmp/bezel_gun_black.info")
 
         w = gameResolution["width"]
         h = gameResolution["height"]
@@ -1164,7 +1170,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         h5 = bezelsUtil.gunsBorderSize(w, h, innerSize, outerSize)
 
         # could be better to compute the ratio while on ra it is forced to 4/3...
-        ratio = generator.getInGameRatio(system.config, gameResolution, rom)
+        ratio = generator.getInGameRatio(system.config, gameResolution, str(rom))
         top    = h5
         left   = h5
         bottom = h5
@@ -1173,7 +1179,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
             left = (w-(h*4/3)) // 2 + h5
             right = left
 
-        with open(gunBezelInfoFile, "w") as fd:
+        with gunBezelInfoFile.open("w") as fd:
             fd.write("{" + f' "width":{w}, "height":{h}, "top":{top}, "left":{left}, "bottom":{bottom}, "right":{right}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000' + "}")
         bezelsUtil.createTransparentBezel(gunBezelFile, gameResolution["width"], gameResolution["height"])
         # if the game needs a specific bezel, to draw border, consider it as a specific game bezel, like for thebezelproject to avoir caches
@@ -1185,14 +1191,15 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
         if bz_infos is None:
             return
 
-    overlay_info_file = bz_infos["info"]
-    overlay_png_file  = bz_infos["png"]
-    bezel_game  = bz_infos["specific_to_game"]
+    overlay_info_file: Path = cast(Path, bz_infos["info"])
+    overlay_png_file: Path  = cast(Path, bz_infos["png"])
+    bezel_game: bool  = bz_infos["specific_to_game"]
 
     # only the png file is mandatory
-    if os.path.exists(overlay_info_file):
+    if overlay_info_file.exists():
         try:
-            infos = json.load(open(overlay_info_file))
+            with overlay_info_file.open() as f:
+                infos = json.load(f)
         except:
             infos = {}
     else:
@@ -1247,7 +1254,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     if not shaderBezel:
         retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
-    retroarchConfig['input_overlay']              = overlay_cfg_file
+    retroarchConfig['input_overlay']              = RETROARCH_OVERLAY_CONFIG
     retroarchConfig['input_overlay_hide_in_menu'] = "true"
 
     if "opacity" not in infos:
@@ -1265,7 +1272,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
     else:
         bezel_stretch = False
 
-    tattoo_output_png = "/tmp/bezel_tattooed.png"
+    tattoo_output_png = Path("/tmp/bezel_tattooed.png")
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -1275,26 +1282,26 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
             eslog.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
         if bezel_game is True:
-            output_png_file = "/tmp/bezel_per_game.png"
+            output_png_file = Path("/tmp/bezel_per_game.png")
             create_new_bezel_file = True
         else:
             # The logic to cache system bezels is not always true anymore now that we have tattoos
-            output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
+            output_png_file = Path("/tmp") / f"{overlay_png_file.stem}_adapted.png"
             if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
                 create_new_bezel_file = True
             else:
-                if (not os.path.exists(tattoo_output_png)) and os.path.exists(output_png_file):
+                if (not tattoo_output_png.exists()) and output_png_file.exists():
                     create_new_bezel_file = False
                     eslog.debug(f"Using cached bezel file {output_png_file}")
                 else:
                     try:
-                        os.remove(tattoo_output_png)
+                        tattoo_output_png.unlink()
                     except:
                         pass
                     create_new_bezel_file = True
             if create_new_bezel_file:
-                fadapted = [ "/tmp/"+f for f in os.listdir("/tmp/") if (f[-12:] == '_adapted.png') ]
-                fadapted.sort(key=lambda x: os.path.getmtime(x))
+                fadapted = [ f for f in Path("/tmp").iterdir() if f.name.endswith('_adapted.png') ]
+                fadapted.sort(key=lambda x: x.stat().st_mtime)
                 # Keep only last 10 generated bezels to save space on tmpfs /tmp
                 if len(fadapted) >= 10:
                     for i in range (10):
@@ -1302,7 +1309,7 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
                     eslog.debug(f"Removing unused bezel file: {fadapted}")
                     for fr in fadapted:
                         try:
-                            os.remove(fr)
+                            fr.unlink()
                         except:
                             pass
 
@@ -1357,39 +1364,36 @@ def writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameRe
 
     if gunsBordersSize is not None:
         eslog.debug("Draw gun borders")
-        output_png_file = "/tmp/bezel_gunborders.png"
+        output_png_file = Path("/tmp/bezel_gunborders.png")
         innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
         borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     eslog.debug(f"Bezel file set to {overlay_png_file}")
-    writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
+    writeBezelCfgConfig(RETROARCH_OVERLAY_CONFIG, overlay_png_file)
 
     # For shaders that will want to use Batocera's decoration as part of the shader instead of an overlay
     if shaderBezel:
         # Create path if needed, clear old bezels
-        shaderBezelPath = '/var/run/shader_bezels'
-        shaderBezelFile = shaderBezelPath + '/bezel.png'
-        if not os.path.exists(shaderBezelPath):
-            os.makedirs(shaderBezelPath)
+        shaderBezelPath = Path('/var/run/shader_bezels')
+        shaderBezelFile = shaderBezelPath / 'bezel.png'
+        if not shaderBezelPath.exists():
+            shaderBezelPath.mkdir(parents=True)
             eslog.debug("Creating shader bezel path {}".format(overlay_png_file))
-        if os.path.exists(shaderBezelFile):
+        if shaderBezelFile.exists():
             eslog.debug("Removing old shader bezel {}".format(shaderBezelFile))
-            if os.path.islink(shaderBezelFile):
-                os.unlink(shaderBezelFile)
-            else:
-                os.remove(shaderBezelFile)
+            shaderBezelFile.unlink()
 
         # Link bezel png file to the fixed path.
         # Shaders should use this path to find the art.
-        os.symlink(overlay_png_file, shaderBezelFile)
+        shaderBezelFile.symlink_to(overlay_png_file)
         eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
 
-def isLowResolution(gameResolution):
+def isLowResolution(gameResolution: Resolution) -> bool:
     return gameResolution["width"] < 480 or gameResolution["height"] < 480
 
-def writeBezelCfgConfig(cfgFile, overlay_png_file: str | Path):
-    fd = open(cfgFile, "w")
+def writeBezelCfgConfig(cfgFile: Path, overlay_png_file: Path) -> None:
+    fd = cfgFile.open("w")
     fd.write("overlays = 1\n")
     fd.write(f'overlay0_overlay = "{overlay_png_file}"\n')
     fd.write("overlay0_full_screen = true\n")

@@ -9,6 +9,13 @@ class Resolution(TypedDict):
     height: int
 
 
+class ScreenInfo(TypedDict):
+    width: int
+    height: int
+    x: int
+    y: int
+
+
 class Gun(TypedDict):
     node: str | None
     id_mouse: int
