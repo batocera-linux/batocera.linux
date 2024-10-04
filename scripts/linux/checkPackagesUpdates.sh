@@ -226,6 +226,7 @@ PACKAGES_PORTS="abuse
                 sonic2013
                 soniccd
                 sonic-mania
+                taradino
                 theforceengine
                 tyrian
                 uqm

@@ -26,6 +26,7 @@
 - Arcade games: automatically switch to vertical bezels (default 'consoles' decorations)
 - /boot/preshare.sh script (to be able to wake up a nas for example)
 - Sinden light gun ratio option (you can select 4:3 ratio instead of fullscreen)
+- Taradino - Rise of the Triad port
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
