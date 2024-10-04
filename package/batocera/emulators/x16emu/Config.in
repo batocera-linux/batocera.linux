@@ -1,0 +1,8 @@
+config BR2_PACKAGE_X16EMU
+    bool "x16emu"
+    select BR2_PACKAGE_SDL2
+    help
+      Emulator for the Commander X16 8-bit computer.
+      
+      https://github.com/X16Community/x16emu
+      https://www.commanderx16.com/

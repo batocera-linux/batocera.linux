@@ -196,6 +196,7 @@ PACKAGES_EMULATORS="amiberry
                     vice
                     vita3k
                     vpinball
+                    x16emu
                     xemu
                     xenia
                     xenia-canary"
