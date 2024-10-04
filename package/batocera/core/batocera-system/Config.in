@@ -1121,6 +1121,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Macintosh
 	select BR2_PACKAGE_LIBRETRO_MINIVMAC	# ALL
 
+	# Commander X16
+	select BR2_PACKAGE_X16EMU    # ALL
+
 	help
 	  Old computers
 

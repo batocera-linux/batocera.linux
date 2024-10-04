@@ -370,6 +370,10 @@ def getGenerator(emulator: str) -> Generator:
         from .generators.taradino.taradinoGenerator import TaradinoGenerator
         return TaradinoGenerator()
 
+    if emulator == "x16emu":
+        from .generators.x16emu.x16emuGenerator import X16emuGenerator
+        return X16emuGenerator()
+
     if emulator == 'sh':
         from .generators.sh.shGenerator import ShGenerator
         return ShGenerator()

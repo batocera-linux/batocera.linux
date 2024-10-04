@@ -5397,3 +5397,23 @@ rott:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:taradino
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:taradino
+
+commanderx16:
+  name: Commander X16
+  manufacturer: David Murray
+  release: 2019
+  hardware: computer
+  extensions: [prg]
+  platform: commanderx16
+  emulators:
+    x16emu:
+      x16emu: { requireAnyOf: [BR2_PACKAGE_X16EMU] }
+  comment_en: |
+    Extract your Commander X16 games here in their own directory.
+    The games .PRG will show in EmulationStation to run accordingly.
+
+    For more info: https://wiki.batocera.org/systems:commanderx16
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:commanderx16
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:commanderx16
