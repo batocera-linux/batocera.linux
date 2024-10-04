@@ -133,6 +133,7 @@ endmenu
 menu "Emulationstation"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-emulationstation/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-es-system/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-es-web-ui/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-carbon/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-background-musics/Config.in"
 endmenu

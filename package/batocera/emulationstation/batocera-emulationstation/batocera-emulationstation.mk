@@ -129,8 +129,6 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	    $(TARGET_DIR)/usr/share/emulationstation/resources/flags
 	$(INSTALL) -m 0644 -D $(@D)/resources/battery/*.* \
 	    $(TARGET_DIR)/usr/share/emulationstation/resources/battery
-	$(INSTALL) -m 0644 -D $(@D)/resources/services/*.* \
-	    $(TARGET_DIR)/usr/share/emulationstation/resources/services
 	$(INSTALL) -m 0644 -D $(@D)/resources/shaders/*.* \
 	    $(TARGET_DIR)/usr/share/emulationstation/resources/shaders
 	$(INSTALL) -m 0644 -D $(@D)/resources/shaders/*.* \

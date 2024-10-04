@@ -1,0 +1,54 @@
+#!/bin/bash
+
+PIDFILE=/var/run/es-web-notifier.pid
+
+start() {
+        echo -n "Starting es-web-notifier: "
+	ARGS=
+        start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/batocera-es-web-notifier -- ${ARGS} >/dev/null &
+        RETVAL=$?
+	echo "done"
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Stopping es-web-notifier: "
+        start-stop-daemon -K -q -p $PIDFILE
+	RETVAL=$?
+        echo "done"
+        return $RETVAL
+}
+
+status() {
+    if start-stop-daemon --status -q -p $PIDFILE
+    then
+	echo "started"
+    else
+	echo "stopped"
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+	status
+	;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        ;;
+esac
+
+exit $?
