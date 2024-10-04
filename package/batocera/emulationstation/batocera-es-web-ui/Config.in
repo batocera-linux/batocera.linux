@@ -1,0 +1,7 @@
+config BR2_PACKAGE_BATOCERA_ES_WEB_UI
+        bool "batocera Emulationstation Web UI"
+	depends on BR2_PACKAGE_BATOCERA_EMULATIONSTATION
+
+        help
+          A modern UI for ES web services
+

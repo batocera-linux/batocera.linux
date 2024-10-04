@@ -1,0 +1,148 @@
+. { 
+	margin:0px; 
+	padding:0px; 
+	font-family: Open Sans, sans-serif; 
+	font-size:12pt;
+	height:100%;
+	overflow:hidden;
+	color:#FFFFFF;
+}
+
+body {
+  background-color: #FF3CAC;
+  background-image: linear-gradient(125deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+  background-repeat: no-repeat;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-width: 100%;
+  min-height: 100vh;
+  padding-top: 56px;
+  padding-bottom: 120px;
+}
+
+.jumbo { 
+	background-color:#cacbcd; 	
+	padding:4px 4px;
+	text-align: center;
+}
+
+div {
+    overflow-x: auto;
+    overflow-y:scroll;
+}
+
+.card-title { 
+	padding:2px 2px;
+	text-align:center;
+	font-size:10pt;
+	text-transform:uppercase;
+}
+.card-text { 
+	padding:2px 2px;
+	text-align:center;
+	font-size:8pt;
+}
+.modal-title { 
+	padding:2px 2px;
+	text-align:left;
+	font-size:12pt;
+	text-transform:uppercase;
+}
+
+.genre {
+	font-size:10px;
+	color:#EFEFEF;
+	max-width:600px;
+	cursor:pointer;
+	text-transform:uppercase;
+}
+
+.sysName {
+	font-size: 12px;
+	color:#EFEFEF;
+	max-width:600px;
+	cursor:pointer;
+	text-transform:uppercase;
+}
+
+.gameName {
+	font-size:14px;
+	font-weight:800;
+	color:#FFFFFF;
+	max-width:600px;
+	cursor:pointer;
+	text-transform:uppercase;
+}
+
+/* control image height */
+.card-img-150 {
+   max-height: 150px;
+   object-fit: contain;
+   max-width: 100%;
+   width: auto;
+   height: auto;
+}
+
+.card-title-50 {
+   max-height: 50px;
+   object-fit: contain;
+   max-width: 100%;
+   width: auto;
+   height: auto;
+}
+
+.card-game {
+	width: 12rem;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.btn {
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.currentborder {
+    border: 2px solid #CFCFCF;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 3px;
+}
+
+.sys-btn { 
+	color: #ffffff;
+	font-size: 48px;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	padding-left: 2px;
+	padding-right:2px;
+	text-align: center; 
+}
+.sys-btn:nth-child(6n+1) { background: #FF3CAC; }
+.sys-btn:nth-child(6n+2) { background: #DF6CAC; }
+.sys-btn:nth-child(6n+3) { background: #BF9CAC; }
+.sys-btn:nth-child(6n+4) { background: #8BD6C5; }
+.sys-btn:nth-child(6n+5) { background: #5BA6C5; }
+.sys-btn:nth-child(6n+6) { background: #2B86C5; }
+
+.carousel-item-prev,
+.carousel-item-next,
+.carousel-item.active {
+    display:flex;
+}
+
+.carousel-control-prev .carousel-control-next {
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: #cf55cf;
+    border-radius: 30%;
+}
+
+.carousel-item.next.left,
+.carousel-item.prev.right,
+{
+    transition: transform .5s ease;
+}
+

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.8.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Batocera Web Services</title>
+<link rel="shortcut icon" href="favicon.png">
+<link href="main.css" rel="stylesheet">
+<!-- bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- fonts icons -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+</head>
+<body>
+<!-- See REST Api list on https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-app/src/services/HttpServerThread.cpp#L25 -->
+<script type='text/javascript'>
+
+function reloadGamelists() {
+	fetch('/reloadgames');
+}
+
+function emuKill() {
+	fetch('/emukill');
+}
+
+function launchGame(game) {
+	fetch('/launch', {
+		method: 'POST',
+		headers: {'Content-Type':'application/x-www-form-urlencoded'},
+		body: game
+	});
+}
+
+function escapeHtml(unsafe) {
+	return unsafe
+	.replace(/&/g, "&amp;")
+	.replace(/</g, "&lt;")
+	.replace(/>/g, "&gt;")
+	.replace(/"/g, "&quot;")
+	.replace(/'/g, "&#039;");
+}
+
+function escapeRom(unsafe) {
+	return unsafe
+	.replace(/'/g, "");
+}
+
+function detailFill(ev) {
+	let title = event.target.getAttribute('data-name');
+	var mtitle = document.getElementById("detailModalLabel");
+	let arg = event.target.getAttribute('data-desc');
+	var marg = document.getElementById("detailModalBody");
+	let thumb = event.target.getAttribute('data-thumb');
+	let img = event.target.getAttribute('data-image');
+	var pic = document.getElementById("detailModalImg");
+	mtitle.innerHTML = title;
+	marg.innerHTML = arg;
+	if (img)
+		pic.src = img;
+	else if (thumb)
+		pic.src = thumb;
+	else
+		pic.src = "";
+}
+
+function detailFill(ev) {
+	let title = event.target.getAttribute('data-name');
+	var mtitle = document.getElementById("detailModalLabel");
+	let arg = event.target.getAttribute('data-desc');
+	var marg = document.getElementById("detailModalBody");
+	let thumb = event.target.getAttribute('data-thumb');
+	let img = event.target.getAttribute('data-image');
+	var pic = document.getElementById("detailModalImg");
+	mtitle.innerHTML = title;
+	marg.innerHTML = arg;
+	if (img)
+		pic.src = img;
+	else if (thumb)
+		pic.src = thumb;
+	else
+		pic.src = "";
+}
+
+function showGames(arr) {
+	var i;
+	var out = '<div class="row mx-auto col-12 d-flex align-items-stretch justify-content-center">';
+	for(i = 0; i < arr.length; i++) {
+		if ( arr[i].hidden != "false")
+			break;
+		out += '<div class="card text-white bg-dark card-game">';
+		if(arr[i].thumbnail)
+			out += '<img class="card-img-top card-img-150" loading="lazy" src="' + arr[i].thumbnail + '">';
+		else if(arr[i].image)
+			out += '<img class="card-img-top card-img-150" loading="lazy" src="' + arr[i].image + '">';
+		if(arr[i].marquee)
+			out += '<img class="card-img card-title-50" loading="lazy" src="' + arr[i].marquee + '">';
+		else
+			out += '<div class="card-title text-center">' + arr[i].name +'</div>';
+		out += '<div class="card-text align-items-center">';
+		if (arr[i].genre) {
+			out += '<p>' + arr[i].genre +'</p>'; 
+		}
+		const regex = /^\d\d\d\d/;
+		if (arr[i].releasedate) {
+			if (regex.test(arr[i].releasedate)) {
+				out += '<p>' + arr[i].releasedate.match(regex) +'</p>'; 
+			}
+		}
+		if (arr[i].cheevosHash && parseInt(arr[i].cheevosHash) != 0) {
+			out += '<i class="fa fa-trophy" width=24 style="margin-left:2px; margin-right:2px"></i>';
+		}
+		if (arr[i].favorite == "true") {
+			out += '<i class="fa fa-star" width=24 style="margin-left:2px; margin-right:2px"></i>';
+		}
+		if (arr[i].playcount && parseInt(arr[i].playcount) > 0) {
+			out += '<p>Played ' + arr[i].playcount + ' time';
+			if (parseInt(arr[i].playcount) > 1)
+				out += 's';
+			out += '</p>'; 
+		} else {
+			out += '<p>Never played</p>';
+		}
+		out += '</div><div class="card-footer mx-auto">';
+		out += '<input type="button" class="btn btn-primary" onClick="launchGame(\'' + escapeRom(arr[i].path) + '\')" value="Play"></button>';
+		if (arr[i].desc) {
+			out += '<input type="button" class="btn btn-info" data-toggle="modal" data-target="#detailModal" data-desc="' + escapeHtml(arr[i].desc) +
+				'" data-name="' + escapeHtml(arr[i].name) +'" data-thumb="' + arr[i].thumbnail +
+				'" data-image="' + arr[i].image + '" value="More" onClick=detailFill()></button>';
+		}
+		out += '</div>'; // card-footer
+		out += '</div>'; // card
+	}
+	out +='</div>'; // card-deck
+
+	document.getElementById("gameList").innerHTML = out;
+}
+
+function getOrder(prop) {
+	return function(a, b) {
+		if (a[prop] > b[prop]) {
+			return 1;
+		} else if (a[prop] < b[prop]) {
+			return -1;
+		}
+		return 0;
+	}
+}
+
+function loadGames(name) {
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myArr = JSON.parse(this.responseText);
+			myArr.sort(getOrder("name"));
+			showGames(myArr);
+		}
+	};
+	xhr.open('GET', '/systems/' + name + '/games');
+	xhr.send(); 
+}
+
+function removeItem(arr, value) {
+	var index = arr.indexOf(value);
+	if (index > -1) {
+		arr.splice(index, 1);
+	}
+	return arr;
+}
+
+function showSystems(arr) {
+	const nb_sys = 6;
+	var out = '<div class="carousel slide" id="sysCarousel" data-touch="true" data-interval="false" data-ride="carousel">' +
+		'<div class="carousel-inner">'; 
+	var i;
+	for(i = 0; i < arr.length; i++) {
+		if (arr[i].visible != "true") {
+			removeItem(arr, arr[i]);
+		}
+	}
+	for(i = 0; i < arr.length; i++) {
+		if ( i % nb_sys == 0 ) {
+			if ( i == 0 )
+				out += '<div class="carousel-item active">';
+			else
+				out += '<div class="carousel-item">';
+			out += '<div class="row" flex-nowrap overflow-auto>'; 
+		}
+		if (arr[i].logo) {
+			out += '<div class="col-4 sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block"><img height=32pt style="max-width:48pt" src="' + arr[i].logo + '"></button></a></div>';
+		} else {
+			out += '<div class="col-4 sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block">' + arr[i].fullname + '</button></a></div>';
+		}
+		if ( i % nb_sys == (nb_sys - 1) )
+			out += '</div></div>' ; //  row carousel-item
+	} 
+	if ( i % nb_sys != (nb_sys - 1) )
+		out += '</div>'; // carousel-item
+	out += '</div></div>' + // carousel-inner
+		'<button class="carousel-control-prev btn-sm btn-outline-info" type="button" data-target="#sysCarousel" data-slide="prev">' +
+		'  <span class="carousel-control-prev-icon" ></span>' +
+		'</button>' +
+		'<button class="carousel-control-next btn-sm btn-outline-info" type="button" data-target="#sysCarousel" data-slide="next">' +
+		'  <span class="carousel-control-next-icon" ></span>' +
+		'</button>' +
+		'</div>'; // carousel-slide container
+	document.getElementById("systemList").innerHTML = out;
+}
+
+function describe(d) {
+	var out = "";
+	var rlogo = null;
+
+	if (d.msg) {
+		if (d.msg == "NO GAME RUNNING") {
+			out += '<div class="gameName" id="gameName">No game running</div>';
+			return (out);
+		}
+		if (d.msg == "ERROR") {
+			out += '<div class="gameName" id="gameName">Notification service unreachable</div>';
+			return (out);
+		}
+	}
+	out += '<div class="row mx-auto">';
+	if (d.image) {
+		out += '<div class="col-4 float-right imgCont"><img src="' + d.image + '" class="imgArt" id="imgArt" width=64pt></div>';
+	} else if (d.thumbnail) {
+		out += '<div class="col-4 float-right imgCont"><img src="' + d.thumbnail + '" class="imgArt" id="imgArt" width=64pt></div>';
+	}
+	out += '<div class="col-8 sysCont">';
+	if (d.systemName) {
+		var url = "/systems/" + d.systemName + "/logo";
+		fetch(url) .then( response => response.blob() )
+			.then((blob) => { const imgE = document.createElement('img'); 
+					const imgUrl = URL.createObjectURL(blob);
+					imgE.src = imgUrl;
+					imgE.style.height = "24pt";
+					const container = document.getElementById("sysName");
+					container.innerHTML='';
+					container.appendChild(imgE);
+					});
+		out += '<div class="row no-gutters"><div class="col-12 sysName" id="sysName" title="">' + d.systemName +'</div></div>';
+	}
+	if (d.name) {
+		out += '<div class="row no-gutters"><div class="col-12 gameName" id="gameName" title="">' + d.name +'</div></div>';
+	}
+	out += '</div></div>';
+	return (out);
+}
+
+
+var PREVDATA = null;
+
+$(document).ready(function() {
+		fetch('/systems')
+		.then(response => response.json())
+		.then(data => {
+			showSystems(data);
+		});
+		var latestOutput = document.getElementById("jumbo");
+		// Construct the WebSocket URL based on the current location of the web page
+		var wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+		var wsHost = location.host;
+		wsHost = wsHost.split(':')[0]+":8080"
+		var wsUrl = wsProtocol + '//' + wsHost + '/';
+		var ws = new WebSocket(wsUrl);
+		ws.onmessage = function(event) {
+		var d = event.data;
+		if (PREVDATA != d) {
+			var dd = JSON.parse(d);
+			latestOutput.innerHTML = describe(dd);
+			PREVDATA = d;
+		}
+		};
+		ws.onclose = function() {
+			var message = { "msg": "ERROR" };
+			latestOutput.innerHTML = describe(message);
+			console.log("WebSocket connection closed");
+		};
+});
+
+$('#myCarousel').carousel();
+
+</script>
+
+<!-- Modal windows -->
+<div class="modal fade" id="killModal" tabindex="-1" role="dialog" aria-labelledby="KillModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="KillModalLabel">Are you sure?</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+</div>
+<div class="modal-body">
+Confirm you want to kill the running emulator and game.
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> <input type="button" class="btn btn-danger" data-dismiss="modal" onclick="emuKill()" value="Kill it!">
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="detailModalLabel"></h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+</div>
+<div class="modal-body">
+<img class="card-img-top card-img-250" loading="lazy" src="" id="detailModalImg">
+<div class="card-body">
+<p class="card-text" id="detailModalBody"></p>
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- navbars -->
+<nav class="navbar navbar-expand navbar-dark bg-dark fixed-top">
+<div class="flex-column mx-auto">
+<ul class="navbar-nav">
+<li class="nav-item">
+<a class="navbar-brand" href="#"><img src="logo-tri.png" height="28"></a>
+</li>
+<li class="nav-item"><input type="button" class="btn btn-primary" data-toggle="collapse" data-target="#systemList" aria-expanded="true" aria-controls="systemList" id="showSystems" value="Systems"></li>
+<li class="nav-item"><button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#jumbo" id="showNotifs">Current</button></li>
+<li class="nav-item"><input type="button" class="btn btn-info" value="Reload" onclick='reloadGamelists()'></li>
+<li class="nav-item"><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#killModal" value="Kill">Kill</button></li>
+</ul>
+<ul class="navbar-nav">
+<li class="nav-item mx-auto">
+<div class="container-fluid collapse show currentborder" id="jumbo"></div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="row">
+<div id="gameList"></div>
+</div>
+<nav class="navbar navbar-expand navbar-dark bg-dark fixed-bottom">
+<div class="mx-auto">
+<div id="systemList" class="collapse show"></div>
+</div>
+</nav>
+
+</body>
+</html>

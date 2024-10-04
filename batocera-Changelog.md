@@ -47,6 +47,7 @@
 - You can now manually forget, connect or disconnect a bluetooth device
 - Updated Nvidia card detection
 - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
+- New ES web UI on http://<batocera>:1234 (with a new es_web_notifier service to enable)
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
