@@ -1,14 +1,18 @@
-import configparser
-import os
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS
-from ... import Command
-from ... import controllersConfig
 from ..Generator import Generator
+
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class TaradinoGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "taradino",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }

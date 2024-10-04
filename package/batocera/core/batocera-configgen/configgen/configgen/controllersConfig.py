@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os
 import re
 import xml.etree.ElementTree as ET
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, TypeAlias
+from collections.abc import Iterable, Mapping
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, NotRequired, TypeAlias, TypedDict
 
 import evdev
 import pyudev
@@ -13,7 +13,8 @@ from .batoceraPaths import BATOCERA_ES_DIR, ES_GAMES_METADATA, USER_ES_DIR
 from .utils.logger import get_logger
 
 if TYPE_CHECKING:
-    from pathlib import Path
+
+    from .types import DeviceInfoDict, DeviceInfoMapping, GunDict, GunMapping
 
 eslog = get_logger(__name__)
 
@@ -67,7 +68,7 @@ class Controller:
         self.nbbuttons = nbbuttons
         self.nbhats = nbhats
         self.nbaxes = nbaxes
-        self.inputs: InputDict = dict(inputs) if inputs is not None else dict()
+        self.inputs: InputDict = dict(inputs) if inputs is not None else {}
 
     def generateSDLGameDBLine(self):
         return _generateSdlGameControllerConfig(self)
@@ -77,8 +78,8 @@ ControllerDict: TypeAlias = dict[str, Controller]
 
 
 # Load all controllers from the es_input.cfg
-def loadAllControllersConfig():
-    controllers = dict()
+def loadAllControllersConfig() -> ControllerDict:
+    controllers: ControllerDict = {}
     for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
       if conffile.exists():
           tree = ET.parse(conffile)
@@ -96,7 +97,7 @@ def loadAllControllersConfig():
 
 # Load all controllers from the es_input.cfg
 def loadAllControllersByNameConfig():
-    controllers = dict()
+    controllers: ControllerDict = {}
     for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
         if conffile.exists():
             tree = ET.parse(conffile)
@@ -113,8 +114,8 @@ def loadAllControllersByNameConfig():
 
 
 # Create a controller array with the player id as a key
-def loadControllerConfig(controllersInput):
-    playerControllers = dict()
+def loadControllerConfig(controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
+    playerControllers: ControllerDict = {}
     controllers = loadAllControllersConfig()
 
     for i, ci in enumerate(controllersInput):
@@ -123,7 +124,7 @@ def loadControllerConfig(controllersInput):
             playerControllers[str(i+1)] = newController
     return playerControllers
 
-def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbbuttons, pxnbhats, pxnbaxes):
+def findBestControllerConfig(controllers: ControllerMapping, x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
     # when there will have more joysticks, use hash tables
     for controllerGUID in controllers:
         controller = controllers[controllerGUID]
@@ -143,14 +144,14 @@ def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxn
     return None
 
 
-def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING):
+def _generateSdlGameControllerConfig(controller: Controller, sdlMapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING) -> str:
     """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
     config = []
     config.append(controller.guid)
     config.append(controller.realName)
     config.append("platform:Linux")
 
-    def add_mapping(input):
+    def add_mapping(input: Input) -> None:
         keyname = sdlMapping.get(input.name, None)
         if keyname is None:
             return
@@ -180,7 +181,7 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
     return ','.join(config)
 
 
-def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
+def _keyToSdlGameControllerConfig(keyname: str, name: str, type: str, id: str, value: str | None = None) -> str | None:
     """
     Converts a key mapping to the SDL_GAMECONTROLLER format.
 
@@ -225,19 +226,20 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
         raise ValueError('unknown key type: {!r}'.format(type))
 
 
-def generateSdlGameControllerConfig(controllers):
+def generateSdlGameControllerConfig(controllers: ControllerMapping) -> str:
     configs = []
     for idx, controller in controllers.items():
         configs.append(controller.generateSDLGameDBLine())
     return "\n".join(configs)
 
 
-def writeSDLGameDBAllControllers(controllers, outputFile: str | Path = "/tmp/gamecontrollerdb.txt"):
-    with open(outputFile, "w") as text_file:
+def writeSDLGameDBAllControllers(controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt") -> Path:
+    outputFile = Path(outputFile)
+    with outputFile.open("w") as text_file:
         text_file.write(generateSdlGameControllerConfig(controllers))
     return outputFile
 
-def generateSdlGameControllerPadsOrderConfig(controllers):
+def generateSdlGameControllerPadsOrderConfig(controllers: ControllerMapping) -> str:
     res = ""
     for idx, controller in controllers.items():
         if res != "":
@@ -245,7 +247,7 @@ def generateSdlGameControllerPadsOrderConfig(controllers):
         res = res + str(controller.index)
     return res
 
-def gunsNeedCrosses(guns):
+def gunsNeedCrosses(guns: GunMapping) -> bool:
     # no gun, enable the cross for joysticks, mouses...
     if len(guns) == 0:
         return True
@@ -256,7 +258,7 @@ def gunsNeedCrosses(guns):
     return False
 
 # returns None is no border is wanted
-def gunsBordersSizeName(guns, config):
+def gunsBordersSizeName(guns: GunMapping, config: Mapping[str, object]) -> str | None:
     bordersSize = "medium"
     if "controllers.guns.borderssize" in config and config["controllers.guns.borderssize"]:
         bordersSize = config["controllers.guns.borderssize"]
@@ -280,17 +282,17 @@ def gunsBordersSizeName(guns, config):
     return None
 
 # returns None to follow the bezel overlay size by default
-def gunsBorderRatioType(guns, config):
+def gunsBorderRatioType(guns: GunMapping, config: dict[str, str]) -> str | None:
     if "controllers.guns.bordersratio" in config:
         return config["controllers.guns.bordersratio"] # "4:3"
     return None
 
-def getMouseButtons(device):
+def getMouseButtons(device: evdev.InputDevice) -> list[str]:
   caps = device.capabilities()
   caps_keys = caps[evdev.ecodes.EV_KEY]
   caps_filter = [evdev.ecodes.BTN_LEFT, evdev.ecodes.BTN_RIGHT, evdev.ecodes.BTN_MIDDLE, evdev.ecodes.BTN_1, evdev.ecodes.BTN_2, evdev.ecodes.BTN_3, evdev.ecodes.BTN_4, evdev.ecodes.BTN_5, evdev.ecodes.BTN_6, evdev.ecodes.BTN_7, evdev.ecodes.BTN_8]
   caps_intersection = list(set(caps_keys) & set(caps_filter))
-  buttons = []
+  buttons: list[str] = []
   if evdev.ecodes.BTN_LEFT in caps_intersection:
     buttons.append("left")
   if evdev.ecodes.BTN_RIGHT in caps_intersection:
@@ -315,7 +317,7 @@ def getMouseButtons(device):
     buttons.append("8")
   return buttons
 
-def mouseButtonToCode(button):
+def mouseButtonToCode(button: str) -> int | None:
     if button == "left":
         return evdev.ecodes.BTN_LEFT
     if button == "right":
@@ -340,12 +342,12 @@ def mouseButtonToCode(button):
         return evdev.ecodes.BTN_8
     return None
 
-def getGuns():
+def getGuns() -> GunDict:
     import re
 
     import pyudev
 
-    guns = {}
+    guns: GunDict = {}
     context = pyudev.Context()
 
     # guns are mouses, just filter on them
@@ -381,10 +383,11 @@ def getGuns():
 
     if len(guns) == 0:
         eslog.info("no gun found")
+
     return guns
 
-def shortNameFromPath(path):
-    redname = os.path.splitext(os.path.basename(path))[0].lower()
+def shortNameFromPath(path: str | Path) -> str:
+    redname = Path(path).stem.lower()
     inpar   = False
     inblock = False
     ret = ""
@@ -401,12 +404,12 @@ def shortNameFromPath(path):
             inblock = True
     return ret
 
-def getGamesMetaData(system, rom):
+def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
     # load the database
     tree = ET.parse(ES_GAMES_METADATA)
     root = tree.getroot()
     game = shortNameFromPath(rom)
-    res = {}
+    res: dict[str, str] = {}
     eslog.info("looking for game metadata ({}, {})".format(system, game))
 
     targetSystem = system
@@ -438,22 +441,31 @@ def getGamesMetaData(system, rom):
                       return res
     return res
 
-def dev2int(dev):
+def dev2int(dev: str) -> int | None:
     matches = re.match(r"^/dev/input/event([0-9]*)$", dev)
     if matches is None:
         return None
     return int(matches.group(1))
 
-def getDevicesInformation():
-  groups    = {}
-  devices   = {}
+
+class _Device(TypedDict):
+    node: str
+    group: str | None
+    isJoystick: bool
+    isWheel: bool
+    isMouse: bool
+    wheel_rotation: NotRequired[int]
+
+def getDevicesInformation() -> DeviceInfoDict:
+  groups: dict[str | None, list[str]] = {}
+  devices: dict[int, _Device] = {}
   context   = pyudev.Context()
   events    = context.list_devices(subsystem='input')
   mouses    = []
   joysticks = []
   for ev in events:
     eventId = dev2int(str(ev.device_node))
-    if eventId != None:
+    if eventId is not None:
       isJoystick = ("ID_INPUT_JOYSTICK" in ev.properties and ev.properties["ID_INPUT_JOYSTICK"] == "1")
       isWheel    = ("ID_INPUT_WHEEL"    in ev.properties and ev.properties["ID_INPUT_WHEEL"] == "1")
       isMouse    = ("ID_INPUT_MOUSE"    in ev.properties and ev.properties["ID_INPUT_MOUSE"] == "1") or ("ID_INPUT_TOUCHPAD" in ev.properties and ev.properties["ID_INPUT_TOUCHPAD"] == "1")
@@ -474,7 +486,7 @@ def getDevicesInformation():
           groups[group].append(ev.device_node)
   mouses.sort()
   joysticks.sort()
-  res = {}
+  res: DeviceInfoDict = {}
   for device in devices:
     d = devices[device]
     dgroup = None
@@ -493,8 +505,8 @@ def getDevicesInformation():
         res[d["node"]]["wheel_rotation"] = d["wheel_rotation"]
   return res
 
-def getAssociatedMouse(devicesInformation, dev):
-    if dev not in devicesInformation or devicesInformation[dev]["associatedDevices"] is None:
+def getAssociatedMouse(devicesInformation: DeviceInfoMapping, dev: str | None) -> str | None:
+    if dev is None or dev not in devicesInformation or devicesInformation[dev]["associatedDevices"] is None:
         return None
     for candidate in devicesInformation[dev]["associatedDevices"]:
         if devicesInformation[candidate]["isMouse"]:

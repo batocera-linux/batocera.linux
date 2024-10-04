@@ -1,18 +1,19 @@
-import os
+from __future__ import annotations
 
-from ... import batoceraFiles
+from ...batoceraPaths import mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
+from .libretroPaths import RETROARCH_CUSTOM
+
 
 def generateRetroarchCustom() -> None:
     # retroarchcustom.cfg
-    if not os.path.exists(os.path.dirname(batoceraFiles.retroarchCustom)):
-        os.makedirs(os.path.dirname(batoceraFiles.retroarchCustom))
+    mkdir_if_not_exists(RETROARCH_CUSTOM.parent)
 
     try:
-        retroarchSettings = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
+        retroarchSettings = UnixSettings(RETROARCH_CUSTOM, separator=' ')
     except UnicodeError:
-        os.remove(batoceraFiles.retroarchCustom)
-        retroarchSettings = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
+        RETROARCH_CUSTOM.unlink()
+        retroarchSettings = UnixSettings(RETROARCH_CUSTOM, separator=' ')
 
     # Use Interface
     retroarchSettings.save('menu_driver',                       '"ozone"')
