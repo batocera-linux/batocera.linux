@@ -108,7 +108,8 @@ for FILE in music bios extractions kodi library saves screenshots recordings spl
             bios/dolphin-emu \
             roms/iortcw/main \
             bios/ps2 \
-            system/configs/pironman5
+            system/configs/pironman5 \
+            bios/commanderx16
 do
     # Skip updating specific files
     if [ "$FILE" = "system/configs/emulationstation/es_settings.cfg" ] || [ "$FILE" = "system/batocera.conf" ] || [ "$FILE" = "system/.kodi/userdata/guisettings.xml" ]; then
