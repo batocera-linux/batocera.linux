@@ -4,12 +4,16 @@
 #
 ################################################################################
 
-X16EMU_VERSION = r48
-X16EMU_SITE = $(call github,X16Community,x16-emulator,$(X16EMU_VERSION))
+X16EMU_VERSION = 48
+X16EMU_SITE = $(call github,X16Community,x16-emulator,r$(X16EMU_VERSION))
 X16EMU_LICENSE = BSD-2-Clause license
 X16EMU_LICENSE_FILE = LICENSE
 
 X16EMU_DEPENDENCIES = sdl2
+
+X16EMU_BIOS_SOURCE = Release.R$(X16EMU_VERSION).ROM.Image.zip
+X16EMU_EXTRA_DOWNLOADS = \
+    https://github.com/X16Community/x16-rom/releases/download/r$(X16EMU_VERSION)/$(X16EMU_BIOS_SOURCE)
 
 define X16EMU_BUILD_CMDS
 	$(MAKE) $(TARGET_CONFIGURE_OPTS) \
@@ -29,6 +33,15 @@ define X16EMU_EVMAPY
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
+# Ensure the matching BIOS gets installed for the emulator
+define X16EMU_BIOS
+    mkdir -p $(@D)/bios
+    cd $(@D)/bios && unzip -x -o $(DL_DIR)/$(X16EMU_DL_SUBDIR)/$(X16EMU_BIOS_SOURCE)
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/commanderx16
+	cp -f $(@D)/bios/rom.bin $(TARGET_DIR)/usr/share/batocera/datainit/bios/commanderx16
+endef
+
 X16EMU_POST_INSTALL_TARGET_HOOKS += X16EMU_EVMAPY
+X16EMU_POST_INSTALL_TARGET_HOOKS += X16EMU_BIOS
 
 $(eval $(generic-package))
