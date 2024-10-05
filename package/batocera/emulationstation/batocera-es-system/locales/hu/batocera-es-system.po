@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: emulationstation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-09-29 13:35+0200\n"
+"PO-Revision-Date: 2024-10-03 12:32+0200\n"
 "Last-Translator: Szoldán Albert\n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.5\n"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -439,7 +439,7 @@ msgstr ""
 "Használjon fénypisztolyokat kontrollerek helyett, ha fénypisztolyok vannak "
 "csatlakoztatva."
 
-#. TRANSLATION: shared, dolphin, rpcs3
+#. TRANSLATION: shared, dolphin
 msgctxt "game_options"
 msgid "LIGHT GUNS"
 msgstr "FÉNYPISZTOLYOK"
@@ -9016,7 +9016,7 @@ msgctxt "game_options"
 msgid "USE PAD PROFILES"
 msgstr "PAD PROFILOK HASZNÁLATA"
 
-#. TRANSLATION: dolphin, rpcs3, rpcs3, rpcs3, rpcs3, ...
+#. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Enable controller rumble capabilities if supported by the controller."
 msgstr "Engedélyezze a vezérlő rezgő képességeit, ha a vezérlő támogatja."
@@ -11733,10 +11733,10 @@ msgstr ""
 "Az alapértelmezett SDL2-t használ, ellenkező esetben engedélyezze a "
 "vezérlőspecifikus képességeket. A Sony DS nem működik klónvezérlőkkel."
 
-#. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
+#. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "PS3 CONTROLLER"
-msgstr ""
+msgid "PS3 CONTROLLER 1"
+msgstr "PS3 KONTROLLER 1"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -11748,20 +11748,35 @@ msgctxt "game_options"
 msgid "Sony DS"
 msgstr "Sony DS"
 
-#. TRANSLATION: rpcs3, rpcs3
+#. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "CONTROLLER 5"
-msgstr ""
+msgid "PS3 CONTROLLER 2"
+msgstr "PS3 KONTROLLER 2"
 
-#. TRANSLATION: rpcs3, rpcs3
+#. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "CONTROLLER 6"
-msgstr ""
+msgid "PS3 CONTROLLER 3"
+msgstr "PS3 KONTROLLER 3"
 
-#. TRANSLATION: rpcs3, rpcs3
+#. TRANSLATION: rpcs3
 msgctxt "game_options"
-msgid "CONTROLLER 7"
-msgstr ""
+msgid "PS3 CONTROLLER 4"
+msgstr "PS3 KONTROLLER 4"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3 CONTROLLER 5"
+msgstr "PS3 kONTROLLER 5"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3 CONTROLLER 6"
+msgstr "PS3 KONTROLLER 6"
+
+#. TRANSLATION: rpcs3
+msgctxt "game_options"
+msgid "PS3 CONTROLLER 7"
+msgstr "PS3 KONTROLLER 7"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -12116,57 +12131,58 @@ msgstr "QUAD RENDERING"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "CRT-like colour adaption. Requires New 3D engine."
-msgstr ""
+msgstr "CRT-szerű színadaptáció. Új 3D motorra van szükség."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "CRT COLOUR"
-msgstr ""
+msgstr "CRT SZÍN"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "ARI/D93 (recommended for all JP developed games)"
-msgstr ""
+msgstr "ARI/D93 (ajánlott minden japán fejlesztésű játékhoz)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "PVM_20M2U/D93"
-msgstr ""
+msgstr "PVM_20M2U/D93"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_525/D93"
-msgstr ""
+msgstr "BT601_525/D93"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_525/D65 (recommended for all US developed games)"
-msgstr ""
+msgstr "BT601_525/D65 (ajánlott minden amerikai fejlesztésű játékhoz)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_625/D65 (recommended for all EUR/AUS developed games)"
-msgstr ""
+msgstr "BT601_625/D65 (ajánlott minden európa/ausztrál fejlesztésű játékhoz)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
 msgstr ""
+"A 2D-s rétegekhez használt felskálázó szűrő. Új 3D motorra van szükség."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "UPSCALE MODE"
-msgstr ""
+msgstr "FELSKÁLÁZOTT MÓD"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "None/Sharp Pixels"
-msgstr ""
+msgstr "Nincs/Éles pixelek"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Biquintic"
-msgstr ""
+msgstr "Biquintic"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -12240,7 +12256,7 @@ msgctxt "game_options"
 msgid "Choose your preferred aspect ratio.."
 msgstr "Válassza ki a kívánt képarányt.."
 
-#. TRANSLATION: cgenius, x16emu
+#. TRANSLATION: cgenius
 msgctxt "game_options"
 msgid "4x3 (Default)"
 msgstr "4x3 (alapértelmezett)"
@@ -15233,41 +15249,6 @@ msgctxt "game_options"
 msgid "TRIPLE BUFFERING"
 msgstr "HÁRMAS PUFFERELÉS"
 
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "Enhancement. Increase the rendering resolution."
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "1280x960 (Default)"
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "Change image scaling algorithm quality."
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "IMAGE QUALITY"
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "Nearest pixel sampling"
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "Linear filtering"
-msgstr ""
-
-#. TRANSLATION: x16emu
-msgctxt "game_options"
-msgid "Anisotropic filtering"
-msgstr ""
-
 #. TRANSLATION: steam.keys
 msgctxt "keys_files"
 msgid "Exit Steam"
@@ -15322,86 +15303,6 @@ msgstr "A jelenetet kihagyása"
 msgctxt "keys_files"
 msgid "Screenshot"
 msgstr "Pillanatkép"
-
-#. TRANSLATION: rott.keys, theforceengine.keys, dreamcast.redream.keys, cave3rd.demul.keys, dreamcast.demul.keys, ...
-msgctxt "keys_files"
-msgid "Exit the emulator"
-msgstr "Kilépés az emulátorból"
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Open door"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Toggle weapon"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Drop weapon"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Aim up"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Aim down"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Strafe left"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Strafe right"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Run"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Fire"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Menu back"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Move left"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Move right"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Move forward"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Move backward"
-msgstr ""
-
-#. TRANSLATION: rott.keys
-msgctxt "keys_files"
-msgid "Toggle run"
-msgstr ""
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -15542,6 +15443,11 @@ msgstr "Kutatás"
 msgctxt "keys_files"
 msgid "Manage Staff"
 msgstr "Személyzet kezelése"
+
+#. TRANSLATION: theforceengine.keys, dreamcast.redream.keys, cave3rd.demul.keys, dreamcast.demul.keys, naomi.demul.keys, ...
+msgctxt "keys_files"
+msgid "Exit the emulator"
+msgstr "Kilépés az emulátorból"
 
 #. TRANSLATION: theforceengine.keys
 msgctxt "keys_files"
@@ -16027,34 +15933,6 @@ msgstr "Grafikai szűrés be/ki"
 msgctxt "keys_files"
 msgid "Configuration menu"
 msgstr "Konfiguráció menü"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 1"
-#~ msgstr "PS3 KONTROLLER 1"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 2"
-#~ msgstr "PS3 KONTROLLER 2"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 3"
-#~ msgstr "PS3 KONTROLLER 3"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 4"
-#~ msgstr "PS3 KONTROLLER 4"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 5"
-#~ msgstr "PS3 kONTROLLER 5"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 6"
-#~ msgstr "PS3 KONTROLLER 6"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 7"
-#~ msgstr "PS3 KONTROLLER 7"
 
 #~ msgctxt "game_options"
 #~ msgid "Enable or disable monsters in battle."
