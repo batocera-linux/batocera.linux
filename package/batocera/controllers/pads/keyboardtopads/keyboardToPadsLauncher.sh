@@ -24,7 +24,7 @@ PHYSPID=$( evtest --info "${PHYSDEV}" | grep -E '^Input device ID:'   | sed -e s
 CONFIGNAME=$(getConfigName "${PHYSNAME}" "${PHYSVID}" "${PHYSPID}")
 CONFIGFILE=""
 test -e "/usr/share/keyboardToPads/inputs/${CONFIGNAME}"        && CONFIGFILE="/usr/share/keyboardToPads/inputs/${CONFIGNAME}"
-test -e "/userdata/configs/keyboardToPads/inputs/${CONFIGNAME}" && CONFIGFILE="/userdata/configs/keyboardToPads/inputs/${CONFIGNAME}"
+test -e "/userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}" && CONFIGFILE="/userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}"
 
 ACTION=$2
 
@@ -35,7 +35,7 @@ then
        echo 0
        exit 0
     fi
-    if test -e "/userdata/configs/keyboardToPads/inputs/${CONFIGNAME}"
+    if test -e "/userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}"
     then
 	echo 0
 	exit 0
@@ -48,12 +48,12 @@ fi
 if test "${ACTION}" == "checkconfig"
 then
     echo "Device ${PHYSNAME} / vendor id: ${PHYSVID} / product id: ${PHYSPID}"
-    echo "checking /userdata/configs/keyboardToPads/inputs/${CONFIGNAME}..."
+    echo "checking /userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}..."
     echo "checking /usr/share/keyboardToPads/inputs/${CONFIGNAME}..."
 
     CONFIGFILE=""
     test -e "/usr/share/keyboardToPads/inputs/${CONFIGNAME}"        && CONFIGFILE="/usr/share/keyboardToPads/inputs/${CONFIGNAME}"
-    test -e "/userdata/configs/keyboardToPads/inputs/${CONFIGNAME}" && CONFIGFILE="/userdata/configs/keyboardToPads/inputs/${CONFIGNAME}"
+    test -e "/userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}" && CONFIGFILE="/userdata/system/configs/keyboardToPads/inputs/${CONFIGNAME}"
     if test -n "${CONFIGFILE}"
     then
 	echo "Using config ${CONFIGFILE}" >&2
