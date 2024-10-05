@@ -1,0 +1,3 @@
+config BR2_PACKAGE_KEYBOARDTOPADS
+	bool "keyboardtopads"
+	select BR2_PACKAGE_EVSIEVE
