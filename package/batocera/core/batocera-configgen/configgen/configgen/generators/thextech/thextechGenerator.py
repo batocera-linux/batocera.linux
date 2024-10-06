@@ -38,5 +38,5 @@ class TheXTechGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "thextech",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ENTER" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ENTER", "pause": "KEY_ENTER" }
         }

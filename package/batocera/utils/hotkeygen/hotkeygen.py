@@ -45,7 +45,7 @@ ECODES_NAMES: Final[dict[int, str]] = {
 }
 
 KNOWN_ACTIONS: Final = {
-    "exit", "coin", "menu", "files", "save_state", "restore_state", "next_slot", "previous_slot", "screenshot"
+    "exit", "coin", "menu", "pause", "files", "save_state", "restore_state", "next_slot", "previous_slot", "screenshot"
 }
 
 # default context is for es
@@ -155,6 +155,7 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
             ecodes.KEY_EXIT:     "exit",
             ecodes.KEY_EURO:     "coin",
             ecodes.KEY_MENU:     "menu",
+            ecodes.KEY_PAUSE:    "pause",
             ecodes.KEY_FILE:     "files",
             ecodes.KEY_SAVE:     "save_state",
             ecodes.KEY_SEND:     "restore_state",

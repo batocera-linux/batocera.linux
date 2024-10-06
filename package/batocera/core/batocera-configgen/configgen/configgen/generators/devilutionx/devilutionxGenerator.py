@@ -39,5 +39,5 @@ class DevilutionXGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "devilutionx",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F2", "restore_state": "KEY_F3" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F2", "restore_state": "KEY_F3" }
         }
