@@ -196,7 +196,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_DROPBEAR			# ssh server
 	select BR2_PACKAGE_PM_UTILS			# suspend
 	select BR2_PACKAGE_QTSIXA_SHANWAN		# ps3 pad
-	select BR2_PACKAGE_XARCADE2JSTICK		# keyboard events of the Xarcade Tankstick
 	select BR2_PACKAGE_EVSIEVE			# linux tool to manipulate events (like joining them) ; armv8 in 32 bits seems not supported
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT		# for util-linux compilation to work (so, may be removed in the future)
 	select BR2_PACKAGE_FBDUMP			# tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
@@ -1483,7 +1482,6 @@ config BR2_PACKAGE_BATOCERA_KODI21
 
 	# Kodi game controllers
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK	# joysticks for kodi
-	select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE	# xarcade for kodi
 
 	# ffmpeg enabler that i'm not sure it has an impact on kodi
 	select BR2_PACKAGE_FFMPEG_GPL			# video recording
