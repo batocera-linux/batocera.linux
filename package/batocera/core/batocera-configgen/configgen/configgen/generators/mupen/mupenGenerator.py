@@ -20,7 +20,7 @@ class MupenGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "mupen64",
-            "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_P" }
+            "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_P", "pause": "KEY_P" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

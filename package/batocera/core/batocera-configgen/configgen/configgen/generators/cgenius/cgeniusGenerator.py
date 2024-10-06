@@ -19,7 +19,7 @@ class CGeniusGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cgenius",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

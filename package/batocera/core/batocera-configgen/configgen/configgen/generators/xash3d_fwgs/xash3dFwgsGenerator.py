@@ -91,7 +91,7 @@ class Xash3dFwgsGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "xash3dFwgs",
-            "keys": { "exit": "KEY_F10", "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
+            "keys": { "exit": "KEY_F10", "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

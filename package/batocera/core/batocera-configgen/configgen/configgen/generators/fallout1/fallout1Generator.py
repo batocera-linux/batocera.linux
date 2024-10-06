@@ -27,7 +27,7 @@ class Fallout1Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "fallout1",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

@@ -8,6 +8,7 @@ target_devices:
       "key:left":      "abs:hat0x:-1"
       "key:right":     "abs:hat0x:1"
       "key:leftshift": "btn:south"
+      "key:enter":     "btn:south"
       "key:z":         "btn:east"
       "key:leftctrl":  "btn:west"
       "key:leftalt":   "btn:north"
@@ -16,7 +17,7 @@ target_devices:
       "key:c":         "btn:start"
       "key:1":         "btn:start"
       "key:v":         "btn:select"
-      "key:enter":     "btn:select"
+      "key:5":         "btn:select"
   - name: Xtension 2P Player 2
     type: joystick
     mapping:
@@ -37,7 +38,6 @@ target_devices:
   - name: Xtension hotkeys
     type: hotkeys
     mapping:
-      "key:5":   "key:euro"
       "key:tab": "key:menu"
-      "key:p":   "key:menu"
+      "key:p":   "key:pause"
       "key:esc": "key:exit"
