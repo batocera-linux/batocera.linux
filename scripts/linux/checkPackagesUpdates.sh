@@ -64,7 +64,6 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-lutro
                    libretro-mame
                    libretro-mame2003-plus
-                   libretro-mame2010
                    libretro-melonds
                    libretro-melonds-ds
                    libretro-mesen

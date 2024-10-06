@@ -16,7 +16,6 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf bsnes_hd_beta_libretro.info		bsnes_hd_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_wide_libretro.info	genesisplusgx-wide_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_libretro.info	genesisplusgx_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2010_libretro.info		mame0139_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2003_plus_libretro.info		mame078plus_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame_libretro.info			mess_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mupen64plus_next_libretro.info	mupen64plus-next_libretro.info
