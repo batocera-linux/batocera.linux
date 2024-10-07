@@ -77,6 +77,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/sound-open-firmware/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-esp8089/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/ti-firmware/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/broadcom-bt-firmware/Config.in"
   endmenu
 
   menu "GPU"
