@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+    export DISPLAY=:0.0
+fi
+
+# Define the directory paths
+configPath="/userdata/system/configs/shadps4"
+dlcPath="/userdata/roms/ps4/DLC"
+
+# Check if the directory exists, and create it if it doesn't
+if [ ! -d "$configPath" ]; then
+    mkdir -p "$configPath"
+    if [ $? -eq 0 ]; then
+        echo "Directory created successfully."
+    else
+        echo "Failed to create directory."
+        exit 1
+    fi
+fi
+
+if [ ! -d "$dlcPath" ]; then
+    mkdir -p "$dlcPath"
+    if [ $? -eq 0 ]; then
+        echo "Directory created successfully."
+    else
+        echo "Failed to create directory."
+        exit 1
+    fi
+fi
+
+emulatorlauncher -system ps4 -rom config -emulator shadps4

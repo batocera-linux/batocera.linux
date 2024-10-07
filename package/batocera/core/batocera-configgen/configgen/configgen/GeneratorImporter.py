@@ -373,6 +373,10 @@ def getGenerator(emulator: str) -> Generator:
     if emulator == "x16emu":
         from .generators.x16emu.x16emuGenerator import X16emuGenerator
         return X16emuGenerator()
+    
+    if emulator == 'shadps4' :
+        from .generators.shadps4.shadps4Generator import shadPS4Generator
+        return shadPS4Generator()
 
     if emulator == 'sh':
         from .generators.sh.shGenerator import ShGenerator

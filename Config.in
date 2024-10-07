@@ -106,6 +106,8 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-volk/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/nv-codec-headers/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/spirv-cross/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-utility-libraries/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/vulkan/vulkan-validationlayers/Config.in"
   endmenu
 
   menu "Network"
@@ -389,6 +391,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/duckstation-legacy/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor7530/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/x16emu/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/shadps4/Config.in"
   endmenu
 
   menu "WINE"

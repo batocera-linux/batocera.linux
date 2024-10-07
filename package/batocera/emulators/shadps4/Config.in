@@ -1,0 +1,25 @@
+config BR2_PACKAGE_SHADPS4
+    bool "shadps4"
+    depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
+    select BR2_HOST_CMAKE_AT_LEAST_3_24
+    select BR2_PACKAGE_ALSA_LIB
+    select BR2_PACKAGE_PULSEAUDIO
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_OPENSSL
+    select BR2_PACKAGE_LIBZLIB
+    select BR2_PACKAGE_LIBEDIT
+    select BR2_PACKAGE_UDEV
+    select BR2_PACKAGE_LIBEVDEV
+    select BR2_PACKAGE_JACK2
+    select BR2_PACKAGE_QT6BASE
+    select BR2_PACKAGE_QT6SVG
+    select BR2_PACKAGE_QT6TOOLS
+    select BR2_PACKAGE_QT6MULTIMEDIA
+    select BR2_PACKAGE_VULKAN_HEADERS
+    select BR2_PACKAGE_VULKAN_LOADER
+    select BR2_PACKAGE_VULKAN_VALIDATIONLAYERS
+    help
+      Sony Playstation 4 emulator.
+
+      https://github.com/shadps4-emu/shadPS4
+      https://shadps4.net/

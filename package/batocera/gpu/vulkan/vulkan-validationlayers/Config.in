@@ -1,0 +1,8 @@
+config BR2_PACKAGE_VULKAN_VALIDATIONLAYERS
+    bool "vulkan-validationlayers"
+    select BR2_PACKAGE_VULKAN_HEADERS
+    select BR2_PACKAGE_VULKAN_UTILITY_LIBRARIES
+    help
+      Vulkan Validation Layers (VVL)
+      
+      https://github.com/KhronosGroup/Vulkan-ValidationLayers
