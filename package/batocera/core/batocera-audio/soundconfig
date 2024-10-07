@@ -122,7 +122,7 @@ mixer $card 'AIF1 Slot 0 Digital DAC' on
 BOARD=$(cat /boot/boot/batocera.board)
 # Amlogic G12 HDMI
 case ${BOARD} in
-    vim3*) #TDM_A
+    *vim3*) #TDM_A
       mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 0'
       mixer $card 'FRDDR_A SRC 1 EN' on
       mixer $card 'TDMOUT_A SRC SEL' 'IN 0'
