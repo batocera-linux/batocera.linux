@@ -32,10 +32,23 @@ class X16emuGenerator(Generator):
             "-ram", "2048", # specify 2MB of RAM by default
             "-rtc", # realtime clock
             "-fullscreen", # run fullscreen
-            "-prg", rom, # program to run
-            "-run" # run the program
         ]
 
+        # Check the rom extension to determine the appropriate option
+        if rom.endswith(".img"):
+            # Load the SD card
+            commandArray.extend(["-sdcard", rom])
+        elif rom.endswith(".bas"):
+            # Load the BASIC program
+            commandArray.extend(["-bas", rom])
+        else:
+            commandArray.extend(["-prg", rom, "-run"]) # use -prg for other files and run the program
+
+        # If an autorun.cmd file exists in the same directory, add it to the command array
+        autorun_cmd = romdir / "autorun.cmd"
+        if autorun_cmd.exists():
+            commandArray.extend(["-bas", autorun_cmd])
+        
         if system.isOptSet("x16emu_scale"):
             commandArray.extend(["-scale", system.config["x16emu_scale"]])
         else:
