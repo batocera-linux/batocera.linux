@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import codecs
 import csv
+import logging
 import os
 import shutil
 import xml.etree.ElementTree as ET
@@ -11,7 +12,6 @@ from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import GunMapping
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 # Define RetroPad inputs for mapping
 retroPad = {

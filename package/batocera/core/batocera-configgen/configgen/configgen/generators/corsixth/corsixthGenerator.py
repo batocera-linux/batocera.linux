@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 from pathlib import Path
@@ -7,7 +8,6 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, ROMS, SAVES, SCREENSHOTS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ corsixthSavesPath = SAVES / "corsixth"
 corsixthDataPath = ROMS / "corsixth"
 corsixthFontPath = Path("/usr/share/fonts/dejavu/DejaVuSans.ttf")
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class CorsixTHGenerator(Generator):
 

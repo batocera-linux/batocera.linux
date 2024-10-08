@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+import logging
 from typing import Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _CONFIG_DIR: Final = CONFIGS / 'applewin'
 _CONFIG_FILE: Final = _CONFIG_DIR / 'config.txt'

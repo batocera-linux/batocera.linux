@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import subprocess
 from os import environ
 from pathlib import Path
@@ -8,13 +9,12 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...Emulator import Emulator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class LemonadeGenerator(Generator):
 

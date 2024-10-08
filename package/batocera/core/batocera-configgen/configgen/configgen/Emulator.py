@@ -3,12 +3,12 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 import yaml
 import collections
+import logging
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
 from .settings.unixSettings import UnixSettings
-from .utils.logger import get_logger
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class Emulator():
     def __init__(self, name, rom):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import re
 import shutil
 import xml.dom.minidom as minidom
@@ -11,13 +12,12 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SCREENSHOTS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 openMSX_Homedir: Final = CONFIGS / 'openmsx'
 openMSX_Config: Final = Path('/usr/share/openmsx')

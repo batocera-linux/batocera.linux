@@ -1,17 +1,17 @@
 from __future__ import annotations
 
+import logging
 import os
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import ROMS
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class TyrianGenerator(Generator):
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import codecs
 import configparser
+import logging
 import re
 from typing import TYPE_CHECKING
 
-from ...utils.logger import get_logger
 from .dolphinTriforcePaths import DOLPHIN_TRIFORCE_CONFIG
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ...controllersConfig import Controller, ControllerMapping
     from ...Emulator import Emulator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, rom: Path) -> None:

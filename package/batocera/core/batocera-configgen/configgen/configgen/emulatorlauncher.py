@@ -23,6 +23,7 @@ import time
 from sys import exit
 import subprocess
 import json
+import logging
 
 from . import controllersConfig as controllers
 from . import GeneratorImporter
@@ -32,9 +33,9 @@ from .utils import bezels as bezelsUtil
 from .utils import videoMode
 from .utils import gunsUtils
 from .utils import wheelsUtils
-from .utils.logger import get_logger
+from .utils.logger import setup_logging
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 def squashfs_begin(rom):
     eslog.debug(f"squashfs_begin({rom})")
@@ -593,55 +594,56 @@ def signal_handler(signal, frame):
         proc.kill()
 
 def launch():
-    global proc
-    proc = None
-    signal.signal(signal.SIGINT, signal_handler)
-    parser = argparse.ArgumentParser(description='emulator-launcher script')
+    with setup_logging():
+        global proc
+        proc = None
+        signal.signal(signal.SIGINT, signal_handler)
+        parser = argparse.ArgumentParser(description='emulator-launcher script')
 
-    maxnbplayers = 8
-    for p in range(1, maxnbplayers+1):
-        parser.add_argument("-p{}index"     .format(p), help="player{} controller index"            .format(p), type=int, required=False)
-        parser.add_argument("-p{}guid"      .format(p), help="player{} controller SDL2 guid"        .format(p), type=str, required=False)
-        parser.add_argument("-p{}name"      .format(p), help="player{} controller name"             .format(p), type=str, required=False)
-        parser.add_argument("-p{}devicepath".format(p), help="player{} controller device"           .format(p), type=str, required=False)
-        parser.add_argument("-p{}nbbuttons" .format(p), help="player{} controller number of buttons".format(p), type=str, required=False)
-        parser.add_argument("-p{}nbhats"    .format(p), help="player{} controller number of hats"   .format(p), type=str, required=False)
-        parser.add_argument("-p{}nbaxes"    .format(p), help="player{} controller number of axes"   .format(p), type=str, required=False)
+        maxnbplayers = 8
+        for p in range(1, maxnbplayers+1):
+            parser.add_argument("-p{}index"     .format(p), help="player{} controller index"            .format(p), type=int, required=False)
+            parser.add_argument("-p{}guid"      .format(p), help="player{} controller SDL2 guid"        .format(p), type=str, required=False)
+            parser.add_argument("-p{}name"      .format(p), help="player{} controller name"             .format(p), type=str, required=False)
+            parser.add_argument("-p{}devicepath".format(p), help="player{} controller device"           .format(p), type=str, required=False)
+            parser.add_argument("-p{}nbbuttons" .format(p), help="player{} controller number of buttons".format(p), type=str, required=False)
+            parser.add_argument("-p{}nbhats"    .format(p), help="player{} controller number of hats"   .format(p), type=str, required=False)
+            parser.add_argument("-p{}nbaxes"    .format(p), help="player{} controller number of axes"   .format(p), type=str, required=False)
 
-    parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
-    parser.add_argument("-rom",            help="rom absolute path",           type=str, required=True)
-    parser.add_argument("-emulator",       help="force emulator",              type=str, required=False)
-    parser.add_argument("-core",           help="force emulator core",         type=str, required=False)
-    parser.add_argument("-netplaymode",    help="host/client",                 type=str, required=False)
-    parser.add_argument("-netplaypass",    help="enable spectator mode",       type=str, required=False)
-    parser.add_argument("-netplayip",      help="remote ip",                   type=str, required=False)
-    parser.add_argument("-netplayport",    help="remote port",                 type=str, required=False)
-    parser.add_argument("-netplaysession", help="netplay session",             type=str, required=False)
-    parser.add_argument("-state_slot",     help="state slot",                  type=str, required=False)
-    parser.add_argument("-state_filename", help="state filename",              type=str, required=False)
-    parser.add_argument("-autosave",       help="autosave",                    type=str, required=False)
-    parser.add_argument("-systemname",     help="system fancy name",           type=str, required=False)
-    parser.add_argument("-gameinfoxml",    help="game info xml",               type=str, nargs='?', default='/dev/null', required=False)
-    parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
-    parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
+        parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
+        parser.add_argument("-rom",            help="rom absolute path",           type=str, required=True)
+        parser.add_argument("-emulator",       help="force emulator",              type=str, required=False)
+        parser.add_argument("-core",           help="force emulator core",         type=str, required=False)
+        parser.add_argument("-netplaymode",    help="host/client",                 type=str, required=False)
+        parser.add_argument("-netplaypass",    help="enable spectator mode",       type=str, required=False)
+        parser.add_argument("-netplayip",      help="remote ip",                   type=str, required=False)
+        parser.add_argument("-netplayport",    help="remote port",                 type=str, required=False)
+        parser.add_argument("-netplaysession", help="netplay session",             type=str, required=False)
+        parser.add_argument("-state_slot",     help="state slot",                  type=str, required=False)
+        parser.add_argument("-state_filename", help="state filename",              type=str, required=False)
+        parser.add_argument("-autosave",       help="autosave",                    type=str, required=False)
+        parser.add_argument("-systemname",     help="system fancy name",           type=str, required=False)
+        parser.add_argument("-gameinfoxml",    help="game info xml",               type=str, nargs='?', default='/dev/null', required=False)
+        parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
+        parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
 
-    args = parser.parse_args()
-    try:
-        exitcode = -1
-        exitcode = main(args, maxnbplayers)
-    except Exception as e:
-        eslog.error("configgen exception: ", exc_info=True)
+        args = parser.parse_args()
+        try:
+            exitcode = -1
+            exitcode = main(args, maxnbplayers)
+        except Exception as e:
+            eslog.error("configgen exception: ", exc_info=True)
 
-    if profiler:
-        import io
-        import pstats
-        profiler.disable()
-        profiler.dump_stats('/var/run/emulatorlauncher.prof')
+        if profiler:
+            import io
+            import pstats
+            profiler.disable()
+            profiler.dump_stats('/var/run/emulatorlauncher.prof')
 
-    time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
-    eslog.debug(f"Exiting configgen with status {str(exitcode)}")
+        time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
+        eslog.debug(f"Exiting configgen with status {str(exitcode)}")
 
-    exit(exitcode)
+        exit(exitcode)
 
 if __name__ == '__main__':
     launch()

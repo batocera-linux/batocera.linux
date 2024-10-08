@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -10,7 +11,6 @@ from ... import controllersConfig
 from ...batoceraPaths import DEFAULTS_DIR, ES_SETTINGS, SAVES, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
 from ...utils import bezels as bezelsUtil, videoMode as videoMode
-from ...utils.logger import get_logger
 from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ...generators.Generator import Generator
     from ...types import DeviceInfoMapping, GunMapping, Resolution
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 
 # Return value for es invertedbuttons

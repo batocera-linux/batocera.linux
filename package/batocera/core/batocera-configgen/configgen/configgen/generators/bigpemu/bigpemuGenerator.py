@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import HOME, mkdir_if_not_exists
 from ...utils import videoMode
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 bigPemuConfig = HOME / ".bigpemu_userdata" / "BigPEmuConfig.bigpcfg"
 

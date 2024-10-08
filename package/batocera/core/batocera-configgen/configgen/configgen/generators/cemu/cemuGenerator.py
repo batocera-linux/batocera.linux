@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import codecs
+import logging
 import os
 import subprocess
 from os import environ
@@ -10,7 +11,6 @@ from xml.dom import minidom
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import cemuControllers
 from .cemuPaths import CEMU_BIOS, CEMU_CONFIG, CEMU_CONTROLLER_PROFILES, CEMU_ROMDIR, CEMU_SAVES
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class CemuGenerator(Generator):
 

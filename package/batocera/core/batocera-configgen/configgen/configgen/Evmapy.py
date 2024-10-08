@@ -1,12 +1,12 @@
 import subprocess
 import json
 import os
+import logging
 import evdev
 
 from . import controllersConfig as controllers
-from .utils.logger import get_logger
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class Evmapy():
     # evmapy is a process that map pads to keyboards (for pygame for example)

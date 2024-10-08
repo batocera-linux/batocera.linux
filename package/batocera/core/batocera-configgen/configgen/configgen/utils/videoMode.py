@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import logging
 import re
 import subprocess
 import sys
@@ -9,14 +10,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import DEFAULTS_DIR
-from .logger import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ..types import Resolution, ScreenInfo
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _ROTATION_FILE: Final = Path("/var/run/rk-rotation")
 _GLXINFO_BIN: Final = Path("/usr/bin/glxinfo")

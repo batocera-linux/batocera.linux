@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import logging
 import os
 import shutil
 import subprocess
@@ -24,7 +25,6 @@ from ...batoceraPaths import (
     mkdir_if_not_exists,
 )
 from ...utils import bezels as bezelsUtil, videoMode as videoMode
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import mameControllers
 from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, MAME_ROMS, MAME_SAVES
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext, Resolution
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 
 class MameGenerator(Generator):

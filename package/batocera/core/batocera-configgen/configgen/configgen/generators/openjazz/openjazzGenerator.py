@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import logging
 import os
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import ROMS
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 
 class OpenJazzGenerator(Generator):

@@ -1,8 +1,7 @@
+import logging
 import subprocess
 
-from .logger import get_logger
-
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class batoceraServices:
 

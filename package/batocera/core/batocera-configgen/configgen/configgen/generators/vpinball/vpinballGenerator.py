@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import shutil
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...utils.batoceraServices import batoceraServices
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import vpinballOptions, vpinballWindowing
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class VPinballGenerator(Generator):
 

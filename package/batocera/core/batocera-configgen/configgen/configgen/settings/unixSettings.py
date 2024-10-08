@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import configparser
-from dataclasses import dataclass, InitVar, field
-from pathlib import Path
-import re
 import io
+import logging
+import re
 import typing
-
-from ..utils.logger import get_logger
+from dataclasses import InitVar, dataclass, field
+from pathlib import Path
 
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 def _protect_string(string: str) -> str:
     return re.sub(r'[^A-Za-z0-9-\.]+', '_', string)
