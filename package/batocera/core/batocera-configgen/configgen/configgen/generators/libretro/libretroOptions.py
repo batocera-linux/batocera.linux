@@ -814,28 +814,6 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
                 status = '"disabled"'
             coreSettings.save('mame2003-plus_crosshair_enabled', status)
 
-    # MAME 2010
-    if (system.config['core'] == 'mame0139'):
-        # Skip Gameinfo / Nagscreen / Disclamers
-        coreSettings.save('mame_current_skip_gameinfo',    '"enabled"')
-        coreSettings.save('mame_current_skip_nagscreen',   '"enabled"')
-        coreSettings.save('mame_current_skip_warnings',    '"enabled"')
-        # Frameskip
-        if system.isOptSet('mame_current_frame_skip'):
-            coreSettings.save('mame_current_frame_skip', '"' + system.config['mame_current_frame_skip'] + '"')
-        else:
-            coreSettings.save('mame_current_frame_skip', '"0"')
-        # Enable autofire
-        if system.isOptSet('mame_current_turbo_button'):
-            coreSettings.save('mame_current_turbo_button', '"' + system.config['mame_current_turbo_button'] + '"')
-        else:
-            coreSettings.save('mame_current_turbo_button', '"disabled"')
-        # Set autofire pulse speed
-        if system.isOptSet('mame_current_turbo_delay'):
-            coreSettings.save('mame_current_turbo_delay', '"' + system.config['mame_current_turbo_delay'] + '"')
-        else:
-            coreSettings.save('mame_current_turbo_delay', '"medium"')
-
     # TODO: Add CORE options for MAME / iMame4all
 
     # MB Vectrex
