@@ -317,6 +317,18 @@ sgb:
       mgba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       mesen-s:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
 
+sgb-msu1:
+  name:       Super Game Boy MSU1
+  manufacturer: Nintendo
+  release: 1994
+  hardware: console
+  extensions: [gb, gbc, zip, 7z]
+  group:      snes
+  emulators:
+    libretro:
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
+
 gbc2players:
   name:       Game Boy Color (2 players)
   manufacturer: Nintendo
@@ -5413,13 +5425,13 @@ commanderx16:
     If you have a game without an appropriate extension you can create a .BAS file with DOS commands.
     i.e. in the game folder create a PLANETX16.BAS file.
     Then add into the file the DOS commands to load the game, like so...
-    
+
     LOAD "PLANETX16"
     RUN
 
     If you have an .IMG file which doesn't load then create an autorun.cmd file with the DOS commands also.
     i.e. X16 Wars would contain the following...
-    
+
     LOAD "WARS.PRG"
     ...
     RUN
