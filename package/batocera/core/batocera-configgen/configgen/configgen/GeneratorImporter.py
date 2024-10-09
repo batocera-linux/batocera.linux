@@ -262,10 +262,6 @@ def getGenerator(emulator: str) -> Generator:
         from .generators.openmsx.openmsxGenerator import OpenmsxGenerator
         return OpenmsxGenerator()
 
-    if emulator == 'demul':
-        from .generators.demul.demulGenerator import DemulGenerator
-        return DemulGenerator()
-
     if emulator == 'xenia' or emulator == 'xenia-canary':
         from .generators.xenia.xeniaGenerator import XeniaGenerator
         return XeniaGenerator()
@@ -365,7 +361,7 @@ def getGenerator(emulator: str) -> Generator:
     if emulator == "uqm":
         from .generators.uqm.uqmGenerator import UqmGenerator
         return UqmGenerator()
-    
+
     if emulator == "taradino":
         from .generators.taradino.taradinoGenerator import TaradinoGenerator
         return TaradinoGenerator()

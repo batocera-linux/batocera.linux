@@ -11967,23 +11967,6 @@ openmsx:
                 "Floppy Disk Image": "disk"
                 "Hard Disk Image":   "hda"
 
-demul:
-  shared: [powermode, tdp, videomode, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
-  cfeatures:
-        demulRatio:
-            prompt:      GAME ASPECT RATIO
-            choices:
-                "Stretch":       0
-                "4:3 (Default)": 1
-                "16:9":          2
-        demulVSync:
-            group: ADVANCED OPTIONS
-            prompt:      VSYNC
-            description: Fix screen tearing.
-            choices:
-                "Off": 0
-                "On":  1
-
 sh:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

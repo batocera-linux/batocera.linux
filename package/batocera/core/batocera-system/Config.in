@@ -421,7 +421,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 									  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
 									  BR2_PACKAGE_BATOCERA_TARGET_BCM2837 && \
 									  BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_8
-	
+
 	select BR2_PACKAGE_LIBGPIOD_TOOLS    if BR2_PACKAGE_LIBGPIOD
 
 	# joy 2 pad
@@ -799,10 +799,6 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 
 	# Naomi and Atomiswave
 	select BR2_PACKAGE_BATOCERA_SEGADC
-
-	# Demul emulator - multiple Sega arcade systems
-	# Disabled until controllers can be resolved under Wine.
-	#select BR2_PACKAGE_DEMUL		if BR2_PACKAGE_BATOCERA_WINE
 
 	# Laserdic emulation
 	select BR2_PACKAGE_HYPSEUS_SINGE		   # ALL
@@ -1749,7 +1745,7 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 								   BR2_PACKAGE_BATOCERA_TARGET_H5	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H6	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H616
-	
+
 	# broadcom bluetooth firware
 	select BR2_PACKAGE_BROADCOM_BT_FIRMWARE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
