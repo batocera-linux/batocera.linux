@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v41b(2024/09/06)\n"
+"Project-Id-Version: batocera-es v41b(2024/10/06)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-09-08 13:12+0900\n"
+"PO-Revision-Date: 2024-10-05 22:06+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -147,7 +147,9 @@ msgstr "使用しない"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Load latest save state on game launch and save state when exiting game."
-msgstr "ゲーム開始時に最新ステートを読込み、ゲーム終了時にステートセーブします"
+msgstr ""
+"ゲーム開始時にステートを読込み、終了時にステートセーブします\n"
+"(ステートセーブ保存方法－「ゲームごとにセーブ」に設定)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -2661,7 +2663,7 @@ msgstr "巻き戻しはCPUに負担がかかります"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "SAVESTATE/REWIND"
-msgstr "ステートセーブ(巻き戻し)"
+msgstr "ステートセーブ/巻き戻し"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -11581,7 +11583,7 @@ msgstr ""
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
 msgid "PS3 CONTROLLER"
-msgstr ""
+msgstr "PS3 コントローラー"
 
 #. TRANSLATION: rpcs3, rpcs3, rpcs3, rpcs3, rpcs3, ...
 msgctxt "game_options"
@@ -11596,17 +11598,17 @@ msgstr "ソニー DS"
 #. TRANSLATION: rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CONTROLLER 5"
-msgstr ""
+msgstr "コントローラー 5"
 
 #. TRANSLATION: rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CONTROLLER 6"
-msgstr ""
+msgstr "コントローラー 6"
 
 #. TRANSLATION: rpcs3, rpcs3
 msgctxt "game_options"
 msgid "CONTROLLER 7"
-msgstr ""
+msgstr "コントローラー 7"
 
 #. TRANSLATION: scummvm
 msgctxt "game_options"
@@ -11951,57 +11953,57 @@ msgstr "クワッド レンダリング"
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "CRT-like colour adaption. Requires New 3D engine."
-msgstr ""
+msgstr "CRT のような色適応。新しい 3D エンジンが必要"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "CRT COLOUR"
-msgstr ""
+msgstr "CRT の色"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "ARI/D93 (recommended for all JP developed games)"
-msgstr ""
+msgstr "ARI/D93 (すべての 日本 開発ゲームに推奨)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "PVM_20M2U/D93"
-msgstr ""
+msgstr "PVM_20M2U/D93"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_525/D93"
-msgstr ""
+msgstr "BT601_525/D93"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_525/D65 (recommended for all US developed games)"
-msgstr ""
+msgstr "BT601_525/D65 (米国で開発されたすべてのゲームに推奨)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "BT601_625/D65 (recommended for all EUR/AUS developed games)"
-msgstr ""
+msgstr "BT601_625/D65 (EUR/AUS で開発されたすべてのゲームに推奨)"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
-msgstr ""
+msgstr "2D レイヤーに使用される高級フィルタ。新しい 3D エンジンが必要"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "UPSCALE MODE"
-msgstr ""
+msgstr "アップスケール モード"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "None/Sharp Pixels"
-msgstr ""
+msgstr "なし/シャープピクセル"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Biquintic"
-msgstr ""
+msgstr "二五分法"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -15031,37 +15033,37 @@ msgstr "トリプルバッファ"
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
-msgstr ""
+msgstr "強化：レンダリング解像度を上げます"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "1280x960 (Default)"
-msgstr ""
+msgstr "1280x960 (標準)"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "Change image scaling algorithm quality."
-msgstr ""
+msgstr "画像スケーリングアルゴリズムの品質を変更します"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "IMAGE QUALITY"
-msgstr ""
+msgstr "映像品質"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "Nearest pixel sampling"
-msgstr ""
+msgstr "最も近いピクセルサンプリング"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "Linear filtering"
-msgstr ""
+msgstr "線形フィルタリング"
 
 #. TRANSLATION: x16emu
 msgctxt "game_options"
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "異方性フィルタリング"
 
 #. TRANSLATION: steam.keys
 msgctxt "keys_files"
@@ -15126,77 +15128,77 @@ msgstr "エミュレータを終了"
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Open door"
-msgstr ""
+msgstr "ドアを開ける"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Toggle weapon"
-msgstr ""
+msgstr "武器切り替え"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Drop weapon"
-msgstr ""
+msgstr "武器 捨てる"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Aim up"
-msgstr ""
+msgstr "照準上げる"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Aim down"
-msgstr ""
+msgstr "照準下げる"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
-msgstr ""
+msgstr "機銃掃射 左"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
-msgstr ""
+msgstr "機銃掃射 右"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Run"
-msgstr ""
+msgstr "走る"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Fire"
-msgstr ""
+msgstr "発射"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
-msgstr ""
+msgstr "メニューに戻る"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move left"
-msgstr ""
+msgstr "左移動"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move right"
-msgstr ""
+msgstr "右移動"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
-msgstr ""
+msgstr "前進"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
-msgstr ""
+msgstr "後退"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Toggle run"
-msgstr ""
+msgstr "移動速度切り替え"
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -15366,12 +15368,12 @@ msgstr "Dolphin-triforce　メニューを開く"
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
 msgid "Load State Slot 1"
-msgstr "ステートロード - スロット  1"
+msgstr "ステートロード - スロット 1"
 
 #. TRANSLATION: triforce.dolphin_triforce.keys
 msgctxt "keys_files"
 msgid "Save State Slot 1"
-msgstr "ステートセーブ - スロット  1"
+msgstr "ステートセーブ - スロット 1"
 
 #. TRANSLATION: psx.duckstation.keys
 msgctxt "keys_files"
