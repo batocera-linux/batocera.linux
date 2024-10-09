@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 import codecs
+import logging
 from typing import TYPE_CHECKING, Final
 
 from ...batoceraPaths import mkdir_if_not_exists
-from ...utils.logger import get_logger
 from .rpcs3Paths import RPCS3_CONFIG_DIR
 
 if TYPE_CHECKING:
     from ...controllersConfig import ControllerMapping
     from ...Emulator import Emulator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _RPCS3_INPUT_DIR: Final = RPCS3_CONFIG_DIR / "input_configs" / "global"
 

@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import configparser
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 # libretro generator uses this, so it needs to be public
 HATARI_CONFIG: Final = CONFIGS / "hatari"

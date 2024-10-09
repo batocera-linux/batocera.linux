@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 import configparser
+import logging
 from typing import TYPE_CHECKING, Literal
 
 from ...batoceraPaths import mkdir_if_not_exists
-from ...utils.logger import get_logger
 from .flycastPaths import FLYCAST_MAPPING
 
 if TYPE_CHECKING:
     from ...controllersConfig import Controller
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 
 flycastMapping = { # Directions

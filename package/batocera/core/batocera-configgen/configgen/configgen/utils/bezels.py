@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import struct
 from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
@@ -7,7 +8,6 @@ from typing import TYPE_CHECKING, TypedDict
 from PIL import Image, ImageOps
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
-from .logger import get_logger
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from ..Emulator import Emulator
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class BezelInfos(TypedDict):
     png: Path

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import codecs
 import csv
+import logging
 import os
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ...utils.logger import get_logger
 from .mamePaths import MAME_CONFIG, MAME_DEFAULT_DATA
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping, GunMapping
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file

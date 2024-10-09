@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import logging
 import shutil
 import zipfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import fsuaeControllers
 from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
@@ -14,7 +14,7 @@ from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class FsuaeGenerator(Generator):
 

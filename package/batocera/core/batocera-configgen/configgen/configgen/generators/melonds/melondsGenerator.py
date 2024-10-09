@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 import codecs
+import logging
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CHEATS, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _MELONDS_SAVES: Final = SAVES / "melonds"
 _MELONDS_ROMS: Final = ROMS / "nds"

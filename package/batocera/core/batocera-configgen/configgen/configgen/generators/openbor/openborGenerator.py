@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
@@ -8,14 +9,13 @@ from typing import TYPE_CHECKING
 from ... import Command
 from ...batoceraPaths import CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import openborControllers
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class OpenborGenerator(Generator):
 

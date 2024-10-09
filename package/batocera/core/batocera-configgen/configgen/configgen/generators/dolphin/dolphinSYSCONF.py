@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from os import environ
 from struct import pack, unpack
 from typing import TYPE_CHECKING, Any
 
-from ...utils.logger import get_logger
+from configgen.utils.logger import setup_logging
+
 from .dolphinPaths import DOLPHIN_SAVES
 
 if TYPE_CHECKING:
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
     from ...types import Resolution
 
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 def readBEInt16(f):
     bytes = f.read(2)
@@ -146,4 +148,5 @@ def update(config: dict[str, Any], filepath: Path, gameResolution: Resolution) -
     readWriteFile(filepath, arg_setval)
 
 if __name__ == '__main__':
-    readWriteFile(DOLPHIN_SAVES / "Wii" / "shared2" / "sys" / "SYSCONF", {})
+    with setup_logging():
+        readWriteFile(DOLPHIN_SAVES / "Wii" / "shared2" / "sys" / "SYSCONF", {})

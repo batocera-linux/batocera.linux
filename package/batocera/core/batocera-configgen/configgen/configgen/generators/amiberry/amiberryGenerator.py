@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import zipfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
@@ -7,14 +8,13 @@ from typing import TYPE_CHECKING, Final
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from ..libretro import libretroControllers
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _CONFIG_DIR: Final = CONFIGS / 'amiberry'
 _CONFIG: Final = _CONFIG_DIR / 'conf' / 'amiberry.conf'

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import re
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
@@ -10,13 +11,12 @@ import evdev
 import pyudev
 
 from .batoceraPaths import BATOCERA_ES_DIR, ES_GAMES_METADATA, USER_ES_DIR
-from .utils.logger import get_logger
 
 if TYPE_CHECKING:
 
     from .types import DeviceInfoDict, DeviceInfoMapping, GunDict, GunMapping
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 
 """Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""

@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import subprocess
 from typing import TYPE_CHECKING, Final
 
 from ...batoceraPaths import ensure_parents_and_open
-from ...utils.logger import get_logger
 from .ppssppPaths import PPSSPP_PSP_SYSTEM_DIR
 
 if TYPE_CHECKING:
     from ...Emulator import Emulator
 
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 ppssppConfig: Final   = PPSSPP_PSP_SYSTEM_DIR / 'ppsspp.ini'
 ppssppControls: Final = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'

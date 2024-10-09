@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import filecmp
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -10,13 +11,12 @@ import ffmpeg
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _DATA_DIR: Final = CONFIGS / 'hypseus-singe'
 _CONFIG: Final = _DATA_DIR / 'hypinput.ini'

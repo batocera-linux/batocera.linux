@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import filecmp
+import logging
 import os
 import re
 import shutil
@@ -13,13 +14,12 @@ import toml
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class XeniaGenerator(Generator):
 

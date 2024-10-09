@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import codecs
 import configparser
+import logging
 import re
 from typing import TYPE_CHECKING
 
-from ...utils.logger import get_logger
 from .dolphinPaths import DOLPHIN_CONFIG
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping, GunMapping
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: GunMapping) -> None:

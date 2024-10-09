@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
-
-from ...utils.logger import get_logger
 
 if TYPE_CHECKING:
     from ...controllersConfig import Controller, ControllerMapping
     from ...settings.unixSettings import UnixSettings
 
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 def generateControllerConfig(config: UnixSettings, playersControllers: ControllerMapping, core: str):
     if core == "openbor4432":

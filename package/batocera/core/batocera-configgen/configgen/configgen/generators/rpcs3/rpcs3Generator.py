@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import re
 import shutil
 import subprocess
@@ -11,7 +12,6 @@ import ruamel.yaml as yaml
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import rpcs3Controllers
 from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG
@@ -19,7 +19,7 @@ from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class Rpcs3Generator(Generator):
 

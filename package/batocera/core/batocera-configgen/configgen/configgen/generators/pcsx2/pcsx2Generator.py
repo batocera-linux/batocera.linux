@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import configparser
 import json
+import logging
 import re
 import shutil
 import subprocess
 import time
-from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -14,14 +14,15 @@ import httplib2
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping, GunMapping, HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 _PCSX2_BIN_DIR: Final = Path("/usr/pcsx2/bin")
 _PCSX2_RESOURCES_DIR: Final = _PCSX2_BIN_DIR / "resources"

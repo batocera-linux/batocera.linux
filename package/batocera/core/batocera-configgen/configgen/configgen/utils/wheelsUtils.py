@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 import re
@@ -10,7 +11,6 @@ from typing import TYPE_CHECKING, cast
 import evdev
 
 from .. import controllersConfig
-from .logger import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ..Emulator import Emulator
     from ..types import DeviceInfoDict, DeviceInfoMapping
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 wheelMapping = {
     "wheel":      "joystick1left",

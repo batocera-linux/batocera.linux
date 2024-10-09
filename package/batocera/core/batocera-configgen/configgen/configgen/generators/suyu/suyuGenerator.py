@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import subprocess
 from os import environ
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 SUYU_CONFIG: Final = CONFIGS / 'suyu'
 

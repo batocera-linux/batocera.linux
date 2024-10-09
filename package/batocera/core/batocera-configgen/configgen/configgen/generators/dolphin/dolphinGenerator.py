@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import configparser
+import logging
 import subprocess
 from os import environ
 from pathlib import Path
@@ -8,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
-from ...utils.logger import get_logger
 from ..Generator import Generator
 from . import dolphinControllers, dolphinSYSCONF
 from .dolphinPaths import (
@@ -24,7 +24,7 @@ from .dolphinPaths import (
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = get_logger(__name__)
+eslog = logging.getLogger(__name__)
 
 class DolphinGenerator(Generator):
 
