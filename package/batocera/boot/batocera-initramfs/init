@@ -9,27 +9,47 @@ do_root() {
     mkdir -p /boot_root /new_root /overlay_root /sys /proc || return 1
     mount -t proc  -o nodev,noexec,nosuid proc  /proc  	|| return 1
     mount -t sysfs -o nodev,noexec,nosuid sysfs /sys 	|| return 1
+    mount -t devtmpfs none /dev
 
     # read the parameters
     read -r cmdline < /proc/cmdline
+
+    # how many times to retry before moving on to the next dev/label/uuid
+    devretry=5
     for param in ${cmdline} ; do
         case ${param} in
-            dev=*)   dev=${param#dev=};;
-            label=*) label=${param#label=};;
+            devretry=*) devretry=${param#devretry=};;
         esac
     done
 
-    # look for devices
-    mount -t devtmpfs none /dev
-
     MOUNTARG=none
-    test -n "${dev}"   && MOUNTARG=${dev}
-    test -n "${label}" && MOUNTARG=LABEL=${label}
-
-    while ! do_mount "${MOUNTARG}"
+    boot_root_mounted=n
+    while [ $boot_root_mounted = n ]
     do
-        echo "Waiting for the root device"
-        sleep 1
+        for param in ${cmdline}
+        do
+            case ${param} in
+                dev=*)      MOUNTARG=${param#dev=};;
+                label=*)    MOUNTARG=LABEL=${param#label=};;
+                uuid=*)     MOUNTARG=UUID=${param#uuid=};;
+                *)          continue;;
+            esac
+            for i in $(seq $devretry)
+            do
+                if do_mount "${MOUNTARG}"
+                then
+                    echo "Mounted ${MOUNTARG} as /boot_root"
+                    boot_root_mounted=y
+                    break
+                fi
+                echo "Waiting for the root device ${MOUNTARG}"
+                sleep 1
+            done
+            if [ $boot_root_mounted = y ]
+            then
+                break
+            fi
+        done
     done
 
     # update the squashfs
