@@ -431,8 +431,6 @@ dreamcast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
     redream:
       redream:        { requireAnyOf: [BR2_PACKAGE_REDREAM]          }
-    demul:
-      demul:          { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:dreamcast
   comment_fr: |
@@ -453,8 +451,6 @@ naomi:
       flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
-    demul:
-      demul:    { requireAnyOf: [BR2_PACKAGE_DEMUL]             }
 
 atomiswave:
   name:       Atomiswave
@@ -469,8 +465,6 @@ atomiswave:
       flycastvl:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCASTVL] }
     flycast:
       flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
-    demul:
-      demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
 
 systemsp:
   name:       Sega System SP
@@ -3845,8 +3839,6 @@ naomi2:
       flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
     flycast:
       flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
-    demul:
-      demul:   { requireAnyOf: [BR2_PACKAGE_DEMUL]            }
   comment_en: |
     ---------------------------------
     ## NAOMI 2 IMPORTANT INFO ##
@@ -5413,13 +5405,13 @@ commanderx16:
     If you have a game without an appropriate extension you can create a .BAS file with DOS commands.
     i.e. in the game folder create a PLANETX16.BAS file.
     Then add into the file the DOS commands to load the game, like so...
-    
+
     LOAD "PLANETX16"
     RUN
 
     If you have an .IMG file which doesn't load then create an autorun.cmd file with the DOS commands also.
     i.e. X16 Wars would contain the following...
-    
+
     LOAD "WARS.PRG"
     ...
     RUN
