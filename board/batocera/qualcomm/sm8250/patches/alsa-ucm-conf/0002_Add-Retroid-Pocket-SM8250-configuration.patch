@@ -1,0 +1,166 @@
+From fbed1fdf326999524c3d81928bd8665ccd1631fa Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Wed, 9 Oct 2024 18:21:07 +0800
+Subject: [PATCH] Add Retroid Pocket SM8250 configuration
+
+---
+ ucm2/Qualcomm/sm8250/HiFi-RP.conf             | 67 +++++++++++++++++++
+ ucm2/Qualcomm/sm8250/RetroidPocket.conf       | 22 ++++++
+ ucm2/codecs/wsa881x/init.conf                 | 12 ++++
+ ucm2/conf.d/sm8250/RetroidPocket.conf         |  1 +
+ .../sm8250/retroidpocket-RetroidPocket5-.conf |  1 +
+ .../retroidpocket-RetroidPocketMini-.conf     |  1 +
+ 6 files changed, 104 insertions(+)
+ create mode 100644 ucm2/Qualcomm/sm8250/HiFi-RP.conf
+ create mode 100644 ucm2/Qualcomm/sm8250/RetroidPocket.conf
+ create mode 100644 ucm2/codecs/wsa881x/init.conf
+ create mode 120000 ucm2/conf.d/sm8250/RetroidPocket.conf
+ create mode 120000 ucm2/conf.d/sm8250/retroidpocket-RetroidPocket5-.conf
+ create mode 120000 ucm2/conf.d/sm8250/retroidpocket-RetroidPocketMini-.conf
+
+diff --git a/ucm2/Qualcomm/sm8250/HiFi-RP.conf b/ucm2/Qualcomm/sm8250/HiFi-RP.conf
+new file mode 100644
+index 0000000..4a6c0a7
+--- /dev/null
++++ b/ucm2/Qualcomm/sm8250/HiFi-RP.conf
+@@ -0,0 +1,67 @@
++# Use case configuration for RetroidPocket 5 and Mini.
++# Author: Teguh Sobirin <teguh@sobir.in>
++
++SectionVerb {
++
++	EnableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 1"
++		cset "name='WSA_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer TX_CODEC_DMA_TX_3' 1"
++	]
++
++	Include.wsae.File "/codecs/wsa881x/DefaultEnableSeq.conf"
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones Playback"
++
++	Include.wcdhpe.File "/codecs/wcd938x/HeadphoneEnableSeq.conf"
++	Include.wcdhpd.File "/codecs/wcd938x/HeadphoneDisableSeq.conf"
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	Value {
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP"
++		JackControl "Headphone Jack"
++		JackHWMute "Speaker"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker Playback"
++
++	Include.wsamspke.File "/codecs/qcom-lpass/wsa-macro/SpeakerEnableSeq.conf"
++	Include.wsamspkd.File "/codecs/qcom-lpass/wsa-macro/SpeakerDisableSeq.conf"
++	Include.wsaspke.File "/codecs/wsa881x/SpeakerEnableSeq.conf"
++	Include.wsaspkd.File "/codecs/wsa881x/SpeakerDisableSeq.conf"
++
++	Value {
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "Speakers"
++	}
++}
++
++SectionDevice."Mic" {
++	Comment "Headphone Microphone"
++
++	Include.wcdmice.File "/codecs/wcd938x/HeadphoneMicEnableSeq.conf"
++	Include.wcdmicd.File "/codecs/wcd938x/HeadphoneMicDisableSeq.conf"
++	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/SoundwireMic1EnableSeq.conf"
++	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicDisableSeq.conf"
++
++	Value {
++		CapturePriority 100
++		CapturePCM "hw:${CardId},2"
++		CaptureMixerElem "ADC2"
++		JackControl "Mic Jack"
++	}
++}
+diff --git a/ucm2/Qualcomm/sm8250/RetroidPocket.conf b/ucm2/Qualcomm/sm8250/RetroidPocket.conf
+new file mode 100644
+index 0000000..387d5a5
+--- /dev/null
++++ b/ucm2/Qualcomm/sm8250/RetroidPocket.conf
+@@ -0,0 +1,22 @@
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/Qualcomm/sm8250/HiFi-RP.conf"
++	Comment "HiFi quality Music."
++}
++
++BootSequence [
++	cset "name='WSA_RX0 Digital Volume' 120"
++	cset "name='WSA_RX1 Digital Volume' 120"
++	cset "name='SpkrLeft PA Volume' 12"
++	cset "name='SpkrRight PA Volume' 12"
++	cset "name='HPHL Volume' 20"
++	cset "name='HPHR Volume' 20"
++	cset "name='ADC2 Volume' 10"
++]
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wcd-init.File "/codecs/wcd938x/init.conf"
++Include.wsa-init.File "/codecs/wsa881x/init.conf"
++Include.rxm-init.File "/codecs/qcom-lpass/rx-macro/init.conf"
+diff --git a/ucm2/codecs/wsa881x/init.conf b/ucm2/codecs/wsa881x/init.conf
+new file mode 100644
+index 0000000..fcb8988
+--- /dev/null
++++ b/ucm2/codecs/wsa881x/init.conf
+@@ -0,0 +1,12 @@
++# WSA881x specific volume control settings
++LibraryConfig.remap.Config {
++
++	ctl.default.map {
++		# Merge two mono controls into one stereo
++		"name='Speakers Volume'" {
++			"name='SpkrLeft PA Volume'".vindex.0 0
++			"name='SpkrRight PA Volume'".vindex.1 0
++		}
++	}
++}
++
+diff --git a/ucm2/conf.d/sm8250/RetroidPocket.conf b/ucm2/conf.d/sm8250/RetroidPocket.conf
+new file mode 120000
+index 0000000..8598750
+--- /dev/null
++++ b/ucm2/conf.d/sm8250/RetroidPocket.conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8250/RetroidPocket.conf
+\ No newline at end of file
+diff --git a/ucm2/conf.d/sm8250/retroidpocket-RetroidPocket5-.conf b/ucm2/conf.d/sm8250/retroidpocket-RetroidPocket5-.conf
+new file mode 120000
+index 0000000..8598750
+--- /dev/null
++++ b/ucm2/conf.d/sm8250/retroidpocket-RetroidPocket5-.conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8250/RetroidPocket.conf
+\ No newline at end of file
+diff --git a/ucm2/conf.d/sm8250/retroidpocket-RetroidPocketMini-.conf b/ucm2/conf.d/sm8250/retroidpocket-RetroidPocketMini-.conf
+new file mode 120000
+index 0000000..8598750
+--- /dev/null
++++ b/ucm2/conf.d/sm8250/retroidpocket-RetroidPocketMini-.conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8250/RetroidPocket.conf
+\ No newline at end of file
+-- 
+2.34.1
+

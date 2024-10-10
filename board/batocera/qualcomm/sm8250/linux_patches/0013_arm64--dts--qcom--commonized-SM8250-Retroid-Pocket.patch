@@ -1,0 +1,346 @@
+From 24f9640566330c0be3f99e23a6c9b1c3ec938202 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Wed, 9 Oct 2024 16:17:40 +0800
+Subject: [PATCH] arm64: dts: qcom: commonized SM8250 Retroid Pocket variant
+
+---
+ arch/arm64/boot/dts/qcom/Makefile             |  3 +-
+ ...i.dts => sm8250-retroidpocket-common.dtsi} | 88 ++++++++-----------
+ .../dts/qcom/sm8250-retroidpocket-rp5.dts     | 44 ++++++++++
+ .../dts/qcom/sm8250-retroidpocket-rpmini.dts  | 42 +++++++++
+ 4 files changed, 124 insertions(+), 53 deletions(-)
+ rename arch/arm64/boot/dts/qcom/{sm8250-retroid-rpmini.dts => sm8250-retroidpocket-common.dtsi} (95%)
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index dd1bd4fe78eb..aecec23e2eaa 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -235,7 +235,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-bahamut.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-griffin.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-hdk.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-mtp.dtb
+-dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroid-rpmini.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rp5.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rpmini.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx203.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx206.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-xiaomi-elish-boe.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+similarity index 95%
+rename from arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts
+rename to arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+index 4f9bc5b43a82..7b20553ccdb5 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+@@ -16,8 +16,6 @@
+ #include "pm8150l.dtsi"
+ 
+ / {
+-	model = "Retroid Pocket Mini";
+-	compatible = "retroid,rpmini", "qcom,sm8250";
+ 	qcom,msm-id = <356 0x20001>;
+ 	qcom,board-id = <0x01001F 0x01>;
+ 
+@@ -38,31 +36,16 @@ battery: battery {
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-
+-		#address-cells = <2>;
+-		#size-cells = <2>;
+-		ranges;
+-
+-		framebuffer: framebuffer@9c000000 {
+-			compatible = "simple-framebuffer";
+-			reg = <0x0 0x9c000000 0x0 0x2300000>;
+-			width = <960>;
+-			height = <1280>;
+-			stride = <(960 * 4)>;
+-			format = "a8r8g8b8";
+-		};
+ 	};
+ 
+ 	fan: pwm-fan {
+ 		compatible = "pwm-fan";
+-		cooling-levels = <0 64 128 255>;
++		cooling-levels = <0 32 64 128 255>;
+ 		#cooling-cells = <2>;
+-		fan-supply = <&fan_pwr>;
+-		pwms = <&pm8150l_lpg 0 50000>;
++		fan-supply = <&vreg_fan_pwr>;
++		pwms = <&pm8150l_lpg 3 100000>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&fan_pwm_active>;
+-
+-		status = "disabled";
+ 	};
+ 
+ 	gpio-keys {
+@@ -165,6 +148,18 @@ vdc_5v: vdc-5v-regulator {
+ 		vin-supply = <&vreg_l11c_3p3>;
+ 	};
+ 
++	vdda_panel: vdda-panel-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdda_panel";
++
++		regulator-min-microvolt = <2800000>;
++		regulator-max-microvolt = <2800000>;
++
++		gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++	};
++
+ 	vph_pwr: vph-pwr-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vph_pwr";
+@@ -183,21 +178,9 @@ vreg_s4a_1p8: vreg-s4a-1p8 {
+ 		vin-supply = <&vph_pwr>;
+ 	};
+ 
+-	avdd_display_panel: avdd-display-panel {
++	vreg_fan_pwr: vreg-fan-pwr-regulator {
+ 		compatible = "regulator-fixed";
+-		regulator-name = "avdd_display_panel";
+-
+-		regulator-min-microvolt = <2800000>;
+-		regulator-max-microvolt = <2800000>;
+-
+-		gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-		regulator-boot-on;
+-	};
+-
+-	fan_pwr: fan-pwr-regulator {
+-		compatible = "regulator-fixed";
+-		regulator-name = "fan_pwr";
++		regulator-name = "vreg_fan_pwr";
+ 
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+@@ -210,9 +193,9 @@ regulator-state-mem {
+ 		};
+ 	};
+ 
+-	mcu_3v3: mcu-3v3-regulator {
++	vreg_mcu_3v3: vreg-mcu-3v3-regulator {
+ 		compatible = "regulator-fixed";
+-		regulator-name = "mcu_3v3";
++		regulator-name = "vreg_mcu_3v3";
+ 
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+@@ -318,7 +301,7 @@ cont_splash_mem: cont-splash@9c000000 {
+ 
+ &adsp {
+ 	status = "okay";
+-	firmware-name = "qcom/sm8250/retroidpocket/rpmini/adsp.mbn";
++	firmware-name = "qcom/sm8250/adsp.mbn";
+ };
+ 
+ &apps_rsc {
+@@ -570,7 +553,7 @@ vreg_s8c_1p3: smps8 {
+ 
+ &cdsp {
+ 	status = "okay";
+-	firmware-name = "qcom/sm8250/retroidpocket/rpmini/cdsp.mbn";
++	firmware-name = "qcom/sm8250/cdsp.mbn";
+ };
+ 
+ &gmu {
+@@ -582,7 +565,7 @@ &gpu {
+ 
+ 	zap-shader {
+ 		memory-region = <&gpu_mem>;
+-		firmware-name = "qcom/sm8250/retroidpocket/rpmini/a650_zap.mbn";
++		firmware-name = "qcom/sm8250/a650_zap.mbn";
+ 	};
+ };
+ 
+@@ -674,16 +657,13 @@ &mdss_dsi0 {
+ 	vdda-supply = <&vreg_l9a_1p2>;
+ 
+ 	panel@0 {
+-		compatible = "ddic,ch13726a";
+ 		reg = <0>;
+ 		reset-gpios = <&tlmm 75 GPIO_ACTIVE_HIGH>;
+ 
+ 		vdd1v2-supply = <&vreg_l3c_1p2>;
+ 		vddio-supply = <&vreg_l14a_1p8>;
+ 		vdd-supply = <&vreg_l11c_3p3>;
+-		avdd-supply = <&avdd_display_panel>;
+-
+-		rotation = <90>;
++		avdd-supply = <&vdda_panel>;
+ 
+ 		pinctrl-0 = <&sde_dsi_active &sde_te_active>;
+ 		pinctrl-1 = <&sde_dsi_sleep &sde_te_sleep>;
+@@ -931,10 +911,11 @@ &pm8150l_gpios {
+ 	fan_pwm_active: fan-pwm-active-state {
+ 		pins = "gpio6";
+ 		function = "func1";
+-		bias-disable;
+-		qcom,drive-strength = <3>;
+-		power-source = <0>;
+-		output-high;
++        bias-disable;
++        power-source = <0>;
++        output-low;
++        qcom,drive-strength = <3>;
++        drive-push-pull;
+ 	};
+ };
+ 
+@@ -978,6 +959,10 @@ &qupv3_id_2 {
+ 	status = "okay";
+ };
+ 
++&qup_uart16_default {
++	drive-strength = <2>;
++};
++
+ &rxmacro {
+ 	status = "okay";
+ };
+@@ -996,7 +981,7 @@ &sdhc_2 {
+ 
+ &sound {
+ 	compatible = "qcom,sm8250-sndcard";
+-	model = "RPMini";
++	model = "RetroidPocket";
+ 	audio-routing =
+ 		"SpkrLeft IN", "WSA_SPK1 OUT",
+ 		"SpkrRight IN", "WSA_SPK2 OUT",
+@@ -1120,7 +1105,7 @@ bt_en_state: bt-default-state {
+ 		bias-pull-up;
+ 	};
+ 
+-	mcu_default: mcu-default-state {
++	mcu_en_default: mcu-en-default-state {
+ 		pins = "gpio111";
+ 		function = "gpio";
+ 		bias-pull-down;
+@@ -1253,9 +1238,9 @@ &uart16 {
+ 
+ 	gamepad {
+ 		compatible = "ayn,odin2-gamepad";
+-		vdd-supply = <&mcu_3v3>;
++		vdd-supply = <&vreg_mcu_3v3>;
+ 		enable-gpios = <&tlmm 111 GPIO_ACTIVE_HIGH>;
+-		pinctrl-0 = <&mcu_default>;
++		pinctrl-0 = <&mcu_en_default>;
+ 		pinctrl-names = "default";
+ 	};
+ };
+@@ -1315,7 +1300,6 @@ &usb_1_qmpphy_out {
+ };
+ 
+ &venus {
+-	firmware-name = "qcom/sm8250/retroidpocket/rpmini/venus.mbn";
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+new file mode 100644
+index 000000000000..f9101248f184
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+@@ -0,0 +1,44 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2024, Retroid Pocket.
++ */
++
++/dts-v1/;
++
++#include "sm8250-retroidpocket-common.dtsi"
++
++/ {
++	model = "Retroid Pocket 5";
++	compatible = "retroidpocket,rp5", "qcom,sm8250";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		framebuffer: framebuffer@9c000000 {
++			compatible = "simple-framebuffer";
++			reg = <0x0 0x9c000000 0x0 0x2300000>;
++			width = <1080>;
++			height = <1920>;
++			stride = <(1080 * 4)>;
++			format = "a8r8g8b8";
++		};
++	};
++};
++
++&i2c13 {
++	touchscreen@38 {
++		touchscreen-size-x = <1080>;
++		touchscreen-size-y = <1920>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++	};
++};
++
++&mdss_dsi0 {
++	panel@0 {
++		compatible = "ch13726a,rp5";
++		rotation = <270>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
+new file mode 100644
+index 000000000000..63d0dda470f0
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2024, Retroid Pocket.
++ */
++
++/dts-v1/;
++
++#include "sm8250-retroidpocket-common.dtsi"
++
++/ {
++	model = "Retroid Pocket Mini";
++	compatible = "retroidpocket,rpmini", "qcom,sm8250";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		framebuffer: framebuffer@9c000000 {
++			compatible = "simple-framebuffer";
++			reg = <0x0 0x9c000000 0x0 0x2300000>;
++			width = <960>;
++			height = <1280>;
++			stride = <(960 * 4)>;
++			format = "a8r8g8b8";
++		};
++	};
++};
++
++&i2c13 {
++	touchscreen@38 {
++		touchscreen-size-x = <960>;
++		touchscreen-size-y = <1280>;
++	};
++};
++
++&mdss_dsi0 {
++	panel@0 {
++		compatible = "ch13726a,rpmini";
++		rotation = <90>;
++	};
++};
+-- 
+2.34.1
+
