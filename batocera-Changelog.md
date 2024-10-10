@@ -8,10 +8,11 @@
 - Khadis VIM4, Vulkan support has now been added
 - Added HyperX and Machenike Xbox360 compatible controllers
 - Support for Argon One v3 case for RPi5
-- wayland multi screens support (including rpi*)
+- Wayland multi screens support (including rpi*)
 - Xtension 2 Players Controller and Xtension 4 Players Controller
-- Initial support for the Retroid Pocket Mini (https://github.com/batocera-linux/batocera.linux/issues/12562)
-- arcade machine inputs have now a better supported thanks to keyboardToPads (xarcadejoystick removed)
+- Initial support for the Retroid Pocket Mini & Retroid Pocket 5
+  - (https://github.com/batocera-linux/batocera.linux/issues/12562)
+- Arcade machine inputs have now a better supported thanks to keyboardToPads (xarcadejoystick removed)
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
@@ -29,7 +30,6 @@
 - Sinden light gun ratio option (you can select 4:3 ratio instead of fullscreen)
 - Taradino - Rise of the Triad port
 - X16-Emulator for Commander X16 system support
-- ShadPS4 emulator for Playstation 4 support (Requires a highly specified PC & GPU with Vulkan support)
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
