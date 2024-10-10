@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MOONLIGHT_EMBEDDED_VERSION = 274d3db34da764344a7a402ee74e6080350ac0cd
+MOONLIGHT_EMBEDDED_VERSION = a6bf7154a743d4f74a1b377e730f188352a1b80c
 MOONLIGHT_EMBEDDED_SITE = https://github.com/moonlight-stream/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -29,7 +29,7 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 endif
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
-    MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga
+    MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga ffmpeg-rockchip
 endif
 
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
