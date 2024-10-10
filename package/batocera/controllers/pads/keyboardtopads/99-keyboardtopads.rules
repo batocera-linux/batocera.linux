@@ -5,4 +5,4 @@
 # "Ultimarc I-PAC 2"                : (twisted)
 # "Ultimarc IPAC 2 Ultimarc IPAC 2" : (dandc)
 # "Ultimarc I-PAC Ultimate I/O"     : (s3nt3nza)
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc*PAC*", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="%c", ENV{ID_INPUT_KEY}="%c", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run" PROGRAM="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} checkconfigsys"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc*PAC*", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="%c", ENV{ID_INPUT_KEY}="%c", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run" PROGRAM="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} checkconfigsys"
