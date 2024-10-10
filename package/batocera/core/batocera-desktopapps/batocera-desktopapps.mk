@@ -166,6 +166,13 @@ ifeq ($(BR2_PACKAGE_PLAY),y)
   BATOCERA_DESKTOPAPPS_ICONS   += play.png
 endif
 
+# shadPS4
+ifeq ($(BR2_PACKAGE_SHADPS4),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-shadps4
+  BATOCERA_DESKTOPAPPS_APPS    += shadps4-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += shadps4.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

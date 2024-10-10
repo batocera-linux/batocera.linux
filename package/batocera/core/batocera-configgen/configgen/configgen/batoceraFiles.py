@@ -41,6 +41,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'gsplus'         : '/usr/bin/GSplus'
               , 'applewin'       : '/usr/bin/applewin'
               , 'fba2x'          : '/usr/bin/fba2x'
+              , 'shadps4'        : '/usr/bin/shadps4/shadps4'
 }
 
 

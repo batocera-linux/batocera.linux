@@ -1,0 +1,8 @@
+config BR2_PACKAGE_VULKAN_UTILITY_LIBRARIES
+    bool "vulkan-utility-libraries"
+    depends on BR2_PACKAGE_WAYLAND || BR2_PACKAGE_XORG7
+    select BR2_PACKAGE_VULKAN_HEADERS
+    help
+      Utility libraries for Vulkan developers.
+      
+      https://github.com/KhronosGroup/Vulkan-Utility-Libraries
