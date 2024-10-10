@@ -1,0 +1,47 @@
+From 3bfe7fe6c0ea23c406a52291da3fb656df9be1ae Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Sun, 10 Mar 2024 01:02:09 +0000
+Subject: dt-bindings: mfd: x-powers,axp152: Document AXP717
+
+The X-Powers AXP717 is a PMIC used on some newer Allwinner devices.
+Among quite some regulators it features the usual ADC/IRQ/power key
+parts, plus a battery charger circuit, and some newly introduced USB
+type-C circuitry.
+Like two other recent PMICs, it lacks the DC/DC converter PWM frequency
+control register, that rate is fixed here as well.
+
+Add the new compatible string, and add that to the list of PMICs without
+the PWM frequency property.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+Link: https://lore.kernel.org/r/20240310010211.28653-3-andre.przywara@arm.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
+index 06f1779835a1ef..b8e8db0d58e9c3 100644
+--- a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
++++ b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
+@@ -83,6 +83,7 @@ allOf:
+             enum:
+               - x-powers,axp313a
+               - x-powers,axp15060
++              - x-powers,axp717
+ 
+     then:
+       properties:
+@@ -99,6 +100,7 @@ properties:
+           - x-powers,axp221
+           - x-powers,axp223
+           - x-powers,axp313a
++          - x-powers,axp717
+           - x-powers,axp803
+           - x-powers,axp806
+           - x-powers,axp809
+-- 
+cgit 1.2.3-korg
+
