@@ -1,0 +1,104 @@
+From 508b86118a53f87b021b8e8b50c01c74d5add9a5 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Sat, 12 Oct 2024 01:31:29 +0800
+Subject: [PATCH] arm64: dts: qcom: Enable Retroid Pocket Joystick RGB LED
+
+Also remove unused DSI panel pins
+---
+ .../dts/qcom/sm8250-retroidpocket-common.dtsi | 59 +++++++++----------
+ 1 file changed, 27 insertions(+), 32 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+index 7b20553ccdb5..e16b61d4c11a 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+@@ -569,6 +569,32 @@ zap-shader {
+ 	};
+ };
+ 
++&i2c3 {
++	clock-frequency = <400000>;
++	status = "okay";
++
++	htr3212r: htr3212@3c {
++		compatible = "heroic,htr3212-pwm";
++		reg = <0x3c>;
++		vdd-supply = <&vreg_mcu_3v3>;
++		sdb-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
++		#pwm-cells = <1>;
++	};
++};
++
++&i2c5 {
++	clock-frequency = <400000>;
++	status = "okay";
++
++	htr3212l: htr3212@3c {
++		compatible = "heroic,htr3212-pwm";
++		reg = <0x3c>;
++		vdd-supply = <&vreg_mcu_3v3>;
++		sdb-gpios = <&tlmm 5 GPIO_ACTIVE_HIGH>;
++		#pwm-cells = <1>;
++	};
++};
++
+ &i2c13 {
+ 	status = "okay";
+ 	clock-frequency = <400000>;
+@@ -658,6 +684,7 @@ &mdss_dsi0 {
+ 
+ 	panel@0 {
+ 		reg = <0>;
++
+ 		reset-gpios = <&tlmm 75 GPIO_ACTIVE_HIGH>;
+ 
+ 		vdd1v2-supply = <&vreg_l3c_1p2>;
+@@ -665,10 +692,6 @@ panel@0 {
+ 		vdd-supply = <&vreg_l11c_3p3>;
+ 		avdd-supply = <&vdda_panel>;
+ 
+-		pinctrl-0 = <&sde_dsi_active &sde_te_active>;
+-		pinctrl-1 = <&sde_dsi_sleep &sde_te_sleep>;
+-		pinctrl-names = "default", "sleep";
+-
+ 		ports {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -1137,34 +1160,6 @@ sdc2_card_det_n: sd-card-det-n-state {
+ 		bias-pull-up;
+ 	};
+ 
+-	sde_dsi_active: sde-dsi-active-state {
+-		pins = "gpio75";
+-		function = "gpio";
+-		drive-strength = <8>;
+-		bias-disable;
+-	};
+-
+-	sde_dsi_sleep: sde-dsi-sleep-state {
+-		pins = "gpio75";
+-		function = "gpio";
+-		drive-strength = <2>;
+-		bias-pull-down;
+-	};
+-
+-	sde_te_active: sde-te-active-state {
+-		pins = "gpio66";
+-		function = "mdp_vsync";
+-		drive-strength = <2>;
+-		bias-pull-down;
+-	};
+-
+-	sde_te_sleep: sde-te-sleep-state {
+-		pins = "gpio66";
+-		function = "mdp_vsync";
+-		drive-strength = <2>;
+-		bias-pull-down;
+-	};
+-
+ 	ts_int_active: ts-int-active-state {
+ 		pins = "gpio39";
+ 		function = "gpio";
+-- 
+2.34.1
+
