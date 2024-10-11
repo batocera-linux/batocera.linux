@@ -112,7 +112,7 @@ class KeyboardController:
                     sysconfig = Path(f"/usr/share/keyboardToPads/inputs/{safename}")
                     if sysconfig.exists():
                         print(f"  system config found at {sysconfig}")
-                    userconfig = Path(f"/boot/configs/keyboardToPads/inputs/{safename}")
+                    userconfig = Path(f"/userdata/system/configs/keyboardToPads/inputs/{safename}")
                     if userconfig.exists():
                         print(f"  user config found at {userconfig}")
                     else:
