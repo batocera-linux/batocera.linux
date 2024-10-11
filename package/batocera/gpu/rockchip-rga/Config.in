@@ -1,6 +1,9 @@
 config BR2_PACKAGE_ROCKCHIP_RGA
-  bool "rockchip-rga"
-
-  help
-
-    https://github.com/rockchip-linux/linux-rga
+    bool "rockchip-rga"
+    select BR2_PACKAGE_LIBDRM
+    help
+      RGA is a standalone 2D raster graphic acceleration unit.
+      It accelerates 2D graphics operations, such as point/line drawing,
+      image scaling, rotation, BitBLT, alpha blending and image blur/sharpness.
+      
+      https://github.com/nyanmisaka/rk-mirrors/tree/jellyfin-rga
