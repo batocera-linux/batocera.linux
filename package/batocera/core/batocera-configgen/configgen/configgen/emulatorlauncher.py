@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-from pathlib import Path
 
 profiler = None
 
@@ -24,6 +23,7 @@ from sys import exit
 import subprocess
 import json
 import logging
+from pathlib import Path
 
 from . import controllersConfig as controllers
 from . import GeneratorImporter
@@ -34,6 +34,7 @@ from .utils import videoMode
 from .utils import gunsUtils
 from .utils import wheelsUtils
 from .utils.logger import setup_logging
+from .utils.hotkeygen import set_hotkeygen_context
 
 eslog = logging.getLogger(__name__)
 
@@ -268,15 +269,11 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
 
         # run the emulator
-        try:
-            from .Evmapy import Evmapy
-            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns)
-
-            # hotkeygen context
-            hkc = generator.getHotkeysContext()
-            eslog.debug("hotkeygen: updating context to {}".format(hkc["name"]))
-            subprocess.call(["hotkeygen", "--new-context", hkc["name"], json.dumps(hkc["keys"])])
-
+        from .utils.evmapy import evmapy
+        with (
+            evmapy(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, playersControllers, guns),
+            set_hotkeygen_context(generator)
+        ):
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)
             if executionDirectory is not None:
@@ -301,12 +298,6 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             exitCode = runCommand(cmd)
             if profiler:
                 profiler.enable()
-        finally:
-            # reset hotkeygen context
-            eslog.debug("hotkeygen: resetting to default context")
-            subprocess.call(["hotkeygen", "--default-context"])
-
-            Evmapy.stop()
 
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
