@@ -1,0 +1,13 @@
+config BR2_PACKAGE_CLEVIS
+        bool "clevis"
+        select BR2_PACKAGE_CRYPTSETUP
+        select BR2_PACKAGE_JOSE
+        select BR2_PACKAGE_LUKSMETA
+        select BR2_PACKAGE_TPM2_TOOLS
+
+        help
+          Clevis is a pluggable framework for automated decryption. It
+          can be used to provide automated decryption of data or even
+          automated unlocking of LUKS volumes.
+
+          https://github.com/latchset/clevis
