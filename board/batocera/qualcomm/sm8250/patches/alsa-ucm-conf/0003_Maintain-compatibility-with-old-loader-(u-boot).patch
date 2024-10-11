@@ -1,0 +1,31 @@
+From 39caffb11de21215c9ae2d651c43869a73d04654 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Sat, 12 Oct 2024 03:42:09 +0800
+Subject: [PATCH] Maintain compatibility with old loader (u-boot)
+
+---
+ ucm2/conf.d/sm8250/retroid-RetroidPocket5-conf     | 1 +
+ ucm2/conf.d/sm8250/retroid-RetroidPocketMini-.conf | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 120000 ucm2/conf.d/sm8250/retroid-RetroidPocket5-conf
+ create mode 120000 ucm2/conf.d/sm8250/retroid-RetroidPocketMini-.conf
+
+diff --git a/ucm2/conf.d/sm8250/retroid-RetroidPocket5-conf b/ucm2/conf.d/sm8250/retroid-RetroidPocket5-conf
+new file mode 120000
+index 0000000..8598750
+--- /dev/null
++++ b/ucm2/conf.d/sm8250/retroid-RetroidPocket5-conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8250/RetroidPocket.conf
+\ No newline at end of file
+diff --git a/ucm2/conf.d/sm8250/retroid-RetroidPocketMini-.conf b/ucm2/conf.d/sm8250/retroid-RetroidPocketMini-.conf
+new file mode 120000
+index 0000000..8598750
+--- /dev/null
++++ b/ucm2/conf.d/sm8250/retroid-RetroidPocketMini-.conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8250/RetroidPocket.conf
+\ No newline at end of file
+-- 
+2.34.1
+
