@@ -279,6 +279,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RCLONE				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # sync files in the cloud (require x86_64)
 	select BR2_PACKAGE_BTOP					# htop alternative
 	select BR2_PACKAGE_MOKUTIL				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # mokutil machine owner key utility
+        select BR2_PACKAGE_CRYPTSETUP				# LUKS encrypted volume userland support
+        select BR2_PACKAGE_CLEVIS				# Automated decryption policy framework
 
 	# Controllers
 	select BR2_PACKAGE_XONE					if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
