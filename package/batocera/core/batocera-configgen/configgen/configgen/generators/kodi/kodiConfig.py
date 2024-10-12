@@ -71,14 +71,17 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
 
         sticksNode = {}
 
+        alreadyset = {}
         for x in cur.inputs:
             input = cur.inputs[x]
             if input.name in kodimapping:
                     if input.type == 'button':
-                        xmlbutton = config.createElement('feature')
-                        xmlbutton.attributes["name"] = kodimapping[input.name]
-                        xmlbutton.attributes["button"] = str(int(input.id))
-                        xmlcontroller.appendChild(xmlbutton)
+                        if "btn_" + str(int(input.id)) not in alreadyset:
+                            xmlbutton = config.createElement('feature')
+                            xmlbutton.attributes["name"] = kodimapping[input.name]
+                            xmlbutton.attributes["button"] = str(int(input.id))
+                            xmlcontroller.appendChild(xmlbutton)
+                            alreadyset["btn_" + str(int(input.id))] = True
 
                     elif input.type == 'hat' and int(input.value) in kodihatspositions:
                         xmlhat = config.createElement('feature')
