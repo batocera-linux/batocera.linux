@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DISPLAY=:0.0
+export DISPLAY=$(getLocalXDisplay)
 
 XDG_CONFIG_HOME=/userdata/system/configs \
 XDG_DATA_HOME=/userdata/saves \

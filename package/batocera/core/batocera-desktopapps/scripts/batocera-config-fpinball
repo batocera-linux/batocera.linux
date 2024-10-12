@@ -2,7 +2,7 @@
 
 if test -z "${DISPLAY}"
 then
-    export DISPLAY=:0.0
+    export DISPLAY=$(getLocalXDisplay)
 fi
 
 emulatorlauncher -system fpinball -rom config

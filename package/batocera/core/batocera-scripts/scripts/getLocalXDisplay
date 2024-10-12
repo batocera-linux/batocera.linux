@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find /tmp/.X11-unix -name "X*" 2>/dev/null | head -1 | sed -e s+"^.*/X"+":"+

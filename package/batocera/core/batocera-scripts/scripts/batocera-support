@@ -41,7 +41,7 @@ DSYSTEM="${TMPDIR}/system"
 
 # in case xorg is in use
 if test -z "${DISPLAY}"; then
-    export DISPLAY=:0.0
+    export DISPLAY=$(getLocalXDisplay)
 fi
 
 dmesg 	         	> "${DSYSTEM}/dmesg.txt"

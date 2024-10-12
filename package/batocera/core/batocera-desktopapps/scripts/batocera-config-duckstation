@@ -2,7 +2,7 @@
 
 # Check if DISPLAY is not set
 if [ -z "${DISPLAY}" ]; then
-    DISPLAY=:0.0
+    DISPLAY=$(getLocalXDisplay)
 fi
 
 # Check if Wayland is available

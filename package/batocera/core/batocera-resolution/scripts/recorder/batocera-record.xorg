@@ -3,7 +3,7 @@
 ACTION=$1
 OVERRIDE_ENCODER=$2
 
-export DISPLAY=:0.0
+export DISPLAY=$(getLocalXDisplay)
 
 RESOLUTION=$(batocera-resolution currentResolution)
 REFRESH_RATE=$(batocera-resolution refreshRate)

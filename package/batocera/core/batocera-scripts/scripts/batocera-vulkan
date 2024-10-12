@@ -3,7 +3,7 @@
 # Ensure a valid display is set
 if [ -z "$WAYLAND_DISPLAY" ]; then
     if [ -z "$DISPLAY" ]; then
-        export DISPLAY=:0.0
+        export DISPLAY=$(getLocalXDisplay)
     fi
 fi
 

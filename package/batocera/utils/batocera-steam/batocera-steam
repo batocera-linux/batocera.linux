@@ -47,16 +47,16 @@ fi
 
 if test -z "${GAME}"
 then
-    DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -bigpicture
+    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -bigpicture
 else
-    DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -silent ${GAME} 2>&1 |
+    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -silent ${GAME} 2>&1 |
 	while read LINE
 	do
 	    echo "${LINE}"
 	    # steam has no option to exit when quitting a game.
 	    if echo "${LINE}" | grep -E '^Exiting app |^Game process removed'
 	    then
-		DISPLAY=:0.0 flatpak run com.valvesoftware.Steam -shutdown
+		DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
 	    fi
 	done
 fi

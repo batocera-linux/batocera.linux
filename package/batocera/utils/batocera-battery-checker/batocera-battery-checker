@@ -73,7 +73,7 @@ while true; do
                                 set_ayn_led_mode 0
                             fi
                         fi
-                        /usr/bin/batocera-info --short | LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=:0.0 osd_cat -f "-*-*-bold-*-*-*-38-120-*-*-*-*-*-*" -cred -s 3 -d ${DELAY}
+                        /usr/bin/batocera-info --short | LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=$(getLocalXDisplay) osd_cat -f "-*-*-bold-*-*-*-38-120-*-*-*-*-*-*" -cred -s 3 -d ${DELAY}
                     fi
                 fi
             fi
