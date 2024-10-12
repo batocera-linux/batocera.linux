@@ -133,6 +133,7 @@
 - GStreamer codecs to 1.24.8
 - Shim signed IA32 EFI bootloader to 1.44~1+deb12u1+15.8-1~deb12u1
 - FFMPEG to 7.1
+- Shim signed x64 EFI bootloader to 1.58+15.8-0ubuntu1
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
