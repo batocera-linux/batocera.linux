@@ -1,5 +1,5 @@
 #!/bin/sh
-export DISPLAY=:0.0
+export DISPLAY=$(getLocalXDisplay)
 
 FILE=$1
 if [ -z ${FILE} ]; then

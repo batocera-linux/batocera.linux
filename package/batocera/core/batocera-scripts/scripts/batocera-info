@@ -150,7 +150,7 @@ echo "Available Memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
 # Current Resolution
 if test -z "${DISPLAY}"; then
-    export DISPLAY=:0.0
+    export DISPLAY=$(getLocalXDisplay)
 fi
 
 DISPLAYRES=$(batocera-resolution currentResolution)
@@ -167,9 +167,9 @@ echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
 	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"; then
-	    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
+	    V_OPENGLVERSION=$(DISPLAY=$(getLocalXDisplay) glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
 	    if test -z "${V_OPENGLVERSION}"; then
-            V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
+            V_OPENGLVERSION=$(DISPLAY=$(getLocalXDisplay) glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
 	    fi
 	    echo "OpenGL Driver Version: ${V_OPENGLVERSION}"
 	fi

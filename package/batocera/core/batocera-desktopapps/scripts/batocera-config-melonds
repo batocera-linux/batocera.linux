@@ -2,7 +2,7 @@
 
 if test -z "${DISPLAY}"
 then
-	export DISPLAY=:0.0
+	export DISPLAY=$(getLocalXDisplay)
 fi
 
 PATH=$PATH:PATH=$PATH:/usr/wine/ge-custom/bin

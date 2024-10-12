@@ -3,4 +3,4 @@
 # not very usefull script ; just a way to cast batocera (for youtuber for example)
 # client side :  mplayer -nocache http://192.168.0.31:8080 or ffplay -fflags nobuffer  http://192.168.0.31:8080
 
-DISPLAY=:0 vlc screen:// --screen-fps=20 --sout '#transcode{vcodec=h264,venc=x264{preset=ultrafast,tune=zerolatency},acodec=none,vb=256,scale=1.0}:std{access=http,mux=asf,dst=:8080}'
+DISPLAY=$(getLocalXDisplay) vlc screen:// --screen-fps=20 --sout '#transcode{vcodec=h264,venc=x264{preset=ultrafast,tune=zerolatency},acodec=none,vb=256,scale=1.0}:std{access=http,mux=asf,dst=:8080}'

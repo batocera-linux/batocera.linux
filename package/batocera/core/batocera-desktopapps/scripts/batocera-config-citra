@@ -5,7 +5,7 @@
 
 if test -z "${DISPLAY}"
 then
-    export DISPLAY=:0.0
+    export DISPLAY=$(getLocalXDisplay)
 fi
 
 if [[ -x /usr/bin/citra-qt ]]; then
