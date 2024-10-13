@@ -617,6 +617,7 @@ def launch():
         parser.add_argument("-gameinfoxml",    help="game info xml",               type=str, nargs='?', default='/dev/null', required=False)
         parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
         parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
+        parser.add_argument("-trackball",      help="configure trackball",         action="store_true")
 
         args = parser.parse_args()
         try:
