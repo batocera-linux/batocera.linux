@@ -1,0 +1,14 @@
+config BR2_PACKAGE_DHEWM3
+    bool "dhewm3"
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBJPEG
+    select BR2_PACKAGE_LIBOGG
+    select BR2_PACKAGE_LIBVORBIS
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_ZLIB
+    help
+      dhewm 3 is a Doom 3 GPL source port.
+      The goal of dhewm 3 is bring DOOM 3 with the help of SDL to all suitable platforms.
+
+      https://github.com/dhewm/dhewm3
