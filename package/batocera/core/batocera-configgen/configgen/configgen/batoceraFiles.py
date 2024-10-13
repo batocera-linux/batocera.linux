@@ -42,6 +42,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'applewin'       : '/usr/bin/applewin'
               , 'fba2x'          : '/usr/bin/fba2x'
               , 'shadps4'        : '/usr/bin/shadps4/shadps4'
+              , 'dhewm3'         : '/usr/bin/dhewm3'
 }
 
 

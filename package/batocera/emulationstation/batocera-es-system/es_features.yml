@@ -13127,3 +13127,18 @@ x16emu:
 shadps4:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+
+dhewm3:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    dhewm3_brightness:
+      prompt: BRIGHTNESS
+      description: Change the game's brightness.
+      choices:
+        "100% (Default)": 1
+        "120%":           1.20
+        "140%":           1.40
+        "160%":           1.60
+        "180%":           1.80
+        "200% (Maximum)": 2

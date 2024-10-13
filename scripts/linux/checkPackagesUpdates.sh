@@ -207,6 +207,7 @@ PACKAGES_PORTS="abuse
                 cgenius
                 corsixth
                 devilutionx
+                dhewm3
                 dxx-rebirth
                 ecwolf
                 eduke32

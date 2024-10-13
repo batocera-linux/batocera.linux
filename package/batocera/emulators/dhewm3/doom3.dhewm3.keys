@@ -1,0 +1,28 @@
+{
+    "actions_player1": [
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "description": "Exit emulator"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": ["KEY_F12"],
+            "description": "Screenshot"
+        },
+    	{
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F5" ],
+            "description": "Quick Save"
+	    },
+    	{
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F9" ],
+            "description": "Quick Load"
+    	}
+    ]
+}

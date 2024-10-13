@@ -374,6 +374,10 @@ def getGenerator(emulator: str) -> Generator:
         from .generators.shadps4.shadps4Generator import shadPS4Generator
         return shadPS4Generator()
 
+    if emulator == 'dhewm3' :
+        from .generators.dhewm3.dhewm3Generator import Dhewm3Generator
+        return Dhewm3Generator()
+
     if emulator == 'sh':
         from .generators.sh.shGenerator import ShGenerator
         return ShGenerator()
