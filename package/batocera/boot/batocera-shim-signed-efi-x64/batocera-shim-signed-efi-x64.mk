@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SHIM_SIGNED_EFI_X64_VERSION = 1.56+15.7-0ubuntu1
+BATOCERA_SHIM_SIGNED_EFI_X64_VERSION = 1.58+15.8-0ubuntu1
 BATOCERA_SHIM_SIGNED_EFI_X64_SITE = https://launchpad.net/ubuntu/+archive/primary/+files
 BATOCERA_SHIM_SIGNED_EFI_X64_SOURCE = shim-signed_$(BATOCERA_SHIM_SIGNED_EFI_X64_VERSION)_amd64.deb
 
