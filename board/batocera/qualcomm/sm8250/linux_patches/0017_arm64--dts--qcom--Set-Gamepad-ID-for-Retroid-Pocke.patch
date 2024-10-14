@@ -1,0 +1,30 @@
+From 5f3738b9a8ea388fa48793f652155148835d79ed Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 14 Oct 2024 18:54:05 +0800
+Subject: [PATCH] arm64: dts: qcom: Set Gamepad ID for Retroid Pocket
+
+---
+ arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+index e16b61d4c11a..e0f49e8e75cd 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+@@ -1233,6 +1233,13 @@ &uart16 {
+ 
+ 	gamepad {
+ 		compatible = "ayn,odin2-gamepad";
++
++		gamepad-name = "Retroid Pocket Controller";
++		gamepad-bus = <0x0003>;
++		gamepad-vid = <0x2020>;
++		gamepad-pid = <0x3001>;
++		gamepad-rev = <0x0001>;
++
+ 		vdd-supply = <&vreg_mcu_3v3>;
+ 		enable-gpios = <&tlmm 111 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-0 = <&mcu_en_default>;
+-- 
+2.34.1
+
