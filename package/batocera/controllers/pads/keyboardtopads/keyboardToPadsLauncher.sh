@@ -82,11 +82,21 @@ else
 	    echo "using config file ${CONFIGFILE}" >&2
 	    keyboardToPads --config "${CONFIGFILE}" --rules > "/run/udev/rules.d/${CONFIGNAME}.rules" || exit 1
 	    udevadm control --reload-rules || exit 1
-	    nohup keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run &
+	    if test -t 1 # check output is a tty
+	    then
+		keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run
+	    else
+		nohup keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run &
+	    fi
 	else
 	    # no config file found, do 1 to 1 mapping to enable keyboard
 	    # map the same, but this one will have ID_INPUT_KEYBOARD set to 1
-	    nohup evsieve --input "${1}" --output name="Default virtual keyboard" &
+	    if test -t 1 # check output is a tty
+	    then
+		evsieve --input "${1}" --output name="Default virtual keyboard"
+	    else
+		nohup evsieve --input "${1}" --output name="Default virtual keyboard" &
+	    fi
 	fi
     else
 	doHelp
