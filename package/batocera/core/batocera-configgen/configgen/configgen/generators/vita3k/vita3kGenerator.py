@@ -49,7 +49,7 @@ class Vita3kGenerator(Generator):
             vita3kymlconfig = {}
 
         # ensure the correct path is set
-        vita3kymlconfig["pref-path"] = vitaSaves
+        vita3kymlconfig["pref-path"] = f"{vitaSaves!s}"
 
         # Set the renderer
         if system.isOptSet("vita3k_gfxbackend"):
