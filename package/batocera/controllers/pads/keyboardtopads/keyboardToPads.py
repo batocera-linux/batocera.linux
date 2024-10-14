@@ -87,7 +87,7 @@ class KeyboardController:
                     cmd.extend(["--map", "yield", "{}:0".format(mappingtypename), "{}:0".format(value)])
 
             # output device
-            cmd.extend(["--output", "name={}".format(target_device["name"])])
+            cmd.extend(["--output", "name={}".format(target_device["name"]), "device-id=ba10:ce8a"])
 
             # output filter (remove doubles)
             keyslist = {}
