@@ -48,6 +48,9 @@ BATOCERA_SHADERS: Final = BATOCERA_SHARE_DIR / 'shaders'
 USER_DECORATIONS: Final = USERDATA / 'decorations'
 SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
 
+USER_SCRIPTS: Final = HOME / 'scripts'
+SYSTEM_SCRIPTS: Final = DEFAULTS_DIR / 'scripts'
+
 
 def mkdir_if_not_exists(dir: Path, /) -> None:
     if not dir.exists():
