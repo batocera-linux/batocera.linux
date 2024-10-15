@@ -58,6 +58,7 @@
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
   - Libretro-Atari800 to July 26, 2024 build
+  - Libretro-Arduous to Oct 10, 2024 build
   - Libretro-Beetle-Lynx to June 29, 2024 build
   - Libretro-Beetle-NGP to June 29, 2024 build
   - Libretro-Beetle-PCE to August 9, 2024 build
@@ -73,6 +74,7 @@
   - Libretro-Cap32 to June 29, 2024 build
   - Libretro-Melonds-Ds to v1.1.5
   - Libretro-Ecwolf to June 28 build
+  - Libretro-Fake08 to Sept 2 build
   - Libretro-Fbneo to October 3, 2024 build
   - Libretro-Flycast to September 29, 2024 build
   - Libretro-Freechaf to June 28 build
