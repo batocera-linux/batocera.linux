@@ -6703,6 +6703,9 @@ libretro:
                 choices:
                     "Off":                      disabled
                     "On":                       enabled
+    vircon32:
+      features: [netplay, padtokeyboard]
+      shared: [rewind, autosave]
     virtualjaguar:
       features: [padtokeyboard, cheevos]
       shared: [autosave]

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_LIBRETRO_VIRCON32
+    bool "libretro-vricon32"
+    depends on BR2_PACKAGE_RETROARCH
+    help
+      A Fantasy Console, based on a 32-bit architecture
