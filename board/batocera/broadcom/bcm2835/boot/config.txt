@@ -85,7 +85,10 @@ display_auto_detect=1
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
-# Enable bluetooth
-dtparam=krnbt=on
+# Automatically load overlays for detected cameras
+camera_auto_detect=1
+
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
 
 [all]

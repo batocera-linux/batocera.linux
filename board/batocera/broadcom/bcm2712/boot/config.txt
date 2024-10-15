@@ -1,5 +1,27 @@
-arm_boost=1
+# For more options and information see
+# http://rpf.io/configtxt
+# Some settings may impact device functionality. See link above for details
+
+# Load the 64-bit kernel
 arm_64bit=1
+
+# Run as fast as firmware / board allows
+arm_boost=1
+
 kernel=boot/linux
 initramfs boot/initrd.lz4
-dtoverlay=vc4-kms-v3d,cma-512
+
+# Uncomment some or all of these to enable the optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
+#dtparam=spi=on
+
+# Automatically load overlays for detected cameras
+camera_auto_detect=1
+
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d
+max_framebuffers=2

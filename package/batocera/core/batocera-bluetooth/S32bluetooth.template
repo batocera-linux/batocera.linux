@@ -54,7 +54,7 @@ case "$1" in
                     sleep 2 # Give hciattach a few seconds to finish attaching firmware
                 ;;
                 bcm921)
-                    /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 # specific rpi0, rpi3
+                    /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600
                 ;;
                 piscan)
                     /usr/bin/hciconfig hci0 up piscan # specific rpi

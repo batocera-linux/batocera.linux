@@ -2,16 +2,33 @@
 
 MAIN_CONF_FILE="/etc/bluetooth/main.conf"
 
-# run this command to get the desired adapter name
-info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+case "$1" in
+    start)
+        # Get the current adapter name from the config file
+        current_name=$(grep -Po '(?<=^Name = ).*' "$MAIN_CONF_FILE")
 
-if [ -n "$info_output" ]; then
-    sed -i '/^\[General\]/a Name = '"$info_output" "$MAIN_CONF_FILE"
+        # Get the desired adapter name from batocera-info
+        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
 
-    echo "Bluetooth adapter name has been set to: $info_output"
-else
-    # fallback to a default naming scheme
-    sed -i '/^\[General\]/a Name = %h-%d' "$MAIN_CONF_FILE"
+        if [ -n "$info_output" ]; then
+            if [ "$current_name" == "$info_output" ]; then
+                echo "Bluetooth adapter name is already set to $info_output. Exiting..."
+                exit 0
+            fi
 
-    echo "Falling back to hostname & adapter"
-fi
+            sed -i '/^\[General\]/a Name = '"$info_output" "$MAIN_CONF_FILE"
+            echo "Bluetooth adapter name has been set to: $info_output"
+        else
+            # fallback to a default naming scheme if no model is found
+            if [ "$current_name" == "%h-%d" ]; then
+                echo "Bluetooth adapter name is already set to the fallback scheme. Exiting..."
+                exit 0
+            fi
+
+            sed -i '/^\[General\]/a Name = %h-%d' "$MAIN_CONF_FILE"
+            echo "Falling back to hostname & adapter"
+        fi
+        ;;
+esac
+
+exit 0
