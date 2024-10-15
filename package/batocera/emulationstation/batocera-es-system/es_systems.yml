@@ -1302,6 +1302,16 @@ pyxel:
   comment_fr: |
     Une fantasy console avec plein de jeux disponibles sur https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples
 
+vircon32:
+  name:       vircon32
+  manufacturer: Fantasy
+  release: 2022
+  hardware: console
+  extensions: [v32, zip]
+  emulators:
+    libretro:
+      vircon32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRCON32] }
+
 channelf:
   name:       Channel-F
   manufacturer: Fairchild

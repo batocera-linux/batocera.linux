@@ -31,6 +31,7 @@
 - Taradino - Rise of the Triad port
 - X16-Emulator for Commander X16 system support
 - Dhewm 3 - A Doom 3 port
+- Vircon32 - a 32-bit inspired Fantasy Console
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
