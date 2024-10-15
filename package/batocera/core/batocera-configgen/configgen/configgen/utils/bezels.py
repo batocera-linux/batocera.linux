@@ -67,11 +67,11 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                 bezel_game = True
                 if not overlay_png_file.exists():
                     if altDecoration != 0:
-                      overlay_info_file = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
-                      overlay_png_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
-                      overlay_layout_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
-                      overlay_mamezip_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.zip"
-                      bezel_game = False
+                        overlay_info_file = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
+                        overlay_png_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
+                        overlay_layout_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
+                        overlay_mamezip_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.zip"
+                        bezel_game = False
                     if not overlay_png_file.exists():
                         overlay_info_file = USER_DECORATIONS / bezel / "systems" / f"{systemName}.info"
                         overlay_png_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}.png"
@@ -80,11 +80,11 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                         bezel_game = False
                         if not overlay_png_file.exists():
                             if altDecoration != 0:
-                              overlay_info_file = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
-                              overlay_png_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
-                              overlay_layout_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
-                              overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.zip"
-                              bezel_game = False
+                                overlay_info_file = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
+                                overlay_png_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
+                                overlay_layout_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
+                                overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.zip"
+                                bezel_game = False
                             if not overlay_png_file.exists():
                                 overlay_info_file = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}.info"
                                 overlay_png_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}.png"
@@ -98,25 +98,25 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                                     overlay_mamezip_file  = USER_DECORATIONS / bezel / f"default-{altDecoration!s}.zip"
                                     bezel_game = True
                                     if not overlay_png_file.exists():
-                                      overlay_info_file = USER_DECORATIONS / bezel / "default.info"
-                                      overlay_png_file  = USER_DECORATIONS / bezel / "default.png"
-                                      overlay_layout_file  = USER_DECORATIONS / bezel / "default.lay"
-                                      overlay_mamezip_file  = USER_DECORATIONS / bezel / "default.zip"
-                                      bezel_game = True
-                                      if not overlay_png_file.exists():
-                                          overlay_info_file = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.info"
-                                          overlay_png_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.png"
-                                          overlay_layout_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.lay"
-                                          overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.zip"
-                                          bezel_game = True
-                                          if not overlay_png_file.exists():
-                                            overlay_info_file = SYSTEM_DECORATIONS / bezel / "default.info"
-                                            overlay_png_file  = SYSTEM_DECORATIONS / bezel / "default.png"
-                                            overlay_layout_file  = SYSTEM_DECORATIONS / bezel / "default.lay"
-                                            overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / "default.zip"
+                                        overlay_info_file = USER_DECORATIONS / bezel / "default.info"
+                                        overlay_png_file  = USER_DECORATIONS / bezel / "default.png"
+                                        overlay_layout_file  = USER_DECORATIONS / bezel / "default.lay"
+                                        overlay_mamezip_file  = USER_DECORATIONS / bezel / "default.zip"
+                                        bezel_game = True
+                                        if not overlay_png_file.exists():
+                                            overlay_info_file = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.info"
+                                            overlay_png_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.png"
+                                            overlay_layout_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.lay"
+                                            overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / f"default-{altDecoration!s}.zip"
                                             bezel_game = True
                                             if not overlay_png_file.exists():
-                                                return None
+                                                overlay_info_file = SYSTEM_DECORATIONS / bezel / "default.info"
+                                                overlay_png_file  = SYSTEM_DECORATIONS / bezel / "default.png"
+                                                overlay_layout_file  = SYSTEM_DECORATIONS / bezel / "default.lay"
+                                                overlay_mamezip_file  = SYSTEM_DECORATIONS / bezel / "default.zip"
+                                                bezel_game = True
+                                                if not overlay_png_file.exists():
+                                                    return None
     eslog.debug(f"Original bezel file used: {overlay_png_file!s}")
     return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "mamezip": overlay_mamezip_file, "specific_to_game": bezel_game }
 
@@ -128,12 +128,12 @@ def fast_image_size(image_file: str | Path) -> tuple[int, int]:
     with image_file.open('rb') as fhandle:
         head = fhandle.read(32)
         if len(head) != 32:
-           # corrupted header, or not a PNG
-           return -1, -1
+            # corrupted header, or not a PNG
+            return -1, -1
         check = struct.unpack('>i', head[4:8])[0]
         if check != 0x0d0a1a0a:
-           # Not a PNG
-           return -1, -1
+            # Not a PNG
+            return -1, -1
         return struct.unpack('>ii', head[16:24]) #image width, height
 
 def resizeImage(input_png: str | Path, output_png: str | Path, screen_width: int, screen_height: int, bezel_stretch: bool = False) -> None:
@@ -154,106 +154,106 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
     else:
         if bezel_stretch:
-          imgout = ImageOps.fit(imgin, (screen_width, screen_height))
+            imgout = ImageOps.fit(imgin, (screen_width, screen_height))
         else:
-          imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
+            imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
         imgout.save(output_png, mode="RGBA", format="PNG")
 
 def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
-  if system.config['bezel.tattoo'] == 'system':
-      try:
-          tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
-          if not tattoo_file.exists():
-              tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
-          tattoo = Image.open(tattoo_file)
-      except:
-          eslog.error(f"Error opening controller overlay: {tattoo_file}")
-  elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
-      try:
-          tattoo = Image.open(tattoo_file)
-      except:
-          eslog.error(f"Error opening custom file: {tattoo_file}")
-  else:
-      try:
-          tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
-          tattoo = Image.open(tattoo_file)
-      except:
-          eslog.error(f"Error opening custom file: {tattoo_file}")
-  # Open the existing bezel...
-  back = Image.open(input_png)
-  # Convert it otherwise it implodes later on...
-  back = back.convert("RGBA")
-  tattoo = tattoo.convert("RGBA")
-  # Quickly grab the sizes.
-  w,h = fast_image_size(input_png)
-  tw,th = fast_image_size(tattoo_file)
-  if "bezel.resize_tattoo" in system.config and system.config['bezel.resize_tattoo'] == 0:
-      # Maintain the image's original size.
-      # Failsafe for if the image is too large.
-      if tw > w or th > h:
-          # Limit width to that of the bezel and crop the rest.
-          pcent = float(w / tw)
-          th = int(float(th) * pcent)
-          # Resize the tattoo to the calculated size.
-          tattoo = tattoo.resize((w,th), Image.BICUBIC)
-  else:
-      # Resize to be slightly smaller than the bezel's column.
-      twtemp = int((225/1920) * w)
-      pcent = float(twtemp / tw)
-      th = int(float(th) * pcent)
-      tattoo = tattoo.resize((twtemp,th), Image.BICUBIC)
-      tw = twtemp
-  # Create a new blank canvas that is the same size as the bezel for later compositing (they are required to be the same size).
-  tattooCanvas = Image.new("RGBA", back.size)
-  # Margin for the tattoo
-  margin = int((20 / 1080) * h)
-  if system.isOptSet('bezel.tattoo_corner'):
-      corner = system.config['bezel.tattoo_corner']
-  else:
-      corner = 'NW'
-  if (corner.upper() == 'NE'):
-      tattooCanvas.paste(tattoo, (w-tw,margin)) # 20 pixels vertical margins (on 1080p)
-  elif (corner.upper() == 'SE'):
-      tattooCanvas.paste(tattoo, (w-tw,h-th-margin))
-  elif (corner.upper() == 'SW'):
-      tattooCanvas.paste(tattoo, (0,h-th-margin))
-  else: # default = NW
-      tattooCanvas.paste(tattoo, (0,margin))
-  back = Image.alpha_composite(back, tattooCanvas)
+    if system.config['bezel.tattoo'] == 'system':
+        try:
+            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
+            if not tattoo_file.exists():
+                tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
+            tattoo = Image.open(tattoo_file)
+        except:
+            eslog.error(f"Error opening controller overlay: {tattoo_file}")
+    elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
+        try:
+            tattoo = Image.open(tattoo_file)
+        except:
+            eslog.error(f"Error opening custom file: {tattoo_file}")
+    else:
+        try:
+            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
+            tattoo = Image.open(tattoo_file)
+        except:
+            eslog.error(f"Error opening custom file: {tattoo_file}")
+    # Open the existing bezel...
+    back = Image.open(input_png)
+    # Convert it otherwise it implodes later on...
+    back = back.convert("RGBA")
+    tattoo = tattoo.convert("RGBA")
+    # Quickly grab the sizes.
+    w,h = fast_image_size(input_png)
+    tw,th = fast_image_size(tattoo_file)
+    if "bezel.resize_tattoo" in system.config and system.config['bezel.resize_tattoo'] == 0:
+        # Maintain the image's original size.
+        # Failsafe for if the image is too large.
+        if tw > w or th > h:
+            # Limit width to that of the bezel and crop the rest.
+            pcent = float(w / tw)
+            th = int(float(th) * pcent)
+            # Resize the tattoo to the calculated size.
+            tattoo = tattoo.resize((w,th), Image.BICUBIC)
+    else:
+        # Resize to be slightly smaller than the bezel's column.
+        twtemp = int((225/1920) * w)
+        pcent = float(twtemp / tw)
+        th = int(float(th) * pcent)
+        tattoo = tattoo.resize((twtemp,th), Image.BICUBIC)
+        tw = twtemp
+    # Create a new blank canvas that is the same size as the bezel for later compositing (they are required to be the same size).
+    tattooCanvas = Image.new("RGBA", back.size)
+    # Margin for the tattoo
+    margin = int((20 / 1080) * h)
+    if system.isOptSet('bezel.tattoo_corner'):
+        corner = system.config['bezel.tattoo_corner']
+    else:
+        corner = 'NW'
+    if (corner.upper() == 'NE'):
+        tattooCanvas.paste(tattoo, (w-tw,margin)) # 20 pixels vertical margins (on 1080p)
+    elif (corner.upper() == 'SE'):
+        tattooCanvas.paste(tattoo, (w-tw,h-th-margin))
+    elif (corner.upper() == 'SW'):
+        tattooCanvas.paste(tattoo, (0,h-th-margin))
+    else: # default = NW
+        tattooCanvas.paste(tattoo, (0,margin))
+    back = Image.alpha_composite(back, tattooCanvas)
 
-  imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
-  imgnew.paste(back, (0,0,w,h))
-  imgnew.save(output_png, mode="RGBA", format="PNG")
+    imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
+    imgnew.paste(back, (0,0,w,h))
+    imgnew.save(output_png, mode="RGBA", format="PNG")
 
 def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, fillcolor: str, screensize: tuple[int, int], bezel_stretch: bool) -> None:
-  # screensize=(screen_width, screen_height)
-  imgin = Image.open(input_png)
-  # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
-  # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-  if not 'transparency' in imgin.info:
-      raise Exception("no transparent pixels in the image, abort")
-  alpha = imgin.split()[-1]  # alpha from original palette + alpha
-  ix,iy = fast_image_size(input_png)
-  sx,sy = screensize
-  i_ratio = (float(ix) / float(iy))
-  s_ratio = (float(sx) / float(sy))
+    # screensize=(screen_width, screen_height)
+    imgin = Image.open(input_png)
+    # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
+    # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
+    if not 'transparency' in imgin.info:
+        raise Exception("no transparent pixels in the image, abort")
+    alpha = imgin.split()[-1]  # alpha from original palette + alpha
+    ix,iy = fast_image_size(input_png)
+    sx,sy = screensize
+    i_ratio = (float(ix) / float(iy))
+    s_ratio = (float(sx) / float(sy))
 
-  if (i_ratio - s_ratio > 0.01):
-      # cut off bezel sides for 16:10 screens
-      new_x = int(ix*s_ratio/i_ratio)
-      delta = int(ix-new_x)
-      borderx = delta//2
-      ix = new_x
-      alpha_new = alpha.crop((borderx, 0, new_x+borderx, iy))
-      alpha = alpha_new
+    if (i_ratio - s_ratio > 0.01):
+        # cut off bezel sides for 16:10 screens
+        new_x = int(ix*s_ratio/i_ratio)
+        delta = int(ix-new_x)
+        borderx = delta//2
+        ix = new_x
+        alpha_new = alpha.crop((borderx, 0, new_x+borderx, iy))
+        alpha = alpha_new
 
-  imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
-  imgnew.paste(alpha, (0,0,ix,iy))
-  if bezel_stretch:
-      imgout = ImageOps.fit(imgnew, screensize)
-  else:
-      imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
-  imgout.save(output_png, mode="RGBA", format="PNG")
+    imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
+    imgnew.paste(alpha, (0,0,ix,iy))
+    if bezel_stretch:
+        imgout = ImageOps.fit(imgnew, screensize)
+    else:
+        imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
+    imgout.save(output_png, mode="RGBA", format="PNG")
 
 def gunBordersSize(bordersSize: str) -> tuple[int, int]:
     if bordersSize == "thin":
