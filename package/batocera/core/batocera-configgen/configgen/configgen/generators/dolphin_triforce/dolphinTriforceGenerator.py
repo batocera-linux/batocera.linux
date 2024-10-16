@@ -470,8 +470,9 @@ $SeatLoopPatch
         # dolphinTriforceGameSettingsGGPE01 = configparser.ConfigParser(interpolation=None, allow_no_value=True,delimiters=';')
         # # To prevent ConfigParser from converting to lower case
         # dolphinTriforceGameSettingsGGPE01.optionxform = str
-        # if os.path.exists(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini"):
-            # dolphinTriforceGameSettingsGGPE01.read(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini")
+        # GGPE01_ini = DOLPHIN_TRIFORCE_GAME_SETTINGS / "GGPE01.ini"
+        # if GGPE01_ini.exists():
+            # dolphinTriforceGameSettingsGGPE01.read(GGPE01_ini)
 
         # # GGPE01 sections
         # if not dolphinTriforceGameSettingsGGPE01.has_section("OnFrame"):
@@ -490,7 +491,7 @@ $SeatLoopPatch
             # dolphinTriforceGameSettingsGGPE01.set("OnFrame_Enabled", "$Emulation Bug Fixes")
 
         # # Save GGPE01.ini
-        # with open(batoceraFiles.dolphinTriforceGameSettings + "/GGPE01.ini", 'w') as configfile:
+        # with GGPE01_ini.open('w') as configfile:
             # dolphinTriforceGameSettingsGGPE01.write(configfile)
 
         commandArray = ["dolphin-triforce", "-b", "-U", "/userdata/system/configs/dolphin-triforce", "-e", rom]
