@@ -22,7 +22,6 @@ menu "System"
 
   menu "Boot"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-initramfs/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-shim/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-shim-signed-efi-x64/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-shim-signed-efi-ia32/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-shim-signed-efi-helpers-ia32/Config.in"
