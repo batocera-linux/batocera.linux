@@ -559,6 +559,7 @@ def launch() -> None:
         parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
         parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
         parser.add_argument("-trackball",      help="configure trackball",         action="store_true")
+        parser.add_argument("-spinner",        help="configure spinner",           action="store_true")
 
         args = parser.parse_args()
         try:
