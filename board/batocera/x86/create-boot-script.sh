@@ -24,13 +24,13 @@ cp "${BINARIES_DIR}/bzImage"         "${BATOCERA_BINARIES_DIR}/boot/boot/linux" 
 cp "${BINARIES_DIR}/initrd.gz"       "${BATOCERA_BINARIES_DIR}/boot/boot/"                || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
+# Legacy bootloader (vestigial)
 cp "${BOARD_DIR}/boot/syslinux.cfg"       "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1
+
+# Legacy bootloader
 cp "${BOARD_DIR}/boot/syslinux.cfg"       "${BATOCERA_BINARIES_DIR}/boot/boot/syslinux/" || exit 1
 cp "${BINARIES_DIR}/syslinux/menu.c32"    "${BATOCERA_BINARIES_DIR}/boot/boot/syslinux/" || exit 1
 cp "${BINARIES_DIR}/syslinux/libutil.c32" "${BATOCERA_BINARIES_DIR}/boot/boot/syslinux/" || exit 1
-
-# What's this used by?  My guess is that it's unused.
-cp "${BOARD_DIR}/boot/syslinux.cfg"             "${BATOCERA_BINARIES_DIR}/boot/EFI/"      || exit 1
 
 # Syslinux EFI loader with Batocera boot configuration
 cp "${BOARD_DIR}/boot/syslinux.cfg"             "${BATOCERA_BINARIES_DIR}/boot/EFI/batocera/"             || exit 1
