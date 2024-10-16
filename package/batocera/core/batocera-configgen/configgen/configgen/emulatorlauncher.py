@@ -29,9 +29,10 @@ from pathlib import Path
 from sys import exit
 from typing import TYPE_CHECKING
 
-from . import GeneratorImporter, controllersConfig as controllers
+from . import controllersConfig as controllers
 from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .Emulator import Emulator
+from .generators import get_generator
 from .utils import bezels as bezelsUtil, gunsUtils, videoMode, wheelsUtils
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
@@ -122,7 +123,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
         wheels: DeviceInfoDict = {}
 
     # find the generator
-    generator = GeneratorImporter.getGenerator(system.config['emulator'])
+    generator = get_generator(system.config['emulator'])
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generator.getResolutionMode(system.config)
