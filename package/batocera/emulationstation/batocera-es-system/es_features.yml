@@ -1780,6 +1780,13 @@ libretro:
                     "10x (6400x4800)":   6400x4800
                     "11x (7040x5280)":   7040x5280
                     "12x (7680x5760)":   7680x5760
+            reicast_dsp:
+                group: ADVANCED OPTIONS
+                prompt:      DIGITAL SOUND PROCESSOR
+                description: Enable the Dreamcast DSP for more accurate audio. Only recommended for fast systems.
+                choices:
+                    "Disabled (Default)": disabled
+                    "Enabled"           : enabled
             reicast_lightgun1_crosshair:
                 group: LIGHT GUN
                 prompt:      PLAYER 1 CROSSHAIR COLOR
@@ -8178,7 +8185,7 @@ flycast:
           prompt:      DIGITAL SOUND PROCESSOR
           description: Enable the Dreamcast DSP for more accurate audio. Only recommended for fast systems.
           choices:
-            "Disbaled (Default)": "no"
+            "Disabled (Default)": "no"
             "Enabled"           : "yes"
 
 fpinball:
