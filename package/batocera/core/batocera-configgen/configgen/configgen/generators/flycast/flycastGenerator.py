@@ -3,8 +3,9 @@ from __future__ import annotations
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, ensure_parents_and_open, mkdir_if_not_exists
+from ...controller import generateSdlGameControllerConfig
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import flycastControllers
@@ -227,7 +228,7 @@ class FlycastGenerator(Generator):
                 "XDG_DATA_HOME":FLYCAST_SAVES.parent,
                 "FLYCAST_DATADIR":FLYCAST_SAVES.parent,
                 "FLYCAST_BIOS_PATH":FLYCAST_BIOS,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

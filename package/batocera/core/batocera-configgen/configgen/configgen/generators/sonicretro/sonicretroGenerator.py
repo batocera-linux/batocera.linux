@@ -5,7 +5,8 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
+from ...controller import generateSdlGameControllerConfig
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
@@ -187,7 +188,7 @@ class SonicRetroGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers)
             })
 
     def getMouseMode(self, config, rom):

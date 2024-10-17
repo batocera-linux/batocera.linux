@@ -4,7 +4,8 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
+from ...controller import generateSdlGameControllerConfig
 from ..Generator import Generator
 from . import ioquake3Config
 from .ioquake3Paths import IOQUAKE3_ROMS
@@ -38,7 +39,7 @@ class IOQuake3Generator(Generator):
         commandArray.extend(command_line_words)
 
         environment = {
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+            "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers)
         }
 
         return Command.Command(array=commandArray, env=environment)

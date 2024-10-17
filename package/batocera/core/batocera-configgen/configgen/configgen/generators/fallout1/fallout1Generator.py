@@ -5,8 +5,9 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
+from ...controller import generateSdlGameControllerConfig
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -137,7 +138,7 @@ class Fallout1Generator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "SDL_GAMECONTROLLERCONFIG":controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers)
             }
         )
 

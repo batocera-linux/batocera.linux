@@ -5,8 +5,9 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import ROMS
+from ...controller import generateSdlGameControllerConfig
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -91,7 +92,7 @@ class SonicManiaGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "SDL_GAMECONTROLLERCONFIG":controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

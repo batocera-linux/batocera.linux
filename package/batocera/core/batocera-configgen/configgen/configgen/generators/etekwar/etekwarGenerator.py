@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ... import Command, controllersConfig
+from ... import Command
+from ...controller import generateSdlGameControllerConfig
 from ..Generator import Generator
 
 
@@ -12,5 +13,5 @@ class EtekwarGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers)
             })

@@ -6,8 +6,9 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
+from ...controller import generateSdlGameControllerConfig
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
@@ -41,7 +42,7 @@ class CitraGenerator(Generator):
             "XDG_CACHE_HOME":CACHE,
             "XDG_RUNTIME_DIR":SAVES / "3ds" / "citra-emu",
             "QT_QPA_PLATFORM":"xcb",
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

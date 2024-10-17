@@ -5,8 +5,9 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
+from ...controller import generateSdlGameControllerConfig, writeSDLGameDBAllControllers
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -520,7 +521,7 @@ class DuckstationGenerator(Generator):
 
         # write our own gamecontrollerdb.txt file before launching the game
         dbfile = "/usr/share/duckstation/resources/gamecontrollerdb.txt"
-        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
+        writeSDLGameDBAllControllers(playersControllers, dbfile)
 
         # check if we're running wayland
         if environ.get("WAYLAND_DISPLAY"):
@@ -535,7 +536,7 @@ class DuckstationGenerator(Generator):
                 "LD_LIBRARY_PATH": "/usr/stenzek-shaderc/lib:/usr/lib",
                 "XDG_CONFIG_HOME": CONFIGS,
                 "QT_QPA_PLATFORM": qt_qpa_platform,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

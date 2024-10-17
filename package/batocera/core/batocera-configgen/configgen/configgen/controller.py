@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, TypeAlias
+import xml.etree.ElementTree as ET
+from collections.abc import Iterable, Mapping
+from pathlib import Path
+from typing import Any, TypeAlias
 
-if TYPE_CHECKING:
-    from .input import Input, InputDict, InputMapping
-
+from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
+from .input import Input, InputDict, InputMapping
 
 """Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
 _DEFAULT_SDL_MAPPING = {
@@ -126,6 +127,96 @@ class Controller:
             add_mapping(hotkey_input)
         config.append('')
         return ','.join(config)
+
+
+# Load all controllers from the es_input.cfg
+def loadAllControllersConfig() -> ControllerDict:
+    controllers: ControllerDict = {}
+    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
+        if conffile.exists():
+            tree = ET.parse(conffile)
+            root = tree.getroot()
+            for controller in root.findall(".//inputConfig"):
+                controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
+                                                controller.get("deviceGUID"), None, None)
+                uidname = controller.get("deviceGUID") + controller.get("deviceName")
+                controllers[uidname] = controllerInstance
+                for input in controller.findall("input"):
+                    inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
+                    controllerInstance.inputs[input.get("name")] = inputInstance
+    return controllers
+
+
+# Load all controllers from the es_input.cfg
+def loadAllControllersByNameConfig():
+    controllers: ControllerDict = {}
+    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
+        if conffile.exists():
+            tree = ET.parse(conffile)
+            root = tree.getroot()
+            for controller in root.findall(".//inputConfig"):
+                controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
+                                                controller.get("deviceGUID"), None, None)
+                deviceName = controller.get("deviceName")
+                controllers[deviceName] = controllerInstance
+                for input in controller.findall("input"):
+                    inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
+                    controllerInstance.inputs[input.get("name")] = inputInstance
+    return controllers
+
+
+# Create a controller array with the player id as a key
+def loadControllerConfig(controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
+    playerControllers: ControllerDict = {}
+    controllers = loadAllControllersConfig()
+
+    for i, ci in enumerate(controllersInput):
+        newController = findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
+        if newController:
+            playerControllers[str(i+1)] = newController
+    return playerControllers
+
+def findBestControllerConfig(controllers: ControllerMapping, x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
+    # when there will have more joysticks, use hash tables
+    for controllerGUID in controllers:
+        controller = controllers[controllerGUID]
+        if controller.guid == pxguid and controller.configName == pxname:
+            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+    for controllerGUID in controllers:
+        controller = controllers[controllerGUID]
+        if controller.guid == pxguid:
+            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+    for controllerGUID in controllers:
+        controller = controllers[controllerGUID]
+        if controller.configName == pxname:
+            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+    return None
+
+
+def generateSdlGameControllerConfig(controllers: ControllerMapping) -> str:
+    configs = []
+    for idx, controller in controllers.items():
+        configs.append(controller.generateSDLGameDBLine())
+    return "\n".join(configs)
+
+
+def writeSDLGameDBAllControllers(controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt") -> Path:
+    outputFile = Path(outputFile)
+    with outputFile.open("w") as text_file:
+        text_file.write(generateSdlGameControllerConfig(controllers))
+    return outputFile
+
+def generateSdlGameControllerPadsOrderConfig(controllers: ControllerMapping) -> str:
+    res = ""
+    for idx, controller in controllers.items():
+        if res != "":
+            res = res + ";"
+        res = res + str(controller.index)
+    return res
+
 
 ControllerMapping: TypeAlias = Mapping[str, Controller]
 ControllerDict: TypeAlias = dict[str, Controller]

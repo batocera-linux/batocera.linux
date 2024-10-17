@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS
+from ...controller import generateSdlGameControllerConfig, writeSDLGameDBAllControllers
 from ..Generator import Generator
 from . import moonlightConfig
 from .moonlightPaths import MOONLIGHT_GAME_LIST, MOONLIGHT_STAGING_CONFIG
@@ -32,13 +33,13 @@ class MoonlightGenerator(Generator):
 
         # write our own gamecontrollerdb.txt file before launching the game
         dbfile = "/usr/share/moonlight/gamecontrollerdb.txt"
-        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
+        writeSDLGameDBAllControllers(playersControllers, dbfile)
 
         return Command.Command(
             array=commandArray,
             env={
                 "XDG_DATA_DIRS": CONFIGS,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

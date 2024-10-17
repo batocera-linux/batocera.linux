@@ -4,8 +4,9 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import HOME, mkdir_if_not_exists
+from ...controller import generateSdlGameControllerConfig
 from ...utils import videoMode
 from ..Generator import Generator
 
@@ -406,7 +407,7 @@ class BigPEmuGenerator(Generator):
         commandArray = ["/usr/bigpemu/bigpemu", rom]
 
         environment = {
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
         }
 

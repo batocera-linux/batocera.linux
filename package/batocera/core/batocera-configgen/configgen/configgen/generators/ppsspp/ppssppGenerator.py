@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES
+from ...controller import generateSdlGameControllerConfig
 from ..Generator import Generator
 from . import ppssppConfig, ppssppControllers
 from .ppssppPaths import PPSSPP_CONFIG_DIR
@@ -68,7 +69,7 @@ class PPSSPPGenerator(Generator):
             env={
                 "XDG_CONFIG_HOME":CONFIGS,
                 "XDG_DATA_HOME":SAVES,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers)
             }
         )
 
