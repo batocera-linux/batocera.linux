@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BAUH_VERSION = 0.9.25
+BAUH_VERSION = 0.10.7
 BAUH_SITE =  $(call github,vinifmor,bauh,$(BAUH_VERSION))
 BAUH_SETUP_TYPE = setuptools
 

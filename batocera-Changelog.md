@@ -111,6 +111,7 @@
 - Xemu to v0.7.130
 - Xenia to v1.0.2817
 - Xenia Canary to October 1, 2024 build
+- Bauh to 0.10.7 (flatpak-config)
 ### System
 - Nvidia Driver to 560.35.03 (Open kernel modules)
 - Nvidia Legacy Driver to 470.256.02
