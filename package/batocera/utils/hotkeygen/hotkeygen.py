@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from types import FrameType
 
-
     class HotkeysContext(TypedDict):
         name: str
         keys: dict[str, list[int] | int | str]
@@ -33,6 +32,9 @@ if TYPE_CHECKING:
 
 
 DEVICE_NAME: Final   = "batocera hotkeys"
+GDEFAULTCONTEXT_FILE: Final = Path("/etc/hotkeygen/default_context.conf")
+GCOMMONCONTEXT_FILE: Final = Path("/etc/hotkeygen/common_context.conf")
+GDEFAULTMAPPING_FILE: Final = Path("/etc/hotkeygen/default_mapping.conf")
 GCONTEXT_FILE: Final = Path("/var/run/hotkeygen.context")
 GPID_FILE: Final     = Path("/var/run/hotkeygen.pid")
 GSYSTEM_DIR: Final   = Path("/usr/share/hotkeygen")
@@ -44,29 +46,16 @@ ECODES_NAMES: Final[dict[int, str]] = {
     key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_")
 }
 
-KNOWN_ACTIONS: Final = {
-    "exit", "coin", "menu", "pause", "files", "save_state", "restore_state", "next_slot", "previous_slot", "screenshot", "volumeup", "volumedown", "volumemute", "brightness-cycle"
-}
-
 # default context is for es
 def get_default_context() -> HotkeysContext:
-    return {
-        "name": "emulationstation",
-        "keys": {
-            "exit": ecodes.KEY_ESC,
-            "menu": ecodes.KEY_SPACE,
-            "files": ecodes.KEY_F1
-        }
-    }
+    with GDEFAULTCONTEXT_FILE.open() as file:
+        data = json.load(file)
+        return load_context(data)
 
 def get_common_context_keys() -> dict[str, int|str]:
-    return {
-        "screenshot":       "batocera-screenshot",
-        "volumeup":         "batocera-audio setSystemVolume +5",
-        "volumedown":       "batocera-audio setSystemVolume -5",
-        "volumemute":       "batocera-audio setSystemVolume mute-toggle",
-        "brightness-cycle": "batocera-brightness cycle"
-    }
+    with GCOMMONCONTEXT_FILE.open() as file:
+        data = json.load(file)
+        return load_context_keys(data)
 
 def get_context() -> HotkeysContext | None:
     if GCONTEXT_FILE.exists():
@@ -89,6 +78,29 @@ def get_context() -> HotkeysContext | None:
             print_context(context)
         return context
 
+def load_context_keys(keys: dict[str, list[str] | str]) -> dict[str, list[int] | int | str]:
+    res = {}
+    for action, key_code_names in keys.items():
+        if isinstance(key_code_names, list):
+            codes: list[int] = []
+            res[action] = codes
+            for x in key_code_names:
+                if x in ecodes.ecodes:
+                    codes.append(ecodes.ecodes[x])
+                else:
+                    raise Exception(f"invalid key {x!r}")
+        else:
+            # string are key if starting by KEY_ else commands (maybe not the best choice, but simple)
+            if key_code_names[:4] == "KEY_":
+                if key_code_names in ecodes.ecodes:
+                    res[action] = ecodes.ecodes[key_code_names]
+                else:
+                    raise Exception(f"invalid key {data['keys'][action]!r}")
+            else:
+                # command
+                res[action] = key_code_names
+    return res
+
 def load_context(data: JsonHotkeysContext) -> HotkeysContext:
     if "name" not in data:
         raise Exception("no name section found")
@@ -96,29 +108,7 @@ def load_context(data: JsonHotkeysContext) -> HotkeysContext:
         raise Exception("no keys section found")
 
     context: HotkeysContext = { "name": data["name"], "keys": {} }
-    for action, key_code_names in data["keys"].items():
-        if action in KNOWN_ACTIONS:
-            if isinstance(key_code_names, list):
-                codes: list[int] = []
-                context["keys"][action] = codes
-                for x in key_code_names:
-                    if x in ecodes.ecodes:
-                        codes.append(ecodes.ecodes[x])
-                    else:
-                        raise Exception(f"invalid key {x!r}")
-            else:
-                # string are key if starting by KEY_ else commands (maybe not the best choice, but simple)
-                if key_code_names[:4] == "KEY_":
-                    if key_code_names in ecodes.ecodes:
-                        context["keys"][action] = ecodes.ecodes[key_code_names]
-                    else:
-                        raise Exception(f"invalid key {data['keys'][action]!r}")
-                else:
-                    # command
-                    context["keys"][action] = key_code_names
-        else:
-            raise Exception(f"invalid entry '{action}'")
-
+    context["keys"] = load_context_keys(data["keys"])
     if gdebug:
         print_context(context)
     return context
@@ -171,35 +161,18 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
             data = json.load(fd)
         return load_mapping(data)
     else:
-        # default for all inputs
-        return {
-            ecodes.KEY_EXIT:             "exit",
-            ecodes.KEY_EURO:             "coin",
-            ecodes.KEY_MENU:             "menu",
-            ecodes.KEY_PAUSE:            "pause",
-            ecodes.KEY_FILE:             "files",
-            ecodes.KEY_SAVE:             "save_state",
-            ecodes.KEY_SEND:             "restore_state",
-            ecodes.KEY_NEXT:             "next_slot",
-            ecodes.KEY_PREVIOUS:         "previous_slot",
-            ecodes.KEY_SYSRQ:            "screenshot",
-            ecodes.KEY_VOLUMEUP:         "volumeup",
-            ecodes.KEY_VOLUMEDOWN:       "volumedown",
-            ecodes.KEY_MUTE:             "volumemute",
-            ecodes.KEY_BRIGHTNESS_CYCLE: "brightness-cycle"
-        }
+        with GDEFAULTMAPPING_FILE.open() as fd:
+            data = json.load(fd)
+        return load_mapping(data)
 
 def load_mapping(data: dict[str, str]) -> dict[int, str]:
     try:
         mapping: dict[int, str] = {}
         for key, action in data.items():
-            if action in KNOWN_ACTIONS:
-                if key in ecodes.ecodes:
-                    mapping[ecodes.ecodes[key]] = action
-                else:
-                    raise Exception(f"invalid key {action!r}")
+            if key in ecodes.ecodes:
+                mapping[ecodes.ecodes[key]] = action
             else:
-                raise Exception(f"invalid entry {action!r}")
+                raise Exception(f"invalid key {action!r}")
         return mapping
     except Exception as e:
         print(f"fail to load mapping : {e}")
@@ -224,6 +197,8 @@ def print_mapping(
                         print(
                             f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_names}"
                         )
+                    if isinstance(key_codes, str):
+                        print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_codes}")
                     else:
                         print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {ECODES_NAMES[key_codes]}")
                 else:
@@ -251,10 +226,6 @@ def send_keys(target: evdev.UInput, keys: int | list[int] | str) -> None:
         target.syn()
 
 def do_send(key: str) -> None:
-    if key not in KNOWN_ACTIONS:
-        print(f"unknown action {KNOWN_ACTIONS}")
-        exit(1)
-
     context = get_context()
     sender_keys: list[int] = []
     if context is not None and key in context["keys"]:
@@ -268,6 +239,8 @@ def do_send(key: str) -> None:
                 sender_keys.append(keys)
             sender = evdev.UInput(name="virtual keyboard", events={ ecodes.EV_KEY: sender_keys })
             send_keys(sender, sender_keys)
+    else:
+        print(f"unknown action {key}")
 
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
