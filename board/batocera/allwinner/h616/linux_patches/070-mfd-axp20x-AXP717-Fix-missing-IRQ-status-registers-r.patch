@@ -1,0 +1,34 @@
+From 0f935898b632d20972d4338a898e493cf152cab5 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Thu, 18 Apr 2024 01:07:32 +0100
+Subject: [PATCH 02/11] mfd: axp20x: AXP717: Fix missing IRQ status registers
+ range
+
+While we list the "IRQ status *and acknowledge*" registers as volatile,
+they are missing from the writable range array, so acknowledging any
+interrupts was met with an -EIO error.
+
+Add the five registers that hold those bits to the writable array.
+
+Fixes: b5bfc8ab2484 ("mfd: axp20x: Add support for AXP717 PMIC")
+Reported-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/mfd/axp20x.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index f2c0f144c0fc..dacd3c96c9f5 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -210,6 +210,7 @@ static const struct regmap_access_table axp313a_volatile_table = {
+ 
+ static const struct regmap_range axp717_writeable_ranges[] = {
+ 	regmap_reg_range(AXP717_IRQ0_EN, AXP717_IRQ4_EN),
++	regmap_reg_range(AXP717_IRQ0_STATE, AXP717_IRQ4_STATE),
+ 	regmap_reg_range(AXP717_DCDC_OUTPUT_CONTROL, AXP717_CPUSLDO_CONTROL),
+ };
+ 
+-- 
+2.45.1
+
