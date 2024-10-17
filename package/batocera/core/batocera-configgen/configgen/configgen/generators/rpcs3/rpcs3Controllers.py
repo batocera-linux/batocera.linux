@@ -8,7 +8,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 from .rpcs3Paths import RPCS3_CONFIG_DIR
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 eslog = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ..Command import Command
-    from ..controllersConfig import ControllerMapping
+    from ..controller import ControllerMapping
     from ..Emulator import Emulator
     from ..types import DeviceInfoMapping, GunMapping, HotkeysContext, Resolution
 

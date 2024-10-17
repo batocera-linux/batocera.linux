@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...controllersConfig import Controller, ControllerMapping
+    from ...controller import Controller, ControllerMapping
     from ...utils.configparser import CaseSensitiveConfigParser
 
 # Map an emulationstation button name to the corresponding fba2x name

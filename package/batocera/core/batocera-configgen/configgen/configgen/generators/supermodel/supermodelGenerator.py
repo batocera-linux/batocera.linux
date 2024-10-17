@@ -12,6 +12,7 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import GunMapping, HotkeysContext
 
@@ -148,7 +149,7 @@ def copy_xml():
     if not dest_path.exists() or source_path.stat().st_mtime > dest_path.stat().st_mtime:
         shutil.copy2(source_path, dest_path)
 
-def configPadsIni(system: Emulator, rom: Path, playersControllers: controllersConfig.ControllerMapping, guns: GunMapping, altControl: bool, sensitivity: str) -> None:
+def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMapping, guns: GunMapping, altControl: bool, sensitivity: str) -> None:
     if altControl:
         templateFile = SUPERMODEL_SHARE / "Supermodel-Driving.ini.template"
         mapping = {

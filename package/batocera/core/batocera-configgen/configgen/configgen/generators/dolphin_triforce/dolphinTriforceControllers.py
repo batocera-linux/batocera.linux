@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from ...controllersConfig import Controller, ControllerMapping
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
 
 eslog = logging.getLogger(__name__)

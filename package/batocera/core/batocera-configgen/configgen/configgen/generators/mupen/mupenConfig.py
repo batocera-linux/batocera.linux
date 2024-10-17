@@ -6,7 +6,7 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import Resolution
     from ...utils.configparser import CaseSensitiveConfigParser

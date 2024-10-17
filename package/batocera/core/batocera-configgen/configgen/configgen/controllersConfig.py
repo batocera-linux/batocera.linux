@@ -3,78 +3,22 @@ from __future__ import annotations
 import logging
 import re
 import xml.etree.ElementTree as ET
-from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, NotRequired, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 import evdev
 import pyudev
 
 from .batoceraPaths import BATOCERA_ES_DIR, ES_GAMES_METADATA, USER_ES_DIR
+from .controller import Controller, ControllerDict, ControllerMapping
+from .input import Input
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
 
     from .types import DeviceInfoDict, DeviceInfoMapping, GunDict, GunMapping
 
 eslog = logging.getLogger(__name__)
-
-
-"""Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
-_DEFAULT_SDL_MAPPING = {
-    'b':      'a',  'a':        'b',
-    'x':      'y',  'y':        'x',
-    'l2':     'lefttrigger',  'r2':    'righttrigger',
-    'l3':     'leftstick',  'r3':    'rightstick',
-    'pageup': 'leftshoulder', 'pagedown': 'rightshoulder',
-    'start':     'start',  'select':    'back',
-    'up': 'dpup', 'down': 'dpdown', 'left': 'dpleft', 'right': 'dpright',
-    'joystick1up': 'lefty', 'joystick1left': 'leftx',
-    'joystick2up': 'righty', 'joystick2left': 'rightx', 'hotkey': 'guide'
-}
-
-
-class Input:
-    def __init__(self, name: str, type: str, id: str, value: str, code: str) -> None:
-        self.name = name
-        self.type = type
-        self.id = id
-        self.value = value
-        self.code = code
-
-InputMapping: TypeAlias = Mapping[str, Input]
-InputDict: TypeAlias = dict[str, Input]
-
-
-class Controller:
-    def __init__(
-        self,
-        configName: str,
-        type: str,
-        guid: str,
-        player: str | None,
-        index: int | str ="-1",
-        realName: str = "",
-        inputs: InputMapping | None = None,
-        dev: str | None = None,
-        nbbuttons: int | None = None, nbhats: int | None = None, nbaxes: int | None = None
-    ) -> None:
-        self.type = type
-        self.configName = configName
-        self.index = index
-        self.realName = realName
-        self.guid = guid
-        self.player = player
-        self.dev = dev
-        self.nbbuttons = nbbuttons
-        self.nbhats = nbhats
-        self.nbaxes = nbaxes
-        self.inputs: InputDict = dict(inputs) if inputs is not None else {}
-
-    def generateSDLGameDBLine(self):
-        return _generateSdlGameControllerConfig(self)
-
-ControllerMapping: TypeAlias = Mapping[str, Controller]
-ControllerDict: TypeAlias = dict[str, Controller]
 
 
 # Load all controllers from the es_input.cfg
@@ -142,88 +86,6 @@ def findBestControllerConfig(controllers: ControllerMapping, x: str, pxguid: str
             return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
                               controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
     return None
-
-
-def _generateSdlGameControllerConfig(controller: Controller, sdlMapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING) -> str:
-    """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
-    config = []
-    config.append(controller.guid)
-    config.append(controller.realName)
-    config.append("platform:Linux")
-
-    def add_mapping(input: Input) -> None:
-        keyname = sdlMapping.get(input.name, None)
-        if keyname is None:
-            return
-        sdlConf = _keyToSdlGameControllerConfig(
-            keyname, input.name, input.type, input.id, input.value)
-        if sdlConf is not None:
-            config.append(sdlConf)
-
-    # "hotkey" is often mapped to an existing button but such a duplicate mapping
-    # confuses SDL apps. We add "hotkey" mapping only if its target isn't also mapped elsewhere.
-    hotkey_input = None
-    mapped_button_ids = set()
-    for k in controller.inputs:
-        input = controller.inputs[k]
-        if input.name is None:
-            continue
-        if input.name == 'hotkey':
-            hotkey_input = input
-            continue
-        if input.type == 'button':
-            mapped_button_ids.add(input.id)
-        add_mapping(input)
-
-    if hotkey_input is not None and not hotkey_input.id in mapped_button_ids:
-        add_mapping(hotkey_input)
-    config.append('')
-    return ','.join(config)
-
-
-def _keyToSdlGameControllerConfig(keyname: str, name: str, type: str, id: str, value: str | None = None) -> str | None:
-    """
-    Converts a key mapping to the SDL_GAMECONTROLLER format.
-
-    Arguments:
-      keyname: (str) SDL_GAMECONTROLLERCONFIG input name.
-      name: (str) `es_input.cfg` input name.
-      type: (str) 'button', 'hat', or 'axis'
-      id: (int) Numeric key id.
-      value: (int) Hat value. Only used if type == 'hat' or type == 'axis' and 'joystick' in name.
-    Returns:
-      (str) SDL_GAMECONTROLLERCONFIG-formatted key mapping string.
-    Examples:
-      _keyToSdlGameControllerConfig('leftshoulder', 'l1', 'button', 6)
-        'leftshoulder:b6'
-
-      _keyToSdlGameControllerConfig('dpleft', 'left', 'hat', 0, 8)
-        'dpleft:h0.8'
-
-      _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, -1)
-        'lefty:a1'
-
-      _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, 1)
-        'lefty:a1~'
-
-      _keyToSdlGameControllerConfig('dpup', 'up', 'axis', 1, -1)
-        'dpup:-a1'
-    """
-    if type == 'button':
-        return f'{keyname}:b{id}'
-    elif type == 'hat':
-        return f'{keyname}:h{id}.{value}'
-    elif type == 'axis':
-        if 'joystick' in name:
-            return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
-        elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
-            return '{}:{}a{}'.format(keyname, '-' if int(value) < 0 else '+', id)
-        else:
-            return f'{keyname}:a{id}'
-    elif type == 'key':
-        return None
-    else:
-        raise ValueError('unknown key type: {!r}'.format(type))
 
 
 def generateSdlGameControllerConfig(controllers: ControllerMapping) -> str:

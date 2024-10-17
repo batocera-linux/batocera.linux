@@ -22,6 +22,7 @@ from .libretroPaths import (
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
     from ...types import DeviceInfoMapping, GunMapping, Resolution
@@ -100,11 +101,11 @@ def connected_to_internet() -> bool:
             eslog.error("Not connected to the internet")
             return False
 
-def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
+def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator: Generator, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
+def createLibretroConfig(generator: Generator, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
 
     # retroarch-core-options.cfg
     mkdir_if_not_exists(RETROARCH_CORE_CUSTOM.parent)

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ...controllersConfig import ControllerMapping, getAssociatedMouse, getDevicesInformation
+from ...controllersConfig import getAssociatedMouse, getDevicesInformation
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...settings.unixSettings import UnixSettings
 

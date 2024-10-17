@@ -12,6 +12,7 @@ from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
@@ -56,7 +57,7 @@ class CitraGenerator(Generator):
     def writeCITRAConfig(
         citraConfigFile: Path,
         system: Emulator,
-        playersControllers: controllersConfig.ControllerMapping
+        playersControllers: ControllerMapping
     ) -> None:
         # Pads
         citraButtons = {

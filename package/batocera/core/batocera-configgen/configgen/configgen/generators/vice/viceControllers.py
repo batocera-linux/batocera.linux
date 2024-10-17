@@ -7,7 +7,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 # inputtype:

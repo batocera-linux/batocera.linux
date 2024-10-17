@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 
 import evdev
 
-from ..controllersConfig import ControllerMapping, mouseButtonToCode
+from ..controllersConfig import mouseButtonToCode
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from types import TracebackType
 
+    from ..controller import ControllerMapping
     from ..types import Gun, GunMapping
 
 

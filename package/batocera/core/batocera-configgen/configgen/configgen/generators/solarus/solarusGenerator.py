@@ -8,6 +8,7 @@ from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
@@ -49,7 +50,7 @@ class SolarusGenerator(Generator):
         })
 
     @staticmethod
-    def padConfig(system: Emulator, playersControllers: controllersConfig.ControllerMapping):
+    def padConfig(system: Emulator, playersControllers: ControllerMapping):
         keymapping = {
             "action": "a",
             "attack": "b",

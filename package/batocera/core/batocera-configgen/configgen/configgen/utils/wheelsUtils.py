@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
 
+    from ..controller import ControllerDict, ControllerMapping
     from ..Emulator import Emulator
     from ..types import DeviceInfoDict, DeviceInfoMapping
 
@@ -103,7 +104,7 @@ emulatorMapping = {
     },
 }
 
-def reconfigureControllers(playersControllers: controllersConfig.ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], controllersConfig.ControllerDict, DeviceInfoDict]:
+def reconfigureControllers(playersControllers: ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], ControllerDict, DeviceInfoDict]:
     eslog.info("wheels reconfiguration")
     wheelsmetadata = None
 
@@ -217,7 +218,7 @@ def reconfigureControllers(playersControllers: controllersConfig.ControllerMappi
                 pad.physid = deviceList[pad.physdev]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads
-    playersControllersNew: controllersConfig.ControllerDict = {}
+    playersControllersNew: ControllerDict = {}
     nplayer = 1
     for _, pad in sorted(playersControllers.items()):
         if (pad.dev in deviceList and deviceList[pad.dev]["isWheel"]) or pad.dev in newPads:

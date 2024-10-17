@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ...controllersConfig import Controller, ControllerMapping, Input, InputMapping
+from ...input import Input, InputMapping
 from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping
     from ...utils.configparser import CaseSensitiveConfigParser

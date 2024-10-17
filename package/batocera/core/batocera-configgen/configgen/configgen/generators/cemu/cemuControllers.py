@@ -11,7 +11,7 @@ from .cemuPaths import CEMU_CONTROLLER_PROFILES
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 # Create the controller configuration file

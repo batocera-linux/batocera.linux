@@ -19,7 +19,9 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import DeviceInfoMapping, GunMapping, HotkeysContext
 
 eslog = logging.getLogger(__name__)
@@ -170,7 +172,7 @@ def configureAudio(config_directory: Path) -> None:
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
+def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
 
     mkdir_if_not_exists(configFileName.parent)
@@ -790,7 +792,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     with configFileName.open('w') as configfile:
         pcsx2INIConfig.write(configfile)
 
-def input2wheel(input: controllersConfig.Input, reversedAxis: bool = False) -> str | None:
+def input2wheel(input: Input, reversedAxis: bool = False) -> str | None:
     if input.type == "button":
         pcsx2_magic_button_offset = 21 # PCSX2/SDLInputSource.cpp : const u32 button = ev->button + std::size(s_sdl_button_names)
         return "Button{}".format(int(input.id) + pcsx2_magic_button_offset)

@@ -16,7 +16,7 @@ from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECO
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import GunMapping
 

@@ -9,7 +9,7 @@ from ...batoceraPaths import HOME, ensure_parents_and_open, mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
 
 _KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
 

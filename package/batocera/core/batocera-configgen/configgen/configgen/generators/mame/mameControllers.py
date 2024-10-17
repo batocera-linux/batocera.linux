@@ -12,7 +12,7 @@ from .mamePaths import MAME_CONFIG, MAME_DEFAULT_DATA
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping, GunMapping
 

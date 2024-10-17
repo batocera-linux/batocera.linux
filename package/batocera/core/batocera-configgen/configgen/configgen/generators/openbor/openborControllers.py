@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...controllersConfig import Controller, ControllerMapping
+    from ...controller import Controller, ControllerMapping
     from ...settings.unixSettings import UnixSettings
 
 

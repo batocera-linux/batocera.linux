@@ -12,6 +12,7 @@ from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 eslog = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class LemonadeGenerator(Generator):
             return True
 
     @staticmethod
-    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: controllersConfig.ControllerMapping):
+    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
         # Pads
         lemonadeButtons = {
             "button_a":      "a",
