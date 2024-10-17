@@ -147,24 +147,6 @@ def loadAllControllersConfig() -> ControllerDict:
     return controllers
 
 
-# Load all controllers from the es_input.cfg
-def loadAllControllersByNameConfig():
-    controllers: ControllerDict = {}
-    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
-        if conffile.exists():
-            tree = ET.parse(conffile)
-            root = tree.getroot()
-            for controller in root.findall(".//inputConfig"):
-                controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
-                                                controller.get("deviceGUID"), None, None)
-                deviceName = controller.get("deviceName")
-                controllers[deviceName] = controllerInstance
-                for input in controller.findall("input"):
-                    inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
-                    controllerInstance.inputs[input.get("name")] = inputInstance
-    return controllers
-
-
 # Create a controller array with the player id as a key
 def loadControllerConfig(controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
     playerControllers: ControllerDict = {}
@@ -208,14 +190,6 @@ def writeSDLGameDBAllControllers(controllers: ControllerMapping, outputFile: str
     with outputFile.open("w") as text_file:
         text_file.write(generateSdlGameControllerConfig(controllers))
     return outputFile
-
-def generateSdlGameControllerPadsOrderConfig(controllers: ControllerMapping) -> str:
-    res = ""
-    for idx, controller in controllers.items():
-        if res != "":
-            res = res + ";"
-        res = res + str(controller.index)
-    return res
 
 
 ControllerMapping: TypeAlias = Mapping[str, Controller]
