@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 
 import evdev
 
-from ..controllersConfig import ControllerMapping, mouseButtonToCode
+from ..controllersConfig import mouseButtonToCode
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from types import TracebackType
 
+    from ..controller import ControllerMapping
     from ..types import Gun, GunMapping
 
 
@@ -133,7 +134,7 @@ class evmapy(AbstractContextManager[None, None]):
             nplayer = 1
             for playercontroller, pad in sorted(self.controllers.items()):
                 if "actions_player"+str(nplayer) in padActionConfig:
-                    configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.dev))
+                    configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.device_path))
                     eslog.debug("config file for keysfile is {} (from {})" .format (configfile, keysfile))
 
                     # create mapping
@@ -211,7 +212,7 @@ class evmapy(AbstractContextManager[None, None]):
                                     axisName = input.name
 
                                 if ((axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"]) or axisId == "_OTHERS_") and input.code is not None:
-                                    axisMin, axisMax = self.__get_pad_min_max_axis(pad.dev, int(input.code))
+                                    axisMin, axisMax = self.__get_pad_min_max_axis(pad.device_path, int(input.code))
                                     known_buttons_names["ABS" + axisId + axisName + ":min"] = True
                                     known_buttons_names["ABS" + axisId + axisName + ":max"] = True
                                     known_buttons_names["ABS" + axisId + axisName + ":val"] = True

@@ -112,7 +112,7 @@ class FpinballGenerator(Generator):
                 for playercontroller, pad in sorted(playersControllers.items()):
                     #only take controller 1
                     if nplayer <= 1:
-                        joystickname = pad.realName
+                        joystickname = pad.real_name
                         unassigned_value = int("ffffffff", 16)
                         assigns = {
                             "JoypadBackbox":        unassigned_value,

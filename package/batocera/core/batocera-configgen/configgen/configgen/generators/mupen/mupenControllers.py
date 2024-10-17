@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ...controllersConfig import Controller, ControllerMapping, Input, InputMapping
 from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input, InputMapping
     from ...types import DeviceInfoMapping
     from ...utils.configparser import CaseSensitiveConfigParser
 
@@ -55,7 +56,7 @@ def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Cont
 
     for playercontroller, pad in sorted(controllers.items()):
         isWheel = False
-        if pad.dev in wheels and wheels[pad.dev]["isWheel"]:
+        if pad.device_path in wheels and wheels[pad.device_path]["isWheel"]:
             isWheel = True
         config = defineControllerKeys(nplayer, pad, system, isWheel)
         fillIniPlayer(nplayer, iniConfig, pad, config)
@@ -102,7 +103,7 @@ def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) 
 
 def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool) -> dict[str, str]:
         # check for auto-config inputs by guid and name, or es settings
-        if (controller.guid in valid_n64_controller_guids and controller.configName in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
+        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
             mupenmapping = getMupenMapping(True)
         else:
             mupenmapping = getMupenMapping(False)
@@ -139,12 +140,10 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
                         print(fakeStick + "-> " + realStick)
-                        inputVar =  Input(fakeStick
-                                        , controller.inputs[realStick].type
-                                        , controller.inputs[realStick].id
-                                        , str(-int(controller.inputs[realStick].value))
-                                        , controller.inputs[realStick].code)
-                        controller.inputs[fakeStick] = inputVar
+                        controller.inputs[fakeStick] = controller.inputs[realStick].replace(
+                            name=fakeStick,
+                            value=str(-int(controller.inputs[realStick].value))
+                        )
 
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]
@@ -215,7 +214,7 @@ def fillIniPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser, controller
         iniConfig.set(section, 'mode', '0')
         iniConfig.set(section, 'device', str(controller.index))
         # TODO: python 3 remove hack to overcome ConfigParser limitation with utf8 in python 2.7
-        name_encode = controller.realName.encode("ascii", "ignore")
+        name_encode = controller.real_name.encode("ascii", "ignore")
         iniConfig.set(section, 'name', str(name_encode))
         iniConfig.set(section, 'plugged', "True")
         iniConfig.set(section, 'plugin', '2')

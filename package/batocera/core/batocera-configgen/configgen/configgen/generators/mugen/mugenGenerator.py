@@ -5,8 +5,9 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -43,7 +44,7 @@ class MugenGenerator(Generator):
         mkdir_if_not_exists(settings_path.parent)
 
         environment={
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
         }
         # ensure nvidia driver used for vulkan
         if Path('/var/tmp/nvidia.prime').exists():
