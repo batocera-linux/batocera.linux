@@ -128,54 +128,56 @@ class Controller:
         config.append('')
         return ','.join(config)
 
+    # Load all controllers from the es_input.cfg
+    @classmethod
+    def loadAllControllersConfig(cls) -> ControllerDict:
+        controllers: ControllerDict = {}
+        for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
+            if conffile.exists():
+                tree = ET.parse(conffile)
+                root = tree.getroot()
+                for controller in root.findall(".//inputConfig"):
+                    controllerInstance = cls(controller.get("deviceName"), controller.get("type"),
+                                                    controller.get("deviceGUID"), None, None)
+                    uidname = controller.get("deviceGUID") + controller.get("deviceName")
+                    controllers[uidname] = controllerInstance
+                    for input in controller.findall("input"):
+                        inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
+                        controllerInstance.inputs[input.get("name")] = inputInstance
+        return controllers
 
-# Load all controllers from the es_input.cfg
-def loadAllControllersConfig() -> ControllerDict:
-    controllers: ControllerDict = {}
-    for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
-        if conffile.exists():
-            tree = ET.parse(conffile)
-            root = tree.getroot()
-            for controller in root.findall(".//inputConfig"):
-                controllerInstance = Controller(controller.get("deviceName"), controller.get("type"),
-                                                controller.get("deviceGUID"), None, None)
-                uidname = controller.get("deviceGUID") + controller.get("deviceName")
-                controllers[uidname] = controllerInstance
-                for input in controller.findall("input"):
-                    inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
-                    controllerInstance.inputs[input.get("name")] = inputInstance
-    return controllers
 
+    # Create a controller array with the player id as a key
+    @classmethod
+    def loadControllerConfig(cls, controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
+        playerControllers: ControllerDict = {}
+        controllers = cls.loadAllControllersConfig()
 
-# Create a controller array with the player id as a key
-def loadControllerConfig(controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
-    playerControllers: ControllerDict = {}
-    controllers = loadAllControllersConfig()
+        for i, ci in enumerate(controllersInput):
+            newController = cls.findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
+            if newController:
+                playerControllers[str(i+1)] = newController
+        return playerControllers
 
-    for i, ci in enumerate(controllersInput):
-        newController = findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
-        if newController:
-            playerControllers[str(i+1)] = newController
-    return playerControllers
-
-def findBestControllerConfig(controllers: ControllerMapping, x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
-    # when there will have more joysticks, use hash tables
-    for controllerGUID in controllers:
-        controller = controllers[controllerGUID]
-        if controller.guid == pxguid and controller.configName == pxname:
-            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
-    for controllerGUID in controllers:
-        controller = controllers[controllerGUID]
-        if controller.guid == pxguid:
-            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
-    for controllerGUID in controllers:
-        controller = controllers[controllerGUID]
-        if controller.configName == pxname:
-            return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
-    return None
+    @classmethod
+    def findBestControllerConfig(cls, controllers: ControllerMapping, x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
+        # when there will have more joysticks, use hash tables
+        for controllerGUID in controllers:
+            controller = controllers[controllerGUID]
+            if controller.guid == pxguid and controller.configName == pxname:
+                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+        for controllerGUID in controllers:
+            controller = controllers[controllerGUID]
+            if controller.guid == pxguid:
+                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+        for controllerGUID in controllers:
+            controller = controllers[controllerGUID]
+            if controller.configName == pxname:
+                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
+                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+        return None
 
 
 def generateSdlGameControllerConfig(controllers: ControllerMapping) -> str:

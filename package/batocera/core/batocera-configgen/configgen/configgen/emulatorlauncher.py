@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 
 from . import controllersConfig as controllers
 from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
-from .controller import loadControllerConfig
+from .controller import Controller
 from .Emulator import Emulator
 from .generators import get_generator
 from .utils import bezels as bezelsUtil, gunsUtils, videoMode, wheelsUtils
@@ -70,7 +70,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
         controllersInput.append(ci)
 
     # Read the controller configuration
-    playersControllers = loadControllerConfig(controllersInput)
+    playersControllers = Controller.loadControllerConfig(controllersInput)
 
     # find the system to run
     systemName = args.system
