@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ class ShGenerator(Generator):
 
         commandArray = ["/bin/bash", shrom]
         return Command.Command(array=commandArray,env={
-            "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers)
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
         })
 
     def getMouseMode(self, config, rom):

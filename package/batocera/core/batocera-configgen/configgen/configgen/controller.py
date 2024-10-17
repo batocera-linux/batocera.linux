@@ -25,7 +25,7 @@ _DEFAULT_SDL_MAPPING = {
 }
 
 
-def _keyToSdlGameControllerConfig(keyname: str, name: str, type: str, id: str, value: str | None = None) -> str | None:
+def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: str, value: str | None = None) -> str | None:
     """
     Converts a key mapping to the SDL_GAMECONTROLLER format.
 
@@ -95,7 +95,7 @@ class Controller:
         self.nbaxes = nbaxes
         self.inputs: InputDict = dict(inputs) if inputs is not None else {}
 
-    def generateSDLGameDBLine(self, sdlMapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /) -> str:
+    def generate_sdl_game_db_line(self, sdlMapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /) -> str:
         """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
         config = []
         config.append(self.guid)
@@ -106,7 +106,7 @@ class Controller:
             keyname = sdlMapping.get(input.name, None)
             if keyname is None:
                 return
-            sdlConf = _keyToSdlGameControllerConfig(
+            sdlConf = _key_to_sdl_game_controller_config(
                 keyname, input.name, input.type, input.id, input.value)
             if sdlConf is not None:
                 config.append(sdlConf)
@@ -153,19 +153,19 @@ class Controller:
 
     # Create a controller array with the player id as a key
     @classmethod
-    def loadControllerConfig(cls, max_players: int, args: Namespace, /) -> ControllerDict:
+    def load_for_players(cls, max_players: int, args: Namespace, /) -> ControllerDict:
         playerControllers: ControllerDict = {}
         all_controllers = cls.load_all()
 
         for player_number in range(1, max_players + 1):
-            controller = cls.findBestControllerConfig(all_controllers, args, str(player_number))
+            controller = cls.find_best_controller_config(all_controllers, args, str(player_number))
             if controller is not None:
                 playerControllers[str(player_number)] = controller
 
         return playerControllers
 
     @classmethod
-    def findBestControllerConfig(cls, controllers: Iterable[Controller], args: Namespace, x: str, /) -> Controller | None:
+    def find_best_controller_config(cls, controllers: Iterable[Controller], args: Namespace, x: str, /) -> Controller | None:
         pxindex: int | None = getattr(args, f'p{x}index')
 
         if pxindex is None:
@@ -194,17 +194,17 @@ class Controller:
         return None
 
 
-def generateSdlGameControllerConfig(controllers: ControllerMapping) -> str:
+def generate_sdl_game_controller_config(controllers: ControllerMapping) -> str:
     configs = []
-    for idx, controller in controllers.items():
-        configs.append(controller.generateSDLGameDBLine())
+    for _, controller in controllers.items():
+        configs.append(controller.generate_sdl_game_db_line())
     return "\n".join(configs)
 
 
-def writeSDLGameDBAllControllers(controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt") -> Path:
+def write_sdl_controller_db(controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt") -> Path:
     outputFile = Path(outputFile)
     with outputFile.open("w") as text_file:
-        text_file.write(generateSdlGameControllerConfig(controllers))
+        text_file.write(generate_sdl_game_controller_config(controllers))
     return outputFile
 
 

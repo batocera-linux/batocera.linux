@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, SCREENSHOTS, mkdir_if_not_exists
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ...utils.buildargs import parse_args
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -78,6 +78,6 @@ class EDuke32Generator(Generator):
         return Command.Command(
             array=launch_args,
             env={
-                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
             }
         )

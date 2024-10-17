@@ -5,7 +5,7 @@ from typing import Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
 
@@ -26,5 +26,5 @@ class AppleWinGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
             })

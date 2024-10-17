@@ -57,7 +57,7 @@ def main(args: argparse.Namespace, maxnbplayers: int) -> int:
         return start_rom(args, maxnbplayers, args.rom, args.rom)
 
 def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfiguration: str) -> int:
-    playersControllers = Controller.loadControllerConfig(maxnbplayers, args)
+    playersControllers = Controller.load_for_players(maxnbplayers, args)
 
     # find the system to run
     systemName = args.system

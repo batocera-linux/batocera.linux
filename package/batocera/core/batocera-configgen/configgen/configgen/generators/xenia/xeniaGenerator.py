@@ -14,7 +14,7 @@ import toml
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -355,7 +355,7 @@ class XeniaGenerator(Generator):
                 'LD_LIBRARY_PATH': '/usr/lib:/lib32:/usr/wine/ge-custom/lib/wine',
                 'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
                 'WINEESYNC': '1',
-                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers),
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0',
                 # hum pw 0.2 and 0.3 are hardcoded, not nice
                 'SPA_PLUGIN_DIR': '/usr/lib/spa-0.2:/lib32/spa-0.2',

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -44,7 +44,7 @@ class WineGenerator(Generator):
             if not system.isOptSet("sdl_config") or system.getOptBoolean("sdl_config"):
                 environment.update(
                     {
-                        "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers),
+                        "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                         "SDL_JOYSTICK_HIDAPI": "0"
                     }
                 )

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import ensure_parents_and_open
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -203,4 +203,4 @@ class IkemenGenerator(Generator):
 
         commandArray = ["/usr/bin/batocera-ikemen", rom]
 
-        return Command.Command(array=commandArray, env={ "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers) })
+        return Command.Command(array=commandArray, env={ "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers) })

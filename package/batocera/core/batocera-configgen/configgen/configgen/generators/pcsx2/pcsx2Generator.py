@@ -13,7 +13,7 @@ import httplib2
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
-from ...controller import ControllerMapping, generateSdlGameControllerConfig, writeSDLGameDBAllControllers
+from ...controller import ControllerMapping, generate_sdl_game_controller_config, write_sdl_controller_db
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -94,7 +94,7 @@ class Pcsx2Generator(Generator):
 
         # write our own game_controller_db.txt file before launching the game
         dbfile = _PCSX2_CONFIG / "game_controller_db.txt"
-        writeSDLGameDBAllControllers(playersControllers, dbfile)
+        write_sdl_controller_db(playersControllers, dbfile)
 
         commandArray = ["/usr/pcsx2/bin/pcsx2-qt"] if rom == "config" else \
               ["/usr/pcsx2/bin/pcsx2-qt", "-nogui", rom]
@@ -114,7 +114,7 @@ class Pcsx2Generator(Generator):
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
         # wheel metadata
         if not Pcsx2Generator.useEmulatorWheels(playingWithWheel, Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)):
-            envcmd["SDL_GAMECONTROLLERCONFIG"] = generateSdlGameControllerConfig(playersControllers)
+            envcmd["SDL_GAMECONTROLLERCONFIG"] = generate_sdl_game_controller_config(playersControllers)
 
         # ensure we have the patches.zip file to avoid message.
         mkdir_if_not_exists(pcsx2Patches.parent)

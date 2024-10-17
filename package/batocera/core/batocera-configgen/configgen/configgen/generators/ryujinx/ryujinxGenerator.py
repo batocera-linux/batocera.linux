@@ -11,7 +11,7 @@ from evdev import InputDevice
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -221,7 +221,7 @@ class RyujinxGenerator(Generator):
             "XDG_DATA_HOME":SAVES / "switch", \
             "XDG_CACHE_HOME":CACHE, \
             "QT_QPA_PLATFORM":"xcb", \
-            "SDL_GAMECONTROLLERCONFIG": generateSdlGameControllerConfig(playersControllers)})
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
 
 def writeControllerIntoJson(new_controller, filename: Path = ryujinxConfFile):
     with filename.open('r+') as file:

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS
-from ...controller import generateSdlGameControllerConfig
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -115,7 +115,7 @@ class DrasticGenerator(Generator):
             env={
                 'DISPLAY': '0.0',
                 'LIB_FB': '3',
-                'SDL_GAMECONTROLLERCONFIG': generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
             })
 
 # Language auto-setting
