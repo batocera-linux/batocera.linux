@@ -2057,6 +2057,11 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('reicast_synchronous_rendering', '"' + system.config['reicast_synchronous_rendering'] + '"')
         else:
             coreSettings.save('reicast_synchronous_rendering', '"enabled"')
+        # DSP audio
+        if system.isOptSet('reicast_dsp'):
+            coreSettings.save('reicast_enable_dsp', '"' + system.config['reicast_dsp'] + '"')
+        else:
+            coreSettings.save('reicast_enable_dsp', '"disabled"')    
         # Threaded Rendering
         coreSettings.save('reicast_threaded_rendering',  '"enabled"')
         # Enable controller force feedback
