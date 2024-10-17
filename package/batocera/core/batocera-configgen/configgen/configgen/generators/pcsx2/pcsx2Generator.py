@@ -665,7 +665,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
                     wheel_type = Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", Pcsx2Generator.wheelTypeMapping[wheel_type])
 
-                    if hasattr(pad, 'physdev'): # ffb on the real wheel
+                    if pad.physdev is not None: # ffb on the real wheel
                         pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.physid))
                     else:
                         pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))

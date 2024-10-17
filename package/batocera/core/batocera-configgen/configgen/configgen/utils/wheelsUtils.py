@@ -214,7 +214,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
                 deviceList[pad.dev]["joystick_index"] = joysticksByDev[pad.dev]
         # fill physid
         for _, pad in sorted(playersControllers.items()):
-            if hasattr(pad, 'physdev') and pad.physdev in deviceList and "joystick_index" in deviceList[pad.physdev]:
+            if pad.physdev is not None and pad.physdev in deviceList and "joystick_index" in deviceList[pad.physdev]:
                 pad.physid = deviceList[pad.physdev]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads
@@ -222,13 +222,11 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
     nplayer = 1
     for _, pad in sorted(playersControllers.items()):
         if (pad.dev in deviceList and deviceList[pad.dev]["isWheel"]) or pad.dev in newPads:
-            pad.player = str(nplayer)
-            playersControllersNew[str(nplayer)] = pad
+            playersControllersNew[str(nplayer)] = pad.replace(player=str(nplayer))
             nplayer += 1
     for _, pad in sorted(playersControllers.items()):
         if not ((pad.dev in deviceList and deviceList[pad.dev]["isWheel"]) or pad.dev in newPads):
-            pad.player = str(nplayer)
-            playersControllersNew[str(nplayer)] = pad
+            playersControllersNew[str(nplayer)] = pad.replace(player=str(nplayer))
             nplayer += 1
 
     eslog.info("after wheel reconfiguration :")

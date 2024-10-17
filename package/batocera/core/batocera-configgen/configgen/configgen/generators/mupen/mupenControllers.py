@@ -140,12 +140,10 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
                         print(fakeStick + "-> " + realStick)
-                        inputVar =  Input(fakeStick
-                                        , controller.inputs[realStick].type
-                                        , controller.inputs[realStick].id
-                                        , str(-int(controller.inputs[realStick].value))
-                                        , controller.inputs[realStick].code)
-                        controller.inputs[fakeStick] = inputVar
+                        controller.inputs[fakeStick] = controller.inputs[realStick].replace(
+                            name=fakeStick,
+                            value=str(-int(controller.inputs[realStick].value))
+                        )
 
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]

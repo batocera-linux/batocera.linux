@@ -1,19 +1,31 @@
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
-from typing import TYPE_CHECKING, Self, TypeAlias, cast
+from dataclasses import dataclass, replace
+from typing import TYPE_CHECKING, Self, TypeAlias, TypedDict, Unpack, cast
 
 if TYPE_CHECKING:
     import xml.etree.ElementTree as ET
 
 
+class _InputChanges(TypedDict, total=False):
+    name: str
+    type: str
+    id: str
+    value: str
+    code: str
+
+
+@dataclass(slots=True)
 class Input:
-    def __init__(self, name: str, type: str, id: str, value: str, code: str) -> None:
-        self.name = name
-        self.type = type
-        self.id = id
-        self.value = value
-        self.code = code
+    name: str
+    type: str
+    id: str
+    value: str
+    code: str
+
+    def replace(self, /, **changes: Unpack[_InputChanges]) -> Self:
+        return replace(self, **changes)
 
     @classmethod
     def from_element(cls, element: ET.Element, /) -> Self:

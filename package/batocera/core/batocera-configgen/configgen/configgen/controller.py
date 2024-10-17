@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
+from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Self, TypeAlias, cast
+from typing import TYPE_CHECKING, Final, Self, TypeAlias, TypedDict, Unpack, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -70,30 +71,42 @@ def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: s
         raise ValueError(f'unknown key type: {type!r}')
 
 
+class _ControllerChanges(TypedDict, total=False):
+    guid: str
+    player: str | None
+    index: int | str
+    realName: str
+    dev: str | None
+    nbbuttons: int | None
+    nbhats: int | None
+    nbaxes: int | None
+    physdev: str | None
+    physid: int | None
+
+
+@dataclass(slots=True)
 class Controller:
-    def __init__(
-        self,
-        configName: str,
-        type: str,
-        guid: str,
-        player: str | None,
-        index: int | str ="-1",
-        realName: str = "",
-        inputs: InputMapping | Iterable[tuple[str, Input]] | None = None,
-        dev: str | None = None,
-        nbbuttons: int | None = None, nbhats: int | None = None, nbaxes: int | None = None
-    ) -> None:
-        self.type = type
-        self.configName = configName
-        self.index = index
-        self.realName = realName
-        self.guid = guid
-        self.player = player
-        self.dev = dev
-        self.nbbuttons = nbbuttons
-        self.nbhats = nbhats
-        self.nbaxes = nbaxes
-        self.inputs: InputDict = dict(inputs) if inputs is not None else {}
+    configName: str
+    type: str
+    guid: str
+    player: str | None
+    index: int | str = "-1"
+    realName: str = ""
+    inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
+    dev: str | None = None
+    nbbuttons: int | None = None
+    nbhats: int | None = None
+    nbaxes: int | None = None
+    physdev: str | None = None
+    physid: int | None = None
+
+    inputs: InputDict = field(init=False)
+
+    def __post_init__(self, inputs_: InputMapping | Iterable[tuple[str, Input]] | None, /) -> None:
+        self.inputs = dict(inputs_) if inputs_ is not None else {}
+
+    def replace(self, /, **changes: Unpack[_ControllerChanges]) -> Self:
+        return replace(self, **changes, inputs_=self.inputs)
 
     def generate_sdl_game_db_line(self, sdlMapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /) -> str:
         """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
@@ -139,7 +152,7 @@ class Controller:
             cast(str, element.get("deviceGUID")),
             None,
             None,
-            inputs=Input.from_parent_element(element)
+            inputs_=Input.from_parent_element(element)
         )
 
     # Load all controllers from the es_input.cfg
@@ -183,16 +196,40 @@ class Controller:
         # when there will have more joysticks, use hash tables
         for controller in controllers:
             if controller.guid == pxguid and controller.configName == pxname:
-                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+                return controller.replace(
+                    guid=pxguid,
+                    player=x,
+                    index=pxindex,
+                    realName=pxname,
+                    dev=pxdev,
+                    nbbuttons=pxnbbuttons,
+                    nbhats=pxnbhats,
+                    nbaxes=pxnbaxes,
+                )
         for controller in controllers:
             if controller.guid == pxguid:
-                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+                return controller.replace(
+                    guid=pxguid,
+                    player=x,
+                    index=pxindex,
+                    realName=pxname,
+                    dev=pxdev,
+                    nbbuttons=pxnbbuttons,
+                    nbhats=pxnbhats,
+                    nbaxes=pxnbaxes,
+                )
         for controller in controllers:
             if controller.configName == pxname:
-                return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                           controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
+                return controller.replace(
+                    guid=pxguid,
+                    player=x,
+                    index=pxindex,
+                    realName=pxname,
+                    dev=pxdev,
+                    nbbuttons=pxnbbuttons,
+                    nbhats=pxnbhats,
+                    nbaxes=pxnbaxes,
+                )
         return None
 
 
