@@ -58,6 +58,7 @@
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
   - Libretro-Atari800 to July 26, 2024 build
+  - Libretro-Applewin to Oct 14, 2024 build
   - Libretro-Arduous to Oct 10, 2024 build
   - Libretro-Beetle-Lynx to June 29, 2024 build
   - Libretro-Beetle-NGP to June 29, 2024 build
