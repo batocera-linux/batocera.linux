@@ -1938,7 +1938,22 @@ jaguar:
   release: 1993
   hardware: console
   extensions: [cue, j64, jag, cof, abs, cdi, rom, zip, 7z]
+  group: jaguar
   theme: atarijaguar
+  emulators:
+    libretro:
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
+    bigpemu:
+      bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
+
+jaguarcd:
+  name: Jaguar CD
+  manufacturer: Atari
+  release: 1995
+  hardware: console
+  extensions: [cue, cdi, zip, 7z]
+  group: jaguar
+  theme: atarijaguarcd
   emulators:
     libretro:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
