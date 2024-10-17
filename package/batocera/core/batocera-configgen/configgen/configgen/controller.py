@@ -3,7 +3,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Self, TypeAlias, cast
+from typing import TYPE_CHECKING, Final, Self, TypeAlias, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from argparse import Namespace
 
 """Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
-_DEFAULT_SDL_MAPPING = {
+_DEFAULT_SDL_MAPPING: Final = {
     'b':      'a',  'a':        'b',
     'x':      'y',  'y':        'x',
     'l2':     'lefttrigger',  'r2':    'righttrigger',
@@ -25,7 +25,7 @@ _DEFAULT_SDL_MAPPING = {
 }
 
 
-def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: str, value: str | None = None) -> str | None:
+def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: str, value: str) -> str | None:
     """
     Converts a key mapping to the SDL_GAMECONTROLLER format.
 
@@ -59,15 +59,15 @@ def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: s
         return f'{keyname}:h{id}.{value}'
     elif type == 'axis':
         if 'joystick' in name:
-            return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
+            return f"{keyname}:a{id}{'~' if int(value) > 0 else ''}"
         elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
-            return '{}:{}a{}'.format(keyname, '-' if int(value) < 0 else '+', id)
+            return f"{keyname}:{'-' if int(value) < 0 else '+'}a{id}"
         else:
             return f'{keyname}:a{id}'
     elif type == 'key':
         return None
     else:
-        raise ValueError('unknown key type: {!r}'.format(type))
+        raise ValueError(f'unknown key type: {type!r}')
 
 
 class Controller:
@@ -126,7 +126,7 @@ class Controller:
                 mapped_button_ids.add(input.id)
             add_mapping(input)
 
-        if hotkey_input is not None and not hotkey_input.id in mapped_button_ids:
+        if hotkey_input is not None and hotkey_input.id not in mapped_button_ids:
             add_mapping(hotkey_input)
         config.append('')
         return ','.join(config)
@@ -165,7 +165,9 @@ class Controller:
         return playerControllers
 
     @classmethod
-    def find_best_controller_config(cls, controllers: Iterable[Controller], args: Namespace, x: str, /) -> Controller | None:
+    def find_best_controller_config(
+        cls, controllers: Iterable[Controller], args: Namespace, x: str, /,
+    ) -> Controller | None:
         pxindex: int | None = getattr(args, f'p{x}index')
 
         if pxindex is None:
@@ -194,14 +196,13 @@ class Controller:
         return None
 
 
-def generate_sdl_game_controller_config(controllers: ControllerMapping) -> str:
-    configs = []
-    for _, controller in controllers.items():
-        configs.append(controller.generate_sdl_game_db_line())
-    return "\n".join(configs)
+def generate_sdl_game_controller_config(controllers: ControllerMapping, /) -> str:
+    return "\n".join(controller.generate_sdl_game_db_line() for controller in controllers.values())
 
 
-def write_sdl_controller_db(controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt") -> Path:
+def write_sdl_controller_db(
+    controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt", /
+) -> Path:
     outputFile = Path(outputFile)
     with outputFile.open("w") as text_file:
         text_file.write(generate_sdl_game_controller_config(controllers))
