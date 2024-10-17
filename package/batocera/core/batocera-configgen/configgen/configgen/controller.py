@@ -3,7 +3,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import Any, Self, TypeAlias, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -76,7 +76,7 @@ class Controller:
         player: str | None,
         index: int | str ="-1",
         realName: str = "",
-        inputs: InputMapping | None = None,
+        inputs: InputMapping | Iterable[tuple[str, Input]] | None = None,
         dev: str | None = None,
         nbbuttons: int | None = None, nbhats: int | None = None, nbaxes: int | None = None
     ) -> None:
@@ -128,30 +128,31 @@ class Controller:
         config.append('')
         return ','.join(config)
 
+    @classmethod
+    def from_element(cls, element: ET.Element, /) -> Self:
+        return cls(
+            cast(str, element.get("deviceName")),
+            cast(str, element.get("type")),
+            cast(str, element.get("deviceGUID")),
+            None,
+            None,
+            inputs=Input.from_parent_element(element)
+        )
+
     # Load all controllers from the es_input.cfg
     @classmethod
-    def loadAllControllersConfig(cls) -> ControllerDict:
-        controllers: ControllerDict = {}
-        for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg']:
-            if conffile.exists():
-                tree = ET.parse(conffile)
-                root = tree.getroot()
-                for controller in root.findall(".//inputConfig"):
-                    controllerInstance = cls(controller.get("deviceName"), controller.get("type"),
-                                                    controller.get("deviceGUID"), None, None)
-                    uidname = controller.get("deviceGUID") + controller.get("deviceName")
-                    controllers[uidname] = controllerInstance
-                    for input in controller.findall("input"):
-                        inputInstance = Input(input.get("name"), input.get("type"), input.get("id"), input.get("value"), input.get("code"))
-                        controllerInstance.inputs[input.get("name")] = inputInstance
-        return controllers
-
+    def load_all(cls) -> list[Self]:
+        return [
+            cls.from_element(controller)
+            for conffile in [BATOCERA_ES_DIR / "es_input.cfg", USER_ES_DIR / 'es_input.cfg'] if conffile.exists()
+            for controller in ET.parse(conffile).getroot().findall(".//inputConfig")
+        ]
 
     # Create a controller array with the player id as a key
     @classmethod
     def loadControllerConfig(cls, controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
         playerControllers: ControllerDict = {}
-        controllers = cls.loadAllControllersConfig()
+        controllers = cls.load_all()
 
         for i, ci in enumerate(controllersInput):
             newController = cls.findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
@@ -160,20 +161,17 @@ class Controller:
         return playerControllers
 
     @classmethod
-    def findBestControllerConfig(cls, controllers: ControllerMapping, x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
+    def findBestControllerConfig(cls, controllers: Iterable[Controller], x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
         # when there will have more joysticks, use hash tables
-        for controllerGUID in controllers:
-            controller = controllers[controllerGUID]
+        for controller in controllers:
             if controller.guid == pxguid and controller.configName == pxname:
                 return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
                            controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
-        for controllerGUID in controllers:
-            controller = controllers[controllerGUID]
+        for controller in controllers:
             if controller.guid == pxguid:
                 return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
                            controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
-        for controllerGUID in controllers:
-            controller = controllers[controllerGUID]
+        for controller in controllers:
             if controller.configName == pxname:
                 return cls(controller.configName, controller.type, pxguid, x, pxindex, pxname,
                            controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
