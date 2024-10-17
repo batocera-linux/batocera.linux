@@ -57,20 +57,7 @@ def main(args: argparse.Namespace, maxnbplayers: int) -> int:
         return start_rom(args, maxnbplayers, args.rom, args.rom)
 
 def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfiguration: str) -> int:
-    controllersInput = []
-    for p in range(1, maxnbplayers+1):
-        ci = {}
-        ci["index"]      = getattr(args, f"p{p}index"     )
-        ci["guid"]       = getattr(args, f"p{p}guid"      )
-        ci["name"]       = getattr(args, f"p{p}name"      )
-        ci["devicepath"] = getattr(args, f"p{p}devicepath")
-        ci["nbbuttons"]  = getattr(args, f"p{p}nbbuttons" )
-        ci["nbhats"]     = getattr(args, f"p{p}nbhats"    )
-        ci["nbaxes"]     = getattr(args, f"p{p}nbaxes"    )
-        controllersInput.append(ci)
-
-    # Read the controller configuration
-    playersControllers = Controller.loadControllerConfig(controllersInput)
+    playersControllers = Controller.loadControllerConfig(maxnbplayers, args)
 
     # find the system to run
     systemName = args.system

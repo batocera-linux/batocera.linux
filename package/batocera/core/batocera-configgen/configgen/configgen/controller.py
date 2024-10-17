@@ -3,10 +3,13 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any, Self, TypeAlias, cast
+from typing import TYPE_CHECKING, Self, TypeAlias, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
+
+if TYPE_CHECKING:
+    from argparse import Namespace
 
 """Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
 _DEFAULT_SDL_MAPPING = {
@@ -150,18 +153,31 @@ class Controller:
 
     # Create a controller array with the player id as a key
     @classmethod
-    def loadControllerConfig(cls, controllersInput: Iterable[Mapping[str, Any]]) -> ControllerDict:
+    def loadControllerConfig(cls, max_players: int, args: Namespace, /) -> ControllerDict:
         playerControllers: ControllerDict = {}
-        controllers = cls.load_all()
+        all_controllers = cls.load_all()
 
-        for i, ci in enumerate(controllersInput):
-            newController = cls.findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
-            if newController:
-                playerControllers[str(i+1)] = newController
+        for player_number in range(1, max_players + 1):
+            controller = cls.findBestControllerConfig(all_controllers, args, str(player_number))
+            if controller is not None:
+                playerControllers[str(player_number)] = controller
+
         return playerControllers
 
     @classmethod
-    def findBestControllerConfig(cls, controllers: Iterable[Controller], x: str, pxguid: str, pxindex: int, pxname: str, pxdev: str, pxnbbuttons: str, pxnbhats: str, pxnbaxes: str) -> Controller | None:
+    def findBestControllerConfig(cls, controllers: Iterable[Controller], args: Namespace, x: str, /) -> Controller | None:
+        pxindex: int | None = getattr(args, f'p{x}index')
+
+        if pxindex is None:
+            return None
+
+        pxguid: str = getattr(args, f'p{x}guid')
+        pxname: str = getattr(args, f'p{x}name')
+        pxdev: str = getattr(args, f'p{x}devicepath')
+        pxnbbuttons: str = getattr(args, f'p{x}nbbuttons')
+        pxnbhats: str = getattr(args, f'p{x}nbhats')
+        pxnbaxes: str = getattr(args, f'p{x}nbaxes')
+
         # when there will have more joysticks, use hash tables
         for controller in controllers:
             if controller.guid == pxguid and controller.configName == pxname:
