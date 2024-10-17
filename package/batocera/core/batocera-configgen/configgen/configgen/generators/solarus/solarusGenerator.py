@@ -11,6 +11,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import HotkeysContext
 
 
@@ -96,7 +97,7 @@ class SolarusGenerator(Generator):
             nplayer += 1
 
     @staticmethod
-    def key2val(input, reverse):
+    def key2val(input: Input, reverse: bool):
         if input.type == "button":
             return f"button {input.id}"
         if input.type == "hat":

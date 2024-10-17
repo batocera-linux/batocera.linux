@@ -792,7 +792,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     with configFileName.open('w') as configfile:
         pcsx2INIConfig.write(configfile)
 
-def input2wheel(input: Input, reversedAxis: bool = False) -> str | None:
+def input2wheel(input: Input, reversedAxis: bool | None = False) -> str | None:
     if input.type == "button":
         pcsx2_magic_button_offset = 21 # PCSX2/SDLInputSource.cpp : const u32 button = ev->button + std::size(s_sdl_button_names)
         return "Button{}".format(int(input.id) + pcsx2_magic_button_offset)

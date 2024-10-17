@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS
@@ -9,10 +10,13 @@ from ..Generator import Generator
 from . import moonlightConfig
 from .moonlightPaths import MOONLIGHT_GAME_LIST, MOONLIGHT_STAGING_CONFIG
 
+if TYPE_CHECKING:
+    from ...types import HotkeysContext
+
 
 class MoonlightGenerator(Generator):
 
-    def getHotkeysContext(self):
+    def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "moonlight",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }

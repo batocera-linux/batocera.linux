@@ -313,7 +313,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
     with ensure_parents_and_open(targetFile, 'w') as configfile:
         targetConfig.write(configfile)
 
-def transformValue(value, playersControllers, mapping, mapping_fallback):
+def transformValue(value, playersControllers: ControllerMapping, mapping, mapping_fallback):
     # remove comments
     cleanValue = value
     matches = re.search("^([^;]*[^ ])[ ]*;.*$", value)
@@ -333,7 +333,7 @@ def transformValue(value, playersControllers, mapping, mapping_fallback):
         # integers
         return cleanValue
 
-def transformElement(elt, playersControllers, mapping, mapping_fallback):
+def transformElement(elt, playersControllers: ControllerMapping, mapping, mapping_fallback):
     # Docs/README.txt
     # JOY1_LEFT  is the same as JOY1_XAXIS_NEG
     # JOY1_RIGHT is the same as JOY1_XAXIS_POS
@@ -395,19 +395,19 @@ def transformElement(elt, playersControllers, mapping, mapping_fallback):
         return None
     return elt
 
-def getMappingKeyIncludingFallback(playersControllers, padnum, key, mapping, mapping_fallback):
+def getMappingKeyIncludingFallback(playersControllers: ControllerMapping, padnum: str, key, mapping, mapping_fallback):
     if padnum in playersControllers:
         if key not in mapping or (key in mapping and mapping[key] not in playersControllers[padnum].inputs):
             if key in mapping_fallback and mapping_fallback[key] in playersControllers[padnum].inputs:
                 return mapping_fallback[key]
     return mapping[key]
 
-def joy2realjoyid(playersControllers, joy):
+def joy2realjoyid(playersControllers: ControllerMapping, joy: str):
     if joy in playersControllers:
         return playersControllers[joy].index
     return None
 
-def hatOrAxis(playersControllers, player):
+def hatOrAxis(playersControllers: ControllerMapping, player: str):
     #default to axis
     type = "axis"
     if (player) in playersControllers:
@@ -420,7 +420,7 @@ def hatOrAxis(playersControllers, player):
                 type = "axis"
     return type
 
-def input2input(playersControllers, player, joynum, button, axisside = None):
+def input2input(playersControllers: ControllerMapping, player: str, joynum, button, axisside = None):
     if (player) in playersControllers:
         pad = playersControllers[(player)]
         if button in pad.inputs:
