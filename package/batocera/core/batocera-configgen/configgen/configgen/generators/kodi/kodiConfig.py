@@ -63,7 +63,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         if provider == "udev":
             xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
 
-        xmldevice.attributes["buttoncount"] = cur.nbbuttons
+        xmldevice.attributes["buttoncount"] = cur.button_count
         xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')

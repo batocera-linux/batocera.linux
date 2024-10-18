@@ -30,7 +30,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
 
     elif input.type == "hat":
         if new_axis_vals:
-            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.nbbuttons) + 4 * int(input.id)
+            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 4 * int(input.id)
             if (input.value == "2"):   # SDL_HAT_RIGHT
                 hatfirst += 3
             elif (input.value == "4"): # SDL_HAT_DOWN
@@ -38,7 +38,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
             elif (input.value == "8"): # SDL_HAT_LEFT
                 hatfirst += 2
         else:
-            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.nbbuttons) + 2 * int(pad.nbaxes) + 4 * int(input.id)
+            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 2 * int(pad.nbaxes) + 4 * int(input.id)
             if (input.value == "2"):   # SDL_HAT_RIGHT
                 hatfirst += 1
             elif (input.value == "4"): # SDL_HAT_DOWN
@@ -48,7 +48,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
         value = hatfirst
 
     elif input.type == "axis":
-        axisfirst = 1 + pad.index * joy_max_inputs + int(pad.nbbuttons) + 2 * int(input.id)
+        axisfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 2 * int(input.id)
         if new_axis_vals:
             axisfirst += int(pad.nbhats)*4
         if ((invertAxis and int(input.value) < 0) or (not invertAxis and int(input.value) > 0)):
