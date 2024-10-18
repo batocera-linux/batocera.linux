@@ -35,7 +35,7 @@ class PPSSPPGenerator(Generator):
         for index in playersControllers :
             controller = playersControllers[index]
             # We only care about player 1
-            if controller.player_number != "1":
+            if controller.player_number != 1:
                 continue
             ppssppControllers.generateControllerConfig(controller)
             break

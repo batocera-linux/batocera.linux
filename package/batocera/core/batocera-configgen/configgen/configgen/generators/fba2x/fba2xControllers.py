@@ -71,7 +71,7 @@ def updateControllersConfig(iniConfig: CaseSensitiveConfigParser, rom: str, cont
         updateControllerConfig(iniConfig, controller, controllers[controller], is6btn(rom))
 
 # Create a configuration file for a given controller
-def updateControllerConfig(iniConfig: CaseSensitiveConfigParser, player: str, controller: Controller, special6: bool = False) -> None:
+def updateControllerConfig(iniConfig: CaseSensitiveConfigParser, player: int, controller: Controller, special6: bool = False) -> None:
     fbaBtns = fba4bnts
     if special6:
         fbaBtns = fba6bnts
@@ -95,7 +95,7 @@ def updateControllerConfig(iniConfig: CaseSensitiveConfigParser, player: str, co
             input = controller.inputs[btnkey]
             iniConfig.set("Joystick", f'{btnvalue}_{player}', input.id)
 
-    if player == '1':
+    if player == 1:
         for btnkey in fbaspecials:
             btnvalue = fbaspecials[btnkey]
             if btnkey in controller.inputs:

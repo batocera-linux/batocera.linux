@@ -73,7 +73,7 @@ def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: s
 
 class _ControllerChanges(TypedDict, total=False):
     guid: str
-    player_number: str | None
+    player_number: int
     index: int
     real_name: str
     device_path: str | None
@@ -89,7 +89,7 @@ class Controller:
     name: str
     type: str
     guid: str
-    player_number: str | None
+    player_number: int
     index: int = -1
     real_name: str = ""
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
@@ -150,7 +150,7 @@ class Controller:
             cast(str, element.get("deviceName")),
             cast(str, element.get("type")),
             cast(str, element.get("deviceGUID")),
-            None,
+            0,  # when this is filled out, player_number starts at 1
             inputs_=Input.from_parent_element(element)
         )
 
@@ -170,15 +170,15 @@ class Controller:
         all_controllers = cls.load_all()
 
         for player_number in range(1, max_players + 1):
-            controller = cls.find_best_controller_config(all_controllers, args, str(player_number))
+            controller = cls.find_best_controller_config(all_controllers, args, player_number)
             if controller is not None:
-                playerControllers[str(player_number)] = controller
+                playerControllers[player_number] = controller
 
         return playerControllers
 
     @classmethod
     def find_best_controller_config(
-        cls, controllers: Iterable[Controller], args: Namespace, player_number: str, /,
+        cls, controllers: Iterable[Controller], args: Namespace, player_number: int, /,
     ) -> Controller | None:
         pxindex: int | None = getattr(args, f'p{player_number}index')
 
@@ -245,5 +245,5 @@ def write_sdl_controller_db(
     return outputFile
 
 
-ControllerMapping: TypeAlias = Mapping[str, Controller]
-ControllerDict: TypeAlias = dict[str, Controller]
+ControllerMapping: TypeAlias = Mapping[int, Controller]
+ControllerDict: TypeAlias = dict[int, Controller]

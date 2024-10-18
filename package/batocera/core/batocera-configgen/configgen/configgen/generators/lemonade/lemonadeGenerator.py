@@ -238,16 +238,16 @@ class LemonadeGenerator(Generator):
 
         # Options required to load the functions when the configuration file is created
         if not lemonadeConfig.has_option("Controls", "profiles\\size"):
-            lemonadeConfig.set("Controls", "profile", 0)
+            lemonadeConfig.set("Controls", "profile", "0")
             lemonadeConfig.set("Controls", "profile\\default", "true")
             lemonadeConfig.set("Controls", "profiles\\1\\name", "default")
             lemonadeConfig.set("Controls", "profiles\\1\\name\\default", "true")
-            lemonadeConfig.set("Controls", "profiles\\size", 1)
+            lemonadeConfig.set("Controls", "profiles\\size", "1")
 
         for index in playersControllers :
             controller = playersControllers[index]
             # We only care about player 1
-            if controller.player_number != "1":
+            if controller.player_number != 1:
                 continue
             for x in lemonadeButtons:
                 lemonadeConfig.set("Controls", "profiles\\1\\" + x, f'"{LemonadeGenerator.setButton(lemonadeButtons[x], controller.guid, controller.inputs)}"')

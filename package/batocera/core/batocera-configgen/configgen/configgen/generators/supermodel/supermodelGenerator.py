@@ -396,22 +396,25 @@ def transformElement(elt, playersControllers: ControllerMapping, mapping, mappin
     return elt
 
 def getMappingKeyIncludingFallback(playersControllers: ControllerMapping, padnum: str, key, mapping, mapping_fallback):
-    if padnum in playersControllers:
-        if key not in mapping or (key in mapping and mapping[key] not in playersControllers[padnum].inputs):
-            if key in mapping_fallback and mapping_fallback[key] in playersControllers[padnum].inputs:
+    pad_number = int(padnum)
+    if pad_number in playersControllers:
+        if key not in mapping or (key in mapping and mapping[key] not in playersControllers[pad_number].inputs):
+            if key in mapping_fallback and mapping_fallback[key] in playersControllers[pad_number].inputs:
                 return mapping_fallback[key]
     return mapping[key]
 
 def joy2realjoyid(playersControllers: ControllerMapping, joy: str):
-    if joy in playersControllers:
-        return playersControllers[joy].index
+    joy_number = int(joy)
+    if joy_number in playersControllers:
+        return playersControllers[joy_number].index
     return None
 
 def hatOrAxis(playersControllers: ControllerMapping, player: str):
+    player_number = int(player)
     #default to axis
     type = "axis"
-    if (player) in playersControllers:
-        pad = playersControllers[(player)]
+    if player_number in playersControllers:
+        pad = playersControllers[player_number]
         for button in pad.inputs:
             input = pad.inputs[button]
             if input.type == "hat":
@@ -421,8 +424,9 @@ def hatOrAxis(playersControllers: ControllerMapping, player: str):
     return type
 
 def input2input(playersControllers: ControllerMapping, player: str, joynum, button, axisside = None):
-    if (player) in playersControllers:
-        pad = playersControllers[(player)]
+    player_number = int(player)
+    if player_number in playersControllers:
+        pad = playersControllers[player_number]
         if button in pad.inputs:
             input = pad.inputs[button]
             if input.type == "button":

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ...input import Input, InputMapping
 from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 
 if TYPE_CHECKING:
@@ -11,6 +10,7 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input, InputMapping
     from ...types import DeviceInfoMapping
     from ...utils.configparser import CaseSensitiveConfigParser
 

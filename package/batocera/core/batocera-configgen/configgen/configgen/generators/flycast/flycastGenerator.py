@@ -56,7 +56,7 @@ class FlycastGenerator(Generator):
             else:
                 Config.set("input", 'device' + str(controller.player_number) + '.2', "1") # Sega VMU
             # Ensure controller(s) are on seperate Ports
-            port = int(controller.player_number)-1
+            port = controller.player_number-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
 
         if not Config.has_section("config"):
