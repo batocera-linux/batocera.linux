@@ -79,7 +79,7 @@ class _ControllerChanges(TypedDict, total=False):
     device_path: str | None
     button_count: int | None
     hat_count: int | None
-    nbaxes: int | None
+    axis_count: int | None
     physdev: str | None
     physid: int | None
 
@@ -96,7 +96,7 @@ class Controller:
     device_path: str | None = None
     button_count: int | None = None
     hat_count: int | None = None
-    nbaxes: int | None = None
+    axis_count: int | None = None
     physdev: str | None = None
     physid: int | None = None
 
@@ -203,7 +203,7 @@ class Controller:
                     device_path=pxdev,
                     button_count=pxnbbuttons,
                     hat_count=pxnbhats,
-                    nbaxes=pxnbaxes,
+                    axis_count=pxnbaxes,
                 )
         for controller in controllers:
             if controller.guid == pxguid:
@@ -215,7 +215,7 @@ class Controller:
                     device_path=pxdev,
                     button_count=pxnbbuttons,
                     hat_count=pxnbhats,
-                    nbaxes=pxnbaxes,
+                    axis_count=pxnbaxes,
                 )
         for controller in controllers:
             if controller.name == pxname:
@@ -227,7 +227,7 @@ class Controller:
                     device_path=pxdev,
                     button_count=pxnbbuttons,
                     hat_count=pxnbhats,
-                    nbaxes=pxnbaxes,
+                    axis_count=pxnbaxes,
                 )
         return None
 

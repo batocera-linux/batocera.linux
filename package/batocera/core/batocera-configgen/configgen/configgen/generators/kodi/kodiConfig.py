@@ -64,7 +64,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
             xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
 
         xmldevice.attributes["buttoncount"] = cur.button_count
-        xmldevice.attributes["axiscount"] = str(2*int(cur.hat_count) + int(cur.nbaxes))
+        xmldevice.attributes["axiscount"] = str(2*int(cur.hat_count) + int(cur.axis_count))
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"
@@ -87,9 +87,9 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
                         xmlhat = config.createElement('feature')
                         val = ""
                         if kodihatspositions[int(input.value)] == "left" or kodihatspositions[int(input.value)] == "right":
-                            val = cur.nbaxes
+                            val = cur.axis_count
                         else:
-                            val = str(int(cur.nbaxes)+1)
+                            val = str(int(cur.axis_count)+1)
                         if kodihatspositions[int(input.value)] == "down" or kodihatspositions[int(input.value)] == "right":
                             xmlhat.attributes["axis"] = "+" + val
                         else:

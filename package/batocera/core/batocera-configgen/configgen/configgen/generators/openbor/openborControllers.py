@@ -38,7 +38,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
             elif (input.value == "8"): # SDL_HAT_LEFT
                 hatfirst += 2
         else:
-            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 2 * int(pad.nbaxes) + 4 * int(input.id)
+            hatfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 2 * int(pad.axis_count) + 4 * int(input.id)
             if (input.value == "2"):   # SDL_HAT_RIGHT
                 hatfirst += 1
             elif (input.value == "4"): # SDL_HAT_DOWN

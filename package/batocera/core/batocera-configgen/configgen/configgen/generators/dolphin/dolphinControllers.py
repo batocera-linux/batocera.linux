@@ -452,7 +452,7 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
 
                 # Write the configuration for this key
                 if keyname is not None:
-                    write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id, None)
+                    write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, hotkey.id, None)
 
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
@@ -543,9 +543,9 @@ def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller
     for x in pad.inputs:
         input = pad.inputs[x]
         if input.name in wheelMapping:
-            write_key(f, wheelMapping[input.name], input.type, input.id, input.value, pad.nbaxes, False, None, None)
+            write_key(f, wheelMapping[input.name], input.type, input.id, input.value, pad.axis_count, False, None, None)
             if input.name == "joystick1left" and "joystick1right" in wheelMapping:
-                write_key(f, wheelMapping["joystick1right"], input.type, input.id, input.value, pad.nbaxes, True, None, None)
+                write_key(f, wheelMapping["joystick1right"], input.type, input.id, input.value, pad.axis_count, True, None, None)
 
 
 def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: Mapping[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator, nplayer: int, nsamepad: int) -> None:
@@ -577,19 +577,19 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
 
         # Write the configuration for this key
         if keyname is not None:
-            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, None)
+            write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, None, None)
             if 'Triggers' in keyname and input.type == 'axis':
-                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None, None)
+                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.axis_count, False, None, None)
             if 'Buttons/Z' in keyname and "pageup" in pad.inputs:
                 # Create dictionary for both L1/R1 to pass to write_key
                 gcz_ids = {
                     "pageup": pad.inputs["pageup"].id,
                     "pagedown": pad.inputs["pagedown"].id
                 }
-                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None, gcz_ids)
+                write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, None, gcz_ids)
         # Write the 2nd part
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
-            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None, None)
+            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.axis_count, True, None, None)
         # DualShock Motion control
         if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
             f.write("IMUGyroscope/Pitch Up = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro X-`\n")

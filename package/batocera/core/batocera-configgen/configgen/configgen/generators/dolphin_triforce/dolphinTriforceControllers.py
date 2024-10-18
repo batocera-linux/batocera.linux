@@ -108,7 +108,7 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
 
                 # Write the configuration for this key
                 if keyname is not None:
-                    write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id)
+                    write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, hotkey.id)
 
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
@@ -177,12 +177,12 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
 
         # Write the configuration for this key
         if keyname is not None:
-            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
+            write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, None)
             if 'Triggers' in keyname and input.type == 'axis':
-                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
+                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.axis_count, False, None)
         # Write the 2nd part
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
-            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
+            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.axis_count, True, None)
         # Rumble option
         if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
             f.write("Rumble/Motor = Weak\n")
