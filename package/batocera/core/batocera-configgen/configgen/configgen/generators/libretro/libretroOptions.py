@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import configparser
 from typing import TYPE_CHECKING
 
 from ... import controllersConfig
 from ...batoceraPaths import BIOS, ROMS, ensure_parents_and_open
+from ...utils.configparser import CaseSensitiveConfigParser
 from .libretroPaths import RETROARCH_CONFIG
 
 if TYPE_CHECKING:
@@ -2061,7 +2061,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
         if system.isOptSet('reicast_dsp'):
             coreSettings.save('reicast_enable_dsp', '"' + system.config['reicast_dsp'] + '"')
         else:
-            coreSettings.save('reicast_enable_dsp', '"disabled"')    
+            coreSettings.save('reicast_enable_dsp', '"disabled"')
         # Threaded Rendering
         coreSettings.save('reicast_threaded_rendering',  '"enabled"')
         # Enable controller force feedback
@@ -2830,9 +2830,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save(user_config[14:], '"' + system.config[user_config] + '"')
 
 def generateHatariConf(hatariConf: Path) -> None:
-    hatariConfig = configparser.ConfigParser(interpolation=None)
-    # To prevent ConfigParser from converting to lower case
-    hatariConfig.optionxform = str
+    hatariConfig = CaseSensitiveConfigParser(interpolation=None)
     if hatariConf.exists():
         hatariConfig.read(hatariConf)
 

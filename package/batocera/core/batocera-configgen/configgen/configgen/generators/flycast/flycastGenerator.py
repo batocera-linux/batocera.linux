@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import configparser
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import flycastControllers
 from .flycastPaths import FLYCAST_BIOS, FLYCAST_CONFIG, FLYCAST_SAVES, FLYCAST_VMU_BLANK, FLYCAST_VMUA1, FLYCAST_VMUA2
@@ -26,8 +26,7 @@ class FlycastGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
-        Config = configparser.ConfigParser(interpolation=None)
-        Config.optionxform = str
+        Config = CaseSensitiveConfigParser(interpolation=None)
         if FLYCAST_CONFIG.exists():
             try:
                 Config.read(FLYCAST_CONFIG)

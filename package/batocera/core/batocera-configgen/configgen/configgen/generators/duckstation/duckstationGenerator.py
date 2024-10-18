@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import logging
 from os import environ
 from pathlib import Path
@@ -8,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -37,9 +37,7 @@ class DuckstationGenerator(Generator):
         else:
             commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom_path ]
 
-        settings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        settings.optionxform = str
+        settings = CaseSensitiveConfigParser(interpolation=None)
         settings_path = CONFIGS / "duckstation" / "settings.ini"
         if settings_path.exists():
             settings.read(settings_path)

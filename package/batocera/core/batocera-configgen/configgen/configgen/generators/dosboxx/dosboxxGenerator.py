@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import configparser
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -27,9 +27,7 @@ class DosBoxxGenerator(Generator):
             configFile = gameConfFile
 
         # configuration file
-        iniSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        iniSettings.optionxform = str
+        iniSettings = CaseSensitiveConfigParser(interpolation=None)
 
         # copy config file to custom config file to avoid overwritting by dosbox-x
         customConfFile = _CONFIG_DIR / 'dosboxx-custom.conf'

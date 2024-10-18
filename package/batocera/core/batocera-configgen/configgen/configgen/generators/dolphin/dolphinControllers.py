@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import codecs
-import configparser
 import logging
 import re
 from typing import TYPE_CHECKING
 
+from ...utils.configparser import CaseSensitiveConfigParser
 from .dolphinPaths import DOLPHIN_CONFIG
 
 if TYPE_CHECKING:
@@ -643,9 +643,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
     for profileFile in glob_path.glob("*.ini"):
         try:
             eslog.debug(f"Looking profile : {profileFile}")
-            profileConfig = configparser.ConfigParser(interpolation=None)
-            # To prevent ConfigParser from converting to lower case
-            profileConfig.optionxform = str
+            profileConfig = CaseSensitiveConfigParser(interpolation=None)
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
             eslog.debug(f"Profile device : {profileDevice}")

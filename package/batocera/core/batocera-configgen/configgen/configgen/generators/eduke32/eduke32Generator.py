@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from configparser import ConfigParser
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, SAVES, SCREENSHOTS, mkdir_if_not_exists
 from ...utils.buildargs import parse_args
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -38,9 +38,7 @@ class EDuke32Generator(Generator):
             with config_file.open('x'):
                 pass
 
-        parser = ConfigParser(interpolation=None)
-        # Override optionxform to stop implicit case conversions
-        parser.optionxform = str
+        parser = CaseSensitiveConfigParser(interpolation=None)
         # Configuration options found here: https://wiki.eduke32.com/wiki/Configuration_file_options
         # NB: Not all configuration options listed actually work e.g. showFPS, etc.
         # NB: In eduke32 configs, booleans must be integers

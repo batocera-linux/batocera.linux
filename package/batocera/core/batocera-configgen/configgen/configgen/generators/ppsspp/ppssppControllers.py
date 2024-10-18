@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import configparser
 import logging
 from typing import TYPE_CHECKING, Final
 
 from ...batoceraPaths import mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from .ppssppPaths import PPSSPP_CONFIG_INIT, PPSSPP_PSP_SYSTEM_DIR
 
 if TYPE_CHECKING:
@@ -131,8 +131,7 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 def generateControllerConfig(controller: Controller):
     # Set config file name
     configFileName = ppssppControlsIni
-    Config = configparser.ConfigParser(interpolation=None)
-    Config.optionxform = str
+    Config = CaseSensitiveConfigParser(interpolation=None)
     Config.read(ppssppControlsInit)
     # As we start with the default ini file, no need to create the section
     section = "ControlMapping"

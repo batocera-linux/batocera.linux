@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import configparser
 from os import environ
 from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import dolphinTriforceControllers
 from .dolphinTriforcePaths import (
@@ -38,9 +38,7 @@ class DolphinTriforceGenerator(Generator):
 
         ## dolphin.ini ##
 
-        dolphinTriforceSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinTriforceSettings.optionxform = str
+        dolphinTriforceSettings = CaseSensitiveConfigParser(interpolation=None)
         if DOLPHIN_TRIFORCE_INI.exists():
             dolphinTriforceSettings.read(DOLPHIN_TRIFORCE_INI)
 
@@ -145,9 +143,7 @@ class DolphinTriforceGenerator(Generator):
 
         ## gfx.ini ##
 
-        dolphinTriforceGFXSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinTriforceGFXSettings.optionxform = str
+        dolphinTriforceGFXSettings = CaseSensitiveConfigParser(interpolation=None)
         dolphinTriforceGFXSettings.read(DOLPHIN_TRIFORCE_GFX_INI)
 
         # Add Default Sections
@@ -249,9 +245,7 @@ class DolphinTriforceGenerator(Generator):
 
         ## logger settings ##
 
-        dolphinTriforceLogSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinTriforceLogSettings.optionxform = str
+        dolphinTriforceLogSettings = CaseSensitiveConfigParser(interpolation=None)
         dolphinTriforceLogSettings.read(DOLPHIN_TRIFORCE_LOGGER_INI)
 
         # Sections
@@ -467,9 +461,7 @@ $SeatLoopPatch
             dolphinTriforceGameSettingsGGPE02.close()
 
         # # Cheats aren't in key = value format, so the allow_no_value option is needed.
-        # dolphinTriforceGameSettingsGGPE01 = configparser.ConfigParser(interpolation=None, allow_no_value=True,delimiters=';')
-        # # To prevent ConfigParser from converting to lower case
-        # dolphinTriforceGameSettingsGGPE01.optionxform = str
+        # dolphinTriforceGameSettingsGGPE01 = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True,delimiters=';')
         # GGPE01_ini = DOLPHIN_TRIFORCE_GAME_SETTINGS / "GGPE01.ini"
         # if GGPE01_ini.exists():
             # dolphinTriforceGameSettingsGGPE01.read(GGPE01_ini)

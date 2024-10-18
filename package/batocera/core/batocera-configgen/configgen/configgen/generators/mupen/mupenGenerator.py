@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import configparser
 from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import mupenConfig, mupenControllers
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_CUSTOM
@@ -26,9 +26,7 @@ class MupenGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Read the configuration file
-        iniConfig = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        iniConfig.optionxform = str
+        iniConfig = CaseSensitiveConfigParser(interpolation=None)
         if MUPEN_CUSTOM.exists():
             iniConfig.read(MUPEN_CUSTOM)
         else:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import configparser
 from typing import TYPE_CHECKING
 
 from ...batoceraPaths import mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveRawConfigParser
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -22,8 +22,7 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
     mkdir_if_not_exists(viceConfigRC.parent)
 
     # config file
-    viceConfig = configparser.RawConfigParser(interpolation=None)
-    viceConfig.optionxform=str
+    viceConfig = CaseSensitiveRawConfigParser(interpolation=None)
 
     if viceConfigRC.exists():
         viceConfig.read(viceConfigRC)
