@@ -64,7 +64,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
             xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
 
         xmldevice.attributes["buttoncount"] = cur.button_count
-        xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
+        xmldevice.attributes["axiscount"] = str(2*int(cur.hat_count) + int(cur.nbaxes))
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"

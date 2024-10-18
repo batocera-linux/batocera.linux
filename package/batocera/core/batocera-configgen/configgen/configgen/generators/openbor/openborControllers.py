@@ -50,7 +50,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
     elif input.type == "axis":
         axisfirst = 1 + pad.index * joy_max_inputs + int(pad.button_count) + 2 * int(input.id)
         if new_axis_vals:
-            axisfirst += int(pad.nbhats)*4
+            axisfirst += int(pad.hat_count)*4
         if ((invertAxis and int(input.value) < 0) or (not invertAxis and int(input.value) > 0)):
             axisfirst += 1
         value = axisfirst

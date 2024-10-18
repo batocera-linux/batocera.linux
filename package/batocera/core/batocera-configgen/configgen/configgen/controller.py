@@ -78,7 +78,7 @@ class _ControllerChanges(TypedDict, total=False):
     real_name: str
     device_path: str | None
     button_count: int | None
-    nbhats: int | None
+    hat_count: int | None
     nbaxes: int | None
     physdev: str | None
     physid: int | None
@@ -95,7 +95,7 @@ class Controller:
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
     device_path: str | None = None
     button_count: int | None = None
-    nbhats: int | None = None
+    hat_count: int | None = None
     nbaxes: int | None = None
     physdev: str | None = None
     physid: int | None = None
@@ -202,7 +202,7 @@ class Controller:
                     real_name=pxname,
                     device_path=pxdev,
                     button_count=pxnbbuttons,
-                    nbhats=pxnbhats,
+                    hat_count=pxnbhats,
                     nbaxes=pxnbaxes,
                 )
         for controller in controllers:
@@ -214,7 +214,7 @@ class Controller:
                     real_name=pxname,
                     device_path=pxdev,
                     button_count=pxnbbuttons,
-                    nbhats=pxnbhats,
+                    hat_count=pxnbhats,
                     nbaxes=pxnbaxes,
                 )
         for controller in controllers:
@@ -226,7 +226,7 @@ class Controller:
                     real_name=pxname,
                     device_path=pxdev,
                     button_count=pxnbbuttons,
-                    nbhats=pxnbhats,
+                    hat_count=pxnbhats,
                     nbaxes=pxnbaxes,
                 )
         return None
