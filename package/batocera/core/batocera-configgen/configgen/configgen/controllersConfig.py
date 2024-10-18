@@ -276,10 +276,11 @@ def getDevicesInformation() -> DeviceInfoDict:
             res[d["node"]]["wheel_rotation"] = d["wheel_rotation"]
     return res
 
-def getAssociatedMouse(devicesInformation: DeviceInfoMapping, dev: str | None) -> str | None:
-    if dev is None or dev not in devicesInformation or devicesInformation[dev]["associatedDevices"] is None:
+def getAssociatedMouse(devicesInformation: DeviceInfoMapping, dev: str) -> str | None:
+    device = devicesInformation.get(dev)
+    if device is None or device["associatedDevices"] is None:
         return None
-    for candidate in devicesInformation[dev]["associatedDevices"]:
+    for candidate in device["associatedDevices"]:
         if devicesInformation[candidate]["isMouse"]:
             return candidate
     return None

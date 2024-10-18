@@ -154,8 +154,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
     recomputeSdlIds = False
     newPads: list[str] = []
     for playercontroller, pad in sorted(playersControllers.items()):
-        device = deviceList.get(pad.device_path) if pad.device_path is not None else None
-        if pad.device_path is not None and (device := deviceList.get(pad.device_path)) is not None and device["isWheel"] and "wheel_rotation" in device:
+        if (device := deviceList.get(pad.device_path)) is not None and device["isWheel"] and "wheel_rotation" in device:
             ra = int(device["wheel_rotation"])
             wanted_ra = ra
             wanted_deadzone = 0
@@ -209,9 +208,10 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
             joysticksByDev[x["node"]] = currentId
         # renumeration
         for playercontroller, pad in sorted(playersControllers.items()):
-            if pad.device_path in joysticksByDev:
-                playersControllers[playercontroller].index = joysticksByDev[pad.device_path]
-                deviceList[pad.device_path]["joystick_index"] = joysticksByDev[pad.device_path]
+            joystick_index = joysticksByDev.get(pad.device_path)
+            if joystick_index is not None:
+                playersControllers[playercontroller].index = joystick_index
+                deviceList[pad.device_path]["joystick_index"] = joystick_index
         # fill physical_index
         for _, pad in sorted(playersControllers.items()):
             if pad.physical_device_path is not None and pad.physical_device_path in deviceList and "joystick_index" in deviceList[pad.physical_device_path]:

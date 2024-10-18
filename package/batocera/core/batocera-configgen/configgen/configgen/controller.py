@@ -70,7 +70,7 @@ class _ControllerChanges(TypedDict, total=False):
     player_number: int
     index: int
     real_name: str
-    device_path: str | None
+    device_path: str
     button_count: int | None
     hat_count: int | None
     axis_count: int | None
@@ -83,17 +83,17 @@ class Controller:
     name: str
     type: Literal['keyboard', 'joystick']
     guid: str
-    player_number: int
+    player_number: int = 0  # when this is filled out, it will start at 0
     index: int = -1
     real_name: str = ""
-    inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
-    device_path: str | None = None
+    device_path: str = ""
     button_count: int | None = None
     hat_count: int | None = None
     axis_count: int | None = None
     physical_device_path: str | None = None
     physical_index: int | None = None
 
+    inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
     inputs: InputDict = field(init=False)
 
     def __post_init__(self, inputs_: InputMapping | Iterable[tuple[str, Input]] | None, /) -> None:
@@ -142,7 +142,6 @@ class Controller:
             cast(str, element.get("deviceName")),
             cast(Literal['keyboard', 'joystick'], element.get("type")),
             cast(str, element.get("deviceGUID")),
-            0,  # when this is filled out, player_number starts at 1
             inputs_=Input.from_parent_element(element)
         )
 
