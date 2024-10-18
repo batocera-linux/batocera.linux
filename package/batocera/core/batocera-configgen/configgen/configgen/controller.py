@@ -188,9 +188,9 @@ class Controller:
         pxguid: str = getattr(args, f'p{x}guid')
         pxname: str = getattr(args, f'p{x}name')
         pxdev: str = getattr(args, f'p{x}devicepath')
-        pxnbbuttons: str = getattr(args, f'p{x}nbbuttons')
-        pxnbhats: str = getattr(args, f'p{x}nbhats')
-        pxnbaxes: str = getattr(args, f'p{x}nbaxes')
+        pxnbbuttons: int = getattr(args, f'p{x}nbbuttons')
+        pxnbhats: int = getattr(args, f'p{x}nbhats')
+        pxnbaxes: int = getattr(args, f'p{x}nbaxes')
 
         # when there will have more joysticks, use hash tables
         for controller in controllers:

@@ -527,9 +527,9 @@ def launch() -> None:
             parser.add_argument(f"-p{p}guid"      , help=f"player{p} controller SDL2 guid"        , type=str, required=False)
             parser.add_argument(f"-p{p}name"      , help=f"player{p} controller name"             , type=str, required=False)
             parser.add_argument(f"-p{p}devicepath", help=f"player{p} controller device"           , type=str, required=False)
-            parser.add_argument(f"-p{p}nbbuttons" , help=f"player{p} controller number of buttons", type=str, required=False)
-            parser.add_argument(f"-p{p}nbhats"    , help=f"player{p} controller number of hats"   , type=str, required=False)
-            parser.add_argument(f"-p{p}nbaxes"    , help=f"player{p} controller number of axes"   , type=str, required=False)
+            parser.add_argument(f"-p{p}nbbuttons" , help=f"player{p} controller number of buttons", type=int, required=False)
+            parser.add_argument(f"-p{p}nbhats"    , help=f"player{p} controller number of hats"   , type=int, required=False)
+            parser.add_argument(f"-p{p}nbaxes"    , help=f"player{p} controller number of axes"   , type=int, required=False)
 
         parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
         parser.add_argument("-rom",            help="rom absolute path",           type=str, required=True)
