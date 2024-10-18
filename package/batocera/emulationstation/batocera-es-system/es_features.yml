@@ -8254,63 +8254,70 @@ melonds:
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
-                "Software": 0
-                "OpenGL":   1
+                "Software":                0
+                "OpenGL (Classic)":        1
+                "OpenGL (Compute shader)": 2
+        melonds_vsync:
+            prompt: VSYNC
+            description: Fix screen tearing. CPU heavy.
+            choices:
+                "Off": False
+                "On":  True
         melonds_framerate:
             group: ADVANCED OPTIONS
             prompt: LIMIT FRAME RATE
             choices:
-                "No Limit":          0
-                "As game specifies": 1
+                "No Limit":          False
+                "As game specifies": True
         melonds_resolution:
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
-                "1x (256x192)":           1
-                "2x (512x384)":           2
-                "3x (768x576)":           3
-                "4x (1024x768)":          4
-                "5x (1280x960)":          5
-                "6x (1536x1152)":         6
-                "7x (1792x1344)":         7
-                "8x (2048x1536)":         8
-                "9x (2304x1728)":         9
-                "10x (2560x1920)":        10
-                "11x (2816x2112)":        11
-                "12x (3072x2304)":        12
-                "13x (3328x2496)":        13
-                "14x (3584x2688)":        14
-                "15x (3840x2880)":        15
-                "16x (4096x3072)":        16
+                "1x (256x192)":    1
+                "2x (512x384)":    2
+                "3x (768x576)":    3
+                "4x (1024x768)":   4
+                "5x (1280x960)":   5
+                "6x (1536x1152)":  6
+                "7x (1792x1344)":  7
+                "8x (2048x1536)":  8
+                "9x (2304x1728)":  9
+                "10x (2560x1920)": 10
+                "11x (2816x2112)": 11
+                "12x (3072x2304)": 12
+                "13x (3328x2496)": 13
+                "14x (3584x2688)": 14
+                "15x (3840x2880)": 15
+                "16x (4096x3072)": 16
         melonds_polygons:
             group: ADVANCED OPTIONS
             prompt: ENABLE POLYGON SPLITTING
             description: Enhancement. Enables improved polygon splitting.
             choices:
-                "Off": 0
-                "On":  1
+                "Off": False
+                "On":  True
         melonds_rotation:
             prompt: SCREEN ROTATION
             description: Rotates the screens, to simulate holding the DS sideways.
             choices:
-                "0 degrees":           0
-                "90 degrees":          1
-                "180 degrees":         2
-                "270 degrees":         3
+                "0 degrees":   0
+                "90 degrees":  1
+                "180 degrees": 2
+                "270 degrees": 3
         melonds_screenswap:
             prompt: SCREEN SWAP
             description: Swap the position of the dual displays.
             choices:
-                "Off":           0
-                "On":            1
+                "Off": False
+                "On":  True
         melonds_screensize:
             prompt: SCREEN SIZE
             description: Sets the window size to an integer size.
             choices:
-                "1x":           0
-                "2x":           1
-                "3x":           2
-                "4x":           3
+                "1x": 0
+                "2x": 1
+                "3x": 2
+                "4x": 3
         melonds_layout:
             prompt: SCREEN LAYOUT
             description: Adjusts the positions of the screens.
@@ -8332,18 +8339,18 @@ melonds:
         melonds_scaling:
             prompt: INTEGER SCALING
             choices:
-                "Off":             0
-                "On":              1
+                "Off": False
+                "On":  True
         melonds_cheats:
             prompt: ENABLE CHEATS
             choices:
-                "Off (Default)":   0
-                "On":              1
+                "Off (Default)": False
+                "On":            True
         melonds_osd:
             prompt: SHOW ON-SCREEN DISPLAY MESSAGES
             choices:
-                "Off":          0
-                "On":           1
+                "Off": False
+                "On":  True
         melonds_console:
             prompt: CONSOLE TYPE
             choices:

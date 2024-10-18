@@ -102,6 +102,7 @@
 - GZDoom to g4.13.0
 - Ikemen to August 1st 2024 build
 - Kodi to 21.1
+- MelonDS to 7th October build
 - Mupen64 core & plugins to v2.6.0
 - PCSX2 to 2.1.179
 - Play to 0.67

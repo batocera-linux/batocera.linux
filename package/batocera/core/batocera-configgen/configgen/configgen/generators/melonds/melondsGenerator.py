@@ -1,19 +1,16 @@
 from __future__ import annotations
 
-import codecs
-import logging
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
+import toml
 from ...batoceraPaths import BIOS, CHEATS, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
-
-_MELONDS_SAVES: Final = SAVES / "melonds"
+_MELONDS_SAVES: Final = SAVES / "nds"
 _MELONDS_ROMS: Final = ROMS / "nds"
 _MELONDS_CHEATS: Final = CHEATS / "melonDS"
 _MELONDS_CONFIG: Final = CONFIGS / "melonDS"
@@ -23,121 +20,176 @@ class MelonDSGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "melonds",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": {"exit": ["KEY_LEFTALT", "KEY_F4"]}
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # Verify the save path exists
+        # Verify paths
         mkdir_if_not_exists(_MELONDS_SAVES)
-        # Verify the cheat path exist
         mkdir_if_not_exists(_MELONDS_CHEATS)
-        # Config path
         mkdir_if_not_exists(_MELONDS_CONFIG)
-        # Config file
-        configFileName = _MELONDS_CONFIG / "melonDS.ini"
-        f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
 
-        # [Set config defaults]
-        f.write("WindowWidth={}\n".format(gameResolution["width"]))
-        f.write("WindowHeight={}\n".format(gameResolution["height"]))
-        f.write("WindowMax=1\n")
-        # Hide mouse after 5 seconds
-        f.write("MouseHide=1\n")
-        f.write("MouseHideSeconds=5\n")
-        # Set bios locations
-        f.write("ExternalBIOSEnable=1\n")
-        f.write(f"BIOS9Path={BIOS / 'bios9.bin'}\n")
-        f.write(f"BIOS7Path={BIOS / 'bios7.bin'}\n")
-        f.write(f"FirmwarePath={BIOS / 'firmware.bin'}\n")
-        f.write(f"DSiBIOS9Path={BIOS / 'dsi_bios9.bin'}\n")
-        f.write(f"DSiBIOS7Path={BIOS / 'dsi_bios7.bin'}\n")
-        f.write(f"DSiFirmwarePath={BIOS / 'dsi_firmware.bin'}\n")
-        f.write(f"DSiNANDPath={BIOS / 'dsi_nand.bin'}\n")
-        # Set save locations
-        f.write(f"DLDIFolderPath={_MELONDS_SAVES}\n")
-        f.write(f"DSiSDFolderPath={_MELONDS_SAVES}\n")
-        f.write(f"MicWavPath={_MELONDS_SAVES}\n")
-        f.write(f"SaveFilePath={_MELONDS_SAVES}\n")
-        f.write(f"SavestatePath={_MELONDS_SAVES}\n")
-        # Cheater!
-        f.write(f"CheatFilePath={_MELONDS_CHEATS}\n")
-        # Roms
-        f.write(f"LastROMFolder={_MELONDS_ROMS}\n")
-        # Audio
-        f.write("AudioInterp=1\n")
-        f.write("AudioBitrate=2\n")
-        f.write("AudioVolume=256\n")
-        # For Software Rendering
-        f.write("Threaded3D=1\n")
+        # Config file path
+        configFileName = _MELONDS_CONFIG / "melonDS.toml"
+        
+        # Load existing config if file exists
+        if configFileName.exists():
+            with open(configFileName, "r") as toml_file:
+                config = toml.load(toml_file)
+        else:
+            config = {}
 
-        # [User selected options]
-        # MelonDS only has OpenGL or Software - use OpenGL if not selected
+        # Define base configuration
+        base_config = {
+            "MouseHide": False,
+            "LastBIOSFolder": str(BIOS),
+            "PauseLostFocus": False,
+            "LastROMFolder": str(_MELONDS_ROMS),
+            "SavestatePath": str(_MELONDS_SAVES),
+            "CheatFilePath": str(_MELONDS_CHEATS),
+            "SaveFilePath": str(_MELONDS_SAVES),
+            "MouseHideSeconds": 5,
+            "DS": {
+                "FirmwarePath": str(BIOS / "firmware.bin"),
+                "BIOS7Path": str(BIOS / "bios7.bin"),
+                "BIOS9Path": str(BIOS / "bios9.bin")
+            },
+            "DLDI": {
+                "FolderPath": str(_MELONDS_SAVES),
+                "ImagePath": "dldi.bin",
+                "Enable": True
+            },
+            "DSi": {
+                "FullBIOSBoot": False,
+                "FirmwarePath": str(BIOS / "dsi_firmware.bin"),
+                "BIOS9Path": str(BIOS / "bios9.bin"),
+                "BIOS7Path": str(BIOS / "bios7.bin"),
+                "NANDPath": str(BIOS / "dsi_nand.bin"),
+                "SD": {
+                    "FolderPath": str(_MELONDS_SAVES),
+                    "ImagePath": "dsisd.bin",
+                    "Enable": True
+                }
+            },
+            "Emu": {
+                "DirectBoot": True,
+                "ExternalBIOSEnable": True
+            },
+            "Instance0": {
+                "Joystick": {},
+                "Window0": {
+                    "ScreenRotation": 0,
+                    "ScreenSwap": False,
+                    "ScreenLayout": 0,
+                    "ScreenSizing": 0,
+                    "IntegerScaling": 0,
+                    "ShowOSD": False
+                }
+            },
+            "3D": {
+                "Renderer": 1,
+                "GL": {
+                    "ScaleFactor": 5,
+                    "BetterPolygons": False
+                }
+            },
+            "Screen": {
+                "VSync": False
+            }
+        }
+
+        ## User selected options
+
+        # Override Renderer if system option is set
         if system.isOptSet("melonds_renderer"):
-            f.write("3DRenderer={}\n".format(system.config["melonds_renderer"]))
-        else:
-            f.write("3DRenderer=1\n")
-        if system.isOptSet("melonds_framerate"):
-            f.write("LimitFPS={}\n".format(system.config["melonds_framerate"]))
-        else:
-            f.write("LimitFPS=1\n")
-        if system.isOptSet("melonds_resolution"):
-            f.write("GL_ScaleFactor={}\n".format(system.config["melonds_resolution"]))
-        else:
-            f.write("GL_ScaleFactor=1\n")
-        if system.isOptSet("melonds_polygons"):
-            f.write("GL_BetterPolygons={}\n".format(system.config["melonds_polygons"]))
-        else:
-            f.write("GL_BetterPolygons=0\n")
-        if system.isOptSet("melonds_rotation"):
-            f.write("ScreenRotation={}\n".format(system.config["melonds_rotation"]))
-        else:
-            f.write("ScreenRotation=0\n")
-        if system.isOptSet("melonds_screenswap"):
-            f.write("ScreenSwap={}\n".format(system.config["melonds_screenswap"]))
-        else:
-            f.write("ScreenSwap=0\n")
-        if system.isOptSet("melonds_layout"):
-            f.write("ScreenLayout={}\n".format(system.config["melonds_layout"]))
-        else:
-            f.write("ScreenLayout=0\n")
-        if system.isOptSet("melonds_screensizing"):
-            f.write("ScreenSizing={}\n".format(system.config["melonds_screensizing"]))
-        else:
-            f.write("ScreenSizing=0\n")
-        if system.isOptSet("melonds_scaling"):
-            f.write("IntegerScaling={}\n".format(system.config["melonds_scaling"]))
-        else:
-            f.write("IntegerScaling=0\n")
-        # Cheater!
+            base_config["3D"]["Renderer"] = int(system.config["melonds_renderer"])
+        
+        if system.isOptSet("melonds_vsync"):
+            base_config["Screen"]["VSync"] = system.config["melonds_vsync"]
+            base_config["Screen"]["VSyncInterval"] = 1
+        
+        # Cheater! Enable cheats if the option is set
         if system.isOptSet("melonds_cheats"):
-            f.write("EnableCheats={}\n".format(system.config["melonds_cheats"]))
+            base_config["Instance0"]["EnableCheats"] = system.config["melonds_cheats"]
         else:
-            f.write("EnableCheats=0\n")
+            base_config["Instance0"]["EnableCheats"] = False
+        
+        # Framerate
+        if system.isOptSet("melonds_framerate"):
+            base_config["LimitFPS"] = system.config["melonds_framerate"]
+        else:
+            base_config["LimitFPS"] = True
+        
+        # Resolution
+        if system.isOptSet("melonds_resolution"):
+            base_config["3D"]["GL"]["ScaleFactor"] = int(system.config["melonds_resolution"])
+            if system.config["melonds_resolution"] == "2":
+                base_config["3D"]["GL"]["HiresCoordinates"] = True
+            else:
+                base_config["3D"]["GL"]["HiresCoordinates"] = False
+        
+        # Polygons
+        if system.isOptSet("melonds_polygons"):
+            base_config["3D"]["GL"]["BetterPolygons"] = system.config["melonds_polygons"]
+        
+        # Rotation
+        if system.isOptSet("melonds_rotation"):
+            base_config["Instance0"]["Window0"]["ScreenRotation"] = int(system.config["melonds_rotation"])
+        else:
+            base_config["Instance0"]["Window0"]["ScreenRotation"] = 0
+
+        # Screen Swap
+        if system.isOptSet("melonds_screenswap"):
+            base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config["melonds_screenswap"]
+        else:
+            base_config["Instance0"]["Window0"]["ScreenSwap"] = False
+
+        # Screen Layout
+        if system.isOptSet("melonds_layout"):
+            base_config["Instance0"]["Window0"]["ScreenLayout"] = int(system.config["melonds_layout"])
+        else:
+            base_config["Instance0"]["Window0"]["ScreenLayout"] = 0
+        
+        # Screen Sizing
+        if system.isOptSet("melonds_screensizing"):
+            base_config["Instance0"]["Window0"]["ScreenSizing"] = int(system.config["melonds_screensizing"])
+        else:
+            base_config["Instance0"]["Window0"]["ScreenSizing"] = 0
+        
+        # Integer Scaling
+        if system.isOptSet("melonds_scaling"):
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config["melonds_scaling"]
+        else:
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = 0
+        
+        # OSD
         if system.isOptSet("melonds_osd"):
-            f.write("ShowOSD={}\n".format(system.config["melonds_osd"]))
+            base_config["Instance0"]["Window0"]["ShowOSD"] = system.config["melonds_osd"]
         else:
-            f.write("ShowOSD=1\n")
+            base_config["Instance0"]["Window0"]["ShowOSD"] = False
+        
+        # Console
         if system.isOptSet("melonds_console"):
-            f.write("ConsoleType={}\n".format(system.config["melonds_console"]))
+            base_config["Emu"]["ConsoleType"] = int(system.config["melonds_console"])
         else:
-            f.write("ConsoleType=0\n")
+            base_config["Emu"]["ConsoleType"] = 0
 
         # Map controllers
         melonDSMapping = {
-        "a":        "Joy_A",
-        "b":        "Joy_B",
-        "select":   "Joy_Select",
-        "start":    "Joy_Start",
-        "right":    "Joy_Right",
-        "left":     "Joy_Left",
-        "up":       "Joy_Up",
-        "down":     "Joy_Down",
-        "pagedown": "Joy_R",
-        "pageup":   "Joy_L",
-        "x":        "Joy_X",
-        "y":        "Joy_Y"
+            "a":        "A",
+            "b":        "B",
+            "select":   "Select",
+            "start":    "Start",
+            "right":    "Right",
+            "left":     "Left",
+            "up":       "Up",
+            "down":     "Down",
+            "pagedown": "R",
+            "pageup":   "L",
+            "x":        "X",
+            "y":        "Y"
         }
-
+        
         val = -1
         for controller, pad in sorted(playersControllers.items()):
             # Only use Player 1 controls
@@ -151,22 +203,29 @@ class MelonDSGenerator(Generator):
                 # Workaround - SDL numbers?
                 val = input.id
                 if val == "0":
-                    if option == "Joy_Up":
+                    if option == "Up":
                         val = 257
-                    elif option == "Joy_Down":
+                    elif option == "Down":
                         val = 260
-                    elif option == "Joy_Left":
+                    elif option == "Left":
                         val = 264
-                    elif option == "Joy_Right":
+                    elif option == "Right":
                         val = 258
-                eslog.debug(f"Name: {option} - Var: {val}")
-                f.write(f"{option}={val}\n")
-        # Always set ID to 0
-        f.write("JoystickID=0\n")
+                base_config["Instance0"]["Joystick"][option] = int(val)
 
-        # Now write the ini file
-        f.close()
+        # Update base_config with any existing values
+        config.update(base_config)
+
+        # Write updated configuration back to the file
+        with open(configFileName, "w") as toml_file:
+            toml.dump(config, toml_file)
 
         commandArray = ["/usr/bin/melonDS", "-f", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS, \
-            "XDG_DATA_HOME":SAVES, "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_DATA_HOME": SAVES,
+                "QT_QPA_PLATFORM": "xcb"
+            }
+        )
