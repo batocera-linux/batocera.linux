@@ -90,7 +90,7 @@ class Controller:
     type: str
     guid: str
     player: str | None
-    index: int | str = "-1"
+    index: int = -1
     realName: str = ""
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
     dev: str | None = None
@@ -150,7 +150,6 @@ class Controller:
             cast(str, element.get("deviceName")),
             cast(str, element.get("type")),
             cast(str, element.get("deviceGUID")),
-            None,
             None,
             inputs_=Input.from_parent_element(element)
         )

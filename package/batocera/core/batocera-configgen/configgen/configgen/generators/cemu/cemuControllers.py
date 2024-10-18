@@ -226,7 +226,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
     # sort pads by index
     pads_by_index = playersControllers
     dict(sorted(pads_by_index.items(), key=lambda kv: kv[1].index))
-    guid_n: dict[int | str, int] = {}
+    guid_n: dict[int, int] = {}
     guid_count: dict[str, int] = {}
     for _, pad in pads_by_index.items():
         if pad.guid in guid_count:
