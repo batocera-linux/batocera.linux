@@ -81,7 +81,7 @@ class _ControllerChanges(TypedDict, total=False):
     hat_count: int | None
     axis_count: int | None
     physical_device_path: str | None
-    physid: int | None
+    physical_index: int | None
 
 
 @dataclass(slots=True)
@@ -98,7 +98,7 @@ class Controller:
     hat_count: int | None = None
     axis_count: int | None = None
     physical_device_path: str | None = None
-    physid: int | None = None
+    physical_index: int | None = None
 
     inputs: InputDict = field(init=False)
 
