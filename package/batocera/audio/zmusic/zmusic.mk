@@ -3,7 +3,7 @@
 # zmusic
 #
 ################################################################################
-ZMUSIC_VERSION = 1.1.12
+ZMUSIC_VERSION = 1.1.14
 ZMUSIC_SITE = $(call github,coelckers,ZMusic,$(ZMUSIC_VERSION))
 ZMUSIC_LICENSE = GPLv3
 ZMUSIC_INSTALL_STAGING = YES
