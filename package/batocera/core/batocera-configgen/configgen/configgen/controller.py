@@ -80,7 +80,7 @@ class _ControllerChanges(TypedDict, total=False):
     button_count: int | None
     hat_count: int | None
     axis_count: int | None
-    physdev: str | None
+    physical_device_path: str | None
     physid: int | None
 
 
@@ -97,7 +97,7 @@ class Controller:
     button_count: int | None = None
     hat_count: int | None = None
     axis_count: int | None = None
-    physdev: str | None = None
+    physical_device_path: str | None = None
     physid: int | None = None
 
     inputs: InputDict = field(init=False)

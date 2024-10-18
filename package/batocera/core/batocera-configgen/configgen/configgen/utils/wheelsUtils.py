@@ -185,7 +185,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
                     eslog.info(f"replacing device {pad.device_path} by device {newdev} for player {playercontroller}")
                     deviceList[newdev] = device.copy()
                     deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
-                    pad.physdev = pad.device_path # save the physical device for ffb
+                    pad.physical_device_path = pad.device_path # save the physical device for ffb
                     pad.device_path = newdev # needs to recompute sdl ids
                     recomputeSdlIds = True
                     newPads.append(newdev)
@@ -214,8 +214,8 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
                 deviceList[pad.device_path]["joystick_index"] = joysticksByDev[pad.device_path]
         # fill physid
         for _, pad in sorted(playersControllers.items()):
-            if pad.physdev is not None and pad.physdev in deviceList and "joystick_index" in deviceList[pad.physdev]:
-                pad.physid = deviceList[pad.physdev]["joystick_index"] # save the physical device for ffb
+            if pad.physical_device_path is not None and pad.physical_device_path in deviceList and "joystick_index" in deviceList[pad.physical_device_path]:
+                pad.physid = deviceList[pad.physical_device_path]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads
     playersControllersNew: ControllerDict = {}
