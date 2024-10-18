@@ -138,7 +138,7 @@ def generateControllerConfig(controller: Controller, retroarchspecials, system, 
         retroarchbtns["pagedown"] = "l"
 
     config = dict()
-    # config['input_device'] = '"%s"' % controller.realName
+    # config['input_device'] = '"%s"' % controller.real_name
     for btnkey in retroarchbtns:
         btnvalue = retroarchbtns[btnkey]
         if btnkey in controller.inputs:

@@ -214,7 +214,7 @@ def fillIniPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser, controller
         iniConfig.set(section, 'mode', '0')
         iniConfig.set(section, 'device', str(controller.index))
         # TODO: python 3 remove hack to overcome ConfigParser limitation with utf8 in python 2.7
-        name_encode = controller.realName.encode("ascii", "ignore")
+        name_encode = controller.real_name.encode("ascii", "ignore")
         iniConfig.set(section, 'name', str(name_encode))
         iniConfig.set(section, 'plugged', "True")
         iniConfig.set(section, 'plugin', '2')

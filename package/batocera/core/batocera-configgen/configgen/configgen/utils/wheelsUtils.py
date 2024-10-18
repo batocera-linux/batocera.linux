@@ -110,7 +110,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
 
     eslog.info("before wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllers.items()):
-        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.realName}")
+        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.real_name}")
 
     # reconfigure wheel buttons
     # no need to sort, but i like keeping the same loop (sorted by players)
@@ -118,7 +118,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
     for playercontroller, pad in sorted(playersControllers.items()):
         if pad.dev in deviceList:
             if deviceList[pad.dev]["isWheel"]:
-                eslog.info(f"Wheel reconfiguration for pad {pad.realName}")
+                eslog.info(f"Wheel reconfiguration for pad {pad.real_name}")
                 originalInputs = pad.inputs.copy()
 
                 # erase target keys
@@ -231,7 +231,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
 
     eslog.info("after wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllersNew.items()):
-        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.realName}")
+        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.real_name}")
 
     return (procs, playersControllersNew, deviceList)
 

@@ -93,7 +93,7 @@ class AmiberryGenerator(Generator):
             for playercontroller, pad in sorted(playersControllers.items()):
                 replacements = {'_player' + str(nplayer) + '_':'_'}
                 # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
-                padfilename = pad.realName.replace("/", "")
+                padfilename = pad.real_name.replace("/", "")
                 playerInputFilename = _RETROARCH_INPUTS_DIR / f"{padfilename}.cfg"
                 with _RETROARCH_CUSTOM.open() as infile, playerInputFilename.open('w') as outfile:
                     for line in infile:

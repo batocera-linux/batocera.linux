@@ -88,7 +88,7 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
             f.write("[Hotkeys1]" + "\n")
-            f.write("Device = SDL/0/" + pad.realName.strip() + "\n")
+            f.write("Device = SDL/0/" + pad.real_name.strip() + "\n")
 
             # Search the hotkey button
             hotkey = None
@@ -129,14 +129,14 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
 
     for playercontroller, pad in sorted(playersControllers.items()):
         # Handle x pads having the same name
-        if pad.realName.strip() in double_pads:
-            nsamepad = double_pads[pad.realName.strip()]
+        if pad.real_name.strip() in double_pads:
+            nsamepad = double_pads[pad.real_name.strip()]
         else:
             nsamepad = 0
-        double_pads[pad.realName.strip()] = nsamepad+1
+        double_pads[pad.real_name.strip()] = nsamepad+1
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
-        f.write("Device = SDL/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
+        f.write("Device = SDL/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + "\n")
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad):
@@ -198,7 +198,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
-                if deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.realName.strip():
+                if deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.real_name.strip():
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":

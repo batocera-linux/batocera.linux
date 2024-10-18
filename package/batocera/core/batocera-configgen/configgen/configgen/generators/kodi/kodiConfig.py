@@ -46,18 +46,18 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         cur = currentControllers[controller]
 
         # skip duplicates
-        if cur.realName in controllersDone:
+        if cur.real_name in controllersDone:
             continue
-        controllersDone[cur.realName] = True
+        controllersDone[cur.real_name] = True
 
         # initialized the file
-        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
+        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.real_name.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
 
         xmldevice = config.createElement('device')
-        xmldevice.attributes["name"] = cur.realName
+        xmldevice.attributes["name"] = cur.real_name
         xmldevice.attributes["provider"] = provider
 
         if provider == "udev":

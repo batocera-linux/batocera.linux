@@ -433,7 +433,7 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
             f.write("[Hotkeys1]" + "\n")
-            f.write("Device = evdev/0/" + pad.realName.strip() + "\n")
+            f.write("Device = evdev/0/" + pad.real_name.strip() + "\n")
 
             # Search the hotkey button
             hotkey = None
@@ -492,14 +492,14 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
 
     for playercontroller, pad in sorted(playersControllers.items()):
         # Handle x pads having the same name
-        if pad.realName.strip() in double_pads:
-            nsamepad = double_pads[pad.realName.strip()]
+        if pad.real_name.strip() in double_pads:
+            nsamepad = double_pads[pad.real_name.strip()]
         else:
             nsamepad = 0
-        double_pads[pad.realName.strip()] = nsamepad+1
+        double_pads[pad.real_name.strip()] = nsamepad+1
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
-        f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
+        f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + "\n")
 
         if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad, system):
@@ -534,7 +534,7 @@ def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller
         "joystick1right": "Main Stick/Right",
     }
 
-    eslog.debug("configuring wheel for pad {}".format(pad.realName))
+    eslog.debug("configuring wheel for pad {}".format(pad.real_name))
 
     f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
     f.write(f"Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
@@ -592,19 +592,19 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None, None)
         # DualShock Motion control
         if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
-            f.write("IMUGyroscope/Pitch Up = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro X-`\n")
-            f.write("IMUGyroscope/Pitch Down = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro X+`\n")
-            f.write("IMUGyroscope/Roll Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Z-`\n")
-            f.write("IMUGyroscope/Roll Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Z+`\n")
-            f.write("IMUGyroscope/Yaw Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Y-`\n")
-            f.write("IMUGyroscope/Yaw Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Gyro Y+`\n")
+            f.write("IMUGyroscope/Pitch Up = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro X-`\n")
+            f.write("IMUGyroscope/Pitch Down = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro X+`\n")
+            f.write("IMUGyroscope/Roll Left = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro Z-`\n")
+            f.write("IMUGyroscope/Roll Right = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro Z+`\n")
+            f.write("IMUGyroscope/Yaw Left = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro Y-`\n")
+            f.write("IMUGyroscope/Yaw Right = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Gyro Y+`\n")
             f.write("IMUIR/Recenter = `Button 10`\n")
-            f.write("IMUAccelerometer/Left = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel X-`\n")
-            f.write("IMUAccelerometer/Right = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel X+`\n")
-            f.write("IMUAccelerometer/Forward = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Z-`\n")
-            f.write("IMUAccelerometer/Backward = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Z+`\n")
-            f.write("IMUAccelerometer/Up = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Y-`\n")
-            f.write("IMUAccelerometer/Down = `evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + " Motion Sensors:Accel Y+`\n")
+            f.write("IMUAccelerometer/Left = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel X-`\n")
+            f.write("IMUAccelerometer/Right = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel X+`\n")
+            f.write("IMUAccelerometer/Forward = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel Z-`\n")
+            f.write("IMUAccelerometer/Backward = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel Z+`\n")
+            f.write("IMUAccelerometer/Up = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel Y-`\n")
+            f.write("IMUAccelerometer/Down = `evdev/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + " Motion Sensors:Accel Y+`\n")
         # Mouse to emulate Wiimote
         if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
             f.write("IR/Up = `Cursor Y-`\n")
@@ -650,7 +650,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
-                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
+                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.real_name.strip():
                     eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":

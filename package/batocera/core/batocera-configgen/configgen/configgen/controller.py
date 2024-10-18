@@ -75,7 +75,7 @@ class _ControllerChanges(TypedDict, total=False):
     guid: str
     player: str | None
     index: int
-    realName: str
+    real_name: str
     dev: str | None
     nbbuttons: int | None
     nbhats: int | None
@@ -91,7 +91,7 @@ class Controller:
     guid: str
     player: str | None
     index: int = -1
-    realName: str = ""
+    real_name: str = ""
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
     dev: str | None = None
     nbbuttons: int | None = None
@@ -112,7 +112,7 @@ class Controller:
         """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
         config = []
         config.append(self.guid)
-        config.append(self.realName)
+        config.append(self.real_name)
         config.append("platform:Linux")
 
         def add_mapping(input: Input) -> None:
@@ -199,7 +199,7 @@ class Controller:
                     guid=pxguid,
                     player=x,
                     index=pxindex,
-                    realName=pxname,
+                    real_name=pxname,
                     dev=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,
@@ -211,7 +211,7 @@ class Controller:
                     guid=pxguid,
                     player=x,
                     index=pxindex,
-                    realName=pxname,
+                    real_name=pxname,
                     dev=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,
@@ -223,7 +223,7 @@ class Controller:
                     guid=pxguid,
                     player=x,
                     index=pxindex,
-                    realName=pxname,
+                    real_name=pxname,
                     dev=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,

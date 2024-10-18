@@ -187,7 +187,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
         return CEMU_CONTROLLER_PROFILES / f"controller{controller}.xml"
 
     def isWiimote(pad: Controller) -> bool:
-        return WIIMOTE_NAME == pad.realName
+        return WIIMOTE_NAME == pad.real_name
 
     def findWiimoteType(pad: Controller) -> str:
         context = pyudev.Context()
@@ -271,7 +271,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
         controllerNode = ET.SubElement(root, 'controller')
         addTextElement(controllerNode, 'api', api)
         addTextElement(controllerNode, 'uuid', "{}_{}".format(guid_n[pad.index], pad.guid)) # controller guid
-        addTextElement(controllerNode, 'display_name', pad.realName) # controller name
+        addTextElement(controllerNode, 'display_name', pad.real_name) # controller name
         addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
         addAnalogControl(controllerNode, 'axis')
         addAnalogControl(controllerNode, 'rotation')
