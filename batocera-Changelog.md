@@ -84,6 +84,7 @@
   - Libretro-MrBoom to v5.5
   - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to June 22 build
+  - Libretro-Play to 0.67
 - Amiberry to v5.7.4
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
@@ -103,6 +104,7 @@
 - Kodi to 21.1
 - Mupen64 core & plugins to v2.6.0
 - PCSX2 to 2.1.179
+- Play to 0.67
 - Pyxel to 2.2.4
 - Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.33 (alpha on Aug 31, 2024)
