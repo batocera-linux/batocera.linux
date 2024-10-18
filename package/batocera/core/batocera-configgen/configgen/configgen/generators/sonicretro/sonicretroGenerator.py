@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import configparser
 import hashlib
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
+from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -69,8 +69,7 @@ class SonicRetroGenerator(Generator):
         }
 
         # ini file
-        sonicConfig = configparser.RawConfigParser(strict=False)
-        sonicConfig.optionxform=str             # Add Case Sensitive comportement
+        sonicConfig = CaseSensitiveRawConfigParser(strict=False)
         if iniFile.exists():
             iniFile.unlink()          # Force removing settings.ini
             sonicConfig.read(iniFile)

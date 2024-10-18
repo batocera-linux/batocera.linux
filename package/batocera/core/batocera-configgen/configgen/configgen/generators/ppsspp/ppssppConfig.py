@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import configparser
 import logging
 import subprocess
 from typing import TYPE_CHECKING, Final
 
 from ...batoceraPaths import ensure_parents_and_open
+from ...utils.configparser import CaseSensitiveConfigParser
 from .ppssppPaths import PPSSPP_PSP_SYSTEM_DIR
 
 if TYPE_CHECKING:
@@ -18,9 +18,7 @@ ppssppConfig: Final   = PPSSPP_PSP_SYSTEM_DIR / 'ppsspp.ini'
 ppssppControls: Final = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'
 
 def writePPSSPPConfig(system: Emulator):
-    iniConfig = configparser.ConfigParser(interpolation=None)
-    # To prevent ConfigParser from converting to lower case
-    iniConfig.optionxform = str
+    iniConfig = CaseSensitiveConfigParser(interpolation=None)
     if ppssppConfig.exists():
         try:
             with ppssppConfig.open('r', encoding='utf_8_sig') as fp:

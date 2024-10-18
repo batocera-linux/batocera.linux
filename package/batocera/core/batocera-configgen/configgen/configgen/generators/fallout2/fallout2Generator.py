@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import os
 import shutil
 from pathlib import Path
@@ -8,6 +7,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -55,8 +55,7 @@ class Fallout2Generator(Generator):
         ## Configure
 
         ## CFG Configuration
-        fout2Cfg = configparser.ConfigParser()
-        fout2Cfg.optionxform = str
+        fout2Cfg = CaseSensitiveConfigParser()
         if fout2ConfigFile.exists():
             fout2Cfg.read(fout2ConfigFile)
 
@@ -107,8 +106,7 @@ class Fallout2Generator(Generator):
             fout2Cfg.write(configfile)
 
         ## INI Configuration
-        fout2Ini = configparser.ConfigParser()
-        fout2Ini.optionxform = str
+        fout2Ini = CaseSensitiveConfigParser()
         if fout2IniFile.exists():
             fout2Ini.read(fout2IniFile)
 

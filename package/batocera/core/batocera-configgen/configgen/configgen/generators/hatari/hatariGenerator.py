@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import configparser
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -95,9 +95,7 @@ class HatariGenerator(Generator):
 
     @staticmethod
     def generateConfig(system, playersControllers):
-        config = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        config.optionxform = str
+        config = CaseSensitiveConfigParser(interpolation=None)
 
         padMapping = {
             1: "y",

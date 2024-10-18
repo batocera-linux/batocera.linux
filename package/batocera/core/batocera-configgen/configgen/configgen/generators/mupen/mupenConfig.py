@@ -6,14 +6,13 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
-    from configparser import ConfigParser
-
     from ...controllersConfig import ControllerMapping
     from ...Emulator import Emulator
     from ...types import Resolution
+    from ...utils.configparser import CaseSensitiveConfigParser
 
 
-def setMupenConfig(iniConfig: ConfigParser, system: Emulator, controllers: ControllerMapping, gameResolution: Resolution):
+def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: ControllerMapping, gameResolution: Resolution):
 
     # Hotkeys
     setHotKeyConfig(iniConfig, controllers, system)
@@ -225,7 +224,7 @@ def setMupenConfig(iniConfig: ConfigParser, system: Emulator, controllers: Contr
                     iniConfig.add_section(custom_section)
                 iniConfig.set(custom_section, custom_option, str(system.config[user_config]))
 
-def setHotKeyConfig(iniConfig: ConfigParser, controllers: ControllerMapping, system: Emulator):
+def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: ControllerMapping, system: Emulator):
     if not iniConfig.has_section("CoreEvents"):
         iniConfig.add_section("CoreEvents")
     iniConfig.set("CoreEvents", "Version", "1")

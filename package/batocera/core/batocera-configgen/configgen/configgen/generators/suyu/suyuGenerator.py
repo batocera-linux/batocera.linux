@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import logging
 import subprocess
 from os import environ
@@ -8,6 +7,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -73,8 +73,7 @@ class SuyuGenerator(Generator):
         }
 
         # ini file
-        suyuConfig = configparser.RawConfigParser()
-        suyuConfig.optionxform=str
+        suyuConfig = CaseSensitiveRawConfigParser()
         if suyuConfigFile.exists():
             suyuConfig.read(suyuConfigFile)
 

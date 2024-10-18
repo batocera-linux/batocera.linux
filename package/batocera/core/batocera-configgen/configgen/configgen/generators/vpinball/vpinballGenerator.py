@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...utils.batoceraServices import batoceraServices
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import vpinballOptions, vpinballWindowing
 
@@ -42,15 +43,13 @@ class VPinballGenerator(Generator):
 
         ## [ VPinballX.ini ] ##
         try:
-            vpinballSettings = configparser.ConfigParser(interpolation=None, allow_no_value=True)
-            vpinballSettings.optionxform = str
+            vpinballSettings = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True)
             vpinballSettings.read(vpinballConfigFile)
         except configparser.DuplicateOptionError as e:
             eslog.debug(f"Error reading VPinballX.ini: {e}")
             eslog.debug(f"*** Using default VPinballX.ini file ***")
             shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFile)
-            vpinballSettings = configparser.ConfigParser(interpolation=None, allow_no_value=True)
-            vpinballSettings.optionxform = str
+            vpinballSettings = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True)
             vpinballSettings.read(vpinballConfigFile)
 
         # init sections

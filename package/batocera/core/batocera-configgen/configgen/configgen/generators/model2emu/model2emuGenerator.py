@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import filecmp
 import logging
 import os
@@ -12,6 +11,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import HOME, ROMS, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -137,9 +137,7 @@ class Model2EmuGenerator(Generator):
 
         # modify the ini file resolution accordingly
         configFileName = emupath / "EMULATOR.INI"
-        Config = configparser.ConfigParser(interpolation=None)
-        # to prevent ConfigParser from converting to lower case
-        Config.optionxform = str
+        Config = CaseSensitiveConfigParser(interpolation=None)
         if configFileName.is_file():
             Config.read(configFileName)
 

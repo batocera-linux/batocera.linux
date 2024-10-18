@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 from ...utils import videoMode
 
 if TYPE_CHECKING:
-    from configparser import ConfigParser
 
     from ...Emulator import Emulator
     from ...types import Resolution
+    from ...utils.configparser import CaseSensitiveConfigParser
 
 
-def configureWindowing(vpinballSettings: ConfigParser, system: Emulator, gameResolution: Resolution, hasDmd: bool) -> None:
+def configureWindowing(vpinballSettings: CaseSensitiveConfigParser, system: Emulator, gameResolution: Resolution, hasDmd: bool) -> None:
     screens = videoMode.getScreensInfos(system.config)
 
     # disable full screen to move the window if necessary

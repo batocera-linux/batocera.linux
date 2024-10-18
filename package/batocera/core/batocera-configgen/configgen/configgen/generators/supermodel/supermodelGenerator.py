@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import re
 import shutil
 from pathlib import Path
@@ -9,6 +8,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -209,16 +209,12 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: controllersCo
     }
 
     # template
-    templateConfig = configparser.ConfigParser(interpolation=None)
-    # To prevent ConfigParser from converting to lower case
-    templateConfig.optionxform = str
+    templateConfig = CaseSensitiveConfigParser(interpolation=None)
     with templateFile.open('r', encoding='utf_8_sig') as fp:
         templateConfig.readfp(fp)
 
     # target
-    targetConfig = configparser.ConfigParser(interpolation=None)
-    # To prevent ConfigParser from converting to lower case
-    targetConfig.optionxform = str
+    targetConfig = CaseSensitiveConfigParser(interpolation=None)
 
     for section in templateConfig.sections():
         targetConfig.add_section(section)

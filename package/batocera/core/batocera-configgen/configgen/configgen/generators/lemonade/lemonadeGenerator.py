@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import logging
 import subprocess
 from os import environ
@@ -9,6 +8,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
+from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -71,8 +71,7 @@ class LemonadeGenerator(Generator):
         }
 
         # ini file
-        lemonadeConfig = configparser.RawConfigParser(strict=False)
-        lemonadeConfig.optionxform=str             # Add Case Sensitive comportement
+        lemonadeConfig = CaseSensitiveRawConfigParser(strict=False)
         if lemonadeConfigFile.exists():
             lemonadeConfig.read(lemonadeConfigFile)
 

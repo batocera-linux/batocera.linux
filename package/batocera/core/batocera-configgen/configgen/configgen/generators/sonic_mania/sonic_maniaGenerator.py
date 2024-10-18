@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import os
 import shutil
 from pathlib import Path
@@ -8,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import ROMS
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -49,8 +49,8 @@ class SonicManiaGenerator(Generator):
             selected_language = '0'
 
         ## Create the Settings.ini file
-        config = configparser.ConfigParser()
-        config.optionxform = str
+        config = CaseSensitiveConfigParser()
+
         # Game
         config['Game'] = {
             'devMenu': 'y',

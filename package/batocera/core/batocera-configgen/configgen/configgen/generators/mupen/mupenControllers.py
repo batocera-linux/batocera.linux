@@ -8,10 +8,10 @@ from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from configparser import ConfigParser
 
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping
+    from ...utils.configparser import CaseSensitiveConfigParser
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters
@@ -50,7 +50,7 @@ def getMupenMapping(use_n64_inputs: bool) -> dict[str, str]:
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig: ConfigParser, controllers: ControllerMapping, system: Emulator, wheels: DeviceInfoMapping) -> None:
+def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: ControllerMapping, system: Emulator, wheels: DeviceInfoMapping) -> None:
     nplayer = 1
 
     for playercontroller, pad in sorted(controllers.items()):
@@ -205,7 +205,7 @@ def setControllerLine(mupenmapping: Mapping[str, str], input: Input, mupenSettin
                                 value = f"axis({input.id}-)"
         return value
 
-def fillIniPlayer(nplayer: int, iniConfig: ConfigParser, controller: Controller, config: dict[str, str]) -> None:
+def fillIniPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser, controller: Controller, config: dict[str, str]) -> None:
         section = "Input-SDL-Control"+str(nplayer)
 
         # set static config
@@ -249,7 +249,7 @@ def fillIniPlayer(nplayer: int, iniConfig: ConfigParser, controller: Controller,
         for inputName in sorted(config):
                 iniConfig.set(section, inputName, config[inputName])
 
-def cleanPlayer(nplayer: int, iniConfig: ConfigParser) -> None:
+def cleanPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser) -> None:
         section = "Input-SDL-Control"+str(nplayer)
 
         # set static config

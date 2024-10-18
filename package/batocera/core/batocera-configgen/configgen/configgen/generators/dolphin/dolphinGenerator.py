@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import logging
 import subprocess
 from os import environ
@@ -9,6 +8,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import dolphinControllers, dolphinSYSCONF
 from .dolphinPaths import (
@@ -40,9 +40,7 @@ class DolphinGenerator(Generator):
         dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom_path, guns)
 
         ## [ Qt.ini ] ##
-        qtIni = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        qtIni.optionxform = str
+        qtIni = CaseSensitiveConfigParser(interpolation=None)
         if DOLPHIN_QT_INI.exists():
             qtIni.read(DOLPHIN_QT_INI)
 
@@ -59,9 +57,7 @@ class DolphinGenerator(Generator):
             qtIni.write(configfile)
 
         ## [ dolphin.ini ] ##
-        dolphinSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinSettings.optionxform = str
+        dolphinSettings = CaseSensitiveConfigParser(interpolation=None)
         if DOLPHIN_INI.exists():
             dolphinSettings.read(DOLPHIN_INI)
 
@@ -225,9 +221,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.write(configfile)
 
         ## [ gfx.ini ] ##
-        dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinGFXSettings.optionxform = str
+        dolphinGFXSettings = CaseSensitiveConfigParser(interpolation=None)
         dolphinGFXSettings.read(DOLPHIN_GFX_INI)
 
         # Add Default Sections
@@ -392,9 +386,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.write(configfile)
 
         ## Hotkeys.ini - overwrite to avoid issues
-        hotkeyConfig = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        hotkeyConfig.optionxform = str
+        hotkeyConfig = CaseSensitiveConfigParser(interpolation=None)
         # [Hotkeys]
         hotkeyConfig.add_section('Hotkeys')
         # General - use virtual for now
@@ -450,9 +442,7 @@ class DolphinGenerator(Generator):
             hotkeyConfig.write(configfile)
 
         ## Retroachievements
-        RacConfig = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        RacConfig.optionxform = str
+        RacConfig = CaseSensitiveConfigParser(interpolation=None)
         # [Achievements]
         RacConfig.add_section('Achievements')
         if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
@@ -505,9 +495,7 @@ class DolphinGenerator(Generator):
 
     def getInGameRatio(self, config, gameResolution, rom):
 
-        dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
-        # To prevent ConfigParser from converting to lower case
-        dolphinGFXSettings.optionxform = str
+        dolphinGFXSettings = CaseSensitiveConfigParser(interpolation=None)
         dolphinGFXSettings.read(DOLPHIN_GFX_INI)
 
         dolphin_aspect_ratio = dolphinGFXSettings.get("Settings", "AspectRatio")

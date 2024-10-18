@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import configparser
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, SAVES, SCREENSHOTS, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -30,8 +30,7 @@ class ScummVMGenerator(Generator):
         mkdir_if_not_exists(scummExtra)
 
         # create / modify scummvm config file as needed
-        scummConfig = configparser.ConfigParser()
-        scummConfig.optionxform=str
+        scummConfig = CaseSensitiveConfigParser()
         if scummConfigFile.exists():
             scummConfig.read(scummConfigFile)
 

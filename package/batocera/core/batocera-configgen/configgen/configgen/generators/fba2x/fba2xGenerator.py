@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import configparser
 from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, LOGS, ensure_parents_and_open
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import fba2xConfig, fba2xControllers
 
@@ -23,9 +23,7 @@ class Fba2xGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        iniConfig = configparser.ConfigParser()
-        # To prevent ConfigParser from converting to lower case
-        iniConfig.optionxform = str
+        iniConfig = CaseSensitiveConfigParser()
         if fbaCustom.exists():
             iniConfig.read(fbaCustom)
 

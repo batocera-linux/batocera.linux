@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import json
 import logging
 import re
@@ -14,6 +13,7 @@ import httplib2
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -179,9 +179,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         with configFileName.open("w") as f:
             f.write("[UI]\n")
 
-    pcsx2INIConfig = configparser.ConfigParser(interpolation=None)
-    # To prevent ConfigParser from converting to lower case
-    pcsx2INIConfig.optionxform = str
+    pcsx2INIConfig = CaseSensitiveConfigParser(interpolation=None)
 
     if configFileName.is_file():
         pcsx2INIConfig.read(configFileName)
