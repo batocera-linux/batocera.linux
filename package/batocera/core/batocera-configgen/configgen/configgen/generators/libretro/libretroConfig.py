@@ -438,7 +438,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         controller_list = sorted(controllers.items())
         for i in range(1, min(5, len(controller_list) + 1)):
             controller, pad = controller_list[i - 1]
-            if (pad.guid in valid_megadrive_controller_guids and pad.configName in valid_megadrive_controller_names) or (system.isOptSet(f'{option}_controller{i}_mapping') and system.config[f'{option}_controller{i}_mapping'] != 'retropad'):
+            if (pad.guid in valid_megadrive_controller_guids and pad.name in valid_megadrive_controller_names) or (system.isOptSet(f'{option}_controller{i}_mapping') and system.config[f'{option}_controller{i}_mapping'] != 'retropad'):
                 update_megadrive_controller_config(i)
 
     ## Sega Mastersystem controller
@@ -584,7 +584,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         controller_list = sorted(controllers.items())
         for i in range(1, min(5, len(controller_list) + 1)):
             controller, pad = controller_list[i - 1]
-            if (pad.guid in valid_n64_controller_guids and pad.configName in valid_n64_controller_names) or (system.isOptSet(f'{option}-controller{i}') and system.config[f'{option}-controller{i}'] != 'retropad'):
+            if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.isOptSet(f'{option}-controller{i}') and system.config[f'{option}-controller{i}'] != 'retropad'):
                 update_n64_controller_config(i)
 
     ## PORTS

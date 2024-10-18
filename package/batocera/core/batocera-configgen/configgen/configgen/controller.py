@@ -74,7 +74,7 @@ def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: s
 class _ControllerChanges(TypedDict, total=False):
     guid: str
     player: str | None
-    index: int | str
+    index: int
     realName: str
     dev: str | None
     nbbuttons: int | None
@@ -86,7 +86,7 @@ class _ControllerChanges(TypedDict, total=False):
 
 @dataclass(slots=True)
 class Controller:
-    configName: str
+    name: str
     type: str
     guid: str
     player: str | None
@@ -194,7 +194,7 @@ class Controller:
 
         # when there will have more joysticks, use hash tables
         for controller in controllers:
-            if controller.guid == pxguid and controller.configName == pxname:
+            if controller.guid == pxguid and controller.name == pxname:
                 return controller.replace(
                     guid=pxguid,
                     player=x,
@@ -218,7 +218,7 @@ class Controller:
                     nbaxes=pxnbaxes,
                 )
         for controller in controllers:
-            if controller.configName == pxname:
+            if controller.name == pxname:
                 return controller.replace(
                     guid=pxguid,
                     player=x,
