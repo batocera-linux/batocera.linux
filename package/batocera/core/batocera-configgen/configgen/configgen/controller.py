@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
 from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Self, TypeAlias, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Final, Literal, Self, TypeAlias, TypedDict, Unpack, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -87,7 +87,7 @@ class _ControllerChanges(TypedDict, total=False):
 @dataclass(slots=True)
 class Controller:
     name: str
-    type: str
+    type: Literal['keyboard', 'joystick']
     guid: str
     player_number: int
     index: int = -1
