@@ -7,7 +7,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 # inputtype:
@@ -64,7 +64,7 @@ def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersCont
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         listVice.append("")
-        listVice.append("# " + pad.realName)
+        listVice.append("# " + pad.real_name)
         for x in pad.inputs:
             input = pad.inputs[x]
             for indexName, indexValue in viceJoystick.items():

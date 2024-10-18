@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import os
 import logging
-
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -38,14 +38,14 @@ class Dhewm3Generator(Generator):
         with open(rom, "r") as file:
             directory = file.readline().strip().split("/")[0]
             eslog.debug(f"Using directory: {directory}")
-        
+
         _DHEWM3_CONFIG_BASE_DIR = _DHEWM3_CONFIG / "base"
         _DHEWM3_CONFIG_DIR = _DHEWM3_CONFIG / directory
         _DHEWM3_CONFIG_BASE_FILE = _DHEWM3_CONFIG_BASE_DIR / "dhewm.cfg"
         _DHEWM3_CONFIG_FILE = _DHEWM3_CONFIG_DIR / "dhewm.cfg"
         os.makedirs(_DHEWM3_CONFIG_BASE_DIR, exist_ok=True)
         os.makedirs(_DHEWM3_CONFIG_DIR, exist_ok=True)
-        
+
         options_to_set = {
             "seta r_mode": "-1",
             "seta r_fullscreen": "1",
@@ -76,7 +76,7 @@ class Dhewm3Generator(Generator):
             options_to_set["seta r_brightness"] = system.config["dhewm3_brightness"]
         else:
             options_to_set["seta r_brightness"] = "1"
-        
+
         def update_config_file(file_path):
             if file_path.is_file():
                 with file_path.open('r') as config_file:
@@ -114,13 +114,13 @@ class Dhewm3Generator(Generator):
             commandArray.extend([
                 "+set", "fs_game", str(directory)
             ])
-                
+
         return Command.Command(
             array=commandArray,
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_DATA_HOME": SAVES,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

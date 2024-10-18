@@ -3,12 +3,15 @@ from __future__ import annotations
 import codecs
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import HotkeysContext
 
 
@@ -44,12 +47,12 @@ class SolarusGenerator(Generator):
 
         return Command.Command(array=commandArray, env={
             'SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS': '0' ,
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
         })
 
     @staticmethod
-    def padConfig(system: Emulator, playersControllers: controllersConfig.ControllerMapping):
+    def padConfig(system: Emulator, playersControllers: ControllerMapping):
         keymapping = {
             "action": "a",
             "attack": "b",
@@ -94,7 +97,7 @@ class SolarusGenerator(Generator):
             nplayer += 1
 
     @staticmethod
-    def key2val(input, reverse):
+    def key2val(input: Input, reverse: bool):
         if input.type == "button":
             return f"button {input.id}"
         if input.type == "hat":

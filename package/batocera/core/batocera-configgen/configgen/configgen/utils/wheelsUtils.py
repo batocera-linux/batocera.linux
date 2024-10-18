@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
 
+    from ..controller import ControllerDict, ControllerMapping
     from ..Emulator import Emulator
     from ..types import DeviceInfoDict, DeviceInfoMapping
 
@@ -103,21 +104,21 @@ emulatorMapping = {
     },
 }
 
-def reconfigureControllers(playersControllers: controllersConfig.ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], controllersConfig.ControllerDict, DeviceInfoDict]:
+def reconfigureControllers(playersControllers: ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], ControllerDict, DeviceInfoDict]:
     eslog.info("wheels reconfiguration")
     wheelsmetadata = None
 
     eslog.info("before wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllers.items()):
-        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.realName}")
+        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.device_path} name:{pad.real_name}")
 
     # reconfigure wheel buttons
     # no need to sort, but i like keeping the same loop (sorted by players)
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
-        if pad.dev in deviceList:
-            if deviceList[pad.dev]["isWheel"]:
-                eslog.info(f"Wheel reconfiguration for pad {pad.realName}")
+        if pad.device_path in deviceList:
+            if deviceList[pad.device_path]["isWheel"]:
+                eslog.info(f"Wheel reconfiguration for pad {pad.real_name}")
                 originalInputs = pad.inputs.copy()
 
                 # erase target keys
@@ -153,8 +154,7 @@ def reconfigureControllers(playersControllers: controllersConfig.ControllerMappi
     recomputeSdlIds = False
     newPads: list[str] = []
     for playercontroller, pad in sorted(playersControllers.items()):
-        device = deviceList.get(pad.dev) if pad.dev is not None else None
-        if pad.dev is not None and (device := deviceList.get(pad.dev)) is not None and device["isWheel"] and "wheel_rotation" in device:
+        if (device := deviceList.get(pad.device_path)) is not None and device["isWheel"] and "wheel_rotation" in device:
             ra = int(device["wheel_rotation"])
             wanted_ra = ra
             wanted_deadzone = 0
@@ -179,13 +179,13 @@ def reconfigureControllers(playersControllers: controllersConfig.ControllerMappi
             eslog.info("wheel rotation angle is " + str(ra) + " ; wanted wheel rotation angle is " + str(wanted_ra) + " ; wanted deadzone is " + str(wanted_deadzone) + " ; wanted midzone is " + str(wanted_midzone))
             # no need new device in some cases
             if wanted_ra < ra or wanted_deadzone > 0:
-                (newdev, p) = reconfigureAngleRotation(pad.dev, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
+                (newdev, p) = reconfigureAngleRotation(pad.device_path, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
                 if newdev is not None:
-                    eslog.info(f"replacing device {pad.dev} by device {newdev} for player {playercontroller}")
+                    eslog.info(f"replacing device {pad.device_path} by device {newdev} for player {playercontroller}")
                     deviceList[newdev] = device.copy()
                     deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
-                    pad.physdev = pad.dev # save the physical device for ffb
-                    pad.dev = newdev # needs to recompute sdl ids
+                    pad.physical_device_path = pad.device_path # save the physical device for ffb
+                    pad.device_path = newdev # needs to recompute sdl ids
                     recomputeSdlIds = True
                     newPads.append(newdev)
                     procs.append(p)
@@ -208,31 +208,30 @@ def reconfigureControllers(playersControllers: controllersConfig.ControllerMappi
             joysticksByDev[x["node"]] = currentId
         # renumeration
         for playercontroller, pad in sorted(playersControllers.items()):
-            if pad.dev in joysticksByDev:
-                playersControllers[playercontroller].index = joysticksByDev[pad.dev]
-                deviceList[pad.dev]["joystick_index"] = joysticksByDev[pad.dev]
-        # fill physid
+            joystick_index = joysticksByDev.get(pad.device_path)
+            if joystick_index is not None:
+                playersControllers[playercontroller].index = joystick_index
+                deviceList[pad.device_path]["joystick_index"] = joystick_index
+        # fill physical_index
         for _, pad in sorted(playersControllers.items()):
-            if hasattr(pad, 'physdev') and pad.physdev in deviceList and "joystick_index" in deviceList[pad.physdev]:
-                pad.physid = deviceList[pad.physdev]["joystick_index"] # save the physical device for ffb
+            if pad.physical_device_path is not None and pad.physical_device_path in deviceList and "joystick_index" in deviceList[pad.physical_device_path]:
+                pad.physical_index = deviceList[pad.physical_device_path]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads
-    playersControllersNew: controllersConfig.ControllerDict = {}
+    playersControllersNew: ControllerDict = {}
     nplayer = 1
     for _, pad in sorted(playersControllers.items()):
-        if (pad.dev in deviceList and deviceList[pad.dev]["isWheel"]) or pad.dev in newPads:
-            pad.player = str(nplayer)
-            playersControllersNew[str(nplayer)] = pad
+        if (pad.device_path in deviceList and deviceList[pad.device_path]["isWheel"]) or pad.device_path in newPads:
+            playersControllersNew[nplayer] = pad.replace(player_number=nplayer)
             nplayer += 1
     for _, pad in sorted(playersControllers.items()):
-        if not ((pad.dev in deviceList and deviceList[pad.dev]["isWheel"]) or pad.dev in newPads):
-            pad.player = str(nplayer)
-            playersControllersNew[str(nplayer)] = pad
+        if not ((pad.device_path in deviceList and deviceList[pad.device_path]["isWheel"]) or pad.device_path in newPads):
+            playersControllersNew[nplayer] = pad.replace(player_number=nplayer)
             nplayer += 1
 
     eslog.info("after wheel reconfiguration :")
     for playercontroller, pad in sorted(playersControllersNew.items()):
-        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.dev} name:{pad.realName}")
+        eslog.info(f"  {playercontroller}. index:{pad.index!s} dev:{pad.device_path} name:{pad.real_name}")
 
     return (procs, playersControllersNew, deviceList)
 

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import Resolution
 

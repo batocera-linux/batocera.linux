@@ -3,8 +3,9 @@ from __future__ import annotations
 from shutil import copyfile
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, ensure_parents_and_open, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import flycastControllers
@@ -46,16 +47,16 @@ class FlycastGenerator(Generator):
                 flycastControllers.generateControllerConfig(controller, "arcade")
 
             # Set the controller type per Port
-            Config.set("input", 'device' + str(controller.player), "0") # Sega Controller
-            Config.set("input", 'device' + str(controller.player) + '.1', "1") # Sega VMU
+            Config.set("input", 'device' + str(controller.player_number), "0") # Sega Controller
+            Config.set("input", 'device' + str(controller.player_number) + '.1', "1") # Sega VMU
             # Set controller pack, gui option
-            ctrlpackconfig = "flycast_ctrl{}_pack".format(controller.player)
+            ctrlpackconfig = "flycast_ctrl{}_pack".format(controller.player_number)
             if system.isOptSet(ctrlpackconfig):
-                Config.set("input", 'device' + str(controller.player) + '.2', str(system.config[ctrlpackconfig]))
+                Config.set("input", 'device' + str(controller.player_number) + '.2', str(system.config[ctrlpackconfig]))
             else:
-                Config.set("input", 'device' + str(controller.player) + '.2', "1") # Sega VMU
+                Config.set("input", 'device' + str(controller.player_number) + '.2', "1") # Sega VMU
             # Ensure controller(s) are on seperate Ports
-            port = int(controller.player)-1
+            port = controller.player_number-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
 
         if not Config.has_section("config"):
@@ -227,7 +228,7 @@ class FlycastGenerator(Generator):
                 "XDG_DATA_HOME":FLYCAST_SAVES.parent,
                 "FLYCAST_DATADIR":FLYCAST_SAVES.parent,
                 "FLYCAST_BIOS_PATH":FLYCAST_BIOS,
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

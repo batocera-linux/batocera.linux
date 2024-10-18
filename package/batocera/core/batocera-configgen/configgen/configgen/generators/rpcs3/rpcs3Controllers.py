@@ -8,7 +8,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 from .rpcs3Paths import RPCS3_CONFIG_DIR
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 eslog = logging.getLogger(__name__)
@@ -179,7 +179,7 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: Evdev\n')
-                f.write(f'  Device: {pad.dev}\n')
+                f.write(f'  Device: {pad.device_path}\n')
                 f.write('  Config:\n')
                 f.write('    Start: Start\n')
                 f.write('    Select: Select\n')
@@ -279,7 +279,7 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 f.write(f'Player {nplayer} Input:\n')
                 f.write(f'  Handler: SDL\n')
                 # workaround controllers with commas in their name - like Nintendo
-                ctrlname = pad.realName.split(',')[0].strip()
+                ctrlname = pad.real_name.split(',')[0].strip()
                 # rpcs3 appends a unique number per controller name
                 if ctrlname in controller_counts:
                     controller_counts[ctrlname] += 1

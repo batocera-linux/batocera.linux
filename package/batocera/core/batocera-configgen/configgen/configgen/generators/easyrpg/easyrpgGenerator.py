@@ -9,7 +9,7 @@ from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...types import HotkeysContext
 
 

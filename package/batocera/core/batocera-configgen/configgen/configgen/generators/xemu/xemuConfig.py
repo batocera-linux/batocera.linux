@@ -7,7 +7,7 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from .xemuPaths import XEMU_CONFIG
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import Resolution
 

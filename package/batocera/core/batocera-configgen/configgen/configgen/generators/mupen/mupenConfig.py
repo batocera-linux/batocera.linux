@@ -6,7 +6,7 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import Resolution
     from ...utils.configparser import CaseSensitiveConfigParser
@@ -229,41 +229,41 @@ def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controlle
         iniConfig.add_section("CoreEvents")
     iniConfig.set("CoreEvents", "Version", "1")
 
-    if '1' in controllers:
-        if 'hotkey' in controllers['1'].inputs:
-            if 'start' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Stop", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['start'])))
+    if (controller := controllers.get(1)) is not None:
+        if 'hotkey' in controller.inputs:
+            if 'start' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Stop", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['start'])))
             if system.isOptSet("mupen64-controller1") and system.config["mupen64-controller1"] == "n64limited":
-                if 'y' in controllers['1'].inputs:
+                if 'y' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Save State", "")
-                if 'x' in controllers['1'].inputs:
+                if 'x' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Load State", "")
-                if 'pageup' in controllers['1'].inputs:
+                if 'pageup' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "")
-                if 'up' in controllers['1'].inputs:
+                if 'up' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "")
-                if 'right' in controllers['1'].inputs:
+                if 'right' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
-                if 'a' in controllers['1'].inputs:
+                if 'a' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
-                if 'b' in controllers['1'].inputs:
+                if 'b' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
                 return
 
-            if 'y' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Save State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['y'])))
-            if 'x' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Load State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['x'])))
-            if 'pageup' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['pageup'])))
-            if 'up' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['up'])))
-            if 'right' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['right'])))
-            if 'a' in controllers['1'].inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Reset", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['a'])))
-            if 'b' in controllers['1'].inputs:
-                #iniConfig.set("CoreEvents", "Joy Mapping Pause", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['b'])))
+            if 'y' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Save State", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['y'])))
+            if 'x' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Load State", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['x'])))
+            if 'pageup' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['pageup'])))
+            if 'up' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['up'])))
+            if 'right' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['right'])))
+            if 'a' in controller.inputs:
+                iniConfig.set("CoreEvents", "Joy Mapping Reset", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['a'])))
+            if 'b' in controller.inputs:
+                #iniConfig.set("CoreEvents", "Joy Mapping Pause", "\"J{}{}/{}\"".format(controller.index, createButtonCode(controller.inputs['hotkey']), createButtonCode(controller.inputs['b'])))
                 iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
 
 

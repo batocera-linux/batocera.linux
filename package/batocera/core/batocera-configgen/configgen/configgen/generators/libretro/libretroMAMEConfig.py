@@ -16,7 +16,7 @@ from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECO
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
     from ...types import GunMapping
 
@@ -570,7 +570,7 @@ def generateMAMEPadConfig(
 
     # Load standard controls from csv
     controlFile = DEFAULTS_DIR / 'data' / 'mame' / 'mameControls.csv'
-    controlDict = {}
+    controlDict: dict[str, dict[str, str]] = {}
     with controlFile.open() as openFile:
         controlList = csv.reader(openFile)
         for row in controlList:
@@ -579,7 +579,7 @@ def generateMAMEPadConfig(
             controlDict[row[0]][row[1]] = row[2]
 
     # Common controls
-    mappings = {}
+    mappings: dict[str, str] = {}
     for controlDef in controlDict['default'].keys():
         mappings[controlDef] = controlDict['default'][controlDef]
 
@@ -766,7 +766,7 @@ def generateMAMEPadConfig(
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml_alt.write(dom_string_alt)
 
-def reverseMapping(key):
+def reverseMapping(key: str) -> str | None:
     if key == "joystick1down":
         return "joystick1up"
     if key == "joystick1right":
@@ -777,7 +777,7 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons):
+def generatePortElement(pad: Controller, config: minidom.Document, nplayer: int, padindex: int, mapping: str, key: str, input: str, reversed: bool, altButtons: str):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", f"P{nplayer}_{mapping}")
@@ -788,7 +788,7 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default):
+def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: str, reversed: bool, mask: str, default: str):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -805,7 +805,7 @@ def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateComboPortElement(pad, config, tag, padindex, mapping, kbkey, key, input, reversed, mask, default):
+def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str, padindex: int, mapping: str, kbkey: str, key: str, input: str, reversed: bool, mask: str, default: str):
     # Maps a keycode + button - for important keyboard keys when available
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -819,7 +819,7 @@ def generateComboPortElement(pad, config, tag, padindex, mapping, kbkey, key, in
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inckey, deckey, mappedinput, mappedinput2, reversed, mask, default, delta, axis = ''):
+def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, inckey: str, deckey: str, mappedinput: str, mappedinput2: str, reversed: bool, mask: str, default: str, delta: str, axis: str = ''):
     # Mapping analog to digital (mouse, etc)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -847,7 +847,7 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False):
+def input2definition(pad: Controller, key: str, input: str, joycode: int, reversed: bool, altButtons: str | int, ignoreAxis: bool = False) -> str:
     if input.find("BUTTON") != -1 or input.find("HAT") != -1 or input == "START" or input == "SELECT":
         input = input.format(joycode) if "{0}" in input else input
         return f"JOYCODE_{joycode}_{input}"
@@ -895,8 +895,7 @@ def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis 
                 return f"JOYCODE_{joycode}_{retroPad[key]} OR JOYCODE_{joycode}_{retroPad['a']}"
             else:
                 return f"JOYCODE_{joycode}_{input}"
-    else:
-        return "unknown"
+    return "unknown"
 
 def getRoot(config, name):
     xml_section = config.getElementsByTagName(name)

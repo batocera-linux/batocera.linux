@@ -9,7 +9,7 @@ from ...batoceraPaths import HOME, ensure_parents_and_open, mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
 
 _KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
 
@@ -46,25 +46,25 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         cur = currentControllers[controller]
 
         # skip duplicates
-        if cur.realName in controllersDone:
+        if cur.real_name in controllersDone:
             continue
-        controllersDone[cur.realName] = True
+        controllersDone[cur.real_name] = True
 
         # initialized the file
-        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.realName.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
+        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.real_name.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
 
         xmldevice = config.createElement('device')
-        xmldevice.attributes["name"] = cur.realName
+        xmldevice.attributes["name"] = cur.real_name
         xmldevice.attributes["provider"] = provider
 
         if provider == "udev":
             xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
 
-        xmldevice.attributes["buttoncount"] = cur.nbbuttons
-        xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
+        xmldevice.attributes["buttoncount"] = cur.button_count
+        xmldevice.attributes["axiscount"] = str(2*int(cur.hat_count) + int(cur.axis_count))
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"
@@ -87,9 +87,9 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
                         xmlhat = config.createElement('feature')
                         val = ""
                         if kodihatspositions[int(input.value)] == "left" or kodihatspositions[int(input.value)] == "right":
-                            val = cur.nbaxes
+                            val = cur.axis_count
                         else:
-                            val = str(int(cur.nbaxes)+1)
+                            val = str(int(cur.axis_count)+1)
                         if kodihatspositions[int(input.value)] == "down" or kodihatspositions[int(input.value)] == "right":
                             xmlhat.attributes["axis"] = "+" + val
                         else:
