@@ -122,7 +122,7 @@ class CitraGenerator(Generator):
             citraConfig.add_section("UI")
         # Start Fullscreen
         citraConfig.set("UI", "fullscreen", "true")
-        citraConfig.set("UI", "fullscreen\default", "false")
+        citraConfig.set("UI", "fullscreen\default", "true")
 
         # Batocera - Defaults
         citraConfig.set("UI", "displayTitleBars", "false")
