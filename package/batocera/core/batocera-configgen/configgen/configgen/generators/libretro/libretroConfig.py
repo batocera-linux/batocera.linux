@@ -354,8 +354,8 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
             deviceInfos = controllersConfig.getDevicesInformation()
             nplayer = 1
             for controller, pad in sorted(controllers.items()):
-                if pad.dev in deviceInfos:
-                    if deviceInfos[pad.dev]["isWheel"]:
+                if pad.device_path in deviceInfos:
+                    if deviceInfos[pad.device_path]["isWheel"]:
                         retroarchConfig['input_player' + str(nplayer) + '_analog_dpad_mode'] = '1'
                         if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 773 # Negcon

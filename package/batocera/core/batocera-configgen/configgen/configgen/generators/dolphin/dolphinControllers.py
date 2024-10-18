@@ -505,7 +505,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             if not generateControllerConfig_any_from_profiles(f, pad, system):
                 generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
         else:
-            if pad.dev in wheels:
+            if pad.device_path in wheels:
                 generateControllerConfig_wheel(f, pad, nplayer)
             else:
                 generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)

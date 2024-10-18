@@ -56,7 +56,7 @@ def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Cont
 
     for playercontroller, pad in sorted(controllers.items()):
         isWheel = False
-        if pad.dev in wheels and wheels[pad.dev]["isWheel"]:
+        if pad.device_path in wheels and wheels[pad.device_path]["isWheel"]:
             isWheel = True
         config = defineControllerKeys(nplayer, pad, system, isWheel)
         fillIniPlayer(nplayer, iniConfig, pad, config)

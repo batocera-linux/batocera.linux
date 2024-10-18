@@ -182,7 +182,7 @@ class RyujinxGenerator(Generator):
                 # example xbox 360 - "id": "0-00000003-045e-0000-8e02-000014010000"
                 devices = [InputDevice(fn) for fn in evdev.list_devices()]
                 for dev in devices:
-                    if dev.path == pad.dev:
+                    if dev.path == pad.device_path:
                         bustype = "%x" % dev.info.bustype
                         bustype = bustype.zfill(8)
                         vendor = "%x" % dev.info.vendor

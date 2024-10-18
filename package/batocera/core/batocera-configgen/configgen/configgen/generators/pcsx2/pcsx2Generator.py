@@ -657,7 +657,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
 
             usbx = 1
             for controller, pad in sorted(controllers.items()):
-                if pad.dev in wheels:
+                if pad.device_path in wheels:
                     if not pcsx2INIConfig.has_section("USB{}".format(usbx)):
                         pcsx2INIConfig.add_section("USB{}".format(usbx))
                     pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")

@@ -179,7 +179,7 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: Evdev\n')
-                f.write(f'  Device: {pad.dev}\n')
+                f.write(f'  Device: {pad.device_path}\n')
                 f.write('  Config:\n')
                 f.write('    Start: Start\n')
                 f.write('    Select: Select\n')

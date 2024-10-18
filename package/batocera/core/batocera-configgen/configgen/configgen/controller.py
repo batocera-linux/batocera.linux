@@ -76,7 +76,7 @@ class _ControllerChanges(TypedDict, total=False):
     player: str | None
     index: int
     real_name: str
-    dev: str | None
+    device_path: str | None
     nbbuttons: int | None
     nbhats: int | None
     nbaxes: int | None
@@ -93,7 +93,7 @@ class Controller:
     index: int = -1
     real_name: str = ""
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
-    dev: str | None = None
+    device_path: str | None = None
     nbbuttons: int | None = None
     nbhats: int | None = None
     nbaxes: int | None = None
@@ -200,7 +200,7 @@ class Controller:
                     player=x,
                     index=pxindex,
                     real_name=pxname,
-                    dev=pxdev,
+                    device_path=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,
                     nbaxes=pxnbaxes,
@@ -212,7 +212,7 @@ class Controller:
                     player=x,
                     index=pxindex,
                     real_name=pxname,
-                    dev=pxdev,
+                    device_path=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,
                     nbaxes=pxnbaxes,
@@ -224,7 +224,7 @@ class Controller:
                     player=x,
                     index=pxindex,
                     real_name=pxname,
-                    dev=pxdev,
+                    device_path=pxdev,
                     nbbuttons=pxnbbuttons,
                     nbhats=pxnbhats,
                     nbaxes=pxnbaxes,
