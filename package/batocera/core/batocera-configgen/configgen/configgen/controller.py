@@ -73,7 +73,7 @@ def _key_to_sdl_game_controller_config(keyname: str, name: str, type: str, id: s
 
 class _ControllerChanges(TypedDict, total=False):
     guid: str
-    player: str | None
+    player_number: str | None
     index: int
     real_name: str
     device_path: str | None
@@ -89,7 +89,7 @@ class Controller:
     name: str
     type: str
     guid: str
-    player: str | None
+    player_number: str | None
     index: int = -1
     real_name: str = ""
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
@@ -178,26 +178,26 @@ class Controller:
 
     @classmethod
     def find_best_controller_config(
-        cls, controllers: Iterable[Controller], args: Namespace, x: str, /,
+        cls, controllers: Iterable[Controller], args: Namespace, player_number: str, /,
     ) -> Controller | None:
-        pxindex: int | None = getattr(args, f'p{x}index')
+        pxindex: int | None = getattr(args, f'p{player_number}index')
 
         if pxindex is None:
             return None
 
-        pxguid: str = getattr(args, f'p{x}guid')
-        pxname: str = getattr(args, f'p{x}name')
-        pxdev: str = getattr(args, f'p{x}devicepath')
-        pxnbbuttons: int = getattr(args, f'p{x}nbbuttons')
-        pxnbhats: int = getattr(args, f'p{x}nbhats')
-        pxnbaxes: int = getattr(args, f'p{x}nbaxes')
+        pxguid: str = getattr(args, f'p{player_number}guid')
+        pxname: str = getattr(args, f'p{player_number}name')
+        pxdev: str = getattr(args, f'p{player_number}devicepath')
+        pxnbbuttons: int = getattr(args, f'p{player_number}nbbuttons')
+        pxnbhats: int = getattr(args, f'p{player_number}nbhats')
+        pxnbaxes: int = getattr(args, f'p{player_number}nbaxes')
 
         # when there will have more joysticks, use hash tables
         for controller in controllers:
             if controller.guid == pxguid and controller.name == pxname:
                 return controller.replace(
                     guid=pxguid,
-                    player=x,
+                    player_number=player_number,
                     index=pxindex,
                     real_name=pxname,
                     device_path=pxdev,
@@ -209,7 +209,7 @@ class Controller:
             if controller.guid == pxguid:
                 return controller.replace(
                     guid=pxguid,
-                    player=x,
+                    player_number=player_number,
                     index=pxindex,
                     real_name=pxname,
                     device_path=pxdev,
@@ -221,7 +221,7 @@ class Controller:
             if controller.name == pxname:
                 return controller.replace(
                     guid=pxguid,
-                    player=x,
+                    player_number=player_number,
                     index=pxindex,
                     real_name=pxname,
                     device_path=pxdev,

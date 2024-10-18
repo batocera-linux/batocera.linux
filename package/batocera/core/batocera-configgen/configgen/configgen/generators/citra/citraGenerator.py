@@ -260,7 +260,7 @@ class CitraGenerator(Generator):
         for index in playersControllers :
             controller = playersControllers[index]
             # We only care about player 1
-            if controller.player != "1":
+            if controller.player_number != "1":
                 continue
             for x in citraButtons:
                 citraConfig.set("Controls", "profiles\\1\\" + x, f'"{CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)}"')

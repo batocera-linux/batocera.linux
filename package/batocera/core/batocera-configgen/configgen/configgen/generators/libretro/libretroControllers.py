@@ -143,36 +143,36 @@ def generateControllerConfig(controller: Controller, retroarchspecials, system, 
         btnvalue = retroarchbtns[btnkey]
         if btnkey in controller.inputs:
             input = controller.inputs[btnkey]
-            config['input_player{}_{}_{}'.format(controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+            config['input_player{}_{}_{}'.format(controller.player_number, btnvalue, typetoname[input.type])] = getConfigValue(
                 input)
     if lightgun:
         for btnkey in retroarchGunbtns: # Gun Mapping
             btnvalue = retroarchGunbtns[btnkey]
             if btnkey in controller.inputs:
                 input = controller.inputs[btnkey]
-                config['input_player{}_gun_{}_{}'.format(controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+                config['input_player{}_gun_{}_{}'.format(controller.player_number, btnvalue, typetoname[input.type])] = getConfigValue(
                     input)
     for dirkey in retroarchdirs:
         dirvalue = retroarchdirs[dirkey]
         if dirkey in controller.inputs:
             input = controller.inputs[dirkey]
-            config['input_player{}_{}_{}'.format(controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+            config['input_player{}_{}_{}'.format(controller.player_number, dirvalue, typetoname[input.type])] = getConfigValue(
                 input)
             if lightgun:
                 # Gun Mapping
-                config['input_player{}_gun_dpad_{}_{}'.format(controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+                config['input_player{}_gun_dpad_{}_{}'.format(controller.player_number, dirvalue, typetoname[input.type])] = getConfigValue(
                     input)
     for jskey in retroarchjoysticks:
         jsvalue = retroarchjoysticks[jskey]
         if jskey in controller.inputs:
             input = controller.inputs[jskey]
             if input.value == '-1':
-                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
-                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_minus_axis' % (controller.player_number, jsvalue)] = '-%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player_number, jsvalue)] = '+%s' % input.id
             else:
-                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
-                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
-    if controller.player == '1':
+                config['input_player%s_%s_minus_axis' % (controller.player_number, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player_number, jsvalue)] = '-%s' % input.id
+    if controller.player_number == '1':
         specialMap = retroarchspecials
         for specialkey in specialMap:
             specialvalue = specialMap[specialkey]
@@ -185,7 +185,7 @@ def generateControllerConfig(controller: Controller, retroarchspecials, system, 
             config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
     if not lightgun:
         # dont touch to it when there are connected lightguns
-        config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
+        config['input_player{}_mouse_index'.format(controller.player_number)] = mouseIndex
     return config
 
 

@@ -222,11 +222,11 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
     nplayer = 1
     for _, pad in sorted(playersControllers.items()):
         if (pad.device_path in deviceList and deviceList[pad.device_path]["isWheel"]) or pad.device_path in newPads:
-            playersControllersNew[str(nplayer)] = pad.replace(player=str(nplayer))
+            playersControllersNew[str(nplayer)] = pad.replace(player_number=str(nplayer))
             nplayer += 1
     for _, pad in sorted(playersControllers.items()):
         if not ((pad.device_path in deviceList and deviceList[pad.device_path]["isWheel"]) or pad.device_path in newPads):
-            playersControllersNew[str(nplayer)] = pad.replace(player=str(nplayer))
+            playersControllersNew[str(nplayer)] = pad.replace(player_number=str(nplayer))
             nplayer += 1
 
     eslog.info("after wheel reconfiguration :")

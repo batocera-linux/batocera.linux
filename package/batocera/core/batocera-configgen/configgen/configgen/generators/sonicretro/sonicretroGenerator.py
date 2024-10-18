@@ -173,7 +173,7 @@ class SonicRetroGenerator(Generator):
 
         for index in playersControllers:
             controller = playersControllers[index]
-            if controller.player != "1":
+            if controller.player_number != "1":
                 continue
             for x in sonicButtons:
                 sonicConfig.set("Controller 1", f"{x}", f"{sonicButtons[x]}")
