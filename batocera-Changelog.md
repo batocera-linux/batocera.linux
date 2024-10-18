@@ -118,7 +118,7 @@
 - Bauh to 0.10.7 (flatpak-config)
 - Nvidia Driver to 560.35.03 (Open kernel modules)
 - Nvidia Legacy Driver to 470.256.02
-- x86_64 Kernel to 6.11.2
+- x86_64 Kernel to 6.11.4
 - RPi Kernel to 6.6.56
 - ARM mainline Kernel boards to 6.6.56
 - Ayaneo Platform driver to Jul 17, 2024 build
