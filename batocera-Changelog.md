@@ -54,6 +54,7 @@
 - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
 - New ES web UI on http://<batocera>:1234 (with a new es_web_notifier service to enable)
 - Enabled more force feedback capabilities on various controllers
+- Share commands in /boot/batocera-boot.conf now allow pipes and other shell metacharacters
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
