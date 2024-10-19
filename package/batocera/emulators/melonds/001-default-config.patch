@@ -2,13 +2,34 @@ diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
 index 7a0ec698ba..0b06f8f120 100644
 --- a/src/frontend/qt_sdl/Config.cpp
 +++ b/src/frontend/qt_sdl/Config.cpp
-@@ -143,8 +143,7 @@ bool DSiBatteryCharging;
- CameraConfig Camera[2];
+@@ -39,10 +39,9 @@ namespace Config
+ using namespace melonDS;
  
  
--const char* kConfigFile = "melonDS.ini";
--const char* kUniqueConfigFile = "melonDS.%d.ini";
-+const char* kConfigFile = "/userdata/system/configs/melonDS/melonDS.ini";
+-const char* kConfigFile = "melonDS.toml";
++const char* kConfigFile = "/userdata/system/configs/melonDS/melonDS.toml";
  
- ConfigEntry ConfigFile[] =
- { 
+-const char* kLegacyConfigFile = "melonDS.ini";
+-const char* kLegacyUniqueConfigFile = "melonDS.%d.ini";
++const char* kLegacyConfigFile = "/userdata/system/configs/melonDS/melonDS.ini";
+ 
+ toml::value RootTable;
+ 
+@@ -671,16 +671,7 @@ template<typename T> T Table::FindDefault(const std::string& path, T def, Defaul
+ bool LoadLegacyFile(int inst)
+ {
+     Platform::FileHandle* f;
+-    if (inst > 0)
+-    {
+-        char name[100] = {0};
+-        snprintf(name, 99, kLegacyUniqueConfigFile, inst+1);
+-        f = Platform::OpenLocalFile(name, Platform::FileMode::ReadText);
+-    }
+-    else
+-    {
+-        f = Platform::OpenLocalFile(kLegacyConfigFile, Platform::FileMode::ReadText);
+-    }
++    f = Platform::OpenLocalFile(kLegacyConfigFile, Platform::FileMode::ReadText);
+ 
+     if (!f) return true;
+ 
