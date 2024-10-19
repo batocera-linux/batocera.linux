@@ -250,7 +250,7 @@ mountDevicesOrNetwork() {
                 fi
 
                 echo "${CMD_EXEC}"
-                if ${CMD_EXEC}
+                if eval ${CMD_EXEC}
                 then
                     echo "success"
                     XTRY=0
