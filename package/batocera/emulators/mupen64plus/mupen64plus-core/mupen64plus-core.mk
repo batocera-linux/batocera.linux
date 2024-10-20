@@ -13,7 +13,7 @@ MUPEN64PLUS_CORE_INSTALL_STAGING = YES
 
 MUPEN64PLUS_GL_CFLAGS = -I$(STAGING_DIR)/usr/include -L$(STAGING_DIR)/usr/lib
 
-ifeq ($(BR2_PACKAGE_LIBGLU)$(BR2_PACKAGE_SDL2_OPENGL),yy)
+ifeq ($(BR2_PACKAGE_LIBGLU)$(BR2_PACKAGE_SDL2_OPENGL)$(BR2_PACKAGE_XSERVER_XORG_SERVER),yyy)
 	MUPEN64PLUS_CORE_DEPENDENCIES += libglu
 	MUPEN64PLUS_GL_LDLIBS = -lGL
 else
@@ -49,7 +49,8 @@ endif
 
 ifeq ($(BR2_arm)$(BR2_ARM_CPU_HAS_NEON),yy)
 	MUPEN64PLUS_CORE_CPUFLAGS += -marm -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
-	MUPEN64PLUS_GL_CFLAGS += -D__ARM_NEON__ -D__NEON_OPT -ftree-vectorize -mvectorize-with-neon-quad -ftree-vectorizer-verbose=2 -funsafe-math-optimizations -fno-finite-math-only
+	MUPEN64PLUS_GL_CFLAGS += -D__ARM_NEON__ -D__NEON_OPT -ftree-vectorize -mvectorize-with-neon-quad
+	MUPEN64PLUS_GL_CFLAGS += -ftree-vectorizer-verbose=2 -funsafe-math-optimizations -fno-finite-math-only
 
 	ifeq ($(BR2_ARM_CPU_HAS_VFPV4),y)
 		MUPEN64PLUS_CORE_CPUFLAGS += -mfpu=neon-vfpv4
