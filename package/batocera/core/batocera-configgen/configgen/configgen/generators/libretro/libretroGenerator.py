@@ -350,12 +350,12 @@ class LibretroGenerator(Generator):
         if system.name == 'reminiscence':
             with rom_path.open() as file:
                 first_line = file.readline().strip()
-            rom_path = rom_path.with_name(first_line)
+            rom_path = rom_path.parent / first_line
 
         if system.name == 'openlara':
             with rom_path.open() as file:
                 first_line = file.readline().strip()
-            rom_path = rom_path.with_name(first_line)
+            rom_path = rom_path.parent / first_line
 
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
