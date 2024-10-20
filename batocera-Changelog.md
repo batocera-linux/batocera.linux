@@ -131,7 +131,7 @@
 - DXVK to 2.4.1
 - DXVK NVAPI to v0.7.1
 - VKD3D Proton to 2.13
-- Linux Firmware to 20240909
+- Linux Firmware to 20241017
 - Pipewire to 1.2.2
 - ALSA stack to 1.2.12
 - ALSA UCM configuration to 1.2.12
