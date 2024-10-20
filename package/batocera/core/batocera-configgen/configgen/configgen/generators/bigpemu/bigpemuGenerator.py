@@ -395,6 +395,41 @@ class BigPEmuGenerator(Generator):
             # Onto the next controller as necessary
             nplayer += 1
 
+        # Scripts config
+        if "ScriptsEnabled" not in config["BigPEmuConfig"]:
+            config["BigPEmuConfig"]["ScriptsEnabled"] = []
+        else:
+            for script_name, script_option in scripts:
+                if script_name in config["BigPEmuConfig"]["ScriptsEnabled"]:
+                    # The script is already enabled, so no need to check its individual setting
+                    continue
+                elif system.isOptSet(script_option):
+                    # Check if the value is "1" to enable the script
+                    if system.config[script_option] == "1":
+                        config["BigPEmuConfig"]["ScriptsEnabled"].append(script_name)
+
+        # User selections for ScriptsEnabled options (individual scripts)
+        scripts = [
+            ("avp", "bigpemu_avp"),
+            ("avp_mp", "bigpemu_avp_mp"),
+            ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
+            ("checkered_flag", "bigpemu_checkered_flag"),
+            ("cybermorph", "bigpemu_cybermorph"),
+            ("iron_soldier", "bigpemu_iron_soldier"),
+            ("mc3d_vr", "bigpemu_mc3d_vr"),
+            ("t2k_rotary", "bigpemu_t2k_rotary"),
+            ("wolf3d", "bigpemu_wolf3d")
+        ]
+
+        # Remove duplicates just in case (as a precaution)
+        config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
+
+        # Screen filter
+        if system.isOptSet("bigpemu_screenfilter"):
+            config["BigPEmuConfig"]["Video"]["ScreenFilter"] = system.config["bigpemu_screenfilter"]
+        else:
+            config["BigPEmuConfig"]["Video"]["ScreenFilter"] = 0
+
         # Close off input
         config["BigPEmuConfig"]["Input"]["InputVer"] = 2
         config["BigPEmuConfig"]["Input"]["InputPluginVer"] = 666
