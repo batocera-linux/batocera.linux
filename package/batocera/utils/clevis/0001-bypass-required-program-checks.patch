@@ -1,0 +1,14 @@
+diff --git a/src/pins/tpm2/meson.build b/src/pins/tpm2/meson.build
+index ec01dcf..e30917b 100644
+--- a/src/pins/tpm2/meson.build
++++ b/src/pins/tpm2/meson.build
+@@ -3,9 +3,6 @@ cmds = ['tpm2_createprimary', ['tpm2_pcrread', 'tpm2_pcrlist'],
+         'tpm2_unseal']
+ 
+ all = true
+-foreach cmd : cmds
+-  all = all and find_program(cmd, required: false).found()
+-endforeach
+ 
+ if all
+   bins += join_paths(meson.current_source_dir(), 'clevis-decrypt-tpm2')
