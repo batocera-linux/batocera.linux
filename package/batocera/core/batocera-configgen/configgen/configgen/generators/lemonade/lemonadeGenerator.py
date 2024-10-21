@@ -6,12 +6,14 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
+from ...controller import generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
 eslog = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ class LemonadeGenerator(Generator):
             "XDG_CACHE_HOME":CACHE,
             "XDG_RUNTIME_DIR":SAVES / "3ds" / "lemonade-emu",
             "QT_QPA_PLATFORM":"xcb",
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
@@ -45,7 +47,7 @@ class LemonadeGenerator(Generator):
             return True
 
     @staticmethod
-    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: controllersConfig.ControllerMapping):
+    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
         # Pads
         lemonadeButtons = {
             "button_a":      "a",
@@ -236,16 +238,16 @@ class LemonadeGenerator(Generator):
 
         # Options required to load the functions when the configuration file is created
         if not lemonadeConfig.has_option("Controls", "profiles\\size"):
-            lemonadeConfig.set("Controls", "profile", 0)
+            lemonadeConfig.set("Controls", "profile", "0")
             lemonadeConfig.set("Controls", "profile\\default", "true")
             lemonadeConfig.set("Controls", "profiles\\1\\name", "default")
             lemonadeConfig.set("Controls", "profiles\\1\\name\\default", "true")
-            lemonadeConfig.set("Controls", "profiles\\size", 1)
+            lemonadeConfig.set("Controls", "profiles\\size", "1")
 
         for index in playersControllers :
             controller = playersControllers[index]
             # We only care about player 1
-            if controller.player != "1":
+            if controller.player_number != 1:
                 continue
             for x in lemonadeButtons:
                 lemonadeConfig.set("Controls", "profiles\\1\\" + x, f'"{LemonadeGenerator.setButton(lemonadeButtons[x], controller.guid, controller.inputs)}"')

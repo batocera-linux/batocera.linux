@@ -11,8 +11,9 @@ from typing import TYPE_CHECKING, Final
 
 import httplib2
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
+from ...controller import ControllerMapping, generate_sdl_game_controller_config, write_sdl_controller_db
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import DeviceInfoMapping, GunMapping, HotkeysContext
 
 eslog = logging.getLogger(__name__)
@@ -92,7 +94,7 @@ class Pcsx2Generator(Generator):
 
         # write our own game_controller_db.txt file before launching the game
         dbfile = _PCSX2_CONFIG / "game_controller_db.txt"
-        controllersConfig.writeSDLGameDBAllControllers(playersControllers, dbfile)
+        write_sdl_controller_db(playersControllers, dbfile)
 
         commandArray = ["/usr/pcsx2/bin/pcsx2-qt"] if rom == "config" else \
               ["/usr/pcsx2/bin/pcsx2-qt", "-nogui", rom]
@@ -112,7 +114,7 @@ class Pcsx2Generator(Generator):
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
         # wheel metadata
         if not Pcsx2Generator.useEmulatorWheels(playingWithWheel, Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)):
-            envcmd["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
+            envcmd["SDL_GAMECONTROLLERCONFIG"] = generate_sdl_game_controller_config(playersControllers)
 
         # ensure we have the patches.zip file to avoid message.
         mkdir_if_not_exists(pcsx2Patches.parent)
@@ -170,7 +172,7 @@ def configureAudio(config_directory: Path) -> None:
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
+def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
 
     mkdir_if_not_exists(configFileName.parent)
@@ -655,7 +657,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
 
             usbx = 1
             for controller, pad in sorted(controllers.items()):
-                if pad.dev in wheels:
+                if pad.device_path in wheels:
                     if not pcsx2INIConfig.has_section("USB{}".format(usbx)):
                         pcsx2INIConfig.add_section("USB{}".format(usbx))
                     pcsx2INIConfig.set("USB{}".format(usbx), "Type", "Pad")
@@ -663,8 +665,8 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
                     wheel_type = Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)
                     pcsx2INIConfig.set("USB{}".format(usbx), "Pad_subtype", Pcsx2Generator.wheelTypeMapping[wheel_type])
 
-                    if hasattr(pad, 'physdev'): # ffb on the real wheel
-                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.physid))
+                    if pad.physical_device_path is not None: # ffb on the real wheel
+                        pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.physical_index))
                     else:
                         pcsx2INIConfig.set("USB{}".format(usbx), "Pad_FFDevice", "SDL-{}".format(pad.index))
 
@@ -790,7 +792,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     with configFileName.open('w') as configfile:
         pcsx2INIConfig.write(configfile)
 
-def input2wheel(input: controllersConfig.Input, reversedAxis: bool = False) -> str | None:
+def input2wheel(input: Input, reversedAxis: bool | None = False) -> str | None:
     if input.type == "button":
         pcsx2_magic_button_offset = 21 # PCSX2/SDLInputSource.cpp : const u32 button = ev->button + std::size(s_sdl_button_names)
         return "Button{}".format(int(input.id) + pcsx2_magic_button_offset)

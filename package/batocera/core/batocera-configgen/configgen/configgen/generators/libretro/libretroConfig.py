@@ -22,6 +22,7 @@ from .libretroPaths import (
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
     from ...types import DeviceInfoMapping, GunMapping, Resolution
@@ -100,11 +101,11 @@ def connected_to_internet() -> bool:
             eslog.error("Not connected to the internet")
             return False
 
-def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
+def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator: Generator, system: Emulator, controllers: controllersConfig.ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
+def createLibretroConfig(generator: Generator, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
 
     # retroarch-core-options.cfg
     mkdir_if_not_exists(RETROARCH_CORE_CUSTOM.parent)
@@ -353,8 +354,8 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: co
             deviceInfos = controllersConfig.getDevicesInformation()
             nplayer = 1
             for controller, pad in sorted(controllers.items()):
-                if pad.dev in deviceInfos:
-                    if deviceInfos[pad.dev]["isWheel"]:
+                if pad.device_path in deviceInfos:
+                    if deviceInfos[pad.device_path]["isWheel"]:
                         retroarchConfig['input_player' + str(nplayer) + '_analog_dpad_mode'] = '1'
                         if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
                             retroarchConfig['input_libretro_device_p' + str(nplayer)] = 773 # Negcon
@@ -437,7 +438,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: co
         controller_list = sorted(controllers.items())
         for i in range(1, min(5, len(controller_list) + 1)):
             controller, pad = controller_list[i - 1]
-            if (pad.guid in valid_megadrive_controller_guids and pad.configName in valid_megadrive_controller_names) or (system.isOptSet(f'{option}_controller{i}_mapping') and system.config[f'{option}_controller{i}_mapping'] != 'retropad'):
+            if (pad.guid in valid_megadrive_controller_guids and pad.name in valid_megadrive_controller_names) or (system.isOptSet(f'{option}_controller{i}_mapping') and system.config[f'{option}_controller{i}_mapping'] != 'retropad'):
                 update_megadrive_controller_config(i)
 
     ## Sega Mastersystem controller
@@ -583,7 +584,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: co
         controller_list = sorted(controllers.items())
         for i in range(1, min(5, len(controller_list) + 1)):
             controller, pad = controller_list[i - 1]
-            if (pad.guid in valid_n64_controller_guids and pad.configName in valid_n64_controller_names) or (system.isOptSet(f'{option}-controller{i}') and system.config[f'{option}-controller{i}'] != 'retropad'):
+            if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.isOptSet(f'{option}-controller{i}') and system.config[f'{option}-controller{i}'] != 'retropad'):
                 update_n64_controller_config(i)
 
     ## PORTS

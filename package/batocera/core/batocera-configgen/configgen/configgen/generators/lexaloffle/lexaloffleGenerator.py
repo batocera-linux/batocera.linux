@@ -5,8 +5,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import BIOS, HOME, ROMS, SCREENSHOTS, ensure_parents_and_open
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -79,7 +80,7 @@ class LexaloffleGenerator(Generator):
         else:
             commandArray.extend(["-run", rom])
 
-        controllersconfig = controllersConfig.generateSdlGameControllerConfig(playersControllers)
+        controllersconfig = generate_sdl_game_controller_config(playersControllers)
         with ensure_parents_and_open(CONTROLLERS, "w") as file:
                file.write(controllersconfig)
 

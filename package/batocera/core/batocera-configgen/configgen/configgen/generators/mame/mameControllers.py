@@ -10,15 +10,17 @@ from xml.dom import minidom
 from .mamePaths import MAME_CONFIG, MAME_DEFAULT_DATA
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import DeviceInfoMapping, GunMapping
 
 eslog = logging.getLogger(__name__)
 
-def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
+def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
     config = minidom.Document()
     configFile = cfgPath / "default.cfg"
@@ -35,7 +37,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
     # Load standard controls from csv
     controlFile = MAME_DEFAULT_DATA / 'mameControls.csv'
     openFile = controlFile.open('r')
-    controlDict = {}
+    controlDict: dict[str, dict[str, str]] = {}
     with openFile:
         controlList = csv.reader(openFile)
         for row in controlList:
@@ -44,19 +46,19 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
             controlDict[row[0]][row[1]] = row[2]
 
     # Common controls
-    mappings = {}
+    mappings: dict[str, str] = {}
     for controlDef in controlDict['default'].keys():
         mappings[controlDef] = controlDict['default'][controlDef]
 
     # Only use gun buttons if lightguns are enabled to prevent conflicts with mouse
-    gunmappings = {}
+    gunmappings: dict[str, str] = {}
     if useGuns:
         for controlDef in controlDict['gunbuttons'].keys():
             gunmappings[controlDef] = controlDict['gunbuttons'][controlDef]
 
     # Only define mouse buttons if mouse is enabled, to prevent unwanted inputs
     # For a standard mouse, left, right, scroll wheel should be mapped to action buttons, and if side buttons are available, they will be coin & start
-    mousemappings = {}
+    mousemappings: dict[str, str] = {}
     if useMouse:
         for controlDef in controlDict['mousebuttons'].keys():
             mousemappings[controlDef] = controlDict['mousebuttons'][controlDef]
@@ -233,7 +235,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
 
         ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
         pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
-        pedalkey = None
+        pedalkey: str | None = None
         pedalcname = "controllers.pedals{}".format(nplayer)
         if pedalcname in system.config:
             pedalkey = system.config[pedalcname]
@@ -314,7 +316,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
         dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
         mameXml_alt.write(dom_string_alt)
 
-def reverseMapping(key):
+def reverseMapping(key: str) -> str | None:
     if key == "joystick1down":
         return "joystick1up"
     if key == "joystick1right":
@@ -325,7 +327,7 @@ def reverseMapping(key):
         return "joystick2left"
     return None
 
-def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, reversed, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey):
+def generatePortElement(pad: Controller, config: minidom.Document, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, altButtons: str | int, gunmappings: Mapping[str, str], isWheel: bool, mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", "P{}_{}".format(nplayer, mapping))
@@ -346,7 +348,7 @@ def generatePortElement(pad, config, nplayer, padindex, mapping, key, input, rev
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateGunPortElement(config, nplayer, mapping, gunmappings, pedalkey):
+def generateGunPortElement(config: minidom.Document, nplayer: int, mapping: str, gunmappings: Mapping[str, str], pedalkey: str | None):
     # Generic input
     xml_port = config.createElement("port")
     if mapping in ["START", "COIN"]:
@@ -367,7 +369,7 @@ def generateGunPortElement(config, nplayer, mapping, gunmappings, pedalkey):
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, gunmappings, mousemappings, multiMouse, pedalkey):
+def generateSpecialPortElementPlayer(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, mask: str, default: str, gunmappings: Mapping[str, str], mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -393,7 +395,7 @@ def generateSpecialPortElementPlayer(pad, config, tag, nplayer, padindex, mappin
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key, input, reversed, mask, default, pedalkey):
+def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, mask: str, default: str, pedalkey: str | None):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -407,7 +409,7 @@ def generateSpecialPortElement(pad, config, tag, nplayer, padindex, mapping, key
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateComboPortElement(pad, config, tag, padindex, mapping, kbkey, key, input, reversed, mask, default):
+def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str, padindex: int, mapping: str, kbkey: str, key: str, input: Input, reversed: bool, mask: str, default: str):
     # Maps a keycode + button - for important keyboard keys when available
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -421,7 +423,7 @@ def generateComboPortElement(pad, config, tag, padindex, mapping, kbkey, key, in
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inckey, deckey, mappedinput, mappedinput2, reversed, mask, default, delta, axis = ''):
+def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, inckey: str, deckey: str, mappedinput: Input, mappedinput2: Input, reversed: bool, mask: str, default: str, delta: str, axis: str = ''):
     # Mapping analog to digital (mouse, etc)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
@@ -449,7 +451,7 @@ def generateAnalogPortElement(pad, config, tag, nplayer, padindex, mapping, inck
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis = False, isWheel = False):
+def input2definition(pad: Controller, key: str, input: Input, joycode: int, reversed: bool, altButtons: str | int, ignoreAxis: bool = False, isWheel: bool = False):
 
     mameAxisMappingNames = {0: "XAXIS", 1: "YAXIS", 2: "ZAXIS", 3: "RXAXIS", 4: "RYAXIS", 5: "RZAXIS"}
 
@@ -477,7 +479,7 @@ def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis 
             return f"JOYCODE_{joycode}_HAT1LEFT"
     elif input.type == "axis":
         # Determine alternate button for D-Pad and right stick as buttons
-        dpadInputs = {}
+        dpadInputs: dict[str, str] = {}
         for direction in ['up', 'down', 'left', 'right']:
             if pad.inputs[direction].type == 'button':
                 dpadInputs[direction] = f'JOYCODE_{joycode}_BUTTON{int(pad.inputs[direction].id)+1}'
@@ -492,7 +494,7 @@ def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis 
                     dpadInputs[direction] = f'JOYCODE_{joycode}_HAT1LEFT'
             else:
                 dpadInputs[direction] = ''
-        buttonDirections = {}
+        buttonDirections: dict[str, str] = {}
         # workarounds for issue #6892
         # Modified because right stick to buttons was not working after the workaround
         # Creates a blank, only modifies if the button exists in the pad.
@@ -547,7 +549,7 @@ def input2definition(pad, key, input, joycode, reversed, altButtons, ignoreAxis 
 
     return "unknown"
 
-def hasStick(pad):
+def hasStick(pad: Controller) -> bool:
     if "joystick1up" in pad.inputs:
         return True
     else:

@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-import os
-import sys
-import toml
-import subprocess
 import logging
-
+import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+import toml
+
+from ... import Command
 from ...batoceraPaths import CONFIGS
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -143,7 +144,7 @@ class shadPS4Generator(Generator):
                     "isPS4Pro": False
                 }
             }
-        
+
         # If the file exists, update the relevant sections
         config.setdefault("General", {})["Fullscreen"] = True
         config["General"]["autoUpdate"] = False
@@ -158,7 +159,7 @@ class shadPS4Generator(Generator):
         # Now write the updated toml
         with toml_file.open("w") as f:
             toml.dump(config, f)
-        
+
         # Change to the configPath directory before running
         os.chdir(configPath)
 
@@ -167,11 +168,11 @@ class shadPS4Generator(Generator):
             commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4"]
         else:
             commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", str(romPath)]
-        
+
         return Command.Command(
             array=commandArray,
             env={
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

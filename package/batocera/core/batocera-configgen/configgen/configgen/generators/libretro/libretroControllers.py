@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ...controllersConfig import ControllerMapping, getAssociatedMouse, getDevicesInformation
+from ...controllersConfig import getAssociatedMouse, getDevicesInformation
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...settings.unixSettings import UnixSettings
 
 
@@ -76,7 +80,7 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
         mouseIndex = None
         if system.name in ['nds', '3ds']:
             deviceList = getDevicesInformation()
-            mouseIndex = getAssociatedMouse(deviceList, controllers[controller].dev)
+            mouseIndex = getAssociatedMouse(deviceList, controllers[controller].device_path)
         if mouseIndex == None:
             mouseIndex = 0
         writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials, lightgun, mouseIndex)
@@ -84,21 +88,21 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
     writeHotKeyConfig(retroconfig, controllers)
 
 # Remove all controller configurations
-def cleanControllerConfig(retroconfig: UnixSettings, controllers, retroarchspecials):
+def cleanControllerConfig(retroconfig: UnixSettings, controllers: ControllerMapping, retroarchspecials: Mapping[str, str]):
     retroconfig.disable_all('input_player')
     for specialkey in retroarchspecials:
         retroconfig.disable_all(f'input_{retroarchspecials[specialkey]}')
 
 
 # Write the hotkey for player 1
-def writeHotKeyConfig(retroconfig: UnixSettings, controllers):
-    if '1' in controllers:
-        if 'hotkey' in controllers['1'].inputs and controllers['1'].inputs['hotkey'].type == 'button':
-            retroconfig.save('input_enable_hotkey_btn', controllers['1'].inputs['hotkey'].id)
+def writeHotKeyConfig(retroconfig: UnixSettings, controllers: ControllerMapping):
+    if (controller := controllers.get(1)) is not None:
+        if 'hotkey' in controller.inputs and controller.inputs['hotkey'].type == 'button':
+            retroconfig.save('input_enable_hotkey_btn', controller.inputs['hotkey'].id)
 
 
 # Write a configuration for a specified controller
-def writeControllerConfig(retroconfig: UnixSettings, controller, playerIndex, system, retroarchspecials, lightgun, mouseIndex=0):
+def writeControllerConfig(retroconfig: UnixSettings, controller: Controller, playerIndex: int, system: Emulator, retroarchspecials: Mapping[str, str], lightgun: bool, mouseIndex: int | None = 0):
     generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
@@ -108,7 +112,7 @@ def writeControllerConfig(retroconfig: UnixSettings, controller, playerIndex, sy
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex=0):
+def generateControllerConfig(controller: Controller, retroarchspecials: Mapping[str, str], system: Emulator, lightgun: bool, mouseIndex: int | None = 0):
 # Map an emulationstation button name to the corresponding retroarch name
     retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
@@ -131,41 +135,41 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
         retroarchbtns["pagedown"] = "l"
 
     config = dict()
-    # config['input_device'] = '"%s"' % controller.realName
+    # config['input_device'] = '"%s"' % controller.real_name
     for btnkey in retroarchbtns:
         btnvalue = retroarchbtns[btnkey]
         if btnkey in controller.inputs:
             input = controller.inputs[btnkey]
-            config['input_player{}_{}_{}'.format(controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+            config['input_player{}_{}_{}'.format(controller.player_number, btnvalue, typetoname[input.type])] = getConfigValue(
                 input)
     if lightgun:
         for btnkey in retroarchGunbtns: # Gun Mapping
             btnvalue = retroarchGunbtns[btnkey]
             if btnkey in controller.inputs:
                 input = controller.inputs[btnkey]
-                config['input_player{}_gun_{}_{}'.format(controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+                config['input_player{}_gun_{}_{}'.format(controller.player_number, btnvalue, typetoname[input.type])] = getConfigValue(
                     input)
     for dirkey in retroarchdirs:
         dirvalue = retroarchdirs[dirkey]
         if dirkey in controller.inputs:
             input = controller.inputs[dirkey]
-            config['input_player{}_{}_{}'.format(controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+            config['input_player{}_{}_{}'.format(controller.player_number, dirvalue, typetoname[input.type])] = getConfigValue(
                 input)
             if lightgun:
                 # Gun Mapping
-                config['input_player{}_gun_dpad_{}_{}'.format(controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+                config['input_player{}_gun_dpad_{}_{}'.format(controller.player_number, dirvalue, typetoname[input.type])] = getConfigValue(
                     input)
     for jskey in retroarchjoysticks:
         jsvalue = retroarchjoysticks[jskey]
         if jskey in controller.inputs:
             input = controller.inputs[jskey]
             if input.value == '-1':
-                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
-                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_minus_axis' % (controller.player_number, jsvalue)] = '-%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player_number, jsvalue)] = '+%s' % input.id
             else:
-                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
-                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
-    if controller.player == '1':
+                config['input_player%s_%s_minus_axis' % (controller.player_number, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player_number, jsvalue)] = '-%s' % input.id
+    if controller.player_number == 1:
         specialMap = retroarchspecials
         for specialkey in specialMap:
             specialvalue = specialMap[specialkey]
@@ -178,12 +182,12 @@ def generateControllerConfig(controller, retroarchspecials, system, lightgun, mo
             config['input_{}_{}'.format(specialvalue, typetoname[input.type])] = getConfigValue(input)
     if not lightgun:
         # dont touch to it when there are connected lightguns
-        config['input_player{}_mouse_index'.format(controller.player)] = mouseIndex
+        config['input_player{}_mouse_index'.format(controller.player_number)] = mouseIndex
     return config
 
 
 # Returns the value to write in retroarch config file, depending on the type
-def getConfigValue(input):
+def getConfigValue(input: Input):
     if input.type == 'button':
         return input.id
     if input.type == 'axis':
@@ -197,7 +201,7 @@ def getConfigValue(input):
         return input.id
 
 # Return the retroarch analog_dpad_mode
-def getAnalogMode(controller, system):
+def getAnalogMode(controller: Controller, system: Emulator):
     # don't enable analog as hat mode for some systems
     if system.name == 'n64' or system.name == 'dreamcast' or system.name == '3ds':
         return '0'

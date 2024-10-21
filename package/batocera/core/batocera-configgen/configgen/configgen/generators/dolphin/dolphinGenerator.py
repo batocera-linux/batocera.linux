@@ -177,7 +177,7 @@ class DolphinGenerator(Generator):
                 dolphinSettings.set("Core", "SIDevice" + str(i - 1), value)
             else:
                 # if the pad is a wheel and on gamecube, use it
-                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and str(i) in playersControllers and playersControllers[str(i)].dev in wheels:
+                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and i in playersControllers and playersControllers[i].device_path in wheels:
                     dolphinSettings.set("Core", "SIDevice" + str(i - 1), "8")
                 else:
                     dolphinSettings.set("Core", "SIDevice" + str(i - 1), "6")

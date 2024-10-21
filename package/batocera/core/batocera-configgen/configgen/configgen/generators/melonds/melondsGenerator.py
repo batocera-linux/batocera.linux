@@ -193,7 +193,7 @@ class MelonDSGenerator(Generator):
         val = -1
         for controller, pad in sorted(playersControllers.items()):
             # Only use Player 1 controls
-            if pad.player != "1":
+            if pad.player_number != 1:
                 continue
             for index in pad.inputs:
                 input = pad.inputs[index]

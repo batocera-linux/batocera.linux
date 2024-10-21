@@ -8,7 +8,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 from .flycastPaths import FLYCAST_MAPPING
 
 if TYPE_CHECKING:
-    from ...controllersConfig import Controller
+    from ...controller import Controller
 
 eslog = logging.getLogger(__name__)
 
@@ -74,10 +74,10 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
     # Set config file name
     if type == 'dreamcast':
         eslog.debug("-=[ Dreamcast Controller Settings ]=-")
-        configFileName = FLYCAST_MAPPING / f"SDL_{controller.realName}.cfg"
+        configFileName = FLYCAST_MAPPING / f"SDL_{controller.real_name}.cfg"
     else: # 'arcade'
         eslog.debug("-=[ Arcade Controller Settings ]=-")
-        configFileName = FLYCAST_MAPPING / f"SDL_{controller.realName}_arcade.cfg"
+        configFileName = FLYCAST_MAPPING / f"SDL_{controller.real_name}_arcade.cfg"
 
     Config = configparser.ConfigParser(interpolation=None)
 
@@ -88,7 +88,7 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
         Config.add_section(section)
 
     # Parse controller inputs
-    eslog.debug("*** Controller Name = {} ***".format(controller.realName))
+    eslog.debug("*** Controller Name = {} ***".format(controller.real_name))
     analogbind = 0
     digitalbind = 0
     for index in controller.inputs:
@@ -185,7 +185,7 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
 
         # Add additional controller info
         Config.set("emulator", "dead_zone", "10")
-        Config.set("emulator", "mapping_name", "Default") #controller.realName)
+        Config.set("emulator", "mapping_name", "Default") #controller.real_name)
         Config.set("emulator", "rumble_power", "100")
         Config.set("emulator", "version", "3")
 

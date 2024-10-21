@@ -11,6 +11,7 @@ import ffmpeg
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -321,7 +322,7 @@ class HypseusSingeGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
                 'SDL_JOYSTICK_HIDAPI': '0',
                 'MANYMOUSE_NO_XINPUT2': 'x' # disable xorg mouse => forces evdev mouse
             }
