@@ -734,7 +734,7 @@ class MameGenerator(Generator):
             tatwidth = int(240/1920 * img_width) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
             pcent = float(tatwidth / tw)
             tatheight = int(float(th) * pcent)
-            tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+            tattoo = tattoo.resize((tatwidth,tatheight), Image.Resampling.LANCZOS)
             alpha = back.split()[-1]
             alphatat = tattoo.split()[-1]
             if system.isOptSet('bezel.tattoo_corner'):
