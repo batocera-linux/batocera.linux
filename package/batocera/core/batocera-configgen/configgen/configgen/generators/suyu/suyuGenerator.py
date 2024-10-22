@@ -13,7 +13,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controllersConfig import ControllerMapping
+    from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 

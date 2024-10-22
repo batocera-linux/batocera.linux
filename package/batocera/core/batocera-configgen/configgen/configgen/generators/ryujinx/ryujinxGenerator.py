@@ -9,8 +9,9 @@ from typing import TYPE_CHECKING, Final
 import evdev
 from evdev import InputDevice
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -181,7 +182,7 @@ class RyujinxGenerator(Generator):
                 # example xbox 360 - "id": "0-00000003-045e-0000-8e02-000014010000"
                 devices = [InputDevice(fn) for fn in evdev.list_devices()]
                 for dev in devices:
-                    if dev.path == pad.dev:
+                    if dev.path == pad.device_path:
                         bustype = "%x" % dev.info.bustype
                         bustype = bustype.zfill(8)
                         vendor = "%x" % dev.info.vendor
@@ -220,7 +221,7 @@ class RyujinxGenerator(Generator):
             "XDG_DATA_HOME":SAVES / "switch", \
             "XDG_CACHE_HOME":CACHE, \
             "QT_QPA_PLATFORM":"xcb", \
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
 
 def writeControllerIntoJson(new_controller, filename: Path = ryujinxConfFile):
     with filename.open('r+') as file:

@@ -8,7 +8,7 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from .ppssppPaths import PPSSPP_CONFIG_INIT, PPSSPP_PSP_SYSTEM_DIR
 
 if TYPE_CHECKING:
-    from ...controllersConfig import Controller
+    from ...controller import Controller
 
 eslog = logging.getLogger(__name__)
 

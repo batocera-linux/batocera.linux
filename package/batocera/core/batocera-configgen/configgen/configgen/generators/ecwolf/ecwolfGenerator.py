@@ -5,8 +5,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -104,6 +105,6 @@ class ECWolfGenerator(Generator):
              ecwolfArray,
              env={
                 'XDG_CONFIG_HOME': CONFIGS,
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
             }
         )

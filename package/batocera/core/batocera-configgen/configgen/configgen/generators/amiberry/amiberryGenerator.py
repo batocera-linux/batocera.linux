@@ -5,8 +5,9 @@ import zipfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
 from ..libretro import libretroControllers
@@ -92,7 +93,7 @@ class AmiberryGenerator(Generator):
             for playercontroller, pad in sorted(playersControllers.items()):
                 replacements = {'_player' + str(nplayer) + '_':'_'}
                 # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
-                padfilename = pad.realName.replace("/", "")
+                padfilename = pad.real_name.replace("/", "")
                 playerInputFilename = _RETROARCH_INPUTS_DIR / f"{padfilename}.cfg"
                 with _RETROARCH_CUSTOM.open() as infile, playerInputFilename.open('w') as outfile:
                     for line in infile:
@@ -202,7 +203,7 @@ class AmiberryGenerator(Generator):
             return Command.Command(array=commandArray,env={
                 "AMIBERRY_DATA_DIR": "/usr/share/amiberry/",
                 "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry/",
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
         # otherwise, unknown format
         return Command.Command(array=[])
 

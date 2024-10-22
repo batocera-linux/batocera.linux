@@ -4,8 +4,9 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import HOME, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ...utils import videoMode
 from ..Generator import Generator
 
@@ -332,17 +333,17 @@ class BigPEmuGenerator(Generator):
                                 input = pad.inputs[x]
                                 # workaround values for SDL2
                                 if input.type == "button":
-                                    input.value = 0
+                                    input.value = "0"
                                 if input.type == "hat":
-                                    input.id = 134
+                                    input.id = "134"
                                 if input.name == "joystick1left":
-                                    input.id = 128
+                                    input.id = "128"
                                 if input.name == "joystick1up":
-                                    input.id = 129
+                                    input.id = "129"
                                 if input.name == "joystick2left":
-                                    input.id = 131
+                                    input.id = "131"
                                 if input.name == "joystick2up":
-                                    input.id = 132
+                                    input.id = "132"
 
                                 # Generate the bindings if input name matches the button in sequence
                                 if input.name == binding_info.get("button") or input.name in binding_info.get("buttons", []):
@@ -355,11 +356,11 @@ class BigPEmuGenerator(Generator):
                                                 button_input = pad.inputs[y]
                                                 # workaround values here too
                                                 if button_input.type == "button":
-                                                    button_input.value = 0
+                                                    button_input.value = "0"
                                                 if button_input.name == "l2":
-                                                    button_input.id = 130
+                                                    button_input.id = "130"
                                                 if button_input.name == "r2":
-                                                    button_input.id = 133
+                                                    button_input.id = "133"
                                                 if button_input.name == button_name:
                                                     button_bindings.extend([button_input.id, button_input.value])
                                         if len(button_bindings) == len(button_combos) * 2:
@@ -437,7 +438,7 @@ class BigPEmuGenerator(Generator):
         commandArray = ["/usr/bigpemu/bigpemu", rom]
 
         environment = {
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
         }
 

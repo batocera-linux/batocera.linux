@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import HOME, ROMS, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -267,7 +268,7 @@ class Model2EmuGenerator(Generator):
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
             "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3",
-            "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
         }
 
