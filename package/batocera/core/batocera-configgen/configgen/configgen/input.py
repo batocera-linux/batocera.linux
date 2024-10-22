@@ -13,7 +13,7 @@ class _InputChanges(TypedDict, total=False):
     type: str
     id: str
     value: str
-    code: str
+    code: str | None
 
 
 @dataclass(slots=True, kw_only=True)
@@ -22,7 +22,7 @@ class Input:
     type: str
     id: str
     value: str
-    code: str
+    code: str | None
 
     def replace(self, /, **changes: Unpack[_InputChanges]) -> Self:
         return replace(self, **changes)
@@ -34,7 +34,7 @@ class Input:
             type=cast(str, element.get("type")),
             id=cast(str, element.get("id")),
             value=cast(str, element.get("value")),
-            code=cast(str, element.get("code"))
+            code=element.get("code")
         )
 
     @classmethod
