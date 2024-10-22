@@ -1,0 +1,14 @@
+diff '--color=auto' -uri mangohud-lbrpdx/src/cpu.cpp mangohud-12620c91eaca0917a7939a92ec33915cadf24475/src/cpu.cpp
+--- mangohud-lbrpdx/src/cpu.cpp	2024-06-15 04:27:17.000000000 -0700
++++ mangohud-12620c91eaca0917a7939a92ec33915cadf24475/src/cpu.cpp	2024-10-22 11:55:44.856218396 -0700
+@@ -528,6 +528,10 @@
+         } else if (name == "asusec") {
+             find_input(path, "temp", input, "CPU");
+             break;
++        } else if (name == "cpu0_thermal") { // Batocera RPMini sm8250
++            find_input(path, "temp", input, "temp1");
++            break;
++
+         } else {
+             path.clear();
+         }
