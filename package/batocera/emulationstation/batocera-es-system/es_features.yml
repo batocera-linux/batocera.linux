@@ -340,7 +340,7 @@ libretro:
   shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+      archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
       prompt:      GRAPHICS API
       description: Choose which graphics API library to use. Vulkan may not work for every core.
       choices:
@@ -7102,7 +7102,7 @@ hypseus-singe:
   shared: [powermode, tdp, videomode, use_guns]
   cfeatures:
         hypseus_api:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use. Vulkan may not work on all hardware.
             choices:
@@ -7215,7 +7215,7 @@ dolphin:
                     description: Fix screen tearing. CPU heavy.
                     preset: switchauto
                 gfxbackend:
-                    archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+                    archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
                     submenu: RENDERING
                     prompt:  GRAPHICS API
                     description: Choose which graphics API library to use.
@@ -7763,7 +7763,7 @@ duckstation:
                 "Enabled":            "true"
         duckstation_gfxbackend:
             submenu: DISPLAY
-            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
@@ -8960,7 +8960,7 @@ ppsspp:
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
@@ -9829,7 +9829,7 @@ mame:
                 "Off (Default)": 0
                 "On":            1
         bgfxbackend:
-            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2]
+            archs_include: [x86, x86_64, bcm2711, bcm2712, a3gen2, sm8250]
             prompt:      BGFX GRAPHICS API
             description: Depends on video mode being set to BGFX.
             choices:
