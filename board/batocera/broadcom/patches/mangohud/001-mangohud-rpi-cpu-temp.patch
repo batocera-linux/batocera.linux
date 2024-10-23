@@ -1,0 +1,15 @@
+diff --git a/src/cpu.cpp b/src/cpu.cpp
+index 51c2570..ac10658 100644
+--- a/src/cpu.cpp
++++ b/src/cpu.cpp
+@@ -514,6 +514,10 @@ bool CPUStats::GetCpuFile() {
+             if (!find_input(path, "temp", input, "Tdie"))
+                 find_input(path, "temp", input, "Tctl");
+             break;
++        } else if (name == "cpu_thermal") {
++            // There is no label so set the input here
++            input = path + "/temp1_input";
++            break;
+         } else if (name == "atk0110") {
+             find_input(path, "temp", input, "CPU Temperature");
+             break;
