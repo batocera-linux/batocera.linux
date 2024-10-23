@@ -53,6 +53,7 @@
 - Updated Nvidia card detection
 - Modern Nvidia cards will now use the OpenSource kernel modules when possible.
 - New ES web UI on http://<batocera>:1234 (with a new es_web_notifier service to enable)
+- ES: simplified launch for netplay games
 - Enabled more force feedback capabilities on various controllers
 - Share commands in /boot/batocera-boot.conf now allow pipes and other shell metacharacters
 ### Updated
