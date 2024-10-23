@@ -95,7 +95,7 @@ class CitraGenerator(Generator):
             citraConfig.add_section("Layout")
         # Screen Layout
         citraConfig.set("Layout", "custom_layout", "false")
-        citraConfig.set("Layout", "custom_layout\default", "true")
+        citraConfig.set("Layout", r"custom_layout\default", "true")
         if system.isOptSet('citra_screen_layout'):
             tab = system.config["citra_screen_layout"].split('-')
             citraConfig.set("Layout", "swap_screen",   tab[1])
@@ -103,8 +103,8 @@ class CitraGenerator(Generator):
         else:
             citraConfig.set("Layout", "swap_screen", "false")
             citraConfig.set("Layout", "layout_option", "0")
-        citraConfig.set("Layout", "swap_screen\default", "false")
-        citraConfig.set("Layout", "layout_option\default", "false")
+        citraConfig.set("Layout", r"swap_screen\default", "false")
+        citraConfig.set("Layout", r"layout_option\default", "false")
 
         ## [SYSTEM]
         if not citraConfig.has_section("System"):
@@ -114,44 +114,44 @@ class CitraGenerator(Generator):
             citraConfig.set("System", "is_new_3ds", "true")
         else:
             citraConfig.set("System", "is_new_3ds", "false")
-        citraConfig.set("System", "is_new_3ds\default", "false")
+        citraConfig.set("System", r"is_new_3ds\default", "false")
         # Language
         citraConfig.set("System", "region_value", str(getCitraLangFromEnvironment()))
-        citraConfig.set("System", "region_value\default", "false")
+        citraConfig.set("System", r"region_value\default", "false")
 
         ## [UI]
         if not citraConfig.has_section("UI"):
             citraConfig.add_section("UI")
         # Start Fullscreen
         citraConfig.set("UI", "fullscreen", "true")
-        citraConfig.set("UI", "fullscreen\default", "true")
+        citraConfig.set("UI", r"fullscreen\default", "true")
 
         # Batocera - Defaults
         citraConfig.set("UI", "displayTitleBars", "false")
         citraConfig.set("UI", "displaytitlebars", "false") # Emulator Bug
-        citraConfig.set("UI", "displayTitleBars\default", "false")
+        citraConfig.set("UI", r"displayTitleBars\default", "false")
         citraConfig.set("UI", "firstStart", "false")
-        citraConfig.set("UI", "firstStart\default", "false")
+        citraConfig.set("UI", r"firstStart\default", "false")
         citraConfig.set("UI", "hideInactiveMouse", "true")
-        citraConfig.set("UI", "hideInactiveMouse\default", "false")
+        citraConfig.set("UI", r"hideInactiveMouse\default", "false")
         citraConfig.set("UI", "enable_discord_presence", "false")
-        citraConfig.set("UI", "enable_discord_presence\default", "false")
+        citraConfig.set("UI", r"enable_discord_presence\default", "false")
 
         # Remove pop-up prompt on start
         citraConfig.set("UI", "calloutFlags", "1")
-        citraConfig.set("UI", "calloutFlags\default", "false")
+        citraConfig.set("UI", r"calloutFlags\default", "false")
         # Close without confirmation
         citraConfig.set("UI", "confirmClose", "false")
         citraConfig.set("UI", "confirmclose", "false") # Emulator Bug
-        citraConfig.set("UI", "confirmClose\default", "false")
+        citraConfig.set("UI", r"confirmClose\default", "false")
 
         # screenshots
-        citraConfig.set("UI", "Paths\screenshotPath", "/userdata/screenshots")
-        citraConfig.set("UI", "Paths\screenshotPath\default", "false")
+        citraConfig.set("UI", r"Paths\screenshotPath", "/userdata/screenshots")
+        citraConfig.set("UI", r"Paths\screenshotPath\default", "false")
 
         # don't check updates
-        citraConfig.set("UI", "Updater\check_for_update_on_start", "false")
-        citraConfig.set("UI", "Updater\check_for_update_on_start\default", "false")
+        citraConfig.set("UI", r"Updater\check_for_update_on_start", "false")
+        citraConfig.set("UI", r"Updater\check_for_update_on_start\default", "false")
 
         ## [RENDERER]
         if not citraConfig.has_section("Renderer"):
@@ -195,19 +195,19 @@ class CitraGenerator(Generator):
             citraConfig.set("Renderer", "use_vsync_new", "false")
         else:
             citraConfig.set("Renderer", "use_vsync_new", "true")
-        citraConfig.set("Renderer", "use_vsync_new\default", "true")
+        citraConfig.set("Renderer", r"use_vsync_new\default", "true")
         # Resolution Factor
         if system.isOptSet('citra_resolution_factor'):
             citraConfig.set("Renderer", "resolution_factor", system.config["citra_resolution_factor"])
         else:
             citraConfig.set("Renderer", "resolution_factor", "1")
-        citraConfig.set("Renderer", "resolution_factor\default", "false")
+        citraConfig.set("Renderer", r"resolution_factor\default", "false")
         # Async Shader Compilation
         if system.isOptSet('citra_async_shader_compilation') and system.config["citra_async_shader_compilation"] == '1':
             citraConfig.set("Renderer", "async_shader_compilation", "true")
         else:
             citraConfig.set("Renderer", "async_shader_compilation", "false")
-        citraConfig.set("Renderer", "async_shader_compilation\default", "false")
+        citraConfig.set("Renderer", r"async_shader_compilation\default", "false")
         # Use Frame Limit
         if system.isOptSet('citra_use_frame_limit') and system.config["citra_use_frame_limit"] == '0':
             citraConfig.set("Renderer", "use_frame_limit", "false")
@@ -227,7 +227,7 @@ class CitraGenerator(Generator):
             citraConfig.set("Utility", "use_disk_shader_cache", "true")
         else:
             citraConfig.set("Utility", "use_disk_shader_cache", "false")
-        citraConfig.set("Utility", "use_disk_shader_cache\default", "false")
+        citraConfig.set("Utility", r"use_disk_shader_cache\default", "false")
         # Custom Textures
         if system.isOptSet('citra_custom_textures') and system.config["citra_custom_textures"] != '0':
             tab = system.config["citra_custom_textures"].split('-')

@@ -330,7 +330,7 @@ class SuyuGenerator(Generator):
                 suyuConfig.set("Controls", "player_{}_type".format(nplayer-1), system.config["p{}_pad".format(nplayer)])
             else:
                 suyuConfig.set("Controls", "player_{}_type".format(nplayer-1), 0)
-            suyuConfig.set("Controls", "player_{}_type\default".format(nplayer-1), "false")
+            suyuConfig.set("Controls", "player_{}_type\\default".format(nplayer-1), "false")
 
             for x in suyuButtonsMapping:
                 suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_" + x, '"{}"'.format(SuyuGenerator.setButton(suyuButtonsMapping[x], pad.guid, pad.inputs, nplayer-1)))
@@ -339,7 +339,7 @@ class SuyuGenerator(Generator):
             suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_motionleft", '"[empty]"')
             suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_motionright", '"[empty]"')
             suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_connected", "true")
-            suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_connected\default", "false")
+            suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_connected\\default", "false")
             suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_vibration_enabled", "true")
             suyuConfig.set("Controls", "player_" + str(nplayer-1) + "_vibration_enabled\\default", "false")
             nplayer += 1
@@ -349,7 +349,7 @@ class SuyuGenerator(Generator):
 
         for y in range(nplayer, 9):
             suyuConfig.set("Controls", "player_" + str(y-1) + "_connected", "false")
-            suyuConfig.set("Controls", "player_" + str(y-1) + "_connected\default", "false")
+            suyuConfig.set("Controls", "player_" + str(y-1) + "_connected\\default", "false")
 
         # telemetry section
         if not suyuConfig.has_section("WebService"):
