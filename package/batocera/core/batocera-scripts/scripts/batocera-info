@@ -205,6 +205,13 @@ else
     fi
 fi
 
+if [[ "${FULL_DISPLAY}" != 0 ]]; then
+	MACADDR=$(ip a | grep -b1 "$PREFSRC" | awk '/link\/ether/ {print $3}' | sed 's/:/-/g')
+	if [ -n "$MACADDR" ]; then
+		echo "Corresponding MAC Address: $MACADDR"
+	fi
+fi
+
 # Boot information
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	if [ -d /sys/firmware/efi ]; then
