@@ -35,27 +35,46 @@ DEVICE_NAME: Final   = "batocera hotkeys"
 GDEFAULTCONTEXT_FILE: Final = Path("/etc/hotkeygen/default_context.conf")
 GCOMMONCONTEXT_FILE: Final = Path("/etc/hotkeygen/common_context.conf")
 GDEFAULTMAPPING_FILE: Final = Path("/etc/hotkeygen/default_mapping.conf")
+
 GCONTEXT_FILE: Final = Path("/var/run/hotkeygen.context")
 GPID_FILE: Final     = Path("/var/run/hotkeygen.pid")
 GSYSTEM_DIR: Final   = Path("/usr/share/hotkeygen")
 GUSER_DIR: Final     = Path("/userdata/system/configs/hotkeygen")
 
+GUSERCOMMONCONTEXT_FILE: Final = GUSER_DIR / Path("common_context.conf")
+GUSERDEFAULTMAPPING_FILE: Final = GUSER_DIR / Path("default_mapping.conf")
+
 gdebug = False
 
 ECODES_NAMES: Final[dict[int, str]] = {
-    key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_")
+    # add BTN_ to that joysticks buttons can run hotkeys (but keep generating only KEY_ events)
+    key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_") or key_name.startswith("BTN_")
 }
 
 # default context is for es
 def get_default_context() -> HotkeysContext:
-    with GDEFAULTCONTEXT_FILE.open() as file:
-        data = json.load(file)
-        return load_context(data)
+    if GDEFAULTCONTEXT_FILE.exists():
+        with GDEFAULTCONTEXT_FILE.open() as file:
+            data = json.load(file)
+            return load_context(data)
+    else:
+        return {"name": "", "keys": {}}
 
 def get_common_context_keys() -> dict[str, int|str]:
-    with GCOMMONCONTEXT_FILE.open() as file:
-        data = json.load(file)
-        return load_context_keys(data)
+    keys = {}
+    userkeys = {}
+
+    if GCOMMONCONTEXT_FILE.exists():
+        with GCOMMONCONTEXT_FILE.open() as file:
+            data = json.load(file)
+            keys = load_context_keys(data)
+
+    if GUSERCOMMONCONTEXT_FILE.exists():
+        with GUSERCOMMONCONTEXT_FILE.open() as file:
+            data = json.load(file)
+            userkeys = load_context_keys(data)
+
+    return keys | userkeys
 
 def get_context() -> HotkeysContext | None:
     if GCONTEXT_FILE.exists():
@@ -161,9 +180,16 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
             data = json.load(fd)
         return load_mapping(data)
     else:
-        with GDEFAULTMAPPING_FILE.open() as fd:
-            data = json.load(fd)
-        return load_mapping(data)
+        data = {}
+        userdata = {}
+        if GDEFAULTMAPPING_FILE.exists():
+            with GDEFAULTMAPPING_FILE.open() as fd:
+                data = json.load(fd)
+        if GUSERDEFAULTMAPPING_FILE.exists():
+            with GUSERDEFAULTMAPPING_FILE.open() as fd:
+                userdata = json.load(fd)
+
+        return load_mapping(data | userdata)
 
 def load_mapping(data: dict[str, str]) -> dict[int, str]:
     try:
@@ -312,7 +338,7 @@ class Daemon:
 
         # target virtual keyboard
         self.target = evdev.UInput(
-            name=DEVICE_NAME, events={ ecodes.EV_KEY: [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES] }
+            name=DEVICE_NAME, events={ ecodes.EV_KEY: [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_" ] }
         )
 
     def __handle_actions(self, action: str, device: pyudev.Device) -> None:
