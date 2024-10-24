@@ -5,7 +5,7 @@
 ################################################################################
 
 FIRMWARE_RADXA_RKWIFIBT_VERSION = 421b7dd8f3c67f66910710838a0be03f3575a3c9
-FIRMWARE_RADXA_RKWIFIBT_SITE = $(call github,JeffyCN,rockchip_mirrors,$(FIRMWARE_RADXA_RKWIFIBT_VERSION))
+FIRMWARE_RADXA_RKWIFIBT_SITE = $(call github,JeffyCN,mirrors,$(FIRMWARE_RADXA_RKWIFIBT_VERSION))
 
 # - rtl8821cs firmware is installed -- these were provided as part of the Indiedroid Nova BSP
 # - rtk_hciattach is patched to be compatible from the above firmware and then built and installed.
