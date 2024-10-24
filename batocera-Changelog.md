@@ -79,7 +79,7 @@
   - Libretro-Ecwolf to June 28 build
   - Libretro-Fake08 to Sept 2 build
   - Libretro-Fbneo to October 3, 2024 build
-  - Libretro-Flycast to September 29, 2024 build
+  - Libretro-Flycast to v2.4
   - Libretro-Freechaf to June 28 build
   - Libretro-MAME to 0.268
   - Libretro-Minivac to July 1 build
@@ -99,7 +99,7 @@
 - Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
-- Flycast to September 29, 2024 build
+- Flycast to v2.4
 - GroovyMAME to 0.268
 - GZDoom to g4.13.0
 - Ikemen to August 1st 2024 build
