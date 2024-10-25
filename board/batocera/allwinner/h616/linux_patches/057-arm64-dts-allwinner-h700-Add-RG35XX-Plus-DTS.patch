@@ -1,0 +1,96 @@
+From 398e5fdf60ed2482115732f12c88f199d27afb75 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sat, 27 Apr 2024 23:02:27 +1200
+Subject: arm64: dts: allwinner: h700: Add RG35XX-Plus DTS
+
+The RG35XX-Plus adds a RTL8221CS SDIO Wifi/BT chip to the RG35XX (2024).
+
+Enabled in this DTS:
+- WiFi
+- Bluetooth
+- Supporting power sequence and GPIOs
+
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20240427110225.727472-7-ryan@testtoast.com
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/Makefile             |  1 +
+ .../allwinner/sun50i-h700-anbernic-rg35xx-plus.dts | 53 ++++++++++++++++++++++
+ 2 files changed, 54 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+
+(limited to 'arch/arm64/boot/dts/allwinner')
+
+diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
+index 4da4749f01d295..2d6b7e6f0b29d0 100644
+--- a/arch/arm64/boot/dts/allwinner/Makefile
++++ b/arch/arm64/boot/dts/allwinner/Makefile
+@@ -49,3 +49,4 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero2w.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero3.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-transpeed-8k618-t.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-2024.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-plus.dtb
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+new file mode 100644
+index 00000000000000..60a8e492210375
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
++ */
++
++#include "sun50i-h700-anbernic-rg35xx-2024.dts"
++
++/ {
++	model = "Anbernic RG35XX Plus";
++	compatible = "anbernic,rg35xx-plus", "allwinner,sun50i-h700";
++
++	wifi_pwrseq: pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&rtc CLK_OSC32K_FANOUT>;
++		clock-names = "ext_clock";
++		pinctrl-0 = <&x32clk_fanout_pin>;
++		pinctrl-names = "default";
++		post-power-on-delay-ms = <200>;
++		reset-gpios = <&pio 6 18 GPIO_ACTIVE_LOW>; /* PG18 */
++	};
++};
++
++/* SDIO WiFi RTL8821CS */
++&mmc1 {
++	vmmc-supply = <&reg_cldo4>;
++	vqmmc-supply = <&reg_aldo4>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	bus-width = <4>;
++	non-removable;
++	status = "okay";
++
++	sdio_wifi: wifi@1 {
++		reg = <1>;
++		interrupt-parent = <&pio>;
++		interrupts = <6 15 IRQ_TYPE_LEVEL_LOW>; /* PG15 */
++		interrupt-names = "host-wake";
++	};
++};
++
++/* Bluetooth RTL8821CS */
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "realtek,rtl8821cs-bt", "realtek,rtl8723bs-bt";
++		device-wake-gpios = <&pio 6 17 GPIO_ACTIVE_HIGH>; /* PG17 */
++		enable-gpios = <&pio 6 19 GPIO_ACTIVE_HIGH>; /* PG19 */
++		host-wake-gpios = <&pio 6 16 GPIO_ACTIVE_HIGH>; /* PG16 */
++	};
++};
+-- 
+cgit 1.2.3-korg
+
