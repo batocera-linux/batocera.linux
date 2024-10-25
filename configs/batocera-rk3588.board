@@ -33,6 +33,8 @@ BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-nanopi-m6 rockchip/rk3588-ban
 BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
+# Support DTB overlays
+BR2_LINUX_KERNEL_DTB_OVERLAY_SUPPORT=y
 
 # Show a nice movie at bootup
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
