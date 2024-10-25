@@ -1,16 +1,46 @@
 {
     "actions_player1": [
-    {
+        {
            "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -15 /usr/bin/flycast",
+            "type": "key",
+            "target": [ "KEY_F7" ],
             "description": "Exit emulator"
-    },
-	{
+        },
+	    {
             "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_TAB" ],
+            "description": "Configuration menu"
+	    },
+	    {
+            "trigger": ["hotkey", "a"],
             "type": "key",
             "target": [ "KEY_RIGHTSHIFT", "KEY_F12" ],
             "description": "Hide the bezel"
-	}
+	    },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": ["KEY_F10"],
+            "description": "Screenshot"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F8" ],
+            "description": "Load State"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F9" ],
+            "description": "Save State"
+        },
+        {
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": [ "KEY_SPACE" ],
+            "description": "Fast Forward"
+        }
     ]
 }

@@ -20,7 +20,14 @@ class FlycastGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "flycast",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { 
+                "exit": "KEY_F7",
+                "menu": "KEY_TAB",
+                "fast_foward": "KEY_SPACE",
+                "load_state": "KEY_F8",
+                "save_state": "KEY_F9",
+                "screenshot": "KEY_F10"
+            }
         }
 
     # Main entry of the module
@@ -58,6 +65,9 @@ class FlycastGenerator(Generator):
             # Ensure controller(s) are on seperate Ports
             port = controller.player_number-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
+        
+        # add the keyboard mappings for hotkeys
+        flycastControllers.generateKeyboardConfig()
 
         if not Config.has_section("config"):
             Config.add_section("config")
