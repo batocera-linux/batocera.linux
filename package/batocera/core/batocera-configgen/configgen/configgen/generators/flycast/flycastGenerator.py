@@ -25,8 +25,7 @@ class FlycastGenerator(Generator):
                 "menu": "KEY_TAB",
                 "fast_foward": "KEY_SPACE",
                 "load_state": "KEY_F8",
-                "save_state": "KEY_F9",
-                "screenshot": "KEY_F10"
+                "save_state": "KEY_F9"
             }
         }
 
