@@ -26,11 +26,11 @@ case "${ACTION}" in
     list)
         printf "auto\tauto\n"
         LANG=C pactl list sinks-raw | sed -e s+"^sink=\"[0-9]*\" name=\"\([^ ]*\)\" .* description=\"\(.*\)\"$"+"\1\t\2"+
-    ;;
+        ;;
 
     get)
         /usr/bin/batocera-settings-get audio.device
-    ;;
+        ;;
 
     set)
         MODE="$2"
@@ -40,39 +40,41 @@ case "${ACTION}" in
                 BOARD=$(cat /boot/boot/batocera.board)
 
                 case "${ARCH}" in
-                "rk3399")
-                    MODE=alsa_output.platform-hdmi-sound.stereo-fallback
-                    LANG=C pactl set-default-sink "${MODE}" || exit 1
-                    ;;
-                "s922x")
-                    if [ "$BOARD" == "ogu" ]; then
+                    "rk3399")
+                        MODE=alsa_output.platform-hdmi-sound.stereo-fallback
+                        LANG=C pactl set-default-sink "${MODE}" || exit 1
+                        ;;
+                    "s922x")
+                        if [[ "$BOARD" == "ogu" ]]; then
+                            LANG=C pactl set-default-sink INTERNAL
+                            amixer -c 0 -q sset "Master" 100%
+                            amixer -c 0 sset 'Playback Mux' SPK
+                            amixer -c 0 -q sset 'FRDDR_A SINK 1 SEL' 'OUT 1'
+                            amixer -c 0 -q sset 'FRDDR_A SRC 1 EN' 'on'
+                        fi
+                        ;;
+                    "rk3326")
                         LANG=C pactl set-default-sink INTERNAL
-                        amixer -c 0 -q sset "Master" 100%
-                        amixer -c 0 sset 'Playback Mux' SPK
-                        amixer -c 0 -q sset 'FRDDR_A SINK 1 SEL' 'OUT 1'
-                        amixer -c 0 -q sset 'FRDDR_A SRC 1 EN' 'on'
-                    fi
-                    ;;
-                "rk3326")
-                    LANG=C pactl set-default-sink INTERNAL
-                    amixer -c 0 cset name='Playback Path' SPK
-                    ;;
-                *)
-                    # do nothing!
+                        amixer -c 0 cset name='Playback Path' SPK
+                        ;;
+                    *)
+                        # do nothing!
+                        ;;
                 esac
-            ;;
+                ;;
             *)
                 LANG=C pactl set-default-sink "${MODE}" || exit 1
-                    if [[ $(LANG=C pactl get-default-sink) != "${MODE}" ]]; then
-                        # default-sink didn't switch right away for some reason, try again later
-                        exit 1
-                    fi
+                if [[ $(LANG=C pactl get-default-sink) != "${MODE}" ]]; then
+                    # default-sink didn't switch right away for some reason, try again later
+                    exit 1
+                fi
+                ;;
         esac
         ;;
 
     list-profiles)
         printf "auto\tauto\n"
-        LANG=C pactl list cards-profiles-raw | grep "available=\"1\"" | sed -e s+"^card=\"[0-9]*\" name=\"\(.*\)\" profile=\"\(.*\)\" available=\"[01]\" active=\"[01]\" description=\"\(.*\)\"$"+"\2@\1\t\3"+
+        LANG=C pactl list cards-profiles-raw | grep 'available="1"' | sed -E 's/^card="[0-9]+" name="(.*)" profile="(.*)" available="[01]" active="[01]" description="(.*)"$/\2@\1\t\3/'
         ;;
 
     get-profile)
@@ -81,16 +83,15 @@ case "${ACTION}" in
 
     set-profile)
         MODE="$2"
-        if test "${MODE}" != "auto"
-        then
-                if [[ $(batocera-audio list-profiles) =~ "${MODE}" ]]; then
-                    PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
-                    CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
-                    LANG=C pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
-                else
-                    # the profile isn't available yet, try again later
-                    exit 1
-                fi
+        if [[ "${MODE}" != "auto" ]]; then
+            if batocera-audio list-profiles | grep -q "${MODE}"; then
+                PROFILE_NAME=$(echo "${MODE}" | cut -d '@' -f 1)
+                CARD_NAME=$(echo "${MODE}" | cut -d '@' -f 2)
+                LANG=C pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+            else
+                # the profile isn't available yet, try again later
+                exit 1
+            fi
         fi
         ;;
 
@@ -101,41 +102,36 @@ case "${ACTION}" in
     setSystemVolume)
         VOLUME="$2"
         case "${VOLUME}" in
-        "mute")
-            LANG=C pactl set-sink-mute @DEFAULT_SINK@ 1 || exit 1
-            ;;
-        "unmute")
-            LANG=C pactl set-sink-mute @DEFAULT_SINK@ 0 || exit 1
-            ;;
-        "mute-toggle")
-            LANG=C pactl set-sink-mute @DEFAULT_SINK@ toggle || exit 1
-            ;;
-        *)
-            if echo "${VOLUME}" | grep -qE '^[0-9]+$'
-            then
-              if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
-              then
-                LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%" || exit 1
-                exit 0
-              fi
-            else
-              if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
-              then
-                let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
-                test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
-                test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
-                LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%" || exit 1
-                exit 0
-              fi
-              echo "invalid volume value" >&2
-              exit 1
-            fi
+            "mute")
+                LANG=C pactl set-sink-mute @DEFAULT_SINK@ 1 || exit 1
+                ;;
+            "unmute")
+                LANG=C pactl set-sink-mute @DEFAULT_SINK@ 0 || exit 1
+                ;;
+            "mute-toggle")
+                LANG=C pactl set-sink-mute @DEFAULT_SINK@ toggle || exit 1
+                ;;
+            *)
+                if echo "${VOLUME}" | grep -qE '^[0-9]+$'; then
+                    if [[ "${VOLUME}" -ge 0 && "${VOLUME}" -le "${MAX_VOLUME}" ]]; then
+                        LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%" || exit 1
+                        exit 0
+                    fi
+                elif echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'; then
+                    let NEW_VOLUME=${DETECT_VOLUME}${VOLUME}
+                    NEW_VOLUME=$(( NEW_VOLUME < 0 ? 0 : (NEW_VOLUME > MAX_VOLUME ? MAX_VOLUME : NEW_VOLUME) ))
+                    LANG=C pactl set-sink-volume @DEFAULT_SINK@ "${NEW_VOLUME}%" || exit 1
+                    exit 0
+                fi
+                echo "invalid volume value" >&2
+                exit 1
+                ;;
         esac
         ;;
 
     test)
         aplay "/usr/share/sounds/Mallet.wav" || exit 1
-    ;;
+        ;;
     *)
-        do_usage $(basename $0)
+        do_usage "$(basename "$0")"
 esac

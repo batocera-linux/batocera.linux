@@ -8,25 +8,72 @@
 
 BOARD=$(cat /boot/boot/batocera.board)
 
-start_pipewire() {
-    printf "Starting pipewire: "
-    start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
-    msg=OK
-
-    #Wait till sinks are listed, this means PW is working
-    until pactl list sinks-raw | grep -qo sink=
-    do
-        sleep 0.1
-        N=$((N+1))
-        test $N -gt 50 && { msg=KO; break; }
+check_pipewire_status() {
+    local timeout=10
+    local interval=0.1
+    local elapsed=0
+    
+    while [ "$(echo "$elapsed < $timeout" | bc)" -eq 1 ]; do
+        if ! pgrep -x pipewire >/dev/null; then
+            return 1
+        fi
+        
+        if [ ! -S "${XDG_RUNTIME_DIR}/pipewire-0" ]; then
+            sleep "$interval"
+            elapsed=$(echo "$elapsed + $interval" | bc)
+            continue
+        fi
+        
+        if pactl info >/dev/null 2>&1 && pactl list sinks-raw 2>/dev/null | grep -qo sink=; then
+            return 0
+        fi
+        
+        sleep "$interval"
+        elapsed=$(echo "$elapsed + $interval" | bc)
     done
+    
+    return 1
+}
 
-    DEFAULT_AUDIO="$(/usr/bin/batocera-settings-get-master audio.device)"
-    if [ -n "$DEFAULT_AUDIO" -a "$DEFAULT_AUDIO" != "auto" ]; then
-        /usr/bin/pactl set-default-sink "$DEFAULT_AUDIO"
+start_pipewire() {
+    LANG=C
+    printf "Starting PipeWire: "
+    
+    # Start PipeWire in the background
+    start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
+    
+    # Check if PipeWire started successfully
+    if check_pipewire_status; then
+        echo "OK"
+        # Check the audio device is set if necessary
+        if set_default_audio_device; then
+            return 0
+        else
+            echo "Error: Failed to set the default audio device." >&2
+            return 1
+        fi
+    else
+        echo "KO"
+        echo "Error: PipeWire failed to start within timeout period" >&2
+        return 1
+    fi
+}
+
+set_default_audio_device() {
+    local default_audio
+    default_audio=$(/usr/bin/batocera-settings-get-master audio.device)
+
+    # Set default audio device if specified
+    if [ -n "$default_audio" ] && [ "$default_audio" != "auto" ]; then
+        if /usr/bin/pactl set-default-sink "$default_audio"; then
+            return 0
+        else
+            echo "Error: Failed to set default sink to $default_audio" >&2
+            return 1
+        fi
     fi
 
-    echo "$msg"
+    return 0
 }
 
 stop_pipewire() {
@@ -40,17 +87,18 @@ case "$1" in
     start)
         alsactl init # init cards with alsa files
         start_pipewire
-    ;;
+        ;;
     stop)
         stop_pipewire
-    ;;
+        ;;
     restart|reload)
         stop_pipewire
         start_pipewire
-    ;;
+        ;;
     *)
         echo "Usage: $0 {start|stop|restart}"
         exit 1
+        ;;
 esac
 
 exit $?
