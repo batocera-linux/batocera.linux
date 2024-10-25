@@ -1,11 +1,13 @@
---- a/src/frontend/mame/ui/ui.cpp	Wed May 26 15:42:03 2021
-+++ b/src/frontend/mame/ui/ui.cpp	Sun Oct  3 15:45:07 2021
-@@ -413,6 +413,8 @@
- 	// or if we are debugging, or if there's no mame window to send inputs to
+diff --git a/src/frontend/mame/ui/ui.cpp b/src/frontend/mame/ui/ui.cpp
+index ca79240426..e7ffb4f5c7 100644
+--- a/src/frontend/mame/ui/ui.cpp
++++ b/src/frontend/mame/ui/ui.cpp
+@@ -601,6 +601,8 @@ void mame_ui_manager::display_startup_screens(bool first_time)
  	if (!first_time || (str > 0 && str < 60*5) || &machine().system() == &GAME_NAME(___empty) || (machine().debug_flags & DEBUG_FLAG_ENABLED) != 0 || video_none)
  		show_gameinfo = show_warnings = show_mandatory_fileman = false;
-+	
-+	show_gameinfo = show_warnings = show_mandatory_fileman = false;
  
++	show_gameinfo = show_warnings = show_mandatory_fileman = false;
++
  #if defined(__EMSCRIPTEN__)
  	// also disable for the JavaScript port since the startup screens do not run asynchronously
+ 	show_gameinfo = show_warnings = false;
