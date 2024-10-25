@@ -102,7 +102,7 @@
 - Eduke32 to Jul 25 build
 - Flycast to v2.4
 - GroovyMAME to 0.268
-- GZDoom to g4.13.0
+- GZDoom to g4.13.1
 - Ikemen to August 1st 2024 build
 - Kodi to 21.1
 - MelonDS to 7th October build
