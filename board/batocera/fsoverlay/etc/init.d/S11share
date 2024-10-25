@@ -272,6 +272,47 @@ mountDevicesOrNetwork() {
     return 0
 }
 
+prepareLUKS() {
+    waitnet_tries=$(seq "$MAXTRY")
+    # Find encrypted block devices
+    for dev in $(blkid -t TYPE="crypto_LUKS" -o device)
+    do
+        # Wait for network to be up, in case any of our LUKS devices are
+        # bound to a networked tang server via clevis for Network-Based
+        # Disk Encryption (NBDE)
+        for waitnet in waitnet_tries
+        do
+            if [ -n "$(ip route)" ]
+            then
+                break
+            fi
+            echo "Waiting for network..."
+            sleep 1
+        done
+        unset waitnet_tries
+        # Try to unlock the device automatically via TPM2 or tang, per
+        # the volume's bound policies
+        if ! clevis luks unlock -d "${dev}"
+        then
+            # If unable to unlock automatically, switch to the console
+            # TTY and open manually via passphrase prompt
+            TTY=1
+            read -r cmdline < /proc/cmdline
+            for param in ${cmdline}
+            do
+                case ${param} in
+                    console=tty*) TTY=${param#console=tty};;
+                    *)            continue;;
+                esac
+            done
+            chvt "${TTY}"
+            cryptsetup open "${dev}" "$(cryptsetup luksUUID ${dev})"
+        fi
+    done
+    # probe any partitions found (full disk encryption)
+    dmsetup ls --target crypt --exec partprobe
+}
+
 # call user script (for nas wakeonlan for example)
 test -e /boot/preshare.sh && bash /boot/preshare.sh start
 
@@ -292,6 +333,12 @@ if [ -x ${VGSCAN} -a -x ${VGCHANGE} ]
 then
     ${VGSCAN}
     ${VGCHANGE} -ay
+fi
+
+luks_enabled="$(/usr/bin/batocera-settings-get luks.enabled)"
+if [ "${luks_enabled}" = "1" -o -z "${luks_enabled}" ]
+then
+    prepareLUKS
 fi
 
 case "${MODE}" in
