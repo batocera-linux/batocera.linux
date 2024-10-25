@@ -42,6 +42,7 @@
 - ES: Sinden light gun border now have the exact same size in-game
 - Custom boot splash image now displays when intended
 - Dualshock controllers not enabled on some Arm boards
+- Hotkey handling for Flycast
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
