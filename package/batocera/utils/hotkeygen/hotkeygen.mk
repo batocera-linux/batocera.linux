@@ -22,4 +22,12 @@ define HOTKEYGEN_INSTALL_TARGET_CMDS
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_mapping.conf $(TARGET_DIR)/etc/hotkeygen/default_mapping.conf
 endef
 
+define HOTKEYGEN_INSTALL_SM8250_CONFIG
+	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_mapping-sm8250.conf $(TARGET_DIR)/etc/hotkeygen/default_mapping.conf
+endef
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+	HOTKEYGEN_POST_INSTALL_TARGET_HOOKS += HOTKEYGEN_INSTALL_SM8250_CONFIG
+endif
+
 $(eval $(generic-package))
