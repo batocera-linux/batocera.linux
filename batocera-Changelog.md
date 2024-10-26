@@ -156,6 +156,8 @@
 - Shim signed x64 EFI bootloader to 1.58+15.8-0ubuntu1
 - WinBTRFS Driver to 1.9
 - Added tmux
+- Support for LUKS-encrypted disk volumes with clevis automated decryption
+  (tpm2 and tang) at boot time
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
