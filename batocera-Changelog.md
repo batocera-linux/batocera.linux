@@ -98,7 +98,7 @@
 - DevilutionX to 1.5.3
 - Dolphin to 2409-233
 - Duckstation to v0.1-7294
-- DXX-Rebirth to July 21 build
+- DXX-Rebirth to Aug 12, 2024 build
 - Eduke32 to Jul 25 build
 - Flycast to v2.4
 - GroovyMAME to 0.268
