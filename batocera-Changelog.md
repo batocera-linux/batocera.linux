@@ -76,17 +76,17 @@
   - Libretro-BlueMSX to August 8, 2024 build
   - Libretro-BSnes to August 9, 2024 build
   - Libretro-Cap32 to June 29, 2024 build
-  - Libretro-Melonds-Ds to v1.1.5
   - Libretro-Ecwolf to June 28 build
   - Libretro-Fake08 to Sept 2 build
   - Libretro-Fbneo to October 3, 2024 build
   - Libretro-Flycast to v2.4
   - Libretro-Freechaf to June 28 build
   - Libretro-MAME to 0.268
+  - Libretro-Melonds-DS to v1.1.5
   - Libretro-Minivac to July 1 build
   - Libretro-MrBoom to v5.5
   - Libretro-Mupen64plus-Next to July 19, 2024 build
-  - Libretro-NeoCD to June 22 build
+  - Libretro-NeoCD to Oct 21, 2024 build
   - Libretro-Play to 0.67-1
 - Amiberry to v5.7.4
 - BigPEmu to v115
