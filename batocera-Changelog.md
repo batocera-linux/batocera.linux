@@ -96,7 +96,7 @@
 - Commander Genius to v3.5.1
 - Corsixth to v0.68.0
 - DevilutionX to 1.5.3
-- Dolphin to 2409-78
+- Dolphin to 2409-233
 - Duckstation to v0.1-7294
 - DXX-Rebirth to July 21 build
 - Eduke32 to Jul 25 build
