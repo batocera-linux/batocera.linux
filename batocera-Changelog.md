@@ -104,6 +104,7 @@
 - GroovyMAME to 0.268
 - GZDoom to g4.13.1
 - Ikemen to August 1st 2024 build
+- IORTCW to May 27, 20024 build
 - Kodi to 21.1
 - MelonDS to 7th October build
 - Mupen64 core & plugins to v2.6.0
