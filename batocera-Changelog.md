@@ -115,7 +115,7 @@
 - Sonic Mania to Jul 21, 2024 build
 - Supermodel to 1st October build
 - Syncthing to 1.27.10
-- The Force Engine to Aug 19, 2024 build
+- The Force Engine to Oct 26, 2024 build
 - TheXTech to v1.3.6.6
 - Vita3k to August 25, 2024 build
 - Xemu to v0.7.130
