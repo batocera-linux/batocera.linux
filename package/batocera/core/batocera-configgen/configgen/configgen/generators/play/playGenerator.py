@@ -224,7 +224,6 @@ class PlayGenerator(Generator):
         ET.indent(input_tree, space="    ", level=0)
         playInputFile.parent.mkdir(parents=True, exist_ok=True)
         input_tree.write(playInputFile)
-        input_tree.write("/userdata/system/configs/play/text.xml")
 
         ## Prepare the command to run the emulator
         commandArray = ["/usr/bin/Play", "--fullscreen"]
