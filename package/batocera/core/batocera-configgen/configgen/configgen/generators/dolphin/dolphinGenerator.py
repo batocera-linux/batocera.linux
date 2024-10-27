@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command, controllersConfig
-from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, SAVES, CACHE, mkdir_if_not_exists
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import dolphinControllers, dolphinSYSCONF
@@ -488,10 +488,15 @@ class DolphinGenerator(Generator):
         if system.isOptSet('state_filename'):
             commandArray.extend(["--save_state", system.config['state_filename']])
 
-        return Command.Command(array=commandArray, \
-            env={ "XDG_CONFIG_HOME":CONFIGS, \
-            "XDG_DATA_HOME":SAVES, \
-            "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(
+            array=commandArray, 
+            env={ 
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_DATA_HOME": SAVES,
+                "XDG_CACHE_HOME": CACHE,
+                "QT_QPA_PLATFORM": "xcb"
+            }
+        )
 
     def getInGameRatio(self, config, gameResolution, rom):
 
