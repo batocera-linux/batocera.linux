@@ -88,6 +88,7 @@
   - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to Oct 21, 2024 build
   - Libretro-Play to 0.67-1
+  - Libretro-SuperBrosWar to Oct 21, 2024 build
 - Amiberry to v5.7.4
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
