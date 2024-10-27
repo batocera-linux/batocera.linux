@@ -120,7 +120,7 @@
 - Vita3k to August 25, 2024 build
 - Xemu to v0.7.130
 - Xenia to v1.0.2817
-- Xenia Canary to October 23, 2024 build
+- Xenia Canary to October 26, 2024 build
 ### System
 - Bauh to 0.10.7 (flatpak-config)
 - Nvidia Driver to 560.35.03 (Open kernel modules)
