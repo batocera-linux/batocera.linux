@@ -112,7 +112,9 @@
 - Pyxel to 2.2.4
 - Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.33 (alpha on Aug 31, 2024)
-- Sonic Mania to Jul 21, 2024 build
+- Sonic 2013 to 1.3.2
+- Sonic CD to 1.3.2
+- Sonic Mania to v1.1.0
 - Supermodel to 1st October build
 - Syncthing to 1.27.10
 - The Force Engine to Oct 26, 2024 build
