@@ -19,6 +19,10 @@ ifeq ($(BR2_ENABLE_DEBUG),y)
     RETROARCH_CONF_OPTS += --enable-debug
 endif
 
+# disable libdecor : A client-side decorations library for Wayland client
+# it makes retroarch unable to start on dual screen. It looks like a ra bug
+RETROARCH_CONF_OPTS += --disable-libdecor
+
 ifeq ($(BR2_PACKAGE_FFMPEG),y)
     RETROARCH_CONF_OPTS += --enable-ffmpeg
     RETROARCH_DEPENDENCIES += ffmpeg
