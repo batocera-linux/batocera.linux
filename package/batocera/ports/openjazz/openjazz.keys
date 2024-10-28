@@ -1,9 +1,10 @@
 {
     "actions_player1": [
-	{
+        {
             "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -9 OpenJazz"
-	}
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "description": "Exit the emulator"
+        }
     ]
 }

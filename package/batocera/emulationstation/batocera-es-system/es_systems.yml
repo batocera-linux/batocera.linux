@@ -3683,7 +3683,7 @@ vemulator:
       vemulator:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VEMULATOR] }
 
 openjazz:
-  name:       Jazz Jackrabbit
+  name: Jazz Jackrabbit
   manufacturer: Ports
   release: 1994
   hardware: port
@@ -3693,6 +3693,16 @@ openjazz:
   emulators:
     openjazz:
       openjazz: { requireAnyOf: [BR2_PACKAGE_OPENJAZZ] }
+  comment_en: |
+    OpenJazz requires the original Jazz Jackrabbit game files.
+    Copy all game files into this directory.
+    Then create an empty `Jazz Jackrabbit.game` file for EmulationStation to be able to launch the game.
+
+    For more info: https://wiki.batocera.org/systems:openjazz
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:openjazz
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:openjazz
 
 tyrian:
   name:       Tyrian

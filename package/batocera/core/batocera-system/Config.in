@@ -1069,6 +1069,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 									BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
 									BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
+	# Jazz Jackrabbit
+	select BR2_PACKAGE_OPENJAZZ		# ALL
+
 	help
 	  Ports
 
@@ -1419,8 +1422,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 	bool "add experimental cores"
 
-	# Jazz Jackrabbit
-	select BR2_PACKAGE_OPENJAZZ		# ALL
+
 
 	# Free Heroes of Might & Magic 2 engine
 	select BR2_PACKAGE_FHEROES2		# ALL
