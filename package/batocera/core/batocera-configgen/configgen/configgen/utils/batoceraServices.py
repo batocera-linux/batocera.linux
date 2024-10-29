@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class batoceraServices:
 
@@ -12,9 +12,9 @@ class batoceraServices:
         for valmod in out.decode().splitlines():
             vals = valmod.split(";")
             if(name == vals[0] and vals[1] == "*"):
-                eslog.debug(f"service {name} is enabled")
+                _logger.debug("service %s is enabled", name)
                 return True
-        eslog.debug(f"service {name} is disabled")
+        _logger.debug("service %s is disabled", name)
         return False
 
     @staticmethod
@@ -22,5 +22,5 @@ class batoceraServices:
         proc = subprocess.Popen(["batocera-services status \"" + name + "\""], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
         val = out.decode().strip()
-        eslog.debug(f"service {name} status : \"" + val + "\"") # strip any end of lines
+        _logger.debug('service %s status : "%s"', name, val) # strip any end of lines
         return val

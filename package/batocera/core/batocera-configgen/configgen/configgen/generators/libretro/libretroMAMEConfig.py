@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import GunMapping
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Define RetroPad inputs for mapping
 retroPad = {
@@ -164,7 +164,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     commandLine += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
-                        eslog.debug("Joyport is only compatible with Apple II +")
+                        _logger.debug("Joyport is only compatible with Apple II +")
                     else:
                         commandLine += ["-gameio", system.config['gameio']]
                         specialController = system.config['gameio']

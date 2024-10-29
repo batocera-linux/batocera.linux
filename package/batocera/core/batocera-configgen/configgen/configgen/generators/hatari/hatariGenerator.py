@@ -12,7 +12,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # libretro generator uses this, so it needs to be public
 HATARI_CONFIG: Final = CONFIGS / "hatari"
@@ -197,9 +197,9 @@ class HatariGenerator(Generator):
                         biosversion = f"tos{v_tos_version}"
                     tos_path = biosdir / f"{biosversion}{v_language}.img"
                     if tos_path.exists():
-                        eslog.debug(f"tos filename: {tos_path.name}")
+                        _logger.debug("tos filename: %s", tos_path.name)
                         return tos_path
                     else:
-                        eslog.warning(f"tos filename {tos_path.name} not found")
+                        _logger.warning("tos filename %s not found", tos_path.name)
 
         raise Exception(f"no bios found for machine {machine}")

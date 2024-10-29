@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class LemonadeGenerator(Generator):
 
@@ -155,17 +155,17 @@ class LemonadeGenerator(Generator):
         # Set Vulkan as necessary
         if system.isOptSet("lemonade_graphics_api") and system.config["lemonade_graphics_api"] == "2":
             if vulkan.is_available():
-                eslog.debug("Vulkan driver is available on the system.")
+                _logger.debug("Vulkan driver is available on the system.")
                 if vulkan.has_discrete_gpu():
-                    eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_index = vulkan.get_discrete_gpu_index()
                     if discrete_index:
-                        eslog.debug("Using Discrete GPU Index: {} for Lemonade".format(discrete_index))
+                        _logger.debug("Using Discrete GPU Index: %s for Lemonade", discrete_index)
                         lemonadeConfig.set("Renderer", "physical_device", discrete_index)
                     else:
-                        eslog.debug("Couldn't get discrete GPU index")
+                        _logger.debug("Couldn't get discrete GPU index")
                 else:
-                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
         if system.isOptSet('lemonade_use_vsync_new') and system.config["lemonade_use_vsync_new"] == '0':
             lemonadeConfig.set("Renderer", "use_vsync_new", "false")

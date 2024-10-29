@@ -11,10 +11,11 @@ from .dolphinTriforcePaths import DOLPHIN_TRIFORCE_CONFIG
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
+
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, rom: Path) -> None:
@@ -153,9 +154,9 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
                 # Write the configuration for this key
                 if keyname is not None:
                     write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, hotkey.id)
-        
+
         nplayer += 1
-    
+
     f.write
     f.close()
 
@@ -173,7 +174,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             nsamepad = double_pads[pad.real_name.strip()]
         else:
             nsamepad = 0
-        
+
         double_pads[pad.real_name.strip()] = nsamepad+1
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Device = SDL/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + "\n")
@@ -189,7 +190,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
         else:
             f.write("Rumble/Motor = \n")
         nplayer += 1
-    
+
     f.write
     f.close()
 
@@ -230,21 +231,21 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
 def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad: Controller) -> bool:
     for profileFile in (DOLPHIN_TRIFORCE_CONFIG / "Config" / "Profiles" / "GCPad").glob("*.ini"):
         try:
-            eslog.debug(f"Looking profile : {profileFile}")
+            _logger.debug("Looking profile : %s", profileFile)
             profileConfig = CaseSensitiveConfigParser(interpolation=None)
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug(f"Profile device : {profileDevice}")
+            _logger.debug("Profile device : %s", profileDevice)
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
                 if deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.real_name.strip():
-                    eslog.debug("Eligible profile device found")
+                    _logger.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
                             f.write(f"{key} = {val}\n")
                     return True
         except:
-            eslog.error(f"profile {profileFile} : FAILED")
+            _logger.error("profile %s : FAILED", profileFile)
 
     return False
 
@@ -263,7 +264,7 @@ def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input
         elif input_value == "8": # left
             f.write("Hat 0 W")
         elif input_value == "2": # right
-            f.write("Hat 0 E")   
+            f.write("Hat 0 E")
     elif input_type == "axis":
         if (reverse and input_value == "-1") or (not reverse and input_value == "1") or (not reverse and input_value == "0"):
             if "-Analog" in keyname:

@@ -12,7 +12,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class HclGenerator(Generator):
 
@@ -27,7 +27,7 @@ class HclGenerator(Generator):
             os.chdir(ROMS / "hcl" / "data" / "map")
             os.chdir(ROMS / "hcl")
         except:
-            eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
+            _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["hcl", "-d"]
 
         return Command.Command(

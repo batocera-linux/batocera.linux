@@ -12,7 +12,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 _CATACOMBGL_CONFIG: Final = CONFIGS / "CatacombGL"
 _CATACOMBGL_SAVES: Final = SAVES / "CatacombGL"
@@ -39,7 +39,7 @@ class CatacombGLGenerator(Generator):
 
         # Check if the ini file exists, and if not, create and adjust it
         if not _CATACOMBGL_CONFIG_FILE.exists():
-            eslog.debug("CatacombGL.ini not found, creating the file.")
+            _logger.debug("CatacombGL.ini not found, creating the file.")
             _CATACOMBGL_CONFIG_FILE.touch()  # Create the file if it doesn't exist
 
         # Define the paths to be added or adjusted in the ini file
@@ -80,7 +80,7 @@ class CatacombGLGenerator(Generator):
             "apocalypse": "--apocalypse",
         }.items():
             if keyword in rom_file_name:
-                eslog.debug(f"Version requested: {keyword}")
+                _logger.debug("Version requested: %s", keyword)
                 commandArray.append(argument)
 
         # Return the configured command

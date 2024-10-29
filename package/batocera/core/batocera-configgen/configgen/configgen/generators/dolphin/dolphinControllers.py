@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import DeviceInfoMapping, GunMapping
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: GunMapping) -> None:
@@ -186,8 +186,8 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
                 wiiMapping.update(res)
                 line = cconfig.readline()
 
-    eslog.debug(f"Extra Options: {extraOptions}")
-    eslog.debug(f"Wii Mappings: {wiiMapping}")
+    _logger.debug("Extra Options: %s", extraOptions)
+    _logger.debug("Wii Mappings: %s", wiiMapping)
 
     generateControllerConfig_any(system, playersControllers, wheels, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
@@ -343,7 +343,7 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
             f.write("Device = evdev/" + str(nsamepad).strip() + "/" + gundevname.strip() + "\n")
 
             buttons = guns[nplayer-1]["buttons"]
-            eslog.debug(f"Gun : {buttons}")
+            _logger.debug("Gun : %s", buttons)
 
             # custom remapping
             # erase values
@@ -353,17 +353,17 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
                         if mval in gunMapping:
                             for x in gunMapping:
                                 if gunMapping[x] == btn:
-                                    eslog.info("erasing {}".format(x))
+                                    _logger.info("erasing %s", x)
                                     gunMapping[x] = ""
                         else:
-                            eslog.info("custom gun mapping ignored for {} => {} (invalid value)".format(btn, mval))
+                            _logger.info("custom gun mapping ignored for %s => %s (invalid value)", btn, mval)
             # setting values
             for btn in gunButtons:
                 if "gun_"+btn in metadata:
                     for mval in metadata["gun_"+btn].split(","):
                         if mval in gunMapping:
                             gunMapping[mval] = btn
-                            eslog.info("setting {} to {}".format(mval, btn))
+                            _logger.info("setting %s to %s", mval, btn)
 
             # write buttons
             for btn in dolphinMappingNames:
@@ -373,9 +373,9 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
                         if gunButtons[gunMapping[btn]]["button"] in buttons:
                             val = gunButtons[gunMapping[btn]]["code"]
                         else:
-                            eslog.debug("gun has not the button {}".format(gunButtons[gunMapping[btn]]["button"]))
+                            _logger.debug("gun has not the button %s", gunButtons[gunMapping[btn]]["button"])
                     else:
-                        eslog.debug("cannot map the button {}".format(gunMapping[btn]))
+                        _logger.debug("cannot map the button %s", gunMapping[btn])
                 f.write(dolphinMappingNames[btn]+" = `"+val+"`\n")
 
             # map ir
@@ -477,7 +477,7 @@ def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller
         "joystick1right": "Main Stick/Right",
     }
 
-    eslog.debug("configuring wheel for pad {}".format(pad.real_name))
+    _logger.debug("configuring wheel for pad %s", pad.real_name)
 
     f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
     f.write(f"Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
@@ -585,22 +585,22 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
 
     for profileFile in glob_path.glob("*.ini"):
         try:
-            eslog.debug(f"Looking profile : {profileFile}")
+            _logger.debug("Looking profile : %s", profileFile)
             profileConfig = CaseSensitiveConfigParser(interpolation=None)
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.debug(f"Profile device : {profileDevice}")
+            _logger.debug("Profile device : %s", profileDevice)
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
                 if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.real_name.strip():
-                    eslog.debug("Eligible profile device found")
+                    _logger.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
                             f.write(f"{key} = {val}\n")
                     return True
         except:
-            eslog.error(f"profile {profileFile} : FAILED")
+            _logger.error("profile %s : FAILED", profileFile)
 
     return False
 

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ...input import Input
     from ...types import DeviceInfoMapping, GunMapping, HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 _PCSX2_BIN_DIR: Final = Path("/usr/pcsx2/bin")
 _PCSX2_RESOURCES_DIR: Final = _PCSX2_BIN_DIR / "resources"
@@ -104,7 +104,7 @@ class Pcsx2Generator(Generator):
 
         with Path("/proc/cpuinfo").open() as cpuinfo:
             if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
-                eslog.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
+                _logger.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
 
         # use their modified shaderc library
         envcmd = {
@@ -304,34 +304,34 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # Renderer
     # Check Vulkan first to be sure
     if vulkan.is_available():
-        eslog.debug("Vulkan driver is available on the system.")
+        _logger.debug("Vulkan driver is available on the system.")
         renderer = "12"  # Default to OpenGL
 
         if system.isOptSet("pcsx2_gfxbackend"):
             if system.config["pcsx2_gfxbackend"] == "13":
-                eslog.debug("User selected Software! Man you must have a fast CPU!")
+                _logger.debug("User selected Software! Man you must have a fast CPU!")
                 renderer = "13"
             elif system.config["pcsx2_gfxbackend"] == "14":
-                eslog.debug("User selected Vulkan")
+                _logger.debug("User selected Vulkan")
                 renderer = "14"
                 if vulkan.has_discrete_gpu():
-                    eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_name = vulkan.get_discrete_gpu_name()
                     if discrete_name:
-                        eslog.debug("Using Discrete GPU Name: {} for PCSX2".format(discrete_name))
+                        _logger.debug("Using Discrete GPU Name: %s for PCSX2", discrete_name)
                         pcsx2INIConfig.set("EmuCore/GS", "Adapter", discrete_name)
                     else:
-                        eslog.debug("Couldn't get discrete GPU Name")
+                        _logger.debug("Couldn't get discrete GPU Name")
                         pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
                 else:
-                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
                     pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
         else:
-            eslog.debug("User selected or defaulting to OpenGL")
+            _logger.debug("User selected or defaulting to OpenGL")
 
         pcsx2INIConfig.set("EmuCore/GS", "Renderer", renderer)
     else:
-        eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+        _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
         pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
 
     # Ratio
@@ -584,7 +584,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
 
     # wheels
     wtype = Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)
-    eslog.info("PS2 wheel type is {}".format(wtype));
+    _logger.info("PS2 wheel type is %s", wtype)
     if Pcsx2Generator.useEmulatorWheels(playingWithWheel, wtype):
         if len(wheels) >= 1:
             wheelMapping = {
@@ -665,7 +665,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # add multitap as needed
     multiTap = 2
     joystick_count = len(controllers)
-    eslog.debug("Number of Controllers = {}".format(joystick_count))
+    _logger.debug("Number of Controllers = %s", joystick_count)
     if system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "4":
         if joystick_count > 2 and joystick_count < 5:
             pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
@@ -673,10 +673,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         elif joystick_count > 4:
             pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
             multiTap = 4
-            eslog.debug("*** You have too many connected controllers for this option, restricting to 4 ***")
+            _logger.debug("*** You have too many connected controllers for this option, restricting to 4 ***")
         else:
             multiTap = 2
-            eslog.debug("*** You have the wrong number of connected controllers for this option ***")
+            _logger.debug("*** You have the wrong number of connected controllers for this option ***")
     elif system.isOptSet("pcsx2_multitap") and system.config["pcsx2_multitap"] == "8":
         if joystick_count > 4:
             pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
@@ -685,10 +685,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         elif joystick_count > 2 and joystick_count < 5:
             pcsx2INIConfig.set("Pad", "MultitapPort1", "true")
             multiTap = 4
-            eslog.debug("*** You don't have enough connected controllers for this option, restricting to 4 ***")
+            _logger.debug("*** You don't have enough connected controllers for this option, restricting to 4 ***")
         else:
             multiTap = 2
-            eslog.debug("*** You don't have enough connected controllers for this option ***")
+            _logger.debug("*** You don't have enough connected controllers for this option ***")
     else:
         multiTap = 2
 

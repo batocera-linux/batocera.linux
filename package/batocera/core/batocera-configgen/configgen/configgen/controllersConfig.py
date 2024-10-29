@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from .types import DeviceInfoDict, DeviceInfoMapping, GunDict, GunMapping
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 def gunsNeedCrosses(guns: GunMapping) -> bool:
     # no gun, enable the cross for joysticks, mouses...
@@ -136,7 +136,7 @@ def getGuns() -> GunDict:
     nmouse = 0
     ngun   = 0
     for eventid in sorted(mouses):
-        eslog.info("found mouse {} at {} with id_mouse={}".format(nmouse, mouses[eventid].device_node, nmouse))
+        _logger.info("found mouse %s at %s with id_mouse=%s", nmouse, mouses[eventid].device_node, nmouse)
         if "ID_INPUT_GUN" not in mouses[eventid].properties or mouses[eventid].properties["ID_INPUT_GUN"] != "1":
             nmouse = nmouse + 1
             continue
@@ -148,12 +148,12 @@ def getGuns() -> GunDict:
         need_cross   = "ID_INPUT_GUN_NEED_CROSS"   in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_CROSS"]   == '1'
         need_borders = "ID_INPUT_GUN_NEED_BORDERS" in mouses[eventid].properties and mouses[eventid].properties["ID_INPUT_GUN_NEED_BORDERS"] == '1'
         guns[ngun] = {"node": mouses[eventid].device_node, "id_mouse": nmouse, "need_cross": need_cross, "need_borders": need_borders, "name": device.name, "buttons": buttons}
-        eslog.info("found gun {} at {} with id_mouse={} ({})".format(ngun, mouses[eventid].device_node, nmouse, guns[ngun]["name"]))
+        _logger.info("found gun %s at %s with id_mouse=%s (%s)", ngun, mouses[eventid].device_node, nmouse, guns[ngun]["name"])
         nmouse = nmouse + 1
         ngun = ngun + 1
 
     if len(guns) == 0:
-        eslog.info("no gun found")
+        _logger.info("no gun found")
 
     return guns
 
@@ -181,7 +181,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
     root = tree.getroot()
     game = shortNameFromPath(rom)
     res: dict[str, str] = {}
-    eslog.info("looking for game metadata ({}, {})".format(system, game))
+    _logger.info("looking for game metadata (%s, %s)", system, game)
 
     targetSystem = system
     # hardcoded list of system for arcade
@@ -200,7 +200,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
                             for attribute in child.attrib:
                                 key = "{}_{}".format(child.tag, attribute)
                                 res[key] = child.get(attribute)
-                                eslog.info("found game metadata {}={} (system level)".format(key, res[key]))
+                                _logger.info("found game metadata %s=%s (system level)", key, res[key])
                         break
                 for nodegame in nodesystem.findall(".//game"):
                     if nodegame.get("name") != "default" and nodegame.get("name") in game:
@@ -208,7 +208,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
                             for attribute in child.attrib:
                                 key = "{}_{}".format(child.tag, attribute)
                                 res[key] = child.get(attribute)
-                                eslog.info("found game metadata {}={}".format(key, res[key]))
+                                _logger.info("found game metadata %s=%s", key, res[key])
                         return res
     return res
 

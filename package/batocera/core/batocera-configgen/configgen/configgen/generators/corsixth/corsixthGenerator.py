@@ -20,7 +20,7 @@ corsixthSavesPath = SAVES / "corsixth"
 corsixthDataPath = ROMS / "corsixth"
 corsixthFontPath = Path("/usr/share/fonts/dejavu/DejaVuSans.ttf")
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class CorsixTHGenerator(Generator):
 
@@ -45,7 +45,7 @@ class CorsixTHGenerator(Generator):
             os.chdir(corsixthDataPath / "LEVELS")
             os.chdir(corsixthDataPath / "QDATA")
         except:
-            eslog.error("ERROR: Game assets not installed. You can get them from the game Theme Hospital.")
+            _logger.error("ERROR: Game assets not installed. You can get them from the game Theme Hospital.")
 
         # If config file already exists, delete it
         if corsixthConfigFile.exists():
@@ -122,7 +122,7 @@ class CorsixTHGenerator(Generator):
             os.chdir(corsixthDataPath / "MP3")
             source_config_file.write(f"audio_music = [[{corsixthDataPath / 'MP3'}]]\n")
         except:
-            eslog.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
+            _logger.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
 
         # Close config file as we are done

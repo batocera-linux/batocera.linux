@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 from typing import TYPE_CHECKING, Any
 
 from ... import Command
@@ -13,8 +12,6 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-
-eslog = logging.getLogger(__name__)
 
 bigPemuConfig = CONFIGS / "bigpemu" / "BigPEmuConfig.bigpcfg"
 
@@ -298,7 +295,7 @@ class BigPEmuGenerator(Generator):
                         BINDINGS_SEQUENCE = P2_BINDINGS_SEQUENCE
 
                     for binding_key, binding_info in BINDINGS_SEQUENCE.items():
-                        #eslog.debug(f"Binding sequence input: {binding_key}")
+                        # _logger.debug(f"Binding sequence input: %s", binding_key)
                         if "button" in binding_info:
                             if "keyboard" in binding_info:
                                 generate_func = generate_keyb_button_bindings

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class CemuGenerator(Generator):
 
@@ -150,19 +150,19 @@ class CemuGenerator(Generator):
         if api_value == "1":
             # Check if we have a discrete GPU & if so, set the UUID
             if vulkan.is_available():
-                eslog.debug("Vulkan driver is available on the system.")
+                _logger.debug("Vulkan driver is available on the system.")
                 if vulkan.has_discrete_gpu():
                     discrete_uuid = vulkan.get_discrete_gpu_uuid()
                     if discrete_uuid:
                         discrete_uuid_num = discrete_uuid.replace("-", "")
-                        eslog.debug("Using Discrete GPU UUID: {} for Cemu".format(discrete_uuid_num))
+                        _logger.debug("Using Discrete GPU UUID: %s for Cemu", discrete_uuid_num)
                         CemuGenerator.setSectionConfig(config, graphic_root, "device", discrete_uuid_num)
                     else:
-                        eslog.debug("Couldn't get discrete GPU UUID!")
+                        _logger.debug("Couldn't get discrete GPU UUID!")
                 else:
-                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
             else:
-                eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+                _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
                 CemuGenerator.setSectionConfig(config, graphic_root, "api", "0")
 
         # Async VULKAN Shader compilation
@@ -252,12 +252,12 @@ class CemuGenerator(Generator):
         # pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .*"+"\1"+ | sed 1q | tr -d '\n'
         proc = subprocess.run(["/usr/bin/cemu/get-audio-device"], stdout=subprocess.PIPE)
         cemuAudioDevice = proc.stdout.decode('utf-8')
-        eslog.debug("*** audio device = {} ***".format(cemuAudioDevice))
+        _logger.debug("*** audio device = %s ***", cemuAudioDevice)
         if system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == True:
             CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
         elif system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == False:
             # don't change the config setting
-            eslog.debug("*** use config audio device ***")
+            _logger.debug("*** use config audio device ***")
         else:
             CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
 

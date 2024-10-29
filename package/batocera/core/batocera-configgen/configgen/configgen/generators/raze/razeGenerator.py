@@ -14,7 +14,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class RazeGenerator(Generator):
 
@@ -89,7 +89,7 @@ class RazeGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         architecture = get_cpu_architecture()
-        eslog.debug(f"*** Detected architecture is: {architecture} ***")
+        _logger.debug("*** Detected architecture is: %s ***", architecture)
 
         mkdir_if_not_exists(self.config_dir)
         mkdir_if_not_exists(self.saves_dir)
@@ -124,7 +124,7 @@ class RazeGenerator(Generator):
                                 if architecture in ["x86_64", "amd64", "i686", "i386"]:
                                     line = "gl_es=false\n"
                                 else:
-                                    eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                                    _logger.debug("*** Architecture isn't intel it's: %s therefore es is true ***", architecture)
                                     line = "gl_es=true\n"
                         else:
                             line = "gl_es=true\n"
@@ -141,14 +141,14 @@ class RazeGenerator(Generator):
 
             # If [GlobalSettings] was not found, add it with the modified options
             if not global_settings_found:
-                eslog.debug("Global Settings NOT found")
+                _logger.debug("Global Settings NOT found")
                 config_file.write("[GlobalSettings]\n")
                 if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
                     if system.isOptSet("raze_api") and system.config["raze_api"] == "0":
                         if architecture in ["x86_64", "amd64", "i686", "i386"]:
                             line = "gl_es=false\n"
                         else:
-                            eslog.debug(f"*** Architecture isn't intel it's: {architecture} therefore es is true ***")
+                            _logger.debug("*** Architecture isn't intel it's: %s therefore es is true ***", architecture)
                             line = "gl_es=true\n"
                 if system.isOptSet("raze_api"):
                     config_file.write(f"vid_preferbackend={system.config['raze_api']}\n")

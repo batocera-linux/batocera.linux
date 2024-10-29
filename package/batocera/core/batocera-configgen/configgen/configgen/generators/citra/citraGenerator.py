@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class CitraGenerator(Generator):
 
@@ -153,17 +153,17 @@ class CitraGenerator(Generator):
         # Set Vulkan as necessary
         if system.isOptSet("citra_graphics_api") and system.config["citra_graphics_api"] == "2":
             if vulkan.is_available():
-                eslog.debug("Vulkan driver is available on the system.")
+                _logger.debug("Vulkan driver is available on the system.")
                 if vulkan.has_discrete_gpu():
-                    eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_index = vulkan.get_discrete_gpu_index()
                     if discrete_index:
-                        eslog.debug("Using Discrete GPU Index: {} for Citra".format(discrete_index))
+                        _logger.debug("Using Discrete GPU Index: %s for Citra", discrete_index)
                         citraConfig.set("Renderer", "physical_device", discrete_index)
                     else:
-                        eslog.debug("Couldn't get discrete GPU index")
+                        _logger.debug("Couldn't get discrete GPU index")
                 else:
-                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
         if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
             citraConfig.set("Renderer", "use_vsync_new", "false")

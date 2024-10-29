@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 SUYU_CONFIG: Final = CONFIGS / 'suyu'
 
@@ -168,20 +168,20 @@ class SuyuGenerator(Generator):
             # Add vulkan logic
             if system.config["suyu_backend"] == "1":
                 if vulkan.is_available():
-                    eslog.debug("Vulkan driver is available on the system.")
+                    _logger.debug("Vulkan driver is available on the system.")
                     if vulkan.has_discrete_gpu():
-                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                        _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                         discrete_index = vulkan.get_discrete_gpu_index()
                         if discrete_index:
-                            eslog.debug("Using Discrete GPU Index: {} for Suyu".format(discrete_index))
+                            _logger.debug("Using Discrete GPU Index: %s for Suyu", discrete_index)
                             suyuConfig.set("Renderer", "vulkan_device", discrete_index)
                             suyuConfig.set("Renderer", "vulkan_device\\default", "true")
                         else:
-                            eslog.debug("Couldn't get discrete GPU index, using default")
+                            _logger.debug("Couldn't get discrete GPU index, using default")
                             suyuConfig.set("Renderer", "vulkan_device", "0")
                             suyuConfig.set("Renderer", "vulkan_device\\default", "true")
                     else:
-                        eslog.debug("Discrete GPU is not available on the system. Using default.")
+                        _logger.debug("Discrete GPU is not available on the system. Using default.")
                         suyuConfig.set("Renderer", "vulkan_device", "0")
                         suyuConfig.set("Renderer", "vulkan_device\\default", "true")
         else:

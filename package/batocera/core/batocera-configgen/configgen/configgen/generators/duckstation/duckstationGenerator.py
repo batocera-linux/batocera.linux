@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -16,7 +15,6 @@ if TYPE_CHECKING:
 
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
 
 class DuckstationGenerator(Generator):
 
