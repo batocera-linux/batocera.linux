@@ -16,7 +16,7 @@ define FAKE_HWCLOCK_INSTALL_TARGET_CMDS
         $(INSTALL) -D -m 0750 $(@D)/debian/fake-hwclock.init $(TARGET_DIR)/etc/init.d/S47fake-hwclock
         mkdir -p $(TARGET_DIR)/etc/default
         echo 'FILE=/userdata/system/fake-hwclock.data' > $(TARGET_DIR)/etc/default/fake-hwclock
-        [ ! -f $(TARGET_DIR)/lib/lsb/init-functions ] && mkdir -p $(TARGET_DIR)/lib/lsb && echo '' > $(TARGET_DIR)/lib/lsb/init-functions
+        [ -f $(TARGET_DIR)/lib/lsb/init-functions ] || mkdir -p $(TARGET_DIR)/lib/lsb && echo '' > $(TARGET_DIR)/lib/lsb/init-functions
 endef
 
 $(eval $(generic-package))
