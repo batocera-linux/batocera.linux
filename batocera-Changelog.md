@@ -17,8 +17,9 @@
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
-- Steering wheel support for Microsoft SideWinder Precision Racing Wheel
-- Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
+- Steering wheel support added for :
+  - Thurstmaster T150, TMX and T248 with force Feedback (new driver)
+  - Microsoft SideWinder Precision Racing Wheel
 - Display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
 - Emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
