@@ -1,0 +1,4 @@
+config BR2_PACKAGE_FAKE_HWCLOCK
+	bool "fake-hwclock"
+	help
+	  Save/restore system clock on machines without working RTC hardware

@@ -2,14 +2,14 @@ diff --git a/doc/CmdLine.md b/doc/CmdLine.md
 index db2b025..b4fd24c 100644
 --- a/doc/CmdLine.md
 +++ b/doc/CmdLine.md
-@@ -68,6 +68,7 @@ Refer also to **bezel arguments** [here](Bezels.md)
- | -gamepad                         | Enable SDL_GameController configuration. Use -haptic [0-4] to configure rumble. |
- | -grabmouse                       | Capture mouse in SDL window.                           |
- | -homedir \<dirname>              | Sets the Home Directory that Hypseus will use.         |
-+| -romdir \<dirname>               | Sets the ROM Directory that Hypseus will use.          |
- | -idleexit \<seconds>             | Tells Hypseus to exit after a certain number of seconds if no input has been received. |
- | -ignore_aspect_ratio             | Tells Hypseus to ignore the aspect ratio defined in the MPEG header. |
- | -keymapfile \<config>            | Specify an alternate hypinput.ini file.                |
+@@ -95,6 +95,7 @@ Refer also to **bezel arguments** [here](Bezels.md)
+ | -pal_sa_sc                       | Tells Hypseus that you are using a PAL Software Corner Space Ace disc instead of an NTSC Space Ace disc. *Only relevant when playing the USA version of Space Ace.* |
+ | -prefer_samples                  | Same games can emulate sound or use samples of sounds. If both emulated and sampled sounds are available, this option will force sampled sounds to be used. Otherwise, emulated sounds will always be used. |
+ | -preset \<number>                | A simple way to pass arguments directly to the game driver. Tells the game driver to use a specific preset configuration. Different for each game. |
++| -romdir \<dirname>               | Sets the ROM Directory that Hypseus will use.         |
+ | -rotate \<degrees>               | Rotates the screen a certain number of degrees counter-clockwise. Valid values are from 0-359. *This is a somewhat limited feature.* |
+ | -sboverlaymono                   | Use white LED's in (lair, ace) scoreboard overlay     |
+ | -seek_frames_per_ms \<frames> | The # of frames that we can seek per millisecond (to simulate seek delay). Typical values for real laserdisc players are about 30.0 for 29.97fps discs and 20.0 for 23.976fps discs (dragon's lair and space ace). FLOATING POINT VALUES ARE ALLOWED HERE. Minimum value is 12.0 (5 seconds for 60,000 frames), maximum value is 600.0 (100 milliseconds for 60,000 frames). If you want a value higher than the max, you should just use 0 (as fast as possible). *This option may be replaced by something more accurate in the future.* |
 diff --git a/src/game/game.cpp b/src/game/game.cpp
 index 0c595c8..dd7e475 100644
 --- a/src/game/game.cpp

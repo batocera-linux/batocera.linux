@@ -217,6 +217,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LEDSPICER			if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 # LED Manager for Linux
 	select BR2_PACKAGE_INNOEXTRACT			# Extract InnoSetup files (useful for Wine and GOG games)
 	select BR2_PACKAGE_TREE				# recursive directory listing (useful for generating documentation on rom directory structure)
+	select BR2_PACKAGE_FAKE_HWCLOCK			# Save/restore system clock on machines without working RTC hardware
 
 	# Python and SSL
 	select BR2_PACKAGE_HOST_PYTHON3
@@ -1069,6 +1070,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 									BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
 									BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
+	# Jazz Jackrabbit
+	select BR2_PACKAGE_OPENJAZZ		# ALL
+
 	help
 	  Ports
 
@@ -1419,8 +1423,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 	bool "add experimental cores"
 
-	# Jazz Jackrabbit
-	select BR2_PACKAGE_OPENJAZZ		# ALL
+
 
 	# Free Heroes of Might & Magic 2 engine
 	select BR2_PACKAGE_FHEROES2		# ALL

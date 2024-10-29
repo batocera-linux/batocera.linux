@@ -84,6 +84,7 @@ class HypseusSingeGenerator(Generator):
             "astron": ["astron", "astronp"],
             "badlands": ["badlands", "badlandsp"],
             "bega": ["bega", "begar1"],
+            "captainpower": ["cpower1", "cpower2", "cpower3", "cpower4", "cpowergh"],
             "cliff": ["cliffhanger", "cliff", "cliffalt", "cliffalt2"],
             "cobra": ["cobra", "cobraab", "cobraconv", "cobram3"],
             "conan": ["conan", "future_boy"],
@@ -177,7 +178,7 @@ class HypseusSingeGenerator(Generator):
         if system.name == "singe":
             commandArray = ['/usr/bin/hypseus',
                             "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
-                            "-fullscreen", "-gamepad", "-datadir", _DATA_DIR,
+                            "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
                             "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
         else:
             commandArray = ['/usr/bin/hypseus',

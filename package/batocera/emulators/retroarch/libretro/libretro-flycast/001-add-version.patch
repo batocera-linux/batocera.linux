@@ -1,0 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 61b86747e2..e4fc022cac 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -103,8 +103,12 @@ if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+ 		OUTPUT_STRIP_TRAILING_WHITESPACE
+ 	)
+ else()
+-	set(GIT_VERSION "v0.0.0-0-g000000000")
+-	set(GIT_HASH "000000000")
++    if(NOT DEFINED GIT_VERSION)
++	    set(GIT_VERSION "v0.0.0-0-g000000000")
++	endif()
++	if(NOT DEFINED GIT_HASH)
++	    set(GIT_HASH "000000000")
++	endif()
+ endif()
+ 
+ if(WINDOWS_STORE)
