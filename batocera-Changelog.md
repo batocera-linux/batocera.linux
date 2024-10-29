@@ -163,6 +163,7 @@
 - Added tmux
 - Support for LUKS-encrypted disk volumes with clevis automated decryption
   (tpm2 and tang) at boot time
+- Added fake-hwclock
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes
