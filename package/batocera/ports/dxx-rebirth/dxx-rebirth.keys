@@ -4,7 +4,183 @@
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_LEFTALT", "KEY_F4" ],
-            "description": "Exit game"
+            "description": "exit game"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_W"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_S"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_A"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_D"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "joystick2left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_X"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_C"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_TAB",
+            "description": "map"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_R",
+            "description": "rear view"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_LEFTCTRL",
+            "description": "fire primary"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "fire secondary"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_B",
+            "description": "drop proximity bomb"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_F",
+            "description": "flare"
+        },
+        {
+            "trigger": ["hotkey", "joystick2down"],
+            "type": "key",
+            "target": "KEY_1",
+            "description": "laser"
+        },
+        {
+            "trigger": ["hotkey", "joystick2right"],
+            "type": "key",
+            "target": "KEY_2",
+            "description": "vulcan cannon"
+        },
+        {
+            "trigger": ["hotkey", "joystick2up"],
+            "type": "key",
+            "target": "KEY_3",
+            "description": "spreadfire cannon"
+        },
+        {
+            "trigger": ["hotkey", "joystick2left"],
+            "type": "key",
+            "target": "KEY_4",
+            "description": "plasma cannon"
+        },
+        {
+            "trigger": ["hotkey", "pagedown"],
+            "type": "key",
+            "target": "KEY_6",
+            "description": "concussion missile"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": "KEY_7",
+            "description": "homing missile"
+        },
+        {
+            "trigger": ["hotkey", "l2"],
+            "type": "key",
+            "target": "KEY_8",
+            "description": "proximity bomb"
+        },
+        {
+            "trigger": ["hotkey", "r2"],
+            "type": "key",
+            "target": "KEY_9",
+            "description": "smart missile"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F2"],
+            "description": "quick save"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F3"],
+            "description": "quick load"
         }
     ]
 }
