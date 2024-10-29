@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: emulationstation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-10-21 11:40+0200\n"
+"PO-Revision-Date: 2024-10-29 16:55+0100\n"
 "Last-Translator: Szoldán Albert\n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -8348,7 +8348,7 @@ msgstr "Állítsa be a vezérlő dübörgés erősségét, ha támogatja."
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Pro Controller required for games that require shake motions."
-msgstr "A Google díjmentesen használható szolgáltatása ..."
+msgstr "Pro Controller szükséges a rázó mozdulatokat igénylő játékokhoz."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -9805,7 +9805,7 @@ msgstr "Pixelenként"
 msgctxt "game_options"
 msgid "Allow mapping Future Pinball with Pad to Keyboard."
 msgstr ""
-"Engedélyezze a Future flipper billentyűzettel való leképezését a "
+"Engedélyezze a Future Pinball billentyűzettel való leképezését a "
 "billentyűzethez."
 
 #. TRANSLATION: fpinball
@@ -12412,8 +12412,8 @@ msgid ""
 "Enable mouse input for trackballs, spinners, lightguns (if no gun "
 "connected), and similar controls"
 msgstr ""
-"Egérbevitel engedélyezése görgetőgolyókhoz, pörgettyűkhöz, "
-"könnyűfegyverekhez (ha nincs pisztoly csatlakoztatva) és hasonló vezérlőkhöz"
+"Egérbevitel engedélyezése trackballokhoz, spinnerekhez, fénypisztolyokhoz "
+"(ha nincs pisztoly csatlakoztatva) és hasonló vezérlőkhöz"
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -13836,86 +13836,6 @@ msgctxt "game_options"
 msgid "UTC+12"
 msgstr "UTC+12"
 
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "320 x 200"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "640 x 480"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "800 x 600"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1024 x 768"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1280 x 720"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1280 x 800"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1280 x 1024"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1366 x 768"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1440 x 900"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1600 x 900"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1680 x 1050"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1920 x 1080"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "1920 x 1200"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "2560 x 1440"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "2560 x 1600"
-msgstr ""
-
-#. TRANSLATION: openjazz
-msgctxt "game_options"
-msgid "3840 x 2160"
-msgstr ""
-
 #. TRANSLATION: openmsx
 msgctxt "game_options"
 msgid "This can be convenient if you're using laserdiscs."
@@ -14436,16 +14356,18 @@ msgid ""
 "Basic Filtering type for the jaguar display when rendering to the native "
 "display."
 msgstr ""
+"Alapvető szűrőtípus a Jaguar kijelzőhöz a natív képernyőre történő "
+"rendereléskor."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "SCREEN FILTER"
-msgstr ""
+msgstr "KÉPERNYŐ SZŰRŐ"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
-msgstr ""
+msgstr "Pont (Alapértelmezett)"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14453,36 +14375,38 @@ msgid ""
 "Supports uncapped frame rates, analog controllers, and mouse look "
 "functionality."
 msgstr ""
+"Támogatja a korlátlan képkockasebességet, az analóg kontrolleket és a Mouse "
+"Look funkciót."
 
 #. TRANSLATION: bigpemu, bigpemu, bigpemu, bigpemu, bigpemu, ...
 msgctxt "game_options"
 msgid "SCRIPT MODULES"
-msgstr ""
+msgstr "SZKRIPT MODULOK"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "ALIEN VS PREDATOR"
-msgstr ""
+msgstr "ALIEN VS PREDATOR"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Switches the game to multiplayer mode."
-msgstr ""
+msgstr "Többjátékos módba kapcsolja a játékot."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "ALIEN VS PREDATOR MULTIPLAYER"
-msgstr ""
+msgstr "ALIEN VS PREDATOR MULTIPLAYER"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Fixes flickering."
-msgstr ""
+msgstr "Kijavítja a villódzást."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "BRETT HULL HOCKEY"
-msgstr ""
+msgstr "BRETT HULL HOCKEY"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14492,21 +14416,25 @@ msgid ""
 "option, custom sky/background functionality, and various other tweaks and "
 "options."
 msgstr ""
+"Natív felbontású rendereléssel, analóg kontroller- és egértámogatással, akár "
+"60 Hz-es képkockasebességgel, továbbfejlesztett kamerával a megdöntési "
+"lehetőség deaktiválásával, egyedi égbolt/háttér funkcióval, valamint számos "
+"egyéb finomítással és lehetőséggel."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "CHECKERED FLAG"
-msgstr ""
+msgstr "CHECKERED FLAG"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Renders polygons and textures at the native resolution."
-msgstr ""
+msgstr "A poligonokat és a textúrákat natív felbontásban jeleníti meg."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "CYBERMORPH"
-msgstr ""
+msgstr "CYBERMORPH"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14514,11 +14442,13 @@ msgid ""
 "Offers support for analog controllers and mouse look functionality for "
 "improved control."
 msgstr ""
+"Támogatja az analóg kontrollereket és a Mouse Look funkciót a jobb irányítás "
+"érdekében."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "IRON SOLDIER"
-msgstr ""
+msgstr "IRON SOLDIER"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14528,11 +14458,16 @@ msgid ""
 "input device type with options to convert analog inputs to tracker angles "
 "for enhanced analog controller support."
 msgstr ""
+"Tartalmazza a VR-fejkövetést és a sztereoszkópikus renderelést VR-hez és 3D-"
+"tévékre egyaránt, valamint egértámogatást (Mouse Look), és egy új Head "
+"Tracker bemeneti eszköztípust kínál, olyan lehetőséggel, amely az analóg "
+"bemeneteket nyomkövetési szögekké alakítja a továbbfejlesztett analóg "
+"kontroller támogatás érdekében."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "MISSILE COMMAND 3D VR"
-msgstr ""
+msgstr "MISSILE COMMAND 3D VR"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14540,11 +14475,13 @@ msgid ""
 "Provides analog controller and mouse support while patching existing rotary "
 "controller bugs found in hardware."
 msgstr ""
+"Analóg kontroller- és egértámogatást biztosít, miközben javítja a hardverben "
+"található forgóvezérlő hibáit."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "TEMPEST 2000"
-msgstr ""
+msgstr "TEMPEST 2000"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -14552,11 +14489,13 @@ msgid ""
 "Offers analog controller and mouse support (Mouse Look), along with options "
 "for always-strafe and always-run functionalities."
 msgstr ""
+"Analóg vezérlő- és egértámogatást (Mouse Look) kínál, valamint opciókat a "
+"mindig oldalazó (Always-Strafe) és mindig futó (Always-Run) funkciókhoz."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "WOLFENSTEIN 3D"
-msgstr ""
+msgstr "WOLFENSTEIN 3D"
 
 #. TRANSLATION: ioquake3
 msgctxt "game_options"
@@ -14603,9 +14542,9 @@ msgid ""
 "Per Table Folder requires all files to be in the associated rom table "
 "folder. If disabled, consult the Wiki for further details."
 msgstr ""
-"A táblázatonkénti mappa megköveteli, hogy minden fájl a hozzátartozó rom "
-"táblázat mappában legyen. Ha letiltva van, további részletekért keresse fel "
-"a Wikit."
+"Az asztalonkénti mappa megköveteli, hogy minden fájl a hozzátartozó rom "
+"asztal mappában legyen. Ha letiltva van, további részletekért keresse fel a "
+"Wikit."
 
 #. TRANSLATION: vpinball, vpinball
 msgctxt "game_options"
@@ -14615,17 +14554,17 @@ msgstr "SZAKÉRTŐI BEÁLLÍTÁSOK"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "PER TABLE FOLDER"
-msgstr "TÁBLÁZAT MAPPÁNKÉNT"
+msgstr "ASZTALONKÉNTI MAPPA"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Provides a ball trail to make the ball easier to follow."
-msgstr "Labdanyomvonalat biztosít, hogy a labda könnyebben követhető legyen."
+msgstr "Golyó-nyomvonalat biztosít, hogy a golyó könnyebben követhető legyen."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "BALL TRAIL STRENGTH"
-msgstr "LABDA NYOMVONAL ERŐSSÉGE"
+msgstr "GOLYÓ-NYOMVONAL ERŐSSÉGE"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -14969,7 +14908,7 @@ msgstr "KÉPERNYŐ LEJÁTSZÓ Z"
 msgctxt "game_options"
 msgid "Adjust the music volume. Some tables may have its own settings."
 msgstr ""
-"Állítsa be a zene hangerejét. Egyes táblák saját beállításokkal "
+"Állítsa be a zene hangerejét. Egyes asztalok saját beállításokkal "
 "rendelkezhetnek."
 
 #. TRANSLATION: vpinball
@@ -15330,7 +15269,7 @@ msgstr "Brutál"
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
 msgid "Choose the preferred violence level."
-msgstr "Válassza ki a kívánt erőszakos szintet."
+msgstr "Válassza ki a kívánt erőszak szintet."
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -15527,11 +15466,6 @@ msgctxt "keys_files"
 msgid "screenshot"
 msgstr "képernyőkép"
 
-#. TRANSLATION: openjazz.keys, rott.keys, theforceengine.keys, dreamcast.redream.keys, vpinball.keys, ...
-msgctxt "keys_files"
-msgid "Exit the emulator"
-msgstr "Kilépés az emulátorból"
-
 #. TRANSLATION: dxx-rebirth.keys, fallout2-ce.keys, fallout1-ce.keys, etlegacy.keys, sonic-mania.keys, ...
 msgctxt "keys_files"
 msgid "Exit game"
@@ -15561,6 +15495,11 @@ msgstr "A jelenetet kihagyása"
 msgctxt "keys_files"
 msgid "Screenshot"
 msgstr "Pillanatkép"
+
+#. TRANSLATION: rott.keys, theforceengine.keys, dreamcast.redream.keys, vpinball.keys, switch.ryujinx.keys, ...
+msgctxt "keys_files"
+msgid "Exit the emulator"
+msgstr "Kilépés az emulátorból"
 
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
@@ -15880,7 +15819,7 @@ msgstr "Grafikus felület beállítása"
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Reset the table, sometimes required for PinMame"
-msgstr "Állítsa vissza a táblázatot, ami néha szükséges a PinMame számára"
+msgstr "Állítsa vissza az asztalt, ami néha szükséges a PinMame számára"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -15920,7 +15859,7 @@ msgstr "Lockbar tűz gomb"
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Buy extraball for a credit"
-msgstr "Vásároljon extraballt hitelért"
+msgstr "Extra golyó vásárlása creditért"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
