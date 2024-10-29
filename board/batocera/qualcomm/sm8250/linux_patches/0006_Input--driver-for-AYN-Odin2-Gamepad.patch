@@ -152,10 +152,10 @@ index 000000000000..1350fc1a291b
 +		input_report_key(indev, keymap[i], (current_states & BIT(i)));
 +	}
 +
-+	input_report_abs(indev, ABS_HAT2X,
-+			 0x755 - (data->data[2] | (data->data[3] << 8)));
-+	input_report_abs(indev, ABS_HAT2Y,
-+			 0x755 - (data->data[4] | (data->data[5] << 8)));
++	input_report_abs(indev, ABS_Z, (int16_t)(2 *
++			 (0x3AA - (int16_t)(data->data[2] | (data->data[3] << 8)))));
++	input_report_abs(indev, ABS_RZ, (int16_t)(2 *
++			 (0x3AA - (int16_t)(data->data[4] | (data->data[5] << 8)))));
 +	input_report_abs(indev, ABS_X,
 +			 -(int16_t)(data->data[6] | (data->data[7] << 8)));
 +	input_report_abs(indev, ABS_Y,
