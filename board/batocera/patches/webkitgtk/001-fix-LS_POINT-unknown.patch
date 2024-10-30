@@ -1,0 +1,30 @@
+diff --git a/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp b/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
+index 04d855f..ba6f02c 100644
+--- a/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
++++ b/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
+@@ -542,14 +542,14 @@ void FELightingNeonParallelApplier::applyPlatformParallel(const LightingData& da
+     floatArguments.colorBlue = color.blue;
+     floatArguments.padding4 = 0;
+ 
+-    if (data.lightSource->type() == LS_POINT) {
++    if (data.lightSource->type() == LightType::LS_POINT) {
+         neonData.flags |= FLAG_POINT_LIGHT;
+         auto& pointLightSource = downcast<PointLightSource>(*data.lightSource);
+         floatArguments.lightX = pointLightSource.position().x();
+         floatArguments.lightY = pointLightSource.position().y();
+         floatArguments.lightZ = pointLightSource.position().z();
+         floatArguments.padding2 = 0;
+-    } else if (data.lightSource->type() == LS_SPOT) {
++    } else if (data.lightSource->type() == LightType::LS_SPOT) {
+         neonData.flags |= FLAG_SPOT_LIGHT;
+         auto& spotLightSource = downcast<SpotLightSource>(*data.lightSource);
+         floatArguments.lightX = spotLightSource.position().x();
+@@ -569,7 +569,7 @@ void FELightingNeonParallelApplier::applyPlatformParallel(const LightingData& da
+         if (spotLightSource.specularExponent() == 1)
+             neonData.flags |= FLAG_CONE_EXPONENT_IS_1;
+     } else {
+-        ASSERT(data.lightSource->type() == LS_DISTANT);
++        ASSERT(data.lightSource->type() == LightType::LS_DISTANT);
+         floatArguments.lightX = paintingData.initialLightingData.lightVector.x();
+         floatArguments.lightY = paintingData.initialLightingData.lightVector.y();
+         floatArguments.lightZ = paintingData.initialLightingData.lightVector.z();

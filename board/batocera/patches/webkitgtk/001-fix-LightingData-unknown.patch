@@ -1,0 +1,13 @@
+diff --git a/Source/WebCore/platform/graphics/filters/FELighting.h b/Source/WebCore/platform/graphics/filters/FELighting.h
+index 4efab92..77f1bcb 100644
+--- a/Source/WebCore/platform/graphics/filters/FELighting.h
++++ b/Source/WebCore/platform/graphics/filters/FELighting.h
+@@ -33,6 +33,8 @@
+ #include "PointLightSource.h"
+ #include "SpotLightSource.h"
+ 
++struct LightingData;
++
+ namespace WebCore {
+ 
+ struct FELightingPaintingDataForNeon;
