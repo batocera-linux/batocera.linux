@@ -13,6 +13,7 @@
 - Initial support for the Retroid Pocket Mini & Retroid Pocket 5
   - (https://github.com/batocera-linux/batocera.linux/issues/12562)
 - Arcade machine inputs have now a better supported thanks to keyboardToPads (xarcadejoystick removed)
+- Handheld devices with RGB LEDs can now display the battery level and status with a color code
 ### Added
 - Exit game with light gun (hold `TRIGGER`, `ACTION` and `START` buttons for 2 seconds)
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
