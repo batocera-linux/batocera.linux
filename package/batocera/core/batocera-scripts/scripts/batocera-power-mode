@@ -1,17 +1,24 @@
 #!/bin/bash
 
-if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] && 
-    [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }; then
-        exit 0
+if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] &&
+       [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }; then
+    exit 0
+fi
+
+EPP_AVAILABLE=""
+if [ -e /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences ]; then
+    EPP_AVAILABLE="1"
+else
+    EPP_AVAILABLE="0"
 fi
 
 # Check if governor exists for CPU
 check_governor() {
     local GOVERNOR_TO_CHECK=$1
-    local AVAILABLE_GOVERNORS_PATH="/sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors"
-    
-    local AVAILABLE_GOVERNORS=$(cat "$AVAILABLE_GOVERNORS_PATH")
-    if echo "$AVAILABLE_GOVERNORS" | grep -q "\b$GOVERNOR_TO_CHECK\b"; then
+    local AVAILABLE_GOVERNORS
+    AVAILABLE_GOVERNORS=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors)
+
+    if [[ " $AVAILABLE_GOVERNORS " =~ [[:space:]]${GOVERNOR_TO_CHECK}[[:space:]] ]]; then
         return 0
     else
         return 1
@@ -33,9 +40,14 @@ set_governor() {
    done
 }
 
-# Check if Energy Performance Preferences are available
-epp_available() {
-    if [ -e /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences ]; then
+# Check if requested EPP is available
+check_epp() {
+    local PREFERENCE=$1
+    local AVAILABLE_PREFERENCES
+    AVAILABLE_PREFERENCES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences)
+
+    # Check if the specified preference is available
+    if [[ " $AVAILABLE_PREFERENCES " =~ [[:space:]]${PREFERENCE}[[:space:]] ]]; then
         return 0
     else
         return 1
@@ -45,13 +57,6 @@ epp_available() {
 # Set Energy Performance Preference
 set_epp() {
     local PREFERENCE=$1
-    local AVAILABLE_PREFERENCES
-    AVAILABLE_PREFERENCES=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences)
-
-    # Check if the specified preference is available
-    if ! echo "$AVAILABLE_PREFERENCES" | grep -q "\b$PREFERENCE\b"; then
-        return 1
-    fi
 
     for cpu in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
         if [ -e "$cpu" ]; then
@@ -60,43 +65,63 @@ set_epp() {
     done
 }
 
+# Set system default
+set_default() {
+    SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
+
+    if check_governor "$SYSTEM_GOVERNOR"; then
+        set_governor "$SYSTEM_GOVERNOR"
+        # If EPP available set to default or performance as fallback
+        if [ "$EPP_AVAILABLE" -eq 1 ]; then
+            if check_epp "default"; then
+                set_epp "default"
+            elif check_epp "performance"; then
+                set_epp "performance"
+            fi
+        fi
+    fi
+}
+
 # Determine which Governors & if applicable EPP to set based on powermode setting
 handle_powermode() {
     local POWERMODE_NAME=$1
+
     case "$POWERMODE_NAME" in
         "highperformance")
             set_governor "performance"
-            if epp_available; then
-                set_epp "performance"
+            if [ "$EPP_AVAILABLE" -eq 1 ]; then
+                if check_epp "performance"; then
+                    set_epp "performance"
+                fi
             fi
             ;;
         "balanced")
+            # Handle governor
             if check_governor "schedutil"; then
                 set_governor "schedutil"
-                if epp_available; then
-                    set_epp "balance_performance"
-                fi
             elif check_governor "ondemand"; then
                 set_governor "ondemand"
-                if epp_available; then
-                    set_epp "balance_performance"
-                fi
             elif check_governor "conservative"; then
                 set_governor "conservative"
-                if epp_available; then
-                    set_epp "balance_performance"
-                fi
-            else
+            elif check_governor "powersave"; then
                 set_governor "powersave"
-                if epp_available; then
-                    set_epp "balance_performance"
+            fi
+
+            # Handle EPP
+            if [ "$EPP_AVAILABLE" -eq 1 ]; then
+                if check_epp "default"; then
+                    set_epp "default"
+                elif check_epp "performance"; then
+                    set_epp "performance"
                 fi
             fi
             ;;
         "powersaver")
             set_governor "powersave"
-            if epp_available; then
-                set_epp "power"
+            if [ "$EPP_AVAILABLE" -eq 1 ]; then
+                if check_epp "power"; then
+                    set_epp "power"
+                fi
             fi
             ;;
         *)
@@ -104,43 +129,34 @@ handle_powermode() {
     esac
 }
 
-# Check for input
-INPUT=$1
-
-# Handle AC input
-if [ "$INPUT" = "ac" ]; then
-    POWER_MODE=$(cat /var/tmp/power_mode 2>/dev/null)
-    if [ -z "$POWER_MODE" ]; then
-        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
-        if [ -z "${POWER_MODE}" ]; then
-            SYSTEM_GOVERNOR="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
-            if check_governor "$SYSTEM_GOVERNOR"; then
-                set_governor "$SYSTEM_GOVERNOR"
-                set_epp "default"
-                exit 0
+case "$1" in
+    ac)
+        POWER_MODE=$(cat /var/tmp/power_mode 2>/dev/null)
+        if [ -z "$POWER_MODE" ]; then
+            POWER_MODE="$(/usr/bin/batocera-settings-get-master global.powermode)"
+            if [ -z "${POWER_MODE}" ]; then
+                set_default
             fi
         fi
-    fi
-    handle_powermode "$POWER_MODE"
-    exit 0
-fi
+        handle_powermode "$POWER_MODE"
+        ;;
+    battery)
+        POWER_MODE="$(/usr/bin/batocera-settings-get-master global.batterymode)"
+        if [ -z "$POWER_MODE" ]; then
+            POWER_MODE="balanced"
+        fi
+        handle_powermode "$POWER_MODE"
+        ;;
+    highperformance|balanced|powersaver)
+        handle_powermode "$1"
+        ;;
+    default)
+        set_default
+        ;;
+    *)
+        echo "Invalid input. Usage: $0 [ac|battery|default|highperformance|balanced|powersaver]"
+        exit 1
+        ;;
+esac
 
-# Handle battery input
-if [ "$INPUT" = "battery" ]; then
-    POWER_MODE="$(/usr/bin/batocera-settings-get-master global.batterymode)"
-    if [ -z "$POWER_MODE" ]; then
-        POWER_MODE="balanced"
-    fi
-    handle_powermode "$POWER_MODE"
-    exit 0
-fi
-
-# Handle highperformance, balanced, and powersaver inputs
-if [ "$INPUT" = "highperformance" ] || [ "$INPUT" = "balanced" ] || [ "$INPUT" = "powersaver" ]; then
-    handle_powermode "$INPUT"
-    exit 0
-fi
-
-# Invalid input
-echo "Invalid input. Usage: $0 [ac|battery|highperformance|balanced|powersaver]"
-exit 1
+exit 0
