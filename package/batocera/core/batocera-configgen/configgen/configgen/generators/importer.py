@@ -47,6 +47,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'sonic3-air': ('sonic3_air.sonic3_airGenerator', 'Sonic3AIRGenerator'),
     'sonic-mania': ('sonic_mania.sonic_maniaGenerator', 'SonicManiaGenerator'),
     'shadps4': ('shadps4.shadps4Generator', 'shadPS4Generator'),
+    'jazz2-native': ('jazz2_native.jazz2_nativeGenerator', 'Jazz2_NativeGenerator'),
 }
 
 
