@@ -1,0 +1,7 @@
+config BR2_PACKAGE_BATOCERA_LED_HANDHELD
+	bool "batocera-led-handheld"
+
+	select BR2_PACKAGE_PYTHON3
+
+	help
+	  Batocera tools to manage LED on handheld devices

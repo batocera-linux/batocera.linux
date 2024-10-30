@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# Starts LED driver for handheld devices
+#
+
+# Exit if not in the list of supported devices
+SUPPBOARD=$(python3 /usr/lib/python*/batoled.py)
+[[ "$SUPPBOARD" == "Unsupported" ]]  && exit
+# Exit if system.led-handheld=0 in batocera.conf
+OPT=$(batocera-settings-set system.led-handheld)
+[[ "$OPT" == 0 ]] && exit
+
+start() {
+	printf "Starting LED handheld daemon: "
+	start-stop-daemon -S -q -p /var/run/led-handheld.pid --exec /usr/bin/batocera-led-handheld start &
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+stop() {
+	printf "Stopping LED handheld daemon: "
+	start-stop-daemon -K -q -p /var/run/led-handheld.pid
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	/usr/bin/batocera-led-handheld stop
+}
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
