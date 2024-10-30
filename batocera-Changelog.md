@@ -61,6 +61,7 @@
 - ES: simplified launch for netplay games
 - Enabled more force feedback capabilities on various controllers
 - Share commands in /boot/batocera-boot.conf now allow pipes and other shell metacharacters
+- X68000: Default emulated RAM size is now 12MB (libretro-px68k)
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
