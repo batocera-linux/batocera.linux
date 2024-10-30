@@ -2388,7 +2388,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
         if system.isOptSet('px68k_ramsize'):
             coreSettings.save('px68k_ramsize', '"' + system.config['px68k_ramsize'] + '"')
         else:
-            coreSettings.save('px68k_ramsize', '"2MB"')
+            coreSettings.save('px68k_ramsize', '"12MB"')
         # Frame Skip
         if system.isOptSet('px68k_frameskip'):
                 coreSettings.save('px68k_frameskip', '"' + system.config['px68k_frameskip'] + '"')
