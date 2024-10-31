@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# Function to check if led module is loaded
-is_module_loaded() {
-    lsmod | grep -q "^$1 "
-}
-
-# Function to set the LED mode parameters
-set_ayn_led_mode() {
-    echo "$1" | tee /sys/class/leds/multicolor:chassis/device/led_mode
-}
-
 # Function to get the battery percentage
 getBattery() {
     BATT=$(cat /sys/class/power_supply/*{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e 's/^POWER_SUPPLY_CAPACITY=//' | sort -rn | head -1)
@@ -66,23 +56,11 @@ while true; do
                     if test "${NEW_BATTERY}" -le 10 -o $((${NEW_BATTERY} / 10)) -lt $((${LAST_BATTERY} / 10)); then
                         if test "${NEW_BATTERY}" -le 5; then
                             DELAY=10
-                            # do some fancy LED flashing
-                            # ayn-platform
-                            if is_module_loaded ayn_platform; then
-                                # set LED mode to 0 (rainbow effect)
-                                set_ayn_led_mode 0
-                            fi
                         fi
                         /usr/bin/batocera-info --short | LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=$(getLocalXDisplay) osd_cat -f "-*-*-bold-*-*-*-38-120-*-*-*-*-*-*" -cred -s 3 -d ${DELAY}
                     fi
                 fi
             fi
-        fi
-    else
-        # Power connected
-        # ayn-platform
-        if is_module_loaded ayn_platform; then
-            set_ayn_led_mode 1
         fi
     fi
 
