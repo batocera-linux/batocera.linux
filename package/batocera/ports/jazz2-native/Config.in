@@ -1,0 +1,13 @@
+config BR2_PACKAGE_JAZZ2_NATIVE
+	bool "jazz2-native"
+	depends on BR2_PACKAGE_XORG7 || BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_LIBGLEW        if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBGL
+	select BR2_PACKAGE_LIBGLFW
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_LIBOPENMPT
+	select BR2_PACKAGE_ZLIB
+	help
+	  Jazz² Resurrection: Native C++ reimplementation of Jazz Jackrabbit 2.
+
+	  https://github.com/deathkiller/jazz2-native

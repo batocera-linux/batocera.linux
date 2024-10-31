@@ -1074,6 +1074,11 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Jazz Jackrabbit
 	select BR2_PACKAGE_OPENJAZZ		# ALL
 
+	# Jazz Jackrabbit 2
+	select BR2_PACKAGE_JAZZ2_NATIVE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
+	                                      BR2_PACKAGE_BATOCERA_GLES3 && \
+										  !BR2_PACKAGE_BATOCERA_TARGET_RK3326
+
 	help
 	  Ports
 

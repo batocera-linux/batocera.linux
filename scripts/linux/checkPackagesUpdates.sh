@@ -220,6 +220,7 @@ PACKAGES_PORTS="abuse
                 hurrican
                 ioquake3
                 iortcw
+                jazz2-native
                 openjazz
                 raze
                 sdlpop
