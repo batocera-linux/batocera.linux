@@ -164,6 +164,7 @@
 - FFMPEG to 7.1
 - Shim signed x64 EFI bootloader to 1.58+15.8-0ubuntu1
 - WinBTRFS Driver to 1.9
+- flatpak to 1.12.9
 - Added tmux
 - Support for LUKS-encrypted disk volumes with clevis automated decryption
   (tpm2 and tang) at boot time
