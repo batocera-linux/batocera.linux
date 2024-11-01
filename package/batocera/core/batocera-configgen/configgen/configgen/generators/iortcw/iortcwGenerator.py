@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from ...batoceraPaths import CONFIGS, ROMS
+from ...batoceraPaths import ROMS
 from ...Command import Command
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-_IORTCW_CONFIG: Final = CONFIGS / "iortcw"
+_IORTCW_CONFIG: Final = ROMS / "iortcw"
 _IORTCW_CONFIG_FILE: Final = _IORTCW_CONFIG / "main" / "wolfconfig.cfg"
 
 
