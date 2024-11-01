@@ -3,8 +3,8 @@
 # ecwolf
 #
 ################################################################################
-
-ECWOLF_VERSION = 1.5pre
+# Version: 2024-05-20
+ECWOLF_VERSION = d1de69a576d4bb39e89124185a6dfd6991202cb9
 ECWOLF_SITE = https://bitbucket.org/ecwolf/ecwolf.git
 ECWOLF_SITE_METHOD=git
 ECWOLF_GIT_SUBMODULES=YES
@@ -18,7 +18,8 @@ HOST_ECWOLF_CONF_OPTS += -DTOOLS_ONLY=ON
 HOST_ECWOLF_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define HOST_ECWOLF_INSTALL_CMDS
-	# Skipping install, the tools are used directly via `ImportExecutables.cmake` from the build directory.
+	# Skipping install, the tools are used directly via 
+	# `ImportExecutables.cmake` from the build directory.
 endef
 
 ECWOLF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release \
@@ -38,9 +39,13 @@ else
 ECWOLF_GENERATED_HEADER_SUFFIX = 32
 endif
 
+ECWOLF_CONF_INIT = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf
+
 define ECWOLF_COPY_GENERATED_HEADERS
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/arith_$(ECWOLF_GENERATED_HEADER_SUFFIX).h $(ECWOLF_BUILDDIR)/deps/gdtoa/arith.h
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/gd_qnan_$(ECWOLF_GENERATED_HEADER_SUFFIX).h $(ECWOLF_BUILDDIR)/deps/gdtoa/gd_qnan.h
+	cp $(ECWOLF_CONF_INIT)/arith_$(ECWOLF_GENERATED_HEADER_SUFFIX).h \
+	    $(ECWOLF_BUILDDIR)/deps/gdtoa/arith.h
+	cp $(ECWOLF_CONF_INIT)/gd_qnan_$(ECWOLF_GENERATED_HEADER_SUFFIX).h \
+	    $(ECWOLF_BUILDDIR)/deps/gdtoa/gd_qnan.h
 endef
 
 ECWOLF_POST_CONFIGURE_HOOKS += ECWOLF_COPY_GENERATED_HEADERS
@@ -54,7 +59,7 @@ define ECWOLF_INSTALL_TARGET_CMDS
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/ecwolf/ecwolf.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(ECWOLF_CONF_INIT)/ecwolf.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
