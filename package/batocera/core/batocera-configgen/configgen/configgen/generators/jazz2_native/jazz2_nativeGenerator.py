@@ -35,3 +35,6 @@ class Jazz2_NativeGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16 / 9
