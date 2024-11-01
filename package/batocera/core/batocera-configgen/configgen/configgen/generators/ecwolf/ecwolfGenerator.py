@@ -19,7 +19,13 @@ class ECWolfGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ecwolf",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F8", "restore_state": "KEY_F9" }
+            "keys": { 
+                "exit": ["KEY_LEFTALT", "KEY_F4"],
+                "menu": "KEY_ESC",
+                "pause": "KEY_ESC",
+                "save_state": "KEY_F8",
+                "restore_state": "KEY_F9"
+            }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -75,7 +81,8 @@ class ECWolfGenerator(Generator):
             except Exception as e:
                 print(f"Error: couldn't go into directory {rom_path} ({e})")
 
-        # File method .ecwolf (recommended) for command parameters, first argument is path to dataset, next parameters according ecwolf --help
+        # File method .ecwolf (recommended) for command parameters, first argument is path to dataset,
+        # next parameters according ecwolf --help
         # File method .pk3, put pk3 files next to wl6 dataset and start the mod in ES
         if rom_path.is_file():
             os.chdir(rom_path.parent)
@@ -105,6 +112,7 @@ class ECWolfGenerator(Generator):
              ecwolfArray,
              env={
                 'XDG_CONFIG_HOME': CONFIGS,
+                'XDG_DATA_HOME': SAVES,
                 'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
             }
         )
