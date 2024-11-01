@@ -114,7 +114,7 @@
 - Kodi to 21.1
 - MelonDS to 7th October build
 - Mupen64 core & plugins to v2.6.0
-- PCSX2 to v2.1.229
+- PCSX2 to v2.2.0
 - Play to 0.67-1
 - Pyxel to 2.2.4
 - Redream to 1.5.0-1133-g03c2ae9
