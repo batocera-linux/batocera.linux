@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_VERSION = v2.1.229
+PCSX2_VERSION = v2.2.0
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
