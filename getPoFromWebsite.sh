@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ "${BR2_BATOCERA_GETPOFROMWEBSITE}" = "n" ]
-then
-    exit 0
-fi
 if ! wget -q "http://translations.batocera.org/?q=updatable&type=options" -O - |
 	while read L
 	do
