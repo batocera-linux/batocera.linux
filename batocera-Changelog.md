@@ -157,7 +157,7 @@
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
-- Mesa3D to 24.2.5
+- Mesa3D to 24.2.6
 - Buildroot to the 2024.05.2 release base
 - GStreamer codecs to 1.24.8
 - Shim signed IA32 EFI bootloader to 1.44~1+deb12u1+15.8-1~deb12u1

@@ -78,9 +78,16 @@ define ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
         $(TARGET_DIR)/lib/firmware/qca
 endef
 
-# Copy Qualcomm firmware for Steam Deck OLED
+# symlink AMD GPU firmware for 890M devices
+define ALLLINUXFIRMWARES_FIX_AMD_890M
+    ln -sf /lib/firmware/amdgpu/isp_4_1_1.bin \
+        $(TARGET_DIR)/lib/firmware/amdgpu/isp_4_1_0.bin
+endef
+
+# Copy Qualcomm firmware for Steam Deck OLED etc
 ifeq ($(BR2_x86_64),y)
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_AMD_890M
 endif
 
 # symlink BT firmware for RK3588 kernel
