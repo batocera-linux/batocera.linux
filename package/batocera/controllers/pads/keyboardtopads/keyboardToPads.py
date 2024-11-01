@@ -125,7 +125,7 @@ class KeyboardController:
                         print(f"  you can create a custom config at {userconfig}. Take example on files in /usr/share/keyboardToPads/inputs.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="keycontroller")
+    parser = argparse.ArgumentParser(prog="keyboardToPads")
     parser.add_argument("--search", action="store_true")
     parser.add_argument("--config")
     parser.add_argument("--input")
