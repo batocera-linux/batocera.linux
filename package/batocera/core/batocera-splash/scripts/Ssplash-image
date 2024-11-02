@@ -49,8 +49,8 @@ case "$1" in
         then
             do_start
             echo "OK"
-	else
-	    echo "SKIPPED"
+	    else
+	        echo "SKIPPED"
         fi
         ;;
     stop)
