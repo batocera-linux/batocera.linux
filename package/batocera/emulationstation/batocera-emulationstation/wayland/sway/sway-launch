@@ -1,4 +1,67 @@
 #!/bin/sh
 
-SWAY_LOG_FILE=/userdata/system/logs/sway.log
-WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway -d > ${SWAY_LOG_FILE} 2>&1
+# Log and configuration file paths
+LOG_FILE="/userdata/system/logs/display.log"
+SWAY_CONF_FILE="/etc/sway/config"
+SWAY_LOG_FILE="/userdata/system/logs/sway.log"
+TEMP_FILE="/tmp/sway_config.tmp"
+
+# Log function for cleaner output
+log_message() {
+    echo "$1" >> "$LOG_FILE"
+}
+
+# Retrieve the preferred display setting
+preferred_display=$(batocera-settings-get global.videooutput)
+
+# Function to gather all connected displays
+get_connected_displays() {
+    connected_displays=""
+    for drm_path in /sys/class/drm/card*/card*-*/status; do
+        if [ "$(cat "$drm_path")" = "connected" ]; then
+            # Extract the display name by removing the card prefix (e.g., "card2-")
+            drm_display=$(basename "$(dirname "$drm_path")" | cut -d'-' -f2-)
+            connected_displays="$connected_displays $drm_display"
+        fi
+    done
+    echo "$connected_displays"
+}
+
+# Check if the preferred display was retrieved successfully
+if [ -n "$preferred_display" ]; then
+    log_message "Preferred display = ${preferred_display}"
+
+    # Get all connected displays
+    connected_displays=$(get_connected_displays)
+    log_message "Connected displays = ${connected_displays}"
+
+    # Write display configuration to SWAY_CONF_FILE
+    log_message "Writing display configuration to ${SWAY_CONF_FILE}"
+    {
+        # Enable the preferred display
+        echo "output ${preferred_display} {"
+        echo "    enable"
+        echo "}"
+        echo # Add a blank line for readability
+
+        # Disable all other connected displays
+        for display in $connected_displays; do
+            if [ "$display" != "$preferred_display" ]; then
+                log_message "Disabling display ${display}"
+                echo "output ${display} {"
+                echo "    disable"
+                echo "}"
+                echo
+            fi
+        done
+
+        # Include any existing configuration from SWAY_CONF_FILE
+        cat "$SWAY_CONF_FILE" 2>/dev/null
+    } > "$TEMP_FILE" && mv "$TEMP_FILE" "$SWAY_CONF_FILE"
+else
+    log_message "Error: Failed to retrieve preferred display setting."
+fi
+
+# Start Sway with specified environment variable, logging output
+log_message "Starting Sway..."
+WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway -d >> "$SWAY_LOG_FILE" 2>&1

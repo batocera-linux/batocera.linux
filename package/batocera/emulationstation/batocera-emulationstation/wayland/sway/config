@@ -13,20 +13,19 @@ input * {
 }
 
 # kill focused window
-bindsym $alt+F4 kill
+bindsym Mod1+F4 kill
 
 # Make the current focus fullscreen
-bindsym $alt+f fullscreen
+bindsym Mod1+f fullscreen
 
 # Set a default rule to remove decorations for all windows
 default_border none
 
 # Set a default rule to start all applications in fullscreen mode
-for_window [app_id="*"] fullscreen
-# Keep apps in fullscreen
-for_window [fullscreen] fullscreen
+for_window [app_id=".*"] fullscreen
+for_window [class=".*"] fullscreen
 
-# Hide decorations for xwayland apps
+# Hide decorations for specific XWayland apps
 for_window [instance="supermodel"] border none, fullscreen
 for_window [instance="dolphin-emu"] border none, fullscreen
 for_window [instance="batocera-config-dolphin"] border none, fullscreen
