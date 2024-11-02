@@ -316,8 +316,9 @@ class OpenJazzGenerator(Generator):
                             self.controls_buttons[12] = int(input.id)
                         elif input.name == 'start':
                             self.controls_buttons[11] = int(input.id)
-
-            eslog.info(f"Configured Controls - Buttons: {self.controls_buttons}")
+                eslog.info(f"Configured Controls - Buttons: {self.controls_buttons}")
+                
+            nplayer += 1
         
         # User configuration
         if system.isOptSet("jazz_resolution"):
