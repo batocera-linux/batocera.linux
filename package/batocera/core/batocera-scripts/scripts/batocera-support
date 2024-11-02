@@ -89,6 +89,10 @@ f_cp /var/log/bluetooth-agent.log                              "${DSYSTEM}"
 if [ -f /tmp/resize.log ]; then
     f_cp /tmp/resize.log                                       "${DSYSTEM}"
 fi
+# boot.log
+if [ -f /var/run/boot.log ]; then
+    f_cp /var/run/boot.log                                     "${DSYSTEM}"
+fi
 
 # clear passwords
 # filter some dangerous options (may include some path with /userdata)
