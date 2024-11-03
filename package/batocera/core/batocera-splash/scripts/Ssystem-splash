@@ -3,59 +3,53 @@
 # This is the BATOCERA system splash service
 # It shows the unique BATOCERA logo in early boot stage
 
-do_start ()
-{
+do_start () {
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
     # are we sure all boards have fb0 ?!
     N=0
-    while ! test -e /dev/fb0 -o $N -gt 80
-    do
+    while ! [ -e /dev/fb0 ] && [ $N -le 80 ]; do
         sleep 0.25
         N=$((N+1))
     done
 
     # V_BOARD_MODEL detection from batocera-info
     V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-    if test -z "${V_BOARD_MODEL}"
-    then
-        # give an other chance with dmi
+    if [ -z "${V_BOARD_MODEL}" ]; then
+        # Try again with DMI
         V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
     fi
-    # 3rd time lucky
-    if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" = "Default_string"
-    then
+    # Third time lucky?
+    if [ -z "${V_BOARD_MODEL}" ] || [ "${V_BOARD_MODEL}" = "Default_string" ]; then
         V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
     fi
 
     # Batocera boot logo
     image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
-    if ! [ -f "$image" ]; then
+    if [ ! -f "$image" ]; then
         image="/usr/share/batocera/splash/boot-logo.png"
         [ -f "$image" ] || exit 1
     fi
 
-    if test "${V_BOARD_MODEL}" = "Loki_Zero"; then
+    if [ "${V_BOARD_MODEL}" = "Loki_Zero" ] || [ "${V_BOARD_MODEL}" = "Retroid_Pocket_5" ]; then
         image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
     fi
     
     # don't display a rotate image if the screen is not horizontal
     # we can't know if that's left or right, it depends on the device, so, just ignore
     # maybe in some case we want the rotated image for some boards. add those boards here
-    if test $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+)
-    then
-	# just replace in case the basic image is displayed
-	if test "${image}" = "/usr/share/batocera/splash/boot-logo.png"
-	then
+    if [ $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+) ]; then
+        # just replace in case the basic image is displayed
+        if [ "${image}" = "/usr/share/batocera/splash/boot-logo.png" ]; then
             image="/usr/share/batocera/splash/boot-logo-half.png"
-	fi
+        fi
     fi
 
     FBV_OPTS="-f -e"
     # FBV_OPTS can be set differently for some boards to work
     MODELOPTS="/etc/opts.$V_BOARD_MODEL"
-    test -e "${MODELOPTS}" && . "${MODELOPTS}"
+    [ -e "${MODELOPTS}" ] && . "${MODELOPTS}"
 
-    test -e /dev/fb0 && fbv ${FBV_OPTS} -i "${image}"
+    [ -e /dev/fb0 ] && fbv ${FBV_OPTS} -i "${image}"
 }
 
 case "$1" in
