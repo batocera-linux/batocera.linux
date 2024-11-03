@@ -1,5 +1,6 @@
 # Trackballs
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Ultimar Opti-PAC Trackball/Spinner Interface", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="0838", ATTRS{idProduct}=="8918", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
 
 # Spinners
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="GGG TurboTwist Spinner", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_SPINNER}="1"
