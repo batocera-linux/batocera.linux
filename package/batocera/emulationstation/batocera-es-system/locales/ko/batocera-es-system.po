@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-10-29 22:52+0900\n"
+"PO-Revision-Date: 2024-11-02 00:05+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ko_KO\n"
@@ -45,7 +45,7 @@ msgstr "고성능"
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
 msgid "Balanced"
-msgstr "균형 잡"
+msgstr "균형 잡힌"
 
 #. TRANSLATION: shared, shared
 msgctxt "game_options"
@@ -468,7 +468,7 @@ msgstr "핸들 사용"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Maximum wheel rotation from left to right (in degrees)"
-msgstr "좌우로의 최대 핸들 휠 회전 (°)"
+msgstr "좌우로의 최대 핸들 회전 (°)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -510,7 +510,7 @@ msgstr "진동 수준"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set game audio level gain in dB."
-msgstr "게임 오디오 레벨 게인을 dB 단위로 설정합니다."
+msgstr "게임 오디오 레벨 게인을 dB 단위로 설정."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -550,7 +550,7 @@ msgstr "숨김"
 #. TRANSLATION: libretro/81
 msgctxt "game_options"
 msgid "Emulate Chroma 81 interface (colorization)."
-msgstr "Chroma 81 인터페이스(색상화)를 에뮬레이트합니다."
+msgstr "크로마 81 인터페이스(색상화)를 에뮬레이트합니다."
 
 #. TRANSLATION: libretro/81, libretro/81, libretro/atari800, libretro/atari800, libretro/atari800, ...
 msgctxt "game_options"
@@ -652,7 +652,7 @@ msgstr "오른쪽 아날로그 스틱을 두 번째 조이스틱으로 취급합
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "JOYSTICK HACK (FOR ROBOTRON 2084)"
-msgstr "조이스틱 해킹 (로봇 론 2084 용)"
+msgstr "조이스틱 해킹 (로보트론 2084 용)"
 
 #. TRANSLATION: libretro/beetle-saturn
 msgctxt "game_options"
@@ -879,13 +879,11 @@ msgid "Monochrome (Blargg)"
 msgstr "모노크롬(Blargg)"
 
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x
-#, fuzzy
 msgctxt "game_options"
 msgid "Blur high-res mode, allowing for better transparency effects."
-msgstr "고해상도 블러 모드를 사용하여 더 나은 투명도 효과를 허용합니다."
+msgstr "고해상도 모드를 흐리게 처리하여, 더 나은 투명도 효과를 구현합니다."
 
 #. TRANSLATION: libretro/mesen-s
-#, fuzzy
 msgctxt "game_options"
 msgid "HIGH-RES BLENDING"
 msgstr "고해상도 블렌딩"
@@ -898,13 +896,11 @@ msgid ""
 msgstr "향상. SNES의 가우시아 보간에서 입방체로 바꿉니다. 음질을 향상시킵니다."
 
 #. TRANSLATION: libretro/mesen-s
-#, fuzzy
 msgctxt "game_options"
 msgid "CUBIC AUDIO INTERPOLATION"
-msgstr "큐빅 오디오 보간"
+msgstr "3차 오디오 보간"
 
 #. TRANSLATION: libretro/mesen-s
-#, fuzzy
 msgctxt "game_options"
 msgid ""
 "Change behaviour when emulating GB games. Auto uses SGB for GB and GBC for "
@@ -934,29 +930,25 @@ msgid "Super Game Boy"
 msgstr "슈퍼 게임보이"
 
 #. TRANSLATION: libretro/mesen-s
-#, fuzzy
 msgctxt "game_options"
 msgid "Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed."
 msgstr ""
 "SGB용 슈퍼 게임보이 2를 에뮬레이트합니다. 올바른 속도로 게임을 실행합니다."
 
 #. TRANSLATION: libretro/mesen-s
-#, fuzzy
 msgctxt "game_options"
 msgid "SUPER GAME BOY 2"
-msgstr "슈퍼 게임 보이 2"
+msgstr "슈퍼 게임보이 2"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/same_cdi, libretro/mame, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
 msgstr "향상. 시스템 속도 저하를 줄입니다. 일부 게임에서 문제를 일으킵니다."
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, libretro/same_cdi, libretro/mame, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "OVERCLOCK (UNSTABLE)"
-msgstr "오버클럭(불안정)"
+msgstr "오버클럭 (불안정)"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, amiberry, mupen64plus, ...
 msgctxt "game_options"
@@ -964,7 +956,6 @@ msgid "Low"
 msgstr "낮음"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, mupen64plus, pcsx2
-#, fuzzy
 msgctxt "game_options"
 msgid "Medium"
 msgstr "보통"
@@ -975,56 +966,46 @@ msgid "High"
 msgstr "높음"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen, libretro/fceumm, mupen64plus
-#, fuzzy
 msgctxt "game_options"
 msgid "Very High"
 msgstr "매우 높음"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Prefer \"Before NMI\", change to After NMI only if needed by the game."
-msgstr ""
-"\"NMI 이전\"을 선호하고 게임에서 필요한 경우에만 NMI 이후로만 변경하십시오."
+msgstr "\"NMI 이전\"을 선호하고, 게임에 필요한 경우에만 NMI 이후로 변경하세요."
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "OVERCLOCK TYPE"
 msgstr "오버클럭 유형"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Before NMI"
 msgstr "NMI 이전"
 
 #. TRANSLATION: libretro/mesen-s, libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "After NMI"
 msgstr "NMI 이후"
 
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x_next
-#, fuzzy
 msgctxt "game_options"
 msgid "Enhancement. Reduces slowdown in mode 7 games."
 msgstr "향상. 모드 7 게임의 속도 저하를 줄입니다."
 
 #. TRANSLATION: libretro/mesen-s, libretro/snes9x, libretro/snes9x_next
-#, fuzzy
 msgctxt "game_options"
 msgid "SUPER FX OVERCLOCK"
 msgstr "슈퍼 FX 오버클럭"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Dendy is a popular Russian clone with unique characteristics."
-msgstr "Dendy는 독특한 특성을 가진 인기있는 러시아 클론입니다."
+msgstr "덴디는 독특한 특성을 가진 인기있는 러시아 클론입니다."
 
 #. TRANSLATION: libretro/mesen, libretro/flycast, libretro/neocd, libretro/o2em, duckstation, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "CONSOLE REGION"
 msgstr "콘솔 지역"
@@ -1032,16 +1013,14 @@ msgstr "콘솔 지역"
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "Dendy"
-msgstr "Dendy"
+msgstr "덴디"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Rotate the screen, useful for certain vertical gameplay homebrews."
-msgstr "화면을 회전, 특정 수직 게임 플레이 홈브류에 유용합니다."
+msgstr "화면을 회전하면, 특정 수직 게임플레이 홈브류에 유용합니다."
 
 #. TRANSLATION: libretro/mesen, libretro/mednafen_wswan
-#, fuzzy
 msgctxt "game_options"
 msgid "DISPLAY ROTATION"
 msgstr "디스플레이 회전"
@@ -1062,82 +1041,69 @@ msgid "270 degrees"
 msgstr "270°"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Core-powered video filter. Bisqwit filters are CPU heavy."
-msgstr "코어 기반 비디오 필터. Bisqwit 필터는 CPU를 많이 사용합니다."
+msgstr "코어 기반 비디오 필터입니다. Bisqwit 필터는 CPU를 많이 사용합니다."
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "NTSC FILTER"
 msgstr "NTSC 필터"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Bisqwit 2x"
-msgstr "비스킷 2x"
+msgstr "Bisqwit 2배"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Bisqwit 4x"
-msgstr "비스킷 4x"
+msgstr "Bisqwit 4배"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Bisqwit 8x"
-msgstr "비스킷 8x"
+msgstr "Bisqwit 8배"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Enhancement. Remove the eight sprite per line limit."
 msgstr "향상. 줄당 8개의 스프라이트 제한을 제거합니다."
 
 #. TRANSLATION: libretro/mesen, libretro/potator
-#, fuzzy
 msgctxt "game_options"
 msgid "COLOR PALETTE"
-msgstr "색상표"
+msgstr "색상 팔레트"
 
 #. TRANSLATION: libretro/mesen, libretro/flycast, libretro/flycast, libretro/puae, libretro/puae2021, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Default"
 msgstr "기본값"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Composite Direct (FirebrandX)"
-msgstr "컴포지트 다이렉트 (파이어브랜드X)"
+msgstr "컴포지트 다이렉트 (파이어브랜드엑스)"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Nes Classic"
-msgstr "네스 클래식"
+msgstr "Nes 클래식"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Nestopia (RGB)"
 msgstr "네스토피아 (RGB)"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Original Hardware (FirebrandX)"
-msgstr "오리지널 하드웨어(파이어브랜드X)"
+msgstr "오리지널 하드웨어 (파이어브랜드엑스)"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "PVM Style (FirebrandX)"
-msgstr "PVM 스타일 (파이어브랜드X)"
+msgstr "PVM 스타일 (파이어브랜드엑스)"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -1145,10 +1111,9 @@ msgid "Sony CXA2025AS"
 msgstr "소니 CXA2025AS"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Unsaturated v6 (FirebrandX)"
-msgstr "불포화 v6 (파이어브랜드X)"
+msgstr "Unsaturated v6 (파이어브랜드엑스)"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -1156,49 +1121,41 @@ msgid "YUV v3 (Firebrand)"
 msgstr "YUV v3 (파이어브랜드)"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "For use with HD texture packs."
-msgstr "HD 텍스처 팩과 함께 사용합니다."
+msgstr "고선명 텍스처 팩과 함께 사용합니다."
 
 #. TRANSLATION: libretro/mesen, citra, dolphin, dolphin_triforce, duckstation, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
-msgstr "사용자 지정 텍스처 로드"
+msgstr "커스텀 텍스처 로드"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Avoids having to manually load side A every time."
 msgstr "매번 A면을 수동으로 로드할 필요가 없습니다."
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "(FDS) AUTOMATICALLY LOAD DISK SIDE A"
-msgstr "(FDS) 디스크 측 A 자동 로드"
+msgstr "(FDS) 디스크 A면 자동 로드"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
-msgstr "정확도를 희생시키면서 로드 시간을 줄입니다."
+msgstr "정확도는 떨어지지만 로드 시간을 줄입니다."
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "(FDS) FAST FORWARD DISK LOADING"
 msgstr "(FDS) 빨리 감기 디스크 로딩"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Useful for speedruns/glitches."
 msgstr "스피드런/글리치에 유용합니다."
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "DEFAULT POWER ON RAM STATE"
 msgstr "RAM 상태의 기본 전원"
@@ -1214,113 +1171,95 @@ msgid "All 1s"
 msgstr "모두 1 초"
 
 #. TRANSLATION: libretro/mesen
-#, fuzzy
 msgctxt "game_options"
 msgid "Random Values"
-msgstr "임의 값"
+msgstr "무작위 값"
 
 #. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
-#, fuzzy
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
 msgstr "향상. 렌더링 해상도를 높입니다. 3D 개체를 더 명확하게 만듭니다."
 
 #. TRANSLATION: libretro/desmume, libretro/dolphin, libretro/swanstation, libretro/duckstation, libretro/flycast, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "렌더링 해상도"
 
 #. TRANSLATION: libretro/desmume
-#, fuzzy
 msgctxt "game_options"
 msgid "Enhancement. Upscales textures on 3D objects."
-msgstr "향상. 3D 개체의 텍스처를 업스케일합니다."
+msgstr "향상. 3D 객체의 텍스처를 업스케일합니다."
 
 #. TRANSLATION: libretro/desmume, libretro/flycast
-#, fuzzy
 msgctxt "game_options"
 msgid "TEXTURE UPSCALING (XBRZ)"
-msgstr "텍스처 업스케일링(XBRZ)"
+msgstr "텍스처 업스케일링 (XBRZ)"
 
 #. TRANSLATION: libretro/desmume
-#, fuzzy
 msgctxt "game_options"
 msgid "Smooths out textures on 3D objects."
-msgstr "3D 개체의 텍스처를 매끄럽게 만듭니다."
+msgstr "3D 객체의 텍스처를 부드럽게 만듭니다."
 
 #. TRANSLATION: libretro/desmume
-#, fuzzy
 msgctxt "game_options"
 msgid "TEXTURE SMOOTHING"
 msgstr "텍스처 스무딩"
 
 #. TRANSLATION: libretro/desmume, libretro/swanstation, libretro/duckstation, dolphin, dolphin_triforce, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Enhancement. Smooth out jagged edges on 3D object polygons."
-msgstr "향상. 3D 개체 다각형에서 들쭉날쭉한 가장자리를 매끄럽게 만듭니다."
+msgstr "향상. 3D 객체 다각형의 들쭉날쭉한 모서리를 부드럽게 다듬습니다."
 
 #. TRANSLATION: libretro/desmume, libretro/mupen64plus-next, mupen64plus
-#, fuzzy
 msgctxt "game_options"
 msgid "ANTI-ALIASING (MSAA)"
-msgstr "앤티앨리어싱(MSAA)"
+msgstr "앤티앨리어싱 (MSAA)"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds, drastic
-#, fuzzy
 msgctxt "game_options"
 msgid "Arrange the dual screen layout."
-msgstr "듀얼 스크린 레이아웃을 정렬합니다."
+msgstr "듀얼 스크린 레이아웃을 처리합니다."
 
 #. TRANSLATION: libretro/desmume, libretro/melonds, citra, melonds, drastic
-#, fuzzy
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "화면 레이아웃"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "top/bottom"
 msgstr "상단/하단"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "bottom/top"
 msgstr "하단/상단"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "left/right"
 msgstr "왼쪽/오른쪽"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "right/left"
 msgstr "오른쪽/왼쪽"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "top only"
-msgstr "맨 위에만"
+msgstr "상단만"
 
 #. TRANSLATION: libretro/desmume, libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "bottom only"
 msgstr "하단만"
 
 #. TRANSLATION: libretro/desmume
-#, fuzzy
 msgctxt "game_options"
 msgid "quick switch"
-msgstr "퀵 스위치"
+msgstr "빠른 전환"
 
 #. TRANSLATION: libretro/desmume
 msgctxt "game_options"
@@ -1333,16 +1272,14 @@ msgid "hybrid/bottom"
 msgstr "하이브리드/하단"
 
 #. TRANSLATION: libretro/desmume, libretro/dosbox, libretro/fbneo, libretro/flycast, libretro/mame078plus, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Skip frames to improve performance, at the cost of choppy motion."
-msgstr "프레임을 건너뛰어 성능을 향상시키지만 동작이 고르지 않습니다."
+msgstr "성능 향상을 위해 프레임을 건너뛰지만, 동작이 끊기는 문제가 있습니다."
 
 #. TRANSLATION: libretro/desmume, libretro/fbneo, libretro/flycast, libretro/mame078plus, libretro/mgba, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "FRAMESKIP"
-msgstr "프레임스킵"
+msgstr "프레임 건너뛰기"
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
@@ -1360,13 +1297,11 @@ msgid "DSi"
 msgstr "DSi"
 
 #. TRANSLATION: libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
-msgstr "시간 및 언어와 같은 시스템 설정에 액세스하려면 비활성화합니다."
+msgstr "시간, 언어 등 시스템 설정에 대한 접속을 비활성화합니다."
 
 #. TRANSLATION: libretro/melonds
-#, fuzzy
 msgctxt "game_options"
 msgid "SKIP DS SYSTEM MENU"
 msgstr "DS 시스템 메뉴 건너뛰기"
@@ -1374,7 +1309,7 @@ msgstr "DS 시스템 메뉴 건너뛰기"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "Use language and username from the NDS Firmware"
-msgstr ""
+msgstr "NDS 펌웨어의 언어, 사용자 이름 사용"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1389,7 +1324,7 @@ msgstr "켜기"
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "OFF (Default)"
-msgstr ""
+msgstr "끄기 (기본)"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -1397,6 +1332,8 @@ msgid ""
 "Select language will be used if 'Use Firmware Settings' is disabled or if "
 "firmware file was not found."
 msgstr ""
+"'펌웨어 설정 사용'이 비활성화되어 있거나 펌웨어 파일을 찾을 수 없는 경우 언"
+"어 선택이 사용됩니다."
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds, libretro/dolphin, libretro/flycast, libretro/kronos, ...
 msgctxt "game_options"
@@ -1466,7 +1403,7 @@ msgstr "DS"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "DSi (Experiemental)"
-msgstr ""
+msgstr "DSi (실험)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1474,6 +1411,8 @@ msgid ""
 "Software mode is faster and more accurate, while OpenGL mode supports "
 "scaling 3D graphics."
 msgstr ""
+"소프트웨어 모드는 더 빠르고 정확하며, OpenGL 모드는 3D 그래픽 크기 조정을 지"
+"원합니다."
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
@@ -1493,52 +1432,52 @@ msgstr "소프트웨어"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "OpenGL (Overwrites Libretro API settings)"
-msgstr ""
+msgstr "OpenGL (Libretro API 설정을 덮어씀)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Degree in which 3D graphics are scaled up. OpenGL renderer only."
-msgstr ""
+msgstr "3D 그래픽이 확대되는 정도입니다. OpenGL 렌더러만 해당합니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "1x native (256 x 192)"
-msgstr ""
+msgstr "1배 네이티브 (256 x 192)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "2x native (512 x 384)"
-msgstr ""
+msgstr "2배 네이티브 (512 x 384)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "3x native (768 x 576)"
-msgstr ""
+msgstr "3배 네이티브 (768 x 576)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "4x native (1024 x 768)"
-msgstr ""
+msgstr "4배 네이티브 (1024 x 768)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "5x native (1280 x 960)"
-msgstr ""
+msgstr "5배 네이티브 (1280 x 960)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "6x native (1536 x 1152)"
-msgstr ""
+msgstr "6배 네이티브 (1536 x 1152)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "7x native (1792 x 1344)"
-msgstr ""
+msgstr "7배 네이티브 (1792 x 1344)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "8x native (2048 x 1536)"
-msgstr ""
+msgstr "8배 네이티브 (2048 x 1536)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1546,11 +1485,13 @@ msgid ""
 "Enable this if your game's 3D modles are not rendered correctly. OpenGL "
 "renderer only."
 msgstr ""
+"게임의 3D 모델이 올바르게 렌더링되지 않으면 이 기능을 활성화하세요. OpenGL 렌"
+"더러만 해당합니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "IMPROVED POLYGON SPLITTING"
-msgstr ""
+msgstr "개선된 폴리곤 분할"
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, ...
 msgctxt "game_options"
@@ -1561,20 +1502,20 @@ msgstr "활성화"
 msgctxt "game_options"
 msgid "Affects how the emulated screens are scaled. OpenGL renderer only."
 msgstr ""
+"에뮬레이트된 화면의 크기 조절 방식에 영향을 줍니다. OpenGL 렌더러만 해당합니"
+"다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "SCREEN FILTERING"
-msgstr ""
+msgstr "화면 필터링"
 
 #. TRANSLATION: libretro/melondsds, libretro/swanstation, libretro/duckstation, libretro/parallel_n64, pcsx2, ...
-#, fuzzy
 msgctxt "game_options"
 msgid "Nearest"
 msgstr "가장 가까운"
 
 #. TRANSLATION: libretro/melondsds, ppsspp
-#, fuzzy
 msgctxt "game_options"
 msgid "Linear"
 msgstr "선형"
@@ -1582,32 +1523,32 @@ msgstr "선형"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Determines how the cursor should apprear on the botton screen."
-msgstr ""
+msgstr "커서가 하단 화면에 어떻게 나타날지 결정합니다."
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
 msgid "SCREEN SETTINGS"
-msgstr ""
+msgstr "화면 설정"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "CURSOR MODE"
-msgstr ""
+msgstr "커서 모드"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Never"
-msgstr ""
+msgstr "절대 안 함"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "While Touching"
-msgstr ""
+msgstr "만지는 동안"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Until Timeout"
-msgstr ""
+msgstr "시간 초과까지"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1617,12 +1558,12 @@ msgstr "항상"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Cursor timeout in seconds when using Cursor Mode - Until Timeout."
-msgstr ""
+msgstr "커서 모드 - 시간 초과까지 사용할 때 커서 시간 초과(초)입니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "CURSOR TIMEOUT"
-msgstr ""
+msgstr "커서 시간 초과"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1672,7 +1613,7 @@ msgstr "60 초"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Determine how the console's touch screen in emulated."
-msgstr ""
+msgstr "콘솔의 터치 스크린이 어떻게 에뮬레이션되는지 확인합니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1687,7 +1628,7 @@ msgstr "조이스틱"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Pointer"
-msgstr ""
+msgstr "포인터"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1695,46 +1636,48 @@ msgid ""
 "Use this to play online with custom servers that reimplement the "
 "discontinued Nintendo Wi-Fi."
 msgstr ""
+"이 기능을 사용하면 중단된 닌텐도 Wi-Fi를 다시 구현한 커스텀 서버에서 온라인으"
+"로 플레이할 수 있습니다."
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
 msgid "FIRMWARE SETTINGS"
-msgstr ""
+msgstr "펌웨어 설정"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "DNS OVERRIDE"
-msgstr ""
+msgstr "DNS 오버라이드"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Kaeru WFC (178.62.43.212)"
-msgstr ""
+msgstr "Kaeru WFC (178.62.43.212)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "AltWFC (172.104.88.237)"
-msgstr ""
+msgstr "AltWFC (172.104.88.237)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Wiimmfi (95.217.77.181)"
-msgstr ""
+msgstr "Wiimmfi (95.217.77.181)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Force Default DNS"
-msgstr ""
+msgstr "기본 DNS 강제"
 
 #. TRANSLATION: libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds, libretro/melondsds
 msgctxt "game_options"
 msgid "Don't Override"
-msgstr ""
+msgstr "재정의하지 않음"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "Overrides the language mode of the emulated console."
-msgstr ""
+msgstr "에뮬레이션된 콘솔의 언어 모드를 재정의합니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1749,12 +1692,12 @@ msgstr "영어"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "The theme colour of the emulated console."
-msgstr ""
+msgstr "에뮬레이션된 콘솔의 테마 색상입니다."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "FAVOURITE COLOUR"
-msgstr ""
+msgstr "즐겨찾기 색깔"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1839,12 +1782,12 @@ msgstr ""
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "The month of your birthay."
-msgstr ""
+msgstr "생일이 있는 월."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "BIRTH MONTH"
-msgstr ""
+msgstr "출생 월"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1909,7 +1852,7 @@ msgstr "12월"
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "The day within the month of your birthday."
-msgstr ""
+msgstr "생일이 있는 월의 날짜."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -3623,7 +3566,6 @@ msgid "Retropad"
 msgstr "레트로패드"
 
 #. TRANSLATION: libretro/fuse, libretro/fuse
-#, fuzzy
 msgctxt "game_options"
 msgid "Cursor Joystick"
 msgstr "커서 조이스틱"
@@ -16822,7 +16764,7 @@ msgctxt "keys_files"
 msgid "Right magnasave"
 msgstr ""
 
-#. TRANSLATION: dreamcast.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, atomiswave.flycast.keys, jaguarcd.bigpemu.keys, ...
+#. TRANSLATION: dreamcast.flycast.keys, naomi2.flycast.keys, naomi.flycast.keys, atomiswave.flycast.keys, jaguar.bigpemu.keys
 msgctxt "keys_files"
 msgid "Configuration menu"
 msgstr ""
