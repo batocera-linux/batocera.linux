@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ### choose configuration file
 BATOCONF="/userdata/system/batocera.conf"
@@ -45,21 +45,21 @@ batocera_hostname() {
 batocera_wifi_configure() {
     X=$1
 
-    settings_hide=false; settings_name="${X}"
-    [ "$X" = "1" ] && { X=; settings_name=default; }
-    [ "$X" = ".hidden" ] && { settings_name=hidden_AP; settings_hide=true; }
-    
+    # Set default values
+    settings_hide=false
+    settings_name="${X}"
+    [ "$X" = "1" ] && { X=; settings_name="default"; }
+    [ "$X" = ".hidden" ] && { settings_name="hidden_AP"; settings_hide=true; }
+
     settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.ssid)"
     settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key)"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
+    optionalPassphrase=""
+    
+    [ -n "$settings_key" ] && optionalPassphrase="Passphrase=${settings_key}"
 
-    if [ -n "${settings_key}" ]; then
-        optionalPassphrase="Passphrase=${settings_key}"
-    else
-        optionalPassphrase=
-    fi
-
-    if [ -n "$settings_ssid" -a "$settingsWlan" = "1" ];then
+    # Create or remove wifi configuration file based on SSID and WLAN status
+    if [ -n "$settings_ssid" ] && [ "$settingsWlan" = "1" ]; then
         mkdir -p "/var/lib/connman"
         cat > "${settings_file}" <<-_EOF_
 		[global]
@@ -77,19 +77,18 @@ batocera_wifi_configure() {
 }
 
 wifi_configure_all() {
-    for i in 1 2 3 .hidden
-    do
-	batocera_wifi_configure $i
-	ret=$?
+    for i in 1 2 3 .hidden; do
+	    batocera_wifi_configure $i
+		ret=$?
     done
 }
 
 wifi_enable() {
     settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
     [ -n "$settingsCountry" ] && /usr/sbin/iw reg set "$settingsCountry"
-    if [ "$settingsWlan" != "1" ];then
-	connmanctl disable wifi 2>/dev/null
-	return
+    if [ "$settingsWlan" != "1" ]; then
+	    connmanctl disable wifi 2>/dev/null
+	    return
     fi
 
     connmanctl enable wifi 2>/dev/null
@@ -98,21 +97,42 @@ wifi_enable() {
 
 case "$1" in
 	start)
-	        batocera_hostname
-	        wifi_configure_all
-	        printf "Starting connman: "
+	    batocera_hostname
+	    wifi_configure_all
+	    printf "Starting connman: "
 		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n -r
 
 		# wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
 		N=0
 		connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-		while test $? -ne 0 -a $N -lt 5 # 5 tries
-		do
+		while test $? -ne 0 -a $N -lt 5; do # 5 tries
 		    N=$((N+1))
 		    sleep 1
 		    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
 		done
 		sleep 0.5
+
+		# Check if device is a Retroid Pocket model,
+		# We generate a MAC address based on the serial number.
+		MAC=""
+		info_output=$(batocera-info)
+
+		if echo "$info_output" | grep -qE "Model: Retroid_Pocket_(Mini|5)"; then
+			WLAN=$(ls /sys/class/net | grep -E '^wlan' | head -n 1)
+			SERIAL="$(cat /sys/devices/soc0/serial_number)"
+			MAC="00:03:7F:${SERIAL:4:2}:${SERIAL:6:2}:${SERIAL:8:2}"
+			
+			if [ -n "$WLAN" ]; then  # Check if a wlan interface was found
+				# Restart the link with the new MAC address
+				ip link set "$WLAN" down
+				ip link set "$WLAN" address "$MAC"
+				ip link set "$WLAN" up
+				echo "Custom MAC address $MAC set for wifi on interface $WLAN"
+				echo "Based on serial number $SERIAL"
+			else
+				echo "No wireless interface found."
+			fi
+		fi
 
 		# can be done detached
 		wifi_enable &
