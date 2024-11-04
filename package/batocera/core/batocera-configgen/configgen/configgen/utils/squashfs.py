@@ -31,7 +31,7 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
         # try to remove an empty directory, else, run the directory, ignoring the .squashfs
         try:
             mount_point.rmdir()
-        except:
+        except (FileNotFoundError, OSError):
             eslog.debug(f"squashfs_rom: failed to rmdir {mount_point}")
             yield str(mount_point)
             # No cleanup is necessary
@@ -45,7 +45,7 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
         eslog.debug(f"squashfs_rom: mounting {mount_point} failed")
         try:
             mount_point.rmdir()
-        except:
+        except (FileNotFoundError, OSError):
             pass
         raise Exception(f"unable to mount the file {rom}")
 
@@ -58,10 +58,11 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
         else:
             try:
                 rom_linked = (mount_point / ".ROM").resolve(strict=True)
+            except OSError:
+                yield str(mount_point)
+            else:
                 eslog.debug(f"squashfs: linked rom {rom_linked}")
                 yield str(rom_linked)
-            except:
-                yield str(mount_point)
     finally:
         eslog.debug(f"squashfs_rom: cleaning up {mount_point}")
 
