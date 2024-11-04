@@ -1,0 +1,12 @@
+diff --git a/Xtrans.c b/Xtrans.c
+index c595bc2f4f..6228af579e 100644
+--- a/Xtrans.c
++++ b/Xtrans.c
+@@ -150,6 +150,7 @@ TRANS(SelectTransport) (const char *protocol)
+ #ifndef HAVE_STRCASECMP
+     char 	protobuf[PROTOBUFSIZE];
+ #endif
++    int		i;
+ 
+     prmsg (3,"SelectTransport(%s)\n", protocol);
+ 
