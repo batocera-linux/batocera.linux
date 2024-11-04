@@ -2,9 +2,8 @@
 
 # Log and configuration file paths
 LOG_FILE="/userdata/system/logs/display.log"
-SWAY_CONF_FILE="/etc/sway/config"
+SWAY_CONF_FILE="/etc/sway/config.display"
 SWAY_LOG_FILE="/userdata/system/logs/sway.log"
-TEMP_FILE="/tmp/sway_config.tmp"
 
 # Log function for cleaner output
 log_message() {
@@ -54,10 +53,7 @@ if [ -n "$preferred_display" ]; then
                 echo
             fi
         done
-
-        # Include any existing configuration from SWAY_CONF_FILE
-        cat "$SWAY_CONF_FILE" 2>/dev/null
-    } > "$TEMP_FILE" && mv "$TEMP_FILE" "$SWAY_CONF_FILE"
+    } > "$SWAY_CONF_FILE"
 else
     log_message "Error: Failed to retrieve preferred display setting."
 fi
