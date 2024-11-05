@@ -56,7 +56,7 @@ endef
 
 define CANNONBALL_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cannonball/cannonball.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cannonball/cannonball.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 
