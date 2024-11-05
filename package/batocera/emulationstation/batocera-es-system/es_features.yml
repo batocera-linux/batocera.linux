@@ -6881,8 +6881,14 @@ amiberry:
                 "OFF":                         false
 
 cannonball:
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode]
   cfeatures:
+        ratio:
+            prompt: ASPECT RATIO
+            description: Change the output resolution ratio.
+            choices:
+                "4:3":  0
+                "16:9": 1
         highResolution:
             prompt:      HIGH RESOLUTION MODE
             description: Improves both sprite scaling and road rendering. Does not affect the car sprite.

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import codecs
 import os
-from typing import TYPE_CHECKING
+import xml.etree.ElementTree as ET
 from xml.dom import minidom
+from typing import TYPE_CHECKING
 
 from ... import Command
+from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
 
@@ -18,93 +19,71 @@ class CannonballGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cannonball",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": {"exit": ["KEY_LEFTALT", "KEY_F4"]}
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        configFile = CONFIGS / 'cannonball' / 'config.xml'
-
+        configFile = CONFIGS / "cannonball" / "config.xml"
         mkdir_if_not_exists(configFile.parent)
 
-        # config file
-        config = minidom.Document()
-        if configFile.exists():
-            try:
-                config = minidom.parse(str(configFile))
-            except:
-                pass # reinit the file
+        # Create data section
+        data = ET.Element("data")
+        ET.SubElement(data, "rompath").text = "/userdata/roms/cannonball/"
+        ET.SubElement(data, "respath").text = "/userdata/system/configs/cannonball/"
+        ET.SubElement(data, "savepath").text = "/userdata/saves/cannonball/"
+        ET.SubElement(data, "crc32").text = "0"
 
-        # root
-        xml_root = CannonballGenerator.getRoot(config, "config")
+        # Create video section
+        video = ET.Element("video")
+        ET.SubElement(video, "mode").text = "1"  # fullscreen
+        window = ET.SubElement(video, "window")
+        ET.SubElement(window, "scale").text = "2" # scale
+        ET.SubElement(video, "fps_counter").text = "1" if (system.isOptSet("showFPS") and system.getOptBoolean("showFPS")) else "0"
+        ET.SubElement(video, "widescreen").text = "1" if (system.isOptSet("ratio") and system.config["ratio"] == "1") else "0"
+        ET.SubElement(video, "hires").text = "1" if (system.isOptSet("highResolution") and system.config["highResolution"] == "1") else "0"
+        ET.SubElement(video, "vsync").text = "1"  # default vsync to 1
+        ET.SubElement(video, "scanlines").text = "0"
+        ET.SubElement(video, "fps").text = "2" # 60 fps
 
-        # video
-        xml_video = CannonballGenerator.getSection(config, xml_root, "video")
+        # OutRun shipped with a corrupt PCM sample ROM. This uses the repaired ROM 'opr-10188.71f'
+        sound = ET.Element("sound")
+        ET.SubElement(sound, "enable").text = "1"
+        ET.SubElement(sound, "fix_samples").text = "0"  # run without it
 
-        # fps
-        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
-            CannonballGenerator.setSectionConfig(config, xml_video, "fps_counter", "1")
-        else:
-            CannonballGenerator.setSectionConfig(config, xml_video, "fps_counter", "0")
+        # Create controls section - disable, use controller defaults
+        controls = ET.Element("controls")
+        #from .cannonballControllers import generateControllerConfig
+        #generateControllerConfig(controls, playersControllers)
 
-        # ratio
-        if system.isOptSet('ratio') and system.config["ratio"] == "16/9":
-            CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "1")
-        else:
-            CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "0")
+        # Function to convert XML to pretty-printed
+        def prettify(element: ET.Element) -> str:
+            rough_string = ET.tostring(element, 'utf-8')
+            reparsed = minidom.parseString(rough_string)
+            pretty_string = reparsed.toprettyxml(indent="    ")
+            # Remove the XML declaration from the pretty string
+            return '\n'.join(pretty_string.splitlines()[1:])
 
-        # high resolution
-        if system.isOptSet('highResolution') and system.config["highResolution"] == "1":
-            CannonballGenerator.setSectionConfig(config, xml_video, "hires", "1")
-        else:
-            CannonballGenerator.setSectionConfig(config, xml_video, "hires", "0")
+        # Save the config file with multiple sections
+        with open(str(configFile), "wb") as cannonballXml:
+            cannonballXml.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
+            cannonballXml.write(prettify(data).encode("utf-8"))
+            cannonballXml.write(b"\n")
+            cannonballXml.write(prettify(video).encode("utf-8"))
+            cannonballXml.write(b"\n")
+            cannonballXml.write(prettify(sound).encode("utf-8"))
+            cannonballXml.write(b"\n")
+            cannonballXml.write(prettify(controls).encode("utf-8"))
+        
+        dbfile = "/userdata/system/configs/cannonball/gamecontrollerdb.txt"
+        write_sdl_controller_db(playersControllers, dbfile)
 
-        # controllers
-        from .cannonballControllers import generateControllerConfig
-        generateControllerConfig(config, xml_root, playersControllers)
+        commandArray = ["/usr/bin/cannonball", "-cfgfile", configFile]
 
-        # save the config file
-        #cannonballXml = open(configFile, "w")
-        # TODO: python 3 - workawround to encode files in utf-8
-        cannonballXml = codecs.open(str(configFile), "w", "utf-8")
-        dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
-        cannonballXml.write(dom_string)
-
-        return Command.Command(array=["cannonball"])
-
-    @staticmethod
-    def getRoot(config: minidom.Document, name: str) -> minidom.Element:
-        xml_section = config.getElementsByTagName(name)
-
-        if len(xml_section) == 0:
-            xml_section = config.createElement(name)
-            config.appendChild(xml_section)
-        else:
-            xml_section = xml_section[0]
-
-        return xml_section
-
-    @staticmethod
-    def getSection(config: minidom.Document, xml_root: minidom.Element, name: str) -> minidom.Element:
-        xml_section = xml_root.getElementsByTagName(name)
-
-        if len(xml_section) == 0:
-            xml_section = config.createElement(name)
-            xml_root.appendChild(xml_section)
-        else:
-            xml_section = xml_section[0]
-
-        return xml_section
-
-    @staticmethod
-    def setSectionConfig(config: minidom.Document, xml_section: minidom.Element, name: str, value: str) -> None:
-        xml_elt = xml_section.getElementsByTagName(name)
-        if len(xml_elt) == 0:
-            xml_elt = config.createElement(name)
-            xml_section.appendChild(xml_elt)
-        else:
-            xml_elt = xml_elt[0]
-
-        if xml_elt.hasChildNodes():
-            xml_elt.firstChild.data = value
-        else:
-            xml_elt.appendChild(config.createTextNode(value))
+        return Command.Command(
+            array=commandArray,
+            env={
+                "XDG_DATA_HOME": CONFIGS,
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
+        )
