@@ -240,7 +240,7 @@ diff '--color=auto' -uri bauh-lbrpdx/bauh/view/qt/window.py bauh-0.10.7/bauh/vie
 +            bt_sugs.setCursor(QCursor(Qt.PointingHandCursor))
 +            bt_sugs.setToolTip(i18n['manage_window.bt.suggestions.tooltip'])
 +            bt_sugs.setText("Suggestions")
-+            bt_sugs.clicked.connect(self._begin_load_suggestions)
++            bt_sugs.clicked.connect(self.begin_load_suggestions)
 +            bt_sugs.sizePolicy().setRetainSizeWhenHidden(True)
 +
 +        # bt_themes = IconButton(self.show_themes,
@@ -250,7 +250,7 @@ diff '--color=auto' -uri bauh-lbrpdx/bauh/view/qt/window.py bauh-0.10.7/bauh/vie
 +        # self.container_bottom.layout().addWidget(bt_themes)
 +        # self.comp_manager.register_component(BT_THEMES, bt_themes)
 +
-+        # self.custom_actions = [a for a in manager.gen_custom_actions()]
++        self.custom_actions = [a for a in manager.gen_custom_actions()]
 +        # bt_custom_actions = IconButton(action=self.show_custom_actions,
 +        #                                i18n=self.i18n,
 +        #                                tooltip=self.i18n['manage_window.bt_custom_actions.tip'])
