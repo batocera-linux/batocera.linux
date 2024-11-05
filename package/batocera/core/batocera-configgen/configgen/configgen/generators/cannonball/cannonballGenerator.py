@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import os
 import xml.etree.ElementTree as ET
-from xml.dom import minidom
 from typing import TYPE_CHECKING
 
 from ... import Command
+from ...batoceraPaths import CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
-from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -23,14 +21,16 @@ class CannonballGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        configFile = CONFIGS / "cannonball" / "config.xml"
-        mkdir_if_not_exists(configFile.parent)
+        configDir = CONFIGS / "cannonball"
+        mkdir_if_not_exists(configDir)
+
+        configFile = configDir / "config.xml"
 
         # Create data section
         data = ET.Element("data")
-        ET.SubElement(data, "rompath").text = "/userdata/roms/cannonball/"
-        ET.SubElement(data, "respath").text = "/userdata/system/configs/cannonball/"
-        ET.SubElement(data, "savepath").text = "/userdata/saves/cannonball/"
+        ET.SubElement(data, "rompath").text = str(ROMS / "cannonball")
+        ET.SubElement(data, "respath").text = str(configDir)
+        ET.SubElement(data, "savepath").text = str(SAVES / "cannonball")
         ET.SubElement(data, "crc32").text = "0"
 
         # Create video section
@@ -56,26 +56,22 @@ class CannonballGenerator(Generator):
         #generateControllerConfig(controls, playersControllers)
 
         # Function to convert XML to pretty-printed
-        def prettify(element: ET.Element) -> str:
-            rough_string = ET.tostring(element, 'utf-8')
-            reparsed = minidom.parseString(rough_string)
-            pretty_string = reparsed.toprettyxml(indent="    ")
-            # Remove the XML declaration from the pretty string
-            return '\n'.join(pretty_string.splitlines()[1:])
+        def prettify(element: ET.Element) -> bytes:
+            ET.indent(element, space='    ')
+            return ET.tostring(element, encoding='unicode').encode('utf-8')
 
         # Save the config file with multiple sections
-        with open(str(configFile), "wb") as cannonballXml:
+        with configFile.open("wb") as cannonballXml:
             cannonballXml.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
-            cannonballXml.write(prettify(data).encode("utf-8"))
+            cannonballXml.write(prettify(data))
             cannonballXml.write(b"\n")
-            cannonballXml.write(prettify(video).encode("utf-8"))
+            cannonballXml.write(prettify(video))
             cannonballXml.write(b"\n")
-            cannonballXml.write(prettify(sound).encode("utf-8"))
+            cannonballXml.write(prettify(sound))
             cannonballXml.write(b"\n")
-            cannonballXml.write(prettify(controls).encode("utf-8"))
-        
-        dbfile = "/userdata/system/configs/cannonball/gamecontrollerdb.txt"
-        write_sdl_controller_db(playersControllers, dbfile)
+            cannonballXml.write(prettify(controls))
+
+        write_sdl_controller_db(playersControllers, configDir / "gamecontrollerdb.txt")
 
         commandArray = ["/usr/bin/cannonball", "-cfgfile", configFile]
 
