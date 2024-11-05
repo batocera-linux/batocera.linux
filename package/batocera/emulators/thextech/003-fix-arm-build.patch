@@ -1,5 +1,5 @@
 diff --git a/3rdparty/AudioCodecs/libopus/CMakeLists.txt b/3rdparty/AudioCodecs/libopus/CMakeLists.txt
-index c249d791..ba9901e7 100644
+index c249d79..281a1fb 100644
 --- a/3rdparty/AudioCodecs/libopus/CMakeLists.txt
 +++ b/3rdparty/AudioCodecs/libopus/CMakeLists.txt
 @@ -575,7 +575,7 @@ elseif(OPUS_ARM_ARCHITECTURE)
@@ -7,7 +7,7 @@ index c249d791..ba9901e7 100644
      )
  
 -    if(OPUS_ARM_ASM AND CMAKE_COMPILER_IS_GNUCC)
-+    if(OPUS_ARM_ASM AND NOT OPUS_ARM64_ARCHITECTURE)
++    if(OPUS_ARM_ASM AND NOT OPUS_ARM64_ARCHITECTURE AND NOT OPUS_ARM_ARCHITECTURE)
          list(APPEND OPUS_SRC
              celt/arm/celt_pitch_xcorr_arm.s
          )
