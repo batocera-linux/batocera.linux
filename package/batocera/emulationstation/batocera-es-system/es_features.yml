@@ -2450,7 +2450,7 @@ libretro:
                description: Choose your Atari hard drive type for the .hd extension file.
                choices:
                   "IDE (Default)": IDE
-                  "ASCI":          ASCI
+                  "ACSI":          ACSI
     imame4all:
       features: [netplay]
       shared: [rewind, autosave]
@@ -8290,7 +8290,7 @@ hatari:
             description: Choose your Atari hard drive type for the .hd extension file.
             choices:
                 "IDE (Default)": IDE
-                "ASCI":          ASCI
+                "ACSI":          ACSI
 
 melonds:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
