@@ -29,27 +29,38 @@ class HatariGenerator(Generator):
         rom_path = Path(rom)
 
         model_mapping = {
-            "520st_auto":   { "machine": "st",      "tos": "auto" },
-            "520st_100":    { "machine": "st",      "tos": "100"  },
-            "520st_102":    { "machine": "st",      "tos": "102"  },
-            "520st_104":    { "machine": "st",      "tos": "104"  },
-            "1040ste_auto": { "machine": "ste",     "tos": "auto" },
-            "1040ste_106":  { "machine": "ste",     "tos": "106"  },
-            "1040ste_162":  { "machine": "ste",     "tos": "162"  },
-            "megaste_auto": { "machine": "megaste", "tos": "auto" },
-            "megaste_205":  { "machine": "megaste", "tos": "205"  },
-            "megaste_206":  { "machine": "megaste", "tos": "206"  },
+            "520st_auto":       { "machine": "st",      "tos": "auto" },
+            "520st_100":        { "machine": "st",      "tos": "100"  },
+            "520st_102":        { "machine": "st",      "tos": "102"  },
+            "520st_104":        { "machine": "st",      "tos": "104"  },
+            "520st_etos256":    { "machine": "st",      "tos": "etos256"  },
+            "1040ste_auto":     { "machine": "ste",     "tos": "auto" },
+            "1040ste_106":      { "machine": "ste",     "tos": "106"  },
+            "1040ste_162":      { "machine": "ste",     "tos": "162"  },
+            "1040ste_etos256":  { "machine": "ste",     "tos": "etos256"  },
+            "megaste_auto":     { "machine": "megaste", "tos": "auto" },
+            "megaste_205":      { "machine": "megaste", "tos": "205"  },
+            "megaste_206":      { "machine": "megaste", "tos": "206"  },
+            "megaste_etos256":  { "machine": "megaste", "tos": "etos256"  },
+            "tt_auto":          { "machine": "tt",      "tos": "auto" },
+            "tt_306":           { "machine": "tt",      "tos": "306"  },
+            "tt_etos512":       { "machine": "tt",      "tos": "etos512"  },
+            "falcon_auto":      { "machine": "falcon",  "tos": "auto" },
+            "falcon_400":       { "machine": "falcon",  "tos": "400"  },
+            "falcon_402":       { "machine": "falcon",  "tos": "402"  },
+            "falcon_404":       { "machine": "falcon",  "tos": "404"  },
+            "falcon_etos512":   { "machine": "falcon",  "tos": "etos512"  },
         }
 
         # Start emulator fullscreen
         commandArray: list[str | Path] = ["hatari", "--fullscreen"]
 
         # Machine can be st (default), ste, megaste, tt, falcon
-        # st should use TOS 1.00 to TOS 1.04 (tos100 / tos102 / tos104)
-        # ste should use TOS 1.06 at least (tos106 / tos162 / tos206)
-        # megaste should use TOS 2.XX series (tos206)
-        # tt should use tos 3.XX
-        # falcon should use tos 4.XX
+        # st should use TOS 1.00 to TOS 1.04 (tos100 / tos102 / tos104 / emutos192k)
+        # ste should use TOS 1.06 at least (tos106 / tos162 / tos206 / emutos192K)
+        # megaste should use TOS 2.XX series (tos206 / emutos256k)
+        # tt should use tos 3.XX / emutos512k
+        # falcon should use tos 4.XX / emutos512k
 
         machine = "st"
         tosversion = "auto"
@@ -162,9 +173,11 @@ class HatariGenerator(Generator):
 
         # machine bioses by prefered orders, when value is "auto"
         all_machines_bios = {
-            "st":      ["104", "102", "100"],
-            "ste":     ["162", "106"],
-            "megaste": ["206", "205"]
+            "st":      ["etos256", "104", "102", "100"],
+            "ste":     ["etos256", "162", "106"],
+            "megaste": ["etos256", "206", "205"],
+            "tt":      ["etos512", "306"],
+            "falcon":  ["etos512", "404", "402", "400"]
         }
 
         if machine in all_machines_bios:
@@ -178,8 +191,12 @@ class HatariGenerator(Generator):
                     l_lang = [language]
                 l_lang.extend(all_languages)
                 for v_language in l_lang:
-                    filename = f"tos{v_tos_version}{v_language}.img"
-                    if (biosdir / filename).exists():
+                    if "etos" in v_tos_version:
+                        biosversion = v_tos_version
+                    else:
+                        biosversion = f"tos{v_tos_version}"
+                    filename = f"{biosversion}{v_language}.img"
+                    if os.path.exists(f"{biosdir}/{filename}"):
                         eslog.debug(f"tos filename: {filename}")
                         return filename
                     else:

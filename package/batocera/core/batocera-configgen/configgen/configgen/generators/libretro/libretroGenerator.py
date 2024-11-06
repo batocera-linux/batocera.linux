@@ -366,6 +366,20 @@ class LibretroGenerator(Generator):
                 corePath = system.config['core']
             commandArray.append(f'/var/run/cmdfiles/{rom_path.stem}.cmd')
 
+        if system.config['core'] == 'hatarib':
+            rom_extension = os.path.splitext(romName)[1].lower()
+            biosdir = "/userdata/bios/hatarib"
+            if not os.path.exists(biosdir):
+                os.mkdir(biosdir)
+            targetlink = biosdir + "/hdd"
+            #retroarch can't use hdd files outside his system directory (/userdata/bios)
+            if os.path.exists(targetlink):
+                os.unlink(targetlink)
+            if rom_extension in [ '.hd', '.gemdos'] :
+                #don't pass hd drive as parameter, it need to be added in configuration
+                dontAppendROM = True
+                os.symlink(rom, targetlink)
+
         if dontAppendROM == False:
             commandArray.append(rom_path)
 

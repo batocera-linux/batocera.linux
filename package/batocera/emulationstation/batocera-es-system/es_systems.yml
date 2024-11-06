@@ -1445,19 +1445,19 @@ atarist:
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos, vhd, gem, ide]
+  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos]
   emulators:
-    libretro:
-      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
-      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB], incompatible_extensions: [ hd, gemdos ] }
     hatari:
       hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
+    libretro:
+      hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB] }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
   comment_en: |
-    To enable GEMDOS support within the non-libretro version of Hatari.
+    To enable GEMDOS support,
     Create a directory within the roms folder that has a .gemdos extension.
     i.e. /userdata/roms/atarist/<drive name>.gemdos
   comment_fr: |
-    Pour activer le support GEMDOS dans la version non libretro de Hatari.
+    Pour activer le support GEMDOS,
     Créez un répertoire dans le dossier roms portant une extension .gemdos.
     c'est-à-dire /userdata/roms/atarist/<nom du lecteur>.gemdos
 amstradcpc:
