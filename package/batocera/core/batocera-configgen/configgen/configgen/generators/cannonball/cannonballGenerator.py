@@ -28,9 +28,9 @@ class CannonballGenerator(Generator):
 
         # Create data section
         data = ET.Element("data")
-        ET.SubElement(data, "rompath").text = str(ROMS / "cannonball")
-        ET.SubElement(data, "respath").text = str(configDir)
-        ET.SubElement(data, "savepath").text = str(SAVES / "cannonball")
+        ET.SubElement(data, "rompath").text = str(ROMS / "cannonball") + "/"
+        ET.SubElement(data, "respath").text = str(configDir) + "/"
+        ET.SubElement(data, "savepath").text = str(SAVES / "cannonball") + "/"
         ET.SubElement(data, "crc32").text = "0"
 
         # Create video section
