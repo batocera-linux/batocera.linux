@@ -127,6 +127,7 @@
 - The Force Engine to Oct 26, 2024 build
 - TheXTech to v1.3.6.6
 - Vita3k to August 25, 2024 build
+- Visual Pinball to November 3, 2024
 - Xemu to v0.7.130
 - Xenia to v1.0.2817
 - Xenia Canary to October 26, 2024 build
