@@ -78,12 +78,14 @@ else
 	# shutdown / suspend
 	case "${SUSPEND_MODE}" in
 	    "suspend")
-		pm-is-supported --suspend && pm-suspend
-	    ;;
+		    pm-is-supported --suspend && pm-suspend
+			;;
 	    "hybrid")
-		# pm-hibernate is not supported on the Win600 at the moment
-		pm-is-supported --suspend-hybrid && pm-suspend-hybrid
-	    ;;
+		    # pm-hibernate is not supported on the Win600 at the moment
+			pm-is-supported --suspend-hybrid && pm-suspend-hybrid
+			;;
+		"hibernate")
+		    pm-is-supported --hibernate && pm-hibernate
 	    *)
 		/sbin/shutdown -h now
 	esac
