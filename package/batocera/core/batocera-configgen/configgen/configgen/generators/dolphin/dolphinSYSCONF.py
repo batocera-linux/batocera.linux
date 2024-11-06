@@ -80,7 +80,6 @@ def readWriteEntry(f, setval):
             itemValue = readBEInt32(f)
         elif itemType == 6: # long long
             itemValue = readBEInt64(f)
-            readBytes(f, dataSize)
         elif itemType == 7: # bool
             itemValue = readInt8(f)
         else:
