@@ -83,8 +83,8 @@ class HatariGenerator(Generator):
 
         rom_extension = rom_path.suffix.lower()
         if rom_extension == ".hd":
-            if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ASCI":
-                commandArray += ["--asci", rom_path]
+            if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ACSI":
+                commandArray += ["--acsi", rom_path]
             else:
                 commandArray += ["--ide-master", rom_path]
         elif rom_extension == ".gemdos":

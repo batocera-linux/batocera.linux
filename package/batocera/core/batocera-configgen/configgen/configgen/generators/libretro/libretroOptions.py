@@ -2839,7 +2839,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('hatarib_hardimg', '"hatarib/hdd"')
             coreSettings.save('hatarib_hardboot', '"1"')
             coreSettings.save('hatarib_hard_readonly', '"1"')
-            if system.isOptSet("hatarib_drive") and system.config["hatarib_drive"] == "ASCI":
+            if system.isOptSet("hatarib_drive") and system.config["hatarib_drive"] == "ACSI":
                 coreSettings.save('hatarib_hardtype', '"2"')
             elif system.isOptSet("hatarib_drive") and system.config["hatarib_drive"] == "SCSI":
                 coreSettings.save('hatarib_hardtype', '"3"')
