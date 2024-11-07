@@ -1,0 +1,34 @@
+diff --git a/pironman/system_status.py b/pironman/system_status.py
+index 46ac14f58f..22de933dd3 100644
+--- a/pironman/system_status.py
++++ b/pironman/system_status.py
+@@ -56,12 +56,26 @@ def getCPUuse():
+ #     disk = disk.replace("G", "").replace("%", "").split()
+ #     return(disk[1:5])
+ def getDiskSpace():
+-    total, used, free = shutil.disk_usage("/")
++    # Find the partition mounted as /userdata or, if not available, the second partition
++    partitions = psutil.disk_partitions()
++    mount_point = "/"
++
++    # Check if /userdata is mounted
++    userdata_partition = next((p.mountpoint for p in partitions if p.mountpoint == "/userdata"), None)
++    if userdata_partition:
++        mount_point = userdata_partition
++    elif len(partitions) > 1:
++        # If /userdata is not found, use the second partition
++        mount_point = partitions[1].mountpoint
++
++    # Get disk usage for the selected mount point
++    total, used, free = shutil.disk_usage(mount_point)
+     total = round(total / (2**30), 2)
+     used = round(used / (2**30), 2)
+     free = round(free / (2**30), 2)
+-    perc = int(used/ total * 100)
+-    return(total, used, free, perc)
++    perc = int(used / total * 100)
++
++    return total, used, free, perc
+ 
+ # IP address
+ def getIP():
