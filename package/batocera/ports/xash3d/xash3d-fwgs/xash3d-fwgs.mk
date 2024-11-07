@@ -31,7 +31,7 @@ endif
 
 define XASH3D_FWGS_EVMAPY
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	  cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/hlsdk-xash3d/xash3d_fwgs.keys \
+	  cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/xash3d/hlsdk-xash3d/xash3d_fwgs.keys \
 		    $(TARGET_DIR)/usr/share/evmapy
 endef
 
