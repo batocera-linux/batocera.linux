@@ -23,7 +23,7 @@ index e8eb343ea4..e9c8b5f0c3 100644
 +      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
 +      HAVE_NEON = 1
 +      WITH_DYNAREC=aarch64
-+      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a77 -mtune=cortex-a77
++      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a76 -mtune=cortex-a76
 +   endif
  
     # ODROIDs
