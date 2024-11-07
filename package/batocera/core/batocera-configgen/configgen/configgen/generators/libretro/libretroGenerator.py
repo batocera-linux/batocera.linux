@@ -8,7 +8,17 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import BATOCERA_SHADERS, CONFIGS, HOME, OVERLAYS, ROMS, SAVES, USER_SHADERS, mkdir_if_not_exists
+from ...batoceraPaths import (
+    BATOCERA_SHADERS,
+    BIOS,
+    CONFIGS,
+    HOME,
+    OVERLAYS,
+    ROMS,
+    SAVES,
+    USER_SHADERS,
+    mkdir_if_not_exists,
+)
 from ...settings.unixSettings import UnixSettings
 from ...utils import videoMode as videoMode
 from ..Generator import Generator
@@ -367,18 +377,17 @@ class LibretroGenerator(Generator):
             commandArray.append(f'/var/run/cmdfiles/{rom_path.stem}.cmd')
 
         if system.config['core'] == 'hatarib':
-            rom_extension = os.path.splitext(romName)[1].lower()
-            biosdir = "/userdata/bios/hatarib"
-            if not os.path.exists(biosdir):
-                os.mkdir(biosdir)
-            targetlink = biosdir + "/hdd"
+            biosdir = BIOS / "hatarib"
+            if not biosdir.exists():
+                biosdir.mkdir()
+            targetlink = biosdir / "hdd"
             #retroarch can't use hdd files outside his system directory (/userdata/bios)
-            if os.path.exists(targetlink):
-                os.unlink(targetlink)
-            if rom_extension in [ '.hd', '.gemdos'] :
+            if targetlink.exists():
+                targetlink.unlink()
+            if rom_path.suffix.lower() in ['.hd', '.gemdos']:
                 #don't pass hd drive as parameter, it need to be added in configuration
                 dontAppendROM = True
-                os.symlink(rom, targetlink)
+                targetlink.symlink_to(rom_path)
 
         if dontAppendROM == False:
             commandArray.append(rom_path)
