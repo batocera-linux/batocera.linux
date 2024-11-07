@@ -93,6 +93,7 @@
   - Libretro-Mupen64plus-Next to July 19, 2024 build
   - Libretro-NeoCD to Oct 21, 2024 build
   - Libretro-Play to 0.67-1
+  - Libretro-PPSSPP to 1.18.1
   - Libretro-SuperBrosWar to Oct 21, 2024 build
 - Amiberry to v5.7.4
 - BigPEmu to v115
@@ -116,6 +117,7 @@
 - Mupen64 core & plugins to v2.6.0
 - PCSX2 to v2.2.0
 - Play to 0.67-1
+- PPSSPP to 1.18.1
 - Pyxel to 2.2.4
 - Redream to 1.5.0-1133-g03c2ae9
 - RPCS3 to 0.0.33 (alpha on Aug 31, 2024)
