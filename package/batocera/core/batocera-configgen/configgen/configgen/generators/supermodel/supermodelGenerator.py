@@ -444,12 +444,12 @@ def input2input(playersControllers: ControllerMapping, player: str, joynum, butt
                 sidestr = ""
                 if axisside is not None:
                     if axisside == 1:
-                        if input.value == 1:
+                        if input.value == "1":
                             sidestr = "_NEG"
                         else:
                             sidestr = "_POS"
                     else:
-                        if input.value == 1:
+                        if input.value == "1":
                             sidestr = "_POS"
                         else:
                             sidestr = "_NEG"
