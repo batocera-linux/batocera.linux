@@ -37,4 +37,15 @@ index 85bc2f1..032fd25 100644
  	// Since wayland requires XDG_RUNTIME_DIR to be set, abort with just the
  	// clear error message (when not running as an IPC client).
  	if (!getenv("XDG_RUNTIME_DIR") && optind == argc) {
+@@ -363,6 +359,11 @@ int main(int argc, char **argv) {
+ 		return 0;
+ 	}
+ 
++	// SUID operation is deprecated, so block it for now.
++	if (detect_suid()) {
++		exit(EXIT_FAILURE);
++	}
++
+ 	detect_proprietary(allow_unsupported_gpu);
+ 	increase_nofile_limit();
  
