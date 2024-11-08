@@ -243,7 +243,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBCURL_CURL				# download tools
 	select BR2_PACKAGE_NGHTTP2				# required for curl http2
 	select BR2_PACKAGE_CA_CERTIFICATES			# ssl certificates
-	
+
 	# Used for screen rotation (SDL, Retroarch, Moonlight)
 	select BR2_PACKAGE_ROCKCHIP_RGA    if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || \
 	                                      BR2_PACKAGE_BATOCERA_TARGET_RK3128 || \
@@ -1493,6 +1493,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
 	select BR2_PACKAGE_AELIGHTGUN				# ae light gun
 	select BR2_PACKAGE_GUN4IR_GUNS				# gun4ir guns
 	select BR2_PACKAGE_RETROSHOOTER_GUNS			# retroshooter guns
+	select BR2_PACKAGE_OPENFIRE_GUNS			# openfire guns
 	select BR2_PACKAGE_GUNCON				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837 # guncon
 	select BR2_PACKAGE_GUNCON3				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # guncon3
 	select BR2_PACKAGE_LIGHTGUNS_GAMES_PRECALIBRATIONS
