@@ -205,7 +205,7 @@ class MameGenerator(Generator):
         elif system.isOptSet("video") and system.config["video"] == "accel":
             commandArray += ["-video", "accel" ]
         else:
-            commandArray += [ "-video", "opengl" ]
+            commandArray += [ "-video", "auto" ]
 
         # CRT / SwitchRes support
         if system.isOptSet("switchres") and system.getOptBoolean("switchres"):
