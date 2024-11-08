@@ -338,7 +338,7 @@ class EsSystemConf:
 
             vcomment = ""
             vn = 0
-            for v in toTranslate[tr]:
+            for v in sorted(toTranslate[tr], key=lambda x: x["emulator"] + ("/" + x["core"] if "core" in x else "")):
                 if vn < 5:
                     if vcomment != "":
                         vcomment = vcomment + ", "
