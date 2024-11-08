@@ -84,6 +84,10 @@ ifeq ($(BR2_cortex_a73_a53),y)
 MAME_CFLAGS += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
 endif
 
+ifeq ($(BR2_cortex_a76_a55),y)
+MAME_CFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
+endif
+
 define MAME_BUILD_CMDS
 	# First, we need to build genie for host
 	cd $(@D); \
