@@ -28,7 +28,7 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
     MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4),yn)
     MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp rockchip-rga ffmpeg-rockchip
 endif
 
