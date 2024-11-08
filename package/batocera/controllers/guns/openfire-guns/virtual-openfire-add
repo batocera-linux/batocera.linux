@@ -52,12 +52,11 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
     # D-pad left                        : KEY_LEFT
     # D-pad right                       : KEY_RIGHT
 
-if test "${NDEVS}" = 3
+if test "${NDEVS}" = 2
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
-    DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
-    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map yield btn:middle btn:2 --map yield btn:side btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="OpenFIRE light gun" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield btn:side btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="OpenFIRE light gun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
