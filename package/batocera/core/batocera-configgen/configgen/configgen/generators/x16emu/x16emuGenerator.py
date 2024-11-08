@@ -32,7 +32,6 @@ class X16emuGenerator(Generator):
             "-fsroot", romdir, # file system
             "-ram", "2048", # specify 2MB of RAM by default
             "-rtc", # realtime clock
-            "-fullscreen", # run fullscreen
         ]
 
         # Check the rom extension to determine the appropriate option
