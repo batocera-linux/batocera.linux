@@ -11,6 +11,7 @@ f_usage() {
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
     echo "${0} setRotation (0|1|2|3)" >&2
+    echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
 }
 
@@ -177,6 +178,10 @@ case "${ACTION}" in
             # In case of reboot of ES
             *) swaymsg output "${PSCREEN}" transform normal ;;
         esac
+        ;;
+    
+    "getRotation")
+        swaymsg -t get_outputs | jq -r '.[] | select(.name == "'"${PSCREEN}"'") | .transform'
         ;;
 
     "mapTouchScreen")
