@@ -15,13 +15,13 @@ default is:
   3=PULSE
   5=FF0000
   10=CC3333
-  25=AA8888
-  50=AA00AA
-  90=00AA00
-  100=88FF88
+  15=ESCOLOR
+  100=009900
 
 100 is when a charger is plugged in
 You can use PULSE, RAINBOW and OFF as rgb_color for special effects.
+
+ESCOLOR is the default one set with sliders in EmulationStation
 
 Also, if you want to trigger a fancy rainbow effect when you unlock a retroachievement,
 SSH into Batocera and type the 3 commands:
@@ -39,9 +39,10 @@ import batoled
 from threading import Thread
 
 DEBUG = 0
-CHECK_INTERVAL = 4 # seconds between two checks
-
-config_file='/userdata/system/configs/leds.conf'
+CHECK_INTERVAL  = 3  # seconds between two checks
+LED_CHANGE_TIME = 30 # seconds to prevent changes while entering the settings menu
+CONFIG_FILE='/userdata/system/configs/leds.conf'
+BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
@@ -100,8 +101,8 @@ def load_config(fname):
 
 # Check the current battery level and adjust led color
 def led_check(led):
-    ledconfig = ["100=88FF88", "90=00AA00", "50=AA00AA", "25=AA8888", "10=CC3333", "5=FF0000", "3=pulse"] # Default values when no config file
-    tmpconfig = load_config(config_file)
+    ledconfig = ["100=009900", "15=ESCOLOR", "10=CC3333", "5=FF0000", "3=PULSE"] # Default values when no config file
+    tmpconfig = load_config(CONFIG_FILE)
     if len(tmpconfig) > 0:
         ledconfig = tmpconfig
     if (DEBUG):
@@ -121,10 +122,32 @@ def led_check(led):
             try:
                 if DEBUG:
                     print(f"Set color to {block} for {bt}%")
-                led.set_color(block)
+                if color_changes_allowed():
+                    led.set_color(block)
             except Exception as e:
                 print (f"Error: {e}") 
             time.sleep(CHECK_INTERVAL)
+
+# Prevent color changes when entering color selection
+def block_color_changes(block):
+    with open(BLOCK_FILE, "w+") as fp:
+        if block:
+            fp.write(str(time.time()))
+        else:
+            fp.write("0")
+
+def color_changes_allowed():
+    try:
+        with open(BLOCK_FILE, "r") as fp:
+            line = fp.read().strip()
+            diff = time.time() - float(line)
+            if diff < LED_CHANGE_TIME:
+                return (False)
+        with open(BLOCK_FILE, "w+") as fp:
+            fp.write("0")
+        return (True)
+    except:
+        return (True)
 
 # argument: start, stop, or no argument = show battery %
 PATH = check_support()
@@ -134,6 +157,7 @@ if len(sys.argv)>1:
     led = batoled.led()
     if sys.argv[1] == "start":
         try:
+            led.set_brightness_conf()
             t = Thread(target=led_check, args=(led,))
             t.start()
         except Exception as e:
@@ -142,11 +166,38 @@ if len(sys.argv)>1:
     elif sys.argv[1] == "stop" or sys.argv[1] == "off":
         led.turn_off()
     elif sys.argv[1] == "retroachievement" or sys.argv[1] == "rainbow":
-        led.rainbow_effect()
+        if color_changes_allowed():
+            led.rainbow_effect()
     elif sys.argv[1] == "pulse":
-        led.pulse_effect()
-    elif sys.argv[1] == "color" and sys.argv[2] != None:
-        led.set_color(sys.argv[2])
+        if color_changes_allowed():
+            led.pulse_effect()
+    elif sys.argv[1] == "set_color" and sys.argv[2] != None:
+        if color_changes_allowed():
+            led.set_color(sys.argv[2])
+    elif sys.argv[1] == "get_color":
+        print(led.get_color())
+    elif sys.argv[1] == "set_color_dec" and sys.argv[2] != None:
+        if color_changes_allowed():
+            rgb = ""
+            for p in (sys.argv[2:]):
+                rgb += str(p) + ' '
+            led.set_color_dec(rgb)
+    elif sys.argv[1] == "set_color_force_dec" and sys.argv[2] != None:
+        rgb = ""
+        for p in (sys.argv[2:]):
+            rgb += str(p) + ' '
+        led.set_color_dec(rgb)
+    elif sys.argv[1] == "get_color_dec":
+        print(led.get_color_dec())
+    elif sys.argv[1] == "block_color_changes":
+        block_color_changes(True)
+    elif sys.argv[1] == "unblock_color_changes":
+        block_color_changes(False)
+    elif sys.argv[1] == "set_brightness" and sys.argv[2] != None:
+        led.set_brightness(sys.argv[2])
+    elif sys.argv[1] == "get_brightness":
+        (b, m) = led.get_brightness()
+        print(f'{b} {m}')
 else:
     with open(PATH + '/capacity', 'r') as tp, \
             open(PATH + '/status','r') as st:
