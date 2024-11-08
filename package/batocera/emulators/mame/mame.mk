@@ -213,9 +213,12 @@ define MAME_INSTALL_TARGET_CMDS
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/dats			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/history			$(TARGET_DIR)/usr/bin/mame/
 
-	# gameStop script when exiting a rotated screen
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
+	# gameStop script when exiting a rotated screen (xorg)
+	ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+	    mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
+		cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh \
+		    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh
+	endif
 
 	# Copy user -autoboot_command overrides (batocera.linux/batocera.linux#11706)
 	mkdir -p $(MAME_CONF_INIT)/autoload
