@@ -66,8 +66,9 @@ class CGeniusGenerator(Generator):
             config["Video"]["aspect"] = system.config["cgenius_aspect"]
         else:
             config["Video"]["aspect"] = "4:3"
-        # we always want fullscreen
-        config["Video"]["fullscreen"] = "true"
+        # set false as we want the correct ratio
+        config["Video"]["fullscreen"] = "false"
+        config["Video"]["integerScaling"] = "false"
         # filter
         if system.isOptSet("cgenius_filter"):
             config["Video"]["filter"] = system.config["cgenius_filter"]
@@ -132,9 +133,21 @@ class CGeniusGenerator(Generator):
 
         return Command.Command(
             array=commandArray,
-            env={"SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)}
+            env={
+                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
+                "SDL_JOYSTICK_HIDAPI": "0"
+            }
         )
 
     # Show mouse on screen for the Config Screen
     def getMouseMode(self, config, rom):
         return True
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        if 'cgenius_aspect' in config:
+            if config['cgenius_aspect'] == "16:9" or config['cgenius_aspect'] == "16:10":
+                return 16/9
+            else:
+                return 4/3
+        else:
+            return 4/3
