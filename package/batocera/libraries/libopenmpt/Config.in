@@ -3,8 +3,11 @@ config BR2_PACKAGE_LIBOPENMPT
 	select BR2_PACKAGE_HOST_DOXYGEN
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_MPG123
+	select BR2_PACKAGE_LIBOGG
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_PULSEAUDIO
 	help 
-	    OpenMPT and libopenmpt
-	    OpenMPT, a free Windows/Wine-based tracker and libopenmpt, a library to render tracker music.
+	  OpenMPT and libopenmpt
+	  OpenMPT, a free Windows/Wine-based tracker and libopenmpt, a library to render tracker music.
 
-		https://github.com/OpenMPT/openmpt
+	  https://github.com/OpenMPT/openmpt
