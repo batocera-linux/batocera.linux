@@ -37,10 +37,12 @@ trylock() {
 trylock
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "Fusion Piggie [1-4]") # remove the joystick from the event cause it duplicates events
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
 ############
+# Old firmware
+#
 # Player 1
 ############
 # Trigger                  : BTN_LEFT
@@ -53,7 +55,7 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
 # Calibration button       : BTN_EXTRA (mouse 5)
 # D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 ############
-# Player 2
+# Player 2 (1.00 firmware)
 ############
 # Trigger                  : BTN_LEFT
 # L button 1 (Bomb)        : BTN_MIDDLE
@@ -65,6 +67,59 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
 # Calibration button       : BTN_EXTRA (mouse 5)
 # D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
+############
+############
+# P.I.G.S. 1.05 firmware
+# (based on OpenFIRE)
+#
+# Player 1
+############
+# Trigger         : BTN_LEFT
+# Pump            : BTN_RIGHT
+# Pedal           : BTN_MIDDLE
+# A               : KEY_ENTER
+# B               : KEY_ESC
+# C (calibration) : BTN_EXTRA
+# Start           : KEY_1
+# Select          : KEY_5
+# D-pad           : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+############
+# Player 2
+############
+# Trigger  : BTN_LEFT
+# Pump     : BTN_RIGHT
+# Pedal    : BTN_MIDDLE
+# A        : KEY_W
+# B        : KEY_BACKSPACE
+# C        : BTN_EXTRA
+# Start    : KEY_2
+# Select   : KEY_6
+# D-pad    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+############
+# Player 3
+############
+# Trigger  : BTN_LEFT
+# Pump     : BTN_RIGHT
+# Pedal    : BTN_MIDDLE
+# A        : KEY_A
+# B        : KEY_PAGEUP
+# C        : BTN_EXTRA
+# Start    : KEY_3
+# Select   : KEY_7
+# D-pad    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+############
+# Player 4
+############
+# Trigger  : BTN_LEFT
+# Pump     : BTN_RIGHT
+# Pedal    : BTN_MIDDLE
+# A        : KEY_S
+# B        : KEY_PAGEDOWN
+# C        : BTN_EXTRA
+# Start    : KEY_4
+# Select   : KEY_8
+# D-pad    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+
 if test "${NDEVS}" = 2
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
@@ -72,12 +127,86 @@ then
 
     if test "${PLAYER}" = "1"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:enter btn:2 --map yield key:esc btn:3 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:1 btn:middle
+                                                               --map yield key:5 btn:1
+                                                               --map yield key:enter btn:2
+                                                               --map yield key:esc btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "2"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right --map yield key:2 btn:middle --map yield key:6 btn:1 --map yield key:leftshift btn:2 --map yield key:leftctrl btn:3 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:2 btn:middle
+                                                               --map yield key:6 btn:1
+                                                               --map yield key:leftshift btn:2
+                                                               --map yield key:leftctrl btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "3"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:1 btn:middle
+                                                               --map yield key:5 btn:1
+                                                               --map yield key:enter btn:2
+                                                               --map yield key:esc btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "4"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:2 btn:middle
+                                                               --map yield key:6 btn:1
+                                                               --map yield key:w btn:2
+                                                               --map yield key:backspace btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "5"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:3 btn:middle
+                                                               --map yield key:7 btn:1
+                                                               --map yield key:a btn:2
+                                                               --map yield key:pageup btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "6"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
+                                                               --map yield key:4 btn:middle
+                                                               --map yield key:8 btn:1
+                                                               --map yield key:s btn:2
+                                                               --map yield key:pagedown btn:3
+                                                               --map yield key:up btn:5
+                                                               --map yield key:down btn:6
+                                                               --map yield key:left btn:7
+                                                               --map yield key:right btn:8
+                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
     fi
 
     echo $! > "${PIDFILE}"
