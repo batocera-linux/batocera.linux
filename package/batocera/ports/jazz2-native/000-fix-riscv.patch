@@ -1,0 +1,13 @@
+diff --git a/Sources/Shared/Core/Logger.h b/Sources/Shared/Core/Logger.h
+index eb1b938894..8ed7be185f 100644
+--- a/Sources/Shared/Core/Logger.h
++++ b/Sources/Shared/Core/Logger.h
+@@ -228,7 +228,7 @@ namespace Death { namespace Trace {
+ 
+ 			return static_cast<std::uint64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+ 		}
+-#	elif (defined(_M_ARM) || defined(_M_ARM64) || defined(__PPC64__))
++#	elif (defined(_M_ARM) || defined(_M_ARM64) || defined(__PPC64__) || defined(__riscv))
+ 		DEATH_ALWAYS_INLINE std::uint64_t rdtsc() noexcept
+ 		{
+ 			return static_cast<std::uint64_t>(std::chrono::system_clock::now().time_since_epoch().count());
