@@ -1,7 +1,7 @@
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
 ### Hardware
-- Add Blamcon Gun support
+- Add initial Blamcon light gun support
 - Khadis VIM4 optimizations and enhancements
 - Add Dockerpi Powerboard support initially for the RPi3
 - Add initial support for the OrangePi-5-Pro
@@ -36,6 +36,11 @@
 - Vircon32 - a 32-bit inspired Fantasy Console
 - DXX-Rebirth enabled for ARM (Retroid Pocket Mini)
 - Automatic controller configuration for the play! standalone emulator
+- Scripts modules for BigPEmu
+- Jazz Jackrabbit 2 port (Jazz² Resurrection)
+- Hibernate option
+- Jaguard CD system
+- ES: Initial trackball/spinner collections
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
@@ -47,6 +52,7 @@
 - Custom boot splash image now displays when intended
 - Dualshock controllers not enabled on some Arm boards
 - Hotkey handling for Flycast
+- Crosshair light gun in DuckStation
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
@@ -62,6 +68,15 @@
 - Enabled more force feedback capabilities on various controllers
 - Share commands in /boot/batocera-boot.conf now allow pipes and other shell metacharacters
 - X68000: Default emulated RAM size is now 12MB (libretro-px68k)
+- Libretro-mame2010 core removed
+- Enable OpenJazz (Jazz Jackrabbit port)
+- Improvements on various emulators and cores :
+  - Hatarib libretro core
+  - OpenJazz
+  - model2emu (now supports xinput and force feedback)
+  - Cannonball
+  - Play!
+- ES: Improved Network Play (NetPlay) sequence for supported systems
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
@@ -110,6 +125,7 @@
 - Flycast to v2.4
 - GroovyMAME to 0.268
 - GZDoom to g4.13.1
+- Hypseus Singe to 2.11.3
 - Ikemen to August 1st 2024 build
 - IORTCW to May 27, 20024 build
 - Kodi to 21.1
