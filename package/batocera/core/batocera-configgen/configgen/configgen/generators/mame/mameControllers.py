@@ -255,13 +255,21 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
                 if rmapping in pad.inputs:
                         xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey))
 
-        #UI Mappings
+        # UI Mappings - Clone P1 controls, change the type and append key codes
         if nplayer == 1:
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], pad.inputs[mappings_use["JOYSTICK_DOWN"]], False, "", ""))      # Down
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], pad.inputs[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'b', pad.inputs['b'], False, "", ""))                                                     # Select
+            ports = xml_input.getElementsByTagName('port')
+            for port in ports:
+                match port.getAttribute('type'):
+                    case 'P1_JOYSTICK_UP':
+                        copyPort(port, xml_input, 'UI_UP', 'KEYCODE_UP')
+                    case 'P1_JOYSTICK_DOWN':
+                        copyPort(port, xml_input, 'UI_DOWN', 'KEYCODE_DOWN')
+                    case 'P1_JOYSTICK_LEFT':
+                        copyPort(port, xml_input, 'UI_LEFT', 'KEYCODE_LEFT')
+                    case 'P1_JOYSTICK_RIGHT':
+                        copyPort(port, xml_input, 'UI_RIGHT', 'KEYCODE_RIGHT')
+                    case 'P1_BUTTON1':
+                        copyPort(port, xml_input, 'UI_SELECT', 'KEYCODE_ENTER')
 
         if useControls in messControlDict.keys():
             for controlDef in messControlDict[useControls].keys():
@@ -599,3 +607,12 @@ def addCommonPlayerPorts(config, xml_input, nplayer):
         value = config.createTextNode("GUNCODE_{}_{}AXIS".format(nplayer, axis))
         xml_newseq.appendChild(value)
         xml_input.appendChild(xml_port)
+
+# Copy a port, change the type and prepend data if provided
+def copyPort(port, xml_input, type, data):
+    new_port = port.cloneNode(True)
+    new_port.setAttribute('type', type)
+    if data:
+        newseq = new_port.getElementsByTagName("newseq")[0].childNodes[0]
+        newseq.nodeValue = data + ' OR ' + newseq.nodeValue
+    xml_input.appendChild(new_port)
