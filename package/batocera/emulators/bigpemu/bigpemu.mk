@@ -13,7 +13,7 @@ define BIGPEMU_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/* $(TARGET_DIR)/usr/bigpemu/
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/bigpemu/jaguar.bigpemu.keys \
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/bigpemu/*.keys \
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
