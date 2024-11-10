@@ -127,16 +127,18 @@ then
 
     if test "${PLAYER}" = "1"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:right
-                                                               --map yield key:1 btn:middle
-                                                               --map yield key:5 btn:1
-                                                               --map yield key:enter btn:2
-                                                               --map yield key:esc btn:3
-                                                               --map yield key:up btn:5
-                                                               --map yield key:down btn:6
-                                                               --map yield key:left btn:7
-                                                               --map yield key:right btn:8
-                                                               --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve                              \
+          --input "${DEV1}" "${DEV2}" persist=exit \
+          --map yield btn:middle     btn:right     \
+          --map yield key:1          btn:middle    \
+          --map yield key:5          btn:1         \
+          --map yield key:enter      btn:2         \
+          --map yield key:esc        btn:3         \
+          --map yield key:up         btn:5         \
+          --map yield key:down       btn:6         \
+          --map yield key:left       btn:7         \
+          --map yield key:right      btn:8         \
+          --output name="Fusion Lightgun" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "2"
