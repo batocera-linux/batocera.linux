@@ -39,7 +39,7 @@
 - Scripts modules for BigPEmu
 - Jazz Jackrabbit 2 port (Jazz² Resurrection)
 - Hibernate option
-- Jaguard CD system
+- Jaguar CD system
 - ES: Initial trackball/spinner collections
 ### Fixed
 - Steam loading on a NAS drive
@@ -52,7 +52,6 @@
 - Custom boot splash image now displays when intended
 - Dualshock controllers not enabled on some Arm boards
 - Hotkey handling for Flycast
-- Crosshair light gun in DuckStation
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
