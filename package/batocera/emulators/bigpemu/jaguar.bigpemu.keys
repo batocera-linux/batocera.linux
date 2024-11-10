@@ -1,16 +1,40 @@
 {
     "actions_player1": [
-	{
+	    {
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_LEFTALT", "KEY_F4" ],
             "description": "Exit the emulator"
-	},
-    {
+	    },
+        {
            "trigger": ["hotkey", "b"],
             "type": "key",
             "target": ["KEY_ESC"],
             "description": "Configuration menu"
-    }
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F9" ],
+            "description": "Save State"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F5" ],
+            "description": "Load State"
+        },
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": ["KEY_F6"],
+            "description": "Screenshot"
+        },
+	    {
+            "trigger": ["hotkey", "a"],
+            "type": "key",
+            "target": [ "KEY_RIGHTSHIFT", "KEY_F12" ],
+            "description": "Hide the bezel"
+	    }
     ]
 }

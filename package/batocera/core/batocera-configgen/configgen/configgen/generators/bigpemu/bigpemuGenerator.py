@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import HOME, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import videoMode
 from ..Generator import Generator
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 eslog = logging.getLogger(__name__)
 
-bigPemuConfig = HOME / ".bigpemu_userdata" / "BigPEmuConfig.bigpcfg"
+bigPemuConfig = CONFIGS / "bigpemu" / "BigPEmuConfig.bigpcfg"
 
 # BigPEmu controller sequence, P1 only requires keyboard inputs
 # default standard bindings
@@ -61,9 +61,9 @@ P1_BINDINGS_SEQUENCE = {
     "Menu": {"buttons": ["start", "r2"], "keyboard": "41"},
     "Fast Forward": {"buttons": ["x", "r2"], "keyboard": "59"},
     "Rewind": {"blank": None},
-    "Save State": {"blank": None},
-    "Load State": {"blank": None},
-    "Screenshot": {"blank": None},
+    "Save State": {"keyboard": "66"},
+    "Load State": {"keyboard": "62"},
+    "Screenshot": {"keyboard": "63"},
     "Overlay": {"buttons": ["l3", "r2"]},
     "Chat": {"keyboard": "23"},
     "Blank1": {"blank": None},
@@ -435,7 +435,7 @@ class BigPEmuGenerator(Generator):
             json.dump(config, file, indent=4)
 
         # Run the emulator
-        commandArray = ["/usr/bigpemu/bigpemu", rom]
+        commandArray = ["/usr/bigpemu/bigpemu", rom, "-cfgpathabs", str(bigPemuConfig)]
 
         environment = {
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
