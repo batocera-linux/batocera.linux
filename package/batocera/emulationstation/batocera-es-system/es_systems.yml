@@ -1937,13 +1937,13 @@ jaguar:
   manufacturer: Atari
   release: 1993
   hardware: console
-  extensions: [j64, jag, cof, abs, rom, zip, 7z]
+  extensions: [j64, jag, cof, abs, rom]
   group: jaguar
   platform: jaguar
   theme: atarijaguar
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
@@ -1952,13 +1952,13 @@ jaguarcd:
   manufacturer: Atari
   release: 1995
   hardware: console
-  extensions: [cue, cdi, zip, 7z]
+  extensions: [cue, cdi]
   group: jaguar
   platform: jaguar
   theme: atarijaguarcd
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
