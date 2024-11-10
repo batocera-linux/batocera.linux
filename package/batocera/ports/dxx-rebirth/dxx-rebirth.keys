@@ -2,8 +2,8 @@
     "actions_player1": [
         {
             "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ],
+            "type": "exec",
+            "target": "killall -9 d1x-rebirth",
             "description": "exit game"
         },
         {
