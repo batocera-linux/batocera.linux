@@ -1,74 +1,75 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-import RPi.GPIO as GPIO
-import os
-import time
-import subprocess
-from multiprocessing import Process
+#!/bin/bash
+# First script for NESPi-cases for Batocera v41
+# Direct Access to gpio-filesystem isn't allowed anymore so gpiod is used
+# cyperghost aka crcerror - 10.11.2024
 
 #initialize pins
-powerPin = 3 #pin 5
-ledPin = 14 #TXD - pin 8
-resetPin = 2 #pin 3
-powerenPin = 4 #pin 7
+powerPin=3 #pin 5
+ledPin=14 #TXD - pin 8
+resetPin=2 #pin 3
+powerenPin=4 #pin 7
 
 #initialize GPIO settings
-def init():
-	GPIO.setwarnings(False)
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setup(powerPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-	GPIO.setup(resetPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-	GPIO.setup(ledPin, GPIO.OUT)
-	GPIO.setup(powerenPin, GPIO.OUT)
-	GPIO.output(powerenPin, GPIO.HIGH)
+init_pins(){
+    chip=0 #Pi0-4
+    #chip=4 #Pi5??
+    gpioset --bias=pull-up $chip $powerPin=1
+    gpioset --bias=pull-up $chip $resetPin=1
+    gpioset --drive=open-source $chip $ledPin=1
+    gpioset --drive=open-source $chip $powerenPin=1
+}
 
-#waits for user to hold button up to 1 second before issuing poweroff command
-def poweroff():
-	while True:
-		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
-		if output:
-			os.system("batocera-es-swissknife --shutdown")
-		else:
-			os.system("shutdown -h now")
+blink_led(){
+    for i in 0 1 0 1 0; do
+        gpioset --drive=open-source $chip $ledPin=$i
+        sleep 0.25
+    done
+}
+    
+get_state(){
+    power_state=$(gpioget $chip $powerPin)
+    reset_state=$(gpioget $chip $resetPin) 
+}
 
-#blinks the LED to signal button being pushed
-def ledBlink():
-	while True:
-		GPIO.output(ledPin, GPIO.HIGH)
-		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		start = time.time()
-		while GPIO.input(powerPin) == GPIO.LOW:
-			GPIO.output(ledPin, GPIO.LOW)
-			time.sleep(0.2)
-			GPIO.output(ledPin, GPIO.HIGH)
-			time.sleep(0.2)
+wait_for_buttons(){
+    gpiomon --num-events=1 -f -s $chip $powerPin $resetPin
+    [[ $(gpioget $chip $resetPin) -ne $reset_state ]] && return 0
 
-#resets the pi
-def reset():
-	while True:
-		GPIO.wait_for_edge(resetPin, GPIO.FALLING)
-		output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
-		output_rc = int(subprocess.check_output(['batocera-es-swissknife', '--emupid']))
-		if output_rc:
-			os.system("batocera-es-swissknife --emukill")
-		elif output:
-			os.system("batocera-es-swissknife --restart")
-		else:
-			os.system("shutdown -r now")
+    #Debounce and check twice
+    if [[ $(gpioget $chip $powerPin) -ne $power_state ]]; then
+        sleep 1
+        [[ $(gpioget $chip $powerPin) -ne $power_state ]] && return 1
+    fi
+}
 
-if __name__ == "__main__":
-	#initialize GPIO settings
-	init()
-	#create a multiprocessing.Process instance for each function to enable parallelism 
-	powerProcess = Process(target = poweroff)
-	powerProcess.start()
-	ledProcess = Process(target = ledBlink)
-	ledProcess.start()
-	resetProcess = Process(target = reset)
-	resetProcess.start()
+init_pins
 
-	powerProcess.join()
-	ledProcess.join()
-	resetProcess.join()
+while true; do   
+    sleep 0.5 #debounce
+    get_state
+    wait_for_buttons
+    ret=$?
+
+    case $ret in
+        0) #Reset Button
+            es_pid=$(batocera-es-swissknife --espid)
+            emu_pid=$(batocera-es-swissknife --emupid)
+            if [[ $emu_pid -ne 0 ]]; then
+                batocera-es-swissknife --emukill
+            elif [[ $es_pid -ne 0 ]]; then
+                batocera-es-swissknife --restart
+            else
+                shutdown -r now
+            fi
+        ;;
+        1) #Power Button
+           blink_led
+           es_pid=$(batocera-es-swissknife --espid)
+           if [[ $es_pid -ne 0 ]]; then
+                batocera-es-swissknife --shutdown
+            else
+                shutdown -h now
+            fi
+        ;;
+    esac
+done
