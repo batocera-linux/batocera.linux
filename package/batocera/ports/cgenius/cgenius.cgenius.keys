@@ -1,9 +1,21 @@
 {
     "actions_player1": [
-	{
+        {
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	}
+        },
+    	{
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F6" ],
+            "description": "Quick Save"
+	    },
+    	{
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F9" ],
+            "description": "Quick Load"
+    	}
     ]
 }

@@ -1,0 +1,140 @@
+diff --git a/GsKit/base/CInput.cpp b/GsKit/base/CInput.cpp.new
+index 56959473f1..05297181b0 100644
+--- a/GsKit/base/CInput.cpp
++++ b/GsKit/base/CInput.cpp.new
+@@ -219,57 +219,99 @@ void CInput::resetControls(const int player)
+     setTwoButtonFiring(player, false);
+ }
+ 
+-
+ void CInput::openJoyAndPrintStats(const int idx)
+ {
++    // Retrieve SDL_GAMECONTROLLERCONFIG environment variable
++    const char* config = std::getenv("SDL_GAMECONTROLLERCONFIG");
++    if (!config) {
++        gLogging << "SDL_GAMECONTROLLERCONFIG is not set." << CLogFile::endl;
++        return;
++    }
+ 
+-    for(auto &curJoy : mp_Joysticks)
++    // Split config string by commas to extract GUIDs
++    std::vector<std::string> preferredOrder;
++    std::istringstream configStream(config);
++    std::string line;
++
++    while (std::getline(configStream, line, '\n')) {
++        auto pos = line.find(',');
++        if (pos != std::string::npos) {
++            std::string guid = line.substr(0, pos);
++            if (guid.length() == 32 && std::all_of(guid.begin(), guid.end(), ::isxdigit)) {
++                preferredOrder.push_back(guid);
++            }
++        }
++    }
++
++    // Loop over each GUID in the parsed preferred order
++    for (const auto& preferredGuid : preferredOrder)
+     {
+-        // Is joystick already added? If found one, don't read it.
+-        const auto curInstance = SDL_JoystickInstanceID(curJoy);
+-        const auto newInstance = SDL_JoystickGetDeviceInstanceID(idx);
++        bool joystickFound = false;
+ 
+-        if(newInstance < 0)
++        // Check all connected joysticks to find a match for the current GUID
++        for (int deviceIdx = 0; deviceIdx < SDL_NumJoysticks(); ++deviceIdx)
+         {
+-            break;
+-        }
++            SDL_JoystickGUID deviceGUID = SDL_JoystickGetDeviceGUID(deviceIdx);
++            char deviceGUIDStr[64];
++            SDL_JoystickGetGUIDString(deviceGUID, deviceGUIDStr, sizeof(deviceGUIDStr));
+ 
+-        if(curInstance == newInstance)
+-        {
+-            return;
+-        }
+-    }
++            // Compare the device's GUID to the preferred GUID
++            if (preferredGuid == deviceGUIDStr)
++            {
++                joystickFound = true;
+ 
+-#if SDL_VERSION_ATLEAST(2, 0, 0)
+-    gLogging << "Joystick/Gamepad detected:" << CLogFile::endl;
+-    gLogging << "    " << SDL_JoystickNameForIndex(idx) << CLogFile::endl;
+-#else
+-    gLogging << "    " << SDL_JoystickName(idx) << CLogFile::endl;
+-#endif
++                // Check if the joystick is already added
++                const auto newInstance = SDL_JoystickGetDeviceInstanceID(deviceIdx);
++                bool alreadyAdded = false;
++                for (auto &curJoy : mp_Joysticks)
++                {
++                    if (SDL_JoystickInstanceID(curJoy) == newInstance)
++                    {
++                        alreadyAdded = true;
++                        break;
++                    }
++                }
+ 
+-    SDL_Joystick *pJoystick = SDL_JoystickOpen(idx);
++                // Skip if this joystick is already added
++                if (alreadyAdded)
++                {
++                    break;
++                }
+ 
+-    if(!pJoystick)
+-    {
+-        gLogging << "     Error adding joystick " << idx << CLogFile::endl;
+-        return;
+-    }
++                // Log the joystick name
++                gLogging << "Joystick/Gamepad detected:" << CLogFile::endl;
++                gLogging << "    " << SDL_JoystickNameForIndex(deviceIdx) << CLogFile::endl;
+ 
+-    char guidStr[64];
++                // Open the joystick
++                SDL_Joystick *pJoystick = SDL_JoystickOpen(deviceIdx);
++                if (!pJoystick)
++                {
++                    gLogging << "     Error adding joystick " << deviceIdx << CLogFile::endl;
++                    return;
++                }
+ 
+-    const auto guid = SDL_JoystickGetGUID(pJoystick);
++                // Store the joystick in the list and map its instance ID
++                const auto id = SDL_JoystickInstanceID(pJoystick);
++                mJoyIdToInputIdx[id] = mp_Joysticks.size();
++                mp_Joysticks.push_back(pJoystick);
+ 
+-    SDL_JoystickGetGUIDString(guid, guidStr, sizeof (guidStr));
++                // Log joystick details
++                gLogging << "     Axes: " << SDL_JoystickNumAxes(pJoystick) << CLogFile::endl;
++                gLogging << "     Buttons: " << SDL_JoystickNumButtons(pJoystick) << CLogFile::endl;
++                gLogging << "     Balls: " << SDL_JoystickNumBalls(pJoystick) << CLogFile::endl;
++                gLogging << "     Hats: " << SDL_JoystickNumHats(pJoystick) << CLogFile::endl;
++                gLogging << "     GUID: " << deviceGUIDStr << CLogFile::endl;
+ 
+-    const auto id = SDL_JoystickInstanceID(pJoystick);
+-    mJoyIdToInputIdx[id] = mp_Joysticks.size();
+-    mp_Joysticks.push_back(pJoystick);
++                break;
++            }
++        }
+ 
+-    gLogging << "     Axes: " << SDL_JoystickNumAxes(pJoystick) << CLogFile::endl;
+-    gLogging << "     Buttons: " << SDL_JoystickNumButtons(pJoystick) << CLogFile::endl;
+-    gLogging << "     Balls: " << SDL_JoystickNumBalls(pJoystick) << CLogFile::endl;
+-    gLogging << "     Hats: " << SDL_JoystickNumHats(pJoystick) << CLogFile::endl;
+-    gLogging << "     GUID: " << guidStr << CLogFile::endl;
++        // If no joystick was found for this GUID, log a message
++        if (!joystickFound)
++        {
++            gLogging << "Joystick with GUID " << preferredGuid << " not found." << CLogFile::endl;
++        }
++    }
+ }
+ 
+ void CInput::enableJoysticks()
