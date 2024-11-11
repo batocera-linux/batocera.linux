@@ -123,7 +123,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
-        libretroOptions.generateHatariConf(HATARI_CONFIG)
+        libretroOptions.generateHatariConf(HATARI_CONFIG / 'hatari.cfg')
 
     if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom, guns)
