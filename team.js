@@ -3,13 +3,13 @@
         "latitude": 44.8448769,
         "longitude": -0.656358,
 	"town": "Mérignac",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "lbrpdx": {
         "latitude": 45.5230622,
         "longitude": -122.6764816,
 	"town": "Portland",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "juliano": {
         "latitude": -21.61389,
@@ -39,13 +39,13 @@
         "latitude": -27.470125,
         "longitude": 153.021072,
 	"town": "Brisbane",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "demetris": {
         "latitude": 34.707130,
         "longitude": 33.022617,
 	"town": "Cyprus",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "tvsian": {
         "latitude": 39.103119,
@@ -69,7 +69,7 @@
         "latitude": 48.692055,
         "longitude": 6.184417,
 	"town": "Nancy",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "modhack": {
         "latitude": 48.864716,
@@ -81,7 +81,7 @@
         "latitude": 45.508888,
         "longitude": -73.561668,
 	"town": "Montreal",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "darknior": {
         "latitude": 43.836699,
@@ -93,7 +93,7 @@
         "latitude": 34.052235,
         "longitude": -118.243683,
 	"town": "Los Angeles",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "cag": {
         "latitude": 33.448376,
@@ -105,13 +105,13 @@
         "latitude": 35.481918,
         "longitude": -97.508469,
 	"town": "Oklahoma City",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "maximumentropy": {
         "latitude": 40.730610,
         "longitude": -73.935242,
 	"town": "New York",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "kycho": {
 	"latitude": 50.26612301276186,
@@ -136,5 +136,11 @@
         "longitude": -82.452606,
 	"town": "Tampa",
 	"last_contribution" : 2023
+    },
+    "bryanforbes": {
+        "latitude": 41.977879,
+        "longitude": -91.665627,
+        "town": "Cedar Rapids",
+        "last_contribution": 2024
     }
 }
