@@ -2413,9 +2413,7 @@ windows:
   theme:      windows
   emulators:
     wine:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2433,9 +2431,7 @@ windows_installers:
   group:      windows
   emulators:
     wine:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2722,9 +2718,7 @@ mugen:
   extensions: [pc]
   emulators:
     mugen:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
 
 ikemen:
   name:       IKEMEN

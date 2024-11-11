@@ -1,7 +1,7 @@
 config BR2_PACKAGE_MODEL2EMU
     bool "model2emu"
     depends on BR2_x86_64
-    depends on BR2_PACKAGE_WINE_GE_CUSTOM
+    depends on BR2_PACKAGE_WINE_TKG
     help
       Model 2 Emulator 1.1a
 

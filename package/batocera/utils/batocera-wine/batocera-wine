@@ -14,26 +14,26 @@ get_setting() {
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
 WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
-[[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="ge-custom"
+[[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
 
 WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"
 # to help with the transition from previous runners.
 [[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
 
 if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
-    WINE_VERSION="ge-custom"
+    WINE_VERSION="wine-tkg"
 fi
 echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
 find_wine_dir() {
     local WINE_VERSION="$1"
     # check if we're using a custom wine runner
-    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
         # now check if the folder exists
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "/userdata/system/wine/custom"
         else
-            WINE_VERSION="ge-custom"
+            WINE_VERSION="wine-tkg"
             if [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
                 echo "/usr/wine"
             else
@@ -49,11 +49,11 @@ find_wine_dir() {
 
 update_wine_version() {
     local WINE_VERSION="$1"
-    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "$WINE_VERSION"
         else
-            WINE_VERSION="ge-custom"
+            WINE_VERSION="wine-tkg"
             echo "$WINE_VERSION"
         fi
     else
@@ -531,6 +531,7 @@ play_pc() {
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
+    env
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else

@@ -38,11 +38,11 @@ class FpinballGenerator(Generator):
             cmd = ["/usr/wine/winetricks", "-q", "wsh57"]
             env = {
                 "W_CACHE": "/userdata/bios",
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
+                "LD_LIBRARY_PATH": "/lib32:/usr/wine/wine-tkg/lib/wine",
                 "WINEPREFIX": wineprefix
             }
             env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
+            env["PATH"] = "/usr/wine/wine-tkg/bin:/bin:/usr/bin"
             eslog.debug(f"command: {str(cmd)}")
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
@@ -68,14 +68,14 @@ class FpinballGenerator(Generator):
 
         if rom == 'config':
             commandArray = [
-                "/usr/wine/ge-custom/bin/wine",
+                "/usr/wine/wine-tkg/bin/wine",
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
                 emupath / "BAM" / "FPLoader.exe" ]
         else:
             commandArray = [
-                "/usr/wine/ge-custom/bin/wine",
+                "/usr/wine/wine-tkg/bin/wine",
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
@@ -175,9 +175,9 @@ class FpinballGenerator(Generator):
                         f.write("\r\n")
 
         cmd = ["wine", "regedit", _FPINBALL_CONFIG_REG]
-        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
+        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/wine-tkg/lib/wine", "WINEPREFIX": wineprefix }
         env.update(os.environ)
-        env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
+        env["PATH"] = "/usr/wine/wine-tkg/bin:/bin:/usr/bin"
         eslog.debug(f"command: {str(cmd)}")
         proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate()
@@ -187,7 +187,7 @@ class FpinballGenerator(Generator):
 
         environment={
             "WINEPREFIX": wineprefix,
-            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
+            "LD_LIBRARY_PATH": "/lib32:/usr/wine/wine-tkg/lib/wine",
             "LIBGL_DRIVERS_PATH": "/lib32/dri",
             # hum pw 0.2 and 0.3 are hardcoded, not nice
             "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",

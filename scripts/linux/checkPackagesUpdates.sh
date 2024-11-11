@@ -243,16 +243,9 @@ PACKAGES_WINE="dxvk
                faudio
                mf
                rtkit
-               vkd3d
                vkd3d-proton
-               wine-ge-custom
-               wine-ge-custom-wow64_32
-               wine-lutris
-               wine-lutris-wow64_32
-               wine-mono-lutris
-               wine-mono-proton
-               wine-proton
-               wine-proton-wow64_32"
+               wine-tkg
+               wine-tkg-wow64_32"
 
 PACKAGES_CONTROLLERS="aelightgun
                       aimtrak-guns

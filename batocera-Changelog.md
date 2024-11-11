@@ -1,5 +1,13 @@
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
+The Xenia Canary introduces GamerTags (user profiles).
+- On first run or game lanuch you may be prompted to create a Profle.
+- This will sometimes migrate your saves for you.
+- If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is creted there.
+Note: The older Xenia version does not have this feature, therefore if you may need to transfer game saves back as necessary.
+
+We have migrated to a more modern WINE runnder, using WINE-TKG.
+- WINE-TKG v9.21 takes advantage of all the benefits from WINE v9.x releases for compatibility.
 ### Hardware
 - Add initial Blamcon light gun support
 - Khadis VIM4 optimizations and enhancements
@@ -159,7 +167,7 @@
 - Ayn Platform driver to Jul 17, 2024 build
 - MangoHud to Jun 15, 2024 build
 - SDL2 to 2.30.6
-- DXVK to 2.4.1
+- DXVK to 2.5
 - DXVK NVAPI to v0.7.1
 - VKD3D Proton to 2.13
 - Linux Firmware to 20241017
@@ -167,7 +175,7 @@
 - ALSA stack to 1.2.12
 - ALSA UCM configuration to 1.2.12
 - Chromebook Linux Audio to 31st of July
-- FAudio to 24.08
+- FAudio to 24.11
 - FDK-AAC to 2.0.3
 - Intel Media Driver to 24.3.4
 - Intel Graphics Memory Management Library to 22.5.2
@@ -182,11 +190,13 @@
 - FFMPEG to 7.1
 - Shim signed x64 EFI bootloader to 1.58+15.8-0ubuntu1
 - WinBTRFS Driver to 1.9
-- flatpak to 1.12.9
+- Flatpak to 1.12.9
 - Added tmux
 - Support for LUKS-encrypted disk volumes with clevis automated decryption
   (tpm2 and tang) at boot time
 - Added fake-hwclock
+- Moved WINE runner from WINE-GE 8-26 (no longer maintained) to WINE-TKG 9.21
+- WINE-mono to 9.30
 
 # 2024/08/11 - batocera.linux 40 - Swallowtail
 ### Special Notes

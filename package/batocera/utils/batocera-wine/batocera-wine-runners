@@ -2,8 +2,8 @@
 
 # Check if the directory /userdata/system/wine/custom exists
 if [ -d "/userdata/system/wine/custom" ]; then
-    echo "ge-custom"
+    echo "wine-tkg"
     find /userdata/system/wine/custom -mindepth 1 -maxdepth 1 -type d -exec basename {} \;
 else
-    echo "ge-custom"
+    echo "wine-tkg"
 fi
