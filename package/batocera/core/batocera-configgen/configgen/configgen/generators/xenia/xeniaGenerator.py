@@ -100,6 +100,8 @@ class XeniaGenerator(Generator):
             shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
         if not (canarypath / 'patches').exists():
             shutil.copytree('/usr/xenia-canary', canarypath, dirs_exist_ok=True)
+        # update patches accordingly
+        self.sync_directories(Path('/usr/xenia-canary'), canarypath)
 
         # create portable txt file to try & stop file spam
         if not (emupath / 'portable.txt').exists():
@@ -155,7 +157,7 @@ class XeniaGenerator(Generator):
                 f.write("done")
 
         # check & copy newer dxvk files
-        self.sync_directories(Path("/usr/wine/dxvk/x64"), wineprefix / "drive_c/windows/system32")
+        #self.sync_directories(Path("/usr/wine/dxvk/x64"), wineprefix / "drive_c/windows/system32")
 
         # are we loading a digital title?
         if rom_path.suffix == '.xbox360':
@@ -194,9 +196,9 @@ class XeniaGenerator(Generator):
         # add node Content
         if 'Content' not in config:
             config['Content'] = {}
-        # Default 1= First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
-        if system.isOptSet('xeniaLicense'):
-            config['Content'] = {'license_mask': int(system.config['xeniaLicense'])}
+        # default 1 = First license enabled. Generally the full version license in Xbox Live Arcade (XBLA) titles.
+        if system.isOptSet('xenia_license'):
+            config['Content'] = {'license_mask': int(system.config['xenia_license'])}
         else:
             config['Content'] = {'license_mask': 1}
         # add node D3D12
@@ -208,8 +210,8 @@ class XeniaGenerator(Generator):
             config['Display'] = {}
         # always run fullscreen & set internal resolution - default 1280x720
         displayRes = 8
-        if system.isOptSet('xeniaResolution'):
-            displayRes = int(system.config['xeniaResolution'])
+        if system.isOptSet('xenia_resolution'):
+            displayRes = int(system.config['xenia_resolution'])
         config['Display'] = {
             'fullscreen': True,
             'internal_display_resolution': displayRes}
@@ -233,16 +235,25 @@ class XeniaGenerator(Generator):
                 'render_target_path_d3d12': 'rtv'
             }
         # vsync
-        config['GPU']['vsync'] = system.config.get('xenia_vsync', False)
+        if system.isOptSet('xenia_vsync') and system.config['xenia_vsync'] == 'False':
+            config['GPU']['vsync'] = False
+        else:
+            config['GPU']['vsync'] = True
         config['GPU']['framerate_limit'] = int(system.config.get('xenia_vsync_fps', 0))
         # page state
-        config['GPU']['clear_memory_page_state'] = system.config.get('xenia_page_state', False)
+        if system.isOptSet('xenia_page_state') and system.config['xenia_page_state'] == 'True':
+            config['GPU']['clear_memory_page_state'] = True
+        else:
+            config['GPU']['clear_memory_page_state'] = False
         # render target path
         config['GPU']['render_target_path_d3d12'] = system.config.get('xenia_target_path', 'rtv')
         # query occlusion
         config['GPU']['query_occlusion_fake_sample_count'] = int(system.config.get('xenia_query_occlusion', 1000))
         # readback resolve
-        config['GPU']['d3d12_readback_resolve'] = system.config.get('xenia_readback_resolve', False)
+        if system.isOptSet('xenia_readback_resolve') and system.config['xenia_readback_resolve'] == 'True':
+            config['GPU']['d3d12_readback_resolve'] = True
+        else:
+            config['GPU']['d3d12_readback_resolve'] = False
         # cache
         config['GPU']['texture_cache_memory_limit_hard'] = int(system.config.get('xenia_limit_hard', 768))
         config['GPU']['texture_cache_memory_limit_render_to_texture'] = int(system.config.get('xenia_limit_render_to_texture', 24))
@@ -254,7 +265,7 @@ class XeniaGenerator(Generator):
         # disable discord
         config['General']['discord'] = False
         # patches
-        if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':
+        if system.isOptSet('xenia_patches') and system.config['xenia_patches'] == 'True':
             config['General'] = {'apply_patches': True}
         else:
             config['General'] = {'apply_patches': False}
@@ -280,22 +291,30 @@ class XeniaGenerator(Generator):
             config['Storage'] = {}
         # certain games require this to set be set to true to work around crashes.
         config['Storage'] = {
-            'cache_root': xeniaCache,
-            'content_root': xeniaSaves,
+            'cache_root': str(xeniaCache),
+            'content_root': str(xeniaSaves),
             'mount_scratch': True,
-            'storage_root': xeniaConfig
+            'storage_root': str(xeniaConfig)
             }
         # mount cache
-        config['Storage']['mount_cache'] = system.config.get('xenia_cache', True)
-
+        if system.isOptSet('xenia_cache') and system.config['xenia_cache'] == 'False':
+            config['Storage']['mount_cache'] = False
+        else:
+            config['Storage']['mount_cache'] = True
+        
         # add node UI
         if 'UI' not in config:
             config['UI'] = {}
         # run headless ?
-        if system.isOptSet('xeniaHeadless') and system.getOptBoolean('xeniaHeadless') == True:
-            config['UI'] = {'headless': True}
+        if system.isOptSet('xenia_headless') and system.config['xenia_headless'] == 'True':
+            config['UI']['headless'] = True
         else:
-            config['UI'] = {'headless': False}
+            config['UI']['headless'] = False
+        # achievements
+        if system.isOptSet('xenia_achievement') and system.config['xenia_achievement'] == 'True':
+            config['UI']['show_achievement_notification'] = True
+        else:
+            config['UI']['show_achievement_notification'] = False
         # add node Vulkan
         if 'Vulkan' not in config:
             config['Vulkan'] = {}
@@ -303,11 +322,24 @@ class XeniaGenerator(Generator):
         # add node XConfig
         if 'XConfig' not in config:
             config['XConfig'] = {}
+        # console country
+        if system.isOptSet('xenia_country'):
+            config['XConfig'] = {'user_country': int(system.config['xenia_country'])}
+        else:
+            config['XConfig'] = {'user_country': 103} # US
         # language
-        if system.isOptSet('xeniaLanguage'):
-            config['XConfig'] = {'user_language': int(system.config['xeniaLanguage'])}
+        if system.isOptSet('xenia_language'):
+            config['XConfig'] = {'user_language': int(system.config['xenia_language'])}
         else:
             config['XConfig'] = {'user_language': 1}
+        # profiles (xenia cananry specific currently)
+        if core == 'xenia-canary':
+            if 'Profiles' not in config:
+                config['Profiles'] = {}
+            # add batocera gamertag as initial save profile
+            # for some reason some games need slot 1 too
+            config['Profiles']['logged_profile_slot_0_xuid'] = "B13EBABEBABEBABE"
+            config['Profiles']['logged_profile_slot_1_xuid'] = "B13EBABEBABEBABE"
 
         # now write the updated toml
         with toml_file.open('w') as f:
@@ -318,7 +350,7 @@ class XeniaGenerator(Generator):
         # simplify the name for matching
         rom_name = re.sub(r'\[.*?\]', '', rom_name)
         rom_name = re.sub(r'\(.*?\)', '', rom_name)
-        if system.isOptSet('xeniaPatches') and system.config['xeniaPatches'] == 'True':
+        if system.isOptSet('xenia_patches') and system.config['xenia_patches'] == 'True':
             # pattern to search for matching .patch.toml files
             pattern = canarypath / 'patches' / f'*{rom_name}*.patch.toml'
             matching_files = [file_path for file_path in (canarypath / 'patches').glob(f'*{rom_name}*.patch.toml') if re.search(rom_name, file_path.name, re.IGNORECASE)]
