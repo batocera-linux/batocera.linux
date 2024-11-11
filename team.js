@@ -15,19 +15,19 @@
         "latitude": -21.61389,
         "longitude": -55.16778,
 	"town": "Maracaju",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "f.caruso": {
         "latitude": 47.950001,
         "longitude": 1.88333 ,
 	"town": "Orléans",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "joinski": {
         "latitude": 53.551085,
         "longitude": 9.993682,
 	"town": "Hamburg",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "poke-1,0": {
         "latitude": -29.754994,
@@ -57,7 +57,7 @@
         "latitude": -37.840935,
         "longitude": 144.946457,
 	"town": "Melbourne",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "stvhay": {
         "latitude": 38.889805,
@@ -75,7 +75,7 @@
         "latitude": 48.864716,
         "longitude": 2.349014,
 	"town": "Paris",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "tovarichtch": {
         "latitude": 45.508888,
@@ -99,7 +99,7 @@
         "latitude": 33.448376,
         "longitude": -112.074036,
 	"town": "Phoenix",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "mikhailzrick": {
         "latitude": 35.481918,
@@ -129,7 +129,7 @@
 	"latitude": 50.768036,
         "longitude": 0.290472,
 	"town": "Eastbourne",
-	"last_contribution" : 2023
+	"last_contribution" : 2024
     },
     "ordovice": {
 	"latitude": 27.964157,
