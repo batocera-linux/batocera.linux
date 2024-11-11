@@ -11316,6 +11316,13 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
+        drastic_scaling:
+            group: ADVANCED OPTIONS
+            prompt:      IMAGE SCALING
+            description: Switches between smooth (Bilinear) and sharp (Nearest Neighbor) image scaling.
+            choices:
+                "Bilinear": bilinear
+                "Nearest-neighbor":  nearest
         drastic_fix2d:
             group: ADVANCED OPTIONS
             prompt:      KEEP MAIN SCREEN ON TOP
