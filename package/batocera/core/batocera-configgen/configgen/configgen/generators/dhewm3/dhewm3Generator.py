@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, SAVES
+from ...batoceraPaths import CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -32,9 +31,9 @@ class Dhewm3Generator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Set the paths using Path objects
-        romDir = Path("/userdata/roms/doom3")
+        romDir = ROMS / "doom3"
         # Read the path within the .d3 rom file
-        with open(rom, "r") as file:
+        with Path(rom).open() as file:
             directory = file.readline().strip().split("/")[0]
             eslog.debug(f"Using directory: {directory}")
 
@@ -42,8 +41,9 @@ class Dhewm3Generator(Generator):
         _DHEWM3_CONFIG_DIR = _DHEWM3_CONFIG / directory
         _DHEWM3_CONFIG_BASE_FILE = _DHEWM3_CONFIG_BASE_DIR / "dhewm.cfg"
         _DHEWM3_CONFIG_FILE = _DHEWM3_CONFIG_DIR / "dhewm.cfg"
-        os.makedirs(_DHEWM3_CONFIG_BASE_DIR, exist_ok=True)
-        os.makedirs(_DHEWM3_CONFIG_DIR, exist_ok=True)
+
+        mkdir_if_not_exists(_DHEWM3_CONFIG_BASE_DIR)
+        mkdir_if_not_exists(_DHEWM3_CONFIG_DIR)
 
         options_to_set = {
             "seta r_mode": "-1",
@@ -111,14 +111,14 @@ class Dhewm3Generator(Generator):
 
         # Run command
         commandArray: list[str | Path] = [
-            "/usr/bin/dhewm3", "+set", "fs_basepath", str(romDir)
+            "/usr/bin/dhewm3", "+set", "fs_basepath", romDir
         ]
 
         if directory == "perfected_roe" or directory == "sikkmodd3xp":
             commandArray.extend(
                 ["+set", "fs_game_base", "d3xp"]
             )
-        
+
         if directory == "d3le":
             commandArray.extend(
                 ["+set", "fs_game_base", "d3xp", "+seta", "com_allowconsole", "1"]
