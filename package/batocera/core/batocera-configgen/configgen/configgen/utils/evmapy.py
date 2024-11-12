@@ -197,7 +197,7 @@ class evmapy(AbstractContextManager[None, None]):
                                     axisId   = "BASE"
                                     axisName = "Y"
                                     if input.name == "up":
-                                        absbasey_positive =  int(input.value) < 0
+                                        absbasey_positive =  int(input.value) >= 0
                                     else:
                                         known_axes_codes.pop(input.code)
                                         axisId = None # don't duplicate, configuration should be done for up
