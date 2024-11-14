@@ -1,14 +1,12 @@
 config BR2_PACKAGE_FAUDIO
 	bool "faudio"
-        depends on BR2_i386 || BR2_x86_64
+    depends on BR2_i386 || BR2_x86_64
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_GSTREAMER1
 	select BR2_PACKAGE_GST1_PLUGINS_BASE
 	# Wine unconditionally builds shared libraries
 	depends on !BR2_STATIC_LIBS
-	help
-          Faudio
-  
+	help  
 	  This is FAudio, an XAudio reimplementation that focuses solely on developing
 	  fully accurate DirectX Audio runtime libraries for the FNA project, including
 	  XAudio2, X3DAudio, XAPO, and XACT3.

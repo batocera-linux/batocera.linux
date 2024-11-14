@@ -1,6 +1,6 @@
 config BR2_PACKAGE_WINETRICKS
 	bool "WINETRICKS"
-	depends on BR2_PACKAGE_WINE_GE_CUSTOM
+	depends on BR2_PACKAGE_WINE_TKG
 	help
 	  Winetricks is an easy way to work around problems in Wine.
 

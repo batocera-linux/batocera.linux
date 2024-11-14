@@ -1,0 +1,5 @@
+config BR2_PACKAGE_WINE_MONO
+	bool "wine-mono"
+    depends on BR2_i386 || BR2_x86_64
+    help
+      Wine Mono for Wine.
