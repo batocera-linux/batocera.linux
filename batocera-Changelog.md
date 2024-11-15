@@ -60,6 +60,7 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Custom boot splash image now displays when intended
 - Dualshock controllers not enabled on some Arm boards
 - Hotkey handling for Flycast
+- M.U.G.E.N controllers
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
