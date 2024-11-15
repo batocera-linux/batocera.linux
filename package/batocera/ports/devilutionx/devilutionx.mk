@@ -31,12 +31,21 @@ else ifeq ($(BR2_arm),y)
     DEVILUTIONX_CONF_OPTS += -DDISABLE_ZERO_TIER=ON
 endif
 
+# ugly hack becuase the is no version in the source file
+# and using the git tag doesn't download the submodules properly
+define DEVILUTIONX_CLEAR_DL
+    if [ -f "$(DL_DIR)/$(DEVILUTIONX_DL_SUBDIR)/$(DEVILUTIONX_SOURCE)" ]; then \
+        rm $(DL_DIR)/$(DEVILUTIONX_DL_SUBDIR)/$(DEVILUTIONX_SOURCE); \
+    fi
+endef
+
 define DEVILUTIONX_INSTALL_TARGET_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/devilutionx/devilutionx.keys \
         $(TARGET_DIR)/usr/share/evmapy
 endef
 
+DEVILUTIONX_PRE_DOWNLOAD_HOOKS = DEVILUTIONX_CLEAR_DL
 DEVILUTIONX_POST_INSTALL_TARGET_HOOKS = DEVILUTIONX_INSTALL_TARGET_EVMAPY
 
 $(eval $(cmake-package))
