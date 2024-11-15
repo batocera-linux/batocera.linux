@@ -11238,7 +11238,7 @@ solarus:
 
 mugen:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode]
   cfeatures:
         esync:
             group: ADVANCED OPTIONS
@@ -11261,13 +11261,7 @@ mugen:
             choices:
                 "Off": 0
                 "On":  1
-        virtual_desktop:
-            group: ADVANCED OPTIONS
-            prompt:      VIRTUAL DESKTOP
-            description: Define the resolution and a new dedicated window.
-            choices:
-                "Off": 0
-                "On":  1
+
 ikemen:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
