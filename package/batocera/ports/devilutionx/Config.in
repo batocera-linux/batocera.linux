@@ -1,11 +1,11 @@
 config BR2_PACKAGE_DEVILUTIONX
-	bool "DevilutionX"
+	bool "devilutionx"
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_IMAGE
 	select BR2_PACKAGE_FMT
 	select BR2_PACKAGE_LIBSODIUM
 	select BR2_PACKAGE_BZIP2
 	help
-	  Diablo 1.
+	  A Diablo 1 port for modern operating systems.
 
 	  https://github.com/diasurgical/devilutionX/
