@@ -1,0 +1,13 @@
+comment "rwm8960-audio-hat needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_WM8960_AUDIO_HAT
+	bool "wm8960-audio-hat"
+	depends on BR2_LINUX_KERNEL
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_RPI_UTILS
+	help
+	  The drivers for the WM8960 Audio HAT for Raspberry Pi devices.
+
+	  https://github.com/waveshareteam/WM8960-Audio-HAT
+	  https://www.waveshare.com/wm8960-audio-hat.htm

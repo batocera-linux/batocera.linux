@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# WM8960 HAT driver and audio config
+#
+# Run after S06audio
+#
+
+audiohat="$(/usr/bin/batocera-settings-get system.power.switch)"
+
+case "$1" in
+    start)
+        if [ "$audiohat" = "WM8960_AUDIO_HAT" ]; then
+            wm8960-soundcard
+        fi
+    ;;
+esac
+
+exit $?

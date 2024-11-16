@@ -321,6 +321,11 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# Hats
 	select BR2_PACKAGE_DOCKERPI_POWERBOARD    if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+	select BR2_PACKAGE_WM8960_AUDIO_HAT       if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || \
+	                                             BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
+	                                             BR2_PACKAGE_BATOCERA_TARGET_BCM2837 || \
+	                                             BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+												 BR2_PACKAGE_BATOCERA_TARGET_BCM2712
 
 	# screens
 	select BR2_PACKAGE_DMD_SIMULATOR
