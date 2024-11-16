@@ -30,5 +30,6 @@ config BR2_PACKAGE_BATOCERA_AUDIO
 	select BR2_PACKAGE_LIBFREEAPTX
 	select BR2_PACKAGE_LIBLDAC
 	select BR2_PACKAGE_LIBLC3
+	select BR2_PACKAGE_LIBSAMPLERATE
 	help
 	  Audio support and scripts for batocera.linux
