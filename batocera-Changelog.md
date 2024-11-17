@@ -1,7 +1,7 @@
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
 The Xenia Canary introduces GamerTags (user profiles).
-- On first run or game lanuch you may be prompted to create a Profle.
+- On first run or game launch you may be prompted to create a Profle.
 - This will sometimes migrate your saves for you.
 - If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is creted there.
 Note: The older Xenia version does not have this feature, therefore if you may need to transfer game saves back as necessary.
