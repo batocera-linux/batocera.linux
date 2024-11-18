@@ -76,6 +76,11 @@ class Dhewm3Generator(Generator):
             options_to_set["seta r_brightness"] = system.config["dhewm3_brightness"]
         else:
             options_to_set["seta r_brightness"] = "1"
+        # Game language
+        if system.isOptSet("dhewm3_language"):
+            options_to_set["seta sys_lang"] = system.config["dhewm3_language"]
+        else:
+            options_to_set["seta sys_lang"] = "english"
 
         def update_config_file(file_path):
             if file_path.is_file():
