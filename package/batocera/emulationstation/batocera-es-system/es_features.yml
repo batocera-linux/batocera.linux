@@ -13514,6 +13514,20 @@ dhewm3:
         "160%":           1.60
         "180%":           1.80
         "200% (Maximum)": 2
+    dhewm3_language:
+      prompt: LANGUAGE
+      description: Change the game's language. Game files require the supported language strings in the .pk4 files.
+      choices:
+        "English":  "english"
+        "Spanish":  "spanish"
+        "Italian":  "italian"
+        "German":   "german"
+        "French":   "french"
+        "Russian":  "russian"
+        "Polish":   "polish"
+        "Korean":   "korean"
+        "Japanese": "japanese"
+        "Chinese":  "chinese"
 
 jazz2-native:
   features: [padtokeyboard]
