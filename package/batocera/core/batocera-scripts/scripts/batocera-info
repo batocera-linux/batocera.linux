@@ -156,7 +156,7 @@ fi
 DISPLAYRES=$(batocera-resolution currentResolution)
 if [ ! -z "$WAYLAND_DISPLAY" ]; then # wayland
     DISPLAYRATE=$(batocera-resolution currentMode | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
-elif test -f /var/run/drmMode; then  # drm
+elif test -f /var/run/drmMode; then  # drm
     DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $4}')
 else # xorg
     DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
