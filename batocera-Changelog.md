@@ -173,14 +173,14 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - VKD3D Proton to 2.13
 - Linux Firmware to 20241017
 - Pipewire to 1.2.2
-- ALSA stack to 1.2.12
-- ALSA UCM configuration to 1.2.12
+- ALSA stack to 1.2.13
+- ALSA UCM configuration to 1.2.13
 - Chromebook Linux Audio to 31st of July
 - FAudio to 24.11
 - FDK-AAC to 2.0.3
 - Intel Media Driver to 24.3.4
 - Intel Graphics Memory Management Library to 22.5.2
-- Sound Open Firmware to 2024.09
+- Sound Open Firmware to 2024.09.1
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
