@@ -1,0 +1,13 @@
+diff --git a/scripts/dtc/pylibfdt/setup.py b/scripts/dtc/pylibfdt/setup.py
+index b4d0cfbaf9..1cad6fc179 100644
+--- a/scripts/dtc/pylibfdt/setup.py
++++ b/scripts/dtc/pylibfdt/setup.py
+@@ -96,7 +96,7 @@ progname = sys.argv[0]
+ files = os.environ.get('SOURCES', '').split()
+ cflags = os.environ.get('CPPFLAGS', '').split()
+ objdir = os.environ.get('OBJDIR')
+-version = os.environ.get('VERSION')
++version = os.environ.get('VERSION', '').replace('u-boot-', '')
+ swig_opts = os.environ.get('SWIG_OPTS', '').split()
+ 
+ # If we were called directly rather than through our Makefile (which is often
