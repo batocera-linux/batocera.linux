@@ -18,12 +18,7 @@ DXX_REBIRTH_SCONS_ENV = $(TARGET_CONFIGURE_OPTS)
 
 DXX_REBIRTH_SCONS_OPTS = -j$(PARALLEL_JOBS)
 
-# dxx-rebirth currently does not support sdl2 + opengles combo
-ifeq ($(BR2_PACKAGE_BATOCERA_RPI_VCORE),y)
-DXX_REBIRTH_SCONS_OPTS += opengles=yes
-else
 DXX_REBIRTH_SCONS_OPTS += sdl2=yes
-endif
 
 define DXX_REBIRTH_BUILD_CMDS
     (cd $(@D); \
