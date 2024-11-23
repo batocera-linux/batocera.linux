@@ -11,6 +11,7 @@ BATOCERA_ES_WEB_UI_SOURCE =
 define BATOCERA_ES_WEB_UI_RESOURCES
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/services
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/bin
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/services
 	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-web-ui/web/* \
 	    $(TARGET_DIR)/usr/share/emulationstation/resources/services
 	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-web-ui/services/* \
