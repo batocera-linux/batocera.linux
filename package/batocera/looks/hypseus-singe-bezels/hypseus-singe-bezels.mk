@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HYPSEUS_SINGE_BEZELS_VERSION = 7fd874c0d49b901e984d87afba73b57a8973c349
+HYPSEUS_SINGE_BEZELS_VERSION = b836daf3e294d15dc36a7267f86622b261d8bcba
 HYPSEUS_SINGE_BEZELS_SITE = \
     $(call github,Tovarichtch,hypseus_singe_daphne_bezels,$(HYPSEUS_SINGE_BEZELS_VERSION))
 HYPSEUS_SINGE_BEZELS_LICENSE = LGPL-3.0
