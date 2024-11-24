@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile
+index f04488886b..47308e7cdb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -678,6 +678,9 @@ KBUILD_CFLAGS   += $(call cc-disable-warning,array-compare)
+ KBUILD_CFLAGS   += $(call cc-disable-warning,stringop-overread)
+ KBUILD_CFLAGS   += $(call cc-disable-warning,dangling-pointer)
+ KBUILD_CFLAGS   += $(call cc-disable-warning,address)
++KBUILD_CFLAGS 	+= $(call cc-disable-warning,invalid-asm)
++KBUILD_CFLAGS 	+= $(call cc-disable-warning,int-to-pointer-cast)
++KBUILD_CFLAGS 	+= $(call cc-disable-warning,enum-int-mismatch)
+ 
+ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
+ KBUILD_CFLAGS	+= -Os
