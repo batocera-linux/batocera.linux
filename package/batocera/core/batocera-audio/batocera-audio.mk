@@ -87,8 +87,6 @@ define BATOCERA_AUDIO_STEAM_DECK
 	    $(TARGET_DIR)/lib/firmware/amd/sof-tplg/sof-vangogh-nau8821-max.tplg
 	# extra ucm files
 	mkdir -p $(TARGET_DIR)/usr/share/alsa/ucm2
-	# remove symlink
-	rm -f $(TARGET_DIR)/usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf
 	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/ucm2/* \
 	    $(TARGET_DIR)/usr/share/alsa/ucm2/
 endef
