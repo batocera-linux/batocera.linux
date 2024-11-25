@@ -34,7 +34,7 @@ systemToSwapDisable = {'amigacd32', 'amigacdtv', 'naomi', 'atomiswave', 'megadri
 # Warning, function used by amiberry because it reads the same retroarch formatting
 def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, lightgun: bool) -> None:
     # Map buttons to the corresponding retroarch specials keys
-    retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'a': 'reset', 'start': 'exit_emulator', \
+    retroarchspecials = {'y': 'load_state', 'x': 'save_state', 'a': 'reset', 'start': 'exit_emulator', \
                          'up': 'state_slot_increase', 'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
                          'pageup': 'screenshot', 'pagedown': 'ai_service', 'l2': 'shader_prev', 'r2': 'shader_next'}
     retroarchspecials["b"] = "menu_toggle"
@@ -58,12 +58,14 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
     # hotkeys, forced to match with the hotkeys system
     retroconfig.save('input_enable_hotkey',       '"shift"')
     retroconfig.save('input_menu_toggle',         '"f1"')
+    retroconfig.save('input_fps_toggle',          '"f2"')
     retroconfig.save('input_exit_emulator',       '"escape"')
     retroconfig.save('input_save_state',          '"f3"')
     retroconfig.save('input_load_state',          '"f4"')
     retroconfig.save('input_state_slot_decrease', '"f5"')
     retroconfig.save('input_state_slot_increase', '"f6"')
-    retroconfig.save('input_player1_select',      '"f12"')
+    retroconfig.save('input_toggle_fast_forward', '"f11"')
+    retroconfig.save('input_screenshot',          '"f12"')
 
     # No menu in non full uimode
     if system.config["uimode"] != "Full":
@@ -114,7 +116,7 @@ def writeControllerConfig(retroconfig: UnixSettings, controller: Controller, pla
 # Create a configuration for a given controller
 def generateControllerConfig(controller: Controller, retroarchspecials: Mapping[str, str], system: Emulator, lightgun: bool, mouseIndex: int | None = 0):
 # Map an emulationstation button name to the corresponding retroarch name
-    retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
+    retroarchbtns = {'b': 'a', 'a': 'b', 'y': 'x', 'x': 'y', \
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
                      'l3': 'l3', 'r3': 'r3', \
                      'start': 'start', 'select': 'select'}
