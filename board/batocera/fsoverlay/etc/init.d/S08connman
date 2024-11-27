@@ -86,13 +86,13 @@ wifi_configure_all() {
 wifi_enable() {
     settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
     [ -n "$settingsCountry" ] && /usr/sbin/iw reg set "$settingsCountry"
-    if [ "$settingsWlan" != "1" ]; then
-	    connmanctl disable wifi 2>/dev/null
-	    return
-    fi
 
     connmanctl enable wifi 2>/dev/null
     connmanctl scan   wifi 2>/dev/null
+}
+
+wifi_disable() {
+    connmanctl disable wifi 2>/dev/null
 }
 
 case "$1" in
@@ -100,56 +100,58 @@ case "$1" in
 	    batocera_hostname
 	    wifi_configure_all
 	    printf "Starting connman: "
-		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n -r
+        start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n -r
 
-		# wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
-		N=0
-		connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-		while test $? -ne 0 -a $N -lt 5; do # 5 tries
-		    N=$((N+1))
-		    sleep 1
-		    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
-		done
-		sleep 0.5
+        # wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
+        for i in $(seq 1 20); do
+            if connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='; then
+                break
+            fi
+            sleep 0.25
+        done
 
-		# Check if device is a Retroid Pocket model,
-		# We generate a MAC address based on the serial number.
-		MAC=""
-		info_output=$(batocera-info)
+        # Check if device is a Retroid Pocket model,
+        # We generate a MAC address based on the serial number.
+        MAC=""
+        info_output=$(batocera-info)
 
-		if echo "$info_output" | grep -qE "Model: Retroid_Pocket_(Mini|5)"; then
-			WLAN=$(ls /sys/class/net | grep -E '^wlan' | head -n 1)
-			SERIAL="$(cat /sys/devices/soc0/serial_number)"
-			MAC="00:03:7F:${SERIAL:4:2}:${SERIAL:6:2}:${SERIAL:8:2}"
+        if echo "$info_output" | grep -qE "Model: Retroid_Pocket_(Mini|5)"; then
+            WLAN=$(ls /sys/class/net | grep -E '^wlan' | head -n 1)
+            SERIAL="$(cat /sys/devices/soc0/serial_number)"
+            MAC="00:03:7F:${SERIAL:4:2}:${SERIAL:6:2}:${SERIAL:8:2}"
 			
-			if [ -n "$WLAN" ]; then  # Check if a wlan interface was found
-				# Restart the link with the new MAC address
-				ip link set "$WLAN" down
-				ip link set "$WLAN" address "$MAC"
-				ip link set "$WLAN" up
-				echo "Custom MAC address $MAC set for wifi on interface $WLAN"
-				echo "Based on serial number $SERIAL"
-			else
-				echo "No wireless interface found."
-			fi
-		fi
+            if [ -n "$WLAN" ]; then  # Check if a wlan interface was found
+                # Restart the link with the new MAC address
+                ip link set "$WLAN" down
+                ip link set "$WLAN" address "$MAC"
+                ip link set "$WLAN" up
+                echo "Custom MAC address $MAC set for wifi on interface $WLAN"
+                echo "Based on serial number $SERIAL"
+            else
+                echo "No wireless interface found."
+            fi
+        fi
 
-		# can be done detached
-		wifi_enable &
+        if [ "$settingsWlan" = "1" ];then
+            # Detach the wifi enable process
+            wifi_enable &
+        else
+            wifi_disable
+        fi
 
-		echo "done."
-		;;
+        echo "done."
+        ;;
 	stop)
-		printf "Stopping connman: "
-		start-stop-daemon -K -q -p /var/run/connmand.pid
-		echo "done."
-		;;
+        printf "Stopping connman: "
+        start-stop-daemon -K -q -p /var/run/connmand.pid
+        echo "done."
+        ;;
 	restart | reload)
-		$0 stop
-		sleep 1
-		$0 start
-		;;
+        $0 stop
+        sleep 0.5
+        $0 start
+        ;;
 	*)
-		echo "usage: $0 {start|stop|restart|reload}"
-		;;
+        echo "usage: $0 {start|stop|restart|reload}"
+        ;;
 esac
