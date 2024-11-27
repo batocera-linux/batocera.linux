@@ -1,53 +1,62 @@
-#!/bin/sh
+#!/bin/bash
 
-if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] && [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }
-then
+if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] && [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }; then
   exit 0
 fi
 
-save_governor() {
-  for policy in $(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors)
-  do
-    if [ "$policy" = "schedutil" ]
-    then
-      /usr/bin/batocera-settings-set system.cpu.governor "schedutil"
-      exit 0
-    elif [ "$policy" = "performance" ]
-    then
-      /usr/bin/batocera-settings-set system.cpu.governor "performance"
+check_governor() {
+    local GOVERNOR_TO_CHECK=$1
+    local AVAILABLE_GOVERNORS
+    AVAILABLE_GOVERNORS=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors)
+
+    if [[ " $AVAILABLE_GOVERNORS " =~ [[:space:]]${GOVERNOR_TO_CHECK}[[:space:]] ]]; then
+        return 0
+    else
+        return 1
     fi
-  done
+}
+
+set_governor() {
+   local GOVERNOR_NAME=$1
+
+   for policy in /sys/devices/system/cpu/cpufreq/policy*; do
+       if [ -e "$policy/scaling_governor" ]; then
+           local CURRENT_GOVERNOR=$(cat "$policy/scaling_governor")
+           if [ "$CURRENT_GOVERNOR" != "$GOVERNOR_NAME" ]; then
+               echo "$GOVERNOR_NAME" > "$policy/scaling_governor" 2>/dev/null
+           fi
+       fi
+   done
+}
+
+save_governor() {
+   local GOVERNOR_TO_SAVE=$1
+   /usr/bin/batocera-settings-set system.cpu.governor "$GOVERNOR_TO_SAVE"
 }
 
 case "$1" in
   start|restart|reload)
 
-    # check if governor is set
-    if ! governor="$(/usr/bin/batocera-settings-get-master system.cpu.governor)"
-    then
-      save_governor
-      exit 0
-    fi
+    governor=$(/usr/bin/batocera-settings-get-master system.cpu.governor)
 
-    # try to apply governor
-    if ! echo $governor > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor 2>/dev/null
-    then
-      save_governor
-      exit 0
-    fi
-
-    # apply governor to all remaining cpufreq policies
-    for policy in /sys/devices/system/cpu/cpufreq/policy*
-    do
-      if { [ "$policy" != "/sys/devices/system/cpu/cpufreq/policy0" ] && [ -e "$policy/scaling_governor" ]; }
-      then
-        echo $governor > "$policy/scaling_governor"
+    if [ -z "$governor" ] || ! check_governor "$governor"; then
+      if check_governor "schedutil"; then
+        governor="schedutil"
+      else
+        governor="performance"
       fi
-    done
+      save_governor "$governor"
+    fi
 
+    set_governor "$governor"
     ;;
+
   list)
     cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors
     ;;
+
   *)
+    echo "Usage: $0 {start|restart|reload|list}"
+    exit 1
+    ;;
 esac
