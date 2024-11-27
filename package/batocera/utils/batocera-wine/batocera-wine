@@ -608,6 +608,26 @@ play_winetgz() {
     waitWineServer
 }
 
+# Function to safely unmount a mount point with multiple attempts
+safe_umount() {
+    local mount_point="$1"
+    local attempts=3
+
+    for ((i=1; i<=attempts; i++)); do
+        # Try lazy unmount first
+        umount -l "${mount_point}" && return 0
+        # If lazy unmount fails, try force unmount
+        umount -f "${mount_point}" && return 0
+        # If that fails, try recursive force unmount
+        umount -f -R "${mount_point}" && return 0
+        sleep 1
+    done
+
+    # If all attempts fail, we return an error
+    echo "Error: Failed to unmount ${mount_point} after ${attempts} attempts" >&2
+    return 1
+}
+
 play_squashfs() {
     echo "play_squashfs"
     GAMENAME=$1
@@ -618,33 +638,38 @@ play_squashfs() {
     SAVEPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}"
     WORKPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}.work"
 
-    # ensure we clean before starting if wine was killed for some reason
-    umount -f -R "${WINEPOINT}"
-    umount -f -R "${SQUASHFSPOINT}"
-    rm -rf "${SQUASHFSPOINT}"
-    rm -rf "${WORKPOINT}"
-    rm -rf "${WINEPOINT}"
+    # Attempt to unmount any existing mount points before starting
+    [[ -d "${WINEPOINT}" ]] && safe_umount "${WINEPOINT}"
+    [[ -d "${SQUASHFSPOINT}" ]] && safe_umount "${SQUASHFSPOINT}"
 
+    # Remove directories if they exist
+    [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+    [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+    [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+
+    # Create necessary fresh directories
     mkdir -p "${SAVEPOINT}" || return 1
     mkdir -p "${WORKPOINT}" || return 1
     mkdir -p "${WINEPOINT}" || return 1
-
     mkdir -p "${SQUASHFSPOINT}" || return 1
+
+    # Mount squashfs
     if ! mount "${GAMENAME}" "${SQUASHFSPOINT}"; then
-        rm -rf "${SQUASHFSPOINT}"
-	    rm -rf "${WORKPOINT}"
-	    rm -rf "${WINEPOINT}"
+        [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+        [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+        [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
         return 1
     fi
-    
+
+    # Mount overlay
     if ! mount -t overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on overlay "${WINEPOINT}"; then
-        umount "${SQUASHFSPOINT}"
-	    rm -rf "${SQUASHFSPOINT}"
-	    rm -rf "${WORKPOINT}"
-	    rm -rf "${WINEPOINT}"
-	    return 1
+        safe_umount "${SQUASHFSPOINT}"
+        [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+        [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+        [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+        return 1
     fi
-    
+
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -653,22 +678,25 @@ play_squashfs() {
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
-    waitWineServer
-    # wait 1 sec before unmounting
-    sleep 1
 
-    # try to clean the cdrom
-    umount -f -R "${WINEPOINT}"
-    umount -f -R "${SQUASHFSPOINT}"
-    sleep 1
-    rm -rf "${SQUASHFSPOINT}"
-    rm -rf "${WORKPOINT}"
-    rm -rf "${WINEPOINT}"
+    waitWineServer
+
+    # Safely unmount and clean up
+    safe_umount "${WINEPOINT}" || return 1
+    safe_umount "${SQUASHFSPOINT}" || return 1
+
+    # Remove directories if they exist
+    [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+    [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+    [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+
+    return 0
 }
 
 init_cmd() {
@@ -749,8 +777,8 @@ install_iso() {
     init_cmd "${WINEPOINT}"
 
     # try to clean the cdrom
-    umount "${GAMEISOMOUNT}"
-    rmdir "${GAMEISOMOUNT}"
+    safe_umount "${GAMEISOMOUNT}"
+    [[ -d "${GAMEISOMOUNT}" ]] && rm -rf "${GAMEISOMOUNT}"
 }
 
 wine2squashfs() {
