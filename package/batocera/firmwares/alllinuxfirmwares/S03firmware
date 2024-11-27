@@ -1,0 +1,20 @@
+#!/bin/bash
+
+case "$1" in
+    start)
+        echo "Checking device model..."
+        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+        if [[ $info_output == "SER9" ]]; then
+            echo "Model matches SER9. Setting up firmware links..."
+            mkdir -p /var/tmp
+            ln -sf /usr/share/batocera/firmware/dcn_3_5_dmcub.bin /var/tmp/dcn_3_5_dmcub.bin
+            ln -sf /var/tmp/dcn_3_5_dmcub.bin /lib/firmware/amdgpu/dcn_3_5_dmcub.bin
+        fi
+        ;;
+    *)
+        echo "Usage: $0 start"
+        exit 1
+        ;;
+esac
+
+exit 0
