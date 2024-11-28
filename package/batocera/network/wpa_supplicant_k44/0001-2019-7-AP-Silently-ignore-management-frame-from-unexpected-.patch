@@ -16,10 +16,6 @@ where the unexpected response frame from the AP might result in a
 connected station dropping its association.
 
 Signed-off-by: Jouni Malinen <j@w1.fi>
-
-Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
-[Retrieved from:
-https://w1.fi/security/2019-7/0001-AP-Silently-ignore-management-frame-from-unexpected-.patch]
 ---
  src/ap/drv_callbacks.c | 13 +++++++++++++
  src/ap/ieee802_11.c    | 12 ++++++++++++

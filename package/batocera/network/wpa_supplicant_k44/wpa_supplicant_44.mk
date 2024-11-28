@@ -7,9 +7,6 @@
 WPA_SUPPLICANT_K44_VERSION = 2.9
 WPA_SUPPLICANT_K44_SITE = http://w1.fi/releases
 WPA_SUPPLICANT_K44_SOURCE = wpa_supplicant-$(WPA_SUPPLICANT_K44_VERSION).tar.gz
-WPA_SUPPLICANT_K44_PATCH = \
-	https://w1.fi/security/2020-2/0001-P2P-Fix-copying-of-secondary-device-types-for-P2P-gr.patch \
-	https://w1.fi/security/2021-1/0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
 WPA_SUPPLICANT_K44_LICENSE = BSD-3-Clause
 WPA_SUPPLICANT_K44_LICENSE_FILES = README
 WPA_SUPPLICANT_K44_CPE_ID_VENDOR = w1.fi
@@ -20,10 +17,10 @@ WPA_SUPPLICANT_K44_CFLAGS = $(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/libnl3
 WPA_SUPPLICANT_K44_LDFLAGS = $(TARGET_LDFLAGS)
 WPA_SUPPLICANT_K44_SELINUX_MODULES = networkmanager
 
-# 0001-AP-Silently-ignore-management-frame-from-unexpected-.patch
+# 0001-2019-7-AP-Silently-ignore-management-frame-from-unexpected-.patch
 WPA_SUPPLICANT_K44_IGNORE_CVES += CVE-2019-16275
 
-# 0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
+# 0009-2021-1-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
 WPA_SUPPLICANT_K44_IGNORE_CVES += CVE-2021-27803
 
 # 0002-ASN.1-Validate-DigestAlgorithmIdentifier-parameters.patch
