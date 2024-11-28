@@ -26,6 +26,13 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Kensington Expert Mouse", MO
 # Trackball: REL_X & REL_Y
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="0838", ATTRS{idProduct}=="8918", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1", ENV{TRACKBALL_MULTIPLIER}="4", ENV{SPINNER_MULTIPLIER}="4"
 
+# Kensington SlimBlade Pro Trackball. Spinner as "scrolling" and a trackball with 4 mouse buttons. Has three connectivity modes:
+# Bluetooth mode (seems unresponsive, ignore for now): 047d:80d4
+# Wireless mode: 047d:80d6
+# Wired mode: 047d:80d7
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="047d", ATTRS{idProduct}=="80d6", MODE="0666", ENV{ID_INPUT_keyboard}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="047d", ATTRS{idProduct}=="80d7", MODE="0666", ENV{ID_INPUT_keyboard}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1"
+
 ##############################
 ### Push-pull spinner
 ##############################
