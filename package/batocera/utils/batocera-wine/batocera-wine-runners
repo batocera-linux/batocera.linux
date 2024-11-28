@@ -3,7 +3,7 @@
 # Check if the directory /userdata/system/wine/custom exists
 if [ -d "/userdata/system/wine/custom" ]; then
     echo "wine-tkg"
-    find /userdata/system/wine/custom -mindepth 1 -maxdepth 1 -type d -exec basename {} \;
+    find /userdata/system/wine/custom -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
 else
     echo "wine-tkg"
 fi
