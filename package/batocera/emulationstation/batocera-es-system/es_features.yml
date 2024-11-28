@@ -1636,12 +1636,12 @@ libretro:
                     "2":           2
                     "3":           3
                     "4":           4
-            fbneo-lightgun-hide-crosshair:
+            fbneo-lightgun-crosshair-emulation:
                 group: LIGHT GUN
                 prompt:      SHOW LIGHT GUN CROSSHAIRS
                 choices:
-                    "Off":                                disabled
-                    "On":                                 enabled
+                    "Off":                                always hide
+                    "On":                                 always show
       systems:
             neogeo:
                 cfeatures:
