@@ -123,6 +123,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtw89-temp/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/r8168/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/aic8800/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/wpa_supplicant_k44/Config.in"
   endmenu
 
   menu "LED"
