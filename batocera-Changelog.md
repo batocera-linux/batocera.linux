@@ -161,7 +161,7 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Bauh to 0.10.7 (flatpak-config)
 - Nvidia Driver to 560.35.03 (Open kernel modules)
 - Nvidia Legacy Driver to 470.256.02
-- x86_64 Kernel to 6.11.4
+- x86_64 Kernel to 6.11.10
 - RPi Kernel to 6.6.56
 - ARM mainline Kernel boards to 6.6.56
 - Ayaneo Platform driver to Jul 17, 2024 build
@@ -184,7 +184,7 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - LibVA to 2.22.0
 - WF-Recorder to 14th of August build
 - Switchres to 2.2.1
-- Mesa3D to 24.2.7
+- Mesa3D to 24.2.8
 - Buildroot to the 2024.05.2 release base
 - GStreamer codecs to 1.24.8
 - Shim signed IA32 EFI bootloader to 1.44~1+deb12u1+15.8-1~deb12u1
