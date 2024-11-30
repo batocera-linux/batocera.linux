@@ -3,10 +3,10 @@
 The Xenia Canary introduces GamerTags (user profiles).
 - On first run or game launch you may be prompted to create a Profle.
 - This will sometimes migrate your saves for you.
-- If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is creted there.
+- If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is created there.
 Note: The older Xenia version does not have this feature, therefore if you may need to transfer game saves back as necessary.
 
-We have migrated to a more modern WINE runnder, using WINE-TKG.
+We have migrated to a more modern WINE runner, using WINE-TKG.
 - WINE-TKG v9.21 takes advantage of all the benefits from WINE v9.x releases for compatibility.
 ### Hardware
 - Add initial Blamcon light gun support
@@ -27,16 +27,16 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Enhanced Bluetooth AD2P codec support for LDAC & aptX supported headphones or speakers
   - The supported AD2P codec may need to be selected under SYSTEM SETTINGS -> AUDIO PROFILES
 - Steering wheel support added for :
-  - Thurstmaster T150, TMX and T248 with force Feedback (new driver)
+  - Thrustmaster T150, TMX and T248 with force Feedback (new driver)
   - Microsoft SideWinder Precision Racing Wheel
 - Display reflection for x86_64 boards (display.reflection=x or y or xy in batocera.conf to enable it)
-- Emulationstation now supports savestates for standalones (dolphin, pcsx2, mupen, ppsspp)
+- Emulationstation now supports savestates for standalone emulators (Dolphin, PCSX2, Mupen64Plus, PPSSPP)
 - Add Raspberry Pi patches for hardware accelerated HEVC decoding (RPi4 & RPi5 boards)
-- Nvidia Encoding support with `batocera-record` for Production driver systems
+- NVIDIA Encoding support with `batocera-record` for Production driver systems
 - N64DD: support for standalone .ndd disk format (with libretro-paralleln64)
 - Amiberry: virtual keyboard (click on left stick)
 - Arcade games: automatically switch to vertical bezels (default 'consoles' decorations)
-- /boot/preshare.sh script (to be able to wake up a nas for example)
+- /boot/preshare.sh script (to be able to wake up a NAS for example)
 - Sinden light gun ratio option (you can select 4:3 ratio instead of fullscreen)
 - Taradino - Rise of the Triad port
 - X16-Emulator for Commander X16 system support
@@ -44,15 +44,15 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Vircon32 - a 32-bit inspired Fantasy Console
 - DXX-Rebirth enabled for ARM (Retroid Pocket Mini)
 - Automatic controller configuration for the play! standalone emulator
-- Scripts modules for BigPEmu
-- Jazz Jackrabbit 2 port (Jazz² Resurrection)
+- Script modules for BigPEmu
+- Jazz² Resurrection (Jazz Jackrabbit 2 port)
 - Hibernate option
 - Jaguar CD system
-- ES: Initial trackball/spinner collections
+- ES: Initial trackball and spinner collections
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting
-- Fixed right controller LED for the Ayaneo Air Plus, it's now functional
+- Fixed right controller LED for the Ayaneo Air Plus, now functional
 - ES: RetroAchievements displayed for Gamecube and Uzebox
 - ES: Fixed a crash when selecting "descending order" for several parameters
 - DuckStation light gun crosshair
@@ -61,16 +61,17 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Dualshock controllers not enabled on some Arm boards
 - Hotkey handling for Flycast
 - M.U.G.E.N controllers
+- Libretro-FBNeo crosshairs for light guns now showing
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
 - Added bezel & sinden border support for the RPi5 with Wii games, requires Vulkan API (default)
 - Dolphin, Flycast & PCSX2 standalone emulators will now center their notifications to avoid rendering under the bezel if enabled
 - Spectravideo system now has Libretro-BlueMSX as an emulator option
-- Libretro ScummVM: Persisting in-game settings will be used if a blank .scummvm file
-- You can now manually forget, connect or disconnect a bluetooth device
-- Updated Nvidia card detection
-- Modern Nvidia cards will now use the OpenSource kernel modules when possible.
+- Libretro-ScummVM: Persisting in-game settings will be used if a blank .scummvm file
+- Manually forget, connect or disconnect a bluetooth device
+- Updated NVIDIA card detection
+- Modern NVIDIA cards will now use the OpenSource kernel modules when possible.
 - New ES web UI on http://<batocera>:1234 (with a new es_web_notifier service to enable)
 - ES: simplified launch for netplay games
 - Enabled more force feedback capabilities on various controllers
@@ -159,8 +160,8 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Xenia Canary to October 26, 2024 build
 ### System
 - Bauh to 0.10.7 (flatpak-config)
-- Nvidia Driver to 560.35.03 (Open kernel modules)
-- Nvidia Legacy Driver to 470.256.02
+- NVIDIA Driver to 560.35.03 (Open kernel modules)
+- NVIDIA Legacy Driver to 470.256.02
 - x86_64 Kernel to 6.11.10
 - RPi Kernel to 6.6.56
 - ARM mainline Kernel boards to 6.6.56
