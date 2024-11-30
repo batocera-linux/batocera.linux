@@ -11615,12 +11615,18 @@ model2emu:
             choices:
                 "Off (Default)": 0
                 "On":            1
-        model2_forceFeedback:
-            prompt:      RUMBLE
-            description: Only some games feature rumble. Not compatible with all controllers.
+        model2_xinput:
+            prompt: X-INPUT
+            description: Enable X-Input mode for Xbox type controllers.
             choices:
-                "Off":      0
-                "On":       1
+                "Off": 0
+                "On":  1
+        model2_forceFeedback:
+            prompt: RUMBLE
+            description: Only some games support rumble. Requires X-Input mode and may not be compatible with all controllers.
+            choices:
+                "Off": 0
+                "On":  1
 gsplus:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

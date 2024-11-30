@@ -250,7 +250,11 @@ class Model2EmuGenerator(Generator):
                 else:
                     Config.set("Renderer","DrawCross", "0")
 
-        Config.set("Input","XInput", "1")
+        # xinput
+        if system.isOptSet("model2_xinput") and system.getOptBoolean("model2_xinput"):
+            Config.set("Input","XInput", "1")
+        else:
+            Config.set("Input","XInput", "0")
 
         # force feedback
         if system.isOptSet("model2_forceFeedback") and system.getOptBoolean("model2_forceFeedback"):
