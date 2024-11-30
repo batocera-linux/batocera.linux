@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v41b(2024/11/16)\n"
+"Project-Id-Version: batocera-es v41b(2024/11/30)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-11-16 21:35+0900\n"
+"PO-Revision-Date: 2024-11-30 21:20+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -4670,7 +4670,7 @@ msgstr "中央 (標準)"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Change Camera Angle"
-msgstr ""
+msgstr "カメラアングル変更"
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -4715,6 +4715,8 @@ msgid ""
 "Change the game's language. Game files require the supported language "
 "strings in the .pk4 files."
 msgstr ""
+"ゲームの言語を変更します。ゲームファイルには、.pk4ファイルで対応している言語"
+"文字列が必要です"
 
 #. TRANSLATION: bigpemu, cannonball, cemu, duckstation, libretro/vice_x128, ...
 msgctxt "game_options"
@@ -6428,7 +6430,7 @@ msgstr ""
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "Enable X-Input mode for Xbox type controllers."
-msgstr ""
+msgstr "Xbox タイプコントローラーの X-Input モードを有効にします"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -6854,13 +6856,12 @@ msgid ""
 "Enhancement. Reduces slowdown in mode 7 games. Can cause issues in certain "
 "games."
 msgstr ""
-"強化：モード 7 のゲームでの速度低下を軽減します。特定のゲームで問題が出る可能"
-"性があります"
+"強化：モード 7 のゲームでの速度低下を軽減します(特定のゲームで不具合の可能性)"
 
 #. TRANSLATION: libretro/fceumm, libretro/mame, libretro/mamevirtual, libretro/mednafen_psx, libretro/mesen, ...
 msgctxt "game_options"
 msgid "Enhancement. Reduces system slowdown. Causes issues in some games."
-msgstr "強化：システムの速度低下を軽減します。一部のゲームで問題が発生します"
+msgstr "強化：システムの速度低下を軽減します(一部のゲームで問題が発生)"
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -6893,8 +6894,7 @@ msgid ""
 "Enhancement. Remove the thirty-two sprites per line limit. Crashes certain "
 "games."
 msgstr ""
-"強化：行制限ごとに32個のスプライトを削除しますが特定のゲームをクラッシュさせ"
-"ます"
+"強化：行制限ごとに32個のスプライトを削除します(特定のゲームで不具合の可能性)"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7301,7 +7301,7 @@ msgstr ""
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
 msgid "Falcon"
-msgstr "ファルコン"
+msgstr "Falcon"
 
 #. TRANSLATION: hatari
 msgctxt "game_options"
@@ -7666,7 +7666,7 @@ msgstr ""
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Forward Nudge"
-msgstr ""
+msgstr "前方を叩く"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -9515,17 +9515,17 @@ msgstr "左"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Left Flipper"
-msgstr ""
+msgstr "左 フリッパー"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Left Manga Save"
-msgstr ""
+msgstr "magnasave ボタン 左"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Left Nudge"
-msgstr ""
+msgstr "左側を叩く"
 
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
@@ -10165,7 +10165,7 @@ msgstr "一部の 2D ゲームで、より鮮明な画像になる場合があ�
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Mech Tilt"
-msgstr ""
+msgstr "メカ Tilt(機械的傾斜)"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -11134,6 +11134,8 @@ msgid ""
 "Only some games support rumble. Requires X-Input mode and may not be "
 "compatible with all controllers."
 msgstr ""
+"一部のゲームのみが振動に対応しています。(X-Input モードが必要)互換性がなく動"
+"作しない場合もあります"
 
 #. TRANSLATION: libretro/fceumm
 msgctxt "game_options"
@@ -11791,7 +11793,7 @@ msgstr "PS2 ホイール(ハンドル)タイプ"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Plunger"
-msgstr ""
+msgstr "レバーを引く"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -12535,17 +12537,17 @@ msgstr "右"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Right Flipper"
-msgstr ""
+msgstr "右 フリッパー"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Right Manga Save"
-msgstr ""
+msgstr "magnasave ボタン 右"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Right Nudge"
-msgstr ""
+msgstr "右側を叩く"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -15424,6 +15426,7 @@ msgctxt "game_options"
 msgid ""
 "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
 msgstr ""
+"ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用します"
 
 #. TRANSLATION: libretro/mame, libretro/mame, libretro/mame, libretro/mame, libretro/mame, ...
 msgctxt "game_options"
@@ -16087,7 +16090,7 @@ msgstr "CPU互換性'正確な動作'モード及びいくつかのゲームで�
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "X-INPUT"
-msgstr ""
+msgstr "X-INPUT"
 
 #. TRANSLATION: libretro/mupen64plus-next
 msgctxt "game_options"
