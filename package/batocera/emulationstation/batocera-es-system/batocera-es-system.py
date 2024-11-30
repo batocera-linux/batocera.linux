@@ -278,7 +278,7 @@ class EsSystemConf:
         for tr in vals:
             vcomment = ""
             vn = 0
-            for v in vals[tr]:
+            for v in sorted(vals[tr]):
                 if vn < 5:
                     if vcomment != "":
                         vcomment = vcomment + ", "
