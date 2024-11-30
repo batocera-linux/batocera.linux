@@ -27,8 +27,7 @@ class ShGenerator(Generator):
         shrom = runsh if runsh.exists() else rom_path
 
         # PortMaster uses this.
-        dbfile = "/tmp/gamecontrollerdb.txt"
-        write_sdl_controller_db(playersControllers, dbfile)
+        write_sdl_controller_db(playersControllers)
 
         commandArray = ["/bin/bash", shrom]
         return Command.Command(array=commandArray,env={

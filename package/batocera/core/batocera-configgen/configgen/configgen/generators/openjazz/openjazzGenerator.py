@@ -1,12 +1,13 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Final
+
 import logging
 import os
 import struct
 from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import ROMS, CONFIGS, CACHE, SAVES
+from ...batoceraPaths import CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -28,41 +29,41 @@ class OpenJazzGenerator(Generator):
         self.video_height: int = 480
         self.video_scale: int = 1
         self.fullscreen: bool = True
-        
+
         # Initialize controls with default values
         self.controls_keys: list[int] = [
             1073741906, 1073741905, 1073741904, 1073741903,
             32, 32, 1073742050, 1073742052, 13, 27, 49, 50
         ]
-        
+
         self.controls_buttons: list[int] = [
-            51, 52, 53, 4294967295, 4294967295, 4294967295, 
-            4294967295, 2, 4, 1, 3, 8, 7, 
+            51, 52, 53, 4294967295, 4294967295, 4294967295,
+            4294967295, 2, 4, 1, 3, 8, 7,
             4294967295, 4294967295, 4294967295
         ]
-        
+
         self.controls_axes: list[tuple[int, int]] = [
-            (4294967295, 4294967295), (4294967295, 4), 
-            (4294967295, 4294967295), (1, 0), 
-            (1, 1), (0, 0), (0, 1), 
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
+            (4294967295, 4294967295), (4294967295, 4),
+            (4294967295, 4294967295), (1, 0),
+            (1, 1), (0, 0), (0, 1),
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
             (4294967295, 0)
         ]
-        
+
         self.controls_hats: list[tuple[int, int]] = [
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
-            (0, 1), (0, 4), 
-            (0, 8), (0, 2), 
-            (4294967295, 0), (4294967295, 0), 
-            (4294967295, 0), (4294967295, 0), 
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
+            (0, 1), (0, 4),
+            (0, 8), (0, 2),
+            (4294967295, 0), (4294967295, 0),
+            (4294967295, 0), (4294967295, 0),
             (4294967295, 0), (4294967295, 0)
         ]
-        
+
         self.character_name: str = "Jazz"
         self.character_colors: list[int] = [255, 255, 255, 255]
         self.music_volume: int = 255
@@ -85,14 +86,14 @@ class OpenJazzGenerator(Generator):
             return
 
         try:
-            with open(filename, "rb") as file:
+            with filename.open("rb") as file:
                 # Read version
                 data = file.read(1)
                 if not data:
                     eslog.warning("Empty config file, creating default configuration")
                     self.create_default_config(filename)
                     return
-                
+
                 self.version = struct.unpack("B", data)[0]
                 eslog.debug(f"Loading configuration version: {self.version}")
 
@@ -130,7 +131,7 @@ class OpenJazzGenerator(Generator):
                 name_bytes = file.read(STRING_LENGTH)
                 name_bytes = [struct.unpack("B", file.read(1))[0] for _ in range(STRING_LENGTH)]
                 self.character_name = "".join(chr(b) for b in name_bytes if b != 0).strip()
-                
+
                 # Colors
                 self.character_colors = []
                 for _ in range(4):
@@ -153,106 +154,106 @@ class OpenJazzGenerator(Generator):
             eslog.info("Creating new default configuration")
             self.create_default_config(filename)
 
-    def create_default_config(self, filename):
+    def create_default_config(self, filename: Path):
         eslog.info("Creating default configuration file")
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        
+        mkdir_if_not_exists(filename.parent)
+
         try:
-            with open(filename, "wb") as file:
+            with filename.open("wb") as file:
                 # Version
                 file.write(struct.pack("B", self.version))
-                
+
                 # Video settings
                 file.write(struct.pack("<H", self.video_width))
                 file.write(struct.pack("<H", self.video_height))
                 video_opts = (self.fullscreen) | (self.video_scale << 1)
                 file.write(struct.pack("B", video_opts))
-                
+
                 # Controls - Keys
                 for key in self.controls_keys:
                     file.write(struct.pack("<I", key))
-                
+
                 # Default buttons
                 for button in self.controls_buttons:
                     file.write(struct.pack("<I", button))
-                
+
                 # Default axes
                 for x, y in self.controls_axes:
                     file.write(struct.pack("<I", x))  # Axis X
                     file.write(struct.pack("<I", y))  # Axis Y
-                
+
                 # Default hats
                 for id, value in self.controls_hats:
                     file.write(struct.pack("<I", id))  # Hat ID
                     file.write(struct.pack("<I", value))  # Hat value
-                
+
                 # Character name
                 name_bytes = self.character_name.encode('utf-8')[:STRING_LENGTH]
                 name_bytes = name_bytes.ljust(STRING_LENGTH, b'\x00')
                 file.write(name_bytes)
-                
+
                 # Colours
                 for color in self.character_colors:
                     file.write(struct.pack("B", color))
-                
+
                 # Volume
                 file.write(struct.pack("B", self.music_volume))
                 file.write(struct.pack("B", self.sound_volume))
-                
+
                 # Gameplay options
                 gameplay_opts = (self.many_birds) | (self.leave_unneeded << 1) | \
                                 (self.slow_motion << 2) | (not self.scale2x << 3)
                 file.write(struct.pack("B", gameplay_opts))
-                
+
         except Exception as e:
             eslog.error(f"Error creating default configuration: {e}")
 
     def save(self, filename=_CONFIG):
         eslog.info("Saving configuration")
         try:
-            with open(filename, "wb") as file:
+            with filename.open("wb") as file:
                 # Version
                 file.write(struct.pack("B", self.version))
-                
+
                 # Video settings
                 file.write(struct.pack("<H", self.video_width))
                 file.write(struct.pack("<H", self.video_height))
                 video_opts = (self.fullscreen) | (self.video_scale << 1)
                 file.write(struct.pack("B", video_opts))
-                
+
                 # Controls
                 for key in self.controls_keys:
                     file.write(struct.pack("<I", key))
-                
+
                 for button in self.controls_buttons:
                     file.write(struct.pack("<I", button))
-                
+
                 for axis_x, axis_y in self.controls_axes:
                     file.write(struct.pack("<I", axis_x))
                     file.write(struct.pack("<I", axis_y))
-                
+
                 for hat_id, hat_value in self.controls_hats:
                     file.write(struct.pack("<I", hat_id))
                     file.write(struct.pack("<I", hat_value))
-                
+
                 # Character name
                 name_bytes = self.character_name.encode('utf-8')[:STRING_LENGTH]
                 name_bytes = name_bytes.ljust(STRING_LENGTH, b'\x00')
                 file.write(name_bytes)
-                
+
                 # Colors
                 for color in self.character_colors:
                     file.write(struct.pack("B", color))
-                
+
                 # Volume
                 file.write(struct.pack("B", self.music_volume))
                 file.write(struct.pack("B", self.sound_volume))
-                
+
                 # Gameplay options
                 gameplay_opts = (self.many_birds) | (self.leave_unneeded << 1) | \
                               (self.slow_motion << 2) | (not self.scale2x << 3)
                 file.write(struct.pack("B", gameplay_opts))
-                
+
         except Exception as e:
             eslog.error(f"Error saving configuration: {e}")
 
@@ -317,9 +318,9 @@ class OpenJazzGenerator(Generator):
                         elif input.name == 'start':
                             self.controls_buttons[11] = int(input.id)
                 eslog.info(f"Configured Controls - Buttons: {self.controls_buttons}")
-                
+
             nplayer += 1
-        
+
         # User configuration
         if system.isOptSet("jazz_resolution"):
             resolution = system.config["jazz_resolution"]
@@ -332,7 +333,7 @@ class OpenJazzGenerator(Generator):
 
         # Save the changes
         self.save()
-        
+
         # Attempt to change directory to the game's assets
         try:
             os.chdir(ROMS / "openjazz")
