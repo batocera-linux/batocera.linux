@@ -1,19 +1,94 @@
 {
     "actions_player1": [
-	{
+        {
             "trigger": ["hotkey", "start"],
             "type": "key",
-            "target": [ "KEY_ESC" ]
-	},
-	{
-            "trigger": ["l2"],
+            "target": "KEY_ESC",
+            "description": "Exit the emulator"
+        },
+        {
+            "trigger": "start",
             "type": "key",
-            "target": [ "KEY_LEFTSHIFT" ]
-	},
-	{
-            "trigger": ["r2"],
+            "target": "KEY_1",
+            "description": "Start"
+        },
+        {
+            "trigger": "select",
             "type": "key",
-            "target": [ "KEY_RIGHTSHIFT" ]
-	}
+            "target": "KEY_5",
+            "description": "Coin"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_LEFTSHIFT",
+            "description": "Left Flipper"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_RIGHTSHIFT",
+            "description": "Right Flipper"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_LEFTSHIFT",
+            "description": "Left Flipper"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_RIGHTSHIFT",
+            "description": "Right Flipper"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Plunger"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_V",
+            "description": "Change Camera Angle"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "Forward Nudge"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_Z",
+            "description": "Left Nudge"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_SLASH",
+            "description": "Right Nudge"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_T",
+            "description": "Mech Tilt"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_LEFTCTRL",
+            "description": "Left Manga Save"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_RIGHTCTRL",
+            "description": "Right Manga Save"
+        }
     ]
 }
