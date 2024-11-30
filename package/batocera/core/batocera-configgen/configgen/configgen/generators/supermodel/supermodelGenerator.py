@@ -107,6 +107,12 @@ class SupermodelGenerator(Generator):
 
         return Command.Command(array=commandArray, env={"SDL_VIDEODRIVER":"x11"})
 
+    def getInGameRatio(self, config, gameResolution, rom):
+        if 'm3_wideScreen' in config and config["m3_wideScreen"] == "1":
+            return 16 / 9
+        else:
+            return 4 / 3
+
 def copy_nvram_files():
     sourceDir = SUPERMODEL_SHARE / "NVRAM"
     targetDir = SUPERMODEL_SAVES / "NVRAM"
