@@ -39,15 +39,24 @@ class Vita3kGenerator(Generator):
                 if item.name not in ['data', 'lang', 'shaders-builtin']:
                     if item.is_dir():
                         shutil.move(item, vitaSaves)
-
+        
         # Create the config.yml file if it doesn't exist
+        mkdir_if_not_exists(vitaConfig)
+
         vita3kymlconfig = {}
         if vitaConfigFile.is_file():
             with vitaConfigFile.open('r') as stream:
-                vita3kymlconfig, indent, block_seq_indent = ruamel.yaml.util.load_yaml_guess_indent(stream)
-
-        if vita3kymlconfig is None:
+                result = ruamel.yaml.util.load_yaml_guess_indent(stream)
+                if result is not None:
+                    vita3kymlconfig, indent, block_seq_indent = result
+                else:
+                    vita3kymlconfig = {}
+                    indent = 2
+                    block_seq_indent = 0
+        else:
             vita3kymlconfig = {}
+            indent = 2
+            block_seq_indent = 0
 
         # ensure the correct path is set
         vita3kymlconfig["pref-path"] = f"{vitaSaves!s}"
