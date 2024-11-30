@@ -49,6 +49,7 @@ We have migrated to a more modern WINE runnder, using WINE-TKG.
 - Hibernate option
 - Jaguar CD system
 - ES: Initial trackball/spinner collections
+- Wireguard VPN tools for RK3326 boards
 ### Fixed
 - Steam loading on a NAS drive
 - ScummVM forcing English which can prevent some non-english games from starting

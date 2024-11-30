@@ -214,7 +214,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 													# Kernel < 5.6 backwards compatibility and not boards which already had it backported
 	select BR2_PACKAGE_WIREGUARD_TOOLS           if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 && \
 	                                                !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
-	                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && \
 	                                                !BR2_PACKAGE_BATOCERA_TARGET_S9GEN4 && \
 													!BR2_PACKAGE_BATOCERA_TARGET_RK3128
 													# WireGuard VPN support (match kernel compatibility)
