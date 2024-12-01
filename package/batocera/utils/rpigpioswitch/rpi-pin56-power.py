@@ -2,7 +2,6 @@
 
 import gpiod
 import subprocess
-import signal
 import time
 
 # Pin Configuration
@@ -12,13 +11,17 @@ SHUTDOWN_PIN = 3  # Pin 5 in BCM mode
 def init_gpio():
     try:
         chip = gpiod.Chip(GPIO_CHIP)
-        shutdown_button = chip.get_line(SHUTDOWN_PIN)
+        
+        shutdown_lines = chip.get_lines([SHUTDOWN_PIN])
 
-        shutdown_button.request(
-            consumer='shutdown',
-            type=gpiod.LINE_REQ_EV_FALLING_EDGE,
-            flags=gpiod.LINE_REQ_FLAG_PULL_UP
+        shutdown_lines.request(
+            consumers=['shutdown'],
+            types=[gpiod.LINE_REQ_EV_FALLING_EDGE],
+            flags=[gpiod.LINE_REQ_FLAG_PULL_UP]
         )
+        
+        shutdown_button = shutdown_lines[0]
+        
         return chip, shutdown_button
     except Exception as e:
         print(f"Failed to initialize GPIO: {e}")

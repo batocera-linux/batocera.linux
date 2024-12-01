@@ -15,21 +15,26 @@ def init_gpio():
     try:
         chip = gpiod.Chip(POWER_CHIP)
         
-        power_button = chip.get_line(POWER_PIN)
-        reset_button = chip.get_line(RESET_PIN)
-        led = chip.get_line(LED_PIN)
+        # Use get_lines with all pins
+        gpio_lines = chip.get_lines([POWER_PIN, RESET_PIN, LED_PIN])
 
-        power_button.request(
-            consumer='power', 
-            type=gpiod.LINE_REQ_EV_FALLING_EDGE, 
-            flags=gpiod.LINE_REQ_FLAG_PULL_UP
+        # Request lines with configuration
+        gpio_lines.request(
+            consumers=['power', 'reset', 'led'],
+            types=[
+                gpiod.LINE_REQ_EV_FALLING_EDGE,  # power
+                gpiod.LINE_REQ_EV_FALLING_EDGE,  # reset
+                gpiod.LINE_REQ_DIR_OUT           # led
+            ],
+            flags=[
+                gpiod.LINE_REQ_FLAG_PULL_UP,  # power
+                gpiod.LINE_REQ_FLAG_PULL_UP,  # reset
+                0                             # led
+            ]
         )
-        reset_button.request(
-            consumer='reset', 
-            type=gpiod.LINE_REQ_EV_FALLING_EDGE, 
-            flags=gpiod.LINE_REQ_FLAG_PULL_UP
-        )
-        led.request(consumer='led', type=gpiod.LINE_REQ_DIR_OUT)
+        
+        # Unpack the lines
+        power_button, reset_button, led = gpio_lines
         
         led.set_value(1)  # Turn on LED
         
@@ -72,7 +77,6 @@ def watch_gpio_events():
                 power_button.event_read()
                 handle_shutdown()
                 blinkLED(led)
-            
     
     except Exception as e:
         print(f"Error watching GPIO events: {e}")

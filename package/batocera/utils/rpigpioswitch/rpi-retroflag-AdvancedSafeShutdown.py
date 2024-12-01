@@ -3,7 +3,7 @@
 import gpiod
 from gpiod.line import Edge, Direction, Value
 import os
-import time
+from datetime import timedelta
 import subprocess
 
 # Pin Configuration
@@ -64,22 +64,28 @@ def watch_gpio_events():
         with gpiod.request_lines(
             POWER_CHIP,
             config={
-                tuple([POWER_PIN, RESET_PIN]): gpiod.LineSettings(
-                    edge_detection=Edge.FALLING
+                POWER_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.FALLING,
+                    debounce_period=timedelta(milliseconds=1000)
+
+                ),
+                RESET_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.RISING,
+                    debounce_period=timedelta(milliseconds=50)
                 )
             },
         ) as request:
             print("GPIO event monitoring started")
-            while True:
-                for event in request.read_edge_events():
-                    handle_gpio_event(event.line_offset)
+            for event in request.read_edge_events():
+                handle_gpio_event(event.line_offset)
     except Exception as e:
         print(f"Error watching GPIO events: {e}")
         exit(1)
 
 def main():
     init_gpio()
-    watch_gpio_events()
+    while True:
+        watch_gpio_events()
 
 if __name__ == "__main__":
     main()
