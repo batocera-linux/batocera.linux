@@ -62,6 +62,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
 - Hotkey handling for Flycast
 - M.U.G.E.N controllers
 - Libretro-FBNeo crosshairs for light guns now showing
+- Fixed multicast DNS
 ### Changed / Improved
 - Splash screen now disabled by default
 - Added bezel & sinden border support for the RPi5 with Model 3 games
