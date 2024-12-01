@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import gpiod
 import subprocess
 import time
@@ -15,30 +14,34 @@ def init_gpio():
     try:
         chip = gpiod.Chip(GPIO_CHIP)
         
-        power_button = chip.get_line(POWER_PIN)
-        reset_button = chip.get_line(RESET_PIN)
-        led = chip.get_line(LED_PIN)
-        power_enable = chip.get_line(POWER_EN_PIN)
-
-        # Request lines
-        power_button.request(
-            consumer="power_button",
-            type=gpiod.LINE_REQ_EV_FALLING_EDGE,
-            flags=gpiod.LINE_REQ_FLAG_PULL_UP
+        # Use get_lines method for version 2.2.0
+        lines = chip.get_lines([POWER_PIN, RESET_PIN, LED_PIN, POWER_EN_PIN])
+        
+        # Request lines with configuration
+        lines.request(
+            consumers=["power_button", "reset_button", "led", "power_enable"],
+            types=[
+                gpiod.LINE_REQ_EV_FALLING_EDGE,  # power_button
+                gpiod.LINE_REQ_EV_FALLING_EDGE,  # reset_button
+                gpiod.LINE_REQ_DIR_OUT,          # led
+                gpiod.LINE_REQ_DIR_OUT           # power_enable
+            ],
+            flags=[
+                gpiod.LINE_REQ_FLAG_PULL_UP,  # power_button
+                gpiod.LINE_REQ_FLAG_PULL_UP,  # reset_button
+                0,                            # led
+                0                             # power_enable
+            ]
         )
-        reset_button.request(
-            consumer="reset_button",
-            type=gpiod.LINE_REQ_EV_FALLING_EDGE,
-            flags=gpiod.LINE_REQ_FLAG_PULL_UP
-        )
-        led.request(consumer="led", type=gpiod.LINE_REQ_DIR_OUT)
-        power_enable.request(consumer="power_enable", type=gpiod.LINE_REQ_DIR_OUT)
-
+        
+        # Separate the lines after requesting
+        power_button, reset_button, led, power_enable = lines
+        
         # Set initial states
         led.set_value(1)  # LED off (active low)
         power_enable.set_value(1)  # Power enable high
-
-        return power_button, reset_button, led
+        
+        return power_button, reset_button, led, chip
     except Exception as e:
         print(f"Failed to initialize GPIO: {e}")
         exit(1)
@@ -77,12 +80,16 @@ def handle_reset(reset_button):
         print(f"Error in handle_reset: {e}")
 
 def main():
-    power_button, reset_button, led = init_gpio()
+    power_button, reset_button, led, chip = init_gpio()
     
-    # Run handlers (no need for multiprocessing; they are independent loops)
-    handle_poweroff(power_button)  # Power off handler
-    handle_led_blink(power_button, led)  # LED blink handler
-    handle_reset(reset_button)  # Reset handler
+    try:
+        # Run handlers (no need for multiprocessing; they are independent loops)
+        handle_poweroff(power_button)  # Power off handler
+        handle_led_blink(power_button, led)  # LED blink handler
+        handle_reset(reset_button)  # Reset handler
+    finally:
+        # Properly close the chip to release resources
+        chip.close()
 
 if __name__ == "__main__":
     main()

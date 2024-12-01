@@ -3,7 +3,7 @@
 #Copyright 2017 Michael Kirsch
 #https://github.com/MichaelKirsch
 #Added to BATOCERA 12.05.2020
-# Moved to use python-gpiod by dmanlfc - 01.12.2024
+#Moved to use python-gpiod by dmanlfc - 01.12.2024
 
 try:
     import time
@@ -18,38 +18,63 @@ class SNES:
     def __init__(self):
 
         #GPIOs
-
-        self.led_pin=7
-        self.fan_pin=8
-        self.reset_pin=3
-        self.power_pin=5
-        self.check_pin=10
+        self.led_pin = 7
+        self.fan_pin = 8
+        self.reset_pin = 3
+        self.power_pin = 5
+        self.check_pin = 10
 
         #vars
-
         self.fan_hysteresis = 20
         self.fan_starttemp = 60
         self.debounce_time = 0.1
 
         #path
-
         self.temp_command = 'vcgencmd measure_temp'
 
         #Set the GPIOs
-
         self.chip = gpiod.Chip('gpiochip0')  # Access the GPIO chip
-        self.led = self.chip.get_line(self.led_pin)  # LED Output
-        self.fan = self.chip.get_line(self.fan_pin)  # FAN Output
-        self.reset = self.chip.get_line(self.reset_pin)
-        self.power = self.chip.get_line(self.power_pin)  # set pin as input
-        self.check = self.chip.get_line(self.check_pin)
+        
+        # Use get_lines for multiple pin configuration
+        self.gpio_lines = self.chip.get_lines([
+            self.led_pin, 
+            self.fan_pin, 
+            self.reset_pin, 
+            self.power_pin, 
+            self.check_pin
+        ])
 
-        # Setup the GPIO lines
-        self.led.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_OUT)
-        self.fan.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_OUT)
-        self.reset.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN, default=gpiod.LINE_REQ_PUD_UP)
-        self.power.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
-        self.check.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN, default=gpiod.LINE_REQ_PUD_UP)
+        # Request lines with appropriate configurations
+        self.gpio_lines.request(
+            consumers=[
+                "SNES_LED", 
+                "SNES_FAN", 
+                "SNES_RESET", 
+                "SNES_POWER", 
+                "SNES_CHECK"
+            ],
+            types=[
+                gpiod.LINE_REQ_DIR_OUT,      # LED
+                gpiod.LINE_REQ_DIR_OUT,      # FAN
+                gpiod.LINE_REQ_DIR_IN,       # RESET
+                gpiod.LINE_REQ_DIR_IN,       # POWER
+                gpiod.LINE_REQ_DIR_IN        # CHECK
+            ],
+            flags=[
+                0,                           # LED
+                0,                           # FAN
+                gpiod.LINE_REQ_FLAG_PULL_UP, # RESET
+                0,                           # POWER
+                gpiod.LINE_REQ_FLAG_PULL_UP  # CHECK
+            ]
+        )
+
+        # Unpack the lines for easier access
+        (self.led, 
+         self.fan, 
+         self.reset, 
+         self.power, 
+         self.check) = self.gpio_lines
 
         #PWM for the fan
         self.pwm = 0
@@ -57,7 +82,7 @@ class SNES:
     def power_interrupt(self, channel):
         time.sleep(self.debounce_time)  # debounce
         if self.power.get_value() == 1 and self.check.get_value() == 0:  # shutdown function if the power switch is toggled
-            self.led(0)  # led and fan off
+            self.led.set_value(0)  # led and fan off
             os.system("shutdown -h now")
 
     def reset_interrupt(self, channel):
@@ -87,9 +112,9 @@ class SNES:
 
     def blink(self,amount,interval): #blink the led
         for x in range(amount):
-            self.led(1)
+            self.led.set_value(1)
             time.sleep(interval)
-            self.led(0)
+            self.led.set_value(0)
             time.sleep(interval)
 
     def check_fan(self):
@@ -97,22 +122,23 @@ class SNES:
 
     def attach_interrupts(self):
         if self.check.get_value() == 0:  # check if there is a PCB and if so attach the interrupts
-            self.check.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)  # if not, the interrupt gets attached
             if self.power.get_value() == 1: # when the system gets started in the on position, it gets shut down
                 os.system("shutdown -h now")
             else:
-                self.led(1)
-                self.reset.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
-                self.power.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
+                self.led.set_value(1)
+
         else:       # no PCB attached, so let's exit
             self.chip.close()
             exit()
 
-snes = SNES()
+def main():
+    snes = SNES()
+    snes.attach_interrupts()
 
-snes.attach_interrupts()
+    while True:
+        time.sleep(5)
+        snes.led.set_value(1)
+        snes.check_fan()
 
-while True:
-    time.sleep(5)
-    snes.led(1)
-    snes.check_fan()
+if __name__ == "__main__":
+    main()

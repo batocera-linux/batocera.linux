@@ -11,8 +11,10 @@ POWER_EN_PIN = 27  # GPIO 27 in BCM mode
 def init_gpio():
     try:
         chip = gpiod.Chip(GPIO_CHIP)
-        power_button = chip.get_line(POWER_PIN)
-        power_en = chip.get_line(POWER_EN_PIN)
+        lines = chip.get_lines([POWER_PIN, POWER_EN_PIN])
+        
+        power_button = lines[POWER_PIN]
+        power_en = lines[POWER_EN_PIN]
 
         power_button.request(
             consumer="power_button",
