@@ -163,8 +163,8 @@ class MugenGenerator(Generator):
         with settings_path.open("w", encoding="utf-8-sig") as f:
             f.writelines(new_config)
         
-        # Foce use of virtual desktop
-        subprocess.run(['/usr/bin/batocera-settings-set', 'mugen.virtual_desktop', '1'], check=True)
+        # Don't use of virtual desktop - fixes handhelds with rotated displays
+        subprocess.run(['/usr/bin/batocera-settings-set', 'mugen.virtual_desktop', '0'], check=True)
 
         environment={}
 
