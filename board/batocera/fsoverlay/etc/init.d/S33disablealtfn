@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if test "$1" != "start"; then
+    exit 0
+fi
+
 # keycode  59 = F1               F13              Console_13      
 #	alt	keycode  59 = Console_1       # disable these lines
 #	control	alt	keycode  59 = Console_1  
