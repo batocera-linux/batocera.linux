@@ -30,6 +30,7 @@
 #v2.8 - add Argon One RPi5 - @lbrpdx
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
 #v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
+#v3.1 - fixed some Retroflag models Pi3/Pi4, debounced gpioded AdvancedSafeShutdown @lala
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -373,6 +374,16 @@ function retroflag_start()
                 mount -o remount, rw /boot
                 echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
                 echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+            fi
+        ;;
+        bcm2837)
+            # PI3 needs to set PowerEN manually high
+            # gpioset chipnumber pin=value
+            gpioset --drive=open-source 0 4=1
+            if ! grep -q "^dtoverlay=Retroflag_pw_io.dtbo" "/boot/config.txt"; then
+                mount -o remount, rw /boot
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+                echo "dtoverlay=Retroflag_pw_io.dtbo" >> "/boot/config.txt"
             fi
         ;;
     esac
