@@ -4,12 +4,15 @@
 # for supported AMD island cards only 
 # function can be turned off using batocera-boot.conf
 
-# try to create the log dir
+if test "$1" != "start"; then
+    exit 0
+fi
+
+# Setup the log file
 mkdir -p "/userdata/system/logs"
 log="/userdata/system/logs/amd.log"
 
-if grep -qE "^[ ]*amdgpu[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
-then
+if grep -qE "^[ ]*amdgpu[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf; then
   echo "Detecting AMD or Radeon GPU." > "$log"
   gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
   if [[ -n $gpu_name ]]; then
@@ -25,7 +28,7 @@ then
       echo "options amdgpu cik_support=1" >> /var/run/amd/modprobe/amdgpu.conf
       echo "options radeon si_support=0" > /var/run/amd/modprobe/radeon.conf
       echo "options radeon cik_support=0" >> /var/run/amd/modprobe/radeon.conf
-      # load amdgpu module
+      # Load amdgpu module
       modprobe amdgpu
     else
       # Logging
