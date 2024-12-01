@@ -38,7 +38,6 @@ double click kills the current emulator and returns to
 EmulationStation menu)
 """
 import smbus
-import RPi.GPIO as GPIO
 import gpiod
 from gpiod.line import Edge
 import os
