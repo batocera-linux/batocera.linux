@@ -1,13 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #Copyright 2017 Michael Kirsch
 #https://github.com/MichaelKirsch
 #Added to BATOCERA 12.05.2020
+# Moved to use python-gpiod by dmanlfc - 01.12.2024
 
 try:
     import time
     import os
-    import RPi.GPIO as GPIO
+    import gpiod
     import subprocess
 except ImportError:
     raise ImportError('spidev or gpio not installed')
@@ -36,49 +37,53 @@ class SNES:
 
         #Set the GPIOs
 
-        GPIO.setmode(GPIO.BOARD)  # Use the same layout as the pins
-        GPIO.setwarnings(False)
-        GPIO.setup(self.led_pin, GPIO.OUT)  # LED Output
-        GPIO.setup(self.fan_pin, GPIO.OUT)  # FAN Output
-        GPIO.setup(self.power_pin, GPIO.IN)  # set pin as input
-        GPIO.setup(self.reset_pin, GPIO.IN,
-                   pull_up_down=GPIO.PUD_UP)  # set pin as input and switch on internal pull up resistor
-        GPIO.setup(self.check_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        self.pwm = GPIO.PWM(self.fan_pin, 50)  #PWM for the fan
-        self.pwm.start(0)
+        self.chip = gpiod.Chip('gpiochip0')  # Access the GPIO chip
+        self.led = self.chip.get_line(self.led_pin)  # LED Output
+        self.fan = self.chip.get_line(self.fan_pin)  # FAN Output
+        self.reset = self.chip.get_line(self.reset_pin)
+        self.power = self.chip.get_line(self.power_pin)  # set pin as input
+        self.check = self.chip.get_line(self.check_pin)
 
+        # Setup the GPIO lines
+        self.led.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_OUT)
+        self.fan.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_OUT)
+        self.reset.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN, default=gpiod.LINE_REQ_PUD_UP)
+        self.power.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
+        self.check.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN, default=gpiod.LINE_REQ_PUD_UP)
+
+        #PWM for the fan
+        self.pwm = 0
 
     def power_interrupt(self, channel):
         time.sleep(self.debounce_time)  # debounce
-        if GPIO.input(self.power_pin) == GPIO.HIGH and GPIO.input(
-                self.check_pin) == GPIO.LOW:  # shutdown function if the powerswitch is toggled
+        if self.power.get_value() == 1 and self.check.get_value() == 0:  # shutdown function if the power switch is toggled
             self.led(0)  # led and fan off
             os.system("shutdown -h now")
 
     def reset_interrupt(self, channel):
-        if GPIO.input(self.reset_pin) == GPIO.LOW:  # reset function
+        if self.reset.get_value() == 0:  # reset function
             time.sleep(self.debounce_time)  # debounce time
-            while GPIO.input(self.reset_pin) == GPIO.LOW:  # while the button is hold the counter counts up
+            while self.reset.get_value() == 0:  # while the button is held the counter counts up
                 self.blink(15, 0.1)
                 os.system("reboot")
 
     def pcb_interrupt(self, channel):
-        GPIO.cleanup()  # when the pcb is pulled clean all the used GPIO pins
+        self.chip.close()  # when the pcb is pulled, clean all the used GPIO pins
 
-    def temp(self):     #returns the gpu temoperature
+    def temp(self):     #returns the gpu temperature
         res = os.popen(self.temp_command).readline()
         return float((res.replace("temp=", "").replace("'C\n", "")))
 
     def pwm_fancontrol(self,hysteresis, starttemp, temp):
         perc = 100.0 * ((temp - (starttemp - hysteresis)) / (starttemp - (starttemp - hysteresis)))
         perc=min(max(perc, 0.0), 100.0)
-        self.pwm.ChangeDutyCycle(float(perc))
+        self.pwm = perc
 
-    def led(self,status):  #toggle the led on of off
+    def led(self,status):  #toggle the led on or off
         if status == 0:       #the led is inverted
-            GPIO.output(self.led_pin, GPIO.LOW)
+            self.led.set_value(0)
         if status == 1:
-            GPIO.output(self.led_pin, GPIO.HIGH)
+            self.led.set_value(1)
 
     def blink(self,amount,interval): #blink the led
         for x in range(amount):
@@ -91,16 +96,16 @@ class SNES:
         self.pwm_fancontrol(self.fan_hysteresis,self.fan_starttemp,self.temp())  # fan starts at 60 degrees and has a 5 degree hysteresis
 
     def attach_interrupts(self):
-        if GPIO.input(self.check_pin) == GPIO.LOW:  # check if there is an pcb and if so attach the interrupts
-            GPIO.add_event_detect(self.check_pin, GPIO.RISING,callback=self.pcb_interrupt)  # if not the interrupt gets attached
-            if GPIO.input(self.power_pin) == GPIO.HIGH: #when the system gets startet in the on position it gets shutdown
+        if self.check.get_value() == 0:  # check if there is a PCB and if so attach the interrupts
+            self.check.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)  # if not, the interrupt gets attached
+            if self.power.get_value() == 1: # when the system gets started in the on position, it gets shut down
                 os.system("shutdown -h now")
             else:
                 self.led(1)
-                GPIO.add_event_detect(self.reset_pin, GPIO.FALLING, callback=self.reset_interrupt)
-                GPIO.add_event_detect(self.power_pin, GPIO.RISING, callback=self.power_interrupt)
-        else:       #no pcb attached so lets exit
-            GPIO.cleanup()
+                self.reset.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
+                self.power.request(consumer="SNES", type=gpiod.LINE_REQ_DIR_IN)
+        else:       # no PCB attached, so let's exit
+            self.chip.close()
             exit()
 
 snes = SNES()

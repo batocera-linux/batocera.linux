@@ -29,6 +29,7 @@
 #v2.7 - add Dockerpi Powerboard support - @dmanlfc
 #v2.8 - add Argon One RPi5 - @lbrpdx
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
+#v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
