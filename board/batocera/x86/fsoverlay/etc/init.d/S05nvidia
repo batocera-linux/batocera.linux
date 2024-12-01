@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if test "$1" != "start"; then
+    exit 0
+fi
+
 mkdir -p "/var/log"
 log="/var/log/nvidia.log"
 
