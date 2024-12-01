@@ -86,6 +86,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
   - Cannonball
   - Play!
 - ES: Improved Network Play (NetPlay) sequence for supported systems
+- Migrated RPi GPIO python library from RPi.GPIO to gpiod.
 ### Updated
 - RetroArch to v1.19.1
   - Libretro-81 to June 29, 2024 build
