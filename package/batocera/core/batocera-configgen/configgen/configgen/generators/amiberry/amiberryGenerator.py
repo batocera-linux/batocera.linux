@@ -216,7 +216,7 @@ class AmiberryGenerator(Generator):
         # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
         if rom_path.stem[-1:].isdigit():
             # path without the number
-            fileprefix = rom_path.stem[-1:]
+            fileprefix = rom_path.stem[:-1]
 
             # special case for 0 while numerotation can start at 1
             zero_file = rom_path.with_name(f"{fileprefix}0{rom_path.suffix}")
