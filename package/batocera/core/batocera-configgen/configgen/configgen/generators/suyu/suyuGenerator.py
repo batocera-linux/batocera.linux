@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import logging
-import subprocess
 from os import environ
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
@@ -167,34 +167,23 @@ class SuyuGenerator(Generator):
             suyuConfig.set("Renderer", "backend", system.config["suyu_backend"])
             # Add vulkan logic
             if system.config["suyu_backend"] == "1":
-                try:
-                    have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-                    if have_vulkan == "true":
-                        eslog.debug("Vulkan driver is available on the system.")
-                        try:
-                            have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                            if have_discrete == "true":
-                                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                                try:
-                                    discrete_index = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteIndex"], text=True).strip()
-                                    if discrete_index != "":
-                                        eslog.debug("Using Discrete GPU Index: {} for Suyu".format(discrete_index))
-                                        suyuConfig.set("Renderer", "vulkan_device", discrete_index)
-                                        suyuConfig.set("Renderer", "vulkan_device\\default", "true")
-                                    else:
-                                        eslog.debug("Couldn't get discrete GPU index, using default")
-                                        suyuConfig.set("Renderer", "vulkan_device", "0")
-                                        suyuConfig.set("Renderer", "vulkan_device\\default", "true")
-                                except subprocess.CalledProcessError:
-                                    eslog.debug("Error getting discrete GPU index")
-                            else:
-                                eslog.debug("Discrete GPU is not available on the system. Using default.")
-                                suyuConfig.set("Renderer", "vulkan_device", "0")
-                                suyuConfig.set("Renderer", "vulkan_device\\default", "true")
-                        except subprocess.CalledProcessError:
-                            eslog.debug("Error checking for discrete GPU.")
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error executing batocera-vulkan script.")
+                if vulkan.is_available():
+                    eslog.debug("Vulkan driver is available on the system.")
+                    if vulkan.has_discrete_gpu():
+                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                        discrete_index = vulkan.get_discrete_gpu_index()
+                        if discrete_index:
+                            eslog.debug("Using Discrete GPU Index: {} for Suyu".format(discrete_index))
+                            suyuConfig.set("Renderer", "vulkan_device", discrete_index)
+                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+                        else:
+                            eslog.debug("Couldn't get discrete GPU index, using default")
+                            suyuConfig.set("Renderer", "vulkan_device", "0")
+                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+                    else:
+                        eslog.debug("Discrete GPU is not available on the system. Using default.")
+                        suyuConfig.set("Renderer", "vulkan_device", "0")
+                        suyuConfig.set("Renderer", "vulkan_device\\default", "true")
         else:
             suyuConfig.set("Renderer", "backend", "0")
         suyuConfig.set("Renderer", "backend\\default", "false")

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, cast
 from ... import controllersConfig
 from ...batoceraPaths import DEFAULTS_DIR, ES_SETTINGS, SAVES, mkdir_if_not_exists
 from ...settings.unixSettings import UnixSettings
-from ...utils import bezels as bezelsUtil, videoMode as videoMode
+from ...utils import bezels as bezelsUtil, videoMode as videoMode, vulkan
 from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
@@ -144,29 +144,18 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
     # Set Vulkan
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
-        try:
-            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-            if have_vulkan == "true":
-                eslog.debug("Vulkan driver is available on the system.")
-                try:
-                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                    if have_discrete == "true":
-                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                        try:
-                            discrete_index = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteIndex"], text=True).strip()
-                            if discrete_index != "":
-                                eslog.debug("Using Discrete GPU Index: {} for RetroArch".format(discrete_index))
-                                retroarchConfig["vulkan_gpu_index"] = '"' + discrete_index + '"'
-                            else:
-                                eslog.debug("Couldn't get discrete GPU index")
-                        except subprocess.CalledProcessError:
-                            eslog.debug("Error getting discrete GPU index")
-                    else:
-                        eslog.debug("Discrete GPU is not available on the system. Using default.")
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error checking for discrete GPU.")
-        except subprocess.CalledProcessError:
-            eslog.debug("Error executing batocera-vulkan script.")
+        if vulkan.is_available():
+            eslog.debug("Vulkan driver is available on the system.")
+            if vulkan.has_discrete_gpu():
+                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_index = vulkan.get_discrete_gpu_index()
+                if discrete_index:
+                    eslog.debug("Using Discrete GPU Index: {} for RetroArch".format(discrete_index))
+                    retroarchConfig["vulkan_gpu_index"] = f'"{discrete_index}"'
+                else:
+                    eslog.debug("Couldn't get discrete GPU index")
+            else:
+                eslog.debug("Discrete GPU is not available on the system. Using default.")
 
     retroarchConfig['audio_driver'] = '"pulse"'
     if (system.isOptSet("audio_driver")):
