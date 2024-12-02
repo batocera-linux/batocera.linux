@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-
 from typing import TYPE_CHECKING
 
 from ... import controllersConfig
@@ -2457,7 +2456,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
         else:
             coreSettings.save('fbneo-frameskip', '"0"')
         # Crosshair (Lightgun)
-        if system.isOptSet('fbneo-lightgun-hide-crosshair'):
+        if system.isOptSet('fbneo-lightgun-crosshair-emulation'):
             coreSettings.save('fbneo-lightgun-crosshair-emulation', '"' + system.config['fbneo-lightgun-crosshair-emulation'] + '"')
         else:
             if controllersConfig.gunsNeedCrosses(guns):
