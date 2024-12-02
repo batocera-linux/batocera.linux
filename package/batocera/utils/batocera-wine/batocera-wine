@@ -121,7 +121,7 @@ usage() {
 }
 
 waitWineServer() {
-    while pgrep "${WINESERVER}"
+    while pgrep -f "${WINESERVER}"
     do
 	echo "waiting wineserver" >&2
 	sleep 1
