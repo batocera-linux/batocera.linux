@@ -399,28 +399,28 @@ class BigPEmuGenerator(Generator):
         # Scripts config
         if "ScriptsEnabled" not in config["BigPEmuConfig"]:
             config["BigPEmuConfig"]["ScriptsEnabled"] = []
-        else:
-            # User selections for ScriptsEnabled options (individual scripts)
-            scripts = [
-                ("avp", "bigpemu_avp"),
-                ("avp_mp", "bigpemu_avp_mp"),
-                ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
-                ("checkered_flag", "bigpemu_checkered_flag"),
-                ("cybermorph", "bigpemu_cybermorph"),
-                ("iron_soldier", "bigpemu_iron_soldier"),
-                ("mc3d_vr", "bigpemu_mc3d_vr"),
-                ("t2k_rotary", "bigpemu_t2k_rotary"),
-                ("wolf3d", "bigpemu_wolf3d")
-            ]
-            for script_name, script_option in scripts:
-                if system.isOptSet(script_option):
-                    # Check if the value is "1" to enable the script
-                    if system.config[script_option] == "1":
-                        config["BigPEmuConfig"]["ScriptsEnabled"].append(script_name)
-            
-            # Remove duplicates just in case (as a precaution)
-            config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
-        
+
+        # User selections for ScriptsEnabled options (individual scripts)
+        scripts = [
+            ("avp", "bigpemu_avp"),
+            ("avp_mp", "bigpemu_avp_mp"),
+            ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
+            ("checkered_flag", "bigpemu_checkered_flag"),
+            ("cybermorph", "bigpemu_cybermorph"),
+            ("iron_soldier", "bigpemu_iron_soldier"),
+            ("mc3d_vr", "bigpemu_mc3d_vr"),
+            ("t2k_rotary", "bigpemu_t2k_rotary"),
+            ("wolf3d", "bigpemu_wolf3d")
+        ]
+
+        config["BigPEmuConfig"]["ScriptsEnabled"] += [
+            script_name for script_name, script_option in scripts
+            if system.isOptSet(script_option) and system.config[script_option] == "1"
+        ]
+
+        # Remove duplicates just in case (as a precaution)
+        config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
+
         # Screen filter
         if system.isOptSet("bigpemu_screenfilter"):
             config["BigPEmuConfig"]["Video"]["ScreenFilter"] = system.config["bigpemu_screenfilter"]
