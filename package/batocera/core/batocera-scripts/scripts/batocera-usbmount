@@ -12,19 +12,16 @@
 # 3) for some others actions, such as /dev/mmcblk0p3 fs growing, it must not be mounted
 
 # if share is already mounted, just use the basic usbmount
-if test -e /var/run/batocera.share.mounted
-then
+if test -e /var/run/batocera.share.mounted; then
     /usr/share/usbmount/usbmount "$1"
     exit $?
 fi
 
 # if not, delay the automounting by saving the context for later
 # it will be played by the S11share script after the mounting of /userdata
-if mkdir -p /var/run/usbmount.delay
-then
-    N=$(ls /var/run/usbmount.delay | wc -l)
-    N=$((N+1))
+if mkdir -p /var/run/usbmount.delay; then
+    TIMESTAMP=$(date +%s%N) # Generate timestamp to use as a unique identifier
     set |
-	grep -E '^DEVNAME=|^ID_FS_USAGE=|^ID_FS_UUID=|^ID_FS_TYPE=|^ID_FS_LABEL=' |
-	sed -e s+'^'+'export '+ > /var/run/usbmount.delay/"$N"."$1"
+        grep -E '^DEVNAME=|^ID_FS_USAGE=|^ID_FS_UUID=|^ID_FS_TYPE=|^ID_FS_LABEL=' |
+        sed -e s+'^'+'export '+ > /var/run/usbmount.delay/"$TIMESTAMP"."$1"
 fi
