@@ -508,6 +508,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
 - Restore missing /sbin/hwclock binary
 - Daphne symlink failing
 - Emulators failing if Vulkan API is selected and no Vulkan capable GPU is in the system. We now fallback to OpenGL where possible.
+- NVIDIA VDPAU and VAAPI hardware acceleration failed to function correctly on hybrid graphics laptops when the NVIDIA GPU is not the primary. Particularly impacting Kodi.
 ### Changed
 - RPCS3 SPU cache enabled by default.
 - Changes made to Mupen64plus joystick sensitivity and deadzone.
