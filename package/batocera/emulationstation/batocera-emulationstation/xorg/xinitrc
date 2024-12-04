@@ -45,6 +45,8 @@ if [ -f "/var/tmp/nvidia.prime" ]; then
             export __NV_PRIME_RENDER_OFFLOAD=$provider_number
             export __VK_LAYER_NV_optimus=NVIDIA_only
             export __GLX_VENDOR_LIBRARY_NAME=nvidia
+            export VDPAU_DRIVER=nvidia
+            export LIBVA_DRIVER_NAME=nvidia
             echo "Nvidia Prime provider = $provider_number" >> "$nvidia_log"
         fi
     else
