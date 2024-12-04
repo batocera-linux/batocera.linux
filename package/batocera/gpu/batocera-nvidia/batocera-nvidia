@@ -25,12 +25,15 @@ if [ "${MODE}" = "auto" ]; then
             jq_output=$(jq -r --arg pcidevid "$PCIDEVID" '
                 .chips[] |
                 select(.devid == $pcidevid) |
-                "\(.name)|\(.legacybranch // "null")|\(.features | contains(["kernelopen"]) | tostring)"' /usr/share/nvidia/supported-gpus.json)
+                "\(.name)|\(.legacybranch // "null")|\(.features | contains(["kernelopen"]) | tostring)"' /usr/share/nvidia/supported-gpus.json | head -n 1)
             
             # Extract the card name and determine the driver mode
             CARDNAME=$(echo "$jq_output" | cut -d'|' -f1)
+            echo "Card name: $CARDNAME" >> $log
             LEGACYBRANCH=$(echo "$jq_output" | cut -d'|' -f2)
+            echo "Use lagacy branch ? $LEGACYBRANCH" >> $log
             KERNELOPEN=$(echo "$jq_output" | cut -d'|' -f3)
+            echo "Use open kernel ? $LEGACYBRANCH" >> $log
 
             if [ -z "$CARDNAME" ]; then
                 # If CARDNAME is empty or null, log it and set MODE to "open"
