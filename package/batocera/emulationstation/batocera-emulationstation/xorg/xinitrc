@@ -3,8 +3,12 @@
 mkdir -p "/var/log"
 mkdir -p "/userdata/system/logs"
 
+if [ -f "/var/log/nvidia.log" ]; then
+    cp -f /var/log/nvidia.log /userdata/system/logs/nvidia.log
+fi
+
 display_log="/userdata/system/logs/display.log"
-nvidia_log="/var/log/nvidia.log"
+nvidia_log="/userdata/system/logs/nvidia.log"
 amd_log="/userdata/system/logs/amd.log"
 
 # hide mouse cursor

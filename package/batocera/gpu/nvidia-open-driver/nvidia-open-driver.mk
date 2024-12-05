@@ -93,8 +93,10 @@ define NVIDIA_OPEN_DRIVER_INSTALL_GL_DEV
 	$(SED) 's:__GENERATED_BY__:Buildroot:' $(STAGING_DIR)/usr/lib/libGL.la
 	$(SED) 's:__LIBGL_PATH__:/usr/lib:' $(STAGING_DIR)/usr/lib/libGL.la
 	$(SED) 's:-L[^[:space:]]\+::' $(STAGING_DIR)/usr/lib/libGL.la
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/gl.pc $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/egl.pc $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/gl.pc \
+	    $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/egl.pc \
+	    $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
 endef
 
 # Those libraries are 'private' libraries requiring an agreement with
@@ -167,7 +169,8 @@ endif # BR2_PACKAGE_NVIDIA_OPEN_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA_OPEN_DRIVER_EXTRACT_CMDS
-	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA_OPEN_DRIVER_DL_DIR)/$(NVIDIA_OPEN_DRIVER_SOURCE) \
+	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) \
+	    $(NVIDIA_OPEN_DRIVER_DL_DIR)/$(NVIDIA_OPEN_DRIVER_SOURCE) \
 		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
@@ -251,7 +254,7 @@ define NVIDIA_OPEN_DRIVER_INSTALL_TARGET_CMDS
 	$(call NVIDIA_OPEN_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
 	$(call NVIDIA_OPEN_DRIVER_INSTALL_32,$(TARGET_DIR))
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_drv.so \
-			$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia_production_drv.so
+		$(TARGET_DIR)/usr/lib/xorg/modules/drivers/nvidia_production_drv.so
 	$(foreach p,$(NVIDIA_OPEN_DRIVER_PROGS), \
 		$(INSTALL) -D -m 0755 $(@D)/$(p) \
 			$(TARGET_DIR)/usr/bin/$(p)
@@ -293,15 +296,20 @@ endef
 
 define NVIDIA_OPEN_DRIVER_VULKANJSON_X86_64
     mkdir -p $(TARGET_DIR)/usr/share/vulkan/nvidia
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.x86_64.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.x86_64.json
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
+	    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.x86_64.json
+    sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ \
+	    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.x86_64.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
+	    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
+    sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ \
+	    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
 endef
 
 define NVIDIA_OPEN_DRIVER_VULKANJSON_X86
     mkdir -p $(TARGET_DIR)/usr/share/vulkan/nvidia
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
+	    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia_production_icd.i686.json
 endef
 
 ifeq ($(BR2_x86_64),y)
