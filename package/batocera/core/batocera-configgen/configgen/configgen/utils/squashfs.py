@@ -67,10 +67,10 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
         eslog.debug(f"squashfs_rom: cleaning up {mount_point}")
 
         # unmount
-        return_code = subprocess.call(["unmount", mount_point])
+        return_code = subprocess.call(["umount", mount_point])
         if return_code != 0:
             eslog.debug(f"squashfs_rom: unmounting {mount_point} failed")
-            raise Exception(f"unable to umount the file {mount_point}")
+            raise Exception(f"unable to unmount the file {mount_point}")
 
         # cleaning the empty directory
         mount_point.rmdir()
