@@ -29,7 +29,7 @@
 #v2.7 - add Dockerpi Powerboard support - @dmanlfc
 #v2.8 - add Argon One RPi5 - @lbrpdx
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
-#v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
+#v3.0 - migrate RPi scripts from RPi.GPIO to gpiod, migrate OnOffShim to gpiomon @lala @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -196,17 +196,16 @@ function onoffshim_start()
 
 
     # This is Button command (GPIO17 default)
-    echo $1 > /sys/class/gpio/export
-    echo in > /sys/class/gpio/gpio$1/direction
-
-    power=$(cat /sys/class/gpio/gpio$1/value)
+    power=$(gpioget 0 $1)
+    echo $$ > /tmp/powerswitch.pid
     [ $power -eq 0 ] && switchtype=1 #Sliding Switch
     [ $power -eq 1 ] && switchtype=0 #Momentary push button
 
     until [ $power -eq $switchtype ]; do
-        power=$(cat /sys/class/gpio/gpio$1/value)
-        sleep 1
-    done
+        gpiomon --num-events=1 -s 0 $1
+        sleep 0.1
+        power=$(gpioget 0 $1)
+done
 
     # Switch off
     if [ "$?" = "0" ]; then
@@ -217,8 +216,9 @@ function onoffshim_start()
 
 function onoffshim_stop()
 {
-    # Cleanup GPIO init, default Button command (GPIO 17)
-    echo "$1" > /sys/class/gpio/unexport
+    # Cleanup script and gpiomon processes
+    pid=$(cat /tmp/powerswitch.pid)
+    kill $(pgrep -P $pid) $pid &> /dev/null
 }
 
 function onoffshim_config()
@@ -374,6 +374,16 @@ function retroflag_start()
                 echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
                 echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
             fi
+        ;;
+        bcm2837)
+            #Pi3 (and possible others needs init for GPIO4 (=Pin 7)
+            #So we do some inline python here with old GPIO lib
+            /usr/bin/python - <<-_EOF_
+		import RPi.GPIO as GPIO
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(4, GPIO.OUT)
+		GPIO.output(4, GPIO.HIGH)
+	_EOF_
         ;;
     esac
     [ $CONF -eq 1 ] && return
