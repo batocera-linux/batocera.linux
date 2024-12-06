@@ -42,6 +42,21 @@ class DrasticGenerator(Generator):
         f = drastic_conf.open("w", encoding="ascii")
 
         #Getting Values from ES
+        if system.isOptSet("drastic_scaling") and system.config["drastic_scaling"] == 'nearest':
+            subprocess.run(f"xxd {drastic_bin} > drastic.txt", shell=True)
+            if subprocess.run("grep -q '6c69 6e65 6172' drastic.txt", shell=True).returncode == 0:
+                # Swap to nearest neighbor
+                subprocess.run("sed -i 's/6c69 6e65 6172/3000 0000 0000/g' drastic.txt", shell=True)
+                subprocess.run(f"xxd -r drastic.txt > {drastic_bin}", shell=True)
+                os.remove("drastic.txt")
+        else:
+            subprocess.run(f"xxd {drastic_bin} > drastic.txt", shell=True)
+            if subprocess.run("grep -q '3000 0000 0000' drastic.txt", shell=True).returncode == 0:
+                # Swap to bilinear
+                subprocess.run("sed -i 's/3000 0000 0000/6c69 6e65 6172/g' drastic.txt", shell=True)
+                subprocess.run(f"xxd -r drastic.txt > {drastic_bin}", shell=True)
+                os.remove("drastic.txt")
+
         if system.isOptSet("drastic_hires") and system.config["drastic_hires"] == '1':
             esvaluedrastichires = 1
         else:
