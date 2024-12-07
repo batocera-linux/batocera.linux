@@ -1932,6 +1932,13 @@ libretro:
                     "Keyboard":  3
                     "Mouse":     2
                     "Light Gun": 4
+            flycast_offscreen_reload:
+                group:       LIGHT GUN
+                prompt:      OFF-SCREEN RELOAD BUTTON
+                description: Set gun button 2 to reload.
+                choices:
+                    "Off":     0
+                    "On":      1
       systems:
             atomiswave:
                 cfeatures:
@@ -8148,13 +8155,6 @@ flycast:
             "Green"     :   -1073479933
             "White"     :   -1056964609
             "Disabled"  :   0
-    flycast_offscreen_reload:
-      group:       LIGHT GUN
-      prompt:      OFF-SCREEN RELOAD BUTTON
-      description: Set gun button 2 to reload.
-      choices:
-        "Off":     0
-        "On":      1
 
   systems:
     dreamcast:
