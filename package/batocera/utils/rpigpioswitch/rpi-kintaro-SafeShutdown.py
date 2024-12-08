@@ -6,10 +6,13 @@
 #Moved to use python-gpiod by dmanlfc - 01.12.2024
 
 try:
-    import time
+    from datetime import timedelta
     import os
     import gpiod
+    from gpiod.line import Edge, Direction, Value
     import subprocess
+    import threading
+    import time
 except ImportError:
     raise ImportError('spidev or gpio not installed')
 
@@ -33,67 +36,50 @@ class SNES:
         self.temp_command = 'vcgencmd measure_temp'
 
         #Set the GPIOs
-        self.chip = gpiod.Chip('gpiochip0')  # Access the GPIO chip
-        
-        # Use get_lines for multiple pin configuration
-        self.gpio_lines = self.chip.get_lines([
-            self.led_pin, 
-            self.fan_pin, 
-            self.reset_pin, 
-            self.power_pin, 
-            self.check_pin
-        ])
+        self.init_gpio()
 
-        # Request lines with appropriate configurations
-        self.gpio_lines.request(
-            consumers=[
-                "SNES_LED", 
-                "SNES_FAN", 
-                "SNES_RESET", 
-                "SNES_POWER", 
-                "SNES_CHECK"
-            ],
-            types=[
-                gpiod.LINE_REQ_DIR_OUT,      # LED
-                gpiod.LINE_REQ_DIR_OUT,      # FAN
-                gpiod.LINE_REQ_DIR_IN,       # RESET
-                gpiod.LINE_REQ_DIR_IN,       # POWER
-                gpiod.LINE_REQ_DIR_IN        # CHECK
-            ],
-            flags=[
-                0,                           # LED
-                0,                           # FAN
-                gpiod.LINE_REQ_FLAG_PULL_UP, # RESET
-                0,                           # POWER
-                gpiod.LINE_REQ_FLAG_PULL_UP  # CHECK
-            ]
-        )
+    def init_gpio(self):
+        try:
+            gpiod.request_lines('/dev/gpiochip0',
+                config={
+                    self.led_pin: gpiod.LineSettings(
+                        direction=Direction.OUTPUT, 
+                        output_value=Value.ACTIVE
+                    ),
+                    self.fan_pin: gpiod.LineSettings(
+                        direction=Direction.OUTPUT, 
+                        output_value=Value.INACTIVE
+                    ),
+                    self.check_pin: gpiod.LineSettings(
+                        direction=Direction.INPUT,
+                        output_value=Value.ACTIVE
+                    )
+                }
+            )
+            print("GPIO initialized successfully.")
+        except Exception as e:
+            print(f"Failed to initialize GPIO: {e}")
+            exit(1)
 
-        # Unpack the lines for easier access
-        (self.led, 
-         self.fan, 
-         self.reset, 
-         self.power, 
-         self.check) = self.gpio_lines
+    def handle_gpio_event(self, event_line_offset):
+        if event_line_offset == self.reset_pin:
+            print("RESET button pressed")
+            self.reset_function()
+        elif event_line_offset == self.power_pin:
+            print("POWER button pressed")
+            self.power_function()
 
-        #PWM for the fan
-        self.pwm = 0
+    def reset_function(self):
+        time.sleep(self.debounce_time)  # debounce time
+        while True:
+            self.blink(15, 0.1)
+            subprocess.run("reboot", shell=True)
 
-    def power_interrupt(self, channel):
+    def power_function(self):
         time.sleep(self.debounce_time)  # debounce
-        if self.power.get_value() == 1 and self.check.get_value() == 0:  # shutdown function if the power switch is toggled
+        if self.check.get_value() == 0:  # shutdown function if the power switch is toggled
             self.led.set_value(0)  # led and fan off
-            os.system("shutdown -h now")
-
-    def reset_interrupt(self, channel):
-        if self.reset.get_value() == 0:  # reset function
-            time.sleep(self.debounce_time)  # debounce time
-            while self.reset.get_value() == 0:  # while the button is held the counter counts up
-                self.blink(15, 0.1)
-                os.system("reboot")
-
-    def pcb_interrupt(self, channel):
-        self.chip.close()  # when the pcb is pulled, clean all the used GPIO pins
+            subprocess.run("shutdown -h now", shell=True)
 
     def temp(self):     #returns the gpu temperature
         res = os.popen(self.temp_command).readline()
@@ -103,12 +89,6 @@ class SNES:
         perc = 100.0 * ((temp - (starttemp - hysteresis)) / (starttemp - (starttemp - hysteresis)))
         perc=min(max(perc, 0.0), 100.0)
         self.pwm = perc
-
-    def led(self,status):  #toggle the led on or off
-        if status == 0:       #the led is inverted
-            self.led.set_value(0)
-        if status == 1:
-            self.led.set_value(1)
 
     def blink(self,amount,interval): #blink the led
         for x in range(amount):
@@ -120,25 +100,42 @@ class SNES:
     def check_fan(self):
         self.pwm_fancontrol(self.fan_hysteresis,self.fan_starttemp,self.temp())  # fan starts at 60 degrees and has a 5 degree hysteresis
 
-    def attach_interrupts(self):
-        if self.check.get_value() == 0:  # check if there is a PCB and if so attach the interrupts
-            if self.power.get_value() == 1: # when the system gets started in the on position, it gets shut down
-                os.system("shutdown -h now")
-            else:
-                self.led.set_value(1)
+    def check_fan_periodically(self):
+        while True:
+            self.check_fan()
+            time.sleep(5)
 
-        else:       # no PCB attached, so let's exit
-            self.chip.close()
-            exit()
+    def watch_gpio_events(self):
+        try:
+            with gpiod.request_lines(
+                '/dev/gpiochip0',
+                config={
+                    self.reset_pin: gpiod.LineSettings(
+                        edge_detection=Edge.RISING,
+                        debounce_period=timedelta(milliseconds=50)
+                    ),
+                    self.power_pin: gpiod.LineSettings(
+                        edge_detection=Edge.FALLING
+                    )
+                },
+            ) as request:
+                print("GPIO event monitoring started")
+                for event in request.read_edge_events():
+                    self.handle_gpio_event(event.line_offset)
+        except Exception as e:
+            print(f"Error watching GPIO events: {e}")
+            exit(1)
+
+    def start(self):
+        fan_thread = threading.Thread(target=self.check_fan_periodically)
+        fan_thread.daemon = True  # So that the thread dies when the main program exits
+        fan_thread.start()
+        while True:
+            self.watch_gpio_events()
 
 def main():
     snes = SNES()
-    snes.attach_interrupts()
-
-    while True:
-        time.sleep(5)
-        snes.led.set_value(1)
-        snes.check_fan()
+    snes.start()
 
 if __name__ == "__main__":
     main()

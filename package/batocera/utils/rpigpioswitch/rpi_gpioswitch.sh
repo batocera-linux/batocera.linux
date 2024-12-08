@@ -30,12 +30,12 @@
 #v2.8 - add Argon One RPi5 - @lbrpdx
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
 #v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
+#v3.1 - remove the RETROFLAG option in favor of RETROFLAG_ADV & add dtbo for retroflag cases - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
 powerdevices=(
-              RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
-              RETROFLAG_ADV "Advanced script for Retroflag housings" \
+              RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
               ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
               KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
@@ -366,12 +366,16 @@ function pin56_config()
 function retroflag_start()
 {
     #------ CONFIG SECTION ------
-    #Check if dtooverlay is setted in /boot/config -- Do this arch related!
+    #Check if dtoverlay is setted in /boot/config -- Do this arch related!
+    if ! grep -q "^dtoverlay=RetroFlag_pw_io.dtbo" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+        echo "dtoverlay=RetroFlag_pw_io.dtbo" >> "/boot/config.txt"
+    fi
     case $(cat /usr/share/batocera/batocera.arch) in
         bcm2711)
             if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
-                mount -o remount, rw /boot
-                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+                mount -o remount,rw /boot
                 echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
             fi
         ;;
@@ -379,7 +383,7 @@ function retroflag_start()
     [ $CONF -eq 1 ] && return
     #------ CONFIG SECTION ------
 
-    #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
+    #$1 = rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
     pid=$!
     echo "$pid" > "/tmp/$1.pid"
@@ -1023,11 +1027,11 @@ case "$CONFVALUE" in
     "PIN356ONOFFRESET")
         pin356_$1
     ;;
-    "RETROFLAG")
-        retroflag_$1 rpi-retroflag-SafeShutdown
-    ;;
     "RETROFLAG_GPI")
         retroflag_$1 rpi-retroflag-GPiCase
+    ;;
+    "RETROFLAG")
+        retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
     ;;
     "RETROFLAG_ADV")
         retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
