@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-import os
 import gpiod
+from gpiod.line import Edge, Direction, Value
+from datetime import timedelta
 import subprocess
 import time
 
@@ -13,77 +14,71 @@ LED_PIN = 4   # pin 7
 
 def init_gpio():
     try:
-        chip = gpiod.Chip(POWER_CHIP)
-        
-        # Use get_lines with all pins
-        gpio_lines = chip.get_lines([POWER_PIN, RESET_PIN, LED_PIN])
-
-        # Request lines with configuration
-        gpio_lines.request(
-            consumers=['power', 'reset', 'led'],
-            types=[
-                gpiod.LINE_REQ_EV_FALLING_EDGE,  # power
-                gpiod.LINE_REQ_EV_FALLING_EDGE,  # reset
-                gpiod.LINE_REQ_DIR_OUT           # led
-            ],
-            flags=[
-                gpiod.LINE_REQ_FLAG_PULL_UP,  # power
-                gpiod.LINE_REQ_FLAG_PULL_UP,  # reset
-                0                             # led
-            ]
+        gpiod.request_lines(POWER_CHIP,
+            config={
+                LED_PIN: gpiod.LineSettings(
+                    direction=Direction.OUTPUT, 
+                    output_value=Value.ACTIVE
+                )
+            }
         )
-        
-        # Unpack the lines
-        power_button, reset_button, led = gpio_lines
-        
-        led.set_value(1)  # Turn on LED
-        
-        return chip, power_button, reset_button, led
-    
+        print("GPIO initialized successfully.")
     except Exception as e:
         print(f"Failed to initialize GPIO: {e}")
         exit(1)
 
-def blinkLED(led):
-    while True:
-        led.set_value(0)
-        time.sleep(0.5)
-        led.set_value(1)
-        time.sleep(0.5)
-
-def handle_shutdown():
-    print('Shutting down Batocera')
-    subprocess.run('(sleep 2; shutdown -h now) &', shell=True)
-
-def handle_emulator_exit():
-    print('Exiting all Batocera emulators')
-    subprocess.run('batocera-es-swissknife --emukill', shell=True)
+def handle_gpio_event(event_line_offset):
+    if event_line_offset == RESET_PIN:
+        print("RESET button pressed")
+        try:
+            output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
+            output_rc = int(subprocess.check_output(['batocera-es-swissknife', '--emupid']))
+            
+            if output_rc:
+                subprocess.run("batocera-es-swissknife --emukill", shell=True, check=True)
+            elif output:
+                subprocess.run("batocera-es-swissknife --restart", shell=True, check=True)
+            else:
+                subprocess.run("shutdown -r now", shell=True, check=True)
+        except Exception as e:
+            print(f"Reset command error: {e}")
+    
+    elif event_line_offset == POWER_PIN:
+        print("POWER button pressed")
+        try:
+            output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
+            if output:
+                subprocess.run("batocera-es-swissknife --shutdown", shell=True, check=True)
+            else:
+                subprocess.run("sleep 2; shutdown -h now", shell=True, check=True)
+        except Exception as e:
+            print(f"Poweroff command error: {e}")
 
 def watch_gpio_events():
     try:
-        chip, power_button, reset_button, led = init_gpio()
-        
-        print("GPIO event monitoring started")
-        
-        while True:
-            reset_event = reset_button.event_wait(sec=1)
-            power_event = power_button.event_wait(sec=1)
-            
-            if reset_event:
-                reset_button.event_read()
-                handle_emulator_exit()
-            
-            if power_event:
-                power_button.event_read()
-                handle_shutdown()
-                blinkLED(led)
-    
+        with gpiod.request_lines(
+            POWER_CHIP,
+            config={
+                POWER_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.FALLING
+                ),
+                RESET_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.RISING,
+                    debounce_period=timedelta(milliseconds=50)
+                )
+            },
+        ) as request:
+            print("GPIO event monitoring started")
+            for event in request.read_edge_events():
+                handle_gpio_event(event.line_offset)
     except Exception as e:
         print(f"Error watching GPIO events: {e}")
         exit(1)
 
 def main():
-    watch_gpio_events()
+    init_gpio()
+    while True:
+        watch_gpio_events()
 
 if __name__ == "__main__":
     main()
