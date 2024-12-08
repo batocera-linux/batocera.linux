@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import gpiod
-from gpiod.line import Edge, Direction, Value
+from gpiod.line import Bias, Edge, Direction, Value
 import os
 from datetime import timedelta
 import subprocess
@@ -66,11 +66,12 @@ def watch_gpio_events():
             config={
                 POWER_PIN: gpiod.LineSettings(
                     edge_detection=Edge.FALLING,
+                    bias=Bias.PULL_UP,
                     debounce_period=timedelta(milliseconds=1000)
-
                 ),
                 RESET_PIN: gpiod.LineSettings(
                     edge_detection=Edge.RISING,
+                    bias=Bias.PULL_UP,
                     debounce_period=timedelta(milliseconds=50)
                 )
             },

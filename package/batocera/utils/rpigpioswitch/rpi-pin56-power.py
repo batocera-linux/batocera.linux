@@ -1,31 +1,13 @@
 #!/usr/bin/python3
 
 import gpiod
+from gpiod.line import Edge
 import subprocess
-import time
+from datetime import timedelta
 
 # Pin Configuration
 GPIO_CHIP = "/dev/gpiochip0"
 SHUTDOWN_PIN = 3  # Pin 5 in BCM mode
-
-def init_gpio():
-    try:
-        chip = gpiod.Chip(GPIO_CHIP)
-        
-        shutdown_lines = chip.get_lines([SHUTDOWN_PIN])
-
-        shutdown_lines.request(
-            consumers=['shutdown'],
-            types=[gpiod.LINE_REQ_EV_FALLING_EDGE],
-            flags=[gpiod.LINE_REQ_FLAG_PULL_UP]
-        )
-        
-        shutdown_button = shutdown_lines[0]
-        
-        return chip, shutdown_button
-    except Exception as e:
-        print(f"Failed to initialize GPIO: {e}")
-        exit(1)
 
 def handle_shutdown():
     print('Shutting down Batocera')
@@ -33,20 +15,25 @@ def handle_shutdown():
 
 def watch_gpio_events():
     try:
-        chip, shutdown_button = init_gpio()
-        print("GPIO event monitoring started")
-
-        while True:
-            if shutdown_button.event_wait(sec=1):
-                shutdown_button.event_read()
+        with gpiod.request_lines(
+            GPIO_CHIP,
+            config={
+                SHUTDOWN_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.FALLING,
+                    debounce_period=timedelta(milliseconds=50)
+                )
+            },
+        ) as request:
+            print("GPIO event monitoring started")
+            for event in request.read_edge_events():
                 handle_shutdown()
-            
     except Exception as e:
         print(f"Error watching GPIO events: {e}")
         exit(1)
 
 def main():
-    watch_gpio_events()
+    while True:
+        watch_gpio_events()
 
 if __name__ == "__main__":
     main()
