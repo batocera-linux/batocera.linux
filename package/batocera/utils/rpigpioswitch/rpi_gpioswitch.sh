@@ -372,14 +372,6 @@ function retroflag_start()
         echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
         echo "dtoverlay=RetroFlag_pw_io.dtbo" >> "/boot/config.txt"
     fi
-    case $(cat /usr/share/batocera/batocera.arch) in
-        bcm2711)
-            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
-                mount -o remount,rw /boot
-                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
-            fi
-        ;;
-    esac
     [ $CONF -eq 1 ] && return
     #------ CONFIG SECTION ------
 
