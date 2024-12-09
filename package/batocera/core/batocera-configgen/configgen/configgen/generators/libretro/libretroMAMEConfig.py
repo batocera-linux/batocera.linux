@@ -158,7 +158,10 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
 
             # Apple II
             if system.name == "apple2":
-                commandLine += ["-sl7", "cffa202"]
+                rom_extension = rom.suffix.lower()
+                # only add SD/IDE control if provided a hard drive image
+                if rom_extension in {".hdv", ".2mg", ".chd", ".iso", ".bin", ".cue"}:
+                    commandLine += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
                         eslog.debug("Joyport is only compatible with Apple II +")
@@ -428,8 +431,8 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         if system.getOptBoolean("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME (except TI99)
-    if not system.name == "ti99":
+    # Share plugins & samples with standalone MAME (except TI99 and apple2+/e/ee)
+    if system.name not in {"ti99", "apple2", "applep", "apple2e", "apple2ee"}:
         commandLine += [ "-pluginspath", f"/usr/bin/mame/plugins/;{SAVES / 'mame' / 'plugins'}" ]
         commandLine += [ "-homepath" , SAVES / 'mame' / 'plugins' ]
         commandLine += [ "-samplepath", BIOS / "mame" / "samples" ]
