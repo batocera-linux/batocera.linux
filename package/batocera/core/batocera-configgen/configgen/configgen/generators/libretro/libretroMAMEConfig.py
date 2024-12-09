@@ -73,7 +73,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             commandLine += [ 'vis', '-cdrom', f'"{rom}"' ]
         else:
             commandLine += [ romDrivername ]
-        commandLine += [ '-cfg_directory', cfgPath ]
+        commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
         commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/mame/;/userdata/bios/"' ]
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
@@ -128,7 +128,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 cfgPath = SAVES / "mame" / "mame" / "cfg"
             mkdir_if_not_exists(cfgPath)
             commandLine += [ romDrivername ]
-            commandLine += [ '-cfg_directory', cfgPath ]
+            commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
             commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/"' ]
         else:
             # Command line for MESS consoles/computers
@@ -205,7 +205,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 else:
                     commandLine += [ romDrivername ]
                 commandLine += [ "-rompath", f'"{softDir};/userdata/bios/"' ]
-                commandLine += [ "-swpath", softDir ]
+                commandLine += [ "-swpath", f'"{softDir}"' ]
                 commandLine += [ "-verbose" ]
             else:
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
@@ -284,16 +284,20 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                         targetFolder = SAVES / 'mame' / system.name
                         targetDisk = targetFolder / f'{rom.stem}.fmtowns'
                     # Add elif statements here for other systems if enabled
+                    else:
+                        blankDisk = Path('/usr/share/mame/blank.default')
+                        targetFolder = SAVES / 'mame' / system.name
+                        targetDisk = targetFolder / f'{rom.stem}.default'
                     mkdir_if_not_exists(targetFolder)
                     if not targetDisk.exists():
                         shutil.copy2(blankDisk, targetDisk)
                     # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
-                        commandLine += [ '-flop', targetDisk ]
+                        commandLine += [ '-flop', f'"{targetDisk}"' ]
                     elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
-                        commandLine += [ '-flop1', targetDisk ]
+                        commandLine += [ '-flop1', f'"{targetDisk}"' ]
                     else:
-                        commandLine += [ '-flop2', targetDisk ]
+                        commandLine += [ '-flop2', f'"{targetDisk}"' ]
 
             # UI enable - for computer systems, the default sends all keys to the emulated system.
             # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
@@ -308,7 +312,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             if system.getOptBoolean("pergamecfg"):
                 cfgPath = CONFIGS / corePath / messSysName[messMode] / rom.name
             mkdir_if_not_exists(cfgPath)
-            commandLine += [ '-cfg_directory', cfgPath ]
+            commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
 
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
@@ -388,7 +392,9 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                             if row[0].casefold() == rom.stem.casefold():
                                 autoRunCmd = row[1] + "\\n"
                                 autoRunDelay = 3
-            commandLine += [ '-inipath', SAVES / 'mame' / 'mame' / 'ini' ]
+
+            inipath = SAVES / 'mame' / 'mame' / 'ini'
+            commandLine += [ '-inipath', f'"{inipath}"' ]
             if autoRunCmd != "":
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
@@ -404,9 +410,9 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     lr_mess_dsk.parent.mkdir(parents=True)
                     shutil.copy2('/usr/share/mame/blank.dsk', lr_mess_dsk)
                 if system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2':
-                    commandLine += [ '-flop1', lr_mess_dsk ]
+                    commandLine += [ '-flop1', f'"{lr_mess_dsk}"' ]
                 else:
-                    commandLine += [ '-flop2', lr_mess_dsk ]
+                    commandLine += [ '-flop2', f'"{lr_mess_dsk}"' ]
 
     # Lightgun reload option
     if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
@@ -420,7 +426,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         else:
             artPath = f"/var/run/mame_artwork/;/usr/bin/mame/artwork/;{BIOS / 'lr-mame' / 'artwork'}"
         if not system.name == "ti99":
-            commandLine += [ '-artpath', artPath ]
+            commandLine += [ '-artpath', f'"{artPath}"' ]
 
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
@@ -432,12 +438,15 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             commandLine += [ "-artwork_crop" ]
 
     # Share plugins & samples with standalone MAME (except TI99 and apple2+/e/ee)
-    if system.name not in {"ti99", "apple2", "applep", "apple2e", "apple2ee"}:
-        commandLine += [ "-pluginspath", f"/usr/bin/mame/plugins/;{SAVES / 'mame' / 'plugins'}" ]
-        commandLine += [ "-homepath" , SAVES / 'mame' / 'plugins' ]
-        commandLine += [ "-samplepath", BIOS / "mame" / "samples" ]
-    mkdir_if_not_exists(SAVES / "mame" / "plugins")
-    mkdir_if_not_exists(BIOS / "mame" / "samples")
+    # FIXME: Not entirely sure why these paths cause parsing problems for apple2+/e/ee for retroarch
+    pluginspath = SAVES / 'mame' / 'plugins'
+    samplepath = BIOS / 'mame' / 'samples'
+    if not system.name in { "ti99", "apple2", "applep", "apple2e", "apple2ee" }:
+        commandLine += [ "-pluginspath", f'"/usr/bin/mame/plugins;{pluginspath}"' ]
+        commandLine += [ "-homepath", f'"{pluginspath}"' ]
+        commandLine += [ "-samplepath", f'"{samplepath}"' ]
+    mkdir_if_not_exists(pluginspath)
+    mkdir_if_not_exists(samplepath)
 
     # Delete old cmd files & prepare path
     cmdPath = Path("/var/run/cmdfiles")
