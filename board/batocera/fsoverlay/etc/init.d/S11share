@@ -335,7 +335,7 @@ then
     ${VGCHANGE} -ay
 fi
 
-luks_enabled="$(/usr/bin/batocera-settings-get luks.enabled)"
+luks_enabled="$(/usr/bin/batocera-settings-get -f "$SHARECONFFILE" luks.enabled)"
 if [ "${luks_enabled}" = "1" -o -z "${luks_enabled}" ]
 then
     prepareLUKS
