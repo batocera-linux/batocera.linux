@@ -904,6 +904,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         "snes9x"        : { "default" : { "device": 260,          "p2": 0, "p3": 1,
                                           "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" },
                                                              { "key": "type", "value": "justifier", "mapkey": "device_p3", "mapvalue": "772" },
+                                                             { "key": "type", "value": "macsrifle", "mapkey": "device", "mapvalue": "1028" },
                                                              { "key": "reversedbuttons", "value": "true", "mapcorekey": "snes9x_superscope_reverse_buttons", "mapcorevalue": "enabled" } ] } },
         "snes9x_next"   : { "default" : { "device": 260,          "p2": 0,
                                           "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ]} },
