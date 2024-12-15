@@ -14,10 +14,13 @@ case "$1" in
 
 	stop)
         emulationstation-standalone --stop-rebooting
-		killall openbox   2>/dev/null # for xorg
-		killall sway      2>/dev/null # for wayland
+		killall openbox          2>/dev/null # for xorg
+		killall sway             2>/dev/null # for wayland
+		killall touchegg         2>/dev/null
+
+		# Kill emulationstation and then wait at least 20 seconds for it to exit.
+		# The watchdog 'if' block must follow immediately, as it tests the exit code of the killall.
 		killall emulationstation 2>/dev/null
-		killall touchegg 2>/dev/null
 		if [ $? -eq 0 ]; then
 			sleep 20 &
 			watchdog=$!
