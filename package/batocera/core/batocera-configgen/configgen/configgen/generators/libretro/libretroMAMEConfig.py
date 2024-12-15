@@ -437,16 +437,13 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         if system.getOptBoolean("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME (except TI99 and apple2+/e/ee)
-    # FIXME: Not entirely sure why these paths cause parsing problems for apple2+/e/ee for retroarch
-    pluginspath = SAVES / 'mame' / 'plugins'
-    samplepath = BIOS / 'mame' / 'samples'
-    if not system.name in { "ti99", "apple2", "applep", "apple2e", "apple2ee" }:
-        commandLine += [ "-pluginspath", f'"/usr/bin/mame/plugins;{pluginspath}"' ]
-        commandLine += [ "-homepath", f'"{pluginspath}"' ]
-        commandLine += [ "-samplepath", f'"{samplepath}"' ]
-    mkdir_if_not_exists(pluginspath)
-    mkdir_if_not_exists(samplepath)
+    # Share plugins & samples with standalone MAME (except TI99)
+    if not system.name == "ti99":
+        commandLine += [ "-pluginspath", f"/usr/bin/mame/plugins/;{SAVES / 'mame' / 'plugins'}" ]
+        commandLine += [ "-homepath" , SAVES / 'mame' / 'plugins' ]
+        commandLine += [ "-samplepath", BIOS / "mame" / "samples" ]
+    mkdir_if_not_exists(SAVES / "mame" / "plugins")
+    mkdir_if_not_exists(BIOS / "mame" / "samples")
 
     # Delete old cmd files & prepare path
     cmdPath = Path("/var/run/cmdfiles")
