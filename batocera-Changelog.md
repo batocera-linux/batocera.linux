@@ -1,3 +1,16 @@
+# 2025/xx/xx - batocera.linux 42 - xxx
+### Special Notes
+### Hardware
+### Added
+### Fixed
+- Fix some problems in ES and Batocera with IPv6 networks
+- Fix ES behavior with usb network tethering
+- Fix handling of luks.enabled setting to allow disabling LUKS integration
+### Changed / Improved
+- Significantly improve ES shutdown time, especially with large and medium collections
+### Updated
+### System
+
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
 The Xenia Canary introduces GamerTags (user profiles).
