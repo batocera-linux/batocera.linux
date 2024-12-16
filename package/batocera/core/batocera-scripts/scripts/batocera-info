@@ -199,7 +199,7 @@ PREFSRC=$(ip -j route get 1.1.1.1 2>/dev/null | jq -r '.[].prefsrc')
 if [ -n "$PREFSRC" ]; then
     echo "Network IP Address: $PREFSRC"
 else
-    PREFSRC=$(ip -j route get 8.8.8.8 2>/dev/null | jq -r '.[].prefsrc')
+    PREFSRC=$(ip -j route get 1:: 2>/dev/null | jq -r '.[].prefsrc')
     if [ -n "$PREFSRC" ]; then
         echo "Network IP Address: $PREFSRC"
     fi
