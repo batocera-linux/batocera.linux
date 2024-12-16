@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Allow startup from a user session where WAYLAND_DISPLAY is set,
+# e.g. to restart via /etc/init.d/S31emulationstation start
+unset WAYLAND_DISPLAY
+
 # Log and configuration file paths
 LOG_FILE="/userdata/system/logs/display.log"
 SWAY_CONF_FILE="/var/run/sway-display.conf"
