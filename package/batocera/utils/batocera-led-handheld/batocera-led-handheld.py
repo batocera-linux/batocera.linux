@@ -40,7 +40,7 @@ from threading import Thread
 
 DEBUG = 0
 CHECK_INTERVAL  = 3  # seconds between two checks
-LED_CHANGE_TIME = 30 # seconds to prevent changes while entering the settings menu
+LED_CHANGE_TIME = 120 # seconds to prevent changes while entering the settings menu
 CONFIG_FILE='/userdata/system/configs/leds.conf'
 BLOCK_FILE='/var/run/led-handheld-block'
 
