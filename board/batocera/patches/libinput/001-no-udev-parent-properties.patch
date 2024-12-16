@@ -1,0 +1,24 @@
+diff --git a/src/evdev.c b/src/evdev.c
+index cd92067..e35ad1c 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -1699,7 +1699,7 @@ evdev_device_get_udev_tags(struct evdev_device *device,
+ 	enum evdev_device_udev_tags tags = 0;
+ 	int i;
+ 
+-	for (i = 0; i < 2 && udev_device; i++) {
++	//for (i = 0; i < 2 && udev_device; i++) {
+ 		unsigned j;
+ 		for (j = 0; j < ARRAY_LENGTH(evdev_udev_tag_matches); j++) {
+ 			const struct evdev_udev_tag_match match = evdev_udev_tag_matches[j];
+@@ -1708,8 +1708,8 @@ evdev_device_get_udev_tags(struct evdev_device *device,
+ 					    match.name))
+ 				tags |= match.tag;
+ 		}
+-		udev_device = udev_device_get_parent(udev_device);
+-	}
++		//udev_device = udev_device_get_parent(udev_device);
++	//}
+ 
+ 	return tags;
+ }
