@@ -124,7 +124,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
 - Amiberry to v5.7.4
 - BigPEmu to v115
 - C-Dogs SDL to 2.1.0
-- Cemu to v2.1
+- Cemu to v2.5
 - Citra to r608383e
 - Commander Genius to v3.5.1
 - Corsixth to v0.68.0
