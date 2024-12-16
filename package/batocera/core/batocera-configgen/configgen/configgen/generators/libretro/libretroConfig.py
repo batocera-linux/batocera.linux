@@ -82,16 +82,16 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 coreForceSlangShaders = { 'mupen64plus-next' }
 
 def connected_to_internet() -> bool:
-    # Try 1.1.1.1 first
-    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "1.1.1.1"]
+    # Try Cloudflare one.one.one.one first
+    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "one.one.one.one"]
     process = subprocess.Popen(cmd)
     process.wait()
     if process.returncode == 0:
         eslog.debug("Connected to the internet")
         return True
     else:
-        # Try 8.8.8.8 if 1.1.1.1 fails
-        cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "8.8.8.8"]
+        # Try dns.google if one.one.one.one fails
+        cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "dns.google"]
         process = subprocess.Popen(cmd)
         process.wait()
         if process.returncode == 0:
