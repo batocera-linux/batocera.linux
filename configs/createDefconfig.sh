@@ -18,6 +18,9 @@ FDEFCONFIG="${BNAME}_defconfig"
 > "${TMPL0}" || exit 1 # level 0
 > "${TMPL1}" || exit 1 # level 1 (includes of includes)
 
+# For untracked local changes
+touch -a "${CONFDIR}/batocera-board.local.common"
+
 grep -E 'include ' "${FBOARD}" | while read INC X
 do
     echo "# from file ${X}" >> "${TMPL0}"
