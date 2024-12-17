@@ -2,6 +2,7 @@
 ### Special Notes
 ### Hardware
 ### Added
+- Wireguard VPN for RK3326 boards
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
