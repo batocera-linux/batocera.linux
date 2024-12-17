@@ -347,6 +347,9 @@ class LibretroGenerator(Generator):
         if system.name == 'snes-msu1' or system.name == 'satellaview':
             if "squashfs" in str(rom_path) and rom_path.is_dir():
                 rom_path = next(itertools.chain(rom_path.glob('*.sfc'), rom_path.glob('*.smc')))
+        elif system.name == 'sgb-msu1':
+            if "squashfs" in str(rom_path) and rom_path.is_dir():
+                rom_path = next(itertools.chain(rom_path.glob('*.gb'), rom_path.glob('*.gbc')))
         elif system.name == 'msu-md':
             if "squashfs" in str(rom_path) and rom_path.is_dir():
                 rom_path = next(rom_path.glob('*.md'))
