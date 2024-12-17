@@ -20,7 +20,7 @@ class FlycastGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "flycast",
-            "keys": { 
+            "keys": {
                 "exit": "KEY_F7",
                 "menu": "KEY_TAB",
                 "fast_foward": "KEY_SPACE",
@@ -64,7 +64,7 @@ class FlycastGenerator(Generator):
             # Ensure controller(s) are on seperate Ports
             port = controller.player_number-1
             Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
-        
+
         # add the keyboard mappings for hotkeys
         flycastControllers.generateKeyboardConfig()
 
@@ -132,7 +132,7 @@ class FlycastGenerator(Generator):
             Config.set("config", "Dreamcast.Language", "1")
         # region
         if system.isOptSet("flycast_region"):
-            Config.set("config", "Dreamcast.Region", str(system.config["flycast_language"]))
+            Config.set("config", "Dreamcast.Region", str(system.config["flycast_region"]))
         else:
             Config.set("config", "Dreamcast.Region", "1")
         # save / load states
@@ -157,19 +157,19 @@ class FlycastGenerator(Generator):
         # Guns (WIP)
         # Guns crosshairs
         if system.isOptSet("flycast_lightgun1_crosshair"):
-            Config.set("config", "rend.CrossHairColor1", + str(system.config["flycast_lightgun1_crosshair"]))
+            Config.set("config", "rend.CrossHairColor1", str(system.config["flycast_lightgun1_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor1", "0")
         if system.isOptSet("flycast_lightgun2_crosshair"):
-            Config.set("config", "rend.CrossHairColor2", + str(system.config["flycast_lightgun2_crosshair"]))
+            Config.set("config", "rend.CrossHairColor2", str(system.config["flycast_lightgun2_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor2", "0")
         if system.isOptSet("flycast_lightgun3_crosshair"):
-            Config.set("config", "rend.CrossHairColor3", + str(system.config["flycast_lightgun3_crosshair"]))
+            Config.set("config", "rend.CrossHairColor3", str(system.config["flycast_lightgun3_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor3", "0")
         if system.isOptSet("flycast_lightgun4_crosshair"):
-            Config.set("config", "rend.CrossHairColor4", + str(system.config["flycast_lightgun4_crosshair"]))
+            Config.set("config", "rend.CrossHairColor4", str(system.config["flycast_lightgun4_crosshair"]))
         else:
             Config.set("config", "rend.CrossHairColor4", "0")
 
