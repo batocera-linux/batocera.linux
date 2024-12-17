@@ -141,6 +141,7 @@ wine_options() {
     HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
     HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
     ENABLE_NVAPI="$(get_setting enable_nvapi "${SYSTEM}" "${ROMGAMENAME}")"
+    ENABLE_HIDRAW="$(get_setting enable_hidraw "${SYSTEM}" "${ROMGAMENAME}")"
     DXVK_RESET_CACHE="$(get_setting dxvk_reset_cache "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_NTFS="$(get_setting wine_ntfs "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
@@ -177,6 +178,9 @@ wine_options() {
     [[ "${WINE_DEBUG}" = 1 ]] && unset VKD3D_SHADER_DEBUG
 
     export VKD3D_SHADER_CACHE_PATH="/userdata/system/cache"
+
+    export WINE_ENABLE_HIDRAW=0
+    [[ "${ENABLE_HIDRAW}" = 1 ]] && WINE_ENABLE_HIDRAW=1
 
     export WINE_FULLSCREEN_FSR=0
     [[ "${FSR}" = 1 ]] && unset WINE_FULLSCREEN_FSR
@@ -347,6 +351,18 @@ reg_install() {
         done
 
         mv "${USER_DIR}/regs" "${USER_DIR}/regs.bak" || return 1
+    fi
+
+    if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
+        if ! grep -q "\"DisableHidraw\"=dword:00000000" "${WINEPOINT}/system.reg"; then
+	    WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
+            waitWineServer
+        fi
+    else
+        if ! grep -q "\"DisableHidraw\"=dword:00000001" "${WINEPOINT}/system.reg"; then
+	    WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
+            waitWineServer
+        fi
     fi
 
     return 0
