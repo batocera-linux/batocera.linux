@@ -73,7 +73,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             commandLine += [ 'vis', '-cdrom', f'"{rom}"' ]
         else:
             commandLine += [ romDrivername ]
-        commandLine += [ '-cfg_directory', cfgPath ]
+        commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
         commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/mame/;/userdata/bios/"' ]
         pluginsToLoad = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
@@ -128,7 +128,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 cfgPath = SAVES / "mame" / "mame" / "cfg"
             mkdir_if_not_exists(cfgPath)
             commandLine += [ romDrivername ]
-            commandLine += [ '-cfg_directory', cfgPath ]
+            commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
             commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/"' ]
         else:
             # Command line for MESS consoles/computers
@@ -158,7 +158,10 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
 
             # Apple II
             if system.name == "apple2":
-                commandLine += ["-sl7", "cffa202"]
+                rom_extension = rom.suffix.lower()
+                # only add SD/IDE control if provided a hard drive image
+                if rom_extension in {".hdv", ".2mg", ".chd", ".iso", ".bin", ".cue"}:
+                    commandLine += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
                         eslog.debug("Joyport is only compatible with Apple II +")
@@ -202,7 +205,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 else:
                     commandLine += [ romDrivername ]
                 commandLine += [ "-rompath", f'"{softDir};/userdata/bios/"' ]
-                commandLine += [ "-swpath", softDir ]
+                commandLine += [ "-swpath", f'"{softDir}"' ]
                 commandLine += [ "-verbose" ]
             else:
                 # Alternate ROM type for systems with mutiple media (ie cassette & floppy)
@@ -281,16 +284,20 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                         targetFolder = SAVES / 'mame' / system.name
                         targetDisk = targetFolder / f'{rom.stem}.fmtowns'
                     # Add elif statements here for other systems if enabled
+                    else:
+                        blankDisk = Path('/usr/share/mame/blank.default')
+                        targetFolder = SAVES / 'mame' / system.name
+                        targetDisk = targetFolder / f'{rom.stem}.default'
                     mkdir_if_not_exists(targetFolder)
                     if not targetDisk.exists():
                         shutil.copy2(blankDisk, targetDisk)
                     # Add other single floppy systems to this if statement
                     if messModel == "fmtmarty":
-                        commandLine += [ '-flop', targetDisk ]
+                        commandLine += [ '-flop', f'"{targetDisk}"' ]
                     elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
-                        commandLine += [ '-flop1', targetDisk ]
+                        commandLine += [ '-flop1', f'"{targetDisk}"' ]
                     else:
-                        commandLine += [ '-flop2', targetDisk ]
+                        commandLine += [ '-flop2', f'"{targetDisk}"' ]
 
             # UI enable - for computer systems, the default sends all keys to the emulated system.
             # This will enable hotkeys, but some keys may pass through to MAME and not be usable in the emulated system.
@@ -305,7 +312,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             if system.getOptBoolean("pergamecfg"):
                 cfgPath = CONFIGS / corePath / messSysName[messMode] / rom.name
             mkdir_if_not_exists(cfgPath)
-            commandLine += [ '-cfg_directory', cfgPath ]
+            commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
 
             # Autostart via ini file
             # Init variables, delete old ini if it exists, prepare ini path
@@ -385,7 +392,9 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                             if row[0].casefold() == rom.stem.casefold():
                                 autoRunCmd = row[1] + "\\n"
                                 autoRunDelay = 3
-            commandLine += [ '-inipath', SAVES / 'mame' / 'mame' / 'ini' ]
+
+            inipath = SAVES / 'mame' / 'mame' / 'ini'
+            commandLine += [ '-inipath', f'"{inipath}"' ]
             if autoRunCmd != "":
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
@@ -401,9 +410,9 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     lr_mess_dsk.parent.mkdir(parents=True)
                     shutil.copy2('/usr/share/mame/blank.dsk', lr_mess_dsk)
                 if system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2':
-                    commandLine += [ '-flop1', lr_mess_dsk ]
+                    commandLine += [ '-flop1', f'"{lr_mess_dsk}"' ]
                 else:
-                    commandLine += [ '-flop2', lr_mess_dsk ]
+                    commandLine += [ '-flop2', f'"{lr_mess_dsk}"' ]
 
     # Lightgun reload option
     if system.isOptSet('offscreenreload') and system.getOptBoolean('offscreenreload'):
@@ -417,7 +426,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         else:
             artPath = f"/var/run/mame_artwork/;/usr/bin/mame/artwork/;{BIOS / 'lr-mame' / 'artwork'}"
         if not system.name == "ti99":
-            commandLine += [ '-artpath', artPath ]
+            commandLine += [ '-artpath', f'"{artPath}"' ]
 
     # Artwork crop - default to On for lr-mame
     # Exceptions for PDP-1 (status lights) and VGM Player (indicators)
