@@ -51,10 +51,10 @@ else
     COMPRESSION_TYPE_COMMAND=(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | $(HOST_DIR)/bin/lz4 -l > $(BINARIES_DIR)/initrd.lz4)
 endif
 
-ifeq ($(BR2_riscv),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_JH7110),y)
 define BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
 	mkdir -p $(INITRAMFS_DIR)
-	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/riscv/initrd/* $(INITRAMFS_DIR)/
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/starfive/jh7110/initrd/* $(INITRAMFS_DIR)/
 endef
 BATOCERA_INITRAMFS_PRE_INSTALL_TARGET_HOOKS += BATOCERA_INITRAMFS_RISCV_EARLY_FIRMWARE
 endif
