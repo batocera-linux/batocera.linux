@@ -37,7 +37,7 @@ trylock() {
 trylock
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "3AGAME 3A-3H Retro Shooter [1-4]$") # remove the joystick from the event cause it duplicates events
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
 ############
