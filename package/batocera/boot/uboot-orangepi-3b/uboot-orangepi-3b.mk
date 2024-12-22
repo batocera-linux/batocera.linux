@@ -12,8 +12,8 @@ endef
 
 define UBOOT_ORANGEPI_3B_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/uboot-orangepi-3b
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/uboot-rock-3c/idbloader.img $(BINARIES_DIR)/uboot-orangepi-3b/idbloader.img
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/uboot-rock-3c/u-boot.itb $(BINARIES_DIR)/uboot-orangepi-3b/u-boot.itb
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/uboot-orangepi-3b/idbloader.img $(BINARIES_DIR)/uboot-orangepi-3b/idbloader.img
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/uboot-orangepi-3b/u-boot.itb $(BINARIES_DIR)/uboot-orangepi-3b/u-boot.itb
 endef
 
 $(eval $(generic-package))
