@@ -149,7 +149,7 @@ mkdir -p /userdata/system/udev/rules.d
 rm -rf /run/udev/rules.d
 ln -s /userdata/system/udev/rules.d/ /run/udev/
 udevadm control --reload-rules
-udevadm trigger --type=devices --action=add --settle
+udevadm trigger --type=devices --action=add
 
 # and add the machine-id
 test -e /userdata/system/machine-id || dbus-uuidgen --ensure=/userdata/system/machine-id
