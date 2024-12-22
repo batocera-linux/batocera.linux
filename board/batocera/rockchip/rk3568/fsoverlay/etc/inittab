@@ -12,8 +12,7 @@ si4::sysinit:/bin/mount -a
 si5::sysinit:/bin/hostname -F /etc/hostname
 si6::sysinit:/etc/init.d/rcS
 
-S0::respawn:/sbin/getty   -n -L -l /usr/bin/batocera-autologin 115200 ttyS0   vt100 # Some boards have a console here
-FIQ0::respawn:/sbin/getty -n -L -l /usr/bin/batocera-autologin 115200 ttyFIQ0 vt100 # Others have a console here
+S2::respawn:/sbin/getty   -n -L -l /usr/bin/batocera-autologin 1500000 ttyS2   vt100 # orangepi-3b has serial console here
 # 2:3:respawn:/sbin/getty 38400 tty2
 # 3:3:respawn:/sbin/getty 38400 tty3
 4:3:respawn:/sbin/getty 38400 tty4 -n -l /usr/bin/batocera-mixer
