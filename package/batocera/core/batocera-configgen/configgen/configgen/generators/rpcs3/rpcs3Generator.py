@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import re
 import shutil
-import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -12,6 +11,7 @@ import ruamel.yaml as yaml
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import rpcs3Controllers
@@ -138,39 +138,30 @@ class Rpcs3Generator(Generator):
         # -= [Video] =-
         # gfx backend - default to Vulkan
         # Check Vulkan first to be sure
-        try:
-            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-            if have_vulkan == "true":
-                eslog.debug("Vulkan driver is available on the system.")
-                if system.isOptSet("rpcs3_gfxbackend") and system.config["rpcs3_gfxbackend"] == "OpenGL":
-                    eslog.debug("User selected OpenGL")
-                    rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
-                else:
-                    rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
-                try:
-                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                    if have_discrete == "true":
-                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                        try:
-                            discrete_name = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteName"], text=True).strip()
-                            if discrete_name != "":
-                                eslog.debug("Using Discrete GPU Name: {} for RPCS3".format(discrete_name))
-                                if "Vulkan" not in rpcs3ymlconfig["Video"]:
-                                    rpcs3ymlconfig["Video"]["Vulkan"] = {}
-                                rpcs3ymlconfig["Video"]["Vulkan"]["Adapter"] = discrete_name
-                            else:
-                                eslog.debug("Couldn't get discrete GPU Name")
-                        except subprocess.CalledProcessError:
-                            eslog.debug("Error getting discrete GPU Name")
-                    else:
-                        eslog.debug("Discrete GPU is not available on the system. Using default.")
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error checking for discrete GPU.")
-            else:
-                eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+        if vulkan.is_available():
+            eslog.debug("Vulkan driver is available on the system.")
+            if system.isOptSet("rpcs3_gfxbackend") and system.config["rpcs3_gfxbackend"] == "OpenGL":
+                eslog.debug("User selected OpenGL")
                 rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
-        except subprocess.CalledProcessError:
-            eslog.debug("Error checking for discrete GPU.")
+            else:
+                rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
+
+            if vulkan.has_discrete_gpu():
+                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_name = vulkan.get_discrete_gpu_name()
+                if discrete_name:
+                    eslog.debug("Using Discrete GPU Name: {} for RPCS3".format(discrete_name))
+                    if "Vulkan" not in rpcs3ymlconfig["Video"]:
+                        rpcs3ymlconfig["Video"]["Vulkan"] = {}
+                    rpcs3ymlconfig["Video"]["Vulkan"]["Adapter"] = discrete_name
+                else:
+                    eslog.debug("Couldn't get discrete GPU Name")
+            else:
+                eslog.debug("Discrete GPU is not available on the system. Using default.")
+        else:
+            eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+            rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
+
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
         if system.isOptSet("rpcs3_ratio"):
             rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config["rpcs3_ratio"]

@@ -15,6 +15,7 @@ import toml
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...utils import vulkan
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -56,28 +57,21 @@ class XeniaGenerator(Generator):
         core = system.config['core']
 
         # check Vulkan first before doing anything
-        try:
-            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-            if have_vulkan == "true":
-                eslog.debug("Vulkan driver is available on the system.")
-                try:
-                    vulkan_version = subprocess.check_output(["/usr/bin/batocera-vulkan", "vulkanVersion"], text=True).strip()
-                    if vulkan_version > "1.3":
-                        eslog.debug("Using Vulkan version: {}".format(vulkan_version))
-                    else:
-                        if system.isOptSet('xenia_api') and system.config['xenia_api'] == "D3D12":
-                            eslog.debug("Vulkan version: {} is not compatible with Xenia when using D3D12".format(vulkan_version))
-                            eslog.debug("You may have performance & graphical errors, switching to native Vulkan".format(vulkan_version))
-                            system.config['xenia_api'] = "Vulkan"
-                        else:
-                            eslog.debug("Vulkan version: {} is not recommended with Xenia".format(vulkan_version))
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error checking for Vulkan version.")
+        if vulkan.is_available():
+            eslog.debug("Vulkan driver is available on the system.")
+            vulkan_version = vulkan.get_version()
+            if vulkan_version > "1.3":
+                eslog.debug("Using Vulkan version: {}".format(vulkan_version))
             else:
-                eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
-                sys.exit()
-        except subprocess.CalledProcessError:
-            eslog.debug("Error executing batocera-vulkan script.")
+                if system.isOptSet('xenia_api') and system.config['xenia_api'] == "D3D12":
+                    eslog.debug("Vulkan version: {} is not compatible with Xenia when using D3D12".format(vulkan_version))
+                    eslog.debug("You may have performance & graphical errors, switching to native Vulkan".format(vulkan_version))
+                    system.config['xenia_api'] = "Vulkan"
+                else:
+                    eslog.debug("Vulkan version: {} is not recommended with Xenia".format(vulkan_version))
+        else:
+            eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
+            sys.exit()
 
         # set to 64bit environment by default
         os.environ['WINEARCH'] = 'win64'
@@ -111,7 +105,7 @@ class XeniaGenerator(Generator):
         if not (canarypath / 'portable.txt').exists():
             with (canarypath / 'portable.txt').open('w'):
                 pass
-        
+
         vcrun2019_done = wineprefix / "vcrun2019.done"
         if not vcrun2019_done.exists():
             cmd = ["/usr/wine/winetricks", "-q", "vcrun2019"]
@@ -126,9 +120,9 @@ class XeniaGenerator(Generator):
             eslog.error(err.decode())
             with vcrun2019_done.open("w") as f:
                 f.write("done")
-        
+
         dll_files = ["d3d12.dll", "d3d12core.dll", "d3d11.dll", "d3d10core.dll", "d3d9.dll", "d3d8.dll", "dxgi.dll"]
-        # Create symbolic links for 64-bit DLLs  
+        # Create symbolic links for 64-bit DLLs
         try:
             for dll in dll_files:
                 src_path = Path("/usr/wine/dxvk/x64") / dll
@@ -151,7 +145,7 @@ class XeniaGenerator(Generator):
                 dest_path.symlink_to(src_path)
         except Exception as e:
             eslog.debug(f"Error creating 32-bit link for {dll}: {e}")
-        
+
         # are we loading a digital title?
         if rom_path.suffix == '.xbox360':
             eslog.debug(f'Found .xbox360 playlist: {rom}')
@@ -283,7 +277,7 @@ class XeniaGenerator(Generator):
             config['Storage']['mount_cache'] = False
         else:
             config['Storage']['mount_cache'] = True
-        
+
         # add node UI
         if 'UI' not in config:
             config['UI'] = {}
@@ -314,7 +308,7 @@ class XeniaGenerator(Generator):
             config['XConfig'] = {'user_language': int(system.config['xenia_language'])}
         else:
             config['XConfig'] = {'user_language': 1}
-        
+
         # now write the updated toml
         with toml_file.open('w') as f:
             toml.dump(config, f)
@@ -369,7 +363,7 @@ class XeniaGenerator(Generator):
                 'VKD3D_SHADER_CACHE_PATH': xeniaCache,
                 'WINEDLLOVERRIDES': "winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n",
             }
-        
+
         # ensure nvidia driver used for vulkan
         if Path('/var/tmp/nvidia.prime').exists():
             variables_to_remove = ['__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME']
