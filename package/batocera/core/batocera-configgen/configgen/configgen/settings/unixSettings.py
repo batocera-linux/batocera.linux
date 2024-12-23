@@ -37,7 +37,7 @@ class UnixSettings:
             file = io.StringIO()
             file.write('[DEFAULT]\n')
 
-            with self.settings_path.open(encoding='utf_8_sig') as f:
+            with self.settings_path.open(encoding='latin1') as f:
                 file.write(f.read())
 
             file.seek(0)
