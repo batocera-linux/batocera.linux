@@ -1,7 +1,9 @@
 # 2025/xx/xx - batocera.linux 42 - xxx
 ### Special Notes
 ### Hardware
+- Add OrangePi 4a board support
 ### Added
+- Image scaling option for Drastic
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
