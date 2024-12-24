@@ -737,9 +737,9 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         if (system.config['core'] in coreToRetroachievements) or (system.isOptSet('cheevos_force') and system.getOptBoolean('cheevos_force') == True):
             retroarchConfig['cheevos_enable'] = 'true'
             retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
-            retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
+            retroarchConfig['cheevos_password'] = "" # clear the password - only use the token
+            retroarchConfig['cheevos_token'] = systemConfig.get('retroachievements.token', "")
             retroarchConfig['cheevos_cmd'] = DEFAULTS_DIR / "call_achievements_hooks.sh"
-            retroarchConfig['cheevos_token'] = "" # clear the token, otherwise, it may fail (possibly a ra bug)
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
