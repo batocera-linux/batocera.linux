@@ -12,6 +12,7 @@
 - Significantly improve ES shutdown time, especially with large and medium collections
 ### Updated
 ### System
+- Mesa3D to 24.3.2
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
