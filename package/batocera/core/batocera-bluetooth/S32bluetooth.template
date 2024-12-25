@@ -66,6 +66,7 @@ case "$1" in
                 ;;
                 bcm4345c5)
                     /usr/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 200000 --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 &
+                    sleep 2
                 ;;
             esac
         done
@@ -111,6 +112,7 @@ case "$1" in
         start-stop-daemon -K -q -p /var/run/bluetoothd.pid
         killall hciattach >/dev/null 2>&1
         killall hciattach_opi >/dev/null 2>&1
+        killall brcm_patchram_plus >/dev/null 2>&1
         batocera-bluetooth save
     ;;
 
