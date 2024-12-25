@@ -64,6 +64,9 @@ case "$1" in
                     /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
                     sleep 2
                 ;;
+                bcm4345c5)
+                    /usr/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 200000 --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 &
+                ;;
             esac
         done
 
