@@ -542,7 +542,9 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
-	default "rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
+	#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME#FIXME default "rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2 rockchip/rk3568/orangepi-3b" \
+        #
+	default "rockchip/rk3568/orangepi-3b" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -1824,7 +1826,8 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 								   BR2_PACKAGE_BATOCERA_TARGET_H5	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H6	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H616 || \
-								   BR2_PACKAGE_BATOCERA_TARGET_T527
+								   BR2_PACKAGE_BATOCERA_TARGET_T527 || \
+								   BR2_PACKAGE_BATOCERA_TARGET_RK3568
 
 	# broadcom bluetooth firware
 	select BR2_PACKAGE_BROADCOM_BT_FIRMWARE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

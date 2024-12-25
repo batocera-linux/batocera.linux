@@ -2,6 +2,7 @@
 ### Special Notes
 ### Hardware
 - Add OrangePi 4a board support
+- Add OrangePi 3b board support
 ### Added
 - Image scaling option for Drastic
 ### Fixed
