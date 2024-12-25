@@ -115,6 +115,12 @@ class DuckstationGenerator(Generator):
             settings.set("Console", "Region", system.config["duckstation_region"])
         else:
             settings.set("Console", "Region", "Auto")
+        # Enable Cheats
+        if system.isOptSet("duckstation_cheats"):
+            settings.set("Console", "EnableCheats", system.config["duckstation_cheats"])
+        else:
+            settings.set("Console", "EnableCheats", "False")
+
 
         ## [BIOS]
         if not settings.has_section("BIOS"):
