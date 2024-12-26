@@ -64,6 +64,20 @@ case "$1" in
                     /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
                     sleep 2
                 ;;
+                bcm4345c5)
+                    /usr/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 200000 \
+                        --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 &
+                    sleep 2
+                ;;
+                bcm4345c0)
+                    bt_status=$(cat /proc/device-tree/wireless-bluetooth/status)
+                    wifi_chip=$(cat /proc/device-tree/wireless-wlan/wifi_chip_type)
+                    if [[ "${wifi_chip}" == "ap6256" && "${bt_status}" == "okay" ]]; then
+                        brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
+                            --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 &
+                        sleep 2
+                    fi
+                ;;
             esac
         done
 
@@ -84,16 +98,20 @@ case "$1" in
         debug="$(/usr/bin/batocera-settings-get controllers.bluetooth.debug)"
         if test "${debug}" = 1
         then
-            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
+            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec \
+                /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
         else
-            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+            start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec \
+                /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
         fi
 
         if [ -n "${btaddr}" ]
         then
-            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
+            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec \
+                /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
         else
-            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
+            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec \
+                /usr/bin/batocera-bluetooth-agent &
         fi
         # for OrangePi LTS devices we need to power on the controller & put in pairable mode
         if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-3-lts" ] || [ ${BOARD} = "orangepi-zero2" ] || [ ${BOARD} = "orangepi-800" ]
@@ -108,6 +126,7 @@ case "$1" in
         start-stop-daemon -K -q -p /var/run/bluetoothd.pid
         killall hciattach >/dev/null 2>&1
         killall hciattach_opi >/dev/null 2>&1
+        killall brcm_patchram_plus >/dev/null 2>&1
         batocera-bluetooth save
     ;;
 

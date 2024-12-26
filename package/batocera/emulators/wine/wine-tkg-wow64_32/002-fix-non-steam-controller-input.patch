@@ -1,0 +1,43 @@
+diff --git a/loader/wine.inf.in b/loader/wine.inf.in
+index 9f8095d525..898fa20f2e 100644
+--- a/loader/wine.inf.in
++++ b/loader/wine.inf.in
+@@ -97,7 +97,8 @@ AddReg=\
+     Tapi,\
+     ThemeManager,\
+     VersionInfo,\
+-    LicenseInformation
++    LicenseInformation,\
++    WineBatoOverrides
+ 
+ [DefaultInstall.ntamd64]
+ RegisterDlls=RegisterDllsSection
+@@ -123,7 +124,8 @@ AddReg=\
+     Tapi,\
+     ThemeManager,\
+     VersionInfo,\
+-    LicenseInformation
++    LicenseInformation,\
++    WineBatoOverrides
+ 
+ [DefaultInstall.ntarm64]
+ RegisterDlls=RegisterDllsSection
+@@ -148,7 +150,8 @@ AddReg=\
+     Tapi,\
+     ThemeManager,\
+     VersionInfo,\
+-    LicenseInformation
++    LicenseInformation,\
++    WineBatoOverrides
+ 
+ [Wow64Install.ntx86]
+ RegisterDlls=RegisterDllsSection
+@@ -2979,3 +2982,8 @@ EtcFiles  = 12,etc
+ InfFiles  = 17
+ NlsFiles  = 11
+ SortFiles = 10,globalization\sorting
++
++[WineBatoOverrides]
++HKLM,System\CurrentControlSet\Services\winebus,"DisableHidraw",0x10001,"1"
++HKLM,System\CurrentControlSet\Services\winebus,"Enable SDL",0x10001,"1"
++

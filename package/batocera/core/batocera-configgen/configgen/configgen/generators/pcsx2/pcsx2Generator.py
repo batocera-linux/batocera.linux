@@ -259,51 +259,32 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         pcsx2INIConfig.add_section("Achievements")
     pcsx2INIConfig.set("Achievements", "Enabled", "false")
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
-        headers   = {"Content-type": "text/plain", "User-Agent": "Batocera.linux"}
-        login_url = "https://retroachievements.org/"
         username  = system.config.get('retroachievements.username', "")
-        password  = system.config.get('retroachievements.password', "")
+        token     = system.config.get('retroachievements.token', "")
         hardcore  = system.config.get('retroachievements.hardcore', "")
         indicator = system.config.get('retroachievements.challenge_indicators', "")
         presence  = system.config.get('retroachievements.richpresence', "")
         leaderbd  = system.config.get('retroachievements.leaderboards', "")
-        login_cmd = f"dorequest.php?r=login&u={username}&p={password}"
-        try:
-                cnx = httplib2.Http()
-        except:
-                eslog.error("ERROR: Unable to connect to " + login_url)
-        try:
-                res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
-                if (res.status != 200):
-                    eslog.warning(f"ERROR: RetroAchievements.org responded with #{res.status} [{res.reason}] {rout}")
-                    pcsx2INIConfig.set("Cheevos", "Enabled",  "false")
-                else:
-                    parsedout = json.loads(rout.decode('utf-8'))
-                    if not parsedout['Success']:
-                        eslog.warning(f"ERROR: RetroAchievements login failed with ({str(parsedout)})")
-                    token = parsedout['Token']
-                    pcsx2INIConfig.set("Achievements", "Enabled", "true")
-                    pcsx2INIConfig.set("Achievements", "Username", username)
-                    pcsx2INIConfig.set("Achievements", "Token", token)
-                    pcsx2INIConfig.set("Achievements", "LoginTimestamp", str(int(time.time())))
-                    if hardcore == '1':
-                        pcsx2INIConfig.set("Achievements", "ChallengeMode", "true")
-                    else:
-                        pcsx2INIConfig.set("Achievements", "ChallengeMode", "false")
-                    if indicator == '1':
-                        pcsx2INIConfig.set("Achievements", "PrimedIndicators", "true")
-                    else:
-                        pcsx2INIConfig.set("Achievements", "PrimedIndicators", "false")
-                    if presence == '1':
-                        pcsx2INIConfig.set("Achievements", "RichPresence", "true")
-                    else:
-                        pcsx2INIConfig.set("Achievements", "RichPresence", "false")
-                    if leaderbd == '1':
-                        pcsx2INIConfig.set("Achievements", "Leaderboards", "true")
-                    else:
-                        pcsx2INIConfig.set("Achievements", "Leaderboards", "false")
-        except:
-                eslog.error("ERROR: setting RetroAchievements parameters")
+        pcsx2INIConfig.set("Achievements", "Enabled", "true")
+        pcsx2INIConfig.set("Achievements", "Username", username)
+        pcsx2INIConfig.set("Achievements", "Token", token)
+        pcsx2INIConfig.set("Achievements", "LoginTimestamp", str(int(time.time())))
+        if hardcore == '1':
+            pcsx2INIConfig.set("Achievements", "ChallengeMode", "true")
+        else:
+            pcsx2INIConfig.set("Achievements", "ChallengeMode", "false")
+        if indicator == '1':
+            pcsx2INIConfig.set("Achievements", "PrimedIndicators", "true")
+        else:
+            pcsx2INIConfig.set("Achievements", "PrimedIndicators", "false")
+        if presence == '1':
+            pcsx2INIConfig.set("Achievements", "RichPresence", "true")
+        else:
+            pcsx2INIConfig.set("Achievements", "RichPresence", "false")
+        if leaderbd == '1':
+            pcsx2INIConfig.set("Achievements", "Leaderboards", "true")
+        else:
+            pcsx2INIConfig.set("Achievements", "Leaderboards", "false")
     # set other settings
     pcsx2INIConfig.set("Achievements", "TestMode", "false")
     pcsx2INIConfig.set("Achievements", "UnofficialTestMode", "false")
@@ -574,18 +555,18 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # Gun crosshairs - one player only, PCSX2 can't distinguish both crosshair for some reason
     if pcsx2INIConfig.has_section("USB1"):
         if system.isOptSet('pcsx2_crosshairs') and system.config["pcsx2_crosshairs"] == "1":
-            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(config_directory / "crosshairs" / "Blue.png"))
+            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Blue.png"))
         else:
             pcsx2INIConfig.set("USB1", "guncon2_cursor_path", "")
     if pcsx2INIConfig.has_section("USB2"):
         if system.isOptSet('pcsx2_crosshairs') and system.config["pcsx2_crosshairs"] == "1":
-            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(config_directory / "crosshairs" / "Red.png"))
+            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Red.png"))
         else:
             pcsx2INIConfig.set("USB2", "guncon2_cursor_path", "")
     # hack for the fog bug for guns (time crisis - crisis zone)
     fog_files = [
-        config_directory / "textures" / "SCES-52530" / "replacements" / "c321d53987f3986d-eadd4df7c9d76527-00005dd4.png",
-        config_directory / "textures" / "SLUS-20927" / "replacements" / "c321d53987f3986d-eadd4df7c9d76527-00005dd4.png"
+        _PCSX2_RESOURCES_DIR / "textures" / "SCES-52530" / "replacements" / "c321d53987f3986d-eadd4df7c9d76527-00005dd4.png",
+        _PCSX2_RESOURCES_DIR / "textures" / "SLUS-20927" / "replacements" / "c321d53987f3986d-eadd4df7c9d76527-00005dd4.png"
     ]
     texture_dir = config_directory / "textures"
     # copy textures if necessary to PCSX2 config folder

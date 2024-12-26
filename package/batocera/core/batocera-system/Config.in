@@ -90,12 +90,13 @@ endif
 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY		|| \
    BR2_PACKAGE_BATOCERA_TARGET_BCM2711		|| \
    BR2_PACKAGE_BATOCERA_TARGET_BCM2712		|| \
-   BR2_PACKAGE_BATOCERA_TARGET_RISCV		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_JH7110		|| \
    BR2_PACKAGE_BATOCERA_TARGET_H616		|| \
    BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3	|| \
    BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3	|| \
    BR2_PACKAGE_BATOCERA_TARGET_ODIN	        || \
-   BR2_PACKAGE_BATOCERA_TARGET_SM8250
+   BR2_PACKAGE_BATOCERA_TARGET_SM8250       || \
+   BR2_PACKAGE_BATOCERA_TARGET_T527
 	config BR2_PACKAGE_BATOCERA_GLES3
 	bool "target gles3 support"
 	default y
@@ -150,7 +151,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	bool "batocera.linux minimal"
 
 	# RISC-V support needs a hack here to declare as RV64GC, needed for Rust
-	select BR2_RISCV_ISA_RVC		if BR2_PACKAGE_BATOCERA_TARGET_RISCV
+	select BR2_RISCV_ISA_RVC		if BR2_PACKAGE_BATOCERA_TARGET_JH7110
 
 	# minimal system required packages
 	select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
@@ -301,7 +302,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_XWIIMOTE				if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # a tool to analye wiimote events (mainly to debug, but helps and is funny)
 	select BR2_PACKAGE_BATOCERA_GUNS			if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	select BR2_PACKAGE_BATOCERA_WHEEL_CALIBRATOR
-	select BR2_PACKAGE_NEW_LG4FF				if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_SM8250 # Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
+	select BR2_PACKAGE_NEW_LG4FF			if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_SM8250  && !BR2_PACKAGE_BATOCERA_TARGET_T527 # Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
 	select BR2_PACKAGE_HID_T150             if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
 	select BR2_PACKAGE_HID_NX				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
@@ -338,7 +339,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_DMD_SIMULATOR
 	select BR2_PACKAGE_DMD_SIMULATOR_PLAYER
 	select BR2_PACKAGE_LIBDMDUTIL # dependancy of vpinball, but vpinball is not everywhere
-	select BR2_PACKAGE_BATOCERA_BACKGLASS if (BR2_PACKAGE_XSERVER_XORG_SERVER || BR2_PACKAGE_BATOCERA_WAYLAND) && !BR2_PACKAGE_BATOCERA_TARGET_RISCV
+	select BR2_PACKAGE_BATOCERA_BACKGLASS if (BR2_PACKAGE_XSERVER_XORG_SERVER || BR2_PACKAGE_BATOCERA_WAYLAND) && !BR2_PACKAGE_BATOCERA_TARGET_JH7110
 
 	# swap
 	select BR2_PACKAGE_SWAPIT		if BR2_PACKAGE_BATOCERA_TARGET_RK3128	|| \
@@ -359,7 +360,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 						    BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
 						    BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
 						    BR2_PACKAGE_BATOCERA_TARGET_SM8250	|| \
-						    BR2_PACKAGE_BATOCERA_TARGET_RISCV
+						    BR2_PACKAGE_BATOCERA_TARGET_JH7110
 
 	# wireless drivers
 	# use the morrownr RTL8812au & RTL8821au drivers
@@ -427,7 +428,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON_SERIAL		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_BATOCERA_ETHTOOL
 	select BR2_PACKAGE_SMARTMONTOOLS
-        select BR2_PACKAGE_LIBDRM_INSTALL_TESTS		if BR2_PACKAGE_LIBDRM # modetest
+    select BR2_PACKAGE_LIBDRM_INSTALL_TESTS		if BR2_PACKAGE_LIBDRM # modetest
 
 	# gpio controllers
 	select BR2_PACKAGE_DB9_GPIO_RPI					if BR2_PACKAGE_BATOCERA_RPI_ANY
@@ -474,6 +475,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	# leds
 	select BR2_PACKAGE_AYN_PLATFORM		  if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_AYANEO_PLATFORM    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
+	# bluetooth
+	select BR2_PACKAGE_BRCM_PATCHRAM_PLUS    if BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	help
 	  Install the batocera.linux system files
@@ -528,7 +532,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86-64-v3"										if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sd845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_ODIN
 	default "qualcomm/sm8250/rp5 qualcomm/sm8250/rpmini"						if BR2_PACKAGE_BATOCERA_TARGET_SM8250
-	default "riscv/visionfive2"									if BR2_PACKAGE_BATOCERA_TARGET_RISCV
+	default "starfive/jh7110"   							if BR2_PACKAGE_BATOCERA_TARGET_JH7110
 	default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_S922X
 	default "amlogic/s905/odroidc2 amlogic/s905/tvbox amlogic/s905/lepotato amlogic/s905/vim amlogic/s905/p201 amlogic/s905/lepotatov2 amlogic/s905/minix-neo-u1" \
@@ -537,10 +541,11 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
-	default "rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
+	default "rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
+	default "allwinner/t527/orangepi-4a"    if BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	choice
 	prompt "batocera.linux target"
@@ -625,6 +630,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_H616
 config BR2_PACKAGE_BATOCERA_TARGET_H6
 	bool "h6"
 
+config BR2_PACKAGE_BATOCERA_TARGET_T527
+	bool "t527"
+
 # PC
 # ------------------------------------
 config BR2_PACKAGE_BATOCERA_TARGET_X86
@@ -649,8 +657,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_XU4
 
 # RISCV
 # -------------------------------------
-config BR2_PACKAGE_BATOCERA_TARGET_RISCV
-	bool "riscv"
+config BR2_PACKAGE_BATOCERA_TARGET_JH7110
+	bool "jh7110"
 
 endchoice
 
@@ -886,10 +894,11 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 							   BR2_PACKAGE_BATOCERA_TARGET_RK3588	|| \
 							   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
 							   BR2_PACKAGE_BATOCERA_TARGET_RK3326	|| \
-							   BR2_PACKAGE_BATOCERA_TARGET_XU4	|| \
-							   BR2_PACKAGE_BATOCERA_TARGET_H616	|| \
+							   BR2_PACKAGE_BATOCERA_TARGET_XU4	    || \
+							   BR2_PACKAGE_BATOCERA_TARGET_H616	    || \
 							   BR2_PACKAGE_BATOCERA_TARGET_SM8250	|| \
-							   BR2_PACKAGE_BATOCERA_TARGET_H6
+							   BR2_PACKAGE_BATOCERA_TARGET_H6       || \
+							   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	select BR2_PACKAGE_MELONDS			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
 								BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
@@ -1041,7 +1050,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 							   !BR2_PACKAGE_BATOCERA_TARGET_H6	&& \
 							   !BR2_PACKAGE_BATOCERA_TARGET_RK3128	&& \
 							   !BR2_PACKAGE_BATOCERA_TARGET_RK3326	&& \
-							   !BR2_PACKAGE_BATOCERA_TARGET_RISCV	&& \
+							   !BR2_PACKAGE_BATOCERA_TARGET_JH7110	&& \
 							   !BR2_PACKAGE_BATOCERA_TARGET_ODIN	&& \
 							   !BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
@@ -1099,7 +1108,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Jazz Jackrabbit 2
 	select BR2_PACKAGE_JAZZ2_NATIVE    if BR2_PACKAGE_BATOCERA_GLES3 || \
 	                                      BR2_PACKAGE_LIBGLFW && \
-										  !BR2_PACKAGE_BATOCERA_TARGET_RISCV
+										  !BR2_PACKAGE_BATOCERA_TARGET_JH7110
 
 	help
 	  Ports
@@ -1462,7 +1471,8 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						   BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_S922X	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H616
+						   BR2_PACKAGE_BATOCERA_TARGET_H616     || \
+						   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	# Amstrad CPC emulator
 	select BR2_PACKAGE_SUGARBOX		if BR2_x86_64				|| \
@@ -1470,7 +1480,8 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						   BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_S922X	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H616
+						   BR2_PACKAGE_BATOCERA_TARGET_H616     || \
+						   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	# Symbian OS / Nokia N-Gage emulator
 	select BR2_PACKAGE_EKA2L1		if BR2_x86_64				|| \
@@ -1478,14 +1489,16 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						   BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_S922X	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H616
+						   BR2_PACKAGE_BATOCERA_TARGET_H616     || \
+						   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	# Supermodel OpenGL ES port
 	select BR2_PACKAGE_SUPERMODEL_ES	if BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_S922X	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H616
+						   BR2_PACKAGE_BATOCERA_TARGET_H616     || \
+						   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	# Apple 2
 	select BR2_PACKAGE_APPLEWIN		# ALL
@@ -1501,7 +1514,8 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3568	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_RK3588	|| \
 						   BR2_PACKAGE_BATOCERA_TARGET_H616     || \
-						   BR2_PACKAGE_BATOCERA_TARGET_SM8250
+						   BR2_PACKAGE_BATOCERA_TARGET_SM8250   || \
+						   BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	help
 	  Emulators under development (Experimental)
@@ -1657,7 +1671,7 @@ config BR2_PACKAGE_BATOCERA_KODI21
 					   BR2_PACKAGE_BATOCERA_TARGET_RK3399	|| \
 					   BR2_PACKAGE_BATOCERA_TARGET_RK3588	|| \
 					   BR2_PACKAGE_BATOCERA_TARGET_S905GEN3	|| \
-					   BR2_PACKAGE_BATOCERA_TARGET_RISCV	|| \
+					   BR2_PACKAGE_BATOCERA_TARGET_JH7110	|| \
 					   BR2_PACKAGE_BATOCERA_TARGET_ODIN	|| \
 					   BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
@@ -1808,7 +1822,9 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	select BR2_PACKAGE_FIRMWARE_ORANGEPI			if BR2_PACKAGE_BATOCERA_TARGET_H3	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H5	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H6	|| \
-								   BR2_PACKAGE_BATOCERA_TARGET_H616
+								   BR2_PACKAGE_BATOCERA_TARGET_H616 || \
+								   BR2_PACKAGE_BATOCERA_TARGET_T527 || \
+								   BR2_PACKAGE_BATOCERA_TARGET_RK3568
 
 	# broadcom bluetooth firware
 	select BR2_PACKAGE_BROADCOM_BT_FIRMWARE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

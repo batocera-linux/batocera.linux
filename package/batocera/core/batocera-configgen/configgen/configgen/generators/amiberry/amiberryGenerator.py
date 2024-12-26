@@ -31,6 +31,8 @@ class AmiberryGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        mkdir_if_not_exists(_RETROARCH_CUSTOM.parent)
+
         retroconfig = UnixSettings(_RETROARCH_CUSTOM, separator=' ')
         amiberryconf = UnixSettings(_CONFIG, separator=' ')
         amiberryconf.save('default_quit_key', 'F10')
@@ -47,8 +49,6 @@ class AmiberryGenerator(Generator):
         amiberryconf.save('default_vkbd_transparency', '60') # TODO: make an option in ES
         amiberryconf.save('default_vkbd_toggle', 'leftstick')
         amiberryconf.write()
-
-        mkdir_if_not_exists(_RETROARCH_CUSTOM.parent)
 
         romType = self.getRomType(rom)
         eslog.debug("romType: "+romType)

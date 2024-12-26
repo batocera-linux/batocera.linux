@@ -2061,6 +2061,7 @@ libretro:
                             "GB - Light":                       GB - Light
                             "GB - Pocket":                      GB - Pocket
                             "GB - Black and White":             GB - Disabled
+                            "GBC - Game Specific":              GBC - Game Specific
                             "GBC - Blue":                       GBC - Blue
                             "GBC - Brown":                      GBC - Brown
                             "GBC - Dark Blue":                  GBC - Dark Blue
@@ -7954,6 +7955,12 @@ duckstation:
                 "PAL":      PAL
                 "NTSC-U/C": NTSC-U
                 "NTSC-J":   NTSC-J
+        duckstation_cheats:
+            prompt: ENABLE CHEATS
+            description: Enable the cheat list (if available).
+            choices:
+                "Disabled (Default)": "false"
+                "Enabled":            "true"
         duckstation_custom_textures:
             group: ADVANCED OPTIONS
             prompt: LOAD CUSTOM TEXTURES
@@ -11310,6 +11317,13 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
+        drastic_scaling:
+            group: ADVANCED OPTIONS
+            prompt:      IMAGE SCALING
+            description: Switches between smooth (Bilinear) and sharp (Nearest Neighbor) image scaling.
+            choices:
+                "Bilinear": bilinear
+                "Nearest-neighbor":  nearest
         drastic_fix2d:
             group: ADVANCED OPTIONS
             prompt:      KEEP MAIN SCREEN ON TOP
