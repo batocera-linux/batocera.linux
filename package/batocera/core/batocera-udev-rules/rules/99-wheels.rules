@@ -28,8 +28,15 @@ ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b6
 # Old (c261) and new revision (c262)
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c262", RUN+="usb_modeswitch '%b/%k'"
+
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G920 Driving Force Racing Wheel", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+
+# Logitech G923 (xbox model) wheel switch to PC mode if it's not already
+# c26e = PC mode | c26d = XBOX mode
+ATTR{idVendor}=="046d", ATTR{idProduct}=="c26d", RUN+="usb_modeswitch '%b/%k'"
+
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for Xbox One and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 
 # HORI RACING WHEEL APEX RWA
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idVendor}=="0f0d", ATTR{idProduct}=="00a4", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
