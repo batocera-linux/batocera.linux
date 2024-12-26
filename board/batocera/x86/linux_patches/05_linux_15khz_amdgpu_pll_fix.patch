@@ -1,7 +1,7 @@
-Index: linux-6.8/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
 ===================================================================
---- linux-6.8.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
-+++ linux-6.8/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
 @@ -89,9 +89,9 @@ static void amdgpu_pll_get_fb_ref_div(st
  
  	/* limit reference * post divider to a maximum */
@@ -13,4 +13,4 @@ Index: linux-6.8/drivers/gpu/drm/amd/amdgpu/amdgpu_pll.c
 +		ref_div_max = max(min(128 / post_div, ref_div_max), 1u);
  
  	/* get matching reference and feedback divider */
- 	*ref_div = min(max(DIV_ROUND_CLOSEST(den, post_div), 1u), ref_div_max);
+ 	*ref_div = clamp(DIV_ROUND_CLOSEST(den, post_div), 1u, ref_div_max);
