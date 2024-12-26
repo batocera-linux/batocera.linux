@@ -15,6 +15,7 @@
 ### Updated
 ### System
 - Mesa3D to 24.3.2
+- Linux Kernel to 6.12.6
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
