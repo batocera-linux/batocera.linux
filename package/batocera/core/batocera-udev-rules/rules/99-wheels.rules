@@ -13,6 +13,7 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech  Logitech MOMO Raci
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T300RS Racing wheel",   MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Force",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="200"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Force Pro",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G920 Driving Force Racing Wheel",            MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for PlayStation 4 and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="ThrustMaster, Inc. Ferrari 458 Spider",               MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T150RS",                    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
@@ -24,16 +25,14 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster Ra
 # for ThrustMaster, Inc. Ferrari 458 Spider, cause xpad driver is blacklisted for the prefered xone
 ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b671", RUN+="/sbin/modprobe xpad"
 
-# G920 Driving Force Racing Wheel for Xbox One & Logitech G920 Driving Force Racing Wheel (2 names, same steering wheel)
-# Old (c261) and new revision (c262)
+# G920 Driving Force Racing Wheel (switch to PC mode)
+# Xbox mode (c261) | PC mode (c262)
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c261", RUN+="usb_modeswitch '%b/%k'"
-ATTR{idVendor}=="046d", ATTR{idProduct}=="c262", RUN+="usb_modeswitch '%b/%k'"
 
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="G920 Driving Force Racing Wheel for Xbox One", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
-KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G920 Driving Force Racing Wheel", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 
-# Logitech G923 (xbox model) wheel switch to PC mode if it's not already
-# c26e = PC mode | c26d = XBOX mode
+# Logitech G923 Racing Wheel (switch to PC mode)
+# Xbox mode (c26d) | PC mode (c26e)
 ATTR{idVendor}=="046d", ATTR{idProduct}=="c26d", RUN+="usb_modeswitch '%b/%k'"
 
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for Xbox One and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
