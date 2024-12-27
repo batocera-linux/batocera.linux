@@ -3,6 +3,7 @@ from __future__ import annotations
 import filecmp
 import os
 import shutil
+import subprocess
 from os import environ
 from typing import TYPE_CHECKING
 
