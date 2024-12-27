@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 def writeCfgFile(system: Emulator, filename: Path, init_line: str, defaults_to_add: Iterable[str], controls_to_add: Iterable[str], gameResolution: Resolution) -> None:
     if not filename.is_file():
-        filename.mkdir(parents=True, exist_ok=True)
+        filename.parent.mkdir(parents=True, exist_ok=True)
 
         with filename.open('w') as file:
             file.write(init_line)
