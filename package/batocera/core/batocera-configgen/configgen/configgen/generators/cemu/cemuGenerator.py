@@ -12,6 +12,7 @@ from xml.dom import minidom
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...utils import vulkan
 from ..Generator import Generator
 from . import cemuControllers
 from .cemuPaths import CEMU_BIOS, CEMU_CONFIG, CEMU_CONTROLLER_PROFILES, CEMU_ROMDIR, CEMU_SAVES
@@ -148,33 +149,21 @@ class CemuGenerator(Generator):
         # Only set the graphics `device` if Vulkan
         if api_value == "1":
             # Check if we have a discrete GPU & if so, set the UUID
-            try:
-                have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-                if have_vulkan == "true":
-                    eslog.debug("Vulkan driver is available on the system.")
-                    try:
-                        have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                        if have_discrete == "true":
-                            eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                            try:
-                                discrete_uuid = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteUUID"], text=True).strip()
-                                if discrete_uuid != "":
-                                    discrete_uuid_num = discrete_uuid.replace("-", "")
-                                    eslog.debug("Using Discrete GPU UUID: {} for Cemu".format(discrete_uuid_num))
-                                    CemuGenerator.setSectionConfig(config, graphic_root, "device", discrete_uuid_num)
-                                else:
-                                    eslog.debug("Couldn't get discrete GPU UUID!")
-                            except subprocess.CalledProcessError:
-                                eslog.debug("Error getting discrete GPU UUID!")
-                        else:
-                            eslog.debug("Discrete GPU is not available on the system. Using default.")
-                    except subprocess.CalledProcessError:
-                        eslog.debug("Error checking for discrete GPU.")
+            if vulkan.is_available():
+                eslog.debug("Vulkan driver is available on the system.")
+                if vulkan.has_discrete_gpu():
+                    discrete_uuid = vulkan.get_discrete_gpu_uuid()
+                    if discrete_uuid:
+                        discrete_uuid_num = discrete_uuid.replace("-", "")
+                        eslog.debug("Using Discrete GPU UUID: {} for Cemu".format(discrete_uuid_num))
+                        CemuGenerator.setSectionConfig(config, graphic_root, "device", discrete_uuid_num)
+                    else:
+                        eslog.debug("Couldn't get discrete GPU UUID!")
                 else:
-                    eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
-                    CemuGenerator.setSectionConfig(config, graphic_root, "api", "0")
-            except subprocess.CalledProcessError:
-                eslog.debug("Error executing batocera-vulkan script.")
+                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+            else:
+                eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0")
 
         # Async VULKAN Shader compilation
         if system.isOptSet("cemu_async") and system.config["cemu_async"] == "False":
