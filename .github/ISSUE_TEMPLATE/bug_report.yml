@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report. We appreciate you taking the time & effort.
+        Thanks for taking the time to fill out this bug report. We appreciate your taking the time & effort.
         Note: Bug reports are NOT for feature requests or for help with coding or compiling.
         If you need real-time help or need to discuss Batocera, join us on Discord - https://discord.gg/bPKRgsVzAR
   - type: input
@@ -38,7 +38,7 @@ body:
       label: Your Graphic Processor Unit(s) (GPU)
       description: |
         Details of your GPU and whether it is integrated or discrete.
-        If you have a laptop or PC with two GPU's. Provide both details.
+        If you have a laptop or PC with two GPUs, provide details for both.
       placeholder: Integrated Intel 630 and Nvidia GT1650 discrete GPU
     validations:
       required: true
@@ -55,17 +55,17 @@ body:
     attributes:
       label: Detailed reproduction steps
       description: |
-        1. Note the detailed steps in the order they are required to be done in order to successfully reproduce this issue.
+        1. Note the detailed steps, in the order they are done, to successfully reproduce this issue.
         2. Include any "but only when" conditions you have discovered.
         3. Describe what happens when the issue occurs, anything to look out for, anything to check the issue has indeed occurred.
       placeholder: |
-        I installed Batocera on a USB using Etcher.
-        I plugged the USB into my laptops USB port.
-        The I booted my PC and changed the BIOS boot order to boot off the USB.
-        When Batocera attempts to boot I see a resizing screen with a progess bar.
-        The annother screen with a intro video.
-        After that is goes blank.
-        I heve no video or sound, just a balnk screen.
+        I installed Batocera on a USB using Raspberry Pi Imager.
+        I plugged the USB into my laptop's USB port.
+        Then I booted my PC and changed the BIOS boot order to boot from the USB.
+        When Batocera attempts to boot, I see a resizing screen with a progess bar.
+        Then I see another screen with an intro video.
+        After that it goes blank.
+        I have no video or sound, just a blank screen.
     validations:
       required: true
   - type: textarea
@@ -82,7 +82,7 @@ body:
     id: any_mods
     attributes:
       label: Details of any modifications you have made to Batocera.
-      description: If you have modified Batocera in any way. Please let us know.
+      description: If you have modified Batocera in any way, please let us know.
       placeholder: I have installed a third-party package from ...
     validations:
       required: true
@@ -96,4 +96,4 @@ body:
         Many useful logs are collected in a [Batocera support file](https://wiki.batocera.org/troubleshooting#create_a_batocera_support_file) which should be attached in your report.
       placeholder: Attach logs and don't paste the content.
     validations:
-      required: false
+      required: true
