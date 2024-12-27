@@ -31,9 +31,9 @@ index 52ea7d757d6a..8636d1d8ae71 100644
  	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
  	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
  	ALC269_FIXUP_ASUS_X101_FUNC,
-@@ -8440,6 +8455,10 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC256_FIXUP_ASUS_HEADSET_MODE
+@@ -9043,6 +9043,10 @@ static const struct hda_fixup alc269_fixups[] = {
+ 			{ 0x1b, 0x90170152 } /* use as internal speaker (back) */
+ 		}
  	},
 +	[ALC269_FIXUP_HEADSET_AYN_LOKI_ZERO] = {
 +		.type = HDA_FIXUP_FUNC,

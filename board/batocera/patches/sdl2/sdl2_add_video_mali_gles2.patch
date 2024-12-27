@@ -10,7 +10,7 @@ index 4c9b3e4..1ee36eb 100755
  enable_kmsdrm_shared
  enable_video_dummy
  enable_video_offscreen
-@@ -22861,6 +22862,10 @@ fi
+@@ -25586,6 +25586,10 @@ fi
  
          video_kmsdrm=no
  
@@ -20,7 +20,7 @@ index 4c9b3e4..1ee36eb 100755
 +    fi
  
  pkg_failed=no
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libdrm >= 1.4.82" >&5
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libdrm >= 1.4.82" >&5
 diff --git a/configure.ac b/configure.ac
 index 27f69d4..cbfd8a2 100644
 --- a/configure.ac

@@ -52,8 +52,8 @@ diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
 index 4b4017c..d8de838 100644
 --- a/src/joystick/SDL_joystick.c
 +++ b/src/joystick/SDL_joystick.c
-@@ -2729,6 +2729,27 @@ SDL_JoystickGUID SDL_JoystickGetGUIDFromString(const char *pchGUID)
-     return guid;
+@@ -3343,6 +3343,27 @@ SDL_JoystickGUID SDL_JoystickGetGUIDFromString(const char *pchGUID)
+     return SDL_GUIDFromString(pchGUID);
  }
  
 +const char *
@@ -84,25 +84,25 @@ diff --git a/src/joystick/SDL_sysjoystick.h b/src/joystick/SDL_sysjoystick.h
 index 7bb6926..91ba45d 100644
 --- a/src/joystick/SDL_sysjoystick.h
 +++ b/src/joystick/SDL_sysjoystick.h
-@@ -218,6 +218,11 @@ extern SDL_JoystickDriver SDL_OS2_JoystickDriver;
- extern SDL_JoystickDriver SDL_PSP_JoystickDriver;
+@@ -257,6 +257,11 @@ extern SDL_JoystickDriver SDL_PSP_JoystickDriver;
  extern SDL_JoystickDriver SDL_VITA_JoystickDriver;
+ extern SDL_JoystickDriver SDL_N3DS_JoystickDriver;
  
 +extern const char *SDL_SYS_JoystickDevicePathById(int device_instance_id);
 +extern int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button);
 +extern int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis);
 +extern int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat);
 +
- #endif /* SDL_sysjoystick_h_ */
- 
- /* vi: set ts=4 sw=4 expandtab: */
+ /* Ends C function definitions when using C++ */
+ #ifdef __cplusplus
+ }
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
 index af9d10c..c105316 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -852,6 +852,16 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
-     unsigned long ffbit[NBITS(FF_MAX)] = { 0 };
-     SDL_bool use_deadzones = SDL_GetHintBoolean(SDL_HINT_LINUX_JOYSTICK_DEADZONES, SDL_FALSE);
+@@ -1267,6 +1267,16 @@ static void ConfigJoystick(SDL_Joystick *joystick, int fd, int fd_sensor)
+ 
+     SDL_AssertJoysticksLocked();
  
 +    for(i=0; i<KEY_MAX; i++) {
 +      joystick->hwdata->key_map[i] = -1;
@@ -178,11 +178,11 @@ diff --git a/src/joystick/linux/SDL_sysjoystick_c.h b/src/joystick/linux/SDL_sys
 index 898f183..51d3c58 100644
 --- a/src/joystick/linux/SDL_sysjoystick_c.h
 +++ b/src/joystick/linux/SDL_sysjoystick_c.h
-@@ -53,6 +53,7 @@ struct joystick_hwdata
+@@ -57,6 +57,7 @@ struct joystick_hwdata
      /* Support for the Linux 2.4 unified input interface */
      Uint8 key_map[KEY_MAX];
      Uint8 abs_map[ABS_MAX];
 +    Uint8 hat_map[ABS_MAX];
      SDL_bool has_key[KEY_MAX];
      SDL_bool has_abs[ABS_MAX];
- 
+     SDL_bool has_accelerometer;

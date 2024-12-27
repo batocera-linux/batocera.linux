@@ -2,17 +2,17 @@ diff --git a/grub-core/kern/main.c b/grub-core/kern/main.c
 index 3262444..3e37133 100644
 --- a/grub-core/kern/main.c
 +++ b/grub-core/kern/main.c
-@@ -211,8 +211,8 @@ grub_main (void)
-   grub_machine_init ();
- 
+@@ -273,8 +273,8 @@ grub_main (void)
+   /* This breaks flicker-free boot on EFI systems, so disable it there. */
+ #ifndef GRUB_MACHINE_EFI
    /* Hello.  */
 -  grub_setcolorstate (GRUB_TERM_COLOR_HIGHLIGHT);
 -  grub_printf ("Welcome to GRUB!\n\n");
 +  //grub_setcolorstate (GRUB_TERM_COLOR_HIGHLIGHT);
 +  //grub_printf ("Welcome to GRUB!\n\n");
    grub_setcolorstate (GRUB_TERM_COLOR_STANDARD);
+ #endif
  
-   /* Load pre-loaded modules and free the space.  */
 diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
 index 7e0a158..255db71 100644
 --- a/grub-core/normal/menu.c

@@ -17,7 +17,8 @@ LIBRETRO_DOLPHIN_CONF_OPTS = -DLIBRETRO=ON \
                              -DENABLE_TESTS=OFF \
                              -DUSE_DISCORD_PRESENCE=OFF \
                              -DBUILD_SHARED_LIBS=OFF \
-                             -DCMAKE_BUILD_TYPE=Release
+                             -DCMAKE_BUILD_TYPE=Release \
+                             -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -fpermissive"
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
     LIBRETRO_DOLPHIN_DEPENDENCIES += xserver_xorg-server

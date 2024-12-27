@@ -1,0 +1,22 @@
+diff --git a/setup.py b/setup.py
+index 14c7550f5e..d8684660b4
+--- a/setup.py
++++ b/setup.py
+@@ -9,7 +9,7 @@ hidapi_topdir = os.path.join("hidapi")
+ hidapi_include = os.path.join(hidapi_topdir, "hidapi")
+ system_hidapi = 0
+ libs = []
+-src = ["hid.pyx", "chid.pxd"]
++src = ["hid.pyx"]
+ 
+ 
+ def hidapi_src(platform):
+@@ -42,7 +42,7 @@ if sys.platform.startswith("linux"):
+             )
+         )
+     libs = ["udev", "rt"]
+-    src = ["hidraw.pyx", "chid.pxd"]
++    src = ["hidraw.pyx"]
+     if system_hidapi == 1:
+         libs.append("hidapi-hidraw")
+     else:

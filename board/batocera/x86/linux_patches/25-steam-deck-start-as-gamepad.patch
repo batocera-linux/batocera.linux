@@ -11,8 +11,7 @@ index e9d9051040..2ebd9bc649 100644
  
  static DEFINE_MUTEX(steam_devices_lock);
  static LIST_HEAD(steam_devices);
-@@ -1122,6 +1122,9 @@ static int steam_probe(struct hid_device *hdev,
- 	INIT_LIST_HEAD(&steam->list);
+@@ -1232,6 +1232,9 @@ static int steam_probe(struct hid_device *hdev,
  	INIT_WORK(&steam->rumble_work, steam_haptic_rumble_cb);
  	steam->sensor_timestamp_us = 0;
  
