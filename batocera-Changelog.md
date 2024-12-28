@@ -14,6 +14,7 @@
 - Significantly improve ES shutdown time, especially with large and medium collections
 ### Updated
 - Cemu to 2.5
+- Ruffle to Nightly-2024-12-28
 ### System
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 24.3.2
