@@ -15,7 +15,7 @@ config BR2_PACKAGE_BATOCERA_WINE
 	select BR2_PACKAGE_WINE_MONO
 
 config BR2_PACKAGE_BATOCERA_WINE_REQUIREMENTS
-        bool "batocera-wine-requirements"
+    bool "batocera-wine-requirements"
 
 	select BR2_PACKAGE_NCURSES
 

@@ -66,9 +66,9 @@ index 5af372d..18bad9a 100644
  	if (spec->num_cvts < ARRAY_SIZE(spec->cvt_nids))
  		spec->cvt_nids[spec->num_cvts] = cvt_nid;
  	spec->num_cvts++;
-@@ -1783,6 +1791,12 @@ static int hdmi_pcm_close(struct hda_pcm_stream *hinfo,
- 	int pinctl;
+@@ -2189,6 +2189,12 @@ static int hdmi_pcm_close(struct hda_pcm_stream *hinfo,
  
+ 	mutex_lock(&spec->pcm_lock);
  	if (hinfo->nid) {
 +		/*
 +		 * Make sure no empty audio is output after this point by
@@ -77,8 +77,8 @@ index 5af372d..18bad9a 100644
 +		__snd_hda_codec_cleanup_stream(codec, hinfo->nid, 1);
 +
  		pcm_idx = hinfo_to_pcm_index(codec, hinfo);
- 		if (snd_BUG_ON(pcm_idx < 0))
- 			return -EINVAL;
+ 		if (snd_BUG_ON(pcm_idx < 0)) {
+ 			err = -EINVAL;
 -- 
 2.7.4
 

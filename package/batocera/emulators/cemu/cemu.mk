@@ -5,7 +5,7 @@
 ################################################################################
 
 CEMU_MAJOR = 2
-CEMU_MINOR = 1
+CEMU_MINOR = 5
 CEMU_PATCH = 
 ifneq ($(CEMU_PATCH),)
 CEMU_VERSION = v$(CEMU_MAJOR).$(CEMU_MINOR)-$(CEMU_PATCH)

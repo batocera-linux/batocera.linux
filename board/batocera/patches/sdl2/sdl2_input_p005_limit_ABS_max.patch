@@ -2,14 +2,14 @@ diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjo
 index 0c7f787..3af375a 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -1031,7 +1031,7 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
+@@ -1341,7 +1341,7 @@ static void ConfigJoystick(SDL_Joystick *joystick, int fd, int fd_sensor)
                  ++joystick->nhats;
              }
          }
 -        for (i = 0; i < ABS_MAX; ++i) {
 +        for (i = 0; i < ABS_MISC; ++i) {
              /* Skip digital hats */
-             if (joystick->hwdata->has_hat[(i - ABS_HAT0X) / 2]) {
+             if (i >= ABS_HAT0X && i <= ABS_HAT3Y && joystick->hwdata->has_hat[(i - ABS_HAT0X) / 2]) {
                  continue;
 @@ -1506,6 +1506,9 @@ HandleInputEvents(SDL_Joystick *joystick)
                                            events[i].value);

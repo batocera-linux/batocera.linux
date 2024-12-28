@@ -2,12 +2,12 @@ diff --git a/xbmc/application/Application.cpp b/xbmc/application/Application.cpp
 index daf96d7..78b4c1a 100644
 --- a/xbmc/application/Application.cpp
 +++ b/xbmc/application/Application.cpp
-@@ -4095,7 +4095,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
-       return true;
+@@ -3060,7 +3060,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
+   }
  
    case GUI_MSG_PLAYBACK_ERROR:
 -    HELPERS::ShowOKDialogText(CVariant{16026}, CVariant{16027});
-+    // hide unsupportable message even when we don't case the cause
++    // hide unsupportable message even when we don't care the cause
 +    //HELPERS::ShowOKDialogText(CVariant{16026}, CVariant{16027});
      return true;
  

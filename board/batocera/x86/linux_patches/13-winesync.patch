@@ -15,7 +15,7 @@ diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
 index 0f5a49fc7c9e..e21e4424d6a2 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -470,6 +470,17 @@ config OPEN_DICE
+@@ -515,6 +515,17 @@ config OPEN_DICE
  
  	  If unsure, say N.
  
@@ -30,9 +30,9 @@ index 0f5a49fc7c9e..e21e4424d6a2 100644
 +
 +	  If unsure, say N.
 +
- source "drivers/misc/c2port/Kconfig"
- source "drivers/misc/eeprom/Kconfig"
- source "drivers/misc/cb710/Kconfig"
+ config NTSYNC
+ 	tristate "NT synchronization primitive emulation"
+ 	depends on BROKEN
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
 index a086197af544..1fb39bc4637b 100644
 --- a/drivers/misc/Makefile
@@ -3286,7 +3286,7 @@ diff --git a/MAINTAINERS b/MAINTAINERS
 index af9530d98717..f51064fca6e9 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -20536,6 +20536,15 @@ M:	David Härdeman <david@hardeman.nu>
+@@ -24950,6 +24950,15 @@ M:	David Härdeman <david@hardeman.nu>
  S:	Maintained
  F:	drivers/media/rc/winbond-cir.c
  
@@ -3300,8 +3300,8 @@ index af9530d98717..f51064fca6e9 100644
 +F:	tools/testing/selftests/drivers/winesync/
 +
  WINSYSTEMS EBC-C384 WATCHDOG DRIVER
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
  L:	linux-watchdog@vger.kernel.org
+ S:	Orphan
 -- 
 2.36.0
 
