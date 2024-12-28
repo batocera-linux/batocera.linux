@@ -96,15 +96,16 @@ build-docker-image: _check_docker
 	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-.ba-docker-image-available: _check_docker
+.ba-docker-image-available:
+	@$(MAKE) -s _check_docker
 	@$(DOCKER) pull $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-batocera-docker-image: $(if $(DIRECT_BUILD),,$(.ba-docker-image-available))
+batocera-docker-image: $(if $(DIRECT_BUILD),,.ba-docker-image-available)
 
 update-docker-image: _check_docker
 	-@rm .ba-docker-image-available > /dev/null
-	@$(MAKE) batocera-docker-image
+	@$(MAKE) -s batocera-docker-image
 
 publish-docker-image: _check_docker
 	@$(DOCKER) push $(DOCKER_REPO)/$(IMAGE_NAME):latest
