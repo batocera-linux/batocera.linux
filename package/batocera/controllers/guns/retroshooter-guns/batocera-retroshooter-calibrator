@@ -4,11 +4,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2022 Nicolas Adenis-Lamarre.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -26,7 +26,7 @@ if len(sys.argv) != 3:
     print("mising device argument")
     exit(1)
 
-bCalibration = ecodes.BTN_1
+bCalibration = ecodes.BTN_MIDDLE
 
 # input
 devpath = sys.argv[1]
@@ -121,7 +121,7 @@ try:
                                 target.syn()
                 else:
                     if calibration_timeChecker is not None:
-                        if time.time() - calibration_timeChecker > 3: # 3 seconds
+                        if time.time() - calibration_timeChecker > 4: # 4 seconds
                             calibration_mode = True
                             calibration_timeChecker  = None
                             calibration_step = 1
