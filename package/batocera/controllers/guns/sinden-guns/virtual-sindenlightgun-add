@@ -66,6 +66,11 @@ NDEVSINPUTS=$(echo "${CHILDRENINPUTS}" | wc -l)
 CHILDRENVIDEOS=$(evsieve-helper children "${PARENTVIDEOSHASH}" video usb)
 NDEVSVIDEOS=$(echo "${CHILDRENVIDEOS}" | wc -l)
 
+if test "${NDEVSINPUTS}" = 2 -a "${NDEVSVIDEOS}" -ge 1
+then
+    DEV1=$(echo "${CHILDRENINPUTS}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDRENINPUTS}" | head -2 | tail -1 | cut -f 1)
+
 # Trigger                  : BTN_LEFT
 # Pump, front left         : BTN_RIGHT
 # Rear left                : BTN_MIDDLE
@@ -73,12 +78,15 @@ NDEVSVIDEOS=$(echo "${CHILDRENVIDEOS}" | wc -l)
 # Rear right               : KEY_1
 # D-pad                    : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
-if test "${NDEVSINPUTS}" = 2 -a "${NDEVSVIDEOS}" -ge 1
-then
-    DEV1=$(echo "${CHILDRENINPUTS}" | head -1           | cut -f 1)
-    DEV2=$(echo "${CHILDRENINPUTS}" | head -2 | tail -1 | cut -f 1)
-
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Sinden lightgun" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve                                      \
+            --input "${DEV1}" "${DEV2}" persist=exit   \
+            --map key:1                btn:1           \
+            --map key:2                btn:2           \
+            --map key:up               btn:5           \
+            --map key:down             btn:6           \
+            --map key:left             btn:7           \
+            --map key:right            btn:8           \
+            --output name="Sinden lightgun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 
     # ttyACM
@@ -100,7 +108,7 @@ then
 	    mv "/var/run/sinden/p${PARENTHASH}/LightgunMono.exe.config" "${CONFIGFILE}" || unlockAndExit 1
 	fi
 
-	# parameters
+	# Recoil settings
 	RECOIL_MODE=$(batocera-settings-get controllers.guns.recoil)
 	case "${RECOIL_MODE}" in
 	    "machinegun")
@@ -140,7 +148,7 @@ then
 	    ;;
 	esac
 
-	# camera
+	# Camera settings
 	OPT_CONTRAST=$(batocera-settings-get controllers.guns.sinden.contrast)
 	OPT_BRIGHTNESS=$(batocera-settings-get controllers.guns.sinden.brightness)
 	OPT_EXPOSURE=$(batocera-settings-get controllers.guns.sinden.exposure)
@@ -148,19 +156,19 @@ then
 	test -z "${OPT_BRIGHTNESS}" && OPT_BRIGHTNESS=120
 	test -z "${OPT_EXPOSURE}"   && OPT_EXPOSURE=-7
 
-	# recoil
+	# Recoil values and parameters
 	sed -i -e s+'\(key="EnableRecoil"[ ]*value="\)[^"]*"'+'\1'${RECOIL_ENABLED}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="TriggerRecoilNormalOrRepeat"[ ]*value="\)[^"]*"'+'\1'${RECOIL_NORMALORREPEAT}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilStrength"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STRENGTH}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilStartDelay"[ ]*value="\)[^"]*"'+'\1'${RECOIL_STARTDELAY}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="AutoRecoilDelayBetweenPulses"[ ]*value="\)[^"]*"'+'\1'${RECOIL_PULSEDELAY}'"'+ "${CONFIGFILE}" # no exit for that
 
-	# camera
+	# Camera values and parameters
 	sed -i -e s+'\(key="CameraContrast"[ ]*value="\)[^"]*"'+'\1'${OPT_CONTRAST}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="CameraBrightness"[ ]*value="\)[^"]*"'+'\1'${OPT_BRIGHTNESS}'"'+ "${CONFIGFILE}" # no exit for that
 	sed -i -e s+'\(key="CameraExposure"[ ]*value="\)[^"]*"'+'\1'${OPT_EXPOSURE}'"'+ "${CONFIGFILE}" # no exit for that
 
-	# border ratio
+	# Border ratio
 	OPT_RATIO=$(batocera-settings-get controllers.guns.bordersratio)
 	if test "${OPT_RATIO}" = "4:3"
 	then

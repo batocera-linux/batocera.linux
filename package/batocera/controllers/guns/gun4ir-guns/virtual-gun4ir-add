@@ -54,7 +54,15 @@ then
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
     DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
 
-    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map key:1 btn:1 --map key:5 btn:2 --map key:up btn:5 --map key:down btn:6 --map key:left btn:7 --map key:right btn:8 --output name="Gun4ir" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve                                              \
+            --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit \
+            --map key:1                btn:1                   \
+            --map key:5                btn:2                   \
+            --map key:up               btn:5                   \
+            --map key:down             btn:6                   \
+            --map key:left             btn:7                   \
+            --map key:right            btn:8                   \
+            --output name="Gun4ir" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
