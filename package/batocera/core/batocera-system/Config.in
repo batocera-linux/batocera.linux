@@ -1096,12 +1096,6 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Rise of the Triad
 	select BR2_PACKAGE_TARADINO    # ALL
 
-	# Doom 3
-	select BR2_PACKAGE_DHEWM3    if BR2_x86_64 || \
-	                                BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
-									BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
-									BR2_PACKAGE_BATOCERA_TARGET_SM8250
-
 	# Jazz Jackrabbit
 	select BR2_PACKAGE_OPENJAZZ		# ALL
 
@@ -1109,6 +1103,12 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_JAZZ2_NATIVE    if BR2_PACKAGE_BATOCERA_GLES3 || \
 	                                      BR2_PACKAGE_LIBGLFW && \
 										  !BR2_PACKAGE_BATOCERA_TARGET_JH7110
+	
+	# Doom 3 & mods
+	select BR2_PACKAGE_BATOCERA_DHEWM3    if BR2_x86_64 || \
+											BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
+											BR2_PACKAGE_BATOCERA_TARGET_BCM2712 || \
+											BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
 	help
 	  Ports
@@ -1429,6 +1429,29 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	help
 	  All avaible systems for the selected architecture
+
+### Dhewm3 port & mods
+config BR2_PACKAGE_BATOCERA_DHEWM3
+	bool "batocera.linux Dhewm3 packages selection"
+
+	select BR2_PACKAGE_DHEWM3		      
+	# Mods
+	select BR2_PACKAGE_BLOODMOD
+	select BR2_PACKAGE_CDOOM
+	select BR2_PACKAGE_D3LE
+	select BR2_PACKAGE_DENTONMOD
+	select BR2_PACKAGE_DESOLATED
+	select BR2_PACKAGE_ELDOOM
+	select BR2_PACKAGE_FITZ
+	select BR2_PACKAGE_GRIMM
+	select BR2_PACKAGE_HARDCORPS
+	select BR2_PACKAGE_PERFECTED
+	select BR2_PACKAGE_REALGIBS
+	select BR2_PACKAGE_RIVENSIN
+	select BR2_PACKAGE_SIKKMOD
+
+	help
+	  Dhewm3
 
 config BR2_PACKAGE_BATOCERA_MUPEN64
 	bool "batocera.linux Mupen64 packages selection"
