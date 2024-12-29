@@ -20,7 +20,15 @@ fi
 
 # set the final tdp value
 set_tdp() {
-    echo "Game ${2} requested setting AMD Mobile Processor TDP to ${1} Watts" >> $log
+    TDP_VALUE=$1
+    ROM_NAME=$2
+
+    if [ -z "${ROM_NAME}" ]; then
+        echo "Setting AMD Mobile Processor TDP to ${1} Watts" >> $log
+    else
+        echo "Game ${2} requested setting AMD Mobile Processor TDP to ${1} Watts" >> $log
+    fi
+
     /usr/bin/batocera-amd-tdp $1
 }
 
@@ -40,69 +48,63 @@ handle_tdp() {
     fi
 }
 
-# Check for events
-EVENT=$1
-SYSTEM_NAME=$2
-ROM_PATH=$5
-
-# Get the rom name from ROM_PATH
-ROM_NAME=$(basename "$ROM_PATH")
-
-# exit accordingly if the event is neither gameStart nor gameStop
-if [ "$EVENT" != "gameStart" ] && [ "$EVENT" != "gameStop" ]; then
-    exit 0
-fi
-
-# handle gameStop event
-if [ "$EVENT" == "gameStop" ]; then
-    # set either user global setting or default tdp
-    TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
-    if [ -z "${TDP_SETTING}" ]; then
-        TDP_SETTING="$(/usr/bin/batocera-settings-get system.cpu.tdp)"
-        
-        if [ -n "$TDP_SETTING" ]; then
-            set_tdp "${TDP_SETTING}" "STOP"
-        else
+handle_game_stop() {
+    if [ "$EVENT" == "gameStop" ]; then
+        # set user global setting
+        TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
+        if [ -z "${TDP_SETTING}" ]; then
             echo "No TDP setting defined, cannot set TDP." >> $log
             exit 1
         fi
+        handle_tdp "${TDP_SETTING}" "STOP"
         exit 0
     fi
-    handle_tdp "${TDP_SETTING}" "STOP"
-    exit 0
-fi
+}
 
-# run through determining the desired TDP setting
-# check for user set system specific setting
-if [ -n "${SYSTEM_NAME}" ]; then
-    # check for rom specific config
-    TDP_SETTING=$(/usr/bin/batocera-settings-get "${SYSTEM_NAME}[\"${ROM_NAME}\"].tdp")
-    if [ -z "${TDP_SETTING}" ]; then
-        TDP_SETTING="$(/usr/bin/batocera-settings-get ${SYSTEM_NAME}.tdp)"
+handle_game_start() {
+    local SYSTEM_NAME="$1"
+    local ROM_PATH="$2"
+
+    # Extract the base game name
+    ROM_NAME="${ROM_PATH##*/}"
+
+    # check for user set system specific setting
+    if [ -n "${SYSTEM_NAME}" ]; then
+        # check for rom specific config
+        TDP_SETTING=$(/usr/bin/batocera-settings-get "${SYSTEM_NAME}[\"${ROM_NAME}\"].tdp")
+        if [ -z "${TDP_SETTING}" ]; then
+            TDP_SETTING="$(/usr/bin/batocera-settings-get ${SYSTEM_NAME}.tdp)"
+        fi
     fi
-fi
 
-# If no user set system specific setting check for user set global setting
-if [ -z "${TDP_SETTING}" ]; then
-    TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
-fi
+    # If no user set system specific setting check for user set global setting
+    if [ -z "${TDP_SETTING}" ]; then
+        TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
+    fi
 
-# If no value is found ensure tdp is default before exiting
-if [ -z "${TDP_SETTING}" ]; then
-    TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
+    # now apply TDP percentage accordingly
     if [ -n "${TDP_SETTING}" ]; then
-        set_tdp "${TDP_SETTING}" "${ROM_NAME}"
+        handle_tdp "${TDP_SETTING}" "${ROM_NAME}"
     else
         echo "No TDP setting defined, cannot set TDP." >> $log
         exit 1
-    fi    
-    exit 0
-fi
+    fi
+}
 
-# now apply TDP percentage accordingly
-if [ -n "${TDP_SETTING}" ]; then
-    handle_tdp "${TDP_SETTING}" "${ROM_NAME}"
-else
-    echo "No TDP setting defined, cannot set TDP." >> $log
-    exit 1
-fi
+# Check for events
+SYSTEM_NAME="$2"
+ROM_PATH="$5"
+
+case "$1" in
+    gameStart)
+        handle_game_start "$SYSTEM_NAME" "$ROM_PATH"
+        ;;
+    gameStop)
+        handle_game_stop
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+exit 0
