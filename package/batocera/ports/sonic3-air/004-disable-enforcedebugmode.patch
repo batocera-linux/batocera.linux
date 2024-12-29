@@ -1,0 +1,13 @@
+diff --git a/Oxygen/sonic3air/config.json b/Oxygen/sonic3air/config.json
+index 050b60e..0f946ea 100644
+--- a/Oxygen/sonic3air/config.json
++++ b/Oxygen/sonic3air/config.json
+@@ -23,7 +23,7 @@
+ 	{
+ 		// For infos on dev mode (developer mode) see Oxygen Handbook in "bonus/oxygenengine" folder
+ 		"Enabled": "1",					// Set to "1" to enable dev mode
+-		"EnforceDebugMode": "1",		// Set to "1" to enable in-game debug mode whenever dev mode is active, independently from what's set in the Options menu
++		"EnforceDebugMode": "0",		// Set to "1" to enable in-game debug mode whenever dev mode is active, independently from what's set in the Options menu
+ 		"SkipExitConfirmation": "1",	// Set to "1" to skip the confirmation when exiting the game from pause menu
+ 
+ 		"LoadSaveState": "state_01",	// Load save state (requires "StartPhase": "3")
