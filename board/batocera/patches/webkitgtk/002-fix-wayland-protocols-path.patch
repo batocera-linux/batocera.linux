@@ -1,13 +1,14 @@
-diff --git a/Source/cmake/FindWaylandProtocols.cmake b/Source/cmake/FindWaylandProtocols.cmake.new
-index ec786a3a93..8c127f7cd8 100644
+diff --git a/Source/cmake/FindWaylandProtocols.cmake b/Source/cmake/FindWaylandProtocols.cmake
+index 8c127f7cd8..d464b21d15 100644
 --- a/Source/cmake/FindWaylandProtocols.cmake
-+++ b/Source/cmake/FindWaylandProtocols.cmake.new
-@@ -31,7 +31,7 @@
- find_package(PkgConfig QUIET)
- pkg_check_modules(WAYLAND_PROTOCOLS wayland-protocols)
++++ b/Source/cmake/FindWaylandProtocols.cmake
+@@ -33,6 +33,9 @@ pkg_check_modules(WAYLAND_PROTOCOLS wayland-protocols)
  
--if (WAYLAND_PROTOCOLS_FOUND)
-+if (NOT DEFINED WAYLAND_PROTOCOLS_DATADIR)
+ if (NOT DEFINED WAYLAND_PROTOCOLS_DATADIR)
    pkg_get_variable(WAYLAND_PROTOCOLS_DATADIR wayland-protocols pkgdatadir)
++endif ()
++
++if (WAYLAND_PROTOCOLS_FOUND)
    find_program(WAYLAND_SCANNER NAMES wayland-scanner)
    mark_as_advanced(WAYLAND_PROTOCOLS_DATADIR WAYLAND_SCANNER)
+ endif ()
