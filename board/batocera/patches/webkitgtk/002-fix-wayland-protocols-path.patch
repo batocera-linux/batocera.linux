@@ -1,10 +1,13 @@
 diff --git a/Source/cmake/FindWaylandProtocols.cmake b/Source/cmake/FindWaylandProtocols.cmake
-index 8c127f7cd8..d464b21d15 100644
+index ec786a3a93..d464b21d15 100644
 --- a/Source/cmake/FindWaylandProtocols.cmake
 +++ b/Source/cmake/FindWaylandProtocols.cmake
-@@ -33,6 +33,9 @@ pkg_check_modules(WAYLAND_PROTOCOLS wayland-protocols)
+@@ -31,8 +31,11 @@
+ find_package(PkgConfig QUIET)
+ pkg_check_modules(WAYLAND_PROTOCOLS wayland-protocols)
  
- if (NOT DEFINED WAYLAND_PROTOCOLS_DATADIR)
+-if (WAYLAND_PROTOCOLS_FOUND)
++if (NOT DEFINED WAYLAND_PROTOCOLS_DATADIR)
    pkg_get_variable(WAYLAND_PROTOCOLS_DATADIR wayland-protocols pkgdatadir)
 +endif ()
 +
