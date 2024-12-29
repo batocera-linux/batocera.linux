@@ -15,6 +15,7 @@
 ### Updated
 - Cemu to 2.5
 - Ruffle to Nightly-2024-12-28
+- RPCS3 to 0.0.34-17265
 ### System
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 24.3.2
