@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import NotRequired, TypeAlias, TypedDict
+from typing import NotRequired, TypedDict
 
 
 class Resolution(TypedDict):
@@ -25,8 +25,8 @@ class Gun(TypedDict):
     buttons: list[str]
 
 
-GunMapping: TypeAlias = Mapping[int, Gun]
-GunDict: TypeAlias = dict[int, Gun]
+type GunMapping = Mapping[int, Gun]
+type GunDict = dict[int, Gun]
 
 
 class DeviceInfo(TypedDict):
@@ -40,8 +40,8 @@ class DeviceInfo(TypedDict):
     wheel_rotation: NotRequired[int]
 
 
-DeviceInfoMapping: TypeAlias = Mapping[str, DeviceInfo]
-DeviceInfoDict: TypeAlias = dict[str, DeviceInfo]
+type DeviceInfoMapping = Mapping[str, DeviceInfo]
+type DeviceInfoDict = dict[str, DeviceInfo]
 
 
 class HotkeysContext(TypedDict):

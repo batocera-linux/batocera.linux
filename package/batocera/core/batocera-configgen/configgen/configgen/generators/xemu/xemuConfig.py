@@ -17,8 +17,7 @@ def writeIniFile(system: Emulator, rom: str, playersControllers: ControllerMappi
 
     if XEMU_CONFIG.exists():
         try:
-            with XEMU_CONFIG.open(encoding='utf_8_sig') as fp:
-                iniConfig.readfp(fp)
+            iniConfig.read(XEMU_CONFIG, encoding='utf_8_sig')
         except:
             pass
 
