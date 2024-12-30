@@ -5,7 +5,6 @@ import logging
 import os
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -15,7 +14,7 @@ import toml
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
-from ...utils import vulkan
+from ...utils import vulkan, wine
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -46,8 +45,6 @@ class XeniaGenerator(Generator):
         rom_path = Path(rom)
 
         wineprefix = HOME / 'wine-bottles' / 'xbox360'
-        winePath = Path('/usr/wine/wine-tkg')
-        wineBinary = winePath / 'bin' / 'wine64'
         xeniaConfig = CONFIGS / 'xenia'
         xeniaCache = CACHE / 'xenia'
         xeniaSaves = SAVES / 'xbox360'
@@ -106,26 +103,13 @@ class XeniaGenerator(Generator):
             with (canarypath / 'portable.txt').open('w'):
                 pass
 
-        vcrun2019_done = wineprefix / "vcrun2019.done"
-        if not vcrun2019_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "vcrun2019"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/wine-tkg/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/wine-tkg/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with vcrun2019_done.open("w") as f:
-                f.write("done")
+        wine.install_wine_trick(wineprefix, 'vcrun2019')
 
         dll_files = ["d3d12.dll", "d3d12core.dll", "d3d11.dll", "d3d10core.dll", "d3d9.dll", "d3d8.dll", "dxgi.dll"]
         # Create symbolic links for 64-bit DLLs
         try:
             for dll in dll_files:
-                src_path = Path("/usr/wine/dxvk/x64") / dll
+                src_path = wine.WINE_BASE / "dxvk" / "x64" / dll
                 dest_path = wineprefix / "drive_c" / "windows" / "system32" / dll
                 # Remove existing link if it already exists
                 if dest_path.exists() or dest_path.is_symlink():
@@ -137,7 +121,7 @@ class XeniaGenerator(Generator):
         # Create symbolic links for 32-bit DLLs
         try:
             for dll in dll_files:
-                src_path = Path("/usr/wine/dxvk/x32") / dll
+                src_path = wine.WINE_BASE / "dxvk" / "x32" / dll
                 dest_path = wineprefix / "drive_c" / "windows" / "syswow64" / dll
                 # Remove existing link if it already exists
                 if dest_path.exists() or dest_path.is_symlink():
@@ -341,28 +325,25 @@ class XeniaGenerator(Generator):
         # now setup the command array for the emulator
         if rom == 'config':
             if core == 'xenia-canary':
-                commandArray = [wineBinary, canarypath / 'xenia_canary.exe']
+                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe']
             else:
-                commandArray = [wineBinary, emupath / 'xenia.exe']
+                commandArray = [wine.WINE64, emupath / 'xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = [wineBinary, canarypath / 'xenia_canary.exe', 'z:' + rom]
+                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe', 'z:' + rom]
             else:
-                commandArray = [wineBinary, emupath / 'xenia.exe', 'z:' + rom]
+                commandArray = [wine.WINE64, emupath / 'xenia.exe', 'z:' + rom]
 
-        environment={
-                'WINEPREFIX': wineprefix,
-                'LD_LIBRARY_PATH': '/usr/lib:/lib32:/usr/wine/wine-tkg/lib/wine',
-                'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
-                'WINEFSYNC': '1',
-                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
-                'SDL_JOYSTICK_HIDAPI': '0',
-                # hum pw 0.2 and 0.3 are hardcoded, not nice
-                'SPA_PLUGIN_DIR': '/usr/lib/spa-0.2:/lib32/spa-0.2',
-                'PIPEWIRE_MODULE_DIR': '/usr/lib/pipewire-0.3:/lib32/pipewire-0.3',
-                'VKD3D_SHADER_CACHE_PATH': xeniaCache,
-                'WINEDLLOVERRIDES': "winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n",
-            }
+        environment = wine.get_wine_environment(wineprefix)
+        environment.update({
+            'LD_LIBRARY_PATH': f'/usr/lib:{environment["LD_LIBRARY_PATH"]}',
+            'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
+            'WINEFSYNC': '1',
+            'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
+            'SDL_JOYSTICK_HIDAPI': '0',
+            'VKD3D_SHADER_CACHE_PATH': xeniaCache,
+            'WINEDLLOVERRIDES': "winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n",
+        })
 
         # ensure nvidia driver used for vulkan
         if Path('/var/tmp/nvidia.prime').exists():
