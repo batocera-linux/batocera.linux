@@ -1,11 +1,11 @@
 --- a/fb_display.c
 +++ b/fb_display.c
-@@ -377,7 +377,7 @@
- 	    for(i = 0; i < count ; i++)
+@@ -367,7 +367,7 @@
+ 		for(i = 0; i < count ; i++)
  		i_fbbuff[i] = ((rgbbuff[i*3] << 16) & 0xFF0000) |
- 			    ((rgbbuff[i*3+1] << 8) & 0xFF00) |
--			    (rgbbuff[i*3+2] & 0xFF);
-+			    (rgbbuff[i*3+2] & 0xFF) | 0xFF000000;
- 	    fbbuff = (void *) i_fbbuff;
- 	    break;
+ 				((rgbbuff[i*3+1] << 8) & 0xFF00) |
+-				(rgbbuff[i*3+2] & 0xFF);
++				(rgbbuff[i*3+2] & 0xFF) | 0xFF000000;
+ 		fbbuff = (void *) i_fbbuff;
+ 		break;
  	default:
