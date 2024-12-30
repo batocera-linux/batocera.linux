@@ -1,0 +1,17 @@
+diff --git a/meson.build b/meson.build
+index 9ea15239f1..ed211199e6 100644
+--- a/meson.build
++++ b/meson.build
+@@ -80,9 +80,9 @@ else
+ endif
+ 
+ libva_dep = dependency('libva', version: libva_req)
+-libva_drm_dep = dependency('libva-drm', version: libva_req)
+-libva_wayland_dep = dependency('libva-wayland', version: libva_req)
+-libva_x11_dep = dependency('libva-x11', version: libva_req)
++libva_drm_dep = dependency('libva-drm', version: libva_req, required: false)
++libva_wayland_dep = dependency('libva-wayland', version: libva_req, required: false)
++libva_x11_dep = dependency('libva-x11', version: libva_req, required: false)
+ 
+ libdrm_dep = dependency('libdrm', version: libdrm_req, required: get_option('drm'))
+ libudev_dep = dependency('libudev', required: get_option('drm'))
