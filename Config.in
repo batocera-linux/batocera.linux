@@ -447,7 +447,23 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/uqm/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/taradino/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/jazz2-native/Config.in"
+  endmenu
+
+  menu "dhewm3"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/bloodmod/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/cdoom/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/d3le/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/dentonmod/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/desolated/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/eldoom/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/fitz/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/grimm/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/hardcorps/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/perfected/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/realgibs/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/rivensin/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/dhewm3/sikkmod/Config.in"
   endmenu
 
   menu "mupen64plus"
