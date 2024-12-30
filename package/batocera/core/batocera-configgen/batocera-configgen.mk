@@ -15,7 +15,6 @@ BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	python-evdev \
 	python-pyudev \
 	python3-configobj \
-	python-httplib2 \
 	ffmpeg-python \
 	python-pillow \
 	python-ruamel-yaml

@@ -56,16 +56,12 @@ class Rpcs3Generator(Generator):
 
         mkdir_if_not_exists(RPCS3_CONFIG.parent)
 
-        yaml = YAML(typ='safe', pure=True)
-
         # Generate a default config if it doesn't exist otherwise just open the existing
         rpcs3ymlconfig = {}
         if RPCS3_CONFIG.is_file():
             with RPCS3_CONFIG.open("r") as stream:
+                yaml = YAML(typ='safe', pure=True)
                 rpcs3ymlconfig = yaml.load(stream) or {}
-
-        if rpcs3ymlconfig is None: # in case the file is empty
-            rpcs3ymlconfig = {}
 
         # Add Nodes if not in the file
         if "Core" not in rpcs3ymlconfig:
@@ -318,6 +314,8 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Miscellaneous"]["Show trophy popups"] = False
 
         with RPCS3_CONFIG.open("w") as file:
+            yaml = YAML(pure=True)
+            yaml.default_flow_style = False
             yaml.dump(rpcs3ymlconfig, file)
 
         # copy icon files to config

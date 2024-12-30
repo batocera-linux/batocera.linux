@@ -21,8 +21,7 @@ def writePPSSPPConfig(system: Emulator):
     iniConfig = CaseSensitiveConfigParser(interpolation=None)
     if ppssppConfig.exists():
         try:
-            with ppssppConfig.open('r', encoding='utf_8_sig') as fp:
-                iniConfig.readfp(fp)
+            iniConfig.read(ppssppConfig, encoding='utf_8_sig')
         except:
             pass
 
