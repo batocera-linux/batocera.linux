@@ -5557,3 +5557,31 @@ jazz2:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:jazz2-native
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:jazz2-native
+
+catacomb:
+  name: CatacombGL
+  manufacturer: Ports
+  release: 1991
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    catacombgl:
+      catacombgl: { requireAnyOf: [BR2_PACKAGE_CATACOMBGL] }
+  comment_en: |
+    CatacombGL is a source port of Catacomb 3D and the Catacomb Adventure series.
+    Catacomb 3D: The Descent was developed by Id Software in 1991.
+    The Catacomb Adventure series consists of The Catacomb Abyss, The Catacomb Armageddon and The Catacomb Apocalypse.
+
+    Copy the game folders from the GOG Catacombs Pack into this roms/catacomb folder.
+    Names should be Abyss (or Abyss_sw13 for the shareware version), Apocalypse, Armageddon, Cat3D
+
+    Create a launch file to be able to launch the game from ES.
+    i.e. Catacomb Abyss.game or Catacomb Armageddon.game etc.
+
+    For more info: https://wiki.batocera.org/systems:catacombgl
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:catacombgl
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:catacombgl

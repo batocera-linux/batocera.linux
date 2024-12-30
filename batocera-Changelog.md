@@ -7,6 +7,7 @@
 - Wireguard VPN for RK3326 boards
 - Image scaling option for Drastic
 - A selection of Dhewm3 mods
+- CatacombGL port for running various Catacomb games
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
