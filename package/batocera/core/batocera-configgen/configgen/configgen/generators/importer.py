@@ -48,8 +48,9 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'sonic-mania': ('sonic_mania.sonic_maniaGenerator', 'SonicManiaGenerator'),
     'shadps4': ('shadps4.shadps4Generator', 'shadPS4Generator'),
     'jazz2-native': ('jazz2_native.jazz2_nativeGenerator', 'Jazz2_NativeGenerator'),
+    'dhewm3': ('dhewm3.dhewm3Generator', 'Dhewm3Generator'),
+    'catacombgl': ('catacombgl.catacombglGenerator', 'CatacombGLGenerator'),
 }
-
 
 def get_generator(emulator: str) -> Generator:
     if emulator in _GENERATOR_MAP:

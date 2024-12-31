@@ -1,0 +1,7 @@
+config BR2_PACKAGE_CATACOMBGL
+    bool "catacombgl"
+    select BR2_PACKAGE_SDL2
+    help
+      CatacombGL is a source port of Catacomb 3D and the Catacomb Adventure series. 
+
+      https://github.com/ArnoAnsems/CatacombGL
