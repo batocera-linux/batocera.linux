@@ -18,8 +18,9 @@
 ### Updated
 - BigPEmu to v117
 - Cemu to 2.5
-- Libretro-MAME to 0.272
+- Jazz2 to 3.0.0
 - GroovyMAME to 0.272
+- Libretro-MAME to 0.272
 - Ruffle to Nightly-2024-12-28
 - RPCS3 to 0.0.34-17265
 - PCSX2 to 2.3.82
