@@ -14,7 +14,9 @@
 - Fix handling of luks.enabled setting to allow disabling LUKS integration
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
+- BigPEmu now supports .bigpimg CD images
 ### Updated
+- BigPEmu to v117
 - Cemu to 2.5
 - Libretro-MAME to 0.272
 - GroovyMAME to 0.272

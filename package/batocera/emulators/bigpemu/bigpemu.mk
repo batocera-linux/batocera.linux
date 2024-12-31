@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BIGPEMU_VERSION = v115
+BIGPEMU_VERSION = v117
 BIGPEMU_SOURCE = BigPEmu_Linux64_$(BIGPEMU_VERSION).tar.gz
 BIGPEMU_SITE = https://www.richwhitehouse.com/jaguar/builds
 
