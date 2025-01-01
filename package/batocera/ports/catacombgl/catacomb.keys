@@ -147,10 +147,16 @@
             "description": "Turn Right"
         },
         {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": "KEY_Y",
+            "description": "Press the Y key for 'Yes'"
+        },
+        {
             "trigger": "joystick2down",
             "type": "key",
             "target": "KEY_N",
-            "description": "Press N for Novice"
+            "description": "Press the N key for 'Novice' or 'No'"
         },
         {
             "trigger": "l3",
