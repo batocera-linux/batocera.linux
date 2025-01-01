@@ -115,10 +115,20 @@ class Dhewm3Generator(Generator):
             "/usr/bin/dhewm3", "+set", "fs_basepath", str(romDir)
         ]
 
+        if directory == "perfected_roe" or directory == "sikkmodd3xp":
+            commandArray.extend(
+                ["+set", "fs_game_base", "d3xp"]
+            )
+        
+        if directory == "d3le":
+            commandArray.extend(
+                ["+set", "fs_game_base", "d3xp", "+seta", "com_allowconsole", "1"]
+            )
+
         if directory != "base":
-            commandArray.extend([
-                "+set", "fs_game", str(directory)
-            ])
+            commandArray.extend(
+                ["+set", "fs_game", str(directory)]
+            )
 
         return Command.Command(
             array=commandArray,
