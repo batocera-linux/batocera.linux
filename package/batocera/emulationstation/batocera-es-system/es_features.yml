@@ -11342,6 +11342,12 @@ drastic:
 xemu:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
+        xemu_api:
+            prompt: GRAPHICS API
+            description: Choose which graphics API library to use.
+            choices:
+                "OpenGL": "OPENGL"
+                "Vulkan": "VULKAN"
         xemu_scaling:
             prompt: SCALING MODE
             description: Choose the scaling mode for the game screen.
@@ -11369,12 +11375,6 @@ xemu:
                 "8x (5120x3840)":   8
                 "9x (5760x4320)":   9
                 "10x (6400x4800)":  10
-        xemu_api:
-            prompt: GRAPHICS API
-            description: Choose which graphics API library to use.
-            choices:
-                "OpenGL": "OPENGL"
-                "Vulkan": "VULKAN"
         xemu_vsync:
             prompt:      VSYNC
             description: Fix screen tearing.
