@@ -1134,6 +1134,7 @@ lynx:
     libretro:
       mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
       handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY] }
+      holani:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HOLANI] }
 
 ngp:
   name:       Neo-Geo Pocket
