@@ -212,6 +212,50 @@ mkdir -p "${TMPOUT}/usr/bin32" || exit 1
 #cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/gst"* "${TMPOUT}/usr/bin32/" || exit 1
 
+# lindbergh loader
+echo 
+echo "lindbergh loader & additional libraries..."
+echo
+mkdir -p "${TMPOUT}/usr/bin/lindbergh" || exit 1
+mkdir -p "${TMPOUT}/lib32/extralibs" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lind"*        "${TMPOUT}/usr/bin/lindbergh/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lib"*"so"*    "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/extralibs/lib"*"so"* "${TMPOUT}/lib32/extralibs/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libglut.so"*            "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libGLU.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libX"*"so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libSM.so"*              "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libICE.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libopenal.so"*          "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libGLEW.so"*            "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libasound"*"so"*        "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libmd.so"*              "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libbsd.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libpcsclite.so"*        "${TMPOUT}/lib32/" || exit 1
+mkdir -p "${TMPOUT}/lib32/gbm" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/gbm/dri_gbm.so"         "${TMPOUT}/lib32/gbm/" || exit 1
+
+# pulseaudio
+echo 
+echo "pulseaudio..."
+echo
+mkdir -p "${TMPOUT}/lib32/pulseaudio" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
+
+# wireplumber
+echo 
+echo "wireplumber..."
+echo
+mkdir -p "${TMPOUT}/lib32/wireplumber-0.5" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/wireplumber-0.5/"* "${TMPOUT}/lib32/wireplumber-0.5" || exit 1
+
+# xorg
+echo 
+echo "xorg..."
+echo
+mkdir -p "${TMPOUT}/lib32/xorg" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/xorg/"* "${TMPOUT}/lib32/xorg" || exit 1
+
 # dri
 echo 
 echo "dri..."

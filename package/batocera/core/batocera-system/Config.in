@@ -1431,6 +1431,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Uzebox
 	select BR2_PACKAGE_LIBRETRO_UZEM		if !BR2_PACKAGE_BATOCERA_TARGET_H3 # speed issue on weak SBCs
 
+	# Sega Lindbergh
+	select BR2_PACKAGE_LINDBERGH_LOADER    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+
 	help
 	  All avaible systems for the selected architecture
 

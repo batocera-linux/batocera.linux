@@ -5586,3 +5586,57 @@ catacomb:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:catacombgl
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:catacombgl
+
+lindbergh:
+  name: Sega Lindbergh
+  manufacturer: Sega
+  release: 2005
+  hardware: arcade
+  extensions: [game]
+  platform: lindbergh, arcade
+  emulators:
+    lindbergh-loader:
+      lindbergh-loader: { requireAnyOf: [BR2_PACKAGE_LINDBERGH_LOADER] }
+  comment_en: |
+    Sega Lindbergh requires good knowledge of rom dumps.
+    We strongly recommend you read the wiki before asking for support.
+
+    To launch a game, create an file name with the .game extension in the location where the rom will execute from.
+        Here are the working games and associated extensions at the time of writing:
+
+    Game                               Filename
+    ----                             | --------
+    2 Spicy                          | apacheM.elf
+    After Burner Climax              | abc
+    Ghost Squad Evolution            | vsg or gsevo
+    Harley Davidson King of the Road | chopperM.elf
+    Hummer                           | a.elf
+    Hummer Extreme Edition           | hummer_Master.elf
+    Initial D Arcade Stage 4         | id4.elf
+    Initial D Arcade Stage 5         | id5.elf
+    Let's Go Jungle                  | lgj_final
+    Let's Go Jungle Special          | lgjsp_app
+    OutRun 2 SP SDX                  | Jennifer
+    Primeval Hunt                    | main.exe
+    R-Tuned Ultimate Street Racing   | dsr
+    Rambo                            | ramboM.elf
+    Sega Race TV                     | drive.elf
+    The House of the Dead 4          | hod4M.elf
+    The House of the Dead 4 Special  | hod4M.elf
+    The House of the Dead EX         | hodexRI.elf
+    Virtua Fighter 5                 | vf5
+    Virtua Fighter 5 R               | vf5
+    Virtua Fighter 5 FS              | vf5
+    Virtua Tennis 3                  | vt3 or vt3_Lindbergh
+
+    i.e . Create Ghost Squad Evolution.game in the /userdata/roms/lindbergh/Ghost Squad Evolution/vsg_l directory
+    EmulationStation will then see the game & launch it accordingly.
+
+    Lindbergh loader compatibility list is here:
+    https://github.com/lindbergh-loader/lindbergh-loader/blob/master/docs/guide.md
+
+    For more info: https://wiki.batocera.org/systems:lindbergh
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:lindbergh
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:lindbergh
