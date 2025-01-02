@@ -6,7 +6,6 @@ import shutil
 import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 import zipfile
-from distutils.dir_util import copy_tree
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -50,7 +49,7 @@ class OpenmsxGenerator(Generator):
         # copy files if needed
         if not share_dir.exists():
             share_dir.mkdir()
-            copy_tree(openMSX_Config, str(share_dir))
+            shutil.copytree(openMSX_Config, share_dir, dirs_exist_ok=True)
 
         # always use our settings.xml file as a base
         shutil.copy2(source_settings, share_dir)

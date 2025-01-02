@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from collections.abc import Iterable, Mapping
 from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Literal, Self, TypeAlias, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -242,5 +242,5 @@ def write_sdl_controller_db(
     return outputFile
 
 
-ControllerMapping: TypeAlias = Mapping[int, Controller]
-ControllerDict: TypeAlias = dict[int, Controller]
+type ControllerMapping = Mapping[int, Controller]
+type ControllerDict = dict[int, Controller]
