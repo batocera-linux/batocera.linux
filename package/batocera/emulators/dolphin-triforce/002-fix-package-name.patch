@@ -1,0 +1,60 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c8c494bfdb..219dd097b9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,7 +20,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14.0" CACHE STRING "")
+ 
+ set(CMAKE_USER_MAKE_RULES_OVERRIDE "CMake/FlagsOverride.cmake")
+ 
+-project(dolphin-emu)
++project(dolphin-triforce)
+ 
+ if (MSVC)
+   if (POLICY CMP0117)
+@@ -1035,7 +1035,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|OpenBSD")
+ endif()
+ 
+ # packaging information
+-set(CPACK_PACKAGE_NAME "dolphin-emu")
++set(CPACK_PACKAGE_NAME "dolphin-triforce")
+ set(CPACK_PACKAGE_VENDOR "Dolphin Team")
+ set(CPACK_PACKAGE_VERSION_MAJOR ${DOLPHIN_VERSION_MAJOR})
+ set(CPACK_PACKAGE_VERSION_MINOR ${DOLPHIN_VERSION_MINOR})
+diff --git a/Source/Core/DolphinQt/CMakeLists.txt b/Source/Core/DolphinQt/CMakeLists.txt
+index 31f8153c2e..5302fa8acb 100644
+--- a/Source/Core/DolphinQt/CMakeLists.txt
++++ b/Source/Core/DolphinQt/CMakeLists.txt
+@@ -640,6 +640,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND STEAM)
+   set_target_properties(dolphin-emu PROPERTIES
+     BUILD_WITH_INSTALL_RPATH true
+     INSTALL_RPATH "\$ORIGIN/lib"
++    OUTPUT_NAME dolphin-triforce
+   )
+ 
+   add_custom_command(TARGET dolphin-emu POST_BUILD
+@@ -705,6 +705,12 @@ if(USE_DISCORD_PRESENCE)
+   target_compile_definitions(dolphin-emu PRIVATE -DUSE_DISCORD_PRESENCE)
+ endif()
+ 
++if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
++  set_target_properties(dolphin-emu PROPERTIES
++    OUTPUT_NAME      dolphin-triforce
++  )
++endif()
++
+ if(USE_RETRO_ACHIEVEMENTS)
+   target_link_libraries(dolphin-emu PRIVATE rcheevos)
+   target_compile_definitions(dolphin-emu PRIVATE -DUSE_RETRO_ACHIEVEMENTS)
+diff --git a/Source/Core/DolphinNoGUI/CMakeLists.txt b/Source/Core/DolphinNoGUI/CMakeLists.txt
+index f21955d809..e16f11a932 100644
+--- a/Source/Core/DolphinNoGUI/CMakeLists.txt
++++ b/Source/Core/DolphinNoGUI/CMakeLists.txt
+@@ -17,7 +17,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+   target_sources(dolphin-nogui PRIVATE PlatformFBDev.cpp)
+ endif()
+ 
+-set_target_properties(dolphin-nogui PROPERTIES OUTPUT_NAME dolphin-emu-nogui)
++set_target_properties(dolphin-nogui PROPERTIES OUTPUT_NAME dolphin-triforce-nogui)
+ 
+ target_link_libraries(dolphin-nogui
+ PRIVATE

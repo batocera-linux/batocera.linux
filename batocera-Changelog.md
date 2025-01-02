@@ -29,6 +29,7 @@
 - PCSX2 to 2.3.82
 - Play! to 28th December build
 - Xemu to v0.7.141
+- Triforce to use a Crediar build (Nov 29, 2024)
 ### System
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 24.3.2

@@ -1,0 +1,75 @@
+diff --git a/Externals/implot/implot/implot.cpp b/Externals/implot/implot/implot.cpp
+index 8713a75b34..bc513310cf 100644
+--- a/Externals/implot/implot/implot.cpp
++++ b/Externals/implot/implot/implot.cpp
+@@ -1802,7 +1802,7 @@ bool UpdateInput(ImPlotPlot& plot) {
+ 
+     // BUTTON STATE -----------------------------------------------------------
+ 
+-    const ImGuiButtonFlags plot_button_flags = ImGuiButtonFlags_AllowItemOverlap
++    const ImGuiButtonFlags plot_button_flags = ImGuiButtonFlags_AllowOverlap
+                                              | ImGuiButtonFlags_PressedOnClick
+                                              | ImGuiButtonFlags_PressedOnDoubleClick
+                                              | ImGuiButtonFlags_MouseButtonLeft
+@@ -3378,7 +3378,7 @@ bool BeginSubplots(const char* title, int rows, int cols, const ImVec2& size, Im
+             ImGui::KeepAliveID(sep_id);
+             const ImRect sep_bb = ImRect(subplot.GridRect.Min.x, ypos-SUBPLOT_SPLITTER_HALF_THICKNESS, subplot.GridRect.Max.x, ypos+SUBPLOT_SPLITTER_HALF_THICKNESS);
+             bool sep_hov = false, sep_hld = false;
+-            const bool sep_clk = ImGui::ButtonBehavior(sep_bb, sep_id, &sep_hov, &sep_hld, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowItemOverlap | ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_PressedOnDoubleClick);
++            const bool sep_clk = ImGui::ButtonBehavior(sep_bb, sep_id, &sep_hov, &sep_hld, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowOverlap | ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_PressedOnDoubleClick);
+             if ((sep_hov && G.HoveredIdTimer > SUBPLOT_SPLITTER_FEEDBACK_TIMER) || sep_hld) {
+                 if (sep_clk && ImGui::IsMouseDoubleClicked(0)) {
+                     float p = (subplot.RowRatios[r] + subplot.RowRatios[r+1])/2;
+@@ -3408,7 +3408,7 @@ bool BeginSubplots(const char* title, int rows, int cols, const ImVec2& size, Im
+             ImGui::KeepAliveID(sep_id);
+             const ImRect sep_bb = ImRect(xpos-SUBPLOT_SPLITTER_HALF_THICKNESS, subplot.GridRect.Min.y, xpos+SUBPLOT_SPLITTER_HALF_THICKNESS, subplot.GridRect.Max.y);
+             bool sep_hov = false, sep_hld = false;
+-            const bool sep_clk = ImGui::ButtonBehavior(sep_bb, sep_id, &sep_hov, &sep_hld, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowItemOverlap | ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_PressedOnDoubleClick);
++            const bool sep_clk = ImGui::ButtonBehavior(sep_bb, sep_id, &sep_hov, &sep_hld, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowOverlap | ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_PressedOnDoubleClick);
+             if ((sep_hov && G.HoveredIdTimer > SUBPLOT_SPLITTER_FEEDBACK_TIMER) || sep_hld) {
+                 if (sep_clk && ImGui::IsMouseDoubleClicked(0)) {
+                     float p = (subplot.ColRatios[c] + subplot.ColRatios[c+1])/2;
+diff --git a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui_internal.h b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui_internal.h
+index 221e5d4698..be4d8cdcae 100644
+--- a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui_internal.h
++++ b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui_internal.h
+@@ -181,7 +181,7 @@ enum ImGuiButtonFlags_
+     ImGuiButtonFlags_PressedOnRelease       = 1 << 3,   // return true on release (default requires click+release)
+     ImGuiButtonFlags_PressedOnDoubleClick   = 1 << 4,   // return true on double-click (default requires click+release)
+     ImGuiButtonFlags_FlattenChildren        = 1 << 5,   // allow interactions even if a child window is overlapping
+-    ImGuiButtonFlags_AllowItemOverlap       = 1 << 6,   // require previous frame HoveredId to either match id or be null before being usable, use along with SetItemAllowOverlap()
++    ImGuiButtonFlags_AllowOverlap           = 1 << 6,   // require previous frame HoveredId to either match id or be null before being usable, use along with SetItemAllowOverlap()
+     ImGuiButtonFlags_DontClosePopups        = 1 << 7,   // disable automatically closing parent popup on press // [UNUSED]
+     ImGuiButtonFlags_Disabled               = 1 << 8,   // disable interactions
+     ImGuiButtonFlags_AlignTextBaseLine      = 1 << 9,   // vertically align button to match text baseline - ButtonEx() only // FIXME: Should be removed and handled by SmallButton(), not possible currently because of DC.CursorPosPrevLine
+diff --git a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
+index c53edb8414..ba94a9c8a5 100644
+--- a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
++++ b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
+@@ -7526,7 +7526,7 @@ bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
+         g.HoveredWindow = backup_hovered_window;
+ 
+     // AllowOverlap mode (rarely used) requires previous frame HoveredId to be null or to match. This allows using patterns where a later submitted widget overlaps a previous one.
+-    if (hovered && (flags & ImGuiButtonFlags_AllowItemOverlap) && (g.HoveredIdPreviousFrame != id && g.HoveredIdPreviousFrame != 0))
++    if (hovered && (flags & ImGuiButtonFlags_AllowOverlap) && (g.HoveredIdPreviousFrame != id && g.HoveredIdPreviousFrame != 0))
+         hovered = false;
+ 
+     // Mouse
+@@ -8039,7 +8039,7 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
+     // - OpenOnDoubleClick .............. double-click anywhere to open
+     // - OpenOnArrow .................... single-click on arrow to open
+     // - OpenOnDoubleClick|OpenOnArrow .. single-click on arrow or double-click anywhere to open
+-    ImGuiButtonFlags button_flags = ImGuiButtonFlags_NoKeyModifiers | ((flags & ImGuiTreeNodeFlags_AllowItemOverlap) ? ImGuiButtonFlags_AllowItemOverlap : 0);
++    ImGuiButtonFlags button_flags = ImGuiButtonFlags_NoKeyModifiers | ((flags & ImGuiTreeNodeFlags_AllowItemOverlap) ? ImGuiButtonFlags_AllowOverlap : 0);
+     if (!(flags & ImGuiTreeNodeFlags_Leaf))
+         button_flags |= ImGuiButtonFlags_PressedOnDragDropHold;
+     if (flags & ImGuiTreeNodeFlags_OpenOnDoubleClick)
+@@ -12137,7 +12137,7 @@ bool ImGui::SplitterBehavior(ImGuiID id, const ImRect& bb, ImGuiAxis axis, float
+     bool hovered, held;
+     ImRect bb_interact = bb;
+     bb_interact.Expand(axis == ImGuiAxis_Y ? ImVec2(0.0f, hover_extend) : ImVec2(hover_extend, 0.0f));
+-    ButtonBehavior(bb_interact, id, &hovered, &held, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowItemOverlap);
++    ButtonBehavior(bb_interact, id, &hovered, &held, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowOverlap);
+     if (g.ActiveId != id)
+         SetItemAllowOverlap();
+ 
