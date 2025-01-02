@@ -1,34 +1,59 @@
 ################################################################################
 #
-# DOLPHIN TRIFORCE
+# dolphin-triforce
 #
 ################################################################################
-# This is a build that is no longer receiving updates. AppImage format ensures compatibility into the future.
-# Site https://dolphin-emu.org/download/list/Triforce/1/
-# Source https://github.com/EIGHTFINITE/dolphin-triforce
-# Dolphin version: 4.0-315
-DOLPHIN_TRIFORCE_SOURCE = 
-DOLPHIN_TRIFORCE_VERSION = 1.0.0-001
+# Version: Nov 29, 2024
+DOLPHIN_TRIFORCE_VERSION = 99bc5987122d1f3b2b2bbf14c3d639f909ad556c
+DOLPHIN_TRIFORCE_SITE = https://crediar.dev/crediar/dolphin
+DOLPHIN_TRIFORCE_SITE_METHOD = git
 DOLPHIN_TRIFORCE_LICENSE = GPLv2+
+DOLPHIN_TRIFORCE_GIT_SUBMODULES = YES
+DOLPHIN_TRIFORCE_SUPPORTS_IN_SOURCE_BUILD = NO
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-	DOLPHIN_TRIFORCE_DEPENDENCIES = xserver_xorg-server
+DOLPHIN_TRIFORCE_DEPENDENCIES += bluez5_utils hidapi host-xz ffmpeg libcurl speex
+DOLPHIN_TRIFORCE_DEPENDENCIES += libevdev libpng libusb lzo xz sdl2 zlib 
+
+DOLPHIN_TRIFORCE_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
+DOLPHIN_TRIFORCE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DCMAKE_CXX_FLAGS=-DIMGUI_DEFINE_MATH_OPERATORS
+DOLPHIN_TRIFORCE_CONF_OPTS += -DDISTRIBUTOR='batocera.linux'
+DOLPHIN_TRIFORCE_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DUSE_MGBA=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DUSE_UPNP=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_TESTS=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_AUTOUPDATE=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_ANALYTICS=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_SDL=ON
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_CLI_TOOL=OFF
+DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_NOGUI=OFF
+
+ifeq ($(BR2_PACKAGE_XORG7),y)
+    DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_X11=ON
+else
+    DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_X11=OFF
 endif
 
-# Includes custom game configs required to successfully launch and play them.
-define DOLPHIN_TRIFORCE_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin
-	$(INSTALL) -D -m 0555 "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/dolphin-triforce.AppImage" "${TARGET_DIR}/usr/bin/dolphin-triforce"
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+    DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_VULKAN=ON
+else
+    DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_VULKAN=OFF
+endif
+
+define DOLPHIN_TRIFORCE_INI
+    mkdir -p $(TARGET_DIR)/usr/share/triforce
+    # copy extra ini files
+    cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/*.ini \
+		$(TARGET_DIR)/usr/share/triforce
 endef
 
-# Hotkeys (non-functional at the moment)
-define DOLPHIN_TRIFORCE_EVMAP
+define DOLPHIN_TRIFORCE_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/triforce.dolphin_triforce.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/*.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 
-DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS = DOLPHIN_TRIFORCE_EVMAP
+DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_INI
+DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_EVMAPY
 
-$(eval $(generic-package))
+$(eval $(cmake-package))

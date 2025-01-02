@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt.new
+index b9f764a2f5..e258fc9479 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt.new
+@@ -684,14 +684,7 @@ if (_M_X86)
+ endif()
+ add_subdirectory(Externals/cpp-optparse)
+ 
+-find_package(fmt 8)
+-if(fmt_FOUND)
+-  message(STATUS "Using shared fmt ${fmt_VERSION}")
+-else()
+-  check_vendoring_approved(fmt)
+-  message(STATUS "Using static fmt from Externals")
+-  add_subdirectory(Externals/fmt EXCLUDE_FROM_ALL)
+-endif()
++add_subdirectory(Externals/fmt EXCLUDE_FROM_ALL)
+ add_subdirectory(Externals/imgui)
+ add_subdirectory(Externals/implot)
+ add_subdirectory(Externals/glslang)

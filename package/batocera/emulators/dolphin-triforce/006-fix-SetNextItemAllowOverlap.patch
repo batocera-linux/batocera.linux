@@ -1,0 +1,83 @@
+diff --git a/Externals/imgui/imgui.cpp b/Externals/imgui/imgui.cpp
+index 39fcd70723..747832d65c 100644
+--- a/Externals/imgui/imgui.cpp
++++ b/Externals/imgui/imgui.cpp
+@@ -5320,7 +5320,7 @@ void ImGui::SetNextItemAllowOverlap()
+ #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+ // Allow last item to be overlapped by a subsequent item. Both may be activated during the same frame before the later one takes priority.
+ // FIXME-LEGACY: Use SetNextItemAllowOverlap() *before* your item instead.
+-void ImGui::SetItemAllowOverlap()
++void ImGui::SetNextItemAllowOverlap()
+ {
+     ImGuiContext& g = *GImGui;
+     ImGuiID id = g.LastItemData.ID;
+diff --git a/Externals/imgui/imgui.h b/Externals/imgui/imgui.h
+index 03e503e60e..f2438117b5 100644
+--- a/Externals/imgui/imgui.h
++++ b/Externals/imgui/imgui.h
+@@ -3082,7 +3082,7 @@ namespace ImGui
+ namespace ImGui
+ {
+     // OBSOLETED in 1.89.7 (from June 2023)
+-    IMGUI_API void      SetItemAllowOverlap();                                              // Use SetNextItemAllowOverlap() before item.
++    IMGUI_API void      SetNextItemAllowOverlap();                                          // Use SetNextItemAllowOverlap() before item.
+     // OBSOLETED in 1.89.4 (from March 2023)
+     static inline void  PushAllowKeyboardFocus(bool tab_stop)                               { PushTabStop(tab_stop); }
+     static inline void  PopAllowKeyboardFocus()                                             { PopTabStop(); }
+diff --git a/Externals/implot/implot/implot.cpp b/Externals/implot/implot/implot.cpp
+index bc513310cf..4f0b091b0a 100644
+--- a/Externals/implot/implot/implot.cpp
++++ b/Externals/implot/implot/implot.cpp
+@@ -1812,7 +1812,7 @@ bool UpdateInput(ImPlotPlot& plot) {
+                                              | plot_button_flags;
+ 
+     const bool plot_clicked = ImGui::ButtonBehavior(plot.PlotRect,plot.ID,&plot.Hovered,&plot.Held,plot_button_flags);
+-    ImGui::SetItemAllowOverlap();
++    ImGui::SetNextItemAllowOverlap();
+ 
+     if (plot_clicked) {
+         if (!ImHasFlag(plot.Flags, ImPlotFlags_NoBoxSelect) && IO.MouseClicked[gp.InputMap.Select] && ImHasFlag(IO.KeyMods, gp.InputMap.SelectMod)) {
+diff --git a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
+index ba94a9c8a5..cf70580719 100644
+--- a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
++++ b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.cpp
+@@ -4724,7 +4724,7 @@ bool ImGui::IsItemVisible()
+ }
+ 
+ // Allow last item to be overlapped by a subsequent item. Both may be activated during the same frame before the later one takes priority.
+-void ImGui::SetItemAllowOverlap()
++void ImGui::SetNextItemAllowOverlap()
+ {
+     ImGuiContext& g = *GImGui;
+     if (g.HoveredId == g.CurrentWindow->DC.LastItemId)
+@@ -8078,7 +8078,7 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
+         }
+     }
+     if (flags & ImGuiTreeNodeFlags_AllowItemOverlap)
+-        SetItemAllowOverlap();
++        SetNextItemAllowOverlap();
+ 
+     // Render
+     const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
+@@ -12139,7 +12139,7 @@ bool ImGui::SplitterBehavior(ImGuiID id, const ImRect& bb, ImGuiAxis axis, float
+     bb_interact.Expand(axis == ImGuiAxis_Y ? ImVec2(0.0f, hover_extend) : ImVec2(hover_extend, 0.0f));
+     ButtonBehavior(bb_interact, id, &hovered, &held, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_AllowOverlap);
+     if (g.ActiveId != id)
+-        SetItemAllowOverlap();
++        SetNextItemAllowOverlap();
+ 
+     if (held || (g.HoveredId == id && g.HoveredIdPreviousFrame == id))
+         SetMouseCursor(axis == ImGuiAxis_Y ? ImGuiMouseCursor_ResizeNS : ImGuiMouseCursor_ResizeEW);
+diff --git a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.h b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.h
+index bd63a2b0c9..0a168b2d20 100644
+--- a/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.h
++++ b/Externals/tinygltf/tinygltf/examples/common/imgui/imgui.h
+@@ -480,7 +480,7 @@ namespace ImGui
+     IMGUI_API ImVec2        GetItemRectMin();                                                   // get bounding rectangle of last item, in screen space
+     IMGUI_API ImVec2        GetItemRectMax();                                                   // "
+     IMGUI_API ImVec2        GetItemRectSize();                                                  // get size of last item, in screen space
+-    IMGUI_API void          SetItemAllowOverlap();                                              // allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
++    IMGUI_API void          SetNextItemAllowOverlap();                                              // allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
+     IMGUI_API bool          IsWindowFocused(ImGuiFocusedFlags flags = 0);                       // is current window focused? or its root/child, depending on flags. see flags for options.
+     IMGUI_API bool          IsWindowHovered(ImGuiHoveredFlags flags = 0);                       // is current window hovered (and typically: not blocked by a popup/modal)? see flags for options.
+     IMGUI_API bool          IsRectVisible(const ImVec2& size);                                  // test if rectangle (of given size, starting from cursor position) is visible / not clipped.

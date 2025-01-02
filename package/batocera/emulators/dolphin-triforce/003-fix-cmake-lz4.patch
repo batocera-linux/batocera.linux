@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt.new
+index f7f9ea081c..3f2f76aaab 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt.new
+@@ -807,7 +807,7 @@ set(LZO lzo2)
+ 
+ check_vendoring_approved(Lz4)
+ message(STATUS "Using static LZ4 from Externals")
+-add_subdirectory(Externals/Lz4)
++add_subdirectory(Externals/lz4)
+ set(LZ4 Lz4)
+ 
+ 

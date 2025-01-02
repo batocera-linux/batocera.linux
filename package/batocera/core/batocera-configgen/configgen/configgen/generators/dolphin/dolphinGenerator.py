@@ -5,7 +5,7 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
