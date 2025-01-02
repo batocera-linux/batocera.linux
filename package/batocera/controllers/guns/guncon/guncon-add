@@ -7,12 +7,22 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 # Based on GunCon2 GUN4IR model, Redemp's work
 ############
 # Trigger           : BTN_LEFT
-# A                 : BTN_MIDDLE
-# B                 : BTN_RIGHT
-# C                 : BTN_4
-# Start             : BTN_3
-# Select            : BTN_2
-# Thumb pad         : BTN_5, BTN_6, BTN_7, BTN_8
+# A                 : BTN_1
+# B                 : BTN_MIDDLE
+# C                 : BTN_C
+# Start             : KEY_1
+# Select            : KEY_5
+# Thumb pad         : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
 DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
-evsieve --input "${DEVNAME}" persist=exit --map yield btn:middle btn:1 --map yield btn:right btn:middle --map yield key:1 btn:3 --map yield key:5 btn:2 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --map yield btn:c btn:right --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
+evsieve --input "${DEVNAME}" persist=exit     \
+        --map yield btn:middle   btn:1        \
+        --map yield btn:right    btn:middle   \
+        --map yield key:1        btn:3        \
+        --map yield key:5        btn:2        \
+        --map yield key:up       btn:5        \
+        --map yield key:down     btn:6        \
+        --map yield key:left     btn:7        \
+        --map yield key:right    btn:8        \
+        --map yield btn:c        btn:right    \
+        --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &

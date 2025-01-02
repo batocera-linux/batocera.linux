@@ -6,7 +6,7 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H 
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 3*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 3"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 4*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 4"
 
-# Virtual light gun
+# Virtual light gun, with calibration script
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Retro Shooter Merged *", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-retroshooter-calibrator-daemon $env{DEVNAME}"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Retro Shooter Lightgun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1"
 

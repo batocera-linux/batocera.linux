@@ -42,17 +42,25 @@ if test "${NDEVS}" = 2
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
-	
-# Trigger                  : BTN_LEFT
-# Front left               : BTN_RIGHT
-# Middle left              : BTN_MIDDLE
-# First button rear left   : KEY_1
-# Second button rear left  : KEY_2
-# Third button rear left   : KEY_3
-# Fourth button rear left  : KEY_4
-# Back top, bottom         : KEY_UP, KEY_DOWN
-	
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map key:1 btn:1 --map key:2 btn:2 --map key:3 btn:3 --map key:4 btn:4 --map key:up btn:5 --map key:down btn:6 --output name="AE lightgun" >/dev/null 2>"${LOGFILE}" &
+
+    # Trigger                  : BTN_LEFT
+    # Front left               : BTN_RIGHT
+    # Middle left              : BTN_MIDDLE
+    # First button rear left   : KEY_1
+    # Second button rear left  : KEY_2
+    # Third button rear left   : KEY_3
+    # Fourth button rear left  : KEY_4
+    # Back top, bottom         : KEY_UP, KEY_DOWN
+
+    nohup evsieve                                    \
+            --input "${DEV1}" "${DEV2}" persist=exit \
+            --map key:1                btn:1         \
+            --map key:2                btn:2         \
+            --map key:3                btn:3         \
+            --map key:4                btn:4         \
+            --map key:up               btn:5         \
+            --map key:down             btn:6         \
+            --output name="AE lightgun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
