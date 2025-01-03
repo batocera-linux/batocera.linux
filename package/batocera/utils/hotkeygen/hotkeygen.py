@@ -305,15 +305,15 @@ def do_list() -> None:
                 if ecodes.EV_KEY in caps:
                     mapping = get_mapping(dev)
                     associations = get_mapping_associations(mapping, caps)
-                    if associations:
-                        fullpath = get_mapping_full_path(dev)
-                        fname = get_device_config_filename(dev)
-                        if fullpath:
-                            print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
-                        else:
-                            print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
-                        print_mapping(mapping, associations, context)
 
+                    fullpath = get_mapping_full_path(dev)
+                    if fullpath:
+                        print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
+                    else:
+                        fname = get_device_config_filename(dev)
+                        print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
+                    if associations:
+                        print_mapping(mapping, associations, context)
 
 @dataclass(slots=True)
 class Daemon:
