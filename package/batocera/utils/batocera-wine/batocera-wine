@@ -500,6 +500,7 @@ play_wine() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -594,6 +595,7 @@ play_winetgz() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
