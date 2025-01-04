@@ -9602,11 +9602,11 @@ scummvm:
           prompt: STRETCH MODE
           description: Stretches the output to fill the display area.
           choices:
-              "Center (Default)":     "centre"
+              "Center":               "center"
               "Pixel Perfect":        "pixel-perfect"
               "Even Pixels":          "even-pixels"
-              "Fit resolution scale": "fit"
               "Stretch to screen":    "stretch"
+              "Fit resolution scale": "fit"
               "Fit 4:3 Aspect Ratio": "fit_force_aspect"
       scumm_renderer:
           prompt: RENDERER
