@@ -314,6 +314,65 @@ redist_install() {
     return 0
 }
 
+save_install() {
+    WINEPREFIX=$1
+    GAMENAME=$2
+    WINE_SAVEDIR=$3
+    WINE_SAVEFILES=$4
+
+    if [[ -n "${WINE_SAVEDIR}" ]]; then
+	GAME_SAVEDIR=$(dirname "${WINE_SAVEDIR}")
+	GAME_SAVEDIR="${WINEPOINT}/${GAME_SAVEDIR}"
+	BASEGAMENAME=$(basename "${GAMENAME}")
+	BASEGAMENAME_NOEXT=${BASEGAMENAME%.*}
+	SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${BASEGAMENAME_NOEXT}"
+	WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+
+	#create save directory, or move existing savedir content
+	if [[ ! -d "${SYSTEM_SAVEDIR}" ]]; then
+	    if [[ -z "${WINE_SAVEFILES}" && ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
+		mv "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}"
+	    else
+		mkdir -p "${SYSTEM_SAVEDIR}"
+	    fi
+	fi
+
+	#if no specific save files, symlink the whole wine_savedir directroy
+	if [[ -z "${WINE_SAVEFILES}" ]]; then
+
+	    if [[ ! -d "${GAME_SAVEDIR}" ]]; then
+	        mkdir -p "${GAME_SAVEDIR}"
+	    fi
+
+	    if [[ ! -L "${WINE_SAVEDIR}" ]]; then
+		rm -rf "${WINE_SAVEDIR}"
+	    fi
+
+	    ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+	else
+            if [[ ! -d "${WINE_SAVEDIR}" ]]; then
+                mkdir -p "${WINE_SAVEDIR}"
+            fi
+	    #split the files list to array with ; delimiter
+	    IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
+	    for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
+
+		if [[ -e "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+		    #if savefiles exist in the prefix and not yet in system save, move it once
+		    if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+			mv "${WINE_SAVEDIR}/${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
+		    else
+			rm "${WINE_SAVEDIR}/${SAVEFILE}"
+		    fi
+		fi
+
+		ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${WINE_SAVEDIR}/${SAVEFILE}"
+	    done
+	fi
+
+    fi
+}
+
 msi_install() {
     WINEPREFIX=$1
     if [[ -e "${USER_DIR}/msi" ]]; then
@@ -505,6 +564,10 @@ play_wine() {
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
@@ -531,6 +594,10 @@ play_pc() {
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     env
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -600,6 +667,10 @@ play_winetgz() {
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
@@ -678,6 +749,9 @@ play_squashfs() {
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
