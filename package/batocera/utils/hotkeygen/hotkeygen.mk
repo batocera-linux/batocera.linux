@@ -15,11 +15,13 @@ define HOTKEYGEN_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
 	mkdir -p $(TARGET_DIR)/etc/init.d
 	mkdir -p $(TARGET_DIR)/etc/hotkeygen
+	mkdir -p $(TARGET_DIR)/usr/share/hotkeygen
 	install -m 0755 $(HOTKEYGEN_PATH)/hotkeygen.py $(TARGET_DIR)/usr/bin/hotkeygen
 	install -m 0755 $(HOTKEYGEN_PATH)/hotkeygen.service $(TARGET_DIR)/etc/init.d/S90hotkeygen
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_context.conf $(TARGET_DIR)/etc/hotkeygen/default_context.conf
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/common_context.conf $(TARGET_DIR)/etc/hotkeygen/common_context.conf
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_mapping.conf $(TARGET_DIR)/etc/hotkeygen/default_mapping.conf
+	install -m 0644 $(HOTKEYGEN_PATH)/conf/specific/Steam_Deck-28de-1205.mapping $(TARGET_DIR)/usr/share/hotkeygen/Steam_Deck-28de-1205.mapping
 endef
 
 define HOTKEYGEN_INSTALL_SM8250_CONFIG
