@@ -429,8 +429,18 @@ class Daemon:
                             event.code in self.mappings_by_fd[fd]
                         ):
                             self.__handle_event(event, self.mappings_by_fd[fd][event.code])
-                except (OSError, KeyError):
-                    pass  # ok, error on the device
+                except (OSError):
+                    if fd == self.monitor.fileno():
+                        raise
+                    else:
+                        # error on a single device
+                        input_device = self.input_devices_by_fd[fd]
+                        print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                        self.poll.unregister(input_device)
+                        del self.mappings_by_fd[fd]
+                        del self.input_devices_by_fd[fd]
+                        del self.input_devices[input_device.path]
+                        input_device.close()
                 except:
                     self.target.close()
                     raise
