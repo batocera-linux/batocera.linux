@@ -167,7 +167,7 @@ dl-dir:
 
 %-webserver: output-dir-%
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
-	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
+	$(if $(shell which python3 2>/dev/null),,$(error "python3 not found!"))
 ifeq ($(strip $(BOARD)),)
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$*/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$*"))
 	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
