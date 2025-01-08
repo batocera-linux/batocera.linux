@@ -13591,3 +13591,50 @@ jazz2-native:
 catacombgl:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+
+lindbergh-loader:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    lindbergh_freeplay:
+      prompt: FREE PLAY
+      description: Enable free play for supported games.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_region:
+      prompt: REGION
+      description: Choose the arcade machine console region. May be required to start the game.
+      choices:
+        "Japan (Default)": JP
+        "United States":   US
+        "Export":          EX
+    lindbergh_aspect:
+      prompt: ASPECT RATIO
+      description: Set to keep the aspect ratio (4:3) in games like Sega Race TV and Primeval Hunt.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_limit:
+      prompt: FPS LIMITER
+      description: Set if you want to limit the FPS in games that are not limited like OutRun2.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_fps:
+      prompt: FPS TARGET
+      description: Set the target FPS (will only work if FPS LIMITER is enabled).
+      choices:
+        "30 fps":           "30"
+        "50 fps":           "50"
+        "60 fps (Default)": "60"
+        "75 fps":           "75"
+        "100 fps":          "100"
+        "120 fps":          "120"
+    lindbergh_test:
+      group: ADVANCED OPTIONS
+      prompt: RUN TEST MODE
+      description: Run the game in test mode to configure certain game options.
+      choices:
+        "Off (Default)": 0
+        "On":            1

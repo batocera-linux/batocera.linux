@@ -222,6 +222,7 @@ PACKAGES_PORTS="abuse
                 ioquake3
                 iortcw
                 jazz2-native
+                lindbergh-loader
                 openjazz
                 raze
                 sdlpop
