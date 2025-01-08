@@ -13594,7 +13594,7 @@ catacombgl:
 
 lindbergh-loader:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
   cfeatures:
     lindbergh_freeplay:
       prompt: FREE PLAY
@@ -13635,6 +13635,13 @@ lindbergh-loader:
       group: ADVANCED OPTIONS
       prompt: RUN TEST MODE
       description: Run the game in test mode to configure certain game options.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_debug:
+      group: ADVANCED OPTIONS
+      prompt: DEBUG MODE
+      description: Add debug logging to help troubleshoot issues.
       choices:
         "Off (Default)": 0
         "On":            1
