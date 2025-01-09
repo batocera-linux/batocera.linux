@@ -8,7 +8,7 @@ import stat
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command
+from ... import Command, controllersConfig
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -80,7 +80,7 @@ class LindberghGenerator(Generator):
             else:
                 modified_lines.append(line)
                 
-        ## ES options
+        ## ES options ##
 
         # Handle freeplay option
         freeplay_value = "1" if system.isOptSet("lindbergh_freeplay") and system.getOptBoolean("lindbergh_freeplay") else "0"
@@ -96,7 +96,7 @@ class LindberghGenerator(Generator):
             modified_lines.append(f"FREEPLAY {freeplay_value}\n")
         
         # Handle region option
-        region_value = system.config["lindbergh_region"] if system.isOptSet("lindbergh_region") else "JP"
+        region_value = system.config["lindbergh_region"] if system.isOptSet("lindbergh_region") else "EX"
         region_replaced = False
 
         for i, line in enumerate(modified_lines):
@@ -107,6 +107,39 @@ class LindberghGenerator(Generator):
 
         if not region_replaced:
             modified_lines.append(f"REGION {region_value}\n")
+        
+        # Handle border option(s)
+        border_value = "1" if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 else "0"
+        border_replaced = False
+
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# BORDER_ENABLED", "BORDER_ENABLED")):
+                modified_lines[i] = f"BORDER_ENABLED {border_value}\n"
+                border_replaced = True
+                break
+
+        if not border_replaced:
+            modified_lines.append(f"BORDER_ENABLED {border_value}\n")
+        
+        if border_value == "1":
+            thickness_replaced = False
+            border_thickness = "2"
+            bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
+            if bordersSize == "thin":
+                border_thickness = "2"
+            elif bordersSize == "medium":
+                border_thickness = "3"
+            else:
+                border_thickness = "4"
+            
+            for i, line in enumerate(modified_lines):
+                if line.strip().startswith(("# WHITE_BORDER_PERCENTAGE", "WHITE_BORDER_PERCENTAGE")):
+                    modified_lines[i] = f"WHITE_BORDER_PERCENTAGE {border_thickness}\n"
+                    thickness_replaced = True
+                    break
+                
+            if not thickness_replaced:
+                modified_lines.append(f"WHITE_BORDER_PERCENTAGE {border_thickness}\n")
         
         # Handle the aspect ratio option
         aspect_value = "1" if system.isOptSet("lindbergh_aspect") and system.getOptBoolean("lindbergh_aspect") else "0"
@@ -146,6 +179,19 @@ class LindberghGenerator(Generator):
 
         if not fps_replaced:
             modified_lines.append(f"FPS_TARGET {fps_value}\n")
+
+        # Debug logging option
+        debug_value = "1" if system.isOptSet("lindbergh_debug") and system.getOptBoolean("lindbergh_debug") else "0"
+        debug_replaced = False
+
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# DEBUG_MSGS", "DEBUG_MSGS")):
+                modified_lines[i] = f"DEBUG_MSGS {debug_value}\n"
+                debug_replaced = True
+                break
+
+        if not debug_replaced:
+            modified_lines.append(f"DEBUG_MSGS {debug_value}\n")
         
         # Non ES option but to set automatically in the rom is OutRun
         outrun_value = "1" if "outrun" in romName.lower() else "0"
@@ -207,7 +253,7 @@ class LindberghGenerator(Generator):
                 eslog.debug(f"Copied: {destination} from {source}")
         
         # -= Game specific library versions =-
-        if "harley" in romName.lower() or "spicy" in romName.lower():
+        if any(keyword in romName.lower() for keyword in ("harley", "spicy", "rambo")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
