@@ -7,13 +7,13 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: German (Germany)\n"
 "Language: de-DE\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po"
+"X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -280,6 +280,11 @@ msgctxt "game_options"
 msgid "10 seconds"
 msgstr "10 Sekunden"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "100 fps"
+msgstr ""
+
 #. TRANSLATION: dhewm3, libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "100% (Default)"
@@ -410,7 +415,7 @@ msgctxt "game_options"
 msgid "12 MHz"
 msgstr "12 MHz"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: iortcw, lindbergh-loader, theforceengine
 msgctxt "game_options"
 msgid "120 fps"
 msgstr "120 fps"
@@ -1220,7 +1225,7 @@ msgctxt "game_options"
 msgid "30 MHz"
 msgstr "30 MHz"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: iortcw, lindbergh-loader, theforceengine
 msgctxt "game_options"
 msgid "30 fps"
 msgstr "30 fps"
@@ -1645,7 +1650,7 @@ msgctxt "game_options"
 msgid "50 (Default)"
 msgstr "50 (Standard)"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: iortcw, lindbergh-loader, theforceengine
 msgctxt "game_options"
 msgid "50 fps"
 msgstr "50 fps"
@@ -1765,7 +1770,7 @@ msgctxt "game_options"
 msgid "6 threads"
 msgstr "6 Threads"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: iortcw, lindbergh-loader, theforceengine
 msgctxt "game_options"
 msgid "60 fps (Default)"
 msgstr "60 fps (Standard)"
@@ -1905,7 +1910,7 @@ msgctxt "game_options"
 msgid "72fps"
 msgstr "72fps"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: iortcw, lindbergh-loader, theforceengine
 msgctxt "game_options"
 msgid "75 fps"
 msgstr "75 fps"
@@ -2655,6 +2660,11 @@ msgctxt "game_options"
 msgid "Add color to Game Boy games."
 msgstr "Bei Gameboy-Spielen Farbe hinzufügen."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Add debug logging to help troubleshoot issues."
+msgstr ""
+
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
 msgid ""
@@ -3223,8 +3233,8 @@ msgid ""
 "Atari ST monitors had a visible border around the main screen area, but most "
 "software does not display anything in it."
 msgstr ""
-"Atari ST-Monitore hatten einen sichtbaren Rand um den Hauptbildschirmbereich,"
-" aber die meisten Programme zeigen darin nichts an."
+"Atari ST-Monitore hatten einen sichtbaren Rand um den "
+"Hauptbildschirmbereich, aber die meisten Programme zeigen darin nichts an."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4943,6 +4953,12 @@ msgctxt "game_options"
 msgid "Choose the appropriate media for disk image."
 msgstr "Passendes Medium für das Datenträgerabbild wählen."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Choose the arcade machine console region. May be required to start the game."
+msgstr ""
+
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Choose the audio output type."
@@ -5188,7 +5204,7 @@ msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Anwendung beim Remote-Host schließen wenn Moonlight beendet wird."
 
-#. TRANSLATION: fpinball.keys
+#. TRANSLATION: fpinball.keys, lindbergh.keys
 msgctxt "keys_files"
 msgid "Coin"
 msgstr "Coin"
@@ -5265,8 +5281,8 @@ msgstr ""
 #. TRANSLATION: citra
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation stutter."
-" May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 "Kompilieren Sie Shader mithilfe von Hintergrundthreads, um Stottern bei der "
 "Shader-Kompilierung zu vermeiden. Kann zu Grafikfehlern führen."
@@ -5502,6 +5518,11 @@ msgstr "DATEN-PLUGIN"
 msgctxt "game_options"
 msgid "DEADZONE"
 msgstr "TOTBEREICH"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "DEBUG MODE"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -6600,6 +6621,11 @@ msgstr ""
 "Für flüssigere Spieldarstellung aktivieren, bei Auftreten von Screen-Tearing "
 "deaktivieren."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Enable free play for supported games."
+msgstr ""
+
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "Enable full-screen antialiasing in Direct3D."
@@ -6627,8 +6653,8 @@ msgstr "Aktiviere Start von vorinstallierten WHDLoad-Installationen."
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
-" and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun "
+"connected), and similar controls"
 msgstr ""
 "Aktivierung der Mauseingabe für Trackballs, Spinner, Lightguns (wenn nicht "
 "verbunden) und ähnliche Steuerungen"
@@ -6665,8 +6691,8 @@ msgid ""
 "Enable or disable bezels being added when content is a 4:3 aspect with a "
 "widescreen display."
 msgstr ""
-"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein 4:"
-"3-Seitenverhältnis mit einem Widescreen-Display hat."
+"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein "
+"4:3-Seitenverhältnis mit einem Widescreen-Display hat."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2, mame/pcsx2
 msgctxt "game_options"
@@ -7189,7 +7215,7 @@ msgctxt "keys_files"
 msgid "Exit Duckstation"
 msgstr "DuckStation beenden"
 
-#. TRANSLATION: catacomb.keys
+#. TRANSLATION: catacomb.keys, lindbergh.keys
 msgctxt "keys_files"
 msgid "Exit Game"
 msgstr "Spiel beenden"
@@ -7223,6 +7249,11 @@ msgstr "Beende laufendes Flatpak"
 msgctxt "keys_files"
 msgid "Exit the emulator"
 msgstr "Emulator beenden"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Export"
+msgstr ""
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -7386,10 +7417,15 @@ msgctxt "game_options"
 msgid "FORCE WINDOWS CE MODE"
 msgstr "WINDOWS CE-MODUS ERZWINGEN"
 
-#. TRANSLATION: wine
+#. TRANSLATION: lindbergh-loader, wine
 msgctxt "game_options"
 msgid "FPS LIMITER"
 msgstr "FPS-LIMIT"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "FPS TARGET"
+msgstr ""
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -7435,6 +7471,11 @@ msgstr "FRAMESKIP TYP"
 msgctxt "game_options"
 msgid "FRAMESKIP VALUE"
 msgstr "FRAMESKIP WERT"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "FREE PLAY"
+msgstr ""
 
 #. TRANSLATION: mugen, wine
 msgctxt "game_options"
@@ -7539,9 +7580,8 @@ msgid ""
 msgstr ""
 "Bietet Rendering in nativer Auflösung, Unterstützung für analoge Controller "
 "und Mäuse, Freischaltung der Bildfrequenz bis zu 60Hz, eine verbesserte "
-"Kamera mit deaktivierbarer Neigungsoption, benutzerdefinierte Himmel-"
-"/Hintergrundfunktionalität und verschiedene andere Optimierungen und "
-"Optionen."
+"Kamera mit deaktivierbarer Neigungsoption, benutzerdefinierte Himmel-/"
+"Hintergrundfunktionalität und verschiedene andere Optimierungen und Optionen."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -9341,6 +9381,11 @@ msgctxt "game_options"
 msgid "Japan"
 msgstr "Japan"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Japan (Default)"
+msgstr ""
+
 #. TRANSLATION: cemu, dhewm3, etlegacy, flycast/dolphin, libretro/dolphin, ...
 msgctxt "game_options"
 msgid "Japanese"
@@ -10905,8 +10950,8 @@ msgstr "Namco GunCon"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid ""
-"Nat to access internet from xemu machine. Udp for System Link. Default (Auto)"
-" disables network access."
+"Nat to access internet from xemu machine. Udp for System Link. Default "
+"(Auto) disables network access."
 msgstr ""
 "Verwende Nat für den Internetzugang von einem xemu-Rechner aus. Udp für "
 "System Link. Standard (Auto) deaktiviert den Netzwerkzugang."
@@ -12026,8 +12071,8 @@ msgstr "Per-Strip"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Per Table Folder requires all files to be in the associated rom table folder."
-" If disabled, consult the Wiki for further details."
+"Per Table Folder requires all files to be in the associated rom table "
+"folder. If disabled, consult the Wiki for further details."
 msgstr ""
 "Pro Tabellenordner erfordert, dass sich alle Dateien in dem zugehörigen "
 "Tabellenordner befinden. Wenn diese Funktion deaktiviert ist, finden Sie "
@@ -12459,7 +12504,7 @@ msgctxt "game_options"
 msgid "REFRESH RATE"
 msgstr "BILDWIEDERHOLUNGSRATE"
 
-#. TRANSLATION: libretro/genesisplusgx, redream
+#. TRANSLATION: libretro/genesisplusgx, lindbergh-loader, redream
 msgctxt "game_options"
 msgid "REGION"
 msgstr "REGION"
@@ -12628,6 +12673,11 @@ msgstr "RUMBLE"
 msgctxt "game_options"
 msgid "RUMBLE LEVEL"
 msgstr "RUMBLE LEVEL"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "RUN TEST MODE"
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -13025,6 +13075,11 @@ msgctxt "keys_files"
 msgid "Run"
 msgstr "Rennen"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Run the game in test mode to configure certain game options."
+msgstr ""
+
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid ""
@@ -13032,8 +13087,8 @@ msgid ""
 "runner in it's own directory under /userdata/system/wine/custom."
 msgstr ""
 "Runner vereinfachen die Kompatibilität der laufenden Windows-Spiele. Sie "
-"müssen einen Runner in seinem eigenen Verzeichnis unter "
-"/userdata/system/wine/custom haben."
+"müssen einen Runner in seinem eigenen Verzeichnis unter /userdata/system/"
+"wine/custom haben."
 
 #. TRANSLATION: libretro/dosbox_pure, xenia, xenia-canary
 msgctxt "game_options"
@@ -13808,6 +13863,12 @@ msgctxt "game_options"
 msgid "Set gun button 2 to reload."
 msgstr "Nachlade-Funktion auf Taste 2 der Lightgun legen."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Set if you want to limit the FPS in games that are not limited like OutRun2."
+msgstr ""
+
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid "Set in Config - choose if no audio output"
@@ -13857,6 +13918,18 @@ msgid "Set the display's resolution. Does not affect the rendering resolution."
 msgstr ""
 "Festlegen der Display-Auflösung. Hat keinen Einfluss auf die Rendering-"
 "Auflösung."
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Set the target FPS (will only work if FPS LIMITER is enabled)."
+msgstr ""
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Set to keep the aspect ratio (4:3) in games like Sega Race TV and Primeval "
+"Hunt."
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
@@ -15818,7 +15891,7 @@ msgctxt "game_options"
 msgid "United Kingdom"
 msgstr "Vereinigtes Königreich"
 
-#. TRANSLATION: xenia, xenia-canary
+#. TRANSLATION: lindbergh-loader, xenia, xenia-canary
 msgctxt "game_options"
 msgid "United States"
 msgstr "USA"
@@ -15947,8 +16020,8 @@ msgid ""
 "Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
 "higher performance cost."
 msgstr ""
-"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser aus,"
-" hat aber einen höheren Leistungsaufwand."
+"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser "
+"aus, hat aber einen höheren Leistungsaufwand."
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, libretro/same_cdi
 msgctxt "game_options"
