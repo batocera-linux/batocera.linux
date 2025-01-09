@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Function to display help message
+show_help() {
+    echo "Usage: $(basename "$0") [OPTIONS] GAME_PATH [FLAG]"
+    echo
+    echo "Arguments:"
+    echo "  GAME_PATH    Required. Path to the games executable directory."
+    echo "  FLAG         Optional. A flag to pass to the 'lindbergh' executable."
+    echo
+    echo "Options:"
+    echo "  -h, --help   Show this help message and exit."
+    exit 0
+}
+
+# Check for help option
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+fi
+
+# Validate required argument
+if [[ -z "$1" ]]; then
+    echo "Error: GAME_PATH is required."
+    show_help
+fi
+
+# Ensure DISPLAY is set
+if test -z "${DISPLAY}"; then
+    export DISPLAY=:0.0
+fi
+
+# Define variables
+GAME_PATH="$1"
+FLAG="$2"
+
+export LD_LIBRARY_PATH="/lib32:/lib32/extralibs:/lib:/usr/lib:${GAME_PATH}"
+export GST_PLUGIN_SYSTEM_PATH_1_0="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+export SPA_PLUGIN_DIR="/lib32/spa-0.2:/usr/lib/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/lib32/pipewire-0.3:/usr/lib/pipewire-0.3"
+
+# Execute the main program
+cd "${GAME_PATH}" || exit
+LD_PRELOAD=lindbergh.so ./lindbergh "${FLAG}"

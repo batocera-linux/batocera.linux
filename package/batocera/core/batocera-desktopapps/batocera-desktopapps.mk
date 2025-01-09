@@ -166,6 +166,11 @@ ifeq ($(BR2_PACKAGE_SHADPS4),y)
   BATOCERA_DESKTOPAPPS_ICONS   += shadps4.png
 endif
 
+# lindbergh loader
+ifeq ($(BR2_PACKAGE_LINDBERGH_LOADER),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-lindbergh
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

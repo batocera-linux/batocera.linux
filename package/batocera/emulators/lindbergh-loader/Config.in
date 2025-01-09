@@ -1,0 +1,43 @@
+config BR2_PACKAGE_LINDBERGH_LOADER
+    bool "lindbergh-loader"
+	depends on BR2_PACKAGE_HAS_LIBGL
+	depends on BR2_PACKAGE_XORG7
+    depends on BR2_PACKAGE_LIBBSD_ARCH_SUPPORTS
+    select BR2_PACKAGE_ALSA_LIB
+    select BR2_PACKAGE_ALSA_PLUGINS
+    select BR2_PACKAGE_ALSA_UTILS
+    select BR2_PACKAGE_FAUDIO
+    select BR2_PACKAGE_LIBBSD
+    select BR2_PACKAGE_LIBFREEGLUT
+    select BR2_PACKAGE_LIBMD
+    select BR2_PACKAGE_LIBGLEW
+    select BR2_PACKAGE_NCURSES
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_PCSC_LITE
+    select BR2_PACKAGE_PIPEWIRE
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_UTIL_LINUX_LIBUUID
+    select BR2_PACKAGE_XCB_PROTO
+	select BR2_PACKAGE_XCB_UTIL
+    select BR2_PACKAGE_XCB_UTIL_CURSOR
+	select BR2_PACKAGE_XCB_UTIL_IMAGE
+    select BR2_PACKAGE_XCB_UTIL_KEYSYMS
+	select BR2_PACKAGE_XCB_UTIL_RENDERUTIL
+    select BR2_PACKAGE_XCB_UTIL_WM
+    select BR2_PACKAGE_XLIB_LIBICE
+    select BR2_PACKAGE_XLIB_LIBXSCRNSAVER
+    select BR2_PACKAGE_XLIB_LIBSM
+    select BR2_PACKAGE_XLIB_LIBX11
+    select BR2_PACKAGE_XLIB_LIBXAU
+    select BR2_PACKAGE_XLIB_LIBXEXT
+    select BR2_PACKAGE_XLIB_LIBXI
+    select BR2_PACKAGE_XLIB_LIBXDMCP
+    select BR2_PACKAGE_XLIB_LIBXMU
+    select BR2_PACKAGE_XLIB_LIBXXF86VM
+    help
+      A SEGA Lindbergh Emulator for Linux. 
+
+      https://github.com/lindbergh-loader/lindbergh-loader
+
+comment "lindbergh-loader depends on X.org and needs an OpenGL backend"
+	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_HAS_LIBGL
