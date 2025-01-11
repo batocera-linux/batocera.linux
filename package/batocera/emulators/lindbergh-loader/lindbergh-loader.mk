@@ -3,8 +3,8 @@
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Jan 5, 2025
-LINDBERGH_LOADER_VERSION = 45dd1cdbbd3ce349405b9370669ea2625b82cb01
+# Version: Commits on Jan 9, 2025
+LINDBERGH_LOADER_VERSION = 6bc6bb6aad2be9bdcd01bb88901a286eb5557f51
 LINDBERGH_LOADER_SITE = $(call github,lindbergh-loader,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
@@ -51,7 +51,7 @@ endif
 
 define LINDBERGH_LOADER_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/lindbergh.keys \
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/lindbergh.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 

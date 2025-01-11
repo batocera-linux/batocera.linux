@@ -42,4 +42,8 @@ export PIPEWIRE_MODULE_DIR="/lib32/pipewire-0.3:/usr/lib/pipewire-0.3"
 
 # Execute the main program
 cd "${GAME_PATH}" || exit
-LD_PRELOAD=lindbergh.so ./lindbergh "${FLAG}"
+if [[ -n "${FLAG}" ]]; then
+    LD_PRELOAD=lindbergh.so ./lindbergh "${FLAG}"
+else
+    LD_PRELOAD=lindbergh.so ./lindbergh
+fi

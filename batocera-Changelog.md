@@ -39,14 +39,13 @@
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
-The Xenia Canary introduces GamerTags (user profiles).
-- On first run or game launch you may be prompted to create a profile.
-- This will sometimes migrate your saves for you.
-- If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is created there.
-Note: The older Xenia version does not have this feature, therefore if you may need to transfer game saves back as necessary.
-
-We have migrated to a more modern WINE runner, using WINE-TKG.
-- WINE-TKG v9.21 takes advantage of all the benefits from WINE v9.x releases for compatibility.
+- The Xenia Canary introduces GamerTags (user profiles).
+  On first run or game launch you may be prompted to create a profile.
+  This will sometimes migrate your saves for you.
+  If not you can manually copy your saves from your /userdata/saves/xbox360 folder to the new profile folder which is created there.
+  Note: The older Xenia version does not have this feature, therefore if you may need to transfer game saves back as necessary.
+- We have migrated to a more modern WINE runner, using WINE-TKG.
+  WINE-TKG v9.21 takes advantage of all the benefits from WINE v9.x releases for compatibility.
 ### Hardware
 - Add initial Blamcon light gun support
 - Khadis VIM4 optimizations and enhancements
@@ -58,7 +57,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
 - Wayland multi screens support (including rpi*)
 - Xtension 2 Players Controller and Xtension 4 Players Controller
 - Initial support for the Retroid Pocket Mini & Retroid Pocket 5
-  - (https://github.com/batocera-linux/batocera.linux/issues/12562)
+  https://github.com/batocera-linux/batocera.linux/issues/12562
 - Arcade machine inputs have now a better supported thanks to keyboardToPads (xarcadejoystick removed)
 - Handheld devices with RGB LEDs can now display the battery level and status with a color code
 ### Added
@@ -236,7 +235,7 @@ We have migrated to a more modern WINE runner, using WINE-TKG.
 - Flatpak to 1.12.9
 - Added tmux
 - Support for LUKS-encrypted disk volumes with clevis automated decryption
-  (tpm2 and tang) at boot time
+  tpm2 and tang at boot time
 - Added fake-hwclock
 - Moved WINE runner from WINE-GE 8-26 (no longer maintained) to WINE-TKG 9.21
 - WINE-mono to 9.30
