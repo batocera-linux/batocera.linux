@@ -204,6 +204,9 @@ echo "wine installation..."
 echo 
 mkdir -p "${TMPOUT}/usr/wine/wine-tkg" || exit 1
 cp -pr "${G_TARGETDIR}/usr/wine/wine-tkg" "${TMPOUT}/usr/wine/" || exit 1
+# remove 32-bit wineserver
+rm "${TMPOUT}/usr/wine/wine-tkg/bin/wineserver" || exit 1
+
 # helper bins
 echo 
 echo " wine helper binaries"
