@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CATACOMBGL_VERSION = v0.5.6-beta
+CATACOMBGL_VERSION = 6c58d1fd17180deffee22220886858baa5f44d08
 CATACOMBGL_SITE = $(call github,ArnoAnsems,CatacombGL,$(CATACOMBGL_VERSION))
 CATACOMBGL_LICENSE = GPLv3
 CATACOMBGL_LICENSE_FILES = COPYING.txt
