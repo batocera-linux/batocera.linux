@@ -407,6 +407,7 @@ class BigPEmuGenerator(Generator):
             ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
             ("checkered_flag", "bigpemu_checkered_flag"),
             ("cybermorph", "bigpemu_cybermorph"),
+            ("doom", "bigpemu_doom"),
             ("iron_soldier", "bigpemu_iron_soldier"),
             ("mc3d_vr", "bigpemu_mc3d_vr"),
             ("t2k_rotary", "bigpemu_t2k_rotary"),
@@ -420,6 +421,15 @@ class BigPEmuGenerator(Generator):
 
         # Remove duplicates just in case (as a precaution)
         config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
+
+        # ScriptSettings
+        if "ScriptSettings" not in config["BigPEmuConfig"]:
+            config["BigPEmuConfig"]["ScriptSettings"] = {}
+        
+        if system.isOptSet("bigpemu_doom"):
+            config["BigPEmuConfig"]["ScriptSettings"]["DOOM-Music"] = system.config["bigpemu_doom"]
+        else:
+            config["BigPEmuConfig"]["ScriptSettings"]["DOOM-Music"] = 0
 
         # Screen filter
         if system.isOptSet("bigpemu_screenfilter"):
