@@ -3,9 +3,9 @@
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Jan 9, 2025
-LINDBERGH_LOADER_VERSION = 6bc6bb6aad2be9bdcd01bb88901a286eb5557f51
-LINDBERGH_LOADER_SITE = $(call github,lindbergh-loader,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
+# Version: Commits on Jan 12, 2025
+LINDBERGH_LOADER_VERSION = ab87b07038cce883607abcb6079f92537248df7a
+LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
 
@@ -34,7 +34,7 @@ define LINDBERGH_LOADER_BUILD_CMDS
 	CFLAGS_FOR_BUILD="-I$(STAGING_DIR)/usr/include" \
 	CFLAGS="$(LINDBERGH_LOADER_CFLAGS)" \
 	CPPFLAGS="-I$(STAGING_DIR)/usr/include" \
-	LD="$(TARGET_CXX) -m32" \
+	LD="$(TARGET_CC) -m32" \
 	LDFLAGS="$(LINDBERGH_LOADER_LDFLAGS)" \
 	-C $(@D) all
 endef

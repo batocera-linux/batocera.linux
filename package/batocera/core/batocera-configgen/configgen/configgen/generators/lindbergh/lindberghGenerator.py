@@ -122,24 +122,26 @@ class LindberghGenerator(Generator):
             modified_lines.append(f"BORDER_ENABLED {border_value}\n")
         
         if border_value == "1":
-            thickness_replaced = False
-            border_thickness = "2"
-            bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
-            if bordersSize == "thin":
-                border_thickness = "2"
-            elif bordersSize == "medium":
-                border_thickness = "3"
-            else:
-                border_thickness = "4"
-            
-            for i, line in enumerate(modified_lines):
-                if line.strip().startswith(("# WHITE_BORDER_PERCENTAGE", "WHITE_BORDER_PERCENTAGE")):
-                    modified_lines[i] = f"WHITE_BORDER_PERCENTAGE {border_thickness}\n"
-                    thickness_replaced = True
-                    break
-                
-            if not thickness_replaced:
-                modified_lines.append(f"WHITE_BORDER_PERCENTAGE {border_thickness}\n")
+            for gun in guns:
+                if guns[gun]["need_borders"]:
+                    thickness_replaced = False
+                    border_thickness = "1"
+                    bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
+                    if bordersSize == "thin":
+                        border_thickness = "1"
+                    elif bordersSize == "medium":
+                        border_thickness = "2"
+                    else:
+                        border_thickness = "3"
+                    
+                    for i, line in enumerate(modified_lines):
+                        if line.strip().startswith(("# WHITE_BORDER_PERCENTAGE", "WHITE_BORDER_PERCENTAGE")):
+                            modified_lines[i] = f"WHITE_BORDER_PERCENTAGE {border_thickness}\n"
+                            thickness_replaced = True
+                            break
+                        
+                    if not thickness_replaced:
+                        modified_lines.append(f"WHITE_BORDER_PERCENTAGE {border_thickness}\n")
         
         # Handle the aspect ratio option
         aspect_value = "1" if system.isOptSet("lindbergh_aspect") and system.getOptBoolean("lindbergh_aspect") else "0"
@@ -206,40 +208,56 @@ class LindberghGenerator(Generator):
         if not outrun_replaced:
             modified_lines.append(f"SKIP_OUTRUN_CABINET_CHECK {outrun_value}\n")
         
-        # Replace or append controller configuration
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            # Handle two players / controllers only
-            if nplayer <= 2:
-                controller_name = pad.real_name.upper().replace(" ", "_").replace("-", "_")
-                for input_name in pad.inputs:
-                    if input_name in lindberghCtrl:
-                        button_name, input_value = lindberghCtrl[input_name]
+        input_type = 1 # SDL controls only
 
-                        # Handle special case for joystick1up and joystick1left
-                        if input_name in {"joystick1up", "joystick1left"}:
-                            key_pattern = button_name
-                        else:
-                            key_pattern = f"PLAYER_{nplayer}_{button_name}"
+        # Handle gun games by name until they're tagged accordingly
+        if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "jungle", "hunt", "rambo", "dead"]):
+            # Replace or append controller evdev configuration
+            input_type = 0 # All controller modes
+            nplayer = 1
+            for playercontroller, pad in sorted(playersControllers.items()):
+                # Handle two players / controllers only
+                if nplayer <= 2:
+                    controller_name = pad.real_name.upper().replace(" ", "_").replace("-", "_")
+                    for input_name in pad.inputs:
+                        if input_name in lindberghCtrl:
+                            button_name, input_value = lindberghCtrl[input_name]
 
-                        line_pattern = re.compile(rf"^(#\s*)?{key_pattern}\s")
+                            # Handle special case for joystick1up and joystick1left
+                            if input_name in {"joystick1up", "joystick1left"}:
+                                key_pattern = button_name
+                            else:
+                                key_pattern = f"PLAYER_{nplayer}_{button_name}"
 
-                        # Check if the line exists
-                        replaced = False
-                        for i, line in enumerate(modified_lines):
-                            if line_pattern.match(line):
+                            line_pattern = re.compile(rf"^(#\s*)?{key_pattern}\s")
+
+                            # Check if the line exists
+                            replaced = False
+                            for i, line in enumerate(modified_lines):
+                                if line_pattern.match(line):
+                                    modified_line = f"{key_pattern} {controller_name}_{input_value}\n"
+                                    eslog.debug(f"Configured: {key_pattern} {controller_name}_{input_value}")
+                                    modified_lines[i] = modified_line
+                                    replaced = True
+                                    break
+
+                            if not replaced:
                                 modified_line = f"{key_pattern} {controller_name}_{input_value}\n"
-                                eslog.debug(f"Configured: {key_pattern} {controller_name}_{input_value}")
-                                modified_lines[i] = modified_line
-                                replaced = True
-                                break
+                                eslog.debug(f"Appended: {key_pattern} {controller_name}_{input_value}")
+                                modified_lines.append(modified_line)
+                    nplayer += 1
+        
+        input_replaced = False
 
-                        if not replaced:
-                            modified_line = f"{key_pattern} {controller_name}_{input_value}\n"
-                            eslog.debug(f"Appended: {key_pattern} {controller_name}_{input_value}")
-                            modified_lines.append(modified_line)
-                nplayer += 1
-
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# INPUT_MODE", "INPUT_MODE")):
+                modified_lines[i] = f"INPUT_MODE {input_type}\n"
+                input_replaced = True
+                break
+        
+        if not input_replaced:
+            modified_lines.append(f"INPUT_MODE {input_type}\n")
+        
         # Write back the modified configuration
         with _LINDBERGH_CONFIG_FILE.open('w') as file:
             file.writelines(modified_lines)
