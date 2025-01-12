@@ -5601,33 +5601,34 @@ lindbergh:
     Sega Lindbergh requires good knowledge of rom dumps.
     We strongly recommend you read the wiki before asking for support.
 
-    To launch a game, create an file name with the .game extension in the location where the rom will execute from.
+    To launch a game, create an file name with the .game extension as suggested below in the location where the rom will execute from.
         Here are the working games and associated extensions at the time of writing:
 
-    Game                               Filename
-    ----                             | --------
-    2 Spicy                          | apacheM.elf
-    After Burner Climax              | abc
-    Ghost Squad Evolution            | vsg or gsevo
-    Harley Davidson King of the Road | chopperM.elf
-    Hummer                           | a.elf
-    Hummer Extreme Edition           | hummer_Master.elf
-    Initial D Arcade Stage 4         | id4.elf
-    Initial D Arcade Stage 5         | id5.elf
-    Let's Go Jungle                  | lgj_final
-    Let's Go Jungle Special          | lgjsp_app
-    OutRun 2 SP SDX                  | Jennifer
-    Primeval Hunt                    | main.exe
-    R-Tuned Ultimate Street Racing   | dsr
-    Rambo                            | ramboM.elf
-    Sega Race TV                     | drive.elf
-    The House of the Dead 4          | hod4M.elf
-    The House of the Dead 4 Special  | hod4M.elf
-    The House of the Dead EX         | hodexRI.elf
-    Virtua Fighter 5                 | vf5
-    Virtua Fighter 5 R               | vf5
-    Virtua Fighter 5 FS              | vf5
-    Virtua Tennis 3                  | vt3 or vt3_Lindbergh
+    Game                                Filename               Game ID
+    ----                              | --------             | -------
+    2 Spicy                           | apacheM.elf          | 2spicy.game
+    After Burner Climax               | abc                  | abclimax.game
+    Ghost Squad Evolution             | vsg or gsevo         | gsevo.game
+    Harley Davidson King of the Road  | chopperM.elf         | hdkotr.game
+    Hummer                            | a.elf                | hummer.game
+    Hummer Extreme Edition            | hummer_Master.elf    | hummerxt.game
+    Initial D Arcade Stage 4          | id4.elf              | initiad4.game
+    Initial D Arcade Stage 4 (Export) | id4.elf              | initiad4exp.game
+    Initial D Arcade Stage 5          | id5.elf              | initiad5.game
+    Let's Go Jungle                   | lgj_final            | letsgoju.game
+    Let's Go Jungle Special           | lgjsp_app            | letsgojusp.game
+    OutRun 2 SP SDX                   | Jennifer             | outr2sdx.game
+    Primeval Hunt                     | main.exe             | primevah.game
+    R-Tuned Ultimate Street Racing    | dsr                  | rtuned.game
+    Rambo                             | ramboM.elf           | rambo.game
+    Sega Race TV                      | drive.elf            | segartv.game
+    The House of the Dead 4           | hod4M.elf            | hotd4.game
+    The House of the Dead 4 Special   | hod4M.elf            | hotd4sp.game
+    The House of the Dead EX          | hodexRI.elf          | hotdex.game
+    Virtua Fighter 5                  | vf5                  | vf5.game
+    Virtua Fighter 5 R                | vf5                  | vf5r.game
+    Virtua Fighter 5 FS               | vf5                  | vf5fs.game
+    Virtua Tennis 3                   | vt3 or vt3_Lindbergh | vtennis3.game
 
     i.e . Create Ghost Squad Evolution.game in the /userdata/roms/lindbergh/Ghost Squad Evolution/vsg_l directory
     EmulationStation will then see the game & launch it accordingly.
