@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS
+from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 eslog = logging.getLogger(__name__)
 
 _CATACOMBGL_CONFIG: Final = CONFIGS / "CatacombGL"
+_CATACOMBGL_SAVES: Final = SAVES / "CatacombGL"
 
 class CatacombGLGenerator(Generator):
 
@@ -29,9 +30,9 @@ class CatacombGLGenerator(Generator):
             },
         }
 
-    def generate(
-        self, system, rom, playersControllers, metadata, guns, wheels, gameResolution
-    ):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        
+        mkdir_if_not_exists(_CATACOMBGL_SAVES)
         # Path to the ini file
         _CATACOMBGL_CONFIG_FILE = _CATACOMBGL_CONFIG / "CatacombGL.ini"
         _CATACOMBGL_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -65,7 +66,7 @@ class CatacombGLGenerator(Generator):
                 ini_file.write(f"{key}={value}\n")
 
         # Run command
-        commandArray = ["/usr/bin/CatacombGL"]
+        commandArray = ["/usr/bin/CatacombGL", "--savedir", _CATACOMBGL_SAVES]
 
         # Version
         rom_file_name = os.path.basename(rom).lower()
