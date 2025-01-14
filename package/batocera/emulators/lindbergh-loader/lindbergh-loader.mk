@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits on Jan 12, 2025
-LINDBERGH_LOADER_VERSION = ab87b07038cce883607abcb6079f92537248df7a
+LINDBERGH_LOADER_VERSION = a0ad7a8ba0405bf5497faf6d700be69fa50c0757
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md

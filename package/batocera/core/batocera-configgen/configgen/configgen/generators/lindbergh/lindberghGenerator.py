@@ -196,7 +196,7 @@ class LindberghGenerator(Generator):
             modified_lines.append(f"DEBUG_MSGS {debug_value}\n")
         
         # Non ES option but to set automatically in the rom is OutRun
-        outrun_value = "1" if "outrun" in romName.lower() else "0"
+        outrun_value = "1" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "0"
         outrun_replaced = False
 
         for i, line in enumerate(modified_lines):
@@ -211,7 +211,7 @@ class LindberghGenerator(Generator):
         input_type = 1 # SDL controls only
 
         # Handle gun games by name until they're tagged accordingly
-        if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "jungle", "hunt", "rambo", "dead"]):
+        if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "gsevo", "jungle", "letsgoju", "hunt", "primevah", "rambo", "dead", "hotd"]):
             # Replace or append controller evdev configuration
             input_type = 0 # All controller modes
             nplayer = 1
@@ -271,7 +271,7 @@ class LindberghGenerator(Generator):
                 eslog.debug(f"Copied: {destination} from {source}")
         
         # -= Game specific library versions =-
-        if any(keyword in romName.lower() for keyword in ("harley", "spicy", "rambo")):
+        if any(keyword in romName.lower() for keyword in ("harley", "hdkotr", "spicy", "rambo")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
@@ -281,7 +281,7 @@ class LindberghGenerator(Generator):
                 shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
                 eslog.debug(f"Copied: {destCgGL}")
         
-        if "stage 4" in romName.lower():
+        if "stage 4" in romName.lower() or "initiad4" in romName.lower():
             destination = Path(romDir) / "libCgGL.so"
             if not destination.exists():
                 shutil.copy2("/lib32/extralibs/libCgGL.so.other", destination)
