@@ -454,14 +454,18 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
 
     # Write command line file
     cmdFilename = cmdPath / f"{romDrivername}.cmd"
-    if not system.isOptSet("cmdfile"):
-        # Create a .cmd file based on the logic above
+    # Check to see whether user provided a custom cmd file, at either a default location, or specified in batocera.conf
+    defaultCustomCmdFilepath = f'{rom}.cmd'
+    if Path(defaultCustomCmdFilepath).is_file():
+        shutil.copyfile(defaultCustomCmdFilepath, cmdFilename)
+    elif system.isOptSet("cmdfile"):
+        # User specified where to find the custom .cmd file in batocera.conf
+        shutil.copyfile(system.config["cmdfile"], cmdFilename)
+    else:
+        # User did not provide a custom .cmd file. Use the logic above to create a new .cmd file
         cmdFile = cmdFilename.open("w")
         cmdFile.write(' '.join(str(item) for item in commandLine))
         cmdFile.close()
-    else:
-        # Copy from a user-configured .cmd file and ignore the logic above
-        shutil.copyfile(system.config["cmdfile"], cmdFilename)
 
     # Call Controller Config
     if messMode == -1:
