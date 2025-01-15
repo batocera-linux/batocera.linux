@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import json
 import logging
 import re
 import shutil
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
-
-import httplib2
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists

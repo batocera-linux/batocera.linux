@@ -7,8 +7,8 @@ from shutil import copyfile
 from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
-from ...controller import generate_sdl_game_controller_config
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -114,7 +114,7 @@ class SupermodelGenerator(Generator):
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )
-    
+
     def getInGameRatio(self, config, gameResolution, rom):
         if 'm3_wideScreen' in config and config["m3_wideScreen"] == "1":
             return 16 / 9
@@ -225,8 +225,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
 
     # template
     templateConfig = CaseSensitiveConfigParser(interpolation=None)
-    with templateFile.open('r', encoding='utf_8_sig') as fp:
-        templateConfig.readfp(fp)
+    templateConfig.read(templateFile, encoding='utf_8_sig')
 
     # target
     targetConfig = CaseSensitiveConfigParser(interpolation=None)
