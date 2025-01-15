@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import ruamel.yaml as yaml
+from ruamel.yaml import YAML
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
@@ -56,11 +56,13 @@ class Rpcs3Generator(Generator):
 
         mkdir_if_not_exists(RPCS3_CONFIG.parent)
 
+        yaml = YAML(typ='safe', pure=True)
+
         # Generate a default config if it doesn't exist otherwise just open the existing
         rpcs3ymlconfig = {}
         if RPCS3_CONFIG.is_file():
             with RPCS3_CONFIG.open("r") as stream:
-                rpcs3ymlconfig = yaml.safe_load(stream)
+                rpcs3ymlconfig = yaml.load(stream) or {}
 
         if rpcs3ymlconfig is None: # in case the file is empty
             rpcs3ymlconfig = {}
@@ -316,7 +318,7 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Miscellaneous"]["Show trophy popups"] = False
 
         with RPCS3_CONFIG.open("w") as file:
-            yaml.dump(rpcs3ymlconfig, file, default_flow_style=False)
+            yaml.dump(rpcs3ymlconfig, file)
 
         # copy icon files to config
         icon_target = RPCS3_CONFIG_DIR / 'Icons'
