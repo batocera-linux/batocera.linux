@@ -3,8 +3,8 @@
 # scummvm
 #
 ################################################################################
-# Version: 2.8.1 - "Oh MMy!"
-SCUMMVM_VERSION = v2.8.1
+
+SCUMMVM_VERSION = v2.9.0
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES += sdl2 zlib libmpeg2 libogg libvorbis flac libmad

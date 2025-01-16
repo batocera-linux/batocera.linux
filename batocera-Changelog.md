@@ -26,6 +26,7 @@
 - Libretro-MAME to 0.272
 - Ruffle to Nightly-2024-12-28
 - RPCS3 to 0.0.34-17265
+- ScummVM to v2.9.0
 - PCSX2 to 2.3.82
 - Play! to 28th December build
 - Xemu to v0.7.141
