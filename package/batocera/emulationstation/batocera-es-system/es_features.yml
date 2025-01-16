@@ -13637,6 +13637,13 @@ lindbergh-loader:
         "75 fps":           "75"
         "100 fps":          "100"
         "120 fps":          "120"
+    lindbergh_hummer:
+      group: ADVANCED OPTIONS
+      prompt: HUMMER FLICKER FIX
+      description: Set to on if you experience flickering in hummer.
+      choices:
+        "Off (Default)": 0
+        "On":            1    
     lindbergh_test:
       group: ADVANCED OPTIONS
       prompt: RUN TEST MODE

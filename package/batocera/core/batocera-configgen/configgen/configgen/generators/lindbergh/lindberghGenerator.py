@@ -195,7 +195,20 @@ class LindberghGenerator(Generator):
         if not debug_replaced:
             modified_lines.append(f"DEBUG_MSGS {debug_value}\n")
         
-        # Non ES option but to set automatically in the rom is OutRun
+        # HUMMER_FLICKER_FIX
+        hummer_value = "1" if system.isOptSet("lindbergh_hummer") and system.getOptBoolean("lindbergh_hummer") else "0"
+        hummer_replaced = False
+
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# HUMMER_FLICKER_FIX", "HUMMER_FLICKER_FIX")):
+                modified_lines[i] = f"HUMMER_FLICKER_FIX {hummer_value}\n"
+                hummer_replaced = True
+                break
+
+        if not hummer_replaced:
+            modified_lines.append(f"HUMMER_FLICKER_FIX {hummer_value}\n")
+        
+        # Not an ES option but to set automatically if the rom is OutRun
         outrun_value = "1" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "0"
         outrun_replaced = False
 
