@@ -27,6 +27,10 @@ define BATOCERA_BACKGLASS_INSTALL_TARGET_CMDS
         cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass/www/backglass-image/*.{js,css,htm}    $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-image/
         mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-marquee
         cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass/www/backglass-marquee/*.{js,css,htm}    $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-marquee/
+        mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-boxart
+        cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass/www/backglass-boxart/*.{js,css,htm}    $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-boxart/
+        mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-fanart
+        cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass/www/backglass-fanart/*.{js,css,htm}    $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-fanart/
 endef
 
 $(eval $(generic-package))

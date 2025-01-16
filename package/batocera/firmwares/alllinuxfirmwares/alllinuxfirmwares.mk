@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20241017
+ALLLINUXFIRMWARES_VERSION = 20241110
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
 ALLLINUXFIRMWARES_SITE = https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot
 
@@ -84,10 +84,20 @@ define ALLLINUXFIRMWARES_FIX_AMD_890M
         $(TARGET_DIR)/lib/firmware/amdgpu/isp_4_1_0.bin
 endef
 
+# symlink Bee-Link SER9 for a BIOS / firmware bug
+define ALLLINUXFIRMWARES_FIX_SER9
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/firmware
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/dcn_3_5_dmcub.bin \
+        $(TARGET_DIR)/usr/share/batocera/firmware/dcn_3_5_dmcub.bin
+    $(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/S03firmware \
+        $(TARGET_DIR)/etc/init.d/
+endef
+
 # Copy Qualcomm firmware for Steam Deck OLED etc
 ifeq ($(BR2_x86_64),y)
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_AMD_890M
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_SER9
 endif
 
 # symlink BT firmware for RK3588 kernel

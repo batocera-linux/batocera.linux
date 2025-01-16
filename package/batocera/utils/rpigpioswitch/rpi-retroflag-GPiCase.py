@@ -1,39 +1,66 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 
-import RPi.GPIO as GPIO
-import os
+import gpiod
+from gpiod.line import Edge, Direction, Value
 import subprocess
-from multiprocessing import Process
+from datetime import timedelta
 
-#initialize pins
-powerPin = 26
-powerenPin = 27
+# Pin Configuration
+POWER_CHIP = "/dev/gpiochip0"
+POWER_PIN = 26  # GPIO 26 in BCM mode
+POWER_EN_PIN = 27  # GPIO 27 in BCM mode
 
-#initialize GPIO settings
-def init():
-	GPIO.setwarnings(False)
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setup(powerPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-	GPIO.setup(powerenPin, GPIO.OUT)
-	GPIO.output(powerenPin, GPIO.HIGH)
+def init_gpio():
+    try:
+        gpiod.request_lines(POWER_CHIP,
+            config={
+                POWER_EN_PIN: gpiod.LineSettings(
+                    direction=Direction.OUTPUT, 
+                    output_value=Value.ACTIVE
+                )
+            }
+        )
+        print("GPIO initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize GPIO: {e}")
+        exit(1)
 
-#waits for user to hold button up to 1 second before issuing poweroff command
-def poweroff():
-	while True:
-		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
-		if output:
-			os.system("batocera-es-swissknife --emukill")
-			os.system("batocera-es-swissknife --shutdown")
-		else:
-			os.system("shutdown -h now")
+def handle_gpio_event(event_line_offset):
+    if event_line_offset == POWER_PIN:
+        print("POWER button pressed")
+        try:
+            output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
+            if output:
+                print("Exiting emulators and shutting down Batocera")
+                subprocess.run("batocera-es-swissknife --emukill", shell=True, check=True)
+                subprocess.run("batocera-es-swissknife --shutdown", shell=True, check=True)
+            else:
+                print("System shutdown")
+                subprocess.run("shutdown -h now", shell=True, check=True)
+        except Exception as e:
+            print(f"Poweroff command error: {e}")
+
+def watch_gpio_events():
+    try:
+        with gpiod.request_lines(
+            POWER_CHIP,
+            config={
+                POWER_PIN: gpiod.LineSettings(
+                    edge_detection=Edge.FALLING
+                )
+            },
+        ) as request:
+            print("GPIO event monitoring started")
+            for event in request.read_edge_events():
+                handle_gpio_event(event.line_offset)
+    except Exception as e:
+        print(f"Error watching GPIO events: {e}")
+        exit(1)
+
+def main():
+    init_gpio()
+    while True:
+        watch_gpio_events()
 
 if __name__ == "__main__":
-	#initialize GPIO settings
-	init()
-	#create a multiprocessing.Process instance for each function to enable parallelism 
-	powerProcess = Process(target = poweroff)
-	powerProcess.start()
-
-	powerProcess.join()
+    main()

@@ -16,6 +16,10 @@ DOLPHIN_EMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl
 DOLPHIN_EMU_DEPENDENCIES += bluez5_utils hidapi xz host-xz sdl2
+# add dolphin-triforce as a dependency so it builds first
+ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
+DOLPHIN_EMU_DEPENDENCIES += dolphin-triforce
+endif
 
 DOLPHIN_EMU_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DOLPHIN_EMU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF

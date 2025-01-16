@@ -2,8 +2,8 @@ diff --git a/src/utils/pactl.c b/src/utils/pactl.c
 index 9db1d6a..2de5257 100644
 --- a/src/utils/pactl.c
 +++ b/src/utils/pactl.c
-@@ -690,6 +690,44 @@ static void get_card_info_callback(pa_context *c, const pa_card_info *i, int is_
-     }
+@@ -1309,6 +1309,44 @@ static void get_card_info_callback(pa_context *c, const pa_card_info *i, int is_
+     pa_xfree(pl);
  }
  
 +static void get_card_profile_raw_info_callback(pa_context *c, const pa_card_info *i, int is_last, void *userdata) {

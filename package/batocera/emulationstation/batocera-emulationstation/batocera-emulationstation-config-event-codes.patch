@@ -2,7 +2,7 @@ diff --git a/es-core/src/InputConfig.cpp b/es-core/src/InputConfig.cpp
 index f8078d3..048af7d 100644
 --- a/es-core/src/InputConfig.cpp
 +++ b/es-core/src/InputConfig.cpp
-@@ -223,5 +223,9 @@ void InputConfig::writeToXML(pugi::xml_node& parent)
+@@ -334,6 +334,10 @@ void InputConfig::writeToXML(pugi::xml_node& parent)
  		input.append_attribute("type") = inputTypeToString(iterator->second.type).c_str();
  		input.append_attribute("id").set_value(iterator->second.id);
  		input.append_attribute("value").set_value(iterator->second.value);
@@ -12,6 +12,7 @@ index f8078d3..048af7d 100644
 +
  	}
  }
+ 
 diff --git a/es-core/src/InputConfig.h b/es-core/src/InputConfig.h
 index de750d4..dc76c8e 100644
 --- a/es-core/src/InputConfig.h

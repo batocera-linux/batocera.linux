@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index aafa444fe0..ace3132564 100644
+--- a/Makefile
++++ b/Makefile
+@@ -481,7 +481,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
+ 		   -Werror=implicit-function-declaration -Werror=implicit-int \
+ 		   -Werror=return-type -Wno-format-security \
+-		   -std=gnu89
++		   -std=gnu89 -Wno-error=format
+ ifndef CONFIG_KASAN
+ KBUILD_CFLAGS	+= -Werror
+ endif
+@@ -751,6 +751,7 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, dangling-pointer)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, address)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, stringop-overread)
+ KBUILD_CFLAGS	+= $(call cc-disable-warning, array-compare)
++KBUILD_CFLAGS   += $(call cc-disable-warning, enum-int-mismatch)
+ 
+ ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+ KBUILD_CFLAGS += -O2

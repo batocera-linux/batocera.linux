@@ -39,12 +39,14 @@ case "$1" in
     if [ "$arch" = "bcm2711" ] && [ $gpio_enabled -eq 1 ]
     then
     /usr/bin/python - <<-_EOF_
-		import RPi.GPIO as GPIO
-		GPIO.setmode(GPIO.BCM)
-		GPIO.setwarnings(False)
-		btn_list = [*range(2,28)]
-		GPIO.setup(btn_list, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-	_EOF_
+        import gpiod
+
+        chip = gpiod.Chip('gpiochip0')
+        btn_list = list(range(2, 28))
+        lines = chip.get_lines(btn_list)
+        for line in lines:
+            line.request(consumer='batocera-gpio', type=gpiod.LINE_REQ_DIR_IN, flags=[gpiod.LINE_FLAG_BIAS_PULL_UP])
+_EOF_
     fi
 
     ;;

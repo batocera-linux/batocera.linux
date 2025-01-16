@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -12,6 +11,7 @@ import toml
 from ... import Command
 from ...batoceraPaths import CONFIGS
 from ...controller import generate_sdl_game_controller_config
+from ...utils import vulkan
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -40,40 +40,26 @@ class shadPS4Generator(Generator):
 
         # Check Vulkan first before doing anything
         discrete_index = 0
-        try:
-            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-            if have_vulkan == "true":
-                eslog.debug("Vulkan driver is available on the system.")
-                try:
-                    vulkan_version = subprocess.check_output(["/usr/bin/batocera-vulkan", "vulkanVersion"], text=True).strip()
-                    if vulkan_version > "1.3":
-                        eslog.debug(f"Using Vulkan version: {vulkan_version}")
-                        try:
-                            have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                            if have_discrete == "true":
-                                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                                try:
-                                    discrete_index = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteIndex"], text=True).strip()
-                                    if discrete_index != "":
-                                        eslog.debug(f"Using Discrete GPU Index: {discrete_index} for shadPS4")
-                                    else:
-                                        eslog.debug("Couldn't get discrete GPU index")
-                                except subprocess.CalledProcessError:
-                                    eslog.debug("Error getting discrete GPU index")
-                            else:
-                                eslog.debug("Discrete GPU is not available on the system. Using default.")
-                                discrete_index = 0
-                        except subprocess.CalledProcessError:
-                            eslog.debug("Error checking for discrete GPU.")
+        if vulkan.is_available():
+            eslog.debug("Vulkan driver is available on the system.")
+            vulkan_version = vulkan.get_version()
+            if vulkan_version > "1.3":
+                eslog.debug(f"Using Vulkan version: {vulkan_version}")
+                if vulkan.has_discrete_gpu():
+                    eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                    discrete_index = vulkan.get_discrete_gpu_index()
+                    if discrete_index:
+                        eslog.debug(f"Using Discrete GPU Index: {discrete_index} for shadPS4")
                     else:
-                        eslog.debug(f"Vulkan version: {vulkan_version} is not compatible with shadPS4")
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error checking for Vulkan version.")
+                        eslog.debug("Couldn't get discrete GPU index")
+                        discrete_index = 0
+                else:
+                    eslog.debug("Discrete GPU is not available on the system. Using default.")
             else:
-                eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
-                sys.exit(1)
-        except subprocess.CalledProcessError:
-            eslog.debug("Error executing batocera-vulkan script.")
+                eslog.debug(f"Vulkan version: {vulkan_version} is not compatible with shadPS4")
+        else:
+            eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
+            sys.exit(1)
 
         # Adjust the config.toml file
         config = {}

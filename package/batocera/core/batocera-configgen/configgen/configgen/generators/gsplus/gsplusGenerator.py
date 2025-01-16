@@ -67,6 +67,7 @@ class GSplusGenerator(Generator):
             config.save("bram3[d0]", 'ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff')
             config.save("bram3[e0]", 'ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff')
             config.save("bram3[f0]", 'ff ff ff ff ff ff ff ff ff ff ff ff 05 cf af 65')
+            config.save("g_limit_speed", "1")
         else: # .po and .2mg
             config.save("s7d1", rom)
             config.save("s5d1", '')
@@ -103,8 +104,8 @@ class GSplusGenerator(Generator):
             config.save("bram3[d0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
             config.save("bram3[e0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
             config.save("bram3[f0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
-        config.save("g_cfg_rom_path", BIOS)
-        # config.save("g_limit_speed", "0")
+            config.save("g_limit_speed", "2")
+        config.save("g_cfg_rom_path", f"""{BIOS}/ROM.03""")
 
         config.write()
         commandArray = ["GSplus", "-fullscreen"]

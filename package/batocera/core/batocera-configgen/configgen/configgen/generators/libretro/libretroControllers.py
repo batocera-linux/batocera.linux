@@ -58,12 +58,14 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
     # hotkeys, forced to match with the hotkeys system
     retroconfig.save('input_enable_hotkey',       '"shift"')
     retroconfig.save('input_menu_toggle',         '"f1"')
+    retroconfig.save('input_fps_toggle',          '"f2"')
     retroconfig.save('input_exit_emulator',       '"escape"')
     retroconfig.save('input_save_state',          '"f3"')
     retroconfig.save('input_load_state',          '"f4"')
     retroconfig.save('input_state_slot_decrease', '"f5"')
     retroconfig.save('input_state_slot_increase', '"f6"')
-    retroconfig.save('input_player1_select',      '"f12"')
+    retroconfig.save('input_toggle_fast_forward', '"f11"')
+    retroconfig.save('input_screenshot',          '"f12"')
 
     # No menu in non full uimode
     if system.config["uimode"] != "Full":

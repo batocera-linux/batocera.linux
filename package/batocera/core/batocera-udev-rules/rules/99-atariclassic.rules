@@ -1,2 +1,4 @@
-SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Atari Classic Controller", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0" RUN+="/usr/bin/batocera-spinner-calibrator -d $env{DEVNAME}"
+SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Atari Classic Controller", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/setsid -f /usr/bin/evsieve --input $env{DEVNAME} grab --map yield key:menu btn:start --map yield key:back btn:select --output 'name=Atari Classic Controller (evsieve)'"
+SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Classic Controller", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/setsid -f /usr/bin/evsieve --input $env{DEVNAME} grab --map yield key:menu btn:start --map yield key:back btn:select --output 'name=Atari Classic Controller (evsieve)'"
+SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="Atari Classic Controller (evsieve)", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/setsid -f /usr/bin/batocera-spinner-calibrator -d $env{DEVNAME}"
 SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="virtual spinner", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"

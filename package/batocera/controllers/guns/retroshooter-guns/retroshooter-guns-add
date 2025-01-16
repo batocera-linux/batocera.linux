@@ -37,7 +37,7 @@ trylock() {
 trylock
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "3AGAME 3A-3H Retro Shooter [1-4]$") # remove the joystick from the event cause it duplicates events
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
 ############
@@ -87,22 +87,22 @@ then
 
     if test "${PLAYER}" = "1"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --map yield key:esc btn:1 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "2"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:2 btn:middle --map yield key:6 btn:1 --map yield key:u btn:5 --map yield key:v btn:6 --map yield key:w btn:7 --map yield key:x btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:2 btn:middle --map yield key:6 btn:1 --map yield key:u btn:5 --map yield key:v btn:6 --map yield key:w btn:7 --map yield key:x btn:8 --map yield key:esc btn:1 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "3"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:3 btn:middle --map yield key:7 btn:1 --map yield key:r btn:5 --map yield key:f btn:6 --map yield key:d btn:7 --map yield key:g btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:3 btn:middle --map yield key:7 btn:1 --map yield key:r btn:5 --map yield key:f btn:6 --map yield key:d btn:7 --map yield key:g btn:8 --map yield key:esc btn:1 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
     fi
 
     if test "${PLAYER}" = "4"
     then
-	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:8 btn:1 --map yield key:i btn:5 --map yield key:k btn:6 --map yield key:j btn:7 --map yield key:l btn:8 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:8 btn:1 --map yield key:i btn:5 --map yield key:k btn:6 --map yield key:j btn:7 --map yield key:l btn:8 --map yield key:esc btn:1 --output name="${NEWNAME}" >/dev/null 2>"${LOGFILE}" &
     fi
 
     echo $! > "${PIDFILE}"

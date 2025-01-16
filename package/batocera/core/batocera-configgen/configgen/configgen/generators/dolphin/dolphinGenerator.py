@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import logging
-import subprocess
 from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
-from ...batoceraPaths import CONFIGS, SAVES, CACHE, mkdir_if_not_exists
+from ... import Command
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
+from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import dolphinControllers, dolphinSYSCONF
@@ -148,13 +148,9 @@ class DolphinGenerator(Generator):
         if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
             dolphinSettings.set("Core", "GFXBackend", "Vulkan")
             # Check Vulkan
-            try:
-                have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-                if have_vulkan != "true":
-                    eslog.debug("Vulkan driver is not available on the system. Using OpenGL instead.")
-                    dolphinSettings.set("Core", "GFXBackend", "OGL")
-            except subprocess.CalledProcessError:
-                eslog.debug("Error checking for discrete GPU.")
+            if not vulkan.is_available():
+                eslog.debug("Vulkan driver is not available on the system. Using OpenGL instead.")
+                dolphinSettings.set("Core", "GFXBackend", "OGL")
         else:
             dolphinSettings.set("Core", "GFXBackend", "OGL")
 
@@ -235,29 +231,18 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.add_section("Hardware")
 
         # Set Vulkan adapter
-        try:
-            have_vulkan = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasVulkan"], text=True).strip()
-            if have_vulkan == "true":
-                eslog.debug("Vulkan driver is available on the system.")
-                try:
-                    have_discrete = subprocess.check_output(["/usr/bin/batocera-vulkan", "hasDiscrete"], text=True).strip()
-                    if have_discrete == "true":
-                        eslog.debug("A discrete GPU is available on the system. We will use that for performance")
-                        try:
-                            discrete_index = subprocess.check_output(["/usr/bin/batocera-vulkan", "discreteIndex"], text=True).strip()
-                            if discrete_index != "":
-                                eslog.debug("Using Discrete GPU Index: {} for Dolphin".format(discrete_index))
-                                dolphinGFXSettings.set("Hardware", "Adapter", discrete_index)
-                            else:
-                                eslog.debug("Couldn't get discrete GPU index")
-                        except subprocess.CalledProcessError:
-                            eslog.debug("Error getting discrete GPU index")
-                    else:
-                        eslog.debug("Discrete GPU is not available on the system. Using default.")
-                except subprocess.CalledProcessError:
-                    eslog.debug("Error checking for discrete GPU.")
-        except subprocess.CalledProcessError:
-            eslog.debug("Error executing batocera-vulkan script.")
+        if vulkan.is_available():
+            eslog.debug("Vulkan driver is available on the system.")
+            if vulkan.has_discrete_gpu():
+                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_index = vulkan.get_discrete_gpu_index()
+                if discrete_index:
+                    eslog.debug("Using Discrete GPU Index: {} for Dolphin".format(discrete_index))
+                    dolphinGFXSettings.set("Hardware", "Adapter", discrete_index)
+                else:
+                    eslog.debug("Couldn't get discrete GPU index")
+            else:
+                eslog.debug("Discrete GPU is not available on the system. Using default.")
 
         # Graphics setting Aspect Ratio
         if system.isOptSet('dolphin_aspect_ratio'):
@@ -489,8 +474,8 @@ class DolphinGenerator(Generator):
             commandArray.extend(["--save_state", system.config['state_filename']])
 
         return Command.Command(
-            array=commandArray, 
-            env={ 
+            array=commandArray,
+            env={
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_DATA_HOME": SAVES,
                 "XDG_CACHE_HOME": CACHE,

@@ -1,0 +1,13 @@
+diff --git a/src/System/SystemSDL.cpp b/src/System/SystemSDL.cpp
+index 1b11d7bb28..33ce0ffb32 100644
+--- a/src/System/SystemSDL.cpp
++++ b/src/System/SystemSDL.cpp
+@@ -89,7 +89,7 @@ fs::path SystemSDL::FindConfigurationFile() const
+     filenamePath = fs::path(appDataPath);
+ 
+ #elif defined (__linux__)
+-    filenamePath = fs::path(getenv("HOME")) / ".config";
++    filenamePath = fs::path("/userdata/system/configs");
+ 
+ #endif
+ 

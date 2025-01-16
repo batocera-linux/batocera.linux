@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-JAZZ2_NATIVE_VERSION = 2.9.1
+JAZZ2_NATIVE_VERSION = 3.0.0
 JAZZ2_NATIVE_SITE = https://github.com/deathkiller/jazz2-native.git
 JAZZ2_NATIVE_SITE_METHOD = git
 JAZZ2_NATIVE_GIT_SUBMODULES = YES
@@ -27,11 +27,9 @@ endif
 ifeq ($(BR2_PACKAGE_LIBGLFW),y)
     JAZZ2_NATIVE_DEPENDENCIES += libglfw
     JAZZ2_NATIVE_CONF_OPTS += -DNCINE_PREFERRED_BACKEND=GLFW
-else
+else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
     JAZZ2_NATIVE_CONF_OPTS += -DNCINE_PREFERRED_BACKEND=SDL2
-    ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
-        JAZZ2_NATIVE_CONF_OPTS += -DNCINE_WITH_OPENGLES=ON
-    endif
+    JAZZ2_NATIVE_CONF_OPTS += -DNCINE_WITH_OPENGLES=ON
 endif
 
 define JAZZ2_NATIVE_EVMAPY

@@ -1,7 +1,7 @@
 config BR2_PACKAGE_XENIA_CANARY
     bool "xenia-canary"
     depends on BR2_x86_64
-    depends on BR2_PACKAGE_WINE_GE_CUSTOM
+    depends on BR2_PACKAGE_WINE_TKG
     select BR2_PACKAGE_PYTHON_TOML
     help
         Xenia is an open source research project for emulating Xbox 360 games on modern PCs.

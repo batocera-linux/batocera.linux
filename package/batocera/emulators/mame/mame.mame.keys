@@ -1,48 +1,55 @@
 {
     "actions_player1": [
-	{
+	    {
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_ESC" ]
-	},
-	{
+	    },
+	    {
             "trigger": ["hotkey", "b"],
             "type": "key",
             "target": [ "KEY_TAB" ]
-	},
-	{
+	    },
+	    {
+            "trigger": ["hotkey", "a"],
+            "type": "key",
+            "target": [ "KEY_F3" ]
+	    },
+	    {
             "trigger": ["hotkey", "x"],
             "type": "key",
-            "target": [ "KEY_F7" ]
-	},
-	{
+            "target": [ "KEY_LEFTSHIFT", "KEY_F7" ],
+            "description": "Quick load"
+	    },
+	    {
             "trigger": ["hotkey", "y"],
             "type": "key",
-            "target": [ "KEY_LEFTSHIFT", "KEY_F7" ]
-	},
-	{
+            "target": [ "KEY_LEFTSHIFT", "KEY_F6" ],
+            "description": "Quick save"
+	    },
+	    {
             "trigger": ["hotkey", "pageup"],
             "type": "key",
             "target": [ "KEY_F12" ]
-	},
-	{
+	    },
+	    {
             "trigger": ["hotkey", "right"],
             "type": "key",
             "target": [ "KEY_PAGEDOWN" ]
-	},
-	{
+	    },
+	    {
             "trigger": ["hotkey", "up"],
             "type": "key",
             "target": [ "KEY_SCROLLLOCK" ]
-	}
+	    }
     ]
     ,"actions_gun1": [
-    {
+        {
             "trigger": ["left", "right", "middle"],
             "type": "key",
             "hold": 2.0,
             "target": [ "KEY_ESC" ],
             "description": "Exit emulator"
-    }
+        }
 	]
 }

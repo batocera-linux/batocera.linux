@@ -5,13 +5,13 @@ import logging
 import os
 import shutil
 import stat
-import subprocess
 from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import HOME, ROMS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...utils import wine
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -43,80 +43,11 @@ class Model2EmuGenerator(Generator):
             (emupath / "EMULATOR.INI").chmod(stat.S_IRWXO)
 
         # install windows libraries required
-        d3dx9_done = wineprefix / "d3dx9.done"
-        if not d3dx9_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "d3dx9"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with d3dx9_done.open("w") as f:
-                f.write("done")
-
-        d3dcompiler_42_done = wineprefix / "d3dcompiler_42.done"
-        if not d3dcompiler_42_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "d3dcompiler_42"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with d3dcompiler_42_done.open("w") as f:
-                f.write("done")
-
-        d3dx9_42_done = wineprefix / "d3dx9_42.done"
-        if not d3dx9_42_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "d3dx9_42"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with d3dx9_42_done.open("w") as f:
-                f.write("done")
-
-        xact_done = wineprefix / "xact.done"
-        if not xact_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "xact"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with xact_done.open("w") as f:
-                f.write("done")
-
-        xact_x64_done = wineprefix / "xact_x64.done"
-        if not xact_x64_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "xact_x64"]
-            env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with xact_x64_done.open("w") as f:
-                f.write("done")
+        wine.install_wine_trick(wineprefix, 'd3dx9')
+        wine.install_wine_trick(wineprefix, 'd3dcompiler_42')
+        wine.install_wine_trick(wineprefix, 'd3dx9_42')
+        wine.install_wine_trick(wineprefix, 'xact')
+        wine.install_wine_trick(wineprefix, 'xact_x64')
 
         # for existing bottles we want to ensure files are updated as necessary
         copy_updated_files(Path("/usr/model2emu/scripts"), emupath / "scripts")
@@ -130,7 +61,7 @@ class Model2EmuGenerator(Generator):
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
 
-        commandArray = ["/usr/wine/ge-custom/bin/wine", emupath / "emulator_multicpu.exe"]
+        commandArray: list[str | Path] = [wine.WINE, emupath / "emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         if rom != 'config':
             rom = Path(rom).stem
@@ -250,7 +181,11 @@ class Model2EmuGenerator(Generator):
                 else:
                     Config.set("Renderer","DrawCross", "0")
 
-        Config.set("Input","XInput", "1")
+        # xinput
+        if system.isOptSet("model2_xinput") and system.getOptBoolean("model2_xinput"):
+            Config.set("Input","XInput", "1")
+        else:
+            Config.set("Input","XInput", "0")
 
         # force feedback
         if system.isOptSet("model2_forceFeedback") and system.getOptBoolean("model2_forceFeedback"):
@@ -262,15 +197,11 @@ class Model2EmuGenerator(Generator):
             Config.write(configfile)
 
         # set the environment variables
-        environment = {
-            "WINEPREFIX": wineprefix,
-            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
-            "LIBGL_DRIVERS_PATH": "/lib32/dri",
-            "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3",
+        environment = wine.get_wine_environment(wineprefix)
+        environment.update({
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
-        }
+        })
 
         # check if software render option is chosen
         if system.isOptSet("model2_Software") and system.config["model2_Software"] == "1":

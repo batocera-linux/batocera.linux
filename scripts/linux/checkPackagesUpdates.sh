@@ -203,6 +203,7 @@ PACKAGES_EMULATORS="amiberry
 PACKAGES_PORTS="abuse
                 abuse-data
                 cannonball
+                catacombgl
                 cdogs
                 cgenius
                 corsixth
@@ -221,6 +222,7 @@ PACKAGES_PORTS="abuse
                 ioquake3
                 iortcw
                 jazz2-native
+                lindbergh-loader
                 openjazz
                 raze
                 sdlpop
@@ -243,16 +245,9 @@ PACKAGES_WINE="dxvk
                faudio
                mf
                rtkit
-               vkd3d
                vkd3d-proton
-               wine-ge-custom
-               wine-ge-custom-wow64_32
-               wine-lutris
-               wine-lutris-wow64_32
-               wine-mono-lutris
-               wine-mono-proton
-               wine-proton
-               wine-proton-wow64_32"
+               wine-tkg
+               wine-tkg-wow64_32"
 
 PACKAGES_CONTROLLERS="aelightgun
                       aimtrak-guns

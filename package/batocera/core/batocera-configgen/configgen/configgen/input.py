@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, replace
-from typing import TYPE_CHECKING, Self, TypeAlias, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Self, TypedDict, Unpack, cast
 
 if TYPE_CHECKING:
     import xml.etree.ElementTree as ET
@@ -44,5 +44,5 @@ class Input:
             yield input.name, input
 
 
-InputMapping: TypeAlias = Mapping[str, Input]
-InputDict: TypeAlias = dict[str, Input]
+type InputMapping = Mapping[str, Input]
+type InputDict = dict[str, Input]

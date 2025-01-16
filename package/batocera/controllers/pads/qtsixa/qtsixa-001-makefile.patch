@@ -23,7 +23,7 @@
  
  install:
  	install -d $(DESTDIR)/etc/default/
-@@ -25,15 +25,12 @@
+@@ -25,15 +25,12 @@ install:
  	install -d $(DESTDIR)/usr/sbin/
  	install -d $(DESTDIR)/var/lib/sixad/
  	install -d $(DESTDIR)/var/lib/sixad/profiles/
@@ -44,4 +44,4 @@
 +	install -m 755 $(BINDIR)/sixad-raw $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
  	install -m 755 sixad-dbus-blocker $(DESTDIR)/usr/sbin/
  
- ifeq "$(wildcard /usr/bin/python3 )" ""
+ ifeq "$(wildcard /usr/bin/python2 )" ""

@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.8
+BATOCERA_AUDIO_VERSION = 6.9
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
-# this one is important because the package erase the default pipewire config files, so it must be built after it
-BATOCERA_AUDIO_DEPENDENCIES = pipewire wireplumber
+# this one is important because the package erase the default pipewire config files
+# so it must be built after it
+BATOCERA_AUDIO_DEPENDENCIES = pipewire wireplumber alsa-ucm-conf
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 ALSA_SUFFIX = "-rk3326"
@@ -76,9 +77,10 @@ define BATOCERA_AUDIO_X86_INTEL_DSP
 endef
 
 # Steam Deck OLED SOF files are not in the sound-open-firmware package yet
-define BATOCERA_AUDIO_STEAM_DECK_OLED
+# Steam Deck LCD still requires their own UCM2 conf files too
+define BATOCERA_AUDIO_STEAM_DECK
 	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-*.bin \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-*.* \
 	    $(TARGET_DIR)/lib/firmware/amd/sof/
 	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof-tplg
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-nau8821-max.tplg \
@@ -90,8 +92,9 @@ define BATOCERA_AUDIO_STEAM_DECK_OLED
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+    BATOCERA_AUDIO_DEPENDENCIES += sound-open-firmware
     BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_X86_INTEL_DSP
-    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_STEAM_DECK_OLED
+    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_STEAM_DECK
 endif
 
 $(eval $(generic-package))

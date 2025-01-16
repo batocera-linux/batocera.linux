@@ -76,6 +76,11 @@ class Dhewm3Generator(Generator):
             options_to_set["seta r_brightness"] = system.config["dhewm3_brightness"]
         else:
             options_to_set["seta r_brightness"] = "1"
+        # Game language
+        if system.isOptSet("dhewm3_language"):
+            options_to_set["seta sys_lang"] = system.config["dhewm3_language"]
+        else:
+            options_to_set["seta sys_lang"] = "english"
 
         def update_config_file(file_path):
             if file_path.is_file():
@@ -110,10 +115,20 @@ class Dhewm3Generator(Generator):
             "/usr/bin/dhewm3", "+set", "fs_basepath", str(romDir)
         ]
 
+        if directory == "perfected_roe" or directory == "sikkmodd3xp":
+            commandArray.extend(
+                ["+set", "fs_game_base", "d3xp"]
+            )
+        
+        if directory == "d3le":
+            commandArray.extend(
+                ["+set", "fs_game_base", "d3xp", "+seta", "com_allowconsole", "1"]
+            )
+
         if directory != "base":
-            commandArray.extend([
-                "+set", "fs_game", str(directory)
-            ])
+            commandArray.extend(
+                ["+set", "fs_game", str(directory)]
+            )
 
         return Command.Command(
             array=commandArray,

@@ -40,9 +40,9 @@ index 3d19dca..6fe1212 100644
  	{ 0x0f30, 0x010b, "Philips Recoil", 0, XTYPE_XBOX },
  	{ 0x0f30, 0x0202, "Joytech Advanced Controller", 0, XTYPE_XBOX },
  	{ 0x0f30, 0x8888, "BigBen XBMiniPad Controller", 0, XTYPE_XBOX },
-@@ -660,6 +668,7 @@ struct usb_xpad {
+@@ -479,6 +479,7 @@ struct usb_xpad {
+ 	int mapping;			/* map d-pad to buttons or to axes */
  	int xtype;			/* type of xbox device */
- 	int packet_type;		/* type of the extended packet */
  	int pad_nr;			/* the order x360 pads were attached */
 +	int quirks;
  	const char *name;		/* name of the device */

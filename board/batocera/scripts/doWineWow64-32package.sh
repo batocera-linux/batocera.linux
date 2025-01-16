@@ -50,7 +50,7 @@ findDeps() {
 }
 
 findLibDir() {
-    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/ge-custom/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
+    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/wine/wine-tkg/lib" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
     done
@@ -129,7 +129,7 @@ cp -dpv "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -dpv "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 
 for BIN in \
-"${G_TARGETDIR}/usr/wine/ge-custom/bin/wine" \
+"${G_TARGETDIR}/usr/wine/wine-tkg/bin/wine" \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
@@ -202,8 +202,11 @@ cp -prv "${G_TARGETDIR}/usr/lib/pipewire-0.3" "${TMPOUT}/lib32/" || exit 1
 echo 
 echo "wine installation..."
 echo 
-mkdir -p "${TMPOUT}/usr/wine/ge-custom" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/ge-custom" "${TMPOUT}/usr/wine/" || exit 1
+mkdir -p "${TMPOUT}/usr/wine/wine-tkg" || exit 1
+cp -pr "${G_TARGETDIR}/usr/wine/wine-tkg" "${TMPOUT}/usr/wine/" || exit 1
+# remove 32-bit wineserver
+rm "${TMPOUT}/usr/wine/wine-tkg/bin/wineserver" || exit 1
+
 # helper bins
 echo 
 echo " wine helper binaries"
@@ -211,6 +214,50 @@ echo
 mkdir -p "${TMPOUT}/usr/bin32" || exit 1
 #cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/gst"* "${TMPOUT}/usr/bin32/" || exit 1
+
+# lindbergh loader
+echo 
+echo "lindbergh loader & additional libraries..."
+echo
+mkdir -p "${TMPOUT}/usr/bin/lindbergh" || exit 1
+mkdir -p "${TMPOUT}/lib32/extralibs" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lind"*        "${TMPOUT}/usr/bin/lindbergh/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lib"*"so"*    "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/extralibs/lib"*"so"* "${TMPOUT}/lib32/extralibs/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libglut.so"*            "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libGLU.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libX"*"so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libSM.so"*              "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libICE.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libopenal.so"*          "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libGLEW.so"*            "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libasound"*"so"*        "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libmd.so"*              "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libbsd.so"*             "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libpcsclite.so"*        "${TMPOUT}/lib32/" || exit 1
+mkdir -p "${TMPOUT}/lib32/gbm" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/gbm/dri_gbm.so"         "${TMPOUT}/lib32/gbm/" || exit 1
+
+# pulseaudio
+echo 
+echo "pulseaudio..."
+echo
+mkdir -p "${TMPOUT}/lib32/pulseaudio" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
+
+# wireplumber
+echo 
+echo "wireplumber..."
+echo
+mkdir -p "${TMPOUT}/lib32/wireplumber-0.5" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/wireplumber-0.5/"* "${TMPOUT}/lib32/wireplumber-0.5" || exit 1
+
+# xorg
+echo 
+echo "xorg..."
+echo
+mkdir -p "${TMPOUT}/lib32/xorg" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/xorg/"* "${TMPOUT}/lib32/xorg" || exit 1
 
 # dri
 echo 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 from ... import controllersConfig
@@ -1507,6 +1508,9 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
                 elif system.config['gb_colorization'] == 'GB - SmartColor':              #Smart Coloring --> Gambatte's most colorful/appropriate color
                     coreSettings.save('gambatte_gb_colorization',     '"auto"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                elif system.config['gb_colorization'] == 'GBC - Game Specific':          #Game specific --> Select automatically a game-specific Game Boy Color palette
+                    coreSettings.save('gambatte_gb_colorization',     '"GBC"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
                 elif system.config['gb_colorization'] == 'custom':                       #Custom Palettes --> Use the custom palettes in the bios/palettes folder
                     coreSettings.save('gambatte_gb_colorization',     '"custom"')
                     coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
@@ -2455,14 +2459,14 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
         else:
             coreSettings.save('fbneo-frameskip', '"0"')
         # Crosshair (Lightgun)
-        if system.isOptSet('fbneo-lightgun-hide-crosshair'):
-            coreSettings.save('fbneo-lightgun-hide-crosshair', '"' + system.config['fbneo-lightgun-hide-crosshair'] + '"')
+        if system.isOptSet('fbneo-lightgun-crosshair-emulation'):
+            coreSettings.save('fbneo-lightgun-crosshair-emulation', '"' + system.config['fbneo-lightgun-crosshair-emulation'] + '"')
         else:
             if controllersConfig.gunsNeedCrosses(guns):
-                status = '"enabled"'
+                status = '"always show"'
             else:
-                status = '"disabled"'
-            coreSettings.save('fbneo-lightgun-hide-crosshair', status)
+                status = '"always hide"'
+            coreSettings.save('fbneo-lightgun-crosshair-emulation', status)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save(f"fbneo-dipswitch-{rom.stem}-Controls", '"Light Gun"')
         else:

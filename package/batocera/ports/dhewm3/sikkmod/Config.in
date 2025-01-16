@@ -1,0 +1,13 @@
+config BR2_PACKAGE_SIKKMOD
+    bool "sikkmod"
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBJPEG
+    select BR2_PACKAGE_LIBOGG
+    select BR2_PACKAGE_LIBVORBIS
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_ZLIB
+    help
+      Sikkmod, a mod for Dhewm3.
+
+      https://github.com/dhewm/dhewm3-sdk/tree/sikkmod

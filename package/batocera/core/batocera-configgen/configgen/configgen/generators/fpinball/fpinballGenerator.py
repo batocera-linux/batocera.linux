@@ -3,12 +3,12 @@ from __future__ import annotations
 import logging
 import os
 import shutil
-import subprocess
 from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, HOME, mkdir_if_not_exists
+from ...batoceraPaths import BIOS, CONFIGS, HOME, mkdir_if_not_exists
+from ...utils import wine
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -33,24 +33,7 @@ class FpinballGenerator(Generator):
 
         mkdir_if_not_exists(wineprefix)
 
-        wsh57_done = wineprefix / "wsh57.done"
-        if not wsh57_done.exists():
-            cmd = ["/usr/wine/winetricks", "-q", "wsh57"]
-            env = {
-                "W_CACHE": "/userdata/bios",
-                "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
-                "WINEPREFIX": wineprefix
-            }
-            env.update(os.environ)
-            env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-            eslog.debug(f"command: {str(cmd)}")
-            proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            eslog.debug(out.decode())
-            eslog.error(err.decode())
-            with wsh57_done.open("w") as f:
-                f.write("done")
+        wine.install_wine_trick(wineprefix, 'wsh57', environment={'W_CACHE': BIOS})
 
         # create dir & copy fpinball files to wine bottle as necessary
         if not emupath.exists():
@@ -60,27 +43,26 @@ class FpinballGenerator(Generator):
         src_file = Path("/usr/fpinball/BAM/FPLoader.exe")
         dest_file = emupath / "BAM" / "FPLoader.exe"
         if src_file.stat().st_mtime > dest_file.stat().st_mtime:
-            shutil.copytree('/usr/fpinball', emupath)
+            shutil.copytree('/usr/fpinball', emupath, dirs_exist_ok=True)
 
         # convert rom path
         rompath = PureWindowsPath(rom)
-        rom = f"Z:{rompath}"
 
         if rom == 'config':
             commandArray = [
-                "/usr/wine/ge-custom/bin/wine",
+                wine.WINE,
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
                 emupath / "BAM" / "FPLoader.exe" ]
         else:
             commandArray = [
-                "/usr/wine/ge-custom/bin/wine",
+                wine.WINE,
                 "explorer",
                 "/desktop=Wine,{}x{}".format(gameResolution["width"],
                 gameResolution["height"]),
                 emupath / "BAM" / "FPLoader.exe",
-                "/open", rom, "/play", "/exit" ]
+                "/open", f"Z:{rompath}", "/play", "/exit" ]
 
         # config
         mkdir_if_not_exists(_FPINBALL_CONFIG)
@@ -173,26 +155,11 @@ class FpinballGenerator(Generator):
                         f.write("\"JoypadVolumeDown\"=dword:ffffffff\r\n")
                         f.write("\"JoypadVolumeUp\"=dword:ffffffff\r\n")
                         f.write("\r\n")
+                    nplayer += 1
 
-        cmd = ["wine", "regedit", _FPINBALL_CONFIG_REG]
-        env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine", "WINEPREFIX": wineprefix }
-        env.update(os.environ)
-        env["PATH"] = "/usr/wine/ge-custom/bin:/bin:/usr/bin"
-        eslog.debug(f"command: {str(cmd)}")
-        proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = proc.communicate()
-        exitcode = proc.returncode
-        eslog.debug(out.decode())
-        eslog.error(err.decode())
+        wine.regedit(wineprefix, _FPINBALL_CONFIG_REG)
 
-        environment={
-            "WINEPREFIX": wineprefix,
-            "LD_LIBRARY_PATH": "/lib32:/usr/wine/ge-custom/lib/wine",
-            "LIBGL_DRIVERS_PATH": "/lib32/dri",
-            # hum pw 0.2 and 0.3 are hardcoded, not nice
-            "SPA_PLUGIN_DIR": "/usr/lib/spa-0.2:/lib32/spa-0.2",
-            "PIPEWIRE_MODULE_DIR": "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
-        }
+        environment = wine.get_wine_environment(wineprefix)
 
         # ensure nvidia driver used for vulkan
         if Path('/var/tmp/nvidia.prime').exists():

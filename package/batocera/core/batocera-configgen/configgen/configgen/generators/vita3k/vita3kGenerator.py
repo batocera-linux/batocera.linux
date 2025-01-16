@@ -41,13 +41,24 @@ class Vita3kGenerator(Generator):
                         shutil.move(item, vitaSaves)
 
         # Create the config.yml file if it doesn't exist
-        vita3kymlconfig = {}
+        mkdir_if_not_exists(vitaConfig)
+
+        vita3kymlconfig = None
+        indent = None
+        block_seq_indent = None
+
         if vitaConfigFile.is_file():
             with vitaConfigFile.open('r') as stream:
                 vita3kymlconfig, indent, block_seq_indent = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
         if vita3kymlconfig is None:
             vita3kymlconfig = {}
+
+        if indent is None:
+            indent = 2
+
+        if block_seq_indent is None:
+            block_seq_indent = 0
 
         # ensure the correct path is set
         vita3kymlconfig["pref-path"] = f"{vitaSaves!s}"

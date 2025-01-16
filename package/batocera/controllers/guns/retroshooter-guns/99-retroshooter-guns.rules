@@ -1,21 +1,14 @@
 # disable raw devices to merge them
 
-# player 1
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 1 Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 1"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 1 Mouse", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 1"
+# Light gun 1 to 4
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 1*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 1"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 2*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 2"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 3*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 3"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 4*", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 4"
 
-# player 2
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 2 Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 2"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 2 Mouse", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 2"
-
-# player 3
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 3 Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 3"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 3 Mouse", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 3"
-
-# player 4
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 4 Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 4"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter 4 Mouse", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/retroshooter-guns-add 4"
-
-# virtual lightgun
+# Virtual light gun
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Retro Shooter Merged *", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-retroshooter-calibrator-daemon $env{DEVNAME}"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Retro Shooter Lightgun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1"
+
+# Gamepad event must be disabled, this mode is unsupported for now
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="3AGAME 3A-3H Retro Shooter [1-4]", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_JOYSTICK}="0"

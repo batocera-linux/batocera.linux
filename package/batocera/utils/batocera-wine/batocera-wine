@@ -14,26 +14,26 @@ get_setting() {
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
 WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
-[[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="ge-custom"
+[[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
 
 WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"
 # to help with the transition from previous runners.
 [[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
 
 if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
-    WINE_VERSION="ge-custom"
+    WINE_VERSION="wine-tkg"
 fi
 echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
 find_wine_dir() {
     local WINE_VERSION="$1"
     # check if we're using a custom wine runner
-    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
         # now check if the folder exists
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "/userdata/system/wine/custom"
         else
-            WINE_VERSION="ge-custom"
+            WINE_VERSION="wine-tkg"
             if [[ -e "/usr/wine/${WINE_VERSION}" ]]; then
                 echo "/usr/wine"
             else
@@ -49,11 +49,11 @@ find_wine_dir() {
 
 update_wine_version() {
     local WINE_VERSION="$1"
-    if [[ "$WINE_VERSION" != "ge-custom" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "$WINE_VERSION"
         else
-            WINE_VERSION="ge-custom"
+            WINE_VERSION="wine-tkg"
             echo "$WINE_VERSION"
         fi
     else
@@ -121,7 +121,7 @@ usage() {
 }
 
 waitWineServer() {
-    while pgrep "${WINESERVER}"
+    while pgrep -f "${WINESERVER}"
     do
 	echo "waiting wineserver" >&2
 	sleep 1
@@ -314,6 +314,65 @@ redist_install() {
     return 0
 }
 
+save_install() {
+    WINEPREFIX=$1
+    GAMENAME=$2
+    WINE_SAVEDIR=$3
+    WINE_SAVEFILES=$4
+
+    if [[ -n "${WINE_SAVEDIR}" ]]; then
+	GAME_SAVEDIR=$(dirname "${WINE_SAVEDIR}")
+	GAME_SAVEDIR="${WINEPOINT}/${GAME_SAVEDIR}"
+	BASEGAMENAME=$(basename "${GAMENAME}")
+	BASEGAMENAME_NOEXT=${BASEGAMENAME%.*}
+	SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${BASEGAMENAME_NOEXT}"
+	WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+
+	#create save directory, or move existing savedir content
+	if [[ ! -d "${SYSTEM_SAVEDIR}" ]]; then
+	    if [[ -z "${WINE_SAVEFILES}" && ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
+		mv "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}"
+	    else
+		mkdir -p "${SYSTEM_SAVEDIR}"
+	    fi
+	fi
+
+	#if no specific save files, symlink the whole wine_savedir directroy
+	if [[ -z "${WINE_SAVEFILES}" ]]; then
+
+	    if [[ ! -d "${GAME_SAVEDIR}" ]]; then
+	        mkdir -p "${GAME_SAVEDIR}"
+	    fi
+
+	    if [[ ! -L "${WINE_SAVEDIR}" ]]; then
+		rm -rf "${WINE_SAVEDIR}"
+	    fi
+
+	    ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+	else
+            if [[ ! -d "${WINE_SAVEDIR}" ]]; then
+                mkdir -p "${WINE_SAVEDIR}"
+            fi
+	    #split the files list to array with ; delimiter
+	    IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
+	    for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
+
+		if [[ -e "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+		    #if savefiles exist in the prefix and not yet in system save, move it once
+		    if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+			mv "${WINE_SAVEDIR}/${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
+		    else
+			rm "${WINE_SAVEDIR}/${SAVEFILE}"
+		    fi
+		fi
+
+		ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${WINE_SAVEDIR}/${SAVEFILE}"
+	    done
+	fi
+
+    fi
+}
+
 msi_install() {
     WINEPREFIX=$1
     if [[ -e "${USER_DIR}/msi" ]]; then
@@ -500,11 +559,16 @@ play_wine() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
@@ -531,6 +595,11 @@ play_pc() {
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
+    env
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
@@ -593,18 +662,43 @@ play_winetgz() {
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
     waitWineServer
+}
+
+# Function to safely unmount a mount point with multiple attempts
+safe_umount() {
+    local mount_point="$1"
+    local attempts=3
+
+    for ((i=1; i<=attempts; i++)); do
+        # Try lazy unmount first
+        umount -l "${mount_point}" && return 0
+        # If lazy unmount fails, try force unmount
+        umount -f "${mount_point}" && return 0
+        # If that fails, try recursive force unmount
+        umount -f -R "${mount_point}" && return 0
+        sleep 1
+    done
+
+    # If all attempts fail, we return an error
+    echo "Error: Failed to unmount ${mount_point} after ${attempts} attempts" >&2
+    return 1
 }
 
 play_squashfs() {
@@ -617,33 +711,38 @@ play_squashfs() {
     SAVEPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}"
     WORKPOINT="${WINE_BOTTLE_DIR}/${BASEGAMENAME}.work"
 
-    # ensure we clean before starting if wine was killed for some reason
-    umount -f -R "${WINEPOINT}"
-    umount -f -R "${SQUASHFSPOINT}"
-    rm -rf "${SQUASHFSPOINT}"
-    rm -rf "${WORKPOINT}"
-    rm -rf "${WINEPOINT}"
+    # Attempt to unmount any existing mount points before starting
+    [[ -d "${WINEPOINT}" ]] && safe_umount "${WINEPOINT}"
+    [[ -d "${SQUASHFSPOINT}" ]] && safe_umount "${SQUASHFSPOINT}"
 
+    # Remove directories if they exist
+    [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+    [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+    [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+
+    # Create necessary fresh directories
     mkdir -p "${SAVEPOINT}" || return 1
     mkdir -p "${WORKPOINT}" || return 1
     mkdir -p "${WINEPOINT}" || return 1
-
     mkdir -p "${SQUASHFSPOINT}" || return 1
+
+    # Mount squashfs
     if ! mount "${GAMENAME}" "${SQUASHFSPOINT}"; then
-        rm -rf "${SQUASHFSPOINT}"
-	    rm -rf "${WORKPOINT}"
-	    rm -rf "${WINEPOINT}"
+        [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+        [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+        [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
         return 1
     fi
-    
+
+    # Mount overlay
     if ! mount -t overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on overlay "${WINEPOINT}"; then
-        umount "${SQUASHFSPOINT}"
-	    rm -rf "${SQUASHFSPOINT}"
-	    rm -rf "${WORKPOINT}"
-	    rm -rf "${WINEPOINT}"
-	    return 1
+        safe_umount "${SQUASHFSPOINT}"
+        [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+        [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+        [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+        return 1
     fi
-    
+
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -652,22 +751,28 @@ play_squashfs() {
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
-    waitWineServer
-    # wait 1 sec before unmounting
-    sleep 1
 
-    # try to clean the cdrom
-    umount -f -R "${WINEPOINT}"
-    umount -f -R "${SQUASHFSPOINT}"
-    sleep 1
-    rm -rf "${SQUASHFSPOINT}"
-    rm -rf "${WORKPOINT}"
-    rm -rf "${WINEPOINT}"
+    waitWineServer
+
+    # Safely unmount and clean up
+    safe_umount "${WINEPOINT}" || return 1
+    safe_umount "${SQUASHFSPOINT}" || return 1
+
+    # Remove directories if they exist
+    [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+    [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+    [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+
+    return 0
 }
 
 init_cmd() {
@@ -748,8 +853,8 @@ install_iso() {
     init_cmd "${WINEPOINT}"
 
     # try to clean the cdrom
-    umount "${GAMEISOMOUNT}"
-    rmdir "${GAMEISOMOUNT}"
+    safe_umount "${GAMEISOMOUNT}"
+    [[ -d "${GAMEISOMOUNT}" ]] && rm -rf "${GAMEISOMOUNT}"
 }
 
 wine2squashfs() {

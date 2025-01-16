@@ -3,8 +3,12 @@
 mkdir -p "/var/log"
 mkdir -p "/userdata/system/logs"
 
+if [ -f "/var/log/nvidia.log" ]; then
+    cp -f /var/log/nvidia.log /userdata/system/logs/nvidia.log
+fi
+
 display_log="/userdata/system/logs/display.log"
-nvidia_log="/var/log/nvidia.log"
+nvidia_log="/userdata/system/logs/nvidia.log"
 amd_log="/userdata/system/logs/amd.log"
 
 # hide mouse cursor
@@ -45,6 +49,8 @@ if [ -f "/var/tmp/nvidia.prime" ]; then
             export __NV_PRIME_RENDER_OFFLOAD=$provider_number
             export __VK_LAYER_NV_optimus=NVIDIA_only
             export __GLX_VENDOR_LIBRARY_NAME=nvidia
+            export VDPAU_DRIVER=nvidia
+            export LIBVA_DRIVER_NAME=nvidia
             echo "Nvidia Prime provider = $provider_number" >> "$nvidia_log"
         fi
     else

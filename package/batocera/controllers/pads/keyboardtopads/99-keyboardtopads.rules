@@ -6,4 +6,9 @@
 # "Ultimarc IPAC 2 Ultimarc IPAC 2" : (dandc)
 # "Ultimarc I-PAC Ultimate I/O"     : (s3nt3nza)
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc*PAC*", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
+
+# xarcade
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="XGaming*X-Arcade*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
+
+# arcade2tv-xr
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="*Baolian industry*Arcade2TV*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"

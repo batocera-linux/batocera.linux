@@ -28,12 +28,14 @@
 #v2.6 - add PIRONMAN 5 case support (RPi5) - @dmanlfc
 #v2.7 - add Dockerpi Powerboard support - @dmanlfc
 #v2.8 - add Argon One RPi5 - @lbrpdx
+#v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
+#v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
+#v3.1 - remove the RETROFLAG option in favor of RETROFLAG_ADV & add dtbo for retroflag cases - @dmanlfc
 
 ### Array for Powerdevices, add/remove entries here
 
 powerdevices=(
-              RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
-              RETROFLAG_ADV "Advanced script for Retroflag housings" \
+              RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
               ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
               KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
@@ -53,6 +55,7 @@ powerdevices=(
               PIRONMAN "Fan, OLED, RGB case support for the Pironman case with RPi4 devices" \
               PIRONMAN5 "Fan, OLED, RGB case support for the Pironman 5 case with RPi5 devices" \
               DOCKERPI_POWERBOARD "Dockerpi Powerboard Hat support for compatible Raspberry Pi boards"
+              WM8960_AUDIO_HAT "WM8960 Audio Hat support for compatible Raspberry Pi boards"
              )
 
 #dialog for selecting your switch or power device
@@ -363,20 +366,16 @@ function pin56_config()
 function retroflag_start()
 {
     #------ CONFIG SECTION ------
-    #Check if dtooverlay is setted in /boot/config -- Do this arch related!
-    case $(cat /usr/share/batocera/batocera.arch) in
-        bcm2711)
-            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
-                mount -o remount, rw /boot
-                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
-                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
-            fi
-        ;;
-    esac
+    #Check if dtoverlay is setted in /boot/config -- Do this arch related!
+    if ! grep -q "^dtoverlay=RetroFlag_pw_io.dtbo" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+        echo "dtoverlay=RetroFlag_pw_io.dtbo" >> "/boot/config.txt"
+    fi
     [ $CONF -eq 1 ] && return
     #------ CONFIG SECTION ------
 
-    #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
+    #$1 = rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
     pid=$!
     echo "$pid" > "/tmp/$1.pid"
@@ -792,29 +791,85 @@ function pironman5_config()
 }
 
 #https://wiki.52pi.com/index.php?title=EP-0104
-function powerboard_start()
-{
-    echo "*** Starting Pironman 5 services ***"
+function powerboard_start() {
+    echo "*** Starting Powerboard hat services ***"
+    
     #------ CONFIG SECTION ------
-    # Check config.txt for i2c
-    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
-        echo "*** Adding Pironman i2c config.txt parameter ***"
-        mount -o remount, rw /boot
-        # Remove other dtparam=i2c_arm type configs to avoid conflicts
-        sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
-        echo "" >> "/boot/config.txt"
-        echo "[DockerPi]" >> "/boot/config.txt"
-        echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    CONFIG_FILE="/boot/config.txt"
+    
+    # Check if /boot is writable, if not make it writable
+    if ! touch "$CONFIG_FILE" >/dev/null 2>&1; then
+        echo "*** Mounting /boot as writable ***"
+        mount -o remount,rw /boot || {
+            echo "Error: Failed to mount /boot as writable"
+            return 1
+        }
     fi
-    # ensure i2c is running
-    modprobe i2c_dev
-    # start
+    
+    # Configure I2C
+    PARAM="dtparam=i2c_arm"
+    # Check for existing parameter (including commented out)
+    if grep -q "^#*${PARAM}" "$CONFIG_FILE"; then
+        # Parameter exists, check various states
+        if grep -q "^#.*${PARAM}=on" "$CONFIG_FILE"; then
+            echo "*** Uncommenting i2c configuration ***"
+            # Remove the comment from the line
+            sed -i "s/^#\(.*${PARAM}=on\)/\1/" "$CONFIG_FILE"
+        elif grep -q "^#.*${PARAM}=off" "$CONFIG_FILE"; then
+            echo "*** Enabling i2c configuration ***"
+            # Remove the commented out disabled line and add enabled one
+            sed -i "/^#.*${PARAM}=off/d" "$CONFIG_FILE"
+            echo "${PARAM}=on" >> "$CONFIG_FILE"
+        elif grep -q "^${PARAM}=off" "$CONFIG_FILE"; then
+            echo "*** Enabling i2c configuration ***"
+            # Remove the disabled line and add enabled one
+            sed -i "/^${PARAM}=off/d" "$CONFIG_FILE"
+            echo "${PARAM}=on" >> "$CONFIG_FILE"
+        elif grep -q "^${PARAM}=on" "$CONFIG_FILE"; then
+            echo "*** I2C already enabled ***"
+        fi
+    else
+        # Parameter doesn't exist at all, append it
+        echo "*** Adding i2c configuration ***"
+        echo "${PARAM}=on" >> "$CONFIG_FILE"
+    fi
+    
+    # Remount /boot as read-only
+    echo "*** Remounting /boot as read-only ***"
+    mount -o remount,ro /boot || {
+        echo "Error: Failed to remount /boot as read-only"
+        return 1
+    }
+    
+    # Ensure i2c is loaded
+    echo "*** Loading i2c-dev module ***"
+    if ! modprobe i2c_dev; then
+        echo "Error: Failed to load i2c_dev module"
+        return 1
+    fi
+    
+    # Start appropriate powerboard service based on architecture
+    echo "*** Starting Powerboard service ***"
     arch=$(uname -m)
     if [ "$arch" == "aarch64" ]; then
-        /usr/sbin/powerboard64 &
+        if [ -x "/usr/sbin/powerboard64" ]; then
+            /usr/sbin/powerboard64 &
+            echo "*** Started powerboard64 service ***"
+        else
+            echo "Error: powerboard64 executable not found or not executable"
+            return 1
+        fi
     else
-        /usr/sbin/powerboard32 &
+        if [ -x "/usr/sbin/powerboard32" ]; then
+            /usr/sbin/powerboard32 &
+            echo "*** Started powerboard32 service ***"
+        else
+            echo "Error: powerboard32 executable not found or not executable"
+            return 1
+        fi
     fi
+    
+    echo "*** Powerboard hat initialization completed ***"
 }
 
 function powerboard_stop()
@@ -826,6 +881,97 @@ function powerboard_stop()
 function powerboard_config()
 {
     powerboard_start $@
+}
+
+function wm8960audiohat_start() {
+    echo "*** Starting WM8960 audio hat ***"
+    
+    #------ CONFIG SECTION ------
+    CONFIG_FILE="/boot/config.txt"
+    
+    # Check if /boot is writable, if not make it writable
+    if ! touch "$CONFIG_FILE" >/dev/null 2>&1; then
+        echo "*** Mounting /boot as writable ***"
+        mount -o remount,rw /boot || {
+            echo "Error: Failed to mount /boot as writable"
+            return 1
+        }
+    fi
+    
+    # Helper function to handle dtparam configuration
+    configure_dtparam() {
+        local PARAM=$1
+        local PARAM_NAME=$2
+        
+        # Check for existing parameter (including commented out)
+        if grep -q "^#*${PARAM}" "$CONFIG_FILE"; then
+            if grep -q "^#.*${PARAM}=on" "$CONFIG_FILE"; then
+                echo "*** Uncommenting ${PARAM_NAME} ***"
+                sed -i "s/^#\(.*${PARAM}=on\)/\1/" "$CONFIG_FILE"
+                echo "*** ${PARAM_NAME} parameter uncommented ***"
+            elif grep -q "^#.*${PARAM}=off" "$CONFIG_FILE"; then
+                echo "*** Removing commented out disabled ${PARAM_NAME} and adding enabled one ***"
+                sed -i "/^#.*${PARAM}=off/d" "$CONFIG_FILE"
+                echo "${PARAM}=on" >> "$CONFIG_FILE"
+                echo "*** ${PARAM_NAME} parameter enabled ***"
+            elif grep -q "^${PARAM}=off" "$CONFIG_FILE"; then
+                echo "*** Enabling ${PARAM_NAME} ***"
+                sed -i "/^${PARAM}=off/d" "$CONFIG_FILE"
+                echo "${PARAM}=on" >> "$CONFIG_FILE"
+                echo "*** ${PARAM_NAME} parameter enabled ***"
+            elif grep -q "^${PARAM}=on" "$CONFIG_FILE"; then
+                echo "*** ${PARAM_NAME} parameter already enabled ***"
+            fi
+        else
+            # Parameter doesn't exist at all, append it
+            echo "*** Adding ${PARAM_NAME} parameter ***"
+            echo "${PARAM}=on" >> "$CONFIG_FILE"
+            echo "*** ${PARAM_NAME} parameter added ***"
+        fi
+    }
+    
+    # Configure I2C
+    configure_dtparam "dtparam=i2c_arm" "WM8960 audio hat i2c"
+    
+    # Configure I2S
+    configure_dtparam "dtparam=i2s" "WM8960 audio hat i2s"
+    
+    # Configure WM8960 overlay
+    OVERLAY="dtoverlay=wm8960-soundcard"
+    if grep -q "^#*${OVERLAY}" "$CONFIG_FILE"; then
+        if grep -q "^#.*${OVERLAY}" "$CONFIG_FILE"; then
+            echo "*** Uncommenting WM8960 soundcard overlay ***"
+            sed -i "s/^#\(.*${OVERLAY}\)/\1/" "$CONFIG_FILE"
+            echo "*** WM8960 soundcard overlay uncommented ***"
+        else
+            echo "*** WM8960 soundcard overlay already configured ***"
+        fi
+    else
+        echo "*** Adding WM8960 soundcard overlay ***"
+        echo "$OVERLAY" >> "$CONFIG_FILE"
+        echo "*** WM8960 soundcard overlay added ***"
+    fi
+
+    # Remount /boot as read-only
+    echo "*** Remounting /boot as read-only ***"
+    mount -o remount,ro /boot || {
+        echo "Error: Failed to remount /boot as read-only"
+        return 1
+    }
+    
+    echo "*** WM8960 audio hat initialization completed ***"
+    echo "*** If you're seeing this message you should reboot your device ***"
+}
+
+function wm8960audiohat_stop()
+{
+    # Handled by the hat
+    true
+}
+
+function wm8960audiohat_config()
+{
+    wm8960audiohat_start $@
 }
 
 #-----------------------------------------
@@ -873,11 +1019,11 @@ case "$CONFVALUE" in
     "PIN356ONOFFRESET")
         pin356_$1
     ;;
-    "RETROFLAG")
-        retroflag_$1 rpi-retroflag-SafeShutdown
-    ;;
     "RETROFLAG_GPI")
         retroflag_$1 rpi-retroflag-GPiCase
+    ;;
+    "RETROFLAG")
+        retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
     ;;
     "RETROFLAG_ADV")
         retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
@@ -908,6 +1054,9 @@ case "$CONFVALUE" in
     ;;
     "DOCKERPI_POWERBOARD")
         powerboard_$1
+    ;;
+    "WM8960_AUDIO_HAT")
+        wm8960audiohat_$1
     ;;
     "--DIALOG")
         # Go to selection dialog

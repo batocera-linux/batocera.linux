@@ -10,9 +10,9 @@ index 504d1b8c4c..4fa450dbdc 100644
  #include "acp-mach.h"
  
  #define PCO_PLAT_CLK 48000000
-@@ -1282,6 +1283,78 @@ SND_SOC_DAILINK_DEF(nau8821,
+@@ -1283,6 +1283,78 @@ SND_SOC_DAILINK_DEF(nau8821,
  		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-NVTN2020:00",
- 						  "nau8821-hifi")));
+ 						  NAU8821_CODEC_DAI)));
  
 +static int acp_cs35l41_init(struct snd_soc_pcm_runtime *rtd)
 +{

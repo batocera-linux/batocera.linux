@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import HOME, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import videoMode
 from ..Generator import Generator
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 eslog = logging.getLogger(__name__)
 
-bigPemuConfig = HOME / ".bigpemu_userdata" / "BigPEmuConfig.bigpcfg"
+bigPemuConfig = CONFIGS / "bigpemu" / "BigPEmuConfig.bigpcfg"
 
 # BigPEmu controller sequence, P1 only requires keyboard inputs
 # default standard bindings
@@ -61,9 +61,9 @@ P1_BINDINGS_SEQUENCE = {
     "Menu": {"buttons": ["start", "r2"], "keyboard": "41"},
     "Fast Forward": {"buttons": ["x", "r2"], "keyboard": "59"},
     "Rewind": {"blank": None},
-    "Save State": {"blank": None},
-    "Load State": {"blank": None},
-    "Screenshot": {"blank": None},
+    "Save State": {"keyboard": "66"},
+    "Load State": {"keyboard": "62"},
+    "Screenshot": {"keyboard": "63"},
     "Overlay": {"buttons": ["l3", "r2"]},
     "Chat": {"keyboard": "23"},
     "Blank1": {"blank": None},
@@ -399,28 +399,38 @@ class BigPEmuGenerator(Generator):
         # Scripts config
         if "ScriptsEnabled" not in config["BigPEmuConfig"]:
             config["BigPEmuConfig"]["ScriptsEnabled"] = []
-        else:
-            # User selections for ScriptsEnabled options (individual scripts)
-            scripts = [
-                ("avp", "bigpemu_avp"),
-                ("avp_mp", "bigpemu_avp_mp"),
-                ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
-                ("checkered_flag", "bigpemu_checkered_flag"),
-                ("cybermorph", "bigpemu_cybermorph"),
-                ("iron_soldier", "bigpemu_iron_soldier"),
-                ("mc3d_vr", "bigpemu_mc3d_vr"),
-                ("t2k_rotary", "bigpemu_t2k_rotary"),
-                ("wolf3d", "bigpemu_wolf3d")
-            ]
-            for script_name, script_option in scripts:
-                if system.isOptSet(script_option):
-                    # Check if the value is "1" to enable the script
-                    if system.config[script_option] == "1":
-                        config["BigPEmuConfig"]["ScriptsEnabled"].append(script_name)
-            
-            # Remove duplicates just in case (as a precaution)
-            config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
+
+        # User selections for ScriptsEnabled options (individual scripts)
+        scripts = [
+            ("avp", "bigpemu_avp"),
+            ("avp_mp", "bigpemu_avp_mp"),
+            ("brett_hull_hockey", "bigpemu_brett_hull_hockey"),
+            ("checkered_flag", "bigpemu_checkered_flag"),
+            ("cybermorph", "bigpemu_cybermorph"),
+            ("doom", "bigpemu_doom"),
+            ("iron_soldier", "bigpemu_iron_soldier"),
+            ("mc3d_vr", "bigpemu_mc3d_vr"),
+            ("t2k_rotary", "bigpemu_t2k_rotary"),
+            ("wolf3d", "bigpemu_wolf3d")
+        ]
+
+        config["BigPEmuConfig"]["ScriptsEnabled"] += [
+            script_name for script_name, script_option in scripts
+            if system.isOptSet(script_option) and system.config[script_option] == "1"
+        ]
+
+        # Remove duplicates just in case (as a precaution)
+        config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
+
+        # ScriptSettings
+        if "ScriptSettings" not in config["BigPEmuConfig"]:
+            config["BigPEmuConfig"]["ScriptSettings"] = {}
         
+        if system.isOptSet("bigpemu_doom"):
+            config["BigPEmuConfig"]["ScriptSettings"]["DOOM-Music"] = system.config["bigpemu_doom"]
+        else:
+            config["BigPEmuConfig"]["ScriptSettings"]["DOOM-Music"] = 0
+
         # Screen filter
         if system.isOptSet("bigpemu_screenfilter"):
             config["BigPEmuConfig"]["Video"]["ScreenFilter"] = system.config["bigpemu_screenfilter"]
@@ -435,7 +445,7 @@ class BigPEmuGenerator(Generator):
             json.dump(config, file, indent=4)
 
         # Run the emulator
-        commandArray = ["/usr/bigpemu/bigpemu", rom]
+        commandArray = ["/usr/bigpemu/bigpemu", rom, "-cfgpathabs", str(bigPemuConfig)]
 
         environment = {
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),

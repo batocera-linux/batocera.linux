@@ -1,7 +1,7 @@
-Index: linux-6.10/drivers/gpu/drm/drm_vblank.c
+Index: linux-6.12-rc2/drivers/gpu/drm/drm_vblank.c
 ===================================================================
---- linux-6.10.orig/drivers/gpu/drm/drm_vblank.c
-+++ linux-6.10/drivers/gpu/drm/drm_vblank.c
+--- linux-6.12-rc2.orig/drivers/gpu/drm/drm_vblank.c
++++ linux-6.12-rc2/drivers/gpu/drm/drm_vblank.c
 @@ -293,6 +293,7 @@ static void drm_update_vblank_count(stru
  	int count = DRM_TIMESTAMP_MAXRETRIES;
  	int framedur_ns = vblank->framedur_ns;

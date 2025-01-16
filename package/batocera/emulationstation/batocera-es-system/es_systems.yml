@@ -317,6 +317,18 @@ sgb:
       mgba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
       mesen-s:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
 
+sgb-msu1:
+  name:       Super Game Boy MSU1
+  manufacturer: Nintendo
+  release: 1994
+  hardware: console
+  extensions: [gb, gbc, zip, 7z, squashfs]
+  group:      snes
+  emulators:
+    libretro:
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
+
 gbc2players:
   name:       Game Boy Color (2 players)
   manufacturer: Nintendo
@@ -813,10 +825,10 @@ dos:
      Para mais informações: https://wiki.batocera.org/systems:dos
 
 devilutionx:
-  name:       DevilutionX
+  name: Diablo
   manufacturer: Ports
-  release:
-  hardware:   port
+  release: 1996
+  hardware: port
   extensions: [mpq]
   platform: pc
   group: ports
@@ -1122,6 +1134,7 @@ lynx:
     libretro:
       mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
       handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY] }
+      holani:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HOLANI] }
 
 ngp:
   name:       Neo-Geo Pocket
@@ -1952,13 +1965,13 @@ jaguarcd:
   manufacturer: Atari
   release: 1995
   hardware: console
-  extensions: [cue, cdi, zip, 7z]
+  extensions: [cue, cdi, bigpimg]
   group: jaguar
   platform: jaguar
   theme: atarijaguarcd
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
@@ -2413,9 +2426,7 @@ windows:
   theme:      windows
   emulators:
     wine:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2433,9 +2444,7 @@ windows_installers:
   group:      windows
   emulators:
     wine:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:windows
   comment_fr: |
@@ -2722,9 +2731,7 @@ mugen:
   extensions: [pc]
   emulators:
     mugen:
-      #lutris:    { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-      #proton:    { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
-      ge-custom: { requireAnyOf: [BR2_PACKAGE_WINE_GE_CUSTOM] }
+      wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }
 
 ikemen:
   name:       IKEMEN
@@ -4866,15 +4873,25 @@ doom3:
             │   ├── pak007.pk4
             │   └── pak008.pk4
             └── d3xp/
-                ├── pak000.pk4 
+                ├── pak000.pk4
                 └── pak001.pk4
-    
-    Create a `Doom 3.d3` file in the roms/doom3 directory. 
+
+    Create a `Doom 3.d3` file in the roms/doom3 directory.
     If you have the Resurrection of Evil mod then Create a `Doom 3 - Resurrection of Evil.d3` file too.
 
     The `Doom 3.d3` file should contain the path to the base game. - i.e. base/pak000.pk4
     Similarly `Doom 3 - Resurrection of Evil.d3` should be - d3xp/pak000.pk4
-    
+
+    MODS
+    ----
+
+    With the inclusion of the Dhewm3 emulator from v42 onwards we supply a selection of mods.
+    Provided mods are:
+    bloodmod, cdoom, d3le, dentonmod, desolated, eldoom, fitz, grimm, hardcorps, perfected, realgibs, rivensin & sikkmod
+
+    Associated mod pk4 files should be in the folder name related to the mod (lowecase).
+    Then create your appropriately named .d3 launch file with appropriate contents to the first pk4 file as above.
+
     For more info: https://wiki.batocera.org/systems:doom3
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:doom3
@@ -5506,7 +5523,7 @@ ps4:
     Before you can play a game you must install the game via the associated .PKG file of your backed-up game using the F1 menu.
     Then in the new installation directory for the installed game, create a file with a .ps4 extension so EmularionStation will see it.
     i.e. /userdata/roms/ps4/CUSA03173/Bloodborne.ps4
-    
+
     Then you can launch the game from EmulationStation accordingly.
 
     DLC content will be stored in: /userdata/roms/ps4/DLC
@@ -5541,3 +5558,87 @@ jazz2:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:jazz2-native
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:jazz2-native
+
+catacomb:
+  name: CatacombGL
+  manufacturer: Ports
+  release: 1991
+  hardware: port
+  extensions: [game]
+  platform: pc
+  group: ports
+  emulators:
+    catacombgl:
+      catacombgl: { requireAnyOf: [BR2_PACKAGE_CATACOMBGL] }
+  comment_en: |
+    CatacombGL is a source port of Catacomb 3D and the Catacomb Adventure series.
+    Catacomb 3D: The Descent was developed by Id Software in 1991.
+    The Catacomb Adventure series consists of The Catacomb Abyss, The Catacomb Armageddon and The Catacomb Apocalypse.
+
+    Copy the game folders from the GOG Catacombs Pack into this roms/catacomb folder.
+    Names should be Abyss (or Abyss_sw13 for the shareware version), Apocalypse, Armageddon, Cat3D
+
+    Create a launch file to be able to launch the game from ES.
+    i.e. Catacomb Abyss.game or Catacomb Armageddon.game etc.
+
+    For more info: https://wiki.batocera.org/systems:catacombgl
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:catacombgl
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:catacombgl
+
+lindbergh:
+  name: Sega Lindbergh
+  manufacturer: Sega
+  release: 2005
+  hardware: arcade
+  extensions: [game]
+  platform: lindbergh, arcade
+  emulators:
+    lindbergh-loader:
+      lindbergh-loader: { requireAnyOf: [BR2_PACKAGE_LINDBERGH_LOADER] }
+  comment_en: |
+    Sega Lindbergh requires good knowledge of rom dumps.
+    We strongly recommend you read the wiki before asking for support.
+
+    To launch a game, create an file name with the .game extension as suggested below in the location where the rom will execute from.
+        Here are the working games and associated extensions at the time of writing:
+
+    Game                                Filename               Game ID
+    ----                              | --------             | -------
+    2 Spicy                           | apacheM.elf          | 2spicy.game
+    After Burner Climax               | abc                  | abclimax.game
+    Ghost Squad Evolution             | vsg or gsevo         | gsevo.game
+    Harley Davidson King of the Road  | chopperM.elf         | hdkotr.game
+    Hummer                            | a.elf                | hummer.game
+    Hummer Extreme Edition            | hummer_Master.elf    | hummerxt.game
+    Initial D Arcade Stage 4          | id4.elf              | initiad4.game
+    Initial D Arcade Stage 4 (Export) | id4.elf              | initiad4exp.game
+    Initial D Arcade Stage 5          | id5.elf              | initiad5.game
+    Let's Go Jungle                   | lgj_final            | letsgoju.game
+    Let's Go Jungle Special           | lgjsp_app            | letsgojusp.game
+    OutRun 2 SP SDX                   | Jennifer             | outr2sdx.game
+    Primeval Hunt                     | main.exe             | primevah.game
+    R-Tuned Ultimate Street Racing    | dsr                  | rtuned.game
+    Rambo                             | ramboM.elf           | rambo.game
+    Sega Race TV                      | drive.elf            | segartv.game
+    The House of the Dead 4           | hod4M.elf            | hotd4.game
+    The House of the Dead 4 Special   | hod4M.elf            | hotd4sp.game
+    The House of the Dead EX          | hodexRI.elf          | hotdex.game
+    Virtua Fighter 5                  | vf5                  | vf5.game
+    Virtua Fighter 5 C                | vf5                  | vf5c.game
+    Virtua Fighter 5 R                | vf5                  | vf5r.game
+    Virtua Fighter 5 FS               | vf5                  | vf5fs.game
+    Virtua Tennis 3                   | vt3 or vt3_Lindbergh | vtennis3.game
+
+    i.e . Create Ghost Squad Evolution.game in the /userdata/roms/lindbergh/Ghost Squad Evolution/vsg_l directory
+    EmulationStation will then see the game & launch it accordingly.
+
+    Lindbergh loader compatibility list is here:
+    https://github.com/lindbergh-loader/lindbergh-loader/blob/master/docs/guide.md
+
+    For more info: https://wiki.batocera.org/systems:lindbergh
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:lindbergh
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:lindbergh

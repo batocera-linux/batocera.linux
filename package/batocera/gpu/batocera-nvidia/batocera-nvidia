@@ -22,14 +22,15 @@ if [ "${MODE}" = "auto" ]; then
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print "0x" toupper($4) }')
             echo "Checking for supported card using ID: $PCIDEVID" >> "$log"
             # Determine the mode and card name based on the JSON data
-            jq_output=$(jq -r --arg pcidevid "$PCIDEVID" '
-                .chips[] |
+            jq_output=$(jq -r --arg pcidevid "$PCIDEVID" '.chips[] |
                 select(.devid == $pcidevid) |
-                "\(.name)|\(.legacybranch // "null")|\(.features | contains(["kernelopen"]) | tostring)"' /usr/share/nvidia/supported-gpus.json)
+                "\(.name)|\(.legacybranch // "null")|\(.features | contains(["kernelopen"]) | tostring)"' \
+                /usr/share/nvidia/supported-gpus.json | head -n 1)
             
+            echo "Matched json query: $jq_output" >> $log
             # Extract the card name and determine the driver mode
             CARDNAME=$(echo "$jq_output" | cut -d'|' -f1)
-            LEGACYBRANCH=$(echo "$jq_output" | cut -d'|' -f2)
+            LEGACYDRIVER=$(echo "$jq_output" | cut -d'|' -f2)
             KERNELOPEN=$(echo "$jq_output" | cut -d'|' -f3)
 
             if [ -z "$CARDNAME" ]; then
@@ -37,12 +38,12 @@ if [ "${MODE}" = "auto" ]; then
                 echo "No matching card name found for ID: $PCIDEVID" >> $log
                 MODE="open"
             else
-                if [ "$LEGACYBRANCH" != "null" ]; then
-                    if [[ "$LEGACYBRANCH" == 340.* ]]; then
+                if [ "$LEGACYDRIVER" != "null" ]; then
+                    if [[ "$LEGACYDRIVER" == 340.* ]]; then
                         MODE="340"
-                    elif [[ "$LEGACYBRANCH" == 390.* ]]; then
+                    elif [[ "$LEGACYDRIVER" == 390.* ]]; then
                         MODE="390"
-                    elif [[ "$LEGACYBRANCH" == 470.* ]]; then
+                    elif [[ "$LEGACYDRIVER" == 470.* ]]; then
                         MODE="470"
                     else
                         MODE="nouveau"
@@ -240,6 +241,7 @@ if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
     # finally link appropriate production kernel modules
     mkdir -p /var/run/nvidia/modules
     if [ "$MODE" = "open" ]; then
+        echo "Linking NVIDIA open modules" >> $log
         ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
         ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
         ln -sf /usr/share/nvidia/modules/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
@@ -249,6 +251,7 @@ if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
         ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
     elif [ "$MODE" = "proprietary" ]; then
+        echo "Linking NVIDIA proprietary modules" >> $log
         ln -sf /usr/share/nvidia/modules/nvidia-proprietary.ko /var/run/nvidia/modules/nvidia.ko
         ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
         ln -sf /usr/share/nvidia/modules/nvidia-modeset-proprietary.ko /var/run/nvidia/modules/nvidia-modeset.ko
@@ -590,5 +593,3 @@ elif test "${MODE}" = "nouveau"; then
     test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
     test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
 fi
-
-cp -f /var/log/nvidia.log /userdata/system/logs/nvidia.log

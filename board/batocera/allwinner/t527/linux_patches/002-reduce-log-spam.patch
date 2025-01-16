@@ -1,0 +1,15 @@
+diff --git a/bsp/drivers/drm/sunxi_drm_hdmi.c b/bsp/drivers/drm/sunxi_drm_hdmi.c
+index 4c4d0b93b1..49900615e6 100644
+--- a/bsp/drivers/drm/sunxi_drm_hdmi.c
++++ b/bsp/drivers/drm/sunxi_drm_hdmi.c
+@@ -2421,8 +2421,8 @@ static int _sunxi_hdmi_drm_encoder_atomic_check(struct drm_encoder *encoder,
+ 		crtc_state->mode_changed = false;
+ 	}
+ 
+-	hdmi_inf("drm hdmi check mode: %s >>>>>>>>>>>>>>>>\n",
+-		crtc_state->mode_changed ? "change" : "unchange");
++	//hdmi_inf("drm hdmi check mode: %s >>>>>>>>>>>>>>>>\n",
++	//	crtc_state->mode_changed ? "change" : "unchange");
+ 	return 0;
+ }
+ 

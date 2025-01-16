@@ -21,12 +21,13 @@
 # Note: When using a virtual combined controller, Batocera will see three controllers (Left, Right & Virtual)
 #       You may need to manually assign the controller number in EmulationStation for emulator compatibility.
 
-if test "$1" = "start"
-then
+if test "$1" = "start"; then
     # joycond: force daemon to start if not already started
-    if [$(pgrep joycond) == ""]; then
+    if [ "$(pgrep joycond)" = "" ]; then
         # ensure module ledtrig-timer is loaded
         modprobe ledtrig-timer
         nohup /usr/bin/joycond &
     fi
+else
+    exit 0
 fi

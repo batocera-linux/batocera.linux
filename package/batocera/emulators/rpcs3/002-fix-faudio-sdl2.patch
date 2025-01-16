@@ -1,8 +1,10 @@
---- a/3rdparty/FAudio/src/FAudio_internal.h	2021-06-30 21:14:13.000000000 +0200
-+++ b/3rdparty/FAudio/src/FAudio_internal.h	2021-08-27 21:25:50.304110669 +0200
-@@ -115,10 +115,10 @@ extern void FAudio_Log(char const *msg);
- #include <SDL3/SDL_endian.h>
- #include <SDL3/SDL_log.h>
+diff --git a/3rdparty/FAudio/src/FAudio_internal.h b/3rdparty/FAudio/src/FAudio_internal.h
+index 039ab92164..a4e91ce889 100644
+--- a/3rdparty/FAudio/src/FAudio_internal.h
++++ b/3rdparty/FAudio/src/FAudio_internal.h
+@@ -133,10 +133,10 @@ extern void FAudio_Log(char const *msg);
+ #define STB_MEMSET_OVERRIDE
+ #endif
  #else
 -#include <SDL_stdinc.h>
 -#include <SDL_assert.h>
@@ -12,17 +14,6 @@
 +#include <SDL2/SDL_assert.h>
 +#include <SDL2/SDL_endian.h>
 +#include <SDL2/SDL_log.h>
- #endif
  
- #define FAudio_malloc SDL_malloc
---- a/3rdparty/FAudio/src/FAudio_platform_sdl2.c  2021-06-30 21:14:13.000000000 +0200
-+++ b/3rdparty/FAudio/src/FAudio_platform_sdl2.c 2021-08-27 21:28:01.430818783 +0200
-@@ -26,7 +26,7 @@
- 
- #include "FAudio_internal.h"
- 
--#include <SDL.h>
-+#include <SDL2/SDL.h>
- 
- #if !SDL_VERSION_ATLEAST(2, 0, 9)
- #error "SDL version older than 2.0.9"
+ #define FAudio_swap16LE(x) SDL_SwapLE16(x)
+ #define FAudio_swap16BE(x) SDL_SwapBE16(x)

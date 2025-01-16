@@ -1,5 +1,5 @@
 config BR2_PACKAGE_UBOOT_PS5000
-    bool "uboot files for ps5000"
+    bool "uboot-ps5000"
     #select BR2_TOOLCHAIN_OPTIONAL_LINARO_ARM
     select BR2_PACKAGE_RK3128_BLOBS
     help

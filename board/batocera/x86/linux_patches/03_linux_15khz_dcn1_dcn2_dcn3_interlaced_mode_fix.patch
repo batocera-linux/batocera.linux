@@ -1,0 +1,233 @@
+Index: linux-6.12/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ linux-6.12/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -6122,6 +6122,8 @@ static void fill_stream_properties_from_
+ 			timing_out->flags.HSYNC_POSITIVE_POLARITY = 1;
+ 		if (mode_in->flags & DRM_MODE_FLAG_PVSYNC)
+ 			timing_out->flags.VSYNC_POSITIVE_POLARITY = 1;
++		if (mode_in->flags & DRM_MODE_FLAG_INTERLACE)
++			timing_out->flags.INTERLACE = 1;
+ 	}
+ 
+ 	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
+@@ -6723,6 +6725,8 @@ create_stream_for_sink(struct drm_connec
+ 
+ 	if (recalculate_timing)
+ 		drm_mode_set_crtcinfo(&saved_mode, 0);
++	else if (!dm_state || mode.flags & DRM_MODE_FLAG_INTERLACE)
++		drm_mode_set_crtcinfo(&mode, 0);
+ 
+ 	/*
+ 	 * If scaling is enabled and refresh rate didn't change
+@@ -7409,8 +7413,7 @@ enum drm_mode_status amdgpu_dm_connector
+ 	struct dc_stream_state *stream;
+ 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
+ 
+-	if ((mode->flags & DRM_MODE_FLAG_INTERLACE) ||
+-			(mode->flags & DRM_MODE_FLAG_DBLSCAN))
++	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
+ 		return result;
+ 
+ 	/*
+@@ -8118,7 +8121,7 @@ void amdgpu_dm_connector_init_helper(str
+ 	aconnector->connector_id = link_index;
+ 	aconnector->bl_idx = -1;
+ 	aconnector->dc_link = link;
+-	aconnector->base.interlace_allowed = false;
++	aconnector->base.interlace_allowed = true;
+ 	aconnector->base.doublescan_allowed = false;
+ 	aconnector->base.stereo_allowed = false;
+ 	aconnector->base.dpms = DRM_MODE_DPMS_OFF;
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+@@ -2758,6 +2758,9 @@ static void update_scaler(struct pipe_ct
+ 	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = per_pixel_alpha;
+ 	pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_36BPP;
+ 	/* scaler configuration */
++	pipe_ctx->plane_res.scl_data.lb_params.interleave_en =
++			pipe_ctx->stream->timing.flags.INTERLACE? 1:0;
++
+ 	pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
+ 			pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
+ }
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+@@ -614,10 +614,6 @@ bool optc1_validate_timing(
+ 		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
+ 		return false;
+ 
+-	/* Temporarily blocking interlacing mode until it's supported */
+-	if (timing->flags.INTERLACE == 1)
+-		return false;
+-
+ 	/* Check maximum number of pixels supported by Timing Generator
+ 	 * (Currently will never fail, in order to fail needs display which
+ 	 * needs more than 8192 horizontal and
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/hwss/dcn20/dcn20_hwseq.c
+@@ -1738,6 +1738,9 @@ static void dcn20_update_dchubp_dpp(
+ 		pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->plane_state->per_pixel_alpha;
+ 		ASSERT(pipe_ctx->plane_res.scl_data.lb_params.depth == LB_PIXEL_DEPTH_36BPP);
+ 		/* scaler configuration */
++		pipe_ctx->plane_res.scl_data.lb_params.interleave_en =
++			pipe_ctx->stream->timing.flags.INTERLACE? 1:0;
++
+ 		pipe_ctx->plane_res.dpp->funcs->dpp_set_scaler(
+ 				pipe_ctx->plane_res.dpp, &pipe_ctx->plane_res.scl_data);
+ 	}
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.c
+@@ -61,7 +61,8 @@ void scaler_settings_calculation(struct
+ 			v->v_ratio[k] = v->h_ratio[k];
+ 		}
+ 		if (v->interlace_output[k] == 1.0) {
+-			v->v_ratio[k] = 2.0 * v->v_ratio[k];
++			// Commented out: this makes scale and ratio taps validation fail
++			//v->v_ratio[k] = 2.0 * v->v_ratio[k];
+ 		}
+ 		if (v->underscan_output[k] == 1.0) {
+ 			v->h_ratio[k] = v->h_ratio[k] * v->under_scan_factor;
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
+@@ -446,6 +446,7 @@ static void pipe_ctx_to_e2e_pipe_params
+ 	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
+ 	input->dest.vupdate_offset = pipe->pipe_dlg_param.vupdate_offset;
+ 	input->dest.vupdate_width = pipe->pipe_dlg_param.vupdate_width;
++	input->dest.interlaced = pipe->stream->timing.flags.INTERLACE;
+ 
+ }
+ 
+@@ -900,7 +901,7 @@ bool dcn_validate_bandwidth(
+ 			continue;
+ 
+ 		v->underscan_output[input_idx] = false; /* taken care of in recout already*/
+-		v->interlace_output[input_idx] = false;
++		v->interlace_output[input_idx] = pipe->stream->timing.flags.INTERLACE? 1.0 : false;
+ 
+ 		v->htotal[input_idx] = pipe->stream->timing.h_total;
+ 		v->vtotal[input_idx] = pipe->stream->timing.v_total;
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+@@ -592,9 +592,11 @@ static void fetch_pipe_params(struct dis
+ 		mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] = scl->vscl_ratio_c;
+ 		mode_lib->vba.ScalerEnabled[mode_lib->vba.NumberOfActivePlanes] = scl->scl_enable;
+ 		mode_lib->vba.Interlace[mode_lib->vba.NumberOfActivePlanes] = dst->interlaced;
++
+ 		if (dst->interlaced && !ip->ptoi_supported) {
+-			mode_lib->vba.VRatio[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
+-			mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
++			// Commented out: this makes scale and ratio taps validation fail
++			//mode_lib->vba.VRatio[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
++			//mode_lib->vba.VRatioChroma[mode_lib->vba.NumberOfActivePlanes] *= 2.0;
+ 		}
+ 		mode_lib->vba.htaps[mode_lib->vba.NumberOfActivePlanes] = taps->htaps;
+ 		mode_lib->vba.vtaps[mode_lib->vba.NumberOfActivePlanes] = taps->vtaps;
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn30/dcn30_optc.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/optc/dcn30/dcn30_optc.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn30/dcn30_optc.h
+@@ -49,6 +49,7 @@
+ 	SRI(OTG_V_BLANK_START_END, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A_CNTL, OTG, inst),\
++	SRI(OTG_INTERLACE_CONTROL, OTG, inst),\
+ 	SRI(OTG_CONTROL, OTG, inst),\
+ 	SRI(OTG_STEREO_CONTROL, OTG, inst),\
+ 	SRI(OTG_3D_STRUCTURE_CONTROL, OTG, inst),\
+@@ -142,6 +143,7 @@
+ 	SF(OTG0_OTG_V_SYNC_A, OTG_V_SYNC_A_END, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_A_POL, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, mask_sh),\
++	SF(OTG0_OTG_INTERLACE_CONTROL, OTG_INTERLACE_ENABLE, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_MASTER_EN, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_START_POINT_CNTL, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_DISABLE_POINT_CNTL, mask_sh),\
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn31/dcn31_optc.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/optc/dcn31/dcn31_optc.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn31/dcn31_optc.h
+@@ -47,6 +47,7 @@
+ 	SRI(OTG_V_BLANK_START_END, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A_CNTL, OTG, inst),\
++	SRI(OTG_INTERLACE_CONTROL, OTG, inst),\
+ 	SRI(OTG_CONTROL, OTG, inst),\
+ 	SRI(OTG_STEREO_CONTROL, OTG, inst),\
+ 	SRI(OTG_3D_STRUCTURE_CONTROL, OTG, inst),\
+@@ -130,6 +131,7 @@
+ 	SF(OTG0_OTG_V_SYNC_A, OTG_V_SYNC_A_END, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_A_POL, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, mask_sh),\
++	SF(OTG0_OTG_INTERLACE_CONTROL, OTG_INTERLACE_ENABLE, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_MASTER_EN, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_START_POINT_CNTL, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_DISABLE_POINT_CNTL, mask_sh),\
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn314/dcn314_optc.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/optc/dcn314/dcn314_optc.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn314/dcn314_optc.h
+@@ -48,6 +48,7 @@
+ 	SRI(OTG_V_BLANK_START_END, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A, OTG, inst),\
+ 	SRI(OTG_V_SYNC_A_CNTL, OTG, inst),\
++	SRI(OTG_INTERLACE_CONTROL, OTG, inst),\
+ 	SRI(OTG_CONTROL, OTG, inst),\
+ 	SRI(OTG_STEREO_CONTROL, OTG, inst),\
+ 	SRI(OTG_3D_STRUCTURE_CONTROL, OTG, inst),\
+@@ -129,6 +130,7 @@
+ 	SF(OTG0_OTG_V_SYNC_A, OTG_V_SYNC_A_END, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_A_POL, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, mask_sh),\
++	SF(OTG0_OTG_INTERLACE_CONTROL, OTG_INTERLACE_ENABLE, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_MASTER_EN, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_START_POINT_CNTL, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_DISABLE_POINT_CNTL, mask_sh),\
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn32/dcn32_optc.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/optc/dcn32/dcn32_optc.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/optc/dcn32/dcn32_optc.h
+@@ -57,6 +57,7 @@
+ 	SF(OTG0_OTG_V_SYNC_A, OTG_V_SYNC_A_END, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_A_POL, mask_sh),\
+ 	SF(OTG0_OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, mask_sh),\
++	SF(OTG0_OTG_INTERLACE_CONTROL, OTG_INTERLACE_ENABLE, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_MASTER_EN, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_START_POINT_CNTL, mask_sh),\
+ 	SF(OTG0_OTG_CONTROL, OTG_DISABLE_POINT_CNTL, mask_sh),\
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/resource/dcn32/dcn32_resource.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/resource/dcn32/dcn32_resource.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/resource/dcn32/dcn32_resource.h
+@@ -1008,6 +1008,7 @@ unsigned int dcn32_calculate_mall_ways_f
+       SRI_ARR(OTG_H_TIMING_CNTL, OTG, inst), SRI_ARR(OTG_V_TOTAL, OTG, inst),  \
+       SRI_ARR(OTG_V_BLANK_START_END, OTG, inst),                               \
+       SRI_ARR(OTG_V_SYNC_A, OTG, inst), SRI_ARR(OTG_V_SYNC_A_CNTL, OTG, inst), \
++      SRI_ARR(OTG_INTERLACE_CONTROL, OTG, inst),                               \
+       SRI_ARR(OTG_CONTROL, OTG, inst), SRI_ARR(OTG_STEREO_CONTROL, OTG, inst), \
+       SRI_ARR(OTG_3D_STRUCTURE_CONTROL, OTG, inst),                            \
+       SRI_ARR(OTG_STEREO_STATUS, OTG, inst),                                   \
+Index: linux-6.12/drivers/gpu/drm/amd/display/dc/resource/dcn35/dcn35_resource.h
+===================================================================
+--- linux-6.12.orig/drivers/gpu/drm/amd/display/dc/resource/dcn35/dcn35_resource.h
++++ linux-6.12/drivers/gpu/drm/amd/display/dc/resource/dcn35/dcn35_resource.h
+@@ -233,6 +233,7 @@ struct resource_pool *dcn35_create_resou
+ 	SRI_ARR(OTG_V_BLANK_START_END, OTG, inst),\
+ 	SRI_ARR(OTG_V_SYNC_A, OTG, inst),\
+ 	SRI_ARR(OTG_V_SYNC_A_CNTL, OTG, inst),\
++	SRI_ARR(OTG_INTERLACE_CONTROL, OTG, inst),\
+ 	SRI_ARR(OTG_CONTROL, OTG, inst),\
+ 	SRI_ARR(OTG_STEREO_CONTROL, OTG, inst),\
+ 	SRI_ARR(OTG_3D_STRUCTURE_CONTROL, OTG, inst),\

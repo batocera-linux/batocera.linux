@@ -17,8 +17,7 @@ def writeIniFile(system: Emulator, rom: str, playersControllers: ControllerMappi
 
     if XEMU_CONFIG.exists():
         try:
-            with XEMU_CONFIG.open(encoding='utf_8_sig') as fp:
-                iniConfig.readfp(fp)
+            iniConfig.read(XEMU_CONFIG, encoding='utf_8_sig')
         except:
             pass
 
@@ -37,6 +36,8 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
         iniConfig.add_section("sys.files")
     if not iniConfig.has_section("audio"):
         iniConfig.add_section("audio")
+    if not iniConfig.has_section("display"):
+        iniConfig.add_section("display")
     if not iniConfig.has_section("display.quality"):
         iniConfig.add_section("display.quality")
     if not iniConfig.has_section("display.window"):
@@ -86,6 +87,12 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     else:
         iniConfig.set("audio", "use_dsp", "false")
 
+    # API
+    if system.isOptSet("xemu_api"):
+        iniConfig.set("display", "renderer", '"' + system.config["xemu_api"] + '"')
+    else:
+        iniConfig.set("display", "renderer", '"OPENGL"')
+    
     # Rendering resolution
     if system.isOptSet("xemu_render"):
         iniConfig.set("display.quality", "surface_scale", system.config["xemu_render"])
@@ -97,7 +104,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
     # Window size
     window_res = format(gameResolution["width"]) + "x" + format(gameResolution["height"])
-    iniConfig.set("display.window", "startup_size", '"' + window_res + '"')
+    iniConfig.set("display.window", "startup_size", '"' + window_res + '"')  
 
     # Vsync
     if system.isOptSet("xemu_vsync"):

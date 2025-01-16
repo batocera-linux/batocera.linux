@@ -1,8 +1,14 @@
 config BR2_PACKAGE_PYWEBVIEW
-        bool "pywebview"
+    bool "pywebview"
 	select BR2_PACKAGE_PYTHON_CRYPTOGRAPHY
 	select BR2_PACKAGE_WEBKITGTK
 	select BR2_PACKAGE_WEBKITGTK_MULTIMEDIA
 	select BR2_PACKAGE_PYTHON_PROXY_TOOLS
 	select BR2_PACKAGE_PYTHON_BOTTLE
 	select BR2_PACKAGE_LIBGTK3
+	select BR2_PACKAGE_PYTHON_TYPING_EXTENSIONS
+	help
+	  pywebview is a lightweight cross-platform wrapper around a webview component 
+	  that allows to display HTML content in its own native GUI window.
+
+	  https://github.com/r0x0r/pywebview

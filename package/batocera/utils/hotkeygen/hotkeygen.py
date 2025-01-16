@@ -305,15 +305,15 @@ def do_list() -> None:
                 if ecodes.EV_KEY in caps:
                     mapping = get_mapping(dev)
                     associations = get_mapping_associations(mapping, caps)
-                    if associations:
-                        fullpath = get_mapping_full_path(dev)
-                        fname = get_device_config_filename(dev)
-                        if fullpath:
-                            print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
-                        else:
-                            print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
-                        print_mapping(mapping, associations, context)
 
+                    fullpath = get_mapping_full_path(dev)
+                    if fullpath:
+                        print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
+                    else:
+                        fname = get_device_config_filename(dev)
+                        print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
+                    if associations:
+                        print_mapping(mapping, associations, context)
 
 @dataclass(slots=True)
 class Daemon:
@@ -429,8 +429,18 @@ class Daemon:
                             event.code in self.mappings_by_fd[fd]
                         ):
                             self.__handle_event(event, self.mappings_by_fd[fd][event.code])
-                except (OSError, KeyError):
-                    pass  # ok, error on the device
+                except (OSError):
+                    if fd == self.monitor.fileno():
+                        raise
+                    else:
+                        # error on a single device
+                        input_device = self.input_devices_by_fd[fd]
+                        print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                        self.poll.unregister(input_device)
+                        del self.mappings_by_fd[fd]
+                        del self.input_devices_by_fd[fd]
+                        del self.input_devices[input_device.path]
+                        input_device.close()
                 except:
                     self.target.close()
                     raise

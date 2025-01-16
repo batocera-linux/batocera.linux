@@ -1,8 +1,8 @@
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-@@ -2861,6 +2861,9 @@ static void dce110_program_front_end_for
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+@@ -2916,6 +2916,9 @@ static void dce110_program_front_end_for
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != NULL;
  
@@ -12,10 +12,10 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
  	program_scaler(dc, pipe_ctx);
  
  	mi->funcs->mem_input_program_surface_config(
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
 @@ -1132,10 +1132,6 @@ bool dce110_timing_generator_validate_ti
  	if (timing->timing_3d_format != TIMING_3D_FORMAT_NONE)
  		return false;
@@ -27,7 +27,7 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.
  	/* Check maximum number of pixels supported by Timing Generator
  	 * (Currently will never fail, in order to fail needs display which
  	 * needs more than 8192 horizontal and
-@@ -1949,7 +1945,7 @@ void dce110_tg_set_overscan_color(struct
+@@ -1949,13 +1945,12 @@ void dce110_tg_set_overscan_color(struct
  	dm_write_reg(ctx, addr, value);
  }
  
@@ -36,7 +36,13 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.
  	const struct dc_crtc_timing *timing,
  	int vready_offset,
  	int vstartup_start,
-@@ -1964,6 +1960,28 @@ void dce110_tg_program_timing(struct tim
+ 	int vupdate_offset,
+ 	int vupdate_width,
+-	int pstate_keepout,
+ 	const enum signal_type signal,
+ 	bool use_vbios)
+ {
+@@ -1965,6 +1960,29 @@ void dce110_tg_program_timing(struct tim
  		dce110_timing_generator_program_blanking(tg, timing);
  }
  
@@ -46,6 +52,7 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.
 +	int vstartup_start,
 +	int vupdate_offset,
 +	int vupdate_width,
++	int pstate_keepout,
 +	const enum signal_type signal,
 +	bool use_vbios)
 +{
@@ -59,17 +66,17 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.
 +	value = (value & interleave_en_mask) | ((timing->flags.INTERLACE == 1? 1 : 0) << 3);
 +	dm_write_reg(tg->ctx, address, value);
 +
-+	DRM_DEBUG_KMS("Calamity: addr[%08x] value[%08x]\n", address, value);
++	DRM_DEBUG_KMS("linux_15khz: addr[%08x] value[%08x]\n", address, value);
 +}
 +
  bool dce110_tg_is_blanked(struct timing_generator *tg)
  {
  	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
-@@ -264,6 +264,15 @@ void dce110_tg_program_timing(struct tim
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+@@ -265,6 +265,15 @@ void dce110_tg_program_timing(struct tim
  	const enum signal_type signal,
  	bool use_vbios);
  
@@ -85,11 +92,11 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.
  bool dce110_tg_is_blanked(struct timing_generator *tg);
  
  void dce110_tg_set_blank(struct timing_generator *tg,
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
-@@ -704,6 +704,15 @@ static void dce120_tg_program_timing(str
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+@@ -705,6 +705,15 @@ static void dce120_tg_program_timing(str
  		dce110_timing_generator_program_timing_generator(tg, timing);
  	else
  		dce120_timing_generator_program_blanking(tg, timing);
@@ -101,14 +108,14 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.
 +	value = (value & interleave_en_mask) | ((timing->flags.INTERLACE == 1? 1 : 0) << 3);
 +	dm_write_reg_soc15(tg->ctx, mmLB0_LB_DATA_FORMAT, tg110->offsets.crtc, value);
 +
-+	DRM_DEBUG_KMS("Calamity: addr[%08x] value[%08x]\n",  mmLB0_LB_DATA_FORMAT + tg110->offsets.crtc, value);
++	DRM_DEBUG_KMS("linux_15khz: addr[%08x] value[%08x]\n",  mmLB0_LB_DATA_FORMAT + tg110->offsets.crtc, value);
  }
  
  static bool dce120_tg_is_blanked(struct timing_generator *tg)
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
 @@ -311,6 +311,9 @@ dce60_program_front_end_for_pipe(
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != 0;
@@ -119,15 +126,15 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.c
  	dce60_program_scaler(dc, pipe_ctx);
  
  	mi->funcs->mem_input_program_surface_config(
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
-@@ -117,7 +117,17 @@ static void program_timing(struct timing
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+@@ -118,7 +118,17 @@ static void program_timing(struct timing
  	if (!use_vbios)
  		program_pix_dur(tg, timing->pix_clk_100hz);
  
--	dce110_tg_program_timing(tg, timing, 0, 0, 0, 0, 0, use_vbios);
+-	dce110_tg_program_timing(tg, timing, 0, 0, 0, 0, 0, 0, use_vbios);
 +	dce_tg_program_timing(tg, timing, 0, 0, 0, 0, 0, use_vbios);
 +
 +	/* Set interleave */
@@ -138,20 +145,20 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 +	value = (value & interleave_en_mask) | (timing->flags.INTERLACE == 1? 1 : 0);
 +	dm_write_reg(tg->ctx, address, value);
 +
-+	DRM_DEBUG_KMS("Calamity: addr[%08x] value[%08x]\n", address, value);
++	DRM_DEBUG_KMS("linux_15khz: addr[%08x] value[%08x]\n", address, value);
  }
  
  static void dce60_timing_generator_enable_advanced_request(
-Index: linux-6.11/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+Index: linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
 ===================================================================
---- linux-6.11.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
-+++ linux-6.11/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+--- linux-6.12-rc2.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
++++ linux-6.12-rc2/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
 @@ -2869,7 +2869,8 @@ static void populate_initial_data(
  			data->bytes_per_pixel[num_displays + 4] = 4;
  			break;
  		}
 -		data->interlace_mode[num_displays + 4] = false;
-+		DRM_DEBUG_KMS("Calamity: pipe[%d] interlace: [%d]\n", i, pipe[i].stream->timing.flags.INTERLACE);
++		DRM_DEBUG_KMS("linux_15khz: pipe[%d] interlace: [%d]\n", i, pipe[i].stream->timing.flags.INTERLACE);
 +		data->interlace_mode[num_displays + 4] = pipe[i].stream->timing.flags.INTERLACE;
  		data->stereo_mode[num_displays + 4] = bw_def_mono;
  
@@ -161,7 +168,7 @@ Index: linux-6.11/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
  		}
  
 -		data->interlace_mode[num_displays + 4] = false;
-+		DRM_DEBUG_KMS("Calamity: pipe[%d] interlace: [%d]\n", i, pipe[i].stream->timing.flags.INTERLACE);
++		DRM_DEBUG_KMS("linux_15khz: pipe[%d] interlace: [%d]\n", i, pipe[i].stream->timing.flags.INTERLACE);
 +		data->interlace_mode[num_displays + 4] = pipe[i].stream->timing.flags.INTERLACE;
  		data->stereo_mode[num_displays + 4] = bw_def_mono;
  		num_displays++;
