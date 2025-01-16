@@ -37,6 +37,7 @@
 - Linux Kernel to 6.12.6
 - GStreamer codecs to 1.24.10
 - SDL2 to 2.30.9
+- Vulkan stack to v1.4.304
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes

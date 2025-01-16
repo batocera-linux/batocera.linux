@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_UTILITY_LIBRARIES_VERSION = v1.3.297
+VULKAN_UTILITY_LIBRARIES_VERSION = v1.4.304
 VULKAN_UTILITY_LIBRARIES_SITE = https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
 VULKAN_UTILITY_LIBRARIES_SITE_METHOD = git
 VULKAN_UTILITY_LIBRARIES_INSTALL_STAGING = YES
