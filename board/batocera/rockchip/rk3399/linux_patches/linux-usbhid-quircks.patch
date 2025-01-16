@@ -1,8 +1,8 @@
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index e92b77f..60bcce2 100644
+index 1d1949d..22db8cc 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
-@@ -27,6 +27,54 @@
+@@ -25,6 +25,57 @@
   */
  
  static const struct hid_device_id hid_quirks[] = {
@@ -53,6 +53,9 @@ index e92b77f..60bcce2 100644
 +
 +// 3H Dual Arcade 2Players
 +	{ HID_USB_DEVICE(0x16c0,0x05e0),0x040 },
++
++// MICREAL USB Controller
++	{ HID_USB_DEVICE(0x0314,0x0324),0x040 },
 +
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AASHIMA, USB_DEVICE_ID_AASHIMA_GAMEPAD), HID_QUIRK_BADPAD },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AASHIMA, USB_DEVICE_ID_AASHIMA_PREDATOR), HID_QUIRK_BADPAD },
