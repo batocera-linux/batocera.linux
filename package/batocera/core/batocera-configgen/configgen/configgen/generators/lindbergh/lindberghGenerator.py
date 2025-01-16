@@ -271,7 +271,7 @@ class LindberghGenerator(Generator):
                 eslog.debug(f"Copied: {destination} from {source}")
         
         # -= Game specific library versions =-
-        if any(keyword in romName.lower() for keyword in ("harley", "hdkotr", "spicy", "rambo")):
+        if any(keyword in romName.lower() for keyword in ("harley", "hdkotr", "spicy", "rambo", "hotdex", "dead ex")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
@@ -299,6 +299,11 @@ class LindberghGenerator(Generator):
         
         # Change to the ROM path before launching
         os.chdir(romDir)
+
+        # remove any legacy libsegaapi.so
+        if Path(romDir, "libsegaapi.so").exists():
+            Path(romDir, "libsegaapi.so").unlink()
+            eslog.debug(f"Removed: {romDir}/libsegaapi.so")
 
         # Check for known executable files and make them executable if needed
         # Details in the Lindbergh.c file
