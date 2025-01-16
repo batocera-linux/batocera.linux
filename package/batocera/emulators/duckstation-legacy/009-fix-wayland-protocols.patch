@@ -1,0 +1,12 @@
+diff --git a/src/duckstation-nogui/CMakeLists.txt b/src/duckstation-nogui/CMakeLists.txt
+index 3896126d84..49883fae5c 100644
+--- a/src/duckstation-nogui/CMakeLists.txt
++++ b/src/duckstation-nogui/CMakeLists.txt
+@@ -51,6 +51,7 @@ if(USE_WAYLAND)
+   # Generate the xdg-shell and xdg-decoration protocols at build-time.
+   # Because these are C, not C++, we have to put them in their own library, otherwise
+   # cmake tries to generate a C PCH as well as the C++ one...
++  set(WAYLAND_PROTOCOLS_PKGDATADIR "${CMAKE_SYSROOT}/usr/share/wayland-protocols")
+   ecm_add_wayland_client_protocol(WAYLAND_PLATFORM_SRCS
+     PROTOCOL "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/xdg-shell/xdg-shell.xml"
+     BASENAME xdg-shell)
