@@ -102,7 +102,6 @@ class Pcsx2Generator(Generator):
 
         # use their modified shaderc library
         envcmd = {
-            "LD_LIBRARY_PATH": "/usr/stenzek-shaderc/lib:/usr/lib",
             "XDG_CONFIG_HOME":CONFIGS,
             "QT_QPA_PLATFORM":"xcb",
             "SDL_JOYSTICK_HIDAPI": "0"
