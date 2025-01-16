@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v42b(2025/01/02)\n"
+"Project-Id-Version: batocera-es v42b(2025/01/12)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-01-03 10:42+0900\n"
+"PO-Revision-Date: 2025-01-12 08:54+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -279,9 +279,11 @@ msgid "10 seconds"
 msgstr "10 秒"
 
 #. TRANSLATION: lindbergh-loader
+#| msgctxt "game_options"
+#| msgid "120 fps"
 msgctxt "game_options"
 msgid "100 fps"
-msgstr ""
+msgstr "100 fps"
 
 #. TRANSLATION: dhewm3, libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
@@ -2638,11 +2640,6 @@ msgctxt "game_options"
 msgid "Acron Electron ROMs"
 msgstr "Acron Electron ROM"
 
-#. TRANSLATION: bigpemu
-msgctxt "game_options"
-msgid "Activate Doom DOS original music and throttle the Doom frame rate."
-msgstr ""
-
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "Adaptive (Bottom Field First)"
@@ -2666,7 +2663,7 @@ msgstr "ゲームボーイのゲームに色を追加します"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Add debug logging to help troubleshoot issues."
-msgstr ""
+msgstr "問題のトラブルシューティングに役立つデバッグ ログを追加します"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/genesisplusgx
 msgctxt "game_options"
@@ -4927,6 +4924,8 @@ msgctxt "game_options"
 msgid ""
 "Choose the arcade machine console region. May be required to start the game."
 msgstr ""
+"アーケード マシン コンソールの地域を選択します。ゲームを開始に必要な場合があ"
+"ります"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -5168,7 +5167,7 @@ msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Moonlightの終了は、リモートホストのアプリを閉じます"
 
-#. TRANSLATION: fpinball.keys
+#. TRANSLATION: fpinball.keys, lindbergh.keys
 msgctxt "keys_files"
 msgid "Coin"
 msgstr "コイン"
@@ -5481,7 +5480,7 @@ msgstr "遊び幅"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "DEBUG MODE"
-msgstr ""
+msgstr "デバッグモード"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -5627,11 +5626,6 @@ msgstr "ドッキングモード"
 msgctxt "game_options"
 msgid "DOLBY PRO LOGIC II"
 msgstr "DOLBY PRO LOGIC II(サラウンド)"
-
-#. TRANSLATION: bigpemu
-msgctxt "game_options"
-msgid "DOOM"
-msgstr ""
 
 #. TRANSLATION: libretro/virtualjaguar
 msgctxt "game_options"
@@ -6568,7 +6562,7 @@ msgstr "流動性を高めるために有効にし、画面が乱れる場合は
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Enable free play for supported games."
-msgstr ""
+msgstr "対応しているゲームでフリープレイを有効にします"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -7169,7 +7163,7 @@ msgstr "エミュレータを終了"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Export"
-msgstr ""
+msgstr "エクスポート"
 
 #. TRANSLATION: libretro/genesisplusgx
 msgctxt "game_options"
@@ -7339,7 +7333,7 @@ msgstr "FPS 制限"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "FPS TARGET"
-msgstr ""
+msgstr "目標 FPS"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -7389,7 +7383,7 @@ msgstr "フレームスキップ 値"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "FREE PLAY"
-msgstr ""
+msgstr "フリープレイ"
 
 #. TRANSLATION: mugen, wine
 msgctxt "game_options"
@@ -8620,11 +8614,6 @@ msgctxt "game_options"
 msgid "HST"
 msgstr "HST"
 
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
-msgid "HUMMER FLICKER FIX"
-msgstr ""
-
 #. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Hack. Increases most PAL games' speed by 17%."
@@ -9272,7 +9261,7 @@ msgstr "日本"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Japan (Default)"
-msgstr ""
+msgstr "日本 (標準)"
 
 #. TRANSLATION: cemu, dhewm3, etlegacy, flycast/dolphin, libretro/dolphin, ...
 msgctxt "game_options"
@@ -12512,7 +12501,7 @@ msgstr "振動レベル"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "RUN TEST MODE"
-msgstr ""
+msgstr "テストモード実行"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -12898,7 +12887,7 @@ msgstr "走る"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Run the game in test mode to configure certain game options."
-msgstr ""
+msgstr "テスト モードでゲームを実行して、特定のゲーム オプションを構成します"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -13680,7 +13669,7 @@ msgstr "画面外射撃の代わりに銃ボタン2をリロードに設定し�
 msgctxt "game_options"
 msgid ""
 "Set if you want to limit the FPS in games that are not limited like OutRun2."
-msgstr ""
+msgstr "OutRun2 のようなFPS制限のないゲームで制限する場合に設定します"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -13730,7 +13719,7 @@ msgstr "ディスプレイ解像度を設定(レンダリング解像度には�
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Set the target FPS (will only work if FPS LIMITER is enabled)."
-msgstr ""
+msgstr "目標 FPS を設定します (FPS 制限 が有効な場合にのみ機能します)"
 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
@@ -13738,11 +13727,8 @@ msgid ""
 "Set to keep the aspect ratio (4:3) in games like Sega Race TV and Primeval "
 "Hunt."
 msgstr ""
-
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
-msgid "Set to on if you experience flickering in hummer."
-msgstr ""
+"Sega Race TV や Primeval Hunt などのゲームでアスペクト比 (4:3) を維持する設定"
+"にします"
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
