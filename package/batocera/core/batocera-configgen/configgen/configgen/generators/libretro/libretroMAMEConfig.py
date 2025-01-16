@@ -454,13 +454,9 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
 
     # Write command line file
     cmdFilename = cmdPath / f"{romDrivername}.cmd"
-    # Check to see whether user provided a custom cmd file, at either a default location, or specified in batocera.conf
-    defaultCustomCmdFilepath = f'{rom}.cmd'
-    if Path(defaultCustomCmdFilepath).is_file():
+    # Check to see whether user provided a custom cmd file at the default location
+    if Path(defaultCustomCmdFilepath := f"{rom}.cmd").is_file():
         shutil.copyfile(defaultCustomCmdFilepath, cmdFilename)
-    elif system.isOptSet("cmdfile"):
-        # User specified where to find the custom .cmd file in batocera.conf
-        shutil.copyfile(system.config["cmdfile"], cmdFilename)
     else:
         # User did not provide a custom .cmd file. Use the logic above to create a new .cmd file
         cmdFile = cmdFilename.open("w")
