@@ -13638,12 +13638,19 @@ lindbergh-loader:
         "100 fps":          "100"
         "120 fps":          "120"
     lindbergh_hummer:
-      group: ADVANCED OPTIONS
+      group: GAME OPTIONS
       prompt: HUMMER FLICKER FIX
-      description: Set to on if you experience flickering in hummer.
+      description: Set to on if you experience flickering in Hummer.
       choices:
         "Off (Default)": 0
-        "On":            1    
+        "On":            1
+    lindbergh_lens:
+      group: GAME OPTIONS
+      prompt: OUTRUN LENS GLARE
+      description: Set to enable lens glare in Outrun 2.
+      choices:
+        "Off (Default)": 0
+        "On":            1
     lindbergh_test:
       group: ADVANCED OPTIONS
       prompt: RUN TEST MODE

@@ -5,10 +5,14 @@ import os
 import re
 import shutil
 import stat
+import tarfile
+import lzma
+import requests
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from ... import Command, controllersConfig
+from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -17,7 +21,37 @@ if TYPE_CHECKING:
 
 eslog = logging.getLogger(__name__)
 
+_LINDBERGH_SAVES: Final = SAVES / "lindbergh"
+DOWNLOADED_FLAG: Final = _LINDBERGH_SAVES / "downloaded.txt"
+RAW_URL: Final = "https://raw.githubusercontent.com/batocera-linux/lindbergh-eeprom/main/lindbergh-eeprom.tar.xz"
+DOWNLOAD_PATH: Final = _LINDBERGH_SAVES / "lindbergh-eeprom.tar.xz"
+
 class LindberghGenerator(Generator):
+
+    @staticmethod
+    def download_file(url, destination):
+        eslog.debug("Downloading the file...")
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(destination, "wb") as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+            eslog.debug(f"File downloaded to {destination}")
+        else:
+            raise Exception(f"Failed to download file. Status code: {response.status_code}")
+            eslog.debug("Do you have internet!?")
+    
+    @staticmethod
+    def extract_tar_xz(file_path, extract_to):
+        eslog.debug("Extracting the file...")
+        with tarfile.open(file_path, "r:xz") as tar:
+            for member in tar.getmembers():
+                file_path_to_extract = os.path.join(extract_to, member.name)
+                if not os.path.exists(file_path_to_extract):
+                    tar.extract(member, path=extract_to)
+                else:
+                    eslog.debug(f"Skipping {member.name}, file already exists.")
+        eslog.debug(f"Files extracted to {extract_to}")
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
@@ -62,6 +96,26 @@ class LindberghGenerator(Generator):
             destination_file = romDir / file_name
             shutil.copy2(source_file, destination_file)
             eslog.debug(f"Updated {file_name}")
+        
+        # Setup eeprom files as necessary
+        mkdir_if_not_exists(_LINDBERGH_SAVES)
+        if not DOWNLOADED_FLAG.exists():
+            try:
+                # Download the file
+                self.download_file(RAW_URL, str(DOWNLOAD_PATH))
+                # Extract the file
+                self.extract_tar_xz(str(DOWNLOAD_PATH), _LINDBERGH_SAVES)
+                # Create the downloaded.txt flag file so we don't download again
+                DOWNLOADED_FLAG.write_text("Download and extraction successful.\n")
+                eslog.debug(f"Created flag file: {DOWNLOADED_FLAG}")
+
+            except Exception as e:
+                eslog.debug(f"An error occurred: {e}")
+            finally:
+                # Cleanup the downloaded .tar.xz file
+                if DOWNLOAD_PATH.exists():
+                    DOWNLOAD_PATH.unlink()
+                    eslog.debug(f"Temporary file {DOWNLOAD_PATH} deleted.")
 
         # Read the configuration file
         with _LINDBERGH_CONFIG_FILE.open('r') as file:
@@ -195,7 +249,7 @@ class LindberghGenerator(Generator):
         if not debug_replaced:
             modified_lines.append(f"DEBUG_MSGS {debug_value}\n")
         
-        # HUMMER_FLICKER_FIX
+        # Hummer flicker fix
         hummer_value = "1" if system.isOptSet("lindbergh_hummer") and system.getOptBoolean("lindbergh_hummer") else "0"
         hummer_replaced = False
 
@@ -207,6 +261,19 @@ class LindberghGenerator(Generator):
 
         if not hummer_replaced:
             modified_lines.append(f"HUMMER_FLICKER_FIX {hummer_value}\n")
+        
+        # Outrun lens glare
+        lens_value = "1" if system.isOptSet("lindbergh_lens") and system.getOptBoolean("lindbergh_lens") else "0"
+        lens_replaced = False
+
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# OUTRUN_LENS_GLARE_ENABLED", "OUTRUN_LENS_GLARE_ENABLED")):
+                modified_lines[i] = f"OUTRUN_LENS_GLARE_ENABLED {lens_value}\n"
+                lens_replaced = True
+                break
+
+        if not lens_replaced:
+            modified_lines.append(f"OUTRUN_LENS_GLARE_ENABLED {lens_value}\n")
         
         # Not an ES option but to set automatically if the rom is OutRun
         outrun_value = "1" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "0"
@@ -221,6 +288,28 @@ class LindberghGenerator(Generator):
         if not outrun_replaced:
             modified_lines.append(f"SKIP_OUTRUN_CABINET_CHECK {outrun_value}\n")
         
+        # eeprom.bin & sram.bin saves
+        sram_replaced = False
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# SRAM_PATH", "SRAM_PATH")):
+                modified_lines[i] = f"SRAM_PATH {_LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}\n"
+                sram_replaced = True
+                break
+
+        if not sram_replaced:
+            modified_lines.append(f"SRAM_PATH {_LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}\n")
+        
+        eeprom_replaced = False
+        for i, line in enumerate(modified_lines):
+            if line.strip().startswith(("# EEPROM_PATH", "EEPROM_PATH")):
+                modified_lines[i] = f"EEPROM_PATH {_LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}\n"
+                eeprom_replaced = True
+                break
+
+        if not eeprom_replaced:
+            modified_lines.append(f"EEPROM_PATH {_LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}\n")
+
+        ## Controllers
         input_type = 1 # SDL controls only
 
         # Handle gun games by name until they're tagged accordingly
