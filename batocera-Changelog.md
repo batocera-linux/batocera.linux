@@ -24,6 +24,7 @@
 - Jazz2 to 3.1.0
 - GroovyMAME to 0.272
 - Gzdoom to g4.14.0
+- Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.272
 - Libretro-Play! to Jan 12 2025 build
 - Ruffle to Nightly-2024-12-28
