@@ -2,7 +2,7 @@ diff --git a/drivers/hid/usbhid/hid-quirks.c b/drivers/hid/usbhid/hid-quirks.c
 index 5dcdfdc..57bc073 100644
 --- a/drivers/hid/usbhid/hid-quirks.c
 +++ b/drivers/hid/usbhid/hid-quirks.c
-@@ -155,6 +155,56 @@ static const struct hid_blacklist {
+@@ -155,6 +155,59 @@ static const struct hid_blacklist {
  	{ USB_VENDOR_ID_DRACAL_RAPHNET, USB_DEVICE_ID_RAPHNET_4NES4SNES, HID_QUIRK_MULTI_INPUT },
  	{ USB_VENDOR_ID_INNOMEDIA, USB_DEVICE_ID_INNEX_GENESIS_ATARI, HID_QUIRK_MULTI_INPUT },
  
@@ -55,6 +55,9 @@ index 5dcdfdc..57bc073 100644
 +
 +// MICREAL USB Controller
 +        { 0x0314,0x0324,0x040 },
++
++// Shanwan Twin USB Joystick (new revision)
++    { 0x2563,0x0555,0x111 },
 +
  	{ 0, 0 }
  };
