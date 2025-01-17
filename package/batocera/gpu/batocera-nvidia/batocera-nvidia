@@ -40,11 +40,11 @@ if [ "${MODE}" = "auto" ]; then
             else
                 if [ "$LEGACYDRIVER" != "null" ]; then
                     if [[ "$LEGACYDRIVER" == 340.* ]]; then
-                        MODE="340"
+                        MODE="legacy340"
                     elif [[ "$LEGACYDRIVER" == 390.* ]]; then
-                        MODE="390"
+                        MODE="legacy390"
                     elif [[ "$LEGACYDRIVER" == 470.* ]]; then
-                        MODE="470"
+                        MODE="legacy470"
                     else
                         MODE="nouveau"
                     fi
@@ -393,7 +393,7 @@ elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
     ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
     ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1.0 /usr/lib/vdpau/libvdpau_nvidia.so.1.0
 
-    if [ "$MODE" = "legacy" ]; then
+    if [ "$MODE" = "legacy470" ]; then
         # libnvidia-glvkspirv.so
         ln -sf /usr/lib/libnvidia-glvkspirv.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
         ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
@@ -487,7 +487,7 @@ elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
     ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
     ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0 /lib32/vdpau/libvdpau_nvidia.so.1.0
     
-    if [ "$MODE" = "legacy" ]; then
+    if [ "$MODE" = "legacy470" ]; then
         # libnvidia-glvkspirv.so
         ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
         ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
@@ -576,13 +576,13 @@ elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
         
         # finally link the kernel modules & run them
         mkdir -p /var/run/nvidia/modules
-        ln -sf /usr/share/nvidia/modules/nvidia-legacy.ko /var/run/nvidia/modules/nvidia.ko
+        ln -sf /usr/share/nvidia/modules/nvidia470-legacy.ko /var/run/nvidia/modules/nvidia.ko
         ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
+        ln -sf /usr/share/nvidia/modules/nvidia470-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
         ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
+        ln -sf /usr/share/nvidia/modules/nvidia470-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
         ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+        ln -sf /usr/share/nvidia/modules/nvidia470-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
         ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
         for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
     
