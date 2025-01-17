@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_KRONOS_VERSION = 2.6.1_official_release
+LIBRETRO_KRONOS_VERSION = 2.7.0_official_release
 LIBRETRO_KRONOS_SITE = $(call github,FCare,kronos,$(LIBRETRO_KRONOS_VERSION))
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
 
