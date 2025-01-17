@@ -1,8 +1,8 @@
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index 1d1949d..22db8cc 100644
+index e0bbf0c634..b44700b7a1 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
-@@ -25,6 +25,57 @@
+@@ -25,6 +25,60 @@
   */
  
  static const struct hid_device_id hid_quirks[] = {
@@ -56,6 +56,9 @@ index 1d1949d..22db8cc 100644
 +
 +// MICREAL USB Controller
 +	{ HID_USB_DEVICE(0x0314,0x0324),0x040 },
++
++// Shanwan Twin USB Joystick (new revision)
++    { HID_USB_DEVICE(0x2563,0x0555),0x111 }
 +
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AASHIMA, USB_DEVICE_ID_AASHIMA_GAMEPAD), HID_QUIRK_BADPAD },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AASHIMA, USB_DEVICE_ID_AASHIMA_PREDATOR), HID_QUIRK_BADPAD },
