@@ -27,13 +27,14 @@ diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWi
 index 06a98b1..7339f9c 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
-@@ -1452,6 +1452,9 @@ void MainWindow::StateLoadSlot()
+@@ -1449,6 +1449,10 @@ void MainWindow::StateLoadSlot()
  
  void MainWindow::StateSaveSlot()
  {
-+  if (Config::Get(Config::MAIN_AUTO_INCREMENT_SLOT_COUNT)) {
++  if (Config::Get(Config::MAIN_AUTO_INCREMENT_SLOT_COUNT))
++  {
 +    m_state_slot++;
 +  }
-   State::Save(Core::System::GetInstance(), m_state_slot);
+   State::Save(m_system, m_state_slot);
  }
  
