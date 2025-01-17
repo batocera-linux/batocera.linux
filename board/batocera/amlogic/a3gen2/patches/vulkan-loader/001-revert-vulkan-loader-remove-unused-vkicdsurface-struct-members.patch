@@ -1,0 +1,306 @@
+--- a/loader/wsi.c
++++ b/loader/wsi.c
+@@ -549,8 +549,8 @@
+     return disp->QueuePresentKHR(queue, pPresentInfo);
+ }
+ 
+-VkResult allocate_icd_surface_struct(struct loader_instance *instance, const VkAllocationCallbacks *pAllocator,
+-                                     VkIcdSurface **out_icd_surface) {
++VkResult allocate_icd_surface_struct(struct loader_instance *instance, size_t base_size, size_t platform_size,
++                                     const VkAllocationCallbacks *pAllocator, VkIcdSurface **out_icd_surface) {
+     uint32_t next_index = 0;
+     VkIcdSurface *icd_surface = NULL;
+     VkResult res = loader_get_next_available_entry(instance, &instance->surfaces_list, &next_index, pAllocator);
+@@ -566,6 +566,10 @@
+     }
+     // Setup the new sizes and offsets so we can grow the structures in the
+     // future without having problems
++    icd_surface->base_size = (uint32_t)base_size;
++    icd_surface->platform_size = (uint32_t)platform_size;
++    icd_surface->non_platform_offset = (uint32_t)((uint8_t *)(&icd_surface->base_size) - (uint8_t *)icd_surface);
++    icd_surface->entire_size = sizeof(VkIcdSurface);
+     icd_surface->surface_index = next_index;
+ 
+     for (struct loader_icd_term *icd_term = instance->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+@@ -653,11 +657,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->win_surf.base), sizeof(icd_surface->win_surf), pAllocator,
++                                         &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->win_surf.base.platform = VK_ICD_WSI_PLATFORM_WIN32;
++    icd_surface->win_surf.hinstance = pCreateInfo->hinstance;
++    icd_surface->win_surf.hwnd = pCreateInfo->hwnd;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -754,11 +763,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->wayland_surf.base), sizeof(icd_surface->wayland_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->wayland_surf.base.platform = VK_ICD_WSI_PLATFORM_WAYLAND;
++    icd_surface->wayland_surf.display = pCreateInfo->display;
++    icd_surface->wayland_surf.surface = pCreateInfo->surface;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -859,11 +873,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->xcb_surf.base), sizeof(icd_surface->xcb_surf), pAllocator,
++                                         &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->xcb_surf.base.platform = VK_ICD_WSI_PLATFORM_XCB;
++    icd_surface->xcb_surf.connection = pCreateInfo->connection;
++    icd_surface->xcb_surf.window = pCreateInfo->window;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -967,11 +986,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->xlib_surf.base), sizeof(icd_surface->xlib_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->xlib_surf.base.platform = VK_ICD_WSI_PLATFORM_XLIB;
++    icd_surface->xlib_surf.dpy = pCreateInfo->dpy;
++    icd_surface->xlib_surf.window = pCreateInfo->window;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1074,11 +1098,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->directfb_surf.base), sizeof(icd_surface->directfb_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->directfb_surf.base.platform = VK_ICD_WSI_PLATFORM_DIRECTFB;
++    icd_surface->directfb_surf.dfb = pCreateInfo->dfb;
++    icd_surface->directfb_surf.surface = pCreateInfo->surface;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1226,11 +1255,13 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->headless_surf.base), sizeof(icd_surface->headless_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->headless_surf.base.platform = VK_ICD_WSI_PLATFORM_HEADLESS;
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1315,11 +1346,15 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->macos_surf.base), sizeof(icd_surface->macos_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->macos_surf.base.platform = VK_ICD_WSI_PLATFORM_MACOS;
++    icd_surface->macos_surf.pView = pCreateInfo->pView;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1429,11 +1464,15 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->ggp_surf.base), sizeof(icd_surface->ggp_surf), pAllocator,
++                                         &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->ggp_surf.base.platform = VK_ICD_WSI_PLATFORM_GGP;
++    icd_surface->ggp_surf.streamDescriptor = pCreateInfo->streamDescriptor;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1487,11 +1526,15 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->metal_surf.base), sizeof(icd_surface->metal_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->metal_surf.base.platform = VK_ICD_WSI_PLATFORM_METAL;
++    icd_surface->metal_surf.pLayer = pCreateInfo->pLayer;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1549,11 +1592,16 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->screen_surf.base), sizeof(icd_surface->screen_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->screen_surf.base.platform = VK_ICD_WSI_PLATFORM_SCREEN;
++    icd_surface->screen_surf.context = pCreateInfo->context;
++    icd_surface->screen_surf.window = pCreateInfo->window;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1652,11 +1700,15 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->vi_surf.base), sizeof(icd_surface->vi_surf), pAllocator,
++                                         &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->vi_surf.base.platform = VK_ICD_WSI_PLATFORM_VI;
++    icd_surface->vi_surf.window = pCreateInfo->window;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -1962,11 +2014,21 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->display_surf.base), sizeof(icd_surface->display_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->display_surf.base.platform = VK_ICD_WSI_PLATFORM_DISPLAY;
++    icd_surface->display_surf.displayMode = pCreateInfo->displayMode;
++    icd_surface->display_surf.planeIndex = pCreateInfo->planeIndex;
++    icd_surface->display_surf.planeStackIndex = pCreateInfo->planeStackIndex;
++    icd_surface->display_surf.transform = pCreateInfo->transform;
++    icd_surface->display_surf.globalAlpha = pCreateInfo->globalAlpha;
++    icd_surface->display_surf.alphaMode = pCreateInfo->alphaMode;
++    icd_surface->display_surf.imageExtent = pCreateInfo->imageExtent;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+@@ -2398,11 +2460,14 @@
+     }
+ 
+     // Next, if so, proceed with the implementation of this function:
+-    result = allocate_icd_surface_struct(loader_inst, pAllocator, &icd_surface);
++    result = allocate_icd_surface_struct(loader_inst, sizeof(icd_surface->imagepipe_surf.base), sizeof(icd_surface->imagepipe_surf),
++                                         pAllocator, &icd_surface);
+     if (VK_SUCCESS != result) {
+         goto out;
+     }
+ 
++    icd_surface->imagepipe_surf.base.platform = VK_ICD_WSI_PLATFORM_FUCHSIA;
++
+     // Loop through each ICD and determine if they need to create a surface
+     for (struct loader_icd_term *icd_term = loader_inst->icd_terms; icd_term != NULL; icd_term = icd_term->next) {
+         if (icd_term->scanned_icd->interface_version >= ICD_VER_SUPPORTS_ICD_SURFACE_KHR) {
+--- a/loader/wsi.h
++++ b/loader/wsi.h
+@@ -25,7 +25,48 @@
+ #include "loader_common.h"
+ 
+ typedef struct {
+-    uint32_t surface_index;  // This surface's index into each drivers list of created surfaces
++    union {
++#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
++        VkIcdSurfaceWayland wayland_surf;
++#endif  // VK_USE_PLATFORM_WAYLAND_KHR
++#if defined(VK_USE_PLATFORM_WIN32_KHR)
++        VkIcdSurfaceWin32 win_surf;
++#endif  // VK_USE_PLATFORM_WIN32_KHR
++#if defined(VK_USE_PLATFORM_XCB_KHR)
++        VkIcdSurfaceXcb xcb_surf;
++#endif  // VK_USE_PLATFORM_XCB_KHR
++#if defined(VK_USE_PLATFORM_XLIB_KHR)
++        VkIcdSurfaceXlib xlib_surf;
++#endif  // VK_USE_PLATFORM_XLIB_KHR
++#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
++        VkIcdSurfaceDirectFB directfb_surf;
++#endif  // VK_USE_PLATFORM_DIRECTFB_EXT
++#if defined(VK_USE_PLATFORM_MACOS_MVK)
++        VkIcdSurfaceMacOS macos_surf;
++#endif  // VK_USE_PLATFORM_MACOS_MVK
++#if defined(VK_USE_PLATFORM_GGP)
++        VkIcdSurfaceGgp ggp_surf;
++#endif  // VK_USE_PLATFORM_GGP
++#if defined(VK_USE_PLATFORM_FUCHSIA)
++        VkIcdSurfaceImagePipe imagepipe_surf;
++#endif  // VK_USE_PLATFORM_FUCHSIA
++#if defined(VK_USE_PLATFORM_METAL_EXT)
++        VkIcdSurfaceMetal metal_surf;
++#endif  // VK_USE_PLATFORM_METAL_EXT
++#if defined(VK_USE_PLATFORM_SCREEN_QNX)
++        VkIcdSurfaceScreen screen_surf;
++#endif  // VK_USE_PLATFORM_SCREEN_QNX
++#if defined(VK_USE_PLATFORM_VI_NN)
++        VkIcdSurfaceVi vi_surf;
++#endif  // VK_USE_PLATFORM_VI_NN
++        VkIcdSurfaceDisplay display_surf;
++        VkIcdSurfaceHeadless headless_surf;
++    };
++    uint32_t base_size;            // Size of VkIcdSurfaceBase
++    uint32_t platform_size;        // Size of corresponding VkIcdSurfaceXXX
++    uint32_t non_platform_offset;  // Start offset to base_size
++    uint32_t entire_size;          // Size of entire VkIcdSurface
++    uint32_t surface_index;        // This surface's index into each drivers list of created surfaces
+ } VkIcdSurface;
+ 
+ bool wsi_swapchain_instance_gpa(struct loader_instance *ptr_instance, const char *name, void **addr);
