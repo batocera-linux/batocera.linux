@@ -2,23 +2,27 @@ diff --git a/Sources/Jazz2/ContentResolver.cpp b/Sources/Jazz2/ContentResolver.c
 index 1b3fa52ce9..7d79a9505f 100644
 --- a/Sources/Jazz2/ContentResolver.cpp
 +++ b/Sources/Jazz2/ContentResolver.cpp
-@@ -226,9 +226,13 @@ namespace Jazz2
+@@ -227,17 +227,16 @@ namespace Jazz2
  			auto localStorage = fs::GetLocalStorage();
  			if (!localStorage.empty()) {
  				// Use "$XDG_DATA_HOME/Jazz² Resurrection/" if exists (for backward compatibility), otherwise "$XDG_DATA_HOME/{NCINE_LINUX_PACKAGE}/"
--				_sourcePath = fs::CombinePath(localStorage, "Jazz² Resurrection/Source/"_s);
-+				_sourcePath = "/userdata/roms/jazz2/";
- 				if (fs::DirectoryExists(_sourcePath)) {
--					_cachePath = fs::CombinePath(localStorage, "Jazz² Resurrection/Cache/"_s);
-+					_cachePath = "/userdata/system/cache/jazz2/";
-+                    // Create the directory if it doesn't exist
-+                    if (!fs::DirectoryExists(_cachePath)) {
-+                        fs::CreateDirectories(_cachePath);
-+                    }
- 				} else {
- 					auto appData = fs::CombinePath(localStorage, NCINE_LINUX_PACKAGE);
- 					_sourcePath = fs::CombinePath(appData, "Source/"_s);
-diff --git a/Sources/Shared/IO/FileSystem.cpp b/Sources/Shared/IO/FileSystem.cpp.new
+-				_cachePath = fs::CombinePath(localStorage, "Jazz² Resurrection/Cache/"_s);
++				_cachePath = "/userdata/system/cache/jazz2/";
+ 				if (!fs::DirectoryExists(_cachePath)) {
+-					auto appData = fs::CombinePath(localStorage, NCINE_LINUX_PACKAGE);
+-					_cachePath = fs::CombinePath(appData, "Cache/"_s);
++					fs::CreateDirectories(_cachePath);
+ 				}
+ 			} else {
+ 				_cachePath = "Cache/"_s;
+ 			}
+ 
+ 			// Prefer system-wide Source only if it exists and the local one doesn't exist
+-			_sourcePath = fs::CombinePath(fs::GetDirectoryName(_cachePath), "Source/"_s);
++			_sourcePath = "/userdata/roms/jazz2/";
+ 			if (!fs::FindPathCaseInsensitive(fs::CombinePath(_sourcePath, "Anims.j2a"_s)) &&
+ 				!fs::FindPathCaseInsensitive(fs::CombinePath(_sourcePath, "AnimsSw.j2a"_s))) {
+ 				auto systemWideSource = NCINE_INSTALL_PREFIX "/share/" NCINE_LINUX_PACKAGE "/Source/";
 index 5b5199b0b6..14a1be044a 100644
 --- a/Sources/Shared/IO/FileSystem.cpp
 +++ b/Sources/Shared/IO/FileSystem.cpp.new
