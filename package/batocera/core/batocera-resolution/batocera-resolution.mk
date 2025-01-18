@@ -1,10 +1,10 @@
 ################################################################################
 #
-# batocera resolution
+# batocera-resolution
 #
 ################################################################################
 
-BATOCERA_RESOLUTION_VERSION = 1.3
+BATOCERA_RESOLUTION_VERSION = 1.4
 BATOCERA_RESOLUTION_LICENSE = GPL
 BATOCERA_RESOLUTION_DEPENDENCIES = pciutils
 BATOCERA_RESOLUTION_SOURCE=

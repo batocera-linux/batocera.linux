@@ -43,6 +43,39 @@ f_minTomaxResolution() {
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+
+    ## Find the best resolution
+    # Get the sorted list of modes, excluding interlaced ones
+    echo "Get ideal resolution from this sorted list..." >> "$log"
+    MODES=$(xrandr --listModes "${PSCREEN}" | grep -v 'i' | sort -t'x' -k1,1nr -k2,2nr -k4,4nr)
+    echo "${MODES}" >> "$log"
+    # Find the ideal mode
+    IDEAL_MODE_FILE=$(mktemp)
+    IDEAL_MODE=""
+    echo "$MODES" | while read -r mode; do
+        MODE_RESOLUTION=$(echo "$mode" | awk '{print $1}')
+        echo "Trying with resolution: $MODE_RESOLUTION" >> "$log"
+        MODE_RATE=$(echo "$MODE_RESOLUTION" | sed 's/^[^0-9]*\([0-9]*x[0-9]*\)\.\([0-9]*\.[0-9]*\)$/\2/')
+        
+        is_valid_rate=$(printf "%.2f\n" "$MODE_RATE" | awk '{if ($1 >= 50.00) print 1; else print 0}')
+        if [ "$is_valid_rate" = "1" ]; then
+            echo "$mode" > "$IDEAL_MODE_FILE"
+            break
+        fi
+    done
+
+    if [ -s "$IDEAL_MODE_FILE" ]; then
+        IDEAL_MODE=$(cat "$IDEAL_MODE_FILE")
+        rm "$IDEAL_MODE_FILE"
+        IDEAL_RESOLUTION=$(echo "$IDEAL_MODE" | awk '{print $1}')
+        IDEAL_WIDTH=$(echo "$IDEAL_RESOLUTION" | awk -F'x' '{print $1}')
+        IDEAL_HEIGHT=$(echo "$IDEAL_RESOLUTION" | awk -F'x' '{print $2}' | cut -d'.' -f1)
+        IDEAL_RATE=$(echo "$IDEAL_RESOLUTION" | sed 's/^[^0-9]*\([0-9]*x[0-9]*\)\.\([0-9]*\.[0-9]*\)$/\2/')
+        echo "Ideal resolution: ${IDEAL_WIDTH} x ${IDEAL_HEIGHT} @ ${IDEAL_RATE} Hz" >> "$log"
+    else
+        echo "No suitable resolution found with rate >= 50.00 Hz." >> "$log"
+    fi
+    
     if [ -n "$MWIDTH" ] && [ -n "$MHEIGHT" ] && [ "$MWIDTH" -ne 0 ] && [ "$MHEIGHT" -ne 0 ]; then
         echo "Requested $MWIDTH x $MHEIGHT" >> "$log"
         MAXWIDTH="$MWIDTH"
@@ -59,7 +92,12 @@ f_minTomaxResolution() {
         else
             echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
-    # otherwise grab the value from the mpv.log if it exists
+    elif [ -n "$IDEAL_MODE" ]; then
+        echo "Using ideal resolution: $IDEAL_WIDTH x $IDEAL_HEIGHT @ $IDEAL_RATE Hz" >> "$log"
+        MAXWIDTH=$IDEAL_WIDTH
+        MAXHEIGHT=$IDEAL_HEIGHT
+        MAXRATE=$IDEAL_RATE
+    # otherwise grab the value from the mpv.log if it exists (last resort)
     else
         if [ -f "$mpvlog" ]; then
             selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
@@ -85,14 +123,14 @@ f_minTomaxResolution() {
             echo "Resolution to use: $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
     else
-        echo "No resolution set, nothing to do..." >> $log
+        echo "No resolution set, nothing to do..." >> "$log"
         exit 0
     fi
 
     # check if there is any change required
     if [ "$CURRENTWIDTH" -eq "$MAXWIDTH" ] && [ "$CURRENTHEIGHT" -eq "$MAXHEIGHT" ]; then
         if [ -z "$MAXRATE" ] || [ "$CURRENTRATE" = "$MAXRATE" ]; then
-            echo "We have a match, nothing to do..." >> $log
+            echo "We have a match, nothing to do..." >> "$log"
             if [ "${CURRENT_ROTATION}" != "0" ]; then
                 batocera-resolution --screen "${PSCREEN}" setRotation "${CURRENT_ROTATION}"
             fi
