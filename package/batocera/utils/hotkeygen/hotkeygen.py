@@ -171,7 +171,10 @@ def get_mapping_full_path(device: evdev.InputDevice) -> Path | None:
     return fullpath
 
 def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
-    fullpath = get_mapping_full_path(device)
+    if device is None:
+        fullpath = None
+    else:
+        fullpath = get_mapping_full_path(device)
 
     if fullpath is not None:
         if gdebug:
@@ -183,9 +186,13 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
         data = {}
         userdata = {}
         if GDEFAULTMAPPING_FILE.exists():
+            if gdebug:
+                print(f"use default mapping file {GDEFAULTMAPPING_FILE}")
             with GDEFAULTMAPPING_FILE.open() as fd:
                 data = json.load(fd)
         if GUSERDEFAULTMAPPING_FILE.exists():
+            if debug:
+                print(f"use user mapping file {GUSERDEFAULTMAPPING_FILE}")
             with GUSERDEFAULTMAPPING_FILE.open() as fd:
                 userdata = json.load(fd)
 
@@ -234,39 +241,42 @@ def print_mapping(
 def send_keys(target: evdev.UInput, keys: int | list[int] | str) -> None:
     if isinstance(keys, list):
         for x in keys:
+            if gdebug:
+               print(f"sending EV_KEY {x} 1")
             target.write(ecodes.EV_KEY, x, 1)
             target.syn()
         # time required for emulators (like mame) based on states and not on events
         # (if you go too fast, the event is not seen)
         time.sleep(0.1)
         for x in keys:
+            if gdebug:
+                print(f"sending EV_KEY {x} 0")
             target.write(ecodes.EV_KEY, x, 0)
             target.syn()
     else:
         target.write(ecodes.EV_KEY, keys, 1)
+        if gdebug:
+            print(f"sending EV_KEY {keys} 1")
         target.syn()
         # time required for emulators (like mame) based on states and not on events
         # (if you go too fast, the event is not seen)
         time.sleep(0.1)
+        if gdebug:
+            print(f"sending EV_KEY {keys} 0")
         target.write(ecodes.EV_KEY, keys, 0)
         target.syn()
 
 def do_send(key: str) -> None:
-    context = get_context()
-    sender_keys: list[int] = []
-    if context is not None and key in context["keys"]:
-        keys = context["keys"][key]
-        if isinstance(keys, str):
-            os.system(keys)
-        else:
-            if isinstance(keys, list):
-                sender_keys.extend(keys)
-            else:
-                sender_keys.append(keys)
-            sender = evdev.UInput(name="virtual keyboard", events={ ecodes.EV_KEY: sender_keys })
-            send_keys(sender, sender_keys)
-    else:
-        print(f"unknown action {key}")
+    if gdebug:
+        print(f"Sending {key}")
+
+    mapping = get_mapping(None)
+    for code in mapping:
+        if mapping[code] == key:
+            if gdebug:
+                print(f"sending {key}")
+            sender = evdev.UInput(name="virtual keyboard", events={ ecodes.EV_KEY: [code] })
+            send_keys(sender, code)
 
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
@@ -429,18 +439,22 @@ class Daemon:
                             event.code in self.mappings_by_fd[fd]
                         ):
                             self.__handle_event(event, self.mappings_by_fd[fd][event.code])
-                except (OSError):
+                except (OSError, KeyError):
                     if fd == self.monitor.fileno():
                         raise
                     else:
                         # error on a single device
-                        input_device = self.input_devices_by_fd[fd]
-                        print(f"error on device {input_device.name} ({input_device.path}), closing.")
-                        self.poll.unregister(input_device)
-                        del self.mappings_by_fd[fd]
-                        del self.input_devices_by_fd[fd]
-                        del self.input_devices[input_device.path]
-                        input_device.close()
+                        if fd in self.input_devices_by_fd:
+                            input_device = self.input_devices_by_fd[fd]
+                            print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                            del self.mappings_by_fd[fd]
+                            del self.input_devices_by_fd[fd]
+                            del self.input_devices[input_device.path]
+                            try:
+                                self.poll.unregister(input_device)
+                                input_device.close()
+                            except:
+                                pass
                 except:
                     self.target.close()
                     raise
