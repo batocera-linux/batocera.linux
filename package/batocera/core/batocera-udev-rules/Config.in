@@ -1,5 +1,5 @@
 config BR2_PACKAGE_BATOCERA_UDEV_RULES
 	bool "batocera-udev-rules"
 
-	select BR2_PACKAGE_USB_MODESWITCH
+	select BR2_PACKAGE_USB_MODESWITCH_DATA
 
