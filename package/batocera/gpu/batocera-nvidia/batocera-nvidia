@@ -39,15 +39,12 @@ if [ "${MODE}" = "auto" ]; then
                 MODE="open"
             else
                 if [ "$LEGACYDRIVER" != "null" ]; then
-                    if [[ "$LEGACYDRIVER" == 340.* ]]; then
-                        MODE="legacy340"
-                    elif [[ "$LEGACYDRIVER" == 390.* ]]; then
-                        MODE="legacy390"
-                    elif [[ "$LEGACYDRIVER" == 470.* ]]; then
-                        MODE="legacy470"
-                    else
-                        MODE="nouveau"
-                    fi
+                    case $LEGACYDRIVER in
+                        340.*) MODE="legacy340" ;;
+                        390.*) MODE="legacy390" ;;
+                        470.*) MODE="legacy470" ;;
+                        *) MODE="nouveau" ;;
+                    esac
                 elif [ "$KERNELOPEN" = "true" ]; then
                     MODE="open"
                 else
