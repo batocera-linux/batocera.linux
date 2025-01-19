@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v42b(2025/01/12)\n"
+"Project-Id-Version: batocera-es v42b(2025/01/17)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-01-12 08:54+0900\n"
+"PO-Revision-Date: 2025-01-17 16:15+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -279,6 +279,8 @@ msgid "10 seconds"
 msgstr "10 秒"
 
 #. TRANSLATION: lindbergh-loader
+#| msgctxt "game_options"
+#| msgid "120 fps"
 msgctxt "game_options"
 msgid "100 fps"
 msgstr "100 fps"
@@ -1296,7 +1298,7 @@ msgstr "32MB"
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "32k RAM expansion card installed"
-msgstr "32k 拡張 RAMカードを使用する"
+msgstr "32k 拡張 RAMカードを使用"
 
 #. TRANSLATION: duckstation, libretro/duckstation, libretro/swanstation
 msgctxt "game_options"
@@ -2121,7 +2123,7 @@ msgstr "960p"
 #. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2, xenia, xenia-canary
 msgctxt "game_options"
 msgid "96MB"
-msgstr "96 MB"
+msgstr "96MB"
 
 #. TRANSLATION: libretro/px68k
 msgctxt "game_options"
@@ -5170,7 +5172,7 @@ msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Moonlightの終了は、リモートホストのアプリを閉じます"
 
-#. TRANSLATION: fpinball.keys
+#. TRANSLATION: fpinball.keys, lindbergh.keys
 msgctxt "keys_files"
 msgid "Coin"
 msgstr "コイン"
@@ -5633,7 +5635,7 @@ msgstr "DOLBY PRO LOGIC II(サラウンド)"
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "DOOM"
-msgstr ""
+msgstr "DOOM"
 
 #. TRANSLATION: libretro/virtualjaguar
 msgctxt "game_options"
@@ -6111,8 +6113,8 @@ msgid ""
 "During gameplay, press Hotkey + R1 to translate on-screen text. Only on "
 "libretro cores."
 msgstr ""
-"ゲームプレイ中に、ホットキー+R1で、画面上のテキストを翻訳します(libretroコア"
-"のみ) "
+"ゲームプレイ中に、ホットキー+R1で、画面上のテキストを翻訳します\n"
+"(libretroコアのみ) "
 
 #. TRANSLATION: cemu, dolphin, etlegacy, libretro/dolphin, play, ...
 msgctxt "game_options"
@@ -7980,11 +7982,6 @@ msgctxt "game_options"
 msgid "GAME DIFFICULTY"
 msgstr "ゲーム難易度"
 
-#. TRANSLATION: lindbergh-loader, lindbergh-loader
-msgctxt "game_options"
-msgid "GAME OPTIONS"
-msgstr ""
-
 #. TRANSLATION: xenia-canary
 msgctxt "game_options"
 msgid "GAME PATCHES"
@@ -8626,11 +8623,6 @@ msgstr "HQ モード"
 msgctxt "game_options"
 msgid "HST"
 msgstr "HST"
-
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
-msgid "HUMMER FLICKER FIX"
-msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -11143,11 +11135,6 @@ msgstr "出力リサンプリング"
 msgctxt "game_options"
 msgid "OUTPUT SCALING"
 msgstr "出力スケーリング"
-
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
-msgid "OUTRUN LENS GLARE"
-msgstr ""
 
 #. TRANSLATION: libretro/fceumm, libretro/mame, libretro/mamevirtual, libretro/mednafen_psx, libretro/mesen, ...
 msgctxt "game_options"
@@ -13746,22 +13733,12 @@ msgstr "目標 FPS を設定します (FPS 制限 が有効な場合にのみ機
 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
-msgid "Set to enable lens glare in Outrun 2."
-msgstr ""
-
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
 msgid ""
 "Set to keep the aspect ratio (4:3) in games like Sega Race TV and Primeval "
 "Hunt."
 msgstr ""
 "Sega Race TV や Primeval Hunt などのゲームでアスペクト比 (4:3) を維持する設定"
 "にします"
-
-#. TRANSLATION: lindbergh-loader
-msgctxt "game_options"
-msgid "Set to on if you experience flickering in Hummer."
-msgstr ""
 
 #. TRANSLATION: dolphin, dolphin, dolphin, dolphin
 msgctxt "game_options"
@@ -17041,187 +17018,12 @@ msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "黄/青"
 
-#~ msgctxt "game_options"
-#~ msgid "1.5x 720p (960x792)"
-#~ msgstr "1.5x 720p (960x792)"
+#.
+msgctxt "game_options"
+msgid "HUMMER FLICKER FIX"
+msgstr "HUMMER FLICKER 修正"
 
-#~ msgctxt "game_options"
-#~ msgid "16x (CSAA)"
-#~ msgstr "16x (CSAA)"
-
-#~ msgctxt "game_options"
-#~ msgid "16xQ (CSAA)"
-#~ msgstr "16xQ (CSAA)"
-
-#~ msgctxt "game_options"
-#~ msgid "2.5x 1080p (1600x1320)"
-#~ msgstr "2.5x 1080p (1600x1320)"
-
-#~ msgctxt "game_options"
-#~ msgid "256 KB"
-#~ msgstr "256 KB"
-
-#~ msgctxt "game_options"
-#~ msgid "4x (SSAA)"
-#~ msgstr "4x (SSAA)"
-
-#~ msgctxt "game_options"
-#~ msgid "512 KB"
-#~ msgstr "512 KB"
-
-#~ msgctxt "game_options"
-#~ msgid "8x (CSAA)"
-#~ msgstr "8x (CSAA)"
-
-#~ msgctxt "game_options"
-#~ msgid "8xQ (CSAA)"
-#~ msgstr "8xQ (CSAA)"
-
-#~ msgctxt "game_options"
-#~ msgid "ASCI"
-#~ msgstr "ASCI"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 1 Down"
-#~ msgstr "アナログ１ 下"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 1 Left"
-#~ msgstr "アナログ１ 左"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 1 Right"
-#~ msgstr "アナログ１ 右"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 1 Up"
-#~ msgstr "アナログ１ 上"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 2 Down"
-#~ msgstr "アナログ 2 下"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 2 Left"
-#~ msgstr "アナログ 2 左"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 2 Right"
-#~ msgstr "アナログ 2 右"
-
-#~ msgctxt "keys_files"
-#~ msgid "Analog 2 Up"
-#~ msgstr "アナログ 2 上"
-
-#~ msgctxt "keys_files"
-#~ msgid "Digital Down"
-#~ msgstr "デジタル 下"
-
-#~ msgctxt "keys_files"
-#~ msgid "Digital Left"
-#~ msgstr "デジタル　左"
-
-#~ msgctxt "keys_files"
-#~ msgid "Digital Right"
-#~ msgstr "デジタル　右"
-
-#~ msgctxt "keys_files"
-#~ msgid "Digital Up"
-#~ msgstr "デジタル　上"
-
-#~ msgctxt "game_options"
-#~ msgid "Disable UI prompts"
-#~ msgstr "UI プロンプト 無効"
-
-#~ msgctxt "game_options"
-#~ msgid "Disbaled (Default)"
-#~ msgstr "無効（標準）"
-
-#~ msgctxt "game_options"
-#~ msgid "Enabled UI prompts (Default)"
-#~ msgstr "UI プロンプト 使用 (標準)"
-
-#~ msgctxt "game_options"
-#~ msgid "Enabled or disbale the mouse cursor. Useful for CG's menus."
-#~ msgstr "マウス カーソルを有効/無効にします。 CG のメニューに便利です"
-
-#~ msgctxt "keys_files"
-#~ msgid "Exit Emulator"
-#~ msgstr "エミュレータを終了"
-
-#~ msgid "FORGET A BLUETOOTH DEVICE"
-#~ msgstr "BLUETOOTH デバイスの削除"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 1"
-#~ msgstr "PS3 コントローラ 1"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 2"
-#~ msgstr "PS3 コントローラ 2"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 3"
-#~ msgstr "PS3 コントローラ 3"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 4"
-#~ msgstr "PS3 コントローラ 4"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 5"
-#~ msgstr "PS3 コントローラ 5"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 6"
-#~ msgstr "PS3 コントローラ 6"
-
-#~ msgctxt "game_options"
-#~ msgid "PS3 CONTROLLER 7"
-#~ msgstr "PS3 コントローラ 7"
-
-#~ msgctxt "keys_files"
-#~ msgid "Press N for Novice"
-#~ msgstr "初心者は N を押す"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 1"
-#~ msgstr "１押す"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 2"
-#~ msgstr "２"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 3"
-#~ msgstr "３"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 4"
-#~ msgstr "４"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 5"
-#~ msgstr "５"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 6"
-#~ msgstr "６"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 7"
-#~ msgstr "７"
-
-#~ msgctxt "keys_files"
-#~ msgid "Push 8"
-#~ msgstr "８押す"
-
-#~ msgctxt "keys_files"
-#~ msgid "Set to full screen"
-#~ msgstr "フルスクリーンに設定"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "アクセル/ブレーキはL2/R2、シフトはL1/R1又はRスティック上/下を使用します"
+#.
+msgctxt "game_options"
+msgid "Set to on if you experience flickering in hummer."
+msgstr "HUMMER がちらつく場合はオンにしてください"
