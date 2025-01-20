@@ -1956,7 +1956,7 @@ jaguar:
   theme: atarijaguar
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [zip, 7z] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], incompatible_extensions: [7z] }
     bigpemu:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
