@@ -1,13 +1,15 @@
-From 358d60900e2cae0975d0cbc3bed60c86772694ab Mon Sep 17 00:00:00 2001
+From 4f09bcb4dc66a477cd50e768bcfbbf88ac3cbc26 Mon Sep 17 00:00:00 2001
 From: Teguh Sobirin <teguh@sobir.in>
-Date: Sun, 8 Sep 2024 06:19:59 +0800
+Date: Wed, 20 Nov 2024 23:13:18 +0700
 Subject: [PATCH] Input: driver for AYN Odin2 Gamepad
 
+There have been improvements from the original Odin 2 Gamepad driver
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
  drivers/input/joystick/Kconfig  |   4 +
  drivers/input/joystick/Makefile |   1 +
- drivers/input/joystick/odin2.c  | 259 ++++++++++++++++++++++++++++++++
- 3 files changed, 264 insertions(+)
+ drivers/input/joystick/odin2.c  | 313 ++++++++++++++++++++++++++++++++
+ 3 files changed, 318 insertions(+)
  create mode 100644 drivers/input/joystick/odin2.c
 
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
@@ -39,16 +41,17 @@ index 9976f596a920..ba7d72514c8b 100644
  obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
 diff --git a/drivers/input/joystick/odin2.c b/drivers/input/joystick/odin2.c
 new file mode 100644
-index 000000000000..1350fc1a291b
+index 000000000000..63a32175b441
 --- /dev/null
 +++ b/drivers/input/joystick/odin2.c
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,313 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Driver for Ayn Odin 2 Gamepad
 + *
 + * Copyright (C) 2024 Molly Sophia <mollysophia379@gmail.com>
 + * Copyright (C) 2024 BigfootACA <bigfoot@classfun.cn>
++ * Copyright (C) 2024 Teguh Sobirin <teguh@sobir.in>
 + *
 + */
 +
@@ -64,18 +67,19 @@ index 000000000000..1350fc1a291b
 +#include <linux/slab.h>
 +#include <uapi/linux/sched/types.h>
 +
++#define DRIVER_NAME "odin2-gamepad"
 +#define MAX_DATA_LEN 64
 +
-+#define gamepad_serdev_write_seq(serdev, seq...)                              \
-+	do {                                                                  \
++#define gamepad_serdev_write_seq(serdev, seq...)                      \
++	do {                                                              \
 +		static const u8 d[] = { seq };                                \
 +		struct device *dev = &serdev->dev;                            \
 +		int ret;                                                      \
 +		ret = serdev_device_write_buf(serdev, d, ARRAY_SIZE(d));      \
 +		if (ret < 0 || ret < ARRAY_SIZE(d)) {                         \
-+			dev_warn_ratelimited(dev, "Unable to write data: %d", \
-+					     ret);                            \
-+			return;                                               \
++			dev_warn_ratelimited(dev, "Unable to write data: %d",     \
++					     ret);                                        \
++			return;                                                   \
 +		}                                                             \
 +	} while (0)
 +
@@ -96,7 +100,9 @@ index 000000000000..1350fc1a291b
 +
 +struct gamepad_device {
 +	struct device *dev;
-+	struct gpio_desc *en_gpio;
++	struct gpio_desc *boot_gpio;
++	struct gpio_desc *enable_gpio;
++	struct gpio_desc *reset_gpio;
 +	struct input_dev *dev_input;
 +};
 +
@@ -152,10 +158,10 @@ index 000000000000..1350fc1a291b
 +		input_report_key(indev, keymap[i], (current_states & BIT(i)));
 +	}
 +
-+	input_report_abs(indev, ABS_Z, (int16_t)(2 *
-+			 (0x3AA - (int16_t)(data->data[2] | (data->data[3] << 8)))));
-+	input_report_abs(indev, ABS_RZ, (int16_t)(2 *
-+			 (0x3AA - (int16_t)(data->data[4] | (data->data[5] << 8)))));
++	input_report_abs(indev, ABS_Z,
++			 0x755 - (data->data[2] | (data->data[3] << 8)));
++	input_report_abs(indev, ABS_RZ,
++			 0x755 - (data->data[4] | (data->data[5] << 8)));
 +	input_report_abs(indev, ABS_X,
 +			 -(int16_t)(data->data[6] | (data->data[7] << 8)));
 +	input_report_abs(indev, ABS_Y,
@@ -214,6 +220,7 @@ index 000000000000..1350fc1a291b
 +	}
 +
 +	gamepad_data_handler(serdev, &recv_data_buffer);
++
 +	return count;
 +}
 +
@@ -225,18 +232,52 @@ index 000000000000..1350fc1a291b
 +{
 +	struct device *dev = &serdev->dev;
 +	struct gamepad_device *gamepad_dev;
++	u32 gamepad_bus = 0;
++	u32 gamepad_vid = 0;
++	u32 gamepad_pid = 0;
++	u32 gamepad_rev = 0;
 +	int ret;
 +
 +	gamepad_dev = devm_kzalloc(dev, sizeof(*gamepad_dev), GFP_KERNEL);
 +	if (!gamepad_dev)
 +		return dev_err_probe(dev, -ENOMEM, "could not allocate memory for device data\n");
 +
-+	gamepad_dev->en_gpio =
-+		devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_HIGH);
-+	if (IS_ERR(gamepad_dev->en_gpio)) {
-+		ret = PTR_ERR(gamepad_dev->en_gpio);
-+		return dev_err_probe(dev, ret, "Unable to get enable gpio\n");
++	gamepad_dev->boot_gpio =
++		devm_gpiod_get_optional(dev, "boot", GPIOD_OUT_HIGH);
++	if (IS_ERR(gamepad_dev->boot_gpio)) {
++		ret = PTR_ERR(gamepad_dev->boot_gpio);
++		dev_warn(dev, "Unable to get boot gpio: %d\n", ret);
 +	}
++
++	gamepad_dev->enable_gpio =
++		devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_HIGH);
++	if (IS_ERR(gamepad_dev->enable_gpio)) {
++		ret = PTR_ERR(gamepad_dev->enable_gpio);
++		dev_warn(dev, "Unable to get enable gpio: %d\n", ret);
++	}
++
++	gamepad_dev->reset_gpio =
++		devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(gamepad_dev->reset_gpio)) {
++		ret = PTR_ERR(gamepad_dev->reset_gpio);
++		dev_warn(dev, "Unable to get reset gpio: %d\n", ret);
++	}
++
++	if (gamepad_dev->boot_gpio)
++		gpiod_set_value_cansleep(gamepad_dev->boot_gpio, 0);
++
++	if (gamepad_dev->reset_gpio)
++		gpiod_set_value_cansleep(gamepad_dev->reset_gpio, 0);
++
++	msleep(100);
++
++	if (gamepad_dev->enable_gpio)
++		gpiod_set_value_cansleep(gamepad_dev->enable_gpio, 1);
++
++	if (gamepad_dev->reset_gpio)
++		gpiod_set_value_cansleep(gamepad_dev->reset_gpio, 1);
++
++	msleep(100);
 +
 +	ret = devm_serdev_device_open(dev, serdev);
 +	if (ret)
@@ -255,21 +296,34 @@ index 000000000000..1350fc1a291b
 +	if (!gamepad_dev->dev_input)
 +		return dev_err_probe(dev, -ENOMEM, "Not enough memory for input device\n");
 +
-+	gamepad_dev->dev_input->name = "Ayn Odin2 Gamepad";
-+	gamepad_dev->dev_input->phys = "odin2-gamepad/input0";
-+	__set_bit(EV_ABS, gamepad_dev->dev_input->evbit);
++	gamepad_dev->dev_input->phys = DRIVER_NAME"/input0";
++	
++	ret = device_property_read_string(dev, "gamepad-name", &gamepad_dev->dev_input->name);
++	if (ret) {
++		gamepad_dev->dev_input->name = "Ayn Odin2 Gamepad";
++	}
 +
++	device_property_read_u32(dev, "gamepad-bus", &gamepad_bus);
++	device_property_read_u32(dev, "gamepad-vid", &gamepad_vid);
++	device_property_read_u32(dev, "gamepad-pid", &gamepad_pid);
++	device_property_read_u32(dev, "gamepad-rev", &gamepad_rev);
++
++	gamepad_dev->dev_input->id.bustype = (u16)gamepad_bus;
++	gamepad_dev->dev_input->id.vendor  = (u16)gamepad_vid;
++	gamepad_dev->dev_input->id.product = (u16)gamepad_pid;
++	gamepad_dev->dev_input->id.version = (u16)gamepad_rev;
++
++	__set_bit(EV_KEY, gamepad_dev->dev_input->evbit);
 +	for (int i = 0; i < ARRAY_SIZE(keymap); i++)
 +		input_set_capability(gamepad_dev->dev_input, EV_KEY, keymap[i]);
 +
-+	input_set_capability(gamepad_dev->dev_input, EV_KEY, BTN_JOYSTICK);
-+
++	__set_bit(EV_ABS, gamepad_dev->dev_input->evbit);
 +	for (int i = ABS_X; i <= ABS_RZ; i++)
 +		input_set_abs_params(gamepad_dev->dev_input, i, -0x580, 0x580,
 +				     0, 0);
 +
-+	input_set_abs_params(gamepad_dev->dev_input, ABS_HAT2X, 0, 1830, 0, 30);
-+	input_set_abs_params(gamepad_dev->dev_input, ABS_HAT2Y, 0, 1830, 0, 30);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_Z, 0, 1830, 0, 30);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_RZ, 0, 1830, 0, 30);
 +
 +	ret = input_register_device(gamepad_dev->dev_input);
 +	if (ret)
@@ -290,7 +344,7 @@ index 000000000000..1350fc1a291b
 +
 +static struct serdev_device_driver gamepad_mcu_uart_driver = {
 +	.driver = {
-+		.name = "odin2-gamepad",
++		.name = DRIVER_NAME,
 +		.of_match_table = gamepad_mcu_uart_of_match,
 +	},
 +	.probe = gamepad_mcu_uart_probe,
@@ -302,6 +356,8 @@ index 000000000000..1350fc1a291b
 +MODULE_DESCRIPTION("Gamepad driver for Ayn Odin2");
 +MODULE_AUTHOR("Molly Sophia <mollysophia379@gmail.com>");
 +MODULE_AUTHOR("BigfootACA <bigfoot@classfun.cn>");
++MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
++MODULE_ALIAS("platform:" DRIVER_NAME);
 -- 
 2.34.1
 

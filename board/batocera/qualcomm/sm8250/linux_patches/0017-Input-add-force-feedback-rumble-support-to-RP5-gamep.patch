@@ -1,0 +1,131 @@
+From 4196ba293138f6705465bda3ff79e32e498ff0b7 Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Fri, 10 Jan 2025 14:20:25 +0000
+Subject: [PATCH] Input: add force feedback (rumble) support to RP5 gamepad
+ driver
+
+---
+ drivers/input/joystick/odin2.c         | 14 +++++++++++++
+ drivers/input/misc/qcom-spmi-haptics.c | 27 ++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
+
+diff --git a/drivers/input/joystick/odin2.c b/drivers/input/joystick/odin2.c
+index 63a32175b441..7fa3109ccd7b 100644
+--- a/drivers/input/joystick/odin2.c
++++ b/drivers/input/joystick/odin2.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2024 Molly Sophia <mollysophia379@gmail.com>
+  * Copyright (C) 2024 BigfootACA <bigfoot@classfun.cn>
+  * Copyright (C) 2024 Teguh Sobirin <teguh@sobir.in>
++ * Copyright (C) 2025 ROCKNIX Team <admin@rocknix.org>
+  *
+  */
+ 
+@@ -181,6 +182,14 @@ static const struct serdev_device_ops gamepad_mcu_uart_client_ops = {
+ 	.receive_buf = gamepad_mcu_uart_rx_bytes,
+ };
+ 
++extern int qcom_spmi_haptics_rumble(unsigned int strong_magnitude, unsigned int weak_magnitude);
++
++static int retroid_rumble_play(struct input_dev *dev, void *data, struct ff_effect *effect)
++{
++	return qcom_spmi_haptics_rumble(effect->u.rumble.strong_magnitude,
++					effect->u.rumble.weak_magnitude);
++}
++
+ static int gamepad_mcu_uart_probe(struct serdev_device *serdev)
+ {
+ 	struct device *dev = &serdev->dev;
+@@ -278,6 +287,10 @@ static int gamepad_mcu_uart_probe(struct serdev_device *serdev)
+ 	input_set_abs_params(gamepad_dev->dev_input, ABS_Z, 0, 1830, 0, 30);
+ 	input_set_abs_params(gamepad_dev->dev_input, ABS_RZ, 0, 1830, 0, 30);
+ 
++		/*__set_bit(EV_FF, gamepad_dev->dev_input->evbit);*/
++		input_set_capability(gamepad_dev->dev_input, EV_FF, FF_RUMBLE);
++		input_ff_create_memless(gamepad_dev->dev_input, NULL, retroid_rumble_play);
++
+ 	ret = input_register_device(gamepad_dev->dev_input);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Could not register input device\n");
+@@ -310,4 +323,5 @@ MODULE_DESCRIPTION("Gamepad driver for Ayn Odin2");
+ MODULE_AUTHOR("Molly Sophia <mollysophia379@gmail.com>");
+ MODULE_AUTHOR("BigfootACA <bigfoot@classfun.cn>");
+ MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
++MODULE_AUTHOR("ROCKNIX Team <admin@rocknix.org>");
+ MODULE_ALIAS("platform:" DRIVER_NAME);
+diff --git a/drivers/input/misc/qcom-spmi-haptics.c b/drivers/input/misc/qcom-spmi-haptics.c
+index 64ef78ec1821..96e6e8c73980 100644
+--- a/drivers/input/misc/qcom-spmi-haptics.c
++++ b/drivers/input/misc/qcom-spmi-haptics.c
+@@ -23,6 +23,7 @@
+ #include <linux/slab.h>
+ #include <linux/time.h>
+ #include <linux/types.h>
++#include <linux/export.h>
+ 
+ #define HAP_STATUS_1_REG		0x0A
+ #define HAP_BUSY_BIT			BIT(1)
+@@ -195,6 +196,8 @@ struct spmi_haptics {
+ 	struct mutex play_lock;
+ };
+ 
++static struct spmi_haptics *global_haptics;
++
+ static inline bool is_secure_addr(u16 addr)
+ {
+ 	return (addr & 0xFF) > 0xD0;
+@@ -775,6 +778,22 @@ static int spmi_haptics_play_effect(struct input_dev *dev, void *data,
+ 	return 0;
+ }
+ 
++int qcom_spmi_haptics_rumble(unsigned int strong_magnitude, unsigned int weak_magnitude)
++{
++	struct ff_effect effect;
++
++	if (!global_haptics)
++		return -ENODEV;
++
++	memset(&effect, 0, sizeof(effect));
++	effect.type = FF_RUMBLE;
++	effect.u.rumble.strong_magnitude = strong_magnitude;
++	effect.u.rumble.weak_magnitude = weak_magnitude;
++
++	return spmi_haptics_play_effect(global_haptics->haptics_input_dev, NULL, &effect);
++}
++EXPORT_SYMBOL_GPL(qcom_spmi_haptics_rumble);
++
+ static int spmi_haptics_probe(struct platform_device *pdev)
+ {
+ 	struct spmi_haptics *haptics;
+@@ -922,6 +941,8 @@ static int spmi_haptics_probe(struct platform_device *pdev)
+ 		goto register_fail;
+ 	}
+ 
++	global_haptics = haptics;
++
+ 	return 0;
+ 
+ register_fail:
+@@ -953,6 +974,9 @@ static void spmi_haptics_remove(struct platform_device *pdev)
+ 
+ 	if (haptics->boost)
+ 		gpiod_set_value_cansleep(haptics->boost, 0);
++
++	if (global_haptics == haptics)
++		global_haptics = NULL;
+ }
+ 
+ static void spmi_haptics_shutdown(struct platform_device *pdev)
+@@ -965,6 +989,9 @@ static void spmi_haptics_shutdown(struct platform_device *pdev)
+ 
+ 	if (haptics->boost)
+ 		gpiod_set_value_cansleep(haptics->boost, 0);
++
++	if (global_haptics == haptics)
++		global_haptics = NULL;
+ }
+ 
+ static const struct of_device_id spmi_haptics_match_table[] = {
+-- 
+2.34.1
+

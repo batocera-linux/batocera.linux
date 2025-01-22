@@ -1,22 +1,23 @@
-From 65850fcb22f34505944688f878b0b10b7b6c6a8b Mon Sep 17 00:00:00 2001
+From e13aab99ea4e3d89ab8cf5dade0790c07f0fd6a4 Mon Sep 17 00:00:00 2001
 From: Teguh Sobirin <teguh@sobir.in>
-Date: Mon, 30 Sep 2024 14:43:45 +0700
-Subject: [PATCH] drm: panel: Add DDIC CH13726A panel
+Date: Wed, 20 Nov 2024 23:04:35 +0700
+Subject: [PATCH] drm: panel: Add DDIC CH13726A panel Signed-off-by: Teguh
+ Sobirin <teguh@sobir.in>
 
 ---
  drivers/gpu/drm/panel/Kconfig               |  11 +
  drivers/gpu/drm/panel/Makefile              |   1 +
- drivers/gpu/drm/panel/panel-ddic-ch13726a.c | 325 ++++++++++++++++++++
- 3 files changed, 337 insertions(+)
+ drivers/gpu/drm/panel/panel-ddic-ch13726a.c | 341 ++++++++++++++++++++
+ 3 files changed, 353 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-ddic-ch13726a.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 9f49b0189d3b..c6fcccdcffa0 100644
+index d3a9a9fafe4e..996570dfcdeb 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -87,6 +87,17 @@ config DRM_PANEL_BOE_TV101WUM_NL6
- 	  Say Y here if you want to support for BOE TV101WUM and AUO KD101N80
- 	  45NA WUXGA PANEL DSI Video Mode panel
+@@ -96,6 +96,17 @@ config DRM_PANEL_BOE_TV101WUM_LL2
+ 	  Say Y here if you want to support for BOE TV101WUM-LL2
+ 	  WUXGA PANEL DSI Video Mode panel
  
 +config DRM_PANEL_DDIC_CH13726A
 +	tristate "DDIC CH13726A-based DSI panel"
@@ -33,12 +34,12 @@ index 9f49b0189d3b..c6fcccdcffa0 100644
  	tristate "EBBG FT8719 panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 5581387707c6..239a1049fb89 100644
+index 987a08702410..a2aa4d78756e 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_BF060Y8M_AJ0) += panel-boe-bf060y8m-aj0.o
- obj-$(CONFIG_DRM_PANEL_BOE_HIMAX8279D) += panel-boe-himax8279d.o
+@@ -8,6 +8,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_HIMAX8279D) += panel-boe-himax8279d.o
  obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.o
+ obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
 +obj-$(CONFIG_DRM_PANEL_DDIC_CH13726A) += panel-ddic-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
@@ -46,10 +47,10 @@ index 5581387707c6..239a1049fb89 100644
  obj-$(CONFIG_DRM_PANEL_SIMPLE) += panel-simple.o
 diff --git a/drivers/gpu/drm/panel/panel-ddic-ch13726a.c b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
 new file mode 100644
-index 000000000000..3d4c0d36077d
+index 000000000000..772bb057c44d
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
-@@ -0,0 +1,325 @@
+@@ -0,0 +1,341 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * DDIC CH13726A MIPI-DSI panel driver
@@ -63,8 +64,6 @@ index 000000000000..3d4c0d36077d
 +#include <linux/of.h>
 +#include <linux/regulator/consumer.h>
 +
-+#include <drm/display/drm_dsc.h>
-+#include <drm/display/drm_dsc_helper.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -74,9 +73,9 @@ index 000000000000..3d4c0d36077d
 +struct ch13726a_panel {
 +	struct drm_panel panel;
 +	struct mipi_dsi_device *dsi;
-+	struct drm_dsc_config dsc;
 +	struct regulator_bulk_data supplies[4];
 +	struct gpio_desc *reset_gpio;
++	const struct drm_display_mode *display_mode;
 +	enum drm_panel_orientation orientation;
 +	bool prepared;
 +};
@@ -193,7 +192,7 @@ index 000000000000..3d4c0d36077d
 +	return 0;
 +}
 +
-+static const struct drm_display_mode ch13726a_mode = {
++static const struct drm_display_mode rpmini_display_mode = {
 +	.clock = (960 + 28 + 4 + 36) * (1280 + 16 + 4 + 8) * 60 / 1000,
 +	.hdisplay = 960,
 +	.hsync_start = 960 + 28,
@@ -207,12 +206,27 @@ index 000000000000..3d4c0d36077d
 +	.height_mm = 75,
 +};
 +
++static const struct drm_display_mode rp5_display_mode = {
++	.clock = (1080 + 12 + 4 + 12) * (1920 + 12 + 4 + 12) * 60 / 1000,
++	.hdisplay = 1080,
++	.hsync_start = 1080 + 12,
++	.hsync_end = 1080 + 12 + 4,
++	.htotal = 1080 + 12 + 4 + 12,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 12,
++	.vsync_end = 1920 + 12 + 4,
++	.vtotal = 1920 + 12 + 4 + 12,
++	.width_mm = 68,
++	.height_mm = 121,
++};
++
 +static int ch13726a_get_modes(struct drm_panel *panel,
 +					struct drm_connector *connector)
 +{
++	struct ch13726a_panel *ctx = to_ch13726a_panel(panel);
 +	struct drm_display_mode *mode;
 +
-+	mode = drm_mode_duplicate(connector->dev, &ch13726a_mode);
++	mode = drm_mode_duplicate(connector->dev, ctx->display_mode);
 +	if (!mode)
 +		return -ENOMEM;
 +
@@ -287,6 +301,8 @@ index 000000000000..3d4c0d36077d
 +	if (!ctx)
 +		return -ENOMEM;
 +
++	ctx->display_mode = of_device_get_match_data(dev);
++
 +	ctx->supplies[0].supply = "vdd1v2";
 +	ctx->supplies[1].supply = "vddio";
 +	ctx->supplies[2].supply = "vdd";
@@ -321,8 +337,8 @@ index 000000000000..3d4c0d36077d
 +
 +	dsi->lanes = 4;
 +	dsi->format = MIPI_DSI_FMT_RGB888;
-+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
-+			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
++	dsi->mode_flags =  MIPI_DSI_MODE_VIDEO_BURST |
++					MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
 +	drm_panel_init(&ctx->panel, dev, &ch13726a_panel_funcs,
 +		       DRM_MODE_CONNECTOR_DSI);
@@ -358,8 +374,9 @@ index 000000000000..3d4c0d36077d
 +}
 +
 +static const struct of_device_id ch13726a_of_match[] = {
-+	{ .compatible = "ddic,ch13726a" },
-+	{ }
++	{ .compatible = "ch13726a,rpmini", .data = &rpmini_display_mode },
++	{ .compatible = "ch13726a,rp5", .data = &rp5_display_mode },
++	{ /* sentinel */ }
 +};
 +MODULE_DEVICE_TABLE(of, ch13726a_of_match);
 +
