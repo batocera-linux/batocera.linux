@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index 293ff75cb3..dc1519f36b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,4 +1,4 @@
+-obj-m += hid-nx.o
++ifeq ($(KERNELRELEASE),)
+ 
+ KERNEL_RELEASE := $(shell uname -r)
+ KDIR           := /lib/modules/$(KERNEL_RELEASE)/build
+@@ -17,3 +17,10 @@ modules modules_install clean $(OBJ_FILE) $(MODNAME).ko:
+ 	$(MAKE) -C $(KDIR) M=$(CURDIR) $@
+ 
+ .PHONY: all default install modules modules_install clean
++
++else
++
++obj-m += hid-nx.o
++
++endif
++

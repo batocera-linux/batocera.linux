@@ -89,22 +89,6 @@ index 504d1b8c4c..4fa450dbdc 100644
  /* Declare DMIC codec components */
  SND_SOC_DAILINK_DEF(dmic_codec,
  		DAILINK_COMP_ARRAY(COMP_CODEC("dmic-codec", "dmic-hifi")));
-@@ -1481,6 +1554,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
- 		links[i].platforms = sof_component;
- 		links[i].num_platforms = ARRAY_SIZE(sof_component);
- 		links[i].dpcm_playback = 1;
-+        links[i].dpcm_capture = 1;
- 		links[i].nonatomic = true;
- 		links[i].no_pcm = 1;
- 		if (!drv_data->amp_codec_id) {
-@@ -1513,6 +1587,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
- 		links[i].platforms = sof_component;
- 		links[i].num_platforms = ARRAY_SIZE(sof_component);
- 		links[i].dpcm_playback = 1;
-+        links[i].dpcm_capture = 1;
- 		links[i].nonatomic = true;
- 		links[i].no_pcm = 1;
- 		if (!drv_data->amp_codec_id) {
 @@ -1543,6 +1618,14 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
  			card->codec_conf = rt1019_conf;
  			card->num_configs = ARRAY_SIZE(rt1019_conf);
