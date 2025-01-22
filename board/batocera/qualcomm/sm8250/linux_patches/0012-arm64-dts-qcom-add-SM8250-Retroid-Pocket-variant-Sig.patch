@@ -1,33 +1,38 @@
-From 73475e71a2196b2190c5ff73e761a0ccd19723eb Mon Sep 17 00:00:00 2001
+From 2a24f8868112aa6009979d25a0ade854707c59db Mon Sep 17 00:00:00 2001
 From: Teguh Sobirin <teguh@sobir.in>
-Date: Mon, 30 Sep 2024 17:27:42 +0700
-Subject: [PATCH] arm64: dts: qcom: sm8250-retroid-rpmini: Add initial device
- tree
+Date: Mon, 25 Nov 2024 02:19:13 +0700
+Subject: [PATCH] arm64: dts: qcom: add SM8250 Retroid Pocket variant
+ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 
 ---
- arch/arm64/boot/dts/qcom/Makefile             |    1 +
- .../boot/dts/qcom/sm8250-retroid-rpmini.dts   | 1324 +++++++++++++++++
- 2 files changed, 1325 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts
+ arch/arm64/boot/dts/qcom/Makefile             |    2 +
+ .../dts/qcom/sm8250-retroidpocket-common.dtsi | 1435 +++++++++++++++++
+ .../dts/qcom/sm8250-retroidpocket-rp5.dts     |  100 ++
+ .../dts/qcom/sm8250-retroidpocket-rpmini.dts  |   98 ++
+ 4 files changed, 1635 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
 
 diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 0e5c810304fb..dd1bd4fe78eb 100644
+index ae002c7cf126..b015527b063f 100644
 --- a/arch/arm64/boot/dts/qcom/Makefile
 +++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -235,6 +235,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-bahamut.dtb
+@@ -242,6 +242,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-bahamut.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-griffin.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-hdk.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-mtp.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroid-rpmini.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rp5.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rpmini.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx203.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx206.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-xiaomi-elish-boe.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts b/arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
 new file mode 100644
-index 000000000000..4f9bc5b43a82
+index 000000000000..58ca9d330a15
 --- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sm8250-retroid-rpmini.dts
-@@ -0,0 +1,1324 @@
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+@@ -0,0 +1,1435 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2024, Retroid Pocket.
@@ -46,8 +51,6 @@ index 000000000000..4f9bc5b43a82
 +#include "pm8150l.dtsi"
 +
 +/ {
-+	model = "Retroid Pocket Mini";
-+	compatible = "retroid,rpmini", "qcom,sm8250";
 +	qcom,msm-id = <356 0x20001>;
 +	qcom,board-id = <0x01001F 0x01>;
 +
@@ -68,31 +71,16 @@ index 000000000000..4f9bc5b43a82
 +
 +	chosen {
 +		stdout-path = "serial0:115200n8";
-+
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		framebuffer: framebuffer@9c000000 {
-+			compatible = "simple-framebuffer";
-+			reg = <0x0 0x9c000000 0x0 0x2300000>;
-+			width = <960>;
-+			height = <1280>;
-+			stride = <(960 * 4)>;
-+			format = "a8r8g8b8";
-+		};
 +	};
 +
 +	fan: pwm-fan {
 +		compatible = "pwm-fan";
-+		cooling-levels = <0 64 128 255>;
++		cooling-levels = <0 32 64 128 255>;
 +		#cooling-cells = <2>;
-+		fan-supply = <&fan_pwr>;
-+		pwms = <&pm8150l_lpg 0 50000>;
++		fan-supply = <&vreg_fan_pwr>;
++		pwms = <&pm8150l_lpg 3 100000>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&fan_pwm_active>;
-+
-+		status = "disabled";
 +	};
 +
 +	gpio-keys {
@@ -195,6 +183,18 @@ index 000000000000..4f9bc5b43a82
 +		vin-supply = <&vreg_l11c_3p3>;
 +	};
 +
++	vdda_panel: vdda-panel-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdda_panel";
++
++		regulator-min-microvolt = <2800000>;
++		regulator-max-microvolt = <2800000>;
++
++		gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++	};
++
 +	vph_pwr: vph-pwr-regulator {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vph_pwr";
@@ -213,21 +213,9 @@ index 000000000000..4f9bc5b43a82
 +		vin-supply = <&vph_pwr>;
 +	};
 +
-+	avdd_display_panel: avdd-display-panel {
++	vreg_fan_pwr: vreg-fan-pwr-regulator {
 +		compatible = "regulator-fixed";
-+		regulator-name = "avdd_display_panel";
-+
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+
-+		gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		regulator-boot-on;
-+	};
-+
-+	fan_pwr: fan-pwr-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "fan_pwr";
++		regulator-name = "vreg_fan_pwr";
 +
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
@@ -240,9 +228,9 @@ index 000000000000..4f9bc5b43a82
 +		};
 +	};
 +
-+	mcu_3v3: mcu-3v3-regulator {
++	vreg_mcu_3v3: vreg-mcu-3v3-regulator {
 +		compatible = "regulator-fixed";
-+		regulator-name = "mcu_3v3";
++		regulator-name = "vreg_mcu_3v3";
 +
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
@@ -339,7 +327,7 @@ index 000000000000..4f9bc5b43a82
 +	};
 +
 +	reserved-memory {
-+		cont_splash_mem: cont-splash@9c000000 {
++		cont_splash_mem: splash_region@9c000000 {
 +			reg = <0x0 0x9c000000 0x0 0x2300000>;
 +			no-map;
 +		};
@@ -348,7 +336,7 @@ index 000000000000..4f9bc5b43a82
 +
 +&adsp {
 +	status = "okay";
-+	firmware-name = "qcom/sm8250/retroidpocket/rpmini/adsp.mbn";
++	firmware-name = "qcom/sm8250/adsp.mbn";
 +};
 +
 +&apps_rsc {
@@ -600,7 +588,7 @@ index 000000000000..4f9bc5b43a82
 +
 +&cdsp {
 +	status = "okay";
-+	firmware-name = "qcom/sm8250/retroidpocket/rpmini/cdsp.mbn";
++	firmware-name = "qcom/sm8250/cdsp.mbn";
 +};
 +
 +&gmu {
@@ -612,7 +600,157 @@ index 000000000000..4f9bc5b43a82
 +
 +	zap-shader {
 +		memory-region = <&gpu_mem>;
-+		firmware-name = "qcom/sm8250/retroidpocket/rpmini/a650_zap.mbn";
++		firmware-name = "qcom/sm8250/a650_zap.mbn";
++	};
++};
++
++&i2c3 {
++	clock-frequency = <400000>;
++	status = "okay";
++
++	htr3212r: led-controller@3c {
++		compatible = "heroic,htr3212";
++		reg = <0x3c>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		sdb-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
++		vdd-supply = <&vreg_mcu_3v3>;
++
++		ledr_b1: led@1 {
++			reg = <1>;
++			label = "r:b1";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledr_g1: led@2 {
++			reg = <2>;
++			label = "r:g1";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledr_r1: led@3 {
++			reg = <3>;
++			label = "r:r1";
++			color = <LED_COLOR_ID_RED>;
++		};
++		ledr_b2: led@4 {
++			reg = <4>;
++			label = "r:b2";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledr_g2: led@5 {
++			reg = <5>;
++			label = "r:g2";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledr_r2: led@6 {
++			reg = <6>;
++			label = "r:r2";
++ 			color = <LED_COLOR_ID_RED>;
++		};
++		ledr_b3: led@7 {
++			reg = <7>;
++			label = "r:b3";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledr_g3: led@8 {
++			reg = <8>;
++			label = "r:g3";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledr_r3: led@9 {
++			reg = <9>;
++			label = "r:r3";
++			color = <LED_COLOR_ID_RED>;
++		};
++		ledr_b4: led@10 {
++			reg = <10>;
++			label = "r:b4";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledr_g4: led@11 {
++			reg = <11>;
++			label = "r:g4";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledr_r4: led@12 {
++			reg = <12>;
++			label = "r:r4";
++			color = <LED_COLOR_ID_RED>;
++		};
++	};
++};
++
++&i2c5 {
++	clock-frequency = <400000>;
++	status = "okay";
++
++	htr3212l: led-controller@3c {
++		compatible = "heroic,htr3212";
++		reg = <0x3c>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		sdb-gpios = <&tlmm 5 GPIO_ACTIVE_HIGH>;
++		vdd-supply = <&vreg_mcu_3v3>;
++
++		ledl_b1: led@1 {
++			reg = <1>;
++			label = "l:b1";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledl_g1: led@2 {
++			reg = <2>;
++			label = "l:g1";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledl_r1: led@3 {
++			reg = <3>;
++			label = "l:r1";
++			color = <LED_COLOR_ID_RED>;
++		};
++		ledl_b2: led@4 {
++			reg = <4>;
++			label = "l:b2";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledl_g2: led@5 {
++			reg = <5>;
++			label = "l:g2";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledl_r2: led@6 {
++			reg = <6>;
++			label = "l:r2";
++			color = <LED_COLOR_ID_RED>;
++		};
++		ledl_b3: led@7 {
++			reg = <7>;
++			label = "l:b3";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledl_g3: led@8 {
++			reg = <8>;
++			label = "l:g3";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledl_r3: led@9 {
++			reg = <9>;
++			label = "l:r3";
++			color = <LED_COLOR_ID_RED>;
++		};
++		ledl_b4: led@10 {
++			reg = <10>;
++			label = "l:b4";
++			color = <LED_COLOR_ID_BLUE>;
++		};
++		ledl_g4: led@11 {
++			reg = <11>;
++			label = "l:g4";
++			color = <LED_COLOR_ID_GREEN>;
++		};
++		ledl_r4: led@12 {
++			reg = <12>;
++			label = "l:r4";
++			color = <LED_COLOR_ID_RED>;
++		};
 +	};
 +};
 +
@@ -704,20 +842,14 @@ index 000000000000..4f9bc5b43a82
 +	vdda-supply = <&vreg_l9a_1p2>;
 +
 +	panel@0 {
-+		compatible = "ddic,ch13726a";
 +		reg = <0>;
++
 +		reset-gpios = <&tlmm 75 GPIO_ACTIVE_HIGH>;
 +
 +		vdd1v2-supply = <&vreg_l3c_1p2>;
 +		vddio-supply = <&vreg_l14a_1p8>;
 +		vdd-supply = <&vreg_l11c_3p3>;
-+		avdd-supply = <&avdd_display_panel>;
-+
-+		rotation = <90>;
-+
-+		pinctrl-0 = <&sde_dsi_active &sde_te_active>;
-+		pinctrl-1 = <&sde_dsi_sleep &sde_te_sleep>;
-+		pinctrl-names = "default", "sleep";
++		avdd-supply = <&vdda_panel>;
 +
 +		ports {
 +			#address-cells = <1>;
@@ -769,26 +901,6 @@ index 000000000000..4f9bc5b43a82
 +		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
 +		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
 +	};
-+};
-+
-+&pcie1 {
-+	status = "okay";
-+};
-+
-+&pcie1_phy {
-+	status = "okay";
-+	vdda-phy-supply = <&vreg_l5a_0p88>;
-+	vdda-pll-supply = <&vreg_l9a_1p2>;
-+};
-+
-+&pcie2 {
-+	status = "okay";
-+};
-+
-+&pcie2_phy {
-+	status = "okay";
-+	vdda-phy-supply = <&vreg_l5a_0p88>;
-+	vdda-pll-supply = <&vreg_l9a_1p2>;
 +};
 +
 +&pm8150_adc {
@@ -854,6 +966,13 @@ index 000000000000..4f9bc5b43a82
 +	status = "okay";
 +	monitored-battery = <&battery>;
 +	power-supplies = <&pm8150b_charger>;
++};
++
++&pm8150b_haptics {
++	status = "okay";
++	qcom,boost-gpios = <&pm8150b_gpios 5 GPIO_ACTIVE_HIGH>;
++	qcom,wave-play-rate-us = <5882>;
++	qcom,actuator-type = <HAP_TYPE_ERM>;
 +};
 +
 +&pm8150b_typec {
@@ -961,10 +1080,11 @@ index 000000000000..4f9bc5b43a82
 +	fan_pwm_active: fan-pwm-active-state {
 +		pins = "gpio6";
 +		function = "func1";
-+		bias-disable;
-+		qcom,drive-strength = <3>;
-+		power-source = <0>;
-+		output-high;
++        bias-disable;
++        power-source = <0>;
++        output-low;
++        qcom,drive-strength = <3>;
++        drive-push-pull;
 +	};
 +};
 +
@@ -1008,6 +1128,11 @@ index 000000000000..4f9bc5b43a82
 +	status = "okay";
 +};
 +
++&qup_uart16_default {
++	drive-strength = <16>;
++	bias-pull-up;
++};
++
 +&rxmacro {
 +	status = "okay";
 +};
@@ -1026,7 +1151,7 @@ index 000000000000..4f9bc5b43a82
 +
 +&sound {
 +	compatible = "qcom,sm8250-sndcard";
-+	model = "RPMini";
++	model = "RetroidPocket";
 +	audio-routing =
 +		"SpkrLeft IN", "WSA_SPK1 OUT",
 +		"SpkrRight IN", "WSA_SPK2 OUT",
@@ -1150,8 +1275,20 @@ index 000000000000..4f9bc5b43a82
 +		bias-pull-up;
 +	};
 +
-+	mcu_default: mcu-default-state {
++	mcu_boot_default: mcu-boot-default-state {
++		pins = "gpio110";
++		function = "gpio";
++		bias-pull-down;
++	};
++
++	mcu_en_default: mcu-en-default-state {
 +		pins = "gpio111";
++		function = "gpio";
++		bias-pull-down;
++	};
++
++	mcu_rst_default: mcu-rst-default-state {
++		pins = "gpio109";
 +		function = "gpio";
 +		bias-pull-down;
 +	};
@@ -1180,34 +1317,6 @@ index 000000000000..4f9bc5b43a82
 +		pins = "gpio77";
 +		function = "gpio";
 +		bias-pull-up;
-+	};
-+
-+	sde_dsi_active: sde-dsi-active-state {
-+		pins = "gpio75";
-+		function = "gpio";
-+		drive-strength = <8>;
-+		bias-disable;
-+	};
-+
-+	sde_dsi_sleep: sde-dsi-sleep-state {
-+		pins = "gpio75";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	sde_te_active: sde-te-active-state {
-+		pins = "gpio66";
-+		function = "mdp_vsync";
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	sde_te_sleep: sde-te-sleep-state {
-+		pins = "gpio66";
-+		function = "mdp_vsync";
-+		drive-strength = <2>;
-+		bias-pull-down;
 +	};
 +
 +	ts_int_active: ts-int-active-state {
@@ -1283,9 +1392,17 @@ index 000000000000..4f9bc5b43a82
 +
 +	gamepad {
 +		compatible = "ayn,odin2-gamepad";
-+		vdd-supply = <&mcu_3v3>;
++
++		gamepad-name = "Retroid Pocket Controller";
++		gamepad-bus = <0x0003>;
++		gamepad-vid = <0x2020>;
++		gamepad-pid = <0x3001>;
++		gamepad-rev = <0x0001>;
++
++		boot-gpios = <&tlmm 110 GPIO_ACTIVE_HIGH>;
 +		enable-gpios = <&tlmm 111 GPIO_ACTIVE_HIGH>;
-+		pinctrl-0 = <&mcu_default>;
++		reset-gpios = <&tlmm 109 GPIO_ACTIVE_HIGH>;
++		pinctrl-0 = <&mcu_boot_default &mcu_en_default &mcu_rst_default>;
 +		pinctrl-names = "default";
 +	};
 +};
@@ -1345,12 +1462,221 @@ index 000000000000..4f9bc5b43a82
 +};
 +
 +&venus {
-+	firmware-name = "qcom/sm8250/retroidpocket/rpmini/venus.mbn";
 +	status = "okay";
 +};
 +
 +&wsamacro {
 +	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+new file mode 100644
+index 000000000000..a059378fcbea
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
+@@ -0,0 +1,100 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2024, Retroid Pocket.
++ */
++
++/dts-v1/;
++
++#include "sm8250-retroidpocket-common.dtsi"
++
++/ {
++	model = "Retroid Pocket 5";
++	compatible = "retroidpocket,rp5", "qcom,sm8250";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		framebuffer: framebuffer@9c000000 {
++			compatible = "simple-framebuffer";
++			reg = <0x0 0x9c000000 0x0 0x2300000>;
++			width = <1080>;
++			height = <1920>;
++			stride = <(1080 * 4)>;
++			format = "a8r8g8b8";
++		};
++	};
++
++	multi-ledr1 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r1";
++		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
++	};
++
++	multi-ledl1 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l1";
++		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
++	};
++
++	multi-ledr2 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r2";
++		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
++	};
++
++	multi-ledl2 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l2";
++		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
++	};
++
++	multi-ledr3 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r3";
++		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
++	};
++
++	multi-ledl3 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l3";
++		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
++	};
++
++	multi-ledr4 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r4";
++		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
++	};
++
++	multi-ledl4 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l4";
++		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
++	};
++};
++
++&i2c13 {
++	touchscreen@38 {
++		touchscreen-size-x = <1080>;
++		touchscreen-size-y = <1920>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++	};
++};
++
++&mdss_dsi0 {
++	panel@0 {
++		compatible = "ch13726a,rp5";
++		rotation = <270>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
+new file mode 100644
+index 000000000000..9f572e87b84e
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
+@@ -0,0 +1,98 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * Copyright (c) 2024, Retroid Pocket.
++ */
++
++/dts-v1/;
++
++#include "sm8250-retroidpocket-common.dtsi"
++
++/ {
++	model = "Retroid Pocket Mini";
++	compatible = "retroidpocket,rpmini", "qcom,sm8250";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		framebuffer: framebuffer@9c000000 {
++			compatible = "simple-framebuffer";
++			reg = <0x0 0x9c000000 0x0 0x2300000>;
++			width = <960>;
++			height = <1280>;
++			stride = <(960 * 4)>;
++			format = "a8r8g8b8";
++		};
++	};
++
++	multi-ledr1 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r1";
++		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
++	};
++
++	multi-ledl1 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l1";
++		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
++	};
++
++	multi-ledr2 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r2";
++		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
++	};
++
++	multi-ledl2 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l2";
++		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
++	};
++
++	multi-ledr3 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r3";
++		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
++	};
++
++	multi-ledl3 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l3";
++		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
++	};
++
++	multi-ledr4 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "r4";
++		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
++	};
++
++	multi-ledl4 {
++		compatible = "leds-group-multicolor";
++		color = <LED_COLOR_ID_RGB>;
++		function = "l4";
++		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
++	};
++};
++
++&i2c13 {
++	touchscreen@38 {
++		touchscreen-size-x = <960>;
++		touchscreen-size-y = <1280>;
++	};
++};
++
++&mdss_dsi0 {
++	panel@0 {
++		compatible = "ch13726a,rpmini";
++		rotation = <90>;
++	};
 +};
 -- 
 2.34.1

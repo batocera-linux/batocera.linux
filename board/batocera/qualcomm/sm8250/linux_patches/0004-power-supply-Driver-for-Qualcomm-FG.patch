@@ -1,10 +1,11 @@
-From 55ef000dd83caada1adcee8c8c87715bcce786b1 Mon Sep 17 00:00:00 2001
+From ee516e7543e2042389427a450999649101cb4211 Mon Sep 17 00:00:00 2001
 From: Teguh Sobirin <teguh@sobir.in>
-Date: Sun, 8 Sep 2024 06:23:32 +0800
+Date: Wed, 20 Nov 2024 23:00:52 +0700
 Subject: [PATCH] power: supply: Driver for Qualcomm FG
 
 support for pm8150 taken from:
 https://github.com/map220v/sm8150-mainline
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
  drivers/power/supply/Kconfig   |    8 +
  drivers/power/supply/Makefile  |    1 +
