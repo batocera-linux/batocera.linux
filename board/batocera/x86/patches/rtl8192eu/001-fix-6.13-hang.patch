@@ -1,0 +1,95 @@
+From 3550c72f9fdcabb9b38de38c74270f31412e0da1 Mon Sep 17 00:00:00 2001
+From: bkby0710 <bkby@qq.com>
+Date: Thu, 28 Nov 2024 13:41:45 +0800
+Subject: [PATCH 1/3] Update ioctl_cfg80211.c
+
+---
+ os_dep/linux/ioctl_cfg80211.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
+index 9ec345a..857b42a 100644
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -4620,7 +4620,7 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
+ 	mon_wdev->iftype = NL80211_IFTYPE_MONITOR;
+ 	mon_ndev->ieee80211_ptr = mon_wdev;
+ 
+-	ret = register_netdevice(mon_ndev);
++	ret = cfg80211_register_netdevice(mon_ndev);
+ 	if (ret)
+ 		goto out;
+ 
+@@ -4764,7 +4764,7 @@ static int cfg80211_rtw_del_virtual_intf(struct wiphy *wiphy,
+ 		pwdev_priv = adapter_wdev_data(adapter);
+ 
+ 		if (ndev == pwdev_priv->pmon_ndev) {
+-			unregister_netdevice(ndev);
++			cfg80211_unregister_netdevice(ndev);
+ 			pwdev_priv->pmon_ndev = NULL;
+ 			pwdev_priv->ifname_mon[0] = '\0';
+ 			RTW_INFO(FUNC_NDEV_FMT" remove monitor ndev\n", FUNC_NDEV_ARG(ndev));
+
+From 3add3d63031fce96406bdfe13bd6b5801cd0956b Mon Sep 17 00:00:00 2001
+From: bkby0710 <bkby@qq.com>
+Date: Thu, 28 Nov 2024 13:44:27 +0800
+Subject: [PATCH 2/3] Update os_intfs.c
+
+---
+ os_dep/linux/os_intfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
+index 0abc43a..dedace0 100644
+--- a/os_dep/linux/os_intfs.c
++++ b/os_dep/linux/os_intfs.c
+@@ -1840,7 +1840,7 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
+ 	if (rtnl_lock_needed)
+ 		ret = (register_netdev(ndev) == 0) ? _SUCCESS : _FAIL;
+ 	else
+-		ret = (register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
++		ret = (cfg80211_register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
+ 
+ 	if (ret == _SUCCESS)
+ 		adapter->registered = 1;
+@@ -1887,7 +1887,7 @@ void rtw_os_ndev_unregister(_adapter *adapter)
+ 		if (rtnl_lock_needed)
+ 			unregister_netdev(netdev);
+ 		else
+-			unregister_netdevice(netdev);
++			cfg80211_unregister_netdevice(netdev);
+ 	}
+ 
+ #if defined(CONFIG_IOCTL_CFG80211) && !defined(RTW_SINGLE_WIPHY)
+
+From 5039e35b20f57c3d197007a8adc4e4fab84a6de5 Mon Sep 17 00:00:00 2001
+From: bkby0710 <bkby@qq.com>
+Date: Thu, 28 Nov 2024 13:48:58 +0800
+Subject: [PATCH 3/3] Update osdep_service.c
+
+---
+ os_dep/osdep_service.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/os_dep/osdep_service.c b/os_dep/osdep_service.c
+index 04000c7..1baca09 100644
+--- a/os_dep/osdep_service.c
++++ b/os_dep/osdep_service.c
+@@ -2510,7 +2510,7 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
+ 	if (rtnl_lock_needed)
+ 		unregister_netdev(cur_pnetdev);
+ 	else
+-		unregister_netdevice(cur_pnetdev);
++		cfg80211_unregister_netdevice(cur_pnetdev);
+ 
+ 	rereg_priv->old_pnetdev = cur_pnetdev;
+ 
+@@ -2529,7 +2529,7 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
+ 	if (rtnl_lock_needed)
+ 		ret = register_netdev(pnetdev);
+ 	else
+-		ret = register_netdevice(pnetdev);
++		ret = cfg80211_register_netdevice(pnetdev);
+ 
+ 	if (ret != 0) {
+ 		goto error;
