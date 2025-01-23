@@ -110,28 +110,6 @@ case "$1" in
             sleep 0.25
         done
 
-        # Check if device is a Retroid Pocket model,
-        # We generate a MAC address based on the serial number.
-        MAC=""
-        info_output=$(batocera-info)
-
-        if echo "$info_output" | grep -qE "Model: Retroid_Pocket_(Mini|5)"; then
-            WLAN=$(ls /sys/class/net | grep -E '^wlan' | head -n 1)
-            SERIAL="$(cat /sys/devices/soc0/serial_number)"
-            MAC="00:03:7F:${SERIAL:4:2}:${SERIAL:6:2}:${SERIAL:8:2}"
-			
-            if [ -n "$WLAN" ]; then  # Check if a wlan interface was found
-                # Restart the link with the new MAC address
-                ip link set "$WLAN" down
-                ip link set "$WLAN" address "$MAC"
-                ip link set "$WLAN" up
-                echo "Custom MAC address $MAC set for wifi on interface $WLAN"
-                echo "Based on serial number $SERIAL"
-            else
-                echo "No wireless interface found."
-            fi
-        fi
-
         if [ "$settingsWlan" = "1" ];then
             # Detach the wifi enable process
             wifi_enable &
