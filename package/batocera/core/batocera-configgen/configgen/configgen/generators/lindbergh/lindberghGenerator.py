@@ -79,6 +79,13 @@ class LindberghGenerator(Generator):
         ### libraries
         self.setup_libraries(romDir, romName)
 
+        #some hardware expose /dev/dsp1|2 instead /dev/dsp required by 2spicy && gsevo
+        if not os.path.exists("/dev/dsp"):
+            if os.path.exists("/dev/dsp1"):
+                os.symlink("/dev/dsp1", "/dev/dsp")
+            elif os.path.exists("/dev/dsp2"):
+                os.symlink("/dev/dsp2", "/dev/dsp")
+
         # Change to the ROM path before launching
         os.chdir(romDir)
 
