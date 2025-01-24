@@ -8,7 +8,7 @@ LIBRETRO_MAME_VERSION = lrmame0272
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 
-LIBRETRO_MAME_DEPENDENCIES = alsa-lib
+LIBRETRO_MAME_DEPENDENCIES = alsa-lib retroarch
 
 # Limit number of jobs not to eat too much RAM....
 total_memory_kb := $(shell grep MemTotal /proc/meminfo | awk '{print $$2}')

@@ -6,6 +6,7 @@
 # Version: Commits on Feb 28, 2024
 LIBRETRO_VBA_M_VERSION = 215e3c5ae9b1e3d32a708f729f481f429c00eef9
 LIBRETRO_VBA_M_SITE = $(call github,visualboyadvance-m,visualboyadvance-m,$(LIBRETRO_VBA_M_VERSION))
+LIBRETRO_VBA_M_DEPENDENCIES += retroarch
 
 define LIBRETRO_VBA_M_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/libretro -f Makefile platform="unix"  \
