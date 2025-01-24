@@ -87,6 +87,7 @@ endef
 # symlink Bee-Link SER9 for a BIOS / firmware bug
 define ALLLINUXFIRMWARES_FIX_SER9
     mkdir -p $(TARGET_DIR)/usr/share/batocera/firmware
+    mkdir -p $(TARGET_DIR)/etc/init.d
     cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/dcn_3_5_dmcub.bin \
         $(TARGET_DIR)/usr/share/batocera/firmware/dcn_3_5_dmcub.bin
     $(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/S03firmware \
