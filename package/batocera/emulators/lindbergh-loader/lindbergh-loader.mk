@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits on Jan 12, 2025
-LINDBERGH_LOADER_VERSION = a0ad7a8ba0405bf5497faf6d700be69fa50c0757
+LINDBERGH_LOADER_VERSION = 59212c742e4b5c958977dd37c1f7a16e9a1227c7
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
@@ -20,7 +20,8 @@ LINDBERGH_LOADER_DEPENDENCIES += xlib_libXext xlib_libXi xlib_libXmu xlib_libXSc
 
 # match the makefile cflags
 LINDBERGH_LOADER_CFLAGS = -g -fPIC -m32 -Wall -Werror -Wno-unused-but-set-variable
-LINDBERGH_LOADER_CFLAGS += -Wno-unused-variable -Wno-unused-function -D_GNU_SOURCE -Wno-char-subscripts
+LINDBERGH_LOADER_CFLAGS += -Wno-unused-variable -Wno-unused-function -D_GNU_SOURCE
+LINDBERGH_LOADER_CFLAGS += -Wno-char-subscripts -Wno-misleading-indentation
 LINDBERGH_LOADER_CFLAGS += -I$(STAGING_DIR)/usr/include
 # match the makefile ldflags
 LINDBERGH_LOADER_LDFLAGS += -L$(STAGING_DIR)/usr/lib
