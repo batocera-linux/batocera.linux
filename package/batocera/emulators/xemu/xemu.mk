@@ -71,7 +71,10 @@ XEMU_CONF_OPTS += --disable-hvf
 XEMU_CONF_OPTS += --disable-whpx
 XEMU_CONF_OPTS += --with-default-devices
 XEMU_CONF_OPTS += --disable-renderdoc
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 XEMU_CONF_OPTS += --enable-avx2
+endif
 
 define XEMU_CONFIGURE_CMDS
 	cd $(@D) && $(TARGET_CONFIGURE_OPTS) ./configure $(XEMU_CONF_OPTS)

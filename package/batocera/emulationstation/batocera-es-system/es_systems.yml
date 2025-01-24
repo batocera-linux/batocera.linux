@@ -2014,12 +2014,15 @@ triforce:
     dolphin_triforce:
       dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
   comment_en: |
-    Triforce is an arcade machine based on the GameCube's hardware. This build only supports certain games.
-    Playable - Mario Kart GP 1, Mario Kart GP 2 (after loading save state).
-    Intro - F-Zero AX, Virtua Striker 2002.
-    Nothing - All other Triforce games.
+    Triforce is an arcade machine based on the GameCube's hardware.
+
+    If your game dump doesn't work, please try the configuration via F1.
 
     For the most up-to-date information and questions about manual save state download, visit https://wiki.batocera.org/systems:triforce
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:triforce
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:triforce
 
 wii:
   name:       Wii
