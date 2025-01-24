@@ -3,20 +3,39 @@
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
+- Initial support for RS3 Reaper light gun
 ### Added
 - Wireguard VPN for RK3326 boards
 - Image scaling option for Drastic
 - A selection of Dhewm3 mods
 - CatacombGL port for running various Catacomb games
 - Holani libretro core
+- Squashfs support for SGB-MSU1
+- DuckStation cheat list
+- Game Specific color palette for gambette core
+- Non-Micro GUN4IR light gun hardware support
+- Steering wheel support added for :
+  - G923 (Xbox), Logitech PRO Racing Wheel
+- Sega Lindbergh loader
+- Variable Refresh Rate (VRR) support for modern AMD gpus
+- Support of Shanwan Twin USB Joystick (new revision)
+- Libretro-PS2 core
+- Force Feedback on RP5 & RPmini
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
 - Fix handling of luks.enabled setting to allow disabling LUKS integration
 - X86_64, choose a better refresh rate or resolution if the TV / Monitors default is too low.
+- Fix potential issue of having race condition with sequential numbering
+- Fix MAME config for apple2p, apple2e, apple2ee
+- Fix GSPlus rom config and speed
+- DualShock 4 controller on Odroid XU4
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images
+- ROG Ally gamepad support
+- Batocera-wine: add saves directory and save files options
+- Libretro-virtualjaguar core can now load .zip ROMs
 ### Updated
 - BigPEmu to v117
 - Cemu to 2.5
