@@ -9,7 +9,7 @@ MELONDS_SITE = https://github.com/Arisotura/melonDS.git
 MELONDS_SITE_METHOD=git
 MELONDS_GIT_SUBMODULES=YES
 MELONDS_LICENSE = GPLv2
-MELONDS_DEPENDENCIES = sdl2 qt6base qt6multimedia slirp libepoxy libarchive
+MELONDS_DEPENDENCIES = ecm sdl2 qt6base qt6multimedia slirp libepoxy libarchive
 
 MELONDS_SUPPORTS_IN_SOURCE_BUILD = NO
 

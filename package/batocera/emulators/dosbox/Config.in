@@ -1,17 +1,20 @@
 config BR2_PACKAGE_DOSBOX
 	bool "dosbox"
-        depends on BR2_INSTALL_LIBSTDCPP
-        select BR2_PACKAGE_SDL2
-		select BR2_PACKAGE_SDL2_NET
-        select BR2_PACKAGE_FLUIDSYNTH
-        select BR2_PACKAGE_FLUIDSYNTH_SDL2
-		select BR2_PACKAGE_ZLIB
-        select BR2_PACKAGE_LIBPNG
-        select BR2_PACKAGE_LIBOGG
-        select BR2_PACKAGE_LIBVORBIS
+    depends on BR2_INSTALL_LIBSTDCPP
+    select BR2_PACKAGE_FLUIDSYNTH
+    select BR2_PACKAGE_FLUIDSYNTH_SDL2
+    select BR2_PACKAGE_LIBGLEW
+    select BR2_PACKAGE_LIBOGG
+    select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_NET
+	select BR2_PACKAGE_ZLIB
+    help
+      DOSBox is a DOS-emulator that uses the SDL-library
+      which makes DOSBox very easy to port to different platforms.
 
-	help
-	  DOSBox is a DOS-emulator that uses the SDL-library
-          which makes DOSBox very easy to port to different platforms
+      https://github.com/duganchen/dosbox
 
-	  https://github.com/duganchen/dosbox
+comment "dosbox needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

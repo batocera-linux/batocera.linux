@@ -1,6 +1,6 @@
 ################################################################################
 #
-# LIGHTSPARK
+# lightspark
 #
 ################################################################################
 # Version.: Commits on May 28, 2023
@@ -10,11 +10,19 @@ LIGHTSPARK_LICENSE = LGPLv3
 LIGHTSPARK_DEPENDENCIES = sdl2 freetype pcre jpeg libpng cairo pango ffmpeg libcurl rtmpdump
 
 LIGHTSPARK_CONF_OPTS += -DCOMPILE_NPAPI_PLUGIN=FALSE -DCOMPILE_PPAPI_PLUGIN=FALSE
-ifneq ($(BR2_x86_64),y)
-LIGHTSPARK_CONF_OPTS += -DENABLE_GLES2=TRUE -DCMAKE_C_FLAGS=-DEGL_NO_X11 -DCMAKE_CXX_FLAGS=-DEGL_NO_X11
-endif
 
 LIGHTSPARK_ARCH = $(BR2_ARCH)
+
+ifeq ($(BR2_PACKAGE_XORG7)$(BR2_PACKAGE_HAS_LIBGL),yy)
+LIGHTSPARK_DEPENDENCIES += libglew
+endif
+
+ifneq ($(BR2_x86_64),y)
+LIGHTSPARK_CONF_OPTS += -DENABLE_GLES2=TRUE
+LIGHTSPARK_CONF_OPTS += -DCMAKE_C_FLAGS=-DEGL_NO_X11
+LIGHTSPARK_CONF_OPTS += -DCMAKE_CXX_FLAGS=-DEGL_NO_X11
+endif
+
 ifeq ($(LIGHTSPARK_ARCH), "arm")
 LIGHTSPARK_ARCH = armv7l
 endif
@@ -29,7 +37,8 @@ define LIGHTSPARK_INSTALL_TARGET_CMDS
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lightspark/flash.lightspark.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lightspark/flash.lightspark.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
