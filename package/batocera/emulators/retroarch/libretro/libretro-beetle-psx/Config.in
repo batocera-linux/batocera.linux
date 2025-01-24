@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_BEETLE_PSX
     bool "libretro-beetle-psx"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-      help
-        A libretro psx emulator core.
+	select BR2_PACKAGE_LIBGLVND if BR2_PACKAGE_XORG7
+    help
+      A libretro psx emulator core.
 
 	  http://www.libretro.com
 
