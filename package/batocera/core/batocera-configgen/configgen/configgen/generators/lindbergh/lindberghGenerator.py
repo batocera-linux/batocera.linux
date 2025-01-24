@@ -45,13 +45,13 @@ class LindberghGenerator(Generator):
         "PLAYER_2_BUTTON_5":         True, "PLAYER_2_BUTTON_6":         True, "PLAYER_2_BUTTON_7":         True, "PLAYER_2_BUTTON_8":         True,
         "ANALOGUE_1":                True, "ANALOGUE_2":                True, "ANALOGUE_3":                True, "ANALOGUE_4":                True,
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
-        "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True
+        "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
+        "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "lindbergh loader",
-            #"keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "coin": "KEY_5" }
             "keys": { "exit": "KEY_T", "coin": "KEY_5" }
         }
 
@@ -219,15 +219,22 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "FULLSCREEN",                1)
         self.setConf(conf, "REGION",                    system.config["lindbergh_region"] if system.isOptSet("lindbergh_region") else "EX")
         self.setConf(conf, "FPS_TARGET",                system.config["lindbergh_fps"]    if system.isOptSet("lindbergh_fps")    else "60")
-        self.setConf(conf, "FPS_LIMITER_ENABLED",       1 if system.isOptSet("lindbergh_limit")    and system.getOptBoolean("lindbergh_limit")            else 0)
-        self.setConf(conf, "FREEPLAY",                  1 if system.isOptSet("lindbergh_freeplay") and system.getOptBoolean("lindbergh_freeplay")         else 0)
-        self.setConf(conf, "KEEP_ASPECT_RATIO",         1 if system.isOptSet("lindbergh_aspect")   and system.getOptBoolean("lindbergh_aspect")           else 0)
-        self.setConf(conf, "DEBUG_MSGS",                1 if system.isOptSet("lindbergh_debug")    and system.getOptBoolean("lindbergh_debug")            else 0)
-        self.setConf(conf, "HUMMER_FLICKER_FIX",        1 if system.isOptSet("lindbergh_hummer")   and system.getOptBoolean("lindbergh_hummer")           else 0)
-        self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", 1 if system.isOptSet("lindbergh_lens")     and system.getOptBoolean("lindbergh_lens")             else 0)
+        self.setConf(conf, "FPS_LIMITER_ENABLED",       1 if system.isOptSet("lindbergh_limit")    and system.getOptBoolean("lindbergh_limit")    else 0)
+        self.setConf(conf, "FREEPLAY",                  1 if system.isOptSet("lindbergh_freeplay") and system.getOptBoolean("lindbergh_freeplay") else 0)
+        self.setConf(conf, "KEEP_ASPECT_RATIO",         1 if system.isOptSet("lindbergh_aspect")   and system.getOptBoolean("lindbergh_aspect")   else 0)
+        self.setConf(conf, "DEBUG_MSGS",                1 if system.isOptSet("lindbergh_debug")    and system.getOptBoolean("lindbergh_debug")    else 0)
+        self.setConf(conf, "HUMMER_FLICKER_FIX",        1 if system.isOptSet("lindbergh_hummer")   and system.getOptBoolean("lindbergh_hummer")   else 0)
+        self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", 1 if system.isOptSet("lindbergh_lens")     and system.getOptBoolean("lindbergh_lens")     else 0)
         self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", 1 if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else 0)
         self.setConf(conf, "SRAM_PATH",   f"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}")
         self.setConf(conf, "EEPROM_PATH", f"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}")
+
+        if "tennis" in romName.lower() and system.isOptSet("lindbergh_card") and system.getOptBoolean("lindbergh_card"):
+            self.setConf(conf, "EMULATE_CARDREADER", 1)
+            self.setConf(conf, "CARDFILE_01", f"{self.LINDBERGH_SAVES}/VT3_Card_01.crd")
+            self.setConf(conf, "CARDFILE_02", f"{self.LINDBERGH_SAVES}/VT3_Card_02.crd")
+        else:
+            self.setConf(conf, "EMULATE_CARDREADER", 0)
 
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             need_guns_border = False
@@ -243,9 +250,9 @@ class LindberghGenerator(Generator):
         else:
             self.setConf(conf, "BORDER_ENABLED", 0)
 
-        self.setup_controllers(conf, playersControllers)
+        self.setup_controllers(conf, playersControllers, romName)
 
-    def setup_controllers(self, conf, playersControllers):
+    def setup_controllers(self, conf, playersControllers, romName):
         # Define mappings as tuples to preserve order
         lindberghCtrl = {
             "a":              ("BUTTON_2", "BTN_EAST"),
@@ -266,25 +273,28 @@ class LindberghGenerator(Generator):
             "r2":             ("BUTTON_8", "BTN_TR2")
         }
 
-        self.setConf(conf, "INPUT_MODE", 0)
+        self.setConf(conf, "INPUT_MODE", 1)
 
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            # Handle two players / controllers only
-            if nplayer <= 2:
-                controller_name = pad.real_name.upper().replace(" ", "_").replace("-", "_")
-                for input_name in pad.inputs:
-                    if input_name in lindberghCtrl:
-                        button_name, input_value = lindberghCtrl[input_name]
+        # Handle games best served by evdev - i.e. Guns
+        if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "gsevo", "jungle", "letsgoju", "hunt", "primevah", "rambo", "dead", "hotd"]):
+            self.setConf(conf, "INPUT_MODE", 0)
+            nplayer = 1
+            for playercontroller, pad in sorted(playersControllers.items()):
+                # Handle two players / controllers only
+                if nplayer <= 2:
+                    controller_name = pad.real_name.upper().replace(" ", "_").replace("-", "_")
+                    for input_name in pad.inputs:
+                        if input_name in lindberghCtrl:
+                            button_name, input_value = lindberghCtrl[input_name]
 
-                        # Handle special case for joystick1up and joystick1left
-                        if input_name in {"joystick1up", "joystick1left"}:
-                            key_pattern = button_name
-                        else:
-                            key_pattern = f"PLAYER_{nplayer}_{button_name}"
+                            # Handle special case for joystick1up and joystick1left
+                            if input_name in {"joystick1up", "joystick1left"}:
+                                key_pattern = button_name
+                            else:
+                                key_pattern = f"PLAYER_{nplayer}_{button_name}"
 
-                        self.setConf(conf, key_pattern, f"{controller_name}_{input_value}")
-                nplayer += 1
+                            self.setConf(conf, key_pattern, f"{controller_name}_{input_value}")
+                    nplayer += 1
 
     def setup_eeprom(self):
         DOWNLOAD_PATH: Final = self.LINDBERGH_SAVES / "lindbergh-eeprom.tar.xz"
