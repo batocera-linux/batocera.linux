@@ -20,6 +20,10 @@ else
     SONICCD_DEPENDENCIES += libglew
 endif
 
+ifeq ($(BR2_PACKAGE_LIBGLU),y)
+    SONICCD_DEPENDENCIES += libglu
+endif
+
 define SONICCD_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef

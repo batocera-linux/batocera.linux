@@ -7,7 +7,8 @@
 MANGOHUD_VERSION = 12620c91eaca0917a7939a92ec33915cadf24475
 MANGOHUD_SITE =  $(call github,flightlessmango,MangoHud,$(MANGOHUD_VERSION))
 
-MANGOHUD_DEPENDENCIES = host-libcurl host-python-mako host-glslang dbus json-for-modern-cpp
+MANGOHUD_DEPENDENCIES += host-libcurl host-python-mako host-glslang dbus
+MANGOHUD_DEPENDENCIES += json-for-modern-cpp libxkbcommon
 
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
     MANGOHUD_DEPENDENCIES += libdrm
@@ -63,12 +64,10 @@ define MANGOHUD_DWD_DEPENDENCIES
 endef
 MANGOHUD_PRE_CONFIGURE_HOOKS += MANGOHUD_DWD_DEPENDENCIES
 
-
 define MANGOHUD_POST_INSTALL_CLEAN
 	rm -f $(TARGET_DIR)/usr/share/man/man1/mangohud.1
 endef
 
 MANGOHUD_POST_INSTALL_TARGET_HOOKS = MANGOHUD_POST_INSTALL_CLEAN
-
 
 $(eval $(meson-package))

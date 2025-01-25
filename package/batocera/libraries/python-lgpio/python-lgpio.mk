@@ -11,6 +11,6 @@ PYTHON_LGPIO_SETUP_TYPE = setuptools
 PYTHON_LGPIO_LICENSE = Unencumbered
 PYTHON_LGPIO_LICENSE_FILES = LICENSE
 
-PYTHON_LGPIO_DEPENDENCIES = liblgpio
+PYTHON_LGPIO_DEPENDENCIES = liblgpio host-swig
 
 $(eval $(python-package))
