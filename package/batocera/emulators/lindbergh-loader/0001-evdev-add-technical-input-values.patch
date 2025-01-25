@@ -1,0 +1,276 @@
+From 5fd2217305253dc4a433cd77cf326d59b4bd8451 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Fri, 24 Jan 2025 22:23:52 +0100
+Subject: [PATCH] evdev: add technical input values
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+---
+ src/lindbergh/config.c     |  2 +
+ src/lindbergh/config.h     |  1 +
+ src/lindbergh/evdevinput.c | 88 +++++++++++++++++++++++++++++++-------
+ src/lindbergh/evdevinput.h |  5 +++
+ 4 files changed, 81 insertions(+), 15 deletions(-)
+
+diff --git a/src/lindbergh/config.c b/src/lindbergh/config.c
+index 93ab44b..25260dd 100644
+--- a/src/lindbergh/config.c
++++ b/src/lindbergh/config.c
+@@ -1192,6 +1192,8 @@ int readConfig(FILE *configFile, EmulatorConfig *config)
+             strncpy(config->arcadeInputs.player1_button_9, getNextToken(NULL, " ", &saveptr), INPUT_STRING_LENGTH - 1);
+         else if (strcmp(command, "PLAYER_1_BUTTON_10") == 0)
+             strncpy(config->arcadeInputs.player1_button_10, getNextToken(NULL, " ", &saveptr), INPUT_STRING_LENGTH - 1);
++        else if (strcmp(command, "PLAYER_1_COIN") == 0)
++            strncpy(config->arcadeInputs.player1_coin, getNextToken(NULL, " ", &saveptr), INPUT_STRING_LENGTH - 1);
+ 
+         // Player 2 controls
+         else if (strcmp(command, "PLAYER_2_BUTTON_START") == 0)
+diff --git a/src/lindbergh/config.h b/src/lindbergh/config.h
+index e1e9824..4e4005c 100644
+--- a/src/lindbergh/config.h
++++ b/src/lindbergh/config.h
+@@ -182,6 +182,7 @@ typedef struct {
+     char player1_button_8[INPUT_STRING_LENGTH];
+     char player1_button_9[INPUT_STRING_LENGTH];
+     char player1_button_10[INPUT_STRING_LENGTH];
++    char player1_coin[INPUT_STRING_LENGTH];
+ 
+     // Player 2 controls
+     char player2_button_start[INPUT_STRING_LENGTH];
+diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
+index 08e4364..3af59d4 100644
+--- a/src/lindbergh/evdevinput.c
++++ b/src/lindbergh/evdevinput.c
+@@ -41,6 +41,7 @@ ArcadeInput arcadeInputs[] = {{"TEST_BUTTON", 0, BUTTON_TEST, 1},
+                               {"PLAYER_1_BUTTON_8", 1, BUTTON_8, 1},
+                               {"PLAYER_1_BUTTON_9", 1, BUTTON_9, 1},
+                               {"PLAYER_1_BUTTON_10", 1, BUTTON_10, 1},
++                              {"PLAYER_1_COIN", 1, COIN, 1},
+ 
+                               {"PLAYER_2_BUTTON_START", 2, BUTTON_START, 1},
+                               {"PLAYER_2_BUTTON_SERVICE", 2, BUTTON_SERVICE, 1},
+@@ -920,14 +921,18 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_KEY, code));
+                     normaliseName(controllerInput->inputName);
++                    if(snprintf(controllerInput->inputTechName, SIZE, "%s:KEY:%i", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
++		    strcpy(controllerInput->inputTechNegName, "-"); // unassignable value (not "" while some conf are empty)
+                 }
+             }
+         }
+ 
+         if (test_bit(EV_ABS, bit[0]))
+         {
+-            ioctl(controller, EVIOCGBIT(EV_ABS, KEY_MAX), bit[EV_ABS]);
+-            for (int code = 0; code < KEY_MAX; code++)
++            ioctl(controller, EVIOCGBIT(EV_ABS, ABS_MAX), bit[EV_ABS]);
++            for (int code = 0; code < ABS_MAX; code++)
+             {
+                 if (test_bit(code, bit[EV_ABS]))
+                 {
+@@ -941,6 +946,12 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_ABS, code));
+                     normaliseName(controllerInput->inputName);
++                    if(snprintf(controllerInput->inputTechName, SIZE, "%s:ABS:%i", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
++                    if(snprintf(controllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
+ 
+                     ControllerInput *minControllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+@@ -949,6 +960,12 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     minControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MIN;
+                     strcpy(minControllerInput->inputName, controllerInput->inputName);
+                     strcat(minControllerInput->inputName, "_MIN");
++                    if(snprintf(minControllerInput->inputTechName, SIZE, "%s:ABS:%i:MIN", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
++                    if(snprintf(minControllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i:MIN", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
+ 
+                     ControllerInput *maxControllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+@@ -957,6 +974,12 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     maxControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MAX;
+                     strcpy(maxControllerInput->inputName, controllerInput->inputName);
+                     strcat(maxControllerInput->inputName, "_MAX");
++                    if(snprintf(maxControllerInput->inputTechName, SIZE, "%s:ABS:%i:MAX", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
++                    if(snprintf(maxControllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i:MAX", controllers->controller[i].path, code) >= 1024) {
++                      // hum ok, truncated value
++                    }
+ 
+                     struct input_absinfo absoluteFeatures;
+                     ioctl(controller, EVIOCGABS(code), &absoluteFeatures);
+@@ -1048,8 +1071,13 @@ void *controllerThread(void *_args)
+                     continue;
+                 }
+ 
+-                setSwitch(args->controller->keyTriggers[event.code].player,
+-                          args->controller->keyTriggers[event.code].channel, event.value == 0 ? 0 : 1);
++                if(args->controller->keyTriggers[event.code].isCoin == 1) {
++                  if(event.value == 1)
++                    incrementCoin(args->controller->keyTriggers[event.code].player, 1);
++                } else
++                  setSwitch(args->controller->keyTriggers[event.code].player,
++                            args->controller->keyTriggers[event.code].channel, event.value == 0 ? 0 : 1);
++
+             }
+             break;
+ 
+@@ -1059,6 +1087,10 @@ void *controllerThread(void *_args)
+                     ((double)event.value - (double)args->controller->absMin[event.code]) /
+                     ((double)args->controller->absMax[event.code] - (double)args->controller->absMin[event.code]);
+ 
++                if(args->controller->absTriggers[event.code].isNeg == 1) {
++                  scaled = 1.0 - scaled;
++                }
++
+                 if (args->controller->absTriggers[event.code].enabled)
+                 {
+                     int channel = args->controller->absTriggers[event.code].channel;
+@@ -1069,20 +1101,23 @@ void *controllerThread(void *_args)
+                         scaled = 0.5;
+                     if (scaled > analogue_deadzones[channel].end_min)
+                         scaled = 1.0;
+-
+                     setAnalogue(channel, scaled * (pow(2, jvsBits) - 1));
+                 }
+ 
+-                if (args->controller->absTriggers[event.code].minEnabled)
+-                {
+-                    setSwitch(args->controller->absTriggers[event.code].minPlayer,
+-                              args->controller->absTriggers[event.code].minChannel, scaled < 0.2);
++                if(event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2)) {
++                  if (args->controller->absTriggers[event.code].minEnabled)
++                    {
++                      int channel = args->controller->absTriggers[event.code].minChannel;
++                      setAnalogue(channel, scaled < 0.2 ? pow(2, jvsBits) * 0.2 : pow(2, jvsBits) * 0.5);
++                    }
+                 }
+ 
+-                if (args->controller->absTriggers[event.code].maxEnabled)
+-                {
+-                    setSwitch(args->controller->absTriggers[event.code].maxPlayer,
+-                              args->controller->absTriggers[event.code].maxChannel, scaled > 0.8);
++                if(event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2)) {
++                  if (args->controller->absTriggers[event.code].maxEnabled)
++                    {
++                       int channel = args->controller->absTriggers[event.code].maxChannel;
++                       setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) * 0.8 : pow(2, jvsBits) * 0.5);
++                    }
+                 }
+             }
+             break;
+@@ -1106,6 +1141,8 @@ char *getMapping(char *mapping)
+     // Test button
+     if (strcmp(mapping, config->arcadeInputs.test) == 0)
+         return "TEST_BUTTON";
++    if (strcmp(mapping, config->arcadeInputs.player1_coin) == 0)
++        return "PLAYER_1_COIN";
+ 
+     // Player 1 controls
+     if (strcmp(mapping, config->arcadeInputs.player1_button_start) == 0)
+@@ -1232,19 +1269,33 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+             controllers->controller[i].absTriggers[j].enabled = 0;
+             controllers->controller[i].absTriggers[j].minEnabled = 0;
+             controllers->controller[i].absTriggers[j].maxEnabled = 0;
++            controllers->controller[i].absTriggers[j].isNeg = 0;
+         }
+ 
+         for (int j = 0; j < KEY_MAX; j++)
+         {
+             controllers->controller[i].keyTriggers[j].enabled = 0;
+             controllers->controller[i].keyTriggers[j].isAnalogue = 0;
++            controllers->controller[i].keyTriggers[j].isCoin = 0;
+         }
+ 
+         for (int j = 0; j < controllers->controller[i].inputCount; j++)
+         {
+             char *mapping = getMapping(controllers->controller[i].inputs[j].inputName);
+-            if (mapping == NULL)
+-                continue;
++            int negabs = 0;
++
++            if (mapping == NULL) {
++              // give a 2nd chance with a techninal mapping
++              mapping = getMapping(controllers->controller[i].inputs[j].inputTechName);
++              if (mapping == NULL) {
++                // give a 3rd change with negativ technical mapping
++                mapping = getMapping(controllers->controller[i].inputs[j].inputTechNegName);
++                negabs = 1;
++                if (mapping == NULL) {
++                  continue;
++                }
++              }
++            }
+ 
+             ArcadeInput input = {0};
+             ControllerStatus status = getArcadeInputByName(mapping, &input);
+@@ -1269,6 +1320,7 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].player =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+                 }
+                 break;
+ 
+@@ -1281,6 +1333,7 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxPlayer =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+                 }
+                 break;
+ 
+@@ -1293,6 +1346,7 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minPlayer =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+                 }
+                 break;
+ 
+@@ -1314,6 +1368,10 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+ 
+                 if (strstr(input.name, "ANALOGUE") != NULL)
+                     controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].isAnalogue = 1;
++
++		if (strcmp(input.name, "PLAYER_1_COIN") == 0) {
++                    controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].isCoin = 1;
++		}
+             }
+             break;
+ 
+diff --git a/src/lindbergh/evdevinput.h b/src/lindbergh/evdevinput.h
+index 5cb5990..3eac25c 100644
+--- a/src/lindbergh/evdevinput.h
++++ b/src/lindbergh/evdevinput.h
+@@ -31,6 +31,9 @@ typedef struct
+     int maxEnabled;
+ 
+     int isAnalogue;
++    int isNeg; // reversed axis
++
++    int isCoin;
+ } ArcadeInput;
+ 
+ typedef enum
+@@ -49,6 +52,8 @@ typedef enum {
+ typedef struct
+ {
+     char inputName[SIZE];
++    char inputTechName[SIZE];
++    char inputTechNegName[SIZE];
+     int evType;
+     int evCode;
+     SpecialFunction specialFunction;
+-- 
+2.34.1
+
