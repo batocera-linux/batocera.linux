@@ -11,12 +11,14 @@ import subprocess
 import socket
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
+from evdev import ecodes
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 from ...utils import bezels as bezelsUtil
+from ...utils import hotkeygen
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -46,10 +48,12 @@ class LindberghGenerator(Generator):
         "PLAYER_2_BUTTON_1":         True, "PLAYER_2_BUTTON_2":         True, "PLAYER_2_BUTTON_3":         True, "PLAYER_2_BUTTON_4":         True,
         "PLAYER_2_BUTTON_5":         True, "PLAYER_2_BUTTON_6":         True, "PLAYER_2_BUTTON_7":         True, "PLAYER_2_BUTTON_8":         True,
         "ANALOGUE_1":                True, "ANALOGUE_2":                True, "ANALOGUE_3":                True, "ANALOGUE_4":                True,
+        "ANALOGUE_1+":               True, "ANALOGUE_2+":               True, "ANALOGUE_3+":               True, "ANALOGUE_4+":               True,
+        "ANALOGUE_1-":               True, "ANALOGUE_2-":               True, "ANALOGUE_3-":               True, "ANALOGUE_4-":               True,
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
         "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
         "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True, "CPU_FREQ_GHZ":              True,
-        "OR2_IP":                    True
+        "OR2_IP":                    True, "PLAYER_1_COIN":             True
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
@@ -77,7 +81,7 @@ class LindberghGenerator(Generator):
         self.setup_eeprom()
 
         ### conf file
-        self.setup_config(source_dir, system, gameResolution, guns, playersControllers, romDir, romName)
+        self.setup_config(source_dir, system, gameResolution, guns, wheels, playersControllers, romDir, romName)
 
         ### libraries
         self.setup_libraries(romDir, romName)
@@ -178,11 +182,29 @@ class LindberghGenerator(Generator):
                 key = matches.group(2)
 
                 if key in self.CONF_KEYS:
-                    conf["keys"][key] = { "value":     matches.group(3).strip(),
-                                          "commented": True if matches.group(1) == "#" else False,
-                                          "line":      n,
-                                          "modified":  False
-                                         }
+                    if key in conf["keys"]: # take care of duplicated keys
+                        # if the 1st one is commented, prefer the last one
+                        if conf["keys"][key]["commented"]:
+                            conf["keys"][key] = { "value":     matches.group(3).strip(),
+                                                  "commented": True if matches.group(1) == "#" else False,
+                                                  "line":      n,
+                                                  "modified":  False
+                                                 }
+                        else:
+                            # if the previous is not commented, prefer the last one if not commented and comment the previous
+                            if matches.group(1) != "#":
+                                lines[conf["keys"][key]["line"]] = "# " + lines[conf["keys"][key]["line"]]
+                                conf["keys"][key] = { "value":     matches.group(3).strip(),
+                                                      "commented": True if matches.group(1) == "#" else False,
+                                                      "line":      n,
+                                                      "modified":  False
+                                                     }
+                    else:
+                        conf["keys"][key] = { "value":     matches.group(3).strip(),
+                                              "commented": True if matches.group(1) == "#" else False,
+                                              "line":      n,
+                                              "modified":  False
+                                             }
                 else:
                     print(f"CONF: ignoring key /{key}/")
             else:
@@ -195,9 +217,23 @@ class LindberghGenerator(Generator):
     def setConf(self, conf, key, value):
         if key not in self.CONF_KEYS:
             raise Exception(f"unknown conf key {key}")
+
+        # new line
+        if key not in conf["keys"]:
+            conf["keys"][key] = { "line": len(conf["raw"]) }
+            conf["raw"].append("###")
+
         conf["keys"][key]["value"]     = str(value)
         conf["keys"][key]["modified"]  = True
         conf["keys"][key]["commented"] = False
+
+    def commentConf(self, conf, key):
+        if key not in self.CONF_KEYS:
+            raise Exception(f"unknown conf key {key}")
+        
+        if key in conf["keys"]:
+            conf["keys"][key]["modified"]  = True
+            conf["keys"][key]["commented"] = True
 
     def saveConf(self, conf, targetFile):
         # update with modified lines
@@ -216,7 +252,7 @@ class LindberghGenerator(Generator):
         except Exception as e:
             eslog.debug(f"Error updating configuration file: {e}")
 
-    def buildConfFile(self, conf, system, gameResolution, guns, playersControllers, romName):
+    def buildConfFile(self, conf, system, gameResolution, guns, wheels, playersControllers, romName):
         self.setConf(conf, "WIDTH",                     gameResolution['width'])
         self.setConf(conf, "HEIGHT",                    gameResolution['height'])
         self.setConf(conf, "FULLSCREEN",                1)
@@ -275,53 +311,247 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "BORDER_ENABLED", 1 if need_guns_border else 0)
         else:
             self.setConf(conf, "BORDER_ENABLED", 0)
-        
-        # Setup evdev controller(s)
-        self.setup_controllers(conf, playersControllers, romName)
 
-    def setup_controllers(self, conf, playersControllers, romName):
-        # Define mappings as tuples to preserve order
-        lindberghCtrl = {
-            "a":              ("BUTTON_2", "BTN_EAST"),
-            "b":              ("BUTTON_1", "BTN_SOUTH"),
-            "x":              ("BUTTON_4", "BTN_NORTH"),
-            "y":              ("BUTTON_3", "BTN_WEST"),
-            "start":          ("BUTTON_START", "BTN_START"),
-            #"select":         ("BUTTON_SERVICE", "BTN_SELECT"),
-            "up":             ("BUTTON_UP", "ABS_HAT0Y_MIN"),
-            "down":           ("BUTTON_DOWN", "ABS_HAT0Y_MAX"),
-            "left":           ("BUTTON_LEFT", "ABS_HAT0X_MIN"),
-            "right":          ("BUTTON_RIGHT", "ABS_HAT0X_MAX"),
-            "joystick1up":    ("ANALOGUE_2", "ABS_Y"),
-            "joystick1left":  ("ANALOGUE_1", "ABS_X"),
-            "pageup":         ("BUTTON_5", "BTN_TL"),
-            "pagedown":       ("BUTTON_6", "BTN_TR"),
-            "l2":             ("BUTTON_7", "BTN_TL2"),
-            "r2":             ("BUTTON_8", "BTN_TR2")
-        }
+        self.setup_controllers(conf, system, playersControllers, guns, wheels)
 
-        self.setConf(conf, "INPUT_MODE", 1)
+    def setup_controllers(self, conf, system, playersControllers, guns, wheels):
+        # 1: SDL, 2: evdev
 
         # Handle games best served by evdev - i.e. Guns
-        if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "gsevo", "jungle", "letsgoju", "hunt", "primevah", "rambo", "dead", "hotd"]):
-            self.setConf(conf, "INPUT_MODE", 0)
-            nplayer = 1
-            for playercontroller, pad in sorted(playersControllers.items()):
-                # Handle two players / controllers only
-                if nplayer <= 2:
-                    controller_name = pad.real_name.upper().replace(" ", "_").replace("-", "_")
-                    for input_name in pad.inputs:
-                        if input_name in lindberghCtrl:
-                            button_name, input_value = lindberghCtrl[input_name]
+        #if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "gsevo", "jungle", "letsgoju", "hunt", "primevah", "rambo", "dead", "hotd"]):
+        #    input_mode = 2
+        #else:
+        #    input_mode = 1
 
-                            # Handle special case for joystick1up and joystick1left
-                            if input_name in {"joystick1up", "joystick1left"}:
-                                key_pattern = button_name
+        input_mode = 2
+        self.setConf(conf, "INPUT_MODE", input_mode)
+
+        # comment all player values
+        for key in conf["keys"]:
+            if key.startswith("PLAYER_") or key.startswith("ANALOGUE_") or key == "TEST_BUTTON":
+                self.commentConf(conf, key)
+
+        # add a test key via evdev
+        if input_mode == 2:
+            hkevent = hotkeygen.getHotkeygenEvent()
+            if hkevent is not None:
+                self.setConf(conf, "TEST_BUTTON",   hkevent + ":KEY:" + str(ecodes.KEY_T))
+                # only 1 assignment possible for coins, let's it on the select button of player 1 for the moment
+                # could be set to hotkeygen/coin and on player1/select via .keys, but different from sdl
+                # self.setConf(conf, "PLAYER_1_COIN", hkevent + ":KEY:" + str(ecodes.KEY_5))
+
+        # configure guns
+        if input_mode == 2:
+            if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+                self.setup_guns_evdev(conf, guns)
+
+        # joysticks
+        if input_mode == 2:
+            self.setup_joysticks_evdev(conf, system, wheels, playersControllers)
+
+    def setup_joysticks_evdev(self, conf, system, wheels, playersControllers):
+        # button that are common to all players
+        noPlayerButton = {
+            "TEST_BUTTON": True,
+            "ANALOGUE_1":  True,
+            "ANALOGUE_2":  True,
+            "ANALOGUE_3":  True,
+            "ANALOGUE_4":  True,
+            "ANALOGUE_5":  True,
+            "ANALOGUE_6":  True,
+            "ANALOGUE_7":  True,
+            "ANALOGUE_8":  True,
+        }
+        
+        lindberghCtrl_pad = {
+            "a":              "BUTTON_2",
+            "b":              "BUTTON_1",
+            "x":              "BUTTON_4",
+            "y":              "BUTTON_3",
+            "start":          "BUTTON_START",
+            "select":         "COIN",
+            "up":             "BUTTON_UP",
+            "down":           "BUTTON_DOWN",
+            "left":           "BUTTON_LEFT",
+            "right":          "BUTTON_RIGHT",
+            "joystick1up":    "ANALOGUE_2",
+            "joystick1left":  "ANALOGUE_1",
+            "pageup":         "BUTTON_5",
+            "pagedown":       "BUTTON_6",
+            "l2":             "BUTTON_7",
+            "r2":             "BUTTON_8"
+        }
+
+        # the same mapping for a wheel or a pad for a wheel game should do the job
+        lindberghCtrl_wheel = {
+            "a":              "BUTTON_2",
+            "b":              "BUTTON_1",
+            "x":              "BUTTON_4",
+            "y":              "BUTTON_3",
+            "start":          "BUTTON_START",
+            "select":         "COIN",
+            "up":             "BUTTON_UP",
+            "down":           "BUTTON_DOWN",
+            "left":           "BUTTON_LEFT",
+            "right":          "BUTTON_RIGHT",
+            "joystick1left":  "ANALOGUE_1",
+            "pageup":         "BUTTON_5",
+            "pagedown":       "BUTTON_6",
+            "l2":             "ANALOGUE_3",
+            "r2":             "ANALOGUE_2"
+        }
+
+        lindberghCtrl_gun = {
+            "a":              "BUTTON_2",
+            "b":              "BUTTON_1",
+            "x":              "BUTTON_4",
+            "y":              "BUTTON_3",
+            "start":          "BUTTON_START",
+            "select":         "COIN",
+            "up":             "BUTTON_UP",
+            "down":           "BUTTON_DOWN",
+            "left":           "BUTTON_LEFT",
+            "right":          "BUTTON_RIGHT",
+            "joystick1up":    "ANALOGUE_2",
+            "joystick1left":  "ANALOGUE_1",
+            "pageup":         "BUTTON_5",
+            "pagedown":       "BUTTON_6",
+            "l2":             "BUTTON_7",
+            "r2":             "BUTTON_8"
+        }
+
+        # configure joysticks if no gun configured for the user
+        nplayer = 1
+        for playercontroller, pad in sorted(playersControllers.items()):
+            # Handle two players / controllers only, don't do if already configured for guns
+            if nplayer <= 2 and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
+                ### choose the adapted mapping
+                if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+                    lindberghCtrl = lindberghCtrl_wheel
+                    eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
+                elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+                    lindberghCtrl = lindberghCtrl_gun
+                    eslog.debug(f"lindbergh gun mapping for player {nplayer}")
+                    # adjustment for player 2 gun
+                    for x in lindberghCtrl:
+                        if lindberghCtrl[x] == "ANALOGUE_1" and nplayer == 2:
+                            lindberghCtrl[x] == "ANALOGUE_3"
+                        if lindberghCtrl[x] == "ANALOGUE_2" and nplayer == 2:
+                            lindberghCtrl[x] == "ANALOGUE_4"
+                else:
+                    lindberghCtrl = lindberghCtrl_pad
+                    eslog.debug(f"lindbergh pad mapping for player {nplayer}")
+
+                ### configure each input
+                controller_name = pad.device_path
+                for input_name in lindberghCtrl:
+
+                    # coin is only for player 1
+                    if lindberghCtrl[input_name] == "COIN" and nplayer > 1:
+                        continue
+                    
+                    input_base_name = input_name
+                    if input_name == "joystick1right":
+                        input_base_name = "joystick1left"
+                    if input_name == "joystick1down":
+                        input_base_name = "joystick1up"
+                    if input_name == "joystick2right":
+                        input_base_name = "joystick2left"
+                    if input_name == "joystick2down":
+                        input_base_name = "joystick2up"
+
+                    if input_base_name in pad.inputs and (pad.inputs[input_base_name].code is not None or pad.inputs[input_base_name].type == "hat"):
+                        button_name = lindberghCtrl[input_name]
+
+                        if pad.inputs[input_base_name].type == "button":
+                            input_value = "KEY:"+pad.inputs[input_base_name].code
+                            if button_name in noPlayerButton:
+                                if nplayer == 1:
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
-                                key_pattern = f"PLAYER_{nplayer}_{button_name}"
+                                if button_name.startswith("ANALOGUE_"):
+                                    if nplayer == 1:
+                                        self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                                else:
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                        elif pad.inputs[input_base_name].type == "axis":
+                            # we have no cache like .sdl2 ; this is not good to check if that's a reversed axis or not
+                            if input_name == "l2" or input_name == "r2": # full reverted axis
+                                input_value = "ABS_NEG:"+pad.inputs[input_base_name].code
+                            else:
+                                input_value = "ABS:"+pad.inputs[input_base_name].code
+                            if button_name.startswith("ANALOGUE_"):
+                                if nplayer == 1:
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                            else:
+                                if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up":
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MIN")
+                                else:
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MAX")
+                        elif pad.inputs[input_base_name].type == "hat":
+                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
+                                # 16 is the HAT0 code
+                                input_value = "ABS:"+ str(16+1+int(pad.inputs[input_base_name].id)*2)
+                            else:
+                                input_value = "ABS:"+ str(16+int(pad.inputs[input_base_name].id)*2)
+                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
+                                input_value += ":MIN"
+                            else:
+                                input_value += ":MAX"
+                            self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                        else:
+                            raise Exception("invalid input type")
+                nplayer += 1
 
-                            self.setConf(conf, key_pattern, f"{controller_name}_{input_value}")
-                    nplayer += 1
+    def setup_guns_evdev(self, conf, guns):
+        nplayer = 1
+
+        # common batocera mapping
+        mappings_codes = {
+            "left":   ecodes.BTN_LEFT,
+            "right":  ecodes.BTN_RIGHT,
+            "middle": ecodes.BTN_MIDDLE,
+            "1": ecodes.BTN_1,
+            "2": ecodes.BTN_2,
+            "3": ecodes.BTN_3,
+            "4": ecodes.BTN_4,
+            "5": ecodes.BTN_5,
+            "6": ecodes.BTN_6,
+            "7": ecodes.BTN_7,
+            "8": ecodes.BTN_8,
+        }
+
+        # lindberg gun mapping
+        mappings_actions = {
+            "left":   "BUTTON_1", # trigger = BUTTON_1
+            "middle": "BUTTON_START",
+            "1":      "COIN",
+            "right":  "BUTTON_2", # reload = BUTTON_2
+            "2":      "BUTTON_3", # extra action = BUTTON_3
+            "3":      "BUTTON_4",
+            "4":      "BUTTON_5",
+            "5":      "BUTTON_UP",
+            "6":      "BUTTON_DOWN",
+            "7":      "BUTTON_LEFT",
+            "8":      "BUTTON_RIGHT",
+        }
+
+        for gun in guns:
+            if nplayer <= 2:
+                eslog.debug(f"lindbergh gun for player {nplayer}")
+                xplayer = 1+(nplayer-1)*2
+                yplayer = 1+(nplayer-1)*2+1
+                evplayer = guns[gun]["node"]
+                self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
+                self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
+
+                for mapping in mappings_actions:
+                    if mapping in guns[gun]["buttons"] and mapping in mappings_codes:
+                        code = mappings_codes[mapping]
+                        action = mappings_actions[mapping]
+                        if not (action == "COIN" and nplayer != 1): # COIN is only for player 1
+                            self.setConf(conf, f"PLAYER_{nplayer}_{action}", f"{evplayer}:KEY:{code}")
+            nplayer += 1
 
     def setup_eeprom(self):
         DOWNLOAD_PATH: Final = self.LINDBERGH_SAVES / "lindbergh-eeprom.tar.xz"
@@ -388,7 +618,7 @@ class LindberghGenerator(Generator):
             Path(romDir, "libsegaapi.so").unlink()
             eslog.debug(f"Removed: {romDir}/libsegaapi.so")
 
-    def setup_config(self, source_dir, system, gameResolution, guns, playersControllers, romDir, romName):
+    def setup_config(self, source_dir, system, gameResolution, guns, wheels, playersControllers, romDir, romName):
         LINDBERGH_CONFIG_FILE = Path("/userdata/system/configs/lindbergh/lindbergh.conf")
         mkdir_if_not_exists(LINDBERGH_CONFIG_FILE.parent)
 
@@ -400,7 +630,7 @@ class LindberghGenerator(Generator):
 
         # load and modify it if needed and save it
         conf = self.loadConf(LINDBERGH_CONFIG_FILE)
-        self.buildConfFile(conf, system, gameResolution, guns, playersControllers, romName)
+        self.buildConfFile(conf, system, gameResolution, guns, wheels, playersControllers, romName)
         self.saveConf(conf, LINDBERGH_CONFIG_FILE)
 
         # copy the config file in the rom dir, where it is used
