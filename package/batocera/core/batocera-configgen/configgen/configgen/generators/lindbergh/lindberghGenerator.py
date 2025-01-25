@@ -347,9 +347,9 @@ class LindberghGenerator(Generator):
 
         # joysticks
         if input_mode == 2:
-            self.setup_joysticks_evdev(conf, system, wheels, playersControllers)
+            self.setup_joysticks_evdev(conf, system, guns, wheels, playersControllers)
 
-    def setup_joysticks_evdev(self, conf, system, wheels, playersControllers):
+    def setup_joysticks_evdev(self, conf, system, guns, wheels, playersControllers):
         # button that are common to all players
         noPlayerButton = {
             "TEST_BUTTON": True,
