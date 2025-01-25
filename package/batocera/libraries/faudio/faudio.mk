@@ -11,7 +11,7 @@ FAUDIO_LICENSE_FILES = LICENSE
 FAUDIO_SUPPORTS_IN_SOURCE_BUILD = NO
 FAUDIO_INSTALL_STAGING = YES
 
-FAUDIO_DEPENDENCIES = host-bison host-flex host-libtool gstreamer1 gst1-plugins-base
+FAUDIO_DEPENDENCIES = host-bison host-flex host-libtool gstreamer1 gst1-plugins-base sdl2
 
 ifeq ($(BR2_PACKAGE_WINE_TKG),y)
 FAUDIO_DEPENDENCIES += host-wine-tkg
