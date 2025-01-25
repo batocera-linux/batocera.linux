@@ -1,0 +1,36 @@
+From 5778cfc64913abc8c80160bb709ec359362fc8ac Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 8 Oct 2024 06:48:13 +0000
+Subject: [PATCH 2/2] TESTING: test uart_ao_a_pins bias disable on Odroid C2
+ and WeTek Hub
+
+This appears to resolve the reports of non-booting C2 boards. No feedback
+on WeTek Hub yet.
+
+Suggested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi  | 7 +++++++
+ arch/arm/dts/meson-gxbb-wetek-hub-u-boot.dtsi | 7 +++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi b/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi
+index 5a2be8171e1..b73ce8378c9 100644
+--- a/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi
++++ b/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi
+@@ -35,6 +35,13 @@
+ 	snps,reset-active-low;
+ };
+ 
++&uart_ao_a_pins {
++	mux {
++		/delete-property/ bias-disable;
++		bias-pull-up;
++	};
++};
++
+ &usb0 {
+ 	status = "disabled";
+ };
+-- 
+2.34.1
