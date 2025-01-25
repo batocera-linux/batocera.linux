@@ -8,7 +8,7 @@ LIBRETRO_HATARIB_VERSION = 0.3
 LIBRETRO_HATARIB_SITE = https://github.com/bbbradsmith/hatariB
 LIBRETRO_HATARIB_SITE_METHOD=git
 LIBRETRO_HATARIB_LICENSE = GPLv2
-LIBRETRO_HATARIB_DEPENDENCIES = libcapsimage libpng libzlib sdl2
+LIBRETRO_HATARIB_DEPENDENCIES = libcapsimage libpng libzlib sdl2 retroarch
 
 LIBRETRO_HATARIB_CONF_ENV += \
     SHORTHASH='"$(shell echo $(LIBRETRO_HATARIB_VERSION) | cut -c 1-7)"' \
