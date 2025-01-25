@@ -20,6 +20,7 @@ define WM8960_AUDIO_HAT_INSTALL_TARGET_CMDS
     cp $(@D)/wm8960_asound.state $(TARGET_DIR)/etc/wm8960-soundcard
     cp $(@D)/wm8960-soundcard $(TARGET_DIR)/usr/bin/
     # add our init.d script
+    mkdir -p $(TARGET_DIR)/etc/init.d
     $(INSTALL) -m 755 $(WM8960_AUDIO_HAT_PATH)/S12wm8960 \
         $(TARGET_DIR)/etc/init.d/S12wm8960
 endef
