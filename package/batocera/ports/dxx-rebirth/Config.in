@@ -6,6 +6,8 @@ config BR2_PACKAGE_DXX_REBIRTH
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_IMAGE
 	select BR2_PACKAGE_SDL2_MIXER
+	select BR2_PACKAGE_LIBGLEW    if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBGL
+	select BR2_PACKAGE_LIBGLU     if BR2_PACKAGE_HAS_LIBGL
 	help
 	  dxx-rebirth is an opensource port of Descent 1 & 2
 

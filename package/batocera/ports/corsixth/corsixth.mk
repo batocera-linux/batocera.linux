@@ -6,7 +6,7 @@
 
 CORSIXTH_VERSION = v0.68.0
 CORSIXTH_SITE = $(call github,CorsixTH,CorsixTH,$(CORSIXTH_VERSION))
-CORSIXTH_DEPENDENCIES = sdl2 sdl2_image lua luafilesystem lpeg luasocket 
+CORSIXTH_DEPENDENCIES = sdl2 sdl2_image lua luafilesystem lpeg luasocket libcurl
 CORSIXTH_DEPENDENCIES += luasec sdl2_mixer ffmpeg
 
 define CORSIXTH_INSTALL_EVMAPY

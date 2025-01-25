@@ -20,6 +20,14 @@ DXX_REBIRTH_SCONS_OPTS = -j$(PARALLEL_JOBS)
 
 DXX_REBIRTH_SCONS_OPTS += sdl2=yes
 
+ifeq ($(BR2_PACKAGE_LIBGLEW),y)
+    DXX_REBIRTH_DEPENDENCIES += libglew
+endif
+
+ifeq ($(BR2_PACKAGE_LIBGLU),y)
+    DXX_REBIRTH_DEPENDENCIES += libglu
+endif
+
 define DXX_REBIRTH_BUILD_CMDS
     (cd $(@D); \
         PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
