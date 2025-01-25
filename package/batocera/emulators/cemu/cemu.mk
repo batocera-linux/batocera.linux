@@ -18,7 +18,7 @@ CEMU_SITE_METHOD=git
 CEMU_GIT_SUBMODULES=YES
 CEMU_DEPENDENCIES = sdl2 host-libcurl host-pugixml pugixml rapidjson boost libpng \
                     libzip host-glslang glslang zlib zstd wxwidgets fmt glm \
-					host-nasm host-zstd host-libusb libcurl
+					host-nasm host-zstd host-libusb libcurl bluez5-utils
 
 CEMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
