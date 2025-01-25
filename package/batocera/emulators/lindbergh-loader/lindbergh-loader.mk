@@ -3,14 +3,14 @@
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Jan 12, 2025
-LINDBERGH_LOADER_VERSION = 59212c742e4b5c958977dd37c1f7a16e9a1227c7
+# Version: Commits on Jan 25, 2025
+LINDBERGH_LOADER_VERSION = 7856fcbcbd576facedac4564ca8094d1fbe15f9d
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
 
 ifeq ($(BR2_x86_64),y)
-LINDBERGH_LOADER_DEPENDENCIES = wine-x86
+LINDBERGH_LOADER_DEPENDENCIES = wine-x86 dmidecode
 endif
 
 ifeq ($(BR2_i386),y)
