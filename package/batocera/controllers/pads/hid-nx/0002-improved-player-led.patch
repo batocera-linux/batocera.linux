@@ -1,0 +1,292 @@
+--- a/hid-nx.c
++++ b/hid-nx.c
+@@ -28,11 +28,17 @@
+  */
+ 
+ #include "hid-ids.h"
++#include <linux/version.h>
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
++#include <linux/unaligned.h>
++#else
+ #include <asm/unaligned.h>
++#endif
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/hid.h>
++#include <linux/idr.h>
+ #include <linux/input.h>
+ #include <linux/jiffies.h>
+ #include <linux/leds.h>
+@@ -559,11 +565,24 @@
+ };
+ 
+ #define NX_CON_NUM_LEDS ARRAY_SIZE(nx_con_player_led_names)
++#define NX_CON_NUM_LED_PATTERNS 8
++/* Taken from https://www.nintendo.com/my/support/qa/detail/33822 */
++static const enum led_brightness nx_con_player_led_patterns[NX_CON_NUM_LED_PATTERNS][NX_CON_NUM_LEDS] = {
++	{ 1, 0, 0, 0 },
++	{ 1, 1, 0, 0 },
++	{ 1, 1, 1, 0 },
++	{ 1, 1, 1, 1 },
++	{ 1, 0, 0, 1 },
++	{ 1, 0, 1, 0 },
++	{ 1, 0, 1, 1 },
++	{ 0, 1, 1, 0 },
++};
+ 
+ /* Each physical controller is associated with a nx_con struct */
+ struct nx_con {
+ 	struct hid_device *hdev;
+ 	struct input_dev *idev;
++	u32 player_id;
+ 	struct led_classdev leds[NX_CON_NUM_LEDS]; /* player leds */
+ 	struct led_classdev home_led;
+ 	enum nx_con_state state;
+@@ -943,6 +962,25 @@
+ 	return nx_con_send_subcmd(con, req, 1, HZ/4);
+ }
+ 
++static int nx_con_set_home_led(struct nx_con *con, enum led_brightness brightness)
++{
++	struct nx_con_subcmd_request *req;
++	u8 buffer[sizeof(*req) + 5] = { 0 };
++	u8 *data;
++
++	req = (struct nx_con_subcmd_request *)buffer;
++	req->subcmd_id = NX_CON_SUBCMD_SET_HOME_LIGHT;
++	data = req->data;
++	data[0] = 0x01;
++	data[1] = brightness << 4;
++	data[2] = brightness | (brightness << 4);
++	data[3] = 0x11;
++	data[4] = 0x11;
++
++	hid_dbg(con->hdev, "setting home led brightness\n");
++	return nx_con_send_subcmd(con, req, 5, HZ/4);
++}
++
+ static int nx_con_request_spi_flash_read(struct nx_con *con,
+ 					 u32 start_addr,
+ 					 u8 size,
+@@ -2089,6 +2127,7 @@
+ 	return 0;
+ }
+ 
++/* Because the subcommand sets all the leds at once, the brightness argument is ignored */
+ static int nx_con_player_led_brightness_set(struct led_classdev *led,
+ 					    enum led_brightness brightness)
+ {
+@@ -2098,28 +2137,16 @@
+ 	int val = 0;
+ 	int i;
+ 	int ret;
+-	int num;
+ 
+ 	if (!(con = hid_get_drvdata(hdev))) {
+ 		hid_err(hdev, "No controller data\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	/* determine which player led this is */
+-	for (num = 0; num < NX_CON_NUM_LEDS; num++) {
+-		if (&con->leds[num] == led)
+-			break;
+-	}
+-	if (num >= NX_CON_NUM_LEDS)
+-		return -EINVAL;
++	for (i = 0; i < NX_CON_NUM_LEDS; i++)
++		val |= con->leds[i].brightness << i;
+ 
+ 	mutex_lock(&con->output_mutex);
+-	for (i = 0; i < NX_CON_NUM_LEDS; i++) {
+-		if (i == num)
+-			val |= brightness << i;
+-		else
+-			val |= con->leds[i].brightness << i;
+-	}
+ 	ret = nx_con_set_player_leds(con, 0, val);
+ 	mutex_unlock(&con->output_mutex);
+ 
+@@ -2132,53 +2159,42 @@
+ 	struct device *dev = led->dev->parent;
+ 	struct hid_device *hdev = to_hid_device(dev);
+ 	struct nx_con *con;
+-	struct nx_con_subcmd_request *req;
+-	u8 buffer[sizeof(*req) + 5] = { 0 };
+-	u8 *data;
+ 	int ret;
+ 
+ 	if (!(con = hid_get_drvdata(hdev))) {
+ 		hid_err(hdev, "No controller data\n");
+ 		return -ENODEV;
+ 	}
+-
+-	req = (struct nx_con_subcmd_request *)buffer;
+-	req->subcmd_id = NX_CON_SUBCMD_SET_HOME_LIGHT;
+-	data = req->data;
+-	data[0] = 0x01;
+-	data[1] = brightness << 4;
+-	data[2] = brightness | (brightness << 4);
+-	data[3] = 0x11;
+-	data[4] = 0x11;
+-
+-	hid_dbg(hdev, "setting home led brightness\n");
+ 	mutex_lock(&con->output_mutex);
+-	ret = nx_con_send_subcmd(con, req, 5, HZ/4);
++	ret = nx_con_set_home_led(con, brightness);
+ 	mutex_unlock(&con->output_mutex);
+-
+ 	return ret;
+ }
+ 
+-static DEFINE_MUTEX(nx_con_input_num_mutex);
++static DEFINE_IDA(nx_con_player_id_allocator);
+ static int nx_con_leds_create(struct nx_con *con)
+ {
+ 	struct hid_device *hdev = con->hdev;
+ 	struct device *dev = &hdev->dev;
+ 	const char *d_name = dev_name(dev);
+ 	struct led_classdev *led;
++	int led_val = 0;
+ 	char *name;
+-	int ret = 0;
++	int ret;
+ 	int i;
+-	static int input_num = 1;
+-
+-	/* Set the default controller player leds based on controller number */
+-	mutex_lock(&nx_con_input_num_mutex);
+-	mutex_lock(&con->output_mutex);
+-	if ((ret = nx_con_set_player_leds(con, 0, 0xF >> (4 - input_num))))
+-		hid_warn(con->hdev, "Failed to set leds; ret=%d\n", ret);
+-	mutex_unlock(&con->output_mutex);
++	int player_led_pattern;
+ 
+ 	/* configure the player LEDs */
++	con->player_id = U32_MAX;
++	ret = ida_alloc(&nx_con_player_id_allocator, GFP_KERNEL);
++	if (ret < 0) {
++		hid_warn(hdev, "Failed to allocate player ID, skipping; ret=%d\n", ret);
++		goto home_led;
++	}
++	con->player_id = ret;
++	player_led_pattern = ret % NX_CON_NUM_LED_PATTERNS;
++	hid_info(con->hdev, "assigned player id %d led pattern %d\n", con->player_id, player_led_pattern + 1);
++
+ 	for (i = 0; i < NX_CON_NUM_LEDS; i++) {
+ 		name = devm_kasprintf(dev,
+ 				      GFP_KERNEL,
+@@ -2187,28 +2203,36 @@
+ 				      "green",
+ 				      nx_con_player_led_names[i]);
+ 		if (!name) {
+-			mutex_unlock(&nx_con_input_num_mutex);
+ 			return -ENOMEM;
+ 		}
+ 
+ 		led = &con->leds[i];
+ 		led->name = name;
+-		led->brightness = ((i + 1) <= input_num) ? 1 : 0;
++		led->brightness = nx_con_player_led_patterns[player_led_pattern][i];
+ 		led->max_brightness = 1;
+ 		led->brightness_set_blocking = nx_con_player_led_brightness_set;
+ 		led->flags = LED_CORE_SUSPENDRESUME | LED_HW_PLUGGABLE;
+ 
+-		if ((ret = devm_led_classdev_register(&hdev->dev, led))) {
+-			hid_err(hdev, "Failed registering %s LED\n", led->name);
+-			mutex_unlock(&nx_con_input_num_mutex);
++		led_val |= nx_con_player_led_patterns[player_led_pattern][i] << i;
++	}
++	mutex_lock(&con->output_mutex);
++	ret = nx_con_set_player_leds(con, 0, led_val);
++	mutex_unlock(&con->output_mutex);
++	if (ret) {
++		hid_warn(hdev, "Failed to set players LEDs, skipping registration; ret=%d\n", ret);
++		goto home_led;
++	}
++
++	for (i = 0; i < NX_CON_NUM_LEDS; i++) {
++		led = &con->leds[i];
++		ret = devm_led_classdev_register(&hdev->dev, led);
++		if (ret) {
++			hid_err(hdev, "Failed to register player %d LED; ret=%d\n", i + 1, ret);
+ 			return ret;
+ 		}
+ 	}
+ 
+-	if (++input_num > 4)
+-		input_num = 1;
+-	mutex_unlock(&nx_con_input_num_mutex);
+-
++home_led:
+ 	/* configure the home LED */
+ 	if (nx_con_type_has_right_controls(con)) {
+ 		name = devm_kasprintf(dev,
+@@ -2227,15 +2251,19 @@
+ 		led->brightness_set_blocking = nx_con_home_led_brightness_set;
+ 		led->flags = LED_CORE_SUSPENDRESUME | LED_HW_PLUGGABLE;
+ 
+-		if ((ret = devm_led_classdev_register(&hdev->dev, led))) {
+-			hid_err(hdev, "Failed registering home led\n");
+-			return ret;
++		/* Set the home LED to 0 as default state */
++		mutex_lock(&con->output_mutex);
++		ret = nx_con_set_home_led(con, 0);
++		mutex_unlock(&con->output_mutex);
++		if (ret) {
++			hid_warn(hdev, "Failed to set home LED, skipping registration; ret=%d\n", ret);
++			return 0;
+ 		}
+ 
+-		/* Set the home LED to 0 as default state */
+-		if ((ret = nx_con_home_led_brightness_set(led, 0))) {
+-			hid_warn(hdev, "Failed to set home LED default, unregistering home LED");
+-			devm_led_classdev_unregister(&hdev->dev, led);
++		ret = devm_led_classdev_register(&hdev->dev, led);
++		if (ret) {
++			hid_err(hdev, "Failed to register home LED; ret=%d\n", ret);
++			return ret;
+ 		}
+ 	}
+ 
+@@ -2654,7 +2682,7 @@
+ 	struct nx_con *con = hid_get_drvdata(hdev);
+ 	unsigned long flags;
+ 
+-	hid_dbg(hdev, "remove\n");
++	hid_info(hdev, "remove player id %d\n", con->player_id);
+ 
+ 	/* Prevent further attempts at sending subcommands. */
+ 	spin_lock_irqsave(&con->lock, flags);
+@@ -2662,6 +2690,7 @@
+ 	spin_unlock_irqrestore(&con->lock, flags);
+ 
+ 	destroy_workqueue(con->rumble_queue);
++	ida_free(&nx_con_player_id_allocator, con->player_id);
+ 
+ 	hid_hw_close(hdev);
+ 	hid_hw_stop(hdev);
+@@ -2691,9 +2720,21 @@
+ 	.remove		= nx_hid_remove,
+ 	.raw_event	= nx_hid_event,
+ };
+-module_hid_driver(nx_hid_driver);
++static int __init nx_hid_init(void)
++{
++	return hid_register_driver(&nx_hid_driver);
++}
++
++static void __exit nx_hid_exit(void)
++{
++	hid_unregister_driver(&nx_hid_driver);
++	ida_destroy(&nx_con_player_id_allocator);
++}
+ 
++module_init(nx_hid_init);
++module_exit(nx_hid_exit);
+ MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Ryan McClelland <rymcclel@gmail.com>");
+ MODULE_AUTHOR("Emily Strickland <linux@emily.st>");
+ MODULE_AUTHOR("Daniel J. Ogorchock <djogorchock@gmail.com>");
+ MODULE_DESCRIPTION("Driver for Nintendo Switch Controllers");
