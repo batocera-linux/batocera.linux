@@ -7,6 +7,8 @@ import shutil
 import stat
 import tarfile
 import requests
+import subprocess
+import socket
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -46,7 +48,8 @@ class LindberghGenerator(Generator):
         "ANALOGUE_1":                True, "ANALOGUE_2":                True, "ANALOGUE_3":                True, "ANALOGUE_4":                True,
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
         "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
-        "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True
+        "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True, "CPU_FREQ_GHZ":              True,
+        "OR2_IP":                    True
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
@@ -229,13 +232,36 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "SRAM_PATH",   f"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}")
         self.setConf(conf, "EEPROM_PATH", f"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}")
 
+        ## Additional game specific options
+
+        # Virtua Tennis - Card Reader
         if "tennis" in romName.lower() and system.isOptSet("lindbergh_card") and system.getOptBoolean("lindbergh_card"):
             self.setConf(conf, "EMULATE_CARDREADER", 1)
             self.setConf(conf, "CARDFILE_01", f"{self.LINDBERGH_SAVES}/VT3_Card_01.crd")
             self.setConf(conf, "CARDFILE_02", f"{self.LINDBERGH_SAVES}/VT3_Card_02.crd")
         else:
             self.setConf(conf, "EMULATE_CARDREADER", 0)
-
+        
+        # House of the Dead 4 - CPU speed
+        cpu_speed = self.get_cpu_speed()
+        if cpu_speed is not None:
+            eslog.debug(f"Current CPU Speed: {cpu_speed:.2f} GHz")
+            if "hotd" in romName.lower() and system.isOptSet("lindbergh_speed") and system.getOptBoolean("lindbergh_speed"):
+                self.setConf(conf, "CPU_FREQ_GHZ", cpu_speed)
+        
+        # OutRun 2 - Network
+        ip = self.get_ip_address()
+        if not ip:
+            eslog.debug("Primary destination unreachable. Trying fallback...")
+            ip = self.get_ip_address(destination="8.8.8.8")
+        if ip:
+            eslog.debug(f"Current IP Address: {ip}")
+            if "outr2sdx" in romName.lower() and system.isOptSet("lindbergh_ip") and system.getOptBoolean("lindbergh_ip"):
+                self.setConf(conf, "OR2_IP", ip)
+        else:
+            eslog.debug("Unable to retrieve IP address.")
+        
+        ## Guns
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             need_guns_border = False
             for gun in guns:
@@ -249,7 +275,8 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "BORDER_ENABLED", 1 if need_guns_border else 0)
         else:
             self.setConf(conf, "BORDER_ENABLED", 0)
-
+        
+        # Setup evdev controller(s)
         self.setup_controllers(conf, playersControllers, romName)
 
     def setup_controllers(self, conf, playersControllers, romName):
@@ -378,3 +405,40 @@ class LindberghGenerator(Generator):
 
         # copy the config file in the rom dir, where it is used
         shutil.copy2(LINDBERGH_CONFIG_FILE, romDir / "lindbergh.conf")
+
+    def get_cpu_speed(self):
+        try:
+            # Run the dmidecode command to get processor information
+            result = subprocess.run(
+                ["dmidecode", "-t", "processor"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True
+            )
+            output = result.stdout
+
+            # Find the "Current Speed" value as our base frequency
+            match = re.search(r"Current Speed:\s+(\d+)\s+MHz", output)
+            if match:
+                current_speed_mhz = int(match.group(1))
+                # Convert to GHz
+                current_speed_ghz = current_speed_mhz / 1000
+                return current_speed_ghz
+            else:
+                eslog.debug("Current Speed information not found.")
+                return None
+
+        except subprocess.CalledProcessError as e:
+            eslog.debug(f"Error running dmidecode: {e}")
+            return None
+
+    def get_ip_address(self, destination="1.1.1.1", port=80):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect((destination, port))
+                ip_address = s.getsockname()[0]
+                return ip_address
+        except Exception as e:
+            eslog.debug(f"Error retrieving IP address: {e}")
+            return None

@@ -13657,6 +13657,20 @@ lindbergh-loader:
       description: Enable to emulate the card reader in Virtua Tenis 3.
       choices:
         "Off (Default)": 0
+        "On":            1
+    lindbergh_speed:
+      group: GAME OPTIONS
+      prompt: CPU SPEED
+      description: House of the Dead 4 speed fix. Sets the game to the CPU base frequency of your processor.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_ip:
+      group: GAME OPTIONS
+      prompt: IP ADDRESS
+      description: Enable the IP address for OutRun 2 network play against another PC on the same network.
+      choices:
+        "Off (Default)": 0
         "On":            1 
     lindbergh_test:
       group: ADVANCED OPTIONS
