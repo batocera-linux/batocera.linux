@@ -187,7 +187,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
     # hardcoded list of system for arcade
     # this list can be found in es_system.yml
     # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
-    if system in ['naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'hypseus-singe', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
+    if system in ['lindbergh', 'naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'hypseus-singe', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
         targetSystem = 'arcade'
 
     for nodesystem in root.findall(".//system"):
