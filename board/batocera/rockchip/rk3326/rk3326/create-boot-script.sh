@@ -21,6 +21,7 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot" || exit 1
 cp "${BINARIES_DIR}/uInitrd"         "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"         || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
+cp "${BINARIES_DIR}/rk3326-rg351v-linux.dtb"        "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-rg351v-linux.dtb"        || exit 1
 cp "${BINARIES_DIR}/rk3326-rg351p-linux.dtb"        "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-rg351p-linux.dtb"        || exit 1
 cp "${BINARIES_DIR}/rk3326-odroidgo2-linux.dtb"     "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux.dtb"     || exit 1
 cp "${BINARIES_DIR}/rk3326-odroidgo2-linux-v11.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux-v11.dtb" || exit 1

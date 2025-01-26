@@ -1,0 +1,14 @@
+--- a/cmd/hwrev.c
++++ b/cmd/hwrev.c
+@@ -34,6 +34,11 @@
+ 		env_set("hwrev", "v10-go3");
+ 		env_set("dtb_name", "rk3326-odroidgo3-linux.dtb");
+ 	}
++	/* RG351V */
++        else if (check_range(494, 534, hwrev_adc)) {
++                env_set("hwrev", "rg351v");
++                env_set("dtb_name", "rk3326-rg351v-linux.dtb");
++        }
+ 	/* engineer samples */
+ 	else {
+ 		env_set("hwrev", "v00");
