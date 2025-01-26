@@ -5,6 +5,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
+import evdev
 
 from .batoceraPaths import BATOCERA_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -241,6 +242,34 @@ def write_sdl_controller_db(
 
     return outputFile
 
+def getMappingAxisRelaxValues(pad):
+    # read the sdl2 cache if possible for axis
+    cachePath = f"/userdata/system/.sdl2/{pad.guid}_{pad.name}.cache"
+    cacheFile = Path(cachePath)
+    if not cacheFile.exists():
+        return []
+    cacheContent = cacheFile.read_text(encoding="utf-8").splitlines()
+    n = int(cacheContent[0]) # number of lines of the cache
+    relaxValues = []
+    for i in range(1, n+1):
+        relaxValues.append(int(cacheContent[i]))
+
+    # get full list of axis (in case one is not used in es)
+    devInfos = evdev.InputDevice(pad.device_path)
+    caps = devInfos.capabilities()
+    codeValues = {}
+    i = 0
+    for code in caps[evdev.ecodes.EV_ABS]:
+        if code[0] < evdev.ecodes.ABS_HAT0X:
+            codeValues[code[0]] = relaxValues[i]
+            i = i+1
+
+    # dict with es input names
+    res = {}
+    for x in pad.inputs:
+        if pad.inputs[x].type == "axis":
+            res[x] = codeValues[int(pad.inputs[x].code)]
+    return res
 
 type ControllerMapping = Mapping[int, Controller]
 type ControllerDict = dict[int, Controller]

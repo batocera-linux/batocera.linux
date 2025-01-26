@@ -15,7 +15,7 @@ from evdev import ecodes
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import generate_sdl_game_controller_config, getMappingAxisRelaxValues
 from ..Generator import Generator
 from ...utils import bezels as bezelsUtil
 from ...utils import hotkeygen
@@ -312,9 +312,9 @@ class LindberghGenerator(Generator):
         else:
             self.setConf(conf, "BORDER_ENABLED", 0)
 
-        self.setup_controllers(conf, system, playersControllers, guns, wheels)
+        self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
-    def setup_controllers(self, conf, system, playersControllers, guns, wheels):
+    def setup_controllers(self, conf, system, romName, playersControllers, guns, wheels):
         # 1: SDL, 2: evdev
 
         # Handle games best served by evdev - i.e. Guns
@@ -347,9 +347,9 @@ class LindberghGenerator(Generator):
 
         # joysticks
         if input_mode == 2:
-            self.setup_joysticks_evdev(conf, system, guns, wheels, playersControllers)
+            self.setup_joysticks_evdev(conf, system, romName, guns, wheels, playersControllers)
 
-    def setup_joysticks_evdev(self, conf, system, guns, wheels, playersControllers):
+    def setup_joysticks_evdev(self, conf, system, romName, guns, wheels, playersControllers):
         # button that are common to all players
         noPlayerButton = {
             "TEST_BUTTON": True,
@@ -362,7 +362,86 @@ class LindberghGenerator(Generator):
             "ANALOGUE_7":  True,
             "ANALOGUE_8":  True,
         }
-        
+
+        # configure joysticks if no gun configured for the user
+        nplayer = 1
+        for playercontroller, pad in sorted(playersControllers.items()):
+            # Handle two players / controllers only, don't do if already configured for guns
+            if nplayer <= 2 and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
+                relaxValues = getMappingAxisRelaxValues(pad)
+
+                ### choose the adapted mapping
+                if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(romName, "wheel", nplayer)
+                    eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
+                elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(romName, "gun", nplayer)
+                    eslog.debug(f"lindbergh gun mapping for player {nplayer}")
+                else:
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(romName, "pad", nplayer)
+                    eslog.debug(f"lindbergh pad mapping for player {nplayer}")
+
+                ### configure each input
+                controller_name = pad.device_path
+                for input_name in lindberghCtrl:
+
+                    # coin is only for player 1
+                    if lindberghCtrl[input_name] == "COIN" and nplayer > 1:
+                        continue
+                    
+                    input_base_name = input_name
+                    if input_name == "joystick1right":
+                        input_base_name = "joystick1left"
+                    if input_name == "joystick1down":
+                        input_base_name = "joystick1up"
+                    if input_name == "joystick2right":
+                        input_base_name = "joystick2left"
+                    if input_name == "joystick2down":
+                        input_base_name = "joystick2up"
+
+                    if input_base_name in pad.inputs and (pad.inputs[input_base_name].code is not None or pad.inputs[input_base_name].type == "hat"):
+                        button_name = lindberghCtrl[input_name]
+
+                        if pad.inputs[input_base_name].type == "button":
+                            input_value = "KEY:"+pad.inputs[input_base_name].code
+                            if button_name in noPlayerButton:
+                                if nplayer == 1:
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                            else:
+                                if button_name.startswith("ANALOGUE_"):
+                                    if nplayer == 1:
+                                        self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                                else:
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                        elif pad.inputs[input_base_name].type == "axis":
+                            if input_name in relaxValues and relaxValues[input_name] < 0:
+                                input_value = "ABS_NEG:"+pad.inputs[input_base_name].code
+                            else:
+                                input_value = "ABS:"+pad.inputs[input_base_name].code
+                            if button_name.startswith("ANALOGUE_"):
+                                if nplayer == 1:
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                            else:
+                                if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up":
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MIN")
+                                else:
+                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MAX")
+                        elif pad.inputs[input_base_name].type == "hat":
+                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
+                                # 16 is the HAT0 code
+                                input_value = "ABS:"+ str(16+1+int(pad.inputs[input_base_name].id)*2)
+                            else:
+                                input_value = "ABS:"+ str(16+int(pad.inputs[input_base_name].id)*2)
+                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
+                                input_value += ":MIN"
+                            else:
+                                input_value += ":MAX"
+                            self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                        else:
+                            raise Exception("invalid input type")
+                nplayer += 1
+
+    def getMappingForJoystickOrWheel(self, romName, type, nplayer):
         lindberghCtrl_pad = {
             "a":              "BUTTON_2",
             "b":              "BUTTON_1",
@@ -420,88 +499,30 @@ class LindberghGenerator(Generator):
             "r2":             "BUTTON_8"
         }
 
-        # configure joysticks if no gun configured for the user
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            # Handle two players / controllers only, don't do if already configured for guns
-            if nplayer <= 2 and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
-                ### choose the adapted mapping
-                if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-                    lindberghCtrl = lindberghCtrl_wheel
-                    eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
-                elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-                    lindberghCtrl = lindberghCtrl_gun
-                    eslog.debug(f"lindbergh gun mapping for player {nplayer}")
-                    # adjustment for player 2 gun
-                    for x in lindberghCtrl:
-                        if lindberghCtrl[x] == "ANALOGUE_1" and nplayer == 2:
-                            lindberghCtrl[x] == "ANALOGUE_3"
-                        if lindberghCtrl[x] == "ANALOGUE_2" and nplayer == 2:
-                            lindberghCtrl[x] == "ANALOGUE_4"
-                else:
-                    lindberghCtrl = lindberghCtrl_pad
-                    eslog.debug(f"lindbergh pad mapping for player {nplayer}")
+        # mapping specific to games
+        name = Path(romName.lower()).stem
+        eslog.debug(f"lindberg mapping for game {name}")
 
-                ### configure each input
-                controller_name = pad.device_path
-                for input_name in lindberghCtrl:
+        if name == "hdkotr":
+            lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
+            lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
+            lindberghCtrl_wheel["joystick1left"] = "ANALOGUE_2"
+        
+        # choose mapping
+        if type == "gun":
+            # adjustment for player 2 gun
+            for x in lindberghCtrl_gun:
+                if lindberghCtrl_gun[x] == "ANALOGUE_1" and nplayer == 2:
+                    lindberghCtrl_gun[x] == "ANALOGUE_3"
+                if lindberghCtrl_gun[x] == "ANALOGUE_2" and nplayer == 2:
+                    lindberghCtrl_gun[x] == "ANALOGUE_4"
+            return lindberghCtrl_gun
 
-                    # coin is only for player 1
-                    if lindberghCtrl[input_name] == "COIN" and nplayer > 1:
-                        continue
-                    
-                    input_base_name = input_name
-                    if input_name == "joystick1right":
-                        input_base_name = "joystick1left"
-                    if input_name == "joystick1down":
-                        input_base_name = "joystick1up"
-                    if input_name == "joystick2right":
-                        input_base_name = "joystick2left"
-                    if input_name == "joystick2down":
-                        input_base_name = "joystick2up"
+        if type == "wheel":
+            return lindberghCtrl_wheel
 
-                    if input_base_name in pad.inputs and (pad.inputs[input_base_name].code is not None or pad.inputs[input_base_name].type == "hat"):
-                        button_name = lindberghCtrl[input_name]
-
-                        if pad.inputs[input_base_name].type == "button":
-                            input_value = "KEY:"+pad.inputs[input_base_name].code
-                            if button_name in noPlayerButton:
-                                if nplayer == 1:
-                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
-                            else:
-                                if button_name.startswith("ANALOGUE_"):
-                                    if nplayer == 1:
-                                        self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
-                                else:
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
-                        elif pad.inputs[input_base_name].type == "axis":
-                            # we have no cache like .sdl2 ; this is not good to check if that's a reversed axis or not
-                            if input_name == "l2" or input_name == "r2": # full reverted axis
-                                input_value = "ABS_NEG:"+pad.inputs[input_base_name].code
-                            else:
-                                input_value = "ABS:"+pad.inputs[input_base_name].code
-                            if button_name.startswith("ANALOGUE_"):
-                                if nplayer == 1:
-                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
-                            else:
-                                if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up":
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MIN")
-                                else:
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MAX")
-                        elif pad.inputs[input_base_name].type == "hat":
-                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
-                                # 16 is the HAT0 code
-                                input_value = "ABS:"+ str(16+1+int(pad.inputs[input_base_name].id)*2)
-                            else:
-                                input_value = "ABS:"+ str(16+int(pad.inputs[input_base_name].id)*2)
-                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
-                                input_value += ":MIN"
-                            else:
-                                input_value += ":MAX"
-                            self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
-                        else:
-                            raise Exception("invalid input type")
-                nplayer += 1
+        if type == "pad":
+            return lindberghCtrl_pad
 
     def setup_guns_evdev(self, conf, guns):
         nplayer = 1
