@@ -7,9 +7,13 @@
 AMIBERRY_VERSION = v5.7.4
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
-AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng libserialport libportmidi libzlib libglew
+AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng libserialport libportmidi libzlib
 
 AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DWITH_LTO=ON
+
+ifeq ($(BR2_PACKAGE_LIBGLEW),y)
+AMIBERRY_DEPENDENCIES += libglew
+endif
 
 define AMIBERRY_INSTALL_TARGET_CMDS
 	# Strip and install binary
