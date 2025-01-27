@@ -3,12 +3,16 @@
 test "${ACTION}" = "add" || exit 0
 echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
-# TRIGGER               : LEFT
-# A1 (Middle)           : RIGHT
+##############
+# GunCon3 mapping
+# Hardward event -> virtual light gun event
+##############
+# TRIGGER               : BTN_LEFT
+# A1 (Middle)           : BTN_RIGHT
 # A2 (Right)            : BTN_2
 # A3 (West)             : BTN_9
 # B1 (Z)                : BTN_1
-# B2 (TL)               : MIDDLE
+# B2 (TL)               : BTN_MIDDLE
 # B3 (TR)               : BTN_10
 # C1 (Select)           : BTN_3
 # C2 (Start)            : BTN_4
@@ -20,16 +24,16 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 
 DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
-evsieve --input "${DEVNAME}" persist=exit \
-	--map btn:west btn:9 \
-        --map yield btn:middle btn:right \
-        --map yield btn:right btn:2 \
-	--map btn:z btn:1 \
-	--map yield btn:tl btn:middle \
-	--map btn:tr btn:tr \
-	--map btn:select btn:3 \
-	--map btn:start btn:4 \
-	--map btn:tl2 btn:tl2 \
+evsieve --input "${DEVNAME}" persist=exit        \
+	--map btn:west               btn:9       \
+        --map yield btn:middle       btn:right   \
+        --map yield btn:right        btn:2       \
+	--map btn:z                  btn:1       \
+	--map yield btn:tl           btn:middle  \
+	--map btn:tr                 btn:tr      \
+	--map btn:select             btn:3       \
+	--map btn:start              btn:4       \
+	--map btn:tl2                btn:tl2     \
 	--copy abs:hat0x:38~..~37    btn:7:1     \
         --copy abs:hat0x:~37..38~    btn:7:0     \
         --copy abs:hat0x:~216..217~  btn:8:1     \

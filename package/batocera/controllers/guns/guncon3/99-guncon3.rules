@@ -1,5 +1,8 @@
+# Disable raw devices to merge them (mouse and joystick events)
 SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{idVendor}=="0b9a", ATTRS{idProduct}=="0800", MODE="0666",ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/guncon3-add"
+
+# Virtual light gun, with calibration script
 SUBSYSTEM=="input", ACTION=="add", KERNEL=="event*", ATTRS{name}=="GunCon3-Gun", MODE="0666", ENV{ID_INPUT_GUN}="0", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/batocera-guncon3-calibrator-daemon $env{DEVNAME} 260"
 
-# rule already set by batocera-gun-calibrator
+# Gun mode rule already set by batocera-gun-calibrator
 # SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="* calibrated", MODE="0666", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1

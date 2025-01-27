@@ -38,16 +38,21 @@ checkRunningPIDAndExit1
 CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
-# Trigger                  : BTN_LEFT
-# L. side button           : BTN_MIDDLE
-# R. side button/offscreen : BTN_RIGHT
+    # Trigger                  : BTN_LEFT
+    # L. side button           : BTN_TRIGGER
+    # R. side button/offscreen : BTN_THUMB
 
 if test "${NDEVS}" = 3
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
     DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
-    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --map btn:trigger btn:middle --map btn:thumb btn:right --output name="Aimtrak ATRAK" >/dev/null 2>"${LOGFILE}" &
+
+    nohup evsieve                                              \
+            --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit \
+            --map btn:trigger          btn:middle              \
+            --map btn:thumb            btn:right               \
+            --output name="Aimtrak ATRAK" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
