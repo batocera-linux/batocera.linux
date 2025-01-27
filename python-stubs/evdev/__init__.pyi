@@ -1,5 +1,11 @@
 from . import ecodes as ecodes, ff as ff
-from .device import AbsInfo as AbsInfo, DeviceInfo as DeviceInfo, InputDevice as InputDevice
+from .device import (
+    AbsInfo as AbsInfo,
+    DeviceInfo as DeviceInfo,
+    InputDevice as InputDevice,
+    _CapabilitiesWithAbsInfo as _CapabilitiesWithAbsInfo,
+    _VerboseCapabilitiesWithAbsInfo as _VerboseCapabilitiesWithAbsInfo,
+)
 from .eventio import EvdevError as EvdevError
 from .events import (
     AbsEvent as AbsEvent,
