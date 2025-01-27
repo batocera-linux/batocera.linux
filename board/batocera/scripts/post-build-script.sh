@@ -124,3 +124,10 @@ if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
     sed -i -e '/# GENERIC_SERIAL$/s~^.*#~S0::respawn:/sbin/getty -n -L -l /usr/bin/batocera-autologin '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
         ${TARGET_DIR}/etc/inittab
 fi
+
+# With PARALLEL_BUILD it is difficult to control which of two
+# conflicting files from different packages will be the one ending up
+# in the final image.  We take any files written to a special
+# directory ${BINARIES_DIR}/batocera-target/ and overwrite those
+# in the main target tree.
+cp -pr "${BINARIES_DIR}/batocera-target/./" "${TARGET_DIR}/./"

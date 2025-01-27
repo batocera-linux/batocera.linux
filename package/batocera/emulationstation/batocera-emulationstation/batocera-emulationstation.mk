@@ -190,7 +190,7 @@ endif
 
 define BATOCERA_EMULATIONSTATION_XORG
 	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/xorg/xinitrc \
-	    $(TARGET_DIR)/etc/X11/xinit/xinitrc
+	    $(BINARIES_DIR)/batocera-target/etc/X11/xinit/xinitrc
 endef
 
 define BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
