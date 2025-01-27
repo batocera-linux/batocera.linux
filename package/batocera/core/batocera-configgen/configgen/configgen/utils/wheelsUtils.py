@@ -6,7 +6,7 @@ import os
 import re
 import signal
 import subprocess
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import evdev
 
@@ -244,7 +244,7 @@ def reconfigureAngleRotation(dev: str, wheelAxis: int, rotationAngle: int, wante
 
     absmin = None
     absmax = None
-    for v, absinfo in cast(list[tuple[int, evdev.AbsInfo]], caps[evdev.ecodes.EV_ABS]):
+    for v, absinfo in caps[evdev.ecodes.EV_ABS]:
         if v == wheelAxis:
             absmin = absinfo.min
             absmax = absinfo.max

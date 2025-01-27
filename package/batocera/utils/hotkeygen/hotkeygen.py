@@ -211,7 +211,7 @@ def load_mapping(data: dict[str, str]) -> dict[int, str]:
         print(f"fail to load mapping : {e}")
         return {}
 
-def get_mapping_associations(mapping: Mapping[int, str], caps: dict[int, list[int | tuple[int, evdev.AbsInfo]]]):
+def get_mapping_associations(mapping: Mapping[int, str], caps: evdev._CapabilitiesWithAbsInfo):
     capskeys = set(caps[ecodes.EV_KEY])
     return {key: value for key, value in mapping.items() if key in capskeys}
 
