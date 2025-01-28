@@ -17,7 +17,7 @@ ALSA_SUFFIX =
 endif
 
 define BATOCERA_AUDIO_ALSA_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds $(TARGET_DIR)/usr/share/batocera/alsa
+	mkdir -p $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds $(TARGET_DIR)/usr/share/batocera/alsa $(TARGET_DIR)/etc/init.d $(TARGET_DIR)/etc/udev/rules.d
 	# default alsa configurations
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio-alsa/alsa/asoundrc-* \
 		$(TARGET_DIR)/usr/share/batocera/alsa/
