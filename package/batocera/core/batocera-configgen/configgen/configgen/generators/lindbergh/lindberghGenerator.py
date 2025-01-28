@@ -444,7 +444,7 @@ class LindberghGenerator(Generator):
                             raise Exception("invalid input type")
                 nplayer += 1
 
-    def getMappingForJoystickOrWheel(self, shortRomName, type, nplayer):
+    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer):
         lindberghCtrl_pad = {
             "a":              "BUTTON_2",
             "b":              "BUTTON_1",
@@ -461,13 +461,15 @@ class LindberghGenerator(Generator):
             "pageup":         "BUTTON_5",
             "pagedown":       "BUTTON_6",
             "l2":             "BUTTON_7",
-            "r2":             "BUTTON_8"
+            "r2":             "BUTTON_8",
+            "l3":             "BUTTON_SERVICE",
+            "r3":             "BUTTON_SERVICE"
         }
 
         # the same mapping for a wheel or a pad for a wheel game should do the job
         lindberghCtrl_wheel = {
             "a":              "BUTTON_2",
-            "b":              "BUTTON_1",
+            "b":              "BUTTON_DOWN",
             "x":              "BUTTON_4",
             "y":              "BUTTON_3",
             "start":          "BUTTON_START",
@@ -477,10 +479,12 @@ class LindberghGenerator(Generator):
             "left":           "BUTTON_LEFT",
             "right":          "BUTTON_RIGHT",
             "joystick1left":  "ANALOGUE_1",
-            "pageup":         "BUTTON_5",
-            "pagedown":       "BUTTON_6",
+            "pageup":         "BUTTON_UP",
+            "pagedown":       "BUTTON_DOWN",
             "l2":             "ANALOGUE_3",
-            "r2":             "ANALOGUE_2"
+            "r2":             "ANALOGUE_2",
+            "l3":             "BUTTON_SERVICE",
+            "r3":             "BUTTON_SERVICE"
         }
 
         lindberghCtrl_gun = {
@@ -499,19 +503,36 @@ class LindberghGenerator(Generator):
             "pageup":         "BUTTON_5",
             "pagedown":       "BUTTON_6",
             "l2":             "BUTTON_7",
-            "r2":             "BUTTON_8"
+            "r2":             "BUTTON_8",
+            "l3":             "BUTTON_SERVICE",
+            "r3":             "BUTTON_SERVICE"
         }
 
         # mapping specific to games
         eslog.debug(f"lindberg mapping for game {shortRomName}")
 
         if shortRomName == "hdkotr":
+            lindberghCtrl_wheel["a"] = "BUTTON_1"
+            lindberghCtrl_wheel["b"] = "BUTTON_2"
             lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
             lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
             lindberghCtrl_wheel["joystick1left"] = "ANALOGUE_2"
-        
+
+        if shortRomName == "rtuned":
+            lindberghCtrl_wheel["a"] = "BUTTON_RIGHT"
+            lindberghCtrl_wheel["y"] = "BUTTON_1"
+
+        if shortRomName.startswith("initiad"):
+            lindberghCtrl_wheel["b"] = "BUTTON_1"
+
+        if shortRomName.startswith("hummer"):
+            lindberghCtrl_wheel["a"] = "BUTTON_DOWN"
+
+        if shortRomName.startswith("segartv"):
+            lindberghCtrl_wheel["a"] = "BUTTON_1"
+
         # choose mapping
-        if type == "gun":
+        if deviceType == "gun":
             # adjustment for player 2 gun
             for x in lindberghCtrl_gun:
                 if lindberghCtrl_gun[x] == "ANALOGUE_1" and nplayer == 2:
@@ -520,10 +541,10 @@ class LindberghGenerator(Generator):
                     lindberghCtrl_gun[x] == "ANALOGUE_4"
             return lindberghCtrl_gun
 
-        if type == "wheel":
+        if deviceType == "wheel":
             return lindberghCtrl_wheel
 
-        if type == "pad":
+        if deviceType == "pad":
             return lindberghCtrl_pad
 
     def setup_guns_evdev(self, conf, guns, shortRomName):
