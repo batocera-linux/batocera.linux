@@ -130,4 +130,7 @@ fi
 # in the final image.  We take any files written to a special
 # directory ${BINARIES_DIR}/batocera-target/ and overwrite those
 # in the main target tree.
-cp -pr "${BINARIES_DIR}/batocera-target/./" "${TARGET_DIR}/./"
+
+if [ -d "${BINARIES_DIR}/batocera-target" ]; then
+    cp -pr "${BINARIES_DIR}/batocera-target/./" "${TARGET_DIR}/./"
+fi
