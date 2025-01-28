@@ -1,5 +1,7 @@
 config BR2_PACKAGE_FIRMWARE_ARMBIAN
 	bool "firmware-armbian"
-
 	help
-	  Batocera Armbian firmware
+	  Armbian firmware repository to support various boards
+	  to work correctly with the Linux kernel.
+
+	  https://github.com/armbian/firmware
