@@ -316,17 +316,14 @@ class LindberghGenerator(Generator):
         self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
     def setup_controllers(self, conf, system, romName, playersControllers, guns, wheels):
-        # 1: SDL, 2: evdev
-
-        # Handle games best served by evdev - i.e. Guns
-        #if any(keyword in romName.lower() for keyword in ["spicy", "ghost", "gsevo", "jungle", "letsgoju", "hunt", "primevah", "rambo", "dead", "hotd"]):
-        #    input_mode = 2
-        #else:
-        #    input_mode = 1
-
+        # 0: SDL, 1: EVDEV
+        if system.isOptSet("lindbergh_controller") and system.config["lindbergh_controller"] == "0":
+            input_mode = 0
+        else:
+            input_mode = 1
+        
         shortRomName = Path(romName.lower()).stem
-
-        input_mode = 2
+        
         self.setConf(conf, "INPUT_MODE", input_mode)
 
         # comment all player values
@@ -335,7 +332,7 @@ class LindberghGenerator(Generator):
                 self.commentConf(conf, key)
 
         # add a test key via evdev
-        if input_mode == 2:
+        if input_mode == 1:
             hkevent = hotkeygen.getHotkeygenEvent()
             if hkevent is not None:
                 self.setConf(conf, "TEST_BUTTON",   hkevent + ":KEY:" + str(ecodes.KEY_T))
@@ -344,12 +341,12 @@ class LindberghGenerator(Generator):
                 # self.setConf(conf, "PLAYER_1_COIN", hkevent + ":KEY:" + str(ecodes.KEY_5))
 
         # configure guns
-        if input_mode == 2:
+        if input_mode == 1:
             if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
                 self.setup_guns_evdev(conf, guns, shortRomName)
 
         # joysticks
-        if input_mode == 2:
+        if input_mode == 1:
             self.setup_joysticks_evdev(conf, system, shortRomName, guns, wheels, playersControllers)
 
     def setup_joysticks_evdev(self, conf, system, shortRomName, guns, wheels, playersControllers):
