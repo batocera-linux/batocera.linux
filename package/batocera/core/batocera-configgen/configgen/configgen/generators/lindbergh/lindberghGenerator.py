@@ -483,10 +483,10 @@ class LindberghGenerator(Generator):
             "left":           "BUTTON_LEFT",
             "right":          "BUTTON_RIGHT",
             "joystick1left":  "ANALOGUE_1",
-            "pageup":         "BUTTON_UP",
-            "pagedown":       "BUTTON_DOWN",
-            "l2":             "ANALOGUE_3",
-            "r2":             "ANALOGUE_2",
+            "pageup":         "BUTTON_UP",   # gear down
+            "pagedown":       "BUTTON_DOWN", # gear up
+            "l2":             "ANALOGUE_2",
+            "r2":             "ANALOGUE_3",
             "l3":             "BUTTON_SERVICE",
             "r3":             "BUTTON_SERVICE"
         }
@@ -537,9 +537,14 @@ class LindberghGenerator(Generator):
         if shortRomName == "hdkotr":
             lindberghCtrl_wheel["a"] = "BUTTON_1"
             lindberghCtrl_wheel["b"] = "BUTTON_2"
-            lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
-            lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
+            lindberghCtrl_wheel["l2"] = "ANALOGUE_1"
+            lindberghCtrl_wheel["r2"] = "ANALOGUE_4"
             lindberghCtrl_wheel["joystick1left"] = "ANALOGUE_2"
+
+            del lindberghCtrl_wheel["x"]
+            del lindberghCtrl_wheel["y"]
+            lindberghCtrl_wheel["pageup"]   = "BUTTON_4"
+            lindberghCtrl_wheel["pagedown"] = "BUTTON_3"
 
         if shortRomName == "rtuned":
             lindberghCtrl_wheel["a"] = "BUTTON_RIGHT"
