@@ -375,13 +375,13 @@ class LindberghGenerator(Generator):
 
                 ### choose the adapted mapping
                 if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad)
                     eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
                 elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad)
                     eslog.debug(f"lindbergh gun mapping for player {nplayer}")
                 else:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad)
                     eslog.debug(f"lindbergh pad mapping for player {nplayer}")
 
                 ### configure each input
@@ -435,16 +435,20 @@ class LindberghGenerator(Generator):
                                 input_value = "ABS:"+ str(16+1+int(pad.inputs[input_base_name].id)*2)
                             else:
                                 input_value = "ABS:"+ str(16+int(pad.inputs[input_base_name].id)*2)
-                            if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
-                                input_value += ":MIN"
+                            if button_name.startswith("ANALOGUE_"):
+                                if nplayer == 1:
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
-                                input_value += ":MAX"
-                            self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                                if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
+                                    input_value += ":MIN"
+                                else:
+                                    input_value += ":MAX"
+                                self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
                         else:
                             raise Exception("invalid input type")
                 nplayer += 1
 
-    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer):
+    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer, pad):
         lindberghCtrl_pad = {
             "a":              "BUTTON_2",
             "b":              "BUTTON_1",
@@ -510,6 +514,25 @@ class LindberghGenerator(Generator):
 
         # mapping specific to games
         eslog.debug(f"lindberg mapping for game {shortRomName}")
+
+        # pads without joystick1left, but with a hat
+        if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
+            lindberghCtrl_wheel["left"] = "ANALOGUE_1"
+            del lindberghCtrl_wheel["right"]
+            lindberghCtrl_pad["left"]   = "ANALOGUE_1"
+            del lindberghCtrl_pad["right"]
+
+        # pads without joystick1up, but with a hat
+        if "joystick1up" not in pad.inputs and "up" in pad.inputs and pad.inputs["up"].type == "hat":
+            lindberghCtrl_pad["up"]   = "ANALOGUE_2"
+            del lindberghCtrl_pad["down"]
+
+        # pads without l2, but with l as a button
+        if "l2" not in pad.inputs and "pageup" in pad.inputs and pad.inputs["pageup"].type == "button":
+            lindberghCtrl_wheel["pageup"] = "ANALOGUE_3"
+        # pads without r2, but with r as a button
+        if "r2" not in pad.inputs and "pagedown" in pad.inputs and pad.inputs["pagedown"].type == "button":
+            lindberghCtrl_wheel["pagedown"] = "ANALOGUE_2"
 
         if shortRomName == "hdkotr":
             lindberghCtrl_wheel["a"] = "BUTTON_1"
