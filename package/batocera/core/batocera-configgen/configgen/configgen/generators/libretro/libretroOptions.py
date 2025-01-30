@@ -1855,6 +1855,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('snes9x_superscope_crosshair', '"' + system.config['superscope_crosshair'] + '"')
             coreSettings.save('snes9x_justifier1_crosshair', '"' + system.config['superscope_crosshair'] + '"')
             coreSettings.save('snes9x_justifier2_crosshair', '"' + system.config['superscope_crosshair'] + '"')
+            coreSettings.save('snes9x_rifle_crosshair', '"' + system.config['superscope_crosshair'] + '"')
         else:
             if controllersConfig.gunsNeedCrosses(guns):
                 status = '"2"'
@@ -1863,6 +1864,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('snes9x_superscope_crosshair', status)
             coreSettings.save('snes9x_justifier1_crosshair', status)
             coreSettings.save('snes9x_justifier2_crosshair', status)
+            coreSettings.save('snes9x_rifle_crosshair', status)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
             coreSettings.save('snes9x_superscope_reverse_buttons', '"disabled"')
 
