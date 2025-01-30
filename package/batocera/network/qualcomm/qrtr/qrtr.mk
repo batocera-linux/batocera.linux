@@ -9,7 +9,7 @@ QRTR_SITE = $(call github,andersson,qrtr,$(QRTR_VERSION))
 QRTR_LICENSE = BSD-3-Clause license
 QRTR_LICENSE_FILE = LICENSE
 QRTR_DEPENDENCIES = linux-headers
-HOST_QRTR_DEPENDENCIES = linux-headers
+HOST_QRTR_DEPENDENCIES = linux-headers toolchain
 
 define QRTR_BUILD_CMDS
     $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) all
