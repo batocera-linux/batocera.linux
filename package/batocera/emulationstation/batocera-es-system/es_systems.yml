@@ -1207,29 +1207,68 @@ prboom:
 
     NÃO APAGUE O ARQUIVO "prboom.wad".
 
-tyrquake:
-  name:       TyrQuake
+quake:
+  name: Quake
   manufacturer: Ports
-  release:
+  release: 1996
   hardware: port
-  extensions: [pak]
+  extensions: [quake]
   platform: pc
   group: ports
   emulators:
     libretro:
-      tyrquake: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TYRQUAKE] }
+      tyrquake: { requireAnyOf: [ BR2_PACKAGE_LIBRETRO_TYRQUAKE ] }
+    vkquake:
+      vkquake: { requireAnyOf: [ BR2_PACKAGE_VKQUAKE ] }
   comment_en: |
-    Put your Quake 1 .PAK games in this directory.
+    Put your Quake id1 folder & associated files in this directory.
+    Make sure all data files are lowercase, e.g. "id1", not "ID1" and "pak0.pak", not "PAK0.PAK".
+    Some distributions of the game have upper case file names, e.g. from GOG.com.
 
-    For more info: https://wiki.batocera.org/systems:tyrquake
+    If your system supports Vulkan you can use vkQuake for more features.
+
+    Create a blank launch file with a .quake extension to be able to start the game from ES.
+    i.e. `Quake.quake` or `Quake Mission Pack 1 - Scourge of Armagon.quake`.
+    Launch files should be in `/userdata/roms/quake`.
+    
+    Mission Packs
+    -------------
+
+    Quake Mission Pack 1: Scourge of Armagon & Quake Mission Pack 2: Dissolution of Eternity are supported automatically.
+    Ensure the game files are in these folders:
+
+    `/userdata/roms/quake/hipnotic` for Mission Pack 1
+    `/userdata/roms/quake/rogue` for Mission Pack 2
+
+    Then create the associated ES launch file.
+    i.e. /userdata/roms/quake/Quake Mission Pack 2 - Dissolution of Eternity.quake
+
+    If the mission packs are names accordingly then vkQuake or libretro-tyrquake will use the correct .pak automatically.
+
+    Music
+    -----
+
+    The original Quake had a great soundtrack by Nine Inch Nails.
+    Unfortunately, the Steam version does not come with the soundtrack files (the 2021 re-release music should work out of the box).
+    The GOG-provided files may need to be converted before they are ready for use.
+    In general, you'll just need to move a "music" folder to the correct location within your installation (.e.g `/userdata/roms/quake/id1/music`).
+
+    Mission Pack 1 soundtrack files go inside "hipnotic/music", and Mission Pack 2 soundtrack files go inside "rogue/music".
+
+    Because the music files are separate to the .pak files you can use your own soundtrack provided they follow the correct naming conventions.
+    The files are named in the pattern "tracknn". i.e. track02.ogg or track02.mp3 etc
+
+    vkQuake supports OGG, MP3, FLAC, and WAV audio formats.
+    
+    For more info: https://wiki.batocera.org/systems:quake
   comment_fr: |
     Placez ici vos fichiers .PAK pour Quake 1.
 
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:tyrquake
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:quake
   comment_br: |
     Coloque seus jogos Quake 1 .PAK neste diretório.
 
-    Para mais informações: https://wiki.batocera.org/systems:tyrquake
+    Para mais informações: https://wiki.batocera.org/systems:quake
 
 mrboom:
   name:       MrBoom
@@ -3637,27 +3676,43 @@ switch:
     ryujinx:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
-vitaquake2:
+quake2:
   name: Quake II
   manufacturer: Ports
   release: 1997
   hardware: port
-  extensions: [pak, zip, 7zip]
+  extensions: [quake2, zip, 7zip]
   platform: pc
   group: ports
   emulators:
     libretro:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
+    vkquake2:
+      vkquake2: { requireAnyOf: [BR2_PACKAGE_VKQUAKE2], incompatible_extensions: [zip, 7zip] }
   comment_en: |
-    The libretro vitaquake2 core offers several mission packs.
-    To ensure the correct vitaquake2 core loads for a mission pack, make sure it is placed in a subdirectory within this ROM directory.
-    The supported subdirectories for mission pack ROMs are: xatrix, rogue, and zaero.
-    For the standard Quake II directory, use 'baseq2' to utilize the standard vitaquake2 core.
+    For the standard Quake II copy your 'baseq2' directory and contents here.
+    Make sure all data files are lowercase, e.g. "baseq2", not "BASEQ2" and "pak0.pak", not "PAK0.PAK".
+
+    Create a blank launch file with a .quake2 extension to be able to start the game from ES.
+    i.e. `Quake II.quake2` or `Quake II - Zaero.quake2`.
+    Launch files should be in `/userdata/roms/quake2`.
+
+    Mission Packs
+    -------------
+
+    Copy necessary data file to `rogue` ("Ground Zero"), `xatrix` ("The Reckoning"), `zaero` ("Quake II: Zaero") and `smd` ("Slight Mechanical Destruction") directories respectively.
+    
+    The libretro vitaquake2 supported mission pack ROMs are: xatrix, rogue, and zaero.
+    If you have vkQuake2 the additional `smd` ("Slight Mechanical Destruction") pack is supported.
+    vkQuake2 also supports the Capture the Flag mod using the `ctf` directory.
+
+    Note: vkQuake2 does not support the zip or 7zip extensions.
+
+    For more info: https://wiki.batocera.org/systems:quake2
   comment_fr: |
-    Le cœur libretro de vitaquake2 propose différents packs de missions.
-    Pour vous assurer que le bon cœur vitaquake2 se charge pour un pack de missions, veillez à le placer dans un sous-répertoire de ce répertoire ROM.
-    Les sous-répertoires pris en charge pour les ROM de packs de missions sont : xatrix, rogue et zaero.
-    Pour le répertoire standard de Quake II, utilisez 'baseq2' pour utiliser le cœur vitaquake2 standard.
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:quake2
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:quake2
 
 j2me:
   name:       Java 2 MicroEdition
@@ -4948,6 +5003,8 @@ quake3:
   emulators:
     ioquake3:
       ioquake3: { requireAnyOf: [ BR2_PACKAGE_IOQUAKE3 ] }
+    vkquake3:
+      vkquake3: { requireAnyOf: [ BR2_PACKAGE_VKQUAKE3 ] }
   comment_en: |
     Quake III is optimized to be played with a mouse and keyboard, but here it is also pre-configured to be played with a gamepad.
 

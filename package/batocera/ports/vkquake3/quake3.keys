@@ -1,0 +1,39 @@
+{
+    "actions_player1": [
+    	{
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_LEFTALT", "KEY_F4" ]
+        },
+        {
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_LEFTSHIFT", "KEY_ESC" ]
+        }
+    ]
+}

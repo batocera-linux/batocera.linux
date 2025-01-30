@@ -50,7 +50,10 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'jazz2-native': ('jazz2_native.jazz2_nativeGenerator', 'Jazz2_NativeGenerator'),
     'dhewm3': ('dhewm3.dhewm3Generator', 'Dhewm3Generator'),
     'catacombgl': ('catacombgl.catacombglGenerator', 'CatacombGLGenerator'),
-    'lindbergh-loader': ('lindbergh.lindberghGenerator', 'LindberghGenerator')
+    'lindbergh-loader': ('lindbergh.lindberghGenerator', 'LindberghGenerator'),
+    'vkquake': ('vkquake.vkquakeGenerator', 'VKQuakeGenerator'),
+    'vkquake2': ('vkquake2.vkquake2Generator', 'VKQuake2Generator'),
+    'vkquake3': ('ioquake3.ioquake3Generator', 'IOQuake3Generator')
 }
 
 def get_generator(emulator: str) -> Generator:

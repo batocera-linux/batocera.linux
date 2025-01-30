@@ -238,7 +238,10 @@ PACKAGES_PORTS="abuse
                 hlsdk-xash3d
                 hlsdk-xash3d-dmc
                 hlsdk-xash3d-opfor
-                xash3d-fwgs"
+                xash3d-fwgs
+                vkquake
+                vkquake2
+                vkquake3"
 
 PACKAGES_WINE="dxvk
                dxvk-nvapi

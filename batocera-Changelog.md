@@ -1,5 +1,9 @@
 # 2025/xx/xx - batocera.linux 42 - xxx
 ### Special Notes
+- Quake 1 & 2 roms need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively.
+  See the _info.txt file for directory layouts & ES file launcher naming conventions.
+  vkQuake3 replaces ioQuake3 for systems that support Vulkan. Saved games should continue to work.
+  The libretro cores will continue to run as before.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
@@ -22,6 +26,7 @@
 - Support of Shanwan Twin USB Joystick (new revision)
 - Libretro-PS2 core
 - Force Feedback on RP5 & RPmini
+- vkQuake 1, 2 & 3 for systems that support Vulkan.
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
