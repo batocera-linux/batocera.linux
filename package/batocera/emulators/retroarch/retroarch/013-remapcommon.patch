@@ -10,15 +10,15 @@ index d89059a..90e4bf0 100644
     /* final path for game-specific configuration (prefix+suffix) */
     char game_path[PATH_MAX_LENGTH];
     /* final path for content-dir-specific configuration (prefix+suffix) */
-@@ -4065,6 +4066,7 @@ bool config_load_remap(const char *directory_input_remapping,
+@@ -4322,6 +4322,7 @@
  
-    content_dir_name[0] = '\0';
     core_path[0]        = '\0';
-+   common_path[0]        = '\0';
     game_path[0]        = '\0';
++   common_path[0]      = '\0';
     content_path[0]     = '\0';
+    config_directory[0] = '\0';
  
-@@ -4475,6 +4475,12 @@
+@@ -4713,6 +4714,12 @@
           FILE_PATH_REMAP_EXTENSION,
           sizeof(core_path));
  
@@ -28,8 +28,8 @@ index d89059a..90e4bf0 100644
 +         FILE_PATH_REMAP_EXTENSION,
 +         sizeof(common_path));
 +
-    /* If a game remap file exists, load it. */
-    if (has_content && (new_conf = config_file_new_from_path_to_string(game_path)))
+    /* If a core remap file exists, load it. */
+    if ((new_conf = config_file_new_from_path_to_string(core_path)))
     {
 --- a/configuration.c	2023-07-13 23:25:43.277761188 +0200
 +++ b/configuration.c	2023-07-13 23:29:15.810429836 +0200

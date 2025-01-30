@@ -1,14 +1,14 @@
 --- a/cheevos/cheevos.c	2023-07-13 17:02:33.000000000 +0200
 +++ b/cheevos/cheevos.c	2023-07-13 23:15:43.488414454 +0200
-@@ -377,9 +377,10 @@ void rcheevos_award_achievement(rcheevos_locals_t* locals,
+@@ -346,9 +346,10 @@ static void rcheevos_award_achievement(const rc_client_achievement_t* cheevo)
        if (shotname)
        {
-          video_driver_state_t *video_st  = video_state_get_ptr();;
+          video_driver_state_t* video_st = video_state_get_ptr();;
 -         snprintf(shotname, shotname_len, "%s/%s-cheevo-%u",
 +         snprintf(shotname, shotname_len, "%s/%s - %s (%u)",
-                settings->paths.directory_screenshot,
-                path_basename(path_get(RARCH_PATH_BASENAME)),
-+               cheevo->title,
-                cheevo->id);
+             settings->paths.directory_screenshot,
+             path_basename(path_get(RARCH_PATH_BASENAME)),
++            cheevo->title,
+             (unsigned)cheevo->id);
           shotname[shotname_len - 1] = '\0';
  
