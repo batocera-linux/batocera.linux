@@ -107,7 +107,7 @@ diff --git a/runloop.h b/runloop.h
 index 9b66c39..6b7d04b 100644
 --- a/runloop.h
 +++ b/runloop.h
-@@ -251,7 +251,7 @@ struct runloop
+@@ -252,7 +252,7 @@ struct runloop
     unsigned fastforward_after_frames;
     unsigned perf_ptr_libretro;
     unsigned subsystem_current_count;
@@ -116,7 +116,7 @@ index 9b66c39..6b7d04b 100644
     unsigned video_swap_interval_auto;
  
     fastmotion_overrides_t fastmotion_override; /* float alignment */
-@@ -424,7 +424,7 @@ void runloop_path_set_names(void);
+@@ -425,7 +425,7 @@ void runloop_path_set_names(void);
  
  uint32_t runloop_get_flags(void);
  

@@ -2,10 +2,10 @@ diff --git a/audio/audio_driver.c b/audio/audio_driver.c
 index 57fa9ed..88bc040 100644
 --- a/audio/audio_driver.c
 +++ b/audio/audio_driver.c
-@@ -1332,8 +1332,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
+@@ -1339,8 +1339,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
  void audio_driver_load_system_sounds(void)
  {
-    char basename_noext[256];
+    char basename_noext[NAME_MAX_LENGTH];
 -   char sounds_path[PATH_MAX_LENGTH];
 -   char sounds_fallback_path[PATH_MAX_LENGTH];
 +   char* sounds_path = "/usr/share/libretro/assets/sounds";
@@ -74,11 +74,11 @@ diff --git a/configuration.h b/configuration.h
 index 839fdde..aa6e709 100644
 --- a/configuration.h
 +++ b/configuration.h
-@@ -410,6 +410,7 @@ typedef struct settings
+@@ -468,6 +468,7 @@ typedef struct settings
+       char cloud_sync_driver[32];
        char menu_driver[32];
        char cheevos_username[32];
-       char cheevos_password[256];
 +      char cheevos_unlock_sound[128];
        char cheevos_token[32];
        char cheevos_leaderboards_enable[32];
-       char cheevos_custom_host[64];
+       char video_context_driver[32];

@@ -85,40 +85,40 @@ index db110b4..b40d78a 100644
     bool wu, wd, whu, whd;
     bool pp;
  } udev_input_mouse_t;
-@@ -895,6 +895,33 @@ static void udev_handle_mouse(void *data,
-             case BTN_TOUCH:
-                mouse->pp = event->value;
+@@ -865,6 +865,33 @@
+             case BTN_EXTRA:
+                mouse->b5 = event->value;
                 break;
-+	    case BTN_1:
++            case BTN_1:
 +               mouse->b1 = event->value;
 +               break;
-+	    case BTN_2:
++            case BTN_2:
 +               mouse->b2 = event->value;
 +               break;
-+	    case BTN_3:
++            case BTN_3:
 +               mouse->b3 = event->value;
 +               break;
-+	    case BTN_4:
++            case BTN_4:
 +               mouse->b4 = event->value;
 +               break;
-+	    case BTN_5:
++            case BTN_5:
 +               mouse->b5 = event->value;
 +               break;
-+	    case BTN_6:
++            case BTN_6:
 +               mouse->b6 = event->value;
 +               break;
-+	    case BTN_7:
++            case BTN_7:
 +               mouse->b7 = event->value;
 +               break;
-+	    case BTN_8:
++            case BTN_8:
 +               mouse->b8 = event->value;
 +               break;
-+	    case BTN_9:
++            case BTN_9:
 +               mouse->b9 = event->value;
 +               break;
- #if 0
-             case BTN_??:
-                mouse->b4 = event->value;
+             default:
+                break;
+          }
 @@ -991,10 +1019,24 @@ static int16_t udev_mouse_state(udev_input_t *udev,
              return mouse->r;
           case RETRO_DEVICE_ID_MOUSE_MIDDLE:

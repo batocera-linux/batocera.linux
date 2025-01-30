@@ -16,20 +16,6 @@ index d8fc40c..aed6de4 100644
  #ifdef HAVE_AUDIOMIXER
     /* Play the unlock sound */
     if (settings->bools.cheevos_unlock_sound_enable)
-@@ -763,6 +770,13 @@ void rcheevos_award_achievement(rcheevos_locals_t* locals,
-    CHEEVOS_LOG(RCHEEVOS_TAG "Awarding achievement %u: %s (%s)\n",
-          cheevo->id, cheevo->title, cheevo->description);
- 
-+   const char* cheevos_cmd = settings->arrays.cheevos_cmd;
-+   if (cheevos_cmd[0]) {
-+     char cmdargs[256];
-+     snprintf(cmdargs, sizeof(cmdargs), "%s %u \"%s\" \"%s\" > /dev/null 2>/dev/null", cheevos_cmd, cheevo->id, cheevo->title, cheevo->description);
-+     system(cmdargs);
-+   }
-+
-    /* Show the on screen message. */
-    if (settings->bools.cheevos_visibility_unlock)
-    {
 diff --git a/configuration.c b/configuration.c
 index 0458404..3119b97 100644
 --- a/configuration.c
@@ -46,10 +32,10 @@ diff --git a/configuration.h b/configuration.h
 index a7eae74..47a8376 100644
 --- a/configuration.h
 +++ b/configuration.h
-@@ -434,6 +434,7 @@ typedef struct settings
+@@ -471,6 +471,7 @@ typedef struct settings
+       char cheevos_unlock_sound[128];
        char cheevos_token[32];
        char cheevos_leaderboards_enable[32];
-       char cheevos_custom_host[64];
 +      char cheevos_cmd[256];
        char video_context_driver[32];
        char audio_driver[32];
