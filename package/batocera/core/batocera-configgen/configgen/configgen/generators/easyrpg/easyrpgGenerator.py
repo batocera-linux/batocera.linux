@@ -17,7 +17,7 @@ class EasyRPGGenerator(Generator):
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
-            "name": "cgenius",
+            "name": "easyrpg",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC" }
         }
 
