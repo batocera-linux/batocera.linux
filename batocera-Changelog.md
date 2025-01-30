@@ -57,6 +57,7 @@
 - Xemu to v0.8.10
 - Triforce to use a Crediar build (Nov 29, 2024)
 ### System
+- Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 24.3.3
 - Linux Kernel to 6.13
