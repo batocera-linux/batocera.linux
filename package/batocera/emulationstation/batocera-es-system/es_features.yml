@@ -13637,6 +13637,12 @@ lindbergh-loader:
         "75 fps":           "75"
         "100 fps":          "100"
         "120 fps":          "120"
+    lindbergh_controller:
+      prompt: CONTROLLER MODE
+      description: Choose the controller configuration. EVDEV for a wide range of controllers, lightguns & steering wheels. SDL2 for gamepads only.
+      choices:
+        "SDL2":            0
+        "EVDEV (Default)": 1
     lindbergh_hummer:
       group: GAME OPTIONS
       prompt: HUMMER FLICKER FIX
