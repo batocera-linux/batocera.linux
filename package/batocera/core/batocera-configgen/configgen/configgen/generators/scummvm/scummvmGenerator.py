@@ -87,8 +87,6 @@ class ScummVMGenerator(Generator):
         #  stretch mode
         if system.isOptSet("scumm_stretch"):
             commandArray.append(f"--stretch-mode={system.config['scumm_stretch']}")
-        else:
-            commandArray.append("--stretch-mode=center")
 
         # renderer
         if system.isOptSet("scumm_renderer"):
