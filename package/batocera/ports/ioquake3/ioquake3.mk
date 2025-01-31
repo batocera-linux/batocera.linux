@@ -22,6 +22,10 @@ IOQUAKE3_BUILD_ARGS += USE_RENDERER_DLOPEN=1
 
 ifeq ($(BR2_PACKAGE_GL4ES),y)
     IOQUAKE3_DEPENDENCIES += gl4es
+else
+ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
+    IOQUAKE3_DEPENDENCIES += libgl
+endif
 endif
 
 ifeq ($(BR2_aarch64),y)
