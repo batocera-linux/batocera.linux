@@ -321,15 +321,19 @@ class LindberghGenerator(Generator):
             input_mode = 0
         else:
             input_mode = 1
-        
+
         shortRomName = Path(romName.lower()).stem
-        
+
         self.setConf(conf, "INPUT_MODE", input_mode)
 
         # comment all player values
         for key in conf["keys"]:
             if key.startswith("PLAYER_") or key.startswith("ANALOGUE_") or key == "TEST_BUTTON":
                 self.commentConf(conf, key)
+
+        # no more config in sdl mode
+        if input_mode == 0:
+            return
 
         # add a test key via evdev
         if input_mode == 1:
@@ -365,9 +369,12 @@ class LindberghGenerator(Generator):
 
         # configure joysticks if no gun configured for the user
         nplayer = 1
+        continuePlayers = True
         for playercontroller, pad in sorted(playersControllers.items()):
             # Handle two players / controllers only, don't do if already configured for guns
-            if nplayer <= 2 and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
+            maxplayers = 2
+
+            if nplayer <= 2 and continuePlayers and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
                 relaxValues = getMappingAxisRelaxValues(pad)
 
                 ### choose the adapted mapping
@@ -380,6 +387,19 @@ class LindberghGenerator(Generator):
                 else:
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad)
                     eslog.debug(f"lindbergh pad mapping for player {nplayer}")
+
+                # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
+                if nplayer == 1:
+                    for input_name in lindberghCtrl:
+                        if lindberghCtrl[input_name].endswith("_ON_PLAYER_2"):
+                            continuePlayers = False
+
+                # checker on buttons mapping (just to control we have no duplicates)
+                x = {}
+                for input_name in lindberghCtrl:
+                    if lindberghCtrl[input_name] in x:
+                        raise Exception(f"duplicate configuration key for {input_name} with value {lindberghCtrl[input_name]}")
+                    x[lindberghCtrl[input_name]] = True
 
                 ### configure each input
                 controller_name = pad.device_path
@@ -402,6 +422,13 @@ class LindberghGenerator(Generator):
                     if input_base_name in pad.inputs and (pad.inputs[input_base_name].code is not None or pad.inputs[input_base_name].type == "hat"):
                         button_name = lindberghCtrl[input_name]
 
+                        # some buttons of player1 are mapped on the player2...
+                        player_input = nplayer
+                        if button_name.endswith("_ON_PLAYER_2"):
+                            button_name = button_name[:-12]
+                            player_input = 2
+                        ###
+
                         if pad.inputs[input_base_name].type == "button":
                             input_value = "KEY:"+pad.inputs[input_base_name].code
                             if button_name in noPlayerButton:
@@ -412,7 +439,7 @@ class LindberghGenerator(Generator):
                                     if nplayer == 1:
                                         self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                                 else:
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                                    self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         elif pad.inputs[input_base_name].type == "axis":
                             if input_name in relaxValues and relaxValues[input_name]["reversed"]:
                                 input_value = "ABS_NEG:"+pad.inputs[input_base_name].code
@@ -423,9 +450,9 @@ class LindberghGenerator(Generator):
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
                                 if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up":
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MIN")
+                                    self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MIN")
                                 else:
-                                    self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}:MAX")
+                                    self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MAX")
                         elif pad.inputs[input_base_name].type == "hat":
                             if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
                                 # 16 is the HAT0 code
@@ -440,7 +467,7 @@ class LindberghGenerator(Generator):
                                     input_value += ":MIN"
                                 else:
                                     input_value += ":MAX"
-                                self.setConf(conf, f"PLAYER_{nplayer}_{button_name}", f"{controller_name}:{input_value}")
+                                self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         else:
                             raise Exception("invalid input type")
                 nplayer += 1
@@ -463,29 +490,25 @@ class LindberghGenerator(Generator):
             "pagedown":       "BUTTON_6",
             "l2":             "BUTTON_7",
             "r2":             "BUTTON_8",
-            "l3":             "BUTTON_SERVICE",
-            "r3":             "BUTTON_SERVICE"
+            "l3":             "BUTTON_SERVICE"
         }
 
         # the same mapping for a wheel or a pad for a wheel game should do the job
         lindberghCtrl_wheel = {
             "a":              "BUTTON_2",
-            "b":              "BUTTON_DOWN",
+            "b":              "BUTTON_1",
             "x":              "BUTTON_4",
             "y":              "BUTTON_3",
             "start":          "BUTTON_START",
             "select":         "COIN",
-            "up":             "BUTTON_UP",
-            "down":           "BUTTON_DOWN",
             "left":           "BUTTON_LEFT",
             "right":          "BUTTON_RIGHT",
             "joystick1left":  "ANALOGUE_1",
-            "pageup":         "BUTTON_UP",   # gear down
-            "pagedown":       "BUTTON_DOWN", # gear up
-            "l2":             "ANALOGUE_2",
-            "r2":             "ANALOGUE_3",
-            "l3":             "BUTTON_SERVICE",
-            "r3":             "BUTTON_SERVICE"
+            "pageup":         "BUTTON_DOWN", # gear down
+            "pagedown":       "BUTTON_UP",   # gear up
+            "l2":             "ANALOGUE_3",
+            "r2":             "ANALOGUE_2",
+            "l3":             "BUTTON_SERVICE"
         }
 
         lindberghCtrl_gun = {
@@ -505,8 +528,7 @@ class LindberghGenerator(Generator):
             "pagedown":       "BUTTON_6",
             "l2":             "BUTTON_7",
             "r2":             "BUTTON_8",
-            "l3":             "BUTTON_SERVICE",
-            "r3":             "BUTTON_SERVICE"
+            "l3":             "BUTTON_SERVICE"
         }
 
         # mapping specific to games
@@ -532,29 +554,42 @@ class LindberghGenerator(Generator):
             lindberghCtrl_wheel["pagedown"] = "ANALOGUE_2"
 
         if shortRomName == "hdkotr":
-            lindberghCtrl_wheel["a"] = "BUTTON_1"
-            lindberghCtrl_wheel["b"] = "BUTTON_2"
-            lindberghCtrl_wheel["l2"] = "ANALOGUE_1"
-            lindberghCtrl_wheel["r2"] = "ANALOGUE_4"
+            lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
+            lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
+            lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
             lindberghCtrl_wheel["joystick1left"] = "ANALOGUE_2"
-
-            del lindberghCtrl_wheel["x"]
+            del lindberghCtrl_wheel["a"]
             del lindberghCtrl_wheel["y"]
             lindberghCtrl_wheel["pageup"]   = "BUTTON_4"
             lindberghCtrl_wheel["pagedown"] = "BUTTON_3"
 
         if shortRomName == "rtuned":
-            lindberghCtrl_wheel["a"] = "BUTTON_RIGHT"
-            lindberghCtrl_wheel["y"] = "BUTTON_1"
+            lindberghCtrl_wheel["a"] = "BUTTON_RIGHT"         # boost 1
+            lindberghCtrl_wheel["y"] = "BUTTON_1_ON_PLAYER_2" # boost 2
+            del lindberghCtrl_wheel["right"]
 
         if shortRomName.startswith("initiad"):
-            lindberghCtrl_wheel["b"] = "BUTTON_1"
+            lindberghCtrl_wheel["x"]    = "BUTTON_1"    # change view
+            lindberghCtrl_wheel["up"]   = "BUTTON_UP"   # menu up
+            lindberghCtrl_wheel["down"] = "BUTTON_DOWN" # menu down
+            del lindberghCtrl_wheel["b"]
 
         if shortRomName.startswith("hummer"):
-            lindberghCtrl_wheel["a"] = "BUTTON_DOWN"
+            lindberghCtrl_wheel["a"] = "BUTTON_DOWN_ON_PLAYER_2" # boost
+            lindberghCtrl_wheel["x"] = "BUTTON_DOWN"             # change view
+            del lindberghCtrl_wheel["pageup"]
 
         if shortRomName.startswith("segartv"):
-            lindberghCtrl_wheel["a"] = "BUTTON_1"
+            lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # change view
+            del lindberghCtrl_wheel["pagedown"]
+
+        if shortRomName.startswith("outr"):
+            lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # view change
+
+        # button up/down on player 2
+        if shortRomName == "rtuned" or shortRomName.startswith("segartv") or shortRomName.startswith("outr") or shortRomName.startswith("initiad"):
+            lindberghCtrl_wheel["pageup"]   = "BUTTON_DOWN_ON_PLAYER_2"
+            lindberghCtrl_wheel["pagedown"] = "BUTTON_UP_ON_PLAYER_2"
 
         # choose mapping
         if deviceType == "gun":
@@ -595,8 +630,8 @@ class LindberghGenerator(Generator):
             "left":   "BUTTON_1", # trigger = BUTTON_1
             "middle": "BUTTON_START",
             "1":      "COIN",
-            "right":  "BUTTON_2", # reload = BUTTON_2
-            "2":      "BUTTON_3", # extra action = BUTTON_3
+            "right":  "BUTTON_3", # action = BUTTON_3
+            "2":      "BUTTON_2", # optional reload in most case = BUTTON_2
             "3":      "BUTTON_4",
             "4":      "BUTTON_5",
             "5":      "BUTTON_UP",
@@ -604,6 +639,13 @@ class LindberghGenerator(Generator):
             "7":      "BUTTON_LEFT",
             "8":      "BUTTON_RIGHT",
         }
+
+        if shortRomName == "ghostsev":
+            mapping_action["right"] = "BUTTON_2"
+            mapping_action["2"]     = "BUTTON_3"
+
+        if shortRomName == "hotdex":
+            mapping_action["right"] = "BUTTON_LEFT"
 
         for gun in guns:
             if nplayer <= 2:

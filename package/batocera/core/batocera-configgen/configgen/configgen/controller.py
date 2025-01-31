@@ -268,7 +268,10 @@ def getMappingAxisRelaxValues(pad):
     res = {}
     for x in pad.inputs:
         if pad.inputs[x].type == "axis":
-            res[x] = { "reversed": codeValues[int(pad.inputs[x].code)] < -16000 } # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
+            # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
+            # 3 possible initial positions <1----------------|-------2-------|----------------3>
+            val = codeValues[int(pad.inputs[x].code)]
+            res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
     return res
 
 type ControllerMapping = Mapping[int, Controller]
