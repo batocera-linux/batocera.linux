@@ -1,0 +1,73 @@
+#!/bin/bash
+
+PLAYER=$1
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}" input usb)
+BASEFILE="/var/run/virtual-xgunner-lightguns-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "HONGWEIHUA XGUNNER-P[1-4]$")
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+if test "${NDEVS}" = 2
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+
+    if test "${PLAYER}" = "1"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:q btn:3 --map yield key:e btn:4 --map yield key:d btn:5 --map yield key:a btn:6 --map yield key:w btn:7 --map yield key:s btn:8 --map yield key:kpenter btn:right --block key:esc --output name="XGunner P1" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "2"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:2 btn:middle --map yield key:5 btn:1 --map yield key:q btn:3 --map yield key:e btn:4 --map yield key:d btn:5 --map yield key:a btn:6 --map yield key:w btn:7 --map yield key:s btn:8 --map yield key:kpenter btn:right --block key:esc --output name="XGunner P2" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "3"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:3 btn:middle --map yield key:5 btn:1 --map yield key:q btn:3 --map yield key:e btn:4 --map yield key:d btn:5 --map yield key:a btn:6 --map yield key:w btn:7 --map yield key:s btn:8 --map yield key:kpenter btn:right --block key:esc --output name="XGunner P3" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "4"
+    then
+	nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield key:4 btn:middle --map yield key:5 btn:1 --map yield key:q btn:3 --map yield key:e btn:4 --map yield key:d btn:5 --map yield key:a btn:6 --map yield key:w btn:7 --map yield key:s btn:8 --map yield key:kpenter btn:right --block key:esc --output name="XGunner P4" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0
