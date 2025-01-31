@@ -11154,6 +11154,12 @@ wine:
             choices:
                 "Off":          0
                 "On (Default)": 1
+        enable_hidraw:
+            prompt: ENABLE HIDRAW
+            description: Enable gamepad HID raw access. This allow modern game to use special gamepad features (like gyroscope for example), but can break older games with x-input support only.
+            choices:
+                "Off (Default)": 0
+                "On":            1
         dxvk_hud:
             group: ADVANCED OPTIONS
             prompt: DXVK HUD
