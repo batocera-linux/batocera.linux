@@ -100,7 +100,7 @@ then
 
     if test "${PLAYER}" = "1"
     then
-	nohup evsieve
+	nohup evsieve                                    \
                 --input "${DEV1}" "${DEV2}" persist=exit \
                 --map yield btn:middle     btn:2         \
                 --map yield key:1          btn:middle    \
@@ -115,7 +115,7 @@ then
 
     if test "${PLAYER}" = "2"
     then
-	nohup evsieve
+	nohup evsieve                                    \
                 --input "${DEV1}" "${DEV2}" persist=exit \
                 --map yield btn:middle     btn:2         \
                 --map yield key:2          btn:middle    \
@@ -130,7 +130,7 @@ then
 
     if test "${PLAYER}" = "3"
     then
-	nohup evsieve
+	nohup evsieve                                    \
                 --input "${DEV1}" "${DEV2}" persist=exit \
                 --map yield btn:middle     btn:2         \
                 --map yield key:3          btn:middle    \
@@ -145,7 +145,7 @@ then
 
     if test "${PLAYER}" = "4"
     then
-	nohup evsieve
+	nohup evsieve                                    \
                 --input "${DEV1}" "${DEV2}" persist=exit \
                 --map yield btn:middle     btn:2         \
                 --map yield key:4          btn:middle    \
