@@ -1,0 +1,16 @@
+config BR2_PACKAGE_VKQUAKE
+	bool "vkquake"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_FLAC
+	select BR2_PACKAGE_GLSLANG
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_MPG123
+	select BR2_PACKAGE_OPUS
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SPIRV_TOOLS
+	select BR2_PACKAGE_VULKAN_HEADERS
+	select BR2_PACKAGE_VULKAN_LOADER
+	help
+	  Vulkan Quake port based on QuakeSpasm.
+
+	  https://github.com/Novum/vkQuake

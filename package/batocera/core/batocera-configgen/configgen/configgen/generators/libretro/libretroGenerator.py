@@ -249,15 +249,28 @@ class LibretroGenerator(Generator):
                     lines = fpin.readlines()
                 rom_path = rom_path.absolute().parent / lines[0].strip()
             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
+        # tyrquake - set directory
+        elif system.name == 'quake':
+            if "scourge" in rom_path.name.lower():
+                rom_path = Path('/userdata/roms/quake/hipnotic/pak0.pak')
+            elif "dissolution" in rom_path.name.lower():
+                rom_path = Path('/userdata/roms/quake/rogue/pak0.pak')
+            else:
+                rom_path = Path('/userdata/roms/quake/id1/pak0.pak')
+            commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
         # vitaquake2 - choose core based on directory
-        elif system.name == 'vitaquake2':
-            directory_parts = rom_path.parent.parts
-            if "xatrix" in directory_parts:
+        elif system.name == 'quake2':
+            if "reckoning" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-xatrix"
-            elif "rogue" in directory_parts:
+                rom_path = Path('/userdata/roms/quake2/xatrix/pak0.pak')
+            if "zero" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-rogue"
-            elif "zaero" in directory_parts:
+                rom_path = Path('/userdata/roms/quake2/rogue/pak0.pak')
+            if "zaero" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-zaero"
+                rom_path = Path('/userdata/roms/quake2/zaero/pak0.pak')
+            else:
+                rom_path = Path('/userdata/roms/quake2/baseq2/pak0.pak')
             # set the updated core name
             retroarchCore = RETROARCH_CORES / f"{system.config['core']}_libretro.so"
             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]

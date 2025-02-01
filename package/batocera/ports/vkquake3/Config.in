@@ -1,0 +1,13 @@
+config BR2_PACKAGE_VKQUAKE3
+    bool "vkquake3"
+    select BR2_PACKAGE_GL4ES    if (!BR2_PACKAGE_HAS_LIBGL) && BR2_PACKAGE_HAS_LIBGLES
+    select BR2_PACKAGE_GLSLANG
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_NET
+    select BR2_PACKAGE_VULKAN_HEADERS
+    select BR2_PACKAGE_VULKAN_LOADER
+    help
+      Based on ioq3 with a vulkan based modular render back end
+      which originally from https://github.com/kennyalive/Quake-III-Arena-Kenny-Edition.
+      
+      https://github.com/suijingfeng/vkQuake3
