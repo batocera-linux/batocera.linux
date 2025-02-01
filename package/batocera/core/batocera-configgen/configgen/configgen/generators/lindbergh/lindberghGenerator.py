@@ -379,13 +379,13 @@ class LindberghGenerator(Generator):
 
                 ### choose the adapted mapping
                 if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad, len(wheels) >= nplayer)
                     eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
                 elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
                     eslog.debug(f"lindbergh gun mapping for player {nplayer}")
                 else:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
                     eslog.debug(f"lindbergh pad mapping for player {nplayer}")
 
                 # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
@@ -472,7 +472,7 @@ class LindberghGenerator(Generator):
                             raise Exception("invalid input type")
                 nplayer += 1
 
-    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer, pad):
+    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer, pad, isRealWheel):
         lindberghCtrl_pad = {
             "a":              "BUTTON_2",
             "b":              "BUTTON_1",
@@ -538,20 +538,17 @@ class LindberghGenerator(Generator):
         if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
             lindberghCtrl_wheel["left"] = "ANALOGUE_1"
             del lindberghCtrl_wheel["right"]
+            del lindberghCtrl_wheel["joystick1left"]
+            #
             lindberghCtrl_pad["left"]   = "ANALOGUE_1"
             del lindberghCtrl_pad["right"]
+            del lindberghCtrl_pad["joystick1left"]
 
         # pads without joystick1up, but with a hat
         if "joystick1up" not in pad.inputs and "up" in pad.inputs and pad.inputs["up"].type == "hat":
-            lindberghCtrl_pad["up"]   = "ANALOGUE_2"
+            lindberghCtrl_pad["up"] = "ANALOGUE_2"
             del lindberghCtrl_pad["down"]
-
-        # pads without l2, but with l as a button
-        if "l2" not in pad.inputs and "pageup" in pad.inputs and pad.inputs["pageup"].type == "button":
-            lindberghCtrl_wheel["pageup"] = "ANALOGUE_3"
-        # pads without r2, but with r as a button
-        if "r2" not in pad.inputs and "pagedown" in pad.inputs and pad.inputs["pagedown"].type == "button":
-            lindberghCtrl_wheel["pagedown"] = "ANALOGUE_2"
+            del lindberghCtrl_pad["joystick1up"]
 
         if shortRomName == "hdkotr":
             lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
@@ -582,6 +579,7 @@ class LindberghGenerator(Generator):
 
         if shortRomName.startswith("segartv"):
             lindberghCtrl_wheel["a"] = "BUTTON_1" # change view
+            del lindberghCtrl_wheel["b"]
 
         if shortRomName.startswith("outr"):
             lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # view change
@@ -590,6 +588,43 @@ class LindberghGenerator(Generator):
         if shortRomName == "rtuned" or shortRomName.startswith("segartv") or shortRomName.startswith("outr") or shortRomName.startswith("initiad"):
             lindberghCtrl_wheel["pageup"]   = "BUTTON_DOWN_ON_PLAYER_2"
             lindberghCtrl_wheel["pagedown"] = "BUTTON_UP_ON_PLAYER_2"
+
+        # remap buttons if for non real wheel
+        if deviceType == "wheel" and isRealWheel == False:
+            x = None
+            y = None
+            l = None
+            r = None
+            if "x" in lindberghCtrl_wheel:
+                x = lindberghCtrl_wheel["x"]
+                del lindberghCtrl_wheel["x"]
+            if "y" in lindberghCtrl_wheel:
+                y = lindberghCtrl_wheel["y"]
+                del lindberghCtrl_wheel["y"]
+            if "pageup" in lindberghCtrl_wheel:
+                l = lindberghCtrl_wheel["pageup"]
+                del lindberghCtrl_wheel["pageup"]
+            if "pagedown" in lindberghCtrl_wheel:
+                r = lindberghCtrl_wheel["pagedown"]
+                del lindberghCtrl_wheel["pagedown"]
+            if x is not None:
+                lindberghCtrl_wheel["pageup"] = x # view     ## free x and y for gear up/down
+            if y is not None:
+                lindberghCtrl_wheel["b"]      = y # action 2 ## free x and y for gear up/down
+            if r is not None:
+                lindberghCtrl_wheel["x"]      = r
+            if l is not None:
+                lindberghCtrl_wheel["y"]      = l
+        ####
+
+        # pads without l2, but with l as a button, important for wheel
+        if "l2" not in pad.inputs and "pageup" in pad.inputs and pad.inputs["pageup"].type == "button":
+            lindberghCtrl_wheel["pageup"] = lindberghCtrl_wheel["l2"]
+            del lindberghCtrl_wheel["l2"]
+        # pads without r2, but with r as a button
+        if "r2" not in pad.inputs and "pagedown" in pad.inputs and pad.inputs["pagedown"].type == "button":
+            lindberghCtrl_wheel["pagedown"] = lindberghCtrl_wheel["r2"]
+            del lindberghCtrl_wheel["r2"]
 
         # choose mapping
         if deviceType == "gun":
