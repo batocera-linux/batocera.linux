@@ -676,11 +676,11 @@ class LindberghGenerator(Generator):
         }
 
         if shortRomName == "ghostsev":
-            mapping_action["right"] = "BUTTON_2"
-            mapping_action["2"]     = "BUTTON_3"
+            mappings_actions["right"] = "BUTTON_2"
+            mappings_actions["2"]     = "BUTTON_3"
 
         if shortRomName == "hotdex":
-            mapping_action["right"] = "BUTTON_LEFT"
+            mappings_actions["right"] = "BUTTON_LEFT"
 
         for gun in guns:
             if nplayer <= 2:
