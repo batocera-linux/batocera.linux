@@ -106,7 +106,7 @@ class Controller:
 
     def generate_sdl_game_db_line(self, sdl_mapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /) -> str:
         """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
-        config = [self.guid, self.real_name, "platform:Linux"]
+        config = [self.guid, self.real_name.replace(",", "."), "platform:Linux"]
 
         def add_mapping(input: Input) -> None:
             key_name = sdl_mapping.get(input.name, None)
