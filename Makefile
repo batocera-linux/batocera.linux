@@ -55,13 +55,13 @@ else # DIRECT_BUILD
 define RUN_DOCKER
 	$(DOCKER) run -t --init --rm \
 		-e HOME \
-		-v $(PROJECT_DIR):/build \
-		-v $(DL_DIR):/build/buildroot/dl \
-		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(PROJECT_DIR):/build:z \
+		-v $(DL_DIR):/build/buildroot/dl:z \
+		-v $(OUTPUT_DIR)/$*:/$*:z \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache:z \
 		-w /$* \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
+		-v /etc/passwd:/etc/passwd:ro,z \
+		-v /etc/group:/etc/group:ro,z \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME)
