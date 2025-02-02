@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v42b(2025/01/18)\n"
+"Project-Id-Version: batocera-es v42b(2025/01/31)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-01-25 08:14+0900\n"
+"PO-Revision-Date: 2025-01-31 21:27+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -468,7 +468,7 @@ msgctxt "game_options"
 msgid "128KB"
 msgstr "128KB"
 
-#. TRANSLATION: ioquake3, libretro/dosbox_pure, libretro/mame, mame/pcsx2, vkquake3
+#. TRANSLATION: ioquake3, libretro/dosbox_pure, libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "128MB"
 msgstr "128MB"
@@ -1018,7 +1018,7 @@ msgctxt "game_options"
 msgid "2560 x 1600"
 msgstr "2560 x 1600"
 
-#. TRANSLATION: ioquake3, vkquake3
+#. TRANSLATION: ioquake3
 msgctxt "game_options"
 msgid "256MB (Default)"
 msgstr "256MB（標準）"
@@ -1673,7 +1673,7 @@ msgctxt "game_options"
 msgid "512KB"
 msgstr "512KB"
 
-#. TRANSLATION: ioquake3, libretro/np2kai, vkquake3
+#. TRANSLATION: ioquake3, libretro/np2kai
 msgctxt "game_options"
 msgid "512MB"
 msgstr "512MB"
@@ -1828,7 +1828,7 @@ msgctxt "game_options"
 msgid "64KB"
 msgstr "64KB"
 
-#. TRANSLATION: ioquake3, libretro/dosbox_pure, libretro/mame, libretro/np2kai, mame/pcsx2, ...
+#. TRANSLATION: ioquake3, libretro/dosbox_pure, libretro/mame, libretro/np2kai, mame/pcsx2
 msgctxt "game_options"
 msgid "64MB"
 msgstr "64MB"
@@ -4350,7 +4350,7 @@ msgstr "コントローラー 構成"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
-msgstr ""
+msgstr "コントローラ モード"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -4760,7 +4760,7 @@ msgstr "カタロニア語"
 #. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
-msgstr ""
+msgstr "中央"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
@@ -4937,8 +4937,8 @@ msgctxt "game_options"
 msgid ""
 "Choose the arcade machine console region. May be required to start the game."
 msgstr ""
-"アーケード マシン コンソールの地域を選択します。ゲームを開始に必要な場合があ"
-"ります"
+"アーケード マシン のリージョン(地域)を選択します\n"
+"ゲームの起動に必要な場合があります"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -4956,6 +4956,8 @@ msgid ""
 "Choose the controller configuration. EVDEV for a wide range of controllers, "
 "lightguns & steering wheels. SDL2 for gamepads only."
 msgstr ""
+"コントローラー構成を選択します:SDL2-ゲームパッド専用\n"
+"EVDEV-幅広いコントローラー、ライトガン、ステアリング ホイール用"
 
 #. TRANSLATION: libretro/cap32
 msgctxt "game_options"
@@ -6256,11 +6258,6 @@ msgctxt "game_options"
 msgid "ENABLE GRAVIS ULTRASOUND"
 msgstr "GRAVIS ULTRASOUNDを有効"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "ENABLE HIDRAW"
-msgstr ""
-
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "ENABLE MESH TRANSPARENCY"
@@ -6369,7 +6366,7 @@ msgstr "ESYNC"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "EVDEV (Default)"
-msgstr ""
+msgstr "EVDEV (標準)"
 
 #. TRANSLATION: vpinball, vpinball
 msgctxt "game_options"
@@ -6604,14 +6601,6 @@ msgctxt "game_options"
 msgid "Enable full-screen antialiasing in Direct3D."
 msgstr "Direct3Dで全画面アンチエイリアスを有効にします"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Enable gamepad HID raw access. This allow modern game to use special gamepad "
-"features (like gyroscope for example), but can break older games with x-"
-"input support only."
-msgstr ""
-
 #. TRANSLATION: cemu
 msgctxt "game_options"
 msgid ""
@@ -6728,6 +6717,8 @@ msgid ""
 "Enable the IP address for OutRun 2 network play against another PC on the "
 "same network."
 msgstr ""
+"同じネットワーク上のPCと対戦するためにOutRun 2などの\n"
+"ネットワークプレイのIPアドレスを有効にします"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -6783,7 +6774,7 @@ msgstr "有効にするとBIOS に既知の問題があるかを表示します"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Enable to emulate the card reader in Virtua Tenis 3."
-msgstr "Virtua Tenis 3 でカード リーダーをエミュレートします"
+msgstr "パワースマッシュ3 でカード リーダーをエミュレートします"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8287,7 +8278,7 @@ msgctxt "game_options"
 msgid "GRAPHICS CHIP TYPE"
 msgstr "グラフィックチップタイプ"
 
-#. TRANSLATION: ioquake3, vkquake3
+#. TRANSLATION: ioquake3
 msgctxt "game_options"
 msgid "GRAPHICS MEMORY"
 msgstr "グラフィックメモリ"
@@ -8865,6 +8856,8 @@ msgid ""
 "House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
 "your processor."
 msgstr ""
+"House of the Dead 4のスピードを修正します\n"
+"(ゲームをプロセッサのCPU基本周波数に設定)"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -9020,7 +9013,7 @@ msgstr "不死身モード"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "IP ADDRESS"
-msgstr ""
+msgstr "IPアドレス"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -9767,7 +9760,7 @@ msgstr "左 フリッパー"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Left Magna Save"
-msgstr ""
+msgstr "マグナセーブボタン 左"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
@@ -12854,7 +12847,7 @@ msgstr "右 フリッパー"
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
 msgid "Right Magna Save"
-msgstr ""
+msgstr "マグナセーブボタン 右"
 
 #. TRANSLATION: fpinball.keys
 msgctxt "keys_files"
@@ -13634,7 +13627,7 @@ msgctxt "game_options"
 msgid "Select controller type for Amiga P2."
 msgstr "Amiga P2のコントローラーを選択します"
 
-#. TRANSLATION: ioquake3, vkquake3
+#. TRANSLATION: ioquake3
 msgctxt "game_options"
 msgid ""
 "Select how much graphics memory is allocated for the GPU, may need modifying "
@@ -15899,7 +15892,7 @@ msgstr "NDS ファームウェアの言語とユーザー名を使用します"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Use light guns instead of pads if light guns are connected."
-msgstr "システムでガンコンが検出された場合は、パッドの代わりに使用します"
+msgstr "ガンコンが検出された場合は、パッドの代わりに使用します"
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
