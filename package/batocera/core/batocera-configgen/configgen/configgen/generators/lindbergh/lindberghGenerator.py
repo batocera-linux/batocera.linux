@@ -578,8 +578,9 @@ class LindberghGenerator(Generator):
             del lindberghCtrl_wheel["pageup"]
 
         if shortRomName.startswith("segartv"):
-            lindberghCtrl_wheel["a"] = "BUTTON_1" # change view
-            del lindberghCtrl_wheel["b"]
+            lindberghCtrl_wheel["a"] = "BUTTON_1_ON_PLAYER_2" # boost
+            lindberghCtrl_wheel["x"] = "BUTTON_DOWN"          # change view
+            del lindberghCtrl_wheel["pageup"]
 
         if shortRomName.startswith("outr"):
             lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # view change
