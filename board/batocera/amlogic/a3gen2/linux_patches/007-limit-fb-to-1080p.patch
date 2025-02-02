@@ -1,0 +1,10 @@
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts
+@@ -1720,6 +1720,7 @@
+ &drm_subsystem {
+ 		crtc_masks = <3 7 1>;
+ 		dummyl_from_hdmitx = /bits/ 8  <1>;
++		4k2k_fb = <0>;
+ };
+ 
+ &lcd {

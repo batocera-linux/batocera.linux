@@ -11,23 +11,24 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_KEEP=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/fsoverlay"
 
-# Linux headers same as kernel, a 5.4 series
+# Linux headers same as kernel, a 5.15 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_4=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_15=y
 
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/khadas/linux/archive/refs/tags/khadas-vims-linux-5.4-v1.5.1-release.tar.gz"
+# Tag: khadas-vims-linux-5.15-v1.7.3-release
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/khadas/linux/archive/99ab673ba5e957245e3053219a8b2a9ed378dfc7.tar.gz"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-kvim4-5.4.180.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-kvim4-5.15.137.config"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/kvim4"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="kvim4 kvim4n"
 
 # System
 BR2_PACKAGE_BATOCERA_KODI21=y

@@ -1,6 +1,7 @@
---- a/Makefile	2023-06-07 01:46:40.175122264 +0200
-+++ b/Makefile	2023-06-07 01:42:58.790118310 +0200
-@@ -746,6 +746,11 @@
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -808,6 +808,11 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning,frame-address,)
  KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
  KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
  KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
