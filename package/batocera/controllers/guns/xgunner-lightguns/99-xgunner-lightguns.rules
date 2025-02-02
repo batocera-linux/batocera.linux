@@ -1,0 +1,13 @@
+# disable raw devices to merge them
+
+# Light gun 1 to 4
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HONGWEIHUA XGUNNER-P1 *", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/xgunner-lightguns-add 1"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HONGWEIHUA XGUNNER-P2 *", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/xgunner-lightguns-add 2"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HONGWEIHUA XGUNNER-P3 *", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/xgunner-lightguns-add 3"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="HONGWEIHUA XGUNNER-P4 *", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/xgunner-lightguns-add 4"
+
+# Virtual light gun 1 to 4
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="XGunner P[1-4]", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_GUN}="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1"
+
+# Gamepad event must be disabled, this mode is unsupported for now
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="HONGWEIHUA XGUNNER-P[1-4]", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_JOYSTICK}="0"

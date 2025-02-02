@@ -9,6 +9,9 @@
 - Add OrangePi 3b board support
 - Initial support for RS3 Reaper light gun
 - Add Anbernic RG351V support
+- Initial support for XGunner light gun
+- Initial support for OpenFIRE light gun
+- Initial support for Fusion P.I.G.S. light gun
 ### Added
 - Wireguard VPN for RK3326 boards
 - Image scaling option for Drastic
