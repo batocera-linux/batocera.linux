@@ -691,6 +691,11 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
 
+                # reverse axis for let's go jungle
+                if shortRomName == ("letsgoju"): # not for the p version
+                    self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
+                    self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
+
                 # add shake for hotd4
                 if shortRomName == "hotd4":
                     xplayerp4 = xplayer + 4
