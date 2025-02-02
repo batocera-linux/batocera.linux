@@ -578,8 +578,9 @@ class LindberghGenerator(Generator):
             del lindberghCtrl_wheel["pageup"]
 
         if shortRomName.startswith("segartv"):
-            lindberghCtrl_wheel["a"] = "BUTTON_1" # change view
-            del lindberghCtrl_wheel["b"]
+            lindberghCtrl_wheel["a"] = "BUTTON_1_ON_PLAYER_2" # boost
+            lindberghCtrl_wheel["x"] = "BUTTON_DOWN"          # change view
+            del lindberghCtrl_wheel["pageup"]
 
         if shortRomName.startswith("outr"):
             lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # view change
@@ -680,7 +681,9 @@ class LindberghGenerator(Generator):
             mappings_actions["2"]     = "BUTTON_3"
 
         if shortRomName == "hotdex":
-            mappings_actions["right"] = "BUTTON_LEFT"
+            mappings_actions["2"] = "BUTTON_LEFT"
+            del mappings_actions["7"]
+            del mappings_actions["8"]
 
         for gun in guns:
             if nplayer <= 2:
@@ -690,6 +693,11 @@ class LindberghGenerator(Generator):
                 evplayer = guns[gun]["node"]
                 self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
+
+                # reverse axis for let's go jungle
+                if shortRomName == ("letsgoju"): # not for the p version
+                    self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
+                    self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
 
                 # add shake for hotd4
                 if shortRomName == "hotd4":
@@ -702,6 +710,11 @@ class LindberghGenerator(Generator):
                     if mapping in guns[gun]["buttons"] and mapping in mappings_codes:
                         code = mappings_codes[mapping]
                         action = mappings_actions[mapping]
+
+                        # in hotdex, player2 reload is on button right (et butto left for player 1...)
+                        if shortRomName == "hotdex" and nplayer == 2 and action == "BUTTON_LEFT":
+                            action = "BUTTON_RIGHT"
+
                         if not (action == "COIN" and nplayer != 1): # COIN is only for player 1
                             self.setConf(conf, f"PLAYER_{nplayer}_{action}", f"{evplayer}:KEY:{code}")
             nplayer += 1
