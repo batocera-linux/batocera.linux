@@ -34,6 +34,8 @@ class BackglassAPI(BaseHTTPRequestHandler):
             query = urlparse(self.path)
             qs = parse_qs(query.query)
 
+            imgvideo_extensions = ["png", "jpg", "gif", "avi", "mp4"]
+
             if query.path == "/game":
                 self.sendHeaders("text/plain")
                 system = qs["system"][0]
@@ -45,12 +47,10 @@ class BackglassAPI(BaseHTTPRequestHandler):
                     for prop in ["image", "video", "marquee", "thumbnail", "fanart", "manual", "titleshot", "bezel", "magazine", "manual", "boxart", "boxback", "wheel", "mix"]:
                         if prop in data:
                             shortname = self.gameShortName(path)
-                            if os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.png".format(system, prop, shortname)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.png".format(system, prop, shortname)
-                            elif os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.jpg".format(system, prop, shortname)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.jpg".format(system, prop, shortname)
-                            elif os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.gif".format(system, prop, shortname)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.gif".format(system, prop, shortname)
+                            for ext in imgvideo_extensions:
+                                if os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.{}".format(system, prop, shortname, ext)):
+                                    data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.{}".format(system, prop, shortname, ext)
+                                    break
                             else:
                                 data[prop] = "http://localhost:1234" + data[prop]
                     window.evaluate_js("onGame(" + json.dumps(data) + ")")
@@ -64,12 +64,10 @@ class BackglassAPI(BaseHTTPRequestHandler):
                     data = json.load(url)
                     for prop in ["logo"]:
                         if prop in data:
-                            if os.path.exists("/userdata/system/backglass/systems/{}/{}.png".format(system, prop)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/{}.png".format(system, prop)
-                            elif os.path.exists("/userdata/system/backglass/systems/{}/{}.jpg".format(system, prop)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/{}.jpg".format(system, prop)
-                            elif os.path.exists("/userdata/system/backglass/systems/{}/{}.gif".format(system, prop)):
-                                data[prop] = "http://localhost:2033/static/images/systems/{}/{}.gif".format(system, prop)
+                            for ext in imgvideo_extensions:
+                                if os.path.exists("/userdata/system/backglass/systems/{}/{}.{}".format(system, prop, ext)):
+                                    data[prop] = "http://localhost:2033/static/images/systems/{}/{}.{}".format(system, prop, ext)
+                                    break
                             else:
                                 data[prop] = "http://localhost:1234" + data[prop]
 
@@ -87,9 +85,13 @@ class BackglassAPI(BaseHTTPRequestHandler):
                         if query.path.endswith(".png"):
                             self.sendHeaders("image/png")
                         elif query.path.endswith(".jpg"):
-                            self.sendHeaders("image/jpg")
+                            self.sendHeaders("image/jpeg")
                         elif query.path.endswith(".gif"):
                             self.sendHeaders("image/gif")
+                        elif query.path.endswith(".mp4"):
+                            self.sendHeaders("video/mp4")
+                        elif query.path.endswith(".avi"):
+                            self.sendHeaders("video/mpeg") # hum
                         else:
                             raise Exception("Invalid extension")
                         self.wfile.write(fd.read())
