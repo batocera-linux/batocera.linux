@@ -49,6 +49,8 @@ class BackglassAPI(BaseHTTPRequestHandler):
                                 data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.png".format(system, prop, shortname)
                             elif os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.jpg".format(system, prop, shortname)):
                                 data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.jpg".format(system, prop, shortname)
+                            elif os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.gif".format(system, prop, shortname)):
+                                data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.gif".format(system, prop, shortname)
                             else:
                                 data[prop] = "http://localhost:1234" + data[prop]
                     window.evaluate_js("onGame(" + json.dumps(data) + ")")
@@ -66,6 +68,8 @@ class BackglassAPI(BaseHTTPRequestHandler):
                                 data[prop] = "http://localhost:2033/static/images/systems/{}/{}.png".format(system, prop)
                             elif os.path.exists("/userdata/system/backglass/systems/{}/{}.jpg".format(system, prop)):
                                 data[prop] = "http://localhost:2033/static/images/systems/{}/{}.jpg".format(system, prop)
+                            elif os.path.exists("/userdata/system/backglass/systems/{}/{}.gif".format(system, prop)):
+                                data[prop] = "http://localhost:2033/static/images/systems/{}/{}.gif".format(system, prop)
                             else:
                                 data[prop] = "http://localhost:1234" + data[prop]
 
@@ -84,6 +88,8 @@ class BackglassAPI(BaseHTTPRequestHandler):
                             self.sendHeaders("image/png")
                         elif query.path.endswith(".jpg"):
                             self.sendHeaders("image/jpg")
+                        elif query.path.endswith(".gif"):
+                            self.sendHeaders("image/gif")
                         else:
                             raise Exception("Invalid extension")
                         self.wfile.write(fd.read())
