@@ -1,0 +1,14 @@
+--- a/linux/Makefile
++++ b/linux/Makefile
+@@ -18,9 +18,9 @@
+ GLIBC=
+ endif
+ 
+-KERNEL_ARCH=$(shell uname -m)
++KERNEL_ARCH?=$(shell uname -m)
+ 
+-ifeq ($(KERNEL_ARCH),x86_64)
++ifeq ($(KERNEL_ARCH),x64)
+   ARCH=x64
+   RPMARCH=i386
+ else ifeq ($(KERNEL_ARCH),amd64)
