@@ -24,6 +24,7 @@ VKQUAKE2_BASE_CFLAGS = -I$(STAGING_DIR)/usr/include -Dstricmp=strcasecmp -D_GNU_
 VKQUAKE2_BASE_CFLAGS += -Wno-format-truncation -Wno-unused-result -Wno-format-overflow
 
 VKQUAKE2_MAKE_OPTS = $(TARGET_CONFIGURE_OPTS) \
+	KERNEL_ARCH="$(VKQUAKE2_ARCH)" \
 	BASE_CFLAGS="$(VKQUAKE2_BASE_CFLAGS)" \
 	GLCFLAGS="-I$(STAGING_DIR)/usr/include" \
 	VKCFLAGS="-I$(STAGING_DIR)/usr/include" \
