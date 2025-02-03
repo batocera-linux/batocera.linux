@@ -534,21 +534,24 @@ class LindberghGenerator(Generator):
         # mapping specific to games
         eslog.debug(f"lindberg mapping for game {shortRomName}")
 
-        # pads without joystick1left, but with a hat
-        if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
-            lindberghCtrl_wheel["left"] = "ANALOGUE_1"
-            del lindberghCtrl_wheel["right"]
-            del lindberghCtrl_wheel["joystick1left"]
-            #
-            lindberghCtrl_pad["left"]   = "ANALOGUE_1"
-            del lindberghCtrl_pad["right"]
-            del lindberghCtrl_pad["joystick1left"]
+        # some pads have not analog axis, on some games, prefer the dpad
+        if not shortRomName.startswith("vf5") and not shortRomName.startswith("vt3"): # all but vf5 and vt3
+            # pads without joystick1left, but with a hat
+            if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
+                lindberghCtrl_wheel["left"] = "ANALOGUE_1"
+                del lindberghCtrl_wheel["right"]
+                del lindberghCtrl_wheel["joystick1left"]
+                #
+                lindberghCtrl_pad["left"]   = "ANALOGUE_1"
+                del lindberghCtrl_pad["right"]
+                del lindberghCtrl_pad["joystick1left"]
 
-        # pads without joystick1up, but with a hat
-        if "joystick1up" not in pad.inputs and "up" in pad.inputs and pad.inputs["up"].type == "hat":
-            lindberghCtrl_pad["up"] = "ANALOGUE_2"
-            del lindberghCtrl_pad["down"]
-            del lindberghCtrl_pad["joystick1up"]
+                # pads without joystick1up, but with a hat
+                if "joystick1up" not in pad.inputs and "up" in pad.inputs and pad.inputs["up"].type == "hat":
+                    lindberghCtrl_pad["up"] = "ANALOGUE_2"
+                    del lindberghCtrl_pad["down"]
+                    del lindberghCtrl_pad["joystick1up"]
+        ###
 
         if shortRomName == "hdkotr":
             lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
