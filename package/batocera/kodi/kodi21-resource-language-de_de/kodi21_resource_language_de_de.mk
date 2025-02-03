@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION = 11.0.81
+KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION = 11.0.84
 KODI21_RESOURCE_LANGUAGE_DE_DE_SOURCE = resource.language.de_de-$(KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_DE_DE_SITE = https://mirrors.kodi.tv/addons/omega/resource.language.de_de
 KODI21_RESOURCE_LANGUAGE_DE_DE_PLUGINNAME=resource.language.de_de
