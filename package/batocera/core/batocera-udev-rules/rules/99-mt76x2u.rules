@@ -1,0 +1,2 @@
+# for Comfast 785 AC WiFi, blacklisted because of conflict with xone
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="0e8d", ATTRS{idProduct}=="7612", RUN+="/sbin/modprobe mt76x2u"
