@@ -611,8 +611,8 @@ play_pc() {
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
     WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
-    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
-    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+    WINE_SAVEDIR=$(getWine_var "${GAMENAME}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${GAMENAME}" "SAVEFILES" "")
     save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     env
