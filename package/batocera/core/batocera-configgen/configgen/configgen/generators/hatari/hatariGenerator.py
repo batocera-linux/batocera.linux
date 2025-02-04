@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -189,7 +188,7 @@ class HatariGenerator(Generator):
             l_tos.extend(all_machines_bios[machine])
             for v_tos_version in l_tos:
                 l_lang = []
-                if l_lang != "auto":
+                if language != "auto":
                     l_lang = [language]
                 l_lang.extend(all_languages)
                 for v_language in l_lang:

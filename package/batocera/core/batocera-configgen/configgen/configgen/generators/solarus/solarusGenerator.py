@@ -96,6 +96,8 @@ class SolarusGenerator(Generator):
 
             nplayer += 1
 
+        f.close()
+
     @staticmethod
     def key2val(input: Input, reverse: bool):
         if input.type == "button":

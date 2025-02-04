@@ -44,14 +44,13 @@ class LexaloffleGenerator(Generator):
             CONTROLLERS=VOX_CONTROLLERS
             ROOT_PATH=VOX_ROOT_PATH
         else:
-            eslog.error(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
-            return -1
+            raise Exception(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
+
         if not BIN_PATH.exists():
-            eslog.error(f"Lexaloffle official binary not found at {BIN_PATH}")
-            return -1
+            raise Exception(f"Lexaloffle official binary not found at {BIN_PATH}")
+
         if not os.access(BIN_PATH, os.X_OK):
-            eslog.error(f"File {BIN_PATH} is not set as executable")
-            return -1
+            raise Exception(f"File {BIN_PATH} is not set as executable")
 
         # the command to run
         commandArray: list[str | Path] = [BIN_PATH]

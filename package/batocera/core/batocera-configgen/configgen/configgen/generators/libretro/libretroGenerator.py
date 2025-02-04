@@ -74,7 +74,7 @@ class LibretroGenerator(Generator):
         else:
             if ('shader-' + str(altDecoration)) in renderConfig:
                 gameShader = renderConfig['shader-' + str(altDecoration)]
-            else:
+            elif 'shader' in renderConfig:
                 gameShader = renderConfig['shader']
         if 'shader' in renderConfig and gameShader != None:
             if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
@@ -147,7 +147,6 @@ class LibretroGenerator(Generator):
         # Set up GB/GBC Link games to use 2 different ROMs if needed
         if system.name == 'gb2players' or system.name == 'gbc2players':
             GBMultiROM: list[Path] = []
-            GBMultiFN: list[str] = []
             GBMultiSys: list[str] = []
             # If ROM file is a .gb2 text, retrieve the filenames
             if rom_path.suffix.lower() in ['.gb2', '.gbc2']:
@@ -155,16 +154,13 @@ class LibretroGenerator(Generator):
                     for line in fp:
                         GBMultiText = line.strip()
                         if GBMultiText.lower().startswith("gb:"):
-                            GBMultiROM.append(ROMS / "gb" / GBMultiText.split(":")[1])
-                            GBMultiFN.append(GBMultiText.split(":")[1])
+                            GBMultiROM.append(ROMS / "gb" / GBMultiText[3:])
                             GBMultiSys.append("gb")
                         elif GBMultiText.lower().startswith("gbc:"):
-                            GBMultiROM.append(ROMS / "gbc" / GBMultiText.split(":")[1])
-                            GBMultiFN.append(GBMultiText.split(":")[1])
+                            GBMultiROM.append(ROMS / "gbc" / GBMultiText[4:])
                             GBMultiSys.append("gbc")
                         else:
                             GBMultiROM.append(ROMS / system.name / GBMultiText)
-                            GBMultiFN.append(GBMultiText.split(":")[1])
                             if system.name == "gb2players":
                                 GBMultiSys.append("gb")
                             else:
@@ -172,7 +168,6 @@ class LibretroGenerator(Generator):
             else:
                 # Otherwise fill in the list with the single game
                 GBMultiROM.append(rom_path)
-                GBMultiFN.append(rom_path.name)
                 if system.name == "gb2players":
                     GBMultiSys.append("gb")
                 else:
@@ -263,10 +258,10 @@ class LibretroGenerator(Generator):
             if "reckoning" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-xatrix"
                 rom_path = Path('/userdata/roms/quake2/xatrix/pak0.pak')
-            if "zero" in rom_path.name.lower():
+            elif "zero" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-rogue"
                 rom_path = Path('/userdata/roms/quake2/rogue/pak0.pak')
-            if "zaero" in rom_path.name.lower():
+            elif "zaero" in rom_path.name.lower():
                 system.config['core'] = "vitaquake2-zaero"
                 rom_path = Path('/userdata/roms/quake2/zaero/pak0.pak')
             else:

@@ -294,8 +294,8 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         else:
             retroarchConfig['input_libretro_device_p2'] = '1'
         # Player 3
-        if system.isOptSet('Controller3_snes9x'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['Controller3_snes9x']
+        if system.isOptSet('controller3_snes9x'):
+            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_snes9x']
         else:
             retroarchConfig['input_libretro_device_p3'] = '1'
 

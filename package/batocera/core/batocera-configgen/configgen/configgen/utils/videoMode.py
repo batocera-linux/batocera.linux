@@ -78,7 +78,7 @@ def getScreensInfos(config: Mapping[str, object]) -> list[ScreenInfo]:
     # output3
     vo3 = None
     # find the configured one
-    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput2"] != vo2:
+    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput3"] != vo2:
         vo3 = config["videooutput3"]
     # find the first one
     for x in outputs:

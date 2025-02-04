@@ -128,7 +128,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
         iniConfig.set("Video-GLideN64",   "AspectRatio", "3")
 
     # Textures Mip-Mapping (Filtering)
-    if system.isOptSet("mupen64plus_Mipmapping") and system.config["mupen64plus_Mipmapping"] != 0:
+    if system.isOptSet("mupen64plus_Mipmapping") and system.config["mupen64plus_Mipmapping"] != '0':
         if system.config["mupen64plus_Mipmapping"] == "1":
             iniConfig.set("Video-Rice",       "Mipmapping", "1")
             iniConfig.set("Video-Glide64mk2", "filtering",  "0")
@@ -143,7 +143,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
         iniConfig.set("Video-Glide64mk2", "filtering", "-1")     # -1=Game default, 0=automatic, 1=force bilinear, 2=force point sampled
 
     # Anisotropic Filtering
-    if system.isOptSet("mupen64plus_Anisotropic") and system.config["mupen64plus_Anisotropic"] != 0:
+    if system.isOptSet("mupen64plus_Anisotropic") and system.config["mupen64plus_Anisotropic"] != '0':
         iniConfig.set("Video-Rice", "AnisotropicFiltering", system.config["mupen64plus_Anisotropic"])
         iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", system.config["mupen64plus_Anisotropic"])
     else:
@@ -152,7 +152,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
         iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", "1") # Wrapper Anisotropic Filtering
 
     # Anti-aliasing MSAA
-    if system.isOptSet("mupen64plus_AntiAliasing") and system.config["mupen64plus_AntiAliasing"] != 0:
+    if system.isOptSet("mupen64plus_AntiAliasing") and system.config["mupen64plus_AntiAliasing"] != '0':
         iniConfig.set("Video-Rice",       "MultiSampling",   system.config["mupen64plus_AntiAliasing"])
         iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", system.config["mupen64plus_AntiAliasing"])
     else:
@@ -169,7 +169,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
 
 
     # Texture Enhencement XBRZ -> ONLY for RICE
-    if system.isOptSet("mupen64plus_TextureEnhancement") and system.config["mupen64plus_TextureEnhancement"] != 0:
+    if system.isOptSet("mupen64plus_TextureEnhancement") and system.config["mupen64plus_TextureEnhancement"] != '0':
         iniConfig.set("Video-Rice", "TextureEnhancement", system.config["mupen64plus_TextureEnhancement"])
     else:
         iniConfig.set("Video-Rice", "TextureEnhancement", "0")   # 0=None, 1=2X, 2=2XSAI, 3=HQ2X, 4=LQ2X, 5=HQ4X, 6=Sharpen, 7=Sharpen More, 8=External, 9=Mirrored
@@ -177,8 +177,8 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
 
     # Frameskip -> ONLY for GLIDE64MK2
     iniConfig.set("Video-Glide64mk2", "autoframeskip", "0")
-    if system.isOptSet("mupen64plus_frameskip") and system.config["mupen64plus_frameskip"] != 0:
-        if system.config["mupen64plus_frameskip"] == "=automatic":
+    if system.isOptSet("mupen64plus_frameskip") and system.config["mupen64plus_frameskip"] != '0':
+        if system.config["mupen64plus_frameskip"] == "automatic":
             # If true, skip up to maxframeskip frames to maintain clock schedule; if false, skip exactly maxframeskip frames
             iniConfig.set("Video-Glide64mk2", "autoframeskip", "1")
             iniConfig.set("Video-Glide64mk2", "maxframeskip",  "5")

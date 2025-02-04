@@ -22,7 +22,7 @@ class Input:
     type: str
     id: str
     value: str
-    code: str | None
+    code: str | None = None
 
     def replace(self, /, **changes: Unpack[_InputChanges]) -> Self:
         return replace(self, **changes)

@@ -151,14 +151,13 @@ class Xash3dFwgsGenerator(Generator):
         if not custom_config.exists():
             with ensure_parents_and_open(custom_config, 'w') as f:
                 f.write('\n')
-            if not custom_rom_config.exists():
-                custom_rom_config.symlink_to(custom_config)
+        if not custom_rom_config.exists():
+            custom_rom_config.symlink_to(custom_config)
 
     def _maybeInitSaveDir(self, game: str) -> None:
         rom_dir = _rom_dir(game)
         rom_save_dir = rom_dir / 'save'
-        if not rom_save_dir.is_dir():
+        if not rom_save_dir.exists():
             save_dir = _save_dir(game)
             mkdir_if_not_exists(save_dir)
-            if not rom_save_dir.exists():
-                rom_save_dir.symlink_to(save_dir)
+            rom_save_dir.symlink_to(save_dir)

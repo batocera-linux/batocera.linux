@@ -2,12 +2,8 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, CONFIGS, SAVES, mkdir_if_not_exists
-
-if TYPE_CHECKING:
-    from ..Emulator import Emulator
 
 
 def precalibration_copyFile(src: Path, dst: Path) -> None:
@@ -25,7 +21,7 @@ def precalibration_copyFilesInDir(srcdir: Path, dstdir: Path, startWith: str, en
         if src.name.startswith(startWith): # and src.endswith(endswith):
             precalibration_copyFile(src, dstdir / src.name)
 
-def precalibration(systemName: str, emulator: Emulator, core: str | None, rom: str | Path) -> None:
+def precalibration(systemName: str, emulator: str, core: str | None, rom: str | Path) -> None:
     dir = BATOCERA_SHARE_DIR / "guns-precalibrations" / systemName
     if not dir.exists():
         return

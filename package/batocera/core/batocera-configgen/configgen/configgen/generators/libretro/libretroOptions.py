@@ -1373,7 +1373,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
     if (system.config['core'] == 'melondsds'):
         # System Settings
         if system.isOptSet('melondsds_console_mode'):
-            coreSettings.save('melonds_console_mode', '"' + system.config['melonds_console_mode'] + '"')
+            coreSettings.save('melonds_console_mode', '"' + system.config['melondsds_console_mode'] + '"')
         else:
             coreSettings.save('melonds_console_mode', '"DS"')
 
@@ -1562,7 +1562,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
         if (system.name == 'sgb'):
             coreSettings.save('mgba_gb_model', '"Super Game Boy"')
             # Default border to on for SGB
-            if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "OFF":
+            if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "False":
                 coreSettings.save('mgba_sgb_borders', '"OFF"')
             else:
                 coreSettings.save('mgba_sgb_borders', '"ON"')
@@ -1791,7 +1791,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('mesen_fdsautoinsertdisk', '"disabled"')
         # FDS Fast forward floppy disk loading
         if system.isOptSet('mesen_fdsfastforwardload'):
-            coreSettings.save('mesen_fdsfastforwardload', '"' + system.config['mesen_fdsautoinsertdisk'] + '"')
+            coreSettings.save('mesen_fdsfastforwardload', '"' + system.config['mesen_fdsfastforwardload'] + '"')
         else:
             coreSettings.save('mesen_fdsfastforwardload', '"disabled"')
         # RAM init state (speedrunning)
@@ -2587,7 +2587,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             if system.isOptSet("gfxbackend"):
                 if system.config["gfxbackend"] == "vulkan":
                     coreSettings.save('swanstation_GPU_Renderer', '"Vulkan"')
-                elif system.config["gfxbackend"] == "opengl" or system.config["gfxbackend"] == "glcore":
+                elif system.config["gfxbackend"] == "gl" or system.config["gfxbackend"] == "glcore":
                     coreSettings.save('swanstation_GPU_Renderer', "OpenGL")
                 else:
                     coreSettings.save('swanstation_GPU_Renderer', '"Auto"')
@@ -2815,7 +2815,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('hatarib_cpu', '"-1"')
         # CPU Clock
         if system.isOptSet('hatarib_cpu_clock'):
-            coreSettings.save('hatarib_cpu_clock', '"' + system.config['hatarib_cpu'] + '"')
+            coreSettings.save('hatarib_cpu_clock', '"' + system.config['hatarib_cpu_clock'] + '"')
         else:
             coreSettings.save('hatarib_cpu_clock', '"-1"')
         # ST Memory Size
