@@ -1110,7 +1110,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_JAZZ2_NATIVE    if BR2_PACKAGE_BATOCERA_GLES3 || \
 	                                      BR2_PACKAGE_LIBGLFW && \
 										  !BR2_PACKAGE_BATOCERA_TARGET_JH7110
-	
+
 	# Doom 3 & mods
 	select BR2_PACKAGE_BATOCERA_DHEWM3    if BR2_x86_64 || \
 											BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
@@ -1448,7 +1448,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 config BR2_PACKAGE_BATOCERA_DHEWM3
 	bool "batocera.linux Dhewm3 packages selection"
 
-	select BR2_PACKAGE_DHEWM3		      
+	select BR2_PACKAGE_DHEWM3
 	# Mods
 	select BR2_PACKAGE_BLOODMOD
 	select BR2_PACKAGE_CDOOM
@@ -1559,21 +1559,22 @@ config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 
 config BR2_PACKAGE_BATOCERA_GUNS
 	bool "batocera guns support"
-	select BR2_PACKAGE_AIMTRAK_GUNS				# aimtrak guns
-	select BR2_PACKAGE_SAMCO_GUNS				# samco guns
-	select BR2_PACKAGE_FUSION_LIGHTGUNS			# fusion lightguns
-	select BR2_PACKAGE_DOLPHINBAR_GUNS			# dolphinbar guns
-	select BR2_PACKAGE_SINDEN_GUNS				# sinden guns
-	select BR2_PACKAGE_AELIGHTGUN				# ae light gun
-	select BR2_PACKAGE_GUN4IR_GUNS				# gun4ir guns
-	select BR2_PACKAGE_RETROSHOOTER_GUNS			# retroshooter guns
-	select BR2_PACKAGE_OPENFIRE_GUNS			# openfire guns
-	select BR2_PACKAGE_GUNCON				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837 # guncon
-	select BR2_PACKAGE_GUNCON3				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # guncon3
-	select BR2_PACKAGE_LIGHTGUNS_GAMES_PRECALIBRATIONS
+	select BR2_PACKAGE_AIMTRAK_GUNS				# AimTrack light gun
+	select BR2_PACKAGE_SAMCO_GUNS				# SAMCO light gun
+	select BR2_PACKAGE_FUSION_LIGHTGUNS			# Fusion Lightgun
+	select BR2_PACKAGE_DOLPHINBAR_GUNS			# Dolphinbar light gun
+	select BR2_PACKAGE_SINDEN_GUNS				# Sinden Light gun
+	select BR2_PACKAGE_AELIGHTGUN				# AE Light gun
+	select BR2_PACKAGE_GUN4IR_GUNS				# GUN4IR light gun
+	select BR2_PACKAGE_RETROSHOOTER_GUNS			# RetroShooter light gun
+	select BR2_PACKAGE_OPENFIRE_GUNS			# OpenFIRE light gun
+	select BR2_PACKAGE_GUNCON				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || BR2_PACKAGE_BATOCERA_TARGET_BCM2837 # GunCon2 light gun
+	select BR2_PACKAGE_GUNCON3				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # GunCon3 Light gun
+	select BR2_PACKAGE_LIGHTGUNS_GAMES_PRECALIBRATIONS      # Light gun accuracy precalibration
 	select BR2_PACKAGE_DOLPHINCROSSHAIRSPACK		if BR2_PACKAGE_DOLPHIN_EMU
 	select BR2_PACKAGE_STEAMDECKGUN				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
-	select BR2_PACKAGE_BLAMCON
+	select BR2_PACKAGE_BLAMCON                              # BlamCon light gun
+	select BR2_PACKAGE_XGUNNER_LIGHTGUNS                    # XGunner light gun
 
 config BR2_PACKAGE_BATOCERA_KODI21
 	bool "batocera.linux Kodi 21 packages selection"
