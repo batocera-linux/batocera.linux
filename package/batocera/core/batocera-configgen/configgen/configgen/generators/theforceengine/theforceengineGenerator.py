@@ -89,7 +89,7 @@ class TheForceEngineGenerator(Generator):
         else:
             forceConfig.set("Graphics", "frameRateLimit", "60")
 
-        if system.isOptSet("force_api") and system.config["force_api"] == "Software":
+        if system.isOptSet("force_api") and system.config["force_api"] == "0":
             forceConfig.set("Graphics", "renderer", "0")
         else:
             forceConfig.set("Graphics", "renderer", "1")
@@ -223,7 +223,7 @@ class TheForceEngineGenerator(Generator):
         ## Accomodate Mods, skip cutscenes etc
         if system.isOptSet("force_skip_cutscenes") and system.config["force_skip_cutscenes"] == "initial":
             commandArray.extend(["-c0"])
-        elif system.isOptSet("force_skip_cutscenes") and system.getOptBoolean("force_skip_cutscenes") == "skip":
+        elif system.isOptSet("force_skip_cutscenes") and system.config["force_skip_cutscenes"] == "skip":
             commandArray.extend(["-c"])
         # Add mod zip file if necessary
         if mod_name is not None:

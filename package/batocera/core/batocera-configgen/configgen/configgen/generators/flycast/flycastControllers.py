@@ -63,7 +63,7 @@ flycastArcadeMapping = { # Directions
                          'select':         {'button': 'btn_d'}
 }
 
-sections = { 'analog', 'digital', 'emulator' }
+sections = ( 'analog', 'digital', 'emulator' )
 
 # Create the controller configuration file
 def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 'arcade']):
@@ -185,7 +185,7 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
         Config.set("emulator", "rumble_power", "100")
         Config.set("emulator", "version", "3")
 
-    with configFileName.open('w+') as cfgfile:
+    with configFileName.open('w') as cfgfile:
         Config.write(cfgfile)
 
 def generateKeyboardConfig():
@@ -236,5 +236,5 @@ def generateKeyboardConfig():
     Config.set("emulator", "saturation", "100")
     Config.set("emulator", "version", "3")
 
-    with configFileName.open('w+') as cfgfile:
+    with configFileName.open('w') as cfgfile:
         Config.write(cfgfile)

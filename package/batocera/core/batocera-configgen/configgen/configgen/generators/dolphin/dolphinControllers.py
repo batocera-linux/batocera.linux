@@ -21,7 +21,6 @@ eslog = logging.getLogger(__name__)
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: GunMapping) -> None:
 
-    #generateHotkeys(playersControllers)
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", metadata, guns)
@@ -164,7 +163,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
-        if (".cc." in rom.name or system.config['controller_mode'] == 'cc'):
+        if (".cc." in rom.name or (system.isOptSet('controller_mode') and system.config['controller_mode'] == 'cc')):
             wiiMapping['pageup'] = 'Classic/Buttons/ZL'
             wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
             wiiMapping['l2'] = 'Classic/Triggers/L'
@@ -403,62 +402,6 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
                 if "gun_"+spe in metadata:
                     f.write("{} = {}\n".format(specifics[spe], metadata["gun_"+spe]))
         nplayer += 1
-    f.write
-    f.close()
-
-def generateHotkeys(playersControllers: ControllerMapping) -> None:
-    configFileName = DOLPHIN_CONFIG / "Hotkeys.ini"
-    f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
-
-    hotkeysMapping: dict[str, str | None] = {
-        'a':             'Keys/Reset',
-        'b':             'Keys/Toggle Pause',
-        'x':             'Keys/Load from selected slot',
-        'y':             'Keys/Save to selected slot',
-        'r2':            None,
-        'start':         'Keys/Exit',
-        'pageup':        'Keys/Take Screenshot',
-        'pagedown':      'Keys/Toggle 3D Side-by-side',
-        'up':            'Keys/Increase Selected State Slot',
-        'down':          'Keys/Decrease Selected State Slot',
-        'left':          None,
-        'right':         None,
-        'joystick1up':   None,
-        'joystick1left': None,
-        'joystick2up':   None,
-        'joystick2left': None
-    }
-
-    nplayer = 1
-    for playercontroller, pad in sorted(playersControllers.items()):
-        if nplayer == 1:
-            f.write("[Hotkeys1]" + "\n")
-            f.write("Device = evdev/0/" + pad.real_name.strip() + "\n")
-
-            # Search the hotkey button
-            hotkey = None
-            if "hotkey" not in pad.inputs:
-                return
-            hotkey = pad.inputs["hotkey"]
-            if hotkey.type != "button":
-                return
-
-            for x in pad.inputs:
-                input = pad.inputs[x]
-
-                keyname = None
-                if input.name in hotkeysMapping:
-                    keyname = hotkeysMapping[input.name]
-
-                # Write the configuration for this key
-                if keyname is not None:
-                    write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, hotkey.id, None)
-
-                #else:
-                #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
-
-        nplayer += 1
-
     f.write
     f.close()
 

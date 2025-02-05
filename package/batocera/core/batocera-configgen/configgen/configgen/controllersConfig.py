@@ -172,7 +172,7 @@ def shortNameFromPath(path: str | Path) -> str:
         elif c == '[':
             inblock = True
         elif c == ']':
-            inblock = True
+            inblock = False
     return ret
 
 def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:

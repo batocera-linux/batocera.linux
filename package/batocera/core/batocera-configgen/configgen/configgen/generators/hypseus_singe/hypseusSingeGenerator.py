@@ -58,9 +58,13 @@ class HypseusSingeGenerator(Generator):
         return None
 
     @staticmethod
-    def get_resolution(video_path: Path) -> tuple[int, int]:
+    def get_resolution(video_path: Path) -> tuple[int, int] | None:
         probe = ffmpeg.probe(video_path)
         video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+
+        if video_stream is None:
+            return None
+
         width = int(video_stream['width'])
         height = int(video_stream['height'])
         sar_num = video_stream['display_aspect_ratio'].split(':')[0]
@@ -171,6 +175,7 @@ class HypseusSingeGenerator(Generator):
 
         eslog.debug("Full m2v path is: {}".format(video_path))
 
+        video_resolution: tuple[int, int] | None = None
         if video_path != None:
             video_resolution = self.get_resolution(video_path)
             eslog.debug("Resolution: {}".format(video_resolution))
@@ -209,7 +214,7 @@ class HypseusSingeGenerator(Generator):
             bezelRequired = True
         # original
         else:
-            if video_resolution[0] != "0":
+            if video_resolution and video_resolution[0] != "0":
                 scaling_factor = gameResolution["height"] / video_resolution[1]
                 screen_width = gameResolution["width"]
                 new_width = video_resolution[0] * scaling_factor

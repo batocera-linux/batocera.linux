@@ -74,12 +74,12 @@ class Vita3kGenerator(Generator):
         else:
             vita3kymlconfig["resolution-multiplier"] = 1
         # Set FXAA
-        if system.isOptSet("vita3k_fxaa") and system.getOptBoolean("vita3k_surface") == True:
+        if system.isOptSet("vita3k_fxaa") and system.getOptBoolean("vita3k_fxaa") == True:
             vita3kymlconfig["enable-fxaa"] = "true"
         else:
             vita3kymlconfig["enable-fxaa"] = "false"
         # Set VSync
-        if system.isOptSet("vita3k_vsync") and system.getOptBoolean("vita3k_surface") == False:
+        if system.isOptSet("vita3k_vsync") and system.getOptBoolean("vita3k_vsync") == False:
             vita3kymlconfig["v-sync"] = "false"
         else:
             vita3kymlconfig["v-sync"] = "true"
@@ -89,7 +89,7 @@ class Vita3kGenerator(Generator):
         else:
             vita3kymlconfig["anisotropic-filtering"] = 1
         # Set the linear filtering option
-        if system.isOptSet("vita3k_linear") and system.getOptBoolean("vita3k_surface") == True:
+        if system.isOptSet("vita3k_linear") and system.getOptBoolean("vita3k_linear") == True:
             vita3kymlconfig["enable-linear-filter"] = "true"
         else:
             vita3kymlconfig["enable-linear-filter"] = "false"

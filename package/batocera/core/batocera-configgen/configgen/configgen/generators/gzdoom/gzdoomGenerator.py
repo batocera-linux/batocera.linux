@@ -28,7 +28,7 @@ def set_joystick_setting(ini_file: Path, set_gz_joystick: str) -> None:
             break
 
     if not joystick_line_found:
-        if "[GlobalSettings]" not in lines:
+        if "[GlobalSettings]\n" not in lines:
             lines.append("[GlobalSettings]\n")
             lines.append(f"use_joystick={set_gz_joystick}\n")
         else:
@@ -101,9 +101,9 @@ class GZDoomGenerator(Generator):
         if not _INI_FILE.exists():
             with _INI_FILE.open("w") as file:
                 file.write('[IWADSearch.Directories]\n')
-                file.write('Path=/userdata/roms/gzdoom\n')
+                file.write(f'Path={rom_path.parent}\n')
                 file.write('[FileSearch.Directories]\n')
-                file.write('Path=/userdata/roms/gzdoom\n')
+                file.write(f'Path={rom_path.parent}\n')
                 file.write('[SoundfontSearch.Directories]\n')
                 file.write(f"Path={_SOUND_FONTS_DIR}\n")
                 file.write(f"Path={_FM_BANKS_DIR}\n")
