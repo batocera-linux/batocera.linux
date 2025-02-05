@@ -5,7 +5,9 @@ CCACHE_DIR     ?= $(PROJECT_DIR)/buildroot-ccache
 LOCAL_MK       ?= $(PROJECT_DIR)/batocera.mk
 EXTRA_OPTS     ?=
 DOCKER_OPTS    ?=
-MAKE_JLEVEL    ?= $(shell nproc)
+NPROC          := $(shell nproc)
+MAKE_JLEVEL    ?= $(NPROC)
+MAKE_LLEVEL    ?= $(shell echo $$(($(NPROC) * 2)))
 BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DIRECT_BUILD   ?=
@@ -15,6 +17,7 @@ DIRECT_BUILD   ?=
 ifdef PARALLEL_BUILD
 	EXTRA_OPTS +=  BR2_PER_PACKAGE_DIRECTORIES=y
 	MAKE_OPTS  += -j$(MAKE_JLEVEL)
+	MAKE_OPTS  += -l$(MAKE_LLEVEL)
 endif
 
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*.board' | sed -n 's/.*\/batocera-\(.*\).board/\1/p'))
