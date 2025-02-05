@@ -6,9 +6,13 @@
 # "Ultimarc IPAC 2 Ultimarc IPAC 2" : (dandc)
 # "Ultimarc I-PAC Ultimate I/O"     : (s3nt3nza)
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Ultimarc*PAC*", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
+# for a reason i ignore, a change event at boot keep the RUN running, but change the flags, so, same rule, but without the RUN, and for change event
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="change", ATTRS{name}=="Ultimarc*PAC*", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1"
 
 # xarcade
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="XGaming*X-Arcade*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="change", ATTRS{name}=="XGaming*X-Arcade*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1" # for change, see comment on Ultimarc
 
 # arcade2tv-xr
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="*Baolian industry*Arcade2TV*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="change", ATTRS{name}=="*Baolian industry*Arcade2TV*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1" # for change, see comment on Ultimarc
