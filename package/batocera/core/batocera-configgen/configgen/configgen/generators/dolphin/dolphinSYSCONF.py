@@ -44,11 +44,11 @@ def readString(f, x):
 
 def readInt8(f):
     bytes = f.read(1)
-    unpacked = unpack("b", bytes)
+    unpacked = unpack("B", bytes)
     return unpacked[0]
 
 def writeInt8(f, x):
-    bytes = pack("b", x)
+    bytes = pack("B", x)
     f.write(bytes)
 
 def readWriteEntry(f, setval):
