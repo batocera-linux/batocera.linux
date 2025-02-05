@@ -679,6 +679,10 @@ class LindberghGenerator(Generator):
             "8":      "BUTTON_RIGHT",
         }
 
+        if shortRomName == "2spicy":
+            mappings_actions["right"] = "BUTTON_2"
+            del mappings_actions["2"]
+
         if shortRomName == "ghostsev":
             mappings_actions["right"] = "BUTTON_2"
             mappings_actions["2"]     = "BUTTON_3"
