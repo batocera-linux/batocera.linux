@@ -146,7 +146,7 @@ class LindberghGenerator(Generator):
         else:
             raise Exception(f"Failed to download file. Status code: {response.status_code}")
             eslog.debug("Do you have internet!?")
-    
+
     @staticmethod
     def extract_tar_xz(file_path, extract_to):
         eslog.debug("Extracting the file...")
@@ -169,7 +169,7 @@ class LindberghGenerator(Generator):
         except FileNotFoundError:
             eslog.debug(f"Configuration file {configFile} not found.")
             lines = []
-        
+
         conf = { "raw": lines, "keys": {}}
 
         # find keys and values
@@ -231,7 +231,7 @@ class LindberghGenerator(Generator):
     def commentConf(self, conf, key):
         if key not in self.CONF_KEYS:
             raise Exception(f"unknown conf key {key}")
-        
+
         if key in conf["keys"]:
             conf["keys"][key]["modified"]  = True
             conf["keys"][key]["commented"] = True
@@ -278,14 +278,14 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "CARDFILE_02", f"{self.LINDBERGH_SAVES}/VT3_Card_02.crd")
         else:
             self.setConf(conf, "EMULATE_CARDREADER", 0)
-        
+
         # House of the Dead 4 - CPU speed
         cpu_speed = self.get_cpu_speed()
         if cpu_speed is not None:
             eslog.debug(f"Current CPU Speed: {cpu_speed:.2f} GHz")
             if "hotd" in romName.lower() and system.isOptSet("lindbergh_speed") and system.getOptBoolean("lindbergh_speed"):
                 self.setConf(conf, "CPU_FREQ_GHZ", cpu_speed)
-        
+
         # OutRun 2 - Network
         ip = self.get_ip_address()
         if not ip:
@@ -297,7 +297,7 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, "OR2_IP", ip)
         else:
             eslog.debug("Unable to retrieve IP address.")
-        
+
         ## Guns
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             need_guns_border = False
@@ -408,7 +408,7 @@ class LindberghGenerator(Generator):
                     # coin is only for player 1
                     if lindberghCtrl[input_name] == "COIN" and nplayer > 1:
                         continue
-                    
+
                     input_base_name = input_name
                     if input_name == "joystick1right":
                         input_base_name = "joystick1left"
@@ -682,11 +682,17 @@ class LindberghGenerator(Generator):
         if shortRomName == "ghostsev":
             mappings_actions["right"] = "BUTTON_2"
             mappings_actions["2"]     = "BUTTON_3"
+            mappings_actions["7"]     = "BUTTON_4"
+            del mappings_actions["3"]
 
         if shortRomName == "hotdex":
             mappings_actions["2"] = "BUTTON_LEFT"
             del mappings_actions["7"]
             del mappings_actions["8"]
+
+        if shortRomName == "hotd4sp":
+            mappings_actions["2"] = "BUTTON_4"
+            del mappings_actions["3"]
 
         for gun in guns:
             if nplayer <= 2:
@@ -754,7 +760,7 @@ class LindberghGenerator(Generator):
             if not destination.exists():
                 shutil.copy2(source, destination)
                 eslog.debug(f"Copied: {destination} from {source}")
-        
+
         # -= Game specific library versions =-
         if any(keyword in romName.lower() for keyword in ("harley", "hdkotr", "spicy", "rambo", "hotdex", "dead ex")):
             destCg = Path(romDir) / "libCg.so"
@@ -765,7 +771,7 @@ class LindberghGenerator(Generator):
             if not destCgGL.exists():
                 shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
                 eslog.debug(f"Copied: {destCgGL}")
-        
+
         if "stage 4" in romName.lower() or "initiad4" in romName.lower():
             destination = Path(romDir) / "libCgGL.so"
             if not destination.exists():
