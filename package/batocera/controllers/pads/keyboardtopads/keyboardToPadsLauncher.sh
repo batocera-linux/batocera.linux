@@ -80,13 +80,13 @@ else
 	if test -n "${CONFIGFILE}"
 	then
 	    echo "using config file ${CONFIGFILE}" >&2
-	    keyboardToPads --config "${CONFIGFILE}" --rules > "/run/udev/rules.d/${CONFIGNAME}.rules" || exit 1
+	    keyboardToPads --config "${CONFIGFILE}" --rules > "/run/udev/rules.d/99_${CONFIGNAME}.rules" || exit 1
 	    udevadm control --reload-rules || exit 1
 	    if test -t 1 # check output is a tty
 	    then
 		keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run
 	    else
-		nohup keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run &
+		nohup keyboardToPads --config "${CONFIGFILE}" --input "${1}" --run >/dev/null 2>/dev/null &
 	    fi
 	else
 	    # no config file found, do 1 to 1 mapping to enable keyboard
