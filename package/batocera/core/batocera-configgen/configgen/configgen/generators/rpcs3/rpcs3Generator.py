@@ -97,20 +97,13 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Core"]["SPU Decoder"] = "Recompiler (LLVM)"
         # Set the SPU XFloat Accuracy based on config
-        rpcs3ymlconfig["Core"]["Accurate xfloat"] = False
-        rpcs3ymlconfig["Core"]["Approximate xfloat"] = True
-        # This is not an oversight. Relaxed xfloat is always set to "true" by the RPCS3 config menu.
-        rpcs3ymlconfig["Core"]["Relaxed xfloat"] = True
         if system.isOptSet("rpcs3_spuxfloataccuracy"):
-            if system.config["rpcs3_spuxfloataccuracy"] == "accurate":
-                rpcs3ymlconfig["Core"]["Accurate xfloat"] = True
-                rpcs3ymlconfig["Core"]["Approximate xfloat"] = False
-            elif system.config["rpcs3_spuxfloataccuracy"] == "relaxed":
-                rpcs3ymlconfig["Core"]["Accurate xfloat"] = False
-                rpcs3ymlconfig["Core"]["Approximate xfloat"] = False
+            rpcs3ymlconfig["Core"]["XFloat Accuracy"] = system.config["rpcs3_spuxfloataccuracy"]
+        else:
+            rpcs3ymlconfig["Core"]["XFloat Accuracy"] = "Approximate"
         # Set the Default Core Values we need
         # Force to True for now to account for updates where exiting config file present. (True results in less stutter when a SPU module is in cache)
-        rpcs3ymlconfig["Core"]["SPU Cache"] = True # When SPU Cache is True, game performance decreases signficantly. Force it to off. (Depreciated)
+        rpcs3ymlconfig["Core"]["SPU Cache"] = True
         # Preferred SPU Threads
         if system.isOptSet("rpcs3_sputhreads"):
             rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = system.config["rpcs3_sputhreads"]
