@@ -67,7 +67,7 @@
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
-- Mesa3D to 24.3.3
+- Mesa3D to 24.3.4
 - Linux Kernel to 6.13
 - GStreamer codecs to 1.24.10
 - SDL2 to 2.30.11
