@@ -48,7 +48,7 @@
 ### Updated
 - BigPEmu to v118
 - Cemu to 2.5
-- Dolphin-Emu to 2412-145
+- Dolphin-Emu to 2412-268
 - ETLegacy to v2.83.1
 - Jazz2 to 3.1.0
 - GroovyMAME to 0.272
