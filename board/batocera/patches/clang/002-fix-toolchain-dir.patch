@@ -1,0 +1,13 @@
+diff --git a/lib/Driver/ToolChains/Gnu.cpp b/lib/Driver/ToolChains/Gnu.cpp
+index e4b922b911..3660a9bda2 100644
+--- a/lib/Driver/ToolChains/Gnu.cpp
++++ b/lib/Driver/ToolChains/Gnu.cpp
+@@ -2303,7 +2303,7 @@ void Generic_GCC::GCCInstallationDetector::init(
+         if (llvm::sys::path::is_relative(GccIinstallPrefix))
+         {
+             // Use a relative path to gcc from clang install path.
+-            Prefixes.push_back(D.InstalledDir + "/" + GccIinstallPrefix.str());
++            Prefixes.push_back(D.Dir + "/" + GccIinstallPrefix.str());
+         }
+         else
+         {
