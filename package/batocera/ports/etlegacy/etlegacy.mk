@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ETLEGACY_VERSION = v2.83.1
+ETLEGACY_VERSION = v2.83.2
 ETLEGACY_SITE = https://github.com/etlegacy/etlegacy.git
 ETLEGACY_SITE_METHOD = git
 ETLEGACY_GIT_SUBMODULES = YES
