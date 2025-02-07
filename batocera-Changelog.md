@@ -58,7 +58,7 @@
 - Libretro-Play! to Jan 12 2025 build
 - RetroArch to v1.20.0
 - Ruffle to Nightly-2024-12-28
-- RPCS3 to 0.0.34-17265
+- RPCS3 to 0.0.34-17438
 - ScummVM to v2.9.0
 - PCSX2 to v2.3.110
 - Play! to Jan 12 2025 build
@@ -75,6 +75,7 @@
 - MPV to 0.39.0
 - Kodi to 21.2
 - Nvidia production driver to 570.86.16
+- LLVM to 19.1.7
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
