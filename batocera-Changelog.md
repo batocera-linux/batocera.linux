@@ -46,7 +46,7 @@
 - Batocera-wine: add saves directory and save files options
 - Libretro-virtualjaguar core can now load .zip ROMs
 ### Updated
-- BigPEmu to v117
+- BigPEmu to v118
 - Cemu to 2.5
 - Dolphin-Emu to 2412-145
 - ETLegacy to v2.83.1
