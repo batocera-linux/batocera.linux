@@ -74,6 +74,7 @@
 - Vulkan stack to v1.4.304
 - MPV to 0.39.0
 - Kodi to 21.2
+- Nvidia production driver to 570.86.16
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
