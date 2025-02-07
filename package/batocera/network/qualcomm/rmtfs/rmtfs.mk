@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RMTFS_VERSION = b08ef6f98ec567876d7d45f15c85c6ed00d7c463
+RMTFS_VERSION = 33e1e40615efc59b17a515afe857c51b8b8c1ad1
 RMTFS_SITE = $(call github,andersson,rmtfs,$(RMTFS_VERSION))
 RMTFS_LICENSE = BSD-3-Clause license
 RMTFS_LICENSE_FILE = LICENSE
