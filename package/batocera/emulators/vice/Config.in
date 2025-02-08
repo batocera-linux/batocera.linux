@@ -1,6 +1,7 @@
 config BR2_PACKAGE_VICE
 	bool "vice"
 	select BR2_PACKAGE_FFMPEG
+	select BR2_PACKAGE_FLAC
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_IMAGE
 	select BR2_PACKAGE_PNG
@@ -12,7 +13,9 @@ config BR2_PACKAGE_VICE
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_HOST_XA
 	select BR2_PACKAGE_HOST_DOS2UNIX
+	select BR2_PACKAGE_LIBVORBIS
 	help
-	  VICE is an emulator collection which emulates the C64, the C64-DTV, the C128, the VIC20, practically all PET models, the PLUS4 and the CBM-II (aka C610). It runs on Unix, MS-DOS, Win32, OS/2, Acorn RISC OS, BeOS, QNX 6.x, Amiga, GP2X or Mac OS X machines.
+	  VICE is an emulator collection which emulates the C64, the C64-DTV, the C128,
+	  the VIC20, practically all PET models, the PLUS4 and the CBM-II (aka C610).
 
 	comment "Vice  needs a toolchain w/ OpenGl,  SDL"
