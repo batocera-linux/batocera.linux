@@ -80,6 +80,7 @@
 - Faudio to 25.02
 - DXVK to 2.5.3
 - DXVK-NVAPI to 0.8.0
+- VKD3D-Proton to 2.14.1
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
