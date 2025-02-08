@@ -1,0 +1,65 @@
+# Xtension 4 Player Ultimate Edition
+target_devices:
+  - name: Xtension 4P Player 1
+    type: joystick
+    mapping:
+      "key:up":        "abs:hat0y:-1"
+      "key:down":      "abs:hat0y:1"
+      "key:left":      "abs:hat0x:-1"
+      "key:right":     "abs:hat0x:1"
+      "key:leftshift": "btn:south"
+      "key:enter":     "btn:south"
+      "key:z":         "btn:east"
+      "key:leftctrl":  "btn:west"
+      "key:leftalt":   "btn:north"
+      "key:space":     "btn:tl"
+      "key:x":         "btn:tr"
+      "key:1":         "btn:start"
+      "key:5":         "btn:select"
+  - name: Xtension 4P Player 2
+    type: joystick
+    mapping:
+      "key:r": "abs:hat0y:-1"
+      "key:f": "abs:hat0y:1"
+      "key:d": "abs:hat0x:-1"
+      "key:g": "abs:hat0x:1"
+      "key:w": "btn:south"
+      "key:i": "btn:east"
+      "key:a": "btn:west"
+      "key:s": "btn:north"
+      "key:q": "btn:tl"
+      "key:k": "btn:tr"
+      "key:2": "btn:start"
+      "key:6": "btn:select"
+  - name: Xtension 4P Player 3
+    type: joystick
+    mapping:
+      "key:9":     "abs:hat0y:-1"
+      "key:0":     "abs:hat0y:1"
+      "key:j":     "abs:hat0x:-1"
+      "key:l":     "abs:hat0x:1"
+      "key:t":     "btn:south"
+      "key:slash": "btn:east"
+      "key:o":     "btn:west"
+      "key:c":     "btn:north"
+      "key:3":     "btn:start"
+      "key:7":     "btn:select"
+  - name: Xtension 4P Player 4
+    type: joystick
+    mapping:
+      "key:y": "abs:hat0y:-1"
+      "key:n": "abs:hat0y:1"
+      "key:v": "abs:hat0x:-1"
+      "key:u": "abs:hat0x:1"
+      "key:h": "btn:south"
+      "key:m": "btn:east"
+      "key:b": "btn:west"
+      "key:e": "btn:north"
+      "key:4": "btn:start"
+      "key:8": "btn:select"
+  - name: Xtension hotkeys
+    type: hotkeys
+    mapping:
+      "key:tab": "key:menu"
+      "key:p":   "key:pause"
+      "key:esc": "key:exit"
