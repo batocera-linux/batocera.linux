@@ -43,19 +43,42 @@ then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
 
+    ############
+    # Common mapping for all player light guns
+    ############
     # Trigger                           : BTN_LEFT
     # A                                 : BTN_RIGHT
     # B                                 : BTN_MIDDLE
     # Foot pedal (GX16-8 pin connector) : BTN_SIDE
-    # Start                             : KEY_1
-    # Select                            : KEY_5
     # D-pad up                          : KEY_UP
     # D-pad down                        : KEY_DOWN
     # D-pad left                        : KEY_LEFT
     # D-pad right                       : KEY_RIGHT
     # Semi/Auto switch                  : BTN_EXTRA
+    ############
+    # Player 1 light gun
+    ############
+    # Start                             : KEY_1
+    # Select                            : KEY_5
+    ############
+    # Player 2 light gun
+    ############
+    # Start                             : KEY_2
+    # Select                            : KEY_6
+    ############
+    # Player 3 light gun
+    ############
+    # Start                             : KEY_3
+    # Select                            : KEY_7
+    ############
+    # Player 4 light gun
+    ############
+    # Start                             : KEY_4
+    # Select                            : KEY_8
 
-    nohup evsieve                                    \
+    if test "${PLAYER}" = "1"
+    then
+        nohup evsieve                                \
             --input "${DEV1}" "${DEV2}" persist=exit \
             --map yield btn:middle     btn:2         \
             --map yield btn:side       btn:right     \
@@ -67,6 +90,56 @@ then
             --map yield key:right      btn:8         \
             --block btn:extra                        \
             --output name="Blamcon lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "2"
+    then
+        nohup evsieve                                \
+            --input "${DEV1}" "${DEV2}" persist=exit \
+            --map yield btn:middle     btn:2         \
+            --map yield btn:side       btn:right     \
+            --map yield key:2          btn:middle    \
+            --map yield key:6          btn:1         \
+            --map yield key:up         btn:5         \
+            --map yield key:down       btn:6         \
+            --map yield key:left       btn:7         \
+            --map yield key:right      btn:8         \
+            --block btn:extra                        \
+            --output name="Blamcon lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "3"
+    then
+        nohup evsieve                                \
+            --input "${DEV1}" "${DEV2}" persist=exit \
+            --map yield btn:middle     btn:2         \
+            --map yield btn:side       btn:right     \
+            --map yield key:3          btn:middle    \
+            --map yield key:7          btn:1         \
+            --map yield key:up         btn:5         \
+            --map yield key:down       btn:6         \
+            --map yield key:left       btn:7         \
+            --map yield key:right      btn:8         \
+            --block btn:extra                        \
+            --output name="Blamcon lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
+    if test "${PLAYER}" = "4"
+    then
+        nohup evsieve                                \
+            --input "${DEV1}" "${DEV2}" persist=exit \
+            --map yield btn:middle     btn:2         \
+            --map yield btn:side       btn:right     \
+            --map yield key:4          btn:middle    \
+            --map yield key:8          btn:1         \
+            --map yield key:up         btn:5         \
+            --map yield key:down       btn:6         \
+            --map yield key:left       btn:7         \
+            --map yield key:right      btn:8         \
+            --block btn:extra                        \
+            --output name="Blamcon lightgun" >/dev/null 2>"${LOGFILE}" &
+    fi
+
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
