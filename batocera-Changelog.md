@@ -62,7 +62,7 @@
 - ScummVM to v2.9.0
 - PCSX2 to v2.3.110
 - Play! to Jan 12 2025 build
-- Xemu to v0.8.10
+- Xemu to v0.8.16
 - Triforce to use a Crediar build (Nov 29, 2024)
 ### System
 - Bluez to 5.79
