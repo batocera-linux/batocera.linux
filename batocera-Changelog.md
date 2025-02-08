@@ -67,6 +67,7 @@
 - Vice to 3.9
 - TheXTech to v1.3.7-hotfix2
 - DXX-Rebirth to 12th of Jan build
+- EDuke to 26th of Dec build
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
