@@ -76,6 +76,7 @@
 - Kodi to 21.2
 - Nvidia production driver to 570.86.16
 - LLVM to 19.1.7
+- Wine-TKG to 10.0
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
