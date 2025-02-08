@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SONIC3_AIR_VERSION = v24.02.02.0-stable
+SONIC3_AIR_VERSION = v25.01.12.0-test
 SONIC3_AIR_SITE = https://github.com/Eukaryot/sonic3air.git
 SONIC3_AIR_SITE_METHOD = git
 SONIC3_AIR_GIT_SUBMODULES = YES
