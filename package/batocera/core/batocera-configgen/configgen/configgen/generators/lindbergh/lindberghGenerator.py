@@ -316,11 +316,12 @@ class LindberghGenerator(Generator):
         self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
     def setup_controllers(self, conf, system, romName, playersControllers, guns, wheels):
-        # 0: SDL, 1: EVDEV
-        if system.isOptSet("lindbergh_controller") and system.config["lindbergh_controller"] == "0":
-            input_mode = 1
+        # 0: SDL, 1: EVDEV, 2: RAW EVDEV
+        if system.isOptSet("lindbergh_controller") and system.config["lindbergh_controller"] == "1":
+            input_mode = 0
         else:
             input_mode = 2
+
 
         shortRomName = Path(romName.lower()).stem
 
