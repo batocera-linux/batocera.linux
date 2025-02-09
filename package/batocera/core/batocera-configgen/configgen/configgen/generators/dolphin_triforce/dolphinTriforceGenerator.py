@@ -28,8 +28,12 @@ class DolphinTriforceGenerator(Generator):
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
-            "name": "dolphin",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "name": "dolphin-triforce",
+            "keys": { "exit":          ["KEY_LEFTALT", "KEY_F4"],
+                      "menu":          ["KEY_LEFTALT", "KEY_ENTER"],
+                      "restore_state": "KEY_F1",
+                      "save_state":    ["KEY_LEFTSHIFT", "KEY_F1"],
+                      "screenshot":    "KEY_F9" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
