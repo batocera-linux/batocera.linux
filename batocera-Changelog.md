@@ -72,6 +72,7 @@
 - Sonic3 Air to v25.01.12.0-test
 - Taradino to 28th of Jan build
 - TheForceEngine to 17th Dec build
+- Xash3d-fwgs to 8th of Feb build
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
