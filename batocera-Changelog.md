@@ -55,13 +55,13 @@
 - Gzdoom to g4.14.0
 - Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.272
-- Libretro-Play! to Jan 12 2025 build
+- Libretro-Play! 4th Feb build
 - RetroArch to v1.20.0
 - Ruffle to Nightly-2024-12-28
 - RPCS3 to 0.0.34-17438
 - ScummVM to v2.9.0
 - PCSX2 to v2.3.146
-- Play! to Jan 12 2025 build
+- Play! to 4th Feb build
 - Xemu to v0.8.16
 - Triforce to use a Crediar build (Nov 29, 2024)
 - Vice to 3.9
