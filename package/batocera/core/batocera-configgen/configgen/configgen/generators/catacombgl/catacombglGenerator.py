@@ -24,9 +24,10 @@ class CatacombGLGenerator(Generator):
         return {
             "name": "catacombgl",
             "keys": {
-                "Exit emulator": ["KEY_LEFTALT", "KEY_F4"],
-                "Save": ["KEY_F3"],
-                "Load": ["KEY_F4"],
+                "exit": ["KEY_LEFTALT", "KEY_F4"],
+                "save_state": ["KEY_F3"],
+                "restore_state": ["KEY_F4"],
+                "menu": "KEY_ESC"
             },
         }
 

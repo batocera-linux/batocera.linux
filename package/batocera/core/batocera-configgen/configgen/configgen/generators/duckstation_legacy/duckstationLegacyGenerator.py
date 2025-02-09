@@ -22,7 +22,8 @@ class DuckstationLegacyGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "duckstation",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F7",
+                      "restore_state": "KEY_F1", "save_state": "KEY_F2", "previous_slot": "KEY_F3", "next_slot": "KEY_F4" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

@@ -44,7 +44,12 @@ class MameGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "mame",
-            "keys": { "exit": "KEY_ESC", "menu": "KEY_TAB", "pause": "KEY_F5", "coin": "KEY_5" }
+            "keys": { "exit":  "KEY_ESC",
+                      "menu":  "KEY_TAB",
+                      "pause": "KEY_F5",
+                      "coin":  "KEY_5",
+                      "save_state" : [ "KEY_LEFTSHIFT", "KEY_F6" ],
+                      "restore_state": [ "KEY_LEFTSHIFT", "KEY_F7" ] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

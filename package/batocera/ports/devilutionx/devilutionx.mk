@@ -39,13 +39,6 @@ define DEVILUTIONX_CLEAR_DL
     fi
 endef
 
-define DEVILUTIONX_INSTALL_TARGET_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/devilutionx/devilutionx.keys \
-        $(TARGET_DIR)/usr/share/evmapy
-endef
-
 DEVILUTIONX_PRE_DOWNLOAD_HOOKS = DEVILUTIONX_CLEAR_DL
-DEVILUTIONX_POST_INSTALL_TARGET_HOOKS = DEVILUTIONX_INSTALL_TARGET_EVMAPY
 
 $(eval $(cmake-package))

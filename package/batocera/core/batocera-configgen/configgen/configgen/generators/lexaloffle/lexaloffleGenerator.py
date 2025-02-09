@@ -29,7 +29,7 @@ class LexaloffleGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "lexaloffle",
-            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"] }
+            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"], "menu": "KEY_ENTER" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

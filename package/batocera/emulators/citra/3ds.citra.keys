@@ -6,22 +6,10 @@
             "description": "Move Stylet Pointer"
         },
         {
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": ["KEY_LEFTCTRL", "KEY_Q"],
-            "description": "Exit emulator"
-        },
-        {
             "trigger": ["hotkey", "a"],
             "type": "key",
             "target": "KEY_F6",
             "description": "Restart Emulation"
-        },
-        {
-            "trigger": ["hotkey", "b"],
-            "type": "key",
-            "target": "KEY_F4",
-            "description": "Continue/Pause emulation"
         },
         {
             "trigger": ["hotkey", "x"],
@@ -34,12 +22,6 @@
             "type": "key",
             "target": "KEY_F10",
             "description": "Toggle Screen Layout"
-        },
-        {
-            "trigger": ["hotkey", "pageup"],
-            "type": "key",
-            "target": ["KEY_LEFTCTRL", "KEY_P"],
-            "description": "Screenshot"
         },
         {
             "trigger": ["hotkey", "pagedown"],

@@ -52,5 +52,5 @@ class IOQuake3Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ioquake3",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": [ "KEY_LEFTSHIFT", "KEY_ESC" ] }
         }

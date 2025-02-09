@@ -523,7 +523,8 @@ class DolphinGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "dolphin",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"],
+                      "previous_slot": [ "KEY_LEFTSHIFT", "KEY_F2" ], "next_slot": [ "KEY_LEFTSHIFT", "KEY_F1" ], "save_state": "KEY_F5", "restore_state": "KEY_F8" }
         }
 
 # Get the language from the environment if user didn't set it in ES.

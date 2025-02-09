@@ -1,32 +1,11 @@
 {
-    "actions_player1": [
-    {
-           "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": ["KEY_ESC"],
-            "description": "Exit emulator"
-    },
-    {
-           "trigger": ["hotkey", "b"],
-            "type": "key",
-            "target": ["KEY_9"],
-            "description": "Service menu"
-    }
-    ]
-    ,"actions_gun1": [
+    "actions_gun1": [
     {
             "trigger": "middle",
             "type": "key",
             "target": "KEY_1"
     },
     {
-            "trigger": ["left", "right", "middle"],
-            "type": "key",
-            "hold": 2.0,
-            "target": [ "KEY_ESC" ],
-            "description": "Exit emulator"
-    },
-	{
             "trigger": "1",
             "type": "key",
             "target": "KEY_5"
