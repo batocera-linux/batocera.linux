@@ -1,0 +1,272 @@
+diff --git a/qt/CMakeLists.txt b/qt/CMakeLists.txt
+index 3fde0482eb..80b0a987a6 100644
+--- a/qt/CMakeLists.txt
++++ b/qt/CMakeLists.txt
+@@ -1,6 +1,9 @@
+ cmake_minimum_required(VERSION 3.20)
+ project(snes9x-qt VERSION 1.63)
+ 
++option(USE_X11 "Build support for X11" ON)
++option(USE_WAYLAND "Build support for Wayland" OFF)
++
+ include(GNUInstallDirs)
+ 
+ set(CMAKE_CXX_STANDARD 20)
+@@ -118,16 +121,43 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+         ../external/glad/src/wgl.c
+         src/resources/snes9x_win32.rc)
+ else()
++    if(USE_WAYLAND)
++        pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
++        if(WAYLAND_FOUND)
++            list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS})
++            list(APPEND LIBS ${WAYLAND_LIBRARIES})
++            list(APPEND FLAGS ${WAYLAND_CFLAGS})
++            list(APPEND DEFINES "USE_WAYLAND")
++            
++            # Wayland-specific source files
++            list(APPEND PLATFORM_SOURCES
++                ../common/video/opengl/wayland_egl_context.cpp
++                ../common/video/opengl/wayland_egl_context.hpp
++                ../common/video/wayland/wayland_surface.cpp
++                ../common/video/wayland/wayland_surface.hpp
++                ../common/video/wayland/fractional-scale-v1.c
++                ../common/video/wayland/fractional-scale-v1.h
++                ../common/video/wayland/viewporter-client-protocol.c
++                ../common/video/wayland/viewporter-client-protocol.h
++                ../common/video/wayland/wayland-idle-inhibit-unstable-v1.c
++                ../common/video/wayland/wayland-idle-inhibit-unstable-v1.h)
++        endif()
++    endif()
+ 
+-    pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
+     include(FindX11)
+-    if(NOT X11_FOUND)
+-        error()
++    if(X11_FOUND)
++        list(APPEND INCLUDES ${X11_INCLUDE_DIRS})
++        list(APPEND LIBS ${X11_LIBRARIES})
++        if(USE_X11)
++            list(APPEND DEFINES "USE_X11")
++            list(APPEND PLATFORM_SOURCES
++                ../common/video/opengl/glx_context.cpp
++                ../common/video/opengl/glx_context.hpp
++                ../external/glad/src/glx.c)
++        endif()
+     endif()
+ 
+-    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
+-    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES})
+-    list(APPEND FLAGS ${WAYLAND_CFLAGS})
++    list(APPEND LIBS ${PNG_LIBRARIES} ${ZLIB_LIBRARIES})
+ 
+     pkg_check_modules(PULSEAUDIO libpulse)
+     if(PULSEAUDIO_FOUND)
+@@ -137,21 +167,7 @@ else()
+         list(APPEND PLATFORM_SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
+     endif()
+ 
+-    list(APPEND PLATFORM_SOURCES
+-    ../common/video/opengl/glx_context.cpp
+-    ../common/video/opengl/glx_context.hpp
+-    ../common/video/opengl/wayland_egl_context.cpp
+-    ../common/video/opengl/wayland_egl_context.hpp
+-    ../common/video/wayland/wayland_surface.cpp
+-    ../common/video/wayland/wayland_surface.hpp
+-    ../common/video/wayland/fractional-scale-v1.c
+-    ../common/video/wayland/fractional-scale-v1.h
+-    ../common/video/wayland/viewporter-client-protocol.c
+-    ../common/video/wayland/viewporter-client-protocol.h
+-    ../common/video/wayland/wayland-idle-inhibit-unstable-v1.c
+-    ../common/video/wayland/wayland-idle-inhibit-unstable-v1.h
+-    ../external/glad/src/glx.c
+-    ../external/glad/src/egl.c)
++    list(APPEND PLATFORM_SOURCES ../external/glad/src/egl.c)
+ endif()
+ 
+ find_package(SDL3 QUIET)
+@@ -264,9 +280,12 @@ list(APPEND LIBS
+ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+     list(APPEND DEFINES "VK_USE_PLATFORM_WIN32_KHR")
+ else()
+-    list(APPEND DEFINES
+-        "VK_USE_PLATFORM_XLIB_KHR"
+-        "VK_USE_PLATFORM_WAYLAND_KHR")
++    if(USE_WAYLAND AND WAYLAND_FOUND)
++        list(APPEND DEFINES "VK_USE_PLATFORM_WAYLAND_KHR")
++    endif()
++    if(X11_FOUND AND USE_X11)
++        list(APPEND DEFINES "VK_USE_PLATFORM_XLIB_KHR")
++    endif()
+ endif()
+ 
+ list(APPEND DEFINES
+diff --git a/qt/src/EmuCanvasOpenGL.cpp b/qt/src/EmuCanvasOpenGL.cpp
+index eb41fe0ff6..3d5349ba99 100644
+--- a/qt/src/EmuCanvasOpenGL.cpp
++++ b/qt/src/EmuCanvasOpenGL.cpp
+@@ -6,10 +6,14 @@
+ #include "common/video/opengl/opengl_context.hpp"
+ 
+ #ifndef _WIN32
+-#include "common/video/opengl/glx_context.hpp"
+-#include "common/video/opengl/wayland_egl_context.hpp"
+ using namespace QNativeInterface;
++#ifdef USE_X11
++#include "common/video/opengl/glx_context.hpp"
+ #include <X11/Xlib.h>
++#endif
++#ifdef USE_WAYLAND
++#include "common/video/opengl/wayland_egl_context.hpp"
++#endif
+ #else
+ #include "common/video/opengl/wgl_context.hpp"
+ #endif
+@@ -138,6 +142,7 @@ bool EmuCanvasOpenGL::createContext()
+     auto pni = QGuiApplication::platformNativeInterface();
+     QGuiApplication::sync();
+ #ifndef _WIN32
++#ifdef USE_WAYLAND
+     if (platform == "wayland")
+     {
+         auto display = (wl_display *)pni->nativeResourceForWindow("display", main_window->windowHandle());
+@@ -154,7 +159,9 @@ bool EmuCanvasOpenGL::createContext()
+ 
+         context.reset(wayland_egl_context);
+     }
+-    else if (platform == "xcb")
++#endif
++#ifdef USE_X11
++    if (platform == "xcb")
+     {
+         auto display = (Display *)pni->nativeResourceForWindow("display", windowHandle());
+         auto xid = (Window)winId();
+@@ -169,6 +176,7 @@ bool EmuCanvasOpenGL::createContext()
+ 
+         context.reset(glx_context);
+     }
++#endif
+ #else
+     auto hwnd = winId();
+     auto wgl_context = new WGLContext();
+@@ -316,10 +324,14 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
+     int s = devicePixelRatio();
+     auto platform = QGuiApplication::platformName();
+ #ifndef _WIN32
++#ifdef USE_WAYLAND
+     if (QGuiApplication::platformName() == "wayland")
+         ((WaylandEGLContext *)context.get())->resize({ x() - main_window->x(), y() - main_window->y(), width(), height(), s });
+-    else if (platform == "xcb")
++#endif
++#ifdef USE_X11
++    if (platform == "xcb")
+         ((GTKGLXContext *)context.get())->resize();
++#endif
+ #else
+     ((WGLContext *)context.get())->resize();
+ #endif
+diff --git a/qt/src/EmuCanvasVulkan.cpp b/qt/src/EmuCanvasVulkan.cpp
+index 670aabd74d..c417ffec0d 100644
+--- a/qt/src/EmuCanvasVulkan.cpp
++++ b/qt/src/EmuCanvasVulkan.cpp
+@@ -104,6 +104,7 @@ bool EmuCanvasVulkan::createContext()
+         return false;
+     }
+ #else
++#ifdef USE_WAYLAND
+     if (platform == "wayland")
+     {
+         wayland_surface = std::make_unique<WaylandSurface>();
+@@ -121,7 +122,9 @@ bool EmuCanvasVulkan::createContext()
+             return false;
+         }
+     }
+-    else if (platform == "xcb")
++#endif
++#ifdef USE_X11
++    if (platform == "xcb")
+     {
+         auto display = (Display *)pni->nativeResourceForWindow("display", window);
+         auto xid = (Window)winId();
+@@ -134,6 +137,7 @@ bool EmuCanvasVulkan::createContext()
+             return false;
+         }
+     }
++#endif
+ #endif
+ 
+     if (config->display_messages == EmuConfig::eOnscreen)
+@@ -241,6 +245,7 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
+     context->swapchain->set_vsync(config->enable_vsync);
+ 
+ #ifndef _WIN32
++#ifdef USE_WAYLAND
+     if (platform == "wayland")
+     {
+         WaylandSurface::Metrics m = {
+@@ -257,6 +262,7 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
+         wayland_surface->resize(m);
+         return;
+     }
++#endif
+ #endif
+ 
+     context->swapchain->check_and_resize(event->size().width() * devicePixelRatio(), event->size().height() * devicePixelRatio());
+@@ -296,7 +302,12 @@ void EmuCanvasVulkan::deinit()
+     shader_chain.reset();
+     context.reset();
+ #ifndef _WIN32
+-    wayland_surface.reset();
++#ifdef USE_WAYLAND
++    if (platform == "wayland")
++    {
++        wayland_surface.reset();
++    }
++#endif
+ #endif
+ }
+ 
+diff --git a/qt/src/EmuCanvasVulkan.hpp b/qt/src/EmuCanvasVulkan.hpp
+index fbb72be468..c49179ee8a 100644
+--- a/qt/src/EmuCanvasVulkan.hpp
++++ b/qt/src/EmuCanvasVulkan.hpp
+@@ -7,8 +7,10 @@
+ #include "common/video/vulkan/vulkan_shader_chain.hpp"
+ 
+ #ifndef _WIN32
++#ifdef USE_WAYLAND
+ #include "common/video/wayland/wayland_surface.hpp"
+ #endif
++#endif
+ 
+ class EmuCanvasVulkan : public EmuCanvas
+ {
+@@ -45,6 +47,8 @@ class EmuCanvasVulkan : public EmuCanvas
+     QString platform;
+ 
+ #ifndef _WIN32
++#ifdef USE_WAYLAND
+     std::unique_ptr<WaylandSurface> wayland_surface;
+ #endif
++#endif
+ };
+diff --git a/qt/src/EmuMainWindow.cpp b/qt/src/EmuMainWindow.cpp
+index 1e063a405b..e10ec72591 100644
+--- a/qt/src/EmuMainWindow.cpp
++++ b/qt/src/EmuMainWindow.cpp
+@@ -377,6 +377,7 @@ void EmuMainWindow::resizeToMultiple(int multiple)
+ void EmuMainWindow::setBypassCompositor(bool bypass)
+ {
+ #ifndef _WIN32
++#ifdef USE_X11
+     if (QGuiApplication::platformName() == "xcb")
+     {
+         auto pni = QGuiApplication::platformNativeInterface();
+@@ -388,6 +389,7 @@ void EmuMainWindow::setBypassCompositor(bool bypass)
+         XChangeProperty(display, xid, net_wm_bypass_compositor, 6, 32, PropModeReplace, (unsigned char *)&value, 1);
+     }
+ #endif
++#endif
+ }
+ 
+ void EmuMainWindow::chooseState(bool save)
