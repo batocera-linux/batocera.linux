@@ -108,6 +108,8 @@ define BATOCERA_CONFIGGEN_CONFIGS
 	    $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
 	cp $(CONFIGGEN_DIR)/scripts/call_achievements_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/
+	# evmapy default hotkeys file
+	cp $(CONFIGGEN_DIR)/hotkeys.keys $(TARGET_DIR)/usr/share/evmapy/hotkeys.keys
 endef
 
 define BATOCERA_CONFIGGEN_ES_HOOKS

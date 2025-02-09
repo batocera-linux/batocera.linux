@@ -194,14 +194,6 @@ define RETROARCH_INSTALL_STAGING_CMDS
 	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) DESTDIR=$(STAGING_DIR) install
 endef
 
-define RETROARCH_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/retroarch/libretro.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-RETROARCH_POST_INSTALL_TARGET_HOOKS += RETROARCH_EVMAPY
-
 $(eval $(generic-package))
 
 # DEFINITION OF LIBRETRO PLATFORM

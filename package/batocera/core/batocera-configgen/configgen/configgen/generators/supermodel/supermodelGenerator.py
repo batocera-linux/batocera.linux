@@ -28,7 +28,7 @@ class SupermodelGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "supermodel",
-            "keys": { "exit": "KEY_ESC" }
+            "keys": { "exit": "KEY_ESC", "menu": [ "KEY_LEFTALT", "KEY_P" ], "pause": [ "KEY_LEFTALT", "KEY_P" ], "save_state": "KEY_F5", "restore_state": "KEY_F7", "next_state": "KEY_F6" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

@@ -1,11 +1,6 @@
 {
     "actions_player1": [
 	{
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	},
-	{
             "trigger": "start",
             "type": "key",
             "target": "KEY_1"
@@ -38,14 +33,7 @@
             "trigger": "1",
             "type": "key",
             "target": "KEY_1"
-	},
-    {
-            "trigger": ["left", "right", "middle"],
-            "type": "key",
-            "hold": 2.0,
-            "target": [ "KEY_LEFTALT", "KEY_F4" ],
-            "description": "Exit emulator"
-    }
+	}
     ]
     ,"actions_gun2": [
 	{

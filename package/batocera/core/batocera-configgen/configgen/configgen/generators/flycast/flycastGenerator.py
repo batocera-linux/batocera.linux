@@ -23,9 +23,8 @@ class FlycastGenerator(Generator):
             "keys": {
                 "exit": "KEY_F7",
                 "menu": "KEY_TAB",
-                "fast_foward": "KEY_SPACE",
-                "load_state": "KEY_F8",
-                "save_state": "KEY_F9"
+                "save_state": "KEY_F8",
+                "restore_state": "KEY_F9"
             }
         }
 

@@ -51,13 +51,6 @@ define DOLPHIN_TRIFORCE_INI
 		$(TARGET_DIR)/usr/share/triforce
 endef
 
-define DOLPHIN_TRIFORCE_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/*.keys \
-		$(TARGET_DIR)/usr/share/evmapy
-endef
-
 DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_INI
-DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_EVMAPY
 
 $(eval $(cmake-package))

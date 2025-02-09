@@ -23,9 +23,6 @@ endef
 
 define TYRIAN_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/opentyrian $(TARGET_DIR)/usr/bin/
-	# evmap config
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/tyrian/tyrian.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))

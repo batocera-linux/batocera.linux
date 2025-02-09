@@ -52,14 +52,7 @@ define VITA3K_INSTALL_TARGET_CMDS
 	cp -R $(@D)/buildroot-build/bin/* $(TARGET_DIR)/usr/bin/vita3k/
 endef
 
-define VITA3K_INSTALL_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/vita3k/psvita.vita3k.keys \
-        $(TARGET_DIR)/usr/share/evmapy
-endef
-
 VITA3K_POST_EXTRACT_HOOKS = VITA3K_GET_SUBMODULE
 VITA3K_POST_EXTRACT_HOOKS += VITA3K_FFMPEG_ZIP
-VITA3K_POST_INSTALL_TARGET_HOOKS = VITA3K_INSTALL_EVMAPY
 
 $(eval $(cmake-package))

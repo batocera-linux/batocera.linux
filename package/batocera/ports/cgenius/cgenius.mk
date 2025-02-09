@@ -30,13 +30,6 @@ define CGENIUS_GET_COSMOS
         cd ../../..
 endef
 
-define CGENIUS_POST_PROCESS
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cgenius/cgenius.cgenius.keys \
-    $(TARGET_DIR)/usr/share/evmapy
-endef
-
 CGENIUS_POST_EXTRACT_HOOKS += CGENIUS_GET_COSMOS
-CGENIUS_POST_INSTALL_TARGET_HOOKS += CGENIUS_POST_PROCESS
 
 $(eval $(cmake-package))
