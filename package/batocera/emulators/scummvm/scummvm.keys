@@ -1,28 +1,10 @@
 {
     "actions_player1": [
         {
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": ["KEY_LEFTCTRL", "KEY_Q"],
-            "description": "Exit emulator"
-        },
-        {
-            "trigger": ["hotkey", "b"],
-            "type": "key",
-            "target": ["KEY_LEFTCTRL", "KEY_F5"],
-            "description": "Menu"
-        },
-        {
             "trigger": ["hotkey", "x"],
             "type": "key",
             "target": ["KEY_LEFTCTRL", "KEY_LEFTALT", "KEY_F"],
             "description": "Graphics filtering on/off"
-        },
-        {
-            "trigger": ["hotkey", "pageup"],
-            "type": "key",
-            "target": ["KEY_LEFTALT", "KEY_S"],
-            "description": "Screenshot"
         }
     ]
 }

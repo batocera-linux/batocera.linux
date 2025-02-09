@@ -26,7 +26,7 @@ class CitraGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "citra",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F4" }
         }
 
     # Main entry of the module

@@ -39,7 +39,13 @@ class Pcsx2Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "pcsx2",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit":          ["KEY_LEFTALT", "KEY_F4"],
+                      "menu":          "KEY_ESC",
+                      "save_state":    "KEY_F1",
+                      "restore_state": "KEY_F3",
+                      "previous_slot": [ "KEY_LEFTSHIFT", "KEY_F2" ],
+                      "next_slot":     "KEY_F2"
+                     }
         }
 
     def getInGameRatio(self, config, gameResolution, rom):

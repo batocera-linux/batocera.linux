@@ -30,7 +30,7 @@ class HypseusSingeGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "hypseus-singe",
-            "keys": { "exit": "KEY_ESC" }
+            "keys": { "exit": "KEY_ESC", "menu": "KEY_9" }
         }
 
     @staticmethod
