@@ -99,6 +99,7 @@
 - Intel Media Driver to 25.1.1
 - LibDRM to 2.4.124
 - Pipewire to 1.2.7
+- Wireplumber to 0.5.8
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
