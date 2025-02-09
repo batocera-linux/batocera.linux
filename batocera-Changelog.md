@@ -100,6 +100,7 @@
 - LibDRM to 2.4.124
 - Pipewire to 1.2.7
 - Wireplumber to 0.5.8
+- Ryzenadj to v0.16.0
 
 # 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
