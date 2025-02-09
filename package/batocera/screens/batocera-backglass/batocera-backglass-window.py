@@ -13,12 +13,15 @@ import re
 
 class BackglassAPI(BaseHTTPRequestHandler):
 
+    imgvideo_extensions = ["png", "jpg", "gif", "avi", "mp4"]
+    imgvideo_properties = ["image", "video", "marquee", "thumbnail", "fanart", "manual", "titleshot", "bezel", "magazine", "manual", "boxart", "boxback", "wheel", "mix"]
+
     def sendHeaders(self, contentType):
         self.send_response(200)
         self.send_header("Content-type", contentType)
         self.end_headers()
 
-    def gameShortName(self, path):
+    def gameShortName(path):
         # just filename without extension
         res = os.path.splitext(os.path.basename(path))[0]
         # remove anything in parenthesis
@@ -34,8 +37,6 @@ class BackglassAPI(BaseHTTPRequestHandler):
             query = urlparse(self.path)
             qs = parse_qs(query.query)
 
-            imgvideo_extensions = ["png", "jpg", "gif", "avi", "mp4"]
-
             if query.path == "/game":
                 self.sendHeaders("text/plain")
                 system = qs["system"][0]
@@ -44,10 +45,10 @@ class BackglassAPI(BaseHTTPRequestHandler):
                 data   = {}
                 with urllib.request.urlopen("http://localhost:1234/systems/{}/games/{}".format(system, hash)) as url:
                     data = json.load(url)
-                    for prop in ["image", "video", "marquee", "thumbnail", "fanart", "manual", "titleshot", "bezel", "magazine", "manual", "boxart", "boxback", "wheel", "mix"]:
+                    for prop in BackglassAPI.imgvideo_properties:
                         if prop in data:
-                            shortname = self.gameShortName(path)
-                            for ext in imgvideo_extensions:
+                            shortname = BackglassAPI.gameShortName(path)
+                            for ext in BackglassAPI.imgvideo_extensions:
                                 if os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.{}".format(system, prop, shortname, ext)):
                                     data[prop] = "http://localhost:2033/static/images/systems/{}/games/{}/{}.{}".format(system, prop, shortname, ext)
                                     break
@@ -64,7 +65,7 @@ class BackglassAPI(BaseHTTPRequestHandler):
                     data = json.load(url)
                     for prop in ["logo"]:
                         if prop in data:
-                            for ext in imgvideo_extensions:
+                            for ext in BackglassAPI.imgvideo_extensions:
                                 if os.path.exists("/userdata/system/backglass/systems/{}/{}.{}".format(system, prop, ext)):
                                     data[prop] = "http://localhost:2033/static/images/systems/{}/{}.{}".format(system, prop, ext)
                                     break
@@ -108,13 +109,32 @@ def handle_api(window):
     except:
         webServer.server_close()
 
+def listMissingCustoms(system, mediatype):
+    if mediatype not in BackglassAPI.imgvideo_properties:
+        raise Exception("invalid media type")
+    with urllib.request.urlopen("http://localhost:1234/systems/{}/games".format(system, hash)) as url:
+        data = json.load(url)
+        for game in data:
+            fname = game["path"]
+            shortname = BackglassAPI.gameShortName(fname)
+
+            for ext in BackglassAPI.imgvideo_extensions:
+                if os.path.exists("/userdata/system/backglass/systems/{}/games/{}/{}.{}".format(system, mediatype, shortname, ext)):
+                    break
+            else:
+                print("/userdata/system/backglass/systems/{}/games/{}/{}.{}".format(system, mediatype, shortname, BackglassAPI.imgvideo_extensions[0]))
+
 parser = argparse.ArgumentParser(prog="batocera-backglass")
 parser.add_argument("--www", default="/usr/share/batocera-backglass/www/backglass-default/index.htm", help="path to the web page")
 parser.add_argument("--x",      type=int, default=0,   help="window x position")
 parser.add_argument("--y",      type=int, default=0,   help="window y position")
 parser.add_argument("--width",  type=int, default=800, help="window width")
 parser.add_argument("--height", type=int, default=600, help="window height")
+parser.add_argument("--list-missing-customs", type=str, nargs=2, help="list missing custom files for a given system/format (ie snes marquee)")
 args = parser.parse_args()
 
-window = webview.create_window('backglass', args.www, x=args.x, y=args.y, width=args.width, height=args.height, focus=False)
-webview.start(handle_api, window)
+if args.list_missing_customs:
+    listMissingCustoms(args.list_missing_customs[0], args.list_missing_customs[1])
+else:
+    window = webview.create_window('backglass', args.www, x=args.x, y=args.y, width=args.width, height=args.height, focus=False)
+    webview.start(handle_api, window)
