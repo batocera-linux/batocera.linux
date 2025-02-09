@@ -47,7 +47,7 @@
 - Libretro-virtualjaguar core can now load .zip ROMs
 ### Updated
 - BigPEmu to v118
-- Cemu to 2.5
+- Cemu to 2.6
 - Dolphin-Emu to 2412-268
 - ETLegacy to v2.83.2
 - Jazz2 to 3.1.0
