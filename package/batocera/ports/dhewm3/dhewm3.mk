@@ -12,12 +12,4 @@ DHEWM3_SUBDIR = neo
 
 DHEWM3_DEPENDENCIES = host-libjpeg libcurl libogg libvorbis openal sdl2 zlib 
 
-define DHEWM3_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/dhewm3/doom3.dhewm3.keys \
-		$(TARGET_DIR)/usr/share/evmapy
-endef
-
-DHEWM3_POST_INSTALL_TARGET_HOOKS = DHEWM3_EVMAPY
-
 $(eval $(cmake-package))

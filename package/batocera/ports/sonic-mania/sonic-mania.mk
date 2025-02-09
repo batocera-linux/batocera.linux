@@ -25,12 +25,4 @@ define SONIC_MANIA_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/bin/sonic-mania
 endef
 
-define SONIC_MANIA_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic-mania/sonic-mania.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-SONIC_MANIA_POST_INSTALL_TARGET_HOOKS += SONIC_MANIA_EVMAPY
-
 $(eval $(cmake-package))

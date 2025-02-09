@@ -34,12 +34,4 @@ define SONIC3_AIR_INSTALL_TARGET_CMDS
 	cp -r $(@D)/Oxygen/sonic3air/saves $(TARGET_DIR)/usr/bin/sonic3-air
 endef
 
-define SONIC3_AIR_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sonic3-air/sonic3-air.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-SONIC3_AIR_POST_INSTALL_TARGET_HOOKS += SONIC3_AIR_EVMAPY
-
 $(eval $(cmake-package))

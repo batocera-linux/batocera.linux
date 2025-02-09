@@ -22,6 +22,107 @@ if TYPE_CHECKING:
 
 eslog = logging.getLogger(__name__)
 
+_EMULATORS_HAVING_INTERNAL_HOTKEYS = [
+    #"abuse",
+    #"amiberry",
+    #"applewin",
+    #"bigpemu",
+    #"cannonball",
+    #"catacombgl",
+    #"cdogs",
+    #"cemu",
+    #"cgenius",
+    #"citra",
+    #"corsixth",
+    #"demul",
+    #"devilutionx",
+    #"dhewm3",
+    #"dolphin",
+    #"dolphin_triforce",
+    #"dosbox",
+    #"dosboxx",
+    #"dosboxstaging",
+    #"drastic",
+    #"duckstation",
+    #"dxx-rebirth",
+    #"easyrpg",
+    #"ecwolf",
+    #"eduke32",
+    #"eka2l1",
+    #"etlegacy",
+    #"fallout1-ce",
+    #"fallout2-ce",
+    #"fba2x",
+    #"flatpak",
+    #"flycast",
+    #"fpinball",
+    #"fsuae",
+    #"gsplus",
+    #"gzdoom",
+    #"hatari",
+    #"hcl",
+    #"hurrican",
+    #"hypseus-singe",
+    #"ikemen",
+    #"ioquake3",
+    #"iortcw",
+    #"jazz2-native",
+    #"libretro",
+    #"lightspark",
+    #"lindbergh-loader",
+    #"mame",
+    #"melonds",
+    #"model2emu",
+    #"moonlight",
+    #"mugen",
+    #"mupen64plus",
+    #"odcommander",
+    #"openbor",
+    #"openjazz",
+    #"openmsx",
+    #"pcsx2",
+    #"play",
+    #"ppsspp",
+    #"pygame",
+    #"pyxel",
+    #"raze",
+    #"redream",
+    #"rpcs3",
+    #"ruffle",
+    #"ryujinx",
+    #"samcoupe",
+    #"scummvm",
+    #"sdlpop",
+    #"sh",
+    #"shadps4",
+    #"solarus",
+    #"sonic-mania",
+    #"sonic2013",
+    #"sonic3-air",
+    #"soniccd",
+    #"steam",
+    #"stella",
+    #"supermodel",
+    #"suyu",
+    #"taradino",
+    #"theforceengine",
+    #"thextech",
+    #"tsugaru",
+    #"tyrian",
+    #"uqm",
+    #"vice",
+    #"vita3k",
+    #"vkquake",
+    #"vkquake2",
+    #"vkquake3",
+    #"vpinball",
+    #"wine",
+    #"x16emu",
+    #"xash3d_fwgs",
+    #"xemu",
+    #"xenia",
+    #"xenia-canary"
+]
 
 @dataclass(slots=True)
 class evmapy(AbstractContextManager[None, None]):
@@ -72,6 +173,13 @@ class evmapy(AbstractContextManager[None, None]):
                 eslog.debug(f"evmapy file to merge : {keysfile}")
                 filesToMerge.append(keysfile)
 
+        # merge conditionnally on the global hotkeys file until it is set everywhere
+        if self.emulator not in _EMULATORS_HAVING_INTERNAL_HOTKEYS:
+            keysfile = "/usr/share/evmapy/hotkeys.keys"
+            if os.path.exists(keysfile):
+                eslog.debug(f"evmapy file to merge : {keysfile}")
+                filesToMerge.append(keysfile)
+            
         if len(filesToMerge) == 0:
             return None
         if len(filesToMerge) == 1:
@@ -79,12 +187,28 @@ class evmapy(AbstractContextManager[None, None]):
 
         mergedFile = "/var/run/evmapy_merged.keys"
 
-        mergedValues = {}
+        mergedUniqueValues = {}
+
         for file in filesToMerge:
             values = json.load(open(file))
-            for action in values:
-                if action not in mergedValues:
-                    mergedValues[action] = values[action]
+            for player_actions in values:
+                if player_actions not in mergedUniqueValues:
+                    mergedUniqueValues[player_actions] = {}
+                for action in values[player_actions]:
+                    #merge multiple trigger keys list in a single ordered key
+                    if isinstance(action['trigger'], list):
+                        action['trigger'].sort()
+                        trigger = "-".join(action['trigger'])
+                    else:
+                        trigger = action['trigger']
+                    if trigger not in mergedUniqueValues[player_actions]:
+                        mergedUniqueValues[player_actions][trigger] = action
+        mergedValues = {}
+        for player_actions in mergedUniqueValues:
+            mergedValues[player_actions] = []
+            for action in mergedUniqueValues[player_actions]:
+                mergedValues[player_actions].append(mergedUniqueValues[player_actions][action])
+
         with open(mergedFile, "w") as fd:
             fd.write(json.dumps(mergedValues, indent=2))
 
