@@ -10,6 +10,12 @@ eslog = logging.getLogger(__name__)
 
 class StellaGenerator(Generator):
 
+    def getHotkeysContext(self) -> HotkeysContext:
+        return {
+            "name": "stella",
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+        }
+
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Launch Stella
         commandArray = ["stella " , rom ]

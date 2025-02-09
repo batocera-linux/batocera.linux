@@ -59,9 +59,6 @@ define OD_COMMANDER_INSTALL_TARGET_CMDS
 	  $(TARGET_DIR)$(OD_COMMANDER_RESOURCES_DIR)
 	$(INSTALL) -m 0755 -D $(OD_COMMANDER_BUILDDIR)commander \
 	  $(TARGET_DIR)/usr/bin/od-commander
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy/
-	 cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/od-commander/odcommander.keys \
-	  $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(cmake-package))

@@ -29,7 +29,7 @@ class OpenmsxGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "openmsx",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "restore_state": "KEY_F6" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

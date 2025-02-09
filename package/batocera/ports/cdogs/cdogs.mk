@@ -31,10 +31,6 @@ define CDOGS_INSTALL_TARGET_CMDS
     # cp -pav $(@D)/sounds $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs
     # cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cdogs/gamecontrollerdb.txt \
         $(TARGET_DIR)/usr/share/batocera/datainit/roms/cdogs/data
-
-    # evmap config
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cdogs/cdogs.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))

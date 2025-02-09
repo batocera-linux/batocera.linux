@@ -25,8 +25,6 @@ define BATOCERA_WINE_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BATOCERA_WINE_SOURCE_PATH)/mugen.keys \
 	    $(TARGET_DIR)/usr/share/evmapy
-	cp $(BATOCERA_WINE_SOURCE_PATH)/windows.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))
