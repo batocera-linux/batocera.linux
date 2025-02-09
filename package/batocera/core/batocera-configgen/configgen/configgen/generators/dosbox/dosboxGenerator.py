@@ -28,7 +28,7 @@ class DosBoxGenerator(Generator):
 
         configFile = _CONFIG
         if gameConfFile.is_file():
-            shutil.copy2(configFile, customConfFile)
+            shutil.copy2(gameConfFile, customConfFile)
         else:
             # empty custom.conf when there is nothing from game directory
             open(customConfFile, 'w').close()
