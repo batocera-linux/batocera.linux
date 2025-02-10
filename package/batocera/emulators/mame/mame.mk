@@ -97,17 +97,19 @@ ifeq ($(BR2_cortex_a76_a55),y)
 MAME_CFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
 endif
 
-define MAME_BUILD_CMDS
-	# First, we need to build genie for host
-	cd $(@D); \
+define MAME_GENIE
+	+cd $(@D) ; \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
+endef
 
-	# Compile emulation target (MAME)
-	cd $(@D); \
+MAME_PRE_BUILD_HOOKS += MAME_GENIE
+
+define MAME_BUILD_CMDS
+	+cd $(@D) ; \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
@@ -115,7 +117,7 @@ define MAME_BUILD_CMDS
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	CCACHE_SLOPPINESS="pch_defines,time_macros" \
-	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
+	$(MAKE) -j$(MAME_JOBS) -l$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=mame \
 	OVERRIDE_CC="$(TARGET_CC)" \
