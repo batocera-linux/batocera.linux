@@ -7,8 +7,8 @@
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
-- Initial support for RS3 Reaper light gun
 - Add Anbernic RG351V support
+- Initial support for RS3 Reaper light gun
 - Initial support for XGunner light gun
 - Initial support for OpenFIRE light gun
 - Initial support for Fusion P.I.G.S. light gun
@@ -23,7 +23,8 @@
 - Game Specific color palette for gambette core
 - Non-Micro GUN4IR light gun hardware support
 - Steering wheel support added for :
-  - G923 (Xbox), Logitech PRO Racing Wheel
+  - Logitech: G923 (Xbox), PRO Racing Wheel
+  - Speedlink: 4in1 Leather Power Feedback Wheel
 - Sega Lindbergh loader
 - Variable Refresh Rate (VRR) support for modern AMD gpus
 - Support of Shanwan Twin USB Joystick (new revision)
@@ -102,7 +103,7 @@
 - Wireplumber to 0.5.8
 - Ryzenadj to v0.16.0
 
-# 2024/12/xx - batocera.linux 41 - Golden-rayed Blue
+# 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
 - The Xenia Canary introduces GamerTags (user profiles).
   On first run or game launch you may be prompted to create a profile.
