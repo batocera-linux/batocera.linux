@@ -79,12 +79,28 @@ class evmapy(AbstractContextManager[None, None]):
 
         mergedFile = "/var/run/evmapy_merged.keys"
 
-        mergedValues = {}
+        mergedUniqueValues = {}
         for file in filesToMerge:
             values = json.load(open(file))
-            for action in values:
-                if action not in mergedValues:
-                    mergedValues[action] = values[action]
+            for player_actions in values:
+                if player_actions not in mergedUniqueValues:
+                    mergedUniqueValues[player_actions] = {}
+                for action in values[player_actions]:
+                    #merge multiple trigger keys list in a single ordered key
+                    if isinstance(action['trigger'], list):
+                        action['trigger'].sort()
+                        trigger = "-".join(action['trigger'])
+                    else:
+                        trigger = action['trigger']
+                    if trigger not in mergedUniqueValues[player_actions]:
+                        mergedUniqueValues[player_actions][trigger] = action
+
+        mergedValues = {}
+        for player_actions in mergedUniqueValues:
+            mergedValues[player_actions] = []
+            for action in mergedUniqueValues[player_actions]:
+                mergedValues[player_actions].append(mergedUniqueValues[player_actions][action])
+
         with open(mergedFile, "w") as fd:
             fd.write(json.dumps(mergedValues, indent=2))
 
