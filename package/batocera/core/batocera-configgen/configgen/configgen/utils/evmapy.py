@@ -83,9 +83,7 @@ class evmapy(AbstractContextManager[None, None]):
         for file in filesToMerge:
             values = json.load(open(file))
             for action in values:
-                if action in mergedValues:
-                    mergedValues[action].extend(values[action])
-                else:
+                if action not in mergedValues:
                     mergedValues[action] = values[action]
         with open(mergedFile, "w") as fd:
             fd.write(json.dumps(mergedValues, indent=2))
