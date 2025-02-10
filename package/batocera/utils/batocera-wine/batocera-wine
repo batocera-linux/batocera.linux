@@ -5,6 +5,49 @@ ACTION=$2
 shift
 shift
 
+stopWineServer() {
+    if [[ -z "${WINESERVER}" ]]; then
+        exit 0
+    fi
+
+    if [[ -z "${WINEPOINT}" ]]; then
+        exit 0
+    fi
+
+    #try to cleanly exit wineserver
+    WINEPREFIX=${WINEPOINT} "${WINESERVER}" -k &
+
+    #wait 10s for clean exit
+    for i in {1..10}; do
+        echo "waiting wineserver shutdown" >&2
+        if ! pgrep -f "${WINESERVER}" ; then
+            echo "wineserver has cleanly exited" >&2
+            cleanAndExit 0
+        fi
+        sleep 1
+    done
+
+    #kill all process with wineprefix as envvar if wineserver is still not stopped
+
+    declare -a PIDS
+
+    # find all process with wineprefix environement
+    for PID in $(ps -e -o pid=); do
+        if grep -z "WINEPREFIX=${WINEPOINT}" "/proc/$PID/environ" 2>/dev/null; then
+            PIDS+=("$PID")
+        fi
+    done
+
+    # kill all pids
+    if [ ${#PIDS[@]} -gt 0 ]; then
+        echo "Killing stuck wine processes: ${PIDS[*]}"
+        kill -9 "${PIDS[@]}"
+    fi
+    cleanAndExit 1
+}
+
+trap stopWineServer SIGHUP SIGINT SIGTERM
+
 # Arguments: key, system, game
 get_setting() {
     /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
@@ -118,6 +161,7 @@ usage() {
     echo "${1} windows tricks  	     <game>.wine directplay" >&2
     echo "${1} windows wine2squashfs <game.wine>"            >&2
     echo "${1} windows wine2winetgz  <game.wine>"            >&2
+    echo "${1} windows stop"                                 >&2
 }
 
 waitWineServer() {
@@ -778,17 +822,7 @@ play_squashfs() {
     fi
 
     waitWineServer
-
-    # Safely unmount and clean up
-    safe_umount "${WINEPOINT}" || return 1
-    safe_umount "${SQUASHFSPOINT}" || return 1
-
-    # Remove directories if they exist
-    [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
-    [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
-    [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
-
-    return 0
+    cleanAndExit 0
 }
 
 init_cmd() {
@@ -868,9 +902,6 @@ install_iso() {
     waitWineServer
     init_cmd "${WINEPOINT}"
 
-    # try to clean the cdrom
-    safe_umount "${GAMEISOMOUNT}"
-    [[ -d "${GAMEISOMOUNT}" ]] && rm -rf "${GAMEISOMOUNT}"
 }
 
 wine2squashfs() {
@@ -907,14 +938,35 @@ cleanAndExit() {
         rm -f "${GST_REGISTRY_1_0}"
     fi
 
+    case "${GAMEEXT}" in
+        "iso")
+            # try to clean the cdrom
+            [[ -n "${GAMEISOMOUNT}" ]] && [[ -d "${GAMEISOMOUNT}" ]] && safe_umount "${GAMEISOMOUNT}" || return 1
+            [[ -n "${GAMEISOMOUNT}" ]] && [[ -d "${GAMEISOMOUNT}" ]] && rm -rf "${GAMEISOMOUNT}"
+            ;;
+        "wsquashfs")
+            # Safely unmount and clean up
+            [[ -n "${WINEPOINT}" ]] && [[ -d "${WINEPOINT}" ]] && safe_umount "${WINEPOINT}" || return 1
+            [[ -n "${SQUASHFSPOINT}" ]] && [[ -d "${SQUASHFSPOINT}" ]] && safe_umount "${SQUASHFSPOINT}" || return 1
+
+            # Remove directories if they exist
+            [[ -n "${SQUASHFSPOINT}" ]] && [[ -d "${SQUASHFSPOINT}" ]] && rm -rf "${SQUASHFSPOINT}"
+            [[ -n "${WORKPOINT}" ]] && [[ -d "${WORKPOINT}" ]] && rm -rf "${WORKPOINT}"
+            [[ -n "${WINEPOINT}" ]] && [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
+            ;;
+    esac
+
     exit "${1}"
-    # TODO : unmount always, trap, later
 }
 
 G_RESCUR=$(batocera-resolution currentMode)
 
 case "${ACTION}" in
-    "play")
+   "stop")
+        killall -1 batocera-wine
+        exit 0
+   ;;
+   "play")
 	GAMENAME=$1
 	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
