@@ -105,7 +105,9 @@ class GSplusGenerator(Generator):
             config.save("bram3[e0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
             config.save("bram3[f0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
             config.save("g_limit_speed", "2")
-        config.save("g_cfg_rom_path", f"""{BIOS}/ROM.03""")
+
+        gsplus_rom_filename = system.config["gsplus_rom_filename"] if system.isOptSet("gsplus_rom_filename") else "ROM.03"
+        config.save("g_cfg_rom_path", f"""{BIOS}/{gsplus_rom_filename}""")
 
         config.write()
         commandArray = ["GSplus", "-fullscreen"]
