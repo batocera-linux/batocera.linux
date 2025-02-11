@@ -14,7 +14,7 @@ LIBRETRO_HOLANI_BIN_DIR = target/$(RUSTC_TARGET_NAME)/$(LIBRETRO_HOLANI_CARGO_MO
 
 # Temporary fix for 'stddef.h file not found'
 # https://github.com/batocera-linux/batocera.linux/issues/13393
-LIBRETRO_HOLANI_CARGO_ENV = BINDGEN_EXTRA_CLANG_ARGS="-I$(HOST_DIR)/lib/clang/18/include/"
+LIBRETRO_HOLANI_CARGO_ENV = BINDGEN_EXTRA_CLANG_ARGS="-I$(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/include/"
 
 define LIBRETRO_HOLANI_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/$(LIBRETRO_HOLANI_BIN_DIR)/libholani.so \
