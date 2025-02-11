@@ -1,5 +1,9 @@
 # Disable raw devices to merge them (mouse and keyboard events)
-SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun *",    MODE="0666", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-blamcon-add"
+# Player light guns 1 to 4
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun - P1*", MODE="0666", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-blamcon-add 1"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun - P2*", MODE="0666", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-blamcon-add 2"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun - P3*", MODE="0666", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-blamcon-add 3"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Props 3D Blamcon Lightgun - P4*", MODE="0666", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_KEYBOARD}="0", RUN+="/usr/bin/virtual-blamcon-add 4"
 
 # Virtual light gun
 SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Blamcon lightgun", MODE="0666", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1"
