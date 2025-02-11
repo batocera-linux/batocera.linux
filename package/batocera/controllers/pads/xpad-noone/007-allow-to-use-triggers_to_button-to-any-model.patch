@@ -1,0 +1,20 @@
+diff --git a/xpad.c b/xpad.c
+index d8bf5cd..ebf2401 100644
+--- a/xpad.c
++++ b/xpad.c
+@@ -1609,12 +1609,13 @@ static int xpad_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 
+ 		if (dpad_to_buttons)
+ 			xpad->mapping |= MAP_DPAD_TO_BUTTONS;
+-		if (triggers_to_buttons)
+-			xpad->mapping |= MAP_TRIGGERS_TO_BUTTONS;
+ 		if (sticks_to_null)
+ 			xpad->mapping |= MAP_STICKS_TO_NULL;
+ 	}
+ 
++	if (triggers_to_buttons)
++		xpad->mapping |= MAP_TRIGGERS_TO_BUTTONS;
++
+ 	ep_irq_in = ep_irq_out = NULL;
+ 
+ 	for (i = 0; i < 2; i++) {
