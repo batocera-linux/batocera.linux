@@ -3,13 +3,13 @@
 # ioquake3
 #
 ################################################################################
-# Version: Commits on Mar 2, 2024
-IOQUAKE3_VERSION = f9547e4533d9195d4f08aebd4691429ea8005f81
+# Version: Commits on Dec 25, 2024
+IOQUAKE3_VERSION = 3fb9006e6461b877b67781cd0f0d94032804a475
 IOQUAKE3_SITE = $(call github,ioquake,ioq3,$(IOQUAKE3_VERSION))
 IOQUAKE3_LICENSE = GPL-2.0
 IOQUAKE3_LICENSE_FILE = COPYING.txt
 
-IOQUAKE3_DEPENDENCIES = sdl2
+IOQUAKE3_DEPENDENCIES = libcurl libogg libvorbis libzlib openal opus sdl2 
 
 IOQUAKE3_BUILD_ARGS += BUILD_SERVER=0
 IOQUAKE3_BUILD_ARGS += BUILD_CLIENT=1
@@ -20,12 +20,12 @@ IOQUAKE3_BUILD_ARGS += BUILD_GAME_QVM=0
 IOQUAKE3_BUILD_ARGS += CROSS_COMPILING=1
 IOQUAKE3_BUILD_ARGS += USE_RENDERER_DLOPEN=1
 
-ifeq ($(BR2_PACKAGE_GL4ES),y)
-    IOQUAKE3_DEPENDENCIES += gl4es
-else
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
     IOQUAKE3_DEPENDENCIES += libgl
 endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
+    IOQUAKE3_DEPENDENCIES += libgles
 endif
 
 ifeq ($(BR2_aarch64),y)
