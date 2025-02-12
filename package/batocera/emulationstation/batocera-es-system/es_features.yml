@@ -13039,6 +13039,7 @@ vpinball:
         "Top-Left Position, Medium": "topleft_medium"
         "Top-Left Position, Large": "topleft_large"
         "On screen 2 if available": "screen2"
+        "On screen 2 with ratio 4:3 if available": "screen243"
         "Disabled": "disabled"
         "Manual": "manual"
     vpinball_b2sdmd:
@@ -13060,6 +13061,39 @@ vpinball:
         "128x32": "128x32"
         "192x64": "192x64"
         "256x64": "256x64"
+    vpinball_pupbackglass:
+      group: WINDOWS POSITIONS
+      prompt: PUP BACKGLASS
+      description: Improved Backglass displaying some extra videos. By default, settings come from the VPinballX.ini configuration file.
+      choices:
+        "Top-Right Position, Small": "topright_small"
+        "Top-Right Position, Medium": "topright_medium"
+        "Top-Right Position, Large": "topright_large"
+        "Top-Left Position, Small": "topleft_small"
+        "Top-Left Position, Medium": "topleft_medium"
+        "Top-Left Position, Large": "topleft_large"
+        "On screen 2 if available": "screen2"
+        "Disabled": "disabled"
+        "Manual": "manual"
+    vpinball_pupfulldmd:
+      group: WINDOWS POSITIONS
+      prompt: PUP FULLDMD
+      description: The Pup FullDMD displays scoring and instructions with advanced effects like video files and animations on some recent or original tables without a rom. By default, settings come from the VPinballX.ini configuration file.
+      choices:
+        "Top-Right Position, Small": "topright_small"
+        "Top-Right Position, Medium": "topright_medium"
+        "Top-Right Position, Large": "topright_large"
+        "Top-Left Position, Small": "topleft_small"
+        "Top-Left Position, Medium": "topleft_medium"
+        "Top-Left Position, Large": "topleft_large"
+        "On screen 2 if available": "screen2"
+        "Disabled": "disabled"
+        "Manual": "manual"
+    vpinball_puptopper:
+      group: WINDOWS POSITIONS
+      prompt: HIDE SEPARATE PUP TOPPER
+      description: Small display on the top of the backglass. Position and size settings come from the VPinballX.ini.
+      preset: switchon
     vpinball_inverseplayfieldandb2s:
       group: WINDOWS POSITIONS
       prompt: INVERSE PLAYFIELD AND B2S
