@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPENMSX_VERSION = RELEASE_19_1
+OPENMSX_VERSION = RELEASE_20_0
 OPENMSX_SITE = $(call github,openMSX,openMSX,$(OPENMSX_VERSION))
 OPENMSX_LICENSE = GPLv2
 OPENMSX_DEPENDENCIES = zlib sdl2 sdl2_ttf libpng tcl freetype
