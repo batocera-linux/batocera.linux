@@ -46,6 +46,7 @@
 - ROG Ally gamepad support
 - Batocera-wine: add saves directory and save files options
 - Libretro-virtualjaguar core can now load .zip ROMs
+- Updated BlamCon code to new firmware (now compatible with 4 light guns)
 ### Updated
 - BigPEmu to v118
 - Cemu to 2.6
