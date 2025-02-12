@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_WASM4_VERSION = v2.7.0
+LIBRETRO_WASM4_VERSION = v2.7.1
 LIBRETRO_WASM4_SITE = https://github.com/aduros/wasm4
 LIBRETRO_WASM4_SITE_METHOD = git
 LIBRETRO_WASM4_GIT_SUBMODULES = yes
