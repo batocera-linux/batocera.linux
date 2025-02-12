@@ -80,6 +80,7 @@
 - Snes9x to 24th Jan build
 - Solarus Engine to 18th Jan build
 - IOQuake3 to 25th December build
+- Amiberry to v7.0.4
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
