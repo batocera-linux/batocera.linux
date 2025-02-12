@@ -53,10 +53,10 @@
 - Dolphin-Emu to 2412-268
 - ETLegacy to v2.83.2
 - Jazz2 to 3.1.0
-- GroovyMAME to 0.272
+- GroovyMAME to 0.274
 - Gzdoom to g4.14.0
 - Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.272
+- Libretro-MAME to 0.274
 - Libretro-Play! 4th Feb build
 - RetroArch to v1.20.0
 - Ruffle to Nightly-2024-12-28
