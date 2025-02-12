@@ -4,48 +4,54 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = v5.7.4
+AMIBERRY_VERSION = v7.0.4
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
-AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac libpng libserialport libportmidi libzlib
+AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
 
-AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DWITH_LTO=ON
+AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2
+AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib
+
+AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+AMIBERRY_CONF_OPTS += -DWITH_LTO=ON
 
 ifeq ($(BR2_PACKAGE_LIBGLEW),y)
 AMIBERRY_DEPENDENCIES += libglew
+AMIBERRY_CONF_OPTS += -DUSE_OPENGL=ON
 endif
 
 define AMIBERRY_INSTALL_TARGET_CMDS
 	# Strip and install binary
-	$(TARGET_STRIP) $(@D)/amiberry
-	$(INSTALL) -D $(@D)/amiberry $(TARGET_DIR)/usr/bin/amiberry
+	$(TARGET_STRIP) $(@D)/buildroot-build/amiberry
+	$(INSTALL) -D $(@D)/buildroot-build/amiberry $(TARGET_DIR)/usr/bin/amiberry
 
 	# Create config and nvram directories, copy default config
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf
-	cp -prn $(@D)/conf/amiberry.conf        $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
-	cp -prn $(@D)/conf/gamecontrollerdb.txt $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
+	cp -prn $(@D)/buildroot-build/controllers/gamecontrollerdb.txt \
+	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/saves/amiga/nvram
 
 	# Copy AROS (open source alternative BIOS)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga
-	cp -prn $(@D)/kickstarts/aros-ext.bin $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga/
-	cp -prn $(@D)/kickstarts/aros-rom.bin $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga/
+	cp -prn $(@D)/buildroot-build/roms/aros-ext.bin \
+	    $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga/
+	cp -prn $(@D)/buildroot-build/roms/aros-rom.bin \
+	    $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga/
 
 	# Copy data and whdboot folders
 	mkdir -p $(TARGET_DIR)/usr/share/amiberry
-	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/amiberry/
-	cp -pr $(@D)/data $(TARGET_DIR)/usr/share/amiberry/
+	cp -pr $(@D)/buildroot-build/whdboot $(TARGET_DIR)/usr/share/amiberry/
+	cp -pr $(@D)/buildroot-build/data $(TARGET_DIR)/usr/share/amiberry/
 endef
 
 define AMIBERRY_EVMAP
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/controllers/amiga500.amiberry.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amiga500.amiberry.keys \
 		$(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/controllers/amiga1200.amiberry.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amiga1200.amiberry.keys \
 		$(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/controllers/amigacd32.amiberry.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amigacd32.amiberry.keys \
 		$(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/controllers/amigacdtv.amiberry.keys \
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amigacdtv.amiberry.keys \
 		$(TARGET_DIR)/usr/share/evmapy
 endef
 

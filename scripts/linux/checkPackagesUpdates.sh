@@ -169,7 +169,6 @@ PACKAGES_EMULATORS="amiberry
                     mame
                     melonds
                     model2
-                    moonlight-embedded
                     openmsx
                     pcsx2
                     pifba
@@ -291,7 +290,9 @@ PACKAGES_CONTROLLERS="aelightgun
                       xpadneo
                       xpad-noone"
 
-PACKAGES_ALLGROUPS="RETROARCH LIBRETRO MUPEN OPENBOR EMULATORS PORTS WINE CONTROLLERS"
+PACKAGES_UTILS="moonlight-embedded"
+
+PACKAGES_ALLGROUPS="RETROARCH LIBRETRO MUPEN OPENBOR EMULATORS PORTS WINE CONTROLLERS UTILS"
 ### ############# ###
 
 # COLORS ##
@@ -314,7 +315,7 @@ show_help() {
   echo "[package] can be any of the *.mk under ./packages/batocera/ (without the extension \".mk\")"
   echo "Example: $0 libretro-mame libretro-fbneo   (search updates for both \"libretro-mame\" and \"libretro-fbneo\" packages)"
   echo ""
-  echo "[PACKAGE] can be RETROARCH, LIBRETRO, MUPEN, OPENBOR, EMULATORS, PORTS, WINE, CONTROLLERS, ALLGROUPS, ALL"
+  echo "[PACKAGE] can be RETROARCH, LIBRETRO, MUPEN, OPENBOR, EMULATORS, PORTS, WINE, CONTROLLERS, ALLGROUPS, UTILS, ALL"
   echo "Example: $0 ALLGROUPS   (search updates for all PACKAGE groups)"
   echo ""
   echo "It is posible to combine packages and groups."
