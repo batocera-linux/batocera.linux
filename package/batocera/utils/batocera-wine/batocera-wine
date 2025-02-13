@@ -1,9 +1,14 @@
 #!/bin/bash
 
-SYSTEM=$1
-ACTION=$2
-shift
-shift
+SYSTEM=${1,,}
+ACTION=${2,,}
+GAMENAME="$3"
+TRICK=${4,,}
+ROMGAMENAME=$(basename "${GAMENAME}")
+GAMEEXT=$(echo "${GAMENAME}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+ | tr A-Z a-z)
+# get current resolution restore later, log wineserver running time  
+G_RESCUR=$(batocera-resolution currentMode)
+TIMESTAMP=$(date +%s)
 
 stopWineServer() {
     if [[ -z "${WINESERVER}" ]]; then
@@ -22,7 +27,7 @@ stopWineServer() {
         echo "waiting wineserver shutdown" >&2
         if ! pgrep -f "${WINESERVER}" ; then
             echo "wineserver has cleanly exited" >&2
-            cleanAndExit 0
+            return 0
         fi
         sleep 1
     done
@@ -43,30 +48,13 @@ stopWineServer() {
         echo "Killing stuck wine processes: ${PIDS[*]}"
         kill -9 "${PIDS[@]}"
     fi
-    cleanAndExit 1
+    return 1
 }
-
-trap stopWineServer SIGHUP SIGINT SIGTERM
 
 # Arguments: key, system, game
 get_setting() {
     /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
 }
-
-## Wine detection
-GAMENAME=$1 
-ROMGAMENAME=$(basename "${GAMENAME}")
-WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
-[[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
-
-WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"
-# to help with the transition from previous runners.
-[[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
-
-if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
-    WINE_VERSION="wine-tkg"
-fi
-echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
 
 find_wine_dir() {
     local WINE_VERSION="$1"
@@ -104,72 +92,9 @@ update_wine_version() {
     fi
 }
 
-## Wine executables
-DIR="$(find_wine_dir "$WINE_VERSION")"
-if [[ $? -eq 0 ]]; then
-    WINE_VERSION="$(update_wine_version "$WINE_VERSION")"
-else
-    echo "can't find WINE version ${WINE_VERSION} directory, you should change the runner"
-    exit 1
-fi
-
-echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
-
-USER_DIR="/userdata/system/wine"
-WINE="${DIR}/${WINE_VERSION}/bin/wine"
-WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
-WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
-MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
-WINETRICKS="${DIR}/winetricks"
-
-## Folders
-WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
-G_ROMS_DIR="/userdata/roms/${SYSTEM}"
-# Check lib64 directory
-if [[ -e "${DIR}/${WINE_VERSION}/lib64/wine" ]]; then
-    WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
-else
-    WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib/wine"
-fi
-# Check lib32 directory
-if [[ -e "${DIR}/${WINE_VERSION}/lib32/wine" ]]; then
-    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib32/wine"
-else
-    WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
-fi
-
-## Export Wine libs
-PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
-export LD_LIBRARY_PATH="/lib32:${WINE_LIB32_DIR}/i386-unix:/lib:/usr/lib:${WINE_LIB64_DIR}/x86_64-unix"
-export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
-export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry..bin"
-export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
-export WINEDLLPATH="${WINE_LIB32_DIR}/i386-windows:${WINE_LIB64_DIR}/x86_64-windows"
-# hum pw 0.2 and 0.3 are hardcoded, not nice
-export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
-export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
-
-usage() {
-    echo "${1} windows play    	     <game>.iso"             >&2
-    echo "${1} windows play    	     <game>.exe"             >&2
-    echo "${1} windows play    	     <game>.pc"              >&2
-    echo "${1} windows play    	     <game>.wine"            >&2
-    echo "${1} windows play    	     <game>.wsquashfs"       >&2
-    echo "${1} windows play    	     <game>.wtgz"            >&2
-    echo "${1} windows install 	     <game>.iso"             >&2
-    echo "${1} windows install 	     <game>.exe"             >&2
-    echo "${1} windows tricks  	     <game>.wine directplay" >&2
-    echo "${1} windows wine2squashfs <game.wine>"            >&2
-    echo "${1} windows wine2winetgz  <game.wine>"            >&2
-    echo "${1} windows stop"                                 >&2
-}
-
 waitWineServer() {
-    while pgrep -f "${WINESERVER}"
-    do
-	echo "waiting wineserver" >&2
-	sleep 1
-    done
+    echo "Waiting WineServer: ${WINESERVER}"
+    wait $(pgrep -f "${WINESERVER}")
 }
 
 wine_options() {
@@ -489,7 +414,6 @@ fonts_install() {
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
-    ROMGAMENAME=$(basename "${GAMENAME}")
 
     # install dxvk only on system where it is available (aka, not x86)
     [[ -e "/usr/wine/dxvk" ]] || return 0
@@ -822,7 +746,6 @@ play_squashfs() {
     fi
 
     waitWineServer
-    cleanAndExit 0
 }
 
 init_cmd() {
@@ -924,10 +847,6 @@ wine2winetgz() {
     return 0
 }
 
-gameext() {
-    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+ | tr A-Z a-z
-}
-
 cleanAndExit() {
     RESNEW=$(batocera-resolution currentMode)
     if [[ "${RESNEW}" != "${G_RESCUR}" ]]; then
@@ -955,85 +874,166 @@ cleanAndExit() {
             [[ -n "${WINEPOINT}" ]] && [[ -d "${WINEPOINT}" ]] && rm -rf "${WINEPOINT}"
             ;;
     esac
-
-    exit "${1}"
+return $?
 }
 
-G_RESCUR=$(batocera-resolution currentMode)
+init_wine() {
+    ## Wine detection
+    WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
+    [[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
+    
+    WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"
+    # to help with the transition from previous runners.
+    [[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
+    
+    if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
+        WINE_VERSION="wine-tkg"
+    fi
+    echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
+    
+    ## Wine executables
+    DIR="$(find_wine_dir "$WINE_VERSION")"
+    if [[ $? -eq 0 ]]; then
+        WINE_VERSION="$(update_wine_version "$WINE_VERSION")"
+    else
+        echo "can't find WINE version ${WINE_VERSION} directory, you should change the runner"
+        exit 1
+    fi
+    
+    echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
+    
+    USER_DIR="/userdata/system/wine"
+    WINE="${DIR}/${WINE_VERSION}/bin/wine"
+    WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+    WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
+    MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
+    WINETRICKS="${DIR}/winetricks"
+    
+    ## Folders
+    WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"
+    G_ROMS_DIR="/userdata/roms/${SYSTEM}"
+    # Check lib64 directory
+    if [[ -e "${DIR}/${WINE_VERSION}/lib64/wine" ]]; then
+        WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
+    else
+        WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+    fi
+    # Check lib32 directory
+    if [[ -e "${DIR}/${WINE_VERSION}/lib32/wine" ]]; then
+        WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib32/wine"
+    else
+        WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
+    fi
+    
+    ## Export Wine libs
+    PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
+    export LD_LIBRARY_PATH="/lib32:${WINE_LIB32_DIR}/i386-unix:/lib:/usr/lib:${WINE_LIB64_DIR}/x86_64-unix"
+    export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
+    export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry..bin"
+    export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+    export WINEDLLPATH="${WINE_LIB32_DIR}/i386-windows:${WINE_LIB64_DIR}/x86_64-windows"
+    # hum pw 0.2 and 0.3 are hardcoded, not nice
+    export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
+    export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+}
+
+###### MAIN #######
+trap stopWineServer SIGHUP SIGINT SIGTERM
+
+#Init WINE Folders and Extension only if parameters are correct and a system is setted
+#Always use "stop" as first and "!no_action!" as last item in list
+for i in stop play install tricks wine2squashfs wine2winetgz !no_action!; do
+    [[ "$i" == "$ACTION" && "$ACTION" == "stop" ]] && break
+    [[ "$i" == "$ACTION" ]] && init_wine && break
+    [[ "$i" == "!no_action!" ]] && ACTION=$i
+done
+[[ -z "${SYSTEM}" ]] && SYSTEM="!missing!" && ACTION="${ACTION}_sys_missing"
 
 case "${ACTION}" in
    "stop")
-        killall -1 batocera-wine
+        echo "Stop called from Sunbeam: Outside World"
+        PID=$(pgrep -f -o $0)
+        kill -1 $(pgrep -P $PID)
+        kill -1 $PID
         exit 0
    ;;
+
    "play")
-	GAMENAME=$1
-	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "wine")
-		play_wine "${GAMENAME}" || cleanAndExit 1
+		play_wine "${GAMENAME}"
 		;;
 	    "pc")
-		play_pc "${GAMENAME}" || cleanAndExit 1
+		play_pc "${GAMENAME}"
 		;;
 	    "exe")
-		play_exe "${GAMENAME}" || cleanAndExit 1
+		play_exe "${GAMENAME}"
 		;;
 #	    "iso")
-#		play_iso "${GAMENAME}" || cleanAndExit 1
+#		play_iso "${GAMENAME}"
 #		;;
 	    "wsquashfs")
-		play_squashfs "${GAMENAME}" || cleanAndExit 1
+		play_squashfs "${GAMENAME}"
 		;;
 	    "wtgz")
-		play_winetgz "${GAMENAME}" || cleanAndExit 1
+		play_winetgz "${GAMENAME}"
 		;;
 	    *)
 		echo "unknown extension ${GAMEEXT}" >&2
-		cleanAndExit 1
 	esac
 	;;
+
     "install")
-	GAMENAME=$1
-    	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "exe")
-		install_exe "${GAMENAME}" || cleanAndExit 1
+		install_exe "${GAMENAME}"
 		;;
 	    "msi")
-		install_msi "${GAMENAME}" || cleanAndExit 1
+		install_msi "${GAMENAME}"
 		;;
 	    "iso")
-		install_iso "${GAMENAME}" || cleanAndExit 1
+		install_iso "${GAMENAME}"
 		;;
 	    *)
 		echo "unknown extension ${GAMEEXT}" >&2
-		cleanAndExit 1
 	esac
 	;;
+
     "tricks")
-	GAMENAME=$1
-	TRICK=$2
-    	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "wine")
-		trick_wine "${GAMENAME}" "${TRICK}" || cleanAndExit 1
+		trick_wine "${GAMENAME}" "${TRICK}"
 		;;
 	esac
 	;;
+
     "wine2squashfs")
-	GAMENAME=$1
-	wine2squashfs "${GAMENAME}" || exit 1
+	wine2squashfs "${GAMENAME}"
 	;;
+
     "wine2winetgz")
-	GAMENAME=$1
-	wine2winetgz "${GAMENAME}" || exit 1
+	wine2winetgz "${GAMENAME}"
 	;;
+
     *)
-	set +x
-	echo "unknown action ${ACTION}" >&2
-	usage "${0}"
-	cleanAndExit 1
+        set +x
+        echo "For system <${SYSTEM}> action <${ACTION}> detected" >&2
+        echo
+        echo "${0} windows play          <game>.iso"             >&2
+        echo "${0} windows play          <game>.exe"             >&2
+        echo "${0} windows play          <game>.pc"              >&2
+        echo "${0} windows play          <game>.wine"            >&2
+        echo "${0} windows play          <game>.wsquashfs"       >&2
+        echo "${0} windows play          <game>.wtgz"            >&2
+        echo "${0} windows install       <game>.iso"             >&2
+        echo "${0} windows install       <game>.exe"             >&2
+        echo "${0} windows tricks        <game>.wine directplay" >&2
+        echo "${0} windows wine2squashfs <game.wine>"            >&2
+        echo "${0} windows wine2winetgz  <game.wine>"            >&2
+        echo "${0} windows stop"                                 >&2
+        exit 1
 esac
 
-cleanAndExit 0
+cleanAndExit $?
+echo "WineServer was $(($(date +%s) - TIMESTAMP))s active"
+exit $?
