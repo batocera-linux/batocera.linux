@@ -10,14 +10,16 @@ AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
 
 AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2
-AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib
+AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib libenet
 
 AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 AMIBERRY_CONF_OPTS += -DWITH_LTO=ON
 
-ifeq ($(BR2_PACKAGE_LIBGLEW),y)
-AMIBERRY_DEPENDENCIES += libglew
+ifeq ($(BR2_PACKAGE_LIBGLEW)$(BR2_PACKAGE_LIBGLU),y)
+AMIBERRY_DEPENDENCIES += libglew libglu
 AMIBERRY_CONF_OPTS += -DUSE_OPENGL=ON
+else
+AMIBERRY_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
 
 define AMIBERRY_INSTALL_TARGET_CMDS
@@ -26,6 +28,7 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/amiberry $(TARGET_DIR)/usr/bin/amiberry
 
 	# Create config and nvram directories, copy default config
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf
 	cp -prn $(@D)/buildroot-build/controllers/gamecontrollerdb.txt \
 	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/saves/amiga/nvram
