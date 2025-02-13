@@ -10,10 +10,6 @@ LIBRETRO_DESMUME_LICENSE = GPLv2
 
 LIBRETRO_DESMUME_DEPENDENCIES = libpcap retroarch
 
-ifeq ($(BR2_PACKAGE_XORG7),y)
-LIBRETRO_DESMUME_DEPENDENCIES += libglvnd
-endif
-
 define LIBRETRO_DESMUME_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	    -C $(@D)/desmume/src/frontend/libretro \
