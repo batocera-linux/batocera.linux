@@ -35,12 +35,12 @@ endif
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
     mkdir -p $(TARGET_DIR)/usr/share/evmapy
     mkdir -p $(TARGET_DIR)/usr/share/moonlight-embedded
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/moonlight.moonlight.keys \
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/moonlight-embedded/moonlight.moonlight.keys \
         $(TARGET_DIR)/usr/share/evmapy
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/moonlight.conf \
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/moonlight-embedded/moonlight.conf \
         $(TARGET_DIR)/usr/share/moonlight-embedded/
     install -m 0755 \
-	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/batocera-moonlight \
+	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/moonlight-embedded/batocera-moonlight \
 	    $(TARGET_DIR)/usr/bin/
 endef
 
