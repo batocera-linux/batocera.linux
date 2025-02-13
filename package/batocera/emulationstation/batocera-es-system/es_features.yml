@@ -11713,6 +11713,16 @@ model2emu:
 gsplus:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+      gsplus_bios_filename:
+          prompt: GSPLUS BIOS FILENAME
+          description: Choose which BIOS filename for GSplus to boot from.
+          choices:
+              "ROM.03 (default)":  "ROM.03"
+              "ROM1":              "ROM1"
+              "ROM.00":            "ROM.00"
+              "APPLE2GS.ROM":      "APPLE2GS.ROM"
+              "APPLE2GS-BIOS.ROM": "APPLE2GS-BIOS.ROM"
 
 play:
   features: [padtokeyboard]
@@ -13707,7 +13717,7 @@ lindbergh-loader:
       description: Enable the IP address for OutRun 2 network play against another PC on the same network.
       choices:
         "Off (Default)": 0
-        "On":            1 
+        "On":            1
     lindbergh_test:
       group: ADVANCED OPTIONS
       prompt: RUN TEST MODE
