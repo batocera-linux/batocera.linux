@@ -23,7 +23,7 @@ class DrasticGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "drastic",
-            "keys": { "exit": "KEY_ESC" }
+            "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_F1" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

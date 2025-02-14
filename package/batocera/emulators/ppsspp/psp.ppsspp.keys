@@ -1,36 +1,6 @@
 {
     "actions_player1": [
         {
-            "trigger": [ "hotkey", "start" ],
-            "type": "exec",
-            "target":  "killall -15 PPSSPP",
-            "description": "Exit emulator"
-        },
-        {
-            "trigger": [ "hotkey", "y" ],
-            "type": "key",
-            "target": [ "KEY_F3" ],
-            "description": "Save State"
-        },
-        {
-            "trigger": [ "hotkey", "x" ],
-            "type": "key",
-            "target": [ "KEY_F4" ],
-            "description": "Load State"
-        },
-        {
-            "trigger": [ "hotkey", "down" ],
-            "type": "key",
-            "target": [ "KEY_F5" ],
-            "description": "Slot -"
-        },
-        {
-            "trigger": [ "hotkey", "up" ],
-            "type": "key",
-            "target": [ "KEY_F6" ],
-            "description": "Slot +"
-        },
-        {
             "trigger": [ "hotkey", "left" ],
             "type": "key",
             "target": [ "KEY_F1" ],
@@ -41,18 +11,6 @@
             "type": "key",
             "target": [ "KEY_F2" ],
             "description": "Fast Forward"
-        },
-        {
-            "trigger": [ "hotkey", "pageup" ],
-            "type": "key",
-            "target": [ "KEY_F7" ],
-            "description": "Screenshot"
-        },
-        {
-            "trigger": [ "hotkey", "b" ],
-            "type": "key",
-            "target": [ "KEY_F9" ],
-            "description": "Pause / Menu"
         }
     ]
 }

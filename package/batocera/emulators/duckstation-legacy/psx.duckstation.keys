@@ -1,52 +1,10 @@
 {
     "actions_player1": [
 	{
-        "trigger": ["hotkey", "start"],
-        "type": "key",
-        "target": [ "KEY_LEFTALT", "KEY_F4" ],
-        "description": "Exit Duckstation"
-	},
-	{
-        "trigger": ["hotkey", "x"],
-        "type": "key",
-        "target": [ "KEY_F1" ],
-	    "description": "Load State"
-	},
-	{
-        "trigger": ["hotkey", "y"],
-        "type": "key",
-        "target": [ "KEY_F2" ],
-	    "description": "Save State"
-	},
-	{
-        "trigger": ["hotkey", "b"],
-        "type": "key",
-        "target": [ "KEY_F7" ],
-	    "description": "Open DuckStation Quick Menu"
-	},
-	{
         "trigger": ["hotkey", "a"],
         "type": "key",
         "target": [ "KEY_F6" ],
 	    "description": "Restart Game"
-	},
-	{
-        "trigger": ["hotkey", "pageup"],
-        "type": "key",
-        "target": [ "KEY_F10" ],
-	    "description": "Screenshot"
-	},
-	{
-        "trigger": ["hotkey", "up"],
-        "type": "key",
-        "target": [ "KEY_F3" ],
-	    "description": "Slot -"
-	},
-	{
-        "trigger": ["hotkey", "down"],
-        "type": "key",
-        "target": [ "KEY_F4" ],
-	    "description": "Slot +"
 	},
 	{
         "trigger": ["hotkey", "left"],
