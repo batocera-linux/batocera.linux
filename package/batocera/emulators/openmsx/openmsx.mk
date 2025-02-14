@@ -28,9 +28,9 @@ else
 OPENMSX_CONF_OPTS += -Dalsamidi=disabled
 endif
 #glrenderer
-ifeq ($(BR2_PACKAGE_LIBGLEW),y)
+ifeq ($(BR2_PACKAGE_LIBGLEW)$(BR2_PACKAGE_LIBGLU),yy)
 OPENMSX_CONF_OPTS += -Dglrenderer=enabled
-OPENMSX_DEPENDENCIES += libglew
+OPENMSX_DEPENDENCIES += libglew libglu
 else
 OPENMSX_CONF_OPTS += -Dglrenderer=disabled
 endif
