@@ -993,108 +993,100 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
     else:
         if n in pedalsKeys:
             pedalkey = pedalsKeys[n]
-    pedalconfig = None
 
     # gun mapping
-    retroarchConfig['input_player{}_mouse_index'            .format(n)] = gun["id_mouse"]
-    retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = 1
-    retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = 2
-    pedalconfig = 'input_player{}_gun_offscreen_shot'.format(n)
-    retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 3
+    retroarchConfig['input_player{}_mouse_index'.format(n)] = gun["id_mouse"]
+    pedalconfig = "offscreen_shot"
+    gun_buttons = {
+        1 : "trigger",
+        2 : "gun_offscreen_shot",
+        3 : "start",
+        4 : "select",
+        5 : "aux_a",
+        6 : "aux_b",
+        7 : "aux_c",
+        8 : "dpad_up",
+        9 : "dpad_down",
+        10: "dpad_left",
+        11: "dpad_right"
+    }
 
-    retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = 4
-    retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 5
-    retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 6
-    retroarchConfig['input_player{}_gun_aux_c_mbtn'         .format(n)] = 7
-    retroarchConfig['input_player{}_gun_dpad_up_mbtn'       .format(n)] = 8
-    retroarchConfig['input_player{}_gun_dpad_down_mbtn'     .format(n)] = 9
-    retroarchConfig['input_player{}_gun_dpad_left_mbtn'     .format(n)] = 10
-    retroarchConfig['input_player{}_gun_dpad_right_mbtn'    .format(n)] = 11
-
-    # custom mapping by core to match more with avaible gun batocera buttons
+    # custom mapping by core to match more with available gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
         if "gun_type" in metadata and metadata["gun_type"] == "justifier":
-            retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-            pedalconfig = 'input_player{}_gun_aux_a'.format(n)
+            gun_buttons[2] = "aux_a"
+            pedalconfig    = "aux_a"
         else:
-            retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-            pedalconfig = 'input_player{}_gun_aux_a'.format(n)
-            retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
+            gun_buttons[2] = "aux_a"
+            gun_buttons[3] = "aux_b"
+            pedalconfig    = "aux_a"
 
     if core == "fbneo":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-        pedalconfig = 'input_player{}_gun_aux_a'.format(n)
+        gun_buttons[2] = "aux_a"
+        pedalconfig    = "aux_a"
 
     if core == "snes9x":
         if "gun_type" in metadata and metadata["gun_type"] == "justifier":
-            retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 2
-            pedalconfig = 'input_player{}_gun_start'.format(n)
+            gun_buttons[2] = "start"
+            pedalconfig    = "start"
         else:
-            retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-            retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-            pedalconfig = 'input_player{}_gun_aux_a'.format(n)
-            retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
+            gun_buttons[2] = "aux_a"
+            gun_buttons[3] = "aux_b"
+            gun_buttons[4] = "start"
+            pedalconfig    = "aux_a"
 
     if core == "genesisplusgx":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-        pedalconfig = 'input_player{}_gun_aux_a'.format(n)
-        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
-        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
+        gun_buttons[2] = "aux_a"
+        gun_buttons[3] = "aux_b"
+        gun_buttons[4] = "start"
+        pedalconfig    = "aux_a"
 
     if core == "flycast":
         if system.isOptSet('flycast_offscreen_reload') and system.getOptBoolean('flycast_offscreen_reload') == 1:
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-            retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 3
-            retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
-            retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = 5
+            gun_buttons[3] = "aux_a"
+            gun_buttons[4] = "start"
+            gun_buttons[5] = "select"
         else:
-            retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-            retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-            pedalconfig = 'input_player{}_gun_aux_a'.format(n)
+            gun_buttons[2] = "aux_a"
+            pedalconfig    = "aux_a"
 
     if core == "mame":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-        pedalconfig = 'input_player{}_gun_aux_a'.format(n)
-        retroarchConfig['input_player{}_start_mbtn'             .format(n)] = 3
-        retroarchConfig['input_player{}_select_mbtn'            .format(n)] = 4
+        gun_buttons[2] = "aux_a"
+        gun_buttons[3] = "start"
+        gun_buttons[4] = "select"
+        pedalconfig    = "aux_a"
 
     if core == "mame078plus":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 3
-        retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = 4
+        gun_buttons[3] = "start"
+        gun_buttons[4] = "select"
 
     if core == "swanstation":
-        retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
-        retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
-        retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = 2
-        pedalconfig = 'input_player{}_gun_aux_a'.format(n)
-        retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = 3
+        gun_buttons[2] = "aux_a"
+        gun_buttons[3] = "aux_b"
+        pedalconfig    = 'aux_a'
 
     # pedal
     if pedalconfig is not None and pedalkey is not None:
-        retroarchConfig[pedalconfig] = pedalkey
+        retroarchConfig['input_player{}_gun_{}'.format(n, pedalconfig)] = pedalkey
 
-    # mapping
+    # save gun mapping
+    # clearing gun buttons
+    retroarchConfig['input_player{}_gun_trigger_mbtn'       .format(n)] = ''
+    retroarchConfig['input_player{}_gun_offscreen_shot_mbtn'.format(n)] = ''
+    retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
+    retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
+    retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = ''
+    retroarchConfig['input_player{}_gun_aux_b_mbtn'         .format(n)] = ''
+    retroarchConfig['input_player{}_gun_aux_c_mbtn'         .format(n)] = ''
+    retroarchConfig['input_player{}_gun_dpad_up_mbtn'       .format(n)] = ''
+    retroarchConfig['input_player{}_gun_dpad_down_mbtn'     .format(n)] = ''
+    retroarchConfig['input_player{}_gun_dpad_left_mbtn'     .format(n)] = ''
+    retroarchConfig['input_player{}_gun_dpad_right_mbtn'    .format(n)] = ''
+    for x in gun_buttons:
+        retroarchConfig['input_player{}_gun_{}_mbtn'.format(n, gun_buttons[x])] = x
+
+    # pad mapping
     mapping = {
         "gun_trigger"        : "b",
         "gun_offscreen_shot" : "a",
