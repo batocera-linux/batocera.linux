@@ -139,6 +139,12 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
     else:
         vpinballSettings.set("Standalone", "AltSound","1")
 
+    # PupTopperWindow
+    if system.isOptSet("vpinball_puptopper") and system.getOptBoolean("vpinball_puptopper") == False:
+        vpinballSettings.set("Standalone", "PUPTopperWindow", "1")
+    else:
+        vpinballSettings.set("Standalone", "PUPTopperWindow", "0")
+
     # select which ID for sounddevices by running:
     # /usr/bin/vpinball/VPinballX_GL -listsnd
     if system.isOptSet("vpinball_sounddevice"):
