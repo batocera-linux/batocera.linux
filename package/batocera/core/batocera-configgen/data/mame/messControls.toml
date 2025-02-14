@@ -1,0 +1,1902 @@
+[cdimono1."Button 1"]
+type = "special"
+player = 1
+tag = ":slave_hle:MOUSEBTN"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "1"
+default = "0"
+
+[cdimono1."Button 2"]
+type = "special"
+player = 1
+tag = ":slave_hle:MOUSEBTN"
+key = "P1_BUTTON2"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "2"
+default = "0"
+
+[cdimono1."Button 3"]
+type = "special"
+player = 1
+tag = ":slave_hle:MOUSEBTN"
+key = "P1_BUTTON3"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "4"
+default = "0"
+
+[cdimono1."X Axis"]
+type = "analog"
+player = 1
+tag = ":slave_hle:MOUSEX"
+key = "P1_MOUSE_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "65535"
+default = "0"
+delta = "10"
+axis = "XAXIS"
+
+[cdimono1."Y Axis"]
+type = "analog"
+player = 1
+tag = ":slave_hle:MOUSEY"
+key = "P1_MOUSE_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "65535"
+default = "0"
+delta = "10"
+axis = "YAXIS"
+
+[apfm1000.Clear]
+type = "special"
+player = 2
+tag = ":joy.2"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "2"
+default = "2"
+
+[apfm1000."Enter/Fire"]
+type = "special"
+player = 2
+tag = ":joy.3"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "2"
+default = "2"
+
+[apfm1000.1]
+type = "special"
+player = 2
+tag = ":joy.0"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "1"
+default = "1"
+
+[apfm1000.2]
+type = "special"
+player = 2
+tag = ":joy.3"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "1"
+default = "1"
+
+[apfm1000.3]
+type = "special"
+player = 2
+tag = ":joy.2"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "1"
+default = "1"
+
+[apfm1000.4]
+type = "special"
+player = 2
+tag = ":joy.0"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "4"
+default = "4"
+
+[apfm1000.5]
+type = "special"
+player = 2
+tag = ":joy.3"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "4"
+default = "4"
+
+[apfm1000.6]
+type = "special"
+player = 2
+tag = ":joy.2"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON7"
+useMapping = "BUTTON7"
+reversed = false
+mask = "4"
+default = "4"
+
+[apfm1000.7]
+type = "special"
+player = 2
+tag = ":joy.0"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON10"
+useMapping = "BUTTON10"
+reversed = false
+mask = "8"
+default = "8"
+
+[apfm1000.8]
+type = "special"
+player = 2
+tag = ":joy.3"
+key = "TYPE_OTHER(243,1)"
+mapping = "BUTTON9"
+useMapping = "BUTTON9"
+reversed = false
+mask = "8"
+default = "8"
+
+[apfm1000.9]
+type = "special"
+player = 2
+tag = ":joy.2"
+key = "TYPE_OTHER(243,1)"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "8"
+default = "8"
+
+[apfm1000.0]
+type = "special"
+player = 2
+tag = ":joy.0"
+key = "TYPE_OTHER(243,1)"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "2"
+default = "2"
+
+[astrocde.0]
+type = "special"
+player = 1
+tag = ":KEYPAD2"
+key = "KEYPAD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "32"
+default = "0"
+
+[astrocde.1]
+type = "special"
+player = 1
+tag = ":KEYPAD3"
+key = "KEYPAD"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "16"
+default = "0"
+
+[astrocde.2]
+type = "special"
+player = 1
+tag = ":KEYPAD2"
+key = "KEYPAD"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "16"
+default = "0"
+
+[astrocde.3]
+type = "special"
+player = 1
+tag = ":KEYPAD1"
+key = "KEYPAD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "16"
+default = "0"
+
+[astrocde.4]
+type = "special"
+player = 1
+tag = ":KEYPAD3"
+key = "KEYPAD"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "8"
+default = "0"
+
+[astrocde.5]
+type = "special"
+player = 1
+tag = ":KEYPAD2"
+key = "KEYPAD"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "8"
+default = "0"
+
+[astrocde.6]
+type = "special"
+player = 1
+tag = ":KEYPAD1"
+key = "KEYPAD"
+mapping = "BUTTON7"
+useMapping = "BUTTON7"
+reversed = false
+mask = "8"
+default = "0"
+
+[astrocde.7]
+type = "special"
+player = 1
+tag = ":KEYPAD3"
+key = "KEYPAD"
+mapping = "BUTTON10"
+useMapping = "BUTTON10"
+reversed = false
+mask = "4"
+default = "0"
+
+[astrocde.8]
+type = "special"
+player = 1
+tag = ":KEYPAD2"
+key = "KEYPAD"
+mapping = "BUTTON9"
+useMapping = "BUTTON9"
+reversed = false
+mask = "4"
+default = "0"
+
+[astrocde.9]
+type = "special"
+player = 1
+tag = ":KEYPAD1"
+key = "KEYPAD"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "4"
+default = "0"
+
+[astrocde."= (Start)"]
+type = "special"
+player = 1
+tag = ":KEYPAD0"
+key = "KEYPAD"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "32"
+default = "0"
+
+[adam.1]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "2"
+default = "2"
+
+[adam.2]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "4"
+default = "4"
+
+[adam.3]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "8"
+default = "8"
+
+[adam.4]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "16"
+default = "16"
+
+[adam.5]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "32"
+default = "32"
+
+[adam.6]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON7"
+useMapping = "BUTTON7"
+reversed = false
+mask = "64"
+default = "64"
+
+[adam.7]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON10"
+useMapping = "BUTTON10"
+reversed = false
+mask = "128"
+default = "128"
+
+[adam.8]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "BUTTON9"
+useMapping = "BUTTON9"
+reversed = false
+mask = "512"
+default = "512"
+
+[adam."#"]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "1024"
+default = "0"
+
+[adam."*"]
+type = "special"
+player = 1
+tag = ":joy1:hand:KEYPAD"
+key = "KEYPAD"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "2048"
+default = "0"
+
+[arcadia.1]
+type = "special"
+player = 2
+tag = ":controller2_col1"
+key = "KEYPAD"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "8"
+default = "0"
+
+[arcadia.2]
+type = "special"
+player = 2
+tag = ":controller2_col2"
+key = "KEYPAD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "8"
+default = "0"
+
+[arcadia.3]
+type = "special"
+player = 2
+tag = ":controller2_col3"
+key = "KEYPAD"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "8"
+default = "0"
+
+[arcadia.4]
+type = "special"
+player = 2
+tag = ":controller2_col1"
+key = "KEYPAD"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "4"
+default = "0"
+
+[arcadia.5]
+type = "special"
+player = 2
+tag = ":controller2_col2"
+key = "KEYPAD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "4"
+default = "0"
+
+[arcadia.6]
+type = "special"
+player = 2
+tag = ":controller2_col3"
+key = "KEYPAD"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "4"
+default = "0"
+
+[arcadia.7]
+type = "special"
+player = 2
+tag = ":controller2_col1"
+key = "KEYPAD"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "2"
+default = "0"
+
+[arcadia.8]
+type = "special"
+player = 2
+tag = ":controller2_col2"
+key = "KEYPAD"
+mapping = "BUTTON7"
+useMapping = "BUTTON7"
+reversed = false
+mask = "2"
+default = "0"
+
+[arcadia.9]
+type = "special"
+player = 2
+tag = ":controller2_col3"
+key = "KEYPAD"
+mapping = "BUTTON10"
+useMapping = "BUTTON10"
+reversed = false
+mask = "2"
+default = "0"
+
+[arcadia.0]
+type = "special"
+player = 2
+tag = ":controller2_col3"
+key = "KEYPAD"
+mapping = "BUTTON9"
+useMapping = "BUTTON9"
+reversed = false
+mask = "1"
+default = "0"
+
+[gamecom.A]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "P1_BUTTON1"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "128"
+default = "128"
+
+[gamecom.B]
+type = "special"
+player = 1
+tag = ":IN1"
+key = "P1_BUTTON2"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "1"
+default = "1"
+
+[gamecom.C]
+type = "special"
+player = 1
+tag = ":IN1"
+key = "P1_BUTTON3"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "2"
+default = "2"
+
+[gamecom.D]
+type = "special"
+player = 1
+tag = ":IN2"
+key = "P1_BUTTON4"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "2"
+default = "2"
+
+[gamecom.Menu]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "OTHER"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "16"
+default = "16"
+
+[gamecom.Pause]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "OTHER"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "32"
+default = "32"
+
+[tutor.Down]
+type = "special"
+player = 2
+tag = ":LINE2_alt"
+key = "P2_JOYSTICK_DOWN"
+mapping = "JOYSTICK_DOWN"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "16"
+default = "0"
+
+[tutor.Left]
+type = "special"
+player = 2
+tag = ":LINE2_alt"
+key = "P2_JOYSTICK_LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "32"
+default = "0"
+
+[tutor.Up]
+type = "special"
+player = 2
+tag = ":LINE2_alt"
+key = "P2_JOYSTICK_UP"
+mapping = "JOYSTICK_UP"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "64"
+default = "0"
+
+[tutor.Right]
+type = "special"
+player = 2
+tag = ":LINE2_alt"
+key = "P2_JOYSTICK_RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "128"
+default = "0"
+
+[tutor."Enter Key"]
+type = "combo"
+player = 1
+tag = ":LINE6"
+key = "KEYBOARD"
+kbMapping = "ENTER"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "16"
+default = "0"
+
+[tutor."Down Arrow"]
+type = "combo"
+player = 1
+tag = ":LINE7"
+key = "KEYBOARD"
+kbMapping = "DOWN"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "4"
+default = "0"
+
+[crvision."P1 Button 1 (Shift)"]
+type = "special"
+player = 1
+tag = ":PA1.7"
+key = "P1_BUTTON1"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "128"
+default = "128"
+
+[crvision."P1 Button 2 (Control)"]
+type = "special"
+player = 1
+tag = ":PA0.7"
+key = "P1_BUTTON2"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "128"
+default = "128"
+
+[crvision."P1 Upper Right (1)"]
+type = "special"
+player = 1
+tag = ":PA0.2"
+key = "KEYBOARD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "8"
+default = "8"
+
+[crvision."P1 Lower Left (B)"]
+type = "special"
+player = 1
+tag = ":PA1.1"
+key = "KEYBOARD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "4"
+default = "4"
+
+[crvision."P1 Lower Right (6)"]
+type = "special"
+player = 1
+tag = ":PA1.4"
+key = "KEYBOARD"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "64"
+default = "64"
+
+[crvision."Reset/Start"]
+type = "special"
+player = 1
+tag = ":NMI"
+key = "P1_START"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "1"
+default = "0"
+
+[crvision."P2 Button 1 (-/=)"]
+type = "special"
+player = 2
+tag = ":PA3.7"
+key = "P2_BUTTON1"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "128"
+default = "128"
+
+[crvision."P2 Button 2 (Right)"]
+type = "special"
+player = 2
+tag = ":PA2.7"
+key = "P2_BUTTON2"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "128"
+default = "128"
+
+[crvision."P2 Upper Right (Space)"]
+type = "special"
+player = 2
+tag = ":PA2.2"
+key = "KEYBOARD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "8"
+default = "8"
+
+[crvision."P2 Lower Left (7)"]
+type = "special"
+player = 2
+tag = ":PA3.1"
+key = "KEYBOARD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "4"
+default = "4"
+
+[crvision."P2 Lower Right (N)"]
+type = "special"
+player = 2
+tag = ":PA3.1"
+key = "KEYBOARD"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "64"
+default = "64"
+
+[bbc."*"]
+type = "combo"
+player = 1
+tag = ":COL8"
+key = "KEYBOARD"
+kbMapping = "QUOTE"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "64"
+default = "64"
+
+[bbc."?"]
+type = "combo"
+player = 1
+tag = ":COL8"
+key = "KEYBOARD"
+kbMapping = "SLASH"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc.Z]
+type = "combo"
+player = 1
+tag = ":COL1"
+key = "KEYBOARD"
+kbMapping = "Z"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "64"
+default = "64"
+
+[bbc.X]
+type = "combo"
+player = 1
+tag = ":COL2"
+key = "KEYBOARD"
+kbMapping = "X"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc.Enter]
+type = "combo"
+player = 1
+tag = ":COL9"
+key = "KEYBOARD"
+kbMapping = "ENTER"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc.Down]
+type = "combo"
+player = 1
+tag = ":COL9"
+key = "KEYBOARD"
+kbMapping = "DOWN"
+mapping = "JOYSTICK_DOWN"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "4"
+default = "4"
+
+[bbc.Left]
+type = "combo"
+player = 1
+tag = ":COL9"
+key = "KEYBOARD"
+kbMapping = "LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "2"
+default = "2"
+
+[bbc.Up]
+type = "combo"
+player = 1
+tag = ":COL9"
+key = "KEYBOARD"
+kbMapping = "UP"
+mapping = "JOYSTICK_UP"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "8"
+default = "8"
+
+[bbc.Right]
+type = "combo"
+player = 1
+tag = ":COL9"
+key = "KEYBOARD"
+kbMapping = "RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "128"
+default = "128"
+
+[bbc-acornjoy."P1 Button"]
+type = "special"
+player = 1
+tag = ":analogue:acornjoy:BUTTONS"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc-acornjoy."P1 X Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:acornjoy:JOY0"
+key = "P1_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-acornjoy."P1 Y Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:acornjoy:JOY1"
+key = "P1_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-acornjoy."P2 Button"]
+type = "special"
+player = 2
+tag = ":analogue:acornjoy:BUTTONS"
+key = "P2_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "32"
+default = "32"
+
+[bbc-acornjoy."P2 X Axis"]
+type = "analog"
+player = 2
+tag = ":analogue:acornjoy:JOY2"
+key = "P2_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-acornjoy."P2 Y Axis"]
+type = "analog"
+player = 2
+tag = ":analogueacornjoy:JOY3"
+key = "P2_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-voltmace3b."P1 Button"]
+type = "special"
+player = 1
+tag = ":analogue:voltmace3b:BUTTONS"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc-voltmace3b."P1 X Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:voltmace3b:JOY0"
+key = "P1_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-voltmace3b."P1 Y Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:voltmace3b:JOY1"
+key = "P1_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-voltmace3b."P2 Button"]
+type = "special"
+player = 2
+tag = ":analogue:voltmace3b:BUTTONS"
+key = "P2_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "32"
+default = "32"
+
+[bbc-voltmace3b."P2 X Axis"]
+type = "analog"
+player = 2
+tag = ":analogue:voltmace3b:JOY2"
+key = "P2_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-voltmace3b."P2 Y Axis"]
+type = "analog"
+player = 2
+tag = ":voltmace3b:JOY3"
+key = "P2_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-bitstik1."P1 Button 1"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik1:BUTTONS"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc-bitstik1."P1 Button 2"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik1:BUTTONS"
+key = "P1_BUTTON2"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "32"
+default = "32"
+
+[bbc-bitstik1."P1 Button 3"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik1:BUTTONS"
+key = "P1_BUTTON3"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "255"
+default = "255"
+
+[bbc-bitstik1."P1 X Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik1:CHANNEL0"
+key = "P1_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-bitstik1."P1 Y Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik1:CHANNEL1"
+key = "P1_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-bitstik1."P1 Z Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik1:CHANNEL2"
+key = "P1_AD_STICK_Z"
+incMapping = "BUTTON5"
+decMapping = "BUTTON6"
+useMapping1 = "BUTTON5"
+useMapping2 = "BUTTON6"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "ZAXIS"
+
+[bbc-bitstik2."P1 Button 1"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik2:BUTTONS"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "16"
+default = "16"
+
+[bbc-bitstik2."P1 Button 2"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik2:BUTTONS"
+key = "P1_BUTTON2"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "32"
+default = "32"
+
+[bbc-bitstik2."P1 Button 3"]
+type = "special"
+player = 1
+tag = ":analogue:bitstik2:BUTTONS"
+key = "P1_BUTTON3"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "255"
+default = "255"
+
+[bbc-bitstik2."P1 X Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik2:CHANNEL0"
+key = "P1_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "XAXIS"
+
+[bbc-bitstik2."P1 Y Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik2:CHANNEL1"
+key = "P1_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "YAXIS"
+
+[bbc-bitstik2."P1 Z Axis"]
+type = "analog"
+player = 1
+tag = ":analogue:bitstik2:CHANNEL2"
+key = "P1_AD_STICK_Z"
+incMapping = "BUTTON5"
+decMapping = "BUTTON6"
+useMapping1 = "BUTTON5"
+useMapping2 = "BUTTON6"
+reversed = false
+mask = "255"
+default = "0"
+delta = "10"
+axis = "ZAXIS"
+
+[xegs.Down]
+type = "special"
+player = 2
+tag = ":djoy_0_1"
+key = "P2_JOYSTICK_DOWN"
+mapping = "JOYSTICK_DOWN"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "32"
+default = "32"
+
+[xegs.Left]
+type = "special"
+player = 2
+tag = ":djoy_0_1"
+key = "P2_JOYSTICK_LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "64"
+default = "64"
+
+[xegs.Up]
+type = "special"
+player = 2
+tag = ":djoy_0_1"
+key = "P2_JOYSTICK_UP"
+mapping = "JOYSTICK_UP"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "16"
+default = "16"
+
+[xegs.Right]
+type = "special"
+player = 2
+tag = ":djoy_0_1"
+key = "P2_JOYSTICK_RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "128"
+default = "128"
+
+[xegs."P1 Button 1"]
+type = "special"
+player = 1
+tag = ":djoy_b"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "1"
+default = "1"
+
+[xegs."P1 Button 2"]
+type = "special"
+player = 1
+tag = ":djoy_b"
+key = "P1_BUTTON2"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "16"
+default = "16"
+
+[xegs."P2 Button 1"]
+type = "special"
+player = 2
+tag = ":djoy_b"
+key = "P2_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "2"
+default = "2"
+
+[xegs."P2 Button 2"]
+type = "special"
+player = 2
+tag = ":djoy_b"
+key = "P2_BUTTON2"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "32"
+default = "32"
+
+[socrates.Down]
+type = "combo"
+player = 2
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "DOWN"
+mapping = "JOYSTICK_DOWN"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "16"
+default = "0"
+
+[socrates.Left]
+type = "combo"
+player = 2
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "32"
+default = "0"
+
+[socrates.Up]
+type = "combo"
+player = 2
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "UP"
+mapping = "JOYSTICK_UP"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "64"
+default = "0"
+
+[socrates.Right]
+type = "combo"
+player = 2
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "128"
+default = "0"
+
+[socrates."P1 Button"]
+type = "combo"
+player = 1
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "ENTERPAD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "256"
+default = "0"
+
+[socrates."P2 Button"]
+type = "combo"
+player = 2
+tag = ":IN5"
+key = "KEYBOARD"
+kbMapping = "RALT"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "512"
+default = "0"
+
+[vgmplay.Stop]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON1"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "1"
+default = "0"
+
+[vgmplay.Pause]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON2"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "2"
+default = "0"
+
+[vgmplay.Play]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON3"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "4"
+default = "0"
+
+[vgmplay.Restart]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON4"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "8"
+default = "0"
+
+[vgmplay.Loop]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON5"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "16"
+default = "0"
+
+[vgmplay."Change Visualization Mode"]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON6"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "32"
+default = "0"
+
+[vgmplay."Rate Down"]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON7"
+mapping = "JOYSTICK_DOWN"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "64"
+default = "0"
+
+[vgmplay."Rate Up"]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON8"
+mapping = "JOYSTICK_UP"
+useMapping = "JOYSTICK_UP"
+reversed = false
+mask = "128"
+default = "0"
+
+[vgmplay."Rate Reset"]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON9"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "256"
+default = "0"
+
+[vgmplay."Rate Hold"]
+type = "special"
+player = 1
+tag = ":CONTROLS"
+key = "P1_BUTTON10"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "512"
+default = "0"
+
+[vgmplay."MAME Menu"]
+type = "main"
+player = 1
+tag = "standard"
+key = "UI_CONFIGURE"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "0"
+default = "0"
+
+[fmtmarty.Run]
+type = "special"
+player = 1
+tag = ":joy1_ex"
+key = "P1_START"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "1"
+default = "0"
+
+[pdp1."Control Panel Switch"]
+type = "combo"
+player = 1
+tag = ":CSW"
+key = "KEYBOARD"
+kbMapping = "LCONTROL"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "1"
+default = "0"
+
+[pdp1."Load Punchtape"]
+type = "combo"
+player = 1
+tag = ":CSW"
+key = "KEYBOARD"
+kbMapping = "ENTER"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "256"
+default = "0"
+
+[pdp1."P1 Spin Left"]
+type = "special"
+player = 1
+tag = ":SPACEWAR"
+key = "P1_JOYSTICK_LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "1"
+default = "0"
+
+[pdp1."P1 Spin Right"]
+type = "special"
+player = 1
+tag = ":SPACEWAR"
+key = "P1_JOYSTICK_RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "2"
+default = "0"
+
+[pdp1."P1 Thrust"]
+type = "special"
+player = 1
+tag = ":SPACEWAR"
+key = "P1_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "4"
+default = "0"
+
+[pdp1."P1 Fire"]
+type = "special"
+player = 1
+tag = ":SPACEWAR"
+key = "P1_BUTTON2"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "8"
+default = "0"
+
+[pdp1."P1 Hyperspace"]
+type = "special"
+player = 1
+tag = ":SPACEWAR"
+key = "P1_BUTTON3"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "256"
+default = "0"
+
+[pdp1."P2 Spin Left"]
+type = "special"
+player = 2
+tag = ":SPACEWAR"
+key = "P2_JOYSTICK_LEFT"
+mapping = "JOYSTICK_LEFT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "16"
+default = "0"
+
+[pdp1."P2 Spin Right"]
+type = "special"
+player = 2
+tag = ":SPACEWAR"
+key = "P2_JOYSTICK_RIGHT"
+mapping = "JOYSTICK_RIGHT"
+useMapping = "JOYSTICK_LEFT"
+reversed = false
+mask = "32"
+default = "0"
+
+[pdp1."P2 Thrust"]
+type = "special"
+player = 2
+tag = ":SPACEWAR"
+key = "P2_BUTTON1"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "64"
+default = "0"
+
+[pdp1."P2 Fire"]
+type = "special"
+player = 2
+tag = ":SPACEWAR"
+key = "P2_BUTTON2"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "128"
+default = "0"
+
+[pdp1."P2 Hyperspace"]
+type = "special"
+player = 2
+tag = ":SPACEWAR"
+key = "P2_BUTTON3"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "512"
+default = "0"
+
+[vc4000.1]
+type = "special"
+player = 2
+tag = ":KEYPAD2_1"
+key = "KEYPAD"
+mapping = "BUTTON3"
+useMapping = "BUTTON3"
+reversed = false
+mask = "128"
+default = "0"
+
+[vc4000."2/Button"]
+type = "special"
+player = 2
+tag = ":KEYPAD2_2"
+key = "KEYPAD"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "128"
+default = "0"
+
+[vc4000.3]
+type = "special"
+player = 2
+tag = ":KEYPAD2_3"
+key = "KEYPAD"
+mapping = "BUTTON4"
+useMapping = "BUTTON4"
+reversed = false
+mask = "128"
+default = "0"
+
+[vc4000.4]
+type = "special"
+player = 2
+tag = ":KEYPAD2_1"
+key = "KEYPAD"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "64"
+default = "0"
+
+[vc4000.5]
+type = "special"
+player = 2
+tag = ":KEYPAD2_2"
+key = "KEYPAD"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "64"
+default = "0"
+
+[vc4000.6]
+type = "special"
+player = 2
+tag = ":KEYPAD2_3"
+key = "KEYPAD"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "64"
+default = "0"
+
+[vc4000.7]
+type = "special"
+player = 2
+tag = ":KEYPAD2_1"
+key = "KEYPAD"
+mapping = "BUTTON8"
+useMapping = "BUTTON8"
+reversed = false
+mask = "32"
+default = "0"
+
+[vc4000.8]
+type = "special"
+player = 2
+tag = ":KEYPAD2_2"
+key = "KEYPAD"
+mapping = "BUTTON7"
+useMapping = "BUTTON7"
+reversed = false
+mask = "32"
+default = "0"
+
+[vc4000.Enter]
+type = "special"
+player = 2
+tag = ":KEYPAD2_1"
+key = "KEYPAD"
+mapping = "BUTTON10"
+useMapping = "BUTTON10"
+reversed = false
+mask = "16"
+default = "0"
+
+[vc4000.Clear]
+type = "special"
+player = 2
+tag = ":KEYPAD2_3"
+key = "KEYPAD"
+mapping = "BUTTON9"
+useMapping = "BUTTON9"
+reversed = false
+mask = "16"
+default = "0"
+
+[vc4000."Game Select"]
+type = "special"
+player = 1
+tag = ":PANEL"
+key = "P1_SELECT"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "128"
+default = "0"
+
+[vc4000.Start]
+type = "special"
+player = 1
+tag = ":PANEL"
+key = "P1_START"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "64"
+default = "0"
+
+[gp32.A]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "P1_BUTTON1"
+mapping = "BUTTON2"
+useMapping = "BUTTON2"
+reversed = false
+mask = "16384"
+default = "16384"
+
+[gp32.B]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "P1_BUTTON2"
+mapping = "BUTTON1"
+useMapping = "BUTTON1"
+reversed = false
+mask = "8192"
+default = "8192"
+
+[gp32.L]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "P1_BUTTON3"
+mapping = "BUTTON5"
+useMapping = "BUTTON5"
+reversed = false
+mask = "4096"
+default = "4096"
+
+[gp32.R]
+type = "special"
+player = 1
+tag = ":IN0"
+key = "P1_BUTTON4"
+mapping = "BUTTON6"
+useMapping = "BUTTON6"
+reversed = false
+mask = "32768"
+default = "32768"
+
+[gp32.Select]
+type = "special"
+player = 1
+tag = ":IN1"
+key = "P1_SELECT"
+mapping = "COIN"
+useMapping = "COIN"
+reversed = false
+mask = "128"
+default = "128"
+
+[gp32.Start]
+type = "special"
+player = 1
+tag = ":IN1"
+key = "P1_START"
+mapping = "START"
+useMapping = "START"
+reversed = false
+mask = "64"
+default = "64"
+
+[apple2-joy."P1 X Axis"]
+type = "analog"
+player = 1
+tag = ":gameio:joy:joystick_1_x"
+key = "P1_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[apple2-joy."P1 Y Axis"]
+type = "analog"
+player = 1
+tag = ":gameio:joy:joystick_1_y"
+key = "P1_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
+
+[apple2-joy."P2 X Axis"]
+type = "analog"
+player = 2
+tag = ":gameio:joy:joystick_2_x"
+key = "P2_AD_STICK_X"
+incMapping = "JOYSTICK_RIGHT"
+decMapping = "JOYSTICK_LEFT"
+useMapping1 = "JOYSTICK_LEFT"
+useMapping2 = "JOYSTICK_LEFT"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "XAXIS"
+
+[apple2-joy."P2 Y Axis"]
+type = "analog"
+player = 2
+tag = ":gameio:joy:joystick_2_y"
+key = "P2_AD_STICK_Y"
+incMapping = "JOYSTICK_DOWN"
+decMapping = "JOYSTICK_UP"
+useMapping1 = "JOYSTICK_UP"
+useMapping2 = "JOYSTICK_UP"
+reversed = false
+mask = "255"
+default = "128"
+delta = "10"
+axis = "YAXIS"
