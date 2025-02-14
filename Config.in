@@ -184,11 +184,13 @@ menu "Controllers"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/guncon/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/guncon3/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/lightguns-games-precalibrations/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/openfire-guns/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/retroshooter-guns/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/samco-guns/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/sinden-guns/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/sinden-guns-libs/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/steamdeckgun/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/controllers/guns/xgunner-lightguns/Config.in"
   endmenu
 
   menu "wheels"
