@@ -1,6 +1,9 @@
 config BR2_PACKAGE_OPENFIRE_GUNS
 	bool "openfire-guns"
 	select BR2_PACKAGE_EVSIEVE
-
 	help
-	  openfire guns support
+	  Support for Open Four Infa-Red Emitter Light Gun System.
+	  OpenFIRE Lightgun is a feature rich open source firmware to allow lightgun enthusiasts
+	  to build their own lightgun that will work on modern flat screen displays.
+
+	  https://openfirelightgun.org/
