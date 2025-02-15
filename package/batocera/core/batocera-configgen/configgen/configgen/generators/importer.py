@@ -53,7 +53,9 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'lindbergh-loader': ('lindbergh.lindberghGenerator', 'LindberghGenerator'),
     'vkquake': ('vkquake.vkquakeGenerator', 'VKQuakeGenerator'),
     'vkquake2': ('vkquake2.vkquake2Generator', 'VKQuake2Generator'),
-    'vkquake3': ('ioquake3.ioquake3Generator', 'IOQuake3Generator')
+    'vkquake3': ('ioquake3.ioquake3Generator', 'IOQuake3Generator'),
+    'tr1x': ('tr1x.tr1xGenerator', 'TR1XGenerator'),
+    'tr2x': ('tr2x.tr2xGenerator', 'TR2XGenerator')
 }
 
 def get_generator(emulator: str) -> Generator:
