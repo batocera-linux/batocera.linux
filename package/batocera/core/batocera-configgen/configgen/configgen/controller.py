@@ -59,6 +59,8 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
             return f"{keyname}:a{input.id}{'~' if int(input.value) > 0 else ''}"
         elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
             return f"{keyname}:{'-' if int(input.value) < 0 else '+'}a{input.id}"
+        elif 'trigger' in keyname:
+            return f"{keyname}:a{input.id}{'~' if int(input.value) < 0 else ''}"
         else:
             return f'{keyname}:a{input.id}'
     elif input.type == 'key':
