@@ -272,6 +272,7 @@ PACKAGES_CONTROLLERS="aelightgun
                       lightguns-games-precalibrations
                       mk_arcade_joystick_rpi
                       new-lg4ff
+                      openfire-guns
                       qtsixa
                       qtsixa-shanwan
                       retrogame
@@ -285,6 +286,7 @@ PACKAGES_CONTROLLERS="aelightgun
                       wiimote-3rdparty
                       wiimotes-rules
                       xarcade2jstick
+                      xgunner-lightguns
                       xone
                       xow
                       xpadneo
