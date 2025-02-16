@@ -19,14 +19,18 @@ FIND_CUSTOMSERVICES=$(batocera-services list user | grep '\*$' | head -1)
 FIND_PRO=
 test -e "/userdata/system/pro" && FIND_PRO=1
 
+FIND_ADDONS=
+test -e "/userdata/system/add-ons" && FIND_ADDONS=1
+
 EXTRA=
-test -n "${FIND_EXT}"      	   && EXTRA=${EXTRA}e
-test -n "${FIND_OVERLAY}"  	   && EXTRA=${EXTRA}o
-test -n "${FIND_CUSTOMSH}" 	   && EXTRA=${EXTRA}c
-test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
+test -n "${FIND_ADDONS}"           && EXTRA=${EXTRA}a
+test -n "${FIND_CUSTOMSH}"         && EXTRA=${EXTRA}c
+test -n "${FIND_EXT}"              && EXTRA=${EXTRA}e
 test -n "${FIND_CUSTOMESFEATURES}" && EXTRA=${EXTRA}f
-test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
+test -n "${FIND_OVERLAY}"          && EXTRA=${EXTRA}o
 test -n "${FIND_PRO}"              && EXTRA=${EXTRA}p
+test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
+test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
 
 if test "${1}" = "--extra"
 then
