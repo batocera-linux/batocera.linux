@@ -77,7 +77,17 @@ mkdir -p /var/run/nvidia/modprobe || exit 1
 
 if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
     echo "Using NVIDIA Production driver - ${NVIDIA_DRIVER_VERSION}" >> $log
-    echo
+    echo "" >> $log
+    echo "Removing any legacy driver symlinks" >> $log
+    # Clean up any legacy driver symlink files
+    find -L /lib32 -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /lib32 -name "*${NVIDIA390_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA390_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /lib32 -name "*${NVIDIA340_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA340_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    echo "" >> $log
+    # Blacklist the Nouveau driver
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
     echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
     # [symbolic link 64-bit library files]
@@ -268,8 +278,13 @@ if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
     done
 
 elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
-    echo "Using an NVIDIA Legacy driver" >> $log
+    echo "Using a NVIDIA Legacy driver" >> $log
     echo "There may be driver issues due to lack of maintenance from Nvidia for modern kernels" >> $log
+    echo "" >> $log
+    echo "Removing any production driver symlinks" >> $log
+    # Clean up any production driver symlink files
+    find -L /lib32 -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     echo "" >> $log
     if [ "$MODE" = "legacy470" ]
     then
@@ -284,7 +299,8 @@ elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
 	    NVIDIA_LEGACY_DRIVER_VERSION=$NVIDIA340_LEGACY_DRIVER_VERSION
     fi
     echo "Using NVIDIA Legacy driver version - ${NVIDIA_LEGACY_DRIVER_VERSION}" >> $log
-    echo
+    echo "" >> $log
+    # Blacklist the Nouveau driver
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
     echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
     # [symbolic link 64-bit library files]
