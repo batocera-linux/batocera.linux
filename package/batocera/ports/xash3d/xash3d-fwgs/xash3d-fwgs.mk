@@ -29,12 +29,4 @@ else
 XASH3D_FWGS_CONF_OPTS += --disable-gl
 endif
 
-define XASH3D_FWGS_EVMAPY
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	  cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/xash3d/hlsdk-xash3d/xash3d_fwgs.keys \
-		    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-XASH3D_FWGS_POST_INSTALL_TARGET_HOOKS = XASH3D_FWGS_EVMAPY
-
 $(eval $(waf-package))

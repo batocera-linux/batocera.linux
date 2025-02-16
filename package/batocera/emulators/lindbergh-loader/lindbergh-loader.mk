@@ -50,14 +50,4 @@ define LINDBERGH_LOADER_INSTALL_TARGET_CMDS
 endef
 endif
 
-define LINDBERGH_LOADER_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/lindbergh.keys \
-		$(TARGET_DIR)/usr/share/evmapy
-endef
-
-ifeq ($(BR2_x86_64),y)
-LINDBERGH_LOADER_POST_INSTALL_TARGET_HOOKS = LINDBERGH_LOADER_EVMAPY
-endif
-
 $(eval $(generic-package))

@@ -1,12 +1,6 @@
 {
     "actions_player1": [
         {
-            "trigger": ["hotkey", "start"],
-            "type": "exec",
-            "target": "killall -9 d1x-rebirth",
-            "description": "exit game"
-        },
-        {
             "trigger": "up",
             "type": "key",
             "target": "KEY_UP"
@@ -169,18 +163,6 @@
             "type": "key",
             "target": "KEY_9",
             "description": "smart missile"
-        },
-        {
-            "trigger": ["hotkey", "y"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F2"],
-            "description": "quick save"
-        },
-        {
-            "trigger": ["hotkey", "x"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F3"],
-            "description": "quick load"
         }
     ]
 }

@@ -21,7 +21,7 @@ class ScummVMGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "scummvm",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": ["KEY_LEFTCTRL", "KEY_F5"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

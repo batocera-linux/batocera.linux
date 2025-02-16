@@ -1,0 +1,56 @@
+{
+    "actions_player1": [
+        {
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_EXIT" ],
+	    "description": "Exit emulator"
+        },
+	{
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_MENU" ],
+	    "description": "Menu"
+        },
+	{
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_SEND" ],
+	    "description": "Restore state"
+        },
+	{
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_SAVE" ],
+	    "description": "Save state"
+        },
+	{
+            "trigger": ["hotkey", "up"],
+            "type": "key",
+            "target": [ "KEY_PREVIOUS" ],
+	    "description": "Previous slot"
+        },
+	{
+            "trigger": ["hotkey", "down"],
+            "type": "key",
+            "target": [ "KEY_NEXT" ],
+	    "description": "Next slot"
+        },
+	{
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": [ "KEY_SYSRQ" ],
+	    "description": "Screenshot"
+        }
+    ],
+
+    "actions_gun1": [
+        {
+            "trigger": ["left", "right", "middle"],
+            "type": "key",
+            "hold": 2.0,
+            "target": [ "KEY_EXIT" ],
+            "description": "Exit emulator"
+        }
+    ]
+}

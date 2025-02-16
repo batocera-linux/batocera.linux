@@ -33,10 +33,7 @@ ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4),yn
 endif
 
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
     mkdir -p $(TARGET_DIR)/usr/share/moonlight-embedded
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/moonlight-embedded/moonlight.moonlight.keys \
-        $(TARGET_DIR)/usr/share/evmapy
     cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/moonlight-embedded/moonlight.conf \
         $(TARGET_DIR)/usr/share/moonlight-embedded/
     install -m 0755 \
