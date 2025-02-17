@@ -336,11 +336,6 @@ class DuckstationLegacyGenerator(Generator):
         else:
             settings.set("Cheevos", "Enabled", "false")
 
-        ## [ControllerPorts]
-        if not settings.has_section("ControllerPorts"):
-            settings.add_section("ControllerPorts")
-        # setting get applied later
-
         ## [TextureReplacements]
         if not settings.has_section("TextureReplacements"):
             settings.add_section("TextureReplacements")

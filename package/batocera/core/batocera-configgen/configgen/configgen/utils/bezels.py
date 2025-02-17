@@ -187,7 +187,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     # Quickly grab the sizes.
     w,h = fast_image_size(input_png)
     tw,th = fast_image_size(tattoo_file)
-    if "bezel.resize_tattoo" in system.config and system.config['bezel.resize_tattoo'] == 0:
+    if system.isOptSet("bezel.resize_tattoo") and not system.getOptBoolean('bezel.resize_tattoo'):
         # Maintain the image's original size.
         # Failsafe for if the image is too large.
         if tw > w or th > h:

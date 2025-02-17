@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
@@ -237,23 +237,11 @@ class BigPEmuGenerator(Generator):
         if bigPemuConfig.exists():
             bigPemuConfig.unlink()
 
-        # Create the config file as it doesn't exist
-        if not bigPemuConfig.exists():
-            with bigPemuConfig.open('w') as file:
-                json.dump({}, file)
-
-        # Load or initialize the configuration
-        with bigPemuConfig.open() as file:
-            try:
-                config = json.load(file)
-            except json.decoder.JSONDecodeError:
-                config = {}
+        config: dict[str, Any] = {}
 
         # Ensure the necessary structure in the config
-        if "BigPEmuConfig" not in config:
-            config["BigPEmuConfig"] = {}
-        if "Video" not in config["BigPEmuConfig"]:
-            config["BigPEmuConfig"]["Video"] = {}
+        config["BigPEmuConfig"] = {}
+        config["BigPEmuConfig"]["Video"] = {}
 
         # Adjust basic settings
         config["BigPEmuConfig"]["Video"]["DisplayMode"] = 2
@@ -274,8 +262,7 @@ class BigPEmuGenerator(Generator):
         config["BigPEmuConfig"]["Video"]["LockAspect"] = 1
 
         # Controller config
-        if "Input" not in config["BigPEmuConfig"]:
-            config["BigPEmuConfig"]["Input"] = {}
+        config["BigPEmuConfig"]["Input"] = {}
 
         # initial settings
         config["BigPEmuConfig"]["Input"]["DeviceCount"] = len(playersControllers)
@@ -397,8 +384,7 @@ class BigPEmuGenerator(Generator):
             nplayer += 1
 
         # Scripts config
-        if "ScriptsEnabled" not in config["BigPEmuConfig"]:
-            config["BigPEmuConfig"]["ScriptsEnabled"] = []
+        config["BigPEmuConfig"]["ScriptsEnabled"] = []
 
         # User selections for ScriptsEnabled options (individual scripts)
         scripts = [
@@ -423,9 +409,8 @@ class BigPEmuGenerator(Generator):
         config["BigPEmuConfig"]["ScriptsEnabled"] = list(set(config["BigPEmuConfig"]["ScriptsEnabled"]))
 
         # ScriptSettings
-        if "ScriptSettings" not in config["BigPEmuConfig"]:
-            config["BigPEmuConfig"]["ScriptSettings"] = {}
-        
+        config["BigPEmuConfig"]["ScriptSettings"] = {}
+
         if system.isOptSet("bigpemu_doom"):
             config["BigPEmuConfig"]["ScriptSettings"]["DOOM-Music"] = system.config["bigpemu_doom"]
         else:

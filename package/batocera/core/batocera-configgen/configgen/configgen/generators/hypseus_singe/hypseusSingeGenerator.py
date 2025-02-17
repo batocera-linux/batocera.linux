@@ -214,9 +214,8 @@ class HypseusSingeGenerator(Generator):
             bezelRequired = True
         # original
         else:
-            if video_resolution and video_resolution[0] != "0":
+            if video_resolution and video_resolution[0]:
                 scaling_factor = gameResolution["height"] / video_resolution[1]
-                screen_width = gameResolution["width"]
                 new_width = video_resolution[0] * scaling_factor
                 commandArray.extend(["-x", str(new_width), "-y", str(gameResolution["height"])])
                 # check if 4:3 for bezels
@@ -312,7 +311,7 @@ class HypseusSingeGenerator(Generator):
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if len(guns) > 0 and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.config["singe_crosshair"]))):
+        if len(guns) > 0 and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair")))):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
