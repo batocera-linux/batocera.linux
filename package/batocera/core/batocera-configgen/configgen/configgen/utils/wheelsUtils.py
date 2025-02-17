@@ -214,7 +214,7 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
                 deviceList[pad.device_path]["joystick_index"] = joystick_index
         # fill physical_index
         for _, pad in sorted(playersControllers.items()):
-            if pad.physical_device_path is not None and pad.physical_device_path in deviceList and "joystick_index" in deviceList[pad.physical_device_path]:
+            if pad.physical_device_path is not None and pad.physical_device_path in deviceList and deviceList[pad.physical_device_path]["joystick_index"] is not None:
                 pad.physical_index = deviceList[pad.physical_device_path]["joystick_index"] # save the physical device for ffb
 
     # reorder players to priorize wheel pads

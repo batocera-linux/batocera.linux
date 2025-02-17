@@ -1056,7 +1056,7 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
         retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = 4
 
     if core == "flycast":
-        if system.isOptSet('flycast_offscreen_reload') and system.getOptBoolean('flycast_offscreen_reload') == 1:
+        if system.isOptSet('flycast_offscreen_reload') and system.getOptBoolean('flycast_offscreen_reload'):
             retroarchConfig['input_player{}_gun_start_mbtn'         .format(n)] = ''
             retroarchConfig['input_player{}_gun_select_mbtn'        .format(n)] = ''
             retroarchConfig['input_player{}_gun_aux_a_mbtn'         .format(n)] = ''
