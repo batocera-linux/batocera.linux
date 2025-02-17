@@ -827,6 +827,10 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
 
     # Microsoft DOS
     if (system.config['core'] == 'dosbox_pure'):
+
+	#allow to read a custom dosbox.conf present in the game directory
+        coreSettings.save('dosbox_pure_conf', '"inside"')
+
         # CPU Type
         if system.isOptSet('pure_cpu_type') and system.config['pure_cpu_type'] != "automatic":
             coreSettings.save('dosbox_pure_cpu_type', '"' + system.config['pure_cpu_type'] + '"')
