@@ -4983,8 +4983,6 @@ traider1:
   platform: pc
   group: ports
   emulators:
-    libretro:
-      openlara: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPENLARA] }
     tr1x:
       tr1x: { requireAnyOf: [BR2_PACKAGE_TR1X] }
   comment_en: |

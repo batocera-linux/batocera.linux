@@ -4,6 +4,8 @@
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
   vkQuake3 replaces ioQuake3 for systems that support Vulkan. Saved games should continue to work.
   The libretro cores will continue to run as before.
+- Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
+  If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
