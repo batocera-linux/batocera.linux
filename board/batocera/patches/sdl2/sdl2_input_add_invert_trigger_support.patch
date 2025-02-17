@@ -1,0 +1,21 @@
+diff --git a/src/joystick/SDL_gamecontroller.c b/src/joystick/SDL_gamecontroller.c
+index 410c985d4..22eec9495 100644
+--- a/src/joystick/SDL_gamecontroller.c
++++ b/src/joystick/SDL_gamecontroller.c
+@@ -951,8 +951,13 @@ static void SDL_PrivateGameControllerParseElement(SDL_GameController *gamecontro
+         bind.outputType = SDL_CONTROLLER_BINDTYPE_AXIS;
+         bind.output.axis.axis = axis;
+         if (axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT || axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) {
+-            bind.output.axis.axis_min = 0;
+-            bind.output.axis.axis_max = SDL_JOYSTICK_AXIS_MAX;
++	    if (*szGameButton == '~') {
++                bind.output.axis.axis_max = 0;
++                bind.output.axis.axis_min = SDL_JOYSTICK_AXIS_MAX;
++            } else {
++                bind.output.axis.axis_min = 0;
++                bind.output.axis.axis_max = SDL_JOYSTICK_AXIS_MAX;
++            }
+         } else {
+             if (half_axis_output == '+') {
+                 bind.output.axis.axis_min = 0;
+
