@@ -455,6 +455,8 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/vkquake/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/vkquake2/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/vkquake3/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr1x/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr2x/Config.in"
   endmenu
 
   menu "dhewm3"
@@ -640,6 +642,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libplacebo/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/stenzek-shaderc/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg-rockchip/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/uthash/Config.in"
 endmenu
 
 menu "Audio"

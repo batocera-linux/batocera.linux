@@ -4974,8 +4974,8 @@ reminiscence:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:reminiscence
 
-openlara:
-  name: OpenLara
+traider1:
+  name: Tomb Raider
   manufacturer: Ports
   release: 1996
   hardware: port
@@ -4985,12 +4985,14 @@ openlara:
   emulators:
     libretro:
       openlara: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPENLARA] }
+    tr1x:
+      tr1x: { requireAnyOf: [BR2_PACKAGE_TR1X] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:openlara
+    For more info: https://wiki.batocera.org/systems:traider1
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:openlara
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider1
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:openlara
+    Para mais informações: https://wiki.batocera.org/systems:traider1
 
 quake3:
   name: Quake III
@@ -5712,3 +5714,21 @@ lindbergh:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:lindbergh
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:lindbergh
+
+traider2:
+  name: Tomb Raider 2
+  manufacturer: Ports
+  release: 1997
+  hardware: port
+  extensions: [croft]
+  platform: pc
+  group: ports
+  emulators:
+    tr2x:
+      tr2x: { requireAnyOf: [BR2_PACKAGE_TR2X] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:traider2
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider2
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:traider2

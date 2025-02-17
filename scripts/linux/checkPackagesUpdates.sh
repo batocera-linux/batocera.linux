@@ -231,6 +231,8 @@ PACKAGES_PORTS="abuse
                 sonic-mania
                 taradino
                 theforceengine
+                tr1x
+                tr2x
                 tyrian
                 uqm
                 vcmi

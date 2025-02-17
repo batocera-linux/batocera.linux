@@ -433,11 +433,6 @@ openbor:
 openjazz:
   emulator: openjazz
   core:     openjazz
-openlara:
-  emulator: libretro
-  core:     openlara
-  options:
-    gfxbackend: gl
 
 # P-S
 
@@ -641,6 +636,12 @@ ti99:
 tic80:
   emulator: libretro
   core:     tic80
+traider1:
+  emulator: tr1x
+  core:     tr1x
+traider2:
+  emulator: tr2x
+  core:     tr2x
 triforce:
   emulator: dolphin_triforce
   core:     dolphin_triforce

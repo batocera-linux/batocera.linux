@@ -31,6 +31,7 @@
 - Libretro-PS2 core
 - Force Feedback on RP5 & RPmini
 - vkQuake 1, 2 & 3 for systems that support Vulkan.
+- TR1X & TR2X for Tomb Raider I & II support
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
