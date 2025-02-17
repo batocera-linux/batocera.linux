@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
 eslog = logging.getLogger(__name__)
 
-
 @dataclass(slots=True)
 class evmapy(AbstractContextManager[None, None]):
     # evmapy is a process that map pads to keyboards (for pygame for example)
@@ -72,6 +71,12 @@ class evmapy(AbstractContextManager[None, None]):
                 eslog.debug(f"evmapy file to merge : {keysfile}")
                 filesToMerge.append(keysfile)
 
+        # merge conditionnally on the global hotkeys file until it is set everywhere
+        keysfile = "/usr/share/evmapy/hotkeys.keys"
+        if os.path.exists(keysfile):
+            eslog.debug(f"evmapy file to merge : {keysfile}")
+            filesToMerge.append(keysfile)
+            
         if len(filesToMerge) == 0:
             return None
         if len(filesToMerge) == 1:
@@ -94,7 +99,6 @@ class evmapy(AbstractContextManager[None, None]):
                         trigger = action['trigger']
                     if trigger not in mergedUniqueValues[player_actions]:
                         mergedUniqueValues[player_actions][trigger] = action
-
         mergedValues = {}
         for player_actions in mergedUniqueValues:
             mergedValues[player_actions] = []

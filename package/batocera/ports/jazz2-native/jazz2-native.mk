@@ -32,12 +32,4 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
     JAZZ2_NATIVE_CONF_OPTS += -DNCINE_WITH_OPENGLES=ON
 endif
 
-define JAZZ2_NATIVE_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/jazz2-native/jazz2.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-JAZZ2_NATIVE_POST_INSTALL_TARGET_HOOKS += JAZZ2_NATIVE_EVMAPY
-
 $(eval $(cmake-package))

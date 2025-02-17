@@ -54,12 +54,4 @@ define CANNONBALL_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/cannonball/config_help.txt
 endef
 
-define CANNONBALL_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/cannonball/cannonball.keys \
-		$(TARGET_DIR)/usr/share/evmapy
-endef
-
-CANNONBALL_POST_INSTALL_TARGET_HOOKS = CANNONBALL_EVMAPY
-
 $(eval $(cmake-package))

@@ -19,7 +19,7 @@ class EDuke32Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "eduke32",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F8", "restore_state": "KEY_F9" }
+            "keys": { "exit": "killall -9 eduke32; killall -9 fury", "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F9" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

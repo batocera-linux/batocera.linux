@@ -23,10 +23,9 @@ class Dhewm3Generator(Generator):
         return {
             "name": "dhewm3",
             "keys": {
-                "Exit emulator": ["KEY_LEFTALT", "KEY_F4"],
-                "Screenshot": ["KEY_F12"],
-                "Quick Save": ["KEY_F5"],
-                "Quick Load": ["KEY_F9"]
+                "exit": ["KEY_LEFTALT", "KEY_F4"],
+                "save_state": "KEY_F5",
+                "restore_state": "KEY_F9"
             }
         }
 

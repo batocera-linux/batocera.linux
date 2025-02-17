@@ -21,7 +21,7 @@ class FsuaeGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "fsuae",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F12" }
         }
 
     # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix

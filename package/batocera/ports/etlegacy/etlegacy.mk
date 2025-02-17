@@ -59,12 +59,4 @@ define ETLEGACY_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/bin/etl
 endef
 
-define ETLEGACY_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/etlegacy/etlegacy.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-ETLEGACY_POST_INSTALL_TARGET_HOOKS += ETLEGACY_EVMAPY
-
 $(eval $(cmake-package))

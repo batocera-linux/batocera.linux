@@ -27,7 +27,7 @@ class CorsixTHGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "corsixth",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_S"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_L"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": ["KEY_RIGHTSHIFT", "KEY_Q"], "save_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_S"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_L"] }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

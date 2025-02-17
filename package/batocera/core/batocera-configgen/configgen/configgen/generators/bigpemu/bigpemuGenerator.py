@@ -224,7 +224,7 @@ class BigPEmuGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "bigpemu",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC", "save_state": "KEY_F9", "restore_state": "KEY_F5" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
