@@ -1,0 +1,133 @@
+From 4c63c575bc5017c2d1f179109cbec2cd45d271da Mon Sep 17 00:00:00 2001
+From: Alexandre Derumier <aderumier@gmail.com>
+Date: Sun, 16 Feb 2025 16:27:30 +0100
+Subject: [PATCH] sdl : convert joystick api to gamecontroller api
+
+---
+ Src/OSD/SDL/SDLInputSystem.cpp | 39 +++++++++++++++++++++++-----------
+ Src/OSD/SDL/SDLInputSystem.h   |  2 +-
+ 2 files changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/Src/OSD/SDL/SDLInputSystem.cpp b/Src/OSD/SDL/SDLInputSystem.cpp
+index 4c6c901..f275ea6 100644
+--- a/Src/OSD/SDL/SDLInputSystem.cpp
++++ b/Src/OSD/SDL/SDLInputSystem.cpp
+@@ -200,7 +200,8 @@ void CSDLInputSystem::OpenJoysticks()
+   for (int joyNum = 0; joyNum < numJoys; joyNum++)
+   {
+     numHapticAxes = 0;
+-    SDL_Joystick *joystick = SDL_JoystickOpen(joyNum);
++    SDL_GameController *gamepad = SDL_GameControllerOpen(joyNum);
++    SDL_Joystick *joystick = SDL_GameControllerGetJoystick(gamepad);
+     if (joystick == nullptr)
+     {
+       ErrorLog("Unable to open joystick device %d with SDL - skipping joystick.\n", joyNum + 1);
+@@ -210,7 +211,7 @@ void CSDLInputSystem::OpenJoysticks()
+     // Gather joystick details (name, num POVs & buttons and which axes are available)
+     JoyDetails joyDetails;
+     hapticInfo hapticDatas;
+-    const char *pName = SDL_JoystickName(joystick);
++    const char *pName = SDL_GameControllerName(gamepad);
+     strncpy(joyDetails.name, pName, MAX_NAME_LENGTH);
+     joyDetails.name[MAX_NAME_LENGTH] = '\0';
+     joyDetails.numAxes = SDL_JoystickNumAxes(joystick);
+@@ -365,7 +366,7 @@ void CSDLInputSystem::OpenJoysticks()
+       }
+     }
+ 
+-    m_joysticks.push_back(joystick);
++    m_joysticks.push_back(gamepad);
+     m_joyDetails.push_back(joyDetails);
+     m_SDLHapticDatas.push_back(hapticDatas);
+   }
+@@ -390,8 +391,8 @@ void CSDLInputSystem::CloseJoysticks()
+ 
+       SDL_HapticClose(m_SDLHapticDatas[i].SDLhaptic);
+     }
+-    SDL_Joystick *joystick = m_joysticks[i];
+-    SDL_JoystickClose(joystick);
++    SDL_GameController *gamepad = m_joysticks[i];
++    SDL_GameControllerClose(gamepad);
+   }
+ 
+   m_joysticks.clear();
+@@ -402,13 +403,13 @@ void CSDLInputSystem::CloseJoysticks()
+ bool CSDLInputSystem::InitializeSystem()
+ {
+   // Make sure joystick subsystem is initialized and joystick events are enabled
+-  if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC) != 0)
++  if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0)
+   {
+     ErrorLog("Unable to initialize SDL joystick subsystem (%s).\n", SDL_GetError());
+ 
+     return false;
+   }
+-  SDL_JoystickEventState(SDL_ENABLE);
++  SDL_GameControllerEventState(SDL_ENABLE);
+ 
+   // Open attached joysticks
+   OpenJoysticks();
+@@ -474,14 +475,27 @@ bool CSDLInputSystem::IsMouseButPressed(int mseNum, int butNum)
+ int CSDLInputSystem::GetJoyAxisValue(int joyNum, int axisNum)
+ {
+   // Get raw joystick axis value for given joystick from SDL (values range from -32768 to 32767)
+-  SDL_Joystick *joystick = m_joysticks[joyNum];
+-  return SDL_JoystickGetAxis(joystick, axisNum);
++  SDL_GameController *gamepad = m_joysticks[joyNum];
++
++  switch (axisNum)
++  {
++    case AXIS_X:  return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_LEFTX);
++    case AXIS_Y:  return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_LEFTY);
++    case AXIS_Z:  return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
++    case AXIS_RX: return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_RIGHTX);
++    case AXIS_RY: return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_RIGHTY);
++    case AXIS_RZ: return SDL_GameControllerGetAxis(gamepad, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
++    case AXIS_S1: return 0;
++    case AXIS_S2: return 0;
++    default:      return 0;
++  }
+ }
+ 
+ bool CSDLInputSystem::IsJoyPOVInDir(int joyNum, int povNum, int povDir)
+ {
+   // Get current joystick POV-hat value for given joystick and POV number from SDL and check if pointing in required direction
+-  SDL_Joystick *joystick = m_joysticks[joyNum];
++  SDL_GameController *gamepad = m_joysticks[joyNum];
++  SDL_Joystick *joystick = SDL_GameControllerGetJoystick(gamepad);
+   int hatVal = SDL_JoystickGetHat(joystick, povNum);
+   switch (povDir)
+   {
+@@ -497,7 +511,8 @@ bool CSDLInputSystem::IsJoyPOVInDir(int joyNum, int povNum, int povDir)
+ bool CSDLInputSystem::IsJoyButPressed(int joyNum, int butNum)
+ {
+   // Get current joystick button state for given joystick and button number from SDL
+-  SDL_Joystick *joystick = m_joysticks[joyNum];
++  SDL_GameController *gamepad = m_joysticks[joyNum];
++  SDL_Joystick *joystick = SDL_GameControllerGetJoystick(gamepad);
+   return !!SDL_JoystickGetButton(joystick, butNum);
+ }
+ 
+@@ -833,4 +848,4 @@ bool CSDLInputSystem::HasBasicForce(SDL_Haptic* hap)
+     return true;
+   else
+     return false;
+-}
+\ No newline at end of file
++}
+diff --git a/Src/OSD/SDL/SDLInputSystem.h b/Src/OSD/SDL/SDLInputSystem.h
+index e837804..12f46ff 100644
+--- a/Src/OSD/SDL/SDLInputSystem.h
++++ b/Src/OSD/SDL/SDLInputSystem.h
+@@ -55,7 +55,7 @@ private:
+ 	static SDLKeyMapStruct s_keyMap[];
+ 
+ 	// Vector to keep track of attached joysticks
+-	std::vector<SDL_Joystick*> m_joysticks;
++	std::vector<SDL_GameController*> m_joysticks;
+ 
+ 	// Vector of joystick details
+ 	std::vector<JoyDetails> m_joyDetails;
+-- 
+2.43.0
+
