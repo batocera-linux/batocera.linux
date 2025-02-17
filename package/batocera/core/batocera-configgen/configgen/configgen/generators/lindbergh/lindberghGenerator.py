@@ -4,21 +4,21 @@ import logging
 import os
 import re
 import shutil
-import stat
-import tarfile
-import requests
-import subprocess
 import socket
+import stat
+import subprocess
+import tarfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
+
+import requests
 from evdev import ecodes
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config, getMappingAxisRelaxValues
+from ...controller import generate_sdl_game_controller_config, get_mapping_axis_relaxed_values
+from ...utils import bezels as bezelsUtil, hotkeygen
 from ..Generator import Generator
-from ...utils import bezels as bezelsUtil
-from ...utils import hotkeygen
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -135,11 +135,11 @@ class LindberghGenerator(Generator):
         )
 
     @staticmethod
-    def download_file(url, destination):
+    def download_file(url: str, destination: Path) -> None:
         eslog.debug("Downloading the file...")
         response = requests.get(url, stream=True)
         if response.status_code == 200:
-            with open(destination, "wb") as file:
+            with destination.open("wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
             eslog.debug(f"File downloaded to {destination}")
@@ -148,7 +148,7 @@ class LindberghGenerator(Generator):
             eslog.debug("Do you have internet!?")
 
     @staticmethod
-    def extract_tar_xz(file_path, extract_to):
+    def extract_tar_xz(file_path: str, extract_to: Path) -> None:
         eslog.debug("Extracting the file...")
         with tarfile.open(file_path, "r:xz") as tar:
             for member in tar.getmembers():
@@ -162,7 +162,7 @@ class LindberghGenerator(Generator):
     def getInGameRatio(self, config, gameResolution, rom):
         return 16 / 9
 
-    def loadConf(self, configFile):
+    def loadConf(self, configFile: Path) -> dict[str, Any]:
         try:
             with configFile.open('r') as file:
                 lines = file.readlines()
@@ -170,7 +170,7 @@ class LindberghGenerator(Generator):
             eslog.debug(f"Configuration file {configFile} not found.")
             lines = []
 
-        conf = { "raw": lines, "keys": {}}
+        conf: dict[str, Any] = { "raw": lines, "keys": {}}
 
         # find keys and values
         pattern = re.compile(r"^\s*(#?)\s*([A-Z0-9_]+)\s(.*)$")
@@ -338,7 +338,7 @@ class LindberghGenerator(Generator):
 
         # add a test key via evdev
         if input_mode == 2:
-            hkevent = hotkeygen.getHotkeygenEvent()
+            hkevent = hotkeygen.get_hotkeygen_event()
             if hkevent is not None:
                 self.setConf(conf, "TEST_BUTTON",   hkevent + ":KEY:" + str(ecodes.KEY_T))
                 # only 1 assignment possible for coins, let's it on the select button of player 1 for the moment
@@ -376,11 +376,18 @@ class LindberghGenerator(Generator):
             maxplayers = 2
 
             if nplayer <= 2 and continuePlayers and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
-                relaxValues = getMappingAxisRelaxValues(pad)
+                relaxValues = get_mapping_axis_relaxed_values(pad)
 
                 ### choose the adapted mapping
                 if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad, len(wheels) >= nplayer)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(
+                        shortRomName,
+                        "wheel",
+                        nplayer,
+                        pad,
+                        # This test works because wheels are rearranged to be first in the player list
+                        len(wheels) >= nplayer
+                    )
                     eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
                 elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
@@ -617,7 +624,8 @@ class LindberghGenerator(Generator):
             # pads without joystick1left, but with a hat
             if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
                 lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
-                del lindberghCtrl_wheel["right"]
+                if "right" in lindberghCtrl_wheel:
+                    del lindberghCtrl_wheel["right"]
                 del lindberghCtrl_wheel["joystick1left"]
                 #
                 lindberghCtrl_pad["left"] = lindberghCtrl_pad["joystick1left"]
@@ -742,7 +750,7 @@ class LindberghGenerator(Generator):
         if not DOWNLOADED_FLAG.exists():
             try:
                 # Download the file
-                self.download_file(RAW_URL, str(DOWNLOAD_PATH))
+                self.download_file(RAW_URL, DOWNLOAD_PATH)
                 # Extract the file
                 self.extract_tar_xz(str(DOWNLOAD_PATH), self.LINDBERGH_SAVES)
                 # Create the downloaded.txt flag file so we don't download again
@@ -757,7 +765,7 @@ class LindberghGenerator(Generator):
                     DOWNLOAD_PATH.unlink()
                     eslog.debug(f"Temporary file {DOWNLOAD_PATH} deleted.")
 
-    def setup_libraries(self, romDir, romName):
+    def setup_libraries(self, romDir: Path, romName: str) -> None:
         # Setup some library quirks for GPU support (NVIDIA?)
         source = Path("/lib32/libkswapapi.so")
         if source.exists():
