@@ -5,7 +5,6 @@ import logging
 import subprocess
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
-import evdev
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -28,9 +27,11 @@ def set_hotkeygen_context(generator: Generator, /) -> Iterator[None]:
         eslog.debug("hotkeygen: resetting to default context")
         subprocess.call(["hotkeygen", "--default-context"])
 
-def getHotkeygenEvent():
-    for l in evdev.list_devices():
-        device = evdev.InputDevice(l)
-        if device.name == "batocera hotkeys":
-            return l
+def get_hotkeygen_event() -> str | None:
+    import evdev
+
+    for dev in evdev.list_devices():
+        input_device = evdev.InputDevice(dev)
+        if input_device.name == "batocera hotkeys":
+            return dev
     return None
