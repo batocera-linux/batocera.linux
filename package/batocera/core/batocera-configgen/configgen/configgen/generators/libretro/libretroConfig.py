@@ -140,6 +140,8 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
     retroarchConfig['menu_show_restart_retroarch'] = 'false'      # this option messes everything up on Batocera if ever clicked
     retroarchConfig['menu_show_load_content_animation'] = 'false' # hide popup when starting a game
     retroarchConfig['menu_swap_ok_cancel_buttons'] = swapButtons  # Set the correct value to match ES confirm /cancel inputs
+    retroarchConfig["video_viewport_bias_x"] = "0.500000"
+    retroarchConfig["video_viewport_bias_y"] = "0.500000"
 
     retroarchConfig['video_driver'] = '"' + gfxBackend + '"'  # needed for the ozone menu
     # Set Vulkan
@@ -1142,17 +1144,6 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
     retroarchConfig['video_message_pos_x']  = 0.05
     retroarchConfig['video_message_pos_y']  = 0.05
 
-    bias = True
-    if retroarchConfig["aspect_ratio_index"] == str(ratioIndexes.index("custom")):
-        bias = False
-
-    if bias:
-        retroarchConfig["video_viewport_bias_x"] = "0.500000"
-        retroarchConfig["video_viewport_bias_y"] = "0.500000"
-    else:
-        retroarchConfig["video_viewport_bias_x"] = "0.000000"
-        retroarchConfig["video_viewport_bias_y"] = "1.000000"
-
     # special text...
     if bezel == "none" or bezel == "":
         bezel = None
@@ -1266,6 +1257,17 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
         infos["messagey"] = 0.0
 
     retroarchConfig['input_overlay_opacity'] = infos["opacity"]
+
+    bias = True
+    if retroarchConfig["aspect_ratio_index"] == str(ratioIndexes.index("custom")):
+        bias = False
+
+    if bias:
+        retroarchConfig["video_viewport_bias_x"] = "0.500000"
+        retroarchConfig["video_viewport_bias_y"] = "0.500000"
+    else:
+        retroarchConfig["video_viewport_bias_x"] = "0.000000"
+        retroarchConfig["video_viewport_bias_y"] = "1.000000"
 
     # stretch option
     if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
