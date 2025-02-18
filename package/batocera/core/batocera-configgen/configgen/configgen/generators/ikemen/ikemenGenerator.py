@@ -178,7 +178,7 @@ class IkemenGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ikemen",
-            "keys": { "exit": "KEY_Q", "menu": "KEY_ESC", "pause": "KEY_ESC" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_ESC" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

@@ -18,7 +18,7 @@ class WineGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "wine",
-            "keys": { "exit": ["/usr/bin/batocera-wine windows stop"] }
+            "keys": { "exit": "/usr/bin/batocera-wine windows stop" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

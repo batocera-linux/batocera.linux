@@ -103,7 +103,7 @@ class Controller:
     def replace(self, /, **changes: Unpack[_ControllerChanges]) -> Self:
         return replace(self, **changes, inputs_={name: input.replace() for name, input in self.inputs.items()})
 
-    def generate_sdl_game_db_line(self, sdl_mapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /) -> str:
+    def generate_sdl_game_db_line(self, sdl_mapping: Mapping[str, str] = _DEFAULT_SDL_MAPPING, /, ignore_buttons: list[str] | None = None) -> str:
         """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
         config = [self.guid, self.real_name.replace(",", "."), "platform:Linux"]
 
@@ -122,6 +122,8 @@ class Controller:
 
         for input in self.inputs.values():
             if input.name is None:  # pragma: no cover
+                continue
+            if ignore_buttons is not None and input.name in ignore_buttons:
                 continue
             if input.name == 'hotkey':
                 hotkey_input = input
@@ -227,8 +229,8 @@ class Controller:
         return None
 
 
-def generate_sdl_game_controller_config(controllers: ControllerMapping, /) -> str:
-    return "\n".join(controller.generate_sdl_game_db_line() for controller in controllers.values())
+def generate_sdl_game_controller_config(controllers: ControllerMapping, /, ignore_buttons: list[str] | None = None) -> str:
+    return "\n".join(controller.generate_sdl_game_db_line(ignore_buttons = ignore_buttons) for controller in controllers.values())
 
 
 def write_sdl_controller_db(

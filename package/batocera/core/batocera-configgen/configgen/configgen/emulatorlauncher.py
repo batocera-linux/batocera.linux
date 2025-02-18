@@ -197,7 +197,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
         from .utils.evmapy import evmapy
         with (
             evmapy(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, player_controllers, guns),
-            set_hotkeygen_context(generator)
+            set_hotkeygen_context(generator, system)
         ):
             # change directory if wanted
             executionDirectory = generator.executionDirectory(system.config, effectiveRom)

@@ -42,6 +42,9 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
         retroarchspecials["r2"] = "disk_next"
         retroarchspecials["r3"] = "disk_eject_toggle"
 
+    if system.isOptSet("exithotkeyonly") and system.getOptBoolean("exithotkeyonly"):
+        retroarchspecials = {}
+
     cleanControllerConfig(retroconfig, controllers)
 
     # hotkeys, forced to match with the hotkeys system
