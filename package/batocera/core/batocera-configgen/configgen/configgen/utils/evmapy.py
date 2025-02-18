@@ -72,9 +72,13 @@ class evmapy(AbstractContextManager[None, None]):
                 filesToMerge.append(keysfile)
 
         # merge conditionnally on the global hotkeys file until it is set everywhere
-        keysfile = "/usr/share/evmapy/hotkeys.keys"
+        keysfile     = "/usr/share/evmapy/hotkeys.keys"
+        userkeysfile = "/userdata/system/configs/hotkeys.keys" # prefer the custom one
+        if os.path.exists(userkeysfile):
+            keysfile = userkeysfile
+
         if os.path.exists(keysfile):
-            eslog.debug(f"evmapy file to merge : {keysfile}")
+            eslog.debug(f"evmapy file to merge for hotkeys : {keysfile}")
             filesToMerge.append(keysfile)
             
         if len(filesToMerge) == 0:
