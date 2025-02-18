@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 from os import environ
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -13,8 +14,6 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from ...types import HotkeysContext
 
 
@@ -49,14 +48,14 @@ class DrasticGenerator(Generator):
                 # Swap to nearest neighbor
                 subprocess.run("sed -i 's/6c69 6e65 6172/3000 0000 0000/g' drastic.txt", shell=True)
                 subprocess.run(f"xxd -r drastic.txt > {drastic_bin}", shell=True)
-                os.remove("drastic.txt")
+                Path("drastic.txt").unlink()
         else:
             subprocess.run(f"xxd {drastic_bin} > drastic.txt", shell=True)
             if subprocess.run("grep -q '3000 0000 0000' drastic.txt", shell=True).returncode == 0:
                 # Swap to bilinear
                 subprocess.run("sed -i 's/3000 0000 0000/6c69 6e65 6172/g' drastic.txt", shell=True)
                 subprocess.run(f"xxd -r drastic.txt > {drastic_bin}", shell=True)
-                os.remove("drastic.txt")
+                Path("drastic.txt").unlink()
 
         if system.isOptSet("drastic_hires") and system.config["drastic_hires"] == '1':
             esvaluedrastichires = 1

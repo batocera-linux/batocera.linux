@@ -2,11 +2,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -17,12 +17,12 @@ from __future__ import annotations
 import logging
 import shutil
 import zipfile
-import requests
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import requests
+
 from ... import Command
-from ...batoceraPaths import ROMS
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -72,7 +72,7 @@ class TR1XGenerator(Generator):
                 response.raise_for_status()
 
                 # Write to music.zip
-                with open(musicZipPath, "wb") as f:
+                with musicZipPath.open("wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
 

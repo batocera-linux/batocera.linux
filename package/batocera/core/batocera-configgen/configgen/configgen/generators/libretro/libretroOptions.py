@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import TYPE_CHECKING
 
 from ... import controllersConfig
@@ -2830,7 +2829,7 @@ def generateCoreSettings(coreSettings: UnixSettings, system: Emulator, rom: Path
             coreSettings.save('hatarib_borders', '"0"')
 
         # Harddrive image support
-        rom_extension = os.path.splitext(os.path.basename(rom))[1].lower()
+        rom_extension = rom.suffix.lower()
         if rom_extension == '.hd':
             coreSettings.save('hatarib_hardimg', '"hatarib/hdd"')
             coreSettings.save('hatarib_hardboot', '"1"')

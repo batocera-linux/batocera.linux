@@ -148,12 +148,12 @@ class LindberghGenerator(Generator):
             eslog.debug("Do you have internet!?")
 
     @staticmethod
-    def extract_tar_xz(file_path: str, extract_to: Path) -> None:
+    def extract_tar_xz(file_path: Path, extract_to: Path) -> None:
         eslog.debug("Extracting the file...")
         with tarfile.open(file_path, "r:xz") as tar:
             for member in tar.getmembers():
-                file_path_to_extract = os.path.join(extract_to, member.name)
-                if not os.path.exists(file_path_to_extract):
+                file_path_to_extract = extract_to / member.name
+                if not file_path_to_extract.exists():
                     tar.extract(member, path=extract_to)
                 else:
                     eslog.debug(f"Skipping {member.name}, file already exists.")
@@ -752,7 +752,7 @@ class LindberghGenerator(Generator):
                 # Download the file
                 self.download_file(RAW_URL, DOWNLOAD_PATH)
                 # Extract the file
-                self.extract_tar_xz(str(DOWNLOAD_PATH), self.LINDBERGH_SAVES)
+                self.extract_tar_xz(DOWNLOAD_PATH, self.LINDBERGH_SAVES)
                 # Create the downloaded.txt flag file so we don't download again
                 DOWNLOADED_FLAG.write_text("Download and extraction successful.\n")
                 eslog.debug(f"Created flag file: {DOWNLOADED_FLAG}")

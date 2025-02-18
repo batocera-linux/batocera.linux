@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import toml
 
 from ... import Command
-from ...batoceraPaths import CONFIGS
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan
 from ..Generator import Generator
@@ -36,7 +36,7 @@ class shadPS4Generator(Generator):
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
 
-        os.makedirs(configPath, exist_ok=True)
+        mkdir_if_not_exists(configPath)
 
         # Check Vulkan first before doing anything
         discrete_index = 0
@@ -140,7 +140,7 @@ class shadPS4Generator(Generator):
         config.setdefault("Vulkan", {})["gpuId"] = int(discrete_index)
 
         # Create necessary directories if they do not exist
-        os.makedirs(toml_file.parent, exist_ok=True)
+        mkdir_if_not_exists(toml_file.parent)
 
         # Now write the updated toml
         with toml_file.open("w") as f:
