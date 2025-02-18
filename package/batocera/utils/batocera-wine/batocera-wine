@@ -1,20 +1,20 @@
 #!/bin/bash
 SYSTEM=${1,,}                                                                        # windows, mugen, fpinball
-ACTION=${2,,}                                                                        # play stop...
-GAMENAME="$3"                                                                        # fullpath to game, gamedir+extension
+ACTION=${2,,}                                                                        # play, stop... see usage
+GAMENAME="$3"                                                                        # fullpath to game: e.g. /userdata/roms/windows/Age of Empires.wine
 TRICK=${4,,}                                                                         # WINE-tricks, see https://github.com/Winetricks/winetricks
-ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable +extension, only
-ROMBASEDIR=$(dirname "${GAMENAME}")                                                  # gamedir where the executeble is
-GAMEEXT="${GAMENAME##*.}"                                                            # gameextension, used in case selections and to strip fileextensions
+ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable: e.g. "Age of Empires.wine" or "AoE_inst.exe
+ROMBASEDIR=$(dirname "${GAMENAME}")                                                  # gamedir or rootdir: eg "/userdata/roms/windows" if AoE is a wine.dir
+GAMEEXT="${GAMENAME##*.}"                                                            # gameextension: pc, wine, exe, msi
 # log wineserver running time  
 TIMESTAMP=$(date +%s)
 
 ## Folders
-WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"                            # Basestorage for points, more variables ini init_wine
-G_ROMS_DIR="/userdata/roms/${SYSTEM}"                                                # Gamesdir, more variables in init_wine
+WINE_BOTTLE_DIR="/userdata/system/wine-bottles/${SYSTEM}"                            # Basestorage for our bottles, more variables in init_wine()
+G_ROMS_DIR="/userdata/roms/${SYSTEM}"                                                # Gamesdir for our games, more variables in init_wine()
 
-## INIT_WINE VARS, these need to be prepared ini init_wine()
-## Wine detection, for specific game or set general if no entry in batocera.conf
+## WINE-VARS, these need to be prepared in init_wine()
+## in general Wine detection routines, for specific game if entered in batocera.conf
 WINE_RUNNER=
 WINE_VERSION=
 ## Wine executables, to be populated in init_wine() with find_wine_dir()
@@ -28,7 +28,7 @@ MSIEXEC=
 WINETRICKS=
 
 stopWineServer() {
-    [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] &&  exit 0
+    [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] && exit 0
 
     #try to cleanly exit wineserver
     WINEPREFIX=${WINEPOINT} "${WINESERVER}" -k &
@@ -766,11 +766,13 @@ init_cmd() {
 }
 
 install_exe_msi() {
-    GAMENAME="$1"
+    #We need to select annother install type for MSI, even if MSI is not yet supported from ES filelist
+    #ROMBASEDIR is here /userdata/roms/windows_installer and ROMGAMENAME is the executable only
+    GAMEEXT="$1"
     WINEPOINT="$2"
     createWineDirectory "${WINEPOINT}"
-
-    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} wine "${ROMGAMENAME}")
+    [[ "${GAMEEXT}" == "exe" ]] && (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} wine "${ROMGAMENAME}")
+    [[ "${GAMEEXT}" == "msi" ]] && (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} wine "${MSIEXEC}" /i "${ROMGAMENAME}")
     waitWineServer
     init_cmd "${WINEPOINT}"
 }
@@ -778,7 +780,6 @@ install_exe_msi() {
 install_iso() {
     GAMENAME="$1"
     WINEPOINT="$2"
-    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEISOMOUNT="/var/run/wine/${ROMGAMENAME}.cdrom"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
@@ -805,15 +806,15 @@ wine2squashfs() {
     #GAMENAME is an .wine directory here, compress DIR -> FILE.wsquasfs
     GAMEDIR="$1"
     SQUASHFSFILE="$2"
-    
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" -comp zstd || return 1
+    echo "Created file: $(basename ${SQUASHFSFILE}) <- Dir: ${GAMEDIR}"
     return 0
 }
 
 wine2winetgz() {
     GAMEDIR="$1"
     WINETGZFILE="$2"
-
+    echo "Building compressed file: $(basename ${WINETGZFILE}) <- ${GAMEDIR}" 
     (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") && echo "File: $(basename ${WINETGZFILE}) build..." || return 1
     return 0
 }
@@ -956,9 +957,8 @@ case "${ACTION}" in
     init_wine
 	case "${GAMEEXT,,}" in
 	    "exe"|"msi")
-		#Parsing Gamename (not needed in fact)
 		#Winepoint with stripped extension, add current date_time to avoid duplicates
-		install_exe_msi "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+		install_exe_msi "${GAMEEXT,,}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
 		;;
 	    "iso")
 		#Parsing Gamename, Winepoint with stripped extension, add current date_time to avoid duplicates
