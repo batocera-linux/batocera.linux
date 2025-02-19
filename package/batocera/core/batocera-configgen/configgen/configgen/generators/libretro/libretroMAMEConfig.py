@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
+from ..mame import mameCommon
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -83,7 +84,8 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         if len(pluginsToLoad) > 0:
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
         messMode = -1
-        messModel = ''
+        mameModel = ''
+        mameSystem = None
     else:
         # Set up command line for MESS or MAMEVirtual
         softDir = Path("/var/run/mame_software")
@@ -100,27 +102,15 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 softList = 'fmtowns_cd'
 
         # Determine MESS system name (if needed)
-        openFile = (DEFAULTS_DIR / "data" / "mame" / "messSystems.csv").open()
-        messSystems: list[str] = []
-        messSysName: list[str] = []
-        messRomType: list[str] = []
-        messAutoRun: list[str] = []
-        with openFile:
-            messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
-            for row in messDataList:
-                messSystems.append(row[0])
-                messSysName.append(row[1])
-                messRomType.append(row[2])
-                messAutoRun.append(row[3])
-        messMode = messSystems.index(system.name)
+        mameSystem = mameCommon.get_mame_system(system.name)
 
         # Alternate system for machines that have different configs (ie computers with different hardware)
-        messModel = messSysName[messMode]
+        mameModel = '' if not mameSystem else mameSystem['model_name']
         if system.isOptSet("altmodel"):
-            messModel = system.config["altmodel"]
-        commandLine += [ messModel ]
+            mameModel = system.config['altmodel']
+        commandLine += [ mameModel ]
 
-        if messSysName[messMode] == "":
+        if not mameSystem or mameSystem['model_name'] == "":
             # Command line for non-arcade, non-system ROMs (lcdgames, plugnplay)
             if system.getOptBoolean("customcfg"):
                 cfgPath = CONFIGS / corePath / "custom"
@@ -163,7 +153,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 if rom_extension in {".hdv", ".2mg", ".chd", ".iso", ".bin", ".cue"}:
                     commandLine += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
-                    if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
+                    if system.config['gameio'] == 'joyport' and mameModel != 'apple2p':
                         eslog.debug("Joyport is only compatible with Apple II +")
                     else:
                         commandLine += ["-gameio", system.config['gameio']]
@@ -177,17 +167,17 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             if system.name == "macintosh":
                 if system.isOptSet("ramsize"):
                     ramSize = int(system.config["ramsize"])
-                    if messModel in [ 'maciix', 'maclc3' ]:
-                        if messModel == 'maclc3' and ramSize == 2:
+                    if mameModel in [ 'maciix', 'maclc3' ]:
+                        if mameModel == 'maclc3' and ramSize == 2:
                             ramSize = 4
-                        if messModel == 'maclc3' and ramSize > 80:
+                        if mameModel == 'maclc3' and ramSize > 80:
                             ramSize = 80
-                        if messModel == 'maciix' and ramSize == 16:
+                        if mameModel == 'maciix' and ramSize == 16:
                             ramSize = 32
-                        if messModel == 'maciix' and ramSize == 48:
+                        if mameModel == 'maciix' and ramSize == 48:
                             ramSize = 64
                         commandLine += [ '-ramsize', str(ramSize) + 'M' ]
-                    if messModel == 'maciix':
+                    if mameModel == 'maciix':
                         imageSlot = 'nba'
                         if system.isOptSet('imagereader'):
                             if system.config["imagereader"] == "disabled":
@@ -212,7 +202,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                 # Mac will auto change floppy 1 to 2 if a boot disk is enabled
                 if system.name != "macintosh":
                     if system.isOptSet("altromtype"):
-                        if system.config["altromtype"] == "flop1" and messModel == "fmtmarty":
+                        if system.config["altromtype"] == "flop1" and mameModel == "fmtmarty":
                             commandLine += [ "-flop" ]
                         else:
                             commandLine += [ "-" + system.config["altromtype"] ]
@@ -247,7 +237,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                         else:
                             commandLine += [ "-flop1" ]
                     else:
-                        commandLine += [ "-" + messRomType[messMode] ]
+                        commandLine += [ "-" + mameSystem['rom_type'] ]
                 else:
                     if system.isOptSet("bootdisk"):
                         if ((system.isOptSet("altromtype") and system.config["altromtype"] == "flop1") or not system.isOptSet("altromtype")) and system.config["bootdisk"] in [ "macos30", "macos608", "macos701", "macos75" ]:
@@ -255,12 +245,12 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                         elif system.isOptSet("altromtype"):
                             commandLine += [ "-" + system.config["altromtype"] ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + mameSystem['rom_type'] ]
                     else:
                         if system.isOptSet("altromtype"):
                             commandLine += [ "-" + system.config["altromtype"] ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + mameSystem['rom_type'] ]
                 # Use the full filename for MESS non-softlist ROMs
                 commandLine += [ f'"{rom}"' ]
                 commandLine += [ "-rompath", f'"{rom.parent};/userdata/bios/"' ]
@@ -292,7 +282,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     if not targetDisk.exists():
                         shutil.copy2(blankDisk, targetDisk)
                     # Add other single floppy systems to this if statement
-                    if messModel == "fmtmarty":
+                    if mameModel == "fmtmarty":
                         commandLine += [ '-flop', f'"{targetDisk}"' ]
                     elif (system.isOptSet('altromtype') and system.config['altromtype'] == 'flop2'):
                         commandLine += [ '-flop1', f'"{targetDisk}"' ]
@@ -306,11 +296,11 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
 
             # MESS config folder
             if system.getOptBoolean("customcfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / "custom"
+                cfgPath = CONFIGS / corePath / mameSystem['model_name'] / "custom"
             else:
-                cfgPath = SAVES / "mame" / "cfg" / messSysName[messMode]
+                cfgPath = SAVES / "mame" / "cfg" / mameSystem['model_name']
             if system.getOptBoolean("pergamecfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / rom.name
+                cfgPath = CONFIGS / corePath / mameSystem['model_name'] / rom.name
             mkdir_if_not_exists(cfgPath)
             commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
 
@@ -383,7 +373,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                                     autoRunCmd = row[1] + "\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
-                autoRunCmd = messAutoRun[messMode]
+                autoRunCmd = mameSystem['autorun']
                 autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / f'{softList}_autoload.csv'
                 if autoRunFile.exists():
                     with autoRunFile.open() as openARFile:
@@ -464,10 +454,10 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
         cmdFile.close()
 
     # Call Controller Config
-    if messMode == -1:
+    if not mameSystem:
         generateMAMEPadConfig(cfgPath, playersControllers, system, "", rom, specialController, guns)
     else:
-        generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, rom, specialController, guns)
+        generateMAMEPadConfig(cfgPath, playersControllers, system, mameModel, rom, specialController, guns)
 
 def prepSoftwareList(subdirSoftList: Sequence[str], softList: str, softDir: Path, hashDir: Path, romParent: Path):
     mkdir_if_not_exists(softDir)
@@ -492,15 +482,6 @@ def prepSoftwareList(subdirSoftList: Sequence[str], softList: str, softDir: Path
         (softDir / softList).symlink_to(romParent, target_is_directory=True)
 
 def getMameControlScheme(system: Emulator, rom: Path) -> str:
-    # Game list files
-    mame_data_dir = DEFAULTS_DIR / 'data' / 'mame'
-    mameCapcom = mame_data_dir / 'mameCapcom.txt'
-    mameKInstinct = mame_data_dir / 'mameKInstinct.txt'
-    mameMKombat = mame_data_dir / 'mameMKombat.txt'
-    mameNeogeo = mame_data_dir / 'mameNeogeo.txt'
-    mameTwinstick = mame_data_dir / 'mameTwinstick.txt'
-    mameRotatedstick = mame_data_dir / 'mameRotatedstick.txt'
-
     # Controls for games with 5-6 buttons or other unusual controls
     if system.isOptSet("altlayout"):
         controllerType = system.config["altlayout"] # Option was manually selected
@@ -510,40 +491,36 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
     if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
         return controllerType
     else:
-        capcomList = set(mameCapcom.read_text().split())
-        mkList = set(mameMKombat.read_text().split())
-        kiList = set(mameKInstinct.read_text().split())
-        neogeoList = set(mameNeogeo.read_text().split())
-        twinstickList = set(mameTwinstick.read_text().split())
-        qbertList = set(mameRotatedstick.read_text().split())
+        # Game list files
+        roms = mameCommon.get_mame_roms()
 
         romName = rom.stem
-        if romName in capcomList:
+        if romName in roms['capcom']:
             if controllerType in [ "auto", "snes" ]:
                 return "sfsnes"
             elif controllerType == "megadrive":
                 return "megadrive"
             elif controllerType == "fightstick":
                 return "sfstick"
-        elif romName in mkList:
+        elif romName in roms['mortal_kombat']:
             if controllerType in [ "auto", "snes" ]:
                 return "mksnes"
             elif controllerType == "megadrive":
                 return "mkmegadrive"
             elif controllerType == "fightstick":
                 return "mkstick"
-        elif romName in kiList:
+        elif romName in roms['killer_instinct']:
             if controllerType in [ "auto", "snes" ]:
                 return "kisnes"
             elif controllerType == "megadrive":
                 return "megadrive"
             elif controllerType == "fightstick":
                 return "sfstick"
-        elif romName in  neogeoList:
+        elif romName in  roms['neogeo']:
             return "neomini"
-        elif romName in  twinstickList:
+        elif romName in  roms['twin_stick']:
             return "twinstick"
-        elif romName in  qbertList:
+        elif romName in  roms['rotated_stick']:
             return "qbert"
         else:
             if controllerType == "fightstick":
