@@ -61,7 +61,7 @@ class FsuaeGenerator(Generator):
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
         commandArray = ['/usr/bin/fs-uae', "--fullscreen",
-                                           "--amiga-model="     + system.config['core'],
+                                           f"--amiga-model={system.config['core']}",
                                            f"--base_dir={FSUAE_CONFIG_DIR!s}",
                                            f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
                                            f"--save_states_dir={FSUAE_SAVES / system.config['core'] / self.filePrefix(rom_path)}",
@@ -111,7 +111,7 @@ class FsuaeGenerator(Generator):
         n = 0
         for playercontroller, pad in sorted(playersControllers.items()):
             if n <= 3:
-                commandArray.append("--joystick_port_" + str(n) + "=" + pad.real_name + "")
+                commandArray.append(f"--joystick_port_{n}={pad.real_name}")
                 n += 1
 
         return Command.Command(array=commandArray)

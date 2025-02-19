@@ -35,13 +35,13 @@ class Emulator():
         globalSettings = batoceraSettings.load_all('global')
         controllersSettings = batoceraSettings.load_all('controllers', True)
         systemSettings = batoceraSettings.load_all(self.name)
-        folderSettings = batoceraSettings.load_all(self.name + ".folder[\"" + os.path.dirname(rom) + "\"]")
-        gameSettings = batoceraSettings.load_all(self.name + "[\"" + gsname + "\"]")
+        folderSettings = batoceraSettings.load_all(f'{self.name}.folder["{os.path.dirname(rom)}"]')
+        gameSettings = batoceraSettings.load_all(f'{self.name}["{gsname}"]')
 
         # add some other options
         displaySettings = batoceraSettings.load_all('display')
         for opt in displaySettings:
-            self.config["display." + opt] = displaySettings[opt]
+            self.config[f"display.{opt}"] = displaySettings[opt]
 
         # update config
         Emulator.updateConfiguration(self.config, controllersSettings)
@@ -89,8 +89,8 @@ class Emulator():
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
         # so that we can fetch them from system.shader without -renderer
-        systemSettings = batoceraSettings.load_all(self.name + "-renderer")
-        gameSettings = batoceraSettings.load_all(self.name + "[\"" + gsname + "\"]" + "-renderer")
+        systemSettings = batoceraSettings.load_all(f'{self.name}-renderer')
+        gameSettings = batoceraSettings.load_all(f'{self.name}["{gsname}"]-renderer')
 
         # es only allow to update systemSettings and gameSettings in fact for the moment
         Emulator.updateConfiguration(self.renderconfig, systemSettings)

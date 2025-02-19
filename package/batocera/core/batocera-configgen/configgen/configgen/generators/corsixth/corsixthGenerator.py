@@ -61,24 +61,24 @@ class CorsixTHGenerator(Generator):
 
         # Values coming from ES configuration : Resolution
         source_config_file.write("fullscreen = true\n")
-        source_config_file.write("width = " + str(gameResolution["width"]) +"\n")
-        source_config_file.write("height = " + str(gameResolution["height"]) + "\n")
+        source_config_file.write(f"width = {gameResolution['width']}\n")
+        source_config_file.write(f"height = {gameResolution['height']}\n")
 
         # Values coming from ES configuration : New Graphics
         if system.isOptSet('cth_new_graphics'):
-          source_config_file.write("use_new_graphics = "+ system.config['cth_new_graphics'] +"\n")
+          source_config_file.write(f"use_new_graphics = {system.config['cth_new_graphics']}\n")
         else:
           source_config_file.write("use_new_graphics = true\n")
 
         # Values coming from ES configuration : Sandbox Mode
         if system.isOptSet('cth_free_build_mode'):
-          source_config_file.write("free_build_mode = "+ system.config['cth_free_build_mode'] +"\n")
+          source_config_file.write(f"free_build_mode = {system.config['cth_free_build_mode']}\n")
         else:
           source_config_file.write("free_build_mode = false\n")
 
         # Values coming from ES configuration : Intro Movie
         if system.isOptSet('cth_play_intro'):
-          source_config_file.write("play_intro = "+ system.config['cth_play_intro'] +"\n")
+          source_config_file.write(f"play_intro = {system.config['cth_play_intro']}\n")
         else:
           source_config_file.write("play_intro = true\n")
 
@@ -115,7 +115,7 @@ class CorsixTHGenerator(Generator):
         # 2. Map it
         corsixthLanguage = language_mapping.get(language, 'en')
         # 3. Write it
-        source_config_file.write("language = [[" + corsixthLanguage +"]]\n")
+        source_config_file.write(f"language = [[{corsixthLanguage}]]\n")
 
         # Check custom music is installed
         try:

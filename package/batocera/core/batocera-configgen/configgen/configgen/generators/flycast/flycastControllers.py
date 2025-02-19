@@ -116,65 +116,65 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
                 code = 258
             if input.name == 'right':
                 code = 259
-            option = "bind{}".format(digitalbind)
+            option = f"bind{digitalbind}"
             digitalbind = digitalbind +1
-            val = "{}:{}".format(code, var)
+            val = f"{code}:{var}"
             Config.set(section, option, val)
 
         if input.type == 'button':
             section = 'digital'
-            option = "bind{}".format(digitalbind)
+            option = f"bind{digitalbind}"
             digitalbind = digitalbind +1
             code = input.id
-            val = "{}:{}".format(code, var)
+            val = f"{code}:{var}"
             Config.set(section, option, val)
 
         if input.type == 'axis':
             section = 'analog'
             if input.name == 'l2' or input.name == 'r2':
                 # Use positive axis for full trigger control
-                code = input.id + "+"
+                code = f"{input.id}+"
             else:
-                code = input.id + "-"
-            option = "bind{}".format(analogbind)
+                code = f"{input.id}-"
+            option = f"bind{analogbind}"
             analogbind = analogbind +1
-            val = "{}:{}".format(code, var)
+            val = f"{code}:{var}"
             if 'left' in input.name or 'up' in input.name:
                 Config.set(section, option, val)
                 # becase we only take one axis input
                 # now have to write the joy-right & joy-down manually
                 # we use the same code number but positive axis
-                option = "bind{}".format(analogbind)
+                option = f"bind{analogbind}"
                 analogbind = analogbind +1
                 if input.name == 'joystick1left':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'btn_analog_right'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
                 if input.name == 'joystick1up':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'btn_analog_down'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
                 if input.name == 'joystick2left':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'axis2_right'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
                 if input.name == 'joystick2up':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'axis2_down'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
                 if input.name == 'up':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'btn_dpad1_down'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
                 if input.name == 'left':
-                    code = input.id + "+"
+                    code = f"{input.id}+"
                     var = 'btn_dpad1_right'
-                    val = "{}:{}".format(code, var)
+                    val = f"{code}:{var}"
                     Config.set(section, option, val)
             else:
                 Config.set(section, option, val)

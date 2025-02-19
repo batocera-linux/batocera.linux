@@ -64,7 +64,7 @@ def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Cont
 
     # remove section with no player
     for x in range(nplayer, 4):
-        section = "Input-SDL-Control"+str(x)
+        section = f"Input-SDL-Control{x}"
         if iniConfig.has_section(section):
             cleanPlayer(nplayer, iniConfig)
 
@@ -139,7 +139,7 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
         for realStick, fakeStick in fakeSticks.items():
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
-                        print(fakeStick + "-> " + realStick)
+                        print(f"{fakeStick} -> {realStick}")
                         controller.inputs[fakeStick] = controller.inputs[realStick].replace(
                             name=fakeStick,
                             value=str(-int(controller.inputs[realStick].value))
@@ -154,7 +154,7 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
                             if mupenmapping[input.name] not in config :
                                 config[mupenmapping[input.name]] = value
                             else:
-                                config[mupenmapping[input.name]] += " " + value
+                                config[mupenmapping[input.name]] += f" {value}"
         return config
 
 def setControllerLine(mupenmapping: Mapping[str, str], input: Input, mupenSettingName: str, allinputs: InputMapping) -> str:
@@ -205,7 +205,7 @@ def setControllerLine(mupenmapping: Mapping[str, str], input: Input, mupenSettin
         return value
 
 def fillIniPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser, controller: Controller, config: dict[str, str]) -> None:
-        section = "Input-SDL-Control"+str(nplayer)
+        section = f"Input-SDL-Control{nplayer}"
 
         # set static config
         if not iniConfig.has_section(section):
@@ -249,7 +249,7 @@ def fillIniPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser, controller
                 iniConfig.set(section, inputName, config[inputName])
 
 def cleanPlayer(nplayer: int, iniConfig: CaseSensitiveConfigParser) -> None:
-        section = "Input-SDL-Control"+str(nplayer)
+        section = f"Input-SDL-Control{nplayer}"
 
         # set static config
         if not iniConfig.has_section(section):

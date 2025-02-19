@@ -66,7 +66,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
     # Fill sys sections
     if system.isOptSet("xemu_memory"):
-        iniConfig.set("sys", "mem_limit", '"' + system.config["xemu_memory"] + '"')
+        iniConfig.set("sys", "mem_limit", f'"{system.config["xemu_memory"]}"')
     else:
         iniConfig.set("sys", "mem_limit", '"64"')
 
@@ -79,7 +79,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("sys.files", "bootrom_path", '"/userdata/bios/mcpx_1.0.bin"')
     iniConfig.set("sys.files", "hdd_path", '"/userdata/saves/xbox/xbox_hdd.qcow2"')
     iniConfig.set("sys.files", "eeprom_path", '"/userdata/saves/xbox/xemu_eeprom.bin"')
-    iniConfig.set("sys.files", "dvd_path", '"' + rom + '"')
+    iniConfig.set("sys.files", "dvd_path", f'"{rom}"')
 
     # Audio quality
     if system.isOptSet("xemu_use_dsp"):
@@ -89,10 +89,10 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
     # API
     if system.isOptSet("xemu_api"):
-        iniConfig.set("display", "renderer", '"' + system.config["xemu_api"] + '"')
+        iniConfig.set("display", "renderer", f'"{system.config["xemu_api"]}"')
     else:
         iniConfig.set("display", "renderer", '"OPENGL"')
-    
+
     # Rendering resolution
     if system.isOptSet("xemu_render"):
         iniConfig.set("display.quality", "surface_scale", system.config["xemu_render"])
@@ -103,8 +103,8 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("display.window", "fullscreen_on_startup", "true")
 
     # Window size
-    window_res = format(gameResolution["width"]) + "x" + format(gameResolution["height"])
-    iniConfig.set("display.window", "startup_size", '"' + window_res + '"')  
+    window_res = f'{gameResolution["width"]}x{gameResolution["height"]}'
+    iniConfig.set("display.window", "startup_size", f'"{window_res}"')
 
     # Vsync
     if system.isOptSet("xemu_vsync"):
@@ -117,13 +117,13 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
     # Scaling
     if system.isOptSet("xemu_scaling"):
-        iniConfig.set("display.ui", "fit", '"' + system.config["xemu_scaling"] + '"')
+        iniConfig.set("display.ui", "fit", f'"{system.config["xemu_scaling"]}"')
     else:
         iniConfig.set("display.ui", "fit", '"scale"')
 
     # Aspect ratio
     if system.isOptSet("xemu_aspect"):
-        iniConfig.set("display.ui", "aspect_ratio", '"' + system.config["xemu_aspect"] + '"')
+        iniConfig.set("display.ui", "aspect_ratio", f'"{system.config["xemu_aspect"]}"')
     else:
         iniConfig.set("display.ui", "aspect_ratio", '"auto"')
 
@@ -134,18 +134,18 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer <= 4:
-            iniConfig.set("input.bindings", f"port{nplayer}", '"' + pad.guid + '"')
+            iniConfig.set("input.bindings", f"port{nplayer}", f'"{pad.guid}"')
         nplayer = nplayer + 1
 
     # Network
     # Documentation: https://github.com/xemu-project/xemu/blob/master/config_spec.yml
     if system.isOptSet("xemu_networktype"):
         iniConfig.set("net", "enable", "true")
-        iniConfig.set("net", "backend", '"' + system.config["xemu_networktype"] + '"')
+        iniConfig.set("net", "backend", f'"{system.config["xemu_networktype"]}"')
     else:
         iniConfig.set("net", "enable", "false")
     # Additionnal settings for udp: if nothing is entered in these fields, the xemu.toml is untouched
     if system.isOptSet("xemu_udpremote"):
-        iniConfig.set("net.udp", "remote_addr", '"' + system.config["xemu_udpremote"] + '"')
+        iniConfig.set("net.udp", "remote_addr", f'"{system.config["xemu_udpremote"]}"')
     if system.isOptSet("xemu_udpbind"):
-        iniConfig.set("net.udp", "bind_addr", '"' + system.config["xemu_udpbind"] + '"')
+        iniConfig.set("net.udp", "bind_addr", f'"{system.config["xemu_udpbind"]}"')

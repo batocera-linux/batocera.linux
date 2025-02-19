@@ -244,12 +244,12 @@ class CitraGenerator(Generator):
             input = padInputs[key]
 
             if input.type == "button":
-                return ("button:{},guid:{},engine:sdl").format(input.id, padGuid)
+                return f"button:{input.id},guid:{padGuid},engine:sdl"
             elif input.type == "hat":
-                return ("engine:sdl,guid:{},hat:{},direction:{}").format(padGuid, input.id, CitraGenerator.hatdirectionvalue(input.value))
+                return f"engine:sdl,guid:{padGuid},hat:{input.id},direction:{CitraGenerator.hatdirectionvalue(input.value)}"
             elif input.type == "axis":
                 # Untested, need to configure an axis as button / triggers buttons to be tested too
-                return ("engine:sdl,guid:{},axis:{},direction:{},threshold:{}").format(padGuid, input.id, "+", 0.5)
+                return f"engine:sdl,guid:{padGuid},axis:{input.id},direction:+,threshold:0.5"
 
     @staticmethod
     def setAxis(key: str, padGuid: str, padInputs: InputMapping) -> str:
@@ -269,7 +269,7 @@ class CitraGenerator(Generator):
         if inputx is None or inputy is None:
             return "";
 
-        return ("axis_x:{},guid:{},axis_y:{},engine:sdl").format(inputx.id, padGuid, inputy.id)
+        return f"axis_x:{inputx.id},guid:{padGuid},axis_y:{inputy.id},engine:sdl"
 
     @staticmethod
     def hatdirectionvalue(value: str) -> str:

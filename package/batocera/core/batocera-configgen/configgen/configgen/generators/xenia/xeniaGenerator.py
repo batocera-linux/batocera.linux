@@ -330,9 +330,9 @@ class XeniaGenerator(Generator):
                 commandArray = [wine.WINE64, emupath / 'xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe', 'z:' + rom]
+                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe', f'z:{rom}']
             else:
-                commandArray = [wine.WINE64, emupath / 'xenia.exe', 'z:' + rom]
+                commandArray = [wine.WINE64, emupath / 'xenia.exe', f'z:{rom}']
 
         environment = wine.get_wine_environment(wineprefix)
         environment.update({

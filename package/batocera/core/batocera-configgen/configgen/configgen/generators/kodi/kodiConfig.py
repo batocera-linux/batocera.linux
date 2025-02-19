@@ -51,7 +51,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         controllersDone[cur.real_name] = True
 
         # initialized the file
-        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(cur.guid+"_"+hashlib.md5(cur.real_name.encode('utf-8')).hexdigest())).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
+        kodiJoy = kodiJoystick.with_name(kodiJoystick.name.format(f"{cur.guid}_{hashlib.md5(cur.real_name.encode('utf-8')).hexdigest()}")).open("w") # because 2 pads with a different name have sometimes the same vid/pid...
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
@@ -63,8 +63,8 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         if provider == "udev":
             xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
 
-        xmldevice.attributes["buttoncount"] = str(cur.button_count)
-        xmldevice.attributes["axiscount"] = str(2*cur.hat_count + cur.axis_count)
+        xmldevice.attributes["buttoncount"] = f'{cur.button_count}'
+        xmldevice.attributes["axiscount"] = f'{2*cur.hat_count + cur.axis_count}'
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"
@@ -76,23 +76,23 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
             input = cur.inputs[x]
             if input.name in kodimapping:
                     if input.type == 'button':
-                        if "btn_" + str(int(input.id)) not in alreadyset:
+                        if f"btn_{int(input.id)}" not in alreadyset:
                             xmlbutton = config.createElement('feature')
                             xmlbutton.attributes["name"] = kodimapping[input.name]
                             xmlbutton.attributes["button"] = str(int(input.id))
                             xmlcontroller.appendChild(xmlbutton)
-                            alreadyset["btn_" + str(int(input.id))] = True
+                            alreadyset[f"btn_{int(input.id)}"] = True
 
                     elif input.type == 'hat' and int(input.value) in kodihatspositions:
                         xmlhat = config.createElement('feature')
                         if kodihatspositions[int(input.value)] == "left" or kodihatspositions[int(input.value)] == "right":
-                            val = str(cur.axis_count)
+                            val = f'{cur.axis_count}'
                         else:
-                            val = str(cur.axis_count+1)
+                            val = f'{cur.axis_count+1}'
                         if kodihatspositions[int(input.value)] == "down" or kodihatspositions[int(input.value)] == "right":
-                            xmlhat.attributes["axis"] = "+" + val
+                            xmlhat.attributes["axis"] = f"+{val}"
                         else:
-                            xmlhat.attributes["axis"] = "-" + val
+                            xmlhat.attributes["axis"] = f"-{val}"
                         xmlhat.attributes["name"] = kodihatspositions[int(input.value)]
                         xmlcontroller.appendChild(xmlhat)
 
@@ -104,18 +104,18 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
                             xmlsens = config.createElement(kodimapping[sens]["sens"])
                             val = input.id
                             if (int(input.value) >= 0 and sens == input.name) or (int(input.value) < 0 and sens != input.name):
-                                val =  "+" + val
+                                val =  f"+{val}"
                             else:
-                                val =  "-" + val
+                                val =  f"-{val}"
                             xmlsens.attributes["axis"] = val
                             sticksNode[kodimapping[sens]["name"]].appendChild(xmlsens)
                     elif input.type == 'axis' and input.name not in kodiaxes:
                         xmlaxis = config.createElement('feature')
                         val = input.id
                         if int(input.value) >= 0:
-                            val =  "+" + val
+                            val =  f"+{val}"
                         else:
-                            val =  "-" + val
+                            val =  f"-{val}"
                         xmlaxis.attributes["axis"] = val
                         xmlaxis.attributes["name"] = kodimapping[input.name]
                         xmlcontroller.appendChild(xmlaxis)

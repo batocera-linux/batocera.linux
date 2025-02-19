@@ -72,42 +72,42 @@ class RedreamGenerator(Generator):
             if nplayer <= 4:
                 ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
                 f.write((ctrlport)+ "\n")
-                ctrlprofile = "profile{}=name:{},type:controller,deadzone:12,crosshair:1,".format(controller.index, controller.guid)
+                ctrlprofile = f"profile{controller.index}=name:{controller.guid},type:controller,deadzone:12,crosshair:1,"
                 fullprofile = ctrlprofile
                 for index in controller.inputs:
                     input = controller.inputs[index]
                     # [buttons]
                     if input.type == "button" and input.name in ButtonMap:
                         buttonname = ButtonMap[input.name]
-                        fullprofile = fullprofile + "{}:joy{},".format(buttonname, input.id)
+                        fullprofile = fullprofile + f"{buttonname}:joy{input.id},"
                     # on rare occassions when triggers are buttons
                     if input.type == "button" and input.name == "l2":
-                        fullprofile = fullprofile + "ltrig:joy{},".format(input.id)
+                        fullprofile = f"{fullprofile}ltrig:joy{input.id},"
                     if input.type == "button" and input.name == "r2":
-                        fullprofile = fullprofile + "rtrig:joy{},".format(input.id)
+                        fullprofile = f"{fullprofile}rtrig:joy{input.id},"
                     # on occassions when dpad directions are buttons
                     if input.type == "button":
                         if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
-                            fullprofile = fullprofile + "dpad_{}:joy{},".format(input.name, input.id)
+                            fullprofile = f"{fullprofile}dpad_{input.name}:joy{input.id},"
                     # [hats]
                     if input.type == "hat" and input.name in HatMap:
                         hatid = HatMap[input.name]
-                        fullprofile = fullprofile + "dpad_{}:hat{},".format(input.name, hatid)
+                        fullprofile = f"{fullprofile}dpad_{input.name}:hat{hatid},"
                     # [axis]
                     if input.type == "axis" and input.name in AxisMap:
                         axisid = AxisMap[input.name]
                         # l2/r2 as axis triggers
                         if input.name == "l2":
-                            fullprofile = fullprofile + "ltrig:+axis{},".format(input.id)
+                            fullprofile = f"{fullprofile}ltrig:+axis{input.id},"
                         if input.name == "r2":
-                            fullprofile = fullprofile + "rtrig:+axis{},".format(input.id)
+                            fullprofile = f"{fullprofile}rtrig:+axis{input.id},"
                         # handle axis l,r,u,d
                         if input.name == "joystick1left":
-                            fullprofile = fullprofile + "ljoy_left:-axis{},".format(axisid)
-                            fullprofile = fullprofile + "ljoy_right:+axis{},".format(axisid)
+                            fullprofile = f"{fullprofile}ljoy_left:-axis{axisid},"
+                            fullprofile = f"{fullprofile}ljoy_right:+axis{axisid},"
                         if input.name == "joystick1up":
-                            fullprofile = fullprofile + "ljoy_up:-axis{},".format(axisid)
-                            fullprofile = fullprofile + "ljoy_down:+axis{},".format(axisid)
+                            fullprofile = f"{fullprofile}ljoy_up:-axis{axisid},"
+                            fullprofile = f"{fullprofile}ljoy_down:+axis{axisid},"
 
                 # special nintendo workaround since redream makes no sense...
                 if controller.guid == "030000007e0500000920000011810000":
@@ -122,45 +122,45 @@ class RedreamGenerator(Generator):
 
         # change settings as per users options
         # [video]
-        f.write("width={}\n".format(gameResolution["width"]))
-        f.write("height={}\n".format(gameResolution["height"]))
-        f.write("fullwidth={}\n".format(gameResolution["width"]))
-        f.write("fullheight={}\n".format(gameResolution["height"]))
+        f.write(f"width={gameResolution['width']}\n")
+        f.write(f"height={gameResolution['height']}\n")
+        f.write(f"fullwidth={gameResolution['width']}\n")
+        f.write(f"fullheight={gameResolution['height']}\n")
         if system.isOptSet("redreamResolution"):
-            f.write("res={}".format(system.config["redreamResolution"]) + "\n")
+            f.write(f"res={system.config['redreamResolution']}\n")
         else:
             f.write("res=2\n")
         if system.isOptSet("redreamRatio"):
-            f.write("aspect={}".format(system.config["redreamRatio"]) + "\n")
+            f.write(f"aspect={system.config['redreamRatio']}\n")
         else:
             f.write("aspect=4:3\n")
         if system.isOptSet("redreamFrameSkip"):
-            f.write("frameskip={}".format(system.config["redreamFrameSkip"]) + "\n")
+            f.write(f"frameskip={system.config['redreamFrameSkip']}\n")
         else:
             f.write("frameskip=0\n")
         if system.isOptSet("redreamVsync"):
-            f.write("vysnc={}".format(system.config["redreamVsync"]) + "\n")
+            f.write(f"vysnc={system.config['redreamVsync']}\n")
         else:
             f.write("vsync=0\n")
         if system.isOptSet("redreamRender"):
-            f.write("renderer={}".format(system.config["redreamRender"]) + "\n")
+            f.write(f"renderer={system.config['redreamRender']}\n")
         else:
             f.write("renderer=hle_perstrip\n")
         # [system]
         if system.isOptSet("redreamRegion"):
-            f.write("region={}".format(system.config["redreamRegion"]) + "\n")
+            f.write(f"region={system.config['redreamRegion']}\n")
         else:
             f.write("region=usa\n")
         if system.isOptSet("redreamLanguage"):
-            f.write("language={}".format(system.config["redreamLanguage"]) + "\n")
+            f.write(f"language={system.config['redreamLanguage']}\n")
         else:
             f.write("language=english\n")
         if system.isOptSet("redreamBroadcast"):
-            f.write("broadcast={}".format(system.config["redreamBroadcast"]) + "\n")
+            f.write(f"broadcast={system.config['redreamBroadcast']}\n")
         else:
             f.write("broadcast=ntsc\n")
         if system.isOptSet("redreamCable"):
-            f.write("cable={}".format(system.config["redreamCable"]) + "\n")
+            f.write(f"cable={system.config['redreamCable']}\n")
         else:
             f.write("cable=vga\n")
 

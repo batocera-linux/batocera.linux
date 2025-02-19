@@ -227,7 +227,7 @@ class TheForceEngineGenerator(Generator):
             commandArray.extend(["-c"])
         # Add mod zip file if necessary
         if mod_name is not None:
-            commandArray.extend(["-u" + mod_name])
+            commandArray.extend([f"-u{mod_name}"])
 
         # Run - only Dark Forces currently
         commandArray.extend(["-gDARK"])

@@ -82,7 +82,7 @@ class UnixSettings:
             m = re.match(rf"^{_protect_string(name)}\.(.+)", _protect_string(key))
             if m:
                 if includeName:
-                    res[name + "." + m.group(1)] = value;
+                    res[f"{name}.{m.group(1)}"] = value;
                 else:
                     res[m.group(1)] = value;
 
