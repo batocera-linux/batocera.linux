@@ -7,8 +7,7 @@ from os import environ
 from struct import pack, unpack
 from typing import TYPE_CHECKING, Any
 
-from configgen.utils.logger import setup_logging
-
+from ...utils.logger import setup_logging
 from .dolphinPaths import DOLPHIN_SAVES
 
 if TYPE_CHECKING:

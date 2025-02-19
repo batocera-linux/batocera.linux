@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from ..Emulator import Emulator
     from ..generators.Generator import Generator
 
 eslog = logging.getLogger(__name__)

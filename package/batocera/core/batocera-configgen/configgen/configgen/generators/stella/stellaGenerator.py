@@ -8,7 +8,7 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from configgen.types import HotkeysContext
+    from ...types import HotkeysContext
 
 eslog = logging.getLogger(__name__)
 
