@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 import shutil
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -39,10 +40,11 @@ class TR2XGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         tr2xRomPath = Path(rom).parent
-        tr2xSoucePath = Path("/usr/bin/tr2x")
+        tr2xConfigPath = tr2xRomPath / "cfg" / "TR2X.json5"
+        tr2xSourcePath = Path("/usr/bin/tr2x")
 
         # Copy files & folders if they don’t exist
-        for item in tr2xSoucePath.iterdir():
+        for item in tr2xSourcePath.iterdir():
             dest = tr2xRomPath / item.name
             try:
                 if item.is_dir():
@@ -54,7 +56,30 @@ class TR2XGenerator(Generator):
                 eslog.debug(f"Permission error while copying {item} -> {dest}: {e}")
             except Exception as e:
                 eslog.debug(f"Error copying {item} -> {dest}: {e}")
-
+        
+        # Configuration
+        tr2xConfigPath.parent.mkdir(parents=True, exist_ok=True)
+        config_data = {}
+        
+        if tr2xConfigPath.exists():
+            try:
+                with open(tr2xConfigPath, "r", encoding="utf-8") as f:
+                    config_data = json.load(f)
+            except json.JSONDecodeError:
+                eslog.debug(f"Invalid JSON format in {tr2xConfigPath}, overwriting with default settings.")
+        
+        # Update settings
+        config_data.update(
+            {
+                "is_fullscreen": True,
+                "width": gameResolution["width"],
+                "height": gameResolution["height"]
+            }
+        )
+        
+        with open(tr2xConfigPath, "w", encoding="utf-8") as f:
+            json.dump(config_data, f, indent=2)
+        
         commandArray = [tr2xRomPath / "TR2X"]
 
         return Command.Command(
