@@ -16,7 +16,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 openMSX_Homedir: Final = CONFIGS / 'openmsx'
 openMSX_Config: Final = Path('/usr/share/openmsx')
@@ -172,11 +172,11 @@ class OpenmsxGenerator(Generator):
                     file_extension = Path(zip_info.filename).suffix
                     # usually zip files only contain 1 file however break loop if file extension found
                     if file_extension in [".cas", ".dsk", ".ogv"]:
-                        eslog.debug(f"Zip file contains: {file_extension}")
+                        _logger.debug("Zip file contains: %s", file_extension)
                         break
 
         if file_extension == ".ogv":
-            eslog.debug("File is a laserdisc")
+            _logger.debug("File is a laserdisc")
             for i in range(len(commandArray)):
                 if commandArray[i] == "-machine":
                     commandArray[i+1] = "Pioneer_PX-7"
@@ -184,13 +184,13 @@ class OpenmsxGenerator(Generator):
                     commandArray[i] = "-laserdisc"
 
         if file_extension == ".cas":
-            eslog.debug("File is a cassette")
+            _logger.debug("File is a cassette")
             for i in range(len(commandArray)):
                 if commandArray[i] == "-cart":
                     commandArray[i] = "-cassetteplayer"
 
         if file_extension == ".dsk":
-            eslog.debug("File is a disk")
+            _logger.debug("File is a disk")
             disk_type = "-diska"
             if system.isOptSet("openmsx_disk") and system.config["openmsx_disk"] == "hda":
                 disk_type = "-hda"

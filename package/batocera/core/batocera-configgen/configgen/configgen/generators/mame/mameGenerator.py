@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext, Resolution
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class MameGenerator(Generator):
@@ -344,7 +344,7 @@ class MameGenerator(Generator):
                 commandArray += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
-                        eslog.debug("Joyport joystick is only compatible with Apple II Plus")
+                        _logger.debug("Joyport joystick is only compatible with Apple II Plus")
                     else:
                         commandArray += ["-gameio", system.config['gameio']]
                         specialController = system.config['gameio']
@@ -718,19 +718,19 @@ class MameGenerator(Generator):
                         tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                     tattoo = Image.open(tattoo_file)
                 except Exception as e:
-                    eslog.error(f"Error opening controller overlay: {tattoo_file}")
+                    _logger.error("Error opening controller overlay: %s", tattoo_file)
             elif system.config['bezel.tattoo'] == 'custom' and Path(system.config['bezel.tattoo_file']).exists():
+                tattoo_file = Path(system.config['bezel.tattoo_file'])
                 try:
-                    tattoo_file = Path(system.config['bezel.tattoo_file'])
                     tattoo = Image.open(tattoo_file)
                 except:
-                    eslog.error("Error opening custom file: {}".format('tattoo_file'))
+                    _logger.error("Error opening custom file: %s", tattoo_file)
             else:
+                tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                 try:
-                    tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                     tattoo = Image.open(tattoo_file)
                 except:
-                    eslog.error("Error opening custom file: {}".format('tattoo_file'))
+                    _logger.error("Error opening custom file: %s", tattoo_file)
             output_png_file = Path("/tmp/bezel_tattooed.png")
             back = Image.open(pngFile)
             tattoo = tattoo.convert("RGBA")

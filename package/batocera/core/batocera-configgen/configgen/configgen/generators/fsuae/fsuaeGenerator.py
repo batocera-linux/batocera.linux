@@ -14,7 +14,7 @@ from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class FsuaeGenerator(Generator):
 
@@ -84,11 +84,11 @@ class FsuaeGenerator(Generator):
                 if (d.endswith("ipf") or d.endswith("adf") or d.endswith("dms") or d.endswith("adz")):
                     diskNames.append(name)
 
-            eslog.debug("Amount of disks in zip " + str(len(diskNames)))
+            _logger.debug("Amount of disks in zip %s", len(diskNames))
 
         # if 2+ files, we have a multidisk ZIP (0=no zip)
         if (len(diskNames) > 1):
-            eslog.debug("extracting...")
+            _logger.debug("extracting...")
             shutil.rmtree(TEMP_DIR, ignore_errors=True) # cleanup
             zf.extractall(TEMP_DIR)
 

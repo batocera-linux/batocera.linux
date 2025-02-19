@@ -10,7 +10,7 @@ from .flycastPaths import FLYCAST_MAPPING
 if TYPE_CHECKING:
     from ...controller import Controller
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 flycastMapping = { # Directions
@@ -69,10 +69,10 @@ sections = ( 'analog', 'digital', 'emulator' )
 def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 'arcade']):
     # Set config file name
     if type == 'dreamcast':
-        eslog.debug("-=[ Dreamcast Controller Settings ]=-")
+        _logger.debug("-=[ Dreamcast Controller Settings ]=-")
         configFileName = FLYCAST_MAPPING / f"SDL_{controller.real_name}.cfg"
     else: # 'arcade'
-        eslog.debug("-=[ Arcade Controller Settings ]=-")
+        _logger.debug("-=[ Arcade Controller Settings ]=-")
         configFileName = FLYCAST_MAPPING / f"SDL_{controller.real_name}_arcade.cfg"
 
     Config = configparser.ConfigParser(interpolation=None)
@@ -84,7 +84,7 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
         Config.add_section(section)
 
     # Parse controller inputs
-    eslog.debug("*** Controller Name = {} ***".format(controller.real_name))
+    _logger.debug("*** Controller Name = %s ***", controller.real_name)
     analogbind = 0
     digitalbind = 0
     for index in controller.inputs:
@@ -93,17 +93,17 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
             if input.name not in flycastMapping:
                 continue
             if input.type not in flycastMapping[input.name]:
-                eslog.debug("Input type: {} / {} - not in mapping".format(input.type, input.name))
+                _logger.debug("Input type: %s / %s - not in mapping", input.type, input.name)
                 continue
             var = flycastMapping[input.name][input.type]
         if type == 'arcade':
             if input.name not in flycastArcadeMapping:
                 continue
             if input.type not in flycastArcadeMapping[input.name]:
-                eslog.debug("Input type: {} - not in mapping".format(input.type))
+                _logger.debug("Input type: %s - not in mapping", input.type)
                 continue
             var = flycastArcadeMapping[input.name][input.type]
-        eslog.debug("Input Name = {}, Var = {}, Type = {}".format(input.name, var, input.type))
+        _logger.debug("Input Name = %s, Var = %s, Type = %s", input.name, var, input.type)
         # batocera doesn't retrieve the code for hats, however
         # SDL is 256 for up, 257 for down, 258 for left & 259 for right
         if input.type == 'hat':

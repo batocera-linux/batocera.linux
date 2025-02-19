@@ -20,7 +20,7 @@ from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class Rpcs3Generator(Generator):
 
@@ -130,27 +130,27 @@ class Rpcs3Generator(Generator):
         # gfx backend - default to Vulkan
         # Check Vulkan first to be sure
         if vulkan.is_available():
-            eslog.debug("Vulkan driver is available on the system.")
+            _logger.debug("Vulkan driver is available on the system.")
             if system.isOptSet("rpcs3_gfxbackend") and system.config["rpcs3_gfxbackend"] == "OpenGL":
-                eslog.debug("User selected OpenGL")
+                _logger.debug("User selected OpenGL")
                 rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
             else:
                 rpcs3ymlconfig["Video"]["Renderer"] = "Vulkan"
 
             if vulkan.has_discrete_gpu():
-                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                 discrete_name = vulkan.get_discrete_gpu_name()
                 if discrete_name:
-                    eslog.debug("Using Discrete GPU Name: {} for RPCS3".format(discrete_name))
+                    _logger.debug("Using Discrete GPU Name: %s for RPCS3", discrete_name)
                     if "Vulkan" not in rpcs3ymlconfig["Video"]:
                         rpcs3ymlconfig["Video"]["Vulkan"] = {}
                     rpcs3ymlconfig["Video"]["Vulkan"]["Adapter"] = discrete_name
                 else:
-                    eslog.debug("Couldn't get discrete GPU Name")
+                    _logger.debug("Couldn't get discrete GPU Name")
             else:
-                eslog.debug("Discrete GPU is not available on the system. Using default.")
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
         else:
-            eslog.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
+            _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
             rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
 
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.

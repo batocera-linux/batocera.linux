@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ...input import Input
     from ...types import DeviceInfoMapping, GunMapping
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
@@ -105,7 +105,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
             useControls = f"apple2-{specialController}"
     else:
         useControls = sysName
-    eslog.debug(f"Using {useControls} for controller config.")
+    _logger.debug("Using %s for controller config.", useControls)
 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
@@ -222,7 +222,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
             for w in wheels:
                 if wheels[w]["joystick_index"] == pad.index:
                     isWheel = True
-                    eslog.debug(f"player {nplayer} has a wheel")
+                    _logger.debug("player %s has a wheel", nplayer)
             if isWheel:
                 for x in mappings_use.copy():
                     if mappings_use[x] == "l2" or mappings_use[x] == "r2" or mappings_use[x] == "joystick1left":
@@ -304,14 +304,14 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
     #mameXml = open(configFile, "w")
     # TODO: python 3 - workawround to encode files in utf-8
     if overwriteMAME:
-        eslog.debug(f"Saving {configFile}")
+        _logger.debug("Saving %s", configFile)
         with codecs.open(str(configFile), "w", "utf-8") as mameXml:
             dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml.write(dom_string)
 
     # Write alt config (if used, custom config is turned off or file doesn't exist yet)
     if sysName in specialControlList and overwriteSystem:
-        eslog.debug(f"Saving {configFile_alt}")
+        _logger.debug("Saving %s", configFile_alt)
         with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
             mameXml_alt.write(dom_string_alt)

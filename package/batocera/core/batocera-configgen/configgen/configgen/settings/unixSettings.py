@@ -12,7 +12,7 @@ from ..utils.configparser import CaseSensitiveConfigParser
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 def _protect_string(string: str) -> str:
     return re.sub(r'[^A-Za-z0-9-\.]+', '_', string)
@@ -28,7 +28,7 @@ class UnixSettings:
         self.settings_path = Path(filename_or_path)
 
         # use ConfigParser as backend.
-        eslog.debug(f"Creating parser for {self.settings_path!s}")
+        _logger.debug("Creating parser for %s", self.settings_path)
         self.config = CaseSensitiveConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
 
         try:
@@ -44,7 +44,7 @@ class UnixSettings:
 
             self.config.read_file(file)
         except IOError as e:
-            eslog.error(str(e))
+            _logger.error(str(e))
 
     def write(self) -> None:
         with self.settings_path.open('w') as fp:
@@ -55,19 +55,19 @@ class UnixSettings:
                 # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
                 # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
                 # TODO: clean that up when porting to Python 3
-                eslog.error("Wrong value detected (after % char maybe?), ignoring.")
+                _logger.error("Wrong value detected (after % char maybe?), ignoring.")
 
     def save(self, name: str, value: object) -> None:
         # at least for cheevos_password
         if "password" in name.lower():
-            eslog.debug(f"Writing {name} = ******** to {self.settings_path!s}")
+            _logger.debug("Writing %s = ******** to %s", name, self.settings_path)
         else:
-            eslog.debug(f"Writing {name} = {value!s} to {self.settings_path!s}")
+            _logger.debug("Writing %s = %s to %s", name, value, self.settings_path)
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
 
     def disable_all(self, name: str) -> None:
-        eslog.debug(f"Disabling {name} from {self.settings_path!s}")
+        _logger.debug("Disabling %s from %s", name, self.settings_path)
         for key, _ in self.config.items('DEFAULT'):
             if key[0:len(name)] == name:
                 self.config.remove_option('DEFAULT', key)
@@ -76,7 +76,7 @@ class UnixSettings:
         self.config.remove_option('DEFAULT', name)
 
     def load_all(self, name: str, includeName: bool = False) -> dict[str, str]:
-        eslog.debug(f"Looking for {name}.* in {self.settings_path!s}")
+        _logger.debug("Looking for %s.* in %s", name, self.settings_path)
         res: dict[str, str] = {}
         for key, value in self.config.items('DEFAULT'):
             m = re.match(rf"^{_protect_string(name)}\.(.+)", _protect_string(key))

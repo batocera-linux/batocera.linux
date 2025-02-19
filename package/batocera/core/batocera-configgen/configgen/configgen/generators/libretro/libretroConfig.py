@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from ...generators.Generator import Generator
     from ...types import DeviceInfoMapping, GunMapping, Resolution
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 # Return value for es invertedbuttons
@@ -87,7 +87,7 @@ def connected_to_internet() -> bool:
     process = subprocess.Popen(cmd)
     process.wait()
     if process.returncode == 0:
-        eslog.debug("Connected to the internet")
+        _logger.debug("Connected to the internet")
         return True
     else:
         # Try dns.google if one.one.one.one fails
@@ -95,10 +95,10 @@ def connected_to_internet() -> bool:
         process = subprocess.Popen(cmd)
         process.wait()
         if process.returncode == 0:
-            eslog.debug("Connected to the internet")
+            _logger.debug("Connected to the internet")
             return True
         else:
-            eslog.error("Not connected to the internet")
+            _logger.error("Not connected to the internet")
             return False
 
 def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
@@ -147,17 +147,17 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
     # Set Vulkan
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
         if vulkan.is_available():
-            eslog.debug("Vulkan driver is available on the system.")
+            _logger.debug("Vulkan driver is available on the system.")
             if vulkan.has_discrete_gpu():
-                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                 discrete_index = vulkan.get_discrete_gpu_index()
                 if discrete_index:
-                    eslog.debug("Using Discrete GPU Index: {} for RetroArch".format(discrete_index))
+                    _logger.debug("Using Discrete GPU Index: %s for RetroArch", discrete_index)
                     retroarchConfig["vulkan_gpu_index"] = f'"{discrete_index}"'
                 else:
-                    eslog.debug("Couldn't get discrete GPU index")
+                    _logger.debug("Couldn't get discrete GPU index")
             else:
-                eslog.debug("Discrete GPU is not available on the system. Using default.")
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
 
     retroarchConfig['audio_driver'] = '"pulse"'
     if (system.isOptSet("audio_driver")):
@@ -968,7 +968,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
     except Exception as e:
         # error with bezels, disabling them
         writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
-        eslog.error(f"Error with bezel {bezel}: {e}", exc_info=e, stack_info=True)
+        _logger.error("Error with bezel %s: %s", bezel, e, exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
@@ -1148,11 +1148,11 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
     if bezel == "none" or bezel == "":
         bezel = None
 
-    eslog.debug("libretro bezel: {}".format(bezel))
+    _logger.debug("libretro bezel: %s", bezel)
 
     # create a fake bezel if guns need it
     if bezel is None and gunsBordersSize is not None:
-        eslog.debug("guns need border")
+        _logger.debug("guns need border")
         gunBezelFile     = Path("/tmp/bezel_gun_black.png")
         gunBezelInfoFile = Path("/tmp/bezel_gun_black.info")
 
@@ -1282,7 +1282,7 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
 
         # Stretch also takes care of cutting off the bezel and adapting viewport, if aspect ratio is < 16:9
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
-            eslog.debug("Screen resolution smaller than bezel: forcing stretch")
+            _logger.debug("Screen resolution smaller than bezel: forcing stretch")
             bezel_stretch = True
         if bezel_game is True:
             output_png_file = Path("/tmp/bezel_per_game.png")
@@ -1295,7 +1295,7 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
             else:
                 if (not tattoo_output_png.exists()) and output_png_file.exists():
                     create_new_bezel_file = False
-                    eslog.debug(f"Using cached bezel file {output_png_file}")
+                    _logger.debug("Using cached bezel file %s", output_png_file)
                 else:
                     try:
                         tattoo_output_png.unlink()
@@ -1309,7 +1309,7 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
                 if len(fadapted) >= 10:
                     for i in range (10):
                         fadapted.pop()
-                    eslog.debug(f"Removing unused bezel file: {fadapted}")
+                    _logger.debug("Removing unused bezel file: %s", fadapted)
                     for fr in fadapted:
                         try:
                             fr.unlink()
@@ -1323,7 +1323,7 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
                 new_x = int(infos["width"]*gameRatio/viewportRatio)
                 delta = int(infos["width"]-new_x)
                 borderx = delta//2
-            eslog.debug(f"Bezel_stretch: need to cut off {borderx} pixels")
+            _logger.debug("Bezel_stretch: need to cut off %s pixels", borderx)
             retroarchConfig['custom_viewport_x']      = (infos["left"] - borderx/2) * wratio
             retroarchConfig['custom_viewport_y']      = infos["top"] * hratio
             retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"] + borderx)  * wratio
@@ -1343,11 +1343,11 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
         if create_new_bezel_file is True:
             # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
             # or up/down for 4K
-            eslog.debug(f"Generating a new adapted bezel file {output_png_file}")
+            _logger.debug("Generating a new adapted bezel file %s", output_png_file)
             try:
                 bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"], bezel_stretch)
             except Exception as e:
-                eslog.debug(f"Failed to create the adapated image: {e}")
+                _logger.debug("Failed to create the adapated image: %s", e)
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
         if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
@@ -1366,13 +1366,13 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
             overlay_png_file = tattoo_output_png
 
     if gunsBordersSize is not None:
-        eslog.debug("Draw gun borders")
+        _logger.debug("Draw gun borders")
         output_png_file = Path("/tmp/bezel_gunborders.png")
         innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
         borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
-    eslog.debug(f"Bezel file set to {overlay_png_file}")
+    _logger.debug("Bezel file set to %s", overlay_png_file)
     writeBezelCfgConfig(RETROARCH_OVERLAY_CONFIG, overlay_png_file)
 
     # For shaders that will want to use Batocera's decoration as part of the shader instead of an overlay
@@ -1382,15 +1382,15 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
         shaderBezelFile = shaderBezelPath / 'bezel.png'
         if not shaderBezelPath.exists():
             shaderBezelPath.mkdir(parents=True)
-            eslog.debug("Creating shader bezel path {}".format(overlay_png_file))
+            _logger.debug("Creating shader bezel path %s", overlay_png_file)
         if shaderBezelFile.exists():
-            eslog.debug("Removing old shader bezel {}".format(shaderBezelFile))
+            _logger.debug("Removing old shader bezel %s", shaderBezelFile)
             shaderBezelFile.unlink()
 
         # Link bezel png file to the fixed path.
         # Shaders should use this path to find the art.
         shaderBezelFile.symlink_to(overlay_png_file)
-        eslog.debug("Symlinked bezel file {} to {} for selected shader".format(overlay_png_file, shaderBezelFile))
+        _logger.debug("Symlinked bezel file %s to %s for selected shader", overlay_png_file, shaderBezelFile)
 
 def isLowResolution(gameResolution: Resolution) -> bool:
     return gameResolution["width"] < 480 or gameResolution["height"] < 480

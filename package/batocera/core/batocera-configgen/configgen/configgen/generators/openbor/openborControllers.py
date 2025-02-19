@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...controller import Controller, ControllerMapping
     from ...settings.unixSettings import UnixSettings
-
-
-eslog = logging.getLogger(__name__)
 
 def generateControllerConfig(config: UnixSettings, playersControllers: ControllerMapping, core: str):
     if core == "openbor4432":
@@ -58,7 +54,7 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
     if input.type != "keyboard":
         value += 600
 
-    #eslog.debug("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
+    # _logger.debug("input.type=%s input.id=%s input.value=%s => result=%s", input.type, input.id, input.value, value)
     return value
 
 def setupControllers(config: UnixSettings, playersControllers: ControllerMapping, joy_max_inputs: int, new_axis_vals: bool) -> None:

@@ -17,7 +17,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class shadPS4Generator(Generator):
 
@@ -41,24 +41,24 @@ class shadPS4Generator(Generator):
         # Check Vulkan first before doing anything
         discrete_index = 0
         if vulkan.is_available():
-            eslog.debug("Vulkan driver is available on the system.")
+            _logger.debug("Vulkan driver is available on the system.")
             vulkan_version = vulkan.get_version()
             if vulkan_version > "1.3":
-                eslog.debug(f"Using Vulkan version: {vulkan_version}")
+                _logger.debug("Using Vulkan version: %s", vulkan_version)
                 if vulkan.has_discrete_gpu():
-                    eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_index = vulkan.get_discrete_gpu_index()
                     if discrete_index:
-                        eslog.debug(f"Using Discrete GPU Index: {discrete_index} for shadPS4")
+                        _logger.debug("Using Discrete GPU Index: %s for shadPS4", discrete_index)
                     else:
-                        eslog.debug("Couldn't get discrete GPU index")
+                        _logger.debug("Couldn't get discrete GPU index")
                         discrete_index = 0
                 else:
-                    eslog.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
             else:
-                eslog.debug(f"Vulkan version: {vulkan_version} is not compatible with shadPS4")
+                _logger.debug("Vulkan version: %s is not compatible with shadPS4", vulkan_version)
         else:
-            eslog.debug("*** Vulkan driver required is not available on the system!!! ***")
+            _logger.debug("*** Vulkan driver required is not available on the system!!! ***")
             sys.exit(1)
 
         # Adjust the config.toml file

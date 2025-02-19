@@ -24,7 +24,7 @@ from .dolphinPaths import (
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class DolphinGenerator(Generator):
 
@@ -149,7 +149,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "GFXBackend", "Vulkan")
             # Check Vulkan
             if not vulkan.is_available():
-                eslog.debug("Vulkan driver is not available on the system. Using OpenGL instead.")
+                _logger.debug("Vulkan driver is not available on the system. Using OpenGL instead.")
                 dolphinSettings.set("Core", "GFXBackend", "OGL")
         else:
             dolphinSettings.set("Core", "GFXBackend", "OGL")
@@ -232,17 +232,17 @@ class DolphinGenerator(Generator):
 
         # Set Vulkan adapter
         if vulkan.is_available():
-            eslog.debug("Vulkan driver is available on the system.")
+            _logger.debug("Vulkan driver is available on the system.")
             if vulkan.has_discrete_gpu():
-                eslog.debug("A discrete GPU is available on the system. We will use that for performance")
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                 discrete_index = vulkan.get_discrete_gpu_index()
                 if discrete_index:
-                    eslog.debug("Using Discrete GPU Index: {} for Dolphin".format(discrete_index))
+                    _logger.debug("Using Discrete GPU Index: %s for Dolphin", discrete_index)
                     dolphinGFXSettings.set("Hardware", "Adapter", discrete_index)
                 else:
-                    eslog.debug("Couldn't get discrete GPU index")
+                    _logger.debug("Couldn't get discrete GPU index")
             else:
-                eslog.debug("Discrete GPU is not available on the system. Using default.")
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
 
         # Graphics setting Aspect Ratio
         if system.isOptSet('dolphin_aspect_ratio'):

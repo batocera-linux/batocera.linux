@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from ..Emulator import Emulator
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class BezelInfos(TypedDict):
     png: Path
@@ -117,7 +117,7 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                                                 bezel_game = True
                                                 if not overlay_png_file.exists():
                                                     return None
-    eslog.debug(f"Original bezel file used: {overlay_png_file!s}")
+    _logger.debug("Original bezel file used: %s", overlay_png_file)
     return { "png": overlay_png_file, "info": overlay_info_file, "layout": overlay_layout_file, "mamezip": overlay_mamezip_file, "specific_to_game": bezel_game }
 
 # Much faster than PIL Image.size
@@ -139,7 +139,7 @@ def fast_image_size(image_file: str | Path) -> tuple[int, int]:
 def resizeImage(input_png: str | Path, output_png: str | Path, screen_width: int, screen_height: int, bezel_stretch: bool = False) -> None:
     imgin = Image.open(input_png)
     fillcolor = 'black'
-    eslog.debug(f"Resizing bezel: image mode {imgin.mode}")
+    _logger.debug("Resizing bezel: image mode %s", imgin.mode)
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
     else:
@@ -149,7 +149,7 @@ def resizeImage(input_png: str | Path, output_png: str | Path, screen_width: int
 def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, screen_height: int, bezel_width: int, bezel_height: int, bezel_stretch: bool = False) -> None:
     imgin = Image.open(input_png)
     fillcolor = 'black'
-    eslog.debug(f"Padding bezel: image mode {imgin.mode}")
+    _logger.debug("Padding bezel: image mode %s", imgin.mode)
     if imgin.mode != "RGBA":
         alphaPaste(input_png, output_png, imgin, fillcolor, (screen_width, screen_height), bezel_stretch)
     else:
@@ -167,18 +167,18 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
         except:
-            eslog.error(f"Error opening controller overlay: {tattoo_file}")
+            _logger.error("Error opening controller overlay: %s", tattoo_file)
     elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
         try:
             tattoo = Image.open(tattoo_file)
         except:
-            eslog.error(f"Error opening custom file: {tattoo_file}")
+            _logger.error("Error opening custom file: %s", tattoo_file)
     else:
         try:
             tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
         except:
-            eslog.error(f"Error opening custom file: {tattoo_file}")
+            _logger.error("Error opening custom file: %s", tattoo_file)
     # Open the existing bezel...
     back = Image.open(input_png)
     # Convert it otherwise it implodes later on...

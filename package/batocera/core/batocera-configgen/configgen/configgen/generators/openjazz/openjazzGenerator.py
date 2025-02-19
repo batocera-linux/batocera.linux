@@ -11,7 +11,7 @@ from ...batoceraPaths import CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -81,7 +81,7 @@ class OpenJazzGenerator(Generator):
 
     def load(self, filename=_CONFIG):
         if not Path(filename).exists():
-            eslog.info("No config file found, creating default configuration")
+            _logger.info("No config file found, creating default configuration")
             self.create_default_config(filename)
             return
 
@@ -90,12 +90,12 @@ class OpenJazzGenerator(Generator):
                 # Read version
                 data = file.read(1)
                 if not data:
-                    eslog.warning("Empty config file, creating default configuration")
+                    _logger.warning("Empty config file, creating default configuration")
                     self.create_default_config(filename)
                     return
 
                 self.version = struct.unpack("B", data)[0]
-                eslog.debug(f"Loading configuration version: {self.version}")
+                _logger.debug("Loading configuration version: %s", self.version)
 
                 # Video settings
                 self.video_width = struct.unpack("<H", file.read(2))[0]
@@ -150,12 +150,12 @@ class OpenJazzGenerator(Generator):
                 self.scale2x = not bool(gameplay_opts & 8)
 
         except Exception as e:
-            eslog.error(f"Error loading configuration: {e}")
-            eslog.info("Creating new default configuration")
+            _logger.error("Error loading configuration: %s", e)
+            _logger.info("Creating new default configuration")
             self.create_default_config(filename)
 
     def create_default_config(self, filename: Path):
-        eslog.info("Creating default configuration file")
+        _logger.info("Creating default configuration file")
         mkdir_if_not_exists(filename.parent)
 
         try:
@@ -206,10 +206,10 @@ class OpenJazzGenerator(Generator):
                 file.write(struct.pack("B", gameplay_opts))
 
         except Exception as e:
-            eslog.error(f"Error creating default configuration: {e}")
+            _logger.error("Error creating default configuration: %s", e)
 
     def save(self, filename=_CONFIG):
-        eslog.info("Saving configuration")
+        _logger.info("Saving configuration")
         try:
             with filename.open("wb") as file:
                 # Version
@@ -255,27 +255,27 @@ class OpenJazzGenerator(Generator):
                 file.write(struct.pack("B", gameplay_opts))
 
         except Exception as e:
-            eslog.error(f"Error saving configuration: {e}")
+            _logger.error("Error saving configuration: %s", e)
 
     def print_config(self):
-        eslog.info("OpenJazz Configuration:")
-        eslog.info(f"Version: {self.version}")
-        eslog.info(f"Resolution: {self.video_width}x{self.video_height}")
-        eslog.info(f"Fullscreen: {self.fullscreen}")
-        eslog.info(f"Video Scale: {self.video_scale}")
-        eslog.info(f"Character Name: {self.character_name}")
-        eslog.info(f"Character Colors: {self.character_colors}")
-        eslog.info(f"Music Volume: {self.music_volume}")
-        eslog.info(f"Sound Volume: {self.sound_volume}")
-        eslog.info(f"Many Birds: {self.many_birds}")
-        eslog.info(f"Leave Unneeded: {self.leave_unneeded}")
-        eslog.info(f"Slow Motion: {self.slow_motion}")
-        eslog.info(f"Scale2x: {self.scale2x}")
-        eslog.info("Controls Configuration:")
-        eslog.info(f"Keys: {self.controls_keys}")
-        eslog.info(f"Buttons: {self.controls_buttons}")
-        eslog.info(f"Axes: {self.controls_axes}")
-        eslog.info(f"Hats: {self.controls_hats}")
+        _logger.info("OpenJazz Configuration:")
+        _logger.info("Version: %s", self.version)
+        _logger.info("Resolution: %sx%s", self.video_width, self.video_height)
+        _logger.info("Fullscreen: %s", self.fullscreen)
+        _logger.info("Video Scale: %s", self.video_scale)
+        _logger.info("Character Name: %s", self.character_name)
+        _logger.info("Character Colors: %s", self.character_colors)
+        _logger.info("Music Volume: %s", self.music_volume)
+        _logger.info("Sound Volume: %s", self.sound_volume)
+        _logger.info("Many Birds: %s", self.many_birds)
+        _logger.info("Leave Unneeded: %s", self.leave_unneeded)
+        _logger.info("Slow Motion: %s", self.slow_motion)
+        _logger.info("Scale2x: %s", self.scale2x)
+        _logger.info("Controls Configuration:")
+        _logger.info("Keys: %s", self.controls_keys)
+        _logger.info("Buttons: %s", self.controls_buttons)
+        _logger.info("Axes: %s", self.controls_axes)
+        _logger.info("Hats: %s", self.controls_hats)
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Load configuration file
@@ -317,7 +317,7 @@ class OpenJazzGenerator(Generator):
                             self.controls_buttons[12] = int(input.id)
                         elif input.name == 'start':
                             self.controls_buttons[11] = int(input.id)
-                eslog.info(f"Configured Controls - Buttons: {self.controls_buttons}")
+                _logger.info("Configured Controls - Buttons: %s", self.controls_buttons)
 
             nplayer += 1
 
@@ -338,7 +338,7 @@ class OpenJazzGenerator(Generator):
         try:
             os.chdir(ROMS / "openjazz")
         except Exception as e:
-            eslog.error(f"Error: {e}")
+            _logger.error("Error: %s", e)
 
         commandArray = ["OpenJazz"]
 

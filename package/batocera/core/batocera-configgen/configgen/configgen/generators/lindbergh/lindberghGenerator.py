@@ -23,7 +23,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class LindberghGenerator(Generator):
     LINDBERGH_SAVES: Final = SAVES / "lindbergh"
@@ -66,7 +66,7 @@ class LindberghGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         romDir = Path(rom).parent
         romName = Path(rom).name
-        eslog.debug(f"ROM path: {romDir}")
+        _logger.debug("ROM path: %s", romDir)
 
         source_dir = Path("/usr/bin/lindbergh")
 
@@ -76,7 +76,7 @@ class LindberghGenerator(Generator):
             destination_file = romDir / file_name
             if not destination_file.exists() or source_file.stat().st_mtime > destination_file.stat().st_mtime:
                 shutil.copy2(source_file, destination_file)
-                eslog.debug(f"Updated {file_name}")
+                _logger.debug("Updated %s", file_name)
 
         ### Setup eeprom files as necessary
         self.setup_eeprom()
@@ -108,7 +108,7 @@ class LindberghGenerator(Generator):
                     current_permissions = file_path.stat().st_mode
                     executable_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
                     file_path.chmod(executable_permissions)
-                    eslog.debug(f"Made {exe_file} executable")
+                    _logger.debug("Made %s executable", exe_file)
 
         # Run command
         if system.isOptSet("lindbergh_test") and system.getOptBoolean("lindbergh_test"):
@@ -136,28 +136,28 @@ class LindberghGenerator(Generator):
 
     @staticmethod
     def download_file(url: str, destination: Path) -> None:
-        eslog.debug("Downloading the file...")
+        _logger.debug("Downloading the file...")
         response = requests.get(url, stream=True)
         if response.status_code == 200:
             with destination.open("wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
-            eslog.debug(f"File downloaded to {destination}")
+            _logger.debug("File downloaded to %s", destination)
         else:
             raise Exception(f"Failed to download file. Status code: {response.status_code}")
-            eslog.debug("Do you have internet!?")
+            _logger.debug("Do you have internet!?")
 
     @staticmethod
     def extract_tar_xz(file_path: Path, extract_to: Path) -> None:
-        eslog.debug("Extracting the file...")
+        _logger.debug("Extracting the file...")
         with tarfile.open(file_path, "r:xz") as tar:
             for member in tar.getmembers():
                 file_path_to_extract = extract_to / member.name
                 if not file_path_to_extract.exists():
                     tar.extract(member, path=extract_to)
                 else:
-                    eslog.debug(f"Skipping {member.name}, file already exists.")
-        eslog.debug(f"Files extracted to {extract_to}")
+                    _logger.debug("Skipping %s, file already exists.", member.name)
+        _logger.debug("Files extracted to %s", extract_to)
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16 / 9
@@ -167,7 +167,7 @@ class LindberghGenerator(Generator):
             with configFile.open('r') as file:
                 lines = file.readlines()
         except FileNotFoundError:
-            eslog.debug(f"Configuration file {configFile} not found.")
+            _logger.debug("Configuration file %s not found.", configFile)
             lines = []
 
         conf: dict[str, Any] = { "raw": lines, "keys": {}}
@@ -249,9 +249,9 @@ class LindberghGenerator(Generator):
         try:
             with targetFile.open('w') as file:
                 file.writelines(conf["raw"])
-            eslog.debug(f"Configuration file {targetFile} updated successfully.")
+            _logger.debug("Configuration file %s updated successfully.", targetFile)
         except Exception as e:
-            eslog.debug(f"Error updating configuration file: {e}")
+            _logger.debug("Error updating configuration file: %s", e)
 
     def buildConfFile(self, conf, system, gameResolution, guns, wheels, playersControllers, romName):
         self.setConf(conf, "WIDTH",                     gameResolution['width'])
@@ -282,21 +282,21 @@ class LindberghGenerator(Generator):
         # House of the Dead 4 - CPU speed
         cpu_speed = self.get_cpu_speed()
         if cpu_speed is not None:
-            eslog.debug(f"Current CPU Speed: {cpu_speed:.2f} GHz")
+            _logger.debug("Current CPU Speed: %.2f GHz", cpu_speed)
             if "hotd" in romName.lower() and system.isOptSet("lindbergh_speed") and system.getOptBoolean("lindbergh_speed"):
                 self.setConf(conf, "CPU_FREQ_GHZ", cpu_speed)
 
         # OutRun 2 - Network
         ip = self.get_ip_address()
         if not ip:
-            eslog.debug("Primary destination unreachable. Trying fallback...")
+            _logger.debug("Primary destination unreachable. Trying fallback...")
             ip = self.get_ip_address(destination="8.8.8.8")
         if ip:
-            eslog.debug(f"Current IP Address: {ip}")
+            _logger.debug("Current IP Address: %s", ip)
             if "outr2sdx" in romName.lower() and system.isOptSet("lindbergh_ip") and system.getOptBoolean("lindbergh_ip"):
                 self.setConf(conf, "OR2_IP", ip)
         else:
-            eslog.debug("Unable to retrieve IP address.")
+            _logger.debug("Unable to retrieve IP address.")
 
         ## Guns
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
@@ -388,13 +388,13 @@ class LindberghGenerator(Generator):
                         # This test works because wheels are rearranged to be first in the player list
                         len(wheels) >= nplayer
                     )
-                    eslog.debug(f"lindbergh wheel mapping for player {nplayer}")
+                    _logger.debug("lindbergh wheel mapping for player %s", nplayer)
                 elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
-                    eslog.debug(f"lindbergh gun mapping for player {nplayer}")
+                    _logger.debug("lindbergh gun mapping for player %s", nplayer)
                 else:
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
-                    eslog.debug(f"lindbergh pad mapping for player {nplayer}")
+                    _logger.debug("lindbergh pad mapping for player %s", nplayer)
 
                 # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
                 if nplayer == 1:
@@ -540,7 +540,7 @@ class LindberghGenerator(Generator):
         }
 
         # mapping specific to games
-        eslog.debug(f"lindberg mapping for game {shortRomName}")
+        _logger.debug("lindberg mapping for game %s", shortRomName)
 
         if shortRomName == "hdkotr":
             lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
@@ -709,7 +709,7 @@ class LindberghGenerator(Generator):
 
         for gun in guns:
             if nplayer <= 2:
-                eslog.debug(f"lindbergh gun for player {nplayer}")
+                _logger.debug("lindbergh gun for player %s", nplayer)
                 xplayer = 1+(nplayer-1)*2
                 yplayer = 1+(nplayer-1)*2+1
                 evplayer = guns[gun]["node"]
@@ -755,15 +755,15 @@ class LindberghGenerator(Generator):
                 self.extract_tar_xz(DOWNLOAD_PATH, self.LINDBERGH_SAVES)
                 # Create the downloaded.txt flag file so we don't download again
                 DOWNLOADED_FLAG.write_text("Download and extraction successful.\n")
-                eslog.debug(f"Created flag file: {DOWNLOADED_FLAG}")
+                _logger.debug("Created flag file: %s", DOWNLOADED_FLAG)
 
             except Exception as e:
-                eslog.debug(f"An error occurred: {e}")
+                _logger.debug("An error occurred: %s", e)
             finally:
                 # Cleanup the downloaded .tar.xz file
                 if DOWNLOAD_PATH.exists():
                     DOWNLOAD_PATH.unlink()
-                    eslog.debug(f"Temporary file {DOWNLOAD_PATH} deleted.")
+                    _logger.debug("Temporary file %s deleted.", DOWNLOAD_PATH)
 
     def setup_libraries(self, romDir: Path, romName: str) -> None:
         # Setup some library quirks for GPU support (NVIDIA?)
@@ -772,7 +772,7 @@ class LindberghGenerator(Generator):
             destination = Path(romDir) / "libGLcore.so.1"
             if not destination.exists():
                 shutil.copy2(source, destination)
-                eslog.debug(f"Copied: {destination} from {source}")
+                _logger.debug("Copied: %s from %s", destination, source)
 
         # -= Game specific library versions =-
         if any(keyword in romName.lower() for keyword in ("harley", "hdkotr", "spicy", "rambo", "hotdex", "dead ex")):
@@ -780,31 +780,31 @@ class LindberghGenerator(Generator):
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
                 shutil.copy2("/lib32/extralibs/libCg.so.harley", destCg)
-                eslog.debug(f"Copied: {destCg}")
+                _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
                 shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
-                eslog.debug(f"Copied: {destCgGL}")
+                _logger.debug("Copied: %s", destCgGL)
 
         if "stage 4" in romName.lower() or "initiad4" in romName.lower():
             destination = Path(romDir) / "libCgGL.so"
             if not destination.exists():
                 shutil.copy2("/lib32/extralibs/libCgGL.so.other", destination)
-                eslog.debug(f"Copied: {destination}")
+                _logger.debug("Copied: %s", destination)
 
         if "tennis" in romName.lower():
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
                 shutil.copy2("/lib32/extralibs/libCg.so.tennis", destCg)
-                eslog.debug(f"Copied: {destCg}")
+                _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
                 shutil.copy2("/lib32/extralibs/libCgGL.so.tennis", destCgGL)
-                eslog.debug(f"Copied: {destCgGL}")
+                _logger.debug("Copied: %s", destCgGL)
 
         # remove any legacy libsegaapi.so
         if Path(romDir, "libsegaapi.so").exists():
             Path(romDir, "libsegaapi.so").unlink()
-            eslog.debug(f"Removed: {romDir}/libsegaapi.so")
+            _logger.debug("Removed: %s/libsegaapi.so", romDir)
 
     def setup_config(self, source_dir, system, gameResolution, guns, wheels, playersControllers, romDir, romName):
         LINDBERGH_CONFIG_FILE = Path("/userdata/system/configs/lindbergh/lindbergh.conf")
@@ -814,7 +814,7 @@ class LindberghGenerator(Generator):
         source_file = source_dir / "lindbergh.conf"
         if not LINDBERGH_CONFIG_FILE.exists() or source_file.stat().st_mtime > LINDBERGH_CONFIG_FILE.stat().st_mtime:
             shutil.copy2(source_file, LINDBERGH_CONFIG_FILE)
-            eslog.debug(f"Updated lindbergh.conf")
+            _logger.debug("Updated lindbergh.conf")
 
         # load and modify it if needed and save it
         conf = self.loadConf(LINDBERGH_CONFIG_FILE)
@@ -844,11 +844,11 @@ class LindberghGenerator(Generator):
                 current_speed_ghz = current_speed_mhz / 1000
                 return current_speed_ghz
             else:
-                eslog.debug("Current Speed information not found.")
+                _logger.debug("Current Speed information not found.")
                 return None
 
         except subprocess.CalledProcessError as e:
-            eslog.debug(f"Error running dmidecode: {e}")
+            _logger.debug("Error running dmidecode: %s", e)
             return None
 
     def get_ip_address(self, destination="1.1.1.1", port=80):
@@ -858,5 +858,5 @@ class LindberghGenerator(Generator):
                 ip_address = s.getsockname()[0]
                 return ip_address
         except Exception as e:
-            eslog.debug(f"Error retrieving IP address: {e}")
+            _logger.debug("Error retrieving IP address: %s", e)
             return None

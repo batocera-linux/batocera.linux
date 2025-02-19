@@ -15,7 +15,7 @@ from ..libretro import libretroControllers
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 _CONFIG_DIR: Final = CONFIGS / 'amiberry'
 _CONFIG: Final = _CONFIG_DIR / 'conf' / 'amiberry.conf'
@@ -51,7 +51,7 @@ class AmiberryGenerator(Generator):
         amiberryconf.write()
 
         romType = self.getRomType(rom)
-        eslog.debug("romType: "+romType)
+        _logger.debug("romType: %s", romType)
         if romType != 'UNKNOWN' :
             commandArray: list[str | Path] = [ "/usr/bin/amiberry", "-G" ]
             if romType != 'WHDL' :
@@ -264,7 +264,7 @@ class AmiberryGenerator(Generator):
                         if extension == "info":
                             return 'WHDL'
                         elif extension == 'lha' :
-                            eslog.warning("Amiberry doesn't support .lha inside a .zip")
+                            _logger.warning("Amiberry doesn't support .lha inside a .zip")
                             return 'UNKNOWN'
                         elif extension == 'adf' :
                             return 'DISK'

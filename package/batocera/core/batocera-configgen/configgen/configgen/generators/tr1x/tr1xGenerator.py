@@ -26,7 +26,7 @@ from ... import Command
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -60,14 +60,14 @@ class TR1XGenerator(Generator):
                 else:
                     shutil.copy2(item, dest)
             except PermissionError as e:
-                eslog.debug(f"Permission error while copying {item} -> {dest}: {e}")
+                _logger.debug("Permission error while copying %s -> %s: %s", item, dest, e)
             except Exception as e:
-                eslog.debug(f"Error copying {item} -> {dest}: {e}")
+                _logger.debug("Error copying %s -> %s: %s", item, dest, e)
 
         # Download and extract music.zip if the music directory does not exist
         if not musicDir.exists():
             try:
-                eslog.debug(f"Downloading music.zip from {self.MUSIC_ZIP_URL}...")
+                _logger.debug("Downloading music.zip from %s...", self.MUSIC_ZIP_URL)
                 response = requests.get(self.MUSIC_ZIP_URL, stream=True)
                 response.raise_for_status()
 
@@ -82,13 +82,13 @@ class TR1XGenerator(Generator):
 
                 # Remove the zip file after extraction
                 musicZipPath.unlink()
-                eslog.debug("Music files downloaded and extracted successfully.")
+                _logger.debug("Music files downloaded and extracted successfully.")
             except requests.RequestException as e:
-                eslog.debug(f"Failed to download music.zip: {e}")
+                _logger.debug("Failed to download music.zip: %s", e)
             except zipfile.BadZipFile as e:
-                eslog.debug(f"Error extracting music.zip: {e}")
+                _logger.debug("Error extracting music.zip: %s", e)
             except Exception as e:
-                eslog.debug(f"Unexpected error: {e}")
+                _logger.debug("Unexpected error: %s", e)
 
         commandArray = [tr1xRomPath / "TR1X"]
 

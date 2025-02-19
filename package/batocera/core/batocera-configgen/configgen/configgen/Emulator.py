@@ -1,14 +1,15 @@
-import os
-from pathlib import Path
-import xml.etree.ElementTree as ET
-import yaml
 import collections
 import logging
+import os
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+import yaml
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
 from .settings.unixSettings import UnixSettings
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class Emulator():
     def __init__(self, name, rom):
@@ -21,7 +22,7 @@ class Emulator():
             DEFAULTS_DIR / "configgen-defaults-arch.yml"
         )
         if "emulator" not in self.config or not self.config["emulator"]:
-            eslog.error("no emulator defined. exiting.")
+            _logger.error("no emulator defined. exiting.")
             raise Exception("No emulator found")
 
         system_emulator = self.config["emulator"]
@@ -49,7 +50,7 @@ class Emulator():
         Emulator.updateConfiguration(self.config, folderSettings)
         Emulator.updateConfiguration(self.config, gameSettings)
         self.updateFromESSettings()
-        eslog.debug("uimode: {}".format(self.config['uimode']))
+        _logger.debug("uimode: %s", self.config['uimode'])
 
         # forced emulators ?
         self.config["emulator-forced"] = False
@@ -103,7 +104,7 @@ class Emulator():
         # see FileData::getConfigurationName() on batocera-emulationstation
         rom = rom.replace('=','')
         rom = rom.replace('#','')
-        eslog.info("game settings name: "+rom)
+        _logger.info("game settings name: %s", rom)
         return rom
 
     # to be updated for python3: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9

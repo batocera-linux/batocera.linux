@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class LibretroGenerator(Generator):
 
@@ -81,10 +81,10 @@ class LibretroGenerator(Generator):
                 shaderFilename = f"{gameShader}.slangp"
             else:
                 shaderFilename = f"{gameShader}.glslp"
-            eslog.debug(f"searching shader {shaderFilename}")
+            _logger.debug("searching shader %s", shaderFilename)
             if (USER_SHADERS / shaderFilename).exists():
                 video_shader_dir = USER_SHADERS
-                eslog.debug(f"shader {shaderFilename} found in {USER_SHADERS}")
+                _logger.debug("shader %s found in %s", shaderFilename, USER_SHADERS)
             else:
                 video_shader_dir = BATOCERA_SHADERS
             video_shader = video_shader_dir / shaderFilename
@@ -275,7 +275,7 @@ class LibretroGenerator(Generator):
                 first_line = file.readline().strip()
             # creating the new 'rom_path' variable by combining the directory path and the first line
             rom_path = rom_path.parent / first_line
-            eslog.debug(f"New rom path: {rom_path}")
+            _logger.debug("New rom path: %s", rom_path)
             # choose core based on new rom directory
             directory_parts = rom_path.parent.parts
             if "d3xp" in directory_parts:
@@ -304,7 +304,7 @@ class LibretroGenerator(Generator):
                     os.chdir(romdir / assetdir)
                 os.chdir(romdir)
             except FileNotFoundError:
-                eslog.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
+                _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
                 raise
 
             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]

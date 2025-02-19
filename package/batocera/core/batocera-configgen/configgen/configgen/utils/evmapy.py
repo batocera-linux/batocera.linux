@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ..types import Gun, GunMapping
 
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 @dataclass(slots=True)
 class evmapy(AbstractContextManager[None, None]):
@@ -68,7 +68,7 @@ class evmapy(AbstractContextManager[None, None]):
                 "/usr/share/evmapy/any.keys",
         ]:
             if os.path.exists(keysfile) and not (os.path.isdir(self.rom) and keysfile == "{}.keys" .format (self.rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
-                eslog.debug(f"evmapy file to merge : {keysfile}")
+                _logger.debug("evmapy file to merge : %s", keysfile)
                 filesToMerge.append(keysfile)
 
         # merge conditionnally on the global hotkeys file until it is set everywhere
@@ -78,9 +78,9 @@ class evmapy(AbstractContextManager[None, None]):
             keysfile = userkeysfile
 
         if os.path.exists(keysfile):
-            eslog.debug(f"evmapy file to merge for hotkeys : {keysfile}")
+            _logger.debug("evmapy file to merge for hotkeys : %s", keysfile)
             filesToMerge.append(keysfile)
-            
+
         if len(filesToMerge) == 0:
             return None
         if len(filesToMerge) == 1:
@@ -117,7 +117,7 @@ class evmapy(AbstractContextManager[None, None]):
     def __prepare(self) -> bool:
         keysfile = self.__build_merged_keys_file()
         if keysfile is not None:
-            eslog.debug(f"evmapy on {keysfile}")
+            _logger.debug("evmapy on %s", keysfile)
             subprocess.call(["batocera-evmapy", "clear"])
 
             padActionConfig = json.load(open(keysfile))
@@ -127,7 +127,7 @@ class evmapy(AbstractContextManager[None, None]):
             for gun in self.guns:
                 if "actions_gun"+str(ngun) in padActionConfig:
                     configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(self.guns[gun]["node"]))
-                    eslog.debug("config file for keysfile is {} (from {}) - gun" .format (configfile, keysfile))
+                    _logger.debug("config file for keysfile is %s (from %s) - gun", configfile, keysfile)
                     padConfig = {}
                     padConfig["buttons"] = []
                     padConfig["axes"] = []
@@ -157,7 +157,7 @@ class evmapy(AbstractContextManager[None, None]):
             for playercontroller, pad in sorted(self.controllers.items()):
                 if "actions_player"+str(nplayer) in padActionConfig:
                     configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.device_path))
-                    eslog.debug("config file for keysfile is {} (from {})" .format (configfile, keysfile))
+                    _logger.debug("config file for keysfile is %s (from %s)", configfile, keysfile)
 
                     # create mapping
                     padConfig = {}
@@ -333,7 +333,7 @@ class evmapy(AbstractContextManager[None, None]):
                 nplayer += 1
             return True
         # otherwise, preparation did nothing
-        eslog.debug("no evmapy config file found for system={}, emulator={}".format(self.system, self.emulator))
+        _logger.debug("no evmapy config file found for system=%s, emulator=%s", self.system, self.emulator)
         return False
 
     # remap evmapy trigger (aka up become HAT0Y:max)

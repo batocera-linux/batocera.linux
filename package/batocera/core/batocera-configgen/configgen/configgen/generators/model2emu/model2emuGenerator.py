@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 MODEL2_ROMS: Final = ROMS / "model2"
 
@@ -310,7 +310,7 @@ def copy_updated_files(source_path: Path, destination_path: Path) -> None:
 
         if src.is_dir():
             shutil.copytree(src, dst)
-            eslog.debug(f"Copying directory {src} to {dst}")
+            _logger.debug("Copying directory %s to %s", src, dst)
         else:
             shutil.copy2(src, dst)
-            eslog.debug(f"Copying file {src} to {dst}")
+            _logger.debug("Copying file %s to %s", src, dst)

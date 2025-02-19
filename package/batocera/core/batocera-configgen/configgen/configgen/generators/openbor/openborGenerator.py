@@ -15,7 +15,7 @@ from . import openborControllers
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class OpenborGenerator(Generator):
 
@@ -35,7 +35,7 @@ class OpenborGenerator(Generator):
         core: str = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
-        eslog.debug(f"core taken is {core}")
+        _logger.debug("core taken is %s", core)
 
         # config file
         configfilename = "config7530.ini"

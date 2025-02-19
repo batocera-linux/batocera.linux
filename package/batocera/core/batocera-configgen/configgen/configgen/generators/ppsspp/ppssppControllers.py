@@ -10,7 +10,7 @@ from .ppssppPaths import PPSSPP_CONFIG_INIT, PPSSPP_PSP_SYSTEM_DIR
 if TYPE_CHECKING:
     from ...controller import Controller
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 ppssppControlsIni: Final  = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'
 ppssppControlsInit: Final = PPSSPP_CONFIG_INIT / 'controls.ini'
@@ -161,7 +161,7 @@ def generateControllerConfig(controller: Controller):
             pspcode = axisToCode(nkAxisId, int(input.value))
             val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
             val = optionValue(Config, section, var, val)
-            eslog.debug(f"Adding {var} to {val}")
+            _logger.debug("Adding %s to %s", var, val)
             Config.set(section, var, val)
 
             # Skip the rest if it's an axis dpad

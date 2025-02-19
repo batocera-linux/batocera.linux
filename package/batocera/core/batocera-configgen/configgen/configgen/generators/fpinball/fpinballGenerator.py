@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 import shutil
 from pathlib import Path, PureWindowsPath
@@ -13,8 +12,6 @@ from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
-
-eslog = logging.getLogger(__name__)
 
 _FPINBALL_CONFIG: Final = CONFIGS / "fpinball"
 _FPINBALL_CONFIG_REG: Final = _FPINBALL_CONFIG / "batocera.confg.reg"

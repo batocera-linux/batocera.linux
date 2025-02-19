@@ -12,7 +12,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-eslog = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 _DHEWM3_CONFIG: Final = CONFIGS / "dhewm3"
 
@@ -35,7 +35,7 @@ class Dhewm3Generator(Generator):
         # Read the path within the .d3 rom file
         with Path(rom).open() as file:
             directory = file.readline().strip().split("/")[0]
-            eslog.debug(f"Using directory: {directory}")
+            _logger.debug("Using directory: %s", directory)
 
         _DHEWM3_CONFIG_BASE_DIR = _DHEWM3_CONFIG / "base"
         _DHEWM3_CONFIG_DIR = _DHEWM3_CONFIG / directory
