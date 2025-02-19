@@ -198,7 +198,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
                     if nodegame.get("name") == "default":
                         for child in nodegame:
                             for attribute in child.attrib:
-                                key = "{}_{}".format(child.tag, attribute)
+                                key = f"{child.tag}_{attribute}"
                                 res[key] = child.get(attribute)
                                 _logger.info("found game metadata %s=%s (system level)", key, res[key])
                         break
@@ -206,7 +206,7 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
                     if nodegame.get("name") != "default" and nodegame.get("name") in game:
                         for child in nodegame:
                             for attribute in child.attrib:
-                                key = "{}_{}".format(child.tag, attribute)
+                                key = f"{child.tag}_{attribute}"
                                 res[key] = child.get(attribute)
                                 _logger.info("found game metadata %s=%s", key, res[key])
                         return res

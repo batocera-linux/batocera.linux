@@ -19,7 +19,7 @@ class batoceraServices:
 
     @staticmethod
     def getServiceStatus(name: str):
-        proc = subprocess.Popen(["batocera-services status \"" + name + "\""], stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([f'batocera-services status "{name}"'], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
         val = out.decode().strip()
         _logger.debug('service %s status : "%s"', name, val) # strip any end of lines

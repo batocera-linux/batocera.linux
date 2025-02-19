@@ -52,17 +52,17 @@ class FlycastGenerator(Generator):
                 flycastControllers.generateControllerConfig(controller, "arcade")
 
             # Set the controller type per Port
-            Config.set("input", 'device' + str(controller.player_number), "0") # Sega Controller
-            Config.set("input", 'device' + str(controller.player_number) + '.1', "1") # Sega VMU
+            Config.set("input", f'device{controller.player_number}', "0") # Sega Controller
+            Config.set("input", f'device{controller.player_number}.1', "1") # Sega VMU
             # Set controller pack, gui option
-            ctrlpackconfig = "flycast_ctrl{}_pack".format(controller.player_number)
+            ctrlpackconfig = f"flycast_ctrl{controller.player_number}_pack"
             if system.isOptSet(ctrlpackconfig):
-                Config.set("input", 'device' + str(controller.player_number) + '.2', str(system.config[ctrlpackconfig]))
+                Config.set("input", f'device{controller.player_number}.2', str(system.config[ctrlpackconfig]))
             else:
-                Config.set("input", 'device' + str(controller.player_number) + '.2', "1") # Sega VMU
+                Config.set("input", f'device{controller.player_number}.2', "1") # Sega VMU
             # Ensure controller(s) are on seperate Ports
             port = controller.player_number-1
-            Config.set("input", 'maple_sdl_joystick_' + str(port), str(port))
+            Config.set("input", f'maple_sdl_joystick_{port}', str(port))
 
         # add the keyboard mappings for hotkeys
         flycastControllers.generateKeyboardConfig()

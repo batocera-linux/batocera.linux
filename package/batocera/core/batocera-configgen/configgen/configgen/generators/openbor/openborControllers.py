@@ -60,54 +60,54 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
 def setupControllers(config: UnixSettings, playersControllers: ControllerMapping, joy_max_inputs: int, new_axis_vals: bool) -> None:
     idx = 0
     for playercontroller, pad in sorted(playersControllers.items()):
-        config.save("keys." + str(idx) + ".0" , JoystickValue("up",       pad, joy_max_inputs, new_axis_vals)) # MOVEUP
-        config.save("keys." + str(idx) + ".1" , JoystickValue("down",     pad, joy_max_inputs, new_axis_vals)) # MOVEDOWN
-        config.save("keys." + str(idx) + ".2" , JoystickValue("left",     pad, joy_max_inputs, new_axis_vals)) # MOVELEFT
-        config.save("keys." + str(idx) + ".3" , JoystickValue("right",    pad, joy_max_inputs, new_axis_vals)) # MOVERIGHT
-        config.save("keys." + str(idx) + ".4" , JoystickValue("b",        pad, joy_max_inputs, new_axis_vals)) # ATTACK
-        config.save("keys." + str(idx) + ".5" , JoystickValue("x",        pad, joy_max_inputs, new_axis_vals)) # ATTACK2
-        config.save("keys." + str(idx) + ".6" , JoystickValue("pageup",   pad, joy_max_inputs, new_axis_vals)) # ATTACK3
-        config.save("keys." + str(idx) + ".7" , JoystickValue("pagedown", pad, joy_max_inputs, new_axis_vals)) # ATTACK4
-        config.save("keys." + str(idx) + ".8" , JoystickValue("a",        pad, joy_max_inputs, new_axis_vals)) # JUMP
-        config.save("keys." + str(idx) + ".9" , JoystickValue("y",        pad, joy_max_inputs, new_axis_vals)) # SPECIAL
-        config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad, joy_max_inputs, new_axis_vals)) # START
-        config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad, joy_max_inputs, new_axis_vals)) # SCREENSHOT
+        config.save(f"keys.{idx}.0" , JoystickValue("up",       pad, joy_max_inputs, new_axis_vals)) # MOVEUP
+        config.save(f"keys.{idx}.1" , JoystickValue("down",     pad, joy_max_inputs, new_axis_vals)) # MOVEDOWN
+        config.save(f"keys.{idx}.2" , JoystickValue("left",     pad, joy_max_inputs, new_axis_vals)) # MOVELEFT
+        config.save(f"keys.{idx}.3" , JoystickValue("right",    pad, joy_max_inputs, new_axis_vals)) # MOVERIGHT
+        config.save(f"keys.{idx}.4" , JoystickValue("b",        pad, joy_max_inputs, new_axis_vals)) # ATTACK
+        config.save(f"keys.{idx}.5" , JoystickValue("x",        pad, joy_max_inputs, new_axis_vals)) # ATTACK2
+        config.save(f"keys.{idx}.6" , JoystickValue("pageup",   pad, joy_max_inputs, new_axis_vals)) # ATTACK3
+        config.save(f"keys.{idx}.7" , JoystickValue("pagedown", pad, joy_max_inputs, new_axis_vals)) # ATTACK4
+        config.save(f"keys.{idx}.8" , JoystickValue("a",        pad, joy_max_inputs, new_axis_vals)) # JUMP
+        config.save(f"keys.{idx}.9" , JoystickValue("y",        pad, joy_max_inputs, new_axis_vals)) # SPECIAL
+        config.save(f"keys.{idx}.10", JoystickValue("start",    pad, joy_max_inputs, new_axis_vals)) # START
+        config.save(f"keys.{idx}.11", JoystickValue("l2",       pad, joy_max_inputs, new_axis_vals)) # SCREENSHOT
 
         # hotkey
         if idx == 0:
-            config.save("keys." + str(idx) + ".12", JoystickValue("hotkey", pad, joy_max_inputs, new_axis_vals)) # ESC
+            config.save(f"keys.{idx}.12", JoystickValue("hotkey", pad, joy_max_inputs, new_axis_vals)) # ESC
         else:
-            config.save("keys." + str(idx) + ".12", "0") # ESC
+            config.save(f"keys.{idx}.12", "0") # ESC
 
         # axis
-        config.save("keys." + str(idx) + ".13", JoystickValue("joystick1up",       pad, joy_max_inputs, new_axis_vals))        # axis up
-        config.save("keys." + str(idx) + ".14", JoystickValue("joystick1up",       pad, joy_max_inputs, new_axis_vals, True))  # axis down
-        config.save("keys." + str(idx) + ".15", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals))        # axis left
-        config.save("keys." + str(idx) + ".16", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals, True))  # axis right
+        config.save(f"keys.{idx}.13", JoystickValue("joystick1up",       pad, joy_max_inputs, new_axis_vals))        # axis up
+        config.save(f"keys.{idx}.14", JoystickValue("joystick1up",       pad, joy_max_inputs, new_axis_vals, True))  # axis down
+        config.save(f"keys.{idx}.15", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals))        # axis left
+        config.save(f"keys.{idx}.16", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals, True))  # axis right
 
         # next one
         idx += 1
 
     # erase old values in case a pad is reused in an other position (so it is not used twice)
     for idx in range(len(playersControllers), 5):
-        config.remove("keys." + str(idx) + ".0")
-        config.remove("keys." + str(idx) + ".1")
-        config.remove("keys." + str(idx) + ".2")
-        config.remove("keys." + str(idx) + ".3")
-        config.remove("keys." + str(idx) + ".4")
-        config.remove("keys." + str(idx) + ".5")
-        config.remove("keys." + str(idx) + ".6")
-        config.remove("keys." + str(idx) + ".7")
-        config.remove("keys." + str(idx) + ".8")
-        config.remove("keys." + str(idx) + ".9")
-        config.remove("keys." + str(idx) + ".10")
-        config.remove("keys." + str(idx) + ".11")
+        config.remove(f"keys.{idx}.0")
+        config.remove(f"keys.{idx}.1")
+        config.remove(f"keys.{idx}.2")
+        config.remove(f"keys.{idx}.3")
+        config.remove(f"keys.{idx}.4")
+        config.remove(f"keys.{idx}.5")
+        config.remove(f"keys.{idx}.6")
+        config.remove(f"keys.{idx}.7")
+        config.remove(f"keys.{idx}.8")
+        config.remove(f"keys.{idx}.9")
+        config.remove(f"keys.{idx}.10")
+        config.remove(f"keys.{idx}.11")
 
         # hotkey
         if idx != 0:
-            config.remove("keys." + str(idx) + ".12")
+            config.remove(f"keys.{idx}.12")
 
-        config.remove("keys." + str(idx) + ".13")
-        config.remove("keys." + str(idx) + ".14")
-        config.remove("keys." + str(idx) + ".15")
-        config.remove("keys." + str(idx) + ".16")
+        config.remove(f"keys.{idx}.13")
+        config.remove(f"keys.{idx}.14")
+        config.remove(f"keys.{idx}.15")
+        config.remove(f"keys.{idx}.16")

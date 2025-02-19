@@ -49,15 +49,13 @@ class FpinballGenerator(Generator):
             commandArray = [
                 wine.WINE,
                 "explorer",
-                "/desktop=Wine,{}x{}".format(gameResolution["width"],
-                gameResolution["height"]),
+                f"/desktop=Wine,{gameResolution['width']}x{gameResolution['height']}",
                 emupath / "BAM" / "FPLoader.exe" ]
         else:
             commandArray = [
                 wine.WINE,
                 "explorer",
-                "/desktop=Wine,{}x{}".format(gameResolution["width"],
-                gameResolution["height"]),
+                f"/desktop=Wine,{gameResolution["width"]}x{gameResolution["height"]}",
                 emupath / "BAM" / "FPLoader.exe",
                 "/open", f"Z:{rompath}", "/play", "/exit" ]
 
@@ -67,10 +65,10 @@ class FpinballGenerator(Generator):
         with _FPINBALL_CONFIG_REG.open("w") as f:
             f.write("Windows Registry Editor Version 5.00\r\n\r\n")
             f.write("[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer]\r\n")
-            f.write("\"AspectRatio\"=dword:{:08x}\r\n".format(FpinballGenerator.getGfxRatioFromConfig(system.config, gameResolution)))
+            f.write(f"\"AspectRatio\"=dword:{FpinballGenerator.getGfxRatioFromConfig(system.config, gameResolution):08x}\r\n")
             f.write("\"FullScreen\"=dword:00000001\r\n")
-            f.write("\"Width\"=dword:{:08x}\r\n".format(gameResolution["width"]))
-            f.write("\"Height\"=dword:{:08x}\r\n".format(gameResolution["height"]))
+            f.write(f"\"Width\"=dword:{gameResolution['width']:08x}\r\n")
+            f.write(f"\"Height\"=dword:{gameResolution['height']:08x}\r\n")
             f.write("\"JoypadNameNum\"=dword:00000001\r\n")
             f.write("\r\n")
 
@@ -111,25 +109,25 @@ class FpinballGenerator(Generator):
                                         assigns[mapping[x]] = int(pad.inputs[x].id)
 
                         f.write(f"[HKEY_CURRENT_USER\\Software\\Future Pinball\\GamePlayer\\Joypads\\{joystickname}]\r\n")
-                        f.write("\"JoypadBackbox\"=dword:{:08x}\r\n".format(assigns["JoypadBackbox"]))
+                        f.write(f"\"JoypadBackbox\"=dword:{assigns['JoypadBackbox']:08x}\r\n")
                         f.write("\"JoypadDeadZone\"=dword:00000064\r\n")
-                        f.write("\"JoypadDigitalPlunger\"=dword:{:08x}\r\n".format(assigns["JoypadDigitalPlunger"]))
+                        f.write(f"\"JoypadDigitalPlunger\"=dword:{assigns['JoypadDigitalPlunger']:08x}\r\n")
                         f.write("\"JoypadExit\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadInsertCoin\"=dword:{:08x}\r\n".format(assigns["JoypadInsertCoin"]))
+                        f.write(f"\"JoypadInsertCoin\"=dword:{assigns['JoypadInsertCoin']:08x}\r\n")
                         f.write("\"JoypadInsertCoin2\"=dword:ffffffff\r\n")
                         f.write("\"JoypadInsertCoin3\"=dword:ffffffff\r\n")
                         f.write("\"JoypadLeft2ndFlipper\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadLeftFlipper\"=dword:{:08x}\r\n".format(assigns["JoypadLeftFlipper"]))
+                        f.write(f"\"JoypadLeftFlipper\"=dword:{assigns['JoypadLeftFlipper']:08x}\r\n")
                         f.write("\"JoypadMusicDown\"=dword:ffffffff\r\n")
                         f.write("\"JoypadMusicUp\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadNextCamera\"=dword:{:08x}\r\n".format(assigns["JoypadNextCamera"]))
+                        f.write(f"\"JoypadNextCamera\"=dword:{assigns['JoypadNextCamera']:08x}\r\n")
                         f.write("\"JoypadNudgeAxisX\"=dword:ffffffff\r\n")
                         f.write("\"JoypadNudgeAxisY\"=dword:ffffffff\r\n")
                         f.write("\"JoypadNudgeGainX\"=dword:000003e8\r\n")
                         f.write("\"JoypadNudgeGainXMax\"=dword:00000002\r\n")
                         f.write("\"JoypadNudgeGainY\"=dword:000003e8\r\n")
                         f.write("\"JoypadNudgeGainYMax\"=dword:00000002\r\n")
-                        f.write("\"JoypadPause\"=dword:{:08x}\r\n".format(assigns["JoypadPause"]))
+                        f.write(f"\"JoypadPause\"=dword:{assigns['JoypadPause']:08x}\r\n")
                         f.write("\"JoypadPinballRoller\"=dword:ffffffff\r\n")
                         f.write("\"JoypadPinballRollerAxisX\"=dword:ffffffff\r\n")
                         f.write("\"JoypadPinballRollerAxisY\"=dword:ffffffff\r\n")
@@ -141,14 +139,14 @@ class FpinballGenerator(Generator):
                         f.write("\"JoypadPlungerGain\"=dword:000003e8\r\n")
                         f.write("\"JoypadPlungerGainMax\"=dword:00000002\r\n")
                         f.write("\"JoypadRight2ndFlipper\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadRightFlipper\"=dword:{:08x}\r\n".format(assigns["JoypadRightFlipper"]))
+                        f.write(f"\"JoypadRightFlipper\"=dword:{assigns['JoypadRightFlipper']:08x}\r\n")
                         f.write("\"JoypadService\"=dword:ffffffff\r\n")
                         f.write("\"JoypadSpecial1\"=dword:ffffffff\r\n")
                         f.write("\"JoypadSpecial2\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadStartGame\"=dword:{:08x}\r\n".format(assigns["JoypadStartGame"]))
+                        f.write(f"\"JoypadStartGame\"=dword:{assigns['JoypadStartGame']:08x}\r\n")
                         f.write("\"JoypadSupport\"=dword:00000001\r\n") # enable joystick
                         f.write("\"JoypadTest\"=dword:ffffffff\r\n")
-                        f.write("\"JoypadToggleHud\"=dword:{:08x}\r\n".format(assigns["JoypadToggleHud"]))
+                        f.write(f"\"JoypadToggleHud\"=dword:{assigns['JoypadToggleHud']:08x}\r\n")
                         f.write("\"JoypadVolumeDown\"=dword:ffffffff\r\n")
                         f.write("\"JoypadVolumeUp\"=dword:ffffffff\r\n")
                         f.write("\r\n")

@@ -120,7 +120,7 @@ class LindberghGenerator(Generator):
             array=commandArray,
             env={
                 # Libraries
-                "LD_LIBRARY_PATH": "/lib32:/lib32/extralibs:/lib:/usr/lib:" + str(romDir),
+                "LD_LIBRARY_PATH": f"/lib32:/lib32/extralibs:/lib:/usr/lib:{romDir}",
                 # Graphics
                 "GST_PLUGIN_SYSTEM_PATH_1_0": "/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0",
                 "GST_REGISTRY_1_0": "/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin",
@@ -194,7 +194,7 @@ class LindberghGenerator(Generator):
                         else:
                             # if the previous is not commented, prefer the last one if not commented and comment the previous
                             if matches.group(1) != "#":
-                                lines[conf["keys"][key]["line"]] = "# " + lines[conf["keys"][key]["line"]]
+                                lines[conf["keys"][key]["line"]] = f'# {lines[conf["keys"][key]["line"]]}'
                                 conf["keys"][key] = { "value":     matches.group(3).strip(),
                                                       "commented": True if matches.group(1) == "#" else False,
                                                       "line":      n,
@@ -241,9 +241,9 @@ class LindberghGenerator(Generator):
         for key in conf["keys"]:
             if conf["keys"][key]["modified"]:
                 nline = conf["keys"][key]["line"]
-                line = key + " " + conf["keys"][key]["value"] + "\n"
+                line = f'{key} {conf["keys"][key]["value"]}\n'
                 if conf["keys"][key]["commented"]:
-                    line = "# " + line
+                    line = f"# {line}"
                 conf["raw"][nline] = line
 
         try:
@@ -340,10 +340,10 @@ class LindberghGenerator(Generator):
         if input_mode == 2:
             hkevent = hotkeygen.get_hotkeygen_event()
             if hkevent is not None:
-                self.setConf(conf, "TEST_BUTTON",   hkevent + ":KEY:" + str(ecodes.KEY_T))
+                self.setConf(conf, "TEST_BUTTON",   f"{hkevent}:KEY:{ecodes.KEY_T}")
                 # only 1 assignment possible for coins, let's it on the select button of player 1 for the moment
                 # could be set to hotkeygen/coin and on player1/select via .keys, but different from sdl
-                # self.setConf(conf, "PLAYER_1_COIN", hkevent + ":KEY:" + str(ecodes.KEY_5))
+                # self.setConf(conf, "PLAYER_1_COIN", f"{hkevent}:KEY:{ecodes.KEY_5}")
 
         # configure guns
         if input_mode == 2:
@@ -438,7 +438,7 @@ class LindberghGenerator(Generator):
                         ###
 
                         if pad.inputs[input_base_name].type == "button":
-                            input_value = "KEY:"+pad.inputs[input_base_name].code
+                            input_value = f"KEY:{pad.inputs[input_base_name].code}"
                             if button_name in noPlayerButton:
                                 if nplayer == 1:
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
@@ -450,9 +450,9 @@ class LindberghGenerator(Generator):
                                     self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         elif pad.inputs[input_base_name].type == "axis":
                             if input_name in relaxValues and relaxValues[input_name]["reversed"]:
-                                input_value = "ABS_NEG:"+pad.inputs[input_base_name].code
+                                input_value = f"ABS_NEG:{pad.inputs[input_base_name].code}"
                             else:
-                                input_value = "ABS:"+pad.inputs[input_base_name].code
+                                input_value = f"ABS:{pad.inputs[input_base_name].code}"
                             if button_name.startswith("ANALOGUE_"):
                                 if nplayer == 1:
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
@@ -464,9 +464,9 @@ class LindberghGenerator(Generator):
                         elif pad.inputs[input_base_name].type == "hat":
                             if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
                                 # 16 is the HAT0 code
-                                input_value = "ABS:"+ str(16+1+int(pad.inputs[input_base_name].id)*2)
+                                input_value = f"ABS:{16+1+int(pad.inputs[input_base_name].id)*2}"
                             else:
-                                input_value = "ABS:"+ str(16+int(pad.inputs[input_base_name].id)*2)
+                                input_value = f"ABS:{16+int(pad.inputs[input_base_name].id)*2}"
                             if button_name.startswith("ANALOGUE_"):
                                 if nplayer == 1:
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")

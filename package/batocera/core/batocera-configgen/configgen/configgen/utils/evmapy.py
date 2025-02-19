@@ -54,20 +54,20 @@ class evmapy(AbstractContextManager[None, None]):
         # consider files here in this order to get a configuration
         filesToMerge = []
         for keysfile in [
-                "{}.keys" .format (self.rom),
-                "{}/padto.keys" .format (self.rom), # case when the rom is a directory
-                #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (self.system, self.emulator, self.core),
-                #"/userdata/system/configs/evmapy/{}.{}.keys" .format (self.system, self.emulator),
-                "/userdata/system/configs/evmapy/{}.keys" .format (self.system),
-                "/userdata/system/configs/evmapy/{}.keys" .format (self.emulator),
+                f"{self.rom}.keys" ,
+                f"{self.rom}/padto.keys" , # case when the rom is a directory
+                #f"/userdata/system/configs/evmapy/{self.system}.{self.emulator}.{self.core}.keys" ,
+                #f"/userdata/system/configs/evmapy/{self.system}.{self.emulator}.keys" ,
+                f"/userdata/system/configs/evmapy/{self.system}.keys" ,
+                f"/userdata/system/configs/evmapy/{self.emulator}.keys" ,
                 "/userdata/system/configs/evmapy/any.keys",
-                #"/usr/share/evmapy/{}.{}.{}.keys" .format (self.system, self.emulator, self.core),
-                "/usr/share/evmapy/{}.{}.keys" .format (self.system, self.emulator),
-                "/usr/share/evmapy/{}.keys" .format (self.system),
-                "/usr/share/evmapy/{}.keys" .format (self.emulator),
+                #f"/usr/share/evmapy/{self.system}.{self.emulator}.{self.core}.keys" ,
+                f"/usr/share/evmapy/{self.system}.{self.emulator}.keys" ,
+                f"/usr/share/evmapy/{self.system}.keys" ,
+                f"/usr/share/evmapy/{self.emulator}.keys" ,
                 "/usr/share/evmapy/any.keys",
         ]:
-            if os.path.exists(keysfile) and not (os.path.isdir(self.rom) and keysfile == "{}.keys" .format (self.rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
+            if os.path.exists(keysfile) and not (os.path.isdir(self.rom) and keysfile == f"{self.rom}.keys"):  # f"{rom}.keys" is forbidden for directories, it must be inside  # noqa: E701
                 _logger.debug("evmapy file to merge : %s", keysfile)
                 filesToMerge.append(keysfile)
 
@@ -125,8 +125,8 @@ class evmapy(AbstractContextManager[None, None]):
             # configure guns
             ngun = 1
             for gun in self.guns:
-                if "actions_gun"+str(ngun) in padActionConfig:
-                    configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(self.guns[gun]["node"]))
+                if f"actions_gun{ngun}" in padActionConfig:
+                    configfile = f"/var/run/evmapy/{os.path.basename(self.guns[gun]['node'])}.json"
                     _logger.debug("config file for keysfile is %s (from %s) - gun", configfile, keysfile)
                     padConfig = {}
                     padConfig["buttons"] = []
@@ -139,7 +139,7 @@ class evmapy(AbstractContextManager[None, None]):
                         })
                     padConfig["grab"] = False
 
-                    for action in padActionConfig["actions_gun"+str(ngun)]:
+                    for action in padActionConfig[f"actions_gun{ngun}"]:
                         if "trigger" in action and "type" in action and "target" in action:
                             guntrigger = self.__get_gun_trigger(action["trigger"], self.guns[gun])
                             if guntrigger:
@@ -155,8 +155,8 @@ class evmapy(AbstractContextManager[None, None]):
             # configure each player
             nplayer = 1
             for playercontroller, pad in sorted(self.controllers.items()):
-                if "actions_player"+str(nplayer) in padActionConfig:
-                    configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.device_path))
+                if f"actions_player{nplayer}" in padActionConfig:
+                    configfile = f"/var/run/evmapy/{os.path.basename(pad.device_path)}.json"
                     _logger.debug("config file for keysfile is %s (from %s)", configfile, keysfile)
 
                     # create mapping
@@ -194,10 +194,10 @@ class evmapy(AbstractContextManager[None, None]):
                                 else:
                                     name = "Y"
                                     isYAsInt =  1
-                                known_buttons_names["HAT" + input.id + name + ":min"] = True
-                                known_buttons_names["HAT" + input.id + name + ":max"] = True
+                                known_buttons_names[f"HAT{input.id}{name}:min"] = True
+                                known_buttons_names[f"HAT{input.id}{name}:max"] = True
                                 padConfig["axes"].append({
-                                    "name": "HAT" + input.id + name,
+                                    "name": f"HAT{input.id}{name}",
                                     "code": int(input.id) + 16 + isYAsInt, # 16 = HAT0X in linux/input.h
                                     "min": -1,
                                     "max": 1
@@ -235,19 +235,19 @@ class evmapy(AbstractContextManager[None, None]):
 
                                 if ((axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"]) or axisId == "_OTHERS_") and input.code is not None:
                                     axisMin, axisMax = self.__get_pad_min_max_axis(pad.device_path, int(input.code))
-                                    known_buttons_names["ABS" + axisId + axisName + ":min"] = True
-                                    known_buttons_names["ABS" + axisId + axisName + ":max"] = True
-                                    known_buttons_names["ABS" + axisId + axisName + ":val"] = True
+                                    known_buttons_names[f"ABS{axisId}{axisName}:min"] = True
+                                    known_buttons_names[f"ABS{axisId}{axisName}:max"] = True
+                                    known_buttons_names[f"ABS{axisId}{axisName}:val"] = True
 
                                     padConfig["axes"].append({
-                                        "name": "ABS" + axisId + axisName,
+                                        "name": f"ABS{axisId}{axisName}",
                                         "code": int(input.code),
                                         "min": axisMin,
                                         "max": axisMax
                                     })
 
                     # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
-                    padActionsPreDefined = padActionConfig["actions_player"+str(nplayer)]
+                    padActionsPreDefined = padActionConfig[f"actions_player{nplayer}"]
                     padActionsFiltered = []
 
                     # handle mouse events : only joystick1 or joystick2 defined for 2 events
@@ -287,21 +287,21 @@ class evmapy(AbstractContextManager[None, None]):
                             if isinstance(trigger, list):
                                 allfound = True
                                 for x in trigger:
-                                    if x not in known_buttons_names and ("ABS_OTHERS_" + x + ":max") not in known_buttons_names :
+                                    if x not in known_buttons_names and (f"ABS_OTHERS_{x}:max") not in known_buttons_names :
                                         allfound = False
                                 if allfound:
                                     # rewrite axis buttons
                                     x = 0
                                     for val in trigger:
-                                        if "ABS_OTHERS_" + val + ":max" in known_buttons_names:
-                                            action["trigger"][x] = "ABS_OTHERS_" + val + ":max"
+                                        if f"ABS_OTHERS_{val}:max" in known_buttons_names:
+                                            action["trigger"][x] = f"ABS_OTHERS_{val}:max"
                                         x = x+1
                                     padActionsFiltered.append(action)
                             else:
                                 if trigger in known_buttons_names:
                                     padActionsFiltered.append(action)
-                                if "ABS_OTHERS_" + trigger + ":max" in known_buttons_names:
-                                    action["trigger"] = "ABS_OTHERS_" + action["trigger"] + ":max"
+                                if f"ABS_OTHERS_{trigger}:max" in known_buttons_names:
+                                    action["trigger"] = f"ABS_OTHERS_{action['trigger']}:max"
                                     padActionsFiltered.append(action)
                             padConfig["actions"] = padActionsFiltered
 
@@ -321,7 +321,7 @@ class evmapy(AbstractContextManager[None, None]):
                                 axis_for_mouse[action["trigger"]] = True
 
                     for axis in padConfig["axes"]:
-                        if axis["name"]+":val" not in axis_for_mouse and axis["name"]+":min" not in axis_for_mouse and axis["name"]+":max" not in axis_for_mouse:
+                        if f"{axis['name']}:val" not in axis_for_mouse and f"{axis['name']}:min" not in axis_for_mouse and f"{axis['name']}:max" not in axis_for_mouse:
                             min, max = self.__get_pad_min_max_axis_for_keys(axis["min"], axis["max"])
                             axis["min"] = min
                             axis["max"] = max

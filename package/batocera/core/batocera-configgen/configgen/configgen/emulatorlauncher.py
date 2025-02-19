@@ -455,7 +455,7 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
 
     emulatorstr = emulator
     if emulator != core and core is not None:
-        emulatorstr += "/" + core
+        emulatorstr += f"/{core}"
 
     gameName = ""
     if "name" in gameinfos:

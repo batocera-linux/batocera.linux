@@ -89,7 +89,7 @@ class EasyRPGGenerator(Generator):
             nplayer = 1
             for playercontroller, pad in sorted(playersControllers.items()):
                 if nplayer == 1:
-                    f.write("number={}\n" .format(pad.index))
+                    f.write(f"number={pad.index}\n" )
                     for key in keymapping:
                         button = -1
                         if keymapping[key] is not None:

@@ -39,9 +39,9 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
 
     # from https://github.com/xwiimote/xwiimote/blob/master/lib/xwiimote.h
     WIIMOTE_NAME            = 'Nintendo Wii Remote'
-    WIIMOTE_NAME_MOTIONPLUS = WIIMOTE_NAME + ' Motion Plus'
-    WIIMOTE_NAME_NUNCHUK    = WIIMOTE_NAME + ' Nunchuk'
-    WIIMOTE_NAME_CLASSIC    = WIIMOTE_NAME + ' Classic Controller'
+    WIIMOTE_NAME_MOTIONPLUS = f'{WIIMOTE_NAME} Motion Plus'
+    WIIMOTE_NAME_NUNCHUK    = f'{WIIMOTE_NAME} Nunchuk'
+    WIIMOTE_NAME_CLASSIC    = f'{WIIMOTE_NAME} Classic Controller'
 
     DEFAULT_DEADZONE       = '0.25'
     DEFAULT_RANGE          = '1'
@@ -270,7 +270,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
         # Create controller configuration
         controllerNode = ET.SubElement(root, 'controller')
         addTextElement(controllerNode, 'api', api)
-        addTextElement(controllerNode, 'uuid', "{}_{}".format(guid_n[pad.index], pad.guid)) # controller guid
+        addTextElement(controllerNode, 'uuid', f"{guid_n[pad.index]}_{pad.guid}") # controller guid
         addTextElement(controllerNode, 'display_name', pad.real_name) # controller name
         addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
         addAnalogControl(controllerNode, 'axis')

@@ -46,8 +46,8 @@ class ECWolfGenerator(Generator):
             f.write('Vid_Aspect = 0;\n')
             f.write('Vid_Vsync = 1;\n')
             f.write('QuitOnEscape = 1;\n')
-            f.write('FullScreenWidth = {};\n'.format(gameResolution["width"]))
-            f.write('FullScreenHeight = {};\n'.format(gameResolution["height"]))
+            f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
+            f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
             f.close()
 
         # Set the resolution and some other defaults
@@ -66,8 +66,8 @@ class ECWolfGenerator(Generator):
             # ... and append the ignored keys with default values now ;)
             f = codecs.open(str(ecwolfConfigFile), "a")
             f.write('JoystickEnabled = 1;\n')
-            f.write('FullScreenWidth = {};\n'.format(gameResolution["width"]))
-            f.write('FullScreenHeight = {};\n'.format(gameResolution["height"]))
+            f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
+            f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
             f.close()
 
         # Create save folder, according rom name with extension

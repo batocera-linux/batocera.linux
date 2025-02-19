@@ -35,7 +35,7 @@ class SolarusGenerator(Generator):
         for playercontroller, pad in sorted(playersControllers.items()):
             if nplayer == 1:
                 if "hotkey" in pad.inputs and "start" in pad.inputs:
-                    commandArray.append("-quit-combo={}+{}".format(pad.inputs["hotkey"].id, pad.inputs["start"].id))
+                    commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
             commandArray.append(f"-joypad-num{nplayer}={pad.index}")
             nplayer += 1
 

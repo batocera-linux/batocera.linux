@@ -93,13 +93,13 @@ def generateControllerConfig_arcade(system: Emulator, playersControllers: Contro
     }
 
     # This section allows a per ROM override of the default key options.
-    configname = rom.with_name(rom.name + ".cfg")       # Define ROM configuration name
+    configname = rom.with_name(f"{rom.name}.cfg")       # Define ROM configuration name
     if configname.is_file():  # File exists
         import ast
         with configname.open() as cconfig:
             line = cconfig.readline()
             while line:
-                entry = "{" + line + "}"
+                entry = f"{{{line}}}"
                 res = ast.literal_eval(entry)
                 arcadeMapping.update(res)
                 line = cconfig.readline()
@@ -135,8 +135,8 @@ def generateHotkeys(playersControllers: ControllerMapping) -> None:
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
-            f.write("[Hotkeys1]" + "\n")
-            f.write("Device = SDL/0/" + pad.real_name.strip() + "\n")
+            f.write(f"[Hotkeys1]\n")
+            f.write(f"Device = SDL/0/{pad.real_name.strip()}\n")
             # Search the hotkey button
             hotkey = None
             if "hotkey" not in pad.inputs:
@@ -176,8 +176,8 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             nsamepad = 0
 
         double_pads[pad.real_name.strip()] = nsamepad+1
-        f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
-        f.write("Device = SDL/" + str(nsamepad).strip() + "/" + pad.real_name.strip() + "\n")
+        f.write(f"[{anyDefKey}{nplayer}]\n")
+        f.write(f"Device = SDL/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
 
         if system.isOptSet("triforce_pad_profiles") and system.getOptBoolean("triforce_pad_profiles") == True:
             if not generateControllerConfig_any_from_profiles(f, pad):
@@ -196,7 +196,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
 
 def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: dict[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator) -> None:
     for opt in extraOptions:
-        f.write(opt + " = " + extraOptions[opt] + "\n")
+        f.write(f"{opt} = {extraOptions[opt]}\n")
     # Recompute the mapping according to available buttons on the pads and the available replacements
     currentMapping = anyMapping
     # Apply replacements
@@ -221,7 +221,7 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
         # Write the configuration for this key
         if keyname is not None:
             if 'Triggers' in keyname and input.type == 'axis':
-                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.axis_count, False, None)
+                write_key(f, f'{keyname}-Analog', input.type, input.id, input.value, pad.axis_count, False, None)
             else:
                 write_key(f, keyname, input.type, input.id, input.value, pad.axis_count, False, None)
         # Write the 2nd part
@@ -250,12 +250,12 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
     return False
 
 def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int | None, reverse: bool, hotkey_id: str | None) -> None:
-    f.write(keyname + " = ")
+    f.write(f"{keyname} = ")
     if hotkey_id is not None:
-        f.write("`Button " + str(hotkey_id) + "` & ")
+        f.write(f"`Button {hotkey_id}` & ")
     f.write("`")
     if input_type == "button":
-        f.write("Button " + str(input_id))
+        f.write(f"Button {input_id}")
     elif input_type == "hat":
         if input_value == "1":   # up
             f.write("Hat 0 N")
@@ -268,9 +268,9 @@ def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input
     elif input_type == "axis":
         if (reverse and input_value == "-1") or (not reverse and input_value == "1") or (not reverse and input_value == "0"):
             if "-Analog" in keyname:
-                f.write("Full Axis " + str(input_id) + "+")
+                f.write(f"Full Axis {input_id}+")
             else:
-                f.write("Axis " + str(input_id) + "+")
+                f.write(f"Axis {input_id}+")
         else:
-            f.write("Axis " + str(input_id) + "-")
+            f.write(f"Axis {input_id}-")
     f.write("`\n")

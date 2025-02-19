@@ -122,7 +122,7 @@ class HatariGenerator(Generator):
         # pads
         # disable previous configuration
         for i in range(1, 6): # 1 to 5 included
-            section = "Joystick" + str(i)
+            section = f"Joystick{i}"
             if config.has_section(section):
                 config.set(section, "nJoyId", "-1")
                 config.set(section, "nJoystickMode", "0")
@@ -130,7 +130,7 @@ class HatariGenerator(Generator):
         nplayer = 1
         for playercontroller, pad in sorted(playersControllers.items()):
             if nplayer <= 5:
-                section = "Joystick" + str(nplayer)
+                section = f"Joystick{nplayer}"
                 if not config.has_section(section):
                     config.add_section(section)
                 config.set(section, "nJoyId", str(pad.index))

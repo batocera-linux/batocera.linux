@@ -278,15 +278,15 @@ class BigPEmuGenerator(Generator):
         nplayer = 0
         for controller, pad in sorted(playersControllers.items()):
             if nplayer <= 7:
-                if "Device{}".format(nplayer) not in config["BigPEmuConfig"]["Input"]:
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)] = {}
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["DeviceType"] = 0 # standard controller
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["InvertAnally"] = 0
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["RotaryScale"] = 0.5
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["HeadTrackerScale"] = 8.0
-                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["HeadTrackerSpring"] = 0
-                    if "Bindings" not in config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]:
-                        config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["Bindings"] = []
+                if f"Device{nplayer}" not in config["BigPEmuConfig"]["Input"]:
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"] = {}
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["DeviceType"] = 0 # standard controller
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["InvertAnally"] = 0
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["RotaryScale"] = 0.5
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerScale"] = 8.0
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerSpring"] = 0
+                    if "Bindings" not in config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]:
+                        config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"] = []
 
                     # Loop through BINDINGS_SEQUENCE to maintain the specific order of bindings
                     if nplayer == 0:
@@ -367,15 +367,15 @@ class BigPEmuGenerator(Generator):
                                                 bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
                                             else:
                                                 bindings = generate_func(pad.guid, input.id, input.value)
-                                    config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["Bindings"].extend(bindings)
+                                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
                                     break
                         else:
                             if generate_func == generate_keyb_bindings:
                                 bindings = generate_func(binding_info["keyboard"])
-                                config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["Bindings"].extend(bindings)
+                                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
                             else:
                                 bindings = generate_func()
-                                config["BigPEmuConfig"]["Input"]["Device{}".format(nplayer)]["Bindings"].extend(bindings)
+                                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
 
             # Onto the next controller as necessary
             nplayer += 1

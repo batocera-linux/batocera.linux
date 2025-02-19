@@ -100,7 +100,7 @@ class OpenmsxGenerator(Generator):
             save_name = re.sub(r"\[[^]]*\]", "", save_name)
             file.write("\n")
             file.write("# -= Save state =-\n")
-            file.write('savestate "{}"\n'.format(save_name))
+            file.write(f'savestate "{save_name}"\n')
             # set the screenshot
             file.write("\n")
             file.write("# -= Screenshots =-\n")
@@ -126,20 +126,20 @@ class OpenmsxGenerator(Generator):
                     for x in pad.inputs:
                         input = pad.inputs[x]
                         if input.name == "y":
-                            file.write('bind "joy{} button{} down" "keymatrixdown 6 0x40"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x40"\n')
                         if input.name == "x":
-                            file.write('bind "joy{} button{} down" "keymatrixdown 6 0x80"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x80"\n')
                         if input.name == "pagedown":
-                            file.write('bind "joy{} button{} up" "set fastforward off"\n'.format(nplayer, input.id))
-                            file.write('bind "joy{} button{} down" "set fastforward on"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} up" "set fastforward off"\n')
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "set fastforward on"\n')
                         if input.name == "select":
-                            file.write('bind "joy{} button{} down" "toggle pause"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle pause"\n')
                         if input.name == "start":
-                            file.write('bind "joy{} button{} down" "main_menu_toggle"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "main_menu_toggle"\n')
                         if input.name == "l3":
-                            file.write('bind "joy{} button{} down" "toggle_osd_keyboard"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle_osd_keyboard"\n')
                         if input.name == "r3":
-                            file.write('bind "joy{} button{} down" "toggle console"\n'.format(nplayer, input.id))
+                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
                 nplayer += 1
 
         # now run the rom with the appropriate flags
