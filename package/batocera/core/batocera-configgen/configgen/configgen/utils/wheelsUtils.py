@@ -104,6 +104,32 @@ emulatorMapping = {
     },
 }
 
+
+def device_file_path(device, filename):
+    path = os.path.join(device["sysfs_path"], filename)
+    if not os.access(path, os.F_OK | os.R_OK | os.W_OK):
+        return False
+    return path
+
+def get_range(device):
+    path = device_file_path(device, "range")
+    if not path:
+        return None
+    with open(path, "r") as file:
+        data = file.read()
+    ra = data.strip()
+    return int(ra)
+
+def set_range(device, wanted_ra):
+    path = device_file_path(device, "range")
+    ra = int(device["wheel_rotation"])
+    if not path:
+        return ra
+    wanted_ra = str(wanted_ra)
+    with open(path, "w") as file:
+        file.write(wanted_ra)
+    return int(wanted_ra)
+
 def reconfigureControllers(playersControllers: ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], ControllerDict, DeviceInfoDict]:
     _logger.info("wheels reconfiguration")
     wheelsmetadata = None
@@ -177,6 +203,10 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
                 wanted_midzone = int(system.config["wheel_midzone"])
 
             _logger.info("wheel rotation angle is %s ; wanted wheel rotation angle is %s ; wanted deadzone is %s ; wanted midzone is %s", ra, wanted_ra, wanted_deadzone, wanted_midzone)
+
+            #try to write range directly in physical wheel if the driver support it
+            ra = set_range(device, wanted_ra)
+
             # no need new device in some cases
             if wanted_ra < ra or wanted_deadzone > 0:
                 (newdev, p) = reconfigureAngleRotation(pad.device_path, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
