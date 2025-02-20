@@ -29,7 +29,10 @@ WINETRICKS=
 # Save function carried out in save_install()
 WINE_SAVEDIR=
 WINE_SAVEFILES=
-# init_cmd() creates automatic autorun.cmd if you use windows_installs with msi/exe
+# createAutorunCmd() tries to creates automatically autorun.cmd if you use windows_installs with msi/exe
+AUTORUN_FILEMASK="$4"
+AUTORUN_FOUNDEXE=
+AUTORUN_FILTER=
 
 stopWineServer() {
     [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] && exit 0
@@ -617,7 +620,7 @@ trick_wine() {
         wget -O "${WINETRICKS}" "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" &>/dev/null
         chmod +x "${WINETRICKS}"
         echo "Winetricks is now installed"
-	fi
+    fi
     WINEPREFIX=${WINEPOINT} "${WINETRICKS}" "${TRICK}"
 }
 
@@ -759,34 +762,41 @@ play_squashfs() {
     waitWineServer 0
 }
 
-init_cmd() {
+createAutorunCmd() {
     WINEPOINT="$1"
-    #Improved version of creating a CMD-file
-    #Here are some default files, we compare and then try to build a proper command file
+    AUTORUN_FILEMASK="$2"
+    local i; local ii
 
-    INSTALLGAME_DEFAULT=(iexplore.exe wmplayer.exe wordpad.exe iexplore.exe
-                         wmplayer.exe wordpad.exe uninstall.exe install.exe
-                         unins000.exe setup.exe help.exe)
+    #Improved version of creating a CMD-file - the FILTER array can handle RegEx like * and ?
+    AUTORUN_FILTER=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$"
+                    "^.*/drive_c/windows/.*$" "^.*/unins[[:alnum:]]{3,4}.exe$" "^.*/[Ii]nstall(..)?.exe$")
 
     #We search in WINEPOINT dir for exes and I assume it's somewhere installed in Program Files, or Program Files(x86)
     pushd "$WINEPOINT" > /dev/null
-    find drive_c/P* -type f -name "*.exe" -printf '%h/%f\n' | while read i; do
-        if ! [[ "${INSTALLGAME_DEFAULT[@]}" =~ "${i##*/}" ]]; then
-            #We use the first hit, maybe can be improved
-            (
-                echo DIR=$(dirname "${i}")
-                echo CMD=\"$(basename "${i}")\"
-             ) > "${WINEPOINT}/autorun.cmd"
-             break
-        else
-            [[ -e "${WINEPOINT}/autorun.cmd" ]] && continue
-           (
-                echo DIR=$(dirname "${i}")
-                echo CMD=\"$(basename "${i}")\"
-             ) > "${WINEPOINT}/autorun.cmd"
-        fi
+    readarray -t AUTORUN_FOUNDEXE < <(find ${AUTORUN_FILEMASK} -type f -iname "*.exe" -printf "%p\n" | sort -n)
+
+    for i in "${AUTORUN_FILTER[@]}"; do
+        for ii in "${!AUTORUN_FOUNDEXE[@]}"; do
+            [[ "${AUTORUN_FOUNDEXE[$ii]}"  =~ $i ]] && unset AUTORUN_FOUNDEXE[$ii]
+        done
     done
-   popd
+
+    AUTORUN_FOUNDEXE=("${AUTORUN_FOUNDEXE[@]}") #Renew array after unset elements
+    if [[ ${#AUTORUN_FOUNDEXE[@]} -eq 1 ]]; then
+        (
+            echo "DIR=$(dirname "${AUTORUN_FOUNDEXE[0]}")"
+            echo "CMD=\"$(basename "${AUTORUN_FOUNDEXE[0]}")\""
+        ) > "${WINEPOINT}/autorun.cmd"
+    else
+       (
+            echo "#DIR=drive_c/Program Files/myprogram"
+            echo "#CMD=start.exe"
+        ) > "${WINEPOINT}/autorun.cmd"
+    fi
+
+    unset AUTORUN_FILTER
+    popd > /dev/null
+    return 0
 }
 
 install_exe_msi() {
@@ -799,7 +809,7 @@ install_exe_msi() {
     [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} wine "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${GAMENAME}"
     waitWineServer 0
-    init_cmd "${WINEPOINT}"
+    createAutorunCmd "${WINEPOINT}" "drive_c/P*"
 }
 
 install_iso() {
@@ -823,7 +833,7 @@ install_iso() {
     fi
 
     waitWineServer 0
-    init_cmd "${WINEPOINT}"
+    createAutorunCmd "${WINEPOINT}" "drive_c/P*"
 
 }
 
@@ -1014,6 +1024,34 @@ case "${ACTION}" in
 	exit $?
 	;;
 
+    "autorun")
+    # Create autorunfile, works only in SSH mode, recommended is arg1 gamepath, arg2=searchmask
+    # It's held small: "batocera-wine windows autrun . bin" will search current directory in dir bin
+    [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
+    [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
+    pushd "${GAMENAME}" > /dev/null
+    GAMENAME="$PWD"
+    createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
+    if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
+        echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
+        for i in "${AUTORUN_FOUNDEXE[@]}"; do
+            let ii++
+            echo -e "$ii) $(basename "$i") --> $(dirname "$i")"
+        done
+        echo
+        read -p "Select entry to write to autorun.cmd: " ii
+    else
+        ii=1
+    fi
+    (
+        echo "DIR=$(dirname "${AUTORUN_FOUNDEXE[$ii-1]}")"
+        echo "CMD=\"$(basename "${AUTORUN_FOUNDEXE[$ii-1]}")\""
+    ) > "${GAMENAME}/autorun.cmd"
+    echo "Written: ${GAMENAME}/autorun.cmd"
+    popd > /dev/null
+    exit 0
+    ;;
+
     *)
         echo "For system <${SYSTEM}> action <${ACTION}> detected" >&2
         echo
@@ -1029,6 +1067,7 @@ case "${ACTION}" in
         echo "${0} windows tricks        <game>.wine directplay" >&2
         echo "${0} windows wine2squashfs <game.wine>"            >&2
         echo "${0} windows wine2winetgz  <game.wine>"            >&2
+        echo "${0} windows autorun       <game>.*    drive_c/P*" >&2
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
