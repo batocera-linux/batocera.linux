@@ -66,7 +66,7 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                 overlay_mamezip_file  = USER_DECORATIONS / bezel / "games" / f"{romBase}.zip"
                 bezel_game = True
                 if not overlay_png_file.exists():
-                    if altDecoration != 0:
+                    if altDecoration != "0":
                         overlay_info_file = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
                         overlay_png_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
                         overlay_layout_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
@@ -79,7 +79,7 @@ def getBezelInfos(rom: str | Path, bezel: str, systemName: str, emulator: str) -
                         overlay_mamezip_file  = USER_DECORATIONS / bezel / "systems" / f"{systemName}.zip"
                         bezel_game = False
                         if not overlay_png_file.exists():
-                            if altDecoration != 0:
+                            if altDecoration != "0":
                                 overlay_info_file = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.info"
                                 overlay_png_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.png"
                                 overlay_layout_file  = SYSTEM_DECORATIONS / bezel / "systems" / f"{systemName}-{altDecoration!s}.lay"
