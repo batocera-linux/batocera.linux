@@ -14,3 +14,6 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="change", ATTRS{name}=="XGaming*X-
 # arcade2tv-xr
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="*Baolian industry*Arcade2TV*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1", RUN+="/usr/bin/keyboardToPadsLauncher $env{DEVNAME} run"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="change", ATTRS{name}=="*Baolian industry*Arcade2TV*", ATTRS{phys}=="*/input0", ENV{ID_INPUT_KEYBOARD}=="1",  ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1" # for change, see comment on Ultimarc
+
+# JammaSD
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="ASD JammASD Interface Keyboard", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_KEYBOARDTOPADS}="1"
