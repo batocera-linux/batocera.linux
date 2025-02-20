@@ -20,8 +20,14 @@ function check_esrun() {
 function emu_kill() {
     RC_PID=$(check_emurun)
     if [[ -n $RC_PID ]]; then
-        pgrep -f -n winedevice.exe && batocera-wine windows stop || hotkeygen --send exit
+        hotkeygen --send exit
     fi
+}
+
+# Wait for PID to finish
+waitpid() {
+    #https://unix.stackexchange.com/a/427133
+    tail --pid=$1 -f /dev/null
 }
 
 # Future proof update check, depends just on build-date and build-time
@@ -35,7 +41,7 @@ case ${1,,} in
     --restart)
         ES_PID=$(check_esrun)
         /etc/init.d/S31emulationstation stop
-        wait $ES_PID
+        waitpid $ES_PID
         /etc/init.d/S31emulationstation start
     ;;
 
@@ -53,7 +59,7 @@ case ${1,,} in
 
     --emukill|--shutdown|--reboot)
         RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && wait $RC_PID
+        [[ -n $RC_PID ]] && emu_kill && waitpid $RC_PID
 
         ES_PID=$(check_esrun)
         if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
@@ -67,7 +73,7 @@ case ${1,,} in
 
     --kodi)
         RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && wait $RC_PID
+        [[ -n $RC_PID ]] && emu_kill && waitpid $RC_PID
 
         /etc/init.d/S31emulationstation stop
         batocera-kodilauncher &
