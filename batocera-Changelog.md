@@ -6,6 +6,7 @@
   The libretro cores will continue to run as before.
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
+- zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
@@ -34,6 +35,7 @@
 - Force Feedback on RP5 & RPmini
 - vkQuake 1, 2 & 3 for systems that support Vulkan.
 - TR1X & TR2X for Tomb Raider I & II support
+- gun : option to hide the crossair in es
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
