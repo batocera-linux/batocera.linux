@@ -31,6 +31,7 @@ type GunDict = dict[int, Gun]
 
 class DeviceInfo(TypedDict):
     eventId: int
+    sysfs_path: str
     isJoystick: bool
     isWheel: bool
     isMouse: bool

@@ -221,6 +221,7 @@ def dev2int(dev: str) -> int | None:
 
 class _Device(TypedDict):
     node: str
+    sysfs_path: str
     group: str | None
     isJoystick: bool
     isWheel: bool
@@ -248,8 +249,14 @@ def getDevicesInformation() -> DeviceInfoDict:
                     joysticks.append(eventId)
                 if isMouse:
                     mouses.append(eventId)
-                devices[eventId] = { "node": ev.device_node, "group": group, "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
-                devices[eventId]["sysfs_path"] = str((Path(ev.sys_path) / "device" / "device").resolve())
+                devices[eventId] = {
+                    "node": ev.device_node,
+                    "sysfs_path": str((Path(ev.sys_path) / "device" / "device").resolve()),
+                    "group": group,
+                    "isJoystick": isJoystick,
+                    "isWheel": isWheel,
+                    "isMouse": isMouse
+                }
                 if "ID_PATH" in ev.properties:
                     if isWheel and "WHEEL_ROTATION_ANGLE" in ev.properties:
                         devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])

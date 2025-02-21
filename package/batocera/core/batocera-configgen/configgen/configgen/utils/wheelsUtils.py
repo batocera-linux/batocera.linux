@@ -6,6 +6,7 @@ import os
 import re
 import signal
 import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import evdev
@@ -14,7 +15,6 @@ from .. import controllersConfig
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    from pathlib import Path
 
     from ..controller import ControllerDict, ControllerMapping
     from ..Emulator import Emulator
@@ -105,31 +105,6 @@ emulatorMapping = {
 }
 
 
-def device_file_path(device, filename):
-    path = os.path.join(device["sysfs_path"], filename)
-    if not os.access(path, os.F_OK | os.R_OK | os.W_OK):
-        return False
-    return path
-
-def get_range(device):
-    path = device_file_path(device, "range")
-    if not path:
-        return None
-    with open(path, "r") as file:
-        data = file.read()
-    ra = data.strip()
-    return int(ra)
-
-def set_range(device, wanted_ra):
-    path = device_file_path(device, "range")
-    ra = int(device["wheel_rotation"])
-    if not path:
-        return ra
-    wanted_ra = str(wanted_ra)
-    with open(path, "w") as file:
-        file.write(wanted_ra)
-    return int(wanted_ra)
-
 def reconfigureControllers(playersControllers: ControllerMapping, system: Emulator, rom: str | Path, metadata: dict[str, str], deviceList: DeviceInfoDict) -> tuple[list[subprocess.Popen[bytes]], ControllerDict, DeviceInfoDict]:
     _logger.info("wheels reconfiguration")
     wheelsmetadata = None
@@ -204,8 +179,11 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
 
             _logger.info("wheel rotation angle is %s ; wanted wheel rotation angle is %s ; wanted deadzone is %s ; wanted midzone is %s", ra, wanted_ra, wanted_deadzone, wanted_midzone)
 
-            #try to write range directly in physical wheel if the driver support it
-            ra = set_range(device, wanted_ra)
+            #try to write range directly in physical wheel if the driver supports it
+            range_path = Path(device['sysfs_path']) / "range"
+            if os.access(range_path, os.F_OK | os.R_OK | os.W_OK):
+                range_path.write_text(str(wanted_ra))
+                ra = wanted_ra
 
             # no need new device in some cases
             if wanted_ra < ra or wanted_deadzone > 0:
