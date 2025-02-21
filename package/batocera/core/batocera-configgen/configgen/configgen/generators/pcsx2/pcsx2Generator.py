@@ -18,8 +18,9 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ...Emulator import Emulator
+    from ...gun import GunMapping
     from ...input import Input
-    from ...types import DeviceInfoMapping, GunMapping, HotkeysContext
+    from ...types import DeviceInfoMapping, HotkeysContext
 
 _logger = logging.getLogger(__name__)
 

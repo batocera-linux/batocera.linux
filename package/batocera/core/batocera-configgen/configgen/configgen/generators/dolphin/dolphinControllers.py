@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
-    from ...types import DeviceInfoMapping, GunMapping
+    from ...gun import GunMapping
+    from ...types import DeviceInfoMapping
 
 _logger = logging.getLogger(__name__)
 
@@ -329,7 +330,7 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
                 "right":   { "code": "BTN_8",      "button": "8"      }
             }
 
-            gundevname = guns[nplayer-1]["name"]
+            gundevname = guns[nplayer-1].name
 
             # Handle x pads having the same name
             nsamepad = 0
@@ -342,7 +343,7 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
             f.write(f"[{anyDefKey}{nplayer}]\n")
             f.write(f"Device = evdev/{str(nsamepad).strip()}/{gundevname.strip()}\n")
 
-            buttons = guns[nplayer-1]["buttons"]
+            buttons = guns[nplayer-1].buttons
             _logger.debug("Gun : %s", buttons)
 
             # custom remapping

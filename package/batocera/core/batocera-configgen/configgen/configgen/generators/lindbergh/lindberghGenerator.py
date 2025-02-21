@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Final, Literal
 import requests
 from evdev import ecodes
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...controller import (
     Controller,
@@ -27,7 +27,8 @@ from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...Emulator import Emulator
-    from ...types import DeviceInfoMapping, GunMapping, HotkeysContext, Resolution
+    from ...gun import GunMapping
+    from ...types import DeviceInfoMapping, HotkeysContext, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -318,10 +319,10 @@ class LindberghGenerator(Generator):
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
             need_guns_border = False
             for gun in guns:
-                if guns[gun]["need_borders"]:
+                if guns[gun].needs_borders:
                     need_guns_border = True
             if need_guns_border:
-                bordersSize = controllersConfig.gunsBordersSizeName(guns, system.config)
+                bordersSize = system.guns_borders_size_name(guns)
                 bordersInnerSize, bordersOuterSize = bezelsUtil.gunBordersSize(bordersSize)
                 self.setConf(conf, "WHITE_BORDER_PERCENTAGE", bordersInnerSize)
                 self.setConf(conf, "BLACK_BORDER_PERCENTAGE", bordersOuterSize)
@@ -754,7 +755,7 @@ class LindberghGenerator(Generator):
                 _logger.debug("lindbergh gun for player %s", nplayer)
                 xplayer = 1+(nplayer-1)*2
                 yplayer = 1+(nplayer-1)*2+1
-                evplayer = guns[gun]["node"]
+                evplayer = guns[gun].node
                 self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
 
@@ -771,7 +772,7 @@ class LindberghGenerator(Generator):
                     self.setConf(conf, f"ANALOGUE_{yplayerp4}", f"{evplayer}:ABS:1:SHAKE")
 
                 for mapping in mappings_actions:
-                    if mapping in guns[gun]["buttons"] and mapping in mappings_codes:
+                    if mapping in guns[gun].buttons and mapping in mappings_codes:
                         code = mappings_codes[mapping]
                         action = mappings_actions[mapping]
 

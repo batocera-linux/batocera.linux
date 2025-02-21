@@ -5,8 +5,9 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
+from ...gun import guns_need_crosses
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -179,7 +180,7 @@ class DolphinGenerator(Generator):
                     dolphinSettings.set("Core", f"SIDevice{i - 1}", "6")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and controllersConfig.gunsNeedCrosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0 and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and guns_need_crosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
         else:
             dolphinSettings.remove_option("General", "CustomTexturesPath")

@@ -6,16 +6,17 @@ from pathlib import Path
 from shutil import copyfile
 from typing import TYPE_CHECKING, Final
 
-from ... import Command, controllersConfig
+from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...gun import GunMapping, guns_need_crosses
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
-    from ...types import GunMapping, HotkeysContext
+    from ...types import HotkeysContext
 
 
 SUPERMODEL_SHARE: Final = Path('/usr/share/supermodel')
@@ -54,7 +55,7 @@ class SupermodelGenerator(Generator):
         if system.isOptSet("crosshairs"):
             commandArray.append(f"-crosshairs={system.config['crosshairs']}")
         else:
-            if controllersConfig.gunsNeedCrosses(guns):
+            if guns_need_crosses(guns):
                 if len(guns) == 1:
                     commandArray.append("-crosshairs=1")
                 else:

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from ...Emulator import Emulator
-    from ...types import GunMapping
+    from ...gun import GunMapping
 
 
 def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str, str], guns: GunMapping, rom: str) -> None:

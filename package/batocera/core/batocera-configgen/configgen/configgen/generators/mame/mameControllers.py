@@ -15,8 +15,9 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
+    from ...gun import GunMapping
     from ...input import Input
-    from ...types import DeviceInfoMapping, GunMapping
+    from ...types import DeviceInfoMapping
 
 _logger = logging.getLogger(__name__)
 

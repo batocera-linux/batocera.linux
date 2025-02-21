@@ -9,7 +9,8 @@ if TYPE_CHECKING:
     from ..Command import Command
     from ..controller import ControllerMapping
     from ..Emulator import Emulator
-    from ..types import DeviceInfoMapping, GunMapping, HotkeysContext, Resolution
+    from ..gun import GunMapping
+    from ..types import DeviceInfoMapping, HotkeysContext, Resolution
 
 
 class Generator(metaclass=ABCMeta):
