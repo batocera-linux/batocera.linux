@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from types import TracebackType
 
     from ..controller import ControllerMapping
-    from ..gun import Gun, GunMapping
+    from ..gun import Gun, Guns
 
 
 _logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class evmapy(AbstractContextManager[None, None]):
     core: str
     rom: str
     controllers: ControllerMapping
-    guns: GunMapping
+    guns: Guns
 
     def __enter__(self) -> None:
         if self.__prepare():
@@ -121,7 +121,7 @@ class evmapy(AbstractContextManager[None, None]):
             padActionConfig = json.load(open(keysfile))
 
             # configure guns
-            for ngun, gun in enumerate(self.guns.values(), start=1):
+            for ngun, gun in enumerate(self.guns, start=1):
                 if f"actions_gun{ngun}" in padActionConfig:
                     configfile = f"/var/run/evmapy/{os.path.basename(gun.node)}.json"
                     _logger.debug("config file for keysfile is %s (from %s) - gun", configfile, keysfile)

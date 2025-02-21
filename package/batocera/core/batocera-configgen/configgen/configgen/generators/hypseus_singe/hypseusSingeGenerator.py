@@ -273,7 +273,7 @@ class HypseusSingeGenerator(Generator):
                 else:
                     commandArray.extend(["-sinden", "6", borderColor])
             else:
-                if len(guns) > 0: # enable manymouse for guns
+                if guns: # enable manymouse for guns
                     commandArray.extend(["-manymouse"]) # sinden implies manymouse
                     if xratio is not None:
                         commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
@@ -311,7 +311,7 @@ class HypseusSingeGenerator(Generator):
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if len(guns) > 0 and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair")))):
+        if guns and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair")))):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16

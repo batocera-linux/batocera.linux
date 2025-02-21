@@ -14,16 +14,16 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
-    from ...gun import GunMapping
+    from ...gun import Guns
     from ...types import DeviceInfoMapping
 
 _logger = logging.getLogger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: GunMapping) -> None:
+def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: Guns) -> None:
 
     if system.name == "wii":
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", metadata, guns)
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
@@ -260,7 +260,7 @@ def generateControllerConfig_realwiimotes(filename: str, anyDefKey: str) -> None
     f.write
     f.close()
 
-def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mapping[str, str], guns: GunMapping) -> None:
+def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mapping[str, str], guns: Guns) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
 

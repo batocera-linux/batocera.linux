@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from argparse import Namespace
     from typing_extensions import deprecated
 
-    from .gun import GunMapping
+    from .gun import Guns
 
 _logger = logging.getLogger(__name__)
 
@@ -255,7 +255,7 @@ class Emulator:
             return ""
 
     # returns None if no border is wanted
-    def guns_borders_size_name(self, guns: GunMapping) -> str | None:
+    def guns_borders_size_name(self, guns: Guns) -> str | None:
         borders_size: str = self.config.get('controllers.guns.borderssize', 'medium')
 
         # overridden by specific options
@@ -272,12 +272,12 @@ class Emulator:
         if borders_mode == 'force':
             return borders_size
 
-        for gun in guns.values():
+        for gun in guns:
             if gun.needs_borders:
                 return borders_size
 
         return None
 
     # returns None to follow the bezel overlay size by default
-    def guns_border_ratio_type(self, guns: GunMapping) -> str | None:
+    def guns_border_ratio_type(self, guns: Guns) -> str | None:
         return self.config.get('controllers.guns.bordersratio', None)

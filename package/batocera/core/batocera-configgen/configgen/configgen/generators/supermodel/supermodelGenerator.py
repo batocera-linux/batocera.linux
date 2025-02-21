@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Final
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
-from ...gun import GunMapping, guns_need_crosses
+from ...gun import Guns, guns_need_crosses
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -166,7 +166,7 @@ def copy_xml():
     if not dest_path.exists() or source_path.stat().st_mtime > dest_path.stat().st_mtime:
         shutil.copy2(source_path, dest_path)
 
-def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMapping, guns: GunMapping, altControl: bool, sensitivity: str) -> None:
+def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMapping, guns: Guns, altControl: bool, sensitivity: str) -> None:
     if altControl:
         templateFile = SUPERMODEL_SHARE / "Supermodel-Driving.ini.template"
         mapping: dict[str, str | None] = {
@@ -245,7 +245,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
             if section.strip() != "Global":
                 targetConfig.set(section, "InputSystem", "to be defined")
             for key, value in targetConfig.items(section):
-                if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= 1:
+                if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
                     if key == "InputSystem":
                         targetConfig.set(section, key, "evdev")
                     elif key == "InputAnalogJoyX":
