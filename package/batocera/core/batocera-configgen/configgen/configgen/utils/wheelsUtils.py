@@ -181,6 +181,8 @@ def reconfigureControllers(playersControllers: ControllerMapping, system: Emulat
             if wanted_ra < ra or wanted_deadzone > 0:
                 (newdev, p) = reconfigureAngleRotation(pad.device_path, int(pad.inputs["joystick1left"].id), ra, wanted_ra, wanted_deadzone, wanted_midzone)
                 if newdev is not None:
+                    #replace sdl guid by virtualwheel guid for correct sdl mapping
+                    playersControllers[playercontroller].guid='03000000010000000100000001000000'
                     _logger.info("replacing device %s by device %s for player %s", pad.device_path, newdev, playercontroller)
                     deviceList[newdev] = device.copy()
                     deviceList[newdev]["eventId"] = controllersConfig.dev2int(newdev)
