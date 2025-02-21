@@ -1,0 +1,14 @@
+diff --git a/client/menu.c b/client/menu.c
+index 8b97142a07..005b3a5d6d 100644
+--- a/client/menu.c
++++ b/client/menu.c
+@@ -3968,7 +3968,8 @@ void M_Quit_Draw (void)
+ 
+ void M_Menu_Quit_f (void)
+ {
+-	M_PushMenu (M_Quit_Draw, M_Quit_Key);
++	CL_Quit_f ();
++	//M_PushMenu (M_Quit_Draw, M_Quit_Key);
+ }
+ 
+ 

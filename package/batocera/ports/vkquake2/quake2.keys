@@ -3,27 +3,146 @@
     	{
             "trigger": "up",
             "type": "key",
-            "target": "KEY_UP"
+            "target": "KEY_UP",
+            "description": "Move forward / up"
         },
         {
             "trigger": "down",
             "type": "key",
-            "target": "KEY_DOWN"
+            "target": "KEY_DOWN",
+            "description": "Move back / down"
         },
         {
             "trigger": "left",
             "type": "key",
-            "target": "KEY_LEFT"
+            "target": "KEY_LEFT",
+            "description": "Move left"
         },
         {
             "trigger": "right",
             "type": "key",
-            "target": "KEY_RIGHT"
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Move forward"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Move backward"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_COMMA",
+            "description": "Strafe left"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_DOT",
+            "description": "Strafe right"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": "KEY_A",
+            "description": "Look up"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": "KEY_Z",
+            "description": "Look down"
+        },
+        {
+            "trigger": "joystick2left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move left"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_LEFTBRACE",
+            "description": "Previous item"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_RIGHTBRACE",
+            "description": "Next item"
         },
         {
             "trigger": "b",
             "type": "key",
-            "target": "KEY_ENTER"
+            "target": "KEY_ENTER",
+            "description": "Use item"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "Jump"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_SLASH",
+            "description": "Next weapon"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_C",
+            "description": "Crouch"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_RIGHTSHIFT",
+            "description": "Run"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_LEFTCTRL",
+            "description": "Fire"
+        },
+        {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_TAB",
+            "description": "Inventory"
+        },
+        {
+            "trigger": "r3",
+            "type": "key",
+            "target": "KEY_F1",
+            "description": "Help computer"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Back / Menu"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_BACKSPACE",
+            "description": "Drop item"
         }
     ]
 }
