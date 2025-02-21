@@ -249,7 +249,7 @@ def getDevicesInformation() -> DeviceInfoDict:
                 if isMouse:
                     mouses.append(eventId)
                 devices[eventId] = { "node": ev.device_node, "group": group, "isJoystick": isJoystick, "isWheel": isWheel, "isMouse": isMouse }
-                devices[eventId]["sysfs_path"] = os.path.realpath(os.path.join(ev.sys_path, 'device', 'device'))
+                devices[eventId]["sysfs_path"] = str((Path(ev.sys_path) / "device" / "device").resolve())
                 if "ID_PATH" in ev.properties:
                     if isWheel and "WHEEL_ROTATION_ANGLE" in ev.properties:
                         devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
