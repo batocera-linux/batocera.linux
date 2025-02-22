@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
-    from ...types import DeviceInfoMapping, GunMapping, Resolution
+    from ...types import DeviceInfoMapping, Gun, GunMapping, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def getInvertButtonsValue() -> bool:
         return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
-def defined(key: str, dict: Mapping[str, Any]) -> bool:
+def defined(key: str, dict: Mapping[str, Any], /) -> bool:
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
 
@@ -101,11 +101,38 @@ def connected_to_internet() -> bool:
             _logger.error("Not connected to the internet")
             return False
 
-def writeLibretroConfig(generator: Generator, retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> None:
+def writeLibretroConfig(
+    generator: Generator,
+    retroconfig: UnixSettings,
+    system: Emulator,
+    controllers: ControllerMapping,
+    metadata: Mapping[str, str],
+    guns: GunMapping,
+    wheels: DeviceInfoMapping,
+    rom: Path,
+    bezel: str | None,
+    shaderBezel: bool,
+    gameResolution: Resolution,
+    gfxBackend: str,
+    /,
+) -> None:
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
-def createLibretroConfig(generator: Generator, system: Emulator, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, rom: Path, bezel: str | None, shaderBezel: bool, gameResolution: Resolution, gfxBackend: str) -> dict[str, object]:
+def createLibretroConfig(
+    generator: Generator,
+    system: Emulator,
+    controllers: ControllerMapping,
+    metadata: Mapping[str, str],
+    guns: GunMapping,
+    wheels: DeviceInfoMapping,
+    rom: Path,
+    bezel: str | None,
+    shaderBezel: bool,
+    gameResolution: Resolution,
+    gfxBackend: str,
+    /,
+) -> dict[str, object]:
 
     # retroarch-core-options.cfg
     mkdir_if_not_exists(RETROARCH_CORE_CUSTOM.parent)
@@ -411,7 +438,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         "Retro Bit Bluetooth Controller",
         ]
 
-        def update_megadrive_controller_config(controller_number):
+        def update_megadrive_controller_config(controller_number: int, /):
             # Remaps for Megadrive style controllers
             remap_values = {
                 'btn_a': '0', 'btn_b': '1', 'btn_x': '9', 'btn_y': '10',
@@ -556,7 +583,7 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
             "8BitDo N64 Modkit",
         ]
 
-        def update_n64_controller_config(controller_number):
+        def update_n64_controller_config(controller_number: int, /):
             # Remaps for N64 style controllers
             remap_values = {
                 'btn_a': '1', 'btn_b': '0', 'btn_x': '23', 'btn_y': '21',
@@ -977,14 +1004,23 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
 
     return retroarchConfig
 
-def clearGunInputsForPlayer(n: int, retroarchConfig: dict[str, object]) -> None:
+def clearGunInputsForPlayer(n: int, retroarchConfig: dict[str, object], /) -> None:
     # mapping
     keys = [ "gun_trigger", "gun_offscreen_shot", "gun_aux_a", "gun_aux_b", "gun_aux_c", "gun_start", "gun_select", "gun_dpad_up", "gun_dpad_down", "gun_dpad_left", "gun_dpad_right" ]
     for key in keys:
         for type in ["btn", "mbtn"]:
             retroarchConfig[f'input_player{n}_{key}_{type}'] = ''
 
-def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, metadata, system):
+def configureGunInputsForPlayer(
+    n: int,
+    gun: Gun,
+    controllers: ControllerMapping,
+    retroarchConfig: dict[str, object],
+    core: str,
+    metadata: Mapping[str, str],
+    system: Emulator,
+    /,
+) -> None:
 
     # find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
     pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
@@ -1129,11 +1165,22 @@ def configureGunInputsForPlayer(n, gun, controllers, retroarchConfig, core, meta
                         retroarchConfig[f'input_player{n}_{m}_axis'] = aval + pad.inputs[mapping[m]].id
         nplayer += 1
 
-def writeLibretroConfigToFile(retroconfig: UnixSettings, config: Mapping[str, object]) -> None:
+def writeLibretroConfigToFile(retroconfig: UnixSettings, config: Mapping[str, object], /) -> None:
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool, retroarchConfig: dict[str, object], rom: Path, gameResolution: Resolution, system: Emulator, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:
+def writeBezelConfig(
+    generator: Generator,
+    bezel: str | None,
+    shaderBezel: bool,
+    retroarchConfig: dict[str, object],
+    rom: Path,
+    gameResolution: Resolution,
+    system: Emulator,
+    gunsBordersSize: str | None,
+    gunsBordersRatio: str | None,
+    /,
+) -> None:
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -1392,10 +1439,10 @@ def writeBezelConfig(generator: Generator, bezel: str | None, shaderBezel: bool,
         shaderBezelFile.symlink_to(overlay_png_file)
         _logger.debug("Symlinked bezel file %s to %s for selected shader", overlay_png_file, shaderBezelFile)
 
-def isLowResolution(gameResolution: Resolution) -> bool:
+def isLowResolution(gameResolution: Resolution, /) -> bool:
     return gameResolution["width"] < 480 or gameResolution["height"] < 480
 
-def writeBezelCfgConfig(cfgFile: Path, overlay_png_file: Path) -> None:
+def writeBezelCfgConfig(cfgFile: Path, overlay_png_file: Path, /) -> None:
     fd = cfgFile.open("w")
     fd.write("overlays = 1\n")
     fd.write(f'overlay0_overlay = "{overlay_png_file}"\n')
