@@ -2831,11 +2831,6 @@ msgstr ""
 "異なる解像度をサポートするゲームを特定の解像度でレンダリングできるようにしま"
 "す"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "Allow mapping Future Pinball with Pad to Keyboard."
-msgstr "パッドからキーボードへの Future Pinabll の割り当てを許可します"
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
@@ -4347,11 +4342,6 @@ msgctxt "game_options"
 msgid "CONTROLLER COMBINATION"
 msgstr "コントローラーの組み合わせ"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "CONTROLLER CONFIGURATION"
-msgstr "コントローラー 構成"
-
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
@@ -4782,11 +4772,6 @@ msgctxt "game_options"
 msgid "Center"
 msgstr "中央"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Change Camera Angle"
-msgstr "カメラアングル変更"
-
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid ""
@@ -5213,11 +5198,6 @@ msgstr "クラシック ソフトウェア"
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Moonlightの終了は、リモートホストのアプリを閉じます"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "コイン"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7852,11 +7832,6 @@ msgid "Forces the DX driver to use Managed textures instead of Dynamic."
 msgstr ""
 "DXドライバーにダイナミックではなく強制的に管理対象テクスチャを使用します"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Forward Nudge"
-msgstr "前方を叩く"
-
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
@@ -9760,21 +9735,6 @@ msgctxt "keys_files"
 msgid "Left"
 msgstr "左"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Flipper"
-msgstr "左 フリッパー"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Magna Save"
-msgstr "マグナセーブボタン 左"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Nudge"
-msgstr "左側を叩く"
-
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
@@ -10414,11 +10374,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr "一部の 2D ゲームで、より鮮明な画像になる場合があります"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Mech Tilt"
-msgstr "メカ Tilt(機械的傾斜)"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -12088,11 +12043,6 @@ msgctxt "game_options"
 msgid "Playstation 2 wheel type"
 msgstr "PS2 ホイール(ハンドル)タイプ"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Plunger"
-msgstr "レバーを引く"
-
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
@@ -12841,21 +12791,6 @@ msgstr "Rice"
 msgctxt "keys_files"
 msgid "Right"
 msgstr "右"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Flipper"
-msgstr "右 フリッパー"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Magna Save"
-msgstr "マグナセーブボタン 右"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Nudge"
-msgstr "右側を叩く"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -14505,11 +14440,6 @@ msgstr "標準コントローラー"
 msgctxt "game_options"
 msgid "Standard OpenGL (Default)"
 msgstr "標準 OpenGL (標準)"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Start"
-msgstr "スタート"
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -17065,13 +16995,29 @@ msgstr "黄/青"
 #~ msgid "72fps"
 #~ msgstr "72fps"
 
+#~ msgctxt "game_options"
+#~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
+#~ msgstr "パッドからキーボードへの Future Pinabll の割り当てを許可します"
+
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
 #~ msgstr "メニュー呼び出し"
 
 #~ msgctxt "game_options"
+#~ msgid "CONTROLLER CONFIGURATION"
+#~ msgstr "コントローラー 構成"
+
+#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "中央 (標準)"
+
+#~ msgctxt "keys_files"
+#~ msgid "Change Camera Angle"
+#~ msgstr "カメラアングル変更"
+
+#~ msgctxt "keys_files"
+#~ msgid "Coin"
+#~ msgstr "コイン"
 
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
@@ -17126,8 +17072,24 @@ msgstr "黄/青"
 #~ msgstr "フレームレート"
 
 #~ msgctxt "keys_files"
+#~ msgid "Forward Nudge"
+#~ msgstr "前方を叩く"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Flipper"
+#~ msgstr "左 フリッパー"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Magna Save"
+#~ msgstr "マグナセーブボタン 左"
+
+#~ msgctxt "keys_files"
 #~ msgid "Left Manga Save"
 #~ msgstr "magnasave ボタン 左"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Nudge"
+#~ msgstr "左側を叩く"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -17136,6 +17098,10 @@ msgstr "黄/青"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "ステートロード - スロット 1"
+
+#~ msgctxt "keys_files"
+#~ msgid "Mech Tilt"
+#~ msgstr "メカ Tilt(機械的傾斜)"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17160,6 +17126,10 @@ msgstr "黄/青"
 #~ msgctxt "keys_files"
 #~ msgid "Pause / Menu"
 #~ msgstr "一時停止/メニュー"
+
+#~ msgctxt "keys_files"
+#~ msgid "Plunger"
+#~ msgstr "レバーを引く"
 
 #~ msgctxt "keys_files"
 #~ msgid "Quick Load"
@@ -17190,8 +17160,20 @@ msgstr "黄/青"
 #~ msgstr "現在のレベルを終了"
 
 #~ msgctxt "keys_files"
+#~ msgid "Right Flipper"
+#~ msgstr "右 フリッパー"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Magna Save"
+#~ msgstr "マグナセーブボタン 右"
+
+#~ msgctxt "keys_files"
 #~ msgid "Right Manga Save"
 #~ msgstr "magnasave ボタン 右"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Nudge"
+#~ msgstr "右側を叩く"
 
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
@@ -17220,6 +17202,10 @@ msgstr "黄/青"
 #~ msgctxt "keys_files"
 #~ msgid "Slot -"
 #~ msgstr "スロット -"
+
+#~ msgctxt "keys_files"
+#~ msgid "Start"
+#~ msgstr "スタート"
 
 #~ msgctxt "keys_files"
 #~ msgid "Take a screenshot"

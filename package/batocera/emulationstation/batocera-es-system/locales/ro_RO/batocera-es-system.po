@@ -2833,11 +2833,6 @@ msgstr ""
 "Permite jocurilor care suportă diferite rezoluții să fie redate într-o "
 "anumită rezoluție."
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "Allow mapping Future Pinball with Pad to Keyboard."
-msgstr "Permite asocierea Future Pinball cu Pad to Keyboard."
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
@@ -4359,11 +4354,6 @@ msgctxt "game_options"
 msgid "CONTROLLER COMBINATION"
 msgstr "COMBINAȚIE CONTROLER"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "CONTROLLER CONFIGURATION"
-msgstr "CONFIGURAȚIE CONTROLER"
-
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
@@ -4802,11 +4792,6 @@ msgctxt "game_options"
 msgid "Center"
 msgstr "Centru"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Change Camera Angle"
-msgstr "Schimbă unghiul camerei"
-
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid ""
@@ -5239,11 +5224,6 @@ msgstr "Clasic software"
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Închide aplicația pe gazda de la distanță când se iese din Moonlight."
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "Monedă"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7936,11 +7916,6 @@ msgid "Forces the DX driver to use Managed textures instead of Dynamic."
 msgstr ""
 "Forțează driver-ul DX să folosească texturi manageriate în loc de dinamice."
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Forward Nudge"
-msgstr "Înghiontire în față"
-
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
@@ -9865,21 +9840,6 @@ msgctxt "keys_files"
 msgid "Left"
 msgstr "Stânga"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Flipper"
-msgstr "Aripa stângă"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Magna Save"
-msgstr "Salvare manga din stânga"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Nudge"
-msgstr "Înghiontire în stânga"
-
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
@@ -10527,11 +10487,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr "Poate rezulta într-o imagine mai clară în unele jocuri 2D."
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Mech Tilt"
-msgstr "Înclinare mecanică"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -12218,11 +12173,6 @@ msgctxt "game_options"
 msgid "Playstation 2 wheel type"
 msgstr "Tip volan Playstation 2"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Plunger"
-msgstr "Piston"
-
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
@@ -12988,21 +12938,6 @@ msgstr "Rice"
 msgctxt "keys_files"
 msgid "Right"
 msgstr "Dreapta"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Flipper"
-msgstr "Aripa dreaptă"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Magna Save"
-msgstr "Salvare manga din dreapta"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Nudge"
-msgstr "Înghiontire în dreapta"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -14672,11 +14607,6 @@ msgstr "Controler standard"
 msgctxt "game_options"
 msgid "Standard OpenGL (Default)"
 msgstr "OpenGL Standard (Implicit)"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Start"
-msgstr "Start"
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -17313,6 +17243,10 @@ msgstr "galben/albastru"
 #~ msgid "ASCI"
 #~ msgstr "ASCI"
 
+#~ msgctxt "game_options"
+#~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
+#~ msgstr "Permite asocierea Future Pinball cu Pad to Keyboard."
+
 #~ msgctxt "keys_files"
 #~ msgid "Analog 1 Down"
 #~ msgstr "Analog 1 Jos"
@@ -17350,8 +17284,20 @@ msgstr "galben/albastru"
 #~ msgstr "Arată meniul"
 
 #~ msgctxt "game_options"
+#~ msgid "CONTROLLER CONFIGURATION"
+#~ msgstr "CONFIGURAȚIE CONTROLER"
+
+#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "Centru (Implicit)"
+
+#~ msgctxt "keys_files"
+#~ msgid "Change Camera Angle"
+#~ msgstr "Schimbă unghiul camerei"
+
+#~ msgctxt "keys_files"
+#~ msgid "Coin"
+#~ msgstr "Monedă"
 
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
@@ -17455,6 +17401,22 @@ msgstr "galben/albastru"
 #~ msgstr "Butoane frontale (orar)"
 
 #~ msgctxt "keys_files"
+#~ msgid "Forward Nudge"
+#~ msgstr "Înghiontire în față"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Flipper"
+#~ msgstr "Aripa stângă"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Magna Save"
+#~ msgstr "Salvare manga din stânga"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Nudge"
+#~ msgstr "Înghiontire în stânga"
+
+#~ msgctxt "keys_files"
 #~ msgid "Load State"
 #~ msgstr "Încarcă stare"
 
@@ -17465,6 +17427,10 @@ msgstr "galben/albastru"
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
 #~ msgstr "MONȘTRII"
+
+#~ msgctxt "keys_files"
+#~ msgid "Mech Tilt"
+#~ msgstr "Înclinare mecanică"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17517,6 +17483,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Pause / Menu"
 #~ msgstr "Pauză / Meniu"
+
+#~ msgctxt "keys_files"
+#~ msgid "Plunger"
+#~ msgstr "Piston"
 
 #~ msgctxt "keys_files"
 #~ msgid "Push 1"
@@ -17579,6 +17549,18 @@ msgstr "galben/albastru"
 #~ msgstr "Abandonează nivelul curent"
 
 #~ msgctxt "keys_files"
+#~ msgid "Right Flipper"
+#~ msgstr "Aripa dreaptă"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Magna Save"
+#~ msgstr "Salvare manga din dreapta"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Nudge"
+#~ msgstr "Înghiontire în dreapta"
+
+#~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Salvează stare"
 
@@ -17613,6 +17595,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Slot -"
 #~ msgstr "Slot -"
+
+#~ msgctxt "keys_files"
+#~ msgid "Start"
+#~ msgstr "Start"
 
 #~ msgctxt "keys_files"
 #~ msgid "Take a screenshot"

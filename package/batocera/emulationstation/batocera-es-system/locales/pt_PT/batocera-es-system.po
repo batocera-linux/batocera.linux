@@ -2835,11 +2835,6 @@ msgstr ""
 "Permite que jogos com suporte a diferentes resoluções sejam renderizados "
 "numa resolução específica."
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "Allow mapping Future Pinball with Pad to Keyboard."
-msgstr "Permitir o mapeamento de Future Pinball com Pad2Key."
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
@@ -4365,11 +4360,6 @@ msgctxt "game_options"
 msgid "CONTROLLER COMBINATION"
 msgstr "COMBINAÇÃO DE COMANDOS"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "CONTROLLER CONFIGURATION"
-msgstr "CONFIGURAÇÃO DO COMANDO"
-
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
@@ -4807,11 +4797,6 @@ msgctxt "game_options"
 msgid "Center"
 msgstr "Centro"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Change Camera Angle"
-msgstr "Alterar ângulo da câmara"
-
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid ""
@@ -5245,11 +5230,6 @@ msgstr "Software Clássico"
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "Feche o aplicativo no host remoto ao sair do Moonlight."
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "Moeda"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7919,11 +7899,6 @@ msgctxt "game_options"
 msgid "Forces the DX driver to use Managed textures instead of Dynamic."
 msgstr "Força o driver DX a usar texturas gerenciadas em vez de dinámicas."
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Forward Nudge"
-msgstr "Empurrão para a frente"
-
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
@@ -9843,21 +9818,6 @@ msgctxt "keys_files"
 msgid "Left"
 msgstr "Esquerda"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Flipper"
-msgstr "Flipper Esquerdo"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Magna Save"
-msgstr "Esquerda Magna Save"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Nudge"
-msgstr "Empurrão para a esquerda"
-
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
@@ -10507,11 +10467,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr "Pode resultar numa imagem mais nítida em certos jogos em 2D."
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Mech Tilt"
-msgstr "Inclinação mecânica"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -12199,11 +12154,6 @@ msgctxt "game_options"
 msgid "Playstation 2 wheel type"
 msgstr "Tipo de volante do Playstation 2"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Plunger"
-msgstr "Êmbolo"
-
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
@@ -12968,21 +12918,6 @@ msgstr "Rice"
 msgctxt "keys_files"
 msgid "Right"
 msgstr "Direita"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Flipper"
-msgstr "Flipper Direito"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Magna Save"
-msgstr "Direita Magna Save"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Nudge"
-msgstr "Empurrão para a direita"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -14650,11 +14585,6 @@ msgstr "Comando Predefinido"
 msgctxt "game_options"
 msgid "Standard OpenGL (Default)"
 msgstr "OpenGL Padrão (Padrão)"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Start"
-msgstr "Iniciar"
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -17241,13 +17171,29 @@ msgstr "amarelo/azul"
 #~ msgid "72fps"
 #~ msgstr "72fps"
 
+#~ msgctxt "game_options"
+#~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
+#~ msgstr "Permitir o mapeamento de Future Pinball com Pad2Key."
+
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
 #~ msgstr "Abra o menu"
 
 #~ msgctxt "game_options"
+#~ msgid "CONTROLLER CONFIGURATION"
+#~ msgstr "CONFIGURAÇÃO DO COMANDO"
+
+#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "Centro (padrão)"
+
+#~ msgctxt "keys_files"
+#~ msgid "Change Camera Angle"
+#~ msgstr "Alterar ângulo da câmara"
+
+#~ msgctxt "keys_files"
+#~ msgid "Coin"
+#~ msgstr "Moeda"
 
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
@@ -17302,8 +17248,24 @@ msgstr "amarelo/azul"
 #~ msgstr "FPS"
 
 #~ msgctxt "keys_files"
+#~ msgid "Forward Nudge"
+#~ msgstr "Empurrão para a frente"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Flipper"
+#~ msgstr "Flipper Esquerdo"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Magna Save"
+#~ msgstr "Esquerda Magna Save"
+
+#~ msgctxt "keys_files"
 #~ msgid "Left Manga Save"
 #~ msgstr "Botão Manga Save à Esquerda"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Nudge"
+#~ msgstr "Empurrão para a esquerda"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -17312,6 +17274,10 @@ msgstr "amarelo/azul"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "Carregar Estado no Slot 1"
+
+#~ msgctxt "keys_files"
+#~ msgid "Mech Tilt"
+#~ msgstr "Inclinação mecânica"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17336,6 +17302,10 @@ msgstr "amarelo/azul"
 #~ msgctxt "keys_files"
 #~ msgid "Pause / Menu"
 #~ msgstr "Pausa / Menu"
+
+#~ msgctxt "keys_files"
+#~ msgid "Plunger"
+#~ msgstr "Êmbolo"
 
 #~ msgctxt "keys_files"
 #~ msgid "Quick Load"
@@ -17366,8 +17336,20 @@ msgstr "amarelo/azul"
 #~ msgstr "Saír do nível atual"
 
 #~ msgctxt "keys_files"
+#~ msgid "Right Flipper"
+#~ msgstr "Flipper Direito"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Magna Save"
+#~ msgstr "Direita Magna Save"
+
+#~ msgctxt "keys_files"
 #~ msgid "Right Manga Save"
 #~ msgstr "Botão Manga Save à Direita"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Nudge"
+#~ msgstr "Empurrão para a direita"
 
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
@@ -17396,6 +17378,10 @@ msgstr "amarelo/azul"
 #~ msgctxt "keys_files"
 #~ msgid "Slot -"
 #~ msgstr "Slot -"
+
+#~ msgctxt "keys_files"
+#~ msgid "Start"
+#~ msgstr "Iniciar"
 
 #~ msgctxt "keys_files"
 #~ msgid "Take a screenshot"
