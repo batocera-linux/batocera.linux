@@ -13702,8 +13702,15 @@ vkquake3:
         "512MB":           "512"
 
 tr1x:
-  features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  features: [padtokeyboard]
+  cfeatures:
+    tr1x-expansion:
+      prompt: EXPANSION PACK
+      description: Run the Unfinished expansion pack.
+      choices:
+        "Off (Default)": 0
+        "On":            1      
 
 tr2x:
   features: [padtokeyboard]

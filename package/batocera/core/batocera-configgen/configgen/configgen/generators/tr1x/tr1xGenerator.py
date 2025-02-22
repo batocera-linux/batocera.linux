@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 class TR1XGenerator(Generator):
 
     MUSIC_ZIP_URL = "https://lostartefacts.dev/aux/tr1x/music.zip"
+    EXPANSION_ZIP_URL = "https://lostartefacts.dev/aux/tr1x/trub-music.zip"
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
@@ -46,9 +47,12 @@ class TR1XGenerator(Generator):
         tr1xSourcePath = Path("/usr/bin/tr1x")
         musicZipPath = tr1xRomPath / "music.zip"
         musicDir = tr1xRomPath / "music"
+        dataDir = tr1xRomPath / "data"
+        expansionZipPath = tr1xRomPath / "trub-music.zip"
 
-        # Ensure the destination directory exists
+        # Ensure the destination directories exist
         tr1xRomPath.mkdir(parents=True, exist_ok=True)
+        dataDir.mkdir(parents=True, exist_ok=True)
 
         # Copy files & folders if they don’t exist
         for item in tr1xSourcePath.iterdir():
@@ -90,7 +94,50 @@ class TR1XGenerator(Generator):
             except Exception as e:
                 _logger.debug("Unexpected error: %s", e)
 
-        commandArray = [tr1xRomPath / "TR1X"]
+        # Handle the expansion pack download and extraction if enabled
+        if system.isOptSet("tr1x-expansion") and system.getOptBoolean("tr1x-expansion"):
+            # Only extract if there is no file named "CAT.PHD" (case-insensitive) in the data directory
+            cat_phd_exists = any(
+                p for p in dataDir.rglob("*") if p.is_file() and p.name.upper() == "CAT.PHD"
+            )
+            if not cat_phd_exists:
+                try:
+                    _logger.debug("Downloading expansion zip from %s...", self.EXPANSION_ZIP_URL)
+                    response = requests.get(self.EXPANSION_ZIP_URL, stream=True)
+                    response.raise_for_status()
+
+                    with expansionZipPath.open("wb") as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+
+                    # Extract files from the expansion zip, ignoring the top-level "DATA" directory
+                    with zipfile.ZipFile(expansionZipPath, "r") as zip_ref:
+                        for file in zip_ref.namelist():
+                            # Remove the top-level DATA/ prefix if present
+                            stripped_file = file
+                            if stripped_file.upper().startswith("DATA/"):
+                                stripped_file = stripped_file[5:]
+                            # Skip directory entries or empty names after stripping
+                            if not stripped_file or file.endswith("/"):
+                                continue
+                            destination = dataDir / stripped_file
+                            if not destination.exists():
+                                destination.parent.mkdir(parents=True, exist_ok=True)
+                                with zip_ref.open(file) as source, open(destination, "wb") as target:
+                                    shutil.copyfileobj(source, target)
+
+                    expansionZipPath.unlink()
+                    _logger.debug("Expansion files downloaded and extracted successfully.")
+                except requests.RequestException as e:
+                    _logger.debug("Failed to download expansion zip: %s", e)
+                except zipfile.BadZipFile as e:
+                    _logger.debug("Error extracting expansion zip: %s", e)
+                except Exception as e:
+                    _logger.debug("Unexpected error: %s", e)
+
+            commandArray = [tr1xRomPath / "TR1X", "-gold"]
+        else:
+            commandArray = [tr1xRomPath / "TR1X"]
 
         return Command.Command(
             array=commandArray,
