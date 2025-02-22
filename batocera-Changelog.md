@@ -97,7 +97,7 @@
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 25.0.0
 - Linux Kernel to 6.13.3
-- GStreamer codecs to 1.24.10
+- GStreamer codecs to 1.24.12
 - SDL2 to 2.30.11
 - Vulkan stack to v1.4.304
 - MPV to 0.39.0
