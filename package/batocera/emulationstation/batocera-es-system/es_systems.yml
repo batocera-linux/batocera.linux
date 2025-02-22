@@ -4970,6 +4970,19 @@ traider1:
     tr1x:
       tr1x: { requireAnyOf: [BR2_PACKAGE_TR1X] }
   comment_en: |
+    The origianl Tomb Raider files should go in this rom folder from your previous Windows installation.
+    You can safetly remove .exe & .dll files which are not necessary for TR1X to run the game.
+    We highly recommend your folders are in lowercase to ensure call files are accounted for.
+    Then create a launcher file with a .croft extension.
+    i.e. Tomb Raider.croft
+    This will allow EmulationStation (ES) to launch the game etc.
+
+    On first launch (provided you have internet) we will download the music files so don't be alarmed if slow.
+    Subsequent launches will be faster.
+
+    To choose the Unfinished expansion pack, enable the associated ES option.
+    We will download the `Unfinished Expansion pack` if necessary so again the first launch may be slow.
+
     For more info: https://wiki.batocera.org/systems:traider1
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:traider1
