@@ -3,10 +3,12 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import cast
 
 import yaml
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
+from .gun import GunMapping
 from .settings.unixSettings import UnixSettings
 
 _logger = logging.getLogger(__name__)
@@ -220,3 +222,30 @@ class Emulator():
             self.config['showFPS'] = False
             self.config['uimode'] = "Full"
 
+    # returns None if no border is wanted
+    def guns_borders_size_name(self, guns: GunMapping) -> str | None:
+        borders_size: str = cast(str, self.config.get('controllers.guns.borderssize', 'medium'))
+
+        # overridden by specific options
+        borders_mode = 'normal'
+        if (config_borders_mode := cast(str, self.config.get('controllers.guns.bordersmode') or 'auto')) != 'auto':
+            borders_mode = config_borders_mode
+        if (config_borders_mode := cast(str, self.config.get('bordersmode') or 'auto')) != 'auto':
+            borders_mode = config_borders_mode
+
+        # others are gameonly and normal
+        if borders_mode == 'hidden':
+            return None
+
+        if borders_mode == 'force':
+            return borders_size
+
+        for gun in guns.values():
+            if gun.needs_borders:
+                return borders_size
+
+        return None
+
+    # returns None to follow the bezel overlay size by default
+    def guns_border_ratio_type(self, guns: GunMapping) -> str | None:
+        return self.config.get('controllers.guns.bordersratio')

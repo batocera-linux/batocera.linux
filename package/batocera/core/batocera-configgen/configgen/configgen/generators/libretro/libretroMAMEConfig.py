@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
-    from ...types import GunMapping
+    from ...gun import GunMapping
 
 _logger = logging.getLogger(__name__)
 

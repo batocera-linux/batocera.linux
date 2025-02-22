@@ -34,7 +34,8 @@ from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
 from .generators import get_generator
-from .utils import bezels as bezelsUtil, gunsUtils, videoMode, wheelsUtils
+from .gun import Gun
+from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
@@ -44,7 +45,7 @@ if TYPE_CHECKING:
 
     from .Command import Command
     from .generators.Generator import Generator
-    from .types import DeviceInfoDict, GunDict, Resolution
+    from .types import DeviceInfoDict, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -87,12 +88,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
     # force use_guns in case es tells it has a gun
     if not system.isOptSet('use_guns') and args.lightgun:
         system.config["use_guns"] = True
-    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-        guns = controllers.getGuns()
-        gunsUtils.precalibration(systemName, system.config['emulator'], system.config.get("core"), rom)
-    else:
-        _logger.info("guns disabled.")
-        guns: GunDict = {}
+
+    guns = Gun.get_and_precalibrate_all(system, rom)
 
     # search wheels in case use_wheels is enabled for this game
     # force use_wheels in case es tells it has a wheel
@@ -207,7 +204,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
             cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
 
             if system.isOptSet('hud_support') and system.getOptBoolean('hud_support'):
-                hud_bezel = getHudBezel(system, generator, rom, gameResolution, controllers.gunsBordersSizeName(guns, system.config), controllers.gunsBorderRatioType(guns, system.config))
+                hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
                 if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"

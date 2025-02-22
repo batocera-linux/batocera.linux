@@ -25,7 +25,8 @@ if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
-    from ...types import DeviceInfoMapping, Gun, GunMapping, Resolution
+    from ...gun import Gun, GunMapping
+    from ...types import DeviceInfoMapping, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -991,10 +992,10 @@ def createLibretroConfig(
 
     # Bezel option
     try:
-        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
+        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, controllersConfig.gunsBordersSizeName(guns, system.config), controllersConfig.gunsBorderRatioType(guns, system.config))
+        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
         _logger.error("Error with bezel %s: %s", bezel, e, exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -1021,7 +1022,6 @@ def configureGunInputsForPlayer(
     system: Emulator,
     /,
 ) -> None:
-
     # find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
     pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
     pedalcname = f"controllers.pedals{n}"
@@ -1034,7 +1034,7 @@ def configureGunInputsForPlayer(
     pedalconfig = None
 
     # gun mapping
-    retroarchConfig[f'input_player{n}_mouse_index'            ] = gun["id_mouse"]
+    retroarchConfig[f'input_player{n}_mouse_index'            ] = gun.mouse_index
     retroarchConfig[f'input_player{n}_gun_trigger_mbtn'       ] = 1
     retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = 2
     pedalconfig = f'input_player{n}_gun_offscreen_shot'
