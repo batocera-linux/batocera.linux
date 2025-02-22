@@ -2825,11 +2825,6 @@ msgid ""
 "resolution."
 msgstr "允许以特定分辨率渲染支持不同分辨率的游戏。"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "Allow mapping Future Pinball with Pad to Keyboard."
-msgstr "允许将Future Pinball手柄映射到键盘."
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
@@ -4332,11 +4327,6 @@ msgctxt "game_options"
 msgid "CONTROLLER COMBINATION"
 msgstr "控制器组合键"
 
-#. TRANSLATION: fpinball
-msgctxt "game_options"
-msgid "CONTROLLER CONFIGURATION"
-msgstr "控制器配置"
-
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
@@ -4765,11 +4755,6 @@ msgctxt "game_options"
 msgid "Center"
 msgstr "居中"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Change Camera Angle"
-msgstr "更改相机角度"
-
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid ""
@@ -5184,11 +5169,6 @@ msgstr "经典软件"
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "退出Moonlight时关闭远程主机上的应用程序。"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Coin"
-msgstr "投币"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -7749,11 +7729,6 @@ msgctxt "game_options"
 msgid "Forces the DX driver to use Managed textures instead of Dynamic."
 msgstr "强制DX驱动程序使用托管纹理而不是动态。"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Forward Nudge"
-msgstr "前推"
-
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "Framerate limiter to reduce CPU utilisation."
@@ -9638,21 +9613,6 @@ msgctxt "keys_files"
 msgid "Left"
 msgstr "左键"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Flipper"
-msgstr "左翻转器"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Magna Save"
-msgstr "左侧磁力保存"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Left Nudge"
-msgstr "左推"
-
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
@@ -10284,11 +10244,6 @@ msgstr "在核心/线程较少的CPU上可能会提供性能增益，但可能�
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr "在一些2D游戏中可能会产生更锐利的图像。"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Mech Tilt"
-msgstr "机械倾斜"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -11944,11 +11899,6 @@ msgctxt "game_options"
 msgid "Playstation 2 wheel type"
 msgstr "PlayStation 2 方向盘类型"
 
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Plunger"
-msgstr "撞针杆"
-
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
@@ -12688,21 +12638,6 @@ msgstr "Rice"
 msgctxt "keys_files"
 msgid "Right"
 msgstr "右键"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Flipper"
-msgstr "右翻转器"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Magna Save"
-msgstr "右侧磁力保存"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Right Nudge"
-msgstr "右推"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -14339,11 +14274,6 @@ msgstr "标准控制器"
 msgctxt "game_options"
 msgid "Standard OpenGL (Default)"
 msgstr "标准OpenGL（默认）"
-
-#. TRANSLATION: fpinball.keys
-msgctxt "keys_files"
-msgid "Start"
-msgstr "开始"
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -16947,6 +16877,10 @@ msgstr "黄色/蓝色"
 #~ msgid "Allow mapping Future Pinabll with Pad to Keyboard."
 #~ msgstr "允许使用键盘将Future Pinball映射到键盘。"
 
+#~ msgctxt "game_options"
+#~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
+#~ msgstr "允许将Future Pinball手柄映射到键盘."
+
 #~ msgctxt "keys_files"
 #~ msgid "Analog 1 Down"
 #~ msgstr "模拟摇杆1 下"
@@ -16988,13 +16922,25 @@ msgstr "黄色/蓝色"
 #~ msgstr "调出菜单"
 
 #~ msgctxt "game_options"
+#~ msgid "CONTROLLER CONFIGURATION"
+#~ msgstr "控制器配置"
+
+#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "居中（默认）"
+
+#~ msgctxt "keys_files"
+#~ msgid "Change Camera Angle"
+#~ msgstr "更改相机角度"
 
 #~ msgctxt "game_options"
 #~ msgid ""
 #~ "Choose the amount of polygon sort accuracy (Higher may cause artifacts)."
 #~ msgstr "选择多边形排序精度的数量（较高可能会导致瑕疵）。"
+
+#~ msgctxt "keys_files"
+#~ msgid "Coin"
+#~ msgstr "投币"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -17139,6 +17085,10 @@ msgstr "黄色/蓝色"
 #~ "当用摇杆玩驾驶游戏, 有时使用大于100%的值更好, 这样拇指操纵摇杆转向就不那么"
 #~ "灵敏了."
 
+#~ msgctxt "keys_files"
+#~ msgid "Forward Nudge"
+#~ msgstr "前推"
+
 #~ msgctxt "game_options"
 #~ msgid "Glorius Eggroll Proton (Default)"
 #~ msgstr "Glorius Eggroll Proton（默认）"
@@ -17152,8 +17102,20 @@ msgstr "黄色/蓝色"
 #~ msgstr "在支持的游戏中隐藏十字光标，例如ActionMax。"
 
 #~ msgctxt "keys_files"
+#~ msgid "Left Flipper"
+#~ msgstr "左翻转器"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Magna Save"
+#~ msgstr "左侧磁力保存"
+
+#~ msgctxt "keys_files"
 #~ msgid "Left Manga Save"
 #~ msgstr "左侧保存"
+
+#~ msgctxt "keys_files"
+#~ msgid "Left Nudge"
+#~ msgstr "左推"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -17174,6 +17136,10 @@ msgstr "黄色/蓝色"
 #~ msgctxt "game_options"
 #~ msgid "Manual (Default)"
 #~ msgstr "手动（默认）"
+
+#~ msgctxt "keys_files"
+#~ msgid "Mech Tilt"
+#~ msgstr "机械倾斜"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17252,6 +17218,10 @@ msgstr "黄色/蓝色"
 #~ msgstr "禁用PinMAME DMD"
 
 #~ msgctxt "keys_files"
+#~ msgid "Plunger"
+#~ msgstr "撞针杆"
+
+#~ msgctxt "keys_files"
 #~ msgid "Press N for Novice"
 #~ msgstr "按N键选择新手模式"
 
@@ -17316,8 +17286,20 @@ msgstr "黄色/蓝色"
 #~ msgstr "退出当前关卡"
 
 #~ msgctxt "keys_files"
+#~ msgid "Right Flipper"
+#~ msgstr "右翻转器"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Magna Save"
+#~ msgstr "右侧磁力保存"
+
+#~ msgctxt "keys_files"
 #~ msgid "Right Manga Save"
 #~ msgstr "右侧保存"
+
+#~ msgctxt "keys_files"
+#~ msgid "Right Nudge"
+#~ msgstr "右推"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -17366,6 +17348,10 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Slot -"
 #~ msgstr "插槽-"
+
+#~ msgctxt "keys_files"
+#~ msgid "Start"
+#~ msgstr "开始"
 
 #~ msgctxt "keys_files"
 #~ msgid "Take a screenshot"
