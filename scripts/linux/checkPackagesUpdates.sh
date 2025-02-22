@@ -157,7 +157,6 @@ PACKAGES_EMULATORS="amiberry
                     liblcf
                     eka2l1
                     flycast
-                    fpinball
                     fsuae
                     gsplus
                     hatari

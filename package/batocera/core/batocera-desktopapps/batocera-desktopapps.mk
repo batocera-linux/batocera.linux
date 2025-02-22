@@ -91,13 +91,6 @@ ifeq ($(BR2_PACKAGE_CEMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
 endif
 
-# fpinball
-ifeq ($(BR2_PACKAGE_FPINBALL),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-fpinball
-  BATOCERA_DESKTOPAPPS_APPS    += fpinball-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += fpinball.png
-endif
-
 # model2emu
 ifeq ($(BR2_PACKAGE_MODEL2EMU),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-model2emu

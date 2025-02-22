@@ -8244,17 +8244,6 @@ flycast:
             "Disabled (Default)": "no"
             "Enabled"           : "yes"
 
-fpinball:
-  features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
-  cfeatures:
-    fpcontroller:
-      prompt: CONTROLLER CONFIGURATION
-      description: Allow mapping Future Pinball with Pad to Keyboard.
-      choices:
-        "Disabled (Default)": false
-        "Enabled":            true
-
 fsuae:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

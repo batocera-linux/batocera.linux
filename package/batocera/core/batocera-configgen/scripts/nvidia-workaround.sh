@@ -3,7 +3,7 @@
 log="/userdata/system/logs/nvidia.log"
 prime_file="/var/tmp/nvidia.prime"
 
-if [[ -e "$prime_file" && ( "$2" == "model2" || "$2" == "jaguar" || "$2" == "xbox360" || "$2" == "wine" || "$2" == "fpinball") ]]; then
+if [[ -e "$prime_file" && ( "$2" == "model2" || "$2" == "xbox360" || "$2" == "wine") ]]; then
     case $1 in
         gameStart)
             echo "Working around a Nvidia Prime bug with WINE" >> "$log"

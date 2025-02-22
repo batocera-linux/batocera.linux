@@ -2789,22 +2789,6 @@ ikemen:
   comment_fr: |
     IKEMEN Go est une re-ecriture de IKEMEN, un moteur qui etend les capacites de MUGEN pour les jeux de combat
 
-fpinball:
-  name:       Future Pinball
-  manufacturer: Christopher Leathley
-  release: 2005
-  hardware: port
-  extensions: [fpt]
-  emulators:
-    fpinball:
-      fpinball:  { requireAnyOf: [BR2_PACKAGE_FPINBALL] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:windows
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:windows
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:windows
-
 flash:
   name:       Flash Player
   manufacturer: Adobe
