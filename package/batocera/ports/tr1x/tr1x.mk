@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-TR1X_VERSION = tr1-4.8.1
+TR1X_VERSION = tr1-4.8.3
 TR1X_SITE = $(call github,LostArtefacts,TRX,$(TR1X_VERSION))
 TR1X_LICENSE = GPL-3.0 license
 TR1X_LICENSE_FILES = COPYING.md
@@ -28,8 +28,6 @@ TR1X_SUBDIR = src/tr1
 TR1X_DEPENDENCIES = ffmpeg4 libglew pcre2 sdl2 uthash
 
 TR1X_CONF_OPTS = -Dstaticdeps=false
-# trx needs the ffmpeg4 config path
-TR1X_CONF_ENV += PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/ffmpeg4.4/pkgconfig"
 
 # Use install target commands to get all files & dirs
 define TR1X_INSTALL_TARGET_CMDS
