@@ -9,19 +9,25 @@ import stat
 import subprocess
 import tarfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, Literal
 
 import requests
 from evdev import ecodes
 
 from ... import Command, controllersConfig
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config, get_mapping_axis_relaxed_values
+from ...controller import (
+    Controller,
+    ControllerMapping,
+    generate_sdl_game_controller_config,
+    get_mapping_axis_relaxed_values,
+)
 from ...utils import bezels as bezelsUtil, hotkeygen
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...types import HotkeysContext
+    from ...Emulator import Emulator
+    from ...types import DeviceInfoMapping, GunMapping, HotkeysContext, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -162,7 +168,7 @@ class LindberghGenerator(Generator):
     def getInGameRatio(self, config, gameResolution, rom):
         return 16 / 9
 
-    def loadConf(self, configFile: Path) -> dict[str, Any]:
+    def loadConf(self, configFile: Path, /) -> dict[str, Any]:
         try:
             with configFile.open('r') as file:
                 lines = file.readlines()
@@ -209,13 +215,13 @@ class LindberghGenerator(Generator):
                 else:
                     print(f"CONF: ignoring key /{key}/")
             else:
-                strippedLine = line.rstrip();
+                strippedLine = line.rstrip()
                 if strippedLine != "":
                     print(f"CONF: ignoring line {strippedLine}")
             n += 1
         return conf
 
-    def setConf(self, conf, key, value):
+    def setConf(self, conf: dict[str, Any], key: str, value: Any, /) -> None:
         if key not in self.CONF_KEYS:
             raise Exception(f"unknown conf key {key}")
 
@@ -228,7 +234,7 @@ class LindberghGenerator(Generator):
         conf["keys"][key]["modified"]  = True
         conf["keys"][key]["commented"] = False
 
-    def commentConf(self, conf, key):
+    def commentConf(self, conf: dict[str, Any], key: str, /) -> None:
         if key not in self.CONF_KEYS:
             raise Exception(f"unknown conf key {key}")
 
@@ -236,7 +242,7 @@ class LindberghGenerator(Generator):
             conf["keys"][key]["modified"]  = True
             conf["keys"][key]["commented"] = True
 
-    def saveConf(self, conf, targetFile):
+    def saveConf(self, conf: dict[str, Any], targetFile: Path, /) -> None:
         # update with modified lines
         for key in conf["keys"]:
             if conf["keys"][key]["modified"]:
@@ -253,7 +259,17 @@ class LindberghGenerator(Generator):
         except Exception as e:
             _logger.debug("Error updating configuration file: %s", e)
 
-    def buildConfFile(self, conf, system, gameResolution, guns, wheels, playersControllers, romName):
+    def buildConfFile(
+        self,
+        conf: dict[str, Any],
+        system: Emulator,
+        gameResolution: Resolution,
+        guns: GunMapping,
+        wheels: DeviceInfoMapping,
+        playersControllers: ControllerMapping,
+        romName: str,
+        /,
+    ) -> None:
         self.setConf(conf, "WIDTH",                     gameResolution['width'])
         self.setConf(conf, "HEIGHT",                    gameResolution['height'])
         self.setConf(conf, "FULLSCREEN",                1)
@@ -315,7 +331,16 @@ class LindberghGenerator(Generator):
 
         self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
-    def setup_controllers(self, conf, system, romName, playersControllers, guns, wheels):
+    def setup_controllers(
+        self,
+        conf: dict[str, Any],
+        system: Emulator,
+        romName: str,
+        playersControllers: ControllerMapping,
+        guns: GunMapping,
+        wheels: DeviceInfoMapping,
+        /,
+    ) -> None:
         # 0: SDL, 1: EVDEV, 2: RAW EVDEV
         if system.isOptSet("lindbergh_controller") and system.config["lindbergh_controller"] == "1":
             input_mode = 0
@@ -354,7 +379,16 @@ class LindberghGenerator(Generator):
         if input_mode == 2:
             self.setup_joysticks_evdev(conf, system, shortRomName, guns, wheels, playersControllers)
 
-    def setup_joysticks_evdev(self, conf, system, shortRomName, guns, wheels, playersControllers):
+    def setup_joysticks_evdev(
+        self,
+        conf: dict[str, Any],
+        system: Emulator,
+        shortRomName: str,
+        guns: GunMapping,
+        wheels: DeviceInfoMapping,
+        playersControllers: ControllerMapping,
+        /,
+    ) -> None:
         # button that are common to all players
         noPlayerButton = {
             "TEST_BUTTON": True,
@@ -480,7 +514,15 @@ class LindberghGenerator(Generator):
                             raise Exception("invalid input type")
                 nplayer += 1
 
-    def getMappingForJoystickOrWheel(self, shortRomName, deviceType, nplayer, pad, isRealWheel):
+    def getMappingForJoystickOrWheel(
+        self,
+        shortRomName: str,
+        deviceType: Literal['wheel', 'gun', 'pad'],
+        nplayer: int,
+        pad: Controller,
+        isRealWheel: bool,
+        /,
+    ) -> dict[str, str]:
         lindberghCtrl_pad = {
             "a":              "BUTTON_2",
             "b":              "BUTTON_1",
@@ -655,7 +697,7 @@ class LindberghGenerator(Generator):
         if deviceType == "pad":
             return lindberghCtrl_pad
 
-    def setup_guns_evdev(self, conf, guns, shortRomName):
+    def setup_guns_evdev(self, conf: dict[str, Any], guns: GunMapping, shortRomName: str, /) -> None:
         nplayer = 1
 
         # common batocera mapping
@@ -806,7 +848,18 @@ class LindberghGenerator(Generator):
             Path(romDir, "libsegaapi.so").unlink()
             _logger.debug("Removed: %s/libsegaapi.so", romDir)
 
-    def setup_config(self, source_dir, system, gameResolution, guns, wheels, playersControllers, romDir, romName):
+    def setup_config(
+        self,
+        source_dir: Path,
+        system: Emulator,
+        gameResolution: Resolution,
+        guns: GunMapping,
+        wheels: DeviceInfoMapping,
+        playersControllers: ControllerMapping,
+        romDir: Path,
+        romName: str,
+        /,
+    ) -> None:
         LINDBERGH_CONFIG_FILE = Path("/userdata/system/configs/lindbergh/lindbergh.conf")
         mkdir_if_not_exists(LINDBERGH_CONFIG_FILE.parent)
 
@@ -851,7 +904,7 @@ class LindberghGenerator(Generator):
             _logger.debug("Error running dmidecode: %s", e)
             return None
 
-    def get_ip_address(self, destination="1.1.1.1", port=80):
+    def get_ip_address(self, destination: str = "1.1.1.1", port: int = 80) -> Any | None:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 s.connect((destination, port))
