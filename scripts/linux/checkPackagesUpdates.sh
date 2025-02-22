@@ -467,6 +467,22 @@ gitlabfreedesktoptagdate_GETNET() {
   wget -qO - "https://gitlab.freedesktop.org/${1}/-/tags/${2}" | grep -m1 'js-timeago' | sed -e s#'.*data-container="body">\(.*\)</time>.*$'#'\1'#
 }
 
+crediarlastcommit_GETNET() {
+  wget -qO - "https://crediar.dev/${1}/-/commits" | grep -oE 'commit/[0-9a-f]{40}' | head -n1 | sed 's#commit/##'
+}
+
+crediarcommitdate_GETNET() {
+  wget -qO - "https://crediar.dev/${1}/-/commit/${2}" | grep -m1 'js-timeago' | sed -e 's#.*data-container="body">\(.*\)</time>.*$#\1#'
+}
+
+crediarlasttag_GETNET() {
+  wget -qO - "https://crediar.dev/${1}/-/tags" | grep -oE '/-/tags/[^"]+' | head -n1 | sed 's#/[-]tags/##'
+}
+
+crediartagdate_GETNET() {
+  wget -qO - "https://crediar.dev/${1}/-/tags/${2}" | grep -m1 'js-timeago' | sed -e 's#.*data-container="body">\(.*\)</time>.*$#\1#'
+}
+
 ## /HELPERS ##
 
 ## GENERATORS ##
@@ -959,6 +975,34 @@ create_pkg_functions_GitLabFreeDesktop() {
   esac
 }
 
+create_pkg_functions_Crediar() {
+  CR_VERS=$(pkg_GETCURVERSION "${1}")
+  if test "$(echo "${CR_VERS}" | wc -c)" = 41  # git full checksum length (40+newline)
+  then
+    eval "${1}_GETNET() {
+      X1=\$(crediarlastcommit_GETNET ${2})
+      X2=\$(crediarcommitdate_GETNET ${2} \${X1})
+      echo \"\${X1} - \${X2}\"
+    }"
+    eval "${1}_GETCUR() {
+      X1=\$(pkg_GETCURVERSION ${1})
+      X2=\$(crediarcommitdate_GETNET ${2} \${X1})
+      echo \"\${X1} - \${X2}\"
+    }"
+  else
+    eval "${1}_GETNET() {
+      X1=\$(crediarlasttag_GETNET ${2})
+      X2=\$(crediartagdate_GETNET ${2} \${X1})
+      echo \"\${X1} - \${X2}\"
+    }"
+    eval "${1}_GETCUR() {
+      X1=\$(pkg_GETCURVERSION ${1})
+      X2=\$(crediartagdate_GETNET ${2} \${X1})
+      echo \"\${X1} - \${X2}\"
+    }"
+  fi
+}
+
 source_site_eval() {
   for pkg in ${PACKAGES}
   do
@@ -1108,6 +1152,10 @@ source_site_eval() {
             ;;
             ""|"binaries"|"\$"* )
               create_pkg_functions_No_Site "${pkg}"
+            ;;
+            *"crediar.dev"* )
+              REPOPATH=$(echo "$TESTSTRING" | sed -e 's#.*crediar\.dev/\([^/]*/[^/]*\)[/]*.*#\1#' -e 's#\.git##')
+              create_pkg_functions_Crediar "${pkg}" "${REPOPATH}"
             ;;
             * )
               echo -e "\n*** UNKNOWN SITE\n  $(find ./package/batocera/ -name "${pkg}.mk" -type f) \n  $TESTSTRING \n***\n"
