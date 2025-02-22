@@ -911,7 +911,7 @@ def input2definition(pad: Controller, key: str, input: str, joycode: int, revers
                 return f"JOYCODE_{joycode}_{input}"
     return "unknown"
 
-def getRoot(config, name):
+def getRoot(config: minidom.Document, name: str, /) -> minidom.Element:
     xml_section = config.getElementsByTagName(name)
 
     if len(xml_section) == 0:
@@ -922,7 +922,7 @@ def getRoot(config, name):
 
     return xml_section
 
-def getSection(config, xml_root, name):
+def getSection(config: minidom.Document, xml_root: minidom.Element, name: str, /) -> minidom.Element:
     xml_section = xml_root.getElementsByTagName(name)
 
     if len(xml_section) == 0:
@@ -933,7 +933,7 @@ def getSection(config, xml_root, name):
 
     return xml_section
 
-def removeSection(config, xml_root, name):
+def removeSection(config: minidom.Document, xml_root: minidom.Element, name: str, /) -> None:
     xml_section = xml_root.getElementsByTagName(name)
 
     for i in range(0, len(xml_section)):

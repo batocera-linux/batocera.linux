@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from ...controllersConfig import getAssociatedMouse, getDevicesInformation
 
@@ -32,7 +32,13 @@ systemToSwapDisable = {'amigacd32', 'amigacdtv', 'naomi', 'atomiswave', 'megadri
 
 # Write a configuration for a specified controller
 # Warning, function used by amiberry because it reads the same retroarch formatting
-def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controllers: ControllerMapping, lightgun: bool) -> None:
+def writeControllersConfig(
+    retroconfig: UnixSettings,
+    system: Emulator,
+    controllers: ControllerMapping,
+    lightgun: bool,
+    /,
+) -> None:
     # Map buttons to the corresponding retroarch specials keys
     retroarchspecials = {'a': 'reset', 'left': 'rewind', 'right': 'hold_fast_forward', 'l3': 'ai_service', 'l2': 'shader_prev', 'r2': 'shader_next'}
 
@@ -70,7 +76,7 @@ def writeControllersConfig(retroconfig: UnixSettings, system: Emulator, controll
     writeHotKeyConfig(retroconfig, controllers)
 
 # Remove all controller configurations
-def cleanControllerConfig(retroconfig: UnixSettings, controllers: ControllerMapping):
+def cleanControllerConfig(retroconfig: UnixSettings, controllers: ControllerMapping, /) -> None:
     retroconfig.disable_all('input_player')
 
     for x in [
@@ -84,13 +90,22 @@ def cleanControllerConfig(retroconfig: UnixSettings, controllers: ControllerMapp
         retroconfig.disable_all(f'input_{x}')
 
 # Write the hotkey for player 1
-def writeHotKeyConfig(retroconfig: UnixSettings, controllers: ControllerMapping):
+def writeHotKeyConfig(retroconfig: UnixSettings, controllers: ControllerMapping, /) -> None:
     if (controller := controllers.get(1)) is not None:
         if 'hotkey' in controller.inputs and controller.inputs['hotkey'].type == 'button':
             retroconfig.save('input_enable_hotkey_btn', controller.inputs['hotkey'].id)
 
 # Write a configuration for a specified controller
-def writeControllerConfig(retroconfig: UnixSettings, controller: Controller, playerIndex: int, system: Emulator, retroarchspecials: Mapping[str, str], lightgun: bool, mouseIndex: int | None = 0):
+def writeControllerConfig(
+    retroconfig: UnixSettings,
+    controller: Controller,
+    playerIndex: int,
+    system: Emulator,
+    retroarchspecials: Mapping[str, str],
+    lightgun: bool,
+    mouseIndex: int | None = 0,
+    /,
+):
     generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
@@ -99,7 +114,14 @@ def writeControllerConfig(retroconfig: UnixSettings, controller: Controller, pla
     retroconfig.save(f'input_player{playerIndex}_analog_dpad_mode', getAnalogMode(controller, system))
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller: Controller, retroarchspecials: Mapping[str, str], system: Emulator, lightgun: bool, mouseIndex: int | None = 0):
+def generateControllerConfig(
+    controller: Controller,
+    retroarchspecials: Mapping[str, str],
+    system: Emulator,
+    lightgun: bool,
+    mouseIndex: int | None = 0,
+    /,
+) -> dict[str, object]:
 # Map an emulationstation button name to the corresponding retroarch name
     retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
@@ -121,7 +143,7 @@ def generateControllerConfig(controller: Controller, retroarchspecials: Mapping[
         retroarchbtns["pageup"] = "r"
         retroarchbtns["pagedown"] = "l"
 
-    config = dict()
+    config: dict[str, object] = {}
     # config['input_device'] = '"%s"' % controller.real_name
     for btnkey in retroarchbtns:
         btnvalue = retroarchbtns[btnkey]
@@ -172,7 +194,7 @@ def generateControllerConfig(controller: Controller, retroarchspecials: Mapping[
 
 
 # Returns the value to write in retroarch config file, depending on the type
-def getConfigValue(input: Input):
+def getConfigValue(input: Input, /) -> str | None:
     if input.type == 'button':
         return input.id
     if input.type == 'axis':
@@ -186,7 +208,7 @@ def getConfigValue(input: Input):
         return input.id
 
 # Return the retroarch analog_dpad_mode
-def getAnalogMode(controller: Controller, system: Emulator):
+def getAnalogMode(controller: Controller, system: Emulator, /) -> Literal['0', '1']:
     # don't enable analog as hat mode for some systems
     if system.name == 'n64' or system.name == 'dreamcast' or system.name == '3ds':
         return '0'
