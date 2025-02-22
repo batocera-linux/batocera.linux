@@ -1,5 +1,5 @@
 #!/bin/bash
-SYSTEM=${1,,}                                                                        # windows, mugen, fpinball
+SYSTEM=${1,,}                                                                        # windows, mugen
 ACTION=${2,,}                                                                        # play, stop... see usage
 GAMENAME="$3"                                                                        # fullpath to game: e.g. /userdata/roms/windows/Age of Empires.wine
 TRICK=${4,,}                                                                         # WINE-tricks, see https://github.com/Winetricks/winetricks

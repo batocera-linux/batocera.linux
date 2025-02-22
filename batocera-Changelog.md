@@ -6,7 +6,8 @@
   The libretro cores will continue to run as before.
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
-- zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
+- Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
+- Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
