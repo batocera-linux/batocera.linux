@@ -76,7 +76,6 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-nestopia
                    libretro-nxengine
                    libretro-o2em
-                   libretro-openlara
                    libretro-opera
                    libretro-parallel-n64
                    libretro-pc88
@@ -269,7 +268,6 @@ PACKAGES_CONTROLLERS="aelightgun
                       guncon3
                       hid-nx
                       input-wrapper
-                      jammasd
                       joycond
                       lightguns-games-precalibrations
                       mk_arcade_joystick_rpi
