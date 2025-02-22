@@ -49,6 +49,13 @@ class TR2XGenerator(Generator):
                 if item.is_dir():
                     if not dest.exists():
                         shutil.copytree(item, dest, dirs_exist_ok=True)
+                    else:
+                        for sub_item in item.rglob('*'):
+                            sub_dest = dest / sub_item.relative_to(item)
+                            if sub_item.is_dir():
+                                sub_dest.mkdir(parents=True, exist_ok=True)
+                            else:
+                                shutil.copy2(sub_item, sub_dest)
                 else:
                     shutil.copy2(item, dest)
             except PermissionError as e:
