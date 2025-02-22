@@ -16,7 +16,7 @@
 #
 ################################################################################
 
-TR2X_VERSION = tr2-0.9
+TR2X_VERSION = tr2-0.9.2
 TR2X_SITE = $(call github,LostArtefacts,TRX,$(TR2X_VERSION))
 TR2X_LICENSE = GPL-3.0 license
 TR2X_LICENSE_FILES = COPYING.md
@@ -27,9 +27,6 @@ TR2X_SUBDIR = src/tr2
 TR2X_DEPENDENCIES = ffmpeg4 libglew pcre2 sdl2 uthash
 
 TR2X_CONF_OPTS = -Dstaticdeps=false
-# trx needs the ffmpeg4 config path
-TR2X_CONF_OPTS += -Dc_args="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/ffmpeg4.4"
-TR2X_CONF_ENV += PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/ffmpeg4.4/pkgconfig"
 
 # Use install target commands to get all files & dirs
 define TR2X_INSTALL_TARGET_CMDS
