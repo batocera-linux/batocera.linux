@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.16
+XEMU_VERSION = v0.8.20
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -143,17 +143,17 @@ define XEMU_GET_SUBMODULES
 	rm tomlplusplus.tar.gz
 	
     # xxhash
-	mkdir -p $(@D)/subprojects/xxHash-0.8.2
+	mkdir -p $(@D)/subprojects/xxHash-0.8.3
 	$(HOST_DIR)/bin/curl -L -o xxhash.tar.gz \
-	    http://github.com/mesonbuild/wrapdb/releases/download/xxhash_0.8.2-1/xxHash-0.8.2.tar.gz
-	$(TAR) -xzf xxhash.tar.gz --strip-components=1 -C $(@D)/subprojects/xxHash-0.8.2
+	    http://github.com/mesonbuild/wrapdb/releases/download/xxhash_0.8.3-1/xxHash-0.8.3.tar.gz
+	$(TAR) -xzf xxhash.tar.gz --strip-components=1 -C $(@D)/subprojects/xxHash-0.8.3
 	rm xxhash.tar.gz
 	
     # xxhash patch
-	$(HOST_DIR)/bin/curl -L -o xxhash_0.8.2-1_patch.zip \
-	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.2-1/get_patch
-	$(UNZIP) -o xxhash_0.8.2-1_patch.zip -d $(@D)/subprojects
-	rm xxhash_0.8.2-1_patch.zip
+	$(HOST_DIR)/bin/curl -L -o xxhash_0.8.3-1_patch.zip \
+	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.3-1/get_patch
+	$(UNZIP) -o xxhash_0.8.3-1_patch.zip -d $(@D)/subprojects
+	rm xxhash_0.8.3-1_patch.zip
 	
     # cpp-httplib
 	mkdir -p $(@D)/subprojects/cpp-httplib
