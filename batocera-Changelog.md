@@ -79,7 +79,7 @@
 - Sonic3 Air to v25.02.15.0-test
 - Taradino to 18th of Feb build
 - TheForceEngine to 20th Feb build
-- Xash3d-fwgs to 8th of Feb build
+- Xash3d-fwgs to 20th of Feb build
 - AppleWin to 8th of Feb build
 - MelonDS to 17th Jan build
 - Snes9x to 24th Jan build
