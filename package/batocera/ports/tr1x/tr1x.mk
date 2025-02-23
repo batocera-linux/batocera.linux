@@ -25,7 +25,7 @@ TR1X_SUPPORTS_IN_SOURCE_BUILD = NO
 # meson.build in src/tr1 subfolder
 TR1X_SUBDIR = src/tr1
 
-TR1X_DEPENDENCIES = ffmpeg4 libglew pcre2 sdl2 uthash
+TR1X_DEPENDENCIES = ffmpeg libglew pcre2 sdl2 uthash
 
 TR1X_CONF_OPTS = -Dstaticdeps=false
 
