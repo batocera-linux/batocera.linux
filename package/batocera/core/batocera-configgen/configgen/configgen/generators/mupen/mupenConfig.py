@@ -215,15 +215,11 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
         iniConfig.set("Video-Glide64mk2", "show_fps", "8") # 1=FPS counter, 2=VI/s counter, 4=% speed, 8=FPS transparent
 
         # Custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
-        for user_config in system.config:
-            if user_config[:12] == "mupen64plus.":
-                section_option = user_config[12:]
-                section_option_splitter = section_option.find(".")
-                custom_section = section_option[:section_option_splitter]
-                custom_option = section_option[section_option_splitter+1:]
-                if not iniConfig.has_section(custom_section):
-                    iniConfig.add_section(custom_section)
-                iniConfig.set(custom_section, custom_option, str(system.config[user_config]))
+        for section_option, user_config_value in system.config.items(starts_with='mupen64plus.'):
+            custom_section, _, custom_option = section_option.partition(".")
+            if not iniConfig.has_section(custom_section):
+                iniConfig.add_section(custom_section)
+            iniConfig.set(custom_section, custom_option, str(user_config_value))
 
 def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: ControllerMapping, system: Emulator):
     if not iniConfig.has_section("CoreEvents"):

@@ -5,7 +5,7 @@ import re
 import shutil
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
@@ -17,6 +17,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...config import SystemConfig
     from ...Emulator import Emulator
     from ...gun import GunMapping
     from ...input import Input
@@ -66,7 +67,7 @@ class Pcsx2Generator(Generator):
         return wheel_type != "Virtual"
 
     @staticmethod
-    def getWheelType(metadata: Mapping[str, str], playingWithWheel: bool, config: dict[str, Any]):
+    def getWheelType(metadata: Mapping[str, str], playingWithWheel: bool, config: SystemConfig):
         wheel_type = "Virtual"
         if playingWithWheel is False:
             return wheel_type
@@ -136,7 +137,7 @@ class Pcsx2Generator(Generator):
             env=envcmd
         )
 
-def getGfxRatioFromConfig(config: dict[str, Any], gameResolution: Resolution):
+def getGfxRatioFromConfig(config: SystemConfig, gameResolution: Resolution):
     # 2: 4:3 ; 1: 16:9
     if "pcsx2_ratio" in config:
         if config["pcsx2_ratio"] == "16:9":

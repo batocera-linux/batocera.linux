@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Final
 from ..batoceraPaths import DEFAULTS_DIR
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
+    from ..config import SystemConfig
     from ..types import Resolution, ScreenInfo
 
 _logger = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ def getRefreshRate() -> str:
     if TYPE_CHECKING:
         raise AssertionError("unreachable")
 
-def getScreensInfos(config: Mapping[str, object]) -> list[ScreenInfo]:
+def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     outputs = getScreens()
     res: list[ScreenInfo] = []
 

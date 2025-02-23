@@ -11,6 +11,7 @@ from ..utils.configparser import CaseSensitiveConfigParser
 
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
+    from collections.abc import Iterator
 
 _logger = logging.getLogger(__name__)
 
@@ -75,15 +76,18 @@ class UnixSettings:
     def remove(self, name: str) -> None:
         self.config.remove_option('DEFAULT', name)
 
-    def load_all(self, name: str, includeName: bool = False) -> dict[str, str]:
+    def get_all(self, name: str, /, *, keep_name: bool = False, keep_defaults: bool = False) -> dict[str, str]:
+        return dict(self.get_all_iter(name, keep_name=keep_name, keep_defaults=keep_defaults))
+
+    def get_all_iter(
+        self, name: str, /, *, keep_name: bool = False, keep_defaults: bool = False
+    ) -> Iterator[tuple[str, str]]:
         _logger.debug("Looking for %s.* in %s", name, self.settings_path)
-        res: dict[str, str] = {}
+
         for key, value in self.config.items('DEFAULT'):
             m = re.match(rf"^{_protect_string(name)}\.(.+)", _protect_string(key))
             if m:
-                if includeName:
-                    res[f"{name}.{m.group(1)}"] = value;
-                else:
-                    res[m.group(1)] = value;
+                if not keep_defaults and value in ['', 'default', 'auto']:
+                    continue
 
-        return res
+                yield f'{name}.{m.group(1)}' if keep_name else m.group(1), value

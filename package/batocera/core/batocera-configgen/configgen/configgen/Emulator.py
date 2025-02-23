@@ -1,236 +1,268 @@
+from __future__ import annotations
+
 import logging
-import os
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping
+from dataclasses import InitVar, dataclass, field
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
-from .gun import GunMapping
+from .config import Config, SystemConfig
 from .settings.unixSettings import UnixSettings
+
+if TYPE_CHECKING:
+    from argparse import Namespace
+    from typing_extensions import deprecated
+
+    from .gun import GunMapping
 
 _logger = logging.getLogger(__name__)
 
-class Emulator():
-    def __init__(self, name: str, rom: str):
-        self.name = name
+# adapted from https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
+def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
+    """Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    updating only top-level keys, dict_merge recurses down into dicts nested
+    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
+    ``dct``.
+    :param destination: dict onto which the merge is executed
+    :param source: dict merged into destination
+    :return: None
+    """
+    for key, value in source.items():
+        if key in destination and isinstance(destination[key], dict) and isinstance(value, Mapping):
+            _dict_merge(destination[key], value)
+        else:
+            destination[key] = value
+
+
+def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
+    with default_yml.open('r') as f:
+        defaults = yaml.load(f, Loader=yaml.CLoader)
+
+    arch_defaults: dict[str, Any] = {}
+    if default_arch_yml.exists():
+        with default_arch_yml.open('r') as f:
+            loaded_arch_defaults = yaml.load(f, Loader=yaml.CLoader)
+        if loaded_arch_defaults is not None:
+            arch_defaults = loaded_arch_defaults
+
+    config: dict[str, Any] = {}
+
+    if 'default' in defaults:
+        config = defaults['default']
+
+    if 'default' in arch_defaults:
+        _dict_merge(config, arch_defaults['default'])
+
+    if system_name in defaults:
+        _dict_merge(config, defaults[system_name])
+
+    if system_name in arch_defaults:
+        _dict_merge(config, arch_defaults[system_name])
+
+    return config
+
+
+def _load_system_config(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
+    defaults = _load_defaults(system_name, default_yml, default_arch_yml)
+
+    # In the yaml files, the "options" structure is not flat, so we have to flatten it here
+    # because the options are flat in batocera.conf to make it easier for end users to edit
+    data: dict[str, Any] = {'emulator': defaults['emulator'], 'core': defaults['core']}
+
+    if 'options' in defaults:
+        _dict_merge(data, defaults['options'])
+
+    return data
+
+
+@dataclass(slots=True)
+class Emulator:
+    args: InitVar[Namespace]
+    rom: InitVar[str]
+
+    name: str = field(init=False)
+    config: SystemConfig = field(init=False)
+    renderconfig: Config = field(init=False)
+
+    def __post_init__(self, args: Namespace, rom: str, /) -> None:
+        self.name = args.system
+
+        rom_path = Path(rom)
 
         # read the configuration from the system name
-        self.config = Emulator.get_system_config(
-            self.name,
-            DEFAULTS_DIR / "configgen-defaults.yml",
-            DEFAULTS_DIR / "configgen-defaults-arch.yml"
+        system_data = _load_system_config(
+            args.system,
+            DEFAULTS_DIR / 'configgen-defaults.yml',
+            DEFAULTS_DIR / 'configgen-defaults-arch.yml'
         )
-        if "emulator" not in self.config or not self.config["emulator"]:
-            _logger.error("no emulator defined. exiting.")
-            raise Exception("No emulator found")
 
-        system_emulator = self.config["emulator"]
-        system_core     = self.config["core"]
+        if not system_data['emulator']:
+            _logger.error('no emulator defined. exiting.')
+            raise Exception('No emulator found')
 
-        gsname = self.game_settings_name(rom)
+        # sanitize rule by EmulationStation
+        # see FileData::getConfigurationName() on batocera-emulationstation
+        gsname = rom_path.name.replace('=', '').replace('#', '')
+        _logger.info('game settings name: %s', gsname)
 
         # load configuration from batocera.conf
-        batoceraSettings = UnixSettings(BATOCERA_CONF)
-        globalSettings = batoceraSettings.load_all('global')
-        controllersSettings = batoceraSettings.load_all('controllers', True)
-        systemSettings = batoceraSettings.load_all(self.name)
-        folderSettings = batoceraSettings.load_all(f'{self.name}.folder["{os.path.dirname(rom)}"]')
-        gameSettings = batoceraSettings.load_all(f'{self.name}["{gsname}"]')
+        settings = UnixSettings(BATOCERA_CONF)
 
-        # add some other options
-        displaySettings = batoceraSettings.load_all('display')
-        for opt in displaySettings:
-            self.config[f"display.{opt}"] = displaySettings[opt]
+        global_settings = settings.get_all('global')
+        system_settings = settings.get_all(args.system)
+        folder_settings = settings.get_all(f'{args.system}.folder["{rom_path.parent}"]')
+        game_settings = settings.get_all(f'{args.system}["{gsname}"]')
 
         # update config
-        Emulator.updateConfiguration(self.config, controllersSettings)
-        Emulator.updateConfiguration(self.config, globalSettings)
-        Emulator.updateConfiguration(self.config, systemSettings)
-        Emulator.updateConfiguration(self.config, folderSettings)
-        Emulator.updateConfiguration(self.config, gameSettings)
-        self.updateFromESSettings()
-        _logger.debug("uimode: %s", self.config['uimode'])
+        system_data.update(settings.get_all_iter('display', keep_name=True, keep_defaults=True))
+        system_data.update(settings.get_all_iter('controllers', keep_name=True))
+        system_data.update(global_settings)
+        system_data.update(system_settings)
+        system_data.update(folder_settings)
+        system_data.update(game_settings)
 
-        # forced emulators ?
-        self.config["emulator-forced"] = False
-        self.config["core-forced"] = False
-        if "emulator" in globalSettings or "emulator" in systemSettings or "emulator" in gameSettings:
-            self.config["emulator-forced"] = True
-        if "core" in globalSettings or "core" in systemSettings or "core" in gameSettings:
-            self.config["core-forced"] = True
+        try:
+            es_config = ET.parse(ES_SETTINGS)
 
-        # update renderconfig
-        self.renderconfig = {}
-        if "shaderset" in self.config:
-            if self.config["shaderset"] != "none":
-                rendering_defaults = USER_SHADERS / "configs" / str(self.config["shaderset"]) / "rendering-defaults.yml"
-                if rendering_defaults.exists():
-                    self.renderconfig = Emulator.get_generic_config(
-                        self.name,
-                        rendering_defaults,
-                        rendering_defaults.with_name("rendering-defaults-arch.yml")
-                    )
-                else:
-                    rendering_defaults = BATOCERA_SHADERS / "configs" / str(self.config["shaderset"]) / "rendering-defaults.yml"
-                    self.renderconfig = Emulator.get_generic_config(
-                        self.name,
-                        rendering_defaults,
-                        rendering_defaults.with_name("rendering-defaults-arch.yml")
-                    )
-            elif self.config["shaderset"] == "none":
-                rendering_defaults = BATOCERA_SHADERS / "configs" / "rendering-defaults.yml"
-                self.renderconfig = Emulator.get_generic_config(
-                    self.name,
-                    rendering_defaults,
-                    rendering_defaults.with_name("rendering-defaults-arch.yml")
-                )
+            # showFPS
+            drawframerate_node = es_config.find('./bool[@name="DrawFramerate"]')
+            drawframerate_value = drawframerate_node.attrib['value'] if drawframerate_node is not None else 'false'
+            if drawframerate_value not in ['false', 'true']:
+                drawframerate_value = 'false'
+
+            system_data['showFPS'] = drawframerate_value == 'true'
+
+            # uimode
+            uimode_node = es_config.find('./string[@name="UIMode"]')
+            uimode_value = uimode_node.attrib['value'] if uimode_node is not None else 'Full'
+            if uimode_value not in ['Full', 'Kiosk', 'Kid']:
+                uimode_value = 'Full'
+
+            system_data['uimode'] = uimode_value
+        except Exception:
+            system_data['showFPS'] = False
+            system_data['uimode'] = 'Full'
+
+        _logger.debug('uimode: %s', system_data['uimode'])
+
+        system_data['emulator-forced'] = (
+            'emulator' in global_settings
+            or 'emulator' in system_settings
+            or 'emulator' in game_settings
+            or args.emulator is not None
+        )
+        system_data['core-forced'] = (
+            'core' in global_settings
+            or 'core' in system_settings
+            or 'core' in game_settings
+            or args.core is not None
+        )
+
+        if args.emulator is not None:
+            system_data['emulator'] = args.emulator
+
+        if args.core is not None:
+            system_data['core'] = args.core
+
+        if 'use_guns' not in system_data and args.lightgun:
+            system_data['use_guns'] = True
+
+        if 'use_wheels' not in system_data and args.wheel:
+            system_data['use_wheels'] = True
+
+        # network options
+        if args.netplaymode is not None:
+            system_data['netplay.mode'] = args.netplaymode
+
+        if args.netplaypass is not None:
+            system_data['netplay.password'] = args.netplaypass
+
+        if args.netplayip is not None:
+            system_data['netplay.server.ip'] = args.netplayip
+
+        if args.netplayport is not None:
+            system_data['netplay.server.port'] = args.netplayport
+
+        if args.netplaysession is not None:
+            system_data['netplay.server.session'] = args.netplaysession
+
+        # autosave arguments
+        if args.state_slot is not None:
+            system_data['state_slot'] = args.state_slot
+
+        if args.autosave is not None:
+            system_data['autosave'] = args.autosave
+
+        if args.state_filename is not None:
+            system_data['state_filename'] = args.state_filename
+
+        self.config = SystemConfig(system_data)
+
+        render_data: dict[str, Any] = {}
+        if (shader_set := self.config.get('shaderset')) is not self.config.MISSING:
+            if shader_set == 'none':
+                rendering_defaults = BATOCERA_SHADERS / 'configs' / 'rendering-defaults.yml'
+            else:
+                rendering_defaults = USER_SHADERS / 'configs' / shader_set / 'rendering-defaults.yml'
+                if not rendering_defaults.exists():
+                    rendering_defaults = BATOCERA_SHADERS / 'configs' / shader_set / 'rendering-defaults.yml'
+
+            render_data = _load_defaults(
+                args.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
+            )
+
+        # es only allow to update systemSettings and gameSettings in fact for the moment
 
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
         # so that we can fetch them from system.shader without -renderer
-        systemSettings = batoceraSettings.load_all(f'{self.name}-renderer')
-        gameSettings = batoceraSettings.load_all(f'{self.name}["{gsname}"]-renderer')
+        render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
+        render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
 
-        # es only allow to update systemSettings and gameSettings in fact for the moment
-        Emulator.updateConfiguration(self.renderconfig, systemSettings)
-        Emulator.updateConfiguration(self.renderconfig, gameSettings)
+        self.renderconfig = Config(render_data)
 
-    def game_settings_name(self, rom: str):
+    if TYPE_CHECKING:
+        @deprecated('Use "key" in config')
+        def isOptSet(self, key: str) -> bool: ...
 
-        rom = os.path.basename(rom)
+        @deprecated('Use config.get_bool()')
+        def getOptBoolean(self, key: str) -> bool: ...
 
-        # sanitize rule by EmulationStation
-        # see FileData::getConfigurationName() on batocera-emulationstation
-        rom = rom.replace('=','')
-        rom = rom.replace('#','')
-        _logger.info("game settings name: %s", rom)
-        return rom
+        @deprecated('Use config.get_str()')
+        def getOptString(self, key: str) -> str: ...
 
-    # to be updated for python3: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
-    @staticmethod
-    def dict_merge(dct: dict[str, Any], merge_dct: Mapping[str, Any]):
-        """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-        updating only top-level keys, dict_merge recurses down into dicts nested
-        to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-        ``dct``.
-        :param dct: dict onto which the merge is executed
-        :param merge_dct: dct merged into dct
-        :return: None
-        """
-        for k, v in merge_dct.items():
-            if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], Mapping)):
-                Emulator.dict_merge(dct[k], merge_dct[k])
-            else:
-                dct[k] = merge_dct[k]
+    else:
+        def isOptSet(self, key: str) -> bool:
+            return key in self.config
 
-    @staticmethod
-    def get_generic_config(system: str, defaultyml: Path, defaultarchyml: Path):
-        with defaultyml.open('r') as f:
-            systems_default = yaml.load(f, Loader=yaml.CLoader)
+        def getOptBoolean(self, key: str) -> bool:
+            true_values = {'1', 'true', 'on', 'enabled', True}
+            value = self.config.get(key)
 
-        systems_default_arch = {}
-        if defaultarchyml.exists():
-            with defaultarchyml.open('r') as f:
-                systems_default_arch = yaml.load(f, Loader=yaml.CLoader)
-                if systems_default_arch is None:
-                    systems_default_arch = {}
-        dict_all = {}
+            if isinstance(value, str):
+                value = value.lower()
 
-        if "default" in systems_default:
-            dict_all = systems_default["default"]
+            return value in true_values
 
-        if "default" in systems_default_arch:
-            Emulator.dict_merge(dict_all, systems_default_arch["default"])
-
-        if system in systems_default:
-            Emulator.dict_merge(dict_all, systems_default[system])
-
-        if system in systems_default_arch:
-            Emulator.dict_merge(dict_all, systems_default_arch[system])
-
-        return dict_all
-
-    @staticmethod
-    def get_system_config(system: str, defaultyml: Path, defaultarchyml: Path):
-        dict_all = Emulator.get_generic_config(system, defaultyml, defaultarchyml)
-
-        # options are in the yaml, not in the system structure
-        # it is flat in the batocera.conf which is easier for the end user, but i prefer not flat in the yml files
-        dict_result = {"emulator": dict_all["emulator"], "core": dict_all["core"]}
-        if "options" in dict_all:
-            Emulator.dict_merge(dict_result, dict_all["options"])
-        return dict_result
-
-    def isOptSet(self, key: str):
-        if key in self.config:
-            return True
-        else:
-            return False
-
-    def getOptBoolean(self, key: str):
-        true_values = {'1', 'true', 'on', 'enabled', True}
-        value = self.config.get(key)
-
-        if isinstance(value, str):
-            value = value.lower()
-
-        return value in true_values
-
-    def getOptString(self, key: str):
-        if key in self.config:
-            if self.config[key]:
-                return self.config[key]
-        return ""
-
-    @staticmethod
-    def updateConfiguration(config: dict[str, Any], settings: dict[str, Any]):
-        # ignore all values "default", "auto", "" to take the system value instead
-        # ideally, such value must not be in the configuration file
-        # but historically some user have them
-        toremove = [k for k in settings if settings[k] == "" or settings[k] == "default" or settings[k] == "auto"]
-        for k in toremove: del settings[k]
-
-        config.update(settings)
-
-    # fps value is from es
-    def updateFromESSettings(self):
-        try:
-            esConfig = ET.parse(ES_SETTINGS)
-
-            # showFPS
-            try:
-                drawframerate_value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
-            except:
-                drawframerate_value = 'false'
-            if drawframerate_value not in ['false', 'true']:
-                drawframerate_value = 'false'
-            self.config['showFPS'] = drawframerate_value
-
-            # uimode
-            try:
-                uimode_value = esConfig.find("./string[@name='UIMode']").attrib["value"]
-            except:
-                uimode_value = 'Full'
-            if uimode_value not in ['Full', 'Kiosk', 'Kid']:
-                uimode_value = 'Full'
-            self.config['uimode'] = uimode_value
-
-        except:
-            self.config['showFPS'] = False
-            self.config['uimode'] = "Full"
+        def getOptString(self, key: str) -> str:
+            if key in self.config:  # noqa: SIM102
+                if self.config[key]:
+                    return self.config[key]
+            return ""
 
     # returns None if no border is wanted
     def guns_borders_size_name(self, guns: GunMapping) -> str | None:
-        borders_size: str = cast(str, self.config.get('controllers.guns.borderssize', 'medium'))
+        borders_size: str = self.config.get('controllers.guns.borderssize', 'medium')
 
         # overridden by specific options
         borders_mode = 'normal'
-        if (config_borders_mode := cast(str, self.config.get('controllers.guns.bordersmode') or 'auto')) != 'auto':
+        if (config_borders_mode := (self.config.get('controllers.guns.bordersmode') or 'auto')) != 'auto':
             borders_mode = config_borders_mode
-        if (config_borders_mode := cast(str, self.config.get('bordersmode') or 'auto')) != 'auto':
+        if (config_borders_mode := (self.config.get('bordersmode') or 'auto')) != 'auto':
             borders_mode = config_borders_mode
 
         # others are gameonly and normal
@@ -248,4 +280,4 @@ class Emulator():
 
     # returns None to follow the bezel overlay size by default
     def guns_border_ratio_type(self, guns: GunMapping) -> str | None:
-        return self.config.get('controllers.guns.bordersratio')
+        return self.config.get('controllers.guns.bordersratio', None)

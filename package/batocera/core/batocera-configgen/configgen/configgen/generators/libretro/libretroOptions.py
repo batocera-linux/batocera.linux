@@ -3131,9 +3131,8 @@ def generateCoreSettings(
         set_options(coreSettings, system, rom, guns, wheels)
 
     # Custom : Allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
-    for user_config, value in system.config.items():
-        if user_config.startswith('retroarchcore.'):
-            coreSettings.save(user_config[14:], f'"{value}"')
+    for user_config, value in system.config.items(starts_with='retroarchcore.'):
+        coreSettings.save(user_config, f'"{value}"')
 
 def generateHatariConf(hatariConf: Path) -> None:
     hatariConfig = CaseSensitiveConfigParser(interpolation=None)

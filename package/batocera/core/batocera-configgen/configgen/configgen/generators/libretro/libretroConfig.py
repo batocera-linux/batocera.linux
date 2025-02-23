@@ -22,6 +22,7 @@ from .libretroPaths import (
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ...config import SystemConfig
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
@@ -54,7 +55,7 @@ def getInvertButtonsValue() -> bool:
         return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
-def defined(key: str, dict: Mapping[str, Any], /) -> bool:
+def defined(key: str, dict: Mapping[str, Any] | SystemConfig, /) -> bool:
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
 
@@ -1008,9 +1009,8 @@ def createLibretroConfig(
         _logger.error("Error with bezel %s: %s", bezel, e, exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
-    for user_config in systemConfig:
-        if user_config[:10] == "retroarch.":
-            retroarchConfig[user_config[10:]] = systemConfig[user_config]
+    for key, value in systemConfig.items(starts_with='retroarch.'):
+        retroarchConfig[key] = value
 
     return retroarchConfig
 
