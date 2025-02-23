@@ -1,0 +1,24 @@
+diff --git a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt.new
+index eb4ecce7b3..138ac087ff 100644
+--- a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
++++ b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt.new
+@@ -12,13 +12,13 @@ project(Sonic3AIR)
+ # Build options
+ option(BUILD_OXYGEN_ENGINEAPP "Build the Oxygen App executable" ON)
+ option(BUILD_OXYGEN_SERVER "Build the Oxygen server executable" OFF)
++# Declare an option to enable or disable Discord integration.
++option(USE_DISCORD "Enable Discord integration" OFF)
+ 
+-
+-# Determine whether to support discord integration
+-set(USE_DISCORD true)
+-if (UNIX AND CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+-	link_directories(/opt/vc/lib)	# Needed when building on Raspberry Pi
+-	set(USE_DISCORD false)
++# On ARM systems (e.g., Raspberry Pi), optionally warn and disable Discord integration.
++if (USE_DISCORD AND UNIX AND CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
++    message(WARNING "Discord integration is not supported on ARM. Disabling Discord integration.")
++    set(USE_DISCORD OFF)
+ endif()
+ if (USE_DISCORD)
+ 	add_definitions(-DUSE_DISCORD)
