@@ -1,32 +1,21 @@
 diff --git a/bin/pironman5 b/bin/pironman5
-index e68ccf122a..71080c975f 100644
+index 2ac8cb324b..a7e363e763 100644
 --- a/bin/pironman5
 +++ b/bin/pironman5
-@@ -1,15 +1,15 @@
- #!/bin/bash
+@@ -17,13 +17,13 @@ for arg in "${args[@]}"; do
+ done
  
- start() {
--    /opt/pironman5/venv/bin/pironman5-service start
-+    /usr/bin/pironman5-service start
- }
- 
- start-background() {
--    /opt/pironman5/venv/bin/pironman5-service start 2>1 1>/dev/null &
-+    /usr/bin/pironman5-service start 2>1 1>/dev/null &
- }
- 
- stop() {
+ if $restart_found; then
 -    /opt/pironman5/venv/bin/pironman5-service stop
 +    /usr/bin/pironman5-service stop
- }
- 
- restart() {
-@@ -28,7 +28,7 @@ elif [ "$1" == "stop" ]; then
- elif [ "$1" == "restart" ]; then
-     restart
- else
--    /opt/pironman5/venv/bin/pironman5-service "$@"
-+    /usr/bin/pironman5-service "$@"
+     sleep 5
  fi
  
- # Pass all arguments to the pironman5 script
+ if $background_found; then
+-    /opt/pironman5/venv/bin/pironman5-service "${new_args[@]}" 2>1 1>/dev/null &
++    /usr/bin/pironman5-service "${new_args[@]}" 2>1 1>/dev/null &
+ else
+-    /opt/pironman5/venv/bin/pironman5-service "${new_args[@]}"
++    /usr/bin/pironman5-service "${new_args[@]}"
+ fi
+ 
