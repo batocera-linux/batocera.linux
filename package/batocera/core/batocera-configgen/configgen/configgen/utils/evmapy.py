@@ -217,6 +217,7 @@ class evmapy(AbstractContextManager[None, None]):
                                     if input.name == "up":
                                         absbasey_positive =  int(input.value) >= 0
                                     else:
+                                        known_axes_codes.pop(input.code)
                                         axisId = None # don't duplicate, configuration should be done for up
                                 elif input.name == "left" or input.name == "right":
                                     axisId   = "BASE"
@@ -224,6 +225,7 @@ class evmapy(AbstractContextManager[None, None]):
                                     if input.name == "left":
                                         absbasex_positive = int(input.value) < 0
                                     else:
+                                        known_axes_codes.pop(input.code)
                                         axisId = None # don't duplicate, configuration should be done for left
                                 else:
                                     axisId   = "_OTHERS_"
@@ -372,7 +374,7 @@ class evmapy(AbstractContextManager[None, None]):
                 mapping["left"]  = "ABSBASEX:max"
                 mapping["right"] = "ABSBASEX:min"
 
-        if "ABSBASEX:min" in known_buttons_names:
+        if "ABSBASEY:min" in known_buttons_names:
             if absbasey_positive:
                 mapping["down"]  = "ABSBASEY:max"
                 mapping["up"]    = "ABSBASEY:min"
