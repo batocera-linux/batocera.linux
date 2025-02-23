@@ -21,6 +21,7 @@ config BR2_PACKAGE_RPCS3
     select BR2_PACKAGE_WOLFSSL_ALL
     select BR2_PACKAGE_OPENCV4
     select BR2_PACKAGE_OPENCV4_LIB_PHOTO
+    select BR2_PACKAGE_FLATBUFFERS
     help
       RPCS3 is a multi-platform open-source Sony PlayStation 3 emulator.
 
