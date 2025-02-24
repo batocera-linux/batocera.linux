@@ -4,7 +4,7 @@ import filecmp
 import json
 import shutil
 from os import environ
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import evdev
 from evdev import InputDevice
@@ -24,7 +24,7 @@ ryujinxConfFile: Final = ryujinxConf / "Config.json"
 ryujinxKeys: Final = BIOS / "switch" / "prod.keys"
 ryujinxExec: Final = ryujinxConf / "ryujinx"
 
-ryujinxCtrl = {
+ryujinxCtrl: dict[str, Any] = {
         "left_joycon_stick": {
         "joystick": "Left",
         "invert_stick_x": False,
@@ -223,7 +223,7 @@ class RyujinxGenerator(Generator):
             "QT_QPA_PLATFORM":"xcb", \
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
 
-def writeControllerIntoJson(new_controller, filename: Path = ryujinxConfFile):
+def writeControllerIntoJson(new_controller: dict[str, Any], filename: Path = ryujinxConfFile):
     with filename.open('r+') as file:
         file_data = json.load(file)
         file_data["input_config"].append(new_controller)

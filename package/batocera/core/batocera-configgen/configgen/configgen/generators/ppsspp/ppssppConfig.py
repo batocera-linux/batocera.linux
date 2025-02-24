@@ -30,7 +30,7 @@ def writePPSSPPConfig(system: Emulator):
     with ensure_parents_and_open(ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createPPSSPPConfig(iniConfig, system):
+def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
 
     ## [GRAPHICS]
     if not iniConfig.has_section("Graphics"):

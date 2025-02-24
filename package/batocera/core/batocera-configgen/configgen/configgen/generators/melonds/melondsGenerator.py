@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import toml
 
@@ -41,7 +41,7 @@ class MelonDSGenerator(Generator):
             config = {}
 
         # Define base configuration
-        base_config = {
+        base_config: dict[str, Any] = {
             "MouseHide": False,
             "LastBIOSFolder": str(BIOS),
             "PauseLostFocus": False,

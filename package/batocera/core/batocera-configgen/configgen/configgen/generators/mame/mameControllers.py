@@ -556,7 +556,7 @@ def hasStick(pad: Controller) -> bool:
     else:
         return False
 
-def getRoot(config, name):
+def getRoot(config: minidom.Document, name: str):
     xml_section = config.getElementsByTagName(name)
 
     if len(xml_section) == 0:
@@ -567,7 +567,7 @@ def getRoot(config, name):
 
     return xml_section
 
-def getSection(config, xml_root, name):
+def getSection(config: minidom.Document, xml_root: minidom.Element, name: str):
     xml_section = xml_root.getElementsByTagName(name)
 
     if len(xml_section) == 0:
@@ -578,14 +578,14 @@ def getSection(config, xml_root, name):
 
     return xml_section
 
-def removeSection(config, xml_root, name):
+def removeSection(config: minidom.Document, xml_root: minidom.Element, name: str):
     xml_section = xml_root.getElementsByTagName(name)
 
     for i in range(0, len(xml_section)):
         old = xml_root.removeChild(xml_section[i])
         old.unlink()
 
-def addCommonPlayerPorts(config, xml_input, nplayer):
+def addCommonPlayerPorts(config: minidom.Document, xml_input: minidom.Element, nplayer: int):
     # adstick for guns
     for axis in ["X", "Y"]:
         nanalog = 1 if axis == "X" else 2

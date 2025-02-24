@@ -5,7 +5,7 @@ import re
 import shutil
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...gun import GunMapping
     from ...input import Input
-    from ...types import DeviceInfoMapping, HotkeysContext
+    from ...types import DeviceInfoMapping, HotkeysContext, Resolution
 
 _logger = logging.getLogger(__name__)
 
@@ -55,18 +55,18 @@ class Pcsx2Generator(Generator):
         return 4/3
 
     @staticmethod
-    def isPlayingWithWheel(system, wheels):
+    def isPlayingWithWheel(system: Emulator, wheels: DeviceInfoMapping):
         return system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0
 
     @staticmethod
-    def useEmulatorWheels(playingWithWheel, wheel_type):
+    def useEmulatorWheels(playingWithWheel: bool, wheel_type: str):
         if playingWithWheel is False:
             return False
         # the virtual type is the virtual wheel that use a physical wheel to manipulate the pad
         return wheel_type != "Virtual"
 
     @staticmethod
-    def getWheelType(metadata, playingWithWheel, config):
+    def getWheelType(metadata: Mapping[str, str], playingWithWheel: bool, config: dict[str, Any]):
         wheel_type = "Virtual"
         if playingWithWheel is False:
             return wheel_type
@@ -136,7 +136,7 @@ class Pcsx2Generator(Generator):
             env=envcmd
         )
 
-def getGfxRatioFromConfig(config, gameResolution):
+def getGfxRatioFromConfig(config: dict[str, Any], gameResolution: Resolution):
     # 2: 4:3 ; 1: 16:9
     if "pcsx2_ratio" in config:
         if config["pcsx2_ratio"] == "16:9":

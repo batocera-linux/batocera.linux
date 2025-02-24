@@ -69,7 +69,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"
 
-        sticksNode = {}
+        sticksNode: dict[str, minidom.Element] = {}
 
         alreadyset = {}
         for x in cur.inputs:

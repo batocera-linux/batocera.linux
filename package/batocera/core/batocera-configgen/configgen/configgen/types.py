@@ -9,6 +9,18 @@ class Resolution(TypedDict):
     height: int
 
 
+class BezelInfo(TypedDict):
+    width: int
+    height: int
+    top: int
+    left: int
+    bottom: int
+    right: int
+    opacity: NotRequired[float]
+    messagex: NotRequired[float]
+    messagey: NotRequired[float]
+
+
 class ScreenInfo(TypedDict):
     width: int
     height: int

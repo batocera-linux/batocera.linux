@@ -10,7 +10,7 @@ from . import ppssppConfig, ppssppControllers
 from .ppssppPaths import PPSSPP_CONFIG_DIR
 
 if TYPE_CHECKING:
-    from ...types import HotkeysContext
+    from ...types import HotkeysContext, Resolution
 
 
 class PPSSPPGenerator(Generator):
@@ -74,7 +74,7 @@ class PPSSPPGenerator(Generator):
         )
 
     @staticmethod
-    def isLowResolution(gameResolution):
+    def isLowResolution(gameResolution: Resolution):
         return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
 
     # Show mouse on screen for the Config Screen

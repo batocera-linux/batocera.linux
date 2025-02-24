@@ -50,7 +50,7 @@ def parse_args(launch_args: list[str | Path], rom_path: Path) -> Result:
     ]}
     with rom_path.open("r") as file:
         lines = file.readlines()
-    errors = []
+    errors: list[ParseError] = []
     for i, line in enumerate(lines):
         line = line.strip()
         if line.startswith("#") or line.startswith("//"):

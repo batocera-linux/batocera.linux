@@ -7,6 +7,7 @@ from ...utils.configparser import CaseSensitiveRawConfigParser
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from io import TextIOWrapper
     from pathlib import Path
 
     from ...Emulator import Emulator
@@ -83,9 +84,8 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
         viceConfig.write(EqualsSpaceRemover(configfile))
 
 class EqualsSpaceRemover:
-    output_file = None
-    def __init__( self, new_output_file ):
+    def __init__(self, new_output_file: TextIOWrapper):
         self.output_file = new_output_file
 
-    def write( self, what ):
+    def write(self, what: str):
         self.output_file.write( what.replace( " = ", "=", 1 ) )

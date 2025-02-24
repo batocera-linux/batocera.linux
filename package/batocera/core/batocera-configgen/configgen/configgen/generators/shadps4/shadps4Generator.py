@@ -62,7 +62,7 @@ class shadPS4Generator(Generator):
             sys.exit(1)
 
         # Adjust the config.toml file
-        config = {}
+        config: dict[str, dict[str, object]] = {}
         toml_file = configPath / "user" / "config.toml"
 
         # Check if the file exists

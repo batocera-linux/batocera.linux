@@ -92,8 +92,8 @@ def getDevicesInformation() -> DeviceInfoDict:
     devices: dict[int, _Device] = {}
     context   = pyudev.Context()
     events    = context.list_devices(subsystem='input')
-    mouses    = []
-    joysticks = []
+    mouses: list[int]    = []
+    joysticks: list[int] = []
     for ev in events:
         eventId = dev2int(str(ev.device_node))
         if eventId is not None:
