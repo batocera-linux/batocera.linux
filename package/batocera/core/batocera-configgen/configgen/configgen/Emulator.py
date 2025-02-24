@@ -1,9 +1,9 @@
-import collections
 import logging
 import os
 import xml.etree.ElementTree as ET
+from collections.abc import Mapping
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import yaml
 
@@ -14,7 +14,7 @@ from .settings.unixSettings import UnixSettings
 _logger = logging.getLogger(__name__)
 
 class Emulator():
-    def __init__(self, name, rom):
+    def __init__(self, name: str, rom: str):
         self.name = name
 
         # read the configuration from the system name
@@ -98,7 +98,7 @@ class Emulator():
         Emulator.updateConfiguration(self.renderconfig, systemSettings)
         Emulator.updateConfiguration(self.renderconfig, gameSettings)
 
-    def game_settings_name(self,rom):
+    def game_settings_name(self, rom: str):
 
         rom = os.path.basename(rom)
 
@@ -111,7 +111,7 @@ class Emulator():
 
     # to be updated for python3: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
     @staticmethod
-    def dict_merge(dct, merge_dct):
+    def dict_merge(dct: dict[str, Any], merge_dct: Mapping[str, Any]):
         """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
         updating only top-level keys, dict_merge recurses down into dicts nested
         to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
@@ -121,7 +121,7 @@ class Emulator():
         :return: None
         """
         for k, v in merge_dct.items():
-            if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.abc.Mapping)):
+            if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], Mapping)):
                 Emulator.dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]
@@ -164,13 +164,13 @@ class Emulator():
             Emulator.dict_merge(dict_result, dict_all["options"])
         return dict_result
 
-    def isOptSet(self, key):
+    def isOptSet(self, key: str):
         if key in self.config:
             return True
         else:
             return False
 
-    def getOptBoolean(self, key):
+    def getOptBoolean(self, key: str):
         true_values = {'1', 'true', 'on', 'enabled', True}
         value = self.config.get(key)
 
@@ -179,14 +179,14 @@ class Emulator():
 
         return value in true_values
 
-    def getOptString(self, key):
+    def getOptString(self, key: str):
         if key in self.config:
             if self.config[key]:
                 return self.config[key]
         return ""
 
     @staticmethod
-    def updateConfiguration(config, settings):
+    def updateConfiguration(config: dict[str, Any], settings: dict[str, Any]):
         # ignore all values "default", "auto", "" to take the system value instead
         # ideally, such value must not be in the configuration file
         # but historically some user have them

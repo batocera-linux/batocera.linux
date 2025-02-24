@@ -66,7 +66,7 @@ class RedreamGenerator(Generator):
             "r2":            3
         }
         nplayer = 1
-        written_guids = set()
+        written_guids: set[str] = set()
         for index in playersControllers:
             controller = playersControllers[index]
             if nplayer <= 4:

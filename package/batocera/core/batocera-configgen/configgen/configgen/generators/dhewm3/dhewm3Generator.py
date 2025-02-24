@@ -81,7 +81,7 @@ class Dhewm3Generator(Generator):
         else:
             options_to_set["seta sys_lang"] = "english"
 
-        def update_config_file(file_path):
+        def update_config_file(file_path: Path):
             if file_path.is_file():
                 with file_path.open('r') as config_file:
                     lines = config_file.readlines()

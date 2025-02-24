@@ -28,7 +28,7 @@ class WineGenerator(Generator):
         elif system.name == "windows":
             commandArray = ["batocera-wine", "windows", "play", rom]
 
-            environment = {}
+            environment: dict[str, str | Path] = {}
             #system.language
             try:
                 language = subprocess.check_output("batocera-settings-get system.language", shell=True, text=True).strip()

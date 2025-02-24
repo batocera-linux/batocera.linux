@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import codecs
 import logging
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, TypedDict
 
 from ...batoceraPaths import mkdir_if_not_exists
 from .rpcs3Paths import RPCS3_CONFIG_DIR
@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 _RPCS3_INPUT_DIR: Final = RPCS3_CONFIG_DIR / "input_configs" / "global"
+
+
+class _InputMapping(TypedDict):
+    config_name: str
+    event_variations: list[tuple[str, str]]
+
 
 def generateControllerConfig(system: Emulator, controllers: ControllerMapping, rom: str):
 
@@ -58,7 +64,7 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
         ("joystick2left", "Right Stick Left", [("ABS_RX", "RX-")])
     ]
 
-    mapping_dict = {}
+    mapping_dict: dict[str, _InputMapping] = {}
     for input_name, config_name, event_variations in input_mapping:
         mapping_dict[input_name] = {
             "config_name": config_name,

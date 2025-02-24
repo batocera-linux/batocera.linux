@@ -576,38 +576,6 @@ class MameGenerator(Generator):
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":SAVES})
 
     @staticmethod
-    def getRoot(config, name):
-        xml_section = config.getElementsByTagName(name)
-
-        if len(xml_section) == 0:
-            xml_section = config.createElement(name)
-            config.appendChild(xml_section)
-        else:
-            xml_section = xml_section[0]
-
-        return xml_section
-
-    @staticmethod
-    def getSection(config, xml_root, name):
-        xml_section = xml_root.getElementsByTagName(name)
-
-        if len(xml_section) == 0:
-            xml_section = config.createElement(name)
-            xml_root.appendChild(xml_section)
-        else:
-            xml_section = xml_section[0]
-
-        return xml_section
-
-    @staticmethod
-    def removeSection(config, xml_root, name):
-        xml_section = xml_root.getElementsByTagName(name)
-
-        for i in range(0, len(xml_section)):
-            old = xml_root.removeChild(xml_section[i])
-            old.unlink()
-
-    @staticmethod
     def writeBezelConfig(bezelSet: str | None, system: Emulator, rom: Path, messSys: str, gameResolution: Resolution, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:
         if messSys == "":
             tmpZipDir = Path("/var/run/mame_artwork") / rom.stem # ok, no need to zip, a folder is taken too

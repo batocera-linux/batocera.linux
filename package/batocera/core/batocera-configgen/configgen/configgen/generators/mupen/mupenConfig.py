@@ -8,6 +8,7 @@ from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
+    from ...input import Input
     from ...types import Resolution
     from ...utils.configparser import CaseSensitiveConfigParser
 
@@ -267,7 +268,7 @@ def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controlle
                 iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
 
 
-def createButtonCode(button):
+def createButtonCode(button: Input):
     if(button.type == 'axis'):
         if button.value == '-1':
             return f'A{button.id}-'

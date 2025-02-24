@@ -75,7 +75,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
             commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
         commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/mame/;/userdata/bios/"' ]
-        pluginsToLoad = []
+        pluginsToLoad: list[str] = []
         if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
             pluginsToLoad += [ "hiscore" ]
         if system.isOptSet("coindropplugin") and system.getOptBoolean("coindropplugin"):

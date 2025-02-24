@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shutil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import ruamel.yaml
 import ruamel.yaml.util
@@ -43,13 +43,13 @@ class Vita3kGenerator(Generator):
         # Create the config.yml file if it doesn't exist
         mkdir_if_not_exists(vitaConfig)
 
-        vita3kymlconfig = None
-        indent = None
-        block_seq_indent = None
+        vita3kymlconfig: dict[str, Any] | None = None
+        indent: int | None = None
+        block_seq_indent: int | None = None
 
         if vitaConfigFile.is_file():
             with vitaConfigFile.open('r') as stream:
-                vita3kymlconfig, indent, block_seq_indent = ruamel.yaml.util.load_yaml_guess_indent(stream)
+                vita3kymlconfig, indent, block_seq_indent = cast('tuple[dict[str, Any] | None, int | None, int | None]', ruamel.yaml.util.load_yaml_guess_indent(stream))
 
         if vita3kymlconfig is None:
             vita3kymlconfig = {}

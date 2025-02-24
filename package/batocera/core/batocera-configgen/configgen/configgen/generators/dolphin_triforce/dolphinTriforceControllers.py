@@ -166,7 +166,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
     nplayer = 1
     nsamepad = 0
     # In case of two pads having the same name, dolphin wants a number to handle this
-    double_pads = dict()
+    double_pads: dict[str, int] = {}
 
     for playercontroller, pad in sorted(playersControllers.items()):
         # Handle x pads having the same name

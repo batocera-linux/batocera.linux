@@ -7,7 +7,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import toml
 
@@ -149,14 +149,14 @@ class XeniaGenerator(Generator):
                     _logger.error('Disc installation/XBLA title %s from %s not found, check path or filename.', firstLine, rom)
 
         # adjust the config toml file accordingly
-        config = {}
+        config: dict[str, dict[str, Any]] = {}
         if core == 'xenia-canary':
             toml_file = canarypath / 'xenia-canary.config.toml'
         else:
             toml_file = emupath / 'xenia.config.toml'
         if toml_file.is_file():
             with toml_file.open() as f:
-                config = toml.load(f)
+                config: dict[str, dict[str, Any]] = toml.load(f)
 
         # [ Now adjust the config file defaults & options we want ]
         # add node CPU

@@ -42,7 +42,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        used_wheels = {}
+        used_wheels: DeviceInfoMapping = {}
         if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
             if "wheel_type" in metadata:
                 if metadata["wheel_type"] == "Steering Wheel":
@@ -75,7 +75,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
         'joystick2left': 'Tilt/Left',
         'hotkey':        'Buttons/Hotkey'
     }
-    wiiReverseAxes = {
+    wiiReverseAxes: dict[str | None, str] = {
         'IR/Up':                    'IR/Down',
         'IR/Left':                  'IR/Right',
         'Swing/Up':                 'Swing/Down',
@@ -213,7 +213,7 @@ def generateControllerConfig_gamecube(system: Emulator, playersControllers: Cont
         'joystick2left': 'C-Stick/Left',
         'hotkey':        'Buttons/Hotkey'
     }
-    gamecubeReverseAxes = {
+    gamecubeReverseAxes: dict[str | None, str] = {
         'Main Stick/Up':   'Main Stick/Down',
         'Main Stick/Left': 'Main Stick/Right',
         'C-Stick/Up':      'C-Stick/Down',
@@ -406,7 +406,7 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
     f.write
     f.close()
 
-def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str]) -> dict[str, str]:
+def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str | None]) -> dict[str, str | None]:
     mapping = dict(anyMapping)
     # Fixes default gamecube style controller mapping for ES from es_input (gc A confirm/gc B cancel)
     if system.isOptSet(f"dolphin_port_{nplayer}_type") and system.config[f'dolphin_port_{nplayer}_type'] == '6b':
@@ -425,7 +425,7 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str]
 
     return mapping
 
-def generateControllerConfig_any(system: Emulator, playersControllers: ControllerMapping, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
+def generateControllerConfig_any(system: Emulator, playersControllers: ControllerMapping, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
     nplayer = 1
@@ -492,7 +492,7 @@ def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller
                 write_key(f, wheelMapping["joystick1right"], input.type, input.id, input.value, pad.axis_count, True, None, None)
 
 
-def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: Mapping[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator, nplayer: int, nsamepad: int) -> None:
+def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator, nplayer: int, nsamepad: int) -> None:
     for opt in extraOptions:
         f.write(f"{opt} = {extraOptions[opt]}\n")
 

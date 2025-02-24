@@ -192,7 +192,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
     def findWiimoteType(pad: Controller) -> str:
         context = pyudev.Context()
         device = pyudev.Devices.from_device_file(context, pad.device_path)
-        names = []
+        names: list[str] = []
         for input_device in context.list_devices(parent=device.find_parent('hid')).match_subsystem('input'):
             if 'NAME' in input_device.properties:
                 names += [input_device.properties['NAME'].strip('"')]
