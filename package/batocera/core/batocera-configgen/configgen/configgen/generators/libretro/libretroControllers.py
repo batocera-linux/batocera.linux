@@ -40,7 +40,7 @@ def writeControllersConfig(
     /,
 ) -> None:
     # Map buttons to the corresponding retroarch specials keys
-    retroarchspecials = {'a': 'reset', 'left': 'rewind', 'right': 'hold_fast_forward', 'l3': 'ai_service', 'l2': 'shader_prev', 'r2': 'shader_next'}
+    retroarchspecials = {'l3': 'ai_service', 'l2': 'shader_prev', 'r2': 'shader_next'}
 
     # Some input adaptations for some systems with swap Disc/CD
     if (system.config['core'] in coreWithSwapSupport) and (system.name not in systemToSwapDisable):
@@ -62,8 +62,10 @@ def writeControllersConfig(
     retroconfig.save('input_load_state',          '"f4"')
     retroconfig.save('input_state_slot_decrease', '"f5"')
     retroconfig.save('input_state_slot_increase', '"f6"')
-    retroconfig.save('input_toggle_fast_forward', '"f11"')
-    retroconfig.save('input_screenshot',          '"f12"')
+    retroconfig.save('input_reset',               '"f10"')
+    retroconfig.save('input_rewind',              '"f11"')
+    retroconfig.save('input_hold_fast_forward',   '"f12"')
+    retroconfig.save('input_screenshot',          '"nul"')
 
     for controller in controllers:
         mouseIndex = None
