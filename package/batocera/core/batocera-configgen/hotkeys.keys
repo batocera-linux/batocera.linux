@@ -7,6 +7,12 @@
 	    "description": "Exit emulator"
         },
 	{
+            "trigger": ["hotkey", "a"],
+            "type": "key",
+            "target": [ "KEY_RESTART" ],
+	    "description": "Reset"
+        },
+	{
             "trigger": ["hotkey", "b"],
             "type": "key",
             "target": [ "KEY_MENU" ],
@@ -35,6 +41,18 @@
             "type": "key",
             "target": [ "KEY_NEXT" ],
 	    "description": "Next slot"
+        },
+	{
+            "trigger": ["hotkey", "left"],
+            "type": "key",
+            "target": [ "KEY_REWIND" ],
+	    "description": "Rewind"
+        },
+	{
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": [ "KEY_FASTFORWARD" ],
+	    "description": "Fast forward"
         },
 	{
             "trigger": ["hotkey", "pageup"],

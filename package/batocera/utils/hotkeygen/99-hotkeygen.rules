@@ -1,0 +1,1 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="batocera hotkeys", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_MOUSE}="0"

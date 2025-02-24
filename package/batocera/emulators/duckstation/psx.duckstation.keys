@@ -1,28 +1,10 @@
 {
     "actions_player1": [
 	{
-        "trigger": ["hotkey", "a"],
-        "type": "key",
-        "target": [ "KEY_F6" ],
-	    "description": "Restart Game"
-	},
-	{
-        "trigger": ["hotkey", "left"],
-        "type": "key",
-        "target": [ "KEY_F5" ],
-	    "description": "Rewind"
-	},
-	{
         "trigger": ["hotkey", "pagedown"],
         "type": "key",
         "target": [ "KEY_F8" ],
 	    "description": "Next Disc (m3u)"
-	},
-	{
-        "trigger": ["hotkey", "right"],
-        "type": "key",
-        "target": [ "KEY_TAB" ],
-	    "description": "Fast Forward"
 	}
     ]
 }

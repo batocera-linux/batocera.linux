@@ -47,7 +47,9 @@ class MameGenerator(Generator):
             "keys": { "exit":  "KEY_ESC",
                       "menu":  "KEY_TAB",
                       "pause": "KEY_F5",
+                      "reset": "KEY_F3",
                       "coin":  "KEY_5",
+                      "fastforward": "KEY_PAGEDOWN",
                       "save_state" : [ "KEY_LEFTSHIFT", "KEY_F6" ],
                       "restore_state": [ "KEY_LEFTSHIFT", "KEY_F7" ] }
         }

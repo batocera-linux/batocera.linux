@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, TypedDict
+import errno
 
 import evdev
 import pyudev
@@ -238,37 +239,30 @@ def print_mapping(
                     print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:15}")
 
 
-def send_keys(target: evdev.UInput, keys: int | list[int] | str) -> None:
+def send_keys(target: evdev.UInput, keys: int | list[int] | str, begin: bool) -> None:
+    if begin:
+        n = 1
+    else:
+        n = 0
+
     if isinstance(keys, list):
         for x in keys:
             if gdebug:
-               print(f"sending EV_KEY {x} 1")
-            target.write(ecodes.EV_KEY, x, 1)
-            target.syn()
-        # time required for emulators (like mame) based on states and not on events
-        # (if you go too fast, the event is not seen)
-        time.sleep(0.1)
-        for x in keys:
-            if gdebug:
-                print(f"sending EV_KEY {x} 0")
-            target.write(ecodes.EV_KEY, x, 0)
+               print(f"sending EV_KEY {x} {n}")
+            target.write(ecodes.EV_KEY, x, n)
             target.syn()
     else:
-        target.write(ecodes.EV_KEY, keys, 1)
         if gdebug:
-            print(f"sending EV_KEY {keys} 1")
-        target.syn()
-        # time required for emulators (like mame) based on states and not on events
-        # (if you go too fast, the event is not seen)
-        time.sleep(0.1)
-        if gdebug:
-            print(f"sending EV_KEY {keys} 0")
-        target.write(ecodes.EV_KEY, keys, 0)
+            print(f"sending EV_KEY {keys} {n}")
+        target.write(ecodes.EV_KEY, keys, n)
         target.syn()
 
-def do_send(key: str) -> None:
+def do_send(key: str, delay: None | int) -> None:
     if gdebug:
-        print(f"Sending {key}")
+        if delay:
+            print(f"Sending {key} with delay {delay}")
+        else:
+            print(f"Sending {key}")
 
     mapping = get_mapping(None)
     for code in mapping:
@@ -276,7 +270,15 @@ def do_send(key: str) -> None:
             if gdebug:
                 print(f"sending {key}")
             sender = evdev.UInput(name="virtual keyboard", events={ ecodes.EV_KEY: [code] })
-            send_keys(sender, code)
+            time.sleep(0.1) # need some time to initialize... (otherwise the first events are ignored the time add is taken)
+            send_keys(sender, code, True)
+            # time required for emulators (like mame) based on states and not on events
+            # (if you go too fast, the event is not seen)
+            if delay:
+                time.sleep(delay)
+            else:
+                time.sleep(0.1)
+            send_keys(sender, code, False)
 
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
@@ -384,15 +386,21 @@ class Daemon:
                     del self.input_devices_by_fd[input_device.fileno()]
                     del self.input_devices[device.device_node]
 
-    def __handle_event(self, event: evdev.InputEvent, action: str) -> None:
+    def __handle_event(self, event: evdev.InputEvent, action: str, begin: bool) -> None:
         if self.context is not None and action in self.context["keys"]:
             keys = self.context["keys"][action]
             if gdebug:
                 print(f"code:{event.code}, value:{event.value}, action:{action}")
-            if isinstance(keys, str):
-                os.system(keys)
+            if begin:
+                if isinstance(keys, str):
+                    pass # nothing on keydown
+                else:
+                    send_keys(self.target, keys, True)
             else:
-                send_keys(self.target, keys)
+                if isinstance(keys, str):
+                    os.system(keys)
+                else:
+                    send_keys(self.target, keys, False)
 
     def __write_pid(self) -> None:
         with GPID_FILE.open("w") as fd:
@@ -435,18 +443,22 @@ class Daemon:
                         if (
                             event is not None and
                             event.type == ecodes.EV_KEY and
-                            event.value == 0 and  # limit to key down
                             event.code in self.mappings_by_fd[fd]
                         ):
-                            self.__handle_event(event, self.mappings_by_fd[fd][event.code])
-                except (OSError, KeyError):
+                            if event.value == 1:
+                                self.__handle_event(event, self.mappings_by_fd[fd][event.code], True)
+                            elif event.value == 0:
+                                self.__handle_event(event, self.mappings_by_fd[fd][event.code], False)
+                except (OSError, KeyError) as e:
                     if fd == self.monitor.fileno():
                         raise
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
                             input_device = self.input_devices_by_fd[fd]
-                            print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                            if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
+                                print(e)
+                                print(f"error on device {input_device.name} ({input_device.path}), closing.")
                             del self.mappings_by_fd[fd]
                             del self.input_devices_by_fd[fd]
                             del self.input_devices[input_device.path]
@@ -464,6 +476,7 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--list", action="store_true")
     parser.add_argument("--send")
+    parser.add_argument("--send-delay", type=int)
     parser.add_argument("--default-context", action="store_true")
     parser.add_argument("--new-context", nargs=2, metavar=("new-context-name", "new-context-json"))
     parser.add_argument("--permanent", action="store_true")
@@ -474,7 +487,7 @@ if __name__ == "__main__":
     if args.list:
         do_list()
     elif args.send is not None:
-        do_send(args.send)
+        do_send(args.send, args.send_delay)
     elif args.new_context is not None:
         new_context_name, new_context_json = args.new_context
         do_new_context(new_context_name, new_context_json)
