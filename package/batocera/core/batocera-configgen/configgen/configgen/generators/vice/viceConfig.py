@@ -69,15 +69,11 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
     viceConfig.set(systemCore, "JoyMapFile",  str(viceController))
 
     # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value
-    for user_config in system.config:
-        if user_config[:5] == "vice.":
-            section_option = user_config[5:]
-            section_option_splitter = section_option.find(".")
-            custom_section = section_option[:section_option_splitter]
-            custom_option = section_option[section_option_splitter+1:]
-            if not viceConfig.has_section(custom_section):
-                viceConfig.add_section(custom_section)
-            viceConfig.set(custom_section, custom_option, system.config[user_config])
+    for section_option, user_config_value in system.config.items(starts_with='vice.'):
+        custom_section, _, custom_option = section_option.partition(".")
+        if not viceConfig.has_section(custom_section):
+            viceConfig.add_section(custom_section)
+        viceConfig.set(custom_section, custom_option, user_config_value)
 
     # update the configuration file
     with viceConfigRC.open('w') as configfile:

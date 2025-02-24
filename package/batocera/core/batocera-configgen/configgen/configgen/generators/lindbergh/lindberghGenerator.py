@@ -118,7 +118,7 @@ class LindberghGenerator(Generator):
                     _logger.debug("Made %s executable", exe_file)
 
         # Run command
-        if system.isOptSet("lindbergh_test") and system.getOptBoolean("lindbergh_test"):
+        if system.config.get_bool("lindbergh_test"):
             commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
         else:
             commandArray: list[str | Path] = [str(romDir / "lindbergh")]
@@ -274,14 +274,14 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "WIDTH",                     gameResolution['width'])
         self.setConf(conf, "HEIGHT",                    gameResolution['height'])
         self.setConf(conf, "FULLSCREEN",                1)
-        self.setConf(conf, "REGION",                    system.config["lindbergh_region"] if system.isOptSet("lindbergh_region") else "EX")
-        self.setConf(conf, "FPS_TARGET",                system.config["lindbergh_fps"]    if system.isOptSet("lindbergh_fps")    else "60")
-        self.setConf(conf, "FPS_LIMITER_ENABLED",       1 if system.isOptSet("lindbergh_limit")    and system.getOptBoolean("lindbergh_limit")    else 0)
-        self.setConf(conf, "FREEPLAY",                  1 if system.isOptSet("lindbergh_freeplay") and system.getOptBoolean("lindbergh_freeplay") else 0)
-        self.setConf(conf, "KEEP_ASPECT_RATIO",         1 if system.isOptSet("lindbergh_aspect")   and system.getOptBoolean("lindbergh_aspect")   else 0)
-        self.setConf(conf, "DEBUG_MSGS",                1 if system.isOptSet("lindbergh_debug")    and system.getOptBoolean("lindbergh_debug")    else 0)
-        self.setConf(conf, "HUMMER_FLICKER_FIX",        1 if system.isOptSet("lindbergh_hummer")   and system.getOptBoolean("lindbergh_hummer")   else 0)
-        self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", 1 if system.isOptSet("lindbergh_lens")     and system.getOptBoolean("lindbergh_lens")     else 0)
+        self.setConf(conf, "REGION",                    system.config.get("lindbergh_region", "EX"))
+        self.setConf(conf, "FPS_TARGET",                system.config.get("lindbergh_fps", "60"))
+        self.setConf(conf, "FPS_LIMITER_ENABLED",       system.config.get_bool("lindbergh_limit", return_values=(1, 0)))
+        self.setConf(conf, "FREEPLAY",                  system.config.get_bool("lindbergh_freeplay", return_values=(1, 0)))
+        self.setConf(conf, "KEEP_ASPECT_RATIO",         system.config.get_bool("lindbergh_aspect", return_values=(1, 0)))
+        self.setConf(conf, "DEBUG_MSGS",                system.config.get_bool("lindbergh_debug", return_values=(1, 0)))
+        self.setConf(conf, "HUMMER_FLICKER_FIX",        system.config.get_bool("lindbergh_hummer", return_values=(1, 0)))
+        self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", system.config.get_bool("lindbergh_lens", return_values=(1, 0)))
         self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", 1 if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else 0)
         self.setConf(conf, "SRAM_PATH",   f"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}")
         self.setConf(conf, "EEPROM_PATH", f"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}")
@@ -289,7 +289,7 @@ class LindberghGenerator(Generator):
         ## Additional game specific options
 
         # Virtua Tennis - Card Reader
-        if "tennis" in romName.lower() and system.isOptSet("lindbergh_card") and system.getOptBoolean("lindbergh_card"):
+        if "tennis" in romName.lower() and system.config.get_bool("lindbergh_card"):
             self.setConf(conf, "EMULATE_CARDREADER", 1)
             self.setConf(conf, "CARDFILE_01", f"{self.LINDBERGH_SAVES}/VT3_Card_01.crd")
             self.setConf(conf, "CARDFILE_02", f"{self.LINDBERGH_SAVES}/VT3_Card_02.crd")
@@ -300,7 +300,7 @@ class LindberghGenerator(Generator):
         cpu_speed = self.get_cpu_speed()
         if cpu_speed is not None:
             _logger.debug("Current CPU Speed: %.2f GHz", cpu_speed)
-            if "hotd" in romName.lower() and system.isOptSet("lindbergh_speed") and system.getOptBoolean("lindbergh_speed"):
+            if "hotd" in romName.lower() and system.config.get_bool("lindbergh_speed"):
                 self.setConf(conf, "CPU_FREQ_GHZ", cpu_speed)
 
         # OutRun 2 - Network
@@ -310,13 +310,13 @@ class LindberghGenerator(Generator):
             ip = self.get_ip_address(destination="8.8.8.8")
         if ip:
             _logger.debug("Current IP Address: %s", ip)
-            if "outr2sdx" in romName.lower() and system.isOptSet("lindbergh_ip") and system.getOptBoolean("lindbergh_ip"):
+            if "outr2sdx" in romName.lower() and system.config.get_bool("lindbergh_ip"):
                 self.setConf(conf, "OR2_IP", ip)
         else:
             _logger.debug("Unable to retrieve IP address.")
 
         ## Guns
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+        if system.config.use_guns and guns:
             need_guns_border = False
             for gun in guns:
                 if guns[gun].needs_borders:
@@ -343,7 +343,7 @@ class LindberghGenerator(Generator):
         /,
     ) -> None:
         # 0: SDL, 1: EVDEV, 2: RAW EVDEV
-        if system.isOptSet("lindbergh_controller") and system.config["lindbergh_controller"] == "1":
+        if system.config.get("lindbergh_controller") == "1":
             input_mode = 0
         else:
             input_mode = 2
@@ -373,7 +373,7 @@ class LindberghGenerator(Generator):
 
         # configure guns
         if input_mode == 2:
-            if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+            if system.config.use_guns:
                 self.setup_guns_evdev(conf, guns, shortRomName)
 
         # joysticks
@@ -410,11 +410,11 @@ class LindberghGenerator(Generator):
             # Handle two players / controllers only, don't do if already configured for guns
             maxplayers = 2
 
-            if nplayer <= 2 and continuePlayers and not (system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) >= nplayer):
+            if nplayer <= 2 and continuePlayers and not (system.config.use_guns and len(guns) >= nplayer):
                 relaxValues = get_mapping_axis_relaxed_values(pad)
 
                 ### choose the adapted mapping
-                if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+                if system.config.use_wheels:
                     lindberghCtrl = self.getMappingForJoystickOrWheel(
                         shortRomName,
                         "wheel",
@@ -424,7 +424,7 @@ class LindberghGenerator(Generator):
                         len(wheels) >= nplayer
                     )
                     _logger.debug("lindbergh wheel mapping for player %s", nplayer)
-                elif system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
+                elif system.config.use_guns:
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
                     _logger.debug("lindbergh gun mapping for player %s", nplayer)
                 else:

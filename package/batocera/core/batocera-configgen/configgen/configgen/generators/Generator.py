@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ..Command import Command
+    from ..config import SystemConfig
     from ..controller import ControllerMapping
     from ..Emulator import Emulator
     from ..gun import GunMapping
@@ -27,13 +28,13 @@ class Generator(metaclass=ABCMeta):
     ) -> Command:
         ...
 
-    def getResolutionMode(self, config: dict[str, Any]) -> str:
+    def getResolutionMode(self, config: SystemConfig) -> str:
         return config['videomode']
 
-    def getMouseMode(self, config: dict[str, Any], rom: str) -> bool:
+    def getMouseMode(self, config: SystemConfig, rom: str) -> bool:
         return False
 
-    def executionDirectory(self, config: dict[str, Any], rom: str) -> str | None:
+    def executionDirectory(self, config: SystemConfig, rom: str) -> str | None:
         return None
 
     # mame or libretro have internal bezels, don't display the one of mangohud
@@ -44,7 +45,7 @@ class Generator(metaclass=ABCMeta):
     def hasInternalMangoHUDCall(self) -> bool:
         return False
 
-    def getInGameRatio(self, config: dict[str, Any], gameResolution: Resolution, rom: str) -> float:
+    def getInGameRatio(self, config: SystemConfig, gameResolution: Resolution, rom: str) -> float:
         # put a default value, but it should be overriden by generators
         return 4/3
 

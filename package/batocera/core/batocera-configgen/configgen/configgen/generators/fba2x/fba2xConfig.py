@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from ...config import SystemConfig
     from ...Emulator import Emulator
     from ...utils.configparser import CaseSensitiveConfigParser
 
 
 # return true if the option is considered defined
-def defined(key: str, dict: dict[str, Any]) -> bool:
+def defined(key: str, dict: dict[str, Any] | SystemConfig) -> bool:
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
 def updateFBAConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator) -> None:

@@ -64,40 +64,27 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
     # find the system to run
     systemName = args.system
     _logger.debug("Running system: %s", systemName)
-    system = Emulator(systemName, romConfiguration)
+    system = Emulator(args, romConfiguration)
 
-    if args.emulator is not None:
-        system.config["emulator"] = args.emulator
-        system.config["emulator-forced"] = True
-    if args.core is not None:
-        system.config["core"] = args.core
-        system.config["core-forced"] = True
-    debugDisplay = system.config.copy()
-    if "retroachievements.password" in debugDisplay:
-        debugDisplay["retroachievements.password"] = "***"
-    _logger.debug("Settings: %s", debugDisplay)
+    _logger.debug("Settings: %s", {
+        key: '***' if 'password' in key else value for key, value in system.config.items()
+    })
+
     if "emulator" in system.config and "core" in system.config:
-        _logger.debug('emulator: %s, core: %s', system.config["emulator"], system.config["core"])
+        _logger.debug('emulator: %s, core: %s', system.config.emulator, system.config.core)
     else:
         if "emulator" in system.config:
-            _logger.debug('emulator: %s', system.config["emulator"])
+            _logger.debug('emulator: %s', system.config.emulator)
 
     # metadata
     metadata = controllers.getGamesMetaData(systemName, rom)
-
-    # search guns in case use_guns is enabled for this game
-    # force use_guns in case es tells it has a gun
-    if not system.isOptSet('use_guns') and args.lightgun:
-        system.config["use_guns"] = True
 
     guns = Gun.get_and_precalibrate_all(system, rom)
 
     # search wheels in case use_wheels is enabled for this game
     # force use_wheels in case es tells it has a wheel
     wheelProcesses = None
-    if not system.isOptSet('use_wheels') and args.wheel:
-        system.config["use_wheels"] = True
-    if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+    if system.config.use_wheels:
         deviceInfos = controllers.getDevicesInformation()
         (wheelProcesses, player_controllers, deviceInfos) = wheelsUtils.reconfigureControllers(player_controllers, system, rom, metadata, deviceInfos)
         wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
@@ -106,7 +93,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
         wheels: DeviceInfoDict = {}
 
     # find the generator
-    generator = get_generator(system.config['emulator'])
+    generator = get_generator(system.config.emulator)
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generator.getResolutionMode(system.config)
@@ -118,7 +105,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
     try:
         # lower the resolution if mode is auto
         newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
-        if system.config["videomode"] == "" or system.config["videomode"] == "default":
+        if system.config.video_mode == "" or system.config.video_mode == "default":
             _logger.debug("minTomaxResolution")
             _logger.debug("video mode before minmax: %s", systemMode)
             videoMode.minTomaxResolution()
@@ -148,53 +135,33 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
 
         # core
         effectiveCore = ""
-        if "core" in system.config and system.config["core"] is not None:
-            effectiveCore = system.config["core"]
+        if "core" in system.config and system.config.core is not None:
+            effectiveCore = system.config.core
         effectiveRom = ""
         effectiveRomConfiguration = ""
         if rom is not None:
             effectiveRom = rom
             effectiveRomConfiguration = romConfiguration
 
-        # network options
-        if args.netplaymode is not None:
-            system.config["netplay.mode"] = args.netplaymode
-        if args.netplaypass is not None:
-            system.config["netplay.password"] = args.netplaypass
-        if args.netplayip is not None:
-            system.config["netplay.server.ip"] = args.netplayip
-        if args.netplayport is not None:
-            system.config["netplay.server.port"] = args.netplayport
-        if args.netplaysession is not None:
-            system.config["netplay.server.session"] = args.netplaysession
-
-        # autosave arguments
-        if args.state_slot is not None:
-            system.config["state_slot"] = args.state_slot
-        if args.autosave is not None:
-            system.config["autosave"] = args.autosave
-        if args.state_filename is not None:
-            system.config["state_filename"] = args.state_filename
-
         if generator.getMouseMode(system.config, rom):
             mouseChanged = True
             videoMode.changeMouse(True)
 
         # SDL VSync is a big deal on OGA and RPi4
-        if system.isOptSet('sdlvsync') and not system.getOptBoolean('sdlvsync'):
+        if not system.config.get_bool('sdlvsync', True):
             system.config["sdlvsync"] = '0'
         else:
             system.config["sdlvsync"] = '1'
         os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
 
         # run a script before emulator starts
-        callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
-        callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
+        callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+        callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
 
         # run the emulator
         from .utils.evmapy import evmapy
         with (
-            evmapy(systemName, system.config['emulator'], effectiveCore, effectiveRomConfiguration, player_controllers, guns),
+            evmapy(systemName, system.config.emulator, effectiveCore, effectiveRomConfiguration, player_controllers, guns),
             set_hotkeygen_context(generator, system)
         ):
             # change directory if wanted
@@ -204,12 +171,12 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
 
             cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
 
-            if system.isOptSet('hud_support') and system.getOptBoolean('hud_support'):
+            if system.config.get_bool('hud_support'):
                 hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
-                if (system.isOptSet('hud') and system.config['hud'] != "" and system.config['hud'] != "none") or hud_bezel is not None:
+                if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
                     gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                     cmd.env["MANGOHUD_DLSYM"] = "1"
-                    hudconfig = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, rom, gameinfos, hud_bezel)
+                    hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, gameinfos, hud_bezel)
                     hud_config_file = Path('/var/run/hud.config')
                     with hud_config_file.open('w') as f:
                         f.write(hudconfig)
@@ -224,8 +191,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
                 _profiler.enable()
 
         # run a script after emulator shuts down
-        callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
-        callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
+        callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+        callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
 
     finally:
         # always restore the resolution
@@ -252,13 +219,17 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
 
 def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
     if generator.supportsInternalBezels():
-        _logger.debug("skipping bezels for emulator %s", system.config['emulator'])
+        _logger.debug("skipping bezels for emulator %s", system.config.emulator)
         return None
     # no good reason for a bezel
-    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none") and not (system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0") and bordersSize is None:
+    bezel = system.config.get_str('bezel', 'none')
+    bezel_tattoo = system.config.get_str('bezel.tattoo', '0')
+
+    if (not bezel or bezel == 'none') and (not bezel_tattoo or bezel_tattoo == '0') and bordersSize is None:
         return None
+
     # no bezel, generate a transparent one for the tatoo/gun borders ... and so on
-    if ('bezel' not in system.config or system.config['bezel'] == "" or system.config['bezel'] == "none"):
+    if not bezel or bezel == 'none':
         overlay_png_file  = Path("/tmp/bezel_transhud_black.png")
         overlay_info_file = Path("/tmp/bezel_transhud_black.info")
         bezelsUtil.createTransparentBezel(overlay_png_file, gameResolution["width"], gameResolution["height"])
@@ -270,8 +241,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
     else:
         _logger.debug("hud enabled. trying to apply the bezel %s", system.config['bezel'])
 
-        bezel = system.config['bezel']
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config['emulator'])
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config.emulator)
         if bz_infos is None:
             _logger.debug("no bezel info file found")
             return None
@@ -365,10 +335,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
 
     # if screen and bezel sizes doesn't match, resize
     # stretch option
-    if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch'):
-        bezel_stretch = True
-    else:
-        bezel_stretch = False
+    bezel_stretch = system.config.get_bool('bezel_stretch')
     if (bezel_width != gameResolution["width"] or bezel_height != gameResolution["height"]):
         _logger.debug("bezel needs to be resized")
         output_png_file = Path("/tmp/bezel.png")
@@ -379,7 +346,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
             return None
         overlay_png_file = output_png_file
 
-    if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+    if bezel_tattoo != "0":
         output_png_file = Path("/tmp/bezel_tattooed.png")
         bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
         overlay_png_file = output_png_file
@@ -438,17 +405,17 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
     if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
-    if not system.isOptSet('hud') or system.config['hud'] == "none":
+    if system.config.get('hud', 'none') == 'none':
         return configstr + "background_alpha=0\n" # hide the background
 
     mode = system.config["hud"]
     hud_position = "bottom-left"
-    if system.isOptSet('hud_corner') and system.config["hud_corner"] != "" :
-        if system.config["hud_corner"] == "NW":
+    if (hud_corner := system.config.get('hud_corner', '')) != '':
+        if hud_corner == "NW":
             hud_position = "top-left"
-        elif system.config["hud_corner"] == "NE":
+        elif hud_corner == "NE":
             hud_position = "top-right"
-        elif system.config["hud_corner"] == "SE":
+        elif hud_corner == "SE":
             hud_position = "bottom-right"
 
     emulatorstr = emulator
@@ -467,8 +434,8 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
         configstr += f"position={hud_position}\nbackground_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
     elif mode == "game":
         configstr += f"position={hud_position}\nbackground_alpha=0\nlegacy_layout=false\nfont_size=32\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
-    elif mode == "custom" and system.isOptSet('hud_custom') and system.config["hud_custom"] != "" :
-        configstr += system.config["hud_custom"].replace("\\n", "\n")
+    elif mode == "custom" and (hud_custom := system.config.get_str('hud_custom')):
+        configstr += hud_custom.replace("\\n", "\n")
     else:
         configstr = configstr + "background_alpha=0\n" # hide the background
 

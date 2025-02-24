@@ -11,10 +11,9 @@ from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORAT
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from PIL.ImageFile import ImageFile
 
+    from ..config import SystemConfig
     from ..Emulator import Emulator
 
 _logger = logging.getLogger(__name__)
@@ -332,7 +331,7 @@ def gunBorderImage(input_png: str | Path, output_png: str | Path, aspect_ratio: 
 def gunsBorderSize(w: int, h: int, innerBorderSizePer: int = 2, outerBorderSizePer: int = 3) -> int:
     return (w * (innerBorderSizePer + outerBorderSizePer)) // 100
 
-def gunsBordersColorFomConfig(config: Mapping[str, object]) -> str:
+def gunsBordersColorFomConfig(config: SystemConfig) -> str:
     if "controllers.guns.borderscolor" in config:
         if config["controllers.guns.borderscolor"] == "red":
             return "#ff0000"

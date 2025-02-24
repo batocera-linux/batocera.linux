@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from os import environ
 from struct import pack, unpack
-from typing import TYPE_CHECKING, Any, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 from ...utils.logger import setup_logging
 from .dolphinPaths import DOLPHIN_SAVES
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
+    from ...config import SystemConfig
     from ...types import Resolution
 
 
@@ -116,29 +117,23 @@ def getWiiLangFromEnvironment():
     else:
         return availableLanguages["en_US"]
 
-def getRatioFromConfig(config: Mapping[str, Any], gameResolution: Resolution):
+def getRatioFromConfig(config: SystemConfig, gameResolution: Resolution) -> int:
     # Sets the setting available to the Wii's internal NAND. Only has two values:
     # 0: 4:3 ; 1: 16:9
-    if "tv_mode" in config:
-        if config["tv_mode"] == "1":
-            return 1
-        else:
-            return 0
-    else:
-        return 0
+    if config.get('tv_mode') == '1':
+        return 1
 
-def getSensorBarPosition(config: Mapping[str, Any]):
+    return 0
+
+def getSensorBarPosition(config: SystemConfig) -> int:
     # Sets the setting available to the Wii's internal NAND. Only has two values:
     # 0: BOTTOM ; 1: TOP
-    if "sensorbar_position" in config:
-        if config["sensorbar_position"] == "1":
-            return 1
-        else:
-            return 0
-    else:
-        return 0
+    if config.get('sensorbar_position') == '1':
+        return 1
 
-def update(config: Mapping[str, Any], filepath: Path, gameResolution: Resolution) -> None:
+    return 0
+
+def update(config: SystemConfig, filepath: Path, gameResolution: Resolution) -> None:
     arg_setval = {
         "IPL.LNG": getWiiLangFromEnvironment(),
         "IPL.AR": getRatioFromConfig(config, gameResolution),
