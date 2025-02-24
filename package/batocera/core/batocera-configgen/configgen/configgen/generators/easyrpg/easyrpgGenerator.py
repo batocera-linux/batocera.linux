@@ -18,7 +18,7 @@ class EasyRPGGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "easyrpg",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F9", "pause": "KEY_ESC", "restore_state": "KEY_F12", "save_state": "KEY_F11" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F9", "pause": "KEY_ESC", "restore_state": "KEY_F12", "save_state": "KEY_F11", "rewind": "KEY_F" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
