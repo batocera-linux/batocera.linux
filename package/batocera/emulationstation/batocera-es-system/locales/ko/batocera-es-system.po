@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-02-04 22:11+0900\n"
+"PO-Revision-Date: 2025-02-20 21:32+0900\n"
 "Last-Translator: DDinghoya <ddinghoya@gmail.com>\n"
 "Language-Team: \n"
 "Language: ko_KO\n"
@@ -1346,12 +1346,12 @@ msgstr "386DX, 33MHz (7800 cps)"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "386_prefetch"
-msgstr ""
+msgstr "386_prefetch"
 
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "386_slow"
-msgstr ""
+msgstr "386_slow"
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -1496,7 +1496,7 @@ msgstr "486DX2, 66MHz (26800 cps)"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "486_slow"
-msgstr ""
+msgstr "486_slow"
 
 #. TRANSLATION: libretro/dosbox_pure, libretro/mame, mame/pcsx2, xenia, xenia-canary
 msgctxt "game_options"
@@ -2336,12 +2336,12 @@ msgstr "APF M-1000 카트리지"
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "APPLE2GS-BIOS.ROM"
-msgstr ""
+msgstr "APPLE2GS-BIOS.ROM"
 
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "APPLE2GS.ROM"
-msgstr ""
+msgstr "APPLE2GS.ROM"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -2476,7 +2476,7 @@ msgstr "오디오 볼륨 게인"
 #. TRANSLATION: dosbox, dosbox, dosbox
 msgctxt "game_options"
 msgid "AUTO"
-msgstr ""
+msgstr "AUTO"
 
 #. TRANSLATION: tsugaru
 msgctxt "game_options"
@@ -2833,6 +2833,11 @@ msgid ""
 "resolution."
 msgstr "다양한 해상도를 지원하는 게임이 특정 해상도로 렌더링되도록 허용합니다."
 
+#. TRANSLATION: fpinball
+msgctxt "game_options"
+msgid "Allow mapping Future Pinball with Pad to Keyboard."
+msgstr "패드와 키보드를 이용한 퓨처 핀볼 매핑을 허용합니다."
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping."
@@ -2923,7 +2928,7 @@ msgstr "미국 영어"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "Amount of instructions DOSBox tries to emulate"
-msgstr ""
+msgstr "도스박스가 에뮬레이션하려는 명령어 수"
 
 #. TRANSLATION: libretro/mame078plus
 msgctxt "game_options"
@@ -3601,11 +3606,6 @@ msgstr "BT601_525/D93"
 msgctxt "game_options"
 msgid "BT601_625/D65 (recommended for all EUR/AUS developed games)"
 msgstr "BT601_625/D65 (모든 EUR/AUS 개발 게임에 권장)"
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Back / Menu"
-msgstr ""
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -4347,6 +4347,11 @@ msgctxt "game_options"
 msgid "CONTROLLER COMBINATION"
 msgstr "컨트롤러 조합"
 
+#. TRANSLATION: fpinball
+msgctxt "game_options"
+msgid "CONTROLLER CONFIGURATION"
+msgstr "컨트롤러 구성"
+
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "CONTROLLER MODE"
@@ -4435,12 +4440,12 @@ msgstr "CPU 코어 방식"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "CPU CYCLES"
-msgstr ""
+msgstr "CPU CYCLES"
 
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "CPU Core used in emulation"
-msgstr ""
+msgstr "에뮬레이션에 사용되는 CPU 코어"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -4475,7 +4480,7 @@ msgstr "CPU 유형"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "CPU Type used in emulation"
-msgstr ""
+msgstr "에뮬레이션에 사용되는 CPU 유형"
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
@@ -4783,6 +4788,11 @@ msgctxt "game_options"
 msgid "Center"
 msgstr "중앙"
 
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Change Camera Angle"
+msgstr "카메라 각도 변경"
+
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
 msgid ""
@@ -5047,7 +5057,7 @@ msgstr ""
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
-msgstr ""
+msgstr "GSplus를 부팅할 바이오스 파일을 선택하세요."
 
 #. TRANSLATION: cemu, citra, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
@@ -5214,6 +5224,11 @@ msgstr "클래식 소프트웨어"
 msgctxt "game_options"
 msgid "Close app on the remote host when quitting Moonlight."
 msgstr "문라이트를 종료할 때 원격 호스트에서 앱을 닫습니다."
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Coin"
+msgstr "동전"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -5424,11 +5439,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Cross"
 msgstr "십자가"
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Crouch"
-msgstr ""
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -6106,11 +6116,6 @@ msgctxt "game_options"
 msgid "Driving Force Pro"
 msgstr "드라이빙 포스 프로"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Drop item"
-msgstr ""
-
 #. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Drop weapon"
@@ -6168,7 +6173,7 @@ msgstr "네덜란드어 (nl)"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "Dynamic"
-msgstr ""
+msgstr "동적"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -6399,11 +6404,6 @@ msgstr "ESYNC"
 msgctxt "game_options"
 msgid "EVDEV (Default)"
 msgstr "EVDEV (기본)"
-
-#. TRANSLATION: tr1x
-msgctxt "game_options"
-msgid "EXPANSION PACK"
-msgstr ""
 
 #. TRANSLATION: vpinball, vpinball
 msgctxt "game_options"
@@ -7582,7 +7582,7 @@ msgctxt "game_options"
 msgid "Finnish (fi)"
 msgstr "핀란드어 (fi)"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Fire"
 msgstr "발사"
@@ -7858,6 +7858,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Forces the DX driver to use Managed textures instead of Dynamic."
 msgstr "DX 드라이버가 동적 대신 관리되는 텍스처를 사용하도록 강제합니다."
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Forward Nudge"
+msgstr "앞으로 살살 밀기"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -8285,7 +8290,7 @@ msgstr "그래픽 렌더러"
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "GSPLUS BIOS FILENAME"
-msgstr ""
+msgstr "GSPLUS 바이오스 파일이르"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8733,11 +8738,6 @@ msgstr "히브리어"
 msgctxt "game_options"
 msgid "Help and Information"
 msgstr "도움말과 정보"
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Help computer"
-msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -9189,11 +9189,6 @@ msgctxt "game_options"
 msgid "InuYasha Sengoku Battle Fix"
 msgstr "이누야샤 전국 전투 수정"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Inventory"
-msgstr ""
-
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
@@ -9437,11 +9432,6 @@ msgstr "조이스틱 (아날로그, 2 버튼)"
 msgctxt "game_options"
 msgid "July"
 msgstr "7월"
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Jump"
-msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -9762,6 +9752,21 @@ msgctxt "keys_files"
 msgid "Left"
 msgstr "왼쪽"
 
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Left Flipper"
+msgstr "왼쪽 플리퍼"
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Left Magna Save"
+msgstr "왼쪽 마그나 세이브"
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Left Nudge"
+msgstr "왼쪽으로 살살 밀기"
+
 #. TRANSLATION: vpinball.keys
 msgctxt "keys_files"
 msgid "Left flipper"
@@ -9915,16 +9920,6 @@ msgstr "록바 발사 버튼"
 msgctxt "game_options"
 msgid "Long visible screen edge (cm)"
 msgstr "긴 가시 화면 가장자리 (cm)"
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Look down"
-msgstr ""
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Look up"
-msgstr ""
 
 #. TRANSLATION: amiberry, libretro/fceumm, libretro/mesen, libretro/mesen-s, mupen64plus, ...
 msgctxt "game_options"
@@ -10307,7 +10302,7 @@ msgstr "일치하는 창"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "Max"
-msgstr ""
+msgstr "최대"
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next
 msgctxt "game_options"
@@ -10404,6 +10399,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "May result in a sharper image in some 2D games."
 msgstr "일부 2D 게임에서는 이미지가 더 선명해질 수 있습니다."
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Mech Tilt"
+msgstr "기계적 기울기"
 
 #. TRANSLATION: libretro/mesen, libretro/mesen-s, mupen64plus, pcsx2
 msgctxt "game_options"
@@ -10634,12 +10634,7 @@ msgctxt "keys_files"
 msgid "Move Stylet Pointer"
 msgstr "스타일릿 포인터 이동"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Move back / down"
-msgstr ""
-
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
 msgstr "뒤로 이동"
@@ -10664,22 +10659,17 @@ msgctxt "keys_files"
 msgid "Move camera up"
 msgstr "카메라를 위쪽으로 이동"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
 msgstr "앞으로 이동"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Move forward / up"
-msgstr ""
-
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move left"
 msgstr "왼쪽으로 이동"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Move right"
 msgstr "오른쪽으로 이동"
@@ -11012,20 +11002,10 @@ msgctxt "keys_files"
 msgid "Next Disc (m3u)"
 msgstr "다음 디스크 (m3u)"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Next item"
-msgstr ""
-
 #. TRANSLATION: hotkeys.keys
 msgctxt "keys_files"
 msgid "Next slot"
-msgstr ""
-
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Next weapon"
-msgstr ""
+msgstr "다음 슬ㄹ"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -12078,6 +12058,11 @@ msgctxt "game_options"
 msgid "Playstation 2 wheel type"
 msgstr "플레이스테이션 2 핸들 유형"
 
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Plunger"
+msgstr "플런저"
+
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
 msgid "Point (Default)"
@@ -12237,15 +12222,10 @@ msgctxt "keys_files"
 msgid "Press the Y key for 'Yes'"
 msgstr "Y 키를 눌러 '예'를 선택"
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Previous item"
-msgstr ""
-
 #. TRANSLATION: hotkeys.keys
 msgctxt "keys_files"
 msgid "Previous slot"
-msgstr ""
+msgstr "이전 슬ㄹ"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -12509,17 +12489,17 @@ msgstr "롬 (슬롯 4)"
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "ROM.00"
-msgstr ""
+msgstr "ROM.00"
 
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "ROM.03 (default)"
-msgstr ""
+msgstr "ROM.03 (기본)"
 
 #. TRANSLATION: gsplus
 msgctxt "game_options"
 msgid "ROM1"
-msgstr ""
+msgstr "ROM1"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -12790,7 +12770,7 @@ msgstr "싱글 스프라이트에서 블렌드모드 윤곽선을 복원합니�
 #. TRANSLATION: hotkeys.keys
 msgctxt "keys_files"
 msgid "Restore state"
-msgstr ""
+msgstr "상태 복원"
 
 #. TRANSLATION: libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/mupen64plus-next, libretro/parallel_n64, ...
 msgctxt "game_options"
@@ -12831,6 +12811,21 @@ msgstr "Rice"
 msgctxt "keys_files"
 msgid "Right"
 msgstr "오른쪽"
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Right Flipper"
+msgstr "오른쪽 플리퍼"
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Right Magna Save"
+msgstr "오른쪽 마그나 세이브"
+
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Right Nudge"
+msgstr "오른쪽으로 살살 밀기"
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -12932,15 +12927,10 @@ msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
 msgstr "진동팩 (자동)"
 
-#. TRANSLATION: catacomb.keys, quake2.keys, rott.keys
+#. TRANSLATION: catacomb.keys, rott.keys
 msgctxt "keys_files"
 msgid "Run"
 msgstr "실행"
-
-#. TRANSLATION: tr1x
-msgctxt "game_options"
-msgid "Run the Unfinished expansion pack."
-msgstr ""
 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
@@ -13499,7 +13489,7 @@ msgstr "사우디아라비아"
 #. TRANSLATION: hotkeys.keys
 msgctxt "keys_files"
 msgid "Save state"
-msgstr ""
+msgstr "상태 저장"
 
 #. TRANSLATION: xemu
 msgctxt "game_options"
@@ -14493,6 +14483,11 @@ msgctxt "game_options"
 msgid "Standard OpenGL (Default)"
 msgstr "표준 OpenGL (기본)"
 
+#. TRANSLATION: fpinball.keys
+msgctxt "keys_files"
+msgid "Start"
+msgstr "시자"
+
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
 msgid "Start / Enter"
@@ -14543,12 +14538,12 @@ msgctxt "keys_files"
 msgid "Strafe Right"
 msgstr "오른쪽 스트레이프"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
 msgstr "왼쪽으로 폭격"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
 msgstr "오른쪽으로 폭격"
@@ -15838,11 +15833,6 @@ msgid ""
 "Use if you're having graphical issues or GPU problems with this emulator."
 msgstr "이 에뮬레이터에 그래픽 문제가 있거나 GPU 문제가 있는 경우 사용합니다."
 
-#. TRANSLATION: quake2.keys
-msgctxt "keys_files"
-msgid "Use item"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
 msgid "Use language and username from the NDS Firmware"
@@ -16878,7 +16868,7 @@ msgstr "오리지널 게임보이"
 #. TRANSLATION: dosbox
 msgctxt "game_options"
 msgid "pentium_slow"
-msgstr ""
+msgstr "pentium_slow"
 
 #. TRANSLATION: libretro/vba-m
 msgctxt "game_options"
@@ -17135,10 +17125,6 @@ msgstr "노란색/파란색"
 #~ msgid "Activate rumble on supported controllers."
 #~ msgstr "지원되는 컨트롤러에서 럼블을 활성화합니다."
 
-#~ msgctxt "game_options"
-#~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
-#~ msgstr "패드와 키보드를 이용한 퓨처 핀볼 매핑을 허용합니다."
-
 #, fuzzy
 #~ msgctxt "game_options"
 #~ msgid "Async (skip draw, recommended)"
@@ -17173,10 +17159,6 @@ msgstr "노란색/파란색"
 #~ msgid "Bring up menu"
 #~ msgstr "메뉴 불러오기"
 
-#~ msgctxt "game_options"
-#~ msgid "CONTROLLER CONFIGURATION"
-#~ msgstr "컨트롤러 구성"
-
 #, fuzzy
 #~ msgctxt "game_options"
 #~ msgid "CONTROLLER PAK 1"
@@ -17201,10 +17183,6 @@ msgstr "노란색/파란색"
 #~ msgid "Center (Default)"
 #~ msgstr "중앙 (기본)"
 
-#~ msgctxt "keys_files"
-#~ msgid "Change Camera Angle"
-#~ msgstr "카메라 각도 변경"
-
 #, fuzzy
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -17220,10 +17198,6 @@ msgstr "노란색/파란색"
 #~ msgstr ""
 #~ "사용할 그래픽 API 라이브러리를 선택합니다. Vulkan은 지원되는 경우 더 좋습"
 #~ "니다."
-
-#~ msgctxt "keys_files"
-#~ msgid "Coin"
-#~ msgstr "동전"
 
 #, fuzzy
 #~ msgctxt "game_options"
@@ -17396,10 +17370,6 @@ msgstr "노란색/파란색"
 #~ msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
 #~ msgstr "엔비디아 GPU가 항상 AMD GPU로 보고되도록 강제합니다."
 
-#~ msgctxt "keys_files"
-#~ msgid "Forward Nudge"
-#~ msgstr "앞으로 살살 밀기"
-
 #, fuzzy
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -17452,20 +17422,8 @@ msgstr "노란색/파란색"
 #~ msgstr "JINC2(에지 블렌딩 없음)"
 
 #~ msgctxt "keys_files"
-#~ msgid "Left Flipper"
-#~ msgstr "왼쪽 플리퍼"
-
-#~ msgctxt "keys_files"
-#~ msgid "Left Magna Save"
-#~ msgstr "왼쪽 마그나 세이브"
-
-#~ msgctxt "keys_files"
 #~ msgid "Left Manga Save"
 #~ msgstr "왼쪽 망가 저장"
-
-#~ msgctxt "keys_files"
-#~ msgid "Left Nudge"
-#~ msgstr "왼쪽으로 살살 밀기"
 
 #, fuzzy
 #~ msgctxt "game_options"
@@ -17513,10 +17471,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "May fix broken graphics in some games."
 #~ msgstr "일부 게임에서 깨진 그래픽을 수정할 수 있습니다."
-
-#~ msgctxt "keys_files"
-#~ msgid "Mech Tilt"
-#~ msgstr "기계적 기울기"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17587,10 +17541,6 @@ msgstr "노란색/파란색"
 #~ msgid "Per-strip (Default)"
 #~ msgstr "스트립당(기본값)"
 
-#~ msgctxt "keys_files"
-#~ msgid "Plunger"
-#~ msgstr "플런저"
-
 #, fuzzy
 #~ msgctxt "game_options"
 #~ msgid "Preload TLB hack to avoid tlb miss on Goemon"
@@ -17654,20 +17604,8 @@ msgstr "노란색/파란색"
 #~ "다."
 
 #~ msgctxt "keys_files"
-#~ msgid "Right Flipper"
-#~ msgstr "오른쪽 플리퍼"
-
-#~ msgctxt "keys_files"
-#~ msgid "Right Magna Save"
-#~ msgstr "오른쪽 마그나 세이브"
-
-#~ msgctxt "keys_files"
 #~ msgid "Right Manga Save"
 #~ msgstr "오른쪽 망가 저장"
-
-#~ msgctxt "keys_files"
-#~ msgid "Right Nudge"
-#~ msgstr "오른쪽으로 살살 밀기"
 
 #~ msgctxt "game_options"
 #~ msgid "SDL"
@@ -17747,10 +17685,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "Standard"
 #~ msgstr "표준"
-
-#~ msgctxt "keys_files"
-#~ msgid "Start"
-#~ msgstr "시자"
 
 #, fuzzy
 #~ msgctxt "game_options"
