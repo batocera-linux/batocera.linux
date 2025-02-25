@@ -30,6 +30,7 @@ WINETRICKS=
 WINE_SAVEDIR=
 WINE_SAVEFILES=
 # createAutorunCmd() tries to creates automatically autorun.cmd if you use windows_installs with msi/exe
+# a basic exe-filter is here in the script, user can set advanced one, see i and ii in function
 AUTORUN_FILEMASK="$4"
 AUTORUN_FOUNDEXE=
 AUTORUN_FILTER=
@@ -615,7 +616,7 @@ trick_wine() {
     TRICK="$3"
     if [[ -e "${WINETRICKS}" ]]; then
         echo "Winetricks is installed"
-	else
+    else
         echo "Winetricks is downloading"
         wget -O "${WINETRICKS}" "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" &>/dev/null
         chmod +x "${WINETRICKS}"
@@ -768,14 +769,21 @@ createAutorunCmd() {
     local i; local ii
 
     #Improved version of creating a CMD-file - the FILTER array can handle RegEx like * and ?
-    AUTORUN_FILTER=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$"
-                    "^.*/drive_c/windows/.*$" "^.*/unins[[:alnum:]]{3,4}.exe$" "^.*/[Ii]nstall(..)?.exe$")
+    #Using RexEx extensions from user created files, ~/../roms/windows_installers is prefered over ~/../saves/windows_installers
+    i="/userdata/roms/windows_installers/autorun-regex.txt"
+    ii="/userdata/saves/windows_installers/autorun-regex.txt"
+    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && readarray -t AUTORUN_FILTER < "$i"
+    # Pre-setted filter to exclude some standard files from created WINEPREFIX
+    AUTORUN_FILTER+=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$" "^.*/drive_c/windows/.*$"
+                     "^.*/[Uu]nins[[:alnum:]]{0,6}\.exe$" "^.*/[Ii]nstall(..)?\.exe$" "^.*/[Ss]etup\.exe$")
 
     #We search in WINEPOINT dir for exes and I assume it's somewhere installed in Program Files, or Program Files(x86)
     pushd "$WINEPOINT" > /dev/null
     readarray -t AUTORUN_FOUNDEXE < <(find ${AUTORUN_FILEMASK} -type f -iname "*.exe" -printf "%p\n" | sort -n)
 
     for i in "${AUTORUN_FILTER[@]}"; do
+        i="${i%%#*}" #Remove everything after a #-comment
+        [[ "${#i}" -eq 0 || "$i" =~ ^[[:space:]]*$ ]] && continue #No empty/invalid values allowed!
         for ii in "${!AUTORUN_FOUNDEXE[@]}"; do
             [[ "${AUTORUN_FOUNDEXE[$ii]}"  =~ $i ]] && unset AUTORUN_FOUNDEXE[$ii]
         done
@@ -1025,31 +1033,33 @@ case "${ACTION}" in
 	;;
 
     "autorun")
-    # Create autorunfile, works only in SSH mode, recommended is arg1 gamepath, arg2=searchmask
-    # It's held small: "batocera-wine windows autrun . bin" will search current directory in dir bin
-    [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
-    [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
-    pushd "${GAMENAME}" > /dev/null
-    GAMENAME="$PWD"
-    createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
-    if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
-        echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
-        for i in "${AUTORUN_FOUNDEXE[@]}"; do
-            let ii++
-            echo -e "$ii) $(basename "$i") --> $(dirname "$i")"
-        done
-        echo
-        read -p "Select entry to write to autorun.cmd: " ii
-    else
-        ii=1
-    fi
-    (
-        echo "DIR=$(dirname "${AUTORUN_FOUNDEXE[$ii-1]}")"
-        echo "CMD=\"$(basename "${AUTORUN_FOUNDEXE[$ii-1]}")\""
-    ) > "${GAMENAME}/autorun.cmd"
-    echo "Written: ${GAMENAME}/autorun.cmd"
-    popd > /dev/null
-    exit 0
+        # Create autorunfile, works only in SSH mode, recommended is arg1 gamepath, arg2=searchmask
+        # It's held small: "batocera-wine windows autrun . bin" will search current directory in dir bin
+        [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
+        [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
+        pushd "${GAMENAME}" > /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'"; exit 1; }
+        GAMENAME="$PWD"
+        createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
+        if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
+            echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
+            echo "0) Enter 0 or CTRL+C to abort creation of autorun.cmd"
+            for i in "${AUTORUN_FOUNDEXE[@]}"; do
+                let ii++
+                echo -e "$ii) $(basename "$i") --> $(dirname "$i")"
+            done
+            echo; read -p "Select entry to write to autorun.cmd: " ii
+        else
+            ii=1
+        fi
+        [[ $ii -eq 0 ]] && exit 2 #0 selected, abort
+        [[ -e autorun.cmd ]] && echo "File exists: Creating Backup!" && mv --backup=t autorun.cmd autorun.cmd.bak
+        (
+            echo "DIR=$(dirname "${AUTORUN_FOUNDEXE[$ii-1]}")"
+            echo "CMD=\"$(basename "${AUTORUN_FOUNDEXE[$ii-1]}")\""
+        ) > autorun.cmd
+        echo "Written: ${GAMENAME}/autorun.cmd"
+        popd > /dev/null
+        exit 0
     ;;
 
     *)
