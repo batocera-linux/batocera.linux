@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 from typing import TYPE_CHECKING, Any
 
 import pyudev

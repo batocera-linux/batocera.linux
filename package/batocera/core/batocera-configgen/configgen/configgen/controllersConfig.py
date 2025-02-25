@@ -4,7 +4,7 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import TYPE_CHECKING, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Final, NotRequired, TypedDict
 
 import pyudev
 
@@ -34,42 +34,65 @@ def shortNameFromPath(path: str | Path) -> str:
             inblock = False
     return ret
 
+
+# hardcoded list of system for arcade
+# this list can be found in es_system.yml
+# at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
+_ARCADE_SYSTEMS: Final = {
+    'lindbergh',
+    'naomi',
+    'naomi2',
+    'atomiswave',
+    'fbneo',
+    'mame',
+    'neogeo',
+    'triforce',
+    'hypseus-singe',
+    'model2',
+    'model3',
+    'hikaru',
+    'gaelco',
+    'cave3rd',
+    'namco2x6',
+}
+
+
+def _update_metadata_from_element(metadata: dict[str, str], element: ET.Element, /, extra_log_text: str = '') -> None:
+    for child in element:
+        for attrib_name, attrib_value in child.attrib.items():
+            key = f'{child.tag}_{attrib_name}'
+            metadata[key] = attrib_value
+            _logger.info("found game metadata %s=%s%s", key, attrib_value, extra_log_text)
+
+
 def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
     # load the database
     tree = ET.parse(ES_GAMES_METADATA)
-    root = tree.getroot()
+    root: ET.Element = tree.getroot()
     game = shortNameFromPath(rom)
-    res: dict[str, str] = {}
+    metadata: dict[str, str] = {}
+
     _logger.info("looking for game metadata (%s, %s)", system, game)
 
-    targetSystem = system
-    # hardcoded list of system for arcade
-    # this list can be found in es_system.yml
-    # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
-    if system in ['lindbergh', 'naomi', 'naomi2', 'atomiswave', 'fbneo', 'mame', 'neogeo', 'triforce', 'hypseus-singe', 'model2', 'model3', 'hikaru', 'gaelco', 'cave3rd', 'namco2x6']:
-        targetSystem = 'arcade'
+    target_system = 'arcade' if system in _ARCADE_SYSTEMS else system
 
-    for nodesystem in root.findall(".//system"):
-        for sysname in nodesystem.get("name").split(','):
-            if sysname == targetSystem:
-                # search the game named default
-                for nodegame in nodesystem.findall(".//game"):
-                    if nodegame.get("name") == "default":
-                        for child in nodegame:
-                            for attribute in child.attrib:
-                                key = f"{child.tag}_{attribute}"
-                                res[key] = child.get(attribute)
-                                _logger.info("found game metadata %s=%s (system level)", key, res[key])
-                        break
-                for nodegame in nodesystem.findall(".//game"):
-                    if nodegame.get("name") != "default" and nodegame.get("name") in game:
-                        for child in nodegame:
-                            for attribute in child.attrib:
-                                key = f"{child.tag}_{attribute}"
-                                res[key] = child.get(attribute)
-                                _logger.info("found game metadata %s=%s", key, res[key])
-                        return res
-    return res
+    for system_element in root.iterfind('./system[@name]'):
+        if target_system not in system_element.attrib['name'].split(','):
+            continue
+
+        # search the game named default
+        if (default_element := system_element.find('./game[@name="default"]')) is not None:
+            _update_metadata_from_element(metadata, default_element, extra_log_text=' (system level)')
+
+        for game_element in system_element.iterfind('./game[@name!="default"]'):
+            if game_element.attrib['name'] not in game:
+                continue
+
+            _update_metadata_from_element(metadata, game_element)
+
+            return metadata
+
+    return metadata
 
 def dev2int(dev: str) -> int | None:
     matches = re.match(r"^/dev/input/event([0-9]*)$", dev)

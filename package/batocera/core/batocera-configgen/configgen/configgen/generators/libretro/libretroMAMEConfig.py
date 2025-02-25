@@ -351,7 +351,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     if softListFile.exists():
                         softwarelist = ET.parse(softListFile)
                         for software in softwarelist.findall('software'):
-                            if software.attrib != {}:
+                            if software.attrib:
                                 if software.get('name') == romDrivername:
                                     for info in software.iter('info'):
                                         if info.get('name') == 'usage':
