@@ -182,10 +182,10 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
             "button10": "select", # coins
             "axisX": "joystick1left",
             "axisY": "joystick1up",
-            "axisZ": "r2",
+            "axisZ": "l2",
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": "l2",
+            "axisRZ": "r2",
             "left": "joystick1left",
             "right": "joystick1right",
             "up": "joystick1up",
@@ -479,8 +479,8 @@ def input2input(playersControllers: ControllerMapping, player: str, joynum: int 
                 elif button == "joystick2up":
                     return f"JOY{joynum+1}_RYAXIS{sidestr}"
                 elif button == "l2":
-                    return f"JOY{joynum+1}_ZAXIS{sidestr}"
+                    return f"JOY{joynum+1}_ZAXIS_POS"
                 elif button == "r2":
-                    return f"JOY{joynum+1}_RZAXIS{sidestr}"
+                    return f"JOY{joynum+1}_RZAXIS_POS"
 
     return None
