@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import xml.etree.ElementTree as ET
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from xml.etree.ElementTree import Element
+
     from ...controller import ControllerMapping
 
 cannonballJoystick = {

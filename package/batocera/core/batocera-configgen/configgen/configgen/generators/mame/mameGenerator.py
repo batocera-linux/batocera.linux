@@ -24,7 +24,7 @@ from ...batoceraPaths import (
     USER_DECORATIONS,
     mkdir_if_not_exists,
 )
-from ...utils import bezels as bezelsUtil, videoMode as videoMode
+from ...utils import bezels as bezelsUtil, videoMode
 from ..Generator import Generator
 from . import mameControllers
 from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, MAME_ROMS, MAME_SAVES
@@ -505,7 +505,7 @@ class MameGenerator(Generator):
                     if softListFile.exists():
                         softwarelist = ET.parse(softListFile)
                         for software in softwarelist.findall('software'):
-                            if software.attrib != {}:
+                            if software.attrib:
                                 if software.get('name') == romName:
                                     for info in software.iter('info'):
                                         if info.get('name') == 'usage':

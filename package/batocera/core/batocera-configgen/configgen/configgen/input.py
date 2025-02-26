@@ -39,7 +39,7 @@ class Input:
 
     @classmethod
     def from_parent_element(cls, parent_element: ET.Element, /) -> Iterator[tuple[str, Self]]:
-        for element in parent_element.findall('input'):
+        for element in parent_element.iterfind('./input'):
             input = cls.from_element(element)
             yield input.name, input
 
