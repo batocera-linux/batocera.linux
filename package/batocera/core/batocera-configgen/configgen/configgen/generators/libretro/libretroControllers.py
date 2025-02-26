@@ -34,11 +34,6 @@ def writeControllersConfig(
     lightgun: bool,
     /,
 ) -> None:
-    # Map buttons to the corresponding retroarch specials keys
-    retroarchspecials = {'l3': 'ai_service'}
-
-    if system.isOptSet("exithotkeyonly") and system.getOptBoolean("exithotkeyonly"):
-        retroarchspecials = {}
 
     cleanControllerConfig(retroconfig, controllers)
 
@@ -51,10 +46,13 @@ def writeControllersConfig(
     retroconfig.save('input_load_state',          '"f4"')
     retroconfig.save('input_state_slot_decrease', '"f5"')
     retroconfig.save('input_state_slot_increase', '"f6"')
+    retroconfig.save('input_ai_service',          '"f9"')
     retroconfig.save('input_reset',               '"f10"')
     retroconfig.save('input_rewind',              '"f11"')
     retroconfig.save('input_hold_fast_forward',   '"f12"')
     retroconfig.save('input_screenshot',          '"nul"')
+    retroconfig.save('input_audio_mute',          '"nul"')
+    retroconfig.save('input_grab_mouse_toggle',   '"nul"')
 
     for controller in controllers:
         mouseIndex = None
@@ -63,7 +61,7 @@ def writeControllersConfig(
             mouseIndex = getAssociatedMouse(deviceList, controllers[controller].device_path)
         if mouseIndex == None:
             mouseIndex = 0
-        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials, lightgun, mouseIndex)
+        writeControllerConfig(retroconfig, controllers[controller], controller, system, lightgun, mouseIndex)
     writeHotKeyConfig(retroconfig, controllers)
 
 # Remove all controller configurations
@@ -92,12 +90,11 @@ def writeControllerConfig(
     controller: Controller,
     playerIndex: int,
     system: Emulator,
-    retroarchspecials: Mapping[str, str],
     lightgun: bool,
     mouseIndex: int | None = 0,
     /,
 ):
-    generatedConfig = generateControllerConfig(controller, retroarchspecials, system, lightgun, mouseIndex)
+    generatedConfig = generateControllerConfig(controller, system, lightgun, mouseIndex)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
@@ -107,7 +104,6 @@ def writeControllerConfig(
 # Create a configuration for a given controller
 def generateControllerConfig(
     controller: Controller,
-    retroarchspecials: Mapping[str, str],
     system: Emulator,
     lightgun: bool,
     mouseIndex: int | None = 0,
@@ -169,14 +165,6 @@ def generateControllerConfig(
             else:
                 config[f'input_player{controller.player_number}_{jsvalue}_minus_axis'] = f'+{input.id}'
                 config[f'input_player{controller.player_number}_{jsvalue}_plus_axis'] = f'-{input.id}'
-
-    if controller.player_number == 1:
-        specialMap = retroarchspecials
-        for specialkey in specialMap:
-            specialvalue = specialMap[specialkey]
-            if specialkey in controller.inputs:
-                input = controller.inputs[specialkey]
-                config[f'input_{specialvalue}_{typetoname[input.type]}'] = getConfigValue(input)
 
     if not lightgun:
         # dont touch to it when there are connected lightguns
