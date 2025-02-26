@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from ...config import SystemConfig
     from ...Emulator import Emulator
-    from ...gun import GunMapping
+    from ...gun import Guns
     from ...input import Input
     from ...types import DeviceInfoMapping, HotkeysContext, Resolution
 
@@ -176,7 +176,7 @@ def configureAudio(config_directory: Path) -> None:
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: ControllerMapping, metadata: Mapping[str, str], guns: GunMapping, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
+def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: ControllerMapping, metadata: Mapping[str, str], guns: Guns, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
 
     mkdir_if_not_exists(configFileName.parent)
@@ -503,11 +503,11 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     ###
 
     # guns
-    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and len(guns) > 0:
+    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
         gun1onport2 = len(guns) == 1 and "gun_gun1port" in metadata and metadata["gun_gun1port"] == "2"
         pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
 
-        if len(guns) >= 1 and not gun1onport2:
+        if guns and not gun1onport2:
             if not pcsx2INIConfig.has_section("USB1"):
                 pcsx2INIConfig.add_section("USB1")
             pcsx2INIConfig.set("USB1", "Type", "guncon2")

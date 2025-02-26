@@ -443,7 +443,7 @@ class DuckstationGenerator(Generator):
                     settings.set(pad_num, "SteeringLeft", f"{sdl_num}/-LeftX")
                     settings.set(pad_num, "SteeringRight", f"{sdl_num}/+LeftX")
                 # Guns
-                if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and len(guns) > 0:
+                if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and guns:
                     # Justifier compatible ROM...
                     if "gun_type" in metadata and metadata["gun_type"] == "justifier":
                         settings.set(pad_num, "Type", "Justifier")

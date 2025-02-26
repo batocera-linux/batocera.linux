@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import re
 import shutil
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final, cast
@@ -75,11 +75,11 @@ class Gun:
         }
 
     @staticmethod
-    def get_all() -> GunDict:
+    def get_all() -> GunList:
         import evdev
         import pyudev
 
-        guns: GunDict = {}
+        guns: GunList = []
         context = pyudev.Context()
 
         # guns are mouses, just filter on them
@@ -106,7 +106,6 @@ class Gun:
         }
         mouse_button_codes = set(mouse_code_to_button.keys())
 
-        gun_index = 0
         for mouse_index, (_, mouse) in enumerate(sorted(mouses.items(), key=lambda item: item[0])):
             _logger.info('found mouse %s at %s with id_mouse=%s', mouse_index, mouse.device_node, mouse_index)
             if mouse.properties.get('ID_INPUT_GUN') != '1':
@@ -125,12 +124,10 @@ class Gun:
                 name=device.name,
                 buttons=[button for code, button in mouse_code_to_button.items() if code in device_codes],
             )
-            guns[gun_index] = gun
+            guns.append(gun)
             _logger.info(
-                'found gun %s at %s with id_mouse=%s (%s)', gun_index, mouse.device_node, mouse_index, gun.name
+                'found gun %s at %s with id_mouse=%s (%s)', len(guns) - 1, mouse.device_node, mouse_index, gun.name
             )
-
-            gun_index += 1
 
         if not guns:
             _logger.info('no gun found')
@@ -138,10 +135,10 @@ class Gun:
         return guns
 
     @classmethod
-    def get_and_precalibrate_all(cls, system: Emulator, rom: str | Path, /) -> GunDict:
+    def get_and_precalibrate_all(cls, system: Emulator, rom: str | Path, /) -> GunList:
         if not system.isOptSet('use_guns') or not system.getOptBoolean('use_guns'):
             _logger.info('guns disabled.')
-            return {}
+            return []
 
         dir = _PRECALIBRATION_DIR / system.name
 
@@ -199,13 +196,13 @@ class Gun:
         return cls.get_all()
 
 
-def guns_need_crosses(guns: GunMapping) -> bool:
+def guns_need_crosses(guns: Guns) -> bool:
     # no gun, enable the cross for joysticks, mouses...
     if not guns:
         return True
 
-    return any(gun.needs_cross for gun in guns.values())
+    return any(gun.needs_cross for gun in guns)
 
 
-type GunDict = dict[int, Gun]
-type GunMapping = Mapping[int, Gun]
+type Guns = Sequence[Gun]
+type GunList = list[Gun]

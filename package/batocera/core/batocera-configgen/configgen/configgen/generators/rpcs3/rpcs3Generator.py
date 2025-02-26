@@ -289,7 +289,7 @@ class Rpcs3Generator(Generator):
 
         # -= [Input/Output] =-
         # gun stuff
-        if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and len(guns) > 0:
+        if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and guns:
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"

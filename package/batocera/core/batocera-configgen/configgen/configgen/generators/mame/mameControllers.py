@@ -15,13 +15,13 @@ if TYPE_CHECKING:
 
     from ...controller import Controller, ControllerMapping
     from ...Emulator import Emulator
-    from ...gun import GunMapping
+    from ...gun import Guns
     from ...input import Input
     from ...types import DeviceInfoMapping
 
 _logger = logging.getLogger(__name__)
 
-def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: GunMapping, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
+def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: Guns, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
     config = minidom.Document()
     configFile = cfgPath / "default.cfg"

@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from ...controller import ControllerMapping
     from ...Emulator import Emulator
     from ...generators.Generator import Generator
-    from ...gun import Gun, GunMapping
+    from ...gun import Gun, Guns
     from ...types import BezelInfo, DeviceInfoMapping, Resolution
 
 _logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ def writeLibretroConfig(
     system: Emulator,
     controllers: ControllerMapping,
     metadata: Mapping[str, str],
-    guns: GunMapping,
+    guns: Guns,
     wheels: DeviceInfoMapping,
     rom: Path,
     bezel: str | None,
@@ -135,7 +135,7 @@ def createLibretroConfig(
     system: Emulator,
     controllers: ControllerMapping,
     metadata: Mapping[str, str],
-    guns: GunMapping,
+    guns: Guns,
     wheels: DeviceInfoMapping,
     rom: Path,
     bezel: str | None,

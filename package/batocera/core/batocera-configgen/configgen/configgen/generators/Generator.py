@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ..config import SystemConfig
     from ..controller import ControllerMapping
     from ..Emulator import Emulator
-    from ..gun import GunMapping
+    from ..gun import Guns
     from ..types import DeviceInfoMapping, HotkeysContext, Resolution
 
 
@@ -22,7 +22,7 @@ class Generator(metaclass=ABCMeta):
         rom: str,
         playersControllers: ControllerMapping,
         metadata: Mapping[str, str],
-        guns: GunMapping,
+        guns: Guns,
         wheels: DeviceInfoMapping,
         gameResolution: Resolution,
     ) -> Command:
