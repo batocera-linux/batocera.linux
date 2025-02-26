@@ -43,8 +43,7 @@ class FlycastGenerator(Generator):
         if not Config.has_section("input"):
             Config.add_section("input")
         # For each pad detected
-        for index in playersControllers:
-            controller = playersControllers[index]
+        for controller in playersControllers:
             # Write the mapping files for Dreamcast
             if (system.name == "dreamcast"):
                 flycastControllers.generateControllerConfig(controller, "dreamcast")

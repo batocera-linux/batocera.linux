@@ -10,7 +10,7 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
@@ -107,7 +107,7 @@ class HatariGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def generateConfig(system: Emulator, playersControllers: ControllerMapping):
+    def generateConfig(system: Emulator, playersControllers: Controllers):
         config = CaseSensitiveConfigParser(interpolation=None)
 
         padMapping = {
@@ -129,28 +129,25 @@ class HatariGenerator(Generator):
                 config.set(section, "nJoyId", "-1")
                 config.set(section, "nJoystickMode", "0")
 
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer <= 5:
-                section = f"Joystick{nplayer}"
-                if not config.has_section(section):
-                    config.add_section(section)
-                config.set(section, "nJoyId", str(pad.index))
-                config.set(section, "nJoystickMode", "1")
+        for pad in playersControllers[:5]:
+            section = f"Joystick{pad.player_number}"
+            if not config.has_section(section):
+                config.add_section(section)
+            config.set(section, "nJoyId", str(pad.index))
+            config.set(section, "nJoystickMode", "1")
 
-                if padMapping[1] in pad.inputs:
-                    config.set(section, "nButton1", str(pad.inputs[padMapping[1]].id))
-                else:
-                    config.set(section, "nButton1", "0")
-                if padMapping[2] in pad.inputs:
-                    config.set(section, "nButton2", str(pad.inputs[padMapping[2]].id))
-                else:
-                    config.set(section, "nButton2", "1")
-                if padMapping[3] in pad.inputs:
-                    config.set(section, "nButton3", str(pad.inputs[padMapping[3]].id))
-                else:
-                    config.set(section, "nButton3", "2")
-            nplayer += 1
+            if padMapping[1] in pad.inputs:
+                config.set(section, "nButton1", str(pad.inputs[padMapping[1]].id))
+            else:
+                config.set(section, "nButton1", "0")
+            if padMapping[2] in pad.inputs:
+                config.set(section, "nButton2", str(pad.inputs[padMapping[2]].id))
+            else:
+                config.set(section, "nButton2", "1")
+            if padMapping[3] in pad.inputs:
+                config.set(section, "nButton3", str(pad.inputs[padMapping[3]].id))
+            else:
+                config.set(section, "nButton3", "2")
 
         # Log
         if not config.has_section("Log"):

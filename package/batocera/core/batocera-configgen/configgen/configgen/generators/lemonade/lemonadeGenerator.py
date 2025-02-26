@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import InputMapping
 
@@ -48,7 +48,7 @@ class LemonadeGenerator(Generator):
             return True
 
     @staticmethod
-    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
+    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: Controllers):
         # Pads
         lemonadeButtons = {
             "button_a":      "a",
@@ -234,16 +234,11 @@ class LemonadeGenerator(Generator):
             lemonadeConfig.set("Controls", "profiles\\1\\name\\default", "true")
             lemonadeConfig.set("Controls", "profiles\\size", "1")
 
-        for index in playersControllers :
-            controller = playersControllers[index]
-            # We only care about player 1
-            if controller.player_number != 1:
-                continue
+        if controller := Controller.find_player_number(playersControllers, 1):
             for x in lemonadeButtons:
                 lemonadeConfig.set("Controls", rf"profiles\1\{x}", f'"{LemonadeGenerator.setButton(lemonadeButtons[x], controller.guid, controller.inputs)}"')
             for x in lemonadeAxis:
                 lemonadeConfig.set("Controls", rf"profiles\1\{x}", f'"{LemonadeGenerator.setAxis(lemonadeAxis[x], controller.guid, controller.inputs)}"')
-            break
 
         ## Update the configuration file
         with ensure_parents_and_open(lemonadeConfigFile, 'w') as configfile:

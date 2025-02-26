@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, SAVES, SCREENSHOTS, ensure_parents_and_open, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -56,12 +56,9 @@ class ScummVMGenerator(Generator):
           romName = rom_path.stem
 
         # pad number
-        nplayer = 1
         id = 0
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer == 1:
-                id=pad.index
-            nplayer += 1
+        if pad := Controller.find_player_number(playersControllers, 1):
+            id = pad.index
 
         commandArray = ["/usr/bin/scummvm", "-f"]
 

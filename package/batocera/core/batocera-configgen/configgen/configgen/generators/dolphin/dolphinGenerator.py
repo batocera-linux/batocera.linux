@@ -164,20 +164,20 @@ class DolphinGenerator(Generator):
 
         # Gamecube ports
         # Create a for loop going 1 through to 4 and iterate through it:
-        for i in range(1, 5):
-            key = f"dolphin_port_{i}_type"
+        for i in range(4):
+            key = f"dolphin_port_{i+1}_type"
             if system.isOptSet(key):
                 value = system.config[key]
                 # Set value to 6 if it is 6a or 6b. This is to differentiate between Standard Controller and GameCube Controller type.
                 value = "6" if value in ["6a", "6b"] else value
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
-                dolphinSettings.set("Core", f"SIDevice{i - 1}", value)
+                dolphinSettings.set("Core", f"SIDevice{i}", value)
             else:
                 # if the pad is a wheel and on gamecube, use it
-                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and i in playersControllers and playersControllers[i].device_path in wheels:
-                    dolphinSettings.set("Core", f"SIDevice{i - 1}", "8")
+                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and i < len(playersControllers) and playersControllers[i].device_path in wheels:
+                    dolphinSettings.set("Core", f"SIDevice{i}", "8")
                 else:
-                    dolphinSettings.set("Core", f"SIDevice{i - 1}", "6")
+                    dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and guns_need_crosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):

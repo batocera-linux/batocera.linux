@@ -6,14 +6,13 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
-    from ...input import Input
     from ...types import Resolution
     from ...utils.configparser import CaseSensitiveConfigParser
 
 
-def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: ControllerMapping, gameResolution: Resolution):
+def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: Controllers, gameResolution: Resolution):
 
     # Hotkeys
     cleanHotKeyConfig(iniConfig)

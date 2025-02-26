@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...gun import Guns
     from ...input import Input
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
-def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: Guns, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
+def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: Guns, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
     config = minidom.Document()
     configFile = cfgPath / "default.cfg"
@@ -207,9 +207,8 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
             xml_input_alt.appendChild(xml_kbenable_alt)
 
     # Fill in controls on cfg files
-    nplayer = 1
     maxplayers = len(playersControllers)
-    for playercontroller, pad in sorted(playersControllers.items()):
+    for nplayer, pad in enumerate(playersControllers, start=1):
         mappings_use = mappings
         if hasStick(pad) == False:
             mappings_use["JOYSTICK_UP"] = "up"
@@ -281,8 +280,6 @@ def generatePadsConfig(cfgPath: Path, playersControllers: ControllerMapping, sys
                     elif thisControl['type'] == 'combo':
                         xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
                             pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
-
-        nplayer = nplayer + 1
 
     # in case there are more guns than pads, configure them
     if useGuns and len(guns) > len(playersControllers):

@@ -7,7 +7,6 @@ from os import environ
 from typing import TYPE_CHECKING, Any, Final
 
 import evdev
-from evdev import InputDevice
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
@@ -174,41 +173,38 @@ class RyujinxGenerator(Generator):
             jout.write(js_out)
 
         # Now add Controllers
-        nplayer = 1
-        for controller, pad in sorted(playersControllers.items()):
-            if nplayer <= 8:
-                ctrlConf = ryujinxCtrl
-                # we need to get the uuid for ryujinx controllers
-                # example xbox 360 - "id": "0-00000003-045e-0000-8e02-000014010000"
-                devices = [InputDevice(fn) for fn in evdev.list_devices()]
-                for dev in devices:
-                    if dev.path == pad.device_path:
-                        bustype = f"{dev.info.bustype:x}"
-                        bustype = bustype.zfill(8)
-                        vendor = f"{dev.info.vendor:x}"
-                        vendor = vendor.zfill(4)
-                        product = f"{dev.info.product:x}"
-                        product = product.zfill(4)
-                        # reverse the poduct id, so 028e becomes 8e02
-                        product1 = (product)[-2::]
-                        product2 = (product)[:-2]
-                        product = product1 + product2
-                        # reverse the version id also
-                        version = f"{dev.info.version:x}"
-                        version = version.zfill(4)
-                        version1 = (version)[-2::]
-                        version2 = (version)[:-2]
-                        version = version1 + version2
-                        ctrlUUID = (f"{pad.index}-{bustype}-{vendor}-0000-{product}-0000{version}0000")
-                        ctrlConf["id"] = ctrlUUID
-                        # always configure a pro controller for now
-                        ctrlConf["controller_type"] = "ProController"
-                        playerNum = (f"Player{nplayer}")
-                        ctrlConf["player_index"] = playerNum
-                        # write the controller to the file
-                        writeControllerIntoJson(ctrlConf)
-                        break
-            nplayer += 1
+        for nplayer, pad in enumerate(playersControllers[:8], start=1):
+            ctrlConf = ryujinxCtrl
+            # we need to get the uuid for ryujinx controllers
+            # example xbox 360 - "id": "0-00000003-045e-0000-8e02-000014010000"
+            devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+            for dev in devices:
+                if dev.path == pad.device_path:
+                    bustype = f"{dev.info.bustype:x}"
+                    bustype = bustype.zfill(8)
+                    vendor = f"{dev.info.vendor:x}"
+                    vendor = vendor.zfill(4)
+                    product = f"{dev.info.product:x}"
+                    product = product.zfill(4)
+                    # reverse the poduct id, so 028e becomes 8e02
+                    product1 = (product)[-2::]
+                    product2 = (product)[:-2]
+                    product = product1 + product2
+                    # reverse the version id also
+                    version = f"{dev.info.version:x}"
+                    version = version.zfill(4)
+                    version1 = (version)[-2::]
+                    version2 = (version)[:-2]
+                    version = version1 + version2
+                    ctrlUUID = (f"{pad.index}-{bustype}-{vendor}-0000-{product}-0000{version}0000")
+                    ctrlConf["id"] = ctrlUUID
+                    # always configure a pro controller for now
+                    ctrlConf["controller_type"] = "ProController"
+                    playerNum = (f"Player{nplayer}")
+                    ctrlConf["player_index"] = playerNum
+                    # write the controller to the file
+                    writeControllerIntoJson(ctrlConf)
+                    break
 
         if rom == "config":
             commandArray = [ryujinxExec]

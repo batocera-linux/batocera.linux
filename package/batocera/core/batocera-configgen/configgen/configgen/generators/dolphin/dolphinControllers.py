@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...gun import Guns
     from ...types import DeviceInfoMapping
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 # Create the controller configuration file
-def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: Guns) -> None:
+def generateControllerConfig(system: Emulator, playersControllers: Controllers, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: Guns) -> None:
 
     if system.name == "wii":
         if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
@@ -56,7 +56,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
 
 # https://docs.libretro.com/library/dolphin/
 
-def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControllers: ControllerMapping, wheels: DeviceInfoMapping, rom: Path) -> None:
+def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, rom: Path) -> None:
     wiiMapping = {
         'x':             'Buttons/2',
         'b':             'Buttons/A',
@@ -192,7 +192,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
 
     generateControllerConfig_any(system, playersControllers, wheels, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(system: Emulator, playersControllers: ControllerMapping, wheels: DeviceInfoMapping, rom: Path) -> None:
+def generateControllerConfig_gamecube(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, rom: Path) -> None:
     gamecubeMapping = {
         'b':             'Buttons/B',
         'a':             'Buttons/A',
@@ -425,7 +425,7 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str 
 
     return mapping
 
-def generateControllerConfig_any(system: Emulator, playersControllers: ControllerMapping, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
+def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
     nplayer = 1
@@ -434,7 +434,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
     # In case of two pads having the same name, dolphin wants a number to handle this
     double_pads: dict[str, int] = {}
 
-    for playercontroller, pad in sorted(playersControllers.items()):
+    for pad in playersControllers:
         # Handle x pads having the same name
         if pad.real_name.strip() in double_pads:
             nsamepad = double_pads[pad.real_name.strip()]

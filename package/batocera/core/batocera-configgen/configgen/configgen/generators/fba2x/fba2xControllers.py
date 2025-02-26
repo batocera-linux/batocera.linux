@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...utils.configparser import CaseSensitiveConfigParser
 
 # Map an emulationstation button name to the corresponding fba2x name
@@ -55,7 +55,7 @@ fbaspecials = {
                 'hotkey': 'HOTKEY'
               }
 
-def updateControllersConfig(iniConfig: CaseSensitiveConfigParser, rom: str, controllers: ControllerMapping) -> None:
+def updateControllersConfig(iniConfig: CaseSensitiveConfigParser, rom: str, controllers: Controllers) -> None:
     # remove any previous section to remove all configured keys
     if iniConfig.has_section("Joystick"):
         iniConfig.remove_section("Joystick")
@@ -64,11 +64,11 @@ def updateControllersConfig(iniConfig: CaseSensitiveConfigParser, rom: str, cont
     # indexes
     for player in range(1, 5):
         iniConfig.set("Joystick", f"SDLID_{player}", "-1")
-    for player in controllers:
-        iniConfig.set("Joystick", f"SDLID_{player}", str(controllers[player].index))
+    for controller in controllers:
+        iniConfig.set("Joystick", f"SDLID_{controller.player_number}", str(controller.index))
 
     for controller in controllers:
-        updateControllerConfig(iniConfig, controller, controllers[controller], is6btn(rom))
+        updateControllerConfig(iniConfig, controller.player_number, controller, is6btn(rom))
 
 # Create a configuration file for a given controller
 def updateControllerConfig(iniConfig: CaseSensitiveConfigParser, player: int, controller: Controller, special6: bool = False) -> None:

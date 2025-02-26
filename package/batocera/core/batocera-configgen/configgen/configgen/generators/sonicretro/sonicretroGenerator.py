@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
@@ -171,13 +171,9 @@ class SonicRetroGenerator(Generator):
         if not sonicConfig.has_section("Controller 1"):
             sonicConfig.add_section("Controller 1")
 
-        for index in playersControllers:
-            controller = playersControllers[index]
-            if controller.player_number != 1:
-                continue
+        if Controller.find_player_number(playersControllers, 1):
             for x in sonicButtons:
                 sonicConfig.set("Controller 1", f"{x}", f"{sonicButtons[x]}")
-            break
 
         with iniFile.open('w') as configfile:
             sonicConfig.write(configfile, False)

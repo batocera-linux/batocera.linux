@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
@@ -68,7 +68,7 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
         raise ValueError(f'unknown key type: {input.type!r}')
 
 
-def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> ET.Element | None:
+def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> ET.Element:
     path = './inputConfig'
 
     for root in roots:
@@ -86,7 +86,7 @@ def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> 
         if element is not None:
             return element
 
-    return None
+    raise Exception(f'Could not find controller data for "{name}" with GUID "{guid}"')
 
 
 class _ControllerChanges(TypedDict, total=False):
@@ -165,18 +165,18 @@ class Controller:
 
     # Create a controller array with the player id as a key
     @classmethod
-    def load_for_players(cls, max_players: int, args: Namespace, /) -> ControllerDict:
+    def load_for_players(cls, max_players: int, args: Namespace, /) -> ControllerList:
         cfg_roots = [
             ET.parse(conffile).getroot()
             for conffile in (USER_ES_DIR / 'es_input.cfg', BATOCERA_ES_DIR / 'es_input.cfg')
             if conffile.exists()
         ]
 
-        return {
-            controller.player_number: controller
+        return [
+            controller
             for player_number in range(1, max_players + 1)
             if (controller := cls._find_best_controller(cfg_roots, args, player_number)) is not None
-        }
+        ]
 
     @classmethod
     def _find_best_controller(
@@ -190,30 +190,36 @@ class Controller:
         guid: str = getattr(args, f'p{player_number}guid')
         real_name: str = getattr(args, f'p{player_number}name')
 
-        if (input_config := _find_input_config(roots, real_name, guid)) is not None:
-            return cls(
-                name=cast(str, input_config.get("deviceName")),
-                type=cast(Literal['keyboard', 'joystick'], input_config.get("type")),
-                guid=guid,
-                inputs_=Input.from_parent_element(input_config),
-                player_number=player_number,
-                index=index,
-                real_name=real_name,
-                device_path=getattr(args, f'p{player_number}devicepath'),
-                button_count=getattr(args, f'p{player_number}nbbuttons'),
-                hat_count=getattr(args, f'p{player_number}nbhats'),
-                axis_count=getattr(args, f'p{player_number}nbaxes'),
-            )
+        input_config = _find_input_config(roots, real_name, guid)
+        return cls(
+            name=cast(str, input_config.get("deviceName")),
+            type=cast(Literal['keyboard', 'joystick'], input_config.get("type")),
+            guid=guid,
+            inputs_=Input.from_parent_element(input_config),
+            player_number=player_number,
+            index=index,
+            real_name=real_name,
+            device_path=getattr(args, f'p{player_number}devicepath'),
+            button_count=getattr(args, f'p{player_number}nbbuttons'),
+            hat_count=getattr(args, f'p{player_number}nbhats'),
+            axis_count=getattr(args, f'p{player_number}nbaxes'),
+        )
+
+    @staticmethod
+    def find_player_number(controllers: Controllers, player_number: int, /) -> Controller | None:
+        for controller in controllers:
+            if controller.player_number == player_number:
+                return controller
 
         return None
 
 
-def generate_sdl_game_controller_config(controllers: ControllerMapping, /, ignore_buttons: list[str] | None = None) -> str:
-    return "\n".join(controller.generate_sdl_game_db_line(ignore_buttons = ignore_buttons) for controller in controllers.values())
+def generate_sdl_game_controller_config(controllers: Controllers, /, ignore_buttons: list[str] | None = None) -> str:
+    return "\n".join(controller.generate_sdl_game_db_line(ignore_buttons = ignore_buttons) for controller in controllers)
 
 
 def write_sdl_controller_db(
-    controllers: ControllerMapping, outputFile: str | Path = "/tmp/gamecontrollerdb.txt", /,
+    controllers: Controllers, outputFile: str | Path = "/tmp/gamecontrollerdb.txt", /,
 ) -> Path:
     outputFile = Path(outputFile)
 
@@ -262,5 +268,5 @@ def get_mapping_axis_relaxed_values(pad: Controller) -> dict[str, _RelaxedDict]:
                 res[x] = { "centered":  True, "reversed": False }
     return res
 
-type ControllerMapping = Mapping[int, Controller]
-type ControllerDict = dict[int, Controller]
+type Controllers = Sequence[Controller]
+type ControllerList = list[Controller]

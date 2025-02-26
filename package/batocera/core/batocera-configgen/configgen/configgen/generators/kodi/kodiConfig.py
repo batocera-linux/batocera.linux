@@ -9,12 +9,12 @@ from ...batoceraPaths import HOME, ensure_parents_and_open, mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
 
 _KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
 
 
-def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, provider: str):
+def writeKodiConfigs(kodiJoystick: Path, currentControllers: Controllers, provider: str):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
     kodireversepositions = {'joystick1up': 'joystick1down', 'joystick1left': 'joystick1right', 'joystick2up': 'joystick2down', 'joystick2left': 'joystick2right' }
     kodiaxes             = { 'joystick1up': True, 'joystick1down': True, 'joystick1left': True, 'joystick1right': True,
@@ -42,9 +42,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
 
     controllersDone = {}
 
-    for controller in currentControllers:
-        cur = currentControllers[controller]
-
+    for cur in currentControllers:
         # skip duplicates
         if cur.real_name in controllersDone:
             continue
@@ -126,11 +124,11 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: ControllerMapping, 
         kodiJoy.write(config.toprettyxml())
         kodiJoy.close()
 
-def writeKodiConfig(controllersFromES: ControllerMapping) -> None:
+def writeKodiConfig(controllersFromES: Controllers) -> None:
     # if there is no controller, don't remove the current generated one
     # it allows people to start kodi at startup when having only bluetooth joysticks
     # or this allows people to plug the last used joystick
-    if len(controllersFromES) == 0:
+    if not controllersFromES:
         return
     #provider = "linux"
     provider = "udev"

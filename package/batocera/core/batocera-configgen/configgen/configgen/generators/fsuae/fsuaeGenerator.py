@@ -108,10 +108,7 @@ class FsuaeGenerator(Generator):
                 n += 1
 
         # controllers
-        n = 0
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if n <= 3:
-                commandArray.append(f"--joystick_port_{n}={pad.real_name}")
-                n += 1
+        for n, pad in enumerate(playersControllers[:4]):
+            commandArray.append(f"--joystick_port_{n}={pad.real_name}")
 
         return Command.Command(array=commandArray)

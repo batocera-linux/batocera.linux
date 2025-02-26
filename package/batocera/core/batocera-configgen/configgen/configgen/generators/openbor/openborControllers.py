@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...settings.unixSettings import UnixSettings
 
-def generateControllerConfig(config: UnixSettings, playersControllers: ControllerMapping, core: str):
+def generateControllerConfig(config: UnixSettings, playersControllers: Controllers, core: str):
     if core == "openbor4432":
         setupControllers(config, playersControllers, 32, False)
     elif core == "openbor7142":
@@ -57,9 +57,8 @@ def JoystickValue(key: str, pad: Controller, joy_max_inputs: int, new_axis_vals:
     # _logger.debug("input.type=%s input.id=%s input.value=%s => result=%s", input.type, input.id, input.value, value)
     return value
 
-def setupControllers(config: UnixSettings, playersControllers: ControllerMapping, joy_max_inputs: int, new_axis_vals: bool) -> None:
-    idx = 0
-    for playercontroller, pad in sorted(playersControllers.items()):
+def setupControllers(config: UnixSettings, playersControllers: Controllers, joy_max_inputs: int, new_axis_vals: bool) -> None:
+    for idx, pad in enumerate(playersControllers):
         config.save(f"keys.{idx}.0" , JoystickValue("up",       pad, joy_max_inputs, new_axis_vals)) # MOVEUP
         config.save(f"keys.{idx}.1" , JoystickValue("down",     pad, joy_max_inputs, new_axis_vals)) # MOVEDOWN
         config.save(f"keys.{idx}.2" , JoystickValue("left",     pad, joy_max_inputs, new_axis_vals)) # MOVELEFT
@@ -84,9 +83,6 @@ def setupControllers(config: UnixSettings, playersControllers: ControllerMapping
         config.save(f"keys.{idx}.14", JoystickValue("joystick1up",       pad, joy_max_inputs, new_axis_vals, True))  # axis down
         config.save(f"keys.{idx}.15", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals))        # axis left
         config.save(f"keys.{idx}.16", JoystickValue("joystick1left",     pad, joy_max_inputs, new_axis_vals, True))  # axis right
-
-        # next one
-        idx += 1
 
     # erase old values in case a pad is reused in an other position (so it is not used twice)
     for idx in range(len(playersControllers), 5):

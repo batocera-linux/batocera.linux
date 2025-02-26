@@ -13,7 +13,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import InputMapping
     from ...types import HotkeysContext
@@ -44,7 +44,7 @@ class SuyuGenerator(Generator):
             "QT_QPA_PLATFORM":"xcb"})
 
     @staticmethod
-    def writeSuyuConfig(suyuConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
+    def writeSuyuConfig(suyuConfigFile: Path, system: Emulator, playersControllers: Controllers):
         # pads
         suyuButtonsMapping = {
             "button_a":      "a",
@@ -314,30 +314,28 @@ class SuyuGenerator(Generator):
         suyuConfig.set("Controls", "time_zone_index\\default", "false")
 
         # controllers
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if system.isOptSet(f'p{nplayer-1}_pad'):
-                suyuConfig.set("Controls", f"player_{nplayer-1}_type", system.config[f"p{nplayer}_pad"])
+        for nplayer, pad in enumerate(playersControllers):
+            if system.isOptSet(f'p{nplayer+1}_pad'):
+                suyuConfig.set("Controls", f"player_{nplayer}_type", system.config[f"p{nplayer+1}_pad"])
             else:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_type", "0")
-            suyuConfig.set("Controls", rf"player_{nplayer-1}_type\default", "false")
+                suyuConfig.set("Controls", f"player_{nplayer}_type", "0")
+            suyuConfig.set("Controls", rf"player_{nplayer}_type\default", "false")
 
             for x in suyuButtonsMapping:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_{x}", f'"{SuyuGenerator.setButton(suyuButtonsMapping[x], pad.guid, pad.inputs, nplayer-1)}"')
+                suyuConfig.set("Controls", f"player_{nplayer}_{x}", f'"{SuyuGenerator.setButton(suyuButtonsMapping[x], pad.guid, pad.inputs, nplayer)}"')
             for x in suyuAxisMapping:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_{x}", f'"{SuyuGenerator.setAxis(suyuAxisMapping[x], pad.guid, pad.inputs, nplayer-1)}"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_motionleft", '"[empty]"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_motionright", '"[empty]"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_connected", "true")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_connected\\default", "false")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_vibration_enabled", "true")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_vibration_enabled\\default", "false")
-            nplayer += 1
+                suyuConfig.set("Controls", f"player_{nplayer}_{x}", f'"{SuyuGenerator.setAxis(suyuAxisMapping[x], pad.guid, pad.inputs, nplayer)}"')
+            suyuConfig.set("Controls", f"player_{nplayer}_motionleft", '"[empty]"')
+            suyuConfig.set("Controls", f"player_{nplayer}_motionright", '"[empty]"')
+            suyuConfig.set("Controls", f"player_{nplayer}_connected", "true")
+            suyuConfig.set("Controls", f"player_{nplayer}_connected\\default", "false")
+            suyuConfig.set("Controls", f"player_{nplayer}_vibration_enabled", "true")
+            suyuConfig.set("Controls", f"player_{nplayer}_vibration_enabled\\default", "false")
 
         suyuConfig.set("Controls", "vibration_enabled", "true")
         suyuConfig.set("Controls", "vibration_enabled\\default", "false")
 
-        for y in range(nplayer, 9):
+        for y in range(len(playersControllers), 9):
             suyuConfig.set("Controls", f"player_{y-1}_connected", "false")
             suyuConfig.set("Controls", rf"player_{y-1}_connected\default", "false")
 
