@@ -1611,7 +1611,7 @@ def _gambatte_options(
                 coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
         else:
             coreSettings.save('gambatte_gb_colorization',         '"internal"')      #It's an empty file, set to Classic Green
-            coreSettings.save('gambatte_gb_internal_palette',     '"Special 1"')
+            coreSettings.save('gambatte_gb_internal_palette',     '"GB - DMG"')
 
 
 def _mgba_options(
