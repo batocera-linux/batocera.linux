@@ -217,14 +217,14 @@ class evmapy(AbstractContextManager[None, None]):
                                     if input.name == "up":
                                         absbasey_positive =  int(input.value) >= 0
                                     else:
-                                        axisId = None # don't duplicate, configuration should be done for up
+                                        absbasey_positive =  int(input.value) < 0
                                 elif input.name == "left" or input.name == "right":
                                     axisId   = "BASE"
                                     axisName = "X"
                                     if input.name == "left":
                                         absbasex_positive = int(input.value) < 0
                                     else:
-                                        axisId = None # don't duplicate, configuration should be done for left
+                                        absbasex_positive = int(input.value) >= 0
                                 else:
                                     axisId   = "_OTHERS_"
                                     axisName = input.name
