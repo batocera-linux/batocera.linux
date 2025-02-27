@@ -45,7 +45,7 @@ class CorsixTHGenerator(Generator):
             os.chdir(corsixthDataPath / "INTRO")
             os.chdir(corsixthDataPath / "LEVELS")
             os.chdir(corsixthDataPath / "QDATA")
-        except:
+        except Exception:
             _logger.error("ERROR: Game assets not installed. You can get them from the game Theme Hospital.")
 
         # If config file already exists, delete it
@@ -122,7 +122,7 @@ class CorsixTHGenerator(Generator):
         try:
             os.chdir(corsixthDataPath / "MP3")
             source_config_file.write(f"audio_music = [[{corsixthDataPath / 'MP3'}]]\n")
-        except:
+        except Exception:
             _logger.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
 

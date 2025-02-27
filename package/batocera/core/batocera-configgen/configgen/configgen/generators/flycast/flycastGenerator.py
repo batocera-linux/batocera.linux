@@ -37,7 +37,7 @@ class FlycastGenerator(Generator):
         if FLYCAST_CONFIG.exists():
             try:
                 Config.read(FLYCAST_CONFIG)
-            except:
+            except Exception:
                 pass # give up the file
 
         if not Config.has_section("input"):

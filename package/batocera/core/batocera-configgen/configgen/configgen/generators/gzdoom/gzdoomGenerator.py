@@ -70,7 +70,7 @@ class GZDoomGenerator(Generator):
         if gzdoom_api == "0":
             with arch_path.open("r") as file:
                 content = file.read().strip()
-                if not content == "x86_64":
+                if content != "x86_64":
                     gzdoom_api = "3"
 
         # now set the config
@@ -164,17 +164,17 @@ class GZDoomGenerator(Generator):
                     "-nologo" if system.getOptBoolean("nologo") else "",
                 ]
             )
-        else:
-            return Command.Command(
-                array=[
-                    "gzdoom",
-                    "-iwad", rom_path.name,
-                    "-exec", script_file,
-                    "-width", str(gameResolution["width"]),
-                    "-height", str(gameResolution["height"]),
-                    "-nologo" if system.getOptBoolean("nologo") else "",
-                ]
-            )
+
+        return Command.Command(
+            array=[
+                "gzdoom",
+                "-iwad", rom_path.name,
+                "-exec", script_file,
+                "-width", str(gameResolution["width"]),
+                "-height", str(gameResolution["height"]),
+                "-nologo" if system.getOptBoolean("nologo") else "",
+            ]
+        )
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

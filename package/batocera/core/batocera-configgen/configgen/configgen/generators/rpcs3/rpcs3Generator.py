@@ -282,8 +282,7 @@ class Rpcs3Generator(Generator):
         screenRatio = gameResolution["width"] / gameResolution["height"]
         if screenRatio < 1.6:
             return "4:3"
-        else:
-            return "16:9"
+        return "16:9"
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

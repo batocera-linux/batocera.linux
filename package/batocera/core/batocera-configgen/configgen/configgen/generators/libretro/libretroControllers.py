@@ -58,7 +58,7 @@ def writeControllersConfig(
         if system.name in ['nds', '3ds']:
             deviceList = getDevicesInformation()
             mouseIndex = getAssociatedMouse(deviceList, controller.device_path)
-        if mouseIndex == None:
+        if mouseIndex is None:
             mouseIndex = 0
         writeControllerConfig(retroconfig, controller, controller.player_number, system, lightgun, mouseIndex)
     writeHotKeyConfig(retroconfig, controllers)
@@ -79,9 +79,8 @@ def cleanControllerConfig(retroconfig: UnixSettings, controllers: Controllers, /
 
 # Write the hotkey for player 1
 def writeHotKeyConfig(retroconfig: UnixSettings, controllers: Controllers, /) -> None:
-    if controllers:
-        if 'hotkey' in controllers[0].inputs and controllers[0].inputs['hotkey'].type == 'button':
-            retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs['hotkey'].id)
+    if controllers and 'hotkey' in controllers[0].inputs and controllers[0].inputs['hotkey'].type == 'button':
+        retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs['hotkey'].id)
 
 # Write a configuration for a specified controller
 def writeControllerConfig(
@@ -119,10 +118,9 @@ def generateControllerConfig(
 
     # Some input adaptations for some cores...
     # Z is important, in case l2 (z) is not available for this pad, use l1
-    if system.name == "n64":
-        if 'r2' not in controller.inputs:
-            retroarchbtns["pageup"] = "l2"
-            retroarchbtns["l2"] = "l"
+    if system.name == "n64" and 'r2' not in controller.inputs:
+        retroarchbtns["pageup"] = "l2"
+        retroarchbtns["l2"] = "l"
 
     # Fix for reversed inputs in Yabasanshiro core which is unmaintained by retroarch
     if (system.config['core'] == 'yabasanshiro'):
@@ -178,12 +176,12 @@ def getConfigValue(input: Input, /) -> str | None:
     if input.type == 'axis':
         if input.value == '-1':
             return f'-{input.id}'
-        else:
-            return f'+{input.id}'
+        return f'+{input.id}'
     if input.type == 'hat':
         return f'h{input.id}{hatstoname[input.value]}'
     if input.type == 'key':
         return input.id
+    return None
 
 # Return the retroarch analog_dpad_mode
 def getAnalogMode(controller: Controller, system: Emulator, /) -> Literal['0', '1']:
@@ -192,7 +190,6 @@ def getAnalogMode(controller: Controller, system: Emulator, /) -> Literal['0', '
         return '0'
 
     for dirkey in retroarchdirs:
-        if dirkey in controller.inputs:
-            if (controller.inputs[dirkey].type == 'button') or (controller.inputs[dirkey].type == 'hat'):
-                return '1'
+        if dirkey in controller.inputs and (controller.inputs[dirkey].type == 'button' or controller.inputs[dirkey].type == 'hat'):
+            return '1'
     return '0'

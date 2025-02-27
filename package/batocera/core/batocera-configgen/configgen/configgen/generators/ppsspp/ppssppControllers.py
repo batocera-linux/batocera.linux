@@ -147,7 +147,6 @@ def generateControllerConfig(controller: Controller):
         var = ppssppMapping[input.name][input.type]
         padnum = controller.index
 
-        code = input.code
         if input.type == 'button':
             pspcode = sdlNameToNKCode[input.name]
             val = f"{DEVICE_ID_PAD_0 + padnum}-{pspcode}"
@@ -165,7 +164,8 @@ def generateControllerConfig(controller: Controller):
             Config.set(section, var, val)
 
             # Skip the rest if it's an axis dpad
-            if input.name in [ 'up', 'down', 'left', 'right' ] : continue
+            if input.name in [ 'up', 'down', 'left', 'right' ]:
+                continue
             # Also need to do the opposite direction manually. The input.id is the same as up/left, but the direction is opposite
             if input.name == 'joystick1up':
                 var = ppssppMapping['joystick1down'][input.type]
@@ -216,5 +216,4 @@ def axisToCode(axisId: int, direction: int) :
 def optionValue(config: CaseSensitiveConfigParser, section: str, option: str, value: str):
     if config.has_option(section, option):
         return f"{config.get(section, option)},{value}"
-    else:
-        return value
+    return value

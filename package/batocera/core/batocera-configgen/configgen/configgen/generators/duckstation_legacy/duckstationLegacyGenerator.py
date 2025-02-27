@@ -241,7 +241,7 @@ class DuckstationLegacyGenerator(Generator):
         # Aspect Ratio
         if system.isOptSet("duckstation_ratio"):
             settings.set("Display", "AspectRatio", system.config["duckstation_ratio"])
-            if not system.config["duckstation_ratio"] == "4:3":
+            if system.config["duckstation_ratio"] != "4:3":
                 system.config['bezel'] = "none"
         else:
             settings.set("Display", "AspectRatio", "Auto (Game Native)")
@@ -302,11 +302,8 @@ class DuckstationLegacyGenerator(Generator):
         if not settings.has_section("Cheevos"):
             settings.add_section("Cheevos")
         # RetroAchievements
-        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
-            headers   = {"Content-type": "text/plain", "User-Agent": "Batocera.linux"}
-            login_url = "https://retroachievements.org/"
+        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
             username  = system.config.get('retroachievements.username', "")
-            password  = system.config.get('retroachievements.password', "")
             hardcore  = system.config.get('retroachievements.hardcore', "")
             presence  = system.config.get('retroachievements.richpresence', "")
             indicator = system.config.get('retroachievements.challenge_indicators', "")

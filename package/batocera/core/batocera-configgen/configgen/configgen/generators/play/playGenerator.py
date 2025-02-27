@@ -242,9 +242,6 @@ class PlayGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if 'play_widescreen' in config and config['play_widescreen'] == "true":
+        if config.get('play_widescreen') == "true" or config.get('play_mode') == "0":
             return 16/9
-        elif 'play_mode' in config and config['play_mode'] == "0":
-            return 16/9
-        else:
-            return 4/3
+        return 4/3

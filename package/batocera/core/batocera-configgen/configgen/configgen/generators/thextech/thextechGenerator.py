@@ -23,7 +23,7 @@ class TheXTechGenerator(Generator):
         if system.isOptSet('rendering_mode'):
             commandArray.extend(["-r", system.config['rendering_mode']])
 
-        if system.isOptSet('frameskip') and system.getOptBoolean('frameskip') == False:
+        if system.isOptSet('frameskip') and not system.getOptBoolean('frameskip'):
             commandArray.extend(["--no-frameskip"])
         else:
             commandArray.extend(["--frameskip"])

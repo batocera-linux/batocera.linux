@@ -41,14 +41,13 @@ class ECWolfGenerator(Generator):
 
         # Create config file if not there
         if not ecwolfConfigFile.is_file():
-            f = codecs.open(str(ecwolfConfigFile), "x")
-            f.write('Vid_FullScreen = 1;\n')
-            f.write('Vid_Aspect = 0;\n')
-            f.write('Vid_Vsync = 1;\n')
-            f.write('QuitOnEscape = 1;\n')
-            f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
-            f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
-            f.close()
+            with codecs.open(str(ecwolfConfigFile), "x") as f:
+                f.write('Vid_FullScreen = 1;\n')
+                f.write('Vid_Aspect = 0;\n')
+                f.write('Vid_Vsync = 1;\n')
+                f.write('QuitOnEscape = 1;\n')
+                f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
+                f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
 
         # Set the resolution and some other defaults
         if ecwolfConfigFile.is_file():
@@ -64,11 +63,10 @@ class ECWolfGenerator(Generator):
                         f.write(line)
 
             # ... and append the ignored keys with default values now ;)
-            f = codecs.open(str(ecwolfConfigFile), "a")
-            f.write('JoystickEnabled = 1;\n')
-            f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
-            f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
-            f.close()
+            with codecs.open(str(ecwolfConfigFile), "a") as f:
+                f.write('JoystickEnabled = 1;\n')
+                f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
+                f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
 
         # Create save folder, according rom name with extension
         mkdir_if_not_exists(ecwolfSaves)
@@ -93,7 +91,7 @@ class ECWolfGenerator(Generator):
                     ecwolfArray += (f.readline().split())
 
                 # If 1. parameter isn't an argument then assume it's a path
-                if not "--" in ecwolfArray[1]:
+                if "--" not in ecwolfArray[1]:
                     try:
                         os.chdir(ecwolfArray[1])
                     except Exception as e:

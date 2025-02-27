@@ -180,7 +180,7 @@ class DolphinGenerator(Generator):
                     dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and guns_need_crosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and ((not system.isOptSet('dolphin-lightgun-hide-crosshair') and not guns_need_crosses(guns)) or system.getOptBoolean('dolphin-lightgun-hide-crosshair')):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
         else:
             dolphinSettings.remove_option("General", "CustomTexturesPath")
@@ -267,7 +267,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
 
         # HiResTextures for guns part 2/2 (see upper part1)
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and (system.isOptSet('dolphin-lightgun-hide-crosshair') == False or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
+        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and (not system.isOptSet('dolphin-lightgun-hide-crosshair') or system.getOptBoolean('dolphin-lightgun-hide-crosshair')):
             # erase what can be set by the option hires_textures
             dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
@@ -337,7 +337,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "InternalResolution", "1")
 
         # VSync
-        if system.isOptSet('vsync') and system.getOptBoolean("vsync") == False:
+        if system.isOptSet('vsync') and not system.getOptBoolean("vsync"):
             dolphinGFXSettings.set("Hardware", "VSync", "False")
         else:
             dolphinGFXSettings.set("Hardware", "VSync", "True")
@@ -498,7 +498,7 @@ class DolphinGenerator(Generator):
 
         try:
             wii_tv_mode = dolphinSYSCONF.getRatioFromConfig(config, gameResolution)
-        except:
+        except Exception:
             pass
 
         # Auto
@@ -536,5 +536,4 @@ def getGameCubeLangFromEnvironment():
     availableLanguages = { "en_US": 0, "de_DE": 1, "fr_FR": 2, "es_ES": 3, "it_IT": 4, "nl_NL": 5 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]

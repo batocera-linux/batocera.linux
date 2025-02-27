@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulator) -> None:
     # Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...
     # We keep a switch to allow users with the old unique pinmame to be able to continue using vpinball (switchon)
-    if system.isOptSet("vpinball_folders") and system.getOptBoolean("vpinball_folders") == False:
+    if system.isOptSet("vpinball_folders") and not system.getOptBoolean("vpinball_folders"):
         vpinballSettings.set("Standalone", "PinMAMEPath", "")
     else:
         vpinballSettings.set("Standalone", "PinMAMEPath", "./")
@@ -121,7 +121,7 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
         vpinballSettings.set("Player", "ScreenPlayerZ",     "")
 
     # Altcolor (switchon)
-    if system.isOptSet("vpinball_altcolor") and system.getOptBoolean("vpinball_altcolor") == False:
+    if system.isOptSet("vpinball_altcolor") and not system.getOptBoolean("vpinball_altcolor"):
         vpinballSettings.set("Standalone", "AltColor", "0")
     else:
         vpinballSettings.set("Standalone", "AltColor","1")
@@ -138,7 +138,7 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
         vpinballSettings.set("Player", "SoundVolume", "")
 
     # Altsound
-    if system.isOptSet("vpinball_altsound") and system.getOptBoolean("vpinball_altsound") == False:
+    if system.isOptSet("vpinball_altsound") and not system.getOptBoolean("vpinball_altsound"):
         vpinballSettings.set("Standalone", "AltSound", "0")
     else:
         vpinballSettings.set("Standalone", "AltSound","1")
@@ -155,7 +155,7 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
         vpinballSettings.set("Player", "SoundDeviceBG", "")
 
     # Don't use SDL "Add credit" with the South button/plunger and pad2key default mapping
-    if system.isOptSet("vpinball_pad_add_credit") and system.getOptBoolean("vpinball_pad_add_credit") == True:
+    if system.isOptSet("vpinball_pad_add_credit") and system.getOptBoolean("vpinball_pad_add_credit"):
         vpinballSettings.set("Player", "JoyAddCreditKey", "")
     else:
         vpinballSettings.set("Player", "JoyAddCreditKey", "0")

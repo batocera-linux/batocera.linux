@@ -139,8 +139,7 @@ def getDrasticLangFromEnvironment():
     availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]
 
 def configurePads(drastic_conf: Path):
     keyboardpart =''.join((

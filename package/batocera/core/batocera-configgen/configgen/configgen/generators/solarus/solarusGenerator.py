@@ -32,9 +32,8 @@ class SolarusGenerator(Generator):
 
         # hotkey to exit
         for nplayer, pad in enumerate(playersControllers, start=1):
-            if nplayer == 1:
-                if "hotkey" in pad.inputs and "start" in pad.inputs:
-                    commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
+            if nplayer == 1 and "hotkey" in pad.inputs and "start" in pad.inputs:
+                commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
             commandArray.append(f"-joypad-num{nplayer}={pad.index}")
 
         # player pad
@@ -81,16 +80,13 @@ class SolarusGenerator(Generator):
                 keymapping["right"] = "joystick2right"
 
         mkdir_if_not_exists(_CONFIG_DIR)
-        f = codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii")
-
-        if pad := Controller.find_player_number(playersControllers, 1):
-            for key in keymapping:
-                if keymapping[key] in pad.inputs:
-                    f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
-                if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
-                    f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
-
-        f.close()
+        with codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii") as f:
+            if pad := Controller.find_player_number(playersControllers, 1):
+                for key in keymapping:
+                    if keymapping[key] in pad.inputs:
+                        f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
+                    if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
+                        f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
 
     @staticmethod
     def key2val(input: Input, reverse: bool):
@@ -107,7 +103,6 @@ class SolarusGenerator(Generator):
                 return "hat 0 left"
         if input.type == "axis":
             if (reverse and input.value == "-1") or (not reverse and input.value == "1"):
-                return f"axis {str(input.id)} +"
-            else:
-                return f"axis {str(input.id)} -"
+                return f"axis {input.id} +"
+            return f"axis {input.id} -"
         return None

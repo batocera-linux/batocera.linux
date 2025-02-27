@@ -295,18 +295,18 @@ class OpenJazzGenerator(Generator):
         self.print_config(cfg)
 
         # Controller config mapping example
-        jazzMapping = {
-            'a': 'jump',
-            'b': 'fire',
-            'x': 'swim up',
-            'y': 'weapon',
-            'select': 'back',
-            'start': 'enter',
-            'up': 'up',
-            'down': 'down',
-            'left': 'left',
-            'right': 'right',
-        }
+        # jazzMapping = {
+        #     'a': 'jump',
+        #     'b': 'fire',
+        #     'x': 'swim up',
+        #     'y': 'weapon',
+        #     'select': 'back',
+        #     'start': 'enter',
+        #     'up': 'up',
+        #     'down': 'down',
+        #     'left': 'left',
+        #     'right': 'right',
+        # }
 
         if controller := Controller.find_player_number(playersControllers, 1):
             for index in controller.inputs:

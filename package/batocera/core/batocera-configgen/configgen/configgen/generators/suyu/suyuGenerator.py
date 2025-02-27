@@ -167,24 +167,23 @@ class SuyuGenerator(Generator):
         if system.isOptSet('suyu_backend'):
             suyuConfig.set("Renderer", "backend", system.config["suyu_backend"])
             # Add vulkan logic
-            if system.config["suyu_backend"] == "1":
-                if vulkan.is_available():
-                    _logger.debug("Vulkan driver is available on the system.")
-                    if vulkan.has_discrete_gpu():
-                        _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                        discrete_index = vulkan.get_discrete_gpu_index()
-                        if discrete_index:
-                            _logger.debug("Using Discrete GPU Index: %s for Suyu", discrete_index)
-                            suyuConfig.set("Renderer", "vulkan_device", discrete_index)
-                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
-                        else:
-                            _logger.debug("Couldn't get discrete GPU index, using default")
-                            suyuConfig.set("Renderer", "vulkan_device", "0")
-                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+            if system.config["suyu_backend"] == "1" and vulkan.is_available():
+                _logger.debug("Vulkan driver is available on the system.")
+                if vulkan.has_discrete_gpu():
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+                    discrete_index = vulkan.get_discrete_gpu_index()
+                    if discrete_index:
+                        _logger.debug("Using Discrete GPU Index: %s for Suyu", discrete_index)
+                        suyuConfig.set("Renderer", "vulkan_device", discrete_index)
+                        suyuConfig.set("Renderer", "vulkan_device\\default", "true")
                     else:
-                        _logger.debug("Discrete GPU is not available on the system. Using default.")
+                        _logger.debug("Couldn't get discrete GPU index, using default")
                         suyuConfig.set("Renderer", "vulkan_device", "0")
                         suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+                else:
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
+                    suyuConfig.set("Renderer", "vulkan_device", "0")
+                    suyuConfig.set("Renderer", "vulkan_device\\default", "true")
         else:
             suyuConfig.set("Renderer", "backend", "0")
         suyuConfig.set("Renderer", "backend\\default", "false")
@@ -363,9 +362,9 @@ class SuyuGenerator(Generator):
 
             if input.type == "button":
                 return f"engine:sdl,button:{input.id},guid:{padGuid},port:{port}"
-            elif input.type == "hat":
+            if input.type == "hat":
                 return f"engine:sdl,hat:{input.id},direction:{SuyuGenerator.hatdirectionvalue(input.value)},guid:{padGuid},port:{port}"
-            elif input.type == "axis":
+            if input.type == "axis":
                 return f"engine:sdl,threshold:0.5,axis:{input.id},guid:{padGuid},port:{port},invert:+"
         return ""
 
@@ -395,8 +394,7 @@ class SuyuGenerator(Generator):
             return "right"
         if int(value) == 8:
             return "left"
-        else:
-            return "unknown"
+        return "unknown"
 
     @staticmethod
     def getSuyuLangFromEnvironment():
@@ -404,8 +402,7 @@ class SuyuGenerator(Generator):
         availableLanguages = { "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "nl_NL": 8, "pt_PT": 9 }
         if lang in availableLanguages:
             return availableLanguages[lang]
-        else:
-            return availableLanguages["en_US"]
+        return availableLanguages["en_US"]
 
     @staticmethod
     def getSuyuRegionFromEnvironment():
@@ -413,5 +410,4 @@ class SuyuGenerator(Generator):
         availableRegions = { "en_US": 1, "ja_JP": 0 }
         if lang in availableRegions:
             return availableRegions[lang]
-        else:
-            return 2 # europe
+        return 2 # europe

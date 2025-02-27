@@ -81,7 +81,7 @@ class FsuaeGenerator(Generator):
             zf = zipfile.ZipFile(rom, 'r')
             for name in zf.namelist():
                 d = name.lower()
-                if (d.endswith("ipf") or d.endswith("adf") or d.endswith("dms") or d.endswith("adz")):
+                if (d.endswith(("ipf", "adf", "dms", "adz"))):
                     diskNames.append(name)
 
             _logger.debug("Amount of disks in zip %s", len(diskNames))
@@ -92,12 +92,10 @@ class FsuaeGenerator(Generator):
             shutil.rmtree(TEMP_DIR, ignore_errors=True) # cleanup
             zf.extractall(TEMP_DIR)
 
-            n = 0
-            for disk in diskNames:
+            for n, disk in enumerate(diskNames):
                 commandArray.append(f"--{device_type}_image_{n}={TEMP_DIR / disk}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
                     commandArray.append(f"--{device_type}_drive_{n}={TEMP_DIR / disk}")
-                n += 1
 
         else:
             n = 0

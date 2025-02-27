@@ -33,7 +33,7 @@ class OpenborGenerator(Generator):
 
         # guess the version to run
         core: str = system.config['core']
-        if system.config["core-forced"] == False:
+        if not system.config["core-forced"]:
             core = OpenborGenerator.guessCore(rom)
         _logger.debug("core taken is %s", core)
 
@@ -115,7 +115,7 @@ class OpenborGenerator(Generator):
     @staticmethod
     def guessCore(rom: str) -> str:
         versionstr = re.search(r'\[.*([0-9]{4})\]+', Path(rom).name)
-        if versionstr == None:
+        if versionstr is None:
             return "openbor7530"
         version = int(versionstr.group(1))
 

@@ -187,7 +187,7 @@ class Gun:
                 dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
                 _copy_file(src, dst)
 
-            elif system.name == 'namco2x6':
+            elif system.name == 'namco2x6':  # noqa: SIM102
                 if emulator == 'play':
                     src = dir / 'play' / rom.stem
                     dst = CONFIGS / 'play' / 'Play Data Files' / 'arcadesaves' / f'{rom.stem}.backupram'

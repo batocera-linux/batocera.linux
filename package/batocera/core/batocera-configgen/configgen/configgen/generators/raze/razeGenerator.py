@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import platform
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
@@ -32,7 +32,7 @@ class RazeGenerator(Generator):
     # A script file with console commands that are always ran when a game starts
     script_file = config_dir / "raze.cfg"
     # Names that Raze uses for game series specific sections in the config file
-    game_names = [
+    game_names: ClassVar = [
         "Blood",
         "Duke",
         "Exhumed",
@@ -43,7 +43,7 @@ class RazeGenerator(Generator):
     ]
     # Options for config file that has more sensible controls and defaults, but only on first boot so overrides persist
     # Raze does not support global bindings; set defaults for each game series
-    config_defaults = {}
+    config_defaults: ClassVar = {}
     for name in game_names:
         config_defaults[f"{name}.ConsoleVariables"] = {
             "hud_size": 8,  # fullscreen / minimal HUD
@@ -110,7 +110,6 @@ class RazeGenerator(Generator):
 
         with self.config_file.open("w") as config_file:
             global_settings_found = False
-            modified_global_settings = False
             for line in config_backup:
                 # Check for the [GlobalSettings] section
                 if line.strip() == "[GlobalSettings]":
@@ -129,11 +128,9 @@ class RazeGenerator(Generator):
                                     line = "gl_es=true\n"
                         else:
                             line = "gl_es=true\n"
-                        modified_global_settings = True
                     elif line.strip().startswith("vid_preferbackend="):
                         if system.isOptSet("raze_api"):
                             line = f"vid_preferbackend={system.config['raze_api']}\n"
-                            modified_global_settings = True
                         else:
                             line = "vid_preferbackend=2\n"
 
@@ -155,7 +152,6 @@ class RazeGenerator(Generator):
                     config_file.write(f"vid_preferbackend={system.config['raze_api']}\n")
                 else:
                     config_file.write("vid_preferbackend=2\n")
-                modified_global_settings = True
 
         with self.script_file.open("w") as script:
             script.write(

@@ -18,7 +18,7 @@ def writeIniFile(system: Emulator, rom: str, playersControllers: Controllers, ga
     if XEMU_CONFIG.exists():
         try:
             iniConfig.read(XEMU_CONFIG, encoding='utf_8_sig')
-        except:
+        except Exception:
             pass
 
     createXemuConfig(iniConfig, system, rom, playersControllers, gameResolution)

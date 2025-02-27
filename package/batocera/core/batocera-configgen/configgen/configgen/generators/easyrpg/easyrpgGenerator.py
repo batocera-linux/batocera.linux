@@ -91,7 +91,6 @@ class EasyRPGGenerator(Generator):
                 f.write(f"number={pad.index}\n" )
                 for key, value in keymapping.items():
                     button = -1
-                    if value is not None:
-                        if pad.inputs[value].type == "button":
-                            button = pad.inputs[value].id
+                    if value is not None and pad.inputs[value].type == "button":
+                        button = pad.inputs[value].id
                     f.write(f"{key}={button}\n")

@@ -106,7 +106,4 @@ def is6btn(rom: str) -> bool:
     sixBtnGames = ['sfa', 'sfz', 'sf2', 'dstlk', 'hsf2', 'msh', 'mshvsf', 'mvsc', 'nwarr', 'ssf2', 'vsav', 'vhunt', 'xmvsf', 'xmcota']
 
     rom_name = Path(rom).name
-    for game in sixBtnGames:
-        if game in rom_name:
-            return True
-    return False
+    return any(game in rom_name for game in sixBtnGames)

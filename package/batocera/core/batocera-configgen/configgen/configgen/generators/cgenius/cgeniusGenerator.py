@@ -141,10 +141,7 @@ class CGeniusGenerator(Generator):
         return True
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if 'cgenius_aspect' in config:
+        if 'cgenius_aspect' in config:  # noqa: SIM102
             if config['cgenius_aspect'] == "16:9" or config['cgenius_aspect'] == "16:10":
                 return 16/9
-            else:
-                return 4/3
-        else:
-            return 4/3
+        return 4/3

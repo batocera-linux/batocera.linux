@@ -215,7 +215,7 @@ class SonicRetroGenerator(Generator):
         try:
             self.__getMD5.__func__.md5
         except AttributeError:
-            self.__getMD5.__func__.md5 = dict()
+            self.__getMD5.__func__.md5 = {}
 
         try:
             return self.__getMD5.__func__.md5[str(rp)]

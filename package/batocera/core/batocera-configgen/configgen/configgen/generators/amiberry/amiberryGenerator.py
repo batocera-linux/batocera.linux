@@ -71,12 +71,9 @@ class AmiberryGenerator(Generator):
                 commandArray.append(rom)
             elif romType == 'DISK':
                 # floppies
-                n = 0
-                for img in self.floppiesFromRom(rom):
-                    if n < 4:
-                        commandArray.append(f"-{n}")
-                        commandArray.append(img)
-                    n += 1
+                for n, img in enumerate(self.floppiesFromRom(rom)[:4]):
+                    commandArray.append(f"-{n}")
+                    commandArray.append(img)
                 # floppy path
                 commandArray.append("-s")
                 # Use disk folder as floppy path
@@ -247,13 +244,13 @@ class AmiberryGenerator(Generator):
 
         if extension == "lha":
             return 'WHDL'
-        elif extension == 'hdf' :
+        if extension == 'hdf' :
             return 'HDF'
-        elif extension in ['iso','cue', 'chd'] :
+        if extension in ['iso','cue', 'chd'] :
             return 'CD'
-        elif extension in ['adf','ipf']:
+        if extension in ['adf','ipf']:
             return 'DISK'
-        elif extension == "zip":
+        if extension == "zip":
             # can be either whdl or adf
             with zipfile.ZipFile(filepath) as zip:
                 for zipfilename in zip.namelist():
@@ -261,10 +258,10 @@ class AmiberryGenerator(Generator):
                         extension = Path(zipfilename).suffix[1:]
                         if extension == "info":
                             return 'WHDL'
-                        elif extension == 'lha' :
+                        if extension == 'lha' :
                             _logger.warning("Amiberry doesn't support .lha inside a .zip")
                             return 'UNKNOWN'
-                        elif extension == 'adf' :
+                        if extension == 'adf' :
                             return 'DISK'
             # no info or adf file found
             return 'UNKNOWN'
