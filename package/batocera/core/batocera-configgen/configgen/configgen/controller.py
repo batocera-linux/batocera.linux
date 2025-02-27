@@ -169,6 +169,7 @@ class Controller:
         cfg_roots = [
             ET.parse(conffile).getroot()
             for conffile in (USER_ES_DIR / 'es_input.cfg', BATOCERA_ES_DIR / 'es_input.cfg')
+            if conffile.exists()
         ]
 
         return {
