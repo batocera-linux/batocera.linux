@@ -41,6 +41,10 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
     else:
         vpinballSettings.set("Player", "SyncMode", "2")
 
+    # avoid default keys like q while it differs depending on the keyboard mapping (making hotkeys fail)
+    # 62 = F4 : https://github.com/vpinball/vpinball/tree/standalone/standalone#keyboard
+    vpinballSettings.set("Player", "ExitGameKey", "62")
+
     # presets
     if system.isOptSet("vpinball_presets"):
         if system.config["vpinball_presets"]=="defaults":
