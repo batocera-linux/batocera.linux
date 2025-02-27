@@ -83,7 +83,7 @@ endif
 ifeq ($(BR2_cortex_a76_a55),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8.2-a+dotprod+rcpc+ssbs+sb
 DOSBOX_STAGING_CFLAGS   += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
-DOSBOX_STAGING_CXXFLAGS += -march=armv8.2-a+dotprod+rcpc+ssbs+sb -mcpu=cortex-a76.cortex-BR2_cortex_a55
+DOSBOX_STAGING_CXXFLAGS += -march=armv8.2-a+dotprod+rcpc+ssbs+sb -mcpu=cortex-a76.cortex-a55
 DOSBOX_STAGING_CXXFLAGS += -mtune=cortex-a76.cortex-a55
 endif
 
