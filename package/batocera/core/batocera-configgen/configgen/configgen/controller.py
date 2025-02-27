@@ -89,6 +89,11 @@ def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> 
     raise Exception(f'Could not find controller data for "{name}" with GUID "{guid}"')
 
 
+class _RelaxedDict(TypedDict):
+    centered: bool
+    reversed: bool
+
+
 class _ControllerChanges(TypedDict, total=False):
     guid: str
     player_number: int
@@ -163,6 +168,40 @@ class Controller:
 
         return ','.join(config)
 
+    def get_mapping_axis_relaxed_values(self) -> dict[str, _RelaxedDict]:
+        import evdev
+
+        # read the sdl2 cache if possible for axis
+        cache_file = Path(HOME / ".sdl2" / f"{self.guid}_{self.name}.cache")
+        if not cache_file.exists():
+            return {}
+
+        cache_content = cache_file.read_text(encoding="utf-8").splitlines()
+        n = int(cache_content[0]) # number of lines of the cache
+
+        relaxed_values: list[int] = [int(cache_content[i]) for i in range(1, n+1)]
+
+        # get full list of axis (in case one is not used in es)
+        caps = evdev.InputDevice(self.device_path).capabilities()
+        code_values: dict[int, int]  = {}
+        i = 0
+        for code, _ in caps[evdev.ecodes.EV_ABS]:
+            if code < evdev.ecodes.ABS_HAT0X:
+                code_values[code] = relaxed_values[i]
+                i = i+1
+
+        # dict with es input names
+        res: dict[str, _RelaxedDict] = {}
+        for x, input in self.inputs.items():
+            if input.type == "axis":
+                # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
+                # 3 possible initial positions <1----------------|-------2-------|----------------3>
+                if (val := code_values.get(int(cast(str, input.code)))) is not None:
+                    res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
+                else:
+                    res[x] = { "centered":  True, "reversed": False }
+        return res
+
     # Create a controller array with the player id as a key
     @classmethod
     def load_for_players(cls, max_players: int, args: Namespace, /) -> ControllerList:
@@ -228,45 +267,6 @@ def write_sdl_controller_db(
 
     return outputFile
 
-
-class _RelaxedDict(TypedDict):
-    centered: bool
-    reversed: bool
-
-
-def get_mapping_axis_relaxed_values(pad: Controller) -> dict[str, _RelaxedDict]:
-    import evdev
-
-    # read the sdl2 cache if possible for axis
-    cache_file = Path(HOME / ".sdl2" / f"{pad.guid}_{pad.name}.cache")
-    if not cache_file.exists():
-        return {}
-
-    cache_content = cache_file.read_text(encoding="utf-8").splitlines()
-    n = int(cache_content[0]) # number of lines of the cache
-
-    relaxed_values: list[int] = [int(cache_content[i]) for i in range(1, n+1)]
-
-    # get full list of axis (in case one is not used in es)
-    caps = evdev.InputDevice(pad.device_path).capabilities()
-    code_values: dict[int, int]  = {}
-    i = 0
-    for code, _ in caps[evdev.ecodes.EV_ABS]:
-        if code < evdev.ecodes.ABS_HAT0X:
-            code_values[code] = relaxed_values[i]
-            i = i+1
-
-    # dict with es input names
-    res: dict[str, _RelaxedDict] = {}
-    for x, input in pad.inputs.items():
-        if input.type == "axis":
-            # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
-            # 3 possible initial positions <1----------------|-------2-------|----------------3>
-            if (val := code_values.get(int(cast(str, input.code)))) is not None:
-                res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
-            else:
-                res[x] = { "centered":  True, "reversed": False }
-    return res
 
 type Controllers = Sequence[Controller]
 type ControllerList = list[Controller]

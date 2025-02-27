@@ -15,12 +15,7 @@ from evdev import ecodes
 
 from ... import Command
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
-from ...controller import (
-    Controller,
-    Controllers,
-    generate_sdl_game_controller_config,
-    get_mapping_axis_relaxed_values,
-)
+from ...controller import Controller, Controllers, generate_sdl_game_controller_config
 from ...utils import bezels as bezelsUtil, hotkeygen
 from ...utils.download import download
 from ..Generator import Generator
@@ -395,7 +390,7 @@ class LindberghGenerator(Generator):
             maxplayers = 2
 
             if nplayer <= 2 and continuePlayers and not (system.config.use_guns and len(guns) >= nplayer):
-                relaxValues = get_mapping_axis_relaxed_values(pad)
+                relaxValues = pad.get_mapping_axis_relaxed_values()
 
                 ### choose the adapted mapping
                 if system.config.use_wheels:
