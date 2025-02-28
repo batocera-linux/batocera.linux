@@ -489,7 +489,7 @@ class LindberghGenerator(Generator):
                                 if nplayer == 1:
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
-                                if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up":
+                                if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up" or input_name == "left" or input_name == "up":
                                     self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MIN")
                                 else:
                                     self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MAX")
@@ -662,7 +662,7 @@ class LindberghGenerator(Generator):
         # some pads have not analog axis, on some games, prefer the dpad
         if not shortRomName.startswith("vf5") and not shortRomName.startswith("vt3"): # all but vf5 and vt3
             # pads without joystick1left, but with a hat
-            if "joystick1left" not in pad.inputs and "left" in pad.inputs and pad.inputs["left"].type == "hat":
+            if "joystick1left" not in pad.inputs and "left" in pad.inputs and (pad.inputs["left"].type == "hat" or pad.inputs["left"].type == "axis"):
                 lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
                 if "right" in lindberghCtrl_wheel:
                     del lindberghCtrl_wheel["right"]
@@ -673,7 +673,7 @@ class LindberghGenerator(Generator):
                 del lindberghCtrl_pad["joystick1left"]
 
             # pads without joystick1up, but with a hat
-            if "joystick1up" not in pad.inputs and "up" in pad.inputs and pad.inputs["up"].type == "hat":
+            if "joystick1up" not in pad.inputs and "up" in pad.inputs and (pad.inputs["up"].type == "hat" or pad.inputs["up"].type == "axis"):
                 lindberghCtrl_pad["up"] = lindberghCtrl_pad["joystick1up"]
                 del lindberghCtrl_pad["down"]
                 del lindberghCtrl_pad["joystick1up"]
