@@ -256,8 +256,12 @@ def get_mapping_axis_relaxed_values(pad: Controller) -> dict[str, _RelaxedDict]:
         if input.type == "axis":
             # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
             # 3 possible initial positions <1----------------|-------2-------|----------------3>
-            val = code_values[int(cast(str, input.code))]
-            res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
+            x = int(cast(str, input.code))
+            if x in code_values:
+                val = code_values[x]
+                res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
+            else:
+                res[x] = { "centered":  True, "reversed": False }
     return res
 
 type ControllerMapping = Mapping[int, Controller]
