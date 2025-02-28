@@ -93,6 +93,7 @@
 - DevilutionX to 1.5.4
 - OpenMSX to release 20.0
 - Ruffle to nightly-2025-02-12
+- Raze to 1.11.0
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
