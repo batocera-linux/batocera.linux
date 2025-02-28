@@ -31,8 +31,6 @@ class shadPS4Generator(Generator):
 
         # Set the paths using Path objects
         configPath = Path(CONFIGS) / "shadps4"
-        if rom != "config":
-            romPath = Path(rom).parent / "eboot.bin"
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
 
@@ -153,7 +151,7 @@ class shadPS4Generator(Generator):
         if rom == "config":
             commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4"]
         else:
-            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", str(romPath)]
+            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", Path(rom).parent / "eboot.bin"]
 
         return Command.Command(
             array=commandArray,
