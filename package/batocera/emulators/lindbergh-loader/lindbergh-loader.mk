@@ -3,8 +3,8 @@
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Feb 7, 2025
-LINDBERGH_LOADER_VERSION = 2b15dff7bf9c66c36fc176bd0b46349df0f4ba4d
+# Version: Commits on Feb 28, 2025
+LINDBERGH_LOADER_VERSION = d755b1ca1f3d89536335dcc17bc4cf6878ee5d5b
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
