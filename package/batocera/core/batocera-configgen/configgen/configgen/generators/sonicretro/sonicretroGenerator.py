@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -12,6 +13,18 @@ from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
+
+
+@cache
+def _get_resolved_path_md5(path: Path) -> str:
+    return hashlib.md5(path.read_bytes()).hexdigest()
+
+
+# @cache is not used on this function because the digest should be cached by
+# resolved path and we don't want the caller to have to remember to call .resolve()
+def _get_path_md5(path: Path) -> str:
+    return _get_resolved_path_md5(path.resolve())
+
 
 class SonicRetroGenerator(Generator):
 
@@ -78,10 +91,7 @@ class SonicRetroGenerator(Generator):
         # [Dev]
         if not sonicConfig.has_section("Dev"):
             sonicConfig.add_section("Dev")
-        if system.isOptSet('devmenu') and system.config["devmenu"] == '1':
-            sonicConfig.set("Dev", "DevMenu", "true")
-        else:
-            sonicConfig.set("Dev", "DevMenu", "false")
+        sonicConfig.set("Dev", "DevMenu", system.config.get_bool('devmenu', return_values=("true", "false")))
         sonicConfig.set("Dev", "EngineDebugMode", "false")
         if (emu == "sonic2013"):
             sonicConfig.set("Dev", "StartingCategory", "255")
@@ -93,10 +103,7 @@ class SonicRetroGenerator(Generator):
             sonicConfig.set("Dev", "StartingScene", "0")
             sonicConfig.set("Dev", "UseSteamDir", "false")
         sonicConfig.set("Dev", "FastForwardSpeed", "8")
-        if system.isOptSet('hqmode') and system.config["hqmode"] == '0':
-            sonicConfig.set("Dev", "UseHQModes", "false")
-        else:
-            sonicConfig.set("Dev", "UseHQModes", "true")
+        sonicConfig.set("Dev", "UseHQModes", system.config.get_bool('hqmode', True, return_values=("true", "false")))
         sonicConfig.set("Dev", "DataFile", "Data.rsdk")
 
         # [Game]
@@ -104,15 +111,9 @@ class SonicRetroGenerator(Generator):
             sonicConfig.add_section("Game")
 
         if (emu == "sonic2013"):
-            if system.isOptSet('skipstart') and system.config["skipstart"] == '1':
-                sonicConfig.set("Game", "SkipStartMenu", "true")
-            else:
-                sonicConfig.set("Game", "SkipStartMenu", "false")
+            sonicConfig.set("Game", "SkipStartMenu", system.config.get_bool('skipstart', return_values=("true", "false")))
         else:
-            if system.isOptSet('spindash'):
-                sonicConfig.set("Game", "OriginalControls", system.config["spindash"])
-            else:
-                sonicConfig.set("Game", "OriginalControls", "-1")
+            sonicConfig.set("Game", "OriginalControls", system.config.get("spindash", "-1"))
             sonicConfig.set("Game", "DisableTouchControls", "true")
 
         originsGameConfig = [
@@ -126,13 +127,10 @@ class SonicRetroGenerator(Generator):
             "e723aab26026e4e6d4522c4356ef5a98",
         ]
         game_config_bin = rom_path / "Data" / "Game" / "GameConfig.bin"
-        if game_config_bin.is_file() and self.__getMD5(game_config_bin) in originsGameConfig:
+        if game_config_bin.is_file() and _get_path_md5(game_config_bin) in originsGameConfig:
             sonicConfig.set("Game", "GameType", "1")
 
-        if system.isOptSet('language'):
-            sonicConfig.set("Game", "Language", system.config["language"])
-        else:
-            sonicConfig.set("Game", "Language", "0")
+        sonicConfig.set("Game", "Language", system.config.get("language", "0"))
 
         # [Window]
         if not sonicConfig.has_section("Window"):
@@ -140,14 +138,8 @@ class SonicRetroGenerator(Generator):
 
         sonicConfig.set("Window", "FullScreen", "true")
         sonicConfig.set("Window", "Borderless", "true")
-        if system.isOptSet('vsync') and system.config["vsync"] == "0":
-            sonicConfig.set("Window", "VSync", "false")
-        else:
-            sonicConfig.set("Window", "VSync", "true")
-        if system.isOptSet('scalingmode'):
-            sonicConfig.set("Window", "ScalingMode", system.config["scalingmode"])
-        else:
-            sonicConfig.set("Window", "ScalingMode", "2")
+        sonicConfig.set("Window", "VSync", system.config.get_bool("vsync", True, return_values=("true", "false")))
+        sonicConfig.set("Window", "ScalingMode", system.config.get("scalingmode", "2"))
         sonicConfig.set("Window", "WindowScale", "2")
         sonicConfig.set("Window", "ScreenWidth", "424")
         sonicConfig.set("Window", "RefreshRate", "60")
@@ -164,16 +156,16 @@ class SonicRetroGenerator(Generator):
         if not sonicConfig.has_section("Keyboard 1"):
             sonicConfig.add_section("Keyboard 1")
 
-        for x in sonicKeys:
-            sonicConfig.set("Keyboard 1", f"{x}", f"{sonicKeys[x]}")
+        for x, key in sonicKeys.items():
+            sonicConfig.set("Keyboard 1", f"{x}", f"{key}")
 
         # [Controller 1]
         if not sonicConfig.has_section("Controller 1"):
             sonicConfig.add_section("Controller 1")
 
         if Controller.find_player_number(playersControllers, 1):
-            for x in sonicButtons:
-                sonicConfig.set("Controller 1", f"{x}", f"{sonicButtons[x]}")
+            for x, button in sonicButtons.items():
+                sonicConfig.set("Controller 1", f"{x}", f"{button}")
 
         with iniFile.open('w') as configfile:
             sonicConfig.write(configfile, False)
@@ -190,35 +182,12 @@ class SonicRetroGenerator(Generator):
     def getMouseMode(self, config, rom):
         rom_path = Path(rom)
 
-        # Determine the emulator to use
-        if rom_path.name.lower().endswith("son"):
-            emu = "sonic2013"
-        else:
-            emu = "soniccd"
-
         mouseRoms = [
             "1bd5ad366df1765c98d20b53c092a528", # iOS version of SonicCD
         ]
 
-        enableMouse = False
         data_file = rom_path / 'Data.rsdk'
-        if emu == "soniccd" and data_file.is_file():
-            enableMouse = self.__getMD5(data_file) in mouseRoms
-        else:
-            enableMouse = False
+        if not rom_path.name.lower().endswith("son") and data_file.is_file():
+            return _get_path_md5(data_file) in mouseRoms
 
-        return enableMouse
-
-    def __getMD5(self, filename: Path) -> str:
-        rp = filename.resolve()
-
-        try:
-            self.__getMD5.__func__.md5
-        except AttributeError:
-            self.__getMD5.__func__.md5 = {}
-
-        try:
-            return self.__getMD5.__func__.md5[str(rp)]
-        except KeyError:
-            self.__getMD5.__func__.md5[str(rp)] = hashlib.md5(rp.read_bytes()).hexdigest()
-            return self.__getMD5.__func__.md5[str(rp)]
+        return False
