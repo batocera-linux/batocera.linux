@@ -3,8 +3,8 @@
 # ppsspp
 #
 ################################################################################
-
-PPSSPP_VERSION = v1.18.1
+# Version: Commits on Feb 28, 2025
+PPSSPP_VERSION = 6770122c5c0ad0c0902ca2304ebb653da5870fe3
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -39,21 +39,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
     PPSSPP_DEPENDENCIES += libglew libglu
 endif
 
-# enable vulkan if we are building with it
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    PPSSPP_CONF_OPTS += -DVULKAN=ON
-    PPSSPP_CONF_OPTS += -DUSE_VULKAN_DISPLAY_KHR=ON
-else
-    PPSSPP_CONF_OPTS += -DVULKAN=OFF
-endif
-# enable x11/vulkan interface only if xorg
-ifeq ($(BR2_PACKAGE_XORG7),y)
-    PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
-else
-    PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
-    PPSSPP_TARGET_CFLAGS += -DEGL_NO_X11=1 -DMESA_EGL_NO_X11_HEADERS=1
-endif
-
 # arm
 ifeq ($(BR2_arm),y)
     PPSSPP_CONF_OPTS += -DARM=ON
@@ -82,13 +67,25 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     PPSSPP_CONF_OPTS += -DX86_64=ON
 endif
 
-# rpi4/5 vulkan support
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
-    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
-    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
-else ifeq ($(BR2_arm)$(BR2_aarch64),y)
-    PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
+# enable vulkan if we are building with it
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+    PPSSPP_CONF_OPTS += -DVULKAN=ON
+    PPSSPP_CONF_OPTS += -DUSE_VULKAN_DISPLAY_KHR=ON
+    # enable x11/vulkan interface only if xorg
+    ifeq ($(BR2_PACKAGE_XORG7),y)
+        PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=ON
+    else
+        PPSSPP_CONF_OPTS += -DUSING_X11_VULKAN=OFF
+        PPSSPP_TARGET_CFLAGS += -DEGL_NO_X11=1 -DMESA_EGL_NO_X11_HEADERS=1
+    endif
+    # rpi4/5 vulkan support
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+        PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=OFF
+    else ifeq ($(BR2_arm)$(BR2_aarch64),y)
+        PPSSPP_CONF_OPTS += -DARM_NO_VULKAN=ON
+    endif
+else
+    PPSSPP_CONF_OPTS += -DVULKAN=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND),y)

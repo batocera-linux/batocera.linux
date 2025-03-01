@@ -55,16 +55,6 @@ class PPSSPPGenerator(Generator):
         if system.isOptSet('state_filename'):
             commandArray.append(f"--state={system.config['state_filename']}")
 
-        # The next line is a reminder on how to quit PPSSPP with just the HK
-        #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]
-
-        # select the correct pad
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer == 1:
-                commandArray.extend(["--njoy", str(pad.index)])
-            nplayer = nplayer +1
-
         return Command.Command(
             array=commandArray,
             env={
