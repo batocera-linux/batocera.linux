@@ -13,7 +13,7 @@ DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DUCKSTATION_DEPENDENCIES += fmt boost ffmpeg libcurl ecm stenzek-shaderc
 DUCKSTATION_DEPENDENCIES += qt6base qt6tools qt6svg libbacktrace cpuinfo
-DUCKSTATION_DEPENDENCIES += spirv-cross libsoundtouch webp
+DUCKSTATION_DEPENDENCIES += spirv-cross libsoundtouch webp host-clang
 
 # Use clang for performance
 DUCKSTATION_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
