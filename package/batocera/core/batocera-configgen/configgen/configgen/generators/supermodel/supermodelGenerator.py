@@ -170,22 +170,24 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
     if altControl:
         templateFile = SUPERMODEL_SHARE / "Supermodel-Driving.ini.template"
         mapping: dict[str, str | None] = {
-            "button1": "y",
+            "button1": "a",
             "button2": "b",
-            "button3": "a",
-            "button4": "x",
+            "button3": "x",
+            "button4": "y",
             "button5": "pageup",
             "button6": "pagedown",
-            "button7": None,
-            "button8": None,
-            "button9": "start", # start
-            "button10": "select", # coins
+            "button7": "select", # coins
+            "button8": "start", #start
+            "button9": "l3",
+            "button10": "r3",
+            "button11": None,
+            "button12": None,
             "axisX": "joystick1left",
             "axisY": "joystick1up",
-            "axisZ": "r2",
+            "axisZ": "l2",
             "axisRX": "joystick2left",
             "axisRY": "joystick2up",
-            "axisRZ": "l2",
+            "axisRZ": "r2",
             "left": "joystick1left",
             "right": "joystick1right",
             "up": "joystick1up",
@@ -194,16 +196,18 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
     else:
         templateFile = SUPERMODEL_SHARE / "Supermodel.ini.template"
         mapping = {
-            "button1": "y",
+            "button1": "a",
             "button2": "b",
-            "button3": "a",
-            "button4": "x",
+            "button3": "x",
+            "button4": "y",
             "button5": "pageup",
             "button6": "pagedown",
-            "button7": "l2",
-            "button8": "r2",
-            "button9": "start", # start
-            "button10": "select", # coins
+            "button7": "select", # coins
+            "button8": "start", # start
+            "button9": "l3", # start
+            "button10": "r3", # coins
+            "button11": "l2",
+            "button12": "r2",
             "axisX": "joystick1left",
             "axisY": "joystick1up",
             "axisZ": None,
@@ -236,7 +240,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
     for section in templateConfig.sections():
         targetConfig.add_section(section)
         for key, value in templateConfig.items(section):
-            targetConfig.set(section, key, transformValue(value, playersControllers, mapping, mapping_fallback))
+            targetConfig.set(section, key, value)
 
     # apply guns
     for section in targetConfig.sections():
@@ -317,7 +321,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: ControllerMap
                             targetConfig.set(section, key, f"MOUSE2_MIDDLE_BUTTON{val}")
                 else:
                     if key == "InputSystem":
-                        targetConfig.set(section, key, "sdl")
+                        targetConfig.set(section, key, "sdlgamepad")
 
     # Update InputJoy1XSaturation key with the given sensitivity value
     sensitivity = str(int(float(sensitivity)))
