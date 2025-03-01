@@ -1,20 +1,3 @@
-diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 4a687683..c4580ab7 100644
---- a/Core/Config.cpp
-+++ b/Core/Config.cpp
-@@ -934,10 +934,10 @@ void Config::Reload() {
- void Config::UpdateIniLocation(const char *iniFileName, const char *controllerIniFilename) {
- 	const bool useIniFilename = iniFileName != nullptr && strlen(iniFileName) > 0;
- 	const char *ppssppIniFilename = IsVREnabled() ? "ppssppvr.ini" : "ppsspp.ini";
--	iniFilename_ = FindConfigFile(useIniFilename ? iniFileName : ppssppIniFilename);
-+	iniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / ppssppIniFilename;
- 	const bool useControllerIniFilename = controllerIniFilename != nullptr && strlen(controllerIniFilename) > 0;
- 	const char *controlsIniFilename = IsVREnabled() ? "controlsvr.ini" : "controls.ini";
--	controllerIniFilename_ = FindConfigFile(useControllerIniFilename ? controllerIniFilename : controlsIniFilename);
-+	controllerIniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / controlsIniFilename;
- }
- 
- bool Config::LoadAppendedConfig() {
 diff --git a/Core/System.cpp b/Core/System.cpp
 index fc4d207f..4b753c8b 100644
 --- a/Core/System.cpp
@@ -96,24 +79,15 @@ diff --git a/SDL/SDLJoystick.cpp b/SDL/SDLJoystick.cpp
 index 2f6b4717..4feccfc1 100644
 --- a/SDL/SDLJoystick.cpp
 +++ b/SDL/SDLJoystick.cpp
-@@ -25,7 +25,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+@@ -24,7 +24,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
  		SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
  	}
  
 -	const char *dbPath = "gamecontrollerdb.txt";
 +	const char *dbPath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt";
- 	cout << "loading control pad mappings from " << dbPath << ": ";
+ 	INFO_LOG(Log::System, "loading control pad mappings from %s:", dbPath);
  
  	size_t size;
-@@ -34,7 +34,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
- 		SDL_RWops *rw = SDL_RWFromConstMem(mappingData, size);
- 		// 1 to free the rw after use
- 		if (SDL_GameControllerAddMappingsFromRW(rw, 1) == -1) {
--			cout << "Failed to read mapping data - corrupt?" << endl;
-+			cout << "/userdata/system/configs/ppsspp/gamecontrollerdb.txt missing" << endl;
- 		}
- 		delete[] mappingData;
- 	} else {
 diff --git a/UI/NativeApp.cpp b/UI/NativeApp.cpp
 index e1f858c2..418c7742 100644
 --- a/UI/NativeApp.cpp

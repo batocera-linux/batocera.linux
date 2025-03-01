@@ -94,6 +94,8 @@
 - OpenMSX to release 20.0
 - Ruffle to nightly-2025-02-12
 - Raze to 1.11.0
+- PPSSPP to 28th February build
+- Libretro-PPSSPP to 28th February build
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
