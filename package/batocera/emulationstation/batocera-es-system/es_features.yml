@@ -9200,6 +9200,14 @@ rpcs3:
                 "Minimum": "50"
                 "Moderate": "100"
                 "Maximum": "150"
+        rpcs3_sleep_timers_accuracy:
+            submenu: CPU
+            prompt: SLEEP TIMERS ACCURACY
+            description: Changes the sleep period accuracy. Some games need this set to improve performance.
+            choices:
+                "As Host (Default)": As Host
+                "Usleep Only": Usleep Only
+                "All Timers": All Timers
         rpcs3_ratio:
             submenu: VIDEO
             prompt: ASPECT RATIO
@@ -9324,6 +9332,13 @@ rpcs3:
             choices:
                 "Off (Default)": False
                 "On":            True
+        rpcs3_write_depth_buffers:
+            submenu: RENDER
+            prompt: WRITE DEPTH BUFFERS
+            description: Writes depth buffer values to VM memory. Some games need this to fix broken graphics.
+            choices:
+                "Off (Default)": False
+                "On": True
         rpcs3_strict:
             submenu: RENDER
             prompt: STRICT RENDERING MODE
@@ -13714,7 +13729,7 @@ tr1x:
       description: Run the Unfinished expansion pack.
       choices:
         "Off (Default)": 0
-        "On":            1      
+        "On":            1
 
 tr2x:
   features: [padtokeyboard]

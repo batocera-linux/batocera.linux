@@ -125,6 +125,8 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config["rpcs3_maxcpu_preemptcount"]
         else:
             rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 0
+        # Sleep Timers Accuracy
+        rpcs3ymlconfig["Core"]["Sleep Timers Accuracy"] = system.config.get("rpcs3_sleep_timers_accuracy", "As Host")
 
         # -= [Video] =-
         # gfx backend - default to Vulkan
@@ -250,6 +252,9 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = system.config["rpcs3_async_texture"]
         else:
             rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = False
+        # Write Depth Buffer
+        rpcs3ymlconfig["Video"]["Write Depth Buffer"] = system.config.get_bool("rpcs3_write_depth_buffers")
+
 
         # -= [Audio] =-
         # defaults
