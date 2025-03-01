@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CGENIUS_VERSION = v3.5.1
+CGENIUS_VERSION = v3.5.2
 CGENIUS_SITE = $(call github,gerstrong,Commander-Genius,$(CGENIUS_VERSION))
 CGENIUS_CONF_LICENSE = GPL-2.0
 CGENIUS_CONF_LICENSE_FILES = LICENSE

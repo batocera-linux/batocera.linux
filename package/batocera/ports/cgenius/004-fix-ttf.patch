@@ -1,0 +1,13 @@
+diff --git a/GsKit/graphics/GsTrueTypeFont.h b/GsKit/graphics/GsTrueTypeFont.h.new
+index bfb5aed138..51c17432a8 100644
+--- a/GsKit/graphics/GsTrueTypeFont.h
++++ b/GsKit/graphics/GsTrueTypeFont.h.new
+@@ -6,7 +6,7 @@
+ #include <base/interface/Color.h>
+ #include <graphics/GsSurface.h>
+ 
+-typedef struct _TTF_Font TTF_Font;
++typedef struct TTF_Font TTF_Font;
+ 
+ class GsTrueTypeFont
+ {
