@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
+from ...batoceraPaths import mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils.download import DownloadException, download
 from ..Generator import Generator
@@ -48,10 +49,10 @@ class TR1XGenerator(Generator):
         dataDir = tr1xRomPath / "data"
 
         # Ensure the destination directories exist
-        tr1xRomPath.mkdir(parents=True, exist_ok=True)
-        dataDir.mkdir(parents=True, exist_ok=True)
+        mkdir_if_not_exists(tr1xRomPath)
+        mkdir_if_not_exists(dataDir)
 
-        # Copy files & folders if they don’t exist
+        # Copy files & folders if they don't exist
         for item in tr1xSourcePath.iterdir():
             dest = tr1xRomPath / item.name
             try:
@@ -91,7 +92,7 @@ class TR1XGenerator(Generator):
                 _logger.debug("Unexpected error: %s", e)
 
         # Handle the expansion pack download and extraction if enabled
-        if system.isOptSet("tr1x-expansion") and system.getOptBoolean("tr1x-expansion"):
+        if system.config.get_bool("tr1x-expansion"):
             # Only extract if there is no file named "CAT.PHD" (case-insensitive) in the data directory
             cat_phd_exists = any(
                 p for p in dataDir.rglob("*") if p.is_file() and p.name.upper() == "CAT.PHD"
@@ -114,7 +115,7 @@ class TR1XGenerator(Generator):
                             destination = dataDir / stripped_file
                             if not destination.exists():
                                 destination.parent.mkdir(parents=True, exist_ok=True)
-                                with zip_ref.open(file) as source, open(destination, "wb") as target:
+                                with zip_ref.open(file) as source, destination.open("wb") as target:
                                     shutil.copyfileobj(source, target)
 
                     _logger.debug("Expansion files downloaded and extracted successfully.")
