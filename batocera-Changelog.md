@@ -66,7 +66,7 @@
 - Libretro-Play! 4th Feb build
 - RetroArch to v1.20.0
 - Ruffle to Nightly-2024-12-28
-- RPCS3 to 0.0.34-17530
+- RPCS3 to v0.0.35
 - ScummVM to v2.9.0
 - PCSX2 to v2.3.185
 - Play! to 4th Feb build
