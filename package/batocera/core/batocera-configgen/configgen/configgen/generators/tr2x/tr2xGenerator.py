@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
+from ...batoceraPaths import mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -42,7 +43,7 @@ class TR2XGenerator(Generator):
         tr2xConfigPath = tr2xRomPath / "cfg" / "TR2X.json5"
         tr2xSourcePath = Path("/usr/bin/tr2x")
 
-        # Copy files & folders if they don’t exist
+        # Copy files & folders if they don't exist
         for item in tr2xSourcePath.iterdir():
             dest = tr2xRomPath / item.name
             try:
@@ -64,13 +65,12 @@ class TR2XGenerator(Generator):
                 _logger.debug("Error copying %s -> %s: %s", item, dest, e)
 
         # Configuration
-        tr2xConfigPath.parent.mkdir(parents=True, exist_ok=True)
+        mkdir_if_not_exists(tr2xConfigPath.parent)
         config_data = {}
 
         if tr2xConfigPath.exists():
             try:
-                with open(tr2xConfigPath, "r", encoding="utf-8") as f:
-                    config_data = json.load(f)
+                config_data = json.loads(tr2xConfigPath.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
                 _logger.debug("Invalid JSON format in %s, overwriting with default settings.", tr2xConfigPath)
 
@@ -83,8 +83,7 @@ class TR2XGenerator(Generator):
             }
         )
 
-        with open(tr2xConfigPath, "w", encoding="utf-8") as f:
-            json.dump(config_data, f, indent=2)
+        tr2xConfigPath.write_text(json.dumps(config_data, indent=2), encoding="utf-8")
 
         commandArray = [tr2xRomPath / "TR2X"]
 
