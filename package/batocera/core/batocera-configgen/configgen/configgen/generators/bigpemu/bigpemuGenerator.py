@@ -316,6 +316,8 @@ class BigPEmuGenerator(Generator):
                                 generate_func = generate_blank_bindings
 
                         if "blank" not in binding_info and generate_func != generate_keyb_bindings:
+                            bindings = None
+
                             for x in pad.inputs:
                                 input = pad.inputs[x]
                                 # workaround values for SDL2
@@ -370,8 +372,21 @@ class BigPEmuGenerator(Generator):
                                                 bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
                                             else:
                                                 bindings = generate_func(pad.guid, input.id, input.value)
-                                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
                                     break
+
+                            if bindings is None:
+                                # no inputs match the button or buttons, generate a blank or keyboard-only binding
+                                # to fill the spot in the bindings sequence
+                                if "keyboard" in binding_info:
+                                    bindings = generate_keyb_bindings(binding_info["keyboard"])
+                                else:
+                                    bindings = generate_blank_bindings()
+
+                                if "button" in binding_info and binding_info["button"].startswith(("joystick1", "joystick2")):
+                                    # For joysticks, generate two bindings
+                                    bindings.extend(generate_blank_bindings())
+
+                            config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
                         else:
                             if generate_func == generate_keyb_bindings:
                                 bindings = generate_func(binding_info["keyboard"])
