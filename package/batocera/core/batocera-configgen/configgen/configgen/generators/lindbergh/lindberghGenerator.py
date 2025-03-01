@@ -9,9 +9,8 @@ import stat
 import subprocess
 import tarfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final, Literal
+from typing import IO, TYPE_CHECKING, Any, Final, Literal
 
-import requests
 from evdev import ecodes
 
 from ... import Command
@@ -23,6 +22,7 @@ from ...controller import (
     get_mapping_axis_relaxed_values,
 )
 from ...utils import bezels as bezelsUtil, hotkeygen
+from ...utils.download import download
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -142,22 +142,9 @@ class LindberghGenerator(Generator):
         )
 
     @staticmethod
-    def download_file(url: str, destination: Path) -> None:
-        _logger.debug("Downloading the file...")
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with destination.open("wb") as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    file.write(chunk)
-            _logger.debug("File downloaded to %s", destination)
-        else:
-            raise Exception(f"Failed to download file. Status code: {response.status_code}")
-            _logger.debug("Do you have internet!?")
-
-    @staticmethod
-    def extract_tar_xz(file_path: Path, extract_to: Path) -> None:
+    def extract_tar_xz(file_path: IO[bytes], extract_to: Path) -> None:
         _logger.debug("Extracting the file...")
-        with tarfile.open(file_path, "r:xz") as tar:
+        with tarfile.open(fileobj=file_path, mode="r:xz") as tar:
             for member in tar.getmembers():
                 file_path_to_extract = extract_to / member.name
                 if not file_path_to_extract.exists():
@@ -782,7 +769,6 @@ class LindberghGenerator(Generator):
             nplayer += 1
 
     def setup_eeprom(self):
-        DOWNLOAD_PATH: Final = self.LINDBERGH_SAVES / "lindbergh-eeprom.tar.xz"
         DOWNLOADED_FLAG: Final = self.LINDBERGH_SAVES / "downloaded.txt"
         RAW_URL: Final = "https://raw.githubusercontent.com/batocera-linux/lindbergh-eeprom/main/lindbergh-eeprom.tar.xz"
 
@@ -790,20 +776,15 @@ class LindberghGenerator(Generator):
         if not DOWNLOADED_FLAG.exists():
             try:
                 # Download the file
-                self.download_file(RAW_URL, DOWNLOAD_PATH)
-                # Extract the file
-                self.extract_tar_xz(DOWNLOAD_PATH, self.LINDBERGH_SAVES)
-                # Create the downloaded.txt flag file so we don't download again
-                DOWNLOADED_FLAG.write_text("Download and extraction successful.\n")
-                _logger.debug("Created flag file: %s", DOWNLOADED_FLAG)
+                with download(RAW_URL, self.LINDBERGH_SAVES) as downloaded:
+                    # Extract the file
+                    self.extract_tar_xz(downloaded, self.LINDBERGH_SAVES)
+                    # Create the downloaded.txt flag file so we don't download again
+                    DOWNLOADED_FLAG.write_text("Download and extraction successful.\n")
+                    _logger.debug("Created flag file: %s", DOWNLOADED_FLAG)
 
-            except Exception as e:
-                _logger.debug("An error occurred: %s", e)
-            finally:
-                # Cleanup the downloaded .tar.xz file
-                if DOWNLOAD_PATH.exists():
-                    DOWNLOAD_PATH.unlink()
-                    _logger.debug("Temporary file %s deleted.", DOWNLOAD_PATH)
+            except Exception:
+                _logger.exception("An error occurred")
 
     def setup_libraries(self, romDir: Path, romName: str) -> None:
         # Setup some library quirks for GPU support (NVIDIA?)
