@@ -227,83 +227,60 @@ wine_options() {
 
 redist_install() {
     WINEPREFIX=$1
-    if [[ -e "${USER_DIR}/exe" ]]; then
-
-        for file in ${USER_DIR}/exe/*.exe; do
+    local i; local ii
+    if [[ -d "${USER_DIR}/exe" ]]; then
+        readarray -t i < <(find "${USER_DIR}/exe" -maxdepth 1 -type f -iname "*.exe" -printf "%p\n")
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "${USER_DIR}/exe"; echo "error: Place only exe-files to ${USER_DIR}/exe" >&2; return 0; }
+        mkdir -p "${USER_DIR}/installed.exe"
+        
+        for file in "${i[@]}"; do
+            #We compare base-filename in lowercase only and execute the file stored in array
+            ii="$(basename $file)"; ii="${ii,,}"
             echo "Executing file $file"
-                
-            case "${file}" in
+            case "${ii}" in
 
-            "${USER_DIR}/exe/DXSETUP.exe" | "${USER_DIR}/exe/dxsetup.exe")
+            "dxsetup.exe")
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /silent &>/dev/null || return 1
                 "${WINESERVER}" -w
-                ;;
+            ;;
 
-            "${USER_DIR}/exe/vcredist_x64_2005.exe" | "${USER_DIR}/exe/vcredist_x86_2005.exe")
+            "vcredist_x64_2005.exe" | "vcredist_x86_2005.exe" | \
+            "vcredist_x64_2008.exe" | "vcredist_x86_2008.exe")
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /q &>/dev/null || return 1
                 "${WINESERVER}" -w
-                ;;
+            ;;
 
-            "${USER_DIR}/exe/vcredist_x64_2008.exe" | "${USER_DIR}/exe/vcredist_x86_2008.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /q &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2010.exe" | "${USER_DIR}/exe/vcredist_x86_2010.exe")
+            "vcredist_x64_2010.exe" | "vcredist_x86_2010.exe" | \
+            "vcredist_x64_2012.exe" | "vcredist_x86_2012.exe" | \
+            "vcredist_x64_2013.exe" | "vcredist_x86_2013.exe" | \
+            "vcredist_x64_2015.exe" | "vcredist_x86_2015.exe" | \
+            "vcredist_x64_2017.exe" | "vcredist_x86_2017.exe" | \
+            "vcredist_x64_2019.exe" | "vcredist_x86_2019.exe")
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
                 "${WINESERVER}" -w
-                ;;
+            ;;
 
-            "${USER_DIR}/exe/vcredist_x64_2012.exe" | "${USER_DIR}/exe/vcredist_x86_2012.exe")
+            "vcredist_x64_2015_2019.exe" | "vcredist_x86_2015_2019.exe" | \
+            "vcredist_x64_2015_2022.exe" | "vcredist_x86_2015_2022.exe" )
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
                 "${WINESERVER}" -w
-                ;;
+            ;;
 
-            "${USER_DIR}/exe/vcredist_x64_2013.exe" | "${USER_DIR}/exe/vcredist_x86_2013.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2015.exe" | "${USER_DIR}/exe/vcredist_x86_2015.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2017.exe" | "${USER_DIR}/exe/vcredist_x86_2017.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2019.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2015_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2015_2019.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/vcredist_x64_2015_2022.exe" | "${USER_DIR}/exe/vcredist_x86_2015_2022.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
-                "${WINESERVER}" -w
-                ;;
-
-            "${USER_DIR}/exe/oalinst.exe")
+            "oalinst.exe")
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /s &>/dev/null
                 "${WINESERVER}" -w
-                ;;
+            ;;
 
             *)
                 WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" &>/dev/null
                 "${WINESERVER}" -w
-                ;;
+            ;;
             esac
+            echo "$(date '+%D %T') - Installed: '$file' --> ${WINEPREFIX}" | tee -a "${USER_DIR}/imports.log"
+            mv --backup=t "$file" "${USER_DIR}/installed.exe"
         done
-
-        mv "${USER_DIR}/exe" "${USER_DIR}/exe.bak" || return 1
+        rmdir "${USER_DIR}/exe" || { echo "error in removing dir: Place only exe-files to ${USER_DIR}/exe" >&2; }
     fi
-
     return 0
 }
 
@@ -366,66 +343,79 @@ save_install() {
 
 msi_install() {
     WINEPREFIX=$1
-    if [[ -e "${USER_DIR}/msi" ]]; then
-
-        for file in ${USER_DIR}/msi/*.msi; do
+    local i; local ii
+    ii="${USER_DIR}/msi"
+    if [[ -d "$ii" ]]; then
+        readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.msi" -printf "%p\n")
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only msi-files to $ii" >&2; return 0; }
+        mkdir -p "${USER_DIR}/installed.msi"
+        
+        for file in "${i[@]}"; do
             echo "Executing file $file"
             WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${file}" /quiet /qn /norestart &>/dev/null || return 1
             "${WINESERVER}" -w
+            echo "$(date '+%D %T') - Installed: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
+            mv --backup=t "$file" "${USER_DIR}/installed.msi"
         done
-
-        mv "${USER_DIR}/msi" "${USER_DIR}/msi.bak" || return 1
+        rmdir "$ii" || { echo "error in removing dir: Place only msi-files to $ii" >&2; }
     fi
-
     return 0
 }
 
 reg_install() {
     WINEPREFIX=$1
+    local i; local ii
+    ii="${USER_DIR}/regs"
     if [[ -e "/var/run/rawinput.reg" ]]; then
         WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
         WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
         rm /var/run/rawinput.reg
     fi
 
-    if [[ -e "${USER_DIR}/regs" ]]; then
+    if [[ -d "$ii" ]]; then
+        readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.reg" -printf "%p\n")
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only reg-files to $ii" >&2; return 0; }
+        mkdir -p "${USER_DIR}/installed.regs"
 
-        for file in ${USER_DIR}/regs/*.reg; do
-            echo "Importing registry $file"
+        for file in "${i[@]}"; do
             WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
             WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
+            echo "$(date '+%D %T') - Importing to registry: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
+            mv --backup=t "$file" "${USER_DIR}/installed.regs"
         done
-
-        mv "${USER_DIR}/regs" "${USER_DIR}/regs.bak" || return 1
+        rmdir  "$ii" || { echo "error in removing dir: Place only reg-files to $ii" >&2; }
     fi
 
     if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
         if ! grep -q "\"DisableHidraw\"=dword:00000000" "${WINEPOINT}/system.reg"; then
-	    WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
+            WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
             waitWineServer 0
         fi
     else
         if ! grep -q "\"DisableHidraw\"=dword:00000001" "${WINEPOINT}/system.reg"; then
-	    WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
+            WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
             waitWineServer 0
         fi
     fi
-
     return 0
 }
 
 fonts_install() {
     WINEPREFIX=$1
-    if [[ -e "${USER_DIR}/fonts" ]]; then
+    local i; local ii
+    ii="${USER_DIR}/fonts"
+    if [[ -d "$ii" ]]; then
+        readarray -t i < <(find "$ii" -maxdepth 1 -type f \( -iname "*.ttf" -o -iname "*.ttc" \) -printf "%p\n")
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only ttc or ttf-files to $ii" >&2; return 0; }
+        mkdir -p "${USER_DIR}/installed.fonts"
 
-        for file in "${USER_DIR}/fonts/"{*.ttf,*.ttc}; do
-            echo "Installing fonts $file"
-            cp -a "${USER_DIR}/fonts/"{*.ttf,*.ttc} "${WINEPREFIX}/drive_c/windows/Fonts" || return 1
+        for file in "${i[@]}"; do
+            cp -i "$file" "${WINEPREFIX}/drive_c/windows/Fonts" || return 1
+            echo "$(date '+%D %T') - Importing font: '$file' --> ${WINEPREFIX}/drive_c/windows/Fonts" | tee -a "${USER_DIR}/imports.log"
+            mv --backup=t "$file" "${USER_DIR}/installed.fonts"
         done
-
-        mv "${USER_DIR}/fonts" "${USER_DIR}/fonts.bak" || return 1
+        rmdir "$ii" || { echo "error in removing dir: Place only ttf and ttc-files to $ii" >&2; }
     fi
-
     return 0
 }
 
@@ -768,11 +758,11 @@ createAutorunCmd() {
     AUTORUN_FILEMASK="$2"
     local i; local ii
 
-    #Improved version of creating a CMD-file - the FILTER array can handle RegEx like * and ?
+    #Improved version of creating a CMD-file - the FILTER array can handle RegEx like * and ? - grep strips every line with a #-literal
     #Using RexEx extensions from user created files, ~/../roms/windows_installers is prefered over ~/../saves/windows_installers
     i="/userdata/roms/windows_installers/autorun-regex.txt"
     ii="/userdata/saves/windows_installers/autorun-regex.txt"
-    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && readarray -t AUTORUN_FILTER < "$i"
+    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && { dos2unix -k -q "$i"; readarray -t AUTORUN_FILTER < <(grep -v [#] "$i"); }
     # Pre-setted filter to exclude some standard files from created WINEPREFIX
     AUTORUN_FILTER+=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$" "^.*/drive_c/windows/.*$"
                      "^.*/[Uu]nins[[:alnum:]]{0,6}\.exe$" "^.*/[Ii]nstall(..)?\.exe$" "^.*/[Ss]etup\.exe$")
@@ -782,8 +772,7 @@ createAutorunCmd() {
     readarray -t AUTORUN_FOUNDEXE < <(find ${AUTORUN_FILEMASK} -type f -iname "*.exe" -printf "%p\n" | sort -n)
 
     for i in "${AUTORUN_FILTER[@]}"; do
-        i="${i%%#*}" #Remove everything after a #-comment
-        [[ "${#i}" -eq 0 || "$i" =~ ^[[:space:]]*$ ]] && continue #No empty/invalid values allowed!
+        [[ "${#i}" -lt 3 || "$i" =~ [[:space:]]{2} ]] && continue #No empty/invalid values allowed!
         for ii in "${!AUTORUN_FOUNDEXE[@]}"; do
             [[ "${AUTORUN_FOUNDEXE[$ii]}"  =~ $i ]] && unset AUTORUN_FOUNDEXE[$ii]
         done
@@ -1034,10 +1023,10 @@ case "${ACTION}" in
 
     "autorun")
         # Create autorunfile, works only in SSH mode, recommended is arg1 gamepath, arg2=searchmask
-        # It's held small: "batocera-wine windows autrun . bin" will search current directory in dir bin
+        # It's held small: "batocera-wine windows autorun . bin" will search current directory in dir bin
         [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
         [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
-        pushd "${GAMENAME}" > /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'"; exit 1; }
+        pushd "${GAMENAME}" > /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'" >&2; exit 1; }
         GAMENAME="$PWD"
         createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
         if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
