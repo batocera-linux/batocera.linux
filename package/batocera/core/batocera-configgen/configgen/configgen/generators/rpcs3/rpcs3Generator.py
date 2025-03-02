@@ -87,44 +87,23 @@ class Rpcs3Generator(Generator):
 
         # -= [Core] =-
         # Set the PPU Decoder based on config
-        if system.isOptSet("rpcs3_ppudecoder"):
-            rpcs3ymlconfig["Core"]["PPU Decoder"] = system.config["rpcs3_ppudecoder"]
-        else:
-            rpcs3ymlconfig["Core"]["PPU Decoder"] = "Recompiler (LLVM)"
+        rpcs3ymlconfig["Core"]["PPU Decoder"] = system.config.get("rpcs3_ppudecoder", "Recompiler (LLVM)")
         # Set the SPU Decoder based on config
-        if system.isOptSet("rpcs3_spudecoder"):
-            rpcs3ymlconfig["Core"]["SPU Decoder"] = system.config["rpcs3_spudecoder"]
-        else:
-            rpcs3ymlconfig["Core"]["SPU Decoder"] = "Recompiler (LLVM)"
+        rpcs3ymlconfig["Core"]["SPU Decoder"] = system.config.get("rpcs3_spudecoder", "Recompiler (LLVM)")
         # Set the SPU XFloat Accuracy based on config
-        if system.isOptSet("rpcs3_spuxfloataccuracy"):
-            rpcs3ymlconfig["Core"]["XFloat Accuracy"] = system.config["rpcs3_spuxfloataccuracy"]
-        else:
-            rpcs3ymlconfig["Core"]["XFloat Accuracy"] = "Approximate"
+        rpcs3ymlconfig["Core"]["XFloat Accuracy"] = system.config.get("rpcs3_spuxfloataccuracy", "Approximate")
         # Set the Default Core Values we need
         # Force to True for now to account for updates where exiting config file present. (True results in less stutter when a SPU module is in cache)
         rpcs3ymlconfig["Core"]["SPU Cache"] = True
         # Preferred SPU Threads
-        if system.isOptSet("rpcs3_sputhreads"):
-            rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = system.config["rpcs3_sputhreads"]
-        else:
-            rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = 0
+        rpcs3ymlconfig["Core"]["Preferred SPU Threads"] = system.config.get_int("rpcs3_sputhreads", 0)
         # SPU Loop Detection
-        if system.isOptSet("rpcs3_spuloopdetection"):
-            rpcs3ymlconfig["Core"]["SPU loop detection"] = system.config["rpcs3_spuloopdetection"]
-        else:
-            rpcs3ymlconfig["Core"]["SPU loop detection"] = False
+        rpcs3ymlconfig["Core"]["SPU loop detection"] = system.config.get_bool("rpcs3_spuloopdetection")
         # SPU Block Size
-        if system.isOptSet("rpcs3_spublocksize"):
-            rpcs3ymlconfig["Core"]["SPU Block Size"] = system.config["rpcs3_spublocksize"]
-        else:
-            rpcs3ymlconfig["Core"]["SPU Block Size"] = "Safe"
+        rpcs3ymlconfig["Core"]["SPU Block Size"] = system.config.get("rpcs3_spublocksize", "Safe")
         # Max Power Saving CPU-Preemptions
         # values are maximum yields per frame threshold
-        if system.isOptSet("rpcs3_maxcpu_preemptcount"):
-            rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config["rpcs3_maxcpu_preemptcount"]
-        else:
-            rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = 0
+        rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config.get_int("rpcs3_maxcpu_preemptcount", 0)
         # Sleep Timers Accuracy
         rpcs3ymlconfig["Core"]["Sleep Timers Accuracy"] = system.config.get("rpcs3_sleep_timers_accuracy", "As Host")
 
@@ -133,7 +112,7 @@ class Rpcs3Generator(Generator):
         # Check Vulkan first to be sure
         if vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
-            if system.isOptSet("rpcs3_gfxbackend") and system.config["rpcs3_gfxbackend"] == "OpenGL":
+            if system.config.get("rpcs3_gfxbackend") == "OpenGL":
                 _logger.debug("User selected OpenGL")
                 rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
             else:
@@ -156,102 +135,62 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Renderer"] = "OpenGL"
 
         # System aspect ratio (the setting in the PS3 system itself, not the displayed ratio) a.k.a. TV mode.
-        if system.isOptSet("rpcs3_ratio"):
-            rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config["rpcs3_ratio"]
-        else:
-            # If not set, see if the screen ratio is closer to 4:3 or 16:9 and pick that.
-            rpcs3ymlconfig["Video"]["Aspect ratio"] = ":".join(map(str, Rpcs3Generator.getClosestRatio(gameResolution)))
+        # If not set, see if the screen ratio is closer to 4:3 or 16:9 and pick that.
+        rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config.get("rpcs3_ratio") or Rpcs3Generator.getClosestRatio(gameResolution)
         # Shader compilation
-        if system.isOptSet("rpcs3_shadermode"):
-            rpcs3ymlconfig["Video"]["Shader Mode"] = system.config["rpcs3_shadermode"]
-        else:
-            rpcs3ymlconfig["Video"]["Shader Mode"] = "Async Shader Recompiler"
+        rpcs3ymlconfig["Video"]["Shader Mode"] = system.config.get("rpcs3_shadermode", "Async Shader Recompiler")
         # Vsync
-        if system.isOptSet("rpcs3_vsync"):
-            rpcs3ymlconfig["Video"]["VSync"] = system.config["rpcs3_vsync"]
-        else:
-            rpcs3ymlconfig["Video"]["VSync"] = False
+        rpcs3ymlconfig["Video"]["VSync"] = system.config.get_bool("rpcs3_vsync")
         # Stretch to display area
-        if system.isOptSet("rpcs3_stretchdisplay"):
-            rpcs3ymlconfig["Video"]["Stretch To Display Area"] = system.config["rpcs3_stretchdisplay"]
-        else:
-            rpcs3ymlconfig["Video"]["Stretch To Display Area"] = False
+        rpcs3ymlconfig["Video"]["Stretch To Display Area"] = system.config.get_bool("rpcs3_stretchdisplay")
         # Frame Limit
         # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60")
         # Second Frame Limit can be any float/integer. 0 = disabled.
-        if system.isOptSet("rpcs3_framelimit"):
-            # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
-            if system.config["rpcs3_framelimit"] in ["Off", "30", "50", "59.94", "60"]:
-                rpcs3ymlconfig["Video"]["Frame limit"] = system.config["rpcs3_framelimit"]
+        match system.config.get("rpcs3_framelimit"):
+            case system.config.MISSING:
+                rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
                 rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
-            else:
-                rpcs3ymlconfig["Video"]["Second Frame Limit"] = system.config["rpcs3_framelimit"]
+            # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
+            case "Off" | "30" | "50" | "59.94" | "60" as framelimit:
+                rpcs3ymlconfig["Video"]["Frame limit"] = framelimit
+                rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
+            case _ as framelimit:
+                rpcs3ymlconfig["Video"]["Second Frame Limit"] = framelimit
                 rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
-        else:
-            rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
-            rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
         # Write Color Buffers
-        if system.isOptSet("rpcs3_colorbuffers"):
-            rpcs3ymlconfig["Video"]["Write Color Buffers"] = system.config["rpcs3_colorbuffers"]
-        else:
-            rpcs3ymlconfig["Video"]["Write Color Buffers"] = False
+        rpcs3ymlconfig["Video"]["Write Color Buffers"] = system.config.get_bool("rpcs3_colorbuffers")
         # Disable Vertex Cache
-        if system.isOptSet("rpcs3_vertexcache"):
-            rpcs3ymlconfig["Video"]["Disable Vertex Cache"] = system.config["rpcs3_vertexcache"]
-        else:
-            rpcs3ymlconfig["Video"]["Disable Vertex Cache"] = False
+        rpcs3ymlconfig["Video"]["Disable Vertex Cache"] = system.config.get_bool("rpcs3_vertexcache")
         # Anisotropic Filtering
-        if system.isOptSet("rpcs3_anisotropic"):
-            rpcs3ymlconfig["Video"]["Anisotropic Filter Override"] = system.config["rpcs3_anisotropic"]
-        else:
-            rpcs3ymlconfig["Video"]["Anisotropic Filter Override"] = 0
+        rpcs3ymlconfig["Video"]["Anisotropic Filter Override"] = system.config.get_int("rpcs3_anisotropic", 0)
         # MSAA
-        if system.isOptSet("rpcs3_aa"):
-            rpcs3ymlconfig["Video"]["MSAA"] = system.config["rpcs3_aa"]
-        else:
-            rpcs3ymlconfig["Video"]["MSAA"] = "Auto"
+        rpcs3ymlconfig["Video"]["MSAA"] = system.config.get("rpcs3_aa", "Auto")
         # ZCULL
-        if system.isOptSet("rpcs3_zcull") and system.config["rpcs3_zcull"] == "Approximate":
-            rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
-            rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
-        elif system.isOptSet("rpcs3_zcull") and system.config["rpcs3_zcull"] == "Relaxed":
-            rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
-            rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = True
-        else:
-            rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = True
-            rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+        match system.config.get("rpcs3_zcull"):
+            case "Approximate":
+                rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
+                rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+            case "Relaxed":
+                rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
+                rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = True
+            case _:
+                rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = True
+                rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+
         # Shader Precision
-        if system.isOptSet("rpcs3_shader"):
-            rpcs3ymlconfig["Video"]["Shader Precision"] = system.config["rpcs3_shader"]
-        else:
-            rpcs3ymlconfig["Video"]["Shader Precision"] = "High"
+        rpcs3ymlconfig["Video"]["Shader Precision"] = system.config.get("rpcs3_shader", "High")
         # Internal resolution (CHANGE AT YOUR OWN RISK)
-            rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
+        rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
         # Resolution scaling
-        if system.isOptSet("rpcs3_resolution_scale"):
-            rpcs3ymlconfig["Video"]["Resolution Scale"] = system.config["rpcs3_resolution_scale"]
-        else:
-            rpcs3ymlconfig["Video"]["Resolution Scale"] = "100"
+        rpcs3ymlconfig["Video"]["Resolution Scale"] = system.config.get_int("rpcs3_resolution_scale", 100)
         # Output Scaling
-        if system.isOptSet("rpcs3_scaling"):
-            rpcs3ymlconfig["Video"]["Output Scaling Mode"] = system.config["rpcs3_scaling"]
-        else:
-            rpcs3ymlconfig["Video"]["Output Scaling Mode"] = "Bilinear"
+        rpcs3ymlconfig["Video"]["Output Scaling Mode"] = system.config.get("rpcs3_scaling", "Bilinear")
         # Number of Shader Compilers
-        if system.isOptSet("rpcs3_num_compilers"):
-            rpcs3ymlconfig["Video"]["Shader Compiler Threads"] = system.config["rpcs3_num_compilers"]
-        else:
-            rpcs3ymlconfig["Video"]["Shader Compiler Threads"] = 0
+        rpcs3ymlconfig["Video"]["Shader Compiler Threads"] = system.config.get_int("rpcs3_num_compilers", 0)
         # Multithreaded RSX
-        if system.isOptSet("rpcs3_rsx"):
-            rpcs3ymlconfig["Video"]["Multithreaded RSX"] = system.config["rpcs3_rsx"]
-        else:
-            rpcs3ymlconfig["Video"]["Multithreaded RSX"] = False
+        rpcs3ymlconfig["Video"]["Multithreaded RSX"] = system.config.get_bool("rpcs3_rsx")
         # Async Texture Streaming
-        if system.isOptSet("rpcs3_async_texture"):
-            rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = system.config["rpcs3_async_texture"]
-        else:
-            rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = False
+        rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = system.config.get_bool("rpcs3_async_texture")
         # Write Depth Buffer
         rpcs3ymlconfig["Video"]["Write Depth Buffer"] = system.config.get_bool("rpcs3_write_depth_buffers")
 
@@ -261,48 +200,30 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Audio"]["Renderer"] = "Cubeb"
         rpcs3ymlconfig["Audio"]["Master Volume"] = 100
         # audio format
-        if system.isOptSet("rpcs3_audio_format"):
-            rpcs3ymlconfig["Audio"]["Audio Format"] = system.config["rpcs3_audio_format"]
-        else:
-            rpcs3ymlconfig["Audio"]["Audio Format"] = "Automatic"
+        rpcs3ymlconfig["Audio"]["Audio Format"] = system.config.get("rpcs3_audio_format", "Automatic")
         # convert to 16 bit
-        if system.isOptSet("rpcs3_audio_16bit") and system.config["rpcs3_audio_16bit"] == "True":
-            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = True
-        else:
-            rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = False
+        rpcs3ymlconfig["Audio"]["Convert to 16 bit"] = system.config.get_bool("rpcs3_audio_16bit")
         # audio buffering
-        if system.isOptSet("rpcs3_audiobuffer"):
-            rpcs3ymlconfig["Audio"]["Enable Buffering"] = system.config["rpcs3_audiobuffer"]
-        else:
-            rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
+        rpcs3ymlconfig["Audio"]["Enable Buffering"] = system.config.get_bool("rpcs3_audiobuffer", True)
         # audio buffer duration
-        if system.isOptSet("rpcs3_audiobuffer_duration"):
-            rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = int(system.config["rpcs3_audiobuffer_duration"])
-        else:
-            rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = 100
+        rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = system.config.get_int("rpcs3_audiobuffer_duration", 100)
         # time stretching
-        if system.isOptSet("rpcs3_timestretch") and system.config["rpcs3_timestretch"] == "True":
+        if system.config.get_bool("rpcs3_timestretch"):
             rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = True
             rpcs3ymlconfig["Audio"]["Enable Buffering"] = True
         else:
             rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = False
         # time stretching threshold
-        if system.isOptSet("rpcs3_timestretch_threshold"):
-            rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = int(system.config["rpcs3_timestretch_threshold"])
-        else:
-            rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = 75
+        rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = system.config.get_int("rpcs3_timestretch_threshold", 75)
 
         # -= [Input/Output] =-
         # gun stuff
-        if system.isOptSet("use_guns") and system.getOptBoolean("use_guns") and guns:
+        if system.config.use_guns and guns:
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
         # Gun crosshairs
-        if system.isOptSet("rpcs3_crosshairs"):
-            rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config["rpcs3_crosshairs"]
-        else:
-            rpcs3ymlconfig["Input/Output"]["Show move cursor"] = False
+        rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
         # -= [Miscellaneous] =-
         rpcs3ymlconfig["Miscellaneous"]["Exit RPCS3 when process finishes"] = True
@@ -338,12 +259,11 @@ class Rpcs3Generator(Generator):
 
         commandArray = [RPCS3_BIN, romName]
 
-        if not (system.isOptSet("rpcs3_gui") and system.getOptBoolean("rpcs3_gui")):
+        if not system.config.get_bool("rpcs3_gui"):
             commandArray.append("--no-gui")
 
         # firmware not installed and available : instead of starting the game, install it
-        if Rpcs3Generator.getFirmwareVersion() is None:
-          if (BIOS / "PS3UPDAT.PUP").exists():
+        if Rpcs3Generator.getFirmwareVersion() is None and (BIOS / "PS3UPDAT.PUP").exists():
             commandArray = [RPCS3_BIN, "--installfw", BIOS / "PS3UPDAT.PUP"]
 
         return Command.Command(
@@ -358,18 +278,18 @@ class Rpcs3Generator(Generator):
         )
 
     @staticmethod
-    def getClosestRatio(gameResolution: Resolution):
+    def getClosestRatio(gameResolution: Resolution) -> str:
         screenRatio = gameResolution["width"] / gameResolution["height"]
         if screenRatio < 1.6:
-            return (4,3)
+            return "4:3"
         else:
-            return (16,9)
+            return "16:9"
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
 
     @staticmethod
-    def getFirmwareVersion():
+    def getFirmwareVersion() -> str | None:
         try:
             with (RPCS3_CONFIG_DIR / "dev_flash" / "vsh" / "etc" / "version.txt").open("r") as stream:
                 lines = stream.readlines()
@@ -377,6 +297,6 @@ class Rpcs3Generator(Generator):
                 matches = re.match("^release:(.*):", line)
                 if matches:
                     return matches[1]
-        except:
+        except Exception:
             return None
         return None
