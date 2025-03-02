@@ -343,7 +343,10 @@ class MameGenerator(Generator):
 
             # Apple II
             if system.name == "apple2":
-                commandArray += ["-sl7", "cffa202"]
+                rom_extension = rom_path.suffix.lower()
+                # only add SD/IDE control if provided a hard drive image
+                if rom_extension in {".hdv", ".2mg", ".chd", ".iso", ".bin", ".cue"}:
+                    commandArray += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
                         _logger.debug("Joyport joystick is only compatible with Apple II Plus")
