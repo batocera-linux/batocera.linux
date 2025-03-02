@@ -164,7 +164,7 @@ def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator,
                     commandLine += ["-sl7", "cffa202"]
                 if system.isOptSet('gameio') and system.config['gameio'] != 'none':
                     if system.config['gameio'] == 'joyport' and messModel != 'apple2p':
-                        _logger.debug("Joyport is only compatible with Apple II +")
+                        _logger.debug("Joyport is only compatible with Apple II Plus")
                     else:
                         commandLine += ["-gameio", system.config['gameio']]
                         specialController = system.config['gameio']
