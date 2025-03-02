@@ -2198,9 +2198,11 @@ x1:
   extensions: [3ds, 3dsx, cxi, axf, elf, app, squashfs]
   emulators:
     citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+      citra:  { requireAnyOf: [BR2_PACKAGE_CITRA]          }
     libretro:
-      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
+      citra:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
+    azahar:
+      azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR]         }
 
 openbor:
   name: OpenBOR

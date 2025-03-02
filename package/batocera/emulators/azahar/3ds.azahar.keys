@@ -1,0 +1,39 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "joystick2",
+            "type": "mouse",
+            "description": "Move Stylet Pointer"
+        },
+        {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": "KEY_F9",
+            "description": "Swap Screen"
+        },
+        {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": "KEY_F10",
+            "description": "Toggle Screen Layout"
+        },
+        {
+            "trigger": ["hotkey", "pagedown"],
+            "type": "key",
+            "target": ["KEY_LEFTCTRL", "KEY_Z"],
+            "description": "Toggle Speed Limit"
+        },
+        {
+            "trigger": ["hotkey", "r2"],
+            "type": "key",
+            "target": ["KEY_LEFTALT", "KEY_TAB"],
+            "description": "Swap screens"
+        },
+        {
+            "trigger": "r3",
+            "type": "key",
+            "target": "BTN_LEFT",
+            "description": "Mouse Click"
+        }
+    ]
+}

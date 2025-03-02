@@ -142,6 +142,7 @@ PACKAGES_OPENBOR="openbor4432
 
 PACKAGES_EMULATORS="amiberry
                     applewin
+                    azahar
                     bigpemu
                     cemu
                     citra
