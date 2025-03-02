@@ -160,12 +160,12 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 10\n')
                 f.write('    Player LED enabled: true\n')
-                if system.isOptSet(f"rpcs3_rumble{nplayer}") and system.getOptBoolean(f"rpcs3_rumble{nplayer}") == False:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
-                else:
+                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
                     f.write('    Enable Large Vibration Motor: true\n')
                     f.write('    Enable Small Vibration Motor: true\n')
+                else:
+                    f.write('    Enable Large Vibration Motor: false\n')
+                    f.write('    Enable Small Vibration Motor: false\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')
@@ -260,12 +260,12 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 50\n')
                 f.write('    Player LED enabled: true\n')
-                if system.isOptSet(f"rpcs3_rumble{nplayer}") and system.getOptBoolean(f"rpcs3_rumble{nplayer}") == False:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
-                else:
+                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
                     f.write('    Enable Large Vibration Motor: true\n')
                     f.write('    Enable Small Vibration Motor: true\n')
+                else:
+                    f.write('    Enable Large Vibration Motor: false\n')
+                    f.write('    Enable Small Vibration Motor: false\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')
@@ -359,12 +359,12 @@ def generateControllerConfig(system: Emulator, controllers: ControllerMapping, r
                 f.write(f'    Use LED as a battery indicator: false\n')
                 f.write(f'    LED battery indicator brightness: 10\n')
                 f.write(f'    Player LED enabled: true\n')
-                if system.isOptSet(f"rpcs3_rumble{nplayer}") and system.getOptBoolean(f"rpcs3_rumble{nplayer}") == False:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
-                else:
+                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
                     f.write('    Enable Large Vibration Motor: true\n')
                     f.write('    Enable Small Vibration Motor: true\n')
+                else:
+                    f.write('    Enable Large Vibration Motor: false\n')
+                    f.write('    Enable Small Vibration Motor: false\n')
                 f.write(f'    Switch Vibration Motors: false\n')
                 f.write(f'    Mouse Movement Mode: Relative\n')
                 f.write(f'    Mouse Deadzone X Axis: 60\n')
