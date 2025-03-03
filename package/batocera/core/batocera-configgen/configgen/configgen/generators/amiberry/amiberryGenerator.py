@@ -113,7 +113,7 @@ class AmiberryGenerator(Generator):
                 nplayer += 1
 
             # fps
-            if system.config['showFPS'] == 'true':
+            if system.config.show_fps:
                 commandArray.append("-s")
                 commandArray.append("show_leds=true")
 

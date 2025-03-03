@@ -207,7 +207,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
 
 
     # Display FPS
-    if system.config['showFPS'] == 'true':
+    if system.config.show_fps:
         iniConfig.set("Video-Rice",       "ShowFPS",  "True")
         iniConfig.set("Video-Glide64mk2", "show_fps", "4")
     else:
