@@ -54,7 +54,7 @@ class LexaloffleGenerator(Generator):
         commandArray.extend(["-desktop", SCREENSHOTS])  # screenshots
         commandArray.extend(["-windowed", "0"])                     # full screen
         # Display FPS
-        if system.config['showFPS'] == 'true':
+        if system.config.show_fps:
                 commandArray.extend(["-show_fps", "1"])
         else:
                 commandArray.extend(["-show_fps", "0"])
