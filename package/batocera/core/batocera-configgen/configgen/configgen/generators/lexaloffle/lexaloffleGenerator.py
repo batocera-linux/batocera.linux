@@ -74,7 +74,7 @@ class LexaloffleGenerator(Generator):
         if (rombase.lower() == "splore" or rombase.lower() == "console"):
             commandArray.extend(["-splore"])
         else:
-            commandArray.extend(["-run", rom])
+            commandArray.extend(["-run", rom_path])
 
         controllersconfig = generate_sdl_game_controller_config(playersControllers)
         with ensure_parents_and_open(CONTROLLERS, "w") as file:
