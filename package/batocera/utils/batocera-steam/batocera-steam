@@ -49,16 +49,22 @@ if test -z "${GAME}"
 then
     DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -bigpicture
 else
-    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -silent ${GAME} 2>&1 |
-	while read LINE
-	do
-	    echo "${LINE}"
-	    # steam has no option to exit when quitting a game.
-	    if echo "${LINE}" | grep -E '^Exiting app |^Game process removed'
-	    then
-		DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
-	    fi
-	done
+    # Steam has no option to exit when quitting a game. We previously used to monitor the
+    # console output of the steam command, but that is no longer reliable:
+    # https://github.com/ValveSoftware/steam-for-linux/issues/11793
+    #
+    # We thus monitor the log and when the game process exits, we request steam to stop.
+    # This should allow our steam command to actually finish.
+    log_file="$target_dir/.var/app/com.valvesoftware.Steam/.local/share/Steam/logs/console_log.txt"
+    (
+        grep -q -E '^\[.*\] (Exiting app|Game process removed)' <(tail -f -n 0 "$log_file")
+        DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
+    ) &
+    log_watcher_pid=$!
+
+    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -silent ${GAME}
+    # Kill our background log watching subshell if it's still there.
+    kill "$log_watcher_pid"
 fi
 
 batocera-mouse hide
