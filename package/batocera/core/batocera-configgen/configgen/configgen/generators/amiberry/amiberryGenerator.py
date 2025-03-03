@@ -77,8 +77,7 @@ class AmiberryGenerator(Generator):
                 # floppy path
                 commandArray.append("-s")
                 # Use disk folder as floppy path
-                romPathIndex = rom.rfind('/')
-                commandArray.append(f"amiberry.floppy_path={rom[0:romPathIndex]}")
+                commandArray.append(f"amiberry.floppy_path={rom.parent}")
 
             # controller
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers, True)
@@ -202,45 +201,44 @@ class AmiberryGenerator(Generator):
         # otherwise, unknown format
         return Command.Command(array=[])
 
-    def floppiesFromRom(self, rom: str):
-        rom_path = Path(rom)
+    def floppiesFromRom(self, rom: Path):
         floppies: list[Path] = []
-        indexDisk = rom_path.name.rfind("(Disk 1")
+        indexDisk = rom.name.rfind("(Disk 1")
 
         # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
         # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
-        if rom_path.stem[-1:].isdigit():
+        if rom.stem[-1:].isdigit():
             # path without the number
-            fileprefix = rom_path.stem[:-1]
+            fileprefix = rom.stem[:-1]
 
             # special case for 0 while numerotation can start at 1
-            zero_file = rom_path.with_name(f"{fileprefix}0{rom_path.suffix}")
+            zero_file = rom.with_name(f"{fileprefix}0{rom.suffix}")
             if zero_file.is_file():
                 floppies.append(zero_file)
 
             # adding all other files
             n = 1
-            while (floppy := rom_path.with_name(f"{fileprefix}{n}{rom_path.suffix}")).is_file():
+            while (floppy := rom.with_name(f"{fileprefix}{n}{rom.suffix}")).is_file():
                 floppies.append(floppy)
                 n += 1
         # (Disk 1 of 2) format
         elif indexDisk != -1:
                 # Several disks
-                floppies.append(rom_path)
-                prefix = rom_path.name[0:indexDisk+6]
-                postfix = rom_path.name[indexDisk+7:]
+                floppies.append(rom)
+                prefix = rom.name[0:indexDisk+6]
+                postfix = rom.name[indexDisk+7:]
                 n = 2
-                while (floppy := rom_path.with_name(f"{prefix}{n}{postfix}")).is_file():
+                while (floppy := rom.with_name(f"{prefix}{n}{postfix}")).is_file():
                     floppies.append(floppy)
                     n += 1
         else:
            #Single ADF
-           return [rom_path]
+           return [rom]
 
         return floppies
 
-    def getRomType(self, filepath: str):
-        extension = Path(filepath).suffix[1:].lower()
+    def getRomType(self, filepath: Path):
+        extension = filepath.suffix[1:].lower()
 
         if extension == "lha":
             return 'WHDL'

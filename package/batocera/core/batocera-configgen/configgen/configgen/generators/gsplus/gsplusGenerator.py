@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -28,8 +27,7 @@ class GSplusGenerator(Generator):
 
         config = UnixSettings(_CONFIGFILE, separator=' ')
 
-        rom_path = Path(rom)
-        if (rom_path.suffix.lower() in ['.dsk', '.do', '.nib']):
+        if (rom.suffix.lower() in ['.dsk', '.do', '.nib']):
             config.save("s6d1", rom)
             config.save("s5d1", '')
             config.save("s7d1", '')

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import codecs
 import os
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -29,11 +28,9 @@ class ECWolfGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         ecwolfConfigDir = CONFIGS / "ecwolf"
         ecwolfConfigFile = ecwolfConfigDir / "ecwolf.cfg"
-        ecwolfSaves = SAVES / "ecwolf" / rom_path.name
+        ecwolfSaves = SAVES / "ecwolf" / rom.name
         ecwolfArray = ["ecwolf"] # Binary for command array
 
         # Create config folders
@@ -72,22 +69,22 @@ class ECWolfGenerator(Generator):
         mkdir_if_not_exists(ecwolfSaves)
 
         # Use the directory method with ecwolf extension and datafiles (wl6 or sod or nh3) inside
-        if rom_path.is_dir():
+        if rom.is_dir():
             try:
-                os.chdir(rom_path)
+                os.chdir(rom)
             # Only game directories, not .ecwolf or .pk3 files
             except Exception as e:
-                print(f"Error: couldn't go into directory {rom_path} ({e})")
+                print(f"Error: couldn't go into directory {rom} ({e})")
 
         # File method .ecwolf (recommended) for command parameters, first argument is path to dataset,
         # next parameters according ecwolf --help
         # File method .pk3, put pk3 files next to wl6 dataset and start the mod in ES
-        if rom_path.is_file():
-            os.chdir(rom_path.parent)
-            fextension = rom_path.suffix.lower()
+        if rom.is_file():
+            os.chdir(rom.parent)
+            fextension = rom.suffix.lower()
 
             if fextension == ".ecwolf":
-                with codecs.open(str(rom_path),"r") as f:
+                with codecs.open(str(rom),"r") as f:
                     ecwolfArray += (f.readline().split())
 
                 # If 1. parameter isn't an argument then assume it's a path
@@ -99,7 +96,7 @@ class ECWolfGenerator(Generator):
                     ecwolfArray.pop(1)
 
             if fextension == ".pk3":
-                ecwolfArray += ["--file", rom_path.name]
+                ecwolfArray += ["--file", rom.name]
 
         ecwolfArray += [
                  #Use values according ecwolf --help, do not miss any parameter

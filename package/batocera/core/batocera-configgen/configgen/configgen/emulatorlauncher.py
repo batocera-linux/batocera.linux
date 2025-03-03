@@ -43,19 +43,19 @@ _logger = logging.getLogger(__name__)
 
 def main(args: argparse.Namespace, maxnbplayers: int) -> int:
     # squashfs roms if squashed
-    if Path(args.rom).suffix == ".squashfs":
+    if args.rom.suffix == ".squashfs":
         with squashfs_rom(args.rom) as rom:
             return start_rom(args, maxnbplayers, rom, args.rom)
     else:
         return start_rom(args, maxnbplayers, args.rom, args.rom)
 
-def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfiguration: str) -> int:
+def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_rom: Path) -> int:
     player_controllers = Controller.load_for_players(maxnbplayers, args)
 
     # find the system to run
     systemName = args.system
     _logger.debug("Running system: %s", systemName)
-    system = Emulator(args, romConfiguration)
+    system = Emulator(args, original_rom)
 
     _logger.debug("Settings: %s", {
         key: '***' if 'password' in key else value for key, value in system.config.items()
@@ -118,11 +118,6 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
             effectiveCore = ""
             if "core" in system.config and system.config.core is not None:
                 effectiveCore = system.config.core
-            effectiveRom = ""
-            effectiveRomConfiguration = ""
-            if rom is not None:
-                effectiveRom = rom
-                effectiveRomConfiguration = romConfiguration
 
             if generator.getMouseMode(system.config, rom):
                 mouseChanged = True
@@ -136,17 +131,17 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
             os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
 
             # run a script before emulator starts
-            callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
-            callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+            callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
+            callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
 
             # run the emulator
             from .utils.evmapy import evmapy
             with (
-                evmapy(systemName, system.config.emulator, effectiveCore, effectiveRomConfiguration, player_controllers, guns),
+                evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns),
                 set_hotkeygen_context(generator, system)
             ):
                 # change directory if wanted
-                executionDirectory = generator.executionDirectory(system.config, effectiveRom)
+                executionDirectory = generator.executionDirectory(system.config, rom)
                 if executionDirectory is not None:
                     os.chdir(executionDirectory)
 
@@ -169,8 +164,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
                     exitCode = runCommand(cmd)
 
             # run a script after emulator shuts down
-            callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
-            callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+            callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
+            callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
 
         finally:
             # always restore the resolution
@@ -189,7 +184,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
     # exit
     return exitCode
 
-def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
+def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
     if generator.supportsInternalBezels():
         _logger.debug("skipping bezels for emulator %s", system.config.emulator)
         return None
@@ -368,7 +363,7 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
         return ""
     return str(string)
 
-def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: str, gameinfos: Mapping[str, str], bezel: Path | None) -> str:
+def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, gameinfos: Mapping[str, str], bezel: Path | None) -> str:
     configstr = ""
 
     if bezel != "" and bezel != "none" and bezel is not None:
@@ -473,7 +468,7 @@ def launch() -> None:
             parser.add_argument(f"-p{p}nbaxes"    , help=f"player{p} controller number of axes"   , type=int, required=False)
 
         parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
-        parser.add_argument("-rom",            help="rom absolute path",           type=str, required=True)
+        parser.add_argument("-rom",            help="rom absolute path",           type=Path, required=True)
         parser.add_argument("-emulator",       help="force emulator",              type=str, required=False)
         parser.add_argument("-core",           help="force emulator core",         type=str, required=False)
         parser.add_argument("-netplaymode",    help="host/client",                 type=str, required=False)

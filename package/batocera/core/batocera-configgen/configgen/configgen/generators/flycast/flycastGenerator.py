@@ -168,8 +168,7 @@ class FlycastGenerator(Generator):
             copyfile(FLYCAST_VMU_BLANK, FLYCAST_VMUA2)
 
         # the command to run
-        commandArray = ['/usr/bin/flycast']
-        commandArray.append(rom)
+        commandArray = ['/usr/bin/flycast', rom]
         # Here is the trick to make flycast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME.
         # VMU will be in $XDG_DATA_HOME / $FLYCAST_DATADIR because it needs rw access -> /userdata/saves/dreamcast

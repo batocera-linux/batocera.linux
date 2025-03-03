@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import shlex
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -9,6 +8,8 @@ from ...batoceraPaths import BATOCERA_SHARE_DIR, CONFIGS, LOGS, mkdir_if_not_exi
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _CONFIG_DIR: Final = CONFIGS / "gzdoom"
@@ -48,8 +49,6 @@ class GZDoomGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # check the path is added to the ini file
         fm_banks = f"Path={_FM_BANKS_DIR}\n"
         sound_fonts = f"Path={_SOUND_FONTS_DIR}\n"
@@ -101,9 +100,9 @@ class GZDoomGenerator(Generator):
         if not _INI_FILE.exists():
             with _INI_FILE.open("w") as file:
                 file.write('[IWADSearch.Directories]\n')
-                file.write(f'Path={rom_path.parent}\n')
+                file.write(f'Path={rom.parent}\n')
                 file.write('[FileSearch.Directories]\n')
-                file.write(f'Path={rom_path.parent}\n')
+                file.write(f'Path={rom.parent}\n')
                 file.write('[SoundfontSearch.Directories]\n')
                 file.write(f"Path={_SOUND_FONTS_DIR}\n")
                 file.write(f"Path={_FM_BANKS_DIR}\n")
@@ -111,7 +110,7 @@ class GZDoomGenerator(Generator):
         else:
             # configparser wasn't working on the default ini file (non-compliant)
             # it's not a true ini file, use this crude method instead
-            line_to_add = f"Path={rom_path.parent}\n"
+            line_to_add = f"Path={rom.parent}\n"
             with _INI_FILE.open("r") as file:
                 lines = file.readlines()
                 if line_to_add not in lines:
@@ -150,8 +149,8 @@ class GZDoomGenerator(Generator):
 
         # define how wads are loaded
         # if we use a custom extension use that instead
-        if rom_path.suffix == ".gzdoom":
-            with rom_path.open() as f:
+        if rom.suffix == ".gzdoom":
+            with rom.open() as f:
                 iwad_command = f.read().strip()
             args = shlex.split(iwad_command)
             return Command.Command(
@@ -168,7 +167,7 @@ class GZDoomGenerator(Generator):
         return Command.Command(
             array=[
                 "gzdoom",
-                "-iwad", rom_path.name,
+                "-iwad", rom.name,
                 "-exec", script_file,
                 "-width", str(gameResolution["width"]),
                 "-height", str(gameResolution["height"]),

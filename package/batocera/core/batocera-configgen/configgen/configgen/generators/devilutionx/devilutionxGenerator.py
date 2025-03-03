@@ -44,9 +44,9 @@ class DevilutionXGenerator(Generator):
             'devilutionx', '--data-dir', '/userdata/roms/devilutionx',
             '--config-dir', configDir, '--save-dir', saveDir
         ]
-        if rom.endswith('hellfire.mpq'):
+        if rom.name.endswith('hellfire.mpq'):
             commandArray.append('--hellfire')
-        elif rom.endswith('spawn.mpq'):
+        elif rom.name.endswith('spawn.mpq'):
             commandArray.append('--spawn')
         else:
             commandArray.append('--diablo')

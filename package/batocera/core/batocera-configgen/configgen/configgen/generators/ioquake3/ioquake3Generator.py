@@ -17,9 +17,7 @@ if TYPE_CHECKING:
 class IOQuake3Generator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
-        ioquake3Config.writeCfgFiles(system, rom_path, playersControllers, gameResolution)
+        ioquake3Config.writeCfgFiles(system, rom, playersControllers, gameResolution)
 
         # ioquake3 looks for folder either in config or from where it's launched
         source_dir = Path("/usr/bin/ioquake3")
@@ -32,7 +30,7 @@ class IOQuake3Generator(Generator):
         commandArray = ["/userdata/roms/quake3/ioquake3"]
 
         # get the game / mod to launch
-        with rom_path.open("r") as file:
+        with rom.open("r") as file:
             command_line = file.readline().strip()
             command_line_words = command_line.split()
 

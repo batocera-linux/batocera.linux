@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -25,8 +24,6 @@ class ScummVMGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
         mkdir_if_not_exists(scummExtra)
 
@@ -45,15 +42,15 @@ class ScummVMGenerator(Generator):
             scummConfig.write(configfile)
 
         # Find rom path
-        if rom_path.is_dir():
+        if rom.is_dir():
           # rom is a directory: must contains a <game name>.scummvm file
-          romPath = rom_path
-          romName = next(rom_path.glob("*.scummvm")).stem
+          romPath = rom
+          romName = next(rom.glob("*.scummvm")).stem
         else:
           # rom is a file: split in directory and file name
-          romPath = rom_path.parent
+          romPath = rom.parent
           # Get rom name without extension
-          romName = rom_path.stem
+          romName = rom.stem
 
         # pad number
         id = 0

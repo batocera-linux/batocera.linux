@@ -67,8 +67,8 @@ class LindberghGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romDir = Path(rom).parent
-        romName = Path(rom).name
+        romDir = rom.parent
+        romName = rom.name
         _logger.debug("ROM path: %s", romDir)
 
         source_dir = Path("/usr/bin/lindbergh")

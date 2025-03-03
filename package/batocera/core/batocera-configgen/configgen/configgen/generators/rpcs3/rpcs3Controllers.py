@@ -8,6 +8,8 @@ from ...batoceraPaths import mkdir_if_not_exists
 from .rpcs3Paths import RPCS3_CONFIG_DIR
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
 
@@ -21,7 +23,7 @@ class _InputMapping(TypedDict):
     event_variations: list[tuple[str, str]]
 
 
-def generateControllerConfig(system: Emulator, controllers: Controllers, rom: str):
+def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path):
 
     mkdir_if_not_exists(_RPCS3_INPUT_DIR)
 

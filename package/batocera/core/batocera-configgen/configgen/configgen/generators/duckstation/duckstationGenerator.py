@@ -29,16 +29,14 @@ class DuckstationGenerator(Generator):
     }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # Test if it's a m3u file
-        if rom_path.suffix == ".m3u":
-            rom_path = rewriteM3uFullPath(rom_path)
+        if rom.suffix == ".m3u":
+            rom = rewriteM3uFullPath(rom)
 
         if Path('/usr/bin/duckstation-qt').exists():
-            commandArray = ["duckstation-qt", "-batch", "-nogui", "--", rom_path ]
+            commandArray = ["duckstation-qt", "-batch", "-nogui", "--", rom ]
         else:
-            commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom_path ]
+            commandArray = ["duckstation-nogui", "-batch", "-fullscreen", "--", rom ]
 
         settings = CaseSensitiveConfigParser(interpolation=None)
         settings_path = CONFIGS / "duckstation" / "settings.ini"

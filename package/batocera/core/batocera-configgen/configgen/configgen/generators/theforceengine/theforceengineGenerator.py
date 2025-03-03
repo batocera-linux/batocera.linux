@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -37,10 +36,8 @@ class TheForceEngineGenerator(Generator):
         if forceModFile.exists():
             mod_name = forcePatchFile
 
-        rom_path = Path(rom)
-
         # Open the .tfe rom file for user mods
-        with rom_path.open() as file:
+        with rom.open() as file:
             # Read the first line and store it as 'first_line'
             first_line = file.readline().strip()
             # use the first_line as mod if the file isn't empty

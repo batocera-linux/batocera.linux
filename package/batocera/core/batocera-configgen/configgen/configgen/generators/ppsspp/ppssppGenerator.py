@@ -37,9 +37,7 @@ class PPSSPPGenerator(Generator):
             ppssppControllers.generateControllerConfig(controller)
 
         # The command to run
-        commandArray = ['/usr/bin/PPSSPP']
-        commandArray.append(rom)
-        commandArray.append("--fullscreen")
+        commandArray = ['/usr/bin/PPSSPP', rom, '--fullscreen']
 
         # Adapt the menu size to low defenition
         # I've played with this option on PC to fix menu size in Hi-Resolution and it not working fine. I'm almost sure this option break the emulator (Darknior)

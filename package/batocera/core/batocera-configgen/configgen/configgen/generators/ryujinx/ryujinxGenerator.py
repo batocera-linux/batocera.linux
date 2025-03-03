@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 import evdev
 
 from ... import Command
-from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -206,7 +206,7 @@ class RyujinxGenerator(Generator):
                     writeControllerIntoJson(ctrlConf)
                     break
 
-        if rom == "config":
+        if configure_emulator(rom):
             commandArray = [ryujinxExec]
         else:
             commandArray = [ryujinxExec, rom]

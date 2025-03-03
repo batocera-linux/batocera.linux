@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -30,7 +29,7 @@ class TsugaruGenerator(Generator):
         if system.isOptSet('386dx') and system.config['386dx'] == '1':
             commandArray += ["-PRETEND386DX"]
 
-        if Path(rom).suffix.lower() in ['.iso', '.cue', '.bin']:
+        if rom.suffix.lower() in ['.iso', '.cue', '.bin']:
             # Launch CD-ROM
             commandArray += ["-CD", rom]
         else:

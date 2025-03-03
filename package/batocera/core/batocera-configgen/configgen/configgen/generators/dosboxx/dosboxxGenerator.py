@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -19,8 +18,7 @@ class DosBoxxGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
-        gameDir = Path(rom)
-        gameConfFile = gameDir / "dosbox.cfg"
+        gameConfFile = rom / "dosbox.cfg"
 
         configFile = _CONFIG
         if gameConfFile.is_file():
@@ -48,7 +46,7 @@ class DosBoxxGenerator(Generator):
         # -fullscreen removed as it crashes on N2
         commandArray = ['/usr/bin/dosbox-x',
                         "-exit",
-                        "-c", f"""mount c {gameDir!s}""",
+                        "-c", f"""mount c {rom!s}""",
                         "-c", "c:",
                         "-c", "dosbox.bat",
                         "-fastbioslogo",

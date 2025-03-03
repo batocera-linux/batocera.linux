@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -11,6 +10,8 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import HotkeysContext
@@ -29,8 +30,6 @@ class HatariGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         model_mapping = {
             "520st_auto":       { "machine": "st",      "tos": "auto" },
             "520st_100":        { "machine": "st",      "tos": "100"  },
@@ -84,21 +83,21 @@ class HatariGenerator(Generator):
             memorysize = system.config["ram"]
         commandArray += ["--memsize", str(memorysize)]
 
-        rom_extension = rom_path.suffix.lower()
+        rom_extension = rom.suffix.lower()
         if rom_extension == ".hd":
             if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ACSI":
-                commandArray += ["--acsi", rom_path]
+                commandArray += ["--acsi", rom]
             else:
-                commandArray += ["--ide-master", rom_path]
+                commandArray += ["--ide-master", rom]
         elif rom_extension == ".gemdos":
             blank_file = HATARI_CONFIG / "blank.st"
             if not blank_file.exists():
                 with blank_file.open('w'):
                     pass
-            commandArray += ["--harddrive", rom_path, blank_file]
+            commandArray += ["--harddrive", rom, blank_file]
         else:
             # Floppy (A) options
-            commandArray += ["--disk-a", rom_path]
+            commandArray += ["--disk-a", rom]
             # Floppy (B) options
             commandArray += ["--drive-b", "off"]
 

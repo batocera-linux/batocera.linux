@@ -9,7 +9,7 @@ from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import HOME, ROMS, mkdir_if_not_exists
+from ...batoceraPaths import HOME, ROMS, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import wine
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -63,9 +63,8 @@ class Model2EmuGenerator(Generator):
 
         commandArray: list[str | Path] = [wine.WINE, emupath / "emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
-        if rom != 'config':
-            rom = Path(rom).stem
-            commandArray.extend([rom])
+        if not configure_emulator(rom):
+            commandArray.extend([rom.stem])
 
         # modify the ini file resolution accordingly
         configFileName = emupath / "EMULATOR.INI"
@@ -93,7 +92,7 @@ class Model2EmuGenerator(Generator):
         Config.set("Renderer","AutoFull", "1")
         Config.set("Renderer","ForceSync", "1")
         # widescreen
-        lua_file_path = emupath / "scripts" / f"{rom}.lua"
+        lua_file_path = emupath / "scripts" / f"{rom.stem}.lua"
         if system.isOptSet("model2_ratio"):
             if lua_file_path.exists():
                 modify_lua_widescreen(lua_file_path, system.config["model2_ratio"])
@@ -109,7 +108,7 @@ class Model2EmuGenerator(Generator):
                 modify_lua_scanlines(lua_file_path, "False")
         # sinden - check if rom is a gun game
         known_gun_roms = ["bel", "gunblade", "hotd", "rchase2", "vcop", "vcop2", "vcopa"]
-        if rom in known_gun_roms and system.config.get_bool('use_guns') and guns:
+        if rom.stem in known_gun_roms and system.config.get_bool('use_guns') and guns:
             for gun in guns:
                 if gun.needs_borders:
                     if lua_file_path.exists():

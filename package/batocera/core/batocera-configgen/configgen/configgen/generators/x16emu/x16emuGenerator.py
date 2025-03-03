@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -9,6 +8,8 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 
@@ -23,7 +24,7 @@ class X16emuGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # set the file system path
-        romdir = Path(rom).parent
+        romdir = rom.parent
 
         # default options
         commandArray: list[str | Path] = [
@@ -35,10 +36,10 @@ class X16emuGenerator(Generator):
         ]
 
         # Check the rom extension to determine the appropriate option
-        if rom.endswith(".img"):
+        if rom.suffix == ".img":
             # Load the SD card
             commandArray.extend(["-sdcard", rom])
-        elif rom.endswith(".bas"):
+        elif rom.suffix == ".bas":
             # Load the BASIC program
             commandArray.extend(["-bas", rom])
         else:

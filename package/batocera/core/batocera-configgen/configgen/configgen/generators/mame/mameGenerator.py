@@ -58,12 +58,11 @@ class MameGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
         # Extract "<romfile.zip>"
-        romBasename = rom_path.name
-        romDirname  = rom_path.parent
-        romName = rom_path.stem
-        romExt = rom_path.suffix
+        romBasename = rom.name
+        romDirname  = rom.parent
+        romName = rom.stem
+        romExt = rom.suffix
 
         softDir = Path("/var/run/mame_software/")
         softList = ""
@@ -342,7 +341,7 @@ class MameGenerator(Generator):
 
             # Apple II
             if system.name == "apple2":
-                rom_extension = rom_path.suffix.lower()
+                rom_extension = rom.suffix.lower()
                 # only add SD/IDE control if provided a hard drive image
                 if rom_extension in {".hdv", ".2mg", ".chd", ".iso", ".bin", ".cue"}:
                     commandArray += ["-sl7", "cffa202"]
@@ -403,7 +402,7 @@ class MameGenerator(Generator):
                             commandArray += [ f'-{system.config["altromtype"]}' ]
                     elif system.name == "adam":
                         # add some logic based on the rom extension
-                        rom_extension = rom_path.suffix
+                        rom_extension = rom.suffix
                         if rom_extension == ".ddp":
                             commandArray += [ "-cass1" ]
                         elif rom_extension == ".dsk":
@@ -557,13 +556,13 @@ class MameGenerator(Generator):
             bezelSet = None
         try:
             if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom_path, messSysName[messMode], gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
             else:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom_path, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
         except Exception:
-            MameGenerator.writeBezelConfig(None, system, rom_path, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+            MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
 
-        buttonLayout = getMameControlScheme(system, rom_path)
+        buttonLayout = getMameControlScheme(system, rom)
 
         if messMode == -1:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)

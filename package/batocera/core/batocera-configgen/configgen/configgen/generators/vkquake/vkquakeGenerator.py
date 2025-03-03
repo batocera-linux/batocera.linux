@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -22,7 +21,7 @@ class VKQuakeGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romName = Path(rom).name
+        romName = rom.name
 
         commandArray = ['/usr/bin/vkquake', '-basedir', str(vkquakeRomPath)]
 

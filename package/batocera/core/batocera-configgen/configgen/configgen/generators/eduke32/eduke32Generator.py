@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -12,6 +11,8 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 
@@ -24,7 +25,6 @@ class EDuke32Generator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
         # Core is either eduke32 or fury
         core = system.config["core"]
         config_dir = CONFIGS / f"{core}"
@@ -69,11 +69,11 @@ class EDuke32Generator(Generator):
         ]
         if core == "fury":
             launch_args += [
-                "-gamegrp", rom_path.name,
-                "-j", rom_path.parent,
+                "-gamegrp", rom.name,
+                "-j", rom.parent,
             ]
         else:
-            result = parse_args(launch_args, rom_path)
+            result = parse_args(launch_args, rom)
             if not result.okay:
                 raise InvalidConfiguration(result.message)
         return Command.Command(

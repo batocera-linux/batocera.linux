@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ...gun import Guns
 
 
-def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str, str], guns: Guns, rom: str) -> None:
+def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str, str], guns: Guns, rom: Path) -> None:
 
     # Path
     viceController = vice_config_dir / "sdl-joymap.vjm"

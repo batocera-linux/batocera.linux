@@ -109,8 +109,8 @@ class Vita3kGenerator(Generator):
             yaml.dump(vita3kymlconfig, fp)
 
         # Simplify the rom name (strip the directory & extension)
-        begin, end = rom.find('['), rom.rfind(']')
-        smplromname = rom[begin+1: end]
+        begin, end = rom.stem.find('['), rom.stem.rfind(']')
+        smplromname = rom.stem[begin+1: end]
         # because of the yml formatting, we don't allow Vita3k to modify it
         # using the -w & -f options prevents Vita3k from re-writing & prompting the user in GUI
         # we want to avoid that so roms load straight away

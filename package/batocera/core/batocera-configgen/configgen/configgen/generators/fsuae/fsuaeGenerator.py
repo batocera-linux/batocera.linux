@@ -56,15 +56,13 @@ class FsuaeGenerator(Generator):
         return rom.stem[:-1]
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
         commandArray = ['/usr/bin/fs-uae', "--fullscreen",
                                            f"--amiga-model={system.config['core']}",
                                            f"--base_dir={FSUAE_CONFIG_DIR!s}",
                                            f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
-                                           f"--save_states_dir={FSUAE_SAVES / system.config['core'] / self.filePrefix(rom_path)}",
+                                           f"--save_states_dir={FSUAE_SAVES / system.config['core'] / self.filePrefix(rom)}",
                                            "--zoom=auto"
                        ]
 
@@ -77,7 +75,7 @@ class FsuaeGenerator(Generator):
         diskNames: list[str] = []
 
         # read from zip
-        if (rom.lower().endswith("zip")):
+        if rom.suffix.lower() == ".zip":
             zf = zipfile.ZipFile(rom, 'r')
             for name in zf.namelist():
                 d = name.lower()
@@ -99,7 +97,7 @@ class FsuaeGenerator(Generator):
 
         else:
             n = 0
-            for img in self.floppiesFromRom(rom_path):
+            for img in self.floppiesFromRom(rom):
                 commandArray.append(f"--{device_type}_image_{n}={img}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
                     commandArray.append(f"--{device_type}_drive_{n}={img}")

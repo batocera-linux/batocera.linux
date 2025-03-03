@@ -35,7 +35,7 @@ class SupermodelGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        commandArray = ["supermodel", "-fullscreen", "-channels=2"]
+        commandArray: list[str | Path] = ["supermodel", "-fullscreen", "-channels=2"]
 
         # legacy3d
         if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
@@ -107,7 +107,7 @@ class SupermodelGenerator(Generator):
         copy_xml()
 
         # controller config
-        configPadsIni(system, Path(rom), playersControllers, guns, drivingGame, sensitivity)
+        configPadsIni(system, rom, playersControllers, guns, drivingGame, sensitivity)
 
         return Command.Command(
             array=commandArray,

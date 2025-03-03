@@ -21,8 +21,6 @@ class MugenGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # Define the key mappings for evmapy
         p1_keys = {
             "Jump": "273",
@@ -52,7 +50,7 @@ class MugenGenerator(Generator):
             "Start": "117"
         }
 
-        settings_path = rom_path / "data" / "mugen.cfg"
+        settings_path = rom / "data" / "mugen.cfg"
         mkdir_if_not_exists(settings_path.parent)
 
         if not settings_path.exists():
@@ -180,7 +178,7 @@ class MugenGenerator(Generator):
                 "VK_LAYER_PATH": "/usr/share/vulkan/explicit_layer.d"
             })
 
-        commandArray = ["batocera-wine", "mugen", "play", str(rom_path)]
+        commandArray = ["batocera-wine", "mugen", "play", str(rom)]
 
         return Command.Command(
             array=commandArray,
