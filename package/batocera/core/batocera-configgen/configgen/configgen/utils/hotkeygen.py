@@ -33,7 +33,11 @@ def set_hotkeygen_context(generator: Generator, system: Emulator, /) -> Iterator
             del hkc["keys"]["menu"]
 
     _logger.debug("hotkeygen: updating context to %s", hkc["name"])
-    subprocess.call(["hotkeygen", "--new-context", hkc["name"], json.dumps(hkc["keys"])])
+
+    cmd = ["hotkeygen", "--new-context", hkc["name"], json.dumps(hkc["keys"])]
+    if system.isOptSet("exithotkeyonly") and system.getOptBoolean("exithotkeyonly"):
+        cmd.append("--disable-common")
+    subprocess.call(cmd)
 
     try:
         yield
