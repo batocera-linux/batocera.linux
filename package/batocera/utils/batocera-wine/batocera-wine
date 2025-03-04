@@ -307,16 +307,10 @@ save_install() {
 
 	#if no specific save files, symlink the whole wine_savedir directroy
 	if [[ -z "${WINE_SAVEFILES}" ]]; then
-
-	    if [[ ! -d "${GAME_SAVEDIR}" ]]; then
-	        mkdir -p "${GAME_SAVEDIR}"
-	    fi
-
-	    if [[ ! -L "${WINE_SAVEDIR}" ]]; then
-		rm -rf "${WINE_SAVEDIR}"
-	    fi
-
-	    ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+            [[ ! -d "${GAME_SAVEDIR}" ]] && mkdir -p "${GAME_SAVEDIR}"
+            [[ ! -L "${WINE_SAVEDIR}" ]] && rm -rf "${WINE_SAVEDIR}"
+            [[ -L "${WINE_SAVEDIR}" ]] || ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+        fi
 	else
             if [[ ! -d "${WINE_SAVEDIR}" ]]; then
                 mkdir -p "${WINE_SAVEDIR}"
