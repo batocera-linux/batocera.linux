@@ -24,18 +24,18 @@ _logger = logging.getLogger(__name__)
 def generateControllerConfig(system: Emulator, playersControllers: Controllers, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: Guns) -> None:
 
     if system.name == "wii":
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
+        if system.config.use_guns and guns:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", metadata, guns)
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
-        elif (system.isOptSet('emulatedwiimotes') and not system.getOptBoolean('emulatedwiimotes')):
+        elif not system.config.get_bool('emulatedwiimotes', True):
             # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
-        elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes')):
+        elif system.config.get_bool('emulatedwiimotes'):
             # Generate if hardcoded
             generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
-        elif (".cc." in rom.name or ".pro." in rom.name or ".side." in rom.name or ".is." in rom.name or ".it." in rom.name or ".in." in rom.name or ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name or ".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or system.isOptSet("sideWiimote"):
+        elif (".cc." in rom.name or ".pro." in rom.name or ".side." in rom.name or ".is." in rom.name or ".it." in rom.name or ".in." in rom.name or ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name or ".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or "sideWiimote" in system.config:
             # Generate if auto and name extensions are present
             generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
@@ -44,7 +44,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
         used_wheels: DeviceInfoMapping = {}
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+        if system.config.use_wheels and wheels:
             if "wheel_type" in metadata:
                 if metadata["wheel_type"] == "Steering Wheel":
                     used_wheels = wheels
@@ -92,10 +92,11 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
 
     extraOptions: dict[str, str] = {}
     extraOptions["Source"] = "1"
+    controller_mode = system.config.get("controller_mode")
 
     # Side wiimote
     # l2 for shaking actions
-    if (".side." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'cc'):
+    if (".side." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode != 'disabled' and controller_mode != 'cc'):
         extraOptions["Options/Sideways Wiimote"] = "1"
         wiiMapping['x']  = 'Buttons/B'
         wiiMapping['y']  = 'Buttons/A'
@@ -109,10 +110,10 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
 
     # i
-    if (".is." in rom.name or ".it." in rom.name or ".in." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'in' and system.config['controller_mode'] != 'cc'):
+    if (".is." in rom.name or ".it." in rom.name or ".in." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode != 'disabled' and controller_mode != 'in' and controller_mode != 'cc'):
         wiiMapping['joystick1up']   = 'IR/Up'
         wiiMapping['joystick1left'] = 'IR/Left'
-    if (".si." in rom.name or ".ti." in rom.name or ".ni." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in' and system.config['controller_mode'] != 'cc'):
+    if (".si." in rom.name or ".ti." in rom.name or ".ni." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode == 'in' and controller_mode != 'cc'):
         wiiMapping['joystick2up']   = 'IR/Up'
         wiiMapping['joystick2left'] = 'IR/Left'
 
@@ -120,7 +121,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     if ".si." in rom.name or ".st." in rom.name or ".sn." in rom.name:
         wiiMapping['joystick1up']   = 'Swing/Up'
         wiiMapping['joystick1left'] = 'Swing/Left'
-    if (".is." in rom.name or ".ts." in rom.name or ".ns." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'is'):
+    if (".is." in rom.name or ".ts." in rom.name or ".ns." in rom.name) or (controller_mode == 'is'):
         wiiMapping['joystick2up']   = 'Swing/Up'
         wiiMapping['joystick2left'] = 'Swing/Left'
 
@@ -128,12 +129,12 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     if ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name:
         wiiMapping['joystick1up']   = 'Tilt/Forward'
         wiiMapping['joystick1left'] = 'Tilt/Left'
-    if (".it." in rom.name or ".st." in rom.name or ".nt." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'it'):
+    if (".it." in rom.name or ".st." in rom.name or ".nt." in rom.name) or (controller_mode == 'it'):
         wiiMapping['joystick2up']   = 'Tilt/Forward'
         wiiMapping['joystick2left'] = 'Tilt/Left'
 
     # n
-    if (".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in') or (system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion")):
+    if (".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or (controller_mode == 'in') or (system.config.get_bool("dsmotion")):
         extraOptions['Extension']   = 'Nunchuk'
         wiiMapping['l2'] = 'Nunchuk/Buttons/C'
         wiiMapping['r2'] = 'Nunchuk/Buttons/Z'
@@ -148,7 +149,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
 
     # cc : Classic Controller Settings / pro : Classic Controller Pro Settings
     # Swap shoulder with triggers and vice versa if cc
-    if (".cc." in rom.name or ".pro." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] in ('cc', 'pro')):
+    if (".cc." in rom.name or ".pro." in rom.name) or (controller_mode in ('cc', 'pro')):
         extraOptions['Extension']   = 'Classic'
         wiiMapping['x'] = 'Classic/Buttons/X'
         wiiMapping['y'] = 'Classic/Buttons/Y'
@@ -164,7 +165,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
-        if (".cc." in rom.name or (system.isOptSet('controller_mode') and system.config['controller_mode'] == 'cc')):
+        if (".cc." in rom.name or (controller_mode == 'cc')):
             wiiMapping['pageup'] = 'Classic/Buttons/ZL'
             wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
             wiiMapping['l2'] = 'Classic/Triggers/L'
@@ -407,12 +408,12 @@ def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mappi
 def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str | None]) -> dict[str, str | None]:
     mapping = dict(anyMapping)
     # Fixes default gamecube style controller mapping for ES from es_input (gc A confirm/gc B cancel)
-    if system.isOptSet(f"dolphin_port_{nplayer}_type") and system.config[f'dolphin_port_{nplayer}_type'] == '6b':
+    if system.config.get(f"dolphin_port_{nplayer}_type") == '6b':
         mapping['a'] = 'Buttons/B'
         mapping['b'] = 'Buttons/A'
 
     # Only rotate inputs for standard controller type so it doesn't effect other controller types.
-    if (not (port_type := system.config.get(f"dolphin_port_{nplayer}_type")) or port_type == '6a') and system.config.get_bool(f"alt_mappings_{nplayer}"):
+    if (system.config.get(f"dolphin_port_{nplayer}_type", '6a') == '6a') and system.config.get_bool(f"alt_mappings_{nplayer}"):
         mapping['a'] = 'Buttons/X'
         mapping['b'] = 'Buttons/A'
         mapping['y'] = 'Buttons/B'
@@ -437,7 +438,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             f.write(f"[{anyDefKey}{nplayer}]\n")
             f.write(f"Device = evdev/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
 
-            if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles"):
+            if system.config.get_bool("use_pad_profiles"):
                 if not generateControllerConfig_any_from_profiles(f, pad, system):
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
             else:
@@ -526,7 +527,7 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.axis_count, True, None, None)
         # DualShock Motion control
-        if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion"):
+        if system.config.get_bool("dsmotion"):
             f.write(f"IMUGyroscope/Pitch Up = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro X-`\n")
             f.write(f"IMUGyroscope/Pitch Down = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro X+`\n")
             f.write(f"IMUGyroscope/Roll Left = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro Z-`\n")
@@ -541,27 +542,24 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
             f.write(f"IMUAccelerometer/Up = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Accel Y-`\n")
             f.write(f"IMUAccelerometer/Down = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Accel Y+`\n")
         # Mouse to emulate Wiimote
-        if system.isOptSet("mouseir") and system.getOptBoolean("mouseir"):
+        if system.config.get_bool("mouseir"):
             f.write("IR/Up = `Cursor Y-`\n")
             f.write("IR/Down = `Cursor Y+`\n")
             f.write("IR/Left = `Cursor X-`\n")
             f.write("IR/Right = `Cursor X+`\n")
         # Rumble option
-        if system.isOptSet("rumble") and system.getOptBoolean("rumble"):
+        if system.config.get_bool("rumble"):
             f.write("Rumble/Motor = Weak\n")
         # Deadzone setting
-        if system.isOptSet(f"deadzone_{nplayer}"):
-            f.write(f"Main Stick/Dead Zone = {system.config[f'deadzone_{nplayer}']}\n")
-            f.write(f"C-Stick/Dead Zone = {system.config[f'deadzone_{nplayer}']}\n")
-        else:
-            f.write("Main Stick/Dead Zone = 5.0\n")
-            f.write("C-Stick/Dead Zone = 5.0\n")
+        deadzone = system.config.get(f"deadzone_{nplayer}", "5.0")
+        f.write(f"Main Stick/Dead Zone = {deadzone}\n")
+        f.write(f"C-Stick/Dead Zone = {deadzone}\n")
         # JS gate size
-        if system.isOptSet(f"jsgate_size_{nplayer}") and system.config[f'jsgate_size_{nplayer}'] != 'normal':
-            if system.config[f'jsgate_size_{nplayer}'] == 'smaller':
+        match system.config.get(f"jsgate_size_{nplayer}"):
+            case 'smaller':
                 f.write("Main Stick/Gate Size = 64.0\n")
                 f.write("C-Stick/Gate Size = 56.0\n")
-            if system.config[f'jsgate_size_{nplayer}'] == 'larger':
+            case 'larger':
                 f.write("Main Stick/Gate Size = 95.0\n")
                 f.write("C-Stick/Gate Size = 88.0\n")
 

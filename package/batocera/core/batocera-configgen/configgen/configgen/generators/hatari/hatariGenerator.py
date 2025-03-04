@@ -64,31 +64,23 @@ class HatariGenerator(Generator):
         # tt should use tos 3.XX / emutos512k
         # falcon should use tos 4.XX / emutos512k
 
-        machine = "st"
-        tosversion = "auto"
-        if system.isOptSet("model") and system.config["model"] in model_mapping:
-            machine   = model_mapping[system.config["model"]]["machine"]
-            tosversion = model_mapping[system.config["model"]]["tos"]
-        toslang = "us"
-        if system.isOptSet("language"):
-            toslang = system.config["language"]
+        model = system.config.get("model", "none")
+        mapped = model_mapping.get(model, {"machine": "st", "tos": "auto"})
+        machine = mapped["machine"]
+        tosversion = mapped["tos"]
+        toslang = system.config.get("language", "us")
 
         commandArray += ["--machine", machine]
         tos = HatariGenerator.findBestTos(BIOS, machine, tosversion, toslang)
         commandArray += [ "--tos", tos]
 
         # RAM (ST Ram) options (0 for 512k, 1 for 1MB)
-        memorysize = 0
-        if system.isOptSet("ram"):
-            memorysize = system.config["ram"]
-        commandArray += ["--memsize", str(memorysize)]
+        memorysize = system.config.get_str("ram", "0")
+        commandArray += ["--memsize", memorysize]
 
         rom_extension = rom.suffix.lower()
         if rom_extension == ".hd":
-            if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ACSI":
-                commandArray += ["--acsi", rom]
-            else:
-                commandArray += ["--ide-master", rom]
+            commandArray += ["--acsi" if system.config.get("hatari_drive") == "ACSI" else "--ide-master", rom]
         elif rom_extension == ".gemdos":
             blank_file = HATARI_CONFIG / "blank.st"
             if not blank_file.exists():
@@ -157,10 +149,7 @@ class HatariGenerator(Generator):
         # Screen
         if not config.has_section("Screen"):
             config.add_section("Screen")
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            config.set("Screen", "bShowStatusbar", "TRUE")
-        else:
-            config.set("Screen", "bShowStatusbar", "FALSE")
+        config.set("Screen", "bShowStatusbar", str(system.config.show_fps).upper())
 
         with configFileName.open('w') as configfile:
             config.write(configfile)

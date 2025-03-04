@@ -169,16 +169,13 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             f.write(f"[{anyDefKey}{nplayer}]\n")
             f.write(f"Device = SDL/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
 
-            if system.isOptSet("triforce_pad_profiles") and system.getOptBoolean("triforce_pad_profiles"):
+            if system.config.get_bool("triforce_pad_profiles"):
                 if not generateControllerConfig_any_from_profiles(f, pad):
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
             else:
                 generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
             # Rumble option
-            if system.isOptSet("triforce_rumble"):
-                f.write(f"Rumble/Motor = {system.config['triforce_rumble']}\n")
-            else:
-                f.write("Rumble/Motor = \n")
+            f.write(f"Rumble/Motor = {system.config.get('triforce_rumble', '')}\n")
 
 def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Controller, anyMapping: dict[str, str], anyReverseAxes: Mapping[str, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str], system: Emulator) -> None:
     for opt in extraOptions:

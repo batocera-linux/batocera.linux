@@ -136,7 +136,7 @@ class Gun:
 
     @classmethod
     def get_and_precalibrate_all(cls, system: Emulator, rom: str | Path, /) -> GunList:
-        if not system.isOptSet('use_guns') or not system.getOptBoolean('use_guns'):
+        if not system.config.use_guns:
             _logger.info('guns disabled.')
             return []
 
@@ -144,7 +144,7 @@ class Gun:
 
         if dir.exists():
             rom = Path(rom)
-            emulator = cast('str', system.config['emulator'])
+            emulator = system.config.emulator
             core = cast('str | None', system.config.get('core'))
 
             if system.name == 'atomiswave':

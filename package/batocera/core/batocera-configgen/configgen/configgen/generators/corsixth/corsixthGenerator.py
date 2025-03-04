@@ -66,22 +66,13 @@ class CorsixTHGenerator(Generator):
         source_config_file.write(f"height = {gameResolution['height']}\n")
 
         # Values coming from ES configuration : New Graphics
-        if system.isOptSet('cth_new_graphics'):
-          source_config_file.write(f"use_new_graphics = {system.config['cth_new_graphics']}\n")
-        else:
-          source_config_file.write("use_new_graphics = true\n")
+        source_config_file.write(f"use_new_graphics = {system.config.get('cth_new_graphics', 'true')}\n")
 
         # Values coming from ES configuration : Sandbox Mode
-        if system.isOptSet('cth_free_build_mode'):
-          source_config_file.write(f"free_build_mode = {system.config['cth_free_build_mode']}\n")
-        else:
-          source_config_file.write("free_build_mode = false\n")
+        source_config_file.write(f"free_build_mode = {system.config.get('cth_free_build_mode', 'false')}\n")
 
         # Values coming from ES configuration : Intro Movie
-        if system.isOptSet('cth_play_intro'):
-          source_config_file.write(f"play_intro = {system.config['cth_play_intro']}\n")
-        else:
-          source_config_file.write("play_intro = true\n")
+        source_config_file.write(f"play_intro = {system.config.get('cth_play_intro', 'true')}\n")
 
         # Now auto-set the language from batocera ES locale
         language_mapping = {

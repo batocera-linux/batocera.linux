@@ -51,28 +51,16 @@ class DXX_RebirthGenerator(Generator):
                     lines[i] = 'WindowMode=0\n'
                 # vsync
                 if line.startswith('VSync='):
-                    if system.isOptSet("rebirth_vsync"):
-                        lines[i] = f'VSync={system.config["rebirth_vsync"]}\n'
-                    else:
-                        lines[i] = 'VSync=0\n'
+                    lines[i] = f'VSync={system.config.get("rebirth_vsync", "0")}\n'
                 # texture filtering
                 if line.startswith('TexFilt='):
-                    if system.isOptSet("rebirth_filtering"):
-                        lines[i] = f'TexFilt={system.config["rebirth_filtering"]}\n'
-                    else:
-                        lines[i] = 'TexFilt=0\n'
+                    lines[i] = f'TexFilt={system.config.get("rebirth_filtering", "0")}\n'
                 # anisotropy
                 if line.startswith('TexAnisotropy='):
-                    if system.isOptSet("rebirth_anisotropy"):
-                        lines[i] = f'TexAnisotropy={system.config["rebirth_anisotropy"]}\n'
-                    else:
-                        lines[i] = 'TexAnisotropy=0\n'
+                    lines[i] = f'TexAnisotropy={system.config.get("rebirth_anisotropy", "0")}\n'
                 # 4x multisampling
                 if line.startswith('Multisample='):
-                    if system.isOptSet("rebirth_multisample"):
-                        lines[i] = f'Multisample={system.config["rebirth_multisample"]}\n'
-                    else:
-                        lines[i] = 'Multisample=0\n'
+                    lines[i] = f'Multisample={system.config.get("rebirth_multisample", "0")}\n'
 
             with rebirthConfigFile.open('w') as file:
                 file.writelines(lines)

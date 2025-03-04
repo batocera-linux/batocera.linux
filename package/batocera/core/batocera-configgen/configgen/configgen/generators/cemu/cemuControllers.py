@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pyudev
 
@@ -168,11 +168,6 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
         }
     }
 
-    def getOption(option: str, defaultValue: str) -> Any:
-        if (system.isOptSet(option)):
-            return system.config[option]
-        return defaultValue
-
     def addTextElement(parent: ET.Element, name: str, value: str) -> None:
         element = ET.SubElement(parent, name)
         element.text = value
@@ -237,23 +232,21 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
 
         # Set type from controller combination
         type = PRO # default
-        if system.isOptSet('cemu_controller_combination') and system.config["cemu_controller_combination"] != '0':
-            if system.config["cemu_controller_combination"] == '1':
+        match system.config.get('cemu_controller_combination'):
+            case '1':
                 if (nplayer == 0):
                     type = GAMEPAD
                 else:
                     type = WIIMOTE
-            elif system.config["cemu_controller_combination"] == '2':
+            case '2':
                 type = PRO
-            else:
+            case '3':
                 type = WIIMOTE
-            if system.config["cemu_controller_combination"] == '4':
+            case '4':
                 type = CLASSIC
-        else:
-            if (nplayer == 0):
-                type = GAMEPAD
-            else:
-                type = PRO
+            case '0' | system.config.MISSING:
+                if (nplayer == 0):
+                    type = GAMEPAD
         addTextElement(root, "type", type)
 
         if isWiimote(pad):
@@ -268,7 +261,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
         addTextElement(controllerNode, 'api', api)
         addTextElement(controllerNode, 'uuid', f"{guid_n[pad.index]}_{pad.guid}") # controller guid
         addTextElement(controllerNode, 'display_name', pad.real_name) # controller name
-        addTextElement(controllerNode, 'rumble', getOption('cemu_rumble', '0')) # % chosen
+        addTextElement(controllerNode, 'rumble', system.config.get('cemu_rumble', '0')) # % chosen
         addAnalogControl(controllerNode, 'axis')
         addAnalogControl(controllerNode, 'rotation')
         addAnalogControl(controllerNode, 'trigger')

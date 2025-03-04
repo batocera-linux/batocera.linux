@@ -27,18 +27,16 @@ class EasyRPGGenerator(Generator):
         commandArray: list[str | Path] = ["easyrpg-player"]
 
         # FPS
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
+        if system.config.show_fps:
             commandArray.append("--show-fps")
 
         # Test Play (Debug Mode)
-        if system.isOptSet('testplay') and system.getOptBoolean("testplay"):
+        if system.config.get_bool('testplay'):
             commandArray.append("--test-play")
 
         # Game Region (Encoding)
-        if system.isOptSet('encoding') and system.config["encoding"] != 'autodetect':
-            commandArray.extend(["--encoding", system.config["encoding"]])
-        else:
-            commandArray.extend(["--encoding", "auto"])
+        encoding = system.config.get('encoding', 'auto')
+        commandArray.extend(["--encoding", encoding if encoding != 'autodetect' else 'auto'])
 
         # Save directory
         savePath = SAVES / "easyrpg" / rom.name

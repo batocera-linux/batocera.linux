@@ -40,20 +40,9 @@ class DosBoxGenerator(Generator):
         if not iniSettings.has_section("cpu"):
             iniSettings.add_section("cpu")
 
-        if system.isOptSet('dosbox_cpu_core'):
-            iniSettings.set("cpu", "core", system.config["dosbox_cpu_core"])
-        else:
-            iniSettings.set("cpu", "core", "auto")
-
-        if system.isOptSet('dosbox_cpu_cputype'):
-            iniSettings.set("cpu", "cputype", system.config["dosbox_cpu_cputype"])
-        else:
-            iniSettings.set("cpu", "cputype", "auto")
-
-        if system.isOptSet('dosbox_cpu_cycles'):
-            iniSettings.set("cpu", "cycles", system.config["dosbox_cpu_cycles"])
-        else:
-            iniSettings.set("cpu", "cycles", "auto")
+        iniSettings.set("cpu", "core", system.config.get("dosbox_cpu_core", "auto"))
+        iniSettings.set("cpu", "cputype", system.config.get("dosbox_cpu_cputype", "auto"))
+        iniSettings.set("cpu", "cycles", system.config.get("dosbox_cpu_cycles", "auto"))
 
         # save
         with _CUSTOM_CONFIG.open('w') as config:
