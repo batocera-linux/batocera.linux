@@ -234,14 +234,3 @@ def cleanHotKeyConfig(iniConfig: CaseSensitiveConfigParser):
     iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
     iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
     iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
-
-def createButtonCode(button: Input):
-    if(button.type == 'axis'):
-        if button.value == '-1':
-            return f'A{button.id}-'
-        else:
-            return f'A{button.id}+'
-    if(button.type == 'button'):
-        return f'B{button.id}'
-    if(button.type == 'hat'):
-        return f'H{button.id}V{button.value}'
