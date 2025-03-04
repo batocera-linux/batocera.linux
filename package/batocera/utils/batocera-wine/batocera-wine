@@ -285,53 +285,38 @@ redist_install() {
 }
 
 save_install() {
-    WINEPREFIX=$1
-    GAMENAME=$2
-    WINE_SAVEDIR=$3
-    WINE_SAVEFILES=$4
+    WINEPREFIX="$1"
+    GAMENAME="$2"
+    WINE_SAVEDIR="$3"
+    WINE_SAVEFILES="$4"
 
-    if [[ -n "${WINE_SAVEDIR}" ]]; then
-	GAME_SAVEDIR=$(dirname "${WINE_SAVEDIR}")
-	GAME_SAVEDIR="${WINEPOINT}/${GAME_SAVEDIR}"
-	SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
-	WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+    [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
 
-	#create save directory, or move existing savedir content
-	if [[ ! -d "${SYSTEM_SAVEDIR}" ]]; then
-	    if [[ -z "${WINE_SAVEFILES}" && ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
-		mv "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}"
-	    else
-		mkdir -p "${SYSTEM_SAVEDIR}"
-	    fi
-	fi
+    SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
+    mkdir -p "${SYSTEM_SAVEDIR}"
 
-	#if no specific save files, symlink the whole wine_savedir directroy
-	if [[ -z "${WINE_SAVEFILES}" ]]; then
-            [[ ! -d "${GAME_SAVEDIR}" ]] && mkdir -p "${GAME_SAVEDIR}"
-            [[ ! -L "${WINE_SAVEDIR}" ]] && rm -rf "${WINE_SAVEDIR}"
-            [[ -L "${WINE_SAVEDIR}" ]] || ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
-        fi
-	else
-            if [[ ! -d "${WINE_SAVEDIR}" ]]; then
-                mkdir -p "${WINE_SAVEDIR}"
+    if [[ -n "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]]; then
+        mkdir -p "(${WINEPOINT}/$(dirname ${WINE_SAVEDIR}))"        #Prepare directory to link to SAVEGAME_SUB_FOLDER
+        WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+        #Move existing savedir content if link is not set then link whole wine_savedir directory
+        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && mv -r "${WINE_SAVEDIR}/*" "${SYSTEM_SAVEDIR}" && rmdir "${WINE_SAVEDIR}"
+        [[ -L "${WINE_SAVEDIR}" ]] || ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+    elif [[ -n "${WINE_SAVEDIR}" && -n "${WINE_SAVEFILES}" ]]; then
+        WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+        mkdir -p "${WINE_SAVEDIR}"
+        #split the files list to array with ; delimiter
+        IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
+        for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
+            if [[ -e "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+                #if savefiles exist in the prefix and not yet in system save, move it once
+                if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+                    mv "${WINE_SAVEDIR}/${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
+                else
+                    rm "${WINE_SAVEDIR}/${SAVEFILE}"
+                fi
             fi
-	    #split the files list to array with ; delimiter
-	    IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
-	    for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
-
-		if [[ -e "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
-		    #if savefiles exist in the prefix and not yet in system save, move it once
-		    if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
-			mv "${WINE_SAVEDIR}/${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
-		    else
-			rm "${WINE_SAVEDIR}/${SAVEFILE}"
-		    fi
-		fi
-
-		ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${WINE_SAVEDIR}/${SAVEFILE}"
-	    done
-	fi
-
+        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${WINE_SAVEDIR}/${SAVEFILE}"
+        done
     fi
 }
 
