@@ -230,7 +230,7 @@ def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controlle
         if 'hotkey' in controller.inputs:
             if 'start' in controller.inputs:
                 iniConfig.set("CoreEvents", "Joy Mapping Stop", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["start"])}"')
-            if system.isOptSet("mupen64-controller1") and system.config["mupen64-controller1"] == "n64limited":
+            if system.config.get("mupen64-controller1") == "n64limited" or system.config.get_bool("exithotkeyonly"):
                 if 'y' in controller.inputs:
                     iniConfig.set("CoreEvents", "Joy Mapping Save State", "")
                 if 'x' in controller.inputs:
