@@ -85,7 +85,6 @@ def get_context() -> HotkeysContext | None:
             with GCONTEXT_FILE.open() as file:
                 data = json.load(file)
                 context = load_context(data)
-                context["keys"] |= get_common_context_keys()
                 return context
         except Exception as e:
             print(f"fail to load context file : {e}")
@@ -284,12 +283,15 @@ def read_pid() -> str:
     with GPID_FILE.open() as fd:
         return fd.read().replace('\n', '')
 
-def do_new_context(context_name: str | None = None, context_json: str | None = None) -> None:
+def do_new_context(context_name: str | None = None, context_json: str | None = None, include_common:bool = True) -> None:
     if context_name is not None and context_json is not None:
         context = load_context({
             'name': context_name,
             'keys': json.loads(context_json)
         })
+        if include_common:
+            context["keys"] |= get_common_context_keys()
+
         # update the config file
         save_context(context, GCONTEXT_FILE)
     else:
@@ -479,6 +481,7 @@ if __name__ == "__main__":
     parser.add_argument("--send-delay", type=int)
     parser.add_argument("--default-context", action="store_true")
     parser.add_argument("--new-context", nargs=2, metavar=("new-context-name", "new-context-json"))
+    parser.add_argument("--disable-common", action="store_true")
     parser.add_argument("--permanent", action="store_true")
     args = parser.parse_args()
     if args.debug:
@@ -490,7 +493,7 @@ if __name__ == "__main__":
         do_send(args.send, args.send_delay)
     elif args.new_context is not None:
         new_context_name, new_context_json = args.new_context
-        do_new_context(new_context_name, new_context_json)
+        do_new_context(new_context_name, new_context_json, not args.disable_common)
     elif args.default_context:
         do_new_context()
     else:
