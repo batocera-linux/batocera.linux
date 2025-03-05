@@ -480,9 +480,9 @@ saveFilesToUserdata() {
                     rm "${SAVEFILE}"
                 fi
             fi
-        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${SAVEFILE}"
+            ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${SAVEFILE}"
         done
-        popd 2 >/dev/null
+        popd >/dev/null; popd >/dev/null #Clear stack
     fi
 }
 
