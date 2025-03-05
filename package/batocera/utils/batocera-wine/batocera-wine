@@ -292,34 +292,38 @@ save_install() {
 
     [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
 
+    #Prepare for Savegames Files or Folders
     SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
     mkdir -p "${SYSTEM_SAVEDIR}"
+    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"  #Prepare directory to link to SAVEGAME_SUB_FOLDER
+    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null
+    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")" #Savegamedir itself, you move+link it to your gamesdir or copy single files out of it
 
-    if [[ -n "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]]; then
-        mkdir -p "(${WINEPOINT}/$(dirname ${WINE_SAVEDIR}))"        #Prepare directory to link to SAVEGAME_SUB_FOLDER
-        WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
+    if [[ -z "${WINE_SAVEFILES}" ]]; then
         #Move existing savedir content if link is not set then link whole wine_savedir directory
-        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && mv -r "${WINE_SAVEDIR}/*" "${SYSTEM_SAVEDIR}" && rmdir "${WINE_SAVEDIR}"
-        [[ -L "${WINE_SAVEDIR}" ]] || ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
-    elif [[ -n "${WINE_SAVEDIR}" && -n "${WINE_SAVEFILES}" ]]; then
-        WINE_SAVEDIR="${WINEPOINT}/${WINE_SAVEDIR}"
-        mkdir -p "${WINE_SAVEDIR}"
+        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && mv "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}"
+        [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}/${WINE_SAVEDIR}" "${WINE_SAVEDIR}"
+        popd >/dev/null
+
+    elif [[ -n "${WINE_SAVEFILES}" ]]; then
+        mkdir "${WINE_SAVEDIR}"
+        pushd "${WINE_SAVEDIR}" #You are working inside the game saves dir
         #split the files list to array with ; delimiter
         IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
         for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
-            if [[ -e "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
+            if [[ -e "${SAVEFILE}" ]]; then
                 #if savefiles exist in the prefix and not yet in system save, move it once
-                if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${WINE_SAVEDIR}/${SAVEFILE}" ]]; then
-                    mv "${WINE_SAVEDIR}/${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
+                if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${SAVEFILE}" ]]; then
+                    mv -f "${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
                 else
-                    rm "${WINE_SAVEDIR}/${SAVEFILE}"
+                    rm "${SAVEFILE}"
                 fi
             fi
-        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${WINE_SAVEDIR}/${SAVEFILE}"
+        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${SAVEFILE}"
         done
+        popd 2 >/dev/null
     fi
 }
-
 msi_install() {
     WINEPREFIX=$1
     local i; local ii
