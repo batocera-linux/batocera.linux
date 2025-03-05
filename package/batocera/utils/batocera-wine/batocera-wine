@@ -301,7 +301,7 @@ save_install() {
 
     if [[ -z "${WINE_SAVEFILES}" ]]; then
         #Move existing savedir content if link is not set then link whole wine_savedir directory
-        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && mv "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}"
+        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && cp -r "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}" && rm -rf "${WINE_SAVEDIR}"
         [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}/${WINE_SAVEDIR}" "${WINE_SAVEDIR}"
         popd >/dev/null
 
