@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_TKG_WOW64_32_VERSION = 10.2
+WINE_TKG_WOW64_32_VERSION = 10.1
 WINE_TKG_WOW64_32_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_WOW64_32_SITE_METHOD = git
 WINE_TKG_WOW64_32_LICENSE = LGPL-2.1+
