@@ -9,7 +9,7 @@ BATOCERA_ES_SYSTEM_SOURCE=
 
 BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python3 host-python-pyyaml batocera-configgen host-gettext
 
-BATOCERA_ES_SYSTEM_LOCALES_DIR=$(@D)/locales
+BATOCERA_ES_SYSTEM_LOCALES_DIR=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/locales
 
 define BATOCERA_ES_SYSTEM_BUILD_CMDS
 	$(HOST_DIR)/bin/python \
