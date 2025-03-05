@@ -29,6 +29,7 @@ WINETRICKS=
 # Save function carried out in save_install()
 WINE_SAVEDIR=
 WINE_SAVEFILES=
+SYSTEM_SAVEDIR=
 # createAutorunCmd() tries to creates automatically autorun.cmd if you use windows_installs with msi/exe
 # a basic exe-filter is here in the script, user can set advanced one, see i and ii in function
 AUTORUN_FILEMASK="$4"
@@ -292,17 +293,17 @@ save_install() {
 
     [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
 
-    #Prepare for Savegames Files or Folders
+    #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
     SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
-    mkdir -p "${SYSTEM_SAVEDIR}"
-    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"  #Prepare directory to link to SAVEGAME_SUB_FOLDER
-    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null
-    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")" #Savegamedir itself, you move+link it to your gamesdir or copy single files out of it
+    mkdir -p "${SYSTEM_SAVEDIR}"                                  #Create dir to store our savegames in /userdata
+    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"          #Create SAVEGAME_ROOT_DIR from there we can cp the files
+    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null  #Enter SAVEGAME_ROOT_DIR
+    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                  #Savegamedir itself, content is copied/linked
 
     if [[ -z "${WINE_SAVEFILES}" ]]; then
-        #Move existing savedir content if link is not set then link whole wine_savedir directory
-        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && cp -r "${WINE_SAVEDIR}" "${SYSTEM_SAVEDIR}" && rm -rf "${WINE_SAVEDIR}"
-        [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}/${WINE_SAVEDIR}" "${WINE_SAVEDIR}"
+        #Copy existing savedir content and link whole wine_savedir directory
+        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" && rm -rf "${WINE_SAVEDIR}"
+        [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
         popd >/dev/null
 
     elif [[ -n "${WINE_SAVEFILES}" ]]; then
@@ -323,6 +324,8 @@ save_install() {
         done
         popd 2 >/dev/null
     fi
+}
+
 }
 msi_install() {
     WINEPREFIX=$1
