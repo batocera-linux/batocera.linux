@@ -1,7 +1,11 @@
 #!/bin/ash
 
 do_mount() {
-    if mount -o ro "${1}"           /boot_root; then return 0; fi
+    local mount_options="ro"
+
+    [ ! -z "${2}" ] && mount_options="$mount_options,${2}"
+
+    if mount -o $mount_options "${1}"           /boot_root; then return 0; fi
     return 1
 }
 
@@ -24,10 +28,15 @@ do_root() {
 
     MOUNTARG=none
     boot_root_mounted=n
+    MOUNTOPTIONS=none
     while [ $boot_root_mounted = n ]
     do
         for param in ${cmdline}
         do
+            MOUNTOPTIONS=${param#*:} # gets everything after the first colon :
+            param=${param%%:*} # gets everything before the first colon :
+            [ "$MOUNTOPTIONS" == "$param" ] && MOUNTOPTIONS= #in case there is no colon :, set MOUNTOPTIONS to nothing
+
             case ${param} in
                 dev=*)      MOUNTARG=${param#dev=};;
                 label=*)    MOUNTARG=LABEL=${param#label=};;
@@ -36,7 +45,7 @@ do_root() {
             esac
             for i in $(seq $devretry)
             do
-                if do_mount "${MOUNTARG}"
+                if do_mount "${MOUNTARG}" "${MOUNTOPTIONS}"
                 then
                     echo "Mounted ${MOUNTARG} as /boot_root"
                     boot_root_mounted=y
