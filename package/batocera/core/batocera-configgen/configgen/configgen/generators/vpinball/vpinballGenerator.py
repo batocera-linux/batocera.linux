@@ -24,7 +24,7 @@ class VPinballGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "vpinball",
-            "keys": { "exit": "KEY_F4", "coin": "KEY_5", "menu": "KEY_ESC", "pause": "KEY_ESC" }
+            "keys": { "exit": "KEY_F4", "coin": "KEY_5", "menu": "KEY_ESC", "pause": "KEY_ESC", "reset": "KEY_F3" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
