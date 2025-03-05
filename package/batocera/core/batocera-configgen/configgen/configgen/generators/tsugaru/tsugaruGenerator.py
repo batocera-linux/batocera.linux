@@ -42,5 +42,5 @@ class TsugaruGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "tsugaru",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F10", "pause": "KEY_F10" }
         }
