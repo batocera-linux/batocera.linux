@@ -81,7 +81,9 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
         for nplayer, pad in enumerate(controllers[:7], start=1):
             _logger.debug("Controller #%s - %s", nplayer, pad.guid)
             # check for DualShock / DualSense
-            if pad.guid in valid_sony_guids and f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Sony":
+            controller_type = system.config.get(f"rpcs3_controller{nplayer}")
+            rumble = system.config.get_bool(f"rpcs3_rumble{nplayer}", True, return_values=("true", "false"))
+            if pad.guid in valid_sony_guids and controller_type == "Sony":
                 _logger.debug("*** Using DualShock / DualSense configuration ***")
                 # dualshock 3
                 if pad.guid in valid_sony_guids[:4]:
@@ -161,12 +163,8 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 10\n')
                 f.write('    Player LED enabled: true\n')
-                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
-                    f.write('    Enable Large Vibration Motor: true\n')
-                    f.write('    Enable Small Vibration Motor: true\n')
-                else:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
+                f.write(f'    Enable Large Vibration Motor: {rumble}\n')
+                f.write(f'    Enable Small Vibration Motor: {rumble}\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')
@@ -181,7 +179,7 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
-            elif f"rpcs3_controller{nplayer}" in system.config and system.config[f"rpcs3_controller{nplayer}"] == "Evdev":
+            elif controller_type == "Evdev":
                 _logger.debug("*** Using EVDEV configuration ***")
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
@@ -259,12 +257,8 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 50\n')
                 f.write('    Player LED enabled: true\n')
-                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
-                    f.write('    Enable Large Vibration Motor: true\n')
-                    f.write('    Enable Small Vibration Motor: true\n')
-                else:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
+                f.write(f'    Enable Large Vibration Motor: {rumble}\n')
+                f.write(f'    Enable Small Vibration Motor: {rumble}\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')
@@ -358,12 +352,8 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 10\n')
                 f.write('    Player LED enabled: true\n')
-                if system.config.get_bool(f"rpcs3_rumble{nplayer}", True):
-                    f.write('    Enable Large Vibration Motor: true\n')
-                    f.write('    Enable Small Vibration Motor: true\n')
-                else:
-                    f.write('    Enable Large Vibration Motor: false\n')
-                    f.write('    Enable Small Vibration Motor: false\n')
+                f.write(f'    Enable Large Vibration Motor: {rumble}\n')
+                f.write(f'    Enable Small Vibration Motor: {rumble}\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')

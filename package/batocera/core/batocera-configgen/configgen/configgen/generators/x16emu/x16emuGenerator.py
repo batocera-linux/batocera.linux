@@ -50,15 +50,12 @@ class X16emuGenerator(Generator):
         if autorun_cmd.exists():
             commandArray.extend(["-bas", autorun_cmd])
 
-        if system.isOptSet("x16emu_scale"):
-            commandArray.extend(["-scale", system.config["x16emu_scale"]])
-        else:
-            commandArray.extend(["-scale", "2"]) # 1280 x 960
+        commandArray.extend(["-scale", system.config.get("x16emu_scale", "2")])  # 2 = 1280 x 960
 
-        if system.isOptSet("x16emu_quality"):
-            commandArray.extend(["-quality", system.config["x16emu_quality"]])
+        if quality := system.config.get("x16emu_quality"):
+            commandArray.extend(["-quality", quality])
 
-        if system.isOptSet("x16emu_ratio") and system.config["x16emu_ratio"] == "16:9":
+        if system.config.get("x16emu_ratio") == "16:9":
             commandArray.extend(["-widescreen"])
 
         # Now add Controllers
@@ -75,6 +72,6 @@ class X16emuGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if ("x16emu_ratio" in config and config["x16emu_ratio"] == "16:9"):
+        if config.get("x16emu_ratio") == "16:9":
             return 16/9
         return 4/3

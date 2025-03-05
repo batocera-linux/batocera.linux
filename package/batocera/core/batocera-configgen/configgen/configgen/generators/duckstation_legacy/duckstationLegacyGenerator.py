@@ -61,7 +61,7 @@ class DuckstationLegacyGenerator(Generator):
         settings.set("Main","SyncToHostRefreshRate", system.config.get("duckstation_hrr", "false"))
 
         # Rewind
-        #if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
+        #if system.config.get_bool('rewind'):
         settings.set("Main","RewindEnable",    "true")
         settings.set("Main","RewindFrequency", "1")        # Frame skipped each seconds
         match system.config.get("duckstation_rewind"):

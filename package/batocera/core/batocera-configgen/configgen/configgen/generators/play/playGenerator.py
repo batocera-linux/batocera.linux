@@ -66,20 +66,20 @@ class PlayGenerator(Generator):
             for attr_name, attr_value in pref_attrs.items():
                 pref_element.attrib[attr_name] = attr_value
                 # Check system options for overriding values
-                if pref_name == 'ps2.limitframerate' and system.isOptSet('play_vsync'):
-                    pref_element.attrib['Value'] = system.config['play_vsync']
-                if pref_name == 'renderer.widescreen' and system.isOptSet('play_widescreen'):
-                    pref_element.attrib['Value'] = system.config['play_widescreen']
-                if pref_name == 'system.language' and system.isOptSet('play_language'):
-                    pref_element.attrib['Value'] = system.config['play_language']
-                if pref_name == 'video.gshandler' and system.isOptSet('play_api'):
-                    pref_element.attrib['Value'] = system.config['play_api']
-                if pref_name == 'renderer.opengl.resfactor' and system.isOptSet('play_scale'):
-                    pref_element.attrib['Value'] = system.config['play_scale']
-                if pref_name == 'renderer.presentationmode' and system.isOptSet('play_mode'):
-                    pref_element.attrib['Value'] = system.config['play_mode']
-                if pref_name == 'renderer.opengl.forcebilineartextures' and system.isOptSet('play_filter'):
-                    pref_element.attrib['Value'] = system.config['play_filter']
+                if pref_name == 'ps2.limitframerate' and (vsync := system.config.get('play_vsync')):
+                    pref_element.attrib['Value'] = vsync
+                if pref_name == 'renderer.widescreen' and (widescreen := system.config.get('play_widescreen')):
+                    pref_element.attrib['Value'] = widescreen
+                if pref_name == 'system.language' and (language := system.config.get('play_language')):
+                    pref_element.attrib['Value'] = language
+                if pref_name == 'video.gshandler' and (api := system.config.get('play_api')):
+                    pref_element.attrib['Value'] = api
+                if pref_name == 'renderer.opengl.resfactor' and (scale := system.config.get('play_scale')):
+                    pref_element.attrib['Value'] = scale
+                if pref_name == 'renderer.presentationmode' and (mode := system.config.get('play_mode')):
+                    pref_element.attrib['Value'] = mode
+                if pref_name == 'renderer.opengl.forcebilineartextures' and (filter := system.config.get('play_filter')):
+                    pref_element.attrib['Value'] = filter
 
         # Write the updated configuration back to the file
         tree = ET.ElementTree(root)

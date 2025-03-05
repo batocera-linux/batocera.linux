@@ -123,43 +123,16 @@ class RedreamGenerator(Generator):
             f.write(f"height={gameResolution['height']}\n")
             f.write(f"fullwidth={gameResolution['width']}\n")
             f.write(f"fullheight={gameResolution['height']}\n")
-            if system.isOptSet("redreamResolution"):
-                f.write(f"res={system.config['redreamResolution']}\n")
-            else:
-                f.write("res=2\n")
-            if system.isOptSet("redreamRatio"):
-                f.write(f"aspect={system.config['redreamRatio']}\n")
-            else:
-                f.write("aspect=4:3\n")
-            if system.isOptSet("redreamFrameSkip"):
-                f.write(f"frameskip={system.config['redreamFrameSkip']}\n")
-            else:
-                f.write("frameskip=0\n")
-            if system.isOptSet("redreamVsync"):
-                f.write(f"vysnc={system.config['redreamVsync']}\n")
-            else:
-                f.write("vsync=0\n")
-            if system.isOptSet("redreamRender"):
-                f.write(f"renderer={system.config['redreamRender']}\n")
-            else:
-                f.write("renderer=hle_perstrip\n")
+            f.write(f"res={system.config.get('redreamResolution', '2')}\n")
+            f.write(f"aspect={system.config.get('redreamRatio', '4:3')}\n")
+            f.write(f"frameskip={system.config.get('redreamFrameSkip', '0')}\n")
+            f.write(f"vsync={system.config.get('redreamVsync', '0')}\n")
+            f.write(f"renderer={system.config.get('redreamRender', 'hle_perstrip')}\n")
             # [system]
-            if system.isOptSet("redreamRegion"):
-                f.write(f"region={system.config['redreamRegion']}\n")
-            else:
-                f.write("region=usa\n")
-            if system.isOptSet("redreamLanguage"):
-                f.write(f"language={system.config['redreamLanguage']}\n")
-            else:
-                f.write("language=english\n")
-            if system.isOptSet("redreamBroadcast"):
-                f.write(f"broadcast={system.config['redreamBroadcast']}\n")
-            else:
-                f.write("broadcast=ntsc\n")
-            if system.isOptSet("redreamCable"):
-                f.write(f"cable={system.config['redreamCable']}\n")
-            else:
-                f.write("cable=vga\n")
+            f.write(f"region={system.config.get('redreamRegion', 'usa')}\n")
+            f.write(f"language={system.config.get('redreamLanguage', 'english')}\n")
+            f.write(f"broadcast={system.config.get('redreamBroadcast', 'ntsc')}\n")
+            f.write(f"cable={system.config.get('redreamCable', 'vga')}\n")
 
         commandArray = [redream_exec, rom]
         return Command.Command(
@@ -171,8 +144,6 @@ class RedreamGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if 'redreamRatio' in config:
-            if config['redreamRatio'] == "16:9" or config['redreamRatio'] == "stretch":
-                return 16/9
-            return 4/3
+        if (ratio := config.get('redreamRatio')) and (ratio == "16:9" or ratio == "stretch"):
+            return 16/9
         return 4/3

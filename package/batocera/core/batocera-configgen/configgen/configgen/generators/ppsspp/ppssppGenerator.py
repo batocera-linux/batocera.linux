@@ -45,8 +45,8 @@ class PPSSPPGenerator(Generator):
             commandArray.extend(["--dpi", "0.5"])
 
         # state_slot option
-        if system.isOptSet('state_filename'):
-            commandArray.append(f"--state={system.config['state_filename']}")
+        if state_filename := system.config.get('state_filename'):
+            commandArray.append(f"--state={state_filename}")
 
         return Command.Command(
             array=commandArray,
