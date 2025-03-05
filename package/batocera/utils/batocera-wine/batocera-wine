@@ -26,7 +26,7 @@ WINE64=
 WINESERVER=
 MSIEXEC=
 WINETRICKS=
-# Save function carried out in save_install()
+# Save function carried out in saveFilesToUserdata()
 WINE_SAVEDIR=
 WINE_SAVEFILES=
 SYSTEM_SAVEDIR=
@@ -285,51 +285,6 @@ redist_install() {
     return 0
 }
 
-save_install() {
-    WINEPREFIX="$1"
-    GAMENAME="$2"
-    WINE_SAVEDIR="$3"
-    WINE_SAVEFILES="$4"
-
-    [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
-
-    #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
-    SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
-    mkdir -p "${SYSTEM_SAVEDIR}"                                  #Create dir to store our savegames in /userdata
-    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"          #Create SAVEGAME_ROOT_DIR from there we can cp the files
-    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null  #Enter SAVEGAME_ROOT_DIR
-    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                  #Savegamedir itself, content is copied/linked
-
-    if [[ -z "${WINE_SAVEFILES}" ]]; then
-        #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
-        if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
-            cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}"
-            rm -rf "${WINE_SAVEDIR}"
-        fi
-        [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
-        popd >/dev/null
-
-    elif [[ -n "${WINE_SAVEFILES}" ]]; then
-        mkdir "${WINE_SAVEDIR}"
-        pushd "${WINE_SAVEDIR}" >/dev/null                        #You are working inside the game saves dir
-        #split the files list to array with ; delimiter
-        IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
-        for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
-            if [[ -e "${SAVEFILE}" ]]; then
-                #if savefiles exist in the prefix and not yet in system save, move it once
-                if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${SAVEFILE}" ]]; then
-                    mv -f "${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
-                else
-                    rm "${SAVEFILE}"
-                fi
-            fi
-        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${SAVEFILE}"
-        done
-        popd 2 >/dev/null
-    fi
-}
-
-}
 msi_install() {
     WINEPREFIX=$1
     local i; local ii
@@ -486,6 +441,51 @@ sandboxing_prefix() {
     return 0
 }
 
+saveFilesToUserdata() {
+    WINEPREFIX="$1"
+    GAMENAME="$2"
+    WINE_SAVEDIR="$3"
+    WINE_SAVEFILES="$4"
+
+    [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
+
+    #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
+    SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
+    mkdir -p "${SYSTEM_SAVEDIR}"                                  #Create dir to store our savegames in /userdata
+    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"          #Create SAVEGAME_ROOT_DIR from there we can cp the files
+    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null  #Enter SAVEGAME_ROOT_DIR
+    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                  #Savegamedir itself, content is copied/linked
+    echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
+
+    if [[ -z "${WINE_SAVEFILES}" ]]; then
+        #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
+        if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
+            cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}"
+            rm -rf "${WINE_SAVEDIR}"
+        fi
+        [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
+        popd >/dev/null
+
+    elif [[ -n "${WINE_SAVEFILES}" ]]; then
+        mkdir "${WINE_SAVEDIR}"
+        pushd "${WINE_SAVEDIR}" >/dev/null                        #You are working inside the game saves dir
+        #split the files list to array with ; delimiter
+        IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
+        for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
+            if [[ -e "${SAVEFILE}" ]]; then
+                #if savefiles exist in the prefix and not yet in system save, move it once
+                if [[ ! -e "${SYSTEM_SAVEDIR}/${SAVEFILE}" && ! -L "${SAVEFILE}" ]]; then
+                    mv -f "${SAVEFILE}" "${SYSTEM_SAVEDIR}/${SAVEFILE}"
+                else
+                    rm "${SAVEFILE}"
+                fi
+            fi
+        ln -sf "${SYSTEM_SAVEDIR}/${SAVEFILE}" "${SAVEFILE}"
+        done
+        popd 2 >/dev/null
+    fi
+}
+
 createWineDirectory() {
     WINEPREFIX=$1
 
@@ -548,7 +548,7 @@ play_wine() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -578,7 +578,7 @@ play_pc() {
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${GAMENAME}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${GAMENAME}" "SAVEFILES" "")
-    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     env
     if [[ -n "${WINE_LANG}" ]]; then
@@ -650,7 +650,7 @@ play_winetgz() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -731,7 +731,7 @@ play_squashfs() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    save_install "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -751,7 +751,7 @@ createAutorunCmd() {
     #Using RexEx extensions from user created files, ~/../roms/windows_installers is prefered over ~/../saves/windows_installers
     i="/userdata/roms/windows_installers/autorun-regex.txt"
     ii="/userdata/saves/windows_installers/autorun-regex.txt"
-    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && { dos2unix -k -q "$i"; readarray -t AUTORUN_FILTER < <(grep  -v -E "^[[:space:]*]|[#]|^[[:space:]]*$" "$i"); }
+    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && { dos2unix -k -q "$i"; readarray -t AUTORUN_FILTER < <(grep -v -E "^[[:space:]*]|[#]|^[[:space:]]*$" "$i"); }
     # Pre-setted filter to exclude some standard files from created WINEPREFIX
     AUTORUN_FILTER+=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$" "^.*/drive_c/windows/.*$"
                      "^.*/[Uu]nins[[:alnum:]]{0,6}\.exe$" "^.*/[Ii]nstall(..)?\.exe$" "^.*/[Ss]etup\.exe$" "^.*/[Uu]nwise(..)?\.exe$")
