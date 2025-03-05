@@ -65,60 +65,55 @@ class RedreamGenerator(Generator):
             "l2":            2,
             "r2":            3
         }
-        nplayer = 1
         written_guids: set[str] = set()
-        for index in playersControllers:
-            controller = playersControllers[index]
-            if nplayer <= 4:
-                ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
-                f.write((ctrlport)+ "\n")
-                ctrlprofile = f"profile{controller.index}=name:{controller.guid},type:controller,deadzone:12,crosshair:1,"
-                fullprofile = ctrlprofile
-                for index in controller.inputs:
-                    input = controller.inputs[index]
-                    # [buttons]
-                    if input.type == "button" and input.name in ButtonMap:
-                        buttonname = ButtonMap[input.name]
-                        fullprofile = fullprofile + f"{buttonname}:joy{input.id},"
-                    # on rare occassions when triggers are buttons
-                    if input.type == "button" and input.name == "l2":
-                        fullprofile = f"{fullprofile}ltrig:joy{input.id},"
-                    if input.type == "button" and input.name == "r2":
-                        fullprofile = f"{fullprofile}rtrig:joy{input.id},"
-                    # on occassions when dpad directions are buttons
-                    if input.type == "button":
-                        if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
-                            fullprofile = f"{fullprofile}dpad_{input.name}:joy{input.id},"
-                    # [hats]
-                    if input.type == "hat" and input.name in HatMap:
-                        hatid = HatMap[input.name]
-                        fullprofile = f"{fullprofile}dpad_{input.name}:hat{hatid},"
-                    # [axis]
-                    if input.type == "axis" and input.name in AxisMap:
-                        axisid = AxisMap[input.name]
-                        # l2/r2 as axis triggers
-                        if input.name == "l2":
-                            fullprofile = f"{fullprofile}ltrig:+axis{input.id},"
-                        if input.name == "r2":
-                            fullprofile = f"{fullprofile}rtrig:+axis{input.id},"
-                        # handle axis l,r,u,d
-                        if input.name == "joystick1left":
-                            fullprofile = f"{fullprofile}ljoy_left:-axis{axisid},"
-                            fullprofile = f"{fullprofile}ljoy_right:+axis{axisid},"
-                        if input.name == "joystick1up":
-                            fullprofile = f"{fullprofile}ljoy_up:-axis{axisid},"
-                            fullprofile = f"{fullprofile}ljoy_down:+axis{axisid},"
+        for controller in playersControllers[:4]:
+            ctrlport = f"port{controller.index}=dev:{4 + controller.index},desc:{controller.guid},type:controller"
+            f.write((ctrlport)+ "\n")
+            ctrlprofile = f"profile{controller.index}=name:{controller.guid},type:controller,deadzone:12,crosshair:1,"
+            fullprofile = ctrlprofile
+            for input in controller.inputs.values():
+                # [buttons]
+                if input.type == "button" and input.name in ButtonMap:
+                    buttonname = ButtonMap[input.name]
+                    fullprofile = fullprofile + f"{buttonname}:joy{input.id},"
+                # on rare occassions when triggers are buttons
+                if input.type == "button" and input.name == "l2":
+                    fullprofile = f"{fullprofile}ltrig:joy{input.id},"
+                if input.type == "button" and input.name == "r2":
+                    fullprofile = f"{fullprofile}rtrig:joy{input.id},"
+                # on occassions when dpad directions are buttons
+                if input.type == "button":
+                    if input.name == "up" or input.name == "down" or input.name == "left" or input.name == "right":
+                        fullprofile = f"{fullprofile}dpad_{input.name}:joy{input.id},"
+                # [hats]
+                if input.type == "hat" and input.name in HatMap:
+                    hatid = HatMap[input.name]
+                    fullprofile = f"{fullprofile}dpad_{input.name}:hat{hatid},"
+                # [axis]
+                if input.type == "axis" and input.name in AxisMap:
+                    axisid = AxisMap[input.name]
+                    # l2/r2 as axis triggers
+                    if input.name == "l2":
+                        fullprofile = f"{fullprofile}ltrig:+axis{input.id},"
+                    if input.name == "r2":
+                        fullprofile = f"{fullprofile}rtrig:+axis{input.id},"
+                    # handle axis l,r,u,d
+                    if input.name == "joystick1left":
+                        fullprofile = f"{fullprofile}ljoy_left:-axis{axisid},"
+                        fullprofile = f"{fullprofile}ljoy_right:+axis{axisid},"
+                    if input.name == "joystick1up":
+                        fullprofile = f"{fullprofile}ljoy_up:-axis{axisid},"
+                        fullprofile = f"{fullprofile}ljoy_down:+axis{axisid},"
 
-                # special nintendo workaround since redream makes no sense...
-                if controller.guid == "030000007e0500000920000011810000":
-                    fullprofile = ctrlprofile + "b:joy1,a:joy0,dpad_down:hat1,ljoy_left:-axis0,ljoy_right:+axis0,ljoy_up:-axis1,ljoy_down:+axis1,ltrig:joy6,dpad_left:hat2,rtrig:joy7,dpad_right:hat3,turbo:joy8,start:joy9,dpad_up:hat0,y:joy2,x:joy3,"
-                # add key to exit for evmapy to the end
-                fullprofile = fullprofile + "exit:f10"
-                # check if we have already writtent the profile, if so, we don't save it
-                if controller.guid not in written_guids:
-                    written_guids.add(controller.guid)
-                    f.write((fullprofile)+ "\n")
-                nplayer = nplayer + 1
+            # special nintendo workaround since redream makes no sense...
+            if controller.guid == "030000007e0500000920000011810000":
+                fullprofile = ctrlprofile + "b:joy1,a:joy0,dpad_down:hat1,ljoy_left:-axis0,ljoy_right:+axis0,ljoy_up:-axis1,ljoy_down:+axis1,ltrig:joy6,dpad_left:hat2,rtrig:joy7,dpad_right:hat3,turbo:joy8,start:joy9,dpad_up:hat0,y:joy2,x:joy3,"
+            # add key to exit for evmapy to the end
+            fullprofile = fullprofile + "exit:f10"
+            # check if we have already writtent the profile, if so, we don't save it
+            if controller.guid not in written_guids:
+                written_guids.add(controller.guid)
+                f.write((fullprofile)+ "\n")
 
         # change settings as per users options
         # [video]

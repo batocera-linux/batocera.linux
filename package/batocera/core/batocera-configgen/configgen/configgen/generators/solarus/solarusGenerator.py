@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import Input
     from ...types import HotkeysContext
@@ -31,13 +31,11 @@ class SolarusGenerator(Generator):
         commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
 
         # hotkey to exit
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
+        for nplayer, pad in enumerate(playersControllers, start=1):
             if nplayer == 1:
                 if "hotkey" in pad.inputs and "start" in pad.inputs:
                     commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
             commandArray.append(f"-joypad-num{nplayer}={pad.index}")
-            nplayer += 1
 
         # player pad
         SolarusGenerator.padConfig(system, playersControllers)
@@ -52,7 +50,7 @@ class SolarusGenerator(Generator):
         })
 
     @staticmethod
-    def padConfig(system: Emulator, playersControllers: ControllerMapping):
+    def padConfig(system: Emulator, playersControllers: Controllers):
         keymapping = {
             "action": "a",
             "attack": "b",
@@ -85,16 +83,12 @@ class SolarusGenerator(Generator):
         mkdir_if_not_exists(_CONFIG_DIR)
         f = codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii")
 
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer == 1:
-                for key in keymapping:
-                    if keymapping[key] in pad.inputs:
-                        f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
-                    if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
-                        f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
-
-            nplayer += 1
+        if pad := Controller.find_player_number(playersControllers, 1):
+            for key in keymapping:
+                if keymapping[key] in pad.inputs:
+                    f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
+                if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
+                    f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
 
         f.close()
 

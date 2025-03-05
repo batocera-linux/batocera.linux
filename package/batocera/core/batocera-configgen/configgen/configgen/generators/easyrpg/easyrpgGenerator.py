@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
+from ...controller import Controller
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...types import HotkeysContext
 
 
@@ -56,7 +57,7 @@ class EasyRPGGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def padConfig(configdir: Path, playersControllers: ControllerMapping) -> None:
+    def padConfig(configdir: Path, playersControllers: Controllers) -> None:
         keymapping: dict[str, str | None] = {
             "button_up": None,
             "button_down": None,
@@ -86,14 +87,11 @@ class EasyRPGGenerator(Generator):
 
         with codecs.open(str(configdir / "config.ini"), "w", encoding="ascii") as f:
             f.write("[Joypad]\n")
-            nplayer = 1
-            for playercontroller, pad in sorted(playersControllers.items()):
-                if nplayer == 1:
-                    f.write(f"number={pad.index}\n" )
-                    for key, value in keymapping.items():
-                        button = -1
-                        if value is not None:
-                            if pad.inputs[value].type == "button":
-                                button = pad.inputs[value].id
-                        f.write(f"{key}={button}\n")
-                nplayer += 1
+            if pad := Controller.find_player_number(playersControllers, 1):
+                f.write(f"number={pad.index}\n" )
+                for key, value in keymapping.items():
+                    button = -1
+                    if value is not None:
+                        if pad.inputs[value].type == "button":
+                            button = pad.inputs[value].id
+                    f.write(f"{key}={button}\n")

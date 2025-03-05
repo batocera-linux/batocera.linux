@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import InputMapping
     from ...types import HotkeysContext
@@ -59,7 +59,7 @@ class CitraGenerator(Generator):
     def writeCITRAConfig(
         citraConfigFile: Path,
         system: Emulator,
-        playersControllers: ControllerMapping
+        playersControllers: Controllers
     ) -> None:
         # Pads
         citraButtons = {
@@ -222,16 +222,12 @@ class CitraGenerator(Generator):
             citraConfig.set("Controls", r"profiles\1\name", "default")
             citraConfig.set("Controls", r"profiles\size", "1")
 
-        for index in playersControllers :
-            controller = playersControllers[index]
-            # We only care about player 1
-            if controller.player_number != 1:
-                continue
+        # We only care about player 1
+        if controller := Controller.find_player_number(playersControllers, 1):
             for x in citraButtons:
                 citraConfig.set("Controls", f"profiles\\1\\{x}", f'"{CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)}"')
             for x in citraAxis:
                 citraConfig.set("Controls", f"profiles\\1\\{x}", f'"{CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs)}"')
-            break
 
         ## Update the configuration file
         with ensure_parents_and_open(citraConfigFile, 'w') as configfile:

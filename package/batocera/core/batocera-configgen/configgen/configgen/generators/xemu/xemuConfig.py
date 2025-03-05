@@ -7,12 +7,12 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from .xemuPaths import XEMU_CONFIG
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import Resolution
 
 
-def writeIniFile(system: Emulator, rom: str, playersControllers: ControllerMapping, gameResolution: Resolution) -> None:
+def writeIniFile(system: Emulator, rom: str, playersControllers: Controllers, gameResolution: Resolution) -> None:
     iniConfig = CaseSensitiveConfigParser(interpolation=None)
 
     if XEMU_CONFIG.exists():
@@ -26,7 +26,7 @@ def writeIniFile(system: Emulator, rom: str, playersControllers: ControllerMappi
     with ensure_parents_and_open(XEMU_CONFIG, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom: str, playersControllers: ControllerMapping, gameResolution: Resolution) -> None:
+def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom: str, playersControllers: Controllers, gameResolution: Resolution) -> None:
     # Create INI sections
     if not iniConfig.has_section("general"):
         iniConfig.add_section("general")
@@ -131,11 +131,8 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     # first, clear
     for i in range(1,5):
         iniConfig.remove_option("input.bindings", f"port{i}")
-    nplayer = 1
-    for playercontroller, pad in sorted(playersControllers.items()):
-        if nplayer <= 4:
-            iniConfig.set("input.bindings", f"port{nplayer}", f'"{pad.guid}"')
-        nplayer = nplayer + 1
+    for nplayer, pad in enumerate(playersControllers[:4], start=1):
+        iniConfig.set("input.bindings", f"port{nplayer}", f'"{pad.guid}"')
 
     # Network
     # Documentation: https://github.com/xemu-project/xemu/blob/master/config_spec.yml

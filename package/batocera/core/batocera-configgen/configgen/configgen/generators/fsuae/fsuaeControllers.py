@@ -6,12 +6,12 @@ from ...batoceraPaths import mkdir_if_not_exists
 from .fsuaePaths import FSUAE_CONFIG_DIR
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
 
 
 # Create the controller configuration file
-def generateControllerConfig(system: Emulator, playersControllers: ControllerMapping) -> None:
+def generateControllerConfig(system: Emulator, playersControllers: Controllers) -> None:
 
     fsuaeMapping = {
         'a':      'east_button',   'b':        'south_button',
@@ -35,7 +35,7 @@ def generateControllerConfig(system: Emulator, playersControllers: ControllerMap
     confDirectory = FSUAE_CONFIG_DIR / "Controllers"
     mkdir_if_not_exists(confDirectory)
 
-    for playercontroller, pad in sorted(playersControllers.items()):
+    for pad in playersControllers:
         configFileName = confDirectory / f"{pad.guid}_linux.conf"
         f = configFileName.open("w")
 

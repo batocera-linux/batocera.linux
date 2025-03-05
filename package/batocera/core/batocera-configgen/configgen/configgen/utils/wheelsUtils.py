@@ -17,7 +17,7 @@ from .. import controllersConfig
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
-    from ..controller import Controller, ControllerDict
+    from ..controller import Controller, ControllerList
     from ..Emulator import Emulator
     from ..types import DeviceInfoDict
 
@@ -108,8 +108,8 @@ _EMULATOR_MAPPING: Final = {
 
 @contextmanager
 def configure_wheels(
-    controllers: ControllerDict, system: Emulator, metadata: dict[str, str], /
-) -> Iterator[tuple[ControllerDict, DeviceInfoDict]]:
+    controllers: ControllerList, system: Emulator, metadata: dict[str, str], /
+) -> Iterator[tuple[ControllerList, DeviceInfoDict]]:
     if not system.config.use_wheels or not controllers:
         _logger.info("wheels disabled.")
         yield controllers, {}
@@ -122,14 +122,14 @@ def configure_wheels(
     _logger.info("wheels reconfiguration")
 
     _logger.info("before wheel reconfiguration :")
-    for player_number, controller in sorted(controllers.items()):
-        _logger.info("  %s. index:%s dev:%s name:%s", player_number, controller.index, controller.device_path, controller.real_name)
+    for controller in controllers:
+        _logger.info("  %s. index:%s dev:%s name:%s", controller.player_number, controller.index, controller.device_path, controller.real_name)
 
     # a map of just the items from metadata that start with "wheel_" with "wheel_" removed from the key
     wheel_metadata = {md_key[6:]: md_value for md_key, md_value in metadata.items() if md_key.startswith("wheel_")}
 
     # reconfigure wheel buttons
-    for controller in controllers.values():
+    for controller in controllers:
         if controller.device_path in devices and devices[controller.device_path]["isWheel"]:
             _logger.info("Wheel reconfiguration for pad %s", controller.real_name)
             original_inputs = controller.inputs.copy()
@@ -160,7 +160,7 @@ def configure_wheels(
     procs: list[subprocess.Popen[bytes]] = []
     recompute_sdl_ids = False
     new_pads: list[str] = []
-    for controller in controllers.values():
+    for controller in controllers:
         if (
             (device := devices.get(controller.device_path)) is not None
             and device["isWheel"]
@@ -230,13 +230,13 @@ def configure_wheels(
         }
 
         # renumeration
-        for controller in controllers.values():
+        for controller in controllers:
             if (joystick_index := joysticks_by_dev.get(controller.device_path)) is not None:
                 controller.index = joystick_index
                 devices[controller.device_path]["joystick_index"] = joystick_index
 
         # fill physical_index
-        for controller in controllers.values():
+        for controller in controllers:
             if (
                 controller.physical_device_path is not None
                 and (device := devices.get(controller.physical_device_path)) is not None
@@ -245,26 +245,26 @@ def configure_wheels(
                 controller.physical_index = device["joystick_index"]  # save the physical device for ffb
 
     # reorder players to priorize wheel pads
-    controllers_new: ControllerDict = {}
+    controllers_new: ControllerList = []
     nplayer = 1
-    for controller in controllers.values():
+    for controller in controllers:
         if (
             controller.device_path in devices and devices[controller.device_path]["isWheel"]
         ) or controller.device_path in new_pads:
-            controllers_new[nplayer] = controller.replace(player_number=nplayer)
+            controllers_new.append(controller.replace(player_number=nplayer))
             nplayer += 1
 
-    for controller in controllers.values():
+    for controller in controllers:
         if not (
             (controller.device_path in devices and devices[controller.device_path]["isWheel"])
             or controller.device_path in new_pads
         ):
-            controllers_new[nplayer] = controller.replace(player_number=nplayer)
+            controllers_new.append(controller.replace(player_number=nplayer))
             nplayer += 1
 
     _logger.info("after wheel reconfiguration :")
 
-    for controller in controllers_new.values():
+    for controller in controllers_new:
         _logger.info("  %s. index:%s dev:%s name:%s", controller.player_number, controller.index, controller.device_path, controller.real_name)
 
     try:

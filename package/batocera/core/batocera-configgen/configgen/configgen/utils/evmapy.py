@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from types import TracebackType
 
-    from ..controller import ControllerMapping
+    from ..controller import Controllers
     from ..gun import Gun, Guns
 
 
@@ -29,7 +29,7 @@ class evmapy(AbstractContextManager[None, None]):
     emulator: str
     core: str
     rom: str
-    controllers: ControllerMapping
+    controllers: Controllers
     guns: Guns
 
     def __enter__(self) -> None:
@@ -149,9 +149,8 @@ class evmapy(AbstractContextManager[None, None]):
                         fd.write(json.dumps(padConfig, indent=2))
 
             # configure each player
-            nplayer = 1
-            for playercontroller, pad in sorted(self.controllers.items()):
-                if f"actions_player{nplayer}" in padActionConfig:
+            for pad in self.controllers:
+                if f"actions_player{pad.player_number}" in padActionConfig:
                     configfile = f"/var/run/evmapy/{os.path.basename(pad.device_path)}.json"
                     _logger.debug("config file for keysfile is %s (from %s)", configfile, keysfile)
 
@@ -243,7 +242,7 @@ class evmapy(AbstractContextManager[None, None]):
                                     })
 
                     # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
-                    padActionsPreDefined = padActionConfig[f"actions_player{nplayer}"]
+                    padActionsPreDefined = padActionConfig[f"actions_player{pad.player_number}"]
                     padActionsFiltered = []
 
                     # handle mouse events : only joystick1 or joystick2 defined for 2 events
@@ -326,7 +325,6 @@ class evmapy(AbstractContextManager[None, None]):
                     with open(configfile, "w") as fd:
                         fd.write(json.dumps(padConfig, indent=2))
 
-                nplayer += 1
             return True
         # otherwise, preparation did nothing
         _logger.debug("no evmapy config file found for system=%s, emulator=%s", self.system, self.emulator)

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, DATAINIT_DIR, ROMS, ensure_parents_and_open, mkdir_if_not_exists
-from ...controller import ControllerMapping, generate_sdl_game_controller_config, write_sdl_controller_db
+from ...controller import Controllers, generate_sdl_game_controller_config, write_sdl_controller_db
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -176,7 +176,7 @@ def configureAudio(config_directory: Path) -> None:
     f.write("HostApi=alsa\n")
     f.close()
 
-def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: ControllerMapping, metadata: Mapping[str, str], guns: Guns, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
+def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: str, controllers: Controllers, metadata: Mapping[str, str], guns: Guns, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
 
     mkdir_if_not_exists(configFileName.parent)
@@ -511,12 +511,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             if not pcsx2INIConfig.has_section("USB1"):
                 pcsx2INIConfig.add_section("USB1")
             pcsx2INIConfig.set("USB1", "Type", "guncon2")
-            nc = 1
-            for controller, pad in sorted(controllers.items()):
+            for nc, pad in enumerate(controllers, start=1):
                 if nc == 1 and not gun1onport2:
                     if "start" in pad.inputs:
                         pcsx2INIConfig.set("USB1", "guncon2_Start", f"SDL-{pad.index}/Start")
-                nc = nc + 1
 
             ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
             if "controllers.pedals1" in system.config:
@@ -529,12 +527,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             if not pcsx2INIConfig.has_section("USB2"):
                 pcsx2INIConfig.add_section("USB2")
             pcsx2INIConfig.set("USB2", "Type", "guncon2")
-            nc = 1
-            for controller, pad in sorted(controllers.items()):
+            for nc, pad in enumerate(controllers, start=1):
                 if nc == 2 or gun1onport2:
                     if "start" in pad.inputs:
                         pcsx2INIConfig.set("USB2", "guncon2_Start", f"SDL-{pad.index}/Start")
-                nc = nc + 1
             ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
             if "controllers.pedals2" in system.config:
                 pedalkey = system.config["controllers.pedals2"]
@@ -629,7 +625,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             }
 
             usbx = 1
-            for controller, pad in sorted(controllers.items()):
+            for pad in controllers:
                 if pad.device_path in wheels:
                     if not pcsx2INIConfig.has_section(f"USB{usbx}"):
                         pcsx2INIConfig.add_section(f"USB{usbx}")
@@ -701,8 +697,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             pcsx2INIConfig.remove_section(section_name)
 
     # Now add Controllers
-    nplayer = 1
-    for controller, pad in sorted(controllers.items()):
+    for nplayer, pad in enumerate(controllers, start=1):
         # only configure the number of controllers set
         if nplayer <= multiTap:
             pad_index = nplayer
@@ -753,8 +748,6 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             pcsx2INIConfig.set(pad_num, "Analog", sdl_num + "/Guide")
             pcsx2INIConfig.set(pad_num, "LargeMotor", sdl_num + "/LargeMotor")
             pcsx2INIConfig.set(pad_num, "SmallMotor", sdl_num + "/SmallMotor")
-
-        nplayer += 1
 
     ## [GameList]
     if not pcsx2INIConfig.has_section("GameList"):

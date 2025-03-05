@@ -89,9 +89,8 @@ class AmiberryGenerator(Generator):
 
             mkdir_if_not_exists(_RETROARCH_INPUTS_DIR)
 
-            nplayer = 1
-            for playercontroller, pad in sorted(playersControllers.items()):
-                replacements = {f'_player{nplayer}_':'_'}
+            for pad in playersControllers:
+                replacements = {f'_player{pad.player_number}_':'_'}
                 # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
                 padfilename = pad.real_name.replace("/", "")
                 playerInputFilename = _RETROARCH_INPUTS_DIR / f"{padfilename}.cfg"
@@ -101,16 +100,15 @@ class AmiberryGenerator(Generator):
                             newline = line.replace(src, target)
                             if not newline.isspace():
                                 outfile.write(newline)
-                if nplayer == 1: # 1 = joystick port
+                if pad.player_number == 1: # 1 = joystick port
                     commandArray.append("-s")
                     commandArray.append(f"joyport1_friendlyname={padfilename}")
                     if romType == 'CD' :
                         commandArray.append("-s")
                         commandArray.append("joyport1_mode=cd32joy")
-                if nplayer == 2: # 0 = mouse for the player 2
+                if pad.player_number == 2: # 0 = mouse for the player 2
                     commandArray.append("-s")
                     commandArray.append(f"joyport0_friendlyname={padfilename}")
-                nplayer += 1
 
             # fps
             if system.config.show_fps:

@@ -278,125 +278,121 @@ class BigPEmuGenerator(Generator):
         config["BigPEmuConfig"]["Input"]["MouseThresh"] = 0.5
 
         # per controller settings (standard controller only currently)
-        nplayer = 0
-        for controller, pad in sorted(playersControllers.items()):
-            if nplayer <= 7:
-                if f"Device{nplayer}" not in config["BigPEmuConfig"]["Input"]:
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"] = {}
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["DeviceType"] = 0 # standard controller
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["InvertAnally"] = 0
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["RotaryScale"] = 0.5
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerScale"] = 8.0
-                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerSpring"] = 0
-                    if "Bindings" not in config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]:
-                        config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"] = []
+        for nplayer, pad in enumerate(playersControllers[:8]):
+            if f"Device{nplayer}" not in config["BigPEmuConfig"]["Input"]:
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"] = {}
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["DeviceType"] = 0 # standard controller
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["InvertAnally"] = 0
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["RotaryScale"] = 0.5
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerScale"] = 8.0
+                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["HeadTrackerSpring"] = 0
+                if "Bindings" not in config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]:
+                    config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"] = []
 
-                    # Loop through BINDINGS_SEQUENCE to maintain the specific order of bindings
-                    if nplayer == 0:
-                        BINDINGS_SEQUENCE = P1_BINDINGS_SEQUENCE
-                    else:
-                        BINDINGS_SEQUENCE = P2_BINDINGS_SEQUENCE
+                # Loop through BINDINGS_SEQUENCE to maintain the specific order of bindings
+                if nplayer == 0:
+                    BINDINGS_SEQUENCE = P1_BINDINGS_SEQUENCE
+                else:
+                    BINDINGS_SEQUENCE = P2_BINDINGS_SEQUENCE
 
-                    for binding_key, binding_info in BINDINGS_SEQUENCE.items():
-                        # _logger.debug(f"Binding sequence input: %s", binding_key)
-                        if "button" in binding_info:
-                            if "keyboard" in binding_info:
-                                generate_func = generate_keyb_button_bindings
-                            else:
-                                generate_func = generate_button_bindings
-                        elif "buttons" in binding_info:
-                            if "keyboard" in binding_info:
-                                generate_func = generate_keyb_combo_bindings
-                            else:
-                                generate_func = generate_combo_bindings
+                for binding_key, binding_info in BINDINGS_SEQUENCE.items():
+                    # _logger.debug(f"Binding sequence input: %s", binding_key)
+                    if "button" in binding_info:
+                        if "keyboard" in binding_info:
+                            generate_func = generate_keyb_button_bindings
                         else:
-                            if "keyboard" in binding_info:
-                                generate_func = generate_keyb_bindings
-                            else:
-                                generate_func = generate_blank_bindings
+                            generate_func = generate_button_bindings
+                    elif "buttons" in binding_info:
+                        if "keyboard" in binding_info:
+                            generate_func = generate_keyb_combo_bindings
+                        else:
+                            generate_func = generate_combo_bindings
+                    else:
+                        if "keyboard" in binding_info:
+                            generate_func = generate_keyb_bindings
+                        else:
+                            generate_func = generate_blank_bindings
 
-                        if "blank" not in binding_info and generate_func != generate_keyb_bindings:
-                            bindings = None
+                    if "blank" not in binding_info and generate_func != generate_keyb_bindings:
+                        bindings = None
 
-                            for x in pad.inputs:
-                                input = pad.inputs[x]
-                                # workaround values for SDL2
-                                if input.type == "button":
-                                    input.value = "0"
-                                if input.type == "hat":
-                                    input.id = "134"
-                                if input.name == "joystick1left":
-                                    input.id = "128"
-                                if input.name == "joystick1up":
-                                    input.id = "129"
-                                if input.name == "joystick2left":
-                                    input.id = "131"
-                                if input.name == "joystick2up":
-                                    input.id = "132"
+                        for x in pad.inputs:
+                            input = pad.inputs[x]
+                            # workaround values for SDL2
+                            if input.type == "button":
+                                input.value = "0"
+                            if input.type == "hat":
+                                input.id = "134"
+                            if input.name == "joystick1left":
+                                input.id = "128"
+                            if input.name == "joystick1up":
+                                input.id = "129"
+                            if input.name == "joystick2left":
+                                input.id = "131"
+                            if input.name == "joystick2up":
+                                input.id = "132"
 
-                                # Generate the bindings if input name matches the button in sequence
-                                if input.name == binding_info.get("button") or input.name in binding_info.get("buttons", []):
-                                    # Handle combo bindings
-                                    if "buttons" in binding_info:
-                                        button_combos = binding_info["buttons"]
-                                        button_bindings: list[str] = []
-                                        for button_name in button_combos:
-                                            for y in pad.inputs:
-                                                button_input = pad.inputs[y]
-                                                # workaround values here too
-                                                if button_input.type == "button":
-                                                    button_input.value = "0"
-                                                if button_input.name == "l2":
-                                                    button_input.id = "130"
-                                                if button_input.name == "r2":
-                                                    button_input.id = "133"
-                                                if button_input.name == button_name:
-                                                    button_bindings.extend([button_input.id, button_input.value])
-                                        if len(button_bindings) == len(button_combos) * 2:
-                                            if "keyboard" in binding_info:
-                                                bindings = generate_func(pad.guid, binding_info["keyboard"], *button_bindings)
-                                            else:
-                                                bindings = generate_func(pad.guid, *button_bindings)
-                                    # Handle single button bindings
-                                    elif "button" in binding_info:
-                                        if input.name.startswith("joystick1") or input.name.startswith("joystick2"):
-                                            # For joysticks, generate two bindings with positive and then negative values
-                                            if "keyboard" in binding_info:
-                                                bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
-                                                bindings.extend(generate_func(pad.guid, binding_info["keyboard"], input.id, -float(input.value)))
-                                            else:
-                                                bindings = generate_func(pad.guid, input.id, input.value)
-                                                bindings.extend(generate_func(pad.guid, input.id, -float(input.value)))
+                            # Generate the bindings if input name matches the button in sequence
+                            if input.name == binding_info.get("button") or input.name in binding_info.get("buttons", []):
+                                # Handle combo bindings
+                                if "buttons" in binding_info:
+                                    button_combos = binding_info["buttons"]
+                                    button_bindings: list[str] = []
+                                    for button_name in button_combos:
+                                        for y in pad.inputs:
+                                            button_input = pad.inputs[y]
+                                            # workaround values here too
+                                            if button_input.type == "button":
+                                                button_input.value = "0"
+                                            if button_input.name == "l2":
+                                                button_input.id = "130"
+                                            if button_input.name == "r2":
+                                                button_input.id = "133"
+                                            if button_input.name == button_name:
+                                                button_bindings.extend([button_input.id, button_input.value])
+                                    if len(button_bindings) == len(button_combos) * 2:
+                                        if "keyboard" in binding_info:
+                                            bindings = generate_func(pad.guid, binding_info["keyboard"], *button_bindings)
                                         else:
-                                            if "keyboard" in binding_info:
-                                                bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
-                                            else:
-                                                bindings = generate_func(pad.guid, input.id, input.value)
-                                    break
+                                            bindings = generate_func(pad.guid, *button_bindings)
+                                # Handle single button bindings
+                                elif "button" in binding_info:
+                                    if input.name.startswith("joystick1") or input.name.startswith("joystick2"):
+                                        # For joysticks, generate two bindings with positive and then negative values
+                                        if "keyboard" in binding_info:
+                                            bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
+                                            bindings.extend(generate_func(pad.guid, binding_info["keyboard"], input.id, -float(input.value)))
+                                        else:
+                                            bindings = generate_func(pad.guid, input.id, input.value)
+                                            bindings.extend(generate_func(pad.guid, input.id, -float(input.value)))
+                                    else:
+                                        if "keyboard" in binding_info:
+                                            bindings = generate_func(pad.guid, binding_info["keyboard"], input.id, input.value)
+                                        else:
+                                            bindings = generate_func(pad.guid, input.id, input.value)
+                                break
 
-                            if bindings is None:
-                                # no inputs match the button or buttons, generate a blank or keyboard-only binding
-                                # to fill the spot in the bindings sequence
-                                if "keyboard" in binding_info:
-                                    bindings = generate_keyb_bindings(binding_info["keyboard"])
-                                else:
-                                    bindings = generate_blank_bindings()
+                        if bindings is None:
+                            # no inputs match the button or buttons, generate a blank or keyboard-only binding
+                            # to fill the spot in the bindings sequence
+                            if "keyboard" in binding_info:
+                                bindings = generate_keyb_bindings(binding_info["keyboard"])
+                            else:
+                                bindings = generate_blank_bindings()
 
-                                if "button" in binding_info and binding_info["button"].startswith(("joystick1", "joystick2")):
-                                    # For joysticks, generate two bindings
-                                    bindings.extend(generate_blank_bindings())
+                            if "button" in binding_info and binding_info["button"].startswith(("joystick1", "joystick2")):
+                                # For joysticks, generate two bindings
+                                bindings.extend(generate_blank_bindings())
 
+
+                        config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
+                    else:
+                        if generate_func == generate_keyb_bindings:
+                            bindings = generate_func(binding_info["keyboard"])
                             config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
                         else:
-                            if generate_func == generate_keyb_bindings:
-                                bindings = generate_func(binding_info["keyboard"])
-                                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
-                            else:
-                                bindings = generate_func()
-                                config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
-
-            # Onto the next controller as necessary
-            nplayer += 1
+                            bindings = generate_func()
+                            config["BigPEmuConfig"]["Input"][f"Device{nplayer}"]["Bindings"].extend(bindings)
 
         # Scripts config
         config["BigPEmuConfig"]["ScriptsEnabled"] = []

@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
 
-from evdev import InputDevice
+import evdev
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
@@ -112,7 +112,7 @@ class PlayGenerator(Generator):
         }
 
         # Functions to convert the GUID
-        def get_device_id(dev: InputDevice) -> str:
+        def get_device_id(dev: evdev.InputDevice) -> str:
             uniq = dev.uniq  # Unique string (e.g., MAC) for the device
 
             if uniq and re.match(r"^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$", uniq):
@@ -173,52 +173,46 @@ class PlayGenerator(Generator):
         input_config = ET.Element("Config")
 
         # Iterate over connected controllers with a limit of 2 players
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            controller = playersControllers[playercontroller]
-            dev = InputDevice(pad.device_path)
+        for nplayer, controller in enumerate(playersControllers[:2], start=1):
+            dev = evdev.InputDevice(controller.device_path)
             pad_guid = get_device_id(dev)
             provider_id = 1702257782
 
-            if nplayer <= 2:
-                # Write this per pad
-                ET.SubElement(
-                    input_config,
-                    "Preference",
-                    Name=f"input.pad{nplayer}.analog.sensitivity",
-                    Type="float",
-                    Value=str(1.000000)
-                )
+            # Write this per pad
+            ET.SubElement(
+                input_config,
+                "Preference",
+                Name=f"input.pad{nplayer}.analog.sensitivity",
+                Type="float",
+                Value=str(1.000000)
+            )
 
-                # Handle joystick inputs
-                for index in controller.inputs:
-                    input = controller.inputs[index]
-                    if input.name not in playMapping:
-                        continue
+            # Handle joystick inputs
+            for input in controller.inputs.values():
+                if input.name not in playMapping:
+                    continue
 
-                    if input.type == 'axis':
-                        key_type = 1
-                        binding_type = 1
-                        key_id = input.id
-                        hat_value = -1
+                if input.type == 'axis':
+                    key_type = 1
+                    binding_type = 1
+                    key_id = input.id
+                    hat_value = -1
+                    create_input_preferences(input_config, pad_guid, key_id, key_type, provider_id, nplayer, input.name, binding_type, hat_value)
+
+                elif input.type == 'hat':
+                    key_type = 2
+                    binding_type = 3
+                    key_id = 17 if input.name in ['up', 'down'] else 16
+                    hat_value = 4 if input.name in ['up', 'left'] else 0
+                    if input.name in ['up', 'down', 'left', 'right']:
                         create_input_preferences(input_config, pad_guid, key_id, key_type, provider_id, nplayer, input.name, binding_type, hat_value)
 
-                    elif input.type == 'hat':
-                        key_type = 2
-                        binding_type = 3
-                        key_id = 17 if input.name in ['up', 'down'] else 16
-                        hat_value = 4 if input.name in ['up', 'left'] else 0
-                        if input.name in ['up', 'down', 'left', 'right']:
-                            create_input_preferences(input_config, pad_guid, key_id, key_type, provider_id, nplayer, input.name, binding_type, hat_value)
-
-                    elif input.type == 'button':
-                        key_type = 0
-                        binding_type = input.value
-                        key_id = input.code
-                        hat_value = -1
-                        create_input_preferences(input_config, pad_guid, cast(str, key_id), key_type, provider_id, nplayer, input.name, binding_type, hat_value)
-
-                nplayer += 1
+                elif input.type == 'button':
+                    key_type = 0
+                    binding_type = input.value
+                    key_id = input.code
+                    hat_value = -1
+                    create_input_preferences(input_config, pad_guid, cast(str, key_id), key_type, provider_id, nplayer, input.name, binding_type, hat_value)
 
         # Save the controller settings to the specified input file
         input_tree = ET.ElementTree(input_config)

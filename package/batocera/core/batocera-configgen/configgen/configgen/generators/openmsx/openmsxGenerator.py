@@ -108,39 +108,36 @@ class OpenmsxGenerator(Generator):
             # setup the controller
             file.write("\n")
             file.write("# -= Controller config =-\n")
-            nplayer = 1
-            for playercontroller, pad in sorted(playersControllers.items()):
-                if nplayer <= 2:
-                    if nplayer == 1:
-                        file.write("plug joyporta joystick1\n")
-                        file.write('dict set joystick1_config LEFT {-axis0 L_hat0}\n')
-                        file.write('dict set joystick1_config RIGHT {+axis0 R_hat0}\n')
-                        file.write('dict set joystick1_config UP {-axis1 U_hat0}\n')
-                        file.write('dict set joystick1_config DOWN {+axis1 D_hat0}\n')
-                    if nplayer == 2:
-                        file.write("plug joyportb joystick2\n")
-                        file.write('dict set joystick2_config LEFT {-axis0 L_hat0}\n')
-                        file.write('dict set joystick2_config RIGHT {+axis0 R_hat0}\n')
-                        file.write('dict set joystick2_config UP {-axis1 U_hat0}\n')
-                        file.write('dict set joystick2_config DOWN {+axis1 D_hat0}\n')
-                    for x in pad.inputs:
-                        input = pad.inputs[x]
-                        if input.name == "y":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x40"\n')
-                        if input.name == "x":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x80"\n')
-                        if input.name == "pagedown":
-                            file.write(f'bind "joy{nplayer} button{input.id} up" "set fastforward off"\n')
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "set fastforward on"\n')
-                        if input.name == "select":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle pause"\n')
-                        if input.name == "start":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "main_menu_toggle"\n')
-                        if input.name == "l3":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle_osd_keyboard"\n')
-                        if input.name == "r3":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
-                nplayer += 1
+            for nplayer, pad in enumerate(playersControllers[:2], start=1):
+                if nplayer == 1:
+                    file.write("plug joyporta joystick1\n")
+                    file.write('dict set joystick1_config LEFT {-axis0 L_hat0}\n')
+                    file.write('dict set joystick1_config RIGHT {+axis0 R_hat0}\n')
+                    file.write('dict set joystick1_config UP {-axis1 U_hat0}\n')
+                    file.write('dict set joystick1_config DOWN {+axis1 D_hat0}\n')
+                if nplayer == 2:
+                    file.write("plug joyportb joystick2\n")
+                    file.write('dict set joystick2_config LEFT {-axis0 L_hat0}\n')
+                    file.write('dict set joystick2_config RIGHT {+axis0 R_hat0}\n')
+                    file.write('dict set joystick2_config UP {-axis1 U_hat0}\n')
+                    file.write('dict set joystick2_config DOWN {+axis1 D_hat0}\n')
+                for x in pad.inputs:
+                    input = pad.inputs[x]
+                    if input.name == "y":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x40"\n')
+                    if input.name == "x":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x80"\n')
+                    if input.name == "pagedown":
+                        file.write(f'bind "joy{nplayer} button{input.id} up" "set fastforward off"\n')
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "set fastforward on"\n')
+                    if input.name == "select":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle pause"\n')
+                    if input.name == "start":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "main_menu_toggle"\n')
+                    if input.name == "l3":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle_osd_keyboard"\n')
+                    if input.name == "r3":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
 
         # now run the rom with the appropriate flags
         file_extension = rom_path.suffix.lower()

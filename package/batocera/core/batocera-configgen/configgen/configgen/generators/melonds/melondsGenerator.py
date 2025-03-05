@@ -6,6 +6,7 @@ import toml
 
 from ... import Command
 from ...batoceraPaths import BIOS, CHEATS, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
+from ...controller import Controller
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -192,10 +193,8 @@ class MelonDSGenerator(Generator):
         }
 
         val = -1
-        for controller, pad in sorted(playersControllers.items()):
-            # Only use Player 1 controls
-            if pad.player_number != 1:
-                continue
+        # Only use Player 1 controls
+        if pad := Controller.find_player_number(playersControllers, 1):
             for index in pad.inputs:
                 input = pad.inputs[index]
                 if input.name not in melonDSMapping:

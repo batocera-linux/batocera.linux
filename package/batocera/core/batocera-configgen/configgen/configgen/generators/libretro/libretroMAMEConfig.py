@@ -16,7 +16,7 @@ from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECO
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...gun import Guns
 
@@ -50,7 +50,7 @@ retroPad = {
     "start":            "START"
 }
 
-def generateMAMEConfigs(playersControllers: ControllerMapping, system: Emulator, rom: Path, guns: Guns) -> None:
+def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: Path, guns: Guns) -> None:
     # Generate command line for MAME/MESS/MAMEVirtual
     commandLine: list[str | Path] = []
     romDrivername = rom.stem
@@ -553,7 +553,7 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
 
 def generateMAMEPadConfig(
     cfgPath: Path,
-    playersControllers: ControllerMapping,
+    playersControllers: Controllers,
     system: Emulator,
     messSysName: str,
     rom: Path,
@@ -717,9 +717,8 @@ def generateMAMEPadConfig(
         return
 
     # Fill in controls on cfg files
-    nplayer = 1
     maxplayers = len(playersControllers)
-    for playercontroller, pad in sorted(playersControllers.items()):
+    for nplayer, pad in enumerate(playersControllers, start=1):
         mappings_use = mappings
         if "joystick1up" not in pad.inputs:
             mappings_use["JOYSTICK_UP"] = "up"
@@ -764,7 +763,6 @@ def generateMAMEPadConfig(
                         xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
                             retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
-        nplayer = nplayer + 1
 
         # save the config file
         #mameXml = open(configFile, "w")
