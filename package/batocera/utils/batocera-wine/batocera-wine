@@ -301,14 +301,17 @@ save_install() {
     WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                  #Savegamedir itself, content is copied/linked
 
     if [[ -z "${WINE_SAVEFILES}" ]]; then
-        #Copy existing savedir content and link whole wine_savedir directory
-        [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]] && cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" && rm -rf "${WINE_SAVEDIR}"
+        #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
+        if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
+            cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}"
+            rm -rf "${WINE_SAVEDIR}"
+        fi
         [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
         popd >/dev/null
 
     elif [[ -n "${WINE_SAVEFILES}" ]]; then
         mkdir "${WINE_SAVEDIR}"
-        pushd "${WINE_SAVEDIR}" #You are working inside the game saves dir
+        pushd "${WINE_SAVEDIR}" >/dev/null                        #You are working inside the game saves dir
         #split the files list to array with ; delimiter
         IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
         for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
@@ -748,17 +751,16 @@ createAutorunCmd() {
     #Using RexEx extensions from user created files, ~/../roms/windows_installers is prefered over ~/../saves/windows_installers
     i="/userdata/roms/windows_installers/autorun-regex.txt"
     ii="/userdata/saves/windows_installers/autorun-regex.txt"
-    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && { dos2unix -k -q "$i"; readarray -t AUTORUN_FILTER < <(grep -v [#] "$i"); }
+    [[ -e "$i" ]] || { [[ -e "$ii" ]] && i="$ii"; } && { dos2unix -k -q "$i"; readarray -t AUTORUN_FILTER < <(grep  -v -E "^[[:space:]*]|[#]|^[[:space:]]*$" "$i"); }
     # Pre-setted filter to exclude some standard files from created WINEPREFIX
     AUTORUN_FILTER+=("^.*/Windows Media Player/.*$" "^.*/Windows NT/.*$" "^.*/Internet Explorer/.*$" "^.*/drive_c/windows/.*$"
-                     "^.*/[Uu]nins[[:alnum:]]{0,6}\.exe$" "^.*/[Ii]nstall(..)?\.exe$" "^.*/[Ss]etup\.exe$")
+                     "^.*/[Uu]nins[[:alnum:]]{0,6}\.exe$" "^.*/[Ii]nstall(..)?\.exe$" "^.*/[Ss]etup\.exe$" "^.*/[Uu]nwise(..)?\.exe$")
 
     #We search in WINEPOINT dir for exes and I assume it's somewhere installed in Program Files, or Program Files(x86)
     pushd "$WINEPOINT" > /dev/null
     readarray -t AUTORUN_FOUNDEXE < <(find ${AUTORUN_FILEMASK} -type f -iname "*.exe" -printf "%p\n" | sort -n)
 
     for i in "${AUTORUN_FILTER[@]}"; do
-        [[ "${#i}" -lt 3 || "$i" =~ [[:space:]]{2} ]] && continue #No empty/invalid values allowed!
         for ii in "${!AUTORUN_FOUNDEXE[@]}"; do
             [[ "${AUTORUN_FOUNDEXE[$ii]}"  =~ $i ]] && unset AUTORUN_FOUNDEXE[$ii]
         done
