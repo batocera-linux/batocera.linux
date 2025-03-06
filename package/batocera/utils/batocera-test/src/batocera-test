@@ -8,6 +8,7 @@ import yaml
 import sys
 import argparse
 from datetime import datetime
+import random
 
 # input:
 # no input required, one game by system will be tested. you can choose a list if you create a file /userdata/system/gamesToTest.yml, example:
@@ -31,8 +32,8 @@ class BatoceraTest():
 
     @staticmethod
     def run(args):
-        timeGame = 10
-        screenshot = False
+        timeGame = 15
+        screenshot = True
         outputDir = "/userdata/reportTest/"
         configFile = "/userdata/system/gamesToTest.yml"
 
@@ -46,6 +47,16 @@ class BatoceraTest():
 
         emulators = BatoceraTest.findEmulators()
 
+        # take randomly some emulators
+        l = list(emulators.keys())
+        random.shuffle(l)
+        l = l[:2]
+        emulators_tmp = {}
+        for e in l:
+            emulators_tmp[e] = emulators[e]
+        emulators = emulators_tmp
+        ###
+
         if os.path.exists(configFile):
             games = BatoceraTest.findGamesForEmulatorsFromFile(emulators, configFile)
         else:
@@ -54,6 +65,7 @@ class BatoceraTest():
         resultName = "batocera-test_" + datetime.now().strftime('%y-%m-%d_%Hh%M.%S')
         resultDir = outputDir + resultName
         try:
+            print(f"creating directory {resultDir}")
             os.makedirs(resultDir)
         except:
             raise Exception(f"unable to create the directory {resultDir}")
@@ -84,34 +96,60 @@ class BatoceraTest():
 
     @staticmethod
     def runTest(system, game, resultDir, timeGame, screenshot):
+        isSuccess = False
         print("System: {}".format(system))
         print("Game: {}".format(os.path.basename(game)))
 
         # start the game
         # curl http://localhost:1234/launch -d "/userdata/roms/gamecube/Super Mario Sunshine.iso"
+        print(f"launching game '{game}'")
         x = requests.post("http://localhost:1234/launch", data = game)
         if not x.ok:
             raise Exception("fail call es")
+        print(f"waiting {timeGame}s in game")
         time.sleep(timeGame)
 
         try:
+            print(f"checking that the game is still running")
+            x = requests.get("http://localhost:1234/runningGame")
+            if not x.ok:
+                raise Exception("fail call es")
+            
+            xj = x.json()
+            if "systemName" in xj:
+                stillRunning = (xj["systemName"] == system)
+            else:
+                stillRunning = False
+        except Exception as e:
+            print(e)
+            stillRunning = False
+
+        if stillRunning:
+            print(f"taking a screenshot")
+            if (screenshot):
+                BatoceraTest.screenshot(resultDir, system)
+                isSuccess = True # yep, we manage to take a screenshot of the game
+                time.sleep(2) # delay to take a screenshot
+
+        # stop the game
+        print(f"exiting the game")
+        code = os.system("hotkeygen --send exit")
+
+        while stillRunning:
+            print(f"waiting 10 seconds")
+            time.sleep(10) # delay to quit
             x = requests.get("http://localhost:1234/runningGame")
             if not x.ok:
                 raise Exception("fail call es")
             xj = x.json()
-            stillRunning = (xj["systemName"] == system)
-        except:
-            stillRunning = False
+            if "systemName" in xj:
+                stillRunning = (xj["systemName"] == system)
+            else:
+                stillRunning = False
+        
+        print(f"end of test")
 
-        if stillRunning:
-            if (screenshot):
-                BatoceraTest.screenshot(resultDir, system)
-                time.sleep(2)
-
-        # stop the game
-        code = os.system("batocera-es-swissknife --emukill")
-
-        return stillRunning
+        return isSuccess
 
     @staticmethod
     def findEmulators():
@@ -173,7 +211,7 @@ class BatoceraTest():
         name = os.path.splitext(name)[0]
         pathScreenshot = "batocera-screenshot {}/{}.png".format(resultDir, name)
         os.system(pathScreenshot)
-        print("Screenshot")
+        print(f"Screenshot ({pathScreenshot})")
 
     @staticmethod
     def parseCommandLine(args):
@@ -181,7 +219,7 @@ class BatoceraTest():
         parser = argparse.ArgumentParser(description='Testing Batocera emulation systems.')
 
         parser.add_argument('-t', '--time', nargs=1, type=int,
-                            help='Time in seconds that the game runs. (default=10)')
+                            help='Time in seconds that the game runs. (default=15)')
 
         parser.add_argument('-s', '--screenshot', dest='screenshot', action='store_true',
                             help='Screenshot of the game running. (default=false)')
