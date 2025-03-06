@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from copy import deepcopy
+from typing import TYPE_CHECKING, TypedDict, cast
 from xml.dom import minidom
 
-from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
+import toml
+
+from .mupenPaths import (
+    MUPEN_SYSTEM_MAPPING,
+    MUPEN_USER_MAPPING,
+    MUPEN_USER_MAPPING_XML,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...input import Input, InputMapping
@@ -36,25 +41,55 @@ valid_n64_controller_names = [
     "8BitDo N64 Modkit",
 ]
 
-def getMupenMapping(use_n64_inputs: bool) -> dict[str, str]:
-    # load system values and override by user values in case some user values are missing
-    map: dict[str, str] = {}
-    for file in [MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING]:
-        if file.exists():
-            dom = minidom.parse(str(file))
-            list_name = 'n64InputList' if use_n64_inputs else 'defaultInputList'
-            for inputs in dom.getElementsByTagName(list_name):
-                for input in inputs.childNodes:
-                    if input.attributes and input.attributes['name'] and input.attributes['value']:
-                        map[input.attributes['name'].value] = input.attributes['value'].value
-    return map
+
+class _MupenInputConfig(TypedDict):
+    retropad: dict[str, str]
+    n64: dict[str, str]
+
+
+def _convert_mupen_user_config_xml_to_toml() -> None:
+    if MUPEN_USER_MAPPING_XML.exists() and not MUPEN_USER_MAPPING.exists():
+        # Convert old inpux.xml to input.toml
+        user_config: dict[str, dict[str, str]] = {}
+
+        dom = minidom.parse(str(MUPEN_USER_MAPPING_XML))
+        for tag_name in ['defaultInputList', 'n64InputList']:
+            for tag in dom.getElementsByTagName(tag_name):
+                section = user_config.setdefault('retropad' if tag_name == 'defaultInputList' else 'n64', {})
+                for input in tag.childNodes:
+                    if input.attributes and (name_attr := input.attributes['name']) and (value_attr := input.attributes['value']):
+                        section[name_attr.value] = value_attr.value
+
+        MUPEN_USER_MAPPING.write_text(toml.dumps(user_config))
+        try:
+            MUPEN_USER_MAPPING_XML.unlink()
+        except Exception:
+            pass  # don't fail
+
+
+def _load_mupen_input_configs() -> _MupenInputConfig:
+    input_config = cast(_MupenInputConfig, toml.loads(MUPEN_SYSTEM_MAPPING.read_text()))
+
+    if MUPEN_USER_MAPPING.exists():
+        user_config = toml.loads(MUPEN_USER_MAPPING.read_text())
+
+        if 'retropad' in user_config:
+            input_config['retropad'].update(user_config['retropad'])
+        if 'n64' in user_config:
+            input_config['n64'].update(user_config['n64'])
+
+    return input_config
+
 
 def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controllers, system: Emulator, wheels: DeviceInfoMapping) -> None:
+    _convert_mupen_user_config_xml_to_toml()
+    mupen_input_configs = _load_mupen_input_configs()
+
     for pad in controllers:
         isWheel = False
         if pad.device_path in wheels and wheels[pad.device_path]["isWheel"]:
             isWheel = True
-        config = defineControllerKeys(pad.player_number, pad, system, isWheel)
+        config = defineControllerKeys(pad.player_number, pad, system, isWheel, mupen_input_configs)
         fillIniPlayer(pad.player_number, iniConfig, pad, config)
 
     # remove section with no player
@@ -90,62 +125,64 @@ def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) 
 
     return f"{deadzone},{deadzone}"
 
-def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool) -> dict[str, str]:
+def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool, input_config: _MupenInputConfig) -> dict[str, str]:
         # check for auto-config inputs by guid and name, or es settings
-        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (system.config.get(f"mupen64-controller{nplayer}", "retropad") != "retropad"):
-            mupenmapping = getMupenMapping(True)
-        else:
-            mupenmapping = getMupenMapping(False)
+        input_config_key = (
+            "retropad"
+            if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names)
+            else system.config.get(f"mupen64-controller{nplayer}", "retropad")
+        )
+        input_mapping = deepcopy(input_config[input_config_key])
 
         # config holds the final pad configuration in the mupen style
         # ex: config['DPad U'] = "button(1)"
         config: dict[str, str] = {}
 
         # determine joystick deadzone and peak
-        config['AnalogPeak'] = getJoystickPeak(mupenmapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
+        config['AnalogPeak'] = getJoystickPeak(input_mapping['AnalogPeak'], f"mupen64-sensitivity{nplayer}", system)
 
         # Analog Deadzone
         if isWheel:
             config['AnalogDeadzone'] = "0,0"
         else:
-            config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
+            config['AnalogDeadzone'] = getJoystickDeadzone(input_mapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
 
         # z is important, in case l2 is not available for this pad, use l1
         # assume that l2 is for "Z Trig" in the mapping
         if 'l2' not in controller.inputs:
-            mupenmapping['pageup'] = mupenmapping['l2']
+            input_mapping['pageup'] = input_mapping['l2']
 
         # if joystick1up is not available, use up/left while these keys are more used
         if 'joystick1up' not in controller.inputs:
-            mupenmapping['up']    = mupenmapping['joystick1up']
-            mupenmapping['down']  = mupenmapping['joystick1down']
-            mupenmapping['left']  = mupenmapping['joystick1left']
-            mupenmapping['right'] = mupenmapping['joystick1right']
+            input_mapping['up']    = input_mapping['joystick1up']
+            input_mapping['down']  = input_mapping['joystick1down']
+            input_mapping['left']  = input_mapping['joystick1left']
+            input_mapping['right'] = input_mapping['joystick1right']
 
-        # the input.xml adds 2 directions per joystick, ES handles just 1
+        # the input.toml adds 2 directions per joystick, ES handles just 1
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
         # Cheat on the controller
         for realStick, fakeStick in fakeSticks.items():
-                if realStick in controller.inputs and controller.inputs[realStick].type == "axis":
-                    print(f"{fakeStick} -> {realStick}")
-                    controller.inputs[fakeStick] = controller.inputs[realStick].replace(
-                        name=fakeStick,
-                        value=str(-int(controller.inputs[realStick].value))
-                    )
+            if realStick in controller.inputs and controller.inputs[realStick].type == "axis":
+                print(f"{fakeStick} -> {realStick}")
+                controller.inputs[fakeStick] = controller.inputs[realStick].replace(
+                    name=fakeStick,
+                    value=str(-int(controller.inputs[realStick].value))
+                )
 
         for inputIdx in controller.inputs:
-                input = controller.inputs[inputIdx]
-                if input.name in mupenmapping and mupenmapping[input.name] != "":
-                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name], controller.inputs)
-                        # Handle multiple inputs for a single N64 Pad input
-                        if value != "":
-                            if mupenmapping[input.name] not in config :
-                                config[mupenmapping[input.name]] = value
-                            else:
-                                config[mupenmapping[input.name]] += f" {value}"
+            input = controller.inputs[inputIdx]
+            if mupen_setting_name := input_mapping.get(input.name):
+                value = setControllerLine(input, mupen_setting_name, controller.inputs)
+                # Handle multiple inputs for a single N64 Pad input
+                if value:
+                    if mupen_setting_name not in config :
+                        config[mupen_setting_name] = value
+                    else:
+                        config[mupen_setting_name] += f" {value}"
         return config
 
-def setControllerLine(mupenmapping: Mapping[str, str], input: Input, mupenSettingName: str, allinputs: InputMapping) -> str:
+def setControllerLine(input: Input, mupenSettingName: str, allinputs: InputMapping) -> str:
         value = ''
         inputType = input.type
         if inputType == 'button':

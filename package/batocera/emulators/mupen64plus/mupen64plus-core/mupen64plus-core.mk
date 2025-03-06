@@ -106,9 +106,9 @@ define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
 	cp $(@D)/data/mupen64plus.ini $(TARGET_DIR)/usr/share/mupen64plus/mupen64plus.ini
 	cp $(@D)/data/mupencheat.txt "$(TARGET_DIR)/usr/share/mupen64plus/mupencheat.txt"
 
-	# input.xml
+	# input.toml
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/mupen64
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mupen64plus/mupen64plus-core/controllers/input.xml \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mupen64plus/mupen64plus-core/controllers/input.toml \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/mupen64
 endef
 
