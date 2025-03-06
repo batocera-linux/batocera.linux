@@ -60,7 +60,7 @@
 - ETLegacy to v2.83.2
 - Jazz2 to 3.2.0
 - GroovyMAME to 0.274
-- Gzdoom to g4.14.0
+- Gzdoom to g4.14.1
 - Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.274
 - Libretro-Play! 4th Feb build
