@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, TypedDict
 from PIL import Image, ImageOps
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
+from ..exceptions import BatoceraException
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
@@ -230,7 +231,7 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
     # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
     # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
     if not 'transparency' in imgin.info:
-        raise Exception("no transparent pixels in the image, abort")
+        raise BatoceraException("No transparent pixels in the bezel image")
     alpha = imgin.split()[-1]  # alpha from original palette + alpha
     ix,iy = fast_image_size(input_png)
     sx,sy = screensize

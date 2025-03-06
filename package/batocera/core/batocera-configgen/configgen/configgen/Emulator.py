@@ -11,6 +11,7 @@ import yaml
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
 from .config import Config, SystemConfig
+from .exceptions import MissingEmulator
 from .settings.unixSettings import UnixSettings
 
 if TYPE_CHECKING:
@@ -102,7 +103,7 @@ class Emulator:
 
         if not system_data['emulator']:
             _logger.error('no emulator defined. exiting.')
-            raise Exception('No emulator found')
+            raise MissingEmulator
 
         # sanitize rule by EmulationStation
         # see FileData::getConfigurationName() on batocera-emulationstation

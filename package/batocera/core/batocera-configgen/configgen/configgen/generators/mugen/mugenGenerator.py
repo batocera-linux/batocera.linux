@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...exceptions import BatoceraException
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -56,7 +56,7 @@ class MugenGenerator(Generator):
         mkdir_if_not_exists(settings_path.parent)
 
         if not settings_path.exists():
-            raise FileNotFoundError(f"Configuration file not found: {settings_path}")
+            raise BatoceraException(f"Configuration file not found: {settings_path}")
 
         # Define the settings we want to update
         sections_to_update = {
@@ -162,7 +162,7 @@ class MugenGenerator(Generator):
         # Save the configuration
         with settings_path.open("w", encoding="utf-8-sig") as f:
             f.writelines(new_config)
-        
+
         # Don't use of virtual desktop - fixes handhelds with rotated displays
         subprocess.run(['/usr/bin/batocera-settings-set', 'mugen.virtual_desktop', '0'], check=True)
 
@@ -181,7 +181,7 @@ class MugenGenerator(Generator):
             })
 
         commandArray = ["batocera-wine", "mugen", "play", str(rom_path)]
-        
+
         return Command.Command(
             array=commandArray,
             env=environment

@@ -24,6 +24,7 @@ from ...batoceraPaths import (
     USER_DECORATIONS,
     mkdir_if_not_exists,
 )
+from ...exceptions import BatoceraException
 from ...utils import bezels as bezelsUtil, videoMode
 from ..Generator import Generator
 from . import mameControllers
@@ -761,7 +762,7 @@ class MameGenerator(Generator):
         exitcode = proc.returncode
 
         if exitcode != 0:
-            raise Exception(f"mame -listxml {machine} failed")
+            raise BatoceraException(f"mame -listxml {machine} failed")
 
         infofile = tmpdir / "infos.xml"
         f = infofile.open("w")
@@ -777,7 +778,7 @@ class MameGenerator(Generator):
             irotate = element.getAttribute("rotate")
             return int(iwidth), int(iheight), int(irotate)
 
-        raise Exception("display element not found")
+        raise BatoceraException("Display element not found")
 
 def getMameControlScheme(system: Emulator, rom_path: Path) -> str:
     # Game list files

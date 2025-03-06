@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...exceptions import InvalidConfiguration
 from ...utils.buildargs import parse_args
 from ..Generator import Generator
 
@@ -167,7 +168,7 @@ class RazeGenerator(Generator):
         launch_args: list[str | Path] = ["raze"]
         result = parse_args(launch_args, Path(rom))
         if not result.okay:
-            raise Exception(result.message)
+            raise InvalidConfiguration(result.message)
 
         launch_args += [
             "-exec", self.script_file,

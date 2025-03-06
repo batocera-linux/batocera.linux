@@ -19,6 +19,7 @@ from ...batoceraPaths import (
     USER_SHADERS,
     mkdir_if_not_exists,
 )
+from ...exceptions import BatoceraException, MissingCore
 from ...settings.unixSettings import UnixSettings
 from ...utils import videoMode as videoMode
 from ..Generator import Generator
@@ -138,7 +139,7 @@ class LibretroGenerator(Generator):
         # to do a global check : cd /usr/lib/libretro && for i in *.so; do INF=$(echo $i | sed -e s+/usr/lib/libretro+/usr/share/libretro/info+ -e s+\.so+.info+); test -e "$INF" || echo $i; done
         infoFile = RETROARCH_SHARE / "info" / f"{system.config['core']}_libretro.info"
         if not infoFile.exists():
-            raise Exception(f"missing file {infoFile}")
+            raise MissingCore
 
         # The command to run
         dontAppendROM = False
@@ -304,9 +305,9 @@ class LibretroGenerator(Generator):
                 for assetdir in assetdirs:
                     os.chdir(romdir / assetdir)
                 os.chdir(romdir)
-            except FileNotFoundError:
+            except FileNotFoundError as e:
                 _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
-                raise
+                raise BatoceraException("Game assets not installed. You can get them from the Batocera Content Downloader.") from e
 
             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
         else:

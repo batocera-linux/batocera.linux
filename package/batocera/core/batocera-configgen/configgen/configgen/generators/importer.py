@@ -3,6 +3,8 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING, Final
 
+from ..exceptions import BatoceraException
+
 if TYPE_CHECKING:
     from .Generator import Generator
 
@@ -70,10 +72,10 @@ def get_generator(emulator: str) -> Generator:
         generator_cls: type[Generator] = getattr(module, cls_name)
     except ImportError as e:
         if e.name is not None and e.name.startswith(__name__.split('.')[0]):
-            raise Exception(f'no generator found for emulator {emulator}') from e
-        else:
-            raise
+            raise BatoceraException(f'No generator found for emulator {emulator}') from e
+
+        raise BatoceraException(f'Error importing generator for emulator {emulator}') from e
     except AttributeError as e:
-        raise Exception(f'no generator found for emulator {emulator}') from e
+        raise BatoceraException(f'No generator found for emulator {emulator}') from e
 
     return generator_cls()

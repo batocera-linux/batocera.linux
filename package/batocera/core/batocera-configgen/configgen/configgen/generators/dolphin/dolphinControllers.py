@@ -5,6 +5,7 @@ import logging
 import re
 from typing import TYPE_CHECKING
 
+from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
 from .dolphinPaths import DOLPHIN_CONFIG
 
@@ -52,7 +53,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
                     used_wheels = wheels
         generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
     else:
-        raise ValueError(f"Invalid system name : '{system.name}'")
+        raise BatoceraException(f"Invalid system name: '{system.name}'")
 
 # https://docs.libretro.com/library/dolphin/
 
