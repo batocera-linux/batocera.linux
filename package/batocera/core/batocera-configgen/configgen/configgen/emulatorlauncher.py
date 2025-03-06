@@ -3,25 +3,15 @@
 
 from __future__ import annotations
 
-import os
+from . import profiler
 
-_profiler = None
-
-# 1) touch /var/run/emulatorlauncher.perf
-# 2) start a game
-# 3) gprof2dot.py -f pstats -n 5 /var/run/emulatorlauncher.prof -o emulatorlauncher.dot # wget https://raw.githubusercontent.com/jrfonseca/gprof2dot/master/gprof2dot.py
-# 4) dot -Tpng emulatorlauncher.dot -o emulatorlauncher.png
-# 3) or upload the file /var/run/emulatorlauncher.prof on https://nejc.saje.info/pstats-viewer.html
-
-if os.path.exists("/var/run/emulatorlauncher.perf"):  # noqa: PTH110
-    import cProfile
-    _profiler = cProfile.Profile()
-    _profiler.enable()
+profiler.start()
 
 ### import always needed ###
 import argparse
 import json
 import logging
+import os
 import signal
 import subprocess
 import time
@@ -174,11 +164,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
                         if not generator.hasInternalMangoHUDCall():
                             cmd.array.insert(0, "mangohud")
 
-                if _profiler:
-                    _profiler.disable()
-                exitCode = runCommand(cmd)
-                if _profiler:
-                    _profiler.enable()
+                with profiler.pause():
+                    exitCode = runCommand(cmd)
 
             # run a script after emulator shuts down
             callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
@@ -512,9 +499,7 @@ def launch() -> None:
         except Exception as e:
             _logger.exception("configgen exception: ")
 
-        if _profiler:
-            _profiler.disable()
-            _profiler.dump_stats('/var/run/emulatorlauncher.prof')
+        profiler.stop()
 
         time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
         _logger.debug("Exiting configgen with status %s", exitcode)
