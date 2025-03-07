@@ -724,6 +724,14 @@ config BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_WINE	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_WINE_X86		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
+#### GameScope ####
+config BR2_PACKAGE_GAMESCOPE
+	bool "Gamescope - microcompositor for games"
+	depends on BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+	
+	# GameScope
+	select BR2_PACKAGE_GAMESCOPE           if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+
 #### Flash Player ####
 config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 	bool "batocera.linux Flash support"
@@ -1942,10 +1950,6 @@ config BR2_PACKAGE_BATOCERA_XWAYLAND
 	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT	# theme for file manager
 	select BR2_PACKAGE_XTERM			# terminal
 	select BR2_PACKAGE_XLIB_LIBXFT			# font size for xterm
-
-config BR2_PACKAGE_GAMESCOPE
-	bool "Gamescope - microcompositor for games"
-	depends on BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
