@@ -11252,6 +11252,216 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        gamescope:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE ENABLE
+            description: Enable GameScope compositor for enhanced game display. Default Off
+            choices:
+                "Off": 0
+                "On": 1
+            default: 0
+        gamescope_nested_resolution:
+            submenu: GAMESCOPE
+            prompt: GAME NESTED RESOLUTION
+            description: Select the game (nested) resolution for GameScope. Default 1920x1080
+            choices:
+                "640x480": "640x480"
+                "800x600": "800x600"
+                "1024x768": "1024x768"
+                "1280x720": "1280x720"
+                "1920x1080": "1920x1080"
+                "2048x1080": "2048x1080"
+                "2560x1440": "2560x1440"
+                "3840x2160": "3840x2160"
+                "4096x2160": "4096x2160"
+            default: "1920x1080"
+        gamescope_output_resolution:
+            submenu: GAMESCOPE
+            prompt: OUTPUT RESOLUTION
+            description: Select the output resolution for GameScope. Default 1920x1080
+            choices:
+                "640x480": "640x480"
+                "800x600": "800x600"
+                "1024x768": "1024x768"
+                "1280x720": "1280x720"
+                "1920x1080": "1920x1080"
+                "2048x1080": "2048x1080"
+                "2560x1444": "2560x1444"
+                "3840x2160": "3840x2160"
+                "4096x2160": "4096x2160"
+            default: "1920x1080"
+        gamescope_nested_refresh:
+            submenu: GAMESCOPE
+            prompt: GAME REFRESH RATE
+            description: Set the refresh rate (fps) for the game when using GameScope. Default 60Hz
+            choices:
+                "60Hz": 60
+                "75Hz": 75
+                "120Hz": 120
+                "138Hz": 138
+                "144Hz": 144
+                "150Hz": 150
+                "165Hz": 165
+                "170Hz": 170
+                "175Hz": 175
+                "180Hz": 180
+                "200Hz": 200
+                "240Hz": 240
+                "270Hz": 270
+                "275Hz": 275
+                "280Hz": 280
+                "360Hz": 360
+                "390Hz": 390
+                "480Hz": 480
+                "540Hz": 540
+            default: 60
+        gamescope_framerate_limit:
+            submenu: GAMESCOPE
+            prompt: FRAMERATE LIMIT
+            description: Set a simple framerate limit. Used as a divisor of the refresh rate, rounds down (e.g., 60 / 59 -> 60fps, 60 / 25 -> 30fps). Default: 0, disabled.
+            choices:
+                "1": 1
+                "2": 2
+                "3": 3
+                "4": 4
+                "6": 6
+                "10": 10
+                "15": 15
+                "30": 30
+                "60": 60
+            default: off
+        gamescope_scaler:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE SCALER
+            description: Choose the upscaler type for GameScope. Default stretch
+            choices:
+                "integer": integer
+                "fit": fit
+                "fill": fill
+                "stretch": stretch
+            default: stretch
+        gamescope_filter:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE FILTER
+            description: Choose the upscaler filter for GameScope. Default linear
+            choices:
+                "linear": linear
+                "nearest": nearest
+                "fsr": fsr
+                "nis": nis
+                "pixel": pixel
+            default: linear
+        gamescope_sharpness:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE SHARPNESS
+            description: Set the upscaler sharpness (0 for maximum sharpness, 20 for minimum). "Auto" disables the sharpness option.
+            choices:
+                "0": 0
+                "5": 5
+                "10": 10
+                "15": 15
+                "20": 20
+            default: 0
+        gamescope_borderless:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE BORDERLESS
+            description: Enable borderless window mode in GameScope. Default Off
+            choices:
+                "Off": 0
+                "On": 1
+            default: 0
+        gamescope_fullscreen:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE FULLSCREEN
+            description: Enable fullscreen mode in GameScope, Default Off. (If both fullscreen and borderless are enabled, fullscreen takes precedence.)
+            choices:
+                "Off": 0
+                "On": 1
+            default: 0
+        gamescope_reshade_effect:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE RESHADE EFFECT
+            description: Specify a ReShade shader effect to use with GameScope.
+            default: ""
+        gamescope_hdr:
+            submenu: GAMESCOPE
+            prompt: GAMESCOPE HDR
+            description: Enable HDR mode in GameScope if supported.
+            choices:
+                "Off": 0
+                "On": 1
+            default: 0
+        gamescope_sdr_gamut_wideness:
+            submenu: GAMESCOPE
+            prompt: SDR GAMUT WIDENESS
+            description: Set the 'wideness' of the gamut for SDR content.
+            choices:
+                "Off": off
+                "0": 0
+                "0.25": 0.25
+                "0.5": 0.5
+                "0.75": 0.75
+                "1": 1
+            default: off
+        gamescope_hdr_sdr_content_nits:
+            submenu: GAMESCOPE
+            prompt: HDR SDR CONTENT NITS
+            description: Set the luminance of SDR content in nits. Default: 400 nits.
+            choices:
+                "Off": off
+                "100": 100
+                "200": 200
+                "300": 300
+                "400": 400
+                "500": 500
+                "600": 600
+                "700": 700
+                "800": 800
+                "900": 900
+                "1000": 1000
+            default: off
+        gamescope_hdr_itm_enabled:
+            submenu: GAMESCOPE
+            prompt: HDR ITM ENABLED
+            description: Enable SDR→HDR inverse tone mapping.
+            choices:
+                "Off": 0
+                "On": 1
+            default: 0
+        gamescope_hdr_itm_sdr_nits:
+            submenu: GAMESCOPE
+            prompt: HDR ITM SDR NITS
+            description: Set the luminance (in nits) of SDR content used as input for inverse tone mapping. Default: 100 nits, Max: 1000 nits.
+            choices:
+                "Off": off
+                "100": 100
+                "200": 200
+                "300": 300
+                "400": 400
+                "500": 500
+                "600": 600
+                "700": 700
+                "800": 800
+                "900": 900
+                "1000": 1000
+            default: off
+        gamescope_hdr_itm_target_nits:
+            submenu: GAMESCOPE
+            prompt: HDR ITM TARGET NITS
+            description: Set the target luminance (in nits) of the inverse tone mapping process. Default: 1000 nits, Max: 10000 nits.
+            choices:
+                "Off": off
+                "1000": 1000
+                "2000": 2000
+                "3000": 3000
+                "4000": 4000
+                "5000": 5000
+                "6000": 6000
+                "7000": 7000
+                "8000": 8000
+                "9000": 9000
+                "10000": 10000
+            default: off
 
 solarus:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
