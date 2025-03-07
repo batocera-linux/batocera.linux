@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BTOP_VERSION = v1.3.2
+BTOP_VERSION = v1.4.0
 BTOP_SITE = $(call github,aristocratos,btop,$(BTOP_VERSION))
 BTOP_LICENSE = Apache-2.0
 BTOP_EXTRA_ARGS = 
