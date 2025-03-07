@@ -1,0 +1,57 @@
+diff --git a/sway/commands/seat/hide_cursor.c b/sway/commands/seat/hide_cursor.c
+index e09b82d..cd0ef97 100644
+--- a/sway/commands/seat/hide_cursor.c
++++ b/sway/commands/seat/hide_cursor.c
+@@ -27,7 +27,7 @@ struct cmd_results *seat_cmd_hide_cursor(int argc, char **argv) {
+ 		if (*end) {
+ 			return cmd_results_new(CMD_INVALID, "Expected an integer timeout");
+ 		}
+-		if (timeout < 100 && timeout != 0) {
++		if (timeout < 100 && timeout != 0 && timeout != 1 /* special value to hide completly */) {
+ 			timeout = 100;
+ 		}
+ 		seat_config->hide_cursor_timeout = timeout;
+diff --git a/sway/input/cursor.c b/sway/input/cursor.c
+index 36aab93..7f6b36a 100644
+--- a/sway/input/cursor.c
++++ b/sway/input/cursor.c
+@@ -265,11 +265,6 @@ static int hide_notify(void *data) {
+ }
+ 
+ int cursor_get_timeout(struct sway_cursor *cursor) {
+-	if (cursor->pressed_button_count > 0) {
+-		// Do not hide cursor unless all buttons are released
+-		return 0;
+-	}
+-
+ 	struct seat_config *sc = seat_get_config(cursor->seat);
+ 	if (!sc) {
+ 		sc = seat_get_config_by_name("*");
+@@ -278,6 +273,12 @@ int cursor_get_timeout(struct sway_cursor *cursor) {
+ 	if (timeout < 0) {
+ 		timeout = 0;
+ 	}
++
++	if (cursor->pressed_button_count > 0 && timeout != 1) {
++		// Do not hide cursor unless all buttons are released
++		return 0;
++	}
++
+ 	return timeout;
+ }
+ 
+@@ -329,11 +330,12 @@ static enum sway_input_idle_source idle_source_from_device(
+ 
+ void cursor_handle_activity_from_idle_source(struct sway_cursor *cursor,
+ 		enum sway_input_idle_source idle_source) {
++	int x = cursor_get_timeout(cursor);
+ 	wl_event_source_timer_update(
+-			cursor->hide_source, cursor_get_timeout(cursor));
++			cursor->hide_source, x);
+ 
+ 	seat_idle_notify_activity(cursor->seat, idle_source);
+-	if (idle_source != IDLE_SOURCE_TOUCH) {
++	if (idle_source != IDLE_SOURCE_TOUCH && x != 1) { /* special value to never unhide */
+ 		cursor_unhide(cursor);
+ 	}
+ }
