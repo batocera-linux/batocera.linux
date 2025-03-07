@@ -55,10 +55,12 @@ then
 
     nohup evsieve                                              \
             --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit \
-            --map abs:y:0              btn:5                   \
-            --map abs:y:4095           btn:6                   \
-            --map abs:x:0              btn:7                   \
-            --map abs:x:4095           btn:8                   \
+            --map abs:y:0              btn:5:1                 \
+            --map abs:y:2048           btn:5:0 btn:6:0         \
+            --map abs:y:4095           btn:6:1                 \
+            --map abs:x:0              btn:7:1                 \
+            --map abs:x:2048           btn:7:0 btn:8:0         \
+            --map abs:x:4095           btn:8:1                 \
             --output name="OneHit light gun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
