@@ -200,21 +200,30 @@ PACKAGES_EMULATORS="amiberry
 
 PACKAGES_PORTS="abuse
                 abuse-data
+                bloodmod
                 cannonball
                 catacombgl
                 cdogs
+                cdoom
                 cgenius
                 corsixth
+                d3le
+                dentonmod
+                desolated
                 devilutionx
                 dhewm3
                 dxx-rebirth
                 ecwolf
                 eduke32
+                eldoom
                 etlegacy
                 fallout1-ce
                 fallout2-ce
                 fheroes2
+                fitz
+                grimm
                 gzdoom
+                hardcorps
                 hcl
                 hurrican
                 ioquake3
@@ -222,8 +231,12 @@ PACKAGES_PORTS="abuse
                 jazz2-native
                 lindbergh-loader
                 openjazz
+                perfected
                 raze
+                realgibs
+                rivensin
                 sdlpop
+                sikkmod
                 sonic3-air
                 sonic2013
                 soniccd
@@ -292,7 +305,13 @@ PACKAGES_CONTROLLERS="aelightgun
                       xpadneo
                       xpad-noone"
 
-PACKAGES_UTILS="moonlight-embedded"
+PACKAGES_UTILS="btop
+                mangohud
+                moonlight-embedded
+                ryzenadj
+                switchres
+                syncthing
+                winetricks"
 
 PACKAGES_ALLGROUPS="RETROARCH LIBRETRO MUPEN OPENBOR EMULATORS PORTS WINE CONTROLLERS UTILS"
 ### ############# ###
