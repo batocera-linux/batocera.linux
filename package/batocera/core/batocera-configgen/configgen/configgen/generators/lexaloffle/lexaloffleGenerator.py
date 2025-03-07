@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Final
 from ... import Command
 from ...batoceraPaths import BIOS, HOME, ROMS, SCREENSHOTS, ensure_parents_and_open
 from ...controller import generate_sdl_game_controller_config
+from ...exceptions import BatoceraException
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -41,13 +42,13 @@ class LexaloffleGenerator(Generator):
             CONTROLLERS=VOX_CONTROLLERS
             ROOT_PATH=VOX_ROOT_PATH
         else:
-            raise Exception(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
+            raise BatoceraException(f"The Lexaloffle generator has been called for an unknwon system: {system.name}.")
 
         if not BIN_PATH.exists():
-            raise Exception(f"Lexaloffle official binary not found at {BIN_PATH}")
+            raise BatoceraException(f"Lexaloffle official binary not found at {BIN_PATH}")
 
         if not os.access(BIN_PATH, os.X_OK):
-            raise Exception(f"File {BIN_PATH} is not set as executable")
+            raise BatoceraException(f"{BIN_PATH} is not set as executable")
 
         # the command to run
         commandArray: list[str | Path] = [BIN_PATH]

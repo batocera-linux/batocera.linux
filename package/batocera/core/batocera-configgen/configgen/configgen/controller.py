@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, HOME, USER_ES_DIR
+from .exceptions import BatoceraException
 from .input import Input, InputDict, InputMapping
 
 if TYPE_CHECKING:
@@ -65,7 +66,7 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
     elif input.type == 'key':
         return None
     else:
-        raise ValueError(f'unknown key type: {input.type!r}')
+        raise BatoceraException(f'Unknown controller input type: {input.type!r}')
 
 
 def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> ET.Element:
@@ -86,7 +87,7 @@ def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> 
         if element is not None:
             return element
 
-    raise Exception(f'Could not find controller data for "{name}" with GUID "{guid}"')
+    raise BatoceraException(f'Could not find controller data for "{name}" with GUID "{guid}"')
 
 
 class _RelaxedDict(TypedDict):

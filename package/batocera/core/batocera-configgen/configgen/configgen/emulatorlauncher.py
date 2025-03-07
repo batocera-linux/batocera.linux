@@ -23,6 +23,7 @@ from . import controllersConfig as controllers
 from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
+from .exceptions import BaseBatoceraException, BatoceraException, UnexpectedEmulatorExit
 from .generators import get_generator
 from .gun import Gun
 from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
@@ -444,8 +445,10 @@ def runCommand(command: Command) -> int:
         # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
         # Examine es-core/src/platform.cpp::runSystemCommand for additional context
         pass
-    except:
+    except Exception as e:
         _logger.error("emulator exited")
+
+        raise UnexpectedEmulatorExit from e
 
     return exitcode
 
@@ -493,9 +496,15 @@ def launch() -> None:
         parser.add_argument("-spinner",        help="configure spinner",           action="store_true")
 
         args = parser.parse_args()
+        exitcode = -1
         try:
-            exitcode = -1
             exitcode = main(args, maxnbplayers)
+        except BaseBatoceraException as e:
+            _logger.exception("configgen exception: ")
+            exitcode = e.exit_code
+
+            if isinstance(e, BatoceraException):
+                Path('/tmp/launch_error.log').write_text(e.args[0])
         except Exception as e:
             _logger.exception("configgen exception: ")
 

@@ -16,6 +16,7 @@ from evdev import ecodes
 from ... import Command
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...controller import Controller, Controllers, generate_sdl_game_controller_config
+from ...exceptions import BatoceraException, InvalidConfiguration
 from ...utils import bezels as bezelsUtil, hotkeygen
 from ...utils.download import download
 from ..Generator import Generator
@@ -206,7 +207,7 @@ class LindberghGenerator(Generator):
 
     def setConf(self, conf: dict[str, Any], key: str, value: Any, /) -> None:
         if key not in self.CONF_KEYS:
-            raise Exception(f"unknown conf key {key}")
+            raise InvalidConfiguration(f"unknown conf key {key}")
 
         # new line
         if key not in conf["keys"]:
@@ -219,7 +220,7 @@ class LindberghGenerator(Generator):
 
     def commentConf(self, conf: dict[str, Any], key: str, /) -> None:
         if key not in self.CONF_KEYS:
-            raise Exception(f"unknown conf key {key}")
+            raise InvalidConfiguration(f"unknown conf key {key}")
 
         if key in conf["keys"]:
             conf["keys"][key]["modified"]  = True
@@ -420,7 +421,7 @@ class LindberghGenerator(Generator):
                 x = {}
                 for input_name in lindberghCtrl:
                     if lindberghCtrl[input_name] in x:
-                        raise Exception(f"duplicate configuration key for {input_name} with value {lindberghCtrl[input_name]}")
+                        raise InvalidConfiguration(f"duplicate configuration key for {input_name} with value {lindberghCtrl[input_name]}")
                     x[lindberghCtrl[input_name]] = True
 
                 ### configure each input
@@ -491,7 +492,7 @@ class LindberghGenerator(Generator):
                                     input_value += ":MAX"
                                 self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         else:
-                            raise Exception("invalid input type")
+                            raise BatoceraException(f"invalid input type: {pad.inputs[input_base_name].type}")
                 nplayer += 1
 
     def getMappingForJoystickOrWheel(

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import DEFAULTS_DIR
+from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
     from ..config import SystemConfig
@@ -34,7 +35,7 @@ def changeMode(videomode: str) -> None:
             except subprocess.CalledProcessError as e:
                 _logger.error("Error setting video mode: %s", e.stderr)
                 if i == max_tries - 1:
-                    raise
+                    raise BatoceraException("Error setting video mode") from e
                 time.sleep(1)
 
 def getCurrentMode() -> str:

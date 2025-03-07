@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -136,7 +137,7 @@ class DuckstationGenerator(Generator):
         found_bios = find_bios(bios_lists)
 
         if not found_bios:
-            raise Exception("No PSX1 BIOS found")
+            raise BatoceraException("No PSX1 BIOS found")
 
         # Set BIOS paths
         if "Uni" in found_bios:
@@ -589,8 +590,8 @@ def find_bios(bios_lists: Mapping[str, Sequence[str]]):
 
     try:
         files_lower = {f.name.lower(): f.name for f in BIOS.iterdir()}
-    except OSError:
-        raise Exception(f"Unable to read BIOS directory: {BIOS}")
+    except OSError as e:
+        raise BatoceraException(f"Unable to read BIOS directory: {BIOS}") from e
 
     for region, bios_list in bios_lists.items():
         for bios in bios_list:
