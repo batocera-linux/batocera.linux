@@ -14,7 +14,7 @@ class BaseBatoceraException(Exception):
 class BatoceraException(BaseBatoceraException):
     @property
     def exit_code(self) -> int:
-        if isinstance(self.args[0], str):
+        if self.args and isinstance(self.args[0], str):
             return 250
 
         return self.EXIT_CODE
