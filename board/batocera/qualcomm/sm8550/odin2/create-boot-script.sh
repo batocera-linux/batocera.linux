@@ -16,11 +16,12 @@ BATOCERA_BINARIES_DIR=$6
 
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
 
+gzip -fk "${BINARIES_DIR}/Image" || exit 1
 cp "${BINARIES_DIR}/Image.gz"               "${BATOCERA_BINARIES_DIR}/boot/boot/Image.gz"           || exit 1
 cp "${BINARIES_DIR}/initrd.lz4"             "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"         || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs"        "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"    || exit 1
 
-cp "${BINARIES_DIR}/qcs8550-ayn-odin2-hypdtbo.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/"         || exit 1
+cp "${BINARIES_DIR}/qcs8550-ayn-odin2.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/"         || exit 1
 cp -f "${BOARD_DIR}/LinuxLoader.cfg"        "${BATOCERA_BINARIES_DIR}/boot/LinuxLoader.cfg"         || exit 1
 
 exit 0
