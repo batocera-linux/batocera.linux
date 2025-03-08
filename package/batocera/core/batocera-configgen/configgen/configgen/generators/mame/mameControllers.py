@@ -18,10 +18,11 @@ if TYPE_CHECKING:
     from ...gun import Guns
     from ...input import Input
     from ...types import DeviceInfoMapping
+    from .mameTypes import MameControlScheme
 
 _logger = logging.getLogger(__name__)
 
-def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: str, altButtons: str | int, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: Guns, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
+def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: str, altButtons: MameControlScheme, customCfg: bool, specialController: str, decorations: str | None, useGuns: bool, guns: Guns, useWheels: bool, wheels: DeviceInfoMapping, useMouse: bool, multiMouse: bool, system: Emulator) -> None:
     # config file
     config = minidom.Document()
     configFile = cfgPath / "default.cfg"
@@ -325,7 +326,7 @@ def reverseMapping(key: str) -> str | None:
         return "joystick2left"
     return None
 
-def generatePortElement(pad: Controller, config: minidom.Document, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, altButtons: str | int, gunmappings: Mapping[str, str], isWheel: bool, mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None):
+def generatePortElement(pad: Controller, config: minidom.Document, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, altButtons: MameControlScheme, gunmappings: Mapping[str, str], isWheel: bool, mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None):
     # Generic input
     xml_port = config.createElement("port")
     xml_port.setAttribute("type", f"P{nplayer}_{mapping}")
@@ -377,7 +378,7 @@ def generateSpecialPortElementPlayer(pad: Controller, config: minidom.Document, 
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    keyval = input2definition(pad, key, input, padindex + 1, reversed, 0)
+    keyval = input2definition(pad, key, input, padindex + 1, reversed, None)
     if mapping == "COIN" and nplayer <= 4:
         keyval = keyval + f" OR KEYCODE_{nplayer}_{nplayer + 4}" # 5 for player 1, 6 for player 2, 7 for player 3 and 8 for player 4
     if mapping in gunmappings:
@@ -403,7 +404,7 @@ def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: s
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(input2definition(pad, key, input, padindex + 1, reversed, 0))
+    value = config.createTextNode(input2definition(pad, key, input, padindex + 1, reversed, None))
     xml_newseq.appendChild(value)
     return xml_port
 
@@ -417,7 +418,7 @@ def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
-    value = config.createTextNode(f"KEYCODE_{kbkey} OR {input2definition(pad, key, input, padindex + 1, reversed, 0)}")
+    value = config.createTextNode(f"KEYCODE_{kbkey} OR {input2definition(pad, key, input, padindex + 1, reversed, None)}")
     xml_newseq.appendChild(value)
     return xml_port
 
@@ -432,12 +433,12 @@ def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: st
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
-    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, 0, True))
+    incvalue = config.createTextNode(input2definition(pad, inckey, mappedinput, padindex + 1, reversed, None, True))
     xml_newseq_inc.appendChild(incvalue)
     xml_newseq_dec = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_dec)
     xml_newseq_dec.setAttribute("type", "decrement")
-    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, 0, True))
+    decvalue = config.createTextNode(input2definition(pad, deckey, mappedinput2, padindex + 1, reversed, None, True))
     xml_newseq_dec.appendChild(decvalue)
     xml_newseq_std = config.createElement("newseq")
     xml_port.appendChild(xml_newseq_std)
@@ -449,7 +450,7 @@ def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: st
     xml_newseq_std.appendChild(stdvalue)
     return xml_port
 
-def input2definition(pad: Controller, key: str, input: Input, joycode: int, reversed: bool, altButtons: str | int, ignoreAxis: bool = False, isWheel: bool = False):
+def input2definition(pad: Controller, key: str, input: Input, joycode: int, reversed: bool, altButtons: MameControlScheme | None, ignoreAxis: bool = False, isWheel: bool = False):
 
     mameAxisMappingNames = {0: "XAXIS", 1: "YAXIS", 2: "ZAXIS", 3: "RXAXIS", 4: "RYAXIS", 5: "RZAXIS"}
 
