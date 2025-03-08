@@ -206,7 +206,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolutio
         with overlay_info_file.open("w") as fd:
             fd.write(f'{{ "width":{w}, "height":{h}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000 }}')
     else:
-        _logger.debug("hud enabled. trying to apply the bezel %s", system.config['bezel'])
+        _logger.debug("hud enabled. trying to apply the bezel %s", bezel)
 
         bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config.emulator)
         if bz_infos is None:
@@ -369,10 +369,9 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
     if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
-    if system.config.get('hud', 'none') == 'none':
+    if (mode := system.config.get('hud', 'none')) == 'none':
         return configstr + "background_alpha=0\n" # hide the background
 
-    mode = system.config["hud"]
     hud_position = "bottom-left"
     if (hud_corner := system.config.get('hud_corner', '')) != '':
         if hud_corner == "NW":

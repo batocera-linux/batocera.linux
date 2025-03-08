@@ -49,7 +49,7 @@ class AzaharGenerator(Generator):
 
     # Show mouse on screen
     def getMouseMode(self, config, rom):
-        return not ("azahar_screen_layout" in config and config["azahar_screen_layout"] == "1-false")
+        return config.get("azahar_screen_layout") != '1-false'
 
     @staticmethod
     def writeAZAHARConfig(
@@ -91,22 +91,15 @@ class AzaharGenerator(Generator):
             azaharConfig.add_section("Layout")
         # Screen Layout
         azaharConfig.set("Layout", "custom_layout", "false")
-        if system.isOptSet('azahar_screen_layout'):
-            tab = system.config["azahar_screen_layout"].split('-')
-            azaharConfig.set("Layout", "swap_screen",   tab[1])
-            azaharConfig.set("Layout", "layout_option", tab[0])
-        else:
-            azaharConfig.set("Layout", "swap_screen", "false")
-            azaharConfig.set("Layout", "layout_option", "0")
+        layout_option, swap_screen = system.config.get("azahar_screen_layout", "0-false").split('-')
+        azaharConfig.set("Layout", "swap_screen",   swap_screen)
+        azaharConfig.set("Layout", "layout_option", layout_option)
 
         ## [SYSTEM]
         if not azaharConfig.has_section("System"):
             azaharConfig.add_section("System")
         # New 3DS Version
-        if system.isOptSet('azahar_is_new_3ds') and system.config["azahar_is_new_3ds"] == '1':
-            azaharConfig.set("System", "is_new_3ds", "true")
-        else:
-            azaharConfig.set("System", "is_new_3ds", "false")
+        azaharConfig.set("System", "is_new_3ds", system.config.get_bool("azahar_is_new_3ds", return_values=("true", "false")))
         # Language
         azaharConfig.set("System", "region_value", str(getAzaharLangFromEnvironment()))
 
@@ -142,12 +135,9 @@ class AzaharGenerator(Generator):
         azaharConfig.set("Renderer", "use_hw_shader",   "true")
         azaharConfig.set("Renderer", "use_shader_jit",  "true")
         # Software, OpenGL (default) or Vulkan
-        if system.isOptSet('azahar_graphics_api'):
-            azaharConfig.set("Renderer", "graphics_api", system.config["azahar_graphics_api"])
-        else:
-            azaharConfig.set("Renderer", "graphics_api", "1")
+        azaharConfig.set("Renderer", "graphics_api", system.config.get("azahar_graphics_api", "1"))
         # Set Vulkan as necessary
-        if system.isOptSet("azahar_graphics_api") and system.config["azahar_graphics_api"] == "2" and vulkan.is_available():
+        if system.config.get("azahar_graphics_api") == "2" and vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
             if vulkan.has_discrete_gpu():
                 _logger.debug("A discrete GPU is available on the system. We will use that for performance")
@@ -160,25 +150,13 @@ class AzaharGenerator(Generator):
             else:
                 _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
-        if system.isOptSet('azahar_use_vsync_new') and system.config["azahar_use_vsync_new"] == '0':
-            azaharConfig.set("Renderer", "use_vsync_new", "false")
-        else:
-            azaharConfig.set("Renderer", "use_vsync_new", "true")
+        azaharConfig.set("Renderer", "use_vsync_new", system.config.get_bool("azahar_use_vsync_new", True, return_values=("true", "false")))
         # Resolution Factor
-        if system.isOptSet('azahar_resolution_factor'):
-            azaharConfig.set("Renderer", "resolution_factor", system.config["azahar_resolution_factor"])
-        else:
-            azaharConfig.set("Renderer", "resolution_factor", "1")
+        azaharConfig.set("Renderer", "resolution_factor", system.config.get("azahar_resolution_factor", "1"))
         # Async Shader Compilation
-        if system.isOptSet('azahar_async_shader_compilation') and system.config["azahar_async_shader_compilation"] == '1':
-            azaharConfig.set("Renderer", "async_shader_compilation", "true")
-        else:
-            azaharConfig.set("Renderer", "async_shader_compilation", "false")
+        azaharConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("azahar_async_shader_compilation", return_values=("true", "false")))
         # Use Frame Limit
-        if system.isOptSet('azahar_use_frame_limit') and system.config["azahar_use_frame_limit"] == '0':
-            azaharConfig.set("Renderer", "use_frame_limit", "false")
-        else:
-            azaharConfig.set("Renderer", "use_frame_limit", "true")
+        azaharConfig.set("Renderer", "use_frame_limit", system.config.get_bool("azahar_use_frame_limit", True, return_values=("true", "false")))
 
         ## [WEB SERVICE]
         if not azaharConfig.has_section("WebService"):
@@ -189,23 +167,21 @@ class AzaharGenerator(Generator):
         if not azaharConfig.has_section("Utility"):
             azaharConfig.add_section("Utility")
         # Disk Shader Cache
-        if system.isOptSet('azahar_use_disk_shader_cache') and system.config["azahar_use_disk_shader_cache"] == '1':
-            azaharConfig.set("Utility", "use_disk_shader_cache", "true")
-        else:
-            azaharConfig.set("Utility", "use_disk_shader_cache", "false")
+        azaharConfig.set("Utility", "use_disk_shader_cache", system.config.get_bool("azahar_use_disk_shader_cache", return_values=("true", "false")))
         # Custom Textures
-        if system.isOptSet('azahar_custom_textures') and system.config["azahar_custom_textures"] != '0':
-            tab = system.config["azahar_custom_textures"].split('-')
-            azaharConfig.set("Utility", "custom_textures",  "true")
-            if tab[1] == 'normal':
-                azaharConfig.set("Utility", "async_custom_loading", "true")
+        match system.config.get('azahar_custom_textures'):
+            case '0' | system.config.MISSING:
+                azaharConfig.set("Utility", "custom_textures",  "false")
                 azaharConfig.set("Utility", "preload_textures", "false")
-            else:
-                azaharConfig.set("Utility", "async_custom_loading", "false")
-                azaharConfig.set("Utility", "preload_textures", "true")
-        else:
-            azaharConfig.set("Utility", "custom_textures",  "false")
-            azaharConfig.set("Utility", "preload_textures", "false")
+            case _ as textures:
+                tab = textures.split('-')
+                azaharConfig.set("Utility", "custom_textures",  "true")
+                if tab[1] == 'normal':
+                    azaharConfig.set("Utility", "async_custom_loading", "true")
+                    azaharConfig.set("Utility", "preload_textures", "false")
+                else:
+                    azaharConfig.set("Utility", "async_custom_loading", "false")
+                    azaharConfig.set("Utility", "preload_textures", "true")
 
         ## [CONTROLS]
         if not azaharConfig.has_section("Controls"):

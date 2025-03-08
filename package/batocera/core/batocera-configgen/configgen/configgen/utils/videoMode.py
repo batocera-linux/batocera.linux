@@ -68,8 +68,8 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     # output2
     vo2 = None
     # find the configured one
-    if "videooutput2" in config and config["videooutput2"] in outputs and config["videooutput2"] != vo1:
-        vo2 = config["videooutput2"]
+    if (vo2_config := config.get("videooutput2")) and vo2_config in outputs and vo2_config != vo1:
+        vo2 = vo2_config
     # find the first one
     for x in outputs:
         if x != vo1 and vo2 is None:
@@ -84,8 +84,8 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     # output3
     vo3 = None
     # find the configured one
-    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput3"] != vo2:
-        vo3 = config["videooutput3"]
+    if (vo3_config := config.get("videooutput3")) and vo3_config in outputs and vo3_config != vo1 and vo3_config != vo2:
+        vo3 = vo3_config
     # find the first one
     for x in outputs:
         if x != vo1 and x != vo2 and vo3 is None:

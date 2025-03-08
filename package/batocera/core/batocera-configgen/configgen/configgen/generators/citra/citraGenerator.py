@@ -92,22 +92,15 @@ class CitraGenerator(Generator):
             citraConfig.add_section("Layout")
         # Screen Layout
         citraConfig.set("Layout", "custom_layout", "false")
-        if system.isOptSet('citra_screen_layout'):
-            tab = system.config["citra_screen_layout"].split('-')
-            citraConfig.set("Layout", "swap_screen",   tab[1])
-            citraConfig.set("Layout", "layout_option", tab[0])
-        else:
-            citraConfig.set("Layout", "swap_screen", "false")
-            citraConfig.set("Layout", "layout_option", "0")
+        layout_option, swap_screen = system.config.get("citra_screen_layout", "0-false").split('-')
+        citraConfig.set("Layout", "swap_screen",   swap_screen)
+        citraConfig.set("Layout", "layout_option", layout_option)
 
         ## [SYSTEM]
         if not citraConfig.has_section("System"):
             citraConfig.add_section("System")
         # New 3DS Version
-        if system.isOptSet('citra_is_new_3ds') and system.config["citra_is_new_3ds"] == '1':
-            citraConfig.set("System", "is_new_3ds", "true")
-        else:
-            citraConfig.set("System", "is_new_3ds", "false")
+        citraConfig.set("System", "is_new_3ds", system.config.get_bool("citra_is_new_3ds", return_values=("true", "false")))
         # Language
         citraConfig.set("System", "region_value", str(getCitraLangFromEnvironment()))
 
@@ -143,10 +136,7 @@ class CitraGenerator(Generator):
         citraConfig.set("Renderer", "use_hw_shader",   "true")
         citraConfig.set("Renderer", "use_shader_jit",  "true")
         # Software, OpenGL (default) or Vulkan
-        if system.isOptSet('citra_graphics_api'):
-            citraConfig.set("Renderer", "graphics_api", system.config["citra_graphics_api"])
-        else:
-            citraConfig.set("Renderer", "graphics_api", "1")
+        citraConfig.set("Renderer", "graphics_api", system.config.get("citra_graphics_api", "1"))
         # Set Vulkan as necessary
         if system.config.get("citra_graphics_api") == "2" and vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
@@ -161,25 +151,13 @@ class CitraGenerator(Generator):
             else:
                 _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
-        if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
-            citraConfig.set("Renderer", "use_vsync_new", "false")
-        else:
-            citraConfig.set("Renderer", "use_vsync_new", "true")
+        citraConfig.set("Renderer", "use_vsync_new", system.config.get_bool("citra_use_vsync_new", True, return_values=("true", "false")))
         # Resolution Factor
-        if system.isOptSet('citra_resolution_factor'):
-            citraConfig.set("Renderer", "resolution_factor", system.config["citra_resolution_factor"])
-        else:
-            citraConfig.set("Renderer", "resolution_factor", "1")
+        citraConfig.set("Renderer", "resolution_factor", system.config.get("citra_resolution_factor", "1"))
         # Async Shader Compilation
-        if system.isOptSet('citra_async_shader_compilation') and system.config["citra_async_shader_compilation"] == '1':
-            citraConfig.set("Renderer", "async_shader_compilation", "true")
-        else:
-            citraConfig.set("Renderer", "async_shader_compilation", "false")
+        citraConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("citra_async_shader_compilation", return_values=("true", "false")))
         # Use Frame Limit
-        if system.isOptSet('citra_use_frame_limit') and system.config["citra_use_frame_limit"] == '0':
-            citraConfig.set("Renderer", "use_frame_limit", "false")
-        else:
-            citraConfig.set("Renderer", "use_frame_limit", "true")
+        citraConfig.set("Renderer", "use_frame_limit", system.config.get_bool("citra_use_frame_limit", True, return_values=("true", "false")))
 
         ## [WEB SERVICE]
         if not citraConfig.has_section("WebService"):
@@ -190,23 +168,21 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Utility"):
             citraConfig.add_section("Utility")
         # Disk Shader Cache
-        if system.isOptSet('citra_use_disk_shader_cache') and system.config["citra_use_disk_shader_cache"] == '1':
-            citraConfig.set("Utility", "use_disk_shader_cache", "true")
-        else:
-            citraConfig.set("Utility", "use_disk_shader_cache", "false")
+        citraConfig.set("Utility", "use_disk_shader_cache", system.config.get_bool("citra_use_disk_shader_cache", return_values=("true", "false")))
         # Custom Textures
-        if system.isOptSet('citra_custom_textures') and system.config["citra_custom_textures"] != '0':
-            tab = system.config["citra_custom_textures"].split('-')
-            citraConfig.set("Utility", "custom_textures",  "true")
-            if tab[1] == 'normal':
-                citraConfig.set("Utility", "async_custom_loading", "true")
+        match system.config.get('citra_custom_textures'):
+            case '0' | system.config.MISSING:
+                citraConfig.set("Utility", "custom_textures",  "false")
                 citraConfig.set("Utility", "preload_textures", "false")
-            else:
-                citraConfig.set("Utility", "async_custom_loading", "false")
-                citraConfig.set("Utility", "preload_textures", "true")
-        else:
-            citraConfig.set("Utility", "custom_textures",  "false")
-            citraConfig.set("Utility", "preload_textures", "false")
+            case _ as textures:
+                tab = textures.split('-')
+                citraConfig.set("Utility", "custom_textures",  "true")
+                if tab[1] == 'normal':
+                    citraConfig.set("Utility", "async_custom_loading", "true")
+                    citraConfig.set("Utility", "preload_textures", "false")
+                else:
+                    citraConfig.set("Utility", "async_custom_loading", "false")
+                    citraConfig.set("Utility", "preload_textures", "true")
 
         ## [CONTROLS]
         if not citraConfig.has_section("Controls"):

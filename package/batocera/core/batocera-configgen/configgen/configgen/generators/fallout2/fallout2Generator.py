@@ -76,30 +76,11 @@ class Fallout2Generator(Generator):
         #fout2Cfg.set("system", "master_dat", "MASTER.DAT")
         #fout2Cfg.set("system", "master_patches", "DATA")
 
-        if system.isOptSet("fout2_game_difficulty"):
-            fout2Cfg.set("preferences", "game_difficulty", system.config["fout2_game_difficulty"])
-        else:
-            fout2Cfg.set("preferences", "game_difficulty", "1")
-
-        if system.isOptSet("fout2_combat_difficulty"):
-            fout2Cfg.set("preferences", "combat_difficulty", system.config["fout2_combat_difficulty"])
-        else:
-            fout2Cfg.set("preferences", "combat_difficulty", "1")
-
-        if system.isOptSet("fout2_violence_level"):
-            fout2Cfg.set("preferences", "violence_level", system.config["fout2_violence_level"])
-        else:
-            fout2Cfg.set("preferences", "violence_level", "2")
-
-        if system.isOptSet("fout2_subtitles"):
-            fout2Cfg.set("preferences", "subtitles", system.config["fout2_subtitles"])
-        else:
-            fout2Cfg.set("preferences", "subtitles", "0")
-
-        if system.isOptSet("fout2_language"):
-            fout2Cfg.set("system", "language", system.config["fout2_language"])
-        else:
-            fout2Cfg.set("system", "language", "english")
+        fout2Cfg.set("preferences", "game_difficulty", system.config.get("fout2_game_difficulty", "1"))
+        fout2Cfg.set("preferences", "combat_difficulty", system.config.get("fout2_combat_difficulty", "1"))
+        fout2Cfg.set("preferences", "violence_level", system.config.get("fout2_violence_level", "2"))
+        fout2Cfg.set("preferences", "subtitles", system.config.get("fout2_subtitles", "0"))
+        fout2Cfg.set("system", "language", system.config.get("fout2_language", "english"))
 
         with fout2ConfigFile.open("w") as configfile:
             fout2Cfg.write(configfile)

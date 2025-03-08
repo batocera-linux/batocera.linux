@@ -103,78 +103,48 @@ class MelonDSGenerator(Generator):
         ## User selected options
 
         # Override Renderer if system option is set
-        if system.isOptSet("melonds_renderer"):
-            base_config["3D"]["Renderer"] = int(system.config["melonds_renderer"])
+        if "melonds_renderer" in system.config:
+            base_config["3D"]["Renderer"] = system.config.get_int("melonds_renderer")
 
-        if system.isOptSet("melonds_vsync"):
-            base_config["Screen"]["VSync"] = system.config["melonds_vsync"]
+        if vsync := system.config.get("melonds_vsync"):
+            base_config["Screen"]["VSync"] = vsync
             base_config["Screen"]["VSyncInterval"] = 1
 
         # Cheater! Enable cheats if the option is set
-        if system.isOptSet("melonds_cheats"):
-            base_config["Instance0"]["EnableCheats"] = system.config["melonds_cheats"]
-        else:
-            base_config["Instance0"]["EnableCheats"] = False
+        base_config["Instance0"]["EnableCheats"] = system.config.get("melonds_cheats", False)
 
         # Framerate
-        if system.isOptSet("melonds_framerate"):
-            base_config["LimitFPS"] = system.config["melonds_framerate"]
-        else:
-            base_config["LimitFPS"] = True
+        base_config["LimitFPS"] = system.config.get("melonds_framerate", True)
 
         # Resolution
-        if system.isOptSet("melonds_resolution"):
-            base_config["3D"]["GL"]["ScaleFactor"] = int(system.config["melonds_resolution"])
-            if system.config["melonds_resolution"] == "2":
-                base_config["3D"]["GL"]["HiresCoordinates"] = True
-            else:
-                base_config["3D"]["GL"]["HiresCoordinates"] = False
+        if (resolution := system.config.get_int("melonds_resolution")) is not system.config.MISSING:
+            base_config["3D"]["GL"]["ScaleFactor"] = resolution
+            base_config["3D"]["GL"]["HiresCoordinates"] = resolution == 2
 
         # Polygons
-        if system.isOptSet("melonds_polygons"):
-            base_config["3D"]["GL"]["BetterPolygons"] = system.config["melonds_polygons"]
+        if polygons := system.config.get("melonds_polygons"):
+            base_config["3D"]["GL"]["BetterPolygons"] = polygons
 
         # Rotation
-        if system.isOptSet("melonds_rotation"):
-            base_config["Instance0"]["Window0"]["ScreenRotation"] = int(system.config["melonds_rotation"])
-        else:
-            base_config["Instance0"]["Window0"]["ScreenRotation"] = 0
+        base_config["Instance0"]["Window0"]["ScreenRotation"] = system.config.get_int("melonds_rotation", 0)
 
         # Screen Swap
-        if system.isOptSet("melonds_screenswap"):
-            base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config["melonds_screenswap"]
-        else:
-            base_config["Instance0"]["Window0"]["ScreenSwap"] = False
+        base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config.get("melonds_screenswap", False)
 
         # Screen Layout
-        if system.isOptSet("melonds_layout"):
-            base_config["Instance0"]["Window0"]["ScreenLayout"] = int(system.config["melonds_layout"])
-        else:
-            base_config["Instance0"]["Window0"]["ScreenLayout"] = 0
+        base_config["Instance0"]["Window0"]["ScreenLayout"] = system.config.get_int("melonds_layout", 0)
 
         # Screen Sizing
-        if system.isOptSet("melonds_screensizing"):
-            base_config["Instance0"]["Window0"]["ScreenSizing"] = int(system.config["melonds_screensizing"])
-        else:
-            base_config["Instance0"]["Window0"]["ScreenSizing"] = 0
+        base_config["Instance0"]["Window0"]["ScreenSizing"] = system.config.get_int("melonds_screensizing", 0)
 
         # Integer Scaling
-        if system.isOptSet("melonds_scaling"):
-            base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config["melonds_scaling"]
-        else:
-            base_config["Instance0"]["Window0"]["IntegerScaling"] = 0
+        base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config.get("melonds_scaling", 0)
 
         # OSD
-        if system.isOptSet("melonds_osd"):
-            base_config["Instance0"]["Window0"]["ShowOSD"] = system.config["melonds_osd"]
-        else:
-            base_config["Instance0"]["Window0"]["ShowOSD"] = False
+        base_config["Instance0"]["Window0"]["ShowOSD"] = system.config.get("melonds_osd", False)
 
         # Console
-        if system.isOptSet("melonds_console"):
-            base_config["Emu"]["ConsoleType"] = int(system.config["melonds_console"])
-        else:
-            base_config["Emu"]["ConsoleType"] = 0
+        base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
 
         # Map controllers
         melonDSMapping = {

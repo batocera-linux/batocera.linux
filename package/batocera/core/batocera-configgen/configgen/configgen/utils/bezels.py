@@ -187,7 +187,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     # Quickly grab the sizes.
     w,h = fast_image_size(input_png)
     tw,th = fast_image_size(tattoo_file)
-    if system.isOptSet("bezel.resize_tattoo") and not system.getOptBoolean('bezel.resize_tattoo'):
+    if not system.config.get_bool("bezel.resize_tattoo", True):
         # Maintain the image's original size.
         # Failsafe for if the image is too large.
         if tw > w or th > h:
@@ -207,10 +207,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     tattooCanvas = Image.new("RGBA", back.size)
     # Margin for the tattoo
     margin = int((20 / 1080) * h)
-    if system.isOptSet('bezel.tattoo_corner'):
-        corner = system.config['bezel.tattoo_corner']
-    else:
-        corner = 'NW'
+    corner = system.config.get('bezel.tattoo_corner', 'NW')
     if (corner.upper() == 'NE'):
         tattooCanvas.paste(tattoo, (w-tw,margin)) # 20 pixels vertical margins (on 1080p)
     elif (corner.upper() == 'SE'):
