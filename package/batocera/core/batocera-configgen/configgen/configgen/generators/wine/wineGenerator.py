@@ -62,7 +62,7 @@ class WineGenerator(Generator):
                 )
 
             # --- GameScope Support using system options ---
-            if system.isOptSet("gamescope") or system.getOptBoolean("gamescope"):
+            if system.config.get_bool("gamescope"):
                 gamescope_options = []
 
                 # Retrieve nested resolution
