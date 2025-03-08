@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import logging
 import os
 import shutil
@@ -33,6 +34,7 @@ from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, M
 if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext, Resolution
+    from .mameTypes import MameControlScheme
 
 _logger = logging.getLogger(__name__)
 
@@ -447,10 +449,6 @@ class MameGenerator(Generator):
                         if checkFile.is_dir():
                             shutil.rmtree(checkFile)
                     mkdir_if_not_exists(softDir / "hash")
-                    # Clear existing hashfile links
-                    for hashFile in (softDir / "hash").iterdir():
-                        if hashFile.suffix == '.xml':
-                            hashFile.unlink()
                     (softDir / "hash" / f"{softList}.xml").symlink_to(f"/usr/bin/mame/hash/{softList}.xml")
                     if softList in subdirSoftList:
                         (softDir / softList).symlink_to(romDirname.parents[0], target_is_directory=True)
@@ -636,33 +634,22 @@ class MameGenerator(Generator):
             return
         elif "layout" in bz_infos and bz_infos["layout"].exists():
             (tmpZipDir / 'default.lay').symlink_to(bz_infos["layout"])
-            (tmpZipDir / bz_infos["png"].name).symlink_to(bz_infos["png"])
+            pngFile = tmpZipDir / bz_infos["png"].name
+            pngFile.symlink_to(bz_infos["png"])
         else:
             pngFile = tmpZipDir / "default.png"
             pngFile.symlink_to(bz_infos["png"])
             if "info" in bz_infos and bz_infos["info"].exists():
-                bzInfoFile = bz_infos["info"].open("r")
-                bzInfoText = bzInfoFile.readlines()
-                bz_alpha = 1.0 # Just in case it's not set in the info file
-                for infoLine in bzInfoText:
-                    if len(infoLine) > 7:
-                        infoLineClean = (infoLine.replace('"', '')).rstrip(",\n").lstrip()
-                        infoLineData = infoLineClean.split(":")
-                        if infoLineData[0].lower() == "width":
-                            img_width = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "height":
-                            img_height = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "top":
-                            bz_y = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "left":
-                            bz_x = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "bottom":
-                            bz_bottom = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "right":
-                            bz_right = int(infoLineData[1])
-                        elif infoLineData[0].lower() == "opacity":
-                            bz_alpha = float(infoLineData[1])
-                bzInfoFile.close()
+                bz_info_data = json.loads(bz_infos["info"].read_text())
+
+                img_width: int = bz_info_data["width"]
+                img_height: int = bz_info_data["height"]
+                bz_y: int = bz_info_data["top"]
+                bz_x: int = bz_info_data["left"]
+                bz_bottom: int = bz_info_data["bottom"]
+                bz_right: int = bz_info_data["right"]
+                bz_alpha: float = bz_info_data.get("opacity", 1.0)  # Just in case it's not set in the info file
+
                 bz_width = img_width - bz_x - bz_right
                 bz_height = img_height - bz_y - bz_bottom
             else:
@@ -780,7 +767,7 @@ class MameGenerator(Generator):
 
         raise BatoceraException("Display element not found")
 
-def getMameControlScheme(system: Emulator, rom_path: Path) -> str:
+def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
     # Game list files
     mameCapcom = MAME_DEFAULT_DATA / 'mameCapcom.txt'
     mameKInstinct = MAME_DEFAULT_DATA / 'mameKInstinct.txt'
@@ -796,7 +783,7 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> str:
         controllerType = "auto"
 
     if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
-        return controllerType
+        return controllerType  # pyright: ignore[reportReturnType]
     else:
         capcomList = set(mameCapcom.read_text().split())
         mkList = set(mameMKombat.read_text().split())
