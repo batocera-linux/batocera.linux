@@ -212,15 +212,16 @@ class OpenmsxGenerator(Generator):
             # get the first lines extension
             extension = rom1.suffix[1:].lower()
             # now start ammending the array
-            if extension == "rom":
-                cart_index = commandArray.index("-cart")
-                commandArray[cart_index] = "-carta"
-                commandArray[cart_index +1] = rom1
-            elif extension == "dsk":
-                cart_index = commandArray.index("-cart")
-                commandArray[cart_index] = "-diska"
-                commandArray[cart_index +1] = rom1
             if extension == "rom" or extension == "dsk":
+                if extension == "rom":
+                    cart_index = commandArray.index("-cart")
+                    commandArray[cart_index] = "-carta"
+                    commandArray[cart_index +1] = rom1
+                else:
+                    cart_index = commandArray.index("-cart")
+                    commandArray[cart_index] = "-diska"
+                    commandArray[cart_index +1] = rom1
+
                 rom2_index = cart_index + 2
                 commandArray.insert(rom2_index, "-cartb" if extension == "rom" else "-diskb")
                 commandArray.insert(rom2_index + 1, rom2)

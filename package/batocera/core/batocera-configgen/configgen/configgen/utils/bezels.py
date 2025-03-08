@@ -161,8 +161,8 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
 
 def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
     if system.config['bezel.tattoo'] == 'system':
+        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
             if not tattoo_file.exists():
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
@@ -174,8 +174,8 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
         except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)
     else:
+        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
         except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)

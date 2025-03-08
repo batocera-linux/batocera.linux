@@ -457,7 +457,7 @@ def createLibretroConfig(
 
         if system.config['core'] == 'genesisplusgx':
             option = 'gx'
-        if system.config['core'] == 'picodrive':
+        else:  # picodrive
             option = 'pd'
 
         for i in range(1, min(5, len(controllers) + 1)):
@@ -601,7 +601,7 @@ def createLibretroConfig(
 
         if system.config['core'] == 'mupen64plus-next':
             option = 'mupen64plus'
-        elif system.config['core'] == 'parallel_n64':
+        else:  # parallel_n64
             option = 'parallel-n64'
 
         for i in range(1, min(5, len(controllers) + 1)):
