@@ -273,6 +273,7 @@ PACKAGES_CONTROLLERS="aelightgun
                       mk_arcade_joystick_rpi
                       new-lg4ff
                       openfire-guns
+                      onehit-guns
                       qtsixa
                       qtsixa-shanwan
                       retrogame
