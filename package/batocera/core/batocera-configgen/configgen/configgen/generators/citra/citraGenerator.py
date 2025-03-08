@@ -50,10 +50,7 @@ class CitraGenerator(Generator):
 
     # Show mouse on screen
     def getMouseMode(self, config, rom):
-        if "citra_screen_layout" in config and config["citra_screen_layout"] == "1-false":
-            return False
-        else:
-            return True
+        return config.get("citra_screen_layout") != '1-false'
 
     @staticmethod
     def writeCITRAConfig(
@@ -151,19 +148,18 @@ class CitraGenerator(Generator):
         else:
             citraConfig.set("Renderer", "graphics_api", "1")
         # Set Vulkan as necessary
-        if system.isOptSet("citra_graphics_api") and system.config["citra_graphics_api"] == "2":
-            if vulkan.is_available():
-                _logger.debug("Vulkan driver is available on the system.")
-                if vulkan.has_discrete_gpu():
-                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                    discrete_index = vulkan.get_discrete_gpu_index()
-                    if discrete_index:
-                        _logger.debug("Using Discrete GPU Index: %s for Citra", discrete_index)
-                        citraConfig.set("Renderer", "physical_device", discrete_index)
-                    else:
-                        _logger.debug("Couldn't get discrete GPU index")
+        if system.config.get("citra_graphics_api") == "2" and vulkan.is_available():
+            _logger.debug("Vulkan driver is available on the system.")
+            if vulkan.has_discrete_gpu():
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_index = vulkan.get_discrete_gpu_index()
+                if discrete_index:
+                    _logger.debug("Using Discrete GPU Index: %s for Citra", discrete_index)
+                    citraConfig.set("Renderer", "physical_device", discrete_index)
                 else:
-                    _logger.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Couldn't get discrete GPU index")
+            else:
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
         if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
             citraConfig.set("Renderer", "use_vsync_new", "false")
@@ -241,11 +237,12 @@ class CitraGenerator(Generator):
 
             if input.type == "button":
                 return f"button:{input.id},guid:{padGuid},engine:sdl"
-            elif input.type == "hat":
+            if input.type == "hat":
                 return f"engine:sdl,guid:{padGuid},hat:{input.id},direction:{CitraGenerator.hatdirectionvalue(input.value)}"
-            elif input.type == "axis":
+            if input.type == "axis":
                 # Untested, need to configure an axis as button / triggers buttons to be tested too
                 return f"engine:sdl,guid:{padGuid},axis:{input.id},direction:+,threshold:0.5"
+        return None
 
     @staticmethod
     def setAxis(key: str, padGuid: str, padInputs: InputMapping) -> str:
@@ -263,7 +260,7 @@ class CitraGenerator(Generator):
             inputy = padInputs["joystick2up"]
 
         if inputx is None or inputy is None:
-            return "";
+            return ""
 
         return f"axis_x:{inputx.id},guid:{padGuid},axis_y:{inputy.id},engine:sdl"
 
@@ -300,5 +297,4 @@ def getCitraLangFromEnvironment():
     lang = environ['LANG'][:5]
     if lang in availableLanguages:
         return region[availableLanguages[lang]]
-    else:
-        return region["AUTO"]
+    return region["AUTO"]

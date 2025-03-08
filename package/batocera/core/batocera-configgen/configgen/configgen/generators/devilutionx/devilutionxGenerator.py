@@ -74,10 +74,6 @@ class DevilutionXGenerator(Generator):
         }
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if "devilutionx_stretch" in config:
-            if config['devilutionx_stretch'] == "true":
-                return 16 / 9
-            else:
-                return 4 / 3
-        else:
-            return 4 / 3
+        if "devilutionx_stretch" in config and config['devilutionx_stretch'] == "true":
+            return 16 / 9
+        return 4 / 3

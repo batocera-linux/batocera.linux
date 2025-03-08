@@ -115,9 +115,8 @@ class MameGenerator(Generator):
 
         # Auto softlist for FM Towns if there is a zip that matches the folder name
         # Used for games that require a CD and floppy to both be inserted
-        if system.name == 'fmtowns' and softList == '':
-            if (ROMS / "fmtowns" / f"{romDirname.name}.zip").exists():
-                softList = 'fmtowns_cd'
+        if system.name == 'fmtowns' and softList == '' and (ROMS / "fmtowns" / f"{romDirname.name}.zip").exists():
+            softList = 'fmtowns_cd'
 
         commandArray: list[str | Path] =  [ "/usr/bin/mame/mame" ]
         # MAME options used here are explained as it's not always straightforward
@@ -171,13 +170,11 @@ class MameGenerator(Generator):
 
         # MAME will create custom configs per game for MAME ROMs and MESS ROMs with no system attached (LCD games, TV games, etc.)
         # This will allow an alternate config path per game for MESS console/computer ROMs that may need additional config.
-        if system.isOptSet("pergamecfg") and system.getOptBoolean("pergamecfg"):
-            if not messMode == -1:
-                if not messSysName[messMode] == "":
-                    base_path = MAME_CONFIG / messSysName[messMode]
-                    mkdir_if_not_exists(base_path)
-                    cfgPath = base_path / romBasename
-                    mkdir_if_not_exists(cfgPath)
+        if system.config.get_bool("pergamecfg") and messMode != -1 and messSysName[messMode] != "":
+            base_path = MAME_CONFIG / messSysName[messMode]
+            mkdir_if_not_exists(base_path)
+            cfgPath = base_path / romBasename
+            mkdir_if_not_exists(cfgPath)
         commandArray += [ "-cfg_directory"   ,    cfgPath ]
         commandArray += [ "-input_directory" ,    MAME_SAVES / "input" ]
         commandArray += [ "-state_directory" ,    MAME_SAVES / "state" ]
@@ -252,7 +249,7 @@ class MameGenerator(Generator):
 
         # Load selected plugins
         pluginsToLoad = []
-        if not (system.isOptSet("hiscoreplugin") and system.getOptBoolean("hiscoreplugin") == False):
+        if not (system.isOptSet("hiscoreplugin") and not system.getOptBoolean("hiscoreplugin")):
             pluginsToLoad += [ "hiscore" ]
         if system.isOptSet("coindropplugin") and system.getOptBoolean("coindropplugin"):
             pluginsToLoad += [ "coindrop" ]
@@ -339,10 +336,9 @@ class MameGenerator(Generator):
                 commandArray += ["-mem", laser310mem]
 
             # BBC Joystick
-            if system.name == "bbc":
-                if system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
-                    commandArray += ["-analogue", system.config['sticktype']]
-                    specialController = system.config['sticktype']
+            if system.name == "bbc" and system.isOptSet('sticktype') and system.config['sticktype'] != 'none':
+                commandArray += ["-analogue", system.config['sticktype']]
+                specialController = system.config['sticktype']
 
             # Apple II
             if system.name == "apple2":
@@ -362,28 +358,27 @@ class MameGenerator(Generator):
                 commandArray += [ '-ramsize', f'{system.config["ramsize"]}M' ]
 
             # Mac RAM & Image Reader (if applicable)
-            if system.name == "macintosh":
-                if system.isOptSet("ramsize"):
-                    ramSize = int(system.config["ramsize"])
-                    if messModel in [ 'maciix', 'maclc3' ]:
-                        if messModel == 'maclc3' and ramSize == 2:
-                            ramSize = 4
-                        if messModel == 'maclc3' and ramSize > 80:
-                            ramSize = 80
-                        if messModel == 'maciix' and ramSize == 16:
-                            ramSize = 32
-                        if messModel == 'maciix' and ramSize == 48:
-                            ramSize = 64
-                        commandArray += [ '-ramsize', f'{ramSize}M' ]
-                    if messModel == 'maciix':
-                        imageSlot = 'nba'
-                        if system.isOptSet('imagereader'):
-                            if system.config["imagereader"] == "disabled":
-                                imageSlot = ''
-                            else:
-                                imageSlot = system.config["imagereader"]
-                        if imageSlot != "":
-                            commandArray += [ f"-{imageSlot}", "image" ]
+            if system.name == "macintosh" and system.isOptSet("ramsize"):
+                ramSize = int(system.config["ramsize"])
+                if messModel in [ 'maciix', 'maclc3' ]:
+                    if messModel == 'maclc3' and ramSize == 2:
+                        ramSize = 4
+                    if messModel == 'maclc3' and ramSize > 80:
+                        ramSize = 80
+                    if messModel == 'maciix' and ramSize == 16:
+                        ramSize = 32
+                    if messModel == 'maciix' and ramSize == 48:
+                        ramSize = 64
+                    commandArray += [ '-ramsize', f'{ramSize}M' ]
+                if messModel == 'maciix':
+                    imageSlot = 'nba'
+                    if system.isOptSet('imagereader'):
+                        if system.config["imagereader"] == "disabled":
+                            imageSlot = ''
+                        else:
+                            imageSlot = system.config["imagereader"]
+                    if imageSlot != "":
+                        commandArray += [ f"-{imageSlot}", "image" ]
 
             if softList == "":
                 # Boot disk for Macintosh
@@ -493,10 +488,12 @@ class MameGenerator(Generator):
                     autoRunDelay = 3
             # fm7 boots floppies, needs cassette loading
             elif system.name == "fm7":
-                if system.isOptSet("altromtype") or softList != "":
-                    if (system.isOptSet('altromtype') and system.config["altromtype"] == "cass") or softList.endswith("cass"):
-                        autoRunCmd = 'LOADM”“,,R\\n'
-                        autoRunDelay = 5
+                if (
+                    system.config.get("altromtype") == "cass"
+                    or (softList != "" and softList[-4:] == "cass")
+                ):
+                    autoRunCmd = 'LOADM”“,,R\\n'
+                    autoRunDelay = 5
             elif system.name == "coco":
                 romType = 'cart'
                 autoRunDelay = 2
@@ -507,11 +504,10 @@ class MameGenerator(Generator):
                     if softListFile.exists():
                         softwarelist = ET.parse(softListFile)
                         for software in softwarelist.findall('software'):
-                            if software.attrib:
-                                if software.get('name') == romName:
-                                    for info in software.iter('info'):
-                                        if info.get('name') == 'usage':
-                                            autoRunCmd = f"{info.get('value')}\\n"
+                            if software.attrib and software.get('name') == romName:
+                                for info in software.iter('info'):
+                                    if info.get('name') == 'usage':
+                                        autoRunCmd = f"{info.get('value')}\\n"
 
                 # if still undefined, default autoRunCmd based on media type
                 if autoRunCmd == "":
@@ -534,9 +530,8 @@ class MameGenerator(Generator):
                     with autoRunFile.open() as openARFile:
                         autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
                         for row in autoRunList:
-                            if row and not row[0].startswith('#'):
-                                if row[0].casefold() == romName.casefold():
-                                    autoRunCmd = f"{row[1]}\\n"
+                            if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
+                                autoRunCmd = f"{row[1]}\\n"
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
@@ -554,7 +549,7 @@ class MameGenerator(Generator):
                 commandArray += [ "-autoboot_delay", str(autoRunDelay), "-autoboot_command", autoRunCmd ]
 
         # bezels
-        if 'bezel' not in system.config.keys() or system.config['bezel'] == '':
+        if 'bezel' not in system.config or system.config['bezel'] == '':
             bezelSet = None
         else:
             bezelSet = system.config['bezel']
@@ -565,7 +560,7 @@ class MameGenerator(Generator):
                 MameGenerator.writeBezelConfig(bezelSet, system, rom_path, messSysName[messMode], gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
             else:
                 MameGenerator.writeBezelConfig(bezelSet, system, rom_path, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
-        except:
+        except Exception:
             MameGenerator.writeBezelConfig(None, system, rom_path, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
 
         buttonLayout = getMameControlScheme(system, rom_path)
@@ -576,9 +571,9 @@ class MameGenerator(Generator):
             mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
 
         # If user provided a custom cmd file at the default location, use that as the customized commandArray
-        if Path(defaultCustomCmdFilepath := f"{rom}.cmd").is_file():
-            with open(defaultCustomCmdFilepath) as f:
-                commandArray = f.read().splitlines()  # type: ignore
+        if (defaultCustomCmdFilepath := Path(f"{rom}.cmd")).is_file():
+            with defaultCustomCmdFilepath.open() as f:
+                commandArray = f.read().splitlines()  # pyright: ignore
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
@@ -611,9 +606,8 @@ class MameGenerator(Generator):
                 return
         else:
             bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
-            if bz_infos is None:
-                if gunsBordersSize is None:
-                    return
+            if bz_infos is None and gunsBordersSize is None:
+                return
 
         # create an empty bezel
         if bz_infos is None:
@@ -632,7 +626,8 @@ class MameGenerator(Generator):
             artFile.symlink_to(bz_infos["mamezip"])
             # hum, not nice if guns need borders
             return
-        elif "layout" in bz_infos and bz_infos["layout"].exists():
+
+        if "layout" in bz_infos and bz_infos["layout"].exists():
             (tmpZipDir / 'default.lay').symlink_to(bz_infos["layout"])
             pngFile = tmpZipDir / bz_infos["png"].name
             pngFile.symlink_to(bz_infos["png"])
@@ -683,19 +678,19 @@ class MameGenerator(Generator):
                     if not tattoo_file.exists():
                         tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                     tattoo = Image.open(tattoo_file)
-                except Exception as e:
+                except Exception:
                     _logger.error("Error opening controller overlay: %s", tattoo_file)
             elif system.config['bezel.tattoo'] == 'custom' and Path(system.config['bezel.tattoo_file']).exists():
                 tattoo_file = Path(system.config['bezel.tattoo_file'])
                 try:
                     tattoo = Image.open(tattoo_file)
-                except:
+                except Exception:
                     _logger.error("Error opening custom file: %s", tattoo_file)
             else:
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
                 try:
                     tattoo = Image.open(tattoo_file)
-                except:
+                except Exception:
                     _logger.error("Error opening custom file: %s", tattoo_file)
             output_png_file = Path("/tmp/bezel_tattooed.png")
             back = Image.open(pngFile)
@@ -706,7 +701,6 @@ class MameGenerator(Generator):
             pcent = float(tatwidth / tw)
             tatheight = int(float(th) * pcent)
             tattoo = tattoo.resize((tatwidth,tatheight), Image.Resampling.LANCZOS)
-            alpha = back.split()[-1]
             alphatat = tattoo.split()[-1]
             if system.isOptSet('bezel.tattoo_corner'):
                 corner = system.config['bezel.tattoo_corner']
@@ -726,7 +720,7 @@ class MameGenerator(Generator):
 
             try:
                 pngFile.unlink()
-            except:
+            except Exception:
                 pass
 
             pngFile.symlink_to(output_png_file)
@@ -735,17 +729,17 @@ class MameGenerator(Generator):
         if gunsBordersSize is not None:
             output_png_file = Path("/tmp/bezel_gunborders.png")
             innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-            borderSize = bezelsUtil.gunBorderImage(pngFile, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+            bezelsUtil.gunBorderImage(pngFile, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
             try:
                 pngFile.unlink()
-            except:
+            except Exception:
                 pass
             pngFile.symlink_to(output_png_file)
 
     @staticmethod
     def getMameMachineSize(machine: str, tmpdir: Path):
         proc = subprocess.Popen(["/usr/bin/mame/mame", "-listxml", machine], stdout=subprocess.PIPE)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
         exitcode = proc.returncode
 
         if exitcode != 0:
@@ -784,46 +778,46 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
 
     if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
         return controllerType  # pyright: ignore[reportReturnType]
-    else:
-        capcomList = set(mameCapcom.read_text().split())
-        mkList = set(mameMKombat.read_text().split())
-        kiList = set(mameKInstinct.read_text().split())
-        neogeoList = set(mameNeogeo.read_text().split())
-        twinstickList = set(mameTwinstick.read_text().split())
-        qbertList = set(mameRotatedstick.read_text().split())
 
-        romName = rom_path.stem
-        if romName in capcomList:
-            if controllerType in [ "auto", "snes" ]:
-                return "sfsnes"
-            elif controllerType == "megadrive":
-                return "megadrive"
-            elif controllerType == "fightstick":
-                return "sfstick"
-        elif romName in mkList:
-            if controllerType in [ "auto", "snes" ]:
-                return "mksnes"
-            elif controllerType == "megadrive":
-                return "mkmegadrive"
-            elif controllerType == "fightstick":
-                return "mkstick"
-        elif romName in kiList:
-            if controllerType in [ "auto", "snes" ]:
-                return "kisnes"
-            elif controllerType == "megadrive":
-                return "megadrive"
-            elif controllerType == "fightstick":
-                return "sfstick"
-        elif romName in  neogeoList:
-            return "neomini"
-        elif romName in  twinstickList:
-            return "twinstick"
-        elif romName in  qbertList:
-            return "qbert"
-        else:
-            if controllerType == "fightstick":
-                return "fightstick"
-            if controllerType == "megadrive":
-                return "mddefault"
+    capcomList = set(mameCapcom.read_text().split())
+    mkList = set(mameMKombat.read_text().split())
+    kiList = set(mameKInstinct.read_text().split())
+    neogeoList = set(mameNeogeo.read_text().split())
+    twinstickList = set(mameTwinstick.read_text().split())
+    qbertList = set(mameRotatedstick.read_text().split())
+
+    romName = rom_path.stem
+    if romName in capcomList:
+        if controllerType in [ "auto", "snes" ]:
+            return "sfsnes"
+        if controllerType == "megadrive":
+            return "megadrive"
+        if controllerType == "fightstick":
+            return "sfstick"
+    elif romName in mkList:
+        if controllerType in [ "auto", "snes" ]:
+            return "mksnes"
+        if controllerType == "megadrive":
+            return "mkmegadrive"
+        if controllerType == "fightstick":
+            return "mkstick"
+    elif romName in kiList:
+        if controllerType in [ "auto", "snes" ]:
+            return "kisnes"
+        if controllerType == "megadrive":
+            return "megadrive"
+        if controllerType == "fightstick":
+            return "sfstick"
+    elif romName in  neogeoList:
+        return "neomini"
+    elif romName in  twinstickList:
+        return "twinstick"
+    elif romName in  qbertList:
+        return "qbert"
+    else:
+        if controllerType == "fightstick":
+            return "fightstick"
+        if controllerType == "megadrive":
+            return "mddefault"
 
     return "default"

@@ -15,7 +15,7 @@ class TsugaruGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-	# Start emulator fullscreen
+        # Start emulator fullscreen
         commandArray = ["/usr/bin/Tsugaru_CUI", BIOS / "fmtowns"]
         commandArray += ["-AUTOSCALE", "-HIGHRES", "-NOWAITBOOT"]
         commandArray += ["-GAMEPORT0", "KEY"]

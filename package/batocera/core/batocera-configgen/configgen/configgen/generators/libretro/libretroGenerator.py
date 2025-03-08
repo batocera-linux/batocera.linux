@@ -78,7 +78,7 @@ class LibretroGenerator(Generator):
                 gameShader = renderConfig['shader-' + str(altDecoration)]
             elif 'shader' in renderConfig:
                 gameShader = renderConfig['shader']
-        if 'shader' in renderConfig and gameShader != None:
+        if 'shader' in renderConfig and gameShader is not None:
             if (gfxBackend == 'glcore' or gfxBackend == 'vulkan') or (system.config['core'] in libretroConfig.coreForceSlangShaders):
                 shaderFilename = f"{gameShader}.slangp"
             else:
@@ -95,7 +95,7 @@ class LibretroGenerator(Generator):
                 shaderBezel = True
 
         # Settings batocera default config file if no user defined one
-        if not 'configfile' in system.config:
+        if 'configfile' not in system.config:
             # Using batocera config file
             system.config['configfile'] = str(RETROARCH_CUSTOM)
             # Create retroarchcustom.cfg if does not exists
@@ -331,7 +331,7 @@ class LibretroGenerator(Generator):
             configToAppend.append(overlayFile)
 
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
-        if 'shader' in renderConfig and gameShader != None:
+        if 'shader' in renderConfig and gameShader is not None:
             commandArray.extend(["--set-shader", video_shader])
 
         # Generate the append
@@ -360,7 +360,7 @@ class LibretroGenerator(Generator):
         elif system.name == 'sgb-msu1':
             if "squashfs" in str(rom_path) and rom_path.is_dir():
                 rom_path = next(itertools.chain(rom_path.glob('*.gb'), rom_path.glob('*.gbc')))
-        elif system.name == 'msu-md':
+        elif system.name == 'msu-md':  # noqa: SIM102
             if "squashfs" in str(rom_path) and rom_path.is_dir():
                 rom_path = next(rom_path.glob('*.md'))
 
@@ -378,10 +378,6 @@ class LibretroGenerator(Generator):
         # Use command line instead of ROM file for MAME variants
         if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
             dontAppendROM = True
-            if system.config['core'] in [ 'mame', 'mess', 'mamevirtual' ]:
-                corePath = 'lr-' + system.config['core']
-            else:
-                corePath = system.config['core']
             commandArray.append(f'/var/run/cmdfiles/{rom_path.stem}.cmd')
 
         if system.config['core'] == 'hatarib':
@@ -397,7 +393,7 @@ class LibretroGenerator(Generator):
                 dontAppendROM = True
                 targetlink.symlink_to(rom_path)
 
-        if dontAppendROM == False:
+        if not dontAppendROM:
             commandArray.append(rom_path)
 
         if system.isOptSet('state_slot') and system.isOptSet('state_filename') and system.config['state_filename'][-5:] != ".auto":

@@ -97,12 +97,12 @@ def readWriteFile(filepath: Path, setval: Mapping[str, int]):
         f = filepath.open("r+b")
 
     try:
-        version    = readString(f, 4) # read SCv0
+        readString(f, 4) # read SCv0
         numEntries = readBEInt16(f)   # num entries
         offsetSize = (numEntries+1)*2 # offsets
         readBytes(f, offsetSize)
 
-        for i in range(0, numEntries): # entries
+        for _ in range(numEntries): # entries
             readWriteEntry(f, setval)
     finally:
         f.close()
@@ -114,8 +114,7 @@ def getWiiLangFromEnvironment():
                            "nl_NL": 6, "zh_CN": 7, "zh_TW": 8, "ko_KR": 9 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]
 
 def getRatioFromConfig(config: SystemConfig, gameResolution: Resolution) -> int:
     # Sets the setting available to the Wii's internal NAND. Only has two values:

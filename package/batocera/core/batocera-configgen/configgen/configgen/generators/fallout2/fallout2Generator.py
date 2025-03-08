@@ -44,14 +44,12 @@ class Fallout2Generator(Generator):
                 shutil.copy(fout2SourceFile, fout2ExeFile)
 
         # Copy cfg file to the config directory
-        if not fout2ConfigFile.exists():
-            if fout2SrcConfig.exists():
-                shutil.copy(fout2SrcConfig , fout2ConfigFile)
+        if not fout2ConfigFile.exists() and fout2SrcConfig.exists():
+            shutil.copy(fout2SrcConfig , fout2ConfigFile)
 
         # Now copy the ini file to the config directory
-        if not fout2IniFile.exists():
-            if fout2SrcIni.exists():
-                shutil.copy(fout2SrcIni , fout2IniFile)
+        if not fout2IniFile.exists() and fout2SrcIni.exists():
+            shutil.copy(fout2SrcIni , fout2IniFile)
 
         ## Configure
 

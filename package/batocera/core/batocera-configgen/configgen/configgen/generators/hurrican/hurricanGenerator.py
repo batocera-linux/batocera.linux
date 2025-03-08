@@ -20,7 +20,7 @@ class HurricanGenerator(Generator):
         try:
             os.chdir(ROMS / "hurrican" / "data" / "levels/")
             os.chdir(ROMS / "hurrican")
-        except:
+        except Exception:
             _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["hurrican"]
 

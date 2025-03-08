@@ -49,7 +49,7 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
     viceConfig.set(systemCore, "SaveResourcesOnExit",    "0")
     viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
-    if system.isOptSet('noborder') and system.getOptBoolean('noborder') == True:
+    if system.isOptSet('noborder') and system.getOptBoolean('noborder'):
         viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
         viceConfig.set(systemCore, "VICBorderMode",        "3")
     else:
@@ -64,7 +64,7 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
     else:
         viceConfig.set(systemCore, "JoyPort1Device",             "1")
     viceConfig.set(systemCore, "JoyDevice1",             "4")
-    if not systemCore == "VIC20":
+    if systemCore != "VIC20":
         viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  str(viceController))
 

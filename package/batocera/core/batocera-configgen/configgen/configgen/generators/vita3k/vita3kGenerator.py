@@ -36,9 +36,8 @@ class Vita3kGenerator(Generator):
         if (vitaConfig / 'ux0').is_dir():
             # Move all folders from vitaConfig to vitaSaves except "data", "lang", and "shaders-builtin"
             for item in vitaConfig.iterdir():
-                if item.name not in ['data', 'lang', 'shaders-builtin']:
-                    if item.is_dir():
-                        shutil.move(item, vitaSaves)
+                if item.name not in ['data', 'lang', 'shaders-builtin'] and item.is_dir():
+                    shutil.move(item, vitaSaves)
 
         # Create the config.yml file if it doesn't exist
         mkdir_if_not_exists(vitaConfig)
@@ -74,12 +73,12 @@ class Vita3kGenerator(Generator):
         else:
             vita3kymlconfig["resolution-multiplier"] = 1
         # Set FXAA
-        if system.isOptSet("vita3k_fxaa") and system.getOptBoolean("vita3k_fxaa") == True:
+        if system.isOptSet("vita3k_fxaa") and system.getOptBoolean("vita3k_fxaa"):
             vita3kymlconfig["enable-fxaa"] = "true"
         else:
             vita3kymlconfig["enable-fxaa"] = "false"
         # Set VSync
-        if system.isOptSet("vita3k_vsync") and system.getOptBoolean("vita3k_vsync") == False:
+        if system.isOptSet("vita3k_vsync") and not system.getOptBoolean("vita3k_vsync"):
             vita3kymlconfig["v-sync"] = "false"
         else:
             vita3kymlconfig["v-sync"] = "true"
@@ -89,12 +88,12 @@ class Vita3kGenerator(Generator):
         else:
             vita3kymlconfig["anisotropic-filtering"] = 1
         # Set the linear filtering option
-        if system.isOptSet("vita3k_linear") and system.getOptBoolean("vita3k_linear") == True:
+        if system.isOptSet("vita3k_linear") and system.getOptBoolean("vita3k_linear"):
             vita3kymlconfig["enable-linear-filter"] = "true"
         else:
             vita3kymlconfig["enable-linear-filter"] = "false"
         # Surface Sync
-        if system.isOptSet("vita3k_surface") and system.getOptBoolean("vita3k_surface") == False:
+        if system.isOptSet("vita3k_surface") and not system.getOptBoolean("vita3k_surface"):
             vita3kymlconfig["disable-surface-sync"] = "false"
         else:
             vita3kymlconfig["disable-surface-sync"] = "true"
@@ -134,10 +133,7 @@ class Vita3kGenerator(Generator):
 
     # Show mouse for touchscreen actions
     def getMouseMode(self, config, rom):
-        if "vita3k_show_pointer" in config and config["vita3k_show_pointer"] == "0":
-             return False
-        else:
-             return True
+        return config.get("vita3k_show_pointer") != '0'
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

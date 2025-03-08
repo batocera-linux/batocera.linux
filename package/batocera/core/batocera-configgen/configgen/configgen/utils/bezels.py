@@ -166,18 +166,18 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
             if not tattoo_file.exists():
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening controller overlay: %s", tattoo_file)
     elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
         try:
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)
     else:
         try:
             tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)
     # Open the existing bezel...
     back = Image.open(input_png)
@@ -230,7 +230,7 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
     imgin = Image.open(input_png)
     # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
     # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-    if not 'transparency' in imgin.info:
+    if 'transparency' not in imgin.info:
         raise BatoceraException("No transparent pixels in the bezel image")
     alpha = imgin.split()[-1]  # alpha from original palette + alpha
     ix,iy = fast_image_size(input_png)
@@ -347,5 +347,5 @@ def gunsBordersColorFomConfig(config: SystemConfig) -> str:
 def createTransparentBezel(output_png: Path, width: int, height: int) -> None:
     from PIL import ImageDraw
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
-    imgnewdraw = ImageDraw.Draw(imgnew)
+    ImageDraw.Draw(imgnew)
     imgnew.save(output_png, mode="RGBA", format="PNG")

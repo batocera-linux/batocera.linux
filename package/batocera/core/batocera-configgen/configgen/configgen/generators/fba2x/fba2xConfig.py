@@ -18,7 +18,7 @@ def updateFBAConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator) -> N
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
 
-    if system.isOptSet("smooth") and system.getOptBoolean("smooth") == True:
+    if system.isOptSet("smooth") and system.getOptBoolean("smooth"):
         iniConfig.set("Graphics", "DisplaySmoothStretch", "1")
     else:
         iniConfig.set("Graphics", "DisplaySmoothStretch", "0")

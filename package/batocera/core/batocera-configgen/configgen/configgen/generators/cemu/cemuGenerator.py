@@ -79,7 +79,7 @@ class CemuGenerator(Generator):
         if configFile.exists():
             try:
                 config = minidom.parse(str(configFile))
-            except:
+            except Exception:
                 pass # reinit the file
 
         ## [ROOT]
@@ -253,17 +253,15 @@ class CemuGenerator(Generator):
         proc = subprocess.run(["/usr/bin/cemu/get-audio-device"], stdout=subprocess.PIPE)
         cemuAudioDevice = proc.stdout.decode('utf-8')
         _logger.debug("*** audio device = %s ***", cemuAudioDevice)
-        if system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == True:
+        if system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config"):
             CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
-        elif system.isOptSet("cemu_audio_config") and system.getOptBoolean("cemu_audio_config") == False:
+        elif system.isOptSet("cemu_audio_config") and not system.getOptBoolean("cemu_audio_config"):
             # don't change the config setting
             _logger.debug("*** use config audio device ***")
         else:
             CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", cemuAudioDevice)
 
         # Save the config file
-        xml = configFile.open("w")
-
         # TODO: python 3 - workaround to encode files in utf-8
         with codecs.open(str(configFile), "w", "utf-8") as xml:
             dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
@@ -271,10 +269,7 @@ class CemuGenerator(Generator):
 
     # Show mouse for touchscreen actions
     def getMouseMode(self, config, rom):
-        if "cemu_touchpad" in config and config["cemu_touchpad"] == "1":
-            return True
-        else:
-            return False
+        return config.get('cemu_touchpad') == '1'
 
     @staticmethod
     def getRoot(config: minidom.Document, name: str) -> minidom.Element:
@@ -306,12 +301,10 @@ class CemuGenerator(Generator):
 def getLangFromEnvironment() -> str:
     if 'LANG' in environ:
         return environ['LANG'][:5]
-    else:
-        return "en_US"
+    return "en_US"
 
 def getCemuLang(lang: str) -> int:
     availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "nl_NL": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]

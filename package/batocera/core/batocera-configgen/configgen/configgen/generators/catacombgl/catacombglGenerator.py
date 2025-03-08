@@ -56,12 +56,11 @@ class CatacombGLGenerator(Generator):
 
         # Read the existing file content
         ini_content = _CATACOMBGL_CONFIG_FILE.read_text().splitlines() if _CATACOMBGL_CONFIG_FILE.exists() else []
-        ini_dict = {line.split("=")[0]: line.split("=")[1] for line in ini_content if "=" in line}
+        ini_dict: dict[str, str | Path] = {line.split("=")[0]: line.split("=")[1] for line in ini_content if "=" in line}
 
         # Update or add required paths
         with _CATACOMBGL_CONFIG_FILE.open("w") as ini_file:
-            for key, value in required_paths.items():
-                ini_dict[key] = value
+            ini_dict.update(required_paths)
             for key, value in ini_dict.items():
                 ini_file.write(f"{key}={value}\n")
 

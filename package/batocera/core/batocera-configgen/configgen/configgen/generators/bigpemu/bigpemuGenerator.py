@@ -295,7 +295,7 @@ class BigPEmuGenerator(Generator):
                 else:
                     BINDINGS_SEQUENCE = P2_BINDINGS_SEQUENCE
 
-                for binding_key, binding_info in BINDINGS_SEQUENCE.items():
+                for binding_info in BINDINGS_SEQUENCE.values():
                     # _logger.debug(f"Binding sequence input: %s", binding_key)
                     if "button" in binding_info:
                         if "keyboard" in binding_info:
@@ -451,10 +451,6 @@ class BigPEmuGenerator(Generator):
         return Command.Command(array=commandArray, env=environment)
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if "bigpemu_ratio" in config:
-            if config['bigpemu_ratio'] == "8":
-                return 16/9
-            else:
-                return 4/3
-        else:
-            return 4/3
+        if "bigpemu_ratio" in config and config['bigpemu_ratio'] == "8":
+            return 16/9
+        return 4/3

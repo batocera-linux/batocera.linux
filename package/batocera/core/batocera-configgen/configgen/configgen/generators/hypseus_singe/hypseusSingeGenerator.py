@@ -49,7 +49,7 @@ class HypseusSingeGenerator(Generator):
         if (start_path / filename).exists():
             return start_path / filename
 
-        for root, dirs, files in os.walk(start_path):
+        for root, _, files in os.walk(start_path):
             if filename in files:
                 full_path = Path(root) / filename
                 _logger.debug("Found m2v file in path - %s", full_path)
@@ -98,7 +98,7 @@ class HypseusSingeGenerator(Generator):
             "dragon": ["dragon", "dragon_trainer"],
             "drugwars": ["drugwars", "drugwars-hd", "cp2dw_hd"],
             "daitarn": ["daitarn", "daitarn_3"],
-            "dle": ["dle", "dle_alt"],
+            "dle": ["dle", "dle_alt"],  # noqa: F601
             "fire_and_ice": ["fire_and_ice", "fire_and_ice_v2"],
             "galaxy": ["galaxy", "galaxyp"],
             "lair": ["lair", "lair_a", "lair_b", "lair_c", "lair_d", "lair_d2", "lair_e", "lair_f", "lair_ita", "lair_n1", "lair_x", "laireuro"],
@@ -176,7 +176,7 @@ class HypseusSingeGenerator(Generator):
         _logger.debug("Full m2v path is: %s", video_path)
 
         video_resolution: tuple[int, int] | None = None
-        if video_path != None:
+        if video_path is not None:
             video_resolution = self.get_resolution(video_path)
             _logger.debug("Resolution: %s", video_resolution)
 
@@ -282,7 +282,7 @@ class HypseusSingeGenerator(Generator):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
         # bezels
-        if system.isOptSet('hypseus_bezels') and system.getOptBoolean("hypseus_bezels") == False:
+        if system.isOptSet('hypseus_bezels') and not system.getOptBoolean("hypseus_bezels"):
             bezelRequired = False
 
         if bezelRequired:
@@ -311,7 +311,7 @@ class HypseusSingeGenerator(Generator):
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if guns and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair")))):
+        if guns and (not system.isOptSet('singe_crosshair') or (system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair"))):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
@@ -334,10 +334,6 @@ class HypseusSingeGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if "hypseus_ratio" in config:
-            if config['hypseus_ratio'] == "stretch":
-                return 16/9
-            if config['hypseus_ratio'] == "force_ratio":
-                return 4/3
-        else:
-            return 4/3
+        if "hypseus_ratio" in config and config['hypseus_ratio'] == "stretch":
+            return 16/9
+        return 4/3

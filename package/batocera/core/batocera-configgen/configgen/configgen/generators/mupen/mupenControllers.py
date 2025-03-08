@@ -45,10 +45,8 @@ def getMupenMapping(use_n64_inputs: bool) -> dict[str, str]:
             list_name = 'n64InputList' if use_n64_inputs else 'defaultInputList'
             for inputs in dom.getElementsByTagName(list_name):
                 for input in inputs.childNodes:
-                    if input.attributes:
-                        if input.attributes['name']:
-                            if input.attributes['value']:
-                                map[input.attributes['name'].value] = input.attributes['value'].value
+                    if input.attributes and input.attributes['name'] and input.attributes['value']:
+                        map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
 def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controllers, system: Emulator, wheels: DeviceInfoMapping) -> None:
@@ -114,7 +112,7 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
 
         # Analog Deadzone
         if isWheel:
-            config['AnalogDeadzone'] = f"0,0"
+            config['AnalogDeadzone'] = "0,0"
         else:
             config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
 
@@ -134,13 +132,12 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
         # Cheat on the controller
         for realStick, fakeStick in fakeSticks.items():
-                if realStick in controller.inputs:
-                    if controller.inputs[realStick].type == "axis":
-                        print(f"{fakeStick} -> {realStick}")
-                        controller.inputs[fakeStick] = controller.inputs[realStick].replace(
-                            name=fakeStick,
-                            value=str(-int(controller.inputs[realStick].value))
-                        )
+                if realStick in controller.inputs and controller.inputs[realStick].type == "axis":
+                    print(f"{fakeStick} -> {realStick}")
+                    controller.inputs[fakeStick] = controller.inputs[realStick].replace(
+                        name=fakeStick,
+                        value=str(-int(controller.inputs[realStick].value))
+                    )
 
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]

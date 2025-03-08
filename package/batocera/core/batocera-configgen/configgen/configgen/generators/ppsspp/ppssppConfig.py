@@ -22,7 +22,7 @@ def writePPSSPPConfig(system: Emulator):
     if ppssppConfig.exists():
         try:
             iniConfig.read(ppssppConfig, encoding='utf_8_sig')
-        except:
+        except Exception:
             pass
 
     createPPSSPPConfig(iniConfig, system)
@@ -61,22 +61,22 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
             iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
 
     # Display FPS
-    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
+    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
         iniConfig.set("Graphics", "ShowFPSCounter", "3") # 1 for Speed%, 2 for FPS, 3 for both
     else:
         iniConfig.set("Graphics", "ShowFPSCounter", "0")
 
     # Frameskip
     iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not percent
-    if system.isOptSet("frameskip") and not system.config["frameskip"] == "automatic":
+    if system.isOptSet("frameskip") and system.config["frameskip"] != "automatic":
         iniConfig.set("Graphics", "FrameSkip", str(system.config["frameskip"]))
-    elif system.isOptSet('rendering_mode') and system.getOptBoolean('rendering_mode') == False:
+    elif system.isOptSet('rendering_mode') and not system.getOptBoolean('rendering_mode'):
         iniConfig.set("Graphics", "FrameSkip", "0")
     else:
         iniConfig.set("Graphics", "FrameSkip", "2")
 
     # Buffered rendering
-    if system.isOptSet('rendering_mode') and system.getOptBoolean('rendering_mode') == False:
+    if system.isOptSet('rendering_mode') and not system.getOptBoolean('rendering_mode'):
         iniConfig.set("Graphics", "RenderingMode", "0")
         # Have to force autoframeskip off here otherwise PPSSPP sets rendering mode back to 1.
         iniConfig.set("Graphics", "AutoFrameSkip", "False")
@@ -89,13 +89,13 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         else:
             iniConfig.set("Graphics", "InternalResolution", "1")
         # Auto frameskip
-        if system.isOptSet("autoframeskip") and system.getOptBoolean("autoframeskip") == False:
+        if system.isOptSet("autoframeskip") and not system.getOptBoolean("autoframeskip"):
             iniConfig.set("Graphics", "AutoFrameSkip", "False")
         else:
             iniConfig.set("Graphics", "AutoFrameSkip", "True")
 
     # VSync Interval
-    if system.isOptSet('vsyncinterval') and system.getOptBoolean('vsyncinterval') == False:
+    if system.isOptSet('vsyncinterval') and not system.getOptBoolean('vsyncinterval'):
         iniConfig.set("Graphics", "VSyncInterval", "False")
     else:
         iniConfig.set("Graphics", "VSyncInterval", "True")
@@ -132,7 +132,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         iniConfig.add_section("SystemParam")
 
     # Forcing Nickname to Batocera or User name
-    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True and system.isOptSet('retroachievements.username') and system.config.get('retroachievements.username', "") != "":
+    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') and system.isOptSet('retroachievements.username') and system.config.get('retroachievements.username', "") != "":
         iniConfig.set("SystemParam", "NickName", system.config.get('retroachievements.username', ""))
     else:
         iniConfig.set("SystemParam", "NickName", "Batocera")
@@ -145,7 +145,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         iniConfig.add_section("General")
 
     # Rewinding
-    if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
+    if system.isOptSet('rewind') and system.getOptBoolean('rewind'):
         iniConfig.set("General", "RewindFlipFrequency", "300") # 300 = every 5 seconds
     else:
         iniConfig.set("General", "RewindFlipFrequency",  "0")

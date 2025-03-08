@@ -57,7 +57,7 @@ class MoonlightGenerator(Generator):
                 gfeRom, gfeGame, confFileString = line.rstrip().split(';')
                 confFile = Path(confFileString)
                 #confFile = confFile.rstrip()
-            except:
+            except Exception:
                 gfeRom, gfeGame = line.rstrip().split(';')
                 confFile = MOONLIGHT_STAGING_CONFIG
             #If found

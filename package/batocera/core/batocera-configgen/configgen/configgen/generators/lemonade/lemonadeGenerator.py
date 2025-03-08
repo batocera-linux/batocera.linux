@@ -42,10 +42,7 @@ class LemonadeGenerator(Generator):
 
     # Show mouse on screen
     def getMouseMode(self, config, rom):
-        if "lemonade_screen_layout" in config and config["lemonade_screen_layout"] == "1-false":
-            return False
-        else:
-            return True
+        return config.get("lemonade_screen_layout") != "1-false"
 
     @staticmethod
     def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: Controllers):
@@ -154,19 +151,18 @@ class LemonadeGenerator(Generator):
         else:
             lemonadeConfig.set("Renderer", "graphics_api", "1")
         # Set Vulkan as necessary
-        if system.isOptSet("lemonade_graphics_api") and system.config["lemonade_graphics_api"] == "2":
-            if vulkan.is_available():
-                _logger.debug("Vulkan driver is available on the system.")
-                if vulkan.has_discrete_gpu():
-                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                    discrete_index = vulkan.get_discrete_gpu_index()
-                    if discrete_index:
-                        _logger.debug("Using Discrete GPU Index: %s for Lemonade", discrete_index)
-                        lemonadeConfig.set("Renderer", "physical_device", discrete_index)
-                    else:
-                        _logger.debug("Couldn't get discrete GPU index")
+        if system.config.get("lemonade_graphics_api") == "2" and vulkan.is_available():
+            _logger.debug("Vulkan driver is available on the system.")
+            if vulkan.has_discrete_gpu():
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_index = vulkan.get_discrete_gpu_index()
+                if discrete_index:
+                    _logger.debug("Using Discrete GPU Index: %s for Lemonade", discrete_index)
+                    lemonadeConfig.set("Renderer", "physical_device", discrete_index)
                 else:
-                    _logger.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Couldn't get discrete GPU index")
+            else:
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
         if system.isOptSet('lemonade_use_vsync_new') and system.config["lemonade_use_vsync_new"] == '0':
             lemonadeConfig.set("Renderer", "use_vsync_new", "false")
@@ -252,11 +248,13 @@ class LemonadeGenerator(Generator):
 
             if input.type == "button":
                 return f"button:{input.id},guid:{padGuid},engine:sdl"
-            elif input.type == "hat":
+            if input.type == "hat":
                 return f"engine:sdl,guid:{padGuid},hat:{input.id},direction:{LemonadeGenerator.hatdirectionvalue(input.value)}"
-            elif input.type == "axis":
+            if input.type == "axis":
                 # Untested, need to configure an axis as button / triggers buttons to be tested too
                 return f"engine:sdl,guid:{padGuid},axis:{input.id},direction:+,threshold:{0.5}"
+
+        return None
 
     @staticmethod
     def setAxis(key: str, padGuid: str, padInputs: InputMapping):
@@ -274,7 +272,7 @@ class LemonadeGenerator(Generator):
             inputy = padInputs["joystick2up"]
 
         if inputx is None or inputy is None:
-            return "";
+            return ""
 
         return f"axis_x:{inputx.id},guid:{padGuid},axis_y:{inputy.id},engine:sdl"
 
@@ -311,5 +309,5 @@ def getLemonadeLangFromEnvironment():
     lang = environ['LANG'][:5]
     if lang in availableLanguages:
         return region[availableLanguages[lang]]
-    else:
-        return region["AUTO"]
+
+    return region["AUTO"]

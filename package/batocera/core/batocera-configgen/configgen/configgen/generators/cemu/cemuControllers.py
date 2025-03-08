@@ -171,8 +171,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
     def getOption(option: str, defaultValue: str) -> Any:
         if (system.isOptSet(option)):
             return system.config[option]
-        else:
-            return defaultValue
+        return defaultValue
 
     def addTextElement(parent: ET.Element, name: str, value: str) -> None:
         element = ET.SubElement(parent, name)
@@ -187,7 +186,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
         return CEMU_CONTROLLER_PROFILES / f"controller{controller}.xml"
 
     def isWiimote(pad: Controller) -> bool:
-        return WIIMOTE_NAME == pad.real_name
+        return pad.real_name == WIIMOTE_NAME
 
     def findWiimoteType(pad: Controller) -> str:
         context = pyudev.Context()
@@ -202,24 +201,22 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
             if WIIMOTE_NAME_CLASSIC in names:
                 return WIIMOTE_TYPE_MOTIONPLUS_CLASSIC
             return WIIMOTE_TYPE_MOTIONPLUS
-        else:
-            if WIIMOTE_NAME_NUNCHUK in names:
-                return WIIMOTE_TYPE_NUNCHUK
-            if WIIMOTE_NAME_CLASSIC in names:
-                return WIIMOTE_TYPE_CLASSIC
-            return WIIMOTE_TYPE_CORE
+        if WIIMOTE_NAME_NUNCHUK in names:
+            return WIIMOTE_TYPE_NUNCHUK
+        if WIIMOTE_NAME_CLASSIC in names:
+            return WIIMOTE_TYPE_CLASSIC
+        return WIIMOTE_TYPE_CORE
 
     # Make controller directory if it doesn't exist
     mkdir_if_not_exists(CEMU_CONTROLLER_PROFILES)
 
     # Purge old controller files
-    for counter in range(0,8):
+    for counter in range(8):
         configFileName = getConfigFileName(counter)
         if configFileName.is_file():
             configFileName.unlink()
 
     ## CONTROLLER: Create the config xml files
-    nplayer = 0
 
     # cemu assign pads by uuid then by index with the same uuid
     # so, if 2 pads have the same uuid, the index is not 0 but 1 for the 2nd one
@@ -235,7 +232,7 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
         guid_n[pad.index] = guid_count[pad.guid]
     ###
 
-    for pad in playersControllers:
+    for nplayer, pad in enumerate(playersControllers):
         root = ET.Element("emulated_controller")
 
         # Set type from controller combination
@@ -290,5 +287,3 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
             ET.indent(tree, space="  ", level=0)
             tree.write(handle, encoding='UTF-8', xml_declaration=True)
             handle.close()
-
-        nplayer+=1

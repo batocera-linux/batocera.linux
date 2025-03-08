@@ -227,7 +227,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         try:
             with overlay_info_file.open() as f:
                 infos = json.load(f)
-        except:
+        except Exception:
             _logger.warning("unable to read %s", overlay_info_file)
             infos = {}
     else:
@@ -249,17 +249,16 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
     bezel_ratio  = bezel_width / bezel_height
 
     # the screen and bezel ratio must be approximatly the same
-    if bordersSize is None:
-        if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
-            _logger.debug(
-                "screen ratio (%(screen_ratio)s) is too far from the bezel one (%(bezel_ratio)s) : %(screen_ratio)s - %(bezel_ratio)s > %(max_ratio_delta)s",
-                {
-                    'screen_ratio': screen_ratio,
-                    'bezel_ratio': bezel_ratio,
-                    'max_ratio_delta': max_ratio_delta
-                }
-            )
-            return None
+    if bordersSize is None and abs(screen_ratio - bezel_ratio) > max_ratio_delta:
+        _logger.debug(
+            "screen ratio (%(screen_ratio)s) is too far from the bezel one (%(bezel_ratio)s) : %(screen_ratio)s - %(bezel_ratio)s > %(max_ratio_delta)s",
+            {
+                'screen_ratio': screen_ratio,
+                'bezel_ratio': bezel_ratio,
+                'max_ratio_delta': max_ratio_delta
+            }
+        )
+        return None
 
     # the ingame image and the bezel free space must feet
     ## the bezel top and bottom cover must be minimum
@@ -283,19 +282,17 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         _logger.debug("bezel has no left info in %s", overlay_info_file)
         # assume default is 4/3 over 16/9
         infos_left = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if bordersSize is None:
-            if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-                _logger.debug("bezel left covers too much the game image : %s / %s > %s", infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover)
-                return None
+        if bordersSize is None and abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            _logger.debug("bezel left covers too much the game image : %s / %s > %s", infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover)
+            return None
 
     if "right" not in infos:
         _logger.debug("bezel has no right info in %s", overlay_info_file)
         # assume default is 4/3 over 16/9
         infos_right = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if bordersSize is None:
-            if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-                _logger.debug("bezel right covers too much the game image : %s / %s > %s", infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover)
-                return None
+        if bordersSize is None and abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            _logger.debug("bezel right covers too much the game image : %s / %s > %s", infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover)
+            return None
 
     if bordersSize is None:
         if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
@@ -329,7 +326,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         output_png_file = Path("/tmp/bezel_gunborders.png")
         innerSize, outerSize = bezelsUtil.gunBordersSize(bordersSize)
         _logger.debug("Gun border ratio = %s", bordersRatio)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, bordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+        bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, bordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     _logger.debug("applying bezel %s", overlay_png_file)
@@ -344,13 +341,13 @@ def extractGameInfosFromXml(xml: str) -> dict[str, str]:
         infos = ET.parse(xml)
         try:
             vals["name"] = infos.find("./game/name").text
-        except:
+        except Exception:
             pass
         try:
             vals["thumbnail"] = infos.find("./game/thumbnail").text
-        except:
+        except Exception:
             pass
-    except:
+    except Exception:
         pass
     return vals
 
@@ -414,9 +411,8 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
     configstr = configstr.replace("%SYSTEMNAME%", hudConfig_protectStr(systemName))
     configstr = configstr.replace("%GAMENAME%", hudConfig_protectStr(gameName))
     configstr = configstr.replace("%EMULATORCORE%", hudConfig_protectStr(emulatorstr))
-    configstr = configstr.replace("%THUMBNAIL%", hudConfig_protectStr(gameThumbnail))
+    return configstr.replace("%THUMBNAIL%", hudConfig_protectStr(gameThumbnail))
 
-    return configstr
 
 def runCommand(command: Command) -> int:
     global proc
@@ -445,7 +441,7 @@ def runCommand(command: Command) -> int:
         # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
         # Examine es-core/src/platform.cpp::runSystemCommand for additional context
         pass
-    except Exception as e:
+    except BaseException as e:
         _logger.error("emulator exited")
 
         raise UnexpectedEmulatorExit from e
@@ -505,7 +501,7 @@ def launch() -> None:
 
             if isinstance(e, BatoceraException):
                 Path('/tmp/launch_error.log').write_text(e.args[0])
-        except Exception as e:
+        except Exception:
             _logger.exception("configgen exception: ")
 
         profiler.stop()

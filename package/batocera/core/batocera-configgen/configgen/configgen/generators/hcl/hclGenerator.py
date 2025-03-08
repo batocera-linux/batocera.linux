@@ -26,7 +26,7 @@ class HclGenerator(Generator):
         try:
             os.chdir(ROMS / "hcl" / "data" / "map")
             os.chdir(ROMS / "hcl")
-        except:
+        except Exception:
             _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["hcl", "-d"]
 
