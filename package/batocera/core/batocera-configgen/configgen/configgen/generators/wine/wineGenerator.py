@@ -66,16 +66,12 @@ class WineGenerator(Generator):
                 gamescope_options = []
 
                 # Retrieve nested resolution
-                nested_resolution = system.getOptString("gamescope_nested_resolution")
-                if nested_resolution:
-                    try:
-                        nested_width, nested_height = nested_resolution.split("x")
-                        gamescope_options.extend([
-                            "-w", nested_width.strip(),
-                            "-h", nested_height.strip()
-                        ])
-                    except Exception:
-                        pass
+                nested_resolution = system.config.get_str("gamescope_nested_resolution", "1920x1080")
+                nested_width, _, nested_height = nested_resolution.partition("x")
+                gamescope_options.extend([
+                "-w", nested_width.strip(),
+                "-h", nested_height.strip()
+                ])
 
                 # Retrieve output resolution
                 output_resolution = system.getOptString("gamescope_output_resolution")
@@ -90,15 +86,11 @@ class WineGenerator(Generator):
                         pass
 
                 # Retrieve refresh rate
-                nested_refresh = system.getOptString("gamescope_nested_refresh")
-                if nested_refresh:
-                    gamescope_options.extend(["-r", str(nested_refresh)])
+                gamescope_options.extend(["-r", system.config.get_str("gamescope_nested_refresh", "60")])
 
-                # --- New: Framerate limit ---
                 # Set a simple framerate limit as a divisor of the refresh rate.
                 # Default is off (i.e. not used) unless explicitly set.
-                framerate_limit = system.getOptString("gamescope_framerate_limit", "off").lower()
-                if framerate_limit != "off":
+                if framerate_limit := system.config.get_str("gamescope_framerate_limit"):
                     gamescope_options.extend(["--framerate-limit", framerate_limit])
 
                 # Upscaler type
@@ -116,10 +108,8 @@ class WineGenerator(Generator):
                 if sharpness and sharpness != "auto":
                     gamescope_options.extend(["--sharpness", sharpness])
 
-                # HDR: only add if set to on/true/1
-                hdr = system.getOptString("gamescope_hdr", "0").lower()
-                if hdr in ["1", "on", "true"]:
-                    gamescope_options.append("--hdr-enabled")
+                # HDR
+                if system.config.get_bool("gamescope_hdr"):
 
                     # Only process the following HDR options if HDR is enabled:
 
