@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -14,161 +13,161 @@ if TYPE_CHECKING:
 
 Keymapping =[
         {
-			"Joystick": -1,
-			"Buttons": [
-				"UP",
-				"DOWN",
-				"LEFT",
-				"RIGHT",
-				"a",
-				"s",
-				"d",
-				"z",
-				"x",
-				"c",
-				"RETURN",
-				"f",
-				"v",
-				"q"
-			]
-		},
-		{
-			"Joystick": -1,
-			"Buttons": [
-				"KP_8",
-				"KP_5",
-				"KP_4",
-				"KP_6",
-				"p",
-				"LBRACKET",
-				"RBRACKET",
-				"SEMICOLON",
-				"QUOTE",
-				"BACKSLASH",
-				"SLASH",
-				"o",
-				"l",
-				"PERIOD"
-			]
-		},
-		{
-			"Joystick": -1,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		},
-		{
-			"Joystick": -1,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		}
-	]
+            "Joystick": -1,
+            "Buttons": [
+                "UP",
+                "DOWN",
+                "LEFT",
+                "RIGHT",
+                "a",
+                "s",
+                "d",
+                "z",
+                "x",
+                "c",
+                "RETURN",
+                "f",
+                "v",
+                "q"
+            ]
+        },
+        {
+            "Joystick": -1,
+            "Buttons": [
+                "KP_8",
+                "KP_5",
+                "KP_4",
+                "KP_6",
+                "p",
+                "LBRACKET",
+                "RBRACKET",
+                "SEMICOLON",
+                "QUOTE",
+                "BACKSLASH",
+                "SLASH",
+                "o",
+                "l",
+                "PERIOD"
+            ]
+        },
+        {
+            "Joystick": -1,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        },
+        {
+            "Joystick": -1,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        }
+    ]
 
 Joymapping =[
         {
-			"Joystick": 0,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		},
+            "Joystick": 0,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        },
         {
-			"Joystick": 1,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		},
-		{
-			"Joystick": 2,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		},
-		{
-			"Joystick": 3,
-			"Buttons": [
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used",
-				"Not used"
-			]
-		}
-	]
+            "Joystick": 1,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        },
+        {
+            "Joystick": 2,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        },
+        {
+            "Joystick": 3,
+            "Buttons": [
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used",
+                "Not used"
+            ]
+        }
+    ]
 
 class IkemenGenerator(Generator):
 
@@ -179,13 +178,12 @@ class IkemenGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-        config_path = rom_path / "save" / "config.json"
+        config_path = rom / "save" / "config.json"
 
         try:
             with config_path.open() as c:
                 conf = json.load(c)
-        except:
+        except Exception:
             conf = {}
 
         # Joystick configuration seems completely broken in 0.98.2 Linux

@@ -3,25 +3,15 @@
 
 from __future__ import annotations
 
-import os
+from . import profiler
 
-_profiler = None
-
-# 1) touch /var/run/emulatorlauncher.perf
-# 2) start a game
-# 3) gprof2dot.py -f pstats -n 5 /var/run/emulatorlauncher.prof -o emulatorlauncher.dot # wget https://raw.githubusercontent.com/jrfonseca/gprof2dot/master/gprof2dot.py
-# 4) dot -Tpng emulatorlauncher.dot -o emulatorlauncher.png
-# 3) or upload the file /var/run/emulatorlauncher.prof on https://nejc.saje.info/pstats-viewer.html
-
-if os.path.exists("/var/run/emulatorlauncher.perf"):  # noqa: PTH110
-    import cProfile
-    _profiler = cProfile.Profile()
-    _profiler.enable()
+profiler.start()
 
 ### import always needed ###
 import argparse
 import json
 import logging
+import os
 import signal
 import subprocess
 import time
@@ -33,6 +23,7 @@ from . import controllersConfig as controllers
 from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
+from .exceptions import BaseBatoceraException, BatoceraException, UnexpectedEmulatorExit
 from .generators import get_generator
 from .gun import Gun
 from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
@@ -46,25 +37,25 @@ if TYPE_CHECKING:
 
     from .Command import Command
     from .generators.Generator import Generator
-    from .types import DeviceInfoDict, Resolution
+    from .types import Resolution
 
 _logger = logging.getLogger(__name__)
 
 def main(args: argparse.Namespace, maxnbplayers: int) -> int:
     # squashfs roms if squashed
-    if Path(args.rom).suffix == ".squashfs":
+    if args.rom.suffix == ".squashfs":
         with squashfs_rom(args.rom) as rom:
             return start_rom(args, maxnbplayers, rom, args.rom)
     else:
         return start_rom(args, maxnbplayers, args.rom, args.rom)
 
-def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfiguration: str) -> int:
+def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_rom: Path) -> int:
     player_controllers = Controller.load_for_players(maxnbplayers, args)
 
     # find the system to run
     systemName = args.system
     _logger.debug("Running system: %s", systemName)
-    system = Emulator(args, romConfiguration)
+    system = Emulator(args, original_rom)
 
     _logger.debug("Settings: %s", {
         key: '***' if 'password' in key else value for key, value in system.config.items()
@@ -81,143 +72,119 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: str, romConfigur
 
     guns = Gun.get_and_precalibrate_all(system, rom)
 
-    # search wheels in case use_wheels is enabled for this game
-    # force use_wheels in case es tells it has a wheel
-    wheelProcesses = None
-    if system.config.use_wheels:
-        deviceInfos = controllers.getDevicesInformation()
-        (wheelProcesses, player_controllers, deviceInfos) = wheelsUtils.reconfigureControllers(player_controllers, system, rom, metadata, deviceInfos)
-        wheels = wheelsUtils.getWheelsFromDevicesInfos(deviceInfos)
-    else:
-        _logger.info("wheels disabled.")
-        wheels: DeviceInfoDict = {}
+    with wheelsUtils.configure_wheels(player_controllers, system, metadata) as (player_controllers, wheels):
+        # find the generator
+        generator = get_generator(system.config.emulator)
 
-    # find the generator
-    generator = get_generator(system.config.emulator)
+        # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
+        wantedGameMode = generator.getResolutionMode(system.config)
+        systemMode = videoMode.getCurrentMode()
 
-    # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
-    wantedGameMode = generator.getResolutionMode(system.config)
-    systemMode = videoMode.getCurrentMode()
+        resolutionChanged = False
+        mouseChanged = False
+        exitCode = -1
+        try:
+            # lower the resolution if mode is auto
+            newsystemMode = systemMode  # newsystemMode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
+            if system.config.video_mode == "" or system.config.video_mode == "default":
+                _logger.debug("minTomaxResolution")
+                _logger.debug("video mode before minmax: %s", systemMode)
+                videoMode.minTomaxResolution()
+                newsystemMode = videoMode.getCurrentMode()
+                if newsystemMode != systemMode:
+                    resolutionChanged = True
 
-    resolutionChanged = False
-    mouseChanged = False
-    exitCode = -1
-    try:
-        # lower the resolution if mode is auto
-        newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
-        if system.config.video_mode == "" or system.config.video_mode == "default":
-            _logger.debug("minTomaxResolution")
-            _logger.debug("video mode before minmax: %s", systemMode)
-            videoMode.minTomaxResolution()
-            newsystemMode = videoMode.getCurrentMode()
-            if newsystemMode != systemMode:
+            _logger.debug("current video mode: %s", newsystemMode)
+            _logger.debug("wanted video mode: %s", wantedGameMode)
+
+            if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
+                videoMode.changeMode(wantedGameMode)
                 resolutionChanged = True
+            gameResolution = videoMode.getCurrentResolution()
 
-        _logger.debug("current video mode: %s", newsystemMode)
-        _logger.debug("wanted video mode: %s", wantedGameMode)
+            # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
+            if videoMode.isResolutionReversed():
+                x = gameResolution["width"]
+                gameResolution["width"]  = gameResolution["height"]
+                gameResolution["height"] = x
+            _logger.debug('resolution: %sx%s', gameResolution["width"], gameResolution["height"])
 
-        if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
-            videoMode.changeMode(wantedGameMode)
-            resolutionChanged = True
-        gameResolution = videoMode.getCurrentResolution()
+            # savedir: create the save directory if not already done
+            dirname = SAVES / system.name
+            if not dirname.exists():
+                dirname.mkdir(parents=True)
 
-        # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
-        if videoMode.isResolutionReversed():
-            x = gameResolution["width"]
-            gameResolution["width"]  = gameResolution["height"]
-            gameResolution["height"] = x
-        _logger.debug('resolution: %sx%s', gameResolution["width"], gameResolution["height"])
+            # core
+            effectiveCore = ""
+            if "core" in system.config and system.config.core is not None:
+                effectiveCore = system.config.core
 
-        # savedir: create the save directory if not already done
-        dirname = SAVES / system.name
-        if not dirname.exists():
-            dirname.mkdir(parents=True)
+            if generator.getMouseMode(system.config, rom):
+                mouseChanged = True
+                videoMode.changeMouse(True)
 
-        # core
-        effectiveCore = ""
-        if "core" in system.config and system.config.core is not None:
-            effectiveCore = system.config.core
-        effectiveRom = ""
-        effectiveRomConfiguration = ""
-        if rom is not None:
-            effectiveRom = rom
-            effectiveRomConfiguration = romConfiguration
+            # SDL VSync is a big deal on OGA and RPi4
+            if not system.config.get_bool('sdlvsync', True):
+                system.config["sdlvsync"] = '0'
+            else:
+                system.config["sdlvsync"] = '1'
+            os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
 
-        if generator.getMouseMode(system.config, rom):
-            mouseChanged = True
-            videoMode.changeMouse(True)
+            # run a script before emulator starts
+            callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
+            callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
 
-        # SDL VSync is a big deal on OGA and RPi4
-        if not system.config.get_bool('sdlvsync', True):
-            system.config["sdlvsync"] = '0'
-        else:
-            system.config["sdlvsync"] = '1'
-        os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
+            # run the emulator
+            from .utils.evmapy import evmapy
+            with (
+                evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns),
+                set_hotkeygen_context(generator, system)
+            ):
+                # change directory if wanted
+                executionDirectory = generator.executionDirectory(system.config, rom)
+                if executionDirectory is not None:
+                    os.chdir(executionDirectory)
 
-        # run a script before emulator starts
-        callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
-        callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+                cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
 
-        # run the emulator
-        from .utils.evmapy import evmapy
-        with (
-            evmapy(systemName, system.config.emulator, effectiveCore, effectiveRomConfiguration, player_controllers, guns),
-            set_hotkeygen_context(generator, system)
-        ):
-            # change directory if wanted
-            executionDirectory = generator.executionDirectory(system.config, effectiveRom)
-            if executionDirectory is not None:
-                os.chdir(executionDirectory)
+                if system.config.get_bool('hud_support'):
+                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+                    if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
+                        gameinfos = extractGameInfosFromXml(args.gameinfoxml)
+                        cmd.env["MANGOHUD_DLSYM"] = "1"
+                        hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, gameinfos, hud_bezel)
+                        hud_config_file = Path('/var/run/hud.config')
+                        with hud_config_file.open('w') as f:
+                            f.write(hudconfig)
+                        cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
+                        if not generator.hasInternalMangoHUDCall():
+                            cmd.array.insert(0, "mangohud")
 
-            cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
+                with profiler.pause():
+                    exitCode = runCommand(cmd)
 
-            if system.config.get_bool('hud_support'):
-                hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
-                if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
-                    gameinfos = extractGameInfosFromXml(args.gameinfoxml)
-                    cmd.env["MANGOHUD_DLSYM"] = "1"
-                    hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, gameinfos, hud_bezel)
-                    hud_config_file = Path('/var/run/hud.config')
-                    with hud_config_file.open('w') as f:
-                        f.write(hudconfig)
-                    cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
-                    if not generator.hasInternalMangoHUDCall():
-                        cmd.array.insert(0, "mangohud")
+            # run a script after emulator shuts down
+            callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
+            callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
 
-            if _profiler:
-                _profiler.disable()
-            exitCode = runCommand(cmd)
-            if _profiler:
-                _profiler.enable()
+        finally:
+            # always restore the resolution
+            if resolutionChanged:
+                try:
+                    videoMode.changeMode(systemMode)
+                except Exception:
+                    pass  # don't fail
 
-        # run a script after emulator shuts down
-        callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
-        callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, effectiveRom])
+            if mouseChanged:
+                try:
+                    videoMode.changeMouse(False)
+                except Exception:
+                    pass  # don't fail
 
-    finally:
-        # always restore the resolution
-        if resolutionChanged:
-            try:
-                videoMode.changeMode(systemMode)
-            except Exception:
-                pass # don't fail
-
-        if mouseChanged:
-            try:
-                videoMode.changeMouse(False)
-            except Exception:
-                pass # don't fail
-
-        if wheelProcesses is not None and len(wheelProcesses) > 0:
-            try:
-                wheelsUtils.resetControllers(wheelProcesses)
-            except Exception:
-                _logger.error("hum, unable to reset wheel controllers !")
-                pass # don't fail
     # exit
     return exitCode
 
-def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
+def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
     if generator.supportsInternalBezels():
         _logger.debug("skipping bezels for emulator %s", system.config.emulator)
         return None
@@ -239,7 +206,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         with overlay_info_file.open("w") as fd:
             fd.write(f'{{ "width":{w}, "height":{h}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000 }}')
     else:
-        _logger.debug("hud enabled. trying to apply the bezel %s", system.config['bezel'])
+        _logger.debug("hud enabled. trying to apply the bezel %s", bezel)
 
         bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name, system.config.emulator)
         if bz_infos is None:
@@ -255,7 +222,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         try:
             with overlay_info_file.open() as f:
                 infos = json.load(f)
-        except:
+        except Exception:
             _logger.warning("unable to read %s", overlay_info_file)
             infos = {}
     else:
@@ -277,17 +244,16 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
     bezel_ratio  = bezel_width / bezel_height
 
     # the screen and bezel ratio must be approximatly the same
-    if bordersSize is None:
-        if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
-            _logger.debug(
-                "screen ratio (%(screen_ratio)s) is too far from the bezel one (%(bezel_ratio)s) : %(screen_ratio)s - %(bezel_ratio)s > %(max_ratio_delta)s",
-                {
-                    'screen_ratio': screen_ratio,
-                    'bezel_ratio': bezel_ratio,
-                    'max_ratio_delta': max_ratio_delta
-                }
-            )
-            return None
+    if bordersSize is None and abs(screen_ratio - bezel_ratio) > max_ratio_delta:
+        _logger.debug(
+            "screen ratio (%(screen_ratio)s) is too far from the bezel one (%(bezel_ratio)s) : %(screen_ratio)s - %(bezel_ratio)s > %(max_ratio_delta)s",
+            {
+                'screen_ratio': screen_ratio,
+                'bezel_ratio': bezel_ratio,
+                'max_ratio_delta': max_ratio_delta
+            }
+        )
+        return None
 
     # the ingame image and the bezel free space must feet
     ## the bezel top and bottom cover must be minimum
@@ -311,19 +277,17 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         _logger.debug("bezel has no left info in %s", overlay_info_file)
         # assume default is 4/3 over 16/9
         infos_left = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if bordersSize is None:
-            if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-                _logger.debug("bezel left covers too much the game image : %s / %s > %s", infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover)
-                return None
+        if bordersSize is None and abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            _logger.debug("bezel left covers too much the game image : %s / %s > %s", infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover)
+            return None
 
     if "right" not in infos:
         _logger.debug("bezel has no right info in %s", overlay_info_file)
         # assume default is 4/3 over 16/9
         infos_right = (bezel_width - (bezel_height / 3 * 4)) / 2
-        if bordersSize is None:
-            if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
-                _logger.debug("bezel right covers too much the game image : %s / %s > %s", infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover)
-                return None
+        if bordersSize is None and abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            _logger.debug("bezel right covers too much the game image : %s / %s > %s", infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover)
+            return None
 
     if bordersSize is None:
         if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
@@ -357,7 +321,7 @@ def getHudBezel(system: Emulator, generator: Generator, rom: str, gameResolution
         output_png_file = Path("/tmp/bezel_gunborders.png")
         innerSize, outerSize = bezelsUtil.gunBordersSize(bordersSize)
         _logger.debug("Gun border ratio = %s", bordersRatio)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, bordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+        bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, bordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     _logger.debug("applying bezel %s", overlay_png_file)
@@ -372,13 +336,13 @@ def extractGameInfosFromXml(xml: str) -> dict[str, str]:
         infos = ET.parse(xml)
         try:
             vals["name"] = infos.find("./game/name").text
-        except:
+        except Exception:
             pass
         try:
             vals["thumbnail"] = infos.find("./game/thumbnail").text
-        except:
+        except Exception:
             pass
-    except:
+    except Exception:
         pass
     return vals
 
@@ -399,16 +363,15 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
         return ""
     return str(string)
 
-def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: str, gameinfos: Mapping[str, str], bezel: Path | None) -> str:
+def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, gameinfos: Mapping[str, str], bezel: Path | None) -> str:
     configstr = ""
 
     if bezel != "" and bezel != "none" and bezel is not None:
         configstr = f"background_image={hudConfig_protectStr(bezel)}\nlegacy_layout=false\n"
 
-    if system.config.get('hud', 'none') == 'none':
+    if (mode := system.config.get('hud', 'none')) == 'none':
         return configstr + "background_alpha=0\n" # hide the background
 
-    mode = system.config["hud"]
     hud_position = "bottom-left"
     if (hud_corner := system.config.get('hud_corner', '')) != '':
         if hud_corner == "NW":
@@ -442,9 +405,8 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
     configstr = configstr.replace("%SYSTEMNAME%", hudConfig_protectStr(systemName))
     configstr = configstr.replace("%GAMENAME%", hudConfig_protectStr(gameName))
     configstr = configstr.replace("%EMULATORCORE%", hudConfig_protectStr(emulatorstr))
-    configstr = configstr.replace("%THUMBNAIL%", hudConfig_protectStr(gameThumbnail))
+    return configstr.replace("%THUMBNAIL%", hudConfig_protectStr(gameThumbnail))
 
-    return configstr
 
 def runCommand(command: Command) -> int:
     global proc
@@ -473,8 +435,10 @@ def runCommand(command: Command) -> int:
         # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
         # Examine es-core/src/platform.cpp::runSystemCommand for additional context
         pass
-    except:
+    except BaseException as e:
         _logger.error("emulator exited")
+
+        raise UnexpectedEmulatorExit from e
 
     return exitcode
 
@@ -503,7 +467,7 @@ def launch() -> None:
             parser.add_argument(f"-p{p}nbaxes"    , help=f"player{p} controller number of axes"   , type=int, required=False)
 
         parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
-        parser.add_argument("-rom",            help="rom absolute path",           type=str, required=True)
+        parser.add_argument("-rom",            help="rom absolute path",           type=Path, required=True)
         parser.add_argument("-emulator",       help="force emulator",              type=str, required=False)
         parser.add_argument("-core",           help="force emulator core",         type=str, required=False)
         parser.add_argument("-netplaymode",    help="host/client",                 type=str, required=False)
@@ -522,15 +486,19 @@ def launch() -> None:
         parser.add_argument("-spinner",        help="configure spinner",           action="store_true")
 
         args = parser.parse_args()
+        exitcode = -1
         try:
-            exitcode = -1
             exitcode = main(args, maxnbplayers)
-        except Exception as e:
+        except BaseBatoceraException as e:
+            _logger.exception("configgen exception: ")
+            exitcode = e.exit_code
+
+            if isinstance(e, BatoceraException):
+                Path('/tmp/launch_error.log').write_text(e.args[0])
+        except Exception:
             _logger.exception("configgen exception: ")
 
-        if _profiler:
-            _profiler.disable()
-            _profiler.dump_stats('/var/run/emulatorlauncher.prof')
+        profiler.stop()
 
         time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
         _logger.debug("Exiting configgen with status %s", exitcode)

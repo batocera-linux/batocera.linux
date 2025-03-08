@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, TypedDict
 from PIL import Image, ImageOps
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
+from ..exceptions import BatoceraException
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
@@ -160,23 +161,23 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
 
 def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
     if system.config['bezel.tattoo'] == 'system':
+        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
             if not tattoo_file.exists():
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening controller overlay: %s", tattoo_file)
     elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
         try:
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)
     else:
+        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
             tattoo = Image.open(tattoo_file)
-        except:
+        except Exception:
             _logger.error("Error opening custom file: %s", tattoo_file)
     # Open the existing bezel...
     back = Image.open(input_png)
@@ -186,7 +187,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     # Quickly grab the sizes.
     w,h = fast_image_size(input_png)
     tw,th = fast_image_size(tattoo_file)
-    if system.isOptSet("bezel.resize_tattoo") and not system.getOptBoolean('bezel.resize_tattoo'):
+    if not system.config.get_bool("bezel.resize_tattoo", True):
         # Maintain the image's original size.
         # Failsafe for if the image is too large.
         if tw > w or th > h:
@@ -206,10 +207,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     tattooCanvas = Image.new("RGBA", back.size)
     # Margin for the tattoo
     margin = int((20 / 1080) * h)
-    if system.isOptSet('bezel.tattoo_corner'):
-        corner = system.config['bezel.tattoo_corner']
-    else:
-        corner = 'NW'
+    corner = system.config.get('bezel.tattoo_corner', 'NW')
     if (corner.upper() == 'NE'):
         tattooCanvas.paste(tattoo, (w-tw,margin)) # 20 pixels vertical margins (on 1080p)
     elif (corner.upper() == 'SE'):
@@ -229,8 +227,8 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
     imgin = Image.open(input_png)
     # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
     # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-    if not 'transparency' in imgin.info:
-        raise Exception("no transparent pixels in the image, abort")
+    if 'transparency' not in imgin.info:
+        raise BatoceraException("No transparent pixels in the bezel image")
     alpha = imgin.split()[-1]  # alpha from original palette + alpha
     ix,iy = fast_image_size(input_png)
     sx,sy = screensize
@@ -346,5 +344,5 @@ def gunsBordersColorFomConfig(config: SystemConfig) -> str:
 def createTransparentBezel(output_png: Path, width: int, height: int) -> None:
     from PIL import ImageDraw
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
-    imgnewdraw = ImageDraw.Draw(imgnew)
+    ImageDraw.Draw(imgnew)
     imgnew.save(output_png, mode="RGBA", format="PNG")

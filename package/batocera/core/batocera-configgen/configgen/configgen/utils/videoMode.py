@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import DEFAULTS_DIR
+from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
     from ..config import SystemConfig
@@ -34,21 +35,21 @@ def changeMode(videomode: str) -> None:
             except subprocess.CalledProcessError as e:
                 _logger.error("Error setting video mode: %s", e.stderr)
                 if i == max_tries - 1:
-                    raise
+                    raise BatoceraException("Error setting video mode") from e
                 time.sleep(1)
 
-def getCurrentMode() -> str:
+def getCurrentMode() -> str:  # noqa: RET503
     proc = subprocess.Popen(["batocera-resolution currentMode"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     for val in out.decode().splitlines():
         return val # return the first line
 
     if TYPE_CHECKING:
         raise AssertionError("unreachable")
 
-def getRefreshRate() -> str:
+def getRefreshRate() -> str:  # noqa: RET503
     proc = subprocess.Popen(["batocera-resolution refreshRate"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     for val in out.decode().splitlines():
         return val # return the first line
 
@@ -67,8 +68,8 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     # output2
     vo2 = None
     # find the configured one
-    if "videooutput2" in config and config["videooutput2"] in outputs and config["videooutput2"] != vo1:
-        vo2 = config["videooutput2"]
+    if (vo2_config := config.get("videooutput2")) and vo2_config in outputs and vo2_config != vo1:
+        vo2 = vo2_config
     # find the first one
     for x in outputs:
         if x != vo1 and vo2 is None:
@@ -77,14 +78,14 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
         try:
             resolution2 = getCurrentResolution(vo2)
             res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
-        except:
+        except Exception:
             pass # ignore bad information
 
     # output3
     vo3 = None
     # find the configured one
-    if "videooutput3" in config and config["videooutput3"] in outputs and config["videooutput3"] != vo1 and config["videooutput3"] != vo2:
-        vo3 = config["videooutput3"]
+    if (vo3_config := config.get("videooutput3")) and vo3_config in outputs and vo3_config != vo1 and vo3_config != vo2:
+        vo3 = vo3_config
     # find the first one
     for x in outputs:
         if x != vo1 and x != vo2 and vo3 is None:
@@ -93,7 +94,7 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
         try:
             resolution3 = getCurrentResolution(vo3)
             res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
-        except:
+        except Exception:
             pass # ignore bad information
 
     _logger.debug("Screens:")
@@ -102,12 +103,12 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
 
 def getScreens() -> list[str]:
     proc = subprocess.Popen(["batocera-resolution listOutputs"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     return out.decode().splitlines()
 
 def minTomaxResolution() -> None:
     proc = subprocess.Popen(["batocera-resolution minTomaxResolution"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    proc.communicate()
 
 def getCurrentResolution(name: str | None = None) -> Resolution:
     if name is None:
@@ -115,18 +116,18 @@ def getCurrentResolution(name: str | None = None) -> Resolution:
     else:
         proc = subprocess.Popen([f"batocera-resolution --screen {name} currentResolution"], stdout=subprocess.PIPE, shell=True)
 
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
 
 def getCurrentOutput() -> str:
     proc = subprocess.Popen(["batocera-resolution currentOutput"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     return out.decode().strip()
 
 def supportSystemRotation() -> bool:
     proc = subprocess.Popen(["batocera-resolution supportSystemRotation"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    proc.communicate()
     return proc.returncode == 0
 
 def isResolutionReversed():
@@ -141,7 +142,7 @@ def checkModeExists(videomode: str) -> bool:
 
     # specific resolution given
     proc = subprocess.Popen(["batocera-resolution listModes"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    (out, _) = proc.communicate()
     for valmod in out.decode().splitlines():
         vals = valmod.split(":")
         if(videomode == vals[0]):
@@ -153,7 +154,7 @@ def checkModeExists(videomode: str) -> bool:
 def changeMouse(mode: bool) -> None:
     _logger.debug("changeMouseMode(%s)", mode)
     proc = subprocess.Popen([f"batocera-mouse {'show' if mode else 'hide'}"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
+    proc.communicate()
 
 def getGLVersion() -> float:
     try:
@@ -167,9 +168,8 @@ def getGLVersion() -> float:
         glVerTemp = glVerString[3].split(".")
         if len(glVerTemp) > 2:
             del glVerTemp[2:]
-        glVersion = float('.'.join(glVerTemp))
-        return glVersion
-    except:
+        return float('.'.join(glVerTemp))
+    except Exception:
         return 0
 
 def getGLVendor() -> str:
@@ -181,9 +181,8 @@ def getGLVendor() -> str:
         glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
         glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)
         glVendString = glVendOutput.split()
-        glVendor = glVendString[3].casefold()
-        return glVendor
-    except:
+        return glVendString[3].casefold()
+    except Exception:
         return "unknown"
 
 def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:

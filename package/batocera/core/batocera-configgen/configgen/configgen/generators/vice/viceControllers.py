@@ -7,7 +7,7 @@ from ...batoceraPaths import mkdir_if_not_exists
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
 
 # inputtype:
@@ -46,23 +46,22 @@ viceJoystick = {
 }
 
 # Create the controller configuration file
-def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersControllers: ControllerMapping):
+def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersControllers: Controllers):
     # vjm file
     viceFile = viceConfigFile / "sdl-joymap.vjm"
     # vic20 uses a slightly different port
-    if(system.config['core'] == 'xvic'):
+    if(system.config.core == 'xvic'):
         joy_port = "0"
     else:
         joy_port = "1"
 
     mkdir_if_not_exists(viceFile.parent)
 
-    listVice: list[str] = [];
+    listVice: list[str] = []
     listVice.append("# Batocera configured controllers")
     listVice.append("")
     listVice.append("!CLEAR")
-    nplayer = 1
-    for playercontroller, pad in sorted(playersControllers.items()):
+    for pad in playersControllers:
         listVice.append("")
         listVice.append(f"# {pad.real_name}")
         for x in pad.inputs:
@@ -71,7 +70,6 @@ def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersCont
                 if indexName == input.name:
                     listVice.append(indexValue.replace('#', str(pad.index)).replace('?', str(input.id)).replace('/', joy_port))
         listVice.append("")
-        nplayer += 1
 
     f = viceFile.open('w')
     for i in range(len(listVice)):

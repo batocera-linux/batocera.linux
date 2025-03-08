@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from pathlib import Path
 
     from ..Command import Command
     from ..config import SystemConfig
-    from ..controller import ControllerMapping
+    from ..controller import Controllers
     from ..Emulator import Emulator
     from ..gun import Guns
     from ..types import DeviceInfoMapping, HotkeysContext, Resolution
@@ -19,8 +20,8 @@ class Generator(metaclass=ABCMeta):
     def generate(
         self,
         system: Emulator,
-        rom: str,
-        playersControllers: ControllerMapping,
+        rom: Path,
+        playersControllers: Controllers,
         metadata: Mapping[str, str],
         guns: Guns,
         wheels: DeviceInfoMapping,
@@ -31,10 +32,10 @@ class Generator(metaclass=ABCMeta):
     def getResolutionMode(self, config: SystemConfig) -> str:
         return config['videomode']
 
-    def getMouseMode(self, config: SystemConfig, rom: str) -> bool:
+    def getMouseMode(self, config: SystemConfig, rom: Path) -> bool:
         return False
 
-    def executionDirectory(self, config: SystemConfig, rom: str) -> str | None:
+    def executionDirectory(self, config: SystemConfig, rom: Path) -> Path | None:
         return None
 
     # mame or libretro have internal bezels, don't display the one of mangohud
@@ -45,7 +46,7 @@ class Generator(metaclass=ABCMeta):
     def hasInternalMangoHUDCall(self) -> bool:
         return False
 
-    def getInGameRatio(self, config: SystemConfig, gameResolution: Resolution, rom: str) -> float:
+    def getInGameRatio(self, config: SystemConfig, gameResolution: Resolution, rom: Path) -> float:
         # put a default value, but it should be overriden by generators
         return 4/3
 

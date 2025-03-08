@@ -29,7 +29,7 @@ class MoonlightGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         moonlightConfig.generateMoonlightConfig(system)
-        gameName, confFile = self.getRealGameNameAndConfigFile(Path(rom))
+        gameName, confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = ['/usr/bin/moonlight', 'stream','-config',  confFile]
         commandArray.append('-app')
         commandArray.append(gameName)
@@ -57,7 +57,7 @@ class MoonlightGenerator(Generator):
                 gfeRom, gfeGame, confFileString = line.rstrip().split(';')
                 confFile = Path(confFileString)
                 #confFile = confFile.rstrip()
-            except:
+            except Exception:
                 gfeRom, gfeGame = line.rstrip().split(';')
                 confFile = MOONLIGHT_STAGING_CONFIG
             #If found

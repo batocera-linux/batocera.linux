@@ -10,7 +10,7 @@ test -x $DAEMON || exit 0
 
 start() {
         printf "Starting $NAME: "
-        start-stop-daemon --start --quiet -m --pidfile $PIDFILE --exec $DAEMON --background -- $DAEMON_ARGS \
+        start-stop-daemon --start --quiet -m --pidfile $PIDFILE --exec $DAEMON --background -- $DAEMON_ARGS > /var/log/hotkeygen.log 2>&1 \
                 && echo "OK" || echo "FAIL"
 }
 

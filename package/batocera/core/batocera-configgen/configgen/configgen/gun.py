@@ -136,7 +136,7 @@ class Gun:
 
     @classmethod
     def get_and_precalibrate_all(cls, system: Emulator, rom: str | Path, /) -> GunList:
-        if not system.isOptSet('use_guns') or not system.getOptBoolean('use_guns'):
+        if not system.config.use_guns:
             _logger.info('guns disabled.')
             return []
 
@@ -144,7 +144,7 @@ class Gun:
 
         if dir.exists():
             rom = Path(rom)
-            emulator = cast('str', system.config['emulator'])
+            emulator = system.config.emulator
             core = cast('str | None', system.config.get('core'))
 
             if system.name == 'atomiswave':
@@ -187,7 +187,7 @@ class Gun:
                 dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
                 _copy_file(src, dst)
 
-            elif system.name == 'namco2x6':
+            elif system.name == 'namco2x6':  # noqa: SIM102
                 if emulator == 'play':
                     src = dir / 'play' / rom.stem
                     dst = CONFIGS / 'play' / 'Play Data Files' / 'arcadesaves' / f'{rom.stem}.backupram'

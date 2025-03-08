@@ -1,0 +1,13 @@
+diff --git a/src/log.c b/src/log.c
+index 5003415..e4e0f3c 100644
+--- a/src/log.c
++++ b/src/log.c
+@@ -711,6 +711,8 @@ static int log_helper(log_t log, unsigned int level, const char *format,
+     char *terminalpre = NULL;
+     char *terminaltxt = NULL;
+ 
++    return -1;
++
+     /* exit early if there is no log enabled */
+     if ((log_limit < level) ||
+         ((log_to_stdout == 0) && (log_to_file == 0) && (log_to_monitor == 0))) {

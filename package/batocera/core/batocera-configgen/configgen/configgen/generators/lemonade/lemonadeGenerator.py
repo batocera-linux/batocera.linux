@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import InputMapping
 
@@ -42,13 +42,10 @@ class LemonadeGenerator(Generator):
 
     # Show mouse on screen
     def getMouseMode(self, config, rom):
-        if "lemonade_screen_layout" in config and config["lemonade_screen_layout"] == "1-false":
-            return False
-        else:
-            return True
+        return config.get("lemonade_screen_layout") != "1-false"
 
     @staticmethod
-    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
+    def writeLEMONADEConfig(lemonadeConfigFile: Path, system: Emulator, playersControllers: Controllers):
         # Pads
         lemonadeButtons = {
             "button_a":      "a",
@@ -84,13 +81,9 @@ class LemonadeGenerator(Generator):
         # Screen Layout
         lemonadeConfig.set("Layout", "custom_layout", "false")
         lemonadeConfig.set("Layout", r"custom_layout\default", "true")
-        if system.isOptSet('lemonade_screen_layout'):
-            tab = system.config["lemonade_screen_layout"].split('-')
-            lemonadeConfig.set("Layout", "swap_screen",   tab[1])
-            lemonadeConfig.set("Layout", "layout_option", tab[0])
-        else:
-            lemonadeConfig.set("Layout", "swap_screen", "false")
-            lemonadeConfig.set("Layout", "layout_option", "0")
+        layout_option, swap_screen = system.config.get_str('lemonade_screen_layout', '0-false').split('-')
+        lemonadeConfig.set("Layout", "swap_screen",   swap_screen)
+        lemonadeConfig.set("Layout", "layout_option", layout_option)
         lemonadeConfig.set("Layout", r"swap_screen\default", "false")
         lemonadeConfig.set("Layout", r"layout_option\default", "false")
 
@@ -98,10 +91,7 @@ class LemonadeGenerator(Generator):
         if not lemonadeConfig.has_section("System"):
             lemonadeConfig.add_section("System")
         # New 3DS Version
-        if system.isOptSet('lemonade_is_new_3ds') and system.config["lemonade_is_new_3ds"] == '1':
-            lemonadeConfig.set("System", "is_new_3ds", "true")
-        else:
-            lemonadeConfig.set("System", "is_new_3ds", "false")
+        lemonadeConfig.set("System", "is_new_3ds", system.config.get_bool("lemonade_is_new_3ds", return_values=("true", "false")))
         lemonadeConfig.set("System", r"is_new_3ds\default", "false")
         # Language
         lemonadeConfig.set("System", "region_value", str(getLemonadeLangFromEnvironment()))
@@ -149,47 +139,31 @@ class LemonadeGenerator(Generator):
         lemonadeConfig.set("Renderer", "use_hw_shader",   "true")
         lemonadeConfig.set("Renderer", "use_shader_jit",  "true")
         # Software, OpenGL (default) or Vulkan
-        if system.isOptSet('lemonade_graphics_api'):
-            lemonadeConfig.set("Renderer", "graphics_api", system.config["lemonade_graphics_api"])
-        else:
-            lemonadeConfig.set("Renderer", "graphics_api", "1")
+        lemonadeConfig.set("Renderer", "graphics_api", system.config.get("lemonade_graphics_api", "1"))
         # Set Vulkan as necessary
-        if system.isOptSet("lemonade_graphics_api") and system.config["lemonade_graphics_api"] == "2":
-            if vulkan.is_available():
-                _logger.debug("Vulkan driver is available on the system.")
-                if vulkan.has_discrete_gpu():
-                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                    discrete_index = vulkan.get_discrete_gpu_index()
-                    if discrete_index:
-                        _logger.debug("Using Discrete GPU Index: %s for Lemonade", discrete_index)
-                        lemonadeConfig.set("Renderer", "physical_device", discrete_index)
-                    else:
-                        _logger.debug("Couldn't get discrete GPU index")
+        if system.config.get("lemonade_graphics_api") == "2" and vulkan.is_available():
+            _logger.debug("Vulkan driver is available on the system.")
+            if vulkan.has_discrete_gpu():
+                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+                discrete_index = vulkan.get_discrete_gpu_index()
+                if discrete_index:
+                    _logger.debug("Using Discrete GPU Index: %s for Lemonade", discrete_index)
+                    lemonadeConfig.set("Renderer", "physical_device", discrete_index)
                 else:
-                    _logger.debug("Discrete GPU is not available on the system. Using default.")
+                    _logger.debug("Couldn't get discrete GPU index")
+            else:
+                _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
-        if system.isOptSet('lemonade_use_vsync_new') and system.config["lemonade_use_vsync_new"] == '0':
-            lemonadeConfig.set("Renderer", "use_vsync_new", "false")
-        else:
-            lemonadeConfig.set("Renderer", "use_vsync_new", "true")
+        lemonadeConfig.set("Renderer", "use_vsync_new", system.config.get_bool("lemonade_use_vsync_new", True, return_values=("true", "false")))
         lemonadeConfig.set("Renderer", r"use_vsync_new\default", "true")
         # Resolution Factor
-        if system.isOptSet('lemonade_resolution_factor'):
-            lemonadeConfig.set("Renderer", "resolution_factor", system.config["lemonade_resolution_factor"])
-        else:
-            lemonadeConfig.set("Renderer", "resolution_factor", "1")
+        lemonadeConfig.set("Renderer", "resolution_factor", system.config.get("lemonade_resolution_factor", "1"))
         lemonadeConfig.set("Renderer", r"resolution_factor\default", "false")
         # Async Shader Compilation
-        if system.isOptSet('lemonade_async_shader_compilation') and system.config["lemonade_async_shader_compilation"] == '1':
-            lemonadeConfig.set("Renderer", "async_shader_compilation", "true")
-        else:
-            lemonadeConfig.set("Renderer", "async_shader_compilation", "false")
+        lemonadeConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("lemonade_async_shader_compilation", return_values=("true", "false")))
         lemonadeConfig.set("Renderer", r"async_shader_compilation\default", "false")
         # Use Frame Limit
-        if system.isOptSet('lemonade_use_frame_limit') and system.config["lemonade_use_frame_limit"] == '0':
-            lemonadeConfig.set("Renderer", "use_frame_limit", "false")
-        else:
-            lemonadeConfig.set("Renderer", "use_frame_limit", "true")
+        lemonadeConfig.set("Renderer", "use_frame_limit", system.config.get_bool("lemonade_use_frame_limit", True, return_values=("true", "false")))
 
         ## [WEB SERVICE]
         if not lemonadeConfig.has_section("WebService"):
@@ -200,24 +174,23 @@ class LemonadeGenerator(Generator):
         if not lemonadeConfig.has_section("Utility"):
             lemonadeConfig.add_section("Utility")
         # Disk Shader Cache
-        if system.isOptSet('lemonade_use_disk_shader_cache') and system.config["lemonade_use_disk_shader_cache"] == '1':
-            lemonadeConfig.set("Utility", "use_disk_shader_cache", "true")
-        else:
-            lemonadeConfig.set("Utility", "use_disk_shader_cache", "false")
+        lemonadeConfig.set("Utility", "use_disk_shader_cache", system.config.get_bool("lemonade_use_disk_shader_cache", return_values=("true", "false")))
         lemonadeConfig.set("Utility", r"use_disk_shader_cache\default", "false")
         # Custom Textures
-        if system.isOptSet('lemonade_custom_textures') and system.config["lemonade_custom_textures"] != '0':
-            tab = system.config["lemonade_custom_textures"].split('-')
-            lemonadeConfig.set("Utility", "custom_textures",  "true")
-            if tab[1] == 'normal':
-                lemonadeConfig.set("Utility", "async_custom_loading", "true")
+        match system.config.get('lemonade_custom_textures'):
+            case '0' | system.config.MISSING:
+                lemonadeConfig.set("Utility", "custom_textures",  "false")
                 lemonadeConfig.set("Utility", "preload_textures", "false")
-            else:
-                lemonadeConfig.set("Utility", "async_custom_loading", "false")
-                lemonadeConfig.set("Utility", "preload_textures", "true")
-        else:
-            lemonadeConfig.set("Utility", "custom_textures",  "false")
-            lemonadeConfig.set("Utility", "preload_textures", "false")
+            case _ as textures:
+                tab = textures.split('-')
+                lemonadeConfig.set("Utility", "custom_textures",  "true")
+                if tab[1] == 'normal':
+                    lemonadeConfig.set("Utility", "async_custom_loading", "true")
+                    lemonadeConfig.set("Utility", "preload_textures", "false")
+                else:
+                    lemonadeConfig.set("Utility", "async_custom_loading", "false")
+                    lemonadeConfig.set("Utility", "preload_textures", "true")
+
         lemonadeConfig.set("Utility", "async_custom_loading\\default", "true")
         lemonadeConfig.set("Utility", "custom_textures\\default", "false")
         lemonadeConfig.set("Utility", "preload_textures\\default", "false")
@@ -234,16 +207,11 @@ class LemonadeGenerator(Generator):
             lemonadeConfig.set("Controls", "profiles\\1\\name\\default", "true")
             lemonadeConfig.set("Controls", "profiles\\size", "1")
 
-        for index in playersControllers :
-            controller = playersControllers[index]
-            # We only care about player 1
-            if controller.player_number != 1:
-                continue
+        if controller := Controller.find_player_number(playersControllers, 1):
             for x in lemonadeButtons:
                 lemonadeConfig.set("Controls", rf"profiles\1\{x}", f'"{LemonadeGenerator.setButton(lemonadeButtons[x], controller.guid, controller.inputs)}"')
             for x in lemonadeAxis:
                 lemonadeConfig.set("Controls", rf"profiles\1\{x}", f'"{LemonadeGenerator.setAxis(lemonadeAxis[x], controller.guid, controller.inputs)}"')
-            break
 
         ## Update the configuration file
         with ensure_parents_and_open(lemonadeConfigFile, 'w') as configfile:
@@ -257,11 +225,13 @@ class LemonadeGenerator(Generator):
 
             if input.type == "button":
                 return f"button:{input.id},guid:{padGuid},engine:sdl"
-            elif input.type == "hat":
+            if input.type == "hat":
                 return f"engine:sdl,guid:{padGuid},hat:{input.id},direction:{LemonadeGenerator.hatdirectionvalue(input.value)}"
-            elif input.type == "axis":
+            if input.type == "axis":
                 # Untested, need to configure an axis as button / triggers buttons to be tested too
                 return f"engine:sdl,guid:{padGuid},axis:{input.id},direction:+,threshold:{0.5}"
+
+        return None
 
     @staticmethod
     def setAxis(key: str, padGuid: str, padInputs: InputMapping):
@@ -279,7 +249,7 @@ class LemonadeGenerator(Generator):
             inputy = padInputs["joystick2up"]
 
         if inputx is None or inputy is None:
-            return "";
+            return ""
 
         return f"axis_x:{inputx.id},guid:{padGuid},axis_y:{inputy.id},engine:sdl"
 
@@ -316,5 +286,5 @@ def getLemonadeLangFromEnvironment():
     lang = environ['LANG'][:5]
     if lang in availableLanguages:
         return region[availableLanguages[lang]]
-    else:
-        return region["AUTO"]
+
+    return region["AUTO"]

@@ -44,7 +44,7 @@ class UnixSettings:
             file.seek(0)
 
             self.config.read_file(file)
-        except IOError as e:
+        except OSError as e:
             _logger.error(str(e))
 
     def write(self) -> None:
@@ -52,7 +52,7 @@ class UnixSettings:
             try:
                 for key, value in self.config.items('DEFAULT'):
                     fp.write(f"{key}{self.separator}={self.separator}{value!s}\n")
-            except:
+            except Exception:
                 # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
                 # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
                 # TODO: clean that up when porting to Python 3

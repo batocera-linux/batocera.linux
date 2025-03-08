@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -9,6 +8,8 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 
@@ -23,7 +24,7 @@ class X16emuGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # set the file system path
-        romdir = Path(rom).parent
+        romdir = rom.parent
 
         # default options
         commandArray: list[str | Path] = [
@@ -35,10 +36,10 @@ class X16emuGenerator(Generator):
         ]
 
         # Check the rom extension to determine the appropriate option
-        if rom.endswith(".img"):
+        if rom.suffix == ".img":
             # Load the SD card
             commandArray.extend(["-sdcard", rom])
-        elif rom.endswith(".bas"):
+        elif rom.suffix == ".bas":
             # Load the BASIC program
             commandArray.extend(["-bas", rom])
         else:
@@ -49,23 +50,17 @@ class X16emuGenerator(Generator):
         if autorun_cmd.exists():
             commandArray.extend(["-bas", autorun_cmd])
 
-        if system.isOptSet("x16emu_scale"):
-            commandArray.extend(["-scale", system.config["x16emu_scale"]])
-        else:
-            commandArray.extend(["-scale", "2"]) # 1280 x 960
+        commandArray.extend(["-scale", system.config.get("x16emu_scale", "2")])  # 2 = 1280 x 960
 
-        if system.isOptSet("x16emu_quality"):
-            commandArray.extend(["-quality", system.config["x16emu_quality"]])
+        if quality := system.config.get("x16emu_quality"):
+            commandArray.extend(["-quality", quality])
 
-        if system.isOptSet("x16emu_ratio") and system.config["x16emu_ratio"] == "16:9":
+        if system.config.get("x16emu_ratio") == "16:9":
             commandArray.extend(["-widescreen"])
 
         # Now add Controllers
-        nplayer = 1
-        for controller, pad in sorted(playersControllers.items()):
-            if nplayer <= 4:
-                commandArray.extend([f"-joy{nplayer}"])
-            nplayer += 1
+        for nplayer, _ in enumerate(playersControllers[:4], start=1):
+            commandArray.extend([f"-joy{nplayer}"])
 
         return Command.Command(
             array=commandArray,
@@ -77,6 +72,6 @@ class X16emuGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if ("x16emu_ratio" in config and config["x16emu_ratio"] == "16:9"):
+        if config.get("x16emu_ratio") == "16:9":
             return 16/9
         return 4/3

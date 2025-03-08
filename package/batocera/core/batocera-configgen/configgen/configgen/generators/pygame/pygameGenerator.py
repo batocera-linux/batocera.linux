@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -23,7 +22,7 @@ class PygameGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def executionDirectory(self, config, rom):
-        return str(Path(rom).parent)
+        return rom.parent
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9

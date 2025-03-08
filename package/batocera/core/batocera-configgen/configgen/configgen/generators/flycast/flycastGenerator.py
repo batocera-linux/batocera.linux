@@ -37,14 +37,13 @@ class FlycastGenerator(Generator):
         if FLYCAST_CONFIG.exists():
             try:
                 Config.read(FLYCAST_CONFIG)
-            except:
+            except Exception:
                 pass # give up the file
 
         if not Config.has_section("input"):
             Config.add_section("input")
         # For each pad detected
-        for index in playersControllers:
-            controller = playersControllers[index]
+        for controller in playersControllers:
             # Write the mapping files for Dreamcast
             if (system.name == "dreamcast"):
                 flycastControllers.generateControllerConfig(controller, "dreamcast")
@@ -169,8 +168,7 @@ class FlycastGenerator(Generator):
             copyfile(FLYCAST_VMU_BLANK, FLYCAST_VMUA2)
 
         # the command to run
-        commandArray = ['/usr/bin/flycast']
-        commandArray.append(rom)
+        commandArray = ['/usr/bin/flycast', rom]
         # Here is the trick to make flycast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME.
         # VMU will be in $XDG_DATA_HOME / $FLYCAST_DATADIR because it needs rw access -> /userdata/saves/dreamcast

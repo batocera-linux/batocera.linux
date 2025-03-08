@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -10,6 +9,8 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class Dhewm3Generator(Generator):
         # Set the paths using Path objects
         romDir = ROMS / "doom3"
         # Read the path within the .d3 rom file
-        with Path(rom).open() as file:
+        with rom.open() as file:
             directory = file.readline().strip().split("/")[0]
             _logger.debug("Using directory: %s", directory)
 
@@ -71,15 +72,9 @@ class Dhewm3Generator(Generator):
 
         ## ES options
         # Set brightness
-        if system.isOptSet("dhewm3_brightness"):
-            options_to_set["seta r_brightness"] = system.config["dhewm3_brightness"]
-        else:
-            options_to_set["seta r_brightness"] = "1"
+        options_to_set["seta r_brightness"] = system.config.get("dhewm3_brightness", "1")
         # Game language
-        if system.isOptSet("dhewm3_language"):
-            options_to_set["seta sys_lang"] = system.config["dhewm3_language"]
-        else:
-            options_to_set["seta sys_lang"] = "english"
+        options_to_set["seta sys_lang"] = system.config.get("dhewm3_language", "english")
 
         def update_config_file(file_path: Path):
             if file_path.is_file():

@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Final
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, CACHE
+from ...batoceraPaths import CACHE, CONFIGS
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ..Generator import Generator
 

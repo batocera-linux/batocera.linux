@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -9,6 +8,8 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _CONFIG_DIR: Final = CONFIGS / 'dosbox'
@@ -21,9 +22,8 @@ class DosBoxGenerator(Generator):
     # Return command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
-        gameDir = Path(rom)
-        batFile = gameDir / "dosbox.bat"
-        gameConfFile = gameDir / "dosbox.cfg"
+        batFile = rom / "dosbox.bat"
+        gameConfFile = rom / "dosbox.cfg"
 
         # configuration file
         iniSettings = CaseSensitiveConfigParser(interpolation=None)
@@ -40,20 +40,9 @@ class DosBoxGenerator(Generator):
         if not iniSettings.has_section("cpu"):
             iniSettings.add_section("cpu")
 
-        if system.isOptSet('dosbox_cpu_core'):
-            iniSettings.set("cpu", "core", system.config["dosbox_cpu_core"])
-        else:
-            iniSettings.set("cpu", "core", "auto")
-
-        if system.isOptSet('dosbox_cpu_cputype'):
-            iniSettings.set("cpu", "cputype", system.config["dosbox_cpu_cputype"])
-        else:
-            iniSettings.set("cpu", "cputype", "auto")
-
-        if system.isOptSet('dosbox_cpu_cycles'):
-            iniSettings.set("cpu", "cycles", system.config["dosbox_cpu_cycles"])
-        else:
-            iniSettings.set("cpu", "cycles", "auto")
+        iniSettings.set("cpu", "core", system.config.get("dosbox_cpu_core", "auto"))
+        iniSettings.set("cpu", "cputype", system.config.get("dosbox_cpu_cputype", "auto"))
+        iniSettings.set("cpu", "cycles", system.config.get("dosbox_cpu_cycles", "auto"))
 
         # save
         with _CUSTOM_CONFIG.open('w') as config:
@@ -66,7 +55,7 @@ class DosBoxGenerator(Generator):
             "-userconf",
             "-exit",
             batFile,
-            "-c", f"""set ROOT={gameDir}""",
+            "-c", f"""set ROOT={rom}""",
         ]
 
         if gameConfFile.exists():

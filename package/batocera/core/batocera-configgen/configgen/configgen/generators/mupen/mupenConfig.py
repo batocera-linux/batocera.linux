@@ -6,17 +6,16 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
-    from ...input import Input
     from ...types import Resolution
     from ...utils.configparser import CaseSensitiveConfigParser
 
 
-def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: ControllerMapping, gameResolution: Resolution):
+def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: Controllers, gameResolution: Resolution):
 
     # Hotkeys
-    setHotKeyConfig(iniConfig, controllers, system)
+    cleanHotKeyConfig(iniConfig)
 
     # Paths
     if not iniConfig.has_section("Core"):
@@ -30,54 +29,45 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
     # TODO : Miss Mupen64Plus\hires_texture
 
     # 4MB RAM Extention Pack
-    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == 'True':
-        iniConfig.set("Core", "DisableExtraMem", "True")
-    else:
-        iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
+    iniConfig.set("Core", "DisableExtraMem", str(system.config.get_bool("mupen64plus_DisableExtraMem")))
 
     # state_slot option, AutoStateSlotIncrement could be set too depending on the es option
-    if system.isOptSet('state_slot'):
-        iniConfig.set("Core", "CurrentStateSlot", str(system.config["state_slot"]))
+    if state_slot := system.config.get_str('state_slot'):
+        iniConfig.set("Core", "CurrentStateSlot", state_slot)
 
     # increment savestates
-    if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
-        iniConfig.set("Core", "AutoStateSlotIncrement", "False")
-    else:
-        iniConfig.set("Core", "AutoStateSlotIncrement", "True")
+    iniConfig.set("Core", "AutoStateSlotIncrement", str(system.config.get_bool("incrementalsavestates", True)))
 
     # Create section for Audio-SDL
     if not iniConfig.has_section("Audio-SDL"):
         iniConfig.add_section("Audio-SDL")
 
     # Default to disable while it causes issues
-    if system.isOptSet("mupen64plus_AudioSync") and system.config["mupen64plus_AudioSync"] == 'True':
-        iniConfig.set("Audio-SDL", "AUDIO_SYNC", "True")
-    else:
-        iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
+    iniConfig.set("Audio-SDL", "AUDIO_SYNC", str(system.config.get_bool("mupen64plus_AudioSync")))
 
     # Audio buffer settings
     # In the future, add for Audio-OMX too?
-    if system.isOptSet("mupen64plus_AudioBuffer"):
-        # Very High
-        if system.config["mupen64plus_AudioBuffer"] == "Very High":
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "16384")
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "4096")
-            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "2048")
-        # High (defaults provided by mupen64plus)
-        if system.config["mupen64plus_AudioBuffer"] == "High":
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "16384")
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "2048")
-            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "1024")
-        # Low
-        if system.config["mupen64plus_AudioBuffer"] == "Low":
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "4096")
-            iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "1024")
-            iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "512")
-    else:
-        # Medium
-        iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", "8192")
-        iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", "2048")
-        iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", "1024")
+    match system.config.get("mupen64plus_AudioBuffer"):
+        case "Very High":
+            primary_buffer_size = "16384"
+            primary_buffer_target = "4096"
+            secondary_buffer_size = "2048"
+        case "High":  # (defaults provided by mupen64plus)
+            primary_buffer_size = "16384"
+            primary_buffer_target = "2048"
+            secondary_buffer_size = "1024"
+        case "Low":
+            primary_buffer_size = "4096"
+            primary_buffer_target = "1024"
+            secondary_buffer_size = "512"
+        case _:  # Medium
+            primary_buffer_size = "8192"
+            primary_buffer_target = "2048"
+            secondary_buffer_size = "1024"
+
+    iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_SIZE", primary_buffer_size)
+    iniConfig.set("Audio-SDL", "PRIMARY_BUFFER_TARGET", primary_buffer_target)
+    iniConfig.set("Audio-SDL", "SECONDARY_BUFFER_SIZE", secondary_buffer_size)
 
     # Invert required when screen is rotated
     if gameResolution["width"] < gameResolution["height"]:
@@ -111,89 +101,86 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
     iniConfig.set("Video-Glide64mk2", "Version", "1")
 
     # Widescreen Mode -> ONLY for GLIDE64 & MK2
-    if (system.isOptSet("mupen64plus_ratio") and system.config["mupen64plus_ratio"] == "16/9") or (not system.isOptSet("mupen64plus_ratio") and system.isOptSet("ratio") and system.config["ratio"] == "16/9"):
-        # Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
-        # Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original
-        iniConfig.set("Video-Glide64mk2", "aspect", "1")
-        # GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
-        iniConfig.set("Video-GLideN64",   "AspectRatio", "2")
-    elif (system.isOptSet("mupen64plus_ratio") and system.config["mupen64plus_ratio"] == "4/3") or (not system.isOptSet("mupen64plus_ratio") and system.isOptSet("ratio") and system.config["ratio"] == "4/3"):
-        # 4/3
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "0")
-        iniConfig.set("Video-Glide64mk2", "aspect", "0")
-        iniConfig.set("Video-GLideN64",   "AspectRatio", "1")
+    mupen_ratio = system.config.get("mupen64plus_ratio")
+    ratio = system.config.get("ratio")
+
+    if mupen_ratio == "16/9" or (not mupen_ratio and ratio == "16/9"):
+        adjust_aspect = "1"
+        aspect = "1"
+        aspect_ratio = "2"
+    elif mupen_ratio == "4/3" or (not mupen_ratio and ratio == "4/3"):
+        adjust_aspect = "0"
+        aspect = "0"
+        aspect_ratio = "1"
     else:
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "-1")
-        iniConfig.set("Video-Glide64mk2", "aspect", "-1")
-        iniConfig.set("Video-GLideN64",   "AspectRatio", "3")
+        adjust_aspect = "-1"
+        aspect = "-1"
+        aspect_ratio = "3"
+
+    # Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
+    iniConfig.set("Video-Glide64mk2", "adjust_aspect", adjust_aspect)
+    # Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original
+    iniConfig.set("Video-Glide64mk2", "aspect", aspect)
+    # GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
+    iniConfig.set("Video-GLideN64",   "AspectRatio", aspect_ratio)
 
     # Textures Mip-Mapping (Filtering)
-    if system.isOptSet("mupen64plus_Mipmapping") and system.config["mupen64plus_Mipmapping"] != '0':
-        if system.config["mupen64plus_Mipmapping"] == "1":
-            iniConfig.set("Video-Rice",       "Mipmapping", "1")
-            iniConfig.set("Video-Glide64mk2", "filtering",  "0")
-        elif system.config["mupen64plus_Mipmapping"] == "2":
-            iniConfig.set("Video-Rice",       "Mipmapping", "2")
-            iniConfig.set("Video-Glide64mk2", "filtering",  "1")
-        else:
-            iniConfig.set("Video-Rice",       "Mipmapping", "3")
-            iniConfig.set("Video-Glide64mk2", "filtering",  "2")
-    else:
-        iniConfig.set("Video-Rice",       "Mipmapping", "0")     # 0=no, 1=nearest, 2=bilinear, 3=trilinear
-        iniConfig.set("Video-Glide64mk2", "filtering", "-1")     # -1=Game default, 0=automatic, 1=force bilinear, 2=force point sampled
+    match (mipmapping := system.config.get("mupen64plus_Mipmapping", "0")):
+        case "1":
+            filtering = "0"
+        case "2":
+            filtering = "1"
+        case "3":
+            filtering = "2"
+            mipmapping = "3"
+        case _:
+            filtering = "-1"
+
+    iniConfig.set("Video-Rice",       "Mipmapping", mipmapping)     # 0=no, 1=nearest, 2=bilinear, 3=trilinear
+    iniConfig.set("Video-Glide64mk2", "filtering", filtering)     # -1=Game default, 0=automatic, 1=force bilinear, 2=force point sampled
 
     # Anisotropic Filtering
-    if system.isOptSet("mupen64plus_Anisotropic") and system.config["mupen64plus_Anisotropic"] != '0':
-        iniConfig.set("Video-Rice", "AnisotropicFiltering", system.config["mupen64plus_Anisotropic"])
-        iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", system.config["mupen64plus_Anisotropic"])
-    else:
-        iniConfig.set("Video-Rice", "AnisotropicFiltering", "0") # Enable/Disable Anisotropic Filtering for Mipmapping (0=no filtering, 2-16=quality).
-                                                                 # This is uneffective if Mipmapping is false.
-        iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", "1") # Wrapper Anisotropic Filtering
+    anisotropic = system.config.get("mupen64plus_Anisotropic", "0")
+
+    # Enable/Disable Anisotropic Filtering for Mipmapping (0=no filtering, 2-16=quality).
+    iniConfig.set("Video-Rice", "AnisotropicFiltering", anisotropic)
+    # Wrapper Anisotropic Filtering
+    # This is uneffective if Mipmapping is false.
+    iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", "1" if anisotropic == "0" else anisotropic)
 
     # Anti-aliasing MSAA
-    if system.isOptSet("mupen64plus_AntiAliasing") and system.config["mupen64plus_AntiAliasing"] != '0':
-        iniConfig.set("Video-Rice",       "MultiSampling",   system.config["mupen64plus_AntiAliasing"])
-        iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", system.config["mupen64plus_AntiAliasing"])
-    else:
-        iniConfig.set("Video-Rice",       "MultiSampling",   "0") # 0=off, 2, 4, 8, 16=quality
-        iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", "0") # Enable full-scene anti-aliasing by setting this to a value greater than 1
+    antialiasing = system.config.get("mupen64plus_AntiAliasing", "0")
+    iniConfig.set("Video-Rice",       "MultiSampling",   antialiasing) # 0=off, 2, 4, 8, 16=quality
+    iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", antialiasing) # Enable full-scene anti-aliasing by setting this to a value greater than 1
 
     # Hires textures
-    if system.isOptSet("mupen64plus_LoadHiResTextures") and system.config["mupen64plus_LoadHiResTextures"] == 'True':
-        iniConfig.set("Video-Rice", "LoadHiResTextures", "True")
-        iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "1")
-    else:
-        iniConfig.set("Video-Rice", "LoadHiResTextures", "False")
-        iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "0")    # Hi-res texture pack format (0 for none, 1 for Rice)
-
+    load_hires_textures = system.config.get_bool("mupen64plus_LoadHiResTextures")
+    iniConfig.set("Video-Rice", "LoadHiResTextures", str(load_hires_textures))
+    iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "1" if load_hires_textures else "0")  # Hi-res texture pack format (0 for none, 1 for Rice)
 
     # Texture Enhencement XBRZ -> ONLY for RICE
-    if system.isOptSet("mupen64plus_TextureEnhancement") and system.config["mupen64plus_TextureEnhancement"] != '0':
-        iniConfig.set("Video-Rice", "TextureEnhancement", system.config["mupen64plus_TextureEnhancement"])
-    else:
-        iniConfig.set("Video-Rice", "TextureEnhancement", "0")   # 0=None, 1=2X, 2=2XSAI, 3=HQ2X, 4=LQ2X, 5=HQ4X, 6=Sharpen, 7=Sharpen More, 8=External, 9=Mirrored
-
+    # 0=None, 1=2X, 2=2XSAI, 3=HQ2X, 4=LQ2X, 5=HQ4X, 6=Sharpen, 7=Sharpen More, 8=External, 9=Mirrored
+    iniConfig.set("Video-Rice", "TextureEnhancement", system.config.get("mupen64plus_TextureEnhancement", "0"))
 
     # Frameskip -> ONLY for GLIDE64MK2
+    autoframeskip = "0"
     iniConfig.set("Video-Glide64mk2", "autoframeskip", "0")
-    if system.isOptSet("mupen64plus_frameskip") and system.config["mupen64plus_frameskip"] != '0':
-        if system.config["mupen64plus_frameskip"] == "automatic":
+    match system.config.get("mupen64plus_frameskip", "0"):
+        case "automatic":
             # If true, skip up to maxframeskip frames to maintain clock schedule; if false, skip exactly maxframeskip frames
-            iniConfig.set("Video-Glide64mk2", "autoframeskip", "1")
-            iniConfig.set("Video-Glide64mk2", "maxframeskip",  "5")
-        else:
+            autoframeskip = "1"
+            maxframeskip = "5"
+        case "0":
+            maxframeskip = "0"
+        case _ as frameskip:
             # If autoframeskip is false, skip exactly this many frames
-            iniConfig.set("Video-Glide64mk2", "maxframeskip", system.config["mupen64plus_frameskip"])
-    else:
-        iniConfig.set("Video-Glide64mk2", "maxframeskip", "0")
+            maxframeskip = frameskip
+
+    iniConfig.set("Video-Glide64mk2", "autoframeskip", autoframeskip)
+    iniConfig.set("Video-Glide64mk2", "maxframeskip",  maxframeskip)
 
     # Read framebuffer always -> for GLIDE64MK2
-    if system.isOptSet("mupen64plus_fb_read_always") and system.config["mupen64plus_fb_read_always"] != "-1":
-        iniConfig.set("Video-Glide64mk2", "fb_read_always", system.config["mupen64plus_fb_read_always"])
-    else:
-        iniConfig.set("Video-Glide64mk2", "fb_read_always", "-1") # -1 = Game default
+    iniConfig.set("Video-Glide64mk2", "fb_read_always", system.config.get("mupen64plus_fb_read_always", "-1"))
 
     # 64DD
     if not iniConfig.has_section("64DD"):
@@ -207,7 +194,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
 
 
     # Display FPS
-    if system.config['showFPS'] == 'true':
+    if system.config.show_fps:
         iniConfig.set("Video-Rice",       "ShowFPS",  "True")
         iniConfig.set("Video-Glide64mk2", "show_fps", "4")
     else:
@@ -221,56 +208,16 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
                 iniConfig.add_section(custom_section)
             iniConfig.set(custom_section, custom_option, str(user_config_value))
 
-def setHotKeyConfig(iniConfig: CaseSensitiveConfigParser, controllers: ControllerMapping, system: Emulator):
+def cleanHotKeyConfig(iniConfig: CaseSensitiveConfigParser):
     if not iniConfig.has_section("CoreEvents"):
-        iniConfig.add_section("CoreEvents")
+        return # nothing needs to be done
+
     iniConfig.set("CoreEvents", "Version", "1")
-
-    if (controller := controllers.get(1)) is not None:
-        if 'hotkey' in controller.inputs:
-            if 'start' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Stop", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["start"])}"')
-            if system.isOptSet("mupen64-controller1") and system.config["mupen64-controller1"] == "n64limited":
-                if 'y' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Save State", "")
-                if 'x' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Load State", "")
-                if 'pageup' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "")
-                if 'up' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "")
-                if 'right' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
-                if 'a' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
-                if 'b' in controller.inputs:
-                    iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
-                return
-
-            if 'y' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Save State", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["y"])}"')
-            if 'x' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Load State", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["x"])}"')
-            if 'pageup' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Screenshot", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["pageup"])}"')
-            if 'up' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["up"])}"')
-            if 'right' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["right"])}"')
-            if 'a' in controller.inputs:
-                iniConfig.set("CoreEvents", "Joy Mapping Reset", f'"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["a"])}"')
-            if 'b' in controller.inputs:
-                #iniConfig.set("CoreEvents", "Joy Mapping Pause", '"J{controller.index}{createButtonCode(controller.inputs["hotkey"])}/{createButtonCode(controller.inputs["b"])}"')
-                iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
-
-
-def createButtonCode(button: Input):
-    if(button.type == 'axis'):
-        if button.value == '-1':
-            return f'A{button.id}-'
-        else:
-            return f'A{button.id}+'
-    if(button.type == 'button'):
-        return f'B{button.id}'
-    if(button.type == 'hat'):
-        return f'H{button.id}V{button.value}'
+    iniConfig.set("CoreEvents", "Joy Mapping Stop", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Save State", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Load State", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Reset", "")
+    iniConfig.set("CoreEvents", "Joy Mapping Pause", "")

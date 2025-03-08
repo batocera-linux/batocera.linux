@@ -96,7 +96,7 @@ class Xash3dFwgsGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        game = Path(rom).stem
+        game = rom.stem
 
         arch_suffix = _get_arch_suffix()
         server_lib = _get_server_lib_basename_from_liblist_gam(game)
@@ -120,7 +120,7 @@ class Xash3dFwgsGenerator(Generator):
         commandArray.append(game)
 
         commandArray.append('+showfps')
-        commandArray.append('1' if system.getOptBoolean('showFPS') == True else '0')
+        commandArray.append('1' if system.config.show_fps else '0')
 
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)

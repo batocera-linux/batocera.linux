@@ -150,7 +150,7 @@ class SystemConfig(Config):
 
     @property
     def show_fps(self) -> bool:
-        return self.data['showFPS']
+        return self.get_bool('showFPS')
 
     @property
     def video_mode(self) -> str:

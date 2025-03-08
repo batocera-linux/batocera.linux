@@ -8,7 +8,7 @@ from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from ...controller import Controller, ControllerMapping
+    from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...input import Input, InputMapping
     from ...types import DeviceInfoMapping
@@ -45,35 +45,27 @@ def getMupenMapping(use_n64_inputs: bool) -> dict[str, str]:
             list_name = 'n64InputList' if use_n64_inputs else 'defaultInputList'
             for inputs in dom.getElementsByTagName(list_name):
                 for input in inputs.childNodes:
-                    if input.attributes:
-                        if input.attributes['name']:
-                            if input.attributes['value']:
-                                map[input.attributes['name'].value] = input.attributes['value'].value
+                    if input.attributes and input.attributes['name'] and input.attributes['value']:
+                        map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: ControllerMapping, system: Emulator, wheels: DeviceInfoMapping) -> None:
-    nplayer = 1
-
-    for playercontroller, pad in sorted(controllers.items()):
+def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Controllers, system: Emulator, wheels: DeviceInfoMapping) -> None:
+    for pad in controllers:
         isWheel = False
         if pad.device_path in wheels and wheels[pad.device_path]["isWheel"]:
             isWheel = True
-        config = defineControllerKeys(nplayer, pad, system, isWheel)
-        fillIniPlayer(nplayer, iniConfig, pad, config)
-        nplayer += 1
+        config = defineControllerKeys(pad.player_number, pad, system, isWheel)
+        fillIniPlayer(pad.player_number, iniConfig, pad, config)
 
     # remove section with no player
-    for x in range(nplayer, 4):
+    for x in range(len(controllers) + 1, 4):
         section = f"Input-SDL-Control{x}"
         if iniConfig.has_section(section):
-            cleanPlayer(nplayer, iniConfig)
+            cleanPlayer(x, iniConfig)
 
 def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> str:
     default_value = int(start_value.split(',')[0])
-    if config_value in system.config:
-        multiplier = float(system.config[config_value])
-    else:
-        multiplier = 1
+    multiplier = system.config.get_float(config_value, 1)
 
     # This is needed because higher peak value lowers sensitivity and vice versa
     if multiplier != 1.0:
@@ -92,10 +84,7 @@ def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> st
 
 def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) -> str:
     default_value = int(default_peak.split(',')[0])
-    if config_value in system.config:
-        deadzone_multiplier = float(system.config[config_value])
-    else:
-        deadzone_multiplier = 0.01
+    deadzone_multiplier = system.config.get_float(config_value, 0.01)
 
     deadzone = int(round(default_value * deadzone_multiplier))
 
@@ -103,7 +92,7 @@ def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) 
 
 def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool) -> dict[str, str]:
         # check for auto-config inputs by guid and name, or es settings
-        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
+        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (system.config.get(f"mupen64-controller{nplayer}", "retropad") != "retropad"):
             mupenmapping = getMupenMapping(True)
         else:
             mupenmapping = getMupenMapping(False)
@@ -117,7 +106,7 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
 
         # Analog Deadzone
         if isWheel:
-            config['AnalogDeadzone'] = f"0,0"
+            config['AnalogDeadzone'] = "0,0"
         else:
             config['AnalogDeadzone'] = getJoystickDeadzone(mupenmapping['AnalogPeak'], f"mupen64-deadzone{nplayer}", system)
 
@@ -137,13 +126,12 @@ def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator,
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
         # Cheat on the controller
         for realStick, fakeStick in fakeSticks.items():
-                if realStick in controller.inputs:
-                    if controller.inputs[realStick].type == "axis":
-                        print(f"{fakeStick} -> {realStick}")
-                        controller.inputs[fakeStick] = controller.inputs[realStick].replace(
-                            name=fakeStick,
-                            value=str(-int(controller.inputs[realStick].value))
-                        )
+                if realStick in controller.inputs and controller.inputs[realStick].type == "axis":
+                    print(f"{fakeStick} -> {realStick}")
+                    controller.inputs[fakeStick] = controller.inputs[realStick].replace(
+                        name=fakeStick,
+                        value=str(-int(controller.inputs[realStick].value))
+                    )
 
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]

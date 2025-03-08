@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, SAVES, SCREENSHOTS, ensure_parents_and_open, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
@@ -25,8 +24,6 @@ class ScummVMGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
         mkdir_if_not_exists(scummExtra)
 
@@ -45,23 +42,20 @@ class ScummVMGenerator(Generator):
             scummConfig.write(configfile)
 
         # Find rom path
-        if rom_path.is_dir():
+        if rom.is_dir():
           # rom is a directory: must contains a <game name>.scummvm file
-          romPath = rom_path
-          romName = next(rom_path.glob("*.scummvm")).stem
+          romPath = rom
+          romName = next(rom.glob("*.scummvm")).stem
         else:
           # rom is a file: split in directory and file name
-          romPath = rom_path.parent
+          romPath = rom.parent
           # Get rom name without extension
-          romName = rom_path.stem
+          romName = rom.stem
 
         # pad number
-        nplayer = 1
         id = 0
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if nplayer == 1:
-                id=pad.index
-            nplayer += 1
+        if pad := Controller.find_player_number(playersControllers, 1):
+            id = pad.index
 
         commandArray = ["/usr/bin/scummvm", "-f"]
 
@@ -73,30 +67,21 @@ class ScummVMGenerator(Generator):
         ## user options
 
         # scale factor
-        if system.isOptSet("scumm_scale"):
-            commandArray.append(f"--scale-factor={system.config['scumm_scale']}")
-        else:
-            commandArray.append("--scale-factor=3")
+        commandArray.append(f"--scale-factor={system.config.get('scumm_scale', '3')}")
 
         # sclaer mode
-        if system.isOptSet("scumm_scaler_mode"):
-            commandArray.append(f"--scaler={system.config['scumm_scaler_mode']}")
-        else:
-            commandArray.append("--scaler=normal")
+        commandArray.append(f"--scaler={system.config.get('scumm_scaler_mode', 'normal')}")
 
         #  stretch mode
-        if system.isOptSet("scumm_stretch"):
-            commandArray.append(f"--stretch-mode={system.config['scumm_stretch']}")
+        if stretch := system.config.get("scumm_stretch"):
+            commandArray.append(f"--stretch-mode={stretch}")
 
         # renderer
-        if system.isOptSet("scumm_renderer"):
-            commandArray.append(f"--renderer={system.config['scumm_renderer']}")
-        else:
-            commandArray.append("--renderer=opengl")
+        commandArray.append(f"--renderer={system.config.get('scumm_renderer', 'opengl')}")
 
         # language
-        if system.isOptSet("scumm_language"):
-            commandArray.extend(["-q", f"{system.config['scumm_language']}"])
+        if language := system.config.get("scumm_language"):
+            commandArray.extend(["-q", f"{language}"])
 
         # logging
         commandArray.append("--logfile=/userdata/system/logs/scummvm.log")
@@ -120,6 +105,6 @@ class ScummVMGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if ("scumm_stretch" in config and config["scumm_stretch"] == "fit_force_aspect") or ("scumm_stretch" in config and config["scumm_stretch"] == "pixel-perfect"):
+        if config.get("scumm_stretch") in ["fit_force_aspect", "pixel-perfect"]:
             return 4/3
         return 16/9

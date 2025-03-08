@@ -13,7 +13,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ...controller import ControllerMapping
+    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import InputMapping
     from ...types import HotkeysContext
@@ -44,7 +44,7 @@ class SuyuGenerator(Generator):
             "QT_QPA_PLATFORM":"xcb"})
 
     @staticmethod
-    def writeSuyuConfig(suyuConfigFile: Path, system: Emulator, playersControllers: ControllerMapping):
+    def writeSuyuConfig(suyuConfigFile: Path, system: Emulator, playersControllers: Controllers):
         # pads
         suyuButtonsMapping = {
             "button_a":      "a",
@@ -97,10 +97,7 @@ class SuyuGenerator(Generator):
         suyuConfig.set("UI", "confirmStop\\default", "false")
 
         # Single Window Mode
-        if system.isOptSet('suyu_single_window'):
-            suyuConfig.set("UI", "singleWindowMode", system.config["suyu_single_window"])
-        else:
-            suyuConfig.set("UI", "singleWindowMode", "true")
+        suyuConfig.set("UI", "singleWindowMode", system.config.get("suyu_single_window", "true"))
         suyuConfig.set("UI", "singleWindowMode\\default", "false")
 
         suyuConfig.set("UI", "hideInactiveMouse", "true")
@@ -157,106 +154,72 @@ class SuyuGenerator(Generator):
             suyuConfig.add_section("Renderer")
 
         # Aspect ratio
-        if system.isOptSet('suyu_ratio'):
-            suyuConfig.set("Renderer", "aspect_ratio", system.config["suyu_ratio"])
-        else:
-            suyuConfig.set("Renderer", "aspect_ratio", "0")
+        suyuConfig.set("Renderer", "aspect_ratio", system.config.get("suyu_ratio", "0"))
         suyuConfig.set("Renderer", "aspect_ratio\\default", "false")
 
         # Graphical backend
-        if system.isOptSet('suyu_backend'):
-            suyuConfig.set("Renderer", "backend", system.config["suyu_backend"])
+        if backend := system.config.get('suyu_backend'):
+            suyuConfig.set("Renderer", "backend", backend)
             # Add vulkan logic
-            if system.config["suyu_backend"] == "1":
-                if vulkan.is_available():
-                    _logger.debug("Vulkan driver is available on the system.")
-                    if vulkan.has_discrete_gpu():
-                        _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                        discrete_index = vulkan.get_discrete_gpu_index()
-                        if discrete_index:
-                            _logger.debug("Using Discrete GPU Index: %s for Suyu", discrete_index)
-                            suyuConfig.set("Renderer", "vulkan_device", discrete_index)
-                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
-                        else:
-                            _logger.debug("Couldn't get discrete GPU index, using default")
-                            suyuConfig.set("Renderer", "vulkan_device", "0")
-                            suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+            if backend == "1" and vulkan.is_available():
+                _logger.debug("Vulkan driver is available on the system.")
+                if vulkan.has_discrete_gpu():
+                    _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+                    discrete_index = vulkan.get_discrete_gpu_index()
+                    if discrete_index:
+                        _logger.debug("Using Discrete GPU Index: %s for Suyu", discrete_index)
+                        suyuConfig.set("Renderer", "vulkan_device", discrete_index)
+                        suyuConfig.set("Renderer", "vulkan_device\\default", "true")
                     else:
-                        _logger.debug("Discrete GPU is not available on the system. Using default.")
+                        _logger.debug("Couldn't get discrete GPU index, using default")
                         suyuConfig.set("Renderer", "vulkan_device", "0")
                         suyuConfig.set("Renderer", "vulkan_device\\default", "true")
+                else:
+                    _logger.debug("Discrete GPU is not available on the system. Using default.")
+                    suyuConfig.set("Renderer", "vulkan_device", "0")
+                    suyuConfig.set("Renderer", "vulkan_device\\default", "true")
         else:
             suyuConfig.set("Renderer", "backend", "0")
         suyuConfig.set("Renderer", "backend\\default", "false")
 
         # Async Shader compilation
-        if system.isOptSet('suyu_async_shaders'):
-            suyuConfig.set("Renderer", "use_asynchronous_shaders", system.config["suyu_async_shaders"])
-        else:
-            suyuConfig.set("Renderer", "use_asynchronous_shaders", "true")
+        suyuConfig.set("Renderer", "use_asynchronous_shaders", system.config.get("suyu_async_shaders", "true"))
         suyuConfig.set("Renderer", "use_asynchronous_shaders\\default", "false")
 
         # Assembly shaders
-        if system.isOptSet('suyu_shaderbackend'):
-            suyuConfig.set("Renderer", "shader_backend", system.config["suyu_shaderbackend"])
-        else:
-            suyuConfig.set("Renderer", "shader_backend", "0")
+        suyuConfig.set("Renderer", "shader_backend", system.config.get("suyu_shaderbackend", "0"))
         suyuConfig.set("Renderer", "shader_backend\\default", "false")
 
         # Async Gpu Emulation
-        if system.isOptSet('suyu_async_gpu'):
-            suyuConfig.set("Renderer", "use_asynchronous_gpu_emulation", system.config["suyu_async_gpu"])
-        else:
-            suyuConfig.set("Renderer", "use_asynchronous_gpu_emulation", "true")
+        suyuConfig.set("Renderer", "use_asynchronous_gpu_emulation", system.config.get("suyu_async_gpu", "true"))
         suyuConfig.set("Renderer", "use_asynchronous_gpu_emulation\\default", "false")
 
         # NVDEC Emulation
-        if system.isOptSet('suyu_nvdec_emu'):
-            suyuConfig.set("Renderer", "nvdec_emulation", system.config["suyu_nvdec_emu"])
-        else:
-            suyuConfig.set("Renderer", "nvdec_emulation", "2")
+        suyuConfig.set("Renderer", "nvdec_emulation", system.config.get("suyu_nvdec_emu", "2"))
         suyuConfig.set("Renderer", "nvdec_emulation\\default", "false")
 
         # GPU Accuracy
-        if system.isOptSet('suyu_accuracy'):
-            suyuConfig.set("Renderer", "gpu_accuracy", system.config["suyu_accuracy"])
-        else:
-            suyuConfig.set("Renderer", "gpu_accuracy", "0")
+        suyuConfig.set("Renderer", "gpu_accuracy", system.config.get("suyu_accuracy", "0"))
         suyuConfig.set("Renderer", "gpu_accuracy\\default", "true")
 
         # Vsync
-        if system.isOptSet('suyu_vsync'):
-            suyuConfig.set("Renderer", "use_vsync", system.config["suyu_vsync"])
-        else:
-            suyuConfig.set("Renderer", "use_vsync", "1")
+        suyuConfig.set("Renderer", "use_vsync", system.config.get("suyu_vsync", "1"))
         suyuConfig.set("Renderer", "use_vsync\\default", "false")
 
         # Max anisotropy
-        if system.isOptSet('suyu_anisotropy'):
-            suyuConfig.set("Renderer", "max_anisotropy", system.config["suyu_anisotropy"])
-        else:
-            suyuConfig.set("Renderer", "max_anisotropy", "0")
+        suyuConfig.set("Renderer", "max_anisotropy", system.config.get("suyu_anisotropy", "0"))
         suyuConfig.set("Renderer", "max_anisotropy\\default", "false")
 
         # Resolution scaler
-        if system.isOptSet('suyu_scale'):
-            suyuConfig.set("Renderer", "resolution_setup", system.config["suyu_scale"])
-        else:
-            suyuConfig.set("Renderer", "resolution_setup", "2")
+        suyuConfig.set("Renderer", "resolution_setup", system.config.get("suyu_scale", "2"))
         suyuConfig.set("Renderer", "resolution_setup\\default", "false")
 
         # Scaling filter
-        if system.isOptSet('suyu_scale_filter'):
-            suyuConfig.set("Renderer", "scaling_filter", system.config["suyu_scale_filter"])
-        else:
-            suyuConfig.set("Renderer", "scaling_filter", "1")
+        suyuConfig.set("Renderer", "scaling_filter", system.config.get("suyu_scale_filter", "1"))
         suyuConfig.set("Renderer", "scaling_filter\\default", "false")
 
         # Anti aliasing method
-        if system.isOptSet('suyu_aliasing_method'):
-            suyuConfig.set("Renderer", "anti_aliasing", system.config["suyu_aliasing_method"])
-        else:
-            suyuConfig.set("Renderer", "anti_aliasing", "0")
+        suyuConfig.set("Renderer", "anti_aliasing", system.config.get("suyu_aliasing_method", "0"))
         suyuConfig.set("Renderer", "anti_aliasing\\default", "false")
 
         # CPU Section
@@ -264,10 +227,7 @@ class SuyuGenerator(Generator):
             suyuConfig.add_section("Cpu")
 
         # CPU Accuracy
-        if system.isOptSet('suyu_cpuaccuracy'):
-            suyuConfig.set("Cpu", "cpu_accuracy", system.config["suyu_cpuaccuracy"])
-        else:
-            suyuConfig.set("Cpu", "cpu_accuracy", "0")
+        suyuConfig.set("Cpu", "cpu_accuracy", system.config.get("suyu_cpuaccuracy", "0"))
         suyuConfig.set("Cpu", "cpu_accuracy\\default", "false")
 
         # System section
@@ -275,17 +235,11 @@ class SuyuGenerator(Generator):
             suyuConfig.add_section("System")
 
         # Language
-        if system.isOptSet('suyu_language'):
-            suyuConfig.set("System", "language_index", system.config["suyu_language"])
-        else:
-            suyuConfig.set("System", "language_index", str(SuyuGenerator.getSuyuLangFromEnvironment()))
+        suyuConfig.set("System", "language_index", system.config.get("suyu_language") or str(SuyuGenerator.getSuyuLangFromEnvironment()))
         suyuConfig.set("System", "language_index\\default", "false")
 
         # Region
-        if system.isOptSet('suyu_region'):
-            suyuConfig.set("System", "region_index", system.config["suyu_region"])
-        else:
-            suyuConfig.set("System", "region_index", str(SuyuGenerator.getSuyuRegionFromEnvironment()))
+        suyuConfig.set("System", "region_index", system.config.get("suyu_region") or str(SuyuGenerator.getSuyuRegionFromEnvironment()))
         suyuConfig.set("System", "region_index\\default", "false")
 
          # controls section
@@ -293,51 +247,37 @@ class SuyuGenerator(Generator):
             suyuConfig.add_section("Controls")
 
         # Dock Mode
-        if system.isOptSet('suyu_dock_mode'):
-            suyuConfig.set("Controls", "use_docked_mode", system.config["suyu_dock_mode"])
-        else:
-            suyuConfig.set("Controls", "use_docked_mode", "true")
+        suyuConfig.set("Controls", "use_docked_mode", system.config.get("suyu_dock_mode", "true"))
         suyuConfig.set("Controls", "use_docked_mode\\default", "false")
 
         # Sound Mode
-        if system.isOptSet('suyu_sound_mode'):
-            suyuConfig.set("Controls", "sound_index", system.config["suyu_sound_mode"])
-        else:
-            suyuConfig.set("Controls", "sound_index", "1")
+        suyuConfig.set("Controls", "sound_index", system.config.get("suyu_sound_mode", "1"))
         suyuConfig.set("Controls", "sound_index\\default", "false")
 
         # Timezone
-        if system.isOptSet('suyu_timezone'):
-            suyuConfig.set("Controls", "time_zone_index", system.config["suyu_timezone"])
-        else:
-            suyuConfig.set("Controls", "time_zone_index", "0")
+        suyuConfig.set("Controls", "time_zone_index", system.config.get("suyu_timezone", "0"))
         suyuConfig.set("Controls", "time_zone_index\\default", "false")
 
         # controllers
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            if system.isOptSet(f'p{nplayer-1}_pad'):
-                suyuConfig.set("Controls", f"player_{nplayer-1}_type", system.config[f"p{nplayer}_pad"])
-            else:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_type", "0")
-            suyuConfig.set("Controls", rf"player_{nplayer-1}_type\default", "false")
+        for nplayer, pad in enumerate(playersControllers):
+            suyuConfig.set("Controls", f"player_{nplayer}_type", system.config.get(f"p{nplayer+1}_pad", "0"))
+            suyuConfig.set("Controls", rf"player_{nplayer}_type\default", "false")
 
             for x in suyuButtonsMapping:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_{x}", f'"{SuyuGenerator.setButton(suyuButtonsMapping[x], pad.guid, pad.inputs, nplayer-1)}"')
+                suyuConfig.set("Controls", f"player_{nplayer}_{x}", f'"{SuyuGenerator.setButton(suyuButtonsMapping[x], pad.guid, pad.inputs, nplayer)}"')
             for x in suyuAxisMapping:
-                suyuConfig.set("Controls", f"player_{nplayer-1}_{x}", f'"{SuyuGenerator.setAxis(suyuAxisMapping[x], pad.guid, pad.inputs, nplayer-1)}"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_motionleft", '"[empty]"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_motionright", '"[empty]"')
-            suyuConfig.set("Controls", f"player_{nplayer-1}_connected", "true")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_connected\\default", "false")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_vibration_enabled", "true")
-            suyuConfig.set("Controls", f"player_{nplayer-1}_vibration_enabled\\default", "false")
-            nplayer += 1
+                suyuConfig.set("Controls", f"player_{nplayer}_{x}", f'"{SuyuGenerator.setAxis(suyuAxisMapping[x], pad.guid, pad.inputs, nplayer)}"')
+            suyuConfig.set("Controls", f"player_{nplayer}_motionleft", '"[empty]"')
+            suyuConfig.set("Controls", f"player_{nplayer}_motionright", '"[empty]"')
+            suyuConfig.set("Controls", f"player_{nplayer}_connected", "true")
+            suyuConfig.set("Controls", f"player_{nplayer}_connected\\default", "false")
+            suyuConfig.set("Controls", f"player_{nplayer}_vibration_enabled", "true")
+            suyuConfig.set("Controls", f"player_{nplayer}_vibration_enabled\\default", "false")
 
         suyuConfig.set("Controls", "vibration_enabled", "true")
         suyuConfig.set("Controls", "vibration_enabled\\default", "false")
 
-        for y in range(nplayer, 9):
+        for y in range(len(playersControllers), 9):
             suyuConfig.set("Controls", f"player_{y-1}_connected", "false")
             suyuConfig.set("Controls", rf"player_{y-1}_connected\default", "false")
 
@@ -365,9 +305,9 @@ class SuyuGenerator(Generator):
 
             if input.type == "button":
                 return f"engine:sdl,button:{input.id},guid:{padGuid},port:{port}"
-            elif input.type == "hat":
+            if input.type == "hat":
                 return f"engine:sdl,hat:{input.id},direction:{SuyuGenerator.hatdirectionvalue(input.value)},guid:{padGuid},port:{port}"
-            elif input.type == "axis":
+            if input.type == "axis":
                 return f"engine:sdl,threshold:0.5,axis:{input.id},guid:{padGuid},port:{port},invert:+"
         return ""
 
@@ -397,8 +337,7 @@ class SuyuGenerator(Generator):
             return "right"
         if int(value) == 8:
             return "left"
-        else:
-            return "unknown"
+        return "unknown"
 
     @staticmethod
     def getSuyuLangFromEnvironment():
@@ -406,8 +345,7 @@ class SuyuGenerator(Generator):
         availableLanguages = { "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "nl_NL": 8, "pt_PT": 9 }
         if lang in availableLanguages:
             return availableLanguages[lang]
-        else:
-            return availableLanguages["en_US"]
+        return availableLanguages["en_US"]
 
     @staticmethod
     def getSuyuRegionFromEnvironment():
@@ -415,5 +353,4 @@ class SuyuGenerator(Generator):
         availableRegions = { "en_US": 1, "ja_JP": 0 }
         if lang in availableRegions:
             return availableRegions[lang]
-        else:
-            return 2 # europe
+        return 2 # europe

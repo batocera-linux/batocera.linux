@@ -9,18 +9,14 @@ import stat
 import subprocess
 import tarfile
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any, Final, Literal
+from typing import IO, TYPE_CHECKING, Any, ClassVar, Final, Literal
 
 from evdev import ecodes
 
 from ... import Command
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
-from ...controller import (
-    Controller,
-    ControllerMapping,
-    generate_sdl_game_controller_config,
-    get_mapping_axis_relaxed_values,
-)
+from ...controller import Controller, Controllers, generate_sdl_game_controller_config
+from ...exceptions import BatoceraException, InvalidConfiguration
 from ...utils import bezels as bezelsUtil, hotkeygen
 from ...utils.download import download
 from ..Generator import Generator
@@ -35,7 +31,7 @@ _logger = logging.getLogger(__name__)
 class LindberghGenerator(Generator):
     LINDBERGH_SAVES: Final = SAVES / "lindbergh"
 
-    CONF_KEYS = {
+    CONF_KEYS: ClassVar = {
         "WIDTH":                     True, "HEIGHT":                    True, "FULLSCREEN":                True, "INPUT_MODE":                True,
         "NO_SDL":                    True, "REGION":                    True, "FREEPLAY":                  True, "EMULATE_JVS":               True,
         "EMULATE_RIDEBOARD":         True, "EMULATE_DRIVEBOARD":        True, "EMULATE_MOTIONBOARD":       True, "JVS_PATH":                  True,
@@ -71,8 +67,8 @@ class LindberghGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romDir = Path(rom).parent
-        romName = Path(rom).name
+        romDir = rom.parent
+        romName = rom.name
         _logger.debug("ROM path: %s", romDir)
 
         source_dir = Path("/usr/bin/lindbergh")
@@ -108,14 +104,13 @@ class LindberghGenerator(Generator):
 
         for exe_file in executable_files:
             file_path = romDir / exe_file
-            if file_path.exists():
-                # Check if file is executable
-                if not os.access(file_path, os.X_OK):
-                    # Add executable permission (equivalent to chmod +x)
-                    current_permissions = file_path.stat().st_mode
-                    executable_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-                    file_path.chmod(executable_permissions)
-                    _logger.debug("Made %s executable", exe_file)
+            # Check if file is executable
+            if file_path.exists() and not os.access(file_path, os.X_OK):
+                # Add executable permission (equivalent to chmod +x)
+                current_permissions = file_path.stat().st_mode
+                executable_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                file_path.chmod(executable_permissions)
+                _logger.debug("Made %s executable", exe_file)
 
         # Run command
         if system.config.get_bool("lindbergh_test"):
@@ -170,8 +165,7 @@ class LindberghGenerator(Generator):
         pattern = re.compile(r"^\s*(#?)\s*([A-Z0-9_]+)\s(.*)$")
 
         # analyze lines
-        n = 0
-        for line in lines:
+        for n, line in enumerate(lines):
             matches = pattern.match(line)
             if matches:
                 key = matches.group(2)
@@ -181,7 +175,7 @@ class LindberghGenerator(Generator):
                         # if the 1st one is commented, prefer the last one
                         if conf["keys"][key]["commented"]:
                             conf["keys"][key] = { "value":     matches.group(3).strip(),
-                                                  "commented": True if matches.group(1) == "#" else False,
+                                                  "commented": matches.group(1) == "#",
                                                   "line":      n,
                                                   "modified":  False
                                                  }
@@ -190,13 +184,13 @@ class LindberghGenerator(Generator):
                             if matches.group(1) != "#":
                                 lines[conf["keys"][key]["line"]] = f'# {lines[conf["keys"][key]["line"]]}'
                                 conf["keys"][key] = { "value":     matches.group(3).strip(),
-                                                      "commented": True if matches.group(1) == "#" else False,
+                                                      "commented": matches.group(1) == "#",
                                                       "line":      n,
                                                       "modified":  False
                                                      }
                     else:
                         conf["keys"][key] = { "value":     matches.group(3).strip(),
-                                              "commented": True if matches.group(1) == "#" else False,
+                                              "commented": matches.group(1) == "#",
                                               "line":      n,
                                               "modified":  False
                                              }
@@ -206,12 +200,12 @@ class LindberghGenerator(Generator):
                 strippedLine = line.rstrip()
                 if strippedLine != "":
                     print(f"CONF: ignoring line {strippedLine}")
-            n += 1
+
         return conf
 
     def setConf(self, conf: dict[str, Any], key: str, value: Any, /) -> None:
         if key not in self.CONF_KEYS:
-            raise Exception(f"unknown conf key {key}")
+            raise InvalidConfiguration(f"unknown conf key {key}")
 
         # new line
         if key not in conf["keys"]:
@@ -224,7 +218,7 @@ class LindberghGenerator(Generator):
 
     def commentConf(self, conf: dict[str, Any], key: str, /) -> None:
         if key not in self.CONF_KEYS:
-            raise Exception(f"unknown conf key {key}")
+            raise InvalidConfiguration(f"unknown conf key {key}")
 
         if key in conf["keys"]:
             conf["keys"][key]["modified"]  = True
@@ -254,7 +248,7 @@ class LindberghGenerator(Generator):
         gameResolution: Resolution,
         guns: Guns,
         wheels: DeviceInfoMapping,
-        playersControllers: ControllerMapping,
+        playersControllers: Controllers,
         romName: str,
         /,
     ) -> None:
@@ -321,7 +315,7 @@ class LindberghGenerator(Generator):
         conf: dict[str, Any],
         system: Emulator,
         romName: str,
-        playersControllers: ControllerMapping,
+        playersControllers: Controllers,
         guns: Guns,
         wheels: DeviceInfoMapping,
         /,
@@ -339,7 +333,7 @@ class LindberghGenerator(Generator):
 
         # comment all player values
         for key in conf["keys"]:
-            if key.startswith("PLAYER_") or key.startswith("ANALOGUE_") or key == "TEST_BUTTON":
+            if key.startswith(("PLAYER_", "ANALOGUE_")) or key == "TEST_BUTTON":
                 self.commentConf(conf, key)
 
         # no more config in sdl mode
@@ -356,9 +350,8 @@ class LindberghGenerator(Generator):
                 # self.setConf(conf, "PLAYER_1_COIN", f"{hkevent}:KEY:{ecodes.KEY_5}")
 
         # configure guns
-        if input_mode == 2:
-            if system.config.use_guns:
-                self.setup_guns_evdev(conf, guns, shortRomName)
+        if input_mode == 2 and system.config.use_guns:
+            self.setup_guns_evdev(conf, guns, shortRomName)
 
         # joysticks
         if input_mode == 2:
@@ -371,7 +364,7 @@ class LindberghGenerator(Generator):
         shortRomName: str,
         guns: Guns,
         wheels: DeviceInfoMapping,
-        playersControllers: ControllerMapping,
+        playersControllers: Controllers,
         /,
     ) -> None:
         # button that are common to all players
@@ -390,12 +383,10 @@ class LindberghGenerator(Generator):
         # configure joysticks if no gun configured for the user
         nplayer = 1
         continuePlayers = True
-        for playercontroller, pad in sorted(playersControllers.items()):
+        for pad in playersControllers:
             # Handle two players / controllers only, don't do if already configured for guns
-            maxplayers = 2
-
             if nplayer <= 2 and continuePlayers and not (system.config.use_guns and len(guns) >= nplayer):
-                relaxValues = get_mapping_axis_relaxed_values(pad)
+                relaxValues = pad.get_mapping_axis_relaxed_values()
 
                 ### choose the adapted mapping
                 if system.config.use_wheels:
@@ -425,7 +416,7 @@ class LindberghGenerator(Generator):
                 x = {}
                 for input_name in lindberghCtrl:
                     if lindberghCtrl[input_name] in x:
-                        raise Exception(f"duplicate configuration key for {input_name} with value {lindberghCtrl[input_name]}")
+                        raise InvalidConfiguration(f"duplicate configuration key for {input_name} with value {lindberghCtrl[input_name]}")
                     x[lindberghCtrl[input_name]] = True
 
                 ### configure each input
@@ -496,10 +487,10 @@ class LindberghGenerator(Generator):
                                     input_value += ":MAX"
                                 self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         else:
-                            raise Exception("invalid input type")
+                            raise BatoceraException(f"invalid input type: {pad.inputs[input_base_name].type}")
                 nplayer += 1
 
-    def getMappingForJoystickOrWheel(
+    def getMappingForJoystickOrWheel(  # noqa: RET503
         self,
         shortRomName: str,
         deviceType: Literal['wheel', 'gun', 'pad'],
@@ -605,15 +596,15 @@ class LindberghGenerator(Generator):
             lindberghCtrl_wheel["x"] = "BUTTON_DOWN" # view change
 
         # button up/down on player 2
-        if shortRomName == "rtuned" or shortRomName.startswith("segartv") or shortRomName.startswith("outr") or shortRomName.startswith("initiad"):
+        if shortRomName == "rtuned" or shortRomName.startswith(("segartv", "outr", "initiad")):
             lindberghCtrl_wheel["pageup"]   = "BUTTON_DOWN_ON_PLAYER_2"
             lindberghCtrl_wheel["pagedown"] = "BUTTON_UP_ON_PLAYER_2"
 
         # remap buttons if for non real wheel
-        if deviceType == "wheel" and isRealWheel == False:
+        if deviceType == "wheel" and not isRealWheel:
             x = None
             y = None
-            l = None
+            l = None  # noqa: E741
             r = None
             if "x" in lindberghCtrl_wheel:
                 x = lindberghCtrl_wheel["x"]
@@ -622,7 +613,7 @@ class LindberghGenerator(Generator):
                 y = lindberghCtrl_wheel["y"]
                 del lindberghCtrl_wheel["y"]
             if "pageup" in lindberghCtrl_wheel:
-                l = lindberghCtrl_wheel["pageup"]
+                l = lindberghCtrl_wheel["pageup"]  # noqa: E741
                 del lindberghCtrl_wheel["pageup"]
             if "pagedown" in lindberghCtrl_wheel:
                 r = lindberghCtrl_wheel["pagedown"]
@@ -671,9 +662,9 @@ class LindberghGenerator(Generator):
             # adjustment for player 2 gun
             for x in lindberghCtrl_gun:
                 if lindberghCtrl_gun[x] == "ANALOGUE_1" and nplayer == 2:
-                    lindberghCtrl_gun[x] == "ANALOGUE_3"
+                    lindberghCtrl_gun[x] = "ANALOGUE_3"
                 if lindberghCtrl_gun[x] == "ANALOGUE_2" and nplayer == 2:
-                    lindberghCtrl_gun[x] == "ANALOGUE_4"
+                    lindberghCtrl_gun[x] = "ANALOGUE_4"
             return lindberghCtrl_gun
 
         if deviceType == "wheel":
@@ -734,39 +725,37 @@ class LindberghGenerator(Generator):
             mappings_actions["2"] = "BUTTON_4"
             del mappings_actions["3"]
 
-        for gun in guns:
-            if nplayer <= 2:
-                _logger.debug("lindbergh gun for player %s", nplayer)
-                xplayer = 1+(nplayer-1)*2
-                yplayer = 1+(nplayer-1)*2+1
-                evplayer = gun.node
-                self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
-                self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
+        for nplayer, gun in enumerate(guns[:2], start=1):
+            _logger.debug("lindbergh gun for player %s", nplayer)
+            xplayer = 1+(nplayer-1)*2
+            yplayer = 1+(nplayer-1)*2+1
+            evplayer = gun.node
+            self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS:0")
+            self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
 
-                # reverse axis for let's go jungle
-                if shortRomName == ("letsgoju"): # not for the p version
-                    self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
-                    self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
+            # reverse axis for let's go jungle
+            if shortRomName == ("letsgoju"): # not for the p version
+                self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
+                self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
 
-                # add shake for hotd4
-                if shortRomName == "hotd4":
-                    xplayerp4 = xplayer + 4
-                    yplayerp4 = yplayer + 4
-                    self.setConf(conf, f"ANALOGUE_{xplayerp4}", f"{evplayer}:ABS:0:SHAKE")
-                    self.setConf(conf, f"ANALOGUE_{yplayerp4}", f"{evplayer}:ABS:1:SHAKE")
+            # add shake for hotd4
+            if shortRomName == "hotd4":
+                xplayerp4 = xplayer + 4
+                yplayerp4 = yplayer + 4
+                self.setConf(conf, f"ANALOGUE_{xplayerp4}", f"{evplayer}:ABS:0:SHAKE")
+                self.setConf(conf, f"ANALOGUE_{yplayerp4}", f"{evplayer}:ABS:1:SHAKE")
 
-                for mapping in mappings_actions:
-                    if mapping in gun.buttons and mapping in mappings_codes:
-                        code = mappings_codes[mapping]
-                        action = mappings_actions[mapping]
+            for mapping in mappings_actions:
+                if mapping in gun.buttons and mapping in mappings_codes:
+                    code = mappings_codes[mapping]
+                    action = mappings_actions[mapping]
 
-                        # in hotdex, player2 reload is on button right (et butto left for player 1...)
-                        if shortRomName == "hotdex" and nplayer == 2 and action == "BUTTON_LEFT":
-                            action = "BUTTON_RIGHT"
+                    # in hotdex, player2 reload is on button right (et butto left for player 1...)
+                    if shortRomName == "hotdex" and nplayer == 2 and action == "BUTTON_LEFT":
+                        action = "BUTTON_RIGHT"
 
-                        if not (action == "COIN" and nplayer != 1): # COIN is only for player 1
-                            self.setConf(conf, f"PLAYER_{nplayer}_{action}", f"{evplayer}:KEY:{code}")
-            nplayer += 1
+                    if not (action == "COIN" and nplayer != 1): # COIN is only for player 1
+                        self.setConf(conf, f"PLAYER_{nplayer}_{action}", f"{evplayer}:KEY:{code}")
 
     def setup_eeprom(self):
         DOWNLOADED_FLAG: Final = self.LINDBERGH_SAVES / "downloaded.txt"
@@ -834,7 +823,7 @@ class LindberghGenerator(Generator):
         gameResolution: Resolution,
         guns: Guns,
         wheels: DeviceInfoMapping,
-        playersControllers: ControllerMapping,
+        playersControllers: Controllers,
         romDir: Path,
         romName: str,
         /,
@@ -861,8 +850,7 @@ class LindberghGenerator(Generator):
             # Run the dmidecode command to get processor information
             result = subprocess.run(
                 ["dmidecode", "-t", "processor"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 text=True,
                 check=True
             )
@@ -873,11 +861,10 @@ class LindberghGenerator(Generator):
             if match:
                 current_speed_mhz = int(match.group(1))
                 # Convert to GHz
-                current_speed_ghz = current_speed_mhz / 1000
-                return current_speed_ghz
-            else:
-                _logger.debug("Current Speed information not found.")
-                return None
+                return current_speed_mhz / 1000
+
+            _logger.debug("Current Speed information not found.")
+            return None
 
         except subprocess.CalledProcessError as e:
             _logger.debug("Error running dmidecode: %s", e)
@@ -887,8 +874,7 @@ class LindberghGenerator(Generator):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 s.connect((destination, port))
-                ip_address = s.getsockname()[0]
-                return ip_address
+                return s.getsockname()[0]
         except Exception as e:
             _logger.debug("Error retrieving IP address: %s", e)
             return None

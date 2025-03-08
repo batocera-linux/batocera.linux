@@ -19,21 +19,29 @@ def set_hotkeygen_context(generator: Generator, system: Emulator, /) -> Iterator
     # hotkeygen context
     hkc = generator.getHotkeysContext()
 
+    exit_hotkey_only = system.config.get_bool("exithotkeyonly")
+
     # limit hotkeys
     # there is an option to disable all hotkeys but exit in case the player 1 is a pad with not hotkey specific button
-    if system.isOptSet("exithotkeyonly") and system.getOptBoolean("exithotkeyonly"):
+    if exit_hotkey_only:
         if "exit" in hkc["keys"]:
             hkc["keys"] = { "exit": hkc["keys"]["exit"] }
         else:
             # should not happen while exit should always be there
             hkc["keys"] = {}
+
     # if uimod is not full (aka kiosk or children mode), remove the menu action
-    if system.isOptSet("uimode") and system.config["uimode"] != "Full":
-        if "menu" in hkc["keys"]:
-            del hkc["keys"]["menu"]
+    if system.config.ui_mode != "Full" and "menu" in hkc["keys"]:
+        del hkc["keys"]["menu"]
 
     _logger.debug("hotkeygen: updating context to %s", hkc["name"])
-    subprocess.call(["hotkeygen", "--new-context", hkc["name"], json.dumps(hkc["keys"])])
+
+    cmd = ["hotkeygen", "--new-context", hkc["name"], json.dumps(hkc["keys"])]
+
+    if exit_hotkey_only:
+        cmd.append("--disable-common")
+
+    subprocess.call(cmd)
 
     try:
         yield

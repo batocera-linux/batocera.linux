@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ..Generator import Generator
 from . import ppssppConfig, ppssppControllers
 from .ppssppPaths import PPSSPP_CONFIG_DIR
@@ -33,18 +33,11 @@ class PPSSPPGenerator(Generator):
             dbpath.unlink()
 
         # Generate the controls.ini
-        for index in playersControllers :
-            controller = playersControllers[index]
-            # We only care about player 1
-            if controller.player_number != 1:
-                continue
+        if controller := Controller.find_player_number(playersControllers, 1):
             ppssppControllers.generateControllerConfig(controller)
-            break
 
         # The command to run
-        commandArray = ['/usr/bin/PPSSPP']
-        commandArray.append(rom)
-        commandArray.append("--fullscreen")
+        commandArray = ['/usr/bin/PPSSPP', rom, '--fullscreen']
 
         # Adapt the menu size to low defenition
         # I've played with this option on PC to fix menu size in Hi-Resolution and it not working fine. I'm almost sure this option break the emulator (Darknior)
@@ -52,8 +45,8 @@ class PPSSPPGenerator(Generator):
             commandArray.extend(["--dpi", "0.5"])
 
         # state_slot option
-        if system.isOptSet('state_filename'):
-            commandArray.append(f"--state={system.config['state_filename']}")
+        if state_filename := system.config.get('state_filename'):
+            commandArray.append(f"--state={state_filename}")
 
         return Command.Command(
             array=commandArray,

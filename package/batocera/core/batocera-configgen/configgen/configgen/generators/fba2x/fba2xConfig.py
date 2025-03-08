@@ -18,20 +18,8 @@ def updateFBAConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator) -> N
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
 
-    if system.isOptSet("smooth") and system.getOptBoolean("smooth") == True:
-        iniConfig.set("Graphics", "DisplaySmoothStretch", "1")
-    else:
-        iniConfig.set("Graphics", "DisplaySmoothStretch", "0")
-
-    if defined("ratio", system.config) and system.config["ratio"] in ratioIndexes:
-        iniConfig.set("Graphics", "MaintainAspectRatio", ratioIndexes[system.config["ratio"]])
-    else:
-        iniConfig.set("Graphics", "MaintainAspectRatio", "0")
-
-    if defined("shaders", system.config) and system.config["shaders"] == 'scanlines':
-        iniConfig.set("Graphics", "DisplayEffect", "1")
-    else :
-        iniConfig.set("Graphics", "DisplayEffect", "0")
-
+    iniConfig.set("Graphics", "DisplaySmoothStretch", system.config.get_bool("smooth", return_values=("1", "0")))
+    iniConfig.set("Graphics", "MaintainAspectRatio", ratioIndexes.get(system.config.get("ratio", "4/3"), "0"))
+    iniConfig.set("Graphics", "DisplayEffect", "1" if system.config.get("shaders") == "scanlines" else "0")
     iniConfig.set("Graphics", "RotateScreen",  "0")
     iniConfig.set("Graphics", "DisplayBorder", "0")

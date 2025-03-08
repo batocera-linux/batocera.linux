@@ -33,8 +33,6 @@ class OpenmsxGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-
-        rom_path = Path(rom)
         share_dir = openMSX_Homedir / "share"
         source_settings = openMSX_Config / "settings.xml"
         settings_xml = share_dir / "settings.xml"
@@ -59,12 +57,8 @@ class OpenmsxGenerator(Generator):
         root = tree.getroot()
 
         settings_elem = root.find("settings")
-        if system.isOptSet("openmsx_loading"):
-            fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
-            fullspeed_elem.text = system.config["openmsx_loading"]
-        else:
-            fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
-            fullspeed_elem.text = "true"
+        fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
+        fullspeed_elem.text = system.config.get("openmsx_loading", "true")
 
         settings_elem.append(fullspeed_elem)
 
@@ -94,7 +88,7 @@ class OpenmsxGenerator(Generator):
             file.write("filepool add -path /userdata/bios/Machines -types system_rom -position 1\n")
             file.write("filepool add -path /userdata/bios/openmsx -types system_rom -position 2\n")
             # get the rom name (no extension) for the savestate name
-            save_name = rom_path.stem
+            save_name = rom.stem
             # simplify the rom name, remove content between brackets () & []
             save_name = re.sub(r"\([^)]*\)", "", save_name)
             save_name = re.sub(r"\[[^]]*\]", "", save_name)
@@ -108,43 +102,40 @@ class OpenmsxGenerator(Generator):
             # setup the controller
             file.write("\n")
             file.write("# -= Controller config =-\n")
-            nplayer = 1
-            for playercontroller, pad in sorted(playersControllers.items()):
-                if nplayer <= 2:
-                    if nplayer == 1:
-                        file.write("plug joyporta joystick1\n")
-                        file.write('dict set joystick1_config LEFT {-axis0 L_hat0}\n')
-                        file.write('dict set joystick1_config RIGHT {+axis0 R_hat0}\n')
-                        file.write('dict set joystick1_config UP {-axis1 U_hat0}\n')
-                        file.write('dict set joystick1_config DOWN {+axis1 D_hat0}\n')
-                    if nplayer == 2:
-                        file.write("plug joyportb joystick2\n")
-                        file.write('dict set joystick2_config LEFT {-axis0 L_hat0}\n')
-                        file.write('dict set joystick2_config RIGHT {+axis0 R_hat0}\n')
-                        file.write('dict set joystick2_config UP {-axis1 U_hat0}\n')
-                        file.write('dict set joystick2_config DOWN {+axis1 D_hat0}\n')
-                    for x in pad.inputs:
-                        input = pad.inputs[x]
-                        if input.name == "y":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x40"\n')
-                        if input.name == "x":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x80"\n')
-                        if input.name == "pagedown":
-                            file.write(f'bind "joy{nplayer} button{input.id} up" "set fastforward off"\n')
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "set fastforward on"\n')
-                        if input.name == "select":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle pause"\n')
-                        if input.name == "start":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "main_menu_toggle"\n')
-                        if input.name == "l3":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle_osd_keyboard"\n')
-                        if input.name == "r3":
-                            file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
-                nplayer += 1
+            for nplayer, pad in enumerate(playersControllers[:2], start=1):
+                if nplayer == 1:
+                    file.write("plug joyporta joystick1\n")
+                    file.write('dict set joystick1_config LEFT {-axis0 L_hat0}\n')
+                    file.write('dict set joystick1_config RIGHT {+axis0 R_hat0}\n')
+                    file.write('dict set joystick1_config UP {-axis1 U_hat0}\n')
+                    file.write('dict set joystick1_config DOWN {+axis1 D_hat0}\n')
+                if nplayer == 2:
+                    file.write("plug joyportb joystick2\n")
+                    file.write('dict set joystick2_config LEFT {-axis0 L_hat0}\n')
+                    file.write('dict set joystick2_config RIGHT {+axis0 R_hat0}\n')
+                    file.write('dict set joystick2_config UP {-axis1 U_hat0}\n')
+                    file.write('dict set joystick2_config DOWN {+axis1 D_hat0}\n')
+                for x in pad.inputs:
+                    input = pad.inputs[x]
+                    if input.name == "y":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x40"\n')
+                    if input.name == "x":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "keymatrixdown 6 0x80"\n')
+                    if input.name == "pagedown":
+                        file.write(f'bind "joy{nplayer} button{input.id} up" "set fastforward off"\n')
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "set fastforward on"\n')
+                    if input.name == "select":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle pause"\n')
+                    if input.name == "start":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "main_menu_toggle"\n')
+                    if input.name == "l3":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle_osd_keyboard"\n')
+                    if input.name == "r3":
+                        file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
 
         # now run the rom with the appropriate flags
-        file_extension = rom_path.suffix.lower()
-        commandArray: list[str | Path] = ["/usr/bin/openmsx", "-cart", rom_path, "-script", settings_tcl]
+        file_extension = rom.suffix.lower()
+        commandArray: list[str | Path] = ["/usr/bin/openmsx", "-cart", rom, "-script", settings_tcl]
 
         # set the best machine based on the system
         if system.name in ["msx1", "msx2"]:
@@ -162,7 +153,7 @@ class OpenmsxGenerator(Generator):
         if system.name == "spectravideo":
             commandArray[1:1] = ["-machine", "Spectravideo_SVI-328"]
 
-        if system.isOptSet("hud") and system.config["hud"] != "":
+        if system.config.get("hud", "") != "":
             commandArray.insert(0, "mangohud")
 
         # setup the media types
@@ -192,7 +183,7 @@ class OpenmsxGenerator(Generator):
         if file_extension == ".dsk":
             _logger.debug("File is a disk")
             disk_type = "-diska"
-            if system.isOptSet("openmsx_disk") and system.config["openmsx_disk"] == "hda":
+            if system.config.get("openmsx_disk") == "hda":
                 disk_type = "-hda"
             for i in range(len(commandArray)):
                 if commandArray[i] == "-cart":
@@ -201,29 +192,30 @@ class OpenmsxGenerator(Generator):
         # handle our own file format for stacked roms / disks
         if file_extension == ".openmsx":
             # read the contents of the file and extract the rom paths
-            with rom_path.open("r") as file:
+            with rom.open("r") as file:
                 lines = file.readlines()
                 rom1 = ""
                 rom1 = lines[0].strip()
                 rom2 = ""
                 rom2 = lines[1].strip()
             # get the directory path of the .openmsx file
-            openmsx_dir = rom_path.parent
+            openmsx_dir = rom.parent
             # prepend the directory path to the .rom/.dsk file paths
             rom1 = openmsx_dir / rom1
             rom2 = openmsx_dir / rom2
             # get the first lines extension
             extension = rom1.suffix[1:].lower()
             # now start ammending the array
-            if extension == "rom":
-                cart_index = commandArray.index("-cart")
-                commandArray[cart_index] = "-carta"
-                commandArray[cart_index +1] = rom1
-            elif extension == "dsk":
-                cart_index = commandArray.index("-cart")
-                commandArray[cart_index] = "-diska"
-                commandArray[cart_index +1] = rom1
             if extension == "rom" or extension == "dsk":
+                if extension == "rom":
+                    cart_index = commandArray.index("-cart")
+                    commandArray[cart_index] = "-carta"
+                    commandArray[cart_index +1] = rom1
+                else:
+                    cart_index = commandArray.index("-cart")
+                    commandArray[cart_index] = "-diska"
+                    commandArray[cart_index +1] = rom1
+
                 rom2_index = cart_index + 2
                 commandArray.insert(rom2_index, "-cartb" if extension == "rom" else "-diskb")
                 commandArray.insert(rom2_index + 1, rom2)

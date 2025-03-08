@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -20,11 +19,9 @@ class ShGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # in case of squashfs, the root directory is passed
-        runsh = rom_path / "run.sh"
-        shrom = runsh if runsh.exists() else rom_path
+        runsh = rom / "run.sh"
+        shrom = runsh if runsh.exists() else rom
 
         # PortMaster uses this.
         write_sdl_controller_db(playersControllers)

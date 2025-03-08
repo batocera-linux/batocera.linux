@@ -8,7 +8,7 @@ from typing import IO, TYPE_CHECKING, Final, Self
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import Controller, generate_sdl_game_controller_config
 from ..Generator import Generator
 
 _logger = logging.getLogger(__name__)
@@ -295,53 +295,46 @@ class OpenJazzGenerator(Generator):
         self.print_config(cfg)
 
         # Controller config mapping example
-        jazzMapping = {
-            'a': 'jump',
-            'b': 'fire',
-            'x': 'swim up',
-            'y': 'weapon',
-            'select': 'back',
-            'start': 'enter',
-            'up': 'up',
-            'down': 'down',
-            'left': 'left',
-            'right': 'right',
-        }
+        # jazzMapping = {
+        #     'a': 'jump',
+        #     'b': 'fire',
+        #     'x': 'swim up',
+        #     'y': 'weapon',
+        #     'select': 'back',
+        #     'start': 'enter',
+        #     'up': 'up',
+        #     'down': 'down',
+        #     'left': 'left',
+        #     'right': 'right',
+        # }
 
-        nplayer = 1
-        for playercontroller, pad in sorted(playersControllers.items()):
-            controller = playersControllers[playercontroller]
-            if nplayer == 1:
-                for index in controller.inputs:
-                    input = controller.inputs[index]
-                    # We only need to write button layouts as hats & axis are already configured by default correctly
-                    if input.type == 'button':
-                        # Write buttons in order to the appropriate slots of buttons
-                        if input.name == 'a':
-                            cfg.buttons[4] = int(input.id)
-                        elif input.name == 'b':
-                            cfg.buttons[6] = int(input.id)
-                        elif input.name== 'x':
-                            cfg.buttons[5] = int(input.id)
-                        elif input.name == 'y':
-                            cfg.buttons[7] = int(input.id)
-                        elif input.name == 'select':
-                            cfg.buttons[9] = int(input.id)
-                        elif input.name == 'start':
-                            cfg.buttons[8] = int(input.id)
-                _logger.info("Configured Controls - Buttons: %s", cfg.buttons)
-
-            nplayer += 1
+        if controller := Controller.find_player_number(playersControllers, 1):
+            for index in controller.inputs:
+                input = controller.inputs[index]
+                # We only need to write button layouts as hats & axis are already configured by default correctly
+                if input.type == 'button':
+                    # Write buttons in order to the appropriate slots of buttons
+                    if input.name == 'a':
+                        cfg.buttons[4] = int(input.id)
+                    elif input.name == 'b':
+                        cfg.buttons[6] = int(input.id)
+                    elif input.name== 'x':
+                        cfg.buttons[5] = int(input.id)
+                    elif input.name == 'y':
+                        cfg.buttons[7] = int(input.id)
+                    elif input.name == 'select':
+                        cfg.buttons[9] = int(input.id)
+                    elif input.name == 'start':
+                        cfg.buttons[8] = int(input.id)
+            _logger.info("Configured Controls - Buttons: %s", cfg.buttons)
 
         # User configuration
-        if system.isOptSet("jazz_resolution"):
-            resolution = system.config["jazz_resolution"]
-            width_str, height_str = resolution.split('x')
-            cfg.video_width = int(width_str)
-            cfg.video_height = int(height_str)
-        else:
-            cfg.video_width = int(gameResolution["width"])
-            cfg.video_height = int(gameResolution["height"])
+        width_str, height_str = system.config.get(
+            "jazz_resolution",
+            f'{gameResolution["width"]}x{gameResolution["height"]}'
+        ).split('x')
+        cfg.video_width = int(width_str)
+        cfg.video_height = int(height_str)
 
         # Save the changes
         cfg.save()

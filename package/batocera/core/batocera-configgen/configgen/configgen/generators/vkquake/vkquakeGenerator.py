@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import re
-import shutil
-from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, ROMS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...batoceraPaths import ROMS
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -24,7 +21,7 @@ class VKQuakeGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romName = Path(rom).name
+        romName = rom.name
 
         commandArray = ['/usr/bin/vkquake', '-basedir', str(vkquakeRomPath)]
 
