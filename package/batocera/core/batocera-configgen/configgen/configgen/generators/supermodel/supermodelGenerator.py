@@ -38,24 +38,24 @@ class SupermodelGenerator(Generator):
         commandArray: list[str | Path] = ["supermodel", "-fullscreen", "-channels=2"]
 
         # legacy3d
-        if system.isOptSet("engine3D") and system.config["engine3D"] == "new3d":
+        if system.config.get("engine3D") == "new3d":
             commandArray.append("-new3d")
         else:
             commandArray.extend(["-multi-texture", "-legacy-scsp", "-legacy3d"])
 
         # widescreen
-        if system.isOptSet("m3_wideScreen") and system.getOptBoolean("m3_wideScreen"):
+        if system.config.get_bool("m3_wideScreen"):
             commandArray.append("-wide-screen")
             commandArray.append("-wide-bg")
             system.config["bezel"] == "none"
 
         # quad rendering
-        if system.isOptSet("quadRendering") and system.getOptBoolean("quadRendering"):
+        if system.config.get_bool("quadRendering"):
             commandArray.append("-quad-rendering")
 
         # crosshairs
-        if system.isOptSet("crosshairs"):
-            commandArray.append(f"-crosshairs={system.config['crosshairs']}")
+        if crosshairs := system.config.get("crosshairs"):
+            commandArray.append(f"-crosshairs={crosshairs}")
         else:
             if guns_need_crosses(guns):
                 if len(guns) == 1:
@@ -64,32 +64,26 @@ class SupermodelGenerator(Generator):
                     commandArray.append("-crosshairs=3")
 
         # force feedback
-        if system.isOptSet("forceFeedback") and system.getOptBoolean("forceFeedback"):
+        if system.config.get_bool("forceFeedback"):
             commandArray.append("-force-feedback")
 
         # powerpc frequesncy
-        if system.isOptSet("ppcFreq"):
-            commandArray.append(f"-ppc-frequency={system.config['ppcFreq']}")
+        if freq := system.config.get("ppcFreq"):
+            commandArray.append(f"-ppc-frequency={freq}")
 
         # crt colour
-        if system.isOptSet("crt_colour"):
-            commandArray.append(f"-crtcolors={system.config['crt_colour']}")
+        if color := system.config.get("crt_colour"):
+            commandArray.append(f"-crtcolors={color}")
 
         # upscale mode
-        if system.isOptSet("upscale_mode"):
-            commandArray.append(f"-upscalemode={system.config['upscale_mode']}")
+        if upscale_mode := system.config.get("upscale_mode"):
+            commandArray.append(f"-upscalemode={upscale_mode}")
 
         #driving controls
-        if system.isOptSet("pedalSwap") and system.getOptBoolean("pedalSwap"):
-            drivingGame = 1
-        else:
-            drivingGame = 0
+        drivingGame = system.config.get_bool("pedalSwap")
 
         #driving sensitivity
-        if system.isOptSet("joystickSensitivity"):
-            sensitivity: str = system.config["joystickSensitivity"]
-        else:
-            sensitivity: str = "100"
+        sensitivity = system.config.get_str("joystickSensitivity", "100")
 
         # resolution
         commandArray.append(f"-res={gameResolution['width']},{gameResolution['height']}")
@@ -119,7 +113,7 @@ class SupermodelGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if 'm3_wideScreen' in config and config["m3_wideScreen"] == "1":
+        if config.get('m3_wideScreen') == "1":
             return 16 / 9
         return 4 / 3
 
@@ -244,7 +238,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, 
             if section.strip() != "Global":
                 targetConfig.set(section, "InputSystem", "to be defined")
             for key, _ in targetConfig.items(section):
-                if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
+                if system.config.use_guns and guns:
                     if key == "InputSystem":
                         targetConfig.set(section, key, "evdev")
                     elif key == "InputAnalogJoyX":

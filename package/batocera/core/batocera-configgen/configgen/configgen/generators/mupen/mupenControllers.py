@@ -65,10 +65,7 @@ def setControllersConfig(iniConfig: CaseSensitiveConfigParser, controllers: Cont
 
 def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> str:
     default_value = int(start_value.split(',')[0])
-    if config_value in system.config:
-        multiplier = float(system.config[config_value])
-    else:
-        multiplier = 1
+    multiplier = system.config.get_float(config_value, 1)
 
     # This is needed because higher peak value lowers sensitivity and vice versa
     if multiplier != 1.0:
@@ -87,10 +84,7 @@ def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> st
 
 def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) -> str:
     default_value = int(default_peak.split(',')[0])
-    if config_value in system.config:
-        deadzone_multiplier = float(system.config[config_value])
-    else:
-        deadzone_multiplier = 0.01
+    deadzone_multiplier = system.config.get_float(config_value, 0.01)
 
     deadzone = int(round(default_value * deadzone_multiplier))
 
@@ -98,7 +92,7 @@ def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) 
 
 def defineControllerKeys(nplayer: int, controller: Controller, system: Emulator, isWheel: bool) -> dict[str, str]:
         # check for auto-config inputs by guid and name, or es settings
-        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (f"mupen64-controller{nplayer}" in system.config and system.config[f"mupen64-controller{nplayer}"] != "retropad"):
+        if (controller.guid in valid_n64_controller_guids and controller.name in valid_n64_controller_names) or (system.config.get(f"mupen64-controller{nplayer}", "retropad") != "retropad"):
             mupenmapping = getMupenMapping(True)
         else:
             mupenmapping = getMupenMapping(False)

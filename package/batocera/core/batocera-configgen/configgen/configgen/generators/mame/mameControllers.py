@@ -81,9 +81,10 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
     for p in range(4):
         xml_crosshair = config.createElement("crosshair")
         xml_crosshair.setAttribute("player", str(p))
-        if system.isOptSet("mame_crosshair") and system.config["mame_crosshair"] == "enabled":
+        mame_crosshair = system.config.get_str("mame_crosshair")
+        if mame_crosshair == "enabled":
             xml_crosshair.setAttribute("mode", "1")
-        elif system.isOptSet("mame_crosshair") and system.config["mame_crosshair"] == "onmove":
+        elif mame_crosshair == "onmove":
             continue # keep no line
         else:
             xml_crosshair.setAttribute("mode", "0")

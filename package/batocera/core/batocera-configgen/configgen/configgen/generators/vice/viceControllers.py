@@ -50,7 +50,7 @@ def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersCont
     # vjm file
     viceFile = viceConfigFile / "sdl-joymap.vjm"
     # vic20 uses a slightly different port
-    if(system.config['core'] == 'xvic'):
+    if(system.config.core == 'xvic'):
         joy_port = "0"
     else:
         joy_port = "1"

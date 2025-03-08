@@ -38,7 +38,7 @@ class ViceGenerator(Generator):
         # controller configuration
         viceControllers.generateControllerConfig(system, _VICE_CONFIG_DIR, playersControllers)
 
-        commandArray = [Path('/usr/bin') / system.config['core']]
+        commandArray = [Path('/usr/bin') / system.config.core]
         # Determine the way to launch roms based on extension type
         rom_extension = rom.suffix.lower()
         # determine extension if a zip file

@@ -120,7 +120,7 @@ class Xash3dFwgsGenerator(Generator):
         commandArray.append(game)
 
         commandArray.append('+showfps')
-        commandArray.append('1' if system.getOptBoolean('showFPS') else '0')
+        commandArray.append('1' if system.config.show_fps else '0')
 
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)

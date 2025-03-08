@@ -57,12 +57,8 @@ class OpenmsxGenerator(Generator):
         root = tree.getroot()
 
         settings_elem = root.find("settings")
-        if system.isOptSet("openmsx_loading"):
-            fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
-            fullspeed_elem.text = system.config["openmsx_loading"]
-        else:
-            fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
-            fullspeed_elem.text = "true"
+        fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
+        fullspeed_elem.text = system.config.get("openmsx_loading", "true")
 
         settings_elem.append(fullspeed_elem)
 
@@ -157,7 +153,7 @@ class OpenmsxGenerator(Generator):
         if system.name == "spectravideo":
             commandArray[1:1] = ["-machine", "Spectravideo_SVI-328"]
 
-        if system.isOptSet("hud") and system.config["hud"] != "":
+        if system.config.get("hud", "") != "":
             commandArray.insert(0, "mangohud")
 
         # setup the media types
@@ -187,7 +183,7 @@ class OpenmsxGenerator(Generator):
         if file_extension == ".dsk":
             _logger.debug("File is a disk")
             disk_type = "-diska"
-            if system.isOptSet("openmsx_disk") and system.config["openmsx_disk"] == "hda":
+            if system.config.get("openmsx_disk") == "hda":
                 disk_type = "-hda"
             for i in range(len(commandArray)):
                 if commandArray[i] == "-cart":

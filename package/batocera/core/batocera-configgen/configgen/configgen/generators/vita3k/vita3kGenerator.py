@@ -63,40 +63,25 @@ class Vita3kGenerator(Generator):
         vita3kymlconfig["pref-path"] = f"{vitaSaves!s}"
 
         # Set the renderer
-        if system.isOptSet("vita3k_gfxbackend"):
-            vita3kymlconfig["backend-renderer"] = system.config["vita3k_gfxbackend"]
-        else:
-            vita3kymlconfig["backend-renderer"] = "OpenGL"
+        vita3kymlconfig["backend-renderer"] = system.config.get("vita3k_gfxbackend", "OpenGL")
+
         # Set the resolution multiplier
-        if system.isOptSet("vita3k_resolution"):
-            vita3kymlconfig["resolution-multiplier"] = int(system.config["vita3k_resolution"])
-        else:
-            vita3kymlconfig["resolution-multiplier"] = 1
+        vita3kymlconfig["resolution-multiplier"] = system.config.get_int("vita3k_resolution", 1)
+
         # Set FXAA
-        if system.isOptSet("vita3k_fxaa") and system.getOptBoolean("vita3k_fxaa"):
-            vita3kymlconfig["enable-fxaa"] = "true"
-        else:
-            vita3kymlconfig["enable-fxaa"] = "false"
+        vita3kymlconfig["enable-fxaa"] = system.config.get_bool("vita3k_fxaa", return_values=("true", "false"))
+
         # Set VSync
-        if system.isOptSet("vita3k_vsync") and not system.getOptBoolean("vita3k_vsync"):
-            vita3kymlconfig["v-sync"] = "false"
-        else:
-            vita3kymlconfig["v-sync"] = "true"
+        vita3kymlconfig["v-sync"] = system.config.get_bool("vita3k_vsync", True, return_values=("true", "false"))
+
         # Set the anisotropic filtering
-        if system.isOptSet("vita3k_anisotropic"):
-            vita3kymlconfig["anisotropic-filtering"] = int(system.config["vita3k_anisotropic"])
-        else:
-            vita3kymlconfig["anisotropic-filtering"] = 1
+        vita3kymlconfig["anisotropic-filtering"] = system.config.get_int("vita3k_anisotropic", 1)
+
         # Set the linear filtering option
-        if system.isOptSet("vita3k_linear") and system.getOptBoolean("vita3k_linear"):
-            vita3kymlconfig["enable-linear-filter"] = "true"
-        else:
-            vita3kymlconfig["enable-linear-filter"] = "false"
+        vita3kymlconfig["enable-linear-filter"] = system.config.get_bool("vita3k_linear", return_values=("true", "false"))
+
         # Surface Sync
-        if system.isOptSet("vita3k_surface") and not system.getOptBoolean("vita3k_surface"):
-            vita3kymlconfig["disable-surface-sync"] = "false"
-        else:
-            vita3kymlconfig["disable-surface-sync"] = "true"
+        vita3kymlconfig["disable-surface-sync"] = system.config.get_bool("vita3k_surface", True, return_values=("true", "false"))
 
         # Vita3k is fussy over its yml file
         # We try to match it as close as possible, but the 'vectors' cause yml formatting issues

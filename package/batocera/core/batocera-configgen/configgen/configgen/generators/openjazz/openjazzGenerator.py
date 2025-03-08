@@ -329,14 +329,12 @@ class OpenJazzGenerator(Generator):
             _logger.info("Configured Controls - Buttons: %s", cfg.buttons)
 
         # User configuration
-        if system.isOptSet("jazz_resolution"):
-            resolution = system.config["jazz_resolution"]
-            width_str, height_str = resolution.split('x')
-            cfg.video_width = int(width_str)
-            cfg.video_height = int(height_str)
-        else:
-            cfg.video_width = int(gameResolution["width"])
-            cfg.video_height = int(gameResolution["height"])
+        width_str, height_str = system.config.get(
+            "jazz_resolution",
+            f'{gameResolution["width"]}x{gameResolution["height"]}'
+        ).split('x')
+        cfg.video_width = int(width_str)
+        cfg.video_height = int(height_str)
 
         # Save the changes
         cfg.save()

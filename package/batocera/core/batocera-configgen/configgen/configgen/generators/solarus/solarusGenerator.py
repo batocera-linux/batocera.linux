@@ -69,17 +69,12 @@ class SolarusGenerator(Generator):
             "left": "right"
         }
 
-        if system.isOptSet('joystick'):
-            if system.config['joystick'] == "joystick1":
-                keymapping["up"]    = "joystick1up"
-                keymapping["down"]  = "joystick1down"
-                keymapping["left"]  = "joystick1left"
-                keymapping["right"] = "joystick1right"
-            elif system.config['joystick'] == "joystick2":
-                keymapping["up"]    = "joystick2up"
-                keymapping["down"]  = "joystick2down"
-                keymapping["left"]  = "joystick2left"
-                keymapping["right"] = "joystick2right"
+        match system.config.get('joystick'):
+            case "joystick1" | "joystick2" as joystick:
+                keymapping["up"]    = f"{joystick}up"
+                keymapping["down"]  = f"{joystick}down"
+                keymapping["left"]  = f"{joystick}left"
+                keymapping["right"] = f"{joystick}right"
 
         mkdir_if_not_exists(_CONFIG_DIR)
         with codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii") as f:

@@ -55,10 +55,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
 
     # Boot Animation Skip
-    if system.isOptSet("xemu_bootanim"):
-        iniConfig.set("general", "skip_boot_anim", system.config["xemu_bootanim"])
-    else:
-        iniConfig.set("general", "skip_boot_anim", "false")
+    iniConfig.set("general", "skip_boot_anim", system.config.get("xemu_bootanim", "false"))
 
     # Disable welcome screen on first launch
     iniConfig.set("general", "show_welcome", "false")
@@ -67,10 +64,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("general", "screenshot_dir", '"/userdata/screenshots"')
 
     # Fill sys sections
-    if system.isOptSet("xemu_memory"):
-        iniConfig.set("sys", "mem_limit", f'"{system.config["xemu_memory"]}"')
-    else:
-        iniConfig.set("sys", "mem_limit", '"64"')
+    iniConfig.set("sys", "mem_limit", f'"{system.config.get("xemu_memory", "64")}"')
 
     if system.name == "chihiro":
         iniConfig.set("sys", "mem_limit", '"128"')
@@ -84,23 +78,14 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("sys.files", "dvd_path", f'"{rom}"')
 
     # Audio quality
-    if system.isOptSet("xemu_use_dsp"):
-        iniConfig.set("audio", "use_dsp", system.config["xemu_use_dsp"])
-    else:
-        iniConfig.set("audio", "use_dsp", "false")
+    iniConfig.set("audio", "use_dsp", system.config.get("xemu_use_dsp", "false"))
 
     # API
-    if system.isOptSet("xemu_api"):
-        iniConfig.set("display", "renderer", f'"{system.config["xemu_api"]}"')
-    else:
-        # use Vulkan as the default for a Mesa bug with some AMD GPU's
-        iniConfig.set("display", "renderer", '"VULKAN"')
+    # use Vulkan as the default for a Mesa bug with some AMD GPU's
+    iniConfig.set("display", "renderer", f'"{system.config.get("xemu_api", "VULKAN")}"')
 
     # Rendering resolution
-    if system.isOptSet("xemu_render"):
-        iniConfig.set("display.quality", "surface_scale", system.config["xemu_render"])
-    else:
-        iniConfig.set("display.quality", "surface_scale", "1") #render scale by default
+    iniConfig.set("display.quality", "surface_scale", system.config.get("xemu_render", "1")) # render scale by default
 
     # start fullscreen
     iniConfig.set("display.window", "fullscreen_on_startup", "true")
@@ -110,25 +95,16 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("display.window", "startup_size", f'"{window_res}"')
 
     # Vsync
-    if system.isOptSet("xemu_vsync"):
-        iniConfig.set("display.window", "vsync", system.config["xemu_vsync"])
-    else:
-        iniConfig.set("display.window", "vsync", "true")
+    iniConfig.set("display.window", "vsync", system.config.get("xemu_vsync", "true"))
 
     # don't show the menubar
     iniConfig.set("display.ui", "show_menubar", "false")
 
     # Scaling
-    if system.isOptSet("xemu_scaling"):
-        iniConfig.set("display.ui", "fit", f'"{system.config["xemu_scaling"]}"')
-    else:
-        iniConfig.set("display.ui", "fit", '"scale"')
+    iniConfig.set("display.ui", "fit", f'"{system.config.get("xemu_scaling", "scale")}"')
 
     # Aspect ratio
-    if system.isOptSet("xemu_aspect"):
-        iniConfig.set("display.ui", "aspect_ratio", f'"{system.config["xemu_aspect"]}"')
-    else:
-        iniConfig.set("display.ui", "aspect_ratio", '"auto"')
+    iniConfig.set("display.ui", "aspect_ratio", f'"{system.config.get("xemu_aspect", "auto")}"')
 
     # Fill input section
     # first, clear
@@ -139,13 +115,13 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
 
     # Network
     # Documentation: https://github.com/xemu-project/xemu/blob/master/config_spec.yml
-    if system.isOptSet("xemu_networktype"):
+    if network_type := system.config.get("xemu_networktype"):
         iniConfig.set("net", "enable", "true")
-        iniConfig.set("net", "backend", f'"{system.config["xemu_networktype"]}"')
+        iniConfig.set("net", "backend", f'"{network_type}"')
     else:
         iniConfig.set("net", "enable", "false")
     # Additionnal settings for udp: if nothing is entered in these fields, the xemu.toml is untouched
-    if system.isOptSet("xemu_udpremote"):
-        iniConfig.set("net.udp", "remote_addr", f'"{system.config["xemu_udpremote"]}"')
-    if system.isOptSet("xemu_udpbind"):
-        iniConfig.set("net.udp", "bind_addr", f'"{system.config["xemu_udpbind"]}"')
+    if udpremote := system.config.get("xemu_udpremote"):
+        iniConfig.set("net.udp", "remote_addr", f'"{udpremote}"')
+    if udpbind := system.config.get("xemu_udpbind"):
+        iniConfig.set("net.udp", "bind_addr", f'"{udpbind}"')
