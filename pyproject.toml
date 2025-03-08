@@ -9,6 +9,7 @@ strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
 reportMissingModuleSource = "none"
+reportDeprecated = "warning"
 
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]
