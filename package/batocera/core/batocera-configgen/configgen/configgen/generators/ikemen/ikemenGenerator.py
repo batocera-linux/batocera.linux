@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -179,8 +178,7 @@ class IkemenGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-        config_path = rom_path / "save" / "config.json"
+        config_path = rom / "save" / "config.json"
 
         try:
             with config_path.open() as c:

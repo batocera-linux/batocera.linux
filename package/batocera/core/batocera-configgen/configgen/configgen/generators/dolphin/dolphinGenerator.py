@@ -30,15 +30,13 @@ _logger = logging.getLogger(__name__)
 class DolphinGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         mkdir_if_not_exists(DOLPHIN_INI.parent)
 
         # Dir required for saves
         mkdir_if_not_exists(DOLPHIN_SAVES / "StateSaves")
 
         # Generate the controller config(s)
-        dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom_path, guns)
+        dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 
         ## [ Qt.ini ] ##
         qtIni = CaseSensitiveConfigParser(interpolation=None)

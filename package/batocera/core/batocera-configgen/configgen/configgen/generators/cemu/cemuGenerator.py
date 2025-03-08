@@ -5,12 +5,11 @@ import logging
 import os
 import subprocess
 from os import environ
-from pathlib import Path
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ... import Command
-from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan
 from ..Generator import Generator
@@ -18,6 +17,8 @@ from . import cemuControllers
 from .cemuPaths import CEMU_BIOS, CEMU_CONFIG, CEMU_CONTROLLER_PROFILES, CEMU_ROMDIR, CEMU_SAVES
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
@@ -36,12 +37,10 @@ class CemuGenerator(Generator):
         return True
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # in case of squashfs, the root directory is passed
-        paths = list(rom_path.glob('**/code/*.rpx'))
+        paths = list(rom.glob('**/code/*.rpx'))
         if len(paths) >= 1:
-            rom_path = paths[0]
+            rom = paths[0]
 
         mkdir_if_not_exists(CEMU_BIOS)
         mkdir_if_not_exists(CEMU_CONFIG)
@@ -56,10 +55,10 @@ class CemuGenerator(Generator):
         # Set-up the controllers
         cemuControllers.generateControllerConfig(system, playersControllers)
 
-        if rom == "config":
+        if configure_emulator(rom):
             commandArray = ["/usr/bin/cemu/cemu"]
         else:
-            commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rom_path]
+            commandArray = ["/usr/bin/cemu/cemu", "-f", "-g", rom]
             # force no menubar
             commandArray.append("--force-no-menubar")
 

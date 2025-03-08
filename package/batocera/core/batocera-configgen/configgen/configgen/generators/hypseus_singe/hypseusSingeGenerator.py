@@ -78,8 +78,6 @@ class HypseusSingeGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # copy input.ini file templates
         hypseusConfigSource = _SHARE_DIR / "hypinput_gamepad.ini"
 
@@ -145,10 +143,10 @@ class HypseusSingeGenerator(Generator):
             copy_resources(_SHARE_DIR / directory, _DATA_DIR / directory)
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
-        romName = rom_path.stem
-        frameFile = rom_path / f"{romName}.txt"
-        commandsFile = rom_path / f"{romName}.commands"
-        singeFile = rom_path / f"{romName}.singe"
+        romName = rom.stem
+        frameFile = rom / f"{romName}.txt"
+        commandsFile = rom / f"{romName}.commands"
+        singeFile = rom / f"{romName}.singe"
 
         bezelFile = find_bezel(romName.lower())
         if bezelFile is not None:
@@ -166,12 +164,12 @@ class HypseusSingeGenerator(Generator):
             _logger.debug("No .m2v files found in the text file.")
 
         # now get the resolution from the m2v file
-        video_path = rom_path / m2v_filename if m2v_filename is not None else rom_path
+        video_path = rom / m2v_filename if m2v_filename is not None else rom
 
         # check the path exists
         if not video_path.exists():
             _logger.debug("Could not find m2v file in path - %s", video_path)
-            video_path = self.find_file(rom_path, cast(str, m2v_filename))
+            video_path = self.find_file(rom, cast(str, m2v_filename))
 
         _logger.debug("Full m2v path is: %s", video_path)
 

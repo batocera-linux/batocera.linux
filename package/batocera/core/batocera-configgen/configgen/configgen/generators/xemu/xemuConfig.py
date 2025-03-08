@@ -7,12 +7,14 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from .xemuPaths import XEMU_CONFIG
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import Resolution
 
 
-def writeIniFile(system: Emulator, rom: str, playersControllers: Controllers, gameResolution: Resolution) -> None:
+def writeIniFile(system: Emulator, rom: Path, playersControllers: Controllers, gameResolution: Resolution) -> None:
     iniConfig = CaseSensitiveConfigParser(interpolation=None)
 
     if XEMU_CONFIG.exists():
@@ -26,7 +28,7 @@ def writeIniFile(system: Emulator, rom: str, playersControllers: Controllers, ga
     with ensure_parents_and_open(XEMU_CONFIG, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom: str, playersControllers: Controllers, gameResolution: Resolution) -> None:
+def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom: Path, playersControllers: Controllers, gameResolution: Resolution) -> None:
     # Create INI sections
     if not iniConfig.has_section("general"):
         iniConfig.add_section("general")

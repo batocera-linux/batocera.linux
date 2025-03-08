@@ -33,8 +33,6 @@ class OpenmsxGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-
-        rom_path = Path(rom)
         share_dir = openMSX_Homedir / "share"
         source_settings = openMSX_Config / "settings.xml"
         settings_xml = share_dir / "settings.xml"
@@ -94,7 +92,7 @@ class OpenmsxGenerator(Generator):
             file.write("filepool add -path /userdata/bios/Machines -types system_rom -position 1\n")
             file.write("filepool add -path /userdata/bios/openmsx -types system_rom -position 2\n")
             # get the rom name (no extension) for the savestate name
-            save_name = rom_path.stem
+            save_name = rom.stem
             # simplify the rom name, remove content between brackets () & []
             save_name = re.sub(r"\([^)]*\)", "", save_name)
             save_name = re.sub(r"\[[^]]*\]", "", save_name)
@@ -140,8 +138,8 @@ class OpenmsxGenerator(Generator):
                         file.write(f'bind "joy{nplayer} button{input.id} down" "toggle console"\n')
 
         # now run the rom with the appropriate flags
-        file_extension = rom_path.suffix.lower()
-        commandArray: list[str | Path] = ["/usr/bin/openmsx", "-cart", rom_path, "-script", settings_tcl]
+        file_extension = rom.suffix.lower()
+        commandArray: list[str | Path] = ["/usr/bin/openmsx", "-cart", rom, "-script", settings_tcl]
 
         # set the best machine based on the system
         if system.name in ["msx1", "msx2"]:
@@ -198,14 +196,14 @@ class OpenmsxGenerator(Generator):
         # handle our own file format for stacked roms / disks
         if file_extension == ".openmsx":
             # read the contents of the file and extract the rom paths
-            with rom_path.open("r") as file:
+            with rom.open("r") as file:
                 lines = file.readlines()
                 rom1 = ""
                 rom1 = lines[0].strip()
                 rom2 = ""
                 rom2 = lines[1].strip()
             # get the directory path of the .openmsx file
-            openmsx_dir = rom_path.parent
+            openmsx_dir = rom.parent
             # prepend the directory path to the .rom/.dsk file paths
             rom1 = openmsx_dir / rom1
             rom2 = openmsx_dir / rom2

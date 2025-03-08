@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -12,12 +11,11 @@ if TYPE_CHECKING:
 class SteamGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-        basename = rom_path.name
+        basename = rom.name
         gameId = None
         if basename != "Steam.steam":
             # read the id inside the file
-            with rom_path.open() as f:
+            with rom.open() as f:
                 gameId = str.strip(f.read())
 
         if gameId is None:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from configobj import ConfigObj
@@ -124,7 +123,7 @@ class CGeniusGenerator(Generator):
         # now setup to run the rom
         commandArray = ["CGeniusExe"]
         # get rom path
-        rom_path = Path(rom).parent
+        rom_path = rom.parent
         rom_path = rom_path.relative_to(alt_config_dir) if rom_path.is_relative_to(alt_config_dir) else rom_path
         commandArray.append(f'dir="{rom_path}"')
 

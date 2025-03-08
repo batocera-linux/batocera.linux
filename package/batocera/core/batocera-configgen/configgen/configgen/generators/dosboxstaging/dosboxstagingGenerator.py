@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -17,17 +16,16 @@ class DosBoxStagingGenerator(Generator):
     # Return command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
-        gameDir = Path(rom)
-        batFile = gameDir / "dosbox.bat"
-        gameConfFile = gameDir / "dosbox.cfg"
+        batFile = rom / "dosbox.bat"
+        gameConfFile = rom / "dosbox.cfg"
 
-        commandArray: list[str | Path] = [
+        commandArray = [
             '/usr/bin/dosbox-staging',
             "-fullscreen",
             "-userconf",
             "-exit",
             batFile,
-            "-c", f"""set ROOT={gameDir!s}"""
+            "-c", f"""set ROOT={rom!s}"""
         ]
         if gameConfFile.is_file():
             commandArray.append("-conf")

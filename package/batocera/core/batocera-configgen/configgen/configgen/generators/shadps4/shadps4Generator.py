@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import toml
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan
 from ..Generator import Generator
@@ -30,7 +30,7 @@ class shadPS4Generator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Set the paths using Path objects
-        configPath = Path(CONFIGS) / "shadps4"
+        configPath = CONFIGS / "shadps4"
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
 
@@ -148,10 +148,10 @@ class shadPS4Generator(Generator):
         os.chdir(configPath)
 
         # Run command
-        if rom == "config":
+        if configure_emulator(rom):
             commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4"]
         else:
-            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", Path(rom).parent / "eboot.bin"]
+            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", rom.parent / "eboot.bin"]
 
         return Command.Command(
             array=commandArray,

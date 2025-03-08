@@ -39,7 +39,7 @@ class TR2XGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        tr2xRomPath = Path(rom).parent
+        tr2xRomPath = rom.parent
         tr2xConfigPath = tr2xRomPath / "cfg" / "TR2X.json5"
         tr2xSourcePath = Path("/usr/bin/tr2x")
 

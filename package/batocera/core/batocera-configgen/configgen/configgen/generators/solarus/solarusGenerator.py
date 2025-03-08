@@ -9,6 +9,8 @@ from ...controller import Controller, generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import Input
@@ -28,7 +30,7 @@ class SolarusGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # basis
-        commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
+        commandArray: list[str | Path] = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
 
         # hotkey to exit
         for nplayer, pad in enumerate(playersControllers, start=1):

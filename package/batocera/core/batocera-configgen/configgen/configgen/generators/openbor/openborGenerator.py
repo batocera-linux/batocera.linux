@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import os
 import re
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -13,6 +12,8 @@ from ..Generator import Generator
 from . import openborControllers
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ class OpenborGenerator(Generator):
         return OpenborGenerator.executeCore(core, rom)
 
     @staticmethod
-    def executeCore(core: str, rom: str) -> Command.Command:
+    def executeCore(core: str, rom: Path) -> Command.Command:
         if core == "openbor4432":
             commandArray = ["OpenBOR4432", rom]
         elif core == "openbor6412":
@@ -113,8 +114,8 @@ class OpenborGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def guessCore(rom: str) -> str:
-        versionstr = re.search(r'\[.*([0-9]{4})\]+', Path(rom).name)
+    def guessCore(rom: Path) -> str:
+        versionstr = re.search(r'\[.*([0-9]{4})\]+', rom.name)
         if versionstr is None:
             return "openbor7530"
         version = int(versionstr.group(1))

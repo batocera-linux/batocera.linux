@@ -27,7 +27,7 @@ class VKQuake2Generator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        romName = Path(rom).name
+        romName = rom.name
 
         # Copy updated binary files if they don't exist or if the source is newer
         if vkquake2SourcePath.exists():
@@ -38,7 +38,7 @@ class VKQuake2Generator(Generator):
         # Change to the rom directory before running
         os.chdir(vkquake2RomPath)
 
-        commandArray = [ vkquake2Binary ]
+        commandArray: list[str | Path] = [ vkquake2Binary ]
 
         # Mission Packs
         if "zero" in romName.lower():

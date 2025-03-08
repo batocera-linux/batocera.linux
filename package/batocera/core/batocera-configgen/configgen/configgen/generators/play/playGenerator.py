@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Final, cast
 import evdev
 
 from ... import Command
-from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, configure_emulator, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -221,11 +221,11 @@ class PlayGenerator(Generator):
         input_tree.write(playInputFile)
 
         ## Prepare the command to run the emulator
-        commandArray = ["/usr/bin/Play", "--fullscreen"]
+        commandArray: list[str | Path] = ["/usr/bin/Play", "--fullscreen"]
 
-        if rom != "config":
+        if not configure_emulator(rom):
             # if zip, it's a namco arcade game
-            if rom.lower().endswith("zip"):
+            if rom.suffix.lower() == ".zip":
                 # strip path & extension
                 commandArray.extend(["--arcade", Path(rom).stem])
             else:

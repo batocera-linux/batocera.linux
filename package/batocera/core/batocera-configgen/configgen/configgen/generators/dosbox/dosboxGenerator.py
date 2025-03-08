@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -9,6 +8,8 @@ from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _CONFIG_DIR: Final = CONFIGS / 'dosbox'
@@ -21,9 +22,8 @@ class DosBoxGenerator(Generator):
     # Return command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
-        gameDir = Path(rom)
-        batFile = gameDir / "dosbox.bat"
-        gameConfFile = gameDir / "dosbox.cfg"
+        batFile = rom / "dosbox.bat"
+        gameConfFile = rom / "dosbox.cfg"
 
         # configuration file
         iniSettings = CaseSensitiveConfigParser(interpolation=None)
@@ -66,7 +66,7 @@ class DosBoxGenerator(Generator):
             "-userconf",
             "-exit",
             batFile,
-            "-c", f"""set ROOT={gameDir}""",
+            "-c", f"""set ROOT={rom}""",
         ]
 
         if gameConfFile.exists():

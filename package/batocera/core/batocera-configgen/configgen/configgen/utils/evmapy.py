@@ -95,7 +95,7 @@ class evmapy(AbstractContextManager[None, None]):
     system: str
     emulator: str
     core: str
-    rom: str
+    rom: Path
     controllers: Controllers
     guns: Guns
 
@@ -116,14 +116,12 @@ class evmapy(AbstractContextManager[None, None]):
             subprocess.call(['batocera-evmapy', 'stop'])
 
     def __build_merged_keys_file(self) -> Path | None:
-        rom_path = Path(self.rom)
-
         # consider files here in this order to get a configuration
         files_to_merge = [
             keys_file
             for keys_file in [
                 # {rom}.keys form is forbidden for directories, it must be inside
-                (rom_path.parent / f'{rom_path.name}.keys') if not rom_path.is_dir() else (rom_path / 'padto.keys'),
+                (self.rom.parent / f'{self.rom.name}.keys') if not self.rom.is_dir() else (self.rom / 'padto.keys'),
                 # EVMAPY / f"{self.system}.{self.emulator}.{self.core}.keys",
                 # EVMAPY / f"{self.system}.{self.emulator}.keys",
                 EVMAPY / f'{self.system}.keys',

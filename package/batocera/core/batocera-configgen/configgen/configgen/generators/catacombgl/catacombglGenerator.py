@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -10,6 +9,8 @@ from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _logger = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ class CatacombGLGenerator(Generator):
         commandArray = ["/usr/bin/CatacombGL", "--savedir", _CATACOMBGL_SAVES]
 
         # Version
-        rom_file_name = Path(rom).name.lower()
+        rom_file_name = rom.name.lower()
 
         # Check and extend the command array with specific arguments
         for keyword, argument in {

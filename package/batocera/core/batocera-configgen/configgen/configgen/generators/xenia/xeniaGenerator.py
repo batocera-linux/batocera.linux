@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 import toml
 
 from ... import Command
-from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan, wine
 from ..Generator import Generator
@@ -42,8 +42,6 @@ class XeniaGenerator(Generator):
             shutil.copy2(src_path, dest_path)
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         wineprefix = HOME / 'wine-bottles' / 'xbox360'
         xeniaConfig = CONFIGS / 'xenia'
         xeniaCache = CACHE / 'xenia'
@@ -131,10 +129,10 @@ class XeniaGenerator(Generator):
             _logger.debug("Error creating 32-bit link for %s: %s", dll, e)
 
         # are we loading a digital title?
-        if rom_path.suffix == '.xbox360':
+        if rom.suffix == '.xbox360':
             _logger.debug('Found .xbox360 playlist: %s', rom)
-            pathLead = rom_path.parent
-            with rom_path.open() as openFile:
+            pathLead = rom.parent
+            with rom.open() as openFile:
                 # Read only the first line of the file.
                 firstLine = openFile.readlines(1)[0]
                 # Strip of any new line characters.
@@ -143,8 +141,7 @@ class XeniaGenerator(Generator):
                 xblaFullPath = pathLead / firstLine
                 if xblaFullPath.exists():
                     _logger.debug('Found! Switching active rom to: %s', firstLine)
-                    rom_path = xblaFullPath
-                    rom = str(xblaFullPath)
+                    rom = xblaFullPath
                 else:
                     _logger.error('Disc installation/XBLA title %s from %s not found, check path or filename.', firstLine, rom)
 
@@ -298,7 +295,7 @@ class XeniaGenerator(Generator):
             toml.dump(config, f)
 
         # handle patches files to set all matching toml files keys to true
-        rom_name = rom_path.stem
+        rom_name = rom.stem
         # simplify the name for matching
         rom_name = re.sub(r'\[.*?\]', '', rom_name)
         rom_name = re.sub(r'\(.*?\)', '', rom_name)
@@ -322,7 +319,7 @@ class XeniaGenerator(Generator):
                 _logger.debug('No patch file found for %s', rom_name)
 
         # now setup the command array for the emulator
-        if rom == 'config':
+        if configure_emulator(rom):
             if core == 'xenia-canary':
                 commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe']
             else:
