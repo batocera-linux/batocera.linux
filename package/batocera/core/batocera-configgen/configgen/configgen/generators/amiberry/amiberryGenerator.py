@@ -56,7 +56,7 @@ class AmiberryGenerator(Generator):
             commandArray: list[str | Path] = [ "/usr/bin/amiberry", "-G" ]
             if romType != 'WHDL' :
                 commandArray.append("--model")
-                commandArray.append(system.config['core'])
+                commandArray.append(system.config.core)
 
             if romType == 'WHDL' :
                 commandArray.append("--autoload")

@@ -123,7 +123,7 @@ def generateControllerConfig(
         retroarchbtns["l2"] = "l"
 
     # Fix for reversed inputs in Yabasanshiro core which is unmaintained by retroarch
-    if (system.config['core'] == 'yabasanshiro'):
+    if system.config.core == 'yabasanshiro':
         retroarchbtns["pageup"] = "r"
         retroarchbtns["pagedown"] = "l"
 
