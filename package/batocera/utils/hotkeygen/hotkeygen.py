@@ -191,7 +191,7 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
             with GDEFAULTMAPPING_FILE.open() as fd:
                 data = json.load(fd)
         if GUSERDEFAULTMAPPING_FILE.exists():
-            if debug:
+            if gdebug:
                 print(f"use user mapping file {GUSERDEFAULTMAPPING_FILE}")
             with GUSERDEFAULTMAPPING_FILE.open() as fd:
                 userdata = json.load(fd)
