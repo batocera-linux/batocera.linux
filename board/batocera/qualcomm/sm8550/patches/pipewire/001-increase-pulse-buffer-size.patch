@@ -1,0 +1,21 @@
+# Fixes pulse audio with Dolphin
+diff --git a/src/daemon/pipewire-pulse.conf.in b/src/daemon/pipewire-pulse.conf.in
+index 0d54cf9b90..bdea2ca072 100644
+--- a/src/daemon/pipewire-pulse.conf.in
++++ b/src/daemon/pipewire-pulse.conf.in
+@@ -102,12 +102,12 @@ pulse.properties = {
+     ]
+     #server.dbus-name       = "org.pulseaudio.Server"
+     #pulse.allow-module-loading = true
+-    #pulse.min.req          = 128/48000     # 2.7ms
++    pulse.min.req          = 960/48000     # 20ms
+     #pulse.default.req      = 960/48000     # 20 milliseconds
+-    #pulse.min.frag         = 128/48000     # 2.7ms
++    pulse.min.frag         = 960/48000     # 20ms
+     #pulse.default.frag     = 96000/48000   # 2 seconds
+     #pulse.default.tlength  = 96000/48000   # 2 seconds
+-    #pulse.min.quantum      = 128/48000     # 2.7ms
++    pulse.min.quantum      = 960/48000     # 20ms
+     #pulse.idle.timeout     = 0             # don't pause after underruns
+     #pulse.default.format   = F32
+     #pulse.default.position = [ FL FR ]
