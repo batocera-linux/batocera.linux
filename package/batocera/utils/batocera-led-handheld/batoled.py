@@ -20,6 +20,9 @@ def batocera_model():
     l = '/sys/class/leds/multicolor:chassis/multi_intensity' 
     if os.path.exists(l):
         return("rgb")
+    c = glob.glob('/sys/class/leds/l:b?')
+    if c:
+        return("rgbaddr")
     c = glob.glob('/sys/class/pwm/pwmchip*/device/name')
     for t in c:
         with open (t) as f:
@@ -40,6 +43,21 @@ def batoconf(key):
             nocomment = rest.split("#", 1)[0].strip()
             return(nocomment) # First one is enough
     return None
+
+def batoconf_color():
+    rgb = batoconf("led.colour")
+    if rgb == None:
+        rgb = DEFAULT_ES_COLOR
+    try:
+        [ r, g, b ] = rgb.split(" ")
+    except:
+        if len (rgb) == 6:
+            r, g, b = hex_to_dec(rgb[0:2]), hex_to_dec(rgb[2:4]), hex_to_dec(rgb[4:6])
+        else:
+            [ r, g, b ] = DEFAULT_ES_COLOR.split(" ")
+    if DEBUG:
+        print (f"batocera.conf said led.colour = {r} {g} {b}")
+    return [ r, g, b ]
 
 
 ####################
@@ -65,12 +83,8 @@ class rgbled(object):
             self.turn_off()
             return
         elif rgb == "ESCOLOR":
-            rgb = batoconf("led.colour")
-            if rgb == None:
-                out = DEFAULT_ES_COLOR
-            else:
-                [ r, g, b ] = rgb.split(" ")
-                out = f'{r} {g} {b}'
+            r, g, b = batoconf_color()
+            out = f'{r} {g} {b}'
         else:
             r, g, b = rgb[0:2], rgb[2:4], rgb[4:6]
             out = f'{hex_to_dec(r)} {hex_to_dec(g)} {hex_to_dec(b)}'
@@ -201,10 +215,7 @@ class pwmled(object):
             self.turn_off()
             return
         elif rgb == "ESCOLOR":
-            rgb = batoconf("led.colour")
-            if rgb == None:
-                rgb = DEFAULT_ES_COLOR
-            [ r, g, b ] = rgb.split(" ")
+            r, g, b = batoconf_color()
             r, g, b = str(dec_to_pwm(r, self.period)), str(dec_to_pwm(g, self.period)), str(dec_to_pwm(b, self.period))
         else:
             r, g, b = rgb[0:2], rgb[2:4], rgb[4:6]
@@ -223,6 +234,8 @@ class pwmled(object):
                     p.write(b)
 
     def get_color (self) -> str:
+        if not self.led:
+            return "000000"
         l = self.led[0]
         with open (l + f'/pwm0/duty_cycle', 'r') as p:
                 r = p.readline().strip()
@@ -234,7 +247,7 @@ class pwmled(object):
         return(out)
 
     def set_color_dec (self, rgb):
-        int_list = [int(x) for x in string.split(rgb)]
+        int_list = [int(x) for x in rgb.split()]
         if len(int_list) != 3:
             print (f'Argument expects three ints for R G B, not {rgb}')
             return (1)
@@ -297,6 +310,108 @@ class pwmled(object):
         return (-1, -1) # current brightness, max_brightness
 
 ####################
+# Handhelds that use a direct RGB interface with each LED addressable
+class rgbledaddr(object):
+    def __init__(self):
+        self.all_r, self.all_g, self.all_b = [], [], []
+        for prefix in ['l', 'r']:
+            self.all_r.extend(glob.glob(f'/sys/class/leds/{prefix}:r?/brightness'))
+            self.all_g.extend(glob.glob(f'/sys/class/leds/{prefix}:g?/brightness'))
+            self.all_b.extend(glob.glob(f'/sys/class/leds/{prefix}:b?/brightness'))
+
+    def set_color (self, rgb):
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
+            print (f'Error Color {rgb} is invalid')
+            return
+        if rgb == "PULSE":
+            self.pulse_effect()
+            return
+        elif rgb == "RAINBOW":
+            self.rainbow_effect()
+            return
+        elif rgb == "OFF":
+            self.turn_off()
+            return
+        elif rgb == "ESCOLOR":
+            r, g, b = batoconf_color()
+            r, g, b = str(r), str(g), str(b)
+        else:
+            r, g, b = str(hex_to_dec(rgb[0:2])), str(hex_to_dec(rgb[2:4])), str(hex_to_dec(rgb[4:6]))
+        if (DEBUG):
+            print (f'Set color to: {r}, {g}, {b}.')
+        for i in  self.all_r:
+            with open (i, 'w') as p:
+                p.write(r)
+        for i in  self.all_g:
+            with open (i, 'w') as p:
+                p.write(g)
+        for i in  self.all_b:
+            with open (i, 'w') as p:
+                p.write(b)
+
+    def get_color (self) -> str:
+        with open (self.all_r[0], 'r') as p:
+            r = p.readline().strip()
+        with open (self.all_g[0], 'r') as p:
+            g = p.readline().strip()
+        with open (self.all_b[0], 'r') as p:
+            b = p.readline().strip()
+        out = f'{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}'
+        return (out)
+
+    def set_color_dec (self, rgb):
+        [ r, g, b ] = rgb.split(" ")
+        if (DEBUG):
+            print (f'Set color to: {rgb}')
+        for i in  self.all_r:
+            with open (i, 'w') as p:
+                p.write(r)
+        for i in  self.all_g:
+            with open (i, 'w') as p:
+                p.write(g)
+        for i in  self.all_b:
+            with open (i, 'w') as p:
+                p.write(b)
+
+    def get_color_dec (self) -> str:
+        with open (self.all_r[0], 'r') as p:
+            r = p.readline().strip()
+        with open (self.all_r[0], 'r') as p:
+            g = p.readline().strip()
+        with open (self.all_b[0], 'r') as p:
+            b = p.readline().strip()
+        out = f'{r} {g} {b}'
+        return (out)
+
+    def rainbow_effect(self):
+        prev = self.get_color()
+        for i in range (0, EFFECT_STEP):
+            o = getRainbowRGB(float (i/EFFECT_STEP))
+            self.set_color(o)
+            time.sleep(EFFECT_DURATION/EFFECT_STEP)
+        self.set_color(prev)
+
+    def pulse_effect(self):
+        prev = self.get_color()
+        for i in range (0, EFFECT_STEP):
+            o = getPulseRGB(i, EFFECT_STEP, prev)
+            self.set_color(o)
+            time.sleep(PULSE_DURATION/EFFECT_STEP)
+        self.set_color(prev)
+
+    def turn_off(self):
+        self.set_color("000000")
+
+    def set_brightness (self, b):
+        return          # unable to set it at the moment
+
+    def set_brightness_conf (self):
+        return
+
+    def ret_brightness (self):
+        return (-1, -1) # current brightness, max_brightness
+
+####################
 # Unified class for Batocera handhelds
 class led(object):
     def __new__(cls):
@@ -305,6 +420,8 @@ class led(object):
             return pwmled()
         elif m == "rgb":
             return rgbled()
+        elif m == "rgbaddr":
+            return rgbledaddr()
         else:
             print(m) 
 
@@ -357,7 +474,6 @@ def getPulseRGB(num, step, rgb): # num = order from 0 to step
     nr, ng, nb = int(coeff*float(r)), int(coeff*float(g)), int(coeff*float(b))
     out = f'{nr:0>2X}{ng:0>2X}{nb:0>2X}'
     return (out)
-    
 
 ####################
 # if invoked as a command line: respond with supported Model, or None
