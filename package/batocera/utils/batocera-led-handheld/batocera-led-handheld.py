@@ -46,7 +46,7 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in [ "pwm" ]:
+    if model in [ "pwm", "rgbaddr" ]:
         return ('/sys/class/power_supply/qcom-battery/')
     if model in [ "rgb" ]:
         return ('/sys/class/power_supply/BAT0/')
