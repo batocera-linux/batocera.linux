@@ -3,7 +3,7 @@ SYSTEM=${1,,}                                                                   
 ACTION=${2,,}                                                                        # play, stop... see usage
 GAMENAME="$3"                                                                        # fullpath to game: e.g. /userdata/roms/windows/Age of Empires.wine
 TRICK=${4,,}                                                                         # WINE-tricks, see https://github.com/Winetricks/winetricks
-ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable: e.g. "Age of Empires.wine" or "AoE_inst.exe
+ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable: e.g. "Age of Empires.wine" or "AoE_inst.exe"
 ROMBASEDIR=$(dirname "${GAMENAME}")                                                  # gamedir or rootdir: eg "/userdata/roms/windows" if AoE is a wine.dir
 GAMEEXT="${GAMENAME##*.}"                                                            # gameextension: pc, wine, exe, msi
 # log wineserver running time  
@@ -35,17 +35,18 @@ SYSTEM_SAVEDIR=
 AUTORUN_FILEMASK="$4"
 AUTORUN_FOUNDEXE=
 AUTORUN_FILTER=
+# Use requestFileSystem() to check dirs and files for symlinks and filesystem, it's a small dev-tool for monitoring the entire script
+# Usage requestFileSystem "FILE" "DIR" "FILE"
 
 stopWineServer() {
     [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] && exit 0
 
     #try to cleanly exit wineserver
     WINEPREFIX=${WINEPOINT} "${WINESERVER}" -k &
-
     #wait 10s for clean exit
-    echo "stopWineServer: waiting wineserver shutdown" >&2
+    echo "${FUNCNAME[0]}: waiting wineserver shutdown" >&2
     if waitWineServer 10; then
-        echo "stopWineServer: wineserver has cleanly exited" >&2
+        echo "${FUNCNAME[0]}: wineserver has cleanly exited" >&2
         return 0
     fi
 
@@ -61,7 +62,7 @@ stopWineServer() {
 
     # kill all pids
     if [ ${#PIDS[@]} -gt 0 ]; then
-        echo "stopWineServer: Killing stuck wine processes: ${PIDS[*]}"
+        echo "${FUNCNAME[0]}: Killing stuck wine processes: ${PIDS[*]}"
         kill -9 "${PIDS[@]}"
     fi
     return 1
@@ -113,7 +114,7 @@ waitWineServer() {
     #timeout will report not 0 if setted value is reached
     if pgrep -f "${WINESERVER}"; then
         echo "Waiting WineServer: ${WINESERVER}"
-        timeout $1 tail -q --pid=$(pgrep -f "${WINESERVER}") -f /dev/null
+        timeout "$1" tail -q --pid=$(pgrep -f "${WINESERVER}") -f /dev/null
         echo "Finished waiting for WineServer: ${WINESERVER}"
     fi
 }
@@ -231,12 +232,12 @@ redist_install() {
     local i; local ii
     if [[ -d "${USER_DIR}/exe" ]]; then
         readarray -t i < <(find "${USER_DIR}/exe" -maxdepth 1 -type f -iname "*.exe" -printf "%p\n")
-        [[ "${#i[@]}" -eq 0 ]] && { rmdir "${USER_DIR}/exe"; echo "error: Place only exe-files to ${USER_DIR}/exe" >&2; return 0; }
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "${USER_DIR}/exe"; echo "${FUNCNAME[0]}: Place only exe-files to ${USER_DIR}/exe" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.exe"
         
         for file in "${i[@]}"; do
             #We compare base-filename in lowercase only and execute the file stored in array
-            ii="$(basename $file)"; ii="${ii,,}"
+            ii="$(basename "$file")"; ii="${ii,,}"
             echo "Executing file $file"
             case "${ii}" in
 
@@ -280,7 +281,7 @@ redist_install() {
             echo "$(date '+%D %T') - Installed: '$file' --> ${WINEPREFIX}" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.exe"
         done
-        rmdir "${USER_DIR}/exe" || { echo "error in removing dir: Place only exe-files to ${USER_DIR}/exe" >&2; }
+        rmdir "${USER_DIR}/exe" || { echo "${FUNCNAME[0]}: Place only exe-files to ${USER_DIR}/exe" >&2; }
     fi
     return 0
 }
@@ -291,7 +292,7 @@ msi_install() {
     ii="${USER_DIR}/msi"
     if [[ -d "$ii" ]]; then
         readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.msi" -printf "%p\n")
-        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only msi-files to $ii" >&2; return 0; }
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "${FUNCNAME[0]}: Place only msi-files to $ii" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.msi"
         
         for file in "${i[@]}"; do
@@ -301,7 +302,7 @@ msi_install() {
             echo "$(date '+%D %T') - Installed: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.msi"
         done
-        rmdir "$ii" || { echo "error in removing dir: Place only msi-files to $ii" >&2; }
+        rmdir "$ii" || { echo "${FUNCNAME[0]}: Place only msi-files to $ii" >&2; }
     fi
     return 0
 }
@@ -318,16 +319,16 @@ reg_install() {
 
     if [[ -d "$ii" ]]; then
         readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.reg" -printf "%p\n")
-        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only reg-files to $ii" >&2; return 0; }
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "${FUNCNAME[0]}: Place only reg-files to $ii" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.regs"
 
         for file in "${i[@]}"; do
             WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
             WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
-            echo "$(date '+%D %T') - Importing to registry: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
+            echo "$(date '+%D %T') - Imported: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.regs"
         done
-        rmdir  "$ii" || { echo "error in removing dir: Place only reg-files to $ii" >&2; }
+        rmdir  "$ii" || { echo "${FUNCNAME[0]}: Place only reg-files to $ii" >&2; }
     fi
 
     if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
@@ -350,15 +351,15 @@ fonts_install() {
     ii="${USER_DIR}/fonts"
     if [[ -d "$ii" ]]; then
         readarray -t i < <(find "$ii" -maxdepth 1 -type f \( -iname "*.ttf" -o -iname "*.ttc" \) -printf "%p\n")
-        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "error: Place only ttc or ttf-files to $ii" >&2; return 0; }
+        [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "${FUNCNAME[0]}: Place only ttc or ttf-files to $ii" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.fonts"
 
         for file in "${i[@]}"; do
             cp -i "$file" "${WINEPREFIX}/drive_c/windows/Fonts" || return 1
-            echo "$(date '+%D %T') - Importing font: '$file' --> ${WINEPREFIX}/drive_c/windows/Fonts" | tee -a "${USER_DIR}/imports.log"
+            echo "$(date '+%D %T') - Imported: '$file' --> ${WINEPREFIX}/drive_c/windows/Fonts" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.fonts"
         done
-        rmdir "$ii" || { echo "error in removing dir: Place only ttf and ttc-files to $ii" >&2; }
+        rmdir "$ii" || { echo "${FUNCNAME[0]}: Place only ttf and ttc-files to $ii" >&2; }
     fi
     return 0
 }
@@ -442,25 +443,24 @@ sandboxing_prefix() {
 }
 
 saveFilesToUserdata() {
-    WINEPREFIX="$1"
-    GAMENAME="$2"
-    WINE_SAVEDIR="$3"
-    WINE_SAVEFILES="$4"
+    SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${1%.*}"
+    WINE_SAVEDIR="$2"
+    WINE_SAVEFILES="$3"
 
     [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
 
     #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
-    SYSTEM_SAVEDIR="/userdata/saves/${SYSTEM}/${ROMGAMENAME%.*}"
-    mkdir -p "${SYSTEM_SAVEDIR}"                                  #Create dir to store our savegames in /userdata
-    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"          #Create SAVEGAME_ROOT_DIR from there we can cp the files
-    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null  #Enter SAVEGAME_ROOT_DIR
-    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                  #Savegamedir itself, content is copied/linked
+    mkdir -p "${SYSTEM_SAVEDIR}"                                         #Create dir to store our savegames in /userdata
+    mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"                 #Create SAVEGAME_ROOT_DIR from there we can cp the files
+    requestFileSystem "${SYSTEM_SAVEDIR}" "${WINEPOINT}/${WINE_SAVEDIR}" #Check filesystem
+    pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null         #Enter SAVEGAME_ROOT_DIR
+    WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                         #Savegamedir itself, content is copied/linked
     echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
 
     if [[ -z "${WINE_SAVEFILES}" ]]; then
         #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
         if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
-            cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}"
+            cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" || { echo "${FUNCNAME[0]}: Error in copying files ${WINE_SAVEDIR} -> ${SYSTEM_SAVEDIR}" >&2; return 1; }
             rm -rf "${WINE_SAVEDIR}"
         fi
         [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
@@ -468,7 +468,7 @@ saveFilesToUserdata() {
 
     elif [[ -n "${WINE_SAVEFILES}" ]]; then
         mkdir "${WINE_SAVEDIR}"
-        pushd "${WINE_SAVEDIR}" >/dev/null                        #You are working inside the game saves dir
+        pushd "${WINE_SAVEDIR}" >/dev/null                               #You are working inside the game saves dir
         #split the files list to array with ; delimiter
         IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
         for SAVEFILE in "${SAVEFILES_ARRAY[@]}"; do
@@ -548,7 +548,7 @@ play_wine() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -578,7 +578,7 @@ play_pc() {
     WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${GAMENAME}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${GAMENAME}" "SAVEFILES" "")
-    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     env
     if [[ -n "${WINE_LANG}" ]]; then
@@ -650,7 +650,7 @@ play_winetgz() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -731,7 +731,7 @@ play_squashfs() {
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-    saveFilesToUserdata "${WINEPOINT}" "${GAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
+    saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
@@ -827,16 +827,29 @@ wine2squashfs() {
     GAMEDIR="$1"
     SQUASHFSFILE="$2"
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" -comp zstd || return 1
-    echo "Created file: $(basename ${SQUASHFSFILE}) <- Dir: ${GAMEDIR}"
+    echo "Created file: $(basename "${SQUASHFSFILE}") <- Dir: ${GAMEDIR}"
     return 0
 }
 
 wine2winetgz() {
     GAMEDIR="$1"
     WINETGZFILE="$2"
-    echo "Building compressed file: $(basename ${WINETGZFILE}) <- ${GAMEDIR}" 
-    (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") && echo "File: $(basename ${WINETGZFILE}) build..." || return 1
+    echo "Building compressed file: $(basename "${WINETGZFILE}") <- ${GAMEDIR}" 
+    (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") && echo "File: $(basename "${WINETGZFILE}") build..." || return 1
     return 0
+}
+
+requestFileSystem() {
+    #@DEVS Caller function is always argument
+    local i ii
+    echo "------ ${FUNCNAME[0]} called from ${FUNCNAME[1]} ------"
+    for i in "$@"; do
+        [ ! -e "$i" ] && echo "${FUNCNAME[1]}: $i does not exists" && continue
+        ii=$(df -PTh "$i" | awk 'END{print $2}')
+        [ -d "$i" ] && printf "%s: Directory %s uses filesystem %s" "${FUNCNAME[1]}" "$i" "$ii"
+        [ -f "$i" ] && printf "%s: File      %s uses filesystem %s" "${FUNCNAME[1]}" "$i" "$ii"
+        [ -L "$i" ] && printf "\n\t \\----> Symlinked to: " && readlink "$i" || echo
+    done
 }
 
 cleanAndExit() {
@@ -947,7 +960,7 @@ case "${ACTION}" in
 
 # case selections will provide 2 variables here, GAMENAME and WINEPOINT
    "play")
-   init_wine
+   init_wine && requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 	case "${GAMEEXT,,}" in
 	    "wine")
 		play_wine "${GAMENAME}" "${GAMENAME}"
@@ -974,7 +987,7 @@ case "${ACTION}" in
 	;;
 
     "install")
-    init_wine
+    init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
 	    "exe"|"msi")
 		#Winepoint with stripped extension, add current date_time to avoid duplicates
@@ -990,7 +1003,7 @@ case "${ACTION}" in
 	;;
 
     "tricks")
-    init_wine
+    init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
 	    "wine")
 		trick_wine "${GAMENAME}" "${GAMENAME}" "${TRICK}"
@@ -1010,7 +1023,7 @@ case "${ACTION}" in
 	;;
 
     "autorun")
-        # Create autorunfile, works only in SSH mode, recommended is arg1 gamepath, arg2=searchmask
+        # Create autorunfile, works only in SSH mode, recommended is arg1=gamepath, arg2=searchmask
         # It's held small: "batocera-wine windows autorun . bin" will search current directory in dir bin
         [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
         [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
