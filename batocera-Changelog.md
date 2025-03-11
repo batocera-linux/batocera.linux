@@ -121,6 +121,7 @@
 - Wireplumber to 0.5.8
 - Ryzenadj to v0.16.0
 - QT6 to 6.8.1
+- BTop to 1.4.0
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
