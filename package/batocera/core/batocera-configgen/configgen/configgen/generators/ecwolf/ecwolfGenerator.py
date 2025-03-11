@@ -3,6 +3,7 @@ from __future__ import annotations
 import codecs
 import os
 from typing import TYPE_CHECKING
+from shlex import split
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
@@ -43,8 +44,6 @@ class ECWolfGenerator(Generator):
                 f.write('Vid_Aspect = 0;\n')
                 f.write('Vid_Vsync = 1;\n')
                 f.write('QuitOnEscape = 1;\n')
-                f.write(f'FullScreenWidth = {gameResolution["width"]};\n')
-                f.write(f'FullScreenHeight = {gameResolution["height"]};\n')
 
         # Set the resolution and some other defaults
         if ecwolfConfigFile.is_file():
@@ -77,7 +76,7 @@ class ECWolfGenerator(Generator):
                 print(f"Error: couldn't go into directory {rom} ({e})")
 
         # File method .ecwolf (recommended) for command parameters, first argument is path to dataset,
-        # next parameters according ecwolf --help
+        # next parameters according ecwolf --help, use doublequotes if path or filenames contains spaces
         # File method .pk3, put pk3 files next to wl6 dataset and start the mod in ES
         if rom.is_file():
             os.chdir(rom.parent)
@@ -85,7 +84,7 @@ class ECWolfGenerator(Generator):
 
             if fextension == ".ecwolf":
                 with codecs.open(str(rom),"r") as f:
-                    ecwolfArray += (f.readline().split())
+                    ecwolfArray += split(f)
 
                 # If 1. parameter isn't an argument then assume it's a path
                 if "--" not in ecwolfArray[1]:
