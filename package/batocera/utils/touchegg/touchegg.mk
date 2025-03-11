@@ -6,7 +6,7 @@
 
 TOUCHEGG_VERSION = 2.0.17
 TOUCHEGG_SITE = $(call github,JoseExposito,touchegg,$(TOUCHEGG_VERSION))
-TOUCHEGG_DEPENDENCIES = xapp_xinput pugixml cairo libinput xlib_libXtst
+TOUCHEGG_DEPENDENCIES = pugixml cairo libinput xlib_libXtst
 
 TOUCHEGG_CONF_OPTS += -DCMAKE_INSTALL_PREFIX=$(STAGING_DIR)/usr/ -DUSE_SYSTEMD=0
 
