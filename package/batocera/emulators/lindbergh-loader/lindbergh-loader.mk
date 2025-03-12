@@ -1,10 +1,23 @@
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 ################################################################################
 #
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Feb 28, 2025
-LINDBERGH_LOADER_VERSION = d755b1ca1f3d89536335dcc17bc4cf6878ee5d5b
+# Version: Commits on Mar 12, 2025
+LINDBERGH_LOADER_VERSION = d53271680d4c5b556e91ac6b9a5ab60d961b6a72
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
@@ -26,7 +39,7 @@ LINDBERGH_LOADER_CFLAGS += -I$(STAGING_DIR)/usr/include
 # match the makefile ldflags
 LINDBERGH_LOADER_LDFLAGS += -L$(STAGING_DIR)/usr/lib
 LINDBERGH_LOADER_LDFLAGS += -Wl,-z,defs -rdynamic -static-libgcc -lc -ldl -lGL
-LINDBERGH_LOADER_LDFLAGS += -lglut -lX11 -lSDL2 -lFAudio -lm -lpthread -shared
+LINDBERGH_LOADER_LDFLAGS += -lglut -lX11 -lSDL2 -lFAudio -lm -lpthread -shared -lXcursor
 LINDBERGH_LOADER_LDFLAGS += -nostdlib -lasound -L./src/libxdiff -lxdiff
 
 define LINDBERGH_LOADER_BUILD_CMDS
