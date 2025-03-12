@@ -11356,6 +11356,7 @@ wine:
             prompt: GAMESCOPE SHARPNESS
             description: Set the upscaler sharpness (0 for maximum sharpness, 20 for minimum). "Auto" disables the sharpness option.
             choices:
+                "Auto": auto
                 "0": 0
                 "5": 5
                 "10": 10
@@ -11396,13 +11397,13 @@ wine:
             prompt: SDR GAMUT WIDENESS
             description: Set the 'wideness' of the gamut for SDR content.
             choices:
-                "Off": off
+                "Off": "off"
                 "0": 0
                 "0.25": 0.25
                 "0.5": 0.5
                 "0.75": 0.75
                 "1": 1
-            default: off
+            default: "off"
         gamescope_hdr_sdr_content_nits:
             submenu: GAMESCOPE
             prompt: HDR SDR CONTENT NITS
