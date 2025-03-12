@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.23
+XEMU_VERSION = v0.8.34
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -154,14 +154,6 @@ define XEMU_GET_SUBMODULES
 	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.3-1/get_patch
 	$(UNZIP) -o xxhash_0.8.3-1_patch.zip -d $(@D)/subprojects
 	rm xxhash_0.8.3-1_patch.zip
-	
-    # cpp-httplib
-	mkdir -p $(@D)/subprojects/cpp-httplib
-    $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/cpp-httplib.wrap))
-	$(HOST_DIR)/bin/curl -L -o cpp-httplib.tar.gz \
-	    https://github.com/yhirose/cpp-httplib/archive/$(REVISION).tar.gz
-	$(TAR) -xzf cpp-httplib.tar.gz --strip-components=1 -C $(@D)/subprojects/cpp-httplib
-	rm cpp-httplib.tar.gz
 	
     # keycodemapdb - revision variation
 	mkdir -p $(@D)/subprojects/keycodemapdb
