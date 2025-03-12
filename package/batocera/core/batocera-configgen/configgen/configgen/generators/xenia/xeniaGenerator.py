@@ -298,15 +298,16 @@ class XeniaGenerator(Generator):
                 commandArray = [wine.WINE64, emupath / 'xenia.exe', f'z:{rom}']
 
         environment = wine.get_wine_environment(wineprefix)
-        environment.update({
-            'LD_LIBRARY_PATH': f'/usr/lib:{environment["LD_LIBRARY_PATH"]}',
-            'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
-            'WINEFSYNC': '1',
-            'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
-            'SDL_JOYSTICK_HIDAPI': '0',
-            'VKD3D_SHADER_CACHE_PATH': xeniaCache,
-            'WINEDLLOVERRIDES': "winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n",
-        })
+        environment.update(
+            {
+                'LD_LIBRARY_PATH': f'/usr/lib:{environment["LD_LIBRARY_PATH"]}',
+                'LIBGL_DRIVERS_PATH': '/usr/lib/dri',
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
+                'SDL_JOYSTICK_HIDAPI': '0',
+                'VKD3D_SHADER_CACHE_PATH': xeniaCache,
+                'WINEDLLOVERRIDES': "winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n",
+            }
+        )
 
         # ensure nvidia driver used for vulkan
         if Path('/var/tmp/nvidia.prime').exists():

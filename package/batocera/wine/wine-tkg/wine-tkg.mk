@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-WINE_TKG_VERSION = 10.1
+WINE_TKG_VERSION = 10.3
 WINE_TKG_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+
 WINE_TKG_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_TKG_SELINUX_MODULES = wine
-WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg wine-x86
+WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg
 HOST_WINE_TKG_DEPENDENCIES = host-bison host-flex
 
 WINE_TKG_GIT_SUBMODULES = YES
@@ -19,6 +19,7 @@ WINE_TKG_GIT_SUBMODULES = YES
 WINE_TKG_CONF_OPTS = \
 	--with-wine-tools=../host-wine-tkg-$(WINE_TKG_VERSION)/ \
 	--disable-tests \
+	--disable-win16 \
 	--without-capi \
 	--without-coreaudio \
 	--without-gettext \
@@ -27,13 +28,15 @@ WINE_TKG_CONF_OPTS = \
 	--without-mingw \
 	--without-opencl \
 	--without-oss \
+	--without-ldap \
     --prefix=/usr/wine/wine-tkg \
     --exec-prefix=/usr/wine/wine-tkg
 
 ifeq ($(BR2_x86_64),y)
-	WINE_TKG_CONF_OPTS += --enable-win64
+WINE_TKG_CONF_OPTS += --enable-win64
+WINE_TKG_DEPENDENCIES += wine-x86
 else
-	WINE_TKG_CONF_OPTS += --disable-win64
+WINE_TKG_CONF_OPTS += --disable-win64
 endif
 
 # Wine uses a wrapper around gcc, and uses the value of -host-wine--host to
@@ -67,6 +70,13 @@ WINE_TKG_CONF_OPTS += --with-dbus
 WINE_TKG_DEPENDENCIES += dbus
 else
 WINE_TKG_CONF_OPTS += --without-dbus
+endif
+
+ifeq ($(BR2_PACKAGE_FFMPEG),y)
+WINE_TKG_CONF_OPTS += --with-ffmpeg
+WINE_TKG_DEPENDENCIES += ffmpeg
+else
+WINE_TKG_CONF_OPTS += --without-ffmpeg
 endif
 
 ifeq ($(BR2_PACKAGE_FONTCONFIG),y)
@@ -151,6 +161,13 @@ else
 WINE_TKG_CONF_OPTS += --without-osmesa
 endif
 
+ifeq ($(BR2_PACKAGE_PCSC_LITE),y)
+WINE_TKG_CONF_OPTS += --with-pcsclite
+WINE_TKG_DEPENDENCIES += pcsc-lite
+else
+WINE_TKG_CONF_OPTS += --without-pcsclite
+endif
+
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
 WINE_TKG_CONF_OPTS += --with-pulse
 WINE_TKG_DEPENDENCIES += pulseaudio
@@ -188,10 +205,17 @@ WINE_TKG_CONF_OPTS += --without-udev
 endif
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
-    WINE_TKG_CONF_OPTS += --with-vulkan
-    WINE_TKG_DEPENDENCIES += vulkan-headers vulkan-loader
+WINE_TKG_CONF_OPTS += --with-vulkan
+WINE_TKG_DEPENDENCIES += vulkan-headers vulkan-loader
 else
-    WINE_TKG_CONF_OPTS += --without-vulkan
+WINE_TKG_CONF_OPTS += --without-vulkan
+endif
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+WINE_TKG_CONF_OPTS += --with-wayland
+WINE_TKG_DEPENDENCIES += wayland
+else
+WINE_TKG_CONF_OPTS += --without-wayland
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBX11),y)
@@ -220,6 +244,13 @@ WINE_TKG_CONF_OPTS += --with-xshape --with-xshm
 WINE_TKG_DEPENDENCIES += xlib_libXext
 else
 WINE_TKG_CONF_OPTS += --without-xshape --without-xshm
+endif
+
+ifeq ($(BR2_PACKAGE_XLIB_LIBXFIXES),y)
+WINE_TKG_CONF_OPTS += --with-xfixes
+WINE_TKG_DEPENDENCIES += xlib_libXfixes
+else
+WINE_TKG_CONF_OPTS += --without-xfixes
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXI),y)
@@ -325,11 +356,22 @@ HOST_WINE_TKG_CONF_OPTS += \
 	--without-xxf86vm
 
 # Cleanup final directory
-define WINE_TKG_REMOVE_INCLUDES_HOOK
-        rm -Rf $(TARGET_DIR)/usr/wine/wine-tkg/include
+define WINE_TKG_POST_INSTALL
+	mkdir -p $(TARGET_DIR)/share/wine/
+	cp -pr $(@D)/nls $(TARGET_DIR)/share/wine/
+    rm -Rf $(TARGET_DIR)/usr/wine/wine-tkg/include
 endef
 
-WINE_TKG_POST_INSTALL_TARGET_HOOKS += WINE_TKG_REMOVE_INCLUDES_HOOK
+define WINE_TKG_64_POST_INSTALL
+	mkdir -p $(TARGET_DIR)/usr/wine/wine-tkg/bin
+	cp $(@D)/loader/wine64 $(TARGET_DIR)/usr/wine/wine-tkg/bin/wine
+endef
+
+WINE_TKG_POST_INSTALL_TARGET_HOOKS += WINE_TKG_POST_INSTALL
+
+ifeq ($(BR2_x86_64),y)
+WINE_TKG_POST_INSTALL_TARGET_HOOKS += WINE_TKG_64_POST_INSTALL
+endif
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

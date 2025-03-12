@@ -262,8 +262,7 @@ PACKAGES_WINE="dxvk
                mf
                rtkit
                vkd3d-proton
-               wine-tkg
-               wine-tkg-wow64_32"
+               wine-tkg"
 
 PACKAGES_CONTROLLERS="aelightgun
                       aimtrak-guns

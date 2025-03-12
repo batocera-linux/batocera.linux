@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
-
 WINE_BASE: Final = Path('/usr/wine')
 WINE_PATH: Final = WINE_BASE / 'wine-tkg'
 WINE_LIB: Final = WINE_PATH / 'lib' / 'wine'
-WINE_BIN: Final = WINE_PATH / 'bin'
+WINE_BIN: Final = WINE_LIB / 'i386-unix'
+WINE64_BIN: Final = WINE_LIB / 'x86_64-unix'
+WINE_SERVER_BIN: Final = WINE_PATH / 'bin'
 WINE: Final = WINE_BIN / 'wine'
-WINE64: Final = WINE_BIN / 'wine64'
+WINE64: Final = WINE64_BIN / 'wine64'
 WINETRICKS: Final = WINE_BASE / 'winetricks'
-
 
 def _run_wine_process(
     prefix: Path, cmd: Sequence[str | Path], /, *, environment: Mapping[str, str | Path] | None = None
@@ -33,7 +33,7 @@ def _run_wine_process(
         env.update(environment)
 
     env.update(os.environ)
-    env['PATH'] = f'{WINE_BIN}:/bin:/usr/bin'
+    env['PATH'] = f'{WINE_BIN}:{WINE64_BIN}:{WINE_SERVER_BIN}:/bin:/usr/bin'
 
     _logger.debug('command: %s', cmd)
 

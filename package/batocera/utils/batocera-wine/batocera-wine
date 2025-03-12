@@ -908,8 +908,18 @@ init_wine() {
     
     echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
     USER_DIR="/userdata/system/wine"
-    WINE="${DIR}/${WINE_VERSION}/bin/wine"
-    WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+    # check 32-bit wine path
+    if [[ -e "${DIR}/${WINE_VERSION}/lib/wine/i386-unix/wine" ]]; then
+        WINE="${DIR}/${WINE_VERSION}/lib/wine/i386-unix/wine"
+    else
+        WINE="${DIR}/${WINE_VERSION}/bin/wine"
+    fi
+    # check 64-bit wine64 path
+    if [[ -e "${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix/wine64" ]]; then
+        WINE64="${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix/wine64"
+    else
+        WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+    fi
     WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
     MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
     WINETRICKS="${DIR}/winetricks"
