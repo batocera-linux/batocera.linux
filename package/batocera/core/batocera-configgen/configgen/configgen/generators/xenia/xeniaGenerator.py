@@ -253,9 +253,9 @@ class XeniaGenerator(Generator):
         if 'XConfig' not in config:
             config['XConfig'] = {}
         # console country
-        config['XConfig'] = {'user_country': system.config.get_int('xenia_country', 103)}  # 103 = US
+        config['XConfig']['user_country'] = system.config.get_int('xenia_country', 103)  # 103 = US
         # language
-        config['XConfig'] = {'user_language': system.config.get_int('xenia_language', 1)}
+        config['XConfig']['user_language'] = system.config.get_int('xenia_language', 1)
 
         # now write the updated toml
         with toml_file.open('w') as f:
