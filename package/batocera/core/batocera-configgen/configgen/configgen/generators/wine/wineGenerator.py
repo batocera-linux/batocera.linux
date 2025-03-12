@@ -134,11 +134,7 @@ class WineGenerator(Generator):
                         gamescope_options.extend(["--hdr-itm-target-nits", hdr_itm_target])
 
                 # Use borderless if explicitly enabled; otherwise, default to fullscreen.
-                borderless = system.getOptString("gamescope_borderless").lower()
-                if borderless in ["on", "1", "true"]:
-                    gamescope_options.append("-b")
-                else:
-                    gamescope_options.append("-f")
+                gamescope_options.append(system.config.get_bool("gamescope_borderless", return_values=("-b", "-f")))
 
                 # Reshade effect.
                 reshade_effect = system.getOptString("gamescope_reshade_effect")
@@ -146,7 +142,7 @@ class WineGenerator(Generator):
                     gamescope_options.extend(["--reshade-effect", reshade_effect])
 
                 # Prepend "gamescope" and its options to the base Wine command.
-                commandArray = ["gamescope"] + gamescope_options + commandArray
+                commandArray = ["gamescope", *gamescope_options, *commandArray]
 
             return Command.Command(array=commandArray, env=environment)
 
