@@ -100,7 +100,7 @@
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 25.0.1
-- Linux Kernel to 6.13.3
+- Linux Kernel to 6.13.6
 - GStreamer codecs to 1.26.0
 - SDL2 to 2.30.11
 - Vulkan stack to v1.4.304
