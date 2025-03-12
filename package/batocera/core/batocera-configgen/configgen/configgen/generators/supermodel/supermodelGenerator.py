@@ -290,21 +290,21 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, 
                         elif key == "InputStart2":
                             val = transformElement("JOY2_BUTTON9", playersControllers, mapping, mapping_fallback)
                             if val is not None:
-                                val += f",{val}"
+                                val = f",{val}"
                             else:
                                 val = ""
                             targetConfig.set(section, key, f"MOUSE2_BUTTONX1{val}")
                         elif key == "InputCoin1":
                             val = transformElement("JOY2_BUTTON10", playersControllers, mapping, mapping_fallback)
                             if val is not None:
-                                val += f",{val}"
+                                val = f",{val}"
                             else:
                                 val = ""
                             targetConfig.set(section, key,  f"MOUSE2_BUTTONX2{val}")
                         elif key == "InputAnalogJoyEvent2":
                             val = transformElement("JOY2_BUTTON2", playersControllers, mapping, mapping_fallback)
                             if val is not None:
-                                val += f",{val}"
+                                val = f",{val}"
                             else:
                                 val = ""
                             targetConfig.set(section, key, f"MOUSE2_MIDDLE_BUTTON{val}")
