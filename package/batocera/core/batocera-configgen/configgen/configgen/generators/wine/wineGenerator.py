@@ -74,16 +74,12 @@ class WineGenerator(Generator):
                 ])
 
                 # Retrieve output resolution
-                output_resolution = system.getOptString("gamescope_output_resolution")
-                if output_resolution:
-                    try:
-                        output_width, output_height = output_resolution.split("x")
-                        gamescope_options.extend([
-                            "-W", output_width.strip(),
-                            "-H", output_height.strip()
-                        ])
-                    except Exception:
-                        pass
+                output_resolution = system.config.get_str("gamescope_output_resolution", "1920x1080")
+                output_width, _, output_height = output_resolution.partition("x")
+                gamescope_options.extend([
+                "-W", output_width.strip(),
+                "-H", output_height.strip()
+                ])
 
                 # Retrieve refresh rate
                 gamescope_options.extend(["-r", system.config.get_str("gamescope_nested_refresh", "60")])
@@ -91,7 +87,7 @@ class WineGenerator(Generator):
                 # Set a simple framerate limit as a divisor of the refresh rate.
                 # Default is off (i.e. not used) unless explicitly set.
                 if framerate_limit := system.config.get_str("gamescope_framerate_limit"):
-                    gamescope_options.extend(["--framerate-limit", framerate_limit])
+                gamescope_options.extend(["--framerate-limit", framerate_limit])
 
                 # Upscaler type
                 scaler = system.getOptString("gamescope_scaler")
@@ -123,11 +119,10 @@ class WineGenerator(Generator):
                     if hdr_sdr_nits.lower() != "off":
                         gamescope_options.extend(["--hdr-sdr-content-nits", hdr_sdr_nits])
                     
-                    # HDR ITM enabled: add if set to on/true/1
-                    hdr_itm_enabled = system.getOptString("gamescope_hdr_itm_enabled", "0").lower()
-                    if hdr_itm_enabled in ["on", "1", "true"]:
+                    # HDR ITM enabled: 
+                    if system.config.get_bool("gamescope_hdr_itm_enabled", False):
                         gamescope_options.append("--hdr-itm-enabled")
-                    
+
                     # HDR ITM SDR nits: add if not "off"
                     hdr_itm_sdr_nits = system.getOptString("gamescope_hdr_itm_sdr_nits", "off")
                     if hdr_itm_sdr_nits.lower() != "off":
