@@ -67,6 +67,11 @@ class LindberghGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        # .squashfs returns mount point so rewire rom to first .game file found
+        # https://stackoverflow.com/a/43669828/9983389
+        if (rom.is_dir()):
+            rom = next(rom.rglob("*.game"))
+
         romDir = rom.parent
         romName = rom.name
         _logger.debug("ROM path: %s", romDir)
