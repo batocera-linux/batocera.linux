@@ -16,6 +16,7 @@
 - Initial support for XGunner light gun
 - Initial support for OpenFIRE light gun
 - Initial support for Fusion P.I.G.S. light gun
+- Initial support for OneHit light gun (AimTrak clone)
 ### Added
 - Wireguard VPN for RK3326 boards
 - Image scaling option for Drastic
