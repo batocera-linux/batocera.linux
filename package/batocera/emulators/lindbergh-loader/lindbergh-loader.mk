@@ -16,8 +16,8 @@
 # lindbergh-loader
 #
 ################################################################################
-# Version: Commits on Mar 12, 2025
-LINDBERGH_LOADER_VERSION = d53271680d4c5b556e91ac6b9a5ab60d961b6a72
+# Version: Commits on Mar 14, 2025
+LINDBERGH_LOADER_VERSION = ecbe4323f28a999f6b0895f0049ff42468d335a5
 LINDBERGH_LOADER_SITE = $(call github,dmanlfc,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
@@ -32,25 +32,26 @@ LINDBERGH_LOADER_DEPENDENCIES += libglew sdl2 ncurses openal pipewire xlib_libX1
 LINDBERGH_LOADER_DEPENDENCIES += xlib_libXext xlib_libXi xlib_libXmu xlib_libXScrnSaver  
 
 # match the makefile cflags
-LINDBERGH_LOADER_CFLAGS = -g -fPIC -m32 -Wall -Werror -Wno-unused-but-set-variable
-LINDBERGH_LOADER_CFLAGS += -Wno-unused-variable -Wno-unused-function -D_GNU_SOURCE
-LINDBERGH_LOADER_CFLAGS += -Wno-char-subscripts -Wno-misleading-indentation
+LINDBERGH_LOADER_CFLAGS += -g -fPIC -m32 -pthread -Wall -Werror -Wno-misleading-indentation
+LINDBERGH_LOADER_CFLAGS += -Wno-unused-but-set-variable -Wno-unused-variable
+LINDBERGH_LOADER_CFLAGS += -Wno-unused-function -D_GNU_SOURCE -Wno-char-subscripts
 LINDBERGH_LOADER_CFLAGS += -I$(STAGING_DIR)/usr/include
 # match the makefile ldflags
+LINDBERGH_LOADER_LDFLAGS += -m32 -Wl,-z,defs -rdynamic -static-libgcc -lc -ldl -lGL
+LINDBERGH_LOADER_LDFLAGS += -lglut -lX11 -lXcursor -lSDL2 -lm -lpthread -shared
+LINDBERGH_LOADER_LDFLAGS += -nostdlib -lasound -L./src/libxdiff -lxdiff -lFAudio
 LINDBERGH_LOADER_LDFLAGS += -L$(STAGING_DIR)/usr/lib
-LINDBERGH_LOADER_LDFLAGS += -Wl,-z,defs -rdynamic -static-libgcc -lc -ldl -lGL
-LINDBERGH_LOADER_LDFLAGS += -lglut -lX11 -lSDL2 -lFAudio -lm -lpthread -shared -lXcursor
-LINDBERGH_LOADER_LDFLAGS += -nostdlib -lasound -L./src/libxdiff -lxdiff
 
 define LINDBERGH_LOADER_BUILD_CMDS
     $(MAKE) \
-	CC="$(HOSTCC) -m32 -pthread" \
-	CFLAGS_FOR_BUILD="-I$(STAGING_DIR)/usr/include" \
-	CFLAGS="$(LINDBERGH_LOADER_CFLAGS)" \
-	CPPFLAGS="-I$(STAGING_DIR)/usr/include" \
-	LD="$(TARGET_CC) -m32" \
-	LDFLAGS="$(LINDBERGH_LOADER_LDFLAGS)" \
-	-C $(@D) all
+		CC="$(TARGET_CC)" \
+		CFLAGS_FOR_BUILD="-I$(STAGING_DIR)/usr/include" \
+		CFLAGS="$(LINDBERGH_LOADER_CFLAGS)" \
+		CXX="$(TARGET_CXX)" \
+		CPPFLAGS="-I$(STAGING_DIR)/usr/include" \
+		LDFLAGS="$(LINDBERGH_LOADER_LDFLAGS)" \
+		AR="$(TARGET_AR)" \
+		-C $(@D) all
 endef
 
 define LINDBERGH_LOADER_INSTALL_TARGET_CMDS
