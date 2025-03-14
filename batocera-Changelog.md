@@ -30,6 +30,7 @@
 - Steering wheel support added for :
   - Logitech: G923 (Xbox), PRO Racing Wheel
   - Speedlink: 4in1 Leather Power Feedback Wheel
+  - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
 - Sega Lindbergh loader
 - Variable Refresh Rate (VRR) support for modern AMD gpus
 - Support of Shanwan Twin USB Joystick (new revision)
