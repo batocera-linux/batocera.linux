@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import codecs
-import csv
 import logging
 import os
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from .mamePaths import MAME_CONFIG, MAME_DEFAULT_DATA
+from configgen.generators.mame import mameCommon
+
+from .mamePaths import MAME_CONFIG
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -36,39 +37,26 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
     else:
         overwriteMAME = True
 
-    # Load standard controls from csv
-    controlFile = MAME_DEFAULT_DATA / 'mameControls.csv'
-    openFile = controlFile.open('r')
-    controlDict: dict[str, dict[str, str]] = {}
-    with openFile:
-        controlList = csv.reader(openFile)
-        for row in controlList:
-            if row[0] not in controlDict:
-                controlDict[row[0]] = {}
-            controlDict[row[0]][row[1]] = row[2]
+    # Load standard controls from toml
+    controlDict = mameCommon.get_mame_controls()
 
     # Common controls
-    mappings: dict[str, str] = {}
-    for controlDef in controlDict['default']:
-        mappings[controlDef] = controlDict['default'][controlDef]
+    mappings = controlDict['default'].copy()
 
     # Only use gun buttons if lightguns are enabled to prevent conflicts with mouse
     gunmappings: dict[str, str] = {}
     if useGuns:
-        for controlDef in controlDict['gunbuttons']:
-            gunmappings[controlDef] = controlDict['gunbuttons'][controlDef]
+        gunmappings = controlDict['gunbuttons'].copy()
 
     # Only define mouse buttons if mouse is enabled, to prevent unwanted inputs
     # For a standard mouse, left, right, scroll wheel should be mapped to action buttons, and if side buttons are available, they will be coin & start
     mousemappings: dict[str, str] = {}
     if useMouse:
-        for controlDef in controlDict['mousebuttons']:
-            mousemappings[controlDef] = controlDict['mousebuttons'][controlDef]
+        mousemappings = controlDict['mousebuttons'].copy()
 
     # Buttons that change based on game/setting
-    if altButtons in controlDict:
-        for controlDef in controlDict[altButtons]:
-            mappings.update({controlDef: controlDict[altButtons][controlDef]})
+    if alt_control_mappings := controlDict.get(altButtons):
+        mappings.update(alt_control_mappings)
 
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
@@ -95,7 +83,6 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
     xml_input = config.createElement("input")
     xml_system.appendChild(xml_input)
 
-    messControlDict = {}
     if sysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
         if specialController == 'none':
             useControls = "bbc"
@@ -112,51 +99,9 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
-        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
-    if sysName in specialControlList:
-        # Load mess controls from csv
-        messControlFile = MAME_DEFAULT_DATA / 'messControls.csv'
-        openMessFile = messControlFile.open('r')
-        with openMessFile:
-            controlList = csv.reader(openMessFile, delimiter=';')
-            for row in controlList:
-                if row[0] not in messControlDict:
-                    messControlDict[row[0]] = {}
-                messControlDict[row[0]][row[1]] = {}
-                currentEntry = messControlDict[row[0]][row[1]]
-                currentEntry['type'] = row[2]
-                currentEntry['player'] = int(row[3])
-                currentEntry['tag'] = row[4]
-                currentEntry['key'] = row[5]
-                if currentEntry['type'] in [ 'special', 'main' ]:
-                    currentEntry['mapping'] = row[6]
-                    currentEntry['useMapping'] = row[7]
-                    currentEntry['reversed'] = row[8]
-                    currentEntry['mask'] = row[9]
-                    currentEntry['default'] = row[10]
-                elif currentEntry['type'] == 'analog':
-                    currentEntry['incMapping'] = row[6]
-                    currentEntry['decMapping'] = row[7]
-                    currentEntry['useMapping1'] = row[8]
-                    currentEntry['useMapping2'] = row[9]
-                    currentEntry['reversed'] = row[10]
-                    currentEntry['mask'] = row[11]
-                    currentEntry['default'] = row[12]
-                    currentEntry['delta'] = row[13]
-                    currentEntry['axis'] = row[14]
-                if currentEntry['type'] == 'combo':
-                    currentEntry['kbMapping'] = row[6]
-                    currentEntry['mapping'] = row[7]
-                    currentEntry['useMapping'] = row[8]
-                    currentEntry['reversed'] = row[9]
-                    currentEntry['mask'] = row[10]
-                    currentEntry['default'] = row[11]
-                if currentEntry['reversed'] == 'False':
-                    currentEntry['reversed'] = False
-                else:
-                    currentEntry['reversed'] = True
+    messControlDict = mameCommon.get_mess_controls(sysName, useControls)
 
+    if messControlDict is not None:
         config_alt = minidom.Document()
         configFile_alt = cfgPath / f"{sysName}.cfg"
         if (configFile_alt.exists() and cfgPath == (MAME_CONFIG / sysName)) or configFile_alt.exists():
@@ -259,9 +204,8 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], pad.inputs[mappings_use["JOYSTICK_LEFT"]], False, "", "")) # Right
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'b', pad.inputs['b'], False, "", ""))                                                     # Select
 
-        if useControls in messControlDict:
-            for controlDef in messControlDict[useControls]:
-                thisControl = messControlDict[useControls][controlDef]
+        if messControlDict:
+            for thisControl in messControlDict.values():
                 if nplayer == thisControl['player']:
                     if thisControl['type'] == 'special':
                         xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
@@ -304,7 +248,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
             mameXml.write(dom_string)
 
     # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-    if sysName in specialControlList and overwriteSystem:
+    if messControlDict is not None and overwriteSystem:
         _logger.debug("Saving %s", configFile_alt)
         with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
             dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
