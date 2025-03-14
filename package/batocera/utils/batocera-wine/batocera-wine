@@ -452,7 +452,7 @@ saveFilesToUserdata() {
     #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
     mkdir -p "${SYSTEM_SAVEDIR}"                                         #Create dir to store our savegames in /userdata
     mkdir -p "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")"                 #Create SAVEGAME_ROOT_DIR from there we can cp the files
-    requestFileSystem "${SYSTEM_SAVEDIR}" "${WINEPOINT}/${WINE_SAVEDIR}" #Check filesystem
+    requestFileSystem "${SYSTEM_SAVEDIR}" "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" "${WINEPOINT}/${WINE_SAVEDIR}" #Check filesystem
     pushd "${WINEPOINT}/$(dirname "${WINE_SAVEDIR}")" >/dev/null         #Enter SAVEGAME_ROOT_DIR
     WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                         #Savegamedir itself, content is copied/linked
     echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
@@ -767,6 +767,10 @@ createAutorunCmd() {
     done
 
     AUTORUN_FOUNDEXE=("${AUTORUN_FOUNDEXE[@]}") #Renew array after unset elements
+    unset AUTORUN_FILTER
+    popd > /dev/null
+    [[ "${FUNCNAME[1]}" == "main" ]] && return 0 #Don't create autorun.cmd if used parameter "autorun"
+
     if [[ ${#AUTORUN_FOUNDEXE[@]} -eq 1 ]]; then
         (
             echo "DIR=$(dirname "${AUTORUN_FOUNDEXE[0]}")"
@@ -779,8 +783,8 @@ createAutorunCmd() {
         ) > "${WINEPOINT}/autorun.cmd"
     fi
 
-    unset AUTORUN_FILTER
-    popd > /dev/null
+						
+					
     return 0
 }
 
@@ -840,7 +844,7 @@ wine2winetgz() {
 }
 
 requestFileSystem() {
-    #@DEVS Caller function is always argument
+    #@DEVS Caller function, current function is always inserted as element 0, called one is therefore 1
     local i ii
     echo "------ ${FUNCNAME[0]} called from ${FUNCNAME[1]} ------"
     for i in "$@"; do
