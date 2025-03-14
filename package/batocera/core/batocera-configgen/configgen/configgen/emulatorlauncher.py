@@ -44,7 +44,8 @@ _logger = logging.getLogger(__name__)
 def main(args: argparse.Namespace, maxnbplayers: int) -> int:
     # squashfs roms if squashed
     if args.rom.suffix == ".squashfs":
-        with squashfs_rom(args.rom) as rom:
+        writable_rom = (args.system == "lindbergh")
+        with squashfs_rom(args.rom, overlay=writable_rom) as rom:
             return start_rom(args, maxnbplayers, rom, args.rom)
     else:
         return start_rom(args, maxnbplayers, args.rom, args.rom)
