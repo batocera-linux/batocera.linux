@@ -280,6 +280,10 @@ def configure_wheels(
 def _reconfigure_angle_rotation(
     controller: Controller, rotation_angle: int, wanted_rotation_angle: int, wanted_deadzone: int, wanted_midzone: int
 ) -> tuple[str, subprocess.Popen[bytes]] | None:
+
+    if "joystick1left" not in controller.inputs:
+        raise Exception(f"Wheel {controller.real_name} has no joystick1left configured. Strange for a wheel.")
+
     wheel_axis = int(controller.inputs["joystick1left"].id)
     input_device = evdev.InputDevice(controller.device_path)
     caps = input_device.capabilities()
