@@ -1,0 +1,22 @@
+From 39a2034f56bc990059cf20d3d6ef3e85fdb0e924 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 24 Feb 2025 17:20:50 +0800
+Subject: [PATCH] AYN Odin2 : Add EFI boot compatibility
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ ucm2/conf.d/sm8550/ayn-AYNOdin2-.conf | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 ucm2/conf.d/sm8550/ayn-AYNOdin2-.conf
+
+diff --git a/ucm2/conf.d/sm8550/ayn-AYNOdin2-.conf b/ucm2/conf.d/sm8550/ayn-AYNOdin2-.conf
+new file mode 120000
+index 0000000..414976a
+--- /dev/null
++++ b/ucm2/conf.d/sm8550/ayn-AYNOdin2-.conf
+@@ -0,0 +1 @@
++../../AYN/Odin2/AYN-Odin2.conf
+\ No newline at end of file
+-- 
+2.34.1
+

@@ -26,6 +26,10 @@ MAME_JOBS := $(jobs)
 # Set PTR64 on/off according to architecture
 ifeq ($(BR2_ARCH_IS_64),y)
 MAME_CROSS_OPTS += PTR64=1
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+# Temp hack for sm8550 architectures : disable WERROR to avoid C/CXX flag conflict for armv9 and armv8.x architectures as error
+MAME_CROSS_OPTS += NOWERROR=1
+endif
 else
 MAME_CROSS_OPTS += PTR64=0
 # Temp hack for 32-bit architectures : disable WERROR to avoid switchres log warning treated as error
@@ -35,6 +39,9 @@ endif
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 MAME_CROSS_ARCH = x86_64
+# sm8550 has OpenGL
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+MAME_CROSS_OPTS += NO_X11=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
 MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
@@ -94,7 +101,11 @@ MAME_CFLAGS += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
 endif
 
 ifeq ($(BR2_cortex_a76_a55),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+MAME_CFLAGS += -pipe -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2
+else
 MAME_CFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
+endif
 endif
 
 define MAME_GENIE
