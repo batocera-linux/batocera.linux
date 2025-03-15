@@ -98,6 +98,7 @@
 - Raze to 1.11.0
 - PPSSPP to 28th February build
 - Libretro-PPSSPP to 28th February build
+- Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates
