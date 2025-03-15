@@ -454,8 +454,7 @@ class LindberghGenerator(Generator):
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
                                 if button_name.startswith("ANALOGUE_"):
-                                    if nplayer == 1:
-                                        self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                                 else:
                                     self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}")
                         elif pad.inputs[input_base_name].type == "axis":
@@ -464,8 +463,7 @@ class LindberghGenerator(Generator):
                             else:
                                 input_value = f"ABS:{pad.inputs[input_base_name].code}"
                             if button_name.startswith("ANALOGUE_"):
-                                if nplayer == 1:
-                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                                self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
                                 if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up" or input_name == "left" or input_name == "up":
                                     self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MIN")
@@ -478,8 +476,7 @@ class LindberghGenerator(Generator):
                             else:
                                 input_value = f"ABS:{16+int(pad.inputs[input_base_name].id)*2}"
                             if button_name.startswith("ANALOGUE_"):
-                                if nplayer == 1:
-                                    self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
+                                self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
                                 if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "8": # up or left
                                     input_value += ":MIN"
@@ -668,9 +665,20 @@ class LindberghGenerator(Generator):
             return lindberghCtrl_gun
 
         if deviceType == "wheel":
+            # adjustment for player 2 wheels (in fact it should not happen, but don't erase the analog, for sure)
+            if nplayer == 2:
+                for x in lindberghCtrl_pad:
+                    if lindberghCtrl_pad[x].startswith("ANALOGUE_"):
+                        del lindberghCtrl_pad[x]
             return lindberghCtrl_wheel
 
         if deviceType == "pad":
+            # adjustment for player 2 pads
+            for x in lindberghCtrl_pad:
+                if lindberghCtrl_pad[x] == "ANALOGUE_1" and nplayer == 2:
+                    lindberghCtrl_pad[x] = "ANALOGUE_3"
+                if lindberghCtrl_pad[x] == "ANALOGUE_2" and nplayer == 2:
+                    lindberghCtrl_pad[x] = "ANALOGUE_4"
             return lindberghCtrl_pad
 
     def setup_guns_evdev(self, conf: dict[str, Any], guns: Guns, shortRomName: str, /) -> None:
