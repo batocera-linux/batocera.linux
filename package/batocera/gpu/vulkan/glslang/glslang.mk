@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GLSLANG_VERSION = 15.0.0
+GLSLANG_VERSION = vulkan-sdk-1.4.309.0
 GLSLANG_SITE =  https://github.com/KhronosGroup/glslang
 GLSLANG_SITE_METHOD=git
 GLSLANG_DEPENDENCIES = vulkan-headers vulkan-loader spirv-tools
