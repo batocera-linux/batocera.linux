@@ -17,11 +17,14 @@ LIBRETRO_GPSP_PLATFORM = rpi1
 
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
 LIBRETRO_GPSP_PLATFORM = rpi2
+
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_GPSP_PLATFORM = arm64
 endif
 
 define LIBRETRO_GPSP_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-	    -C $(@D) platform=$(LIBRETRO_GPSP_PLATFORM) \
+	    -C $(@D) platform=$(LIBRETRO_GPSP_PLATFORM) -j"$(PARALLEL_JOBS)"   \
         GIT_VERSION="-$(shell echo $(LIBRETRO_GPSP_VERSION) | cut -c 1-7)"
 endef
 
