@@ -30,7 +30,7 @@ do_start () {
         [ -f "$image" ] || exit 1
     fi
 
-    if [ "${V_BOARD_MODEL}" = "Loki_Zero" ] || [ "${V_BOARD_MODEL}" = "Retroid_Pocket_5" ]; then
+    if [ "${V_BOARD_MODEL}" = "Loki_Zero" ] || [ "${V_BOARD_MODEL}" = "Retroid_Pocket_5" ] || [ "${V_BOARD_MODEL}" = "AYN_Odin_2_Portal" ]; then
         image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
     fi
 
