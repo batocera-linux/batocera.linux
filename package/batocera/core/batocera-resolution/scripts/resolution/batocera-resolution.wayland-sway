@@ -1,5 +1,7 @@
 #!/bin/sh
 
+log="/userdata/system/logs/display.log"
+
 f_usage() {
     echo "${0} listModes" >&2
     echo "${0} setMode <MODE>" >&2
@@ -171,12 +173,51 @@ case "${ACTION}" in
 
     "setRotation")
         ROTATE=$1
+        RETRIES=5
+        TOUCHSCREEN=""
+        for i in $(seq 1 $RETRIES); do
+            TOUCHSCREEN=$(swaymsg -t get_inputs | jq -r '.[] | select(.type | ascii_downcase == "touch") | .identifier')
+            if [ -n "${TOUCHSCREEN}" ]; then
+                echo "Touchscreen identifier is: ${TOUCHSCREEN}" >> $log
+                break
+            fi
+            # If not found, wait for another second and try again
+            sleep 1
+        done
+
         case "${ROTATE}" in
-            "1") swaymsg output "${PSCREEN}" transform 90 ;;
-            "2") swaymsg output "${PSCREEN}" transform 180 ;;
-            "3") swaymsg output "${PSCREEN}" transform 270 ;;
+            "1")
+                echo "Rotate 90 degrees" >> $log
+                swaymsg output "${PSCREEN}" transform 90
+                if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 1 0 -1 0 1"
+                    echo "Touchscreen rotated 90 degrees" >> $log
+                fi
+            ;;
+            "2")
+                echo "Rotate 180 degrees" >> $log
+                swaymsg output "${PSCREEN}" transform 180
+                if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix -1 0 1 0 -1 1"
+                    echo "Touchscreen rotated 180 degrees" >> $log
+                fi
+            ;;
+            "3")
+                echo "Rotate 270 degrees" >> $log
+                swaymsg output "${PSCREEN}" transform 270
+                if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 -1 1 1 0 0"
+                    echo "Touchscreen rotated 270 degrees" >> $log
+                fi
+            ;;
             # In case of reboot of ES
-            *) swaymsg output "${PSCREEN}" transform normal ;;
+            *)
+                swaymsg output "${PSCREEN}" transform normal
+                if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 1 0 0 0 1 0"
+                    echo "Touchscreen rotated 0 degrees" >> $log
+                fi
+            ;;
         esac
         ;;
     
