@@ -45,6 +45,7 @@
   AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
 - gun : option to hide the crosshair in ES
 - Azahar 3DS emulator: Version 2120.1
+- DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
 - Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
 - OpenJKDF2 to play Jedi Knight Dark Forces 2
