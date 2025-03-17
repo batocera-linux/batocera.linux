@@ -19,7 +19,8 @@
 - Initial support for OneHit light gun (AimTrak clone)
 - Ayn Odin2 and Odin2 Portal support
 ### Added
-- Wireguard VPN for RK3326 boards
+- WireGuard VPN for RK3326 boards
+- WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
 - Image scaling option for Drastic
 - A selection of Dhewm3 mods
 - CatacombGL port for running various Catacomb games
