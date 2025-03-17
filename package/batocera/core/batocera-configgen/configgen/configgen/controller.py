@@ -202,7 +202,7 @@ class Controller:
             if input.type == "axis":
                 # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
                 # 3 possible initial positions <1----------------|-------2-------|----------------3>
-                if (val := code_values.get(int(cast(str, input.code)))) is not None:
+                if (val := code_values.get(int(cast('str', input.code)))) is not None:
                     res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
                 else:
                     res[x] = { "centered":  True, "reversed": False }
@@ -237,8 +237,8 @@ class Controller:
 
         input_config = _find_input_config(roots, real_name, guid)
         return cls(
-            name=cast(str, input_config.get("deviceName")),
-            type=cast(Literal['keyboard', 'joystick'], input_config.get("type")),
+            name=cast('str', input_config.get("deviceName")),
+            type=cast('Literal["keyboard", "joystick"]', input_config.get("type")),
             guid=guid,
             inputs_=Input.from_parent_element(input_config),
             player_number=player_number,

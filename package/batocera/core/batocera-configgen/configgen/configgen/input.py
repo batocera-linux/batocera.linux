@@ -30,10 +30,10 @@ class Input:
     @classmethod
     def from_element(cls, element: ET.Element, /) -> Self:
         return cls(
-            name=cast(str, element.get("name")),
-            type=cast(str, element.get("type")),
-            id=cast(str, element.get("id")),
-            value=cast(str, element.get("value")),
+            name=cast("str", element.get("name")),
+            type=cast("str", element.get("type")),
+            id=cast("str", element.get("id")),
+            value=cast("str", element.get("value")),
             code=element.get("code")
         )
 

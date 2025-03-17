@@ -111,11 +111,11 @@ class Gun:
             if mouse.properties.get('ID_INPUT_GUN') != '1':
                 continue
 
-            device = evdev.InputDevice(cast(str, mouse.device_node))
+            device = evdev.InputDevice(cast('str', mouse.device_node))
             device_codes = set(device.capabilities()[evdev.ecodes.EV_KEY]) & mouse_button_codes
 
             gun = Gun(
-                node=cast(str, mouse.device_node),
+                node=cast('str', mouse.device_node),
                 # retroarch uses mouse indexes into configuration files using ID_INPUT_MOUSE
                 # (TOUCHPAD are listed after mouses)
                 mouse_index=mouse_index,

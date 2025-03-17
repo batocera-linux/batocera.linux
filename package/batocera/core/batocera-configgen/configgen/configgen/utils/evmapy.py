@@ -71,14 +71,14 @@ type _KeysConfig = dict[str, _KeysActions]
 
 
 def _keys_action_to_evmapy_action(keys_action: _KeysAction, /) -> _EvmapyAction:
-    return cast(_EvmapyAction, {key: value for key, value in keys_action.items() if key != 'description'})
+    return cast('_EvmapyAction', {key: value for key, value in keys_action.items() if key != 'description'})
 
 
 def _keys_mouse_action_to_evmapy_action(
     keys_action: _KeysMouseAction, /, *, trigger: str, target: str
 ) -> _EvmapyAction:
     return cast(
-        _EvmapyAction,
+        '_EvmapyAction',
         {
             **{key: value for key, value in keys_action.items() if key != 'description'},
             'trigger': trigger,
@@ -465,7 +465,7 @@ class evmapy(AbstractContextManager[None, None]):
     ) -> str | list[str]:
         if isinstance(trigger, list):
             return [
-                cast(str, self.__trigger_mapper_string(x, known_button_aliases, known_button_names, trigger_mapping))
+                cast('str', self.__trigger_mapper_string(x, known_button_aliases, known_button_names, trigger_mapping))
                 for x in trigger
             ]
 

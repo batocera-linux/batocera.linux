@@ -74,9 +74,9 @@ def getJoystickPeak(start_value: str, config_value: str, system: Emulator) -> st
 
         # Figure out if we need to add or subtract the starting peak value
         if adjusted_value < default_value:
-            peak = int(round(default_value + difference))
+            peak = round(default_value + difference)
         else:
-            peak = int(round(default_value - difference))
+            peak = round(default_value - difference)
     else:
         peak = default_value
 
@@ -86,7 +86,7 @@ def getJoystickDeadzone(default_peak: str, config_value: str, system: Emulator) 
     default_value = int(default_peak.split(',')[0])
     deadzone_multiplier = system.config.get_float(config_value, 0.01)
 
-    deadzone = int(round(default_value * deadzone_multiplier))
+    deadzone = round(default_value * deadzone_multiplier)
 
     return f"{deadzone},{deadzone}"
 

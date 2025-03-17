@@ -212,7 +212,7 @@ class PlayGenerator(Generator):
                     binding_type = input.value
                     key_id = input.code
                     hat_value = -1
-                    create_input_preferences(input_config, pad_guid, cast(str, key_id), key_type, provider_id, nplayer, input.name, binding_type, hat_value)
+                    create_input_preferences(input_config, pad_guid, cast('str', key_id), key_type, provider_id, nplayer, input.name, binding_type, hat_value)
 
         # Save the controller settings to the specified input file
         input_tree = ET.ElementTree(input_config)

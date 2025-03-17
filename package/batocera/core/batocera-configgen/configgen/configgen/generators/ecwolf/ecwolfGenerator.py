@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import codecs
 import os
-from typing import TYPE_CHECKING
 from shlex import split
+from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
