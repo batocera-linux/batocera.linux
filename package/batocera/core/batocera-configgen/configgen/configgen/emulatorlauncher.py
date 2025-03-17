@@ -20,7 +20,7 @@ from sys import exit
 from typing import TYPE_CHECKING
 
 from . import controllersConfig as controllers
-from .batoceraPaths import SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
+from .batoceraPaths import BATOCERA_SHARE_DIR, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
 from .exceptions import BaseBatoceraException, BatoceraException, UnexpectedEmulatorExit
@@ -454,6 +454,12 @@ def launch() -> None:
         global proc
         proc = None
         signal.signal(signal.SIGINT, signal_handler)
+
+        batocera_version = 'UNKNOWN'
+        if (version_file := BATOCERA_SHARE_DIR / 'batocera.version').exists():
+            batocera_version = version_file.read_text().strip()
+        _logger.info('Batocera version: %s', batocera_version)
+
         parser = argparse.ArgumentParser(description='emulator-launcher script')
 
         maxnbplayers = 8
