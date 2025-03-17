@@ -1039,9 +1039,9 @@ def writeBezelConfig(
         if bz_infos is None:
             return
 
-    overlay_info_file: Path = cast(Path, bz_infos["info"])
-    overlay_png_file: Path  = cast(Path, bz_infos["png"])
-    bezel_game: bool  = cast(bool, bz_infos["specific_to_game"])
+    overlay_info_file: Path = cast("Path", bz_infos["info"])
+    overlay_png_file: Path  = cast("Path", bz_infos["png"])
+    bezel_game: bool  = cast("bool", bz_infos["specific_to_game"])
 
     # only the png file is mandatory
     if overlay_info_file.exists():

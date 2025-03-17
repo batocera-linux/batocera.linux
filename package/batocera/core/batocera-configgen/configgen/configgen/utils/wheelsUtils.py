@@ -205,7 +205,7 @@ def configure_wheels(
                     newdev, p = reconfigure_result
                     _logger.info("replacing device %s by device %s for player %s", controller.device_path, newdev, controller.player_number)
                     devices[newdev] = device.copy()
-                    devices[newdev]["eventId"] = cast(int, controllersConfig.dev2int(newdev))
+                    devices[newdev]["eventId"] = cast('int', controllersConfig.dev2int(newdev))
                     controller.physical_device_path = controller.device_path  # save the physical device for ffb
                     controller.device_path = newdev  # needs to recompute sdl ids
                     recompute_sdl_ids = True

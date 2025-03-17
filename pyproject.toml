@@ -22,7 +22,7 @@ explicit-preview-rules = true
 select = [
     "TCH", "PYI", "I", "UP", "F", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
 ]
-ignore = ["SIM105", "SIM108", "E501"]
+ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
