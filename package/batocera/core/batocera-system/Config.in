@@ -1599,6 +1599,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
 	select BR2_PACKAGE_STEAMDECKGUN				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 	select BR2_PACKAGE_BLAMCON                              # BlamCon light gun
 	select BR2_PACKAGE_XGUNNER_LIGHTGUNS                    # XGunner light gun
+	select BR2_PACKAGE_ONEHIT_GUNS                          # OneHit light gun
 
 config BR2_PACKAGE_BATOCERA_KODI21
 	bool "batocera.linux Kodi 21 packages selection"
