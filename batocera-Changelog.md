@@ -17,6 +17,7 @@
 - Initial support for OpenFIRE light gun
 - Initial support for Fusion P.I.G.S. light gun
 - Initial support for OneHit light gun (AimTrak clone)
+- Ayn Odin2 and Odin2 Portal support
 ### Added
 - Wireguard VPN for RK3326 boards
 - Image scaling option for Drastic
