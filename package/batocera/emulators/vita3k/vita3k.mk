@@ -3,8 +3,8 @@
 # vita3k
 #
 ################################################################################
-# Version: Commits on Aug 25, 2024
-VITA3K_VERSION = f01a4e9b63583aa901f37a54523360be33034ccb
+# Version: Commits on Mar 3, 2025
+VITA3K_VERSION = 8de2d49c12b45da670906b0d13f3c5f90ed280fb
 VITA3K_SITE = https://github.com/vita3k/vita3k
 VITA3K_SITE_METHOD=git
 VITA3K_GIT_SUBMODULES=YES
@@ -17,8 +17,7 @@ VITA3K_SUPPORTS_IN_SOURCE_BUILD = NO
 VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
                    -DBUILD_SHARED_LIBS=OFF \
                    -DUSE_DISCORD_RICH_PRESENCE=OFF \
-                   -DUSE_VITA3K_UPDATE=OFF \
-                   -DBUILD_EXTERNAL=ON
+                   -DUSE_VITA3K_UPDATE=OFF
 
 ifeq ($(BR2_x86_64),y)
 VITA3K_FFMPEG_NAME=ffmpeg-linux-x64.zip
