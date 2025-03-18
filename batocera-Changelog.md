@@ -39,7 +39,10 @@
 - Force Feedback on RP5 & RPmini
 - vkQuake 1, 2 & 3 for systems that support Vulkan.
 - TR1X & TR2X for Tomb Raider I & II support
-- gun : option to hide the crossair in es
+- Oric Atmos (and Oric 1) with CLK Clock Signal emulator
+- CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
+  AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
+- gun : option to hide the crosshair in ES
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering

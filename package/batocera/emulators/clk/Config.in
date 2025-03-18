@@ -1,0 +1,9 @@
+config BR2_PACKAGE_CLK
+    bool "clk"
+    select BR2_PACKAGE_SDL2
+    depends on BR2_PACKAGE_HAS_LIBGL
+
+    help
+      CLS is a latency-hating multi-system emulator
+
+      https://github.com/TomHarte/CLK

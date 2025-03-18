@@ -1207,6 +1207,10 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Commander X16
 	select BR2_PACKAGE_X16EMU    # ALL
 
+	# CLK - Oric Atmos and other old computers
+	select BR2_PACKAGE_CLK                  if BR2_PACKAGE_BATOCERA_GLES3
+
+
 	help
 	  Old computers
 
