@@ -71,10 +71,6 @@ define DUCKSTATION_LEGACY_INSTALL_TARGET_CMDS
     cp -R $(@D)/buildroot-build/bin/resources \
         $(TARGET_DIR)/usr/share/duckstation/
     rm -f $(TARGET_DIR)/usr/share/duckstation/resources/gamecontrollerdb.txt
-
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys \
-        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 define DUCKSTATION_LEGACY_TRANSLATIONS

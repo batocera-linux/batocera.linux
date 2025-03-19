@@ -29,7 +29,7 @@ class CemuGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "cemu",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "swap_screen": ["KEY_LEFTCTRL", "KEY_TAB"] }
         }
 
     # disable hud & bezels for now - causes game issues
