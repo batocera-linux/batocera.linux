@@ -41,7 +41,7 @@ def writeControllersConfig(
     retroconfig.save('input_menu_toggle',         '"f1"')
     retroconfig.save('input_fps_toggle',          '"f2"')
     retroconfig.save('input_exit_emulator',       '"escape"')
-    retroconfig.save('input_pause_toogle',        '"p"')
+    retroconfig.save('input_pause_toggle',        '"p"')
     retroconfig.save('input_save_state',          '"f3"')
     retroconfig.save('input_load_state',          '"f4"')
     retroconfig.save('input_state_slot_decrease', '"f5"')
