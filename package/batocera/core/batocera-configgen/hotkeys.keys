@@ -61,6 +61,24 @@
 	    "description": "Screenshot"
         },
 	{
+            "trigger": ["hotkey", "pagedown"],
+            "type": "key",
+            "target": [ "KEY_VIDEO_NEXT" ],
+	    "description": "Next disk"
+        },
+	{
+            "trigger": ["hotkey", "l2"],
+            "type": "key",
+            "target": [ "KEY_SCREEN" ],
+	    "description": "Swap screen"
+        },
+	{
+            "trigger": ["hotkey", "r2"],
+            "type": "key",
+            "target": [ "KEY_PRESENTATION" ],
+	    "description": "Toogle screen layout"
+        },
+	{
             "trigger": ["hotkey", "l3"],
             "type": "key",
             "target": [ "KEY_SUBTITLE" ],
