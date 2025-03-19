@@ -47,7 +47,7 @@ class LibretroGenerator(Generator):
         # f12 for coin : set in libretroMameConfig.py, others in libretroControllers.py
         return {
             "name": "retroarch",
-            "keys": { "exit": ["KEY_LEFTSHIFT", "KEY_ESC"], "menu": ["KEY_LEFTSHIFT", "KEY_F1"], "pause": ["KEY_LEFTSHIFT", "KEY_F1"], "coin": "KEY_F12",
+            "keys": { "exit": ["KEY_LEFTSHIFT", "KEY_ESC"], "menu": ["KEY_LEFTSHIFT", "KEY_F1"], "pause": ["KEY_LEFTSHIFT", "KEY_P"], "coin": "KEY_F12",
                       "save_state": ["KEY_LEFTSHIFT", "KEY_F3"], "restore_state": ["KEY_LEFTSHIFT", "KEY_F4"], "previous_slot": ["KEY_LEFTSHIFT", "KEY_F6"], "next_slot": ["KEY_LEFTSHIFT", "KEY_F5"],
                       "rewind": ["KEY_LEFTSHIFT", "KEY_F11"], "fastforward": ["KEY_LEFTSHIFT", "KEY_F12"], "reset": ["KEY_LEFTSHIFT", "KEY_F10"], "translation": ["KEY_LEFTSHIFT", "KEY_F9"]
                      }
