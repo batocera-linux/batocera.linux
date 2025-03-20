@@ -123,6 +123,12 @@ def generateControllerConfig(
         retroarchbtns["pageup"] = "l2"
         retroarchbtns["l2"] = "l"
 
+    if system.name == "dreamcast" and system.config.core == "flycast" and 'r2' not in controller.inputs:
+        retroarchbtns["pageup"] = "l2"
+        retroarchbtns["l2"] = "l"
+        retroarchbtns["pagedown"] = "r2"
+        retroarchbtns["r2"] = "r"
+
     # Fix for reversed inputs in Yabasanshiro core which is unmaintained by retroarch
     if system.config.core == 'yabasanshiro':
         retroarchbtns["pageup"] = "r"
