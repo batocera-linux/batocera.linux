@@ -2,8 +2,14 @@ config BR2_PACKAGE_CLK
     bool "clk"
     select BR2_PACKAGE_SDL2
     depends on BR2_PACKAGE_HAS_LIBGL
-
     help
-      CLS is a latency-hating multi-system emulator
+      CLK is a latency-hating emulator of: the Acorn Electron and Archimedes,
+      Amstrad CPC, Apple II/II+/IIe and early Macintosh, Atari 2600 and ST,
+      ColecoVision, Enterprise 64/128, Commodore Vic-20 and Amiga, MSX 1/2,
+      Oric 1/Atmos, early PC compatibles, Sega Master System, Sinclair ZX80/81
+      and ZX Spectrum.
 
       https://github.com/TomHarte/CLK
+
+comment "clk needs an OpenGL backend"
+	depends on !BR2_PACKAGE_HAS_LIBGL
