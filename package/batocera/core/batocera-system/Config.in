@@ -235,6 +235,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_PYTHON3_SSL
 	select BR2_PACKAGE_PYTHON3_PYOPENSSL
+	select BR2_PACKAGE_PYTHON3_READLINE
 
 	select BR2_PACKAGE_PARTED				# partition management (for the first boot)
 	select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter
