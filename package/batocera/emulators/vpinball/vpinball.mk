@@ -18,13 +18,15 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
     SOURCE_DIR = linux-aarch64
     ARCH = aarch64
     VPINBALL_CONF_OPTS += "-DBUILD_RK3588=ON"
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
     SOURCE = CMakeLists_gl-linux-aarch64.txt
     SOURCE_DIR = linux-aarch64
     ARCH = aarch64
     VPINBALL_CONF_OPTS += "-DBUILD_RPI=ON"
+else ifeq ($(BR2_aarch64),y)
+    SOURCE = CMakeLists_gl-linux-aarch64.txt
+    SOURCE_DIR = linux-aarch64
+    ARCH = aarch64
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)

@@ -17,12 +17,7 @@ LIBALTSOUND_CONF_OPTS += -DPLATFORM=linux
 LIBALTSOUND_CONF_OPTS += -DARCH=$(BUILD_ARCH)
 
 # handle supported target platforms
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
-    BUILD_ARCH = aarch64
-    BASS_ARCH = aarch64
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+ifeq ($(BR2_aarch64),y)
     BUILD_ARCH = aarch64
     BASS_ARCH = aarch64
 endif
