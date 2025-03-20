@@ -230,7 +230,7 @@ def print_mapping(
                         print(
                             f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_names}"
                         )
-                    if isinstance(key_codes, str):
+                    elif isinstance(key_codes, str):
                         print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_codes}")
                     else:
                         print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {ECODES_NAMES[key_codes]}")
