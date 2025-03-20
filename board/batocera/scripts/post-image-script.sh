@@ -63,7 +63,7 @@ do
     echo "creating images/${BATOCERA_SUBTARGET}/boot.tar.xz"
     mkdir -p "${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}" || exit 1
     (cd "${BATOCERA_BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/boot.tar.xz" *) || exit 1
-    
+
     # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
     mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
@@ -86,7 +86,7 @@ do
 	GENIMAGEBOOTFILE="${GENIMAGEDIR}/genimage-boot.cfg"
 	echo "installing syslinux" >&2
 	cat "${GENIMAGEBOOTFILE}" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BATOCERA_BINARIES_DIR}/genimage-boot.cfg" || exit 1
-    genimage --rootpath="${TARGET_DIR}" --inputpath="${BATOCERA_BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BATOCERA_BINARIES_DIR}/genimage-boot.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+    "${HOST_DIR}/bin/genimage" --rootpath="${TARGET_DIR}" --inputpath="${BATOCERA_BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BATOCERA_BINARIES_DIR}/genimage-boot.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
     "${HOST_DIR}/bin/syslinux" -i "${BATOCERA_BINARIES_DIR}/boot.vfat" -d "/boot/syslinux" || exit 1
     # remove genimage temp path as sometimes genimage v14 fails to start
     rm -rf ${GENIMAGE_TMP}
@@ -94,7 +94,7 @@ do
     fi
     ###
     "${HOST_DIR}/bin/genimage" --rootpath="${TARGET_DIR}" --inputpath="${BATOCERA_BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BATOCERA_BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
- 
+
     rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
     rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
     mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERAIMG}" || exit 1
