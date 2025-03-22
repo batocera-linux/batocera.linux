@@ -4,7 +4,7 @@ from typing import ClassVar
 
 
 class BaseBatoceraException(Exception):
-    EXIT_CODE: ClassVar = -1
+    EXIT_CODE: ClassVar = 1
 
     @property
     def exit_code(self) -> int:
