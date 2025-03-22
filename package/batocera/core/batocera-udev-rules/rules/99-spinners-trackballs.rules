@@ -1,6 +1,8 @@
 ##############################
 ### Trackballs
 ##############################
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Barcode Reader  Mouse", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Cypress Semiconductor, Inc. enCoReII Mouse RDK", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Ultimar Opti-PAC Trackball/Spinner Interface", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Ultimarc U-Trak", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
 
@@ -12,13 +14,14 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="1241", ATTRS{idProduct}=
 ### Spinners
 ##############################
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="GGG TurboTwist Spinner", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_SPINNER}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Ultimarc SpinTrak", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1"
 
 ##############################
 #### Combo (spinner + trackball)
 ##############################
-KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="TAITO USB Paddle & Trackball Controller", MODE="0666", ENV{ID_INPUT_keyboard}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1", ENV{TRACKBALL_MULTIPLIER}="5", ENV{SPINNER_MULTIPLIER}="2", RUN+="/usr/bin/evsieve --input $env{DEVNAME} grab --map yield key:%300 key:up --map yield key:%301 key:down --block"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Baolian industry Co., Ltd. TS-SPTB-COMBO", MODE="0666", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Kensington Expert Mouse", MODE="0666", ENV{ID_INPUT_keyboard}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="TAITO USB Paddle & Trackball Controller", MODE="0666", ENV{ID_INPUT_keyboard}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_TRACKBALL}="1", ENV{ID_INPUT_SPINNER}="1", ENV{TRACKBALL_MULTIPLIER}="5", ENV{SPINNER_MULTIPLIER}="2", RUN+="/usr/bin/evsieve --input $env{DEVNAME} grab --map yield key:%300 key:up --map yield key:%301 key:down --block"
 
 # AtGames Legends Ultimate Control Panel. Two spinners and a trackball on the same event as follow:
 # Player 1 spinner: REL_X
