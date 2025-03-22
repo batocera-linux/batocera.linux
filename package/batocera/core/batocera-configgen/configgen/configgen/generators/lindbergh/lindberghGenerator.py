@@ -638,7 +638,7 @@ class LindberghGenerator(Generator):
             del lindberghCtrl_wheel["r2"]
 
         # some pads have not analog axis, on some games, prefer the dpad
-        if not shortRomName.startswith("vf5") and not shortRomName.startswith("vt3"): # all but vf5 and vt3
+        if not shortRomName.startswith("vf5") and not shortRomName.startswith("vt"): # all but vf5 and vt3
             # pads without joystick1left, but with a hat
             if "joystick1left" not in pad.inputs and "left" in pad.inputs and (pad.inputs["left"].type == "hat" or pad.inputs["left"].type == "axis"):
                 lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
