@@ -1644,6 +1644,12 @@ libretro:
                 choices:
                     "Off":                                always hide
                     "On":                                 always show
+            altlayout:
+                prompt:      SPECIAL CONTROL LAYOUTS
+                description: Controls for 5/6 button games and other unique controls
+                choices:
+                    "Default Only":                 "default"
+                    "Modern Fightstick Style":      "fightstick"
       systems:
             neogeo:
                 cfeatures:
@@ -1941,6 +1947,12 @@ libretro:
                 choices:
                     "Off":     0
                     "On":      1
+            altlayout:
+                prompt:      SPECIAL CONTROL LAYOUTS
+                description: Controls for 5/6 button games and other unique controls
+                choices:
+                    "Default Only":                 "default"
+                    "Modern Fightstick Style":      "fightstick"
       systems:
             atomiswave:
                 cfeatures:
