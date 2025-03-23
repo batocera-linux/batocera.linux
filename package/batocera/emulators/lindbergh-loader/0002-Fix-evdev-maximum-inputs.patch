@@ -1,0 +1,182 @@
+diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
+index ba60743..4dfa26d 100644
+--- a/src/lindbergh/evdevinput.c
++++ b/src/lindbergh/evdevinput.c
+@@ -862,7 +862,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+         int controller = open(controllers->controller[i].path, O_RDONLY);
+         if (controller < 0)
+         {
+-            strcpy(controllers->controller[i].name, "Unknown");
++            strncpy(controllers->controller[i].name, "Unknown", SIZE);
+             continue;
+         }
+ 
+@@ -912,13 +912,18 @@ static ControllerStatus listControllers(Controllers *controllers)
+             {
+                 if (test_bit(code, bit[EV_KEY]))
+                 {
++                    if(controllers->controller[i].inputCount >= MAX_INPUTS) { // the number of input is limited
++		      fprintf(stderr, "warning, maximum number of inputs reached !\n");
++		      break;
++                    }
++
+                     controllers->controller[i].enabled = 1;
+                     ControllerInput *controllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+                     controllerInput->evType = EV_KEY;
+                     controllerInput->evCode = code;
+                     controllerInput->specialFunction = NO_SPECIAL_FUNCTION;
+-                    strcpy(controllerInput->inputName, controllers->controller[i].name);
++                    strncpy(controllerInput->inputName, controllers->controller[i].name, SIZE);
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_KEY, code));
+                     normaliseName(controllerInput->inputName);
+@@ -926,7 +931,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     {
+                         // hum ok, truncated value
+                     }
+-                    strcpy(controllerInput->inputTechNegName, "-"); // unassignable value (not "" while some conf are empty)
++                    strncpy(controllerInput->inputTechNegName, "-", SIZE); // unassignable value (not "" while some conf are empty)
+                 }
+             }
+         }
+@@ -944,7 +949,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     controllerInput->evType = EV_ABS;
+                     controllerInput->evCode = code;
+                     controllerInput->specialFunction = NO_SPECIAL_FUNCTION;
+-                    strcpy(controllerInput->inputName, controllers->controller[i].name);
++                    strncpy(controllerInput->inputName, controllers->controller[i].name, SIZE);
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_ABS, code));
+                     normaliseName(controllerInput->inputName);
+@@ -962,7 +967,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     minControllerInput->evType = EV_ABS;
+                     minControllerInput->evCode = code;
+                     minControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MIN;
+-                    strcpy(minControllerInput->inputName, controllerInput->inputName);
++                    strncpy(minControllerInput->inputName, controllerInput->inputName, SIZE);
+                     strcat(minControllerInput->inputName, "_MIN");
+                     if (snprintf(minControllerInput->inputTechName, SIZE, "%s:ABS:%i:MIN", controllers->controller[i].path, code) >= 1024)
+                     {
+@@ -979,7 +984,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     maxControllerInput->evType = EV_ABS;
+                     maxControllerInput->evCode = code;
+                     maxControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MAX;
+-                    strcpy(maxControllerInput->inputName, controllerInput->inputName);
++                    strncpy(maxControllerInput->inputName, controllerInput->inputName, SIZE);
+                     strcat(maxControllerInput->inputName, "_MAX");
+                     if (snprintf(maxControllerInput->inputTechName, SIZE, "%s:ABS:%i:MAX", controllers->controller[i].path, code) >= 1024)
+                     {
+@@ -995,7 +1000,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     shakeControllerInput->evType = EV_ABS;
+                     shakeControllerInput->evCode = code;
+                     shakeControllerInput->specialFunction = ANALOGUE_SHAKE;
+-                    strcpy(shakeControllerInput->inputName, controllerInput->inputName);
++                    strncpy(shakeControllerInput->inputName, controllerInput->inputName, SIZE);
+                     strcat(shakeControllerInput->inputName, "_SHAKE");
+                     if (snprintf(shakeControllerInput->inputTechName, SIZE, "%s:ABS:%i:SHAKE", controllers->controller[i].path, code) >=
+                         1024)
+@@ -1007,6 +1012,7 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     ioctl(controller, EVIOCGABS(code), &absoluteFeatures);
+                     controllers->controller[i].absMin[code] = absoluteFeatures.minimum;
+                     controllers->controller[i].absMax[code] = absoluteFeatures.maximum;
++
+                 }
+             }
+         }
+@@ -1294,7 +1300,7 @@ ControllerStatus getArcadeInputByName(char *name, ArcadeInput *input)
+     {
+         if (strcmp(tempName, name) == 0)
+         {
+-            strcpy(input->name, arcadeInputs[index].name);
++            strncpy(input->name, arcadeInputs[index].name, SIZE);
+             input->channel = arcadeInputs[index].channel;
+             input->player = arcadeInputs[index].player;
+             return CONTROLLER_STATUS_SUCCESS;
+@@ -1371,8 +1377,8 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].enabled = 1;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].channel =
+                         input.channel;
+-                    strcpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].name,
+-                           input.name);
++                    strncpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].name,
++			    input.name, SIZE);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].player =
+                         input.player;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+@@ -1386,8 +1392,8 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxEnabled = 1;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxChannel =
+                         input.channel;
+-                    strcpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxName,
+-                           input.name);
++                    strncpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxName,
++			    input.name, SIZE);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxPlayer =
+                         input.player;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+@@ -1401,8 +1407,8 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minEnabled = 1;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minChannel =
+                         input.channel;
+-                    strcpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minName,
+-                           input.name);
++                    strncpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minName,
++			    input.name, SIZE);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minPlayer =
+                         input.player;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
+@@ -1416,8 +1422,8 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeEnabled = 1;
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeChannel =
+                         input.channel;
+-                    strcpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeName,
+-                           input.name);
++                    strncpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeName,
++			    input.name, SIZE);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakePlayer =
+                         input.player;
+                 }
+@@ -1434,8 +1440,8 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                 controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].enabled = 1;
+                 controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].channel =
+                     input.channel;
+-                strcpy(controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].name,
+-                       input.name);
++                strncpy(controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].name,
++			input.name, SIZE);
+                 controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].player =
+                     input.player;
+ 
+diff --git a/src/lindbergh/evdevinput.h b/src/lindbergh/evdevinput.h
+index 462c30d..bd80be6 100644
+--- a/src/lindbergh/evdevinput.h
++++ b/src/lindbergh/evdevinput.h
+@@ -2,9 +2,9 @@
+ 
+ #include <linux/input-event-codes.h>
+ 
+-#define SIZE 128
++#define SIZE 300
+ #define CONTROLLER_THREAD_MAX 256
+-
++#define MAX_INPUTS 512
+ 
+ typedef struct
+ {
+@@ -69,12 +69,12 @@ typedef struct
+ typedef struct
+ {
+     char name[SIZE];
+-    char path[320];
+-    char physicalLocation[128];
++    char path[SIZE];
++    char physicalLocation[SIZE];
+     int absMax[ABS_MAX];
+     int absMin[ABS_MAX];
+ 
+-    ControllerInput inputs[320];
++    ControllerInput inputs[MAX_INPUTS];
+     int inputCount;
+ 
+     ArcadeInput keyTriggers[KEY_MAX];

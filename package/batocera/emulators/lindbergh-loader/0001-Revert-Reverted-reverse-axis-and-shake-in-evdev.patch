@@ -1,0 +1,321 @@
+From c712248dd891be164eafb06a29bd9df94722bcfd Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+Date: Sun, 23 Mar 2025 09:49:25 +0100
+Subject: [PATCH] Revert "Reverted reverse axis and shake in evdev."
+
+This reverts commit a96b1fcf30b1110981468aee7bab9eec174a3153.
+---
+ src/lindbergh/evdevinput.c | 147 +++++++++++++++++++++++++++++++++----
+ src/lindbergh/evdevinput.h |  21 ++++--
+ src/lindbergh/lindbergh.c  |   2 +-
+ 3 files changed, 148 insertions(+), 22 deletions(-)
+
+diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
+index 6301fd4..ba60743 100644
+--- a/src/lindbergh/evdevinput.c
++++ b/src/lindbergh/evdevinput.c
+@@ -922,6 +922,11 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_KEY, code));
+                     normaliseName(controllerInput->inputName);
++                    if (snprintf(controllerInput->inputTechName, SIZE, "%s:KEY:%i", controllers->controller[i].path, code) >= 1024)
++                    {
++                        // hum ok, truncated value
++                    }
++                    strcpy(controllerInput->inputTechNegName, "-"); // unassignable value (not "" while some conf are empty)
+                 }
+             }
+         }
+@@ -943,6 +948,14 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     strcat(controllerInput->inputName, "_");
+                     strcat(controllerInput->inputName, codename(EV_ABS, code));
+                     normaliseName(controllerInput->inputName);
++                    if (snprintf(controllerInput->inputTechName, SIZE, "%s:ABS:%i", controllers->controller[i].path, code) >= 1024)
++                    {
++                        // hum ok, truncated value
++                    }
++                    if (snprintf(controllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i", controllers->controller[i].path, code) >= 1024)
++                    {
++                        // hum ok, truncated value
++                    }
+ 
+                     ControllerInput *minControllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+@@ -951,6 +964,15 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     minControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MIN;
+                     strcpy(minControllerInput->inputName, controllerInput->inputName);
+                     strcat(minControllerInput->inputName, "_MIN");
++                    if (snprintf(minControllerInput->inputTechName, SIZE, "%s:ABS:%i:MIN", controllers->controller[i].path, code) >= 1024)
++                    {
++                        // hum ok, truncated value
++                    }
++                    if (snprintf(minControllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i:MIN", controllers->controller[i].path, code) >=
++                        1024)
++                    {
++                        // hum ok, truncated value
++                    }
+ 
+                     ControllerInput *maxControllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+@@ -959,6 +981,27 @@ static ControllerStatus listControllers(Controllers *controllers)
+                     maxControllerInput->specialFunction = ANALOGUE_TO_DIGITAL_MAX;
+                     strcpy(maxControllerInput->inputName, controllerInput->inputName);
+                     strcat(maxControllerInput->inputName, "_MAX");
++                    if (snprintf(maxControllerInput->inputTechName, SIZE, "%s:ABS:%i:MAX", controllers->controller[i].path, code) >= 1024)
++                    {
++                        // hum ok, truncated value
++                    }
++                    if (snprintf(maxControllerInput->inputTechNegName, SIZE, "%s:ABS_NEG:%i:MAX", controllers->controller[i].path, code) >=
++                        1024)
++                    {
++                        // hum ok, truncated value
++                    }
++
++                    ControllerInput *shakeControllerInput = &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
++                    shakeControllerInput->evType = EV_ABS;
++                    shakeControllerInput->evCode = code;
++                    shakeControllerInput->specialFunction = ANALOGUE_SHAKE;
++                    strcpy(shakeControllerInput->inputName, controllerInput->inputName);
++                    strcat(shakeControllerInput->inputName, "_SHAKE");
++                    if (snprintf(shakeControllerInput->inputTechName, SIZE, "%s:ABS:%i:SHAKE", controllers->controller[i].path, code) >=
++                        1024)
++                    {
++                        // hum ok, truncated value
++                    }
+ 
+                     struct input_absinfo absoluteFeatures;
+                     ioctl(controller, EVIOCGABS(code), &absoluteFeatures);
+@@ -1066,31 +1109,67 @@ void *controllerThread(void *_args)
+                     ((double)event.value - (double)args->controller->absMin[event.code]) /
+                     ((double)args->controller->absMax[event.code] - (double)args->controller->absMin[event.code]);
+ 
++                if(args->controller->absTriggers[event.code].isNeg == 1) {
++                  scaled = 1.0 - scaled;
++                }
++
+                 if (args->controller->absTriggers[event.code].enabled)
+                 {
+                     int channel = args->controller->absTriggers[event.code].channel;
+-                    // Deadzone handling
+-                    if (scaled < analogue_deadzones[channel].start_max)
++
++		    if (args->controller->absTriggers[event.code].isAnalogue) {
++		      // Deadzone handling
++		      if (scaled < analogue_deadzones[channel].start_max)
+                         scaled = 0.0;
+-                    if (scaled > analogue_deadzones[channel].middle_min && scaled < analogue_deadzones[channel].middle_max)
++		      if (scaled > analogue_deadzones[channel].middle_min && scaled < analogue_deadzones[channel].middle_max)
+                         scaled = 0.5;
+-                    if (scaled > analogue_deadzones[channel].end_min)
++		      if (scaled > analogue_deadzones[channel].end_min)
+                         scaled = 1.0;
+-
+-                    setAnalogue(channel, scaled * (pow(2, jvsBits) - 1));
++		      setAnalogue(channel, scaled * (pow(2, jvsBits) - 1));
++		    } else {
++		      setSwitch(args->controller->absTriggers[event.code].player,
++				args->controller->absTriggers[event.code].channel, scaled < 0.8 ? 0 : 1);
++		    }
+                 }
+ 
+-                if (args->controller->absTriggers[event.code].minEnabled)
+-                {
+-                    setSwitch(args->controller->absTriggers[event.code].minPlayer,
+-                              args->controller->absTriggers[event.code].minChannel, scaled < 0.2);
++                if(event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2)) {
++                  if (args->controller->absTriggers[event.code].minEnabled)
++                    {
++                      int channel = args->controller->absTriggers[event.code].minChannel;
++
++		      if (args->controller->absTriggers[event.code].isAnalogue) {
++			setAnalogue(channel, scaled < 0.2 ? 0.0 : pow(2, jvsBits) * 1.0);
++		      } else {
++			setSwitch(args->controller->absTriggers[event.code].minPlayer,
++				  args->controller->absTriggers[event.code].minChannel, scaled < 0.2 ? 1 : 0);
++		      }
++                    }
+                 }
+ 
+-                if (args->controller->absTriggers[event.code].maxEnabled)
+-                {
+-                    setSwitch(args->controller->absTriggers[event.code].maxPlayer,
+-                              args->controller->absTriggers[event.code].maxChannel, scaled > 0.8);
++                if(event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2)) {
++                  if (args->controller->absTriggers[event.code].maxEnabled)
++                    {
++                       int channel = args->controller->absTriggers[event.code].maxChannel;
++
++		       if (args->controller->absTriggers[event.code].isAnalogue) {
++			 setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) : 0.0);
++		       } else {
++			setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++				  args->controller->absTriggers[event.code].maxChannel, scaled > 0.8 ? 1 : 0);
++		      }
++                    }
+                 }
++		if (args->controller->absTriggers[event.code].shakeEnabled)
++		  {
++		    int channel = args->controller->absTriggers[event.code].shakeChannel;
++		    if( (scaled > args->controller->absTriggers[event.code].shakePreviousScaled &&  scaled - args->controller->absTriggers[event.code].shakePreviousScaled > 0.1) ||
++			(scaled < args->controller->absTriggers[event.code].shakePreviousScaled && -scaled + args->controller->absTriggers[event.code].shakePreviousScaled > 0.1)) {
++		      setAnalogue(channel, 0);
++		    } else {
++		      setAnalogue(channel, pow(2, jvsBits) / 2);
++		    }
++		    args->controller->absTriggers[event.code].shakePreviousScaled = scaled;
++		  }
+             }
+             break;
+ 
+@@ -1243,6 +1322,9 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+             controllers->controller[i].absTriggers[j].enabled = 0;
+             controllers->controller[i].absTriggers[j].minEnabled = 0;
+             controllers->controller[i].absTriggers[j].maxEnabled = 0;
++            controllers->controller[i].absTriggers[j].shakeEnabled = 0;
++            controllers->controller[i].absTriggers[j].isNeg = 0;
++	    controllers->controller[i].absTriggers[j].isAnalogue = 1;
+         }
+ 
+         for (int j = 0; j < KEY_MAX; j++)
+@@ -1255,8 +1337,20 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+         for (int j = 0; j < controllers->controller[i].inputCount; j++)
+         {
+             char *mapping = getMapping(controllers->controller[i].inputs[j].inputName);
+-            if (mapping == NULL)
+-                continue;
++            int negabs = 0;
++
++            if (mapping == NULL) {
++              // give a 2nd chance with a techninal mapping
++              mapping = getMapping(controllers->controller[i].inputs[j].inputTechName);
++              if (mapping == NULL) {
++                // give a 3rd change with negativ technical mapping
++                mapping = getMapping(controllers->controller[i].inputs[j].inputTechNegName);
++                negabs = 1;
++                if (mapping == NULL) {
++                  continue;
++                }
++              }
++            }
+ 
+             ArcadeInput input = {0};
+             ControllerStatus status = getArcadeInputByName(mapping, &input);
+@@ -1281,6 +1375,9 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].player =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
++		    if (strstr(input.name, "ANALOGUE") == NULL)
++		      controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isAnalogue = 0;
+                 }
+                 break;
+ 
+@@ -1293,6 +1390,9 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].maxPlayer =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
++		    if (strstr(input.name, "ANALOGUE") == NULL)
++		      controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isAnalogue = 0;
+                 }
+                 break;
+ 
+@@ -1305,6 +1405,21 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                            input.name);
+                     controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].minPlayer =
+                         input.player;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isNeg = negabs;
++		    if (strstr(input.name, "ANALOGUE") == NULL)
++		      controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].isAnalogue = 0;
++                }
++                break;
++
++                case ANALOGUE_SHAKE:
++                {
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeEnabled = 1;
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeChannel =
++                        input.channel;
++                    strcpy(controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakeName,
++                           input.name);
++                    controllers->controller[i].absTriggers[controllers->controller[i].inputs[j].evCode].shakePlayer =
++                        input.player;
+                 }
+                 break;
+ 
+diff --git a/src/lindbergh/evdevinput.h b/src/lindbergh/evdevinput.h
+index bcf30ee..462c30d 100644
+--- a/src/lindbergh/evdevinput.h
++++ b/src/lindbergh/evdevinput.h
+@@ -2,7 +2,7 @@
+ 
+ #include <linux/input-event-codes.h>
+ 
+-#define SIZE 1024
++#define SIZE 128
+ #define CONTROLLER_THREAD_MAX 256
+ 
+ 
+@@ -31,6 +31,14 @@ typedef struct
+     int maxEnabled;
+ 
+     int isAnalogue;
++    int isNeg; // reversed axis
++
++    char shakeName[SIZE];
++    int shakeChannel;
++    int shakeEnabled;
++    int shakePlayer;
++    double shakePreviousScaled;
++
+     int isCoin;
+ } ArcadeInput;
+ 
+@@ -44,12 +52,15 @@ typedef enum {
+     NO_SPECIAL_FUNCTION = 0,
+     ANALOGUE_TO_DIGITAL_MAX,
+     ANALOGUE_TO_DIGITAL_MIN,
+-    DIGITAL_TO_ANALOGUE
++    DIGITAL_TO_ANALOGUE,
++    ANALOGUE_SHAKE
+ } SpecialFunction;
+ 
+ typedef struct
+ {
+     char inputName[SIZE];
++    char inputTechName[SIZE];
++    char inputTechNegName[SIZE];
+     int evType;
+     int evCode;
+     SpecialFunction specialFunction;
+@@ -58,12 +69,12 @@ typedef struct
+ typedef struct
+ {
+     char name[SIZE];
+-    char path[SIZE];
+-    char physicalLocation[SIZE];
++    char path[320];
++    char physicalLocation[128];
+     int absMax[ABS_MAX];
+     int absMin[ABS_MAX];
+ 
+-    ControllerInput inputs[SIZE];
++    ControllerInput inputs[320];
+     int inputCount;
+ 
+     ArcadeInput keyTriggers[KEY_MAX];
+diff --git a/src/lindbergh/lindbergh.c b/src/lindbergh/lindbergh.c
+index cc900ed..e143b1b 100644
+--- a/src/lindbergh/lindbergh.c
++++ b/src/lindbergh/lindbergh.c
+@@ -444,7 +444,7 @@ int main(int argc, char *argv[])
+             continue;
+         }
+ 
+-        if (strcmp(argv[i], "-z") == 0 || strcmp(argv[i], "--zink") == 0)
++        if (strcmp(argv[i], "-z") == 0 || strcmp(argv[i], "--ziink") == 0)
+         {
+             zink = 1;
+             continue;
+-- 
+2.34.1
+
