@@ -131,6 +131,7 @@
 - QT6 to 6.8.1
 - BTop to 1.4.0
 - Wine Mono to 9.4.0
+- Syncthing to 1.29.3
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
