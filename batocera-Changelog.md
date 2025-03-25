@@ -114,7 +114,7 @@
 - Vulkan stack to v1.4.304
 - MPV to 0.39.0
 - Kodi to 21.2
-- Nvidia production driver to 570.124.04
+- Nvidia production driver to 570.133.07
 - LLVM to 19.1.7
 - Wine-TKG to 10.3
 - Faudio to 25.02
