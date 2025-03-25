@@ -18,14 +18,6 @@ index e2c1848..70eaa7e 100644
  	{ 0x045e, 0x0202, "Microsoft X-Box pad v1 (US)", 0, XTYPE_XBOX },
  	{ 0x045e, 0x0285, "Microsoft X-Box pad (Japan)", 0, XTYPE_XBOX },
  	{ 0x045e, 0x0287, "Microsoft Xbox Controller S", 0, XTYPE_XBOX },
-@@ -485,6 +485,7 @@ static const struct usb_device_id xpad_table[] = {
- 	XPAD_XBOX360_VENDOR(0x03f0),		/* HP HyperX Xbox 360 controllers */
- 	XPAD_XBOXONE_VENDOR(0x03f0),		/* HP HyperX Xbox One controllers */
- 	XPAD_XBOX360_VENDOR(0x044f),		/* Thrustmaster Xbox 360 controllers */
-+	XPAD_XBOXONE_VENDOR(0x044f),		/* Thrustmaster Xbox One controllers */
- 	XPAD_XBOX360_VENDOR(0x045e),		/* Microsoft Xbox 360 controllers */
- 	XPAD_XBOXONE_VENDOR(0x045e),		/* Microsoft Xbox One controllers */
- 	XPAD_XBOX360_VENDOR(0x046d),		/* Logitech Xbox 360-style controllers */
 @@ -1044,6 +1047,11 @@ static void xpadone_process_packet(struct usb_xpad *xpad, u16 cmd, unsigned char
  		input_report_key(dev, BTN_THUMBR, data[5] & BIT(7));
  
