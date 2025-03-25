@@ -1091,7 +1091,7 @@ def writeBezelConfig(
         if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
             bezelNeedAdaptation = False
         if not shaderBezel:
-            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom"))
             if defined('ratio', system.config) and system.config['ratio'] in ratioIndexes:
                 retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
                 retroarchConfig['video_aspect_ratio_auto'] = 'false'
