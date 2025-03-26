@@ -1,0 +1,15 @@
+config BR2_PACKAGE_SDL3_IMAGE
+	bool "sdl3_image"
+	depends on !BR2_STATIC_LIBS
+	select BR2_PACKAGE_SDL3
+	select BR2_PACKAGE_WEBP
+	select BR2_PACKAGE_WEBP_DEMUX
+	select BR2_PACKAGE_LIBAVIF
+	select BR2_PACKAGE_TIFF
+	help
+	  Image decoding for many popular formats for Simple Directmedia Layer.
+
+	  https://github.com/libsdl-org/SDL_image
+
+comment "SDL3_image needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS

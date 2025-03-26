@@ -642,6 +642,10 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/stenzek-shaderc/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ffmpeg-rockchip/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/uthash/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_ttf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_mixer/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_image/Config.in"
 endmenu
 
 menu "Audio"
