@@ -220,6 +220,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3128    \
                                                      )
 													# WireGuard VPN support (match kernel compatibility)
+	select BR2_PACKAGE_WIREGUARD_SERVICE    if BR2_PACKAGE_WIREGUARD_TOOLS # Batocera service
 	select BR2_PACKAGE_OPENRESOLV                # DNS resolver
 	select BR2_PACKAGE_USB_MODESWITCH		# USB modeswitch support
 	select BR2_PACKAGE_UMTOOL			# command line tool for configuring Ultimarc arcade hardware
