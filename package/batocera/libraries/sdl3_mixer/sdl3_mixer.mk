@@ -1,0 +1,52 @@
+################################################################################
+#
+# sdl3_mixer
+#
+################################################################################
+# Version: Commits on Mar 24, 2025
+SDL3_MIXER_VERSION = cadfafb61e03fc38ce8aac849de4b892f880bb24
+SDL3_MIXER_SITE = https://github.com/libsdl-org/SDL_mixer
+SDL3_MIXER_SITE_METHOD = git
+SDL3_MIXER_GIT_SUBMODULES = yes
+SDL3_MIXER_LICENSE = Zlib
+SDL3_MIXER_LICENSE_FILES = LICENSE.txt
+SDL3_MIXER_INSTALL_STAGING = YES
+
+SDL3_MIXER_DEPENDENCIES += alsa-lib libogg sdl3 
+
+SDL3_MIXER_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release
+
+ifeq ($(BR2_PACKAGE_FLAC),y)
+SDL3_MIXER_DEPENDENCIES += flac
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_FLAC=ON
+else
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_FLAC=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_FLUIDSYNTH),y)
+SDL3_MIXER_DEPENDENCIES += fluidsynth
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_MIDI_FLUIDSYNTH=ON
+else
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_MIDI_FLUIDSYNTH=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_LIBVORBIS),y)
+SDL3_MIXER_DEPENDENCIES += libvorbis
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_VORBIS=VORBISFILE
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXMP),y)
+SDL3_MIXER_DEPENDENCIES += libxmp
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_MOD_XMP=ON
+else
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_MOD_XMP=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_OPUS),y)
+SDL3_MIXER_DEPENDENCIES += opus
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_OPUS=ON
+else
+SDL3_MIXER_CONF_OPTS += -DSDLMIXER_OPUS=OFF
+endif
+
+$(eval $(cmake-package))
