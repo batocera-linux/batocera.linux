@@ -357,6 +357,35 @@ class LindberghGenerator(Generator):
         if input_mode == 2:
             self.setup_joysticks_evdev(conf, system, shortRomName, guns, wheels, playersControllers)
 
+        # map service and test buttons for tests mode
+        if system.isOptSet("lindbergh_test") and system.getOptBoolean("lindbergh_test"):
+            if input_mode == 2:
+                self.setup_test_mode_evdev(conf, playersControllers)
+
+    def setup_test_mode_evdev(
+        self,
+        conf: dict[str, Any],
+        playersControllers: Controllers,
+        /,
+    ) -> None:
+        for pad in playersControllers[:1]:
+            input_name = "b"
+            if input_name in pad.inputs and pad.inputs[input_name].type == "button":
+                self.setConf(conf, "TEST_BUTTON", f"{pad.device_path}:KEY:{pad.inputs[input_name].code}")
+            input_name = "down"
+            if input_name in pad.inputs and pad.inputs[input_name].type == "hat":
+                if pad.inputs[input_name].value == "4": # down
+                    # 16 is the HAT0 code, MAX for down/right
+                    input_value = f"ABS:{16+1+int(pad.inputs[input_name].id)*2}:MAX"
+                    self.setConf(conf, "PLAYER_1_BUTTON_SERVICE", f"{pad.device_path}:{input_value}")
+            if input_name in pad.inputs and pad.inputs[input_name].type == "axis":
+                relaxValues = pad.get_mapping_axis_relaxed_values()
+                if input_name in relaxValues and relaxValues[input_name]["reversed"]:
+                    input_value = f"ABS_NEG:{pad.inputs[input_name].code}"
+                else:
+                    input_value = f"ABS:{pad.inputs[input_name].code}"
+                self.setConf(conf, f"PLAYER_1_BUTTON_SERVICE", f"{pad.device_path}:{input_value}:MAX")
+
     def setup_joysticks_evdev(
         self,
         conf: dict[str, Any],
