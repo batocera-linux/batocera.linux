@@ -115,6 +115,8 @@ class LindberghGenerator(Generator):
         # Run command
         if system.config.get_bool("lindbergh_test"):
             commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
+        elif system.config.get_bool("lindbergh_zink"):
+            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "--zink"]
         else:
             commandArray: list[str | Path] = [str(romDir / "lindbergh")]
 
@@ -263,6 +265,7 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "DEBUG_MSGS",                system.config.get_bool("lindbergh_debug", return_values=(1, 0)))
         self.setConf(conf, "HUMMER_FLICKER_FIX",        system.config.get_bool("lindbergh_hummer", return_values=(1, 0)))
         self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", system.config.get_bool("lindbergh_lens", return_values=(1, 0)))
+        self.setConf(conf, "BOOST_RENDER_RES",          system.config.get_bool("lindbergh_boost", return_values=(1, 0)))
         self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", 1 if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else 0)
         self.setConf(conf, "SRAM_PATH",   f"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}")
         self.setConf(conf, "EEPROM_PATH", f"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}")
@@ -295,6 +298,10 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, "OR2_IP", ip)
         else:
             _logger.debug("Unable to retrieve IP address.")
+
+        # Primeval Hunt mode (touch screen)
+        if "primeval" in romName.lower() or "primehunt" in romName.lower():
+            self.setConf(conf, "PRIMEVAL_HUNT_MODE", system.config.get("lindbergh_hunt", "1"))
 
         ## Guns
         if system.config.use_guns and guns:
@@ -792,23 +799,18 @@ class LindberghGenerator(Generator):
                 shutil.copy2("/lib32/extralibs/libCg.so.harley", destCg)
                 _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
+                shutil.copy2("/lib32/extralibs/libCgGL.so.harley", destCgGL)
                 _logger.debug("Copied: %s", destCgGL)
 
-        if "stage 4" in romName.lower() or "initiad4" in romName.lower():
-            destination = Path(romDir) / "libCgGL.so"
-            if not destination.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destination)
-                _logger.debug("Copied: %s", destination)
-
-        if "tennis" in romName.lower():
+        # fixes shadows and textures
+        if any(keyword in romName.lower() for keyword in ("initiad", "letsgoju", "tennis")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
-                shutil.copy2("/lib32/extralibs/libCg.so.tennis", destCg)
+                shutil.copy2("/lib32/extralibs/libCg.so.other", destCg)
                 _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.tennis", destCgGL)
+                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
                 _logger.debug("Copied: %s", destCgGL)
 
         # remove any legacy libsegaapi.so
