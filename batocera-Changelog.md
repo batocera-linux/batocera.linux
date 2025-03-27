@@ -117,7 +117,7 @@
 - Kodi to 21.2
 - Nvidia production driver to 570.133.07
 - LLVM to 19.1.7
-- Wine-TKG to 10.3
+- Wine-TKG to 10.4
 - Faudio to 25.02
 - DXVK to 2.6
 - DXVK-NVApi to 0.9.0

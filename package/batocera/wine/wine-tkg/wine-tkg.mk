@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_TKG_VERSION = 10.3
+WINE_TKG_VERSION = 10.4
 WINE_TKG_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+
@@ -360,11 +360,13 @@ define WINE_TKG_POST_INSTALL
 	mkdir -p $(TARGET_DIR)/share/wine/
 	cp -pr $(@D)/nls $(TARGET_DIR)/share/wine/
     rm -Rf $(TARGET_DIR)/usr/wine/wine-tkg/include
+	rm $(TARGET_DIR)/usr/wine/wine-tkg/lib/wine/i386-unix/*.a
 endef
 
 define WINE_TKG_64_POST_INSTALL
 	mkdir -p $(TARGET_DIR)/usr/wine/wine-tkg/bin
 	cp $(@D)/loader/wine64 $(TARGET_DIR)/usr/wine/wine-tkg/bin/wine
+	rm $(TARGET_DIR)/usr/wine/wine-tkg/lib/wine/x86_64-unix/*.a
 endef
 
 WINE_TKG_POST_INSTALL_TARGET_HOOKS += WINE_TKG_POST_INSTALL
