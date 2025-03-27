@@ -358,7 +358,7 @@ class LindberghGenerator(Generator):
             self.setup_joysticks_evdev(conf, system, shortRomName, guns, wheels, playersControllers)
 
         # map service and test buttons for tests mode
-        if system.isOptSet("lindbergh_test") and system.getOptBoolean("lindbergh_test"):
+        if system.config.get_bool("lindbergh_test"):
             if input_mode == 2:
                 self.setup_test_mode_evdev(conf, playersControllers)
 
