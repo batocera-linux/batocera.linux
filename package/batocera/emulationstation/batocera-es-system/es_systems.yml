@@ -516,13 +516,13 @@ megadrive:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:megadrive
 
-segacd:
-  name:       Sega CD
+megacd:
+  name:       Mega CD
   manufacturer: Sega
   release: 1991
   hardware: console
   extensions: [cue, iso, chd, m3u]
-  platform:   segacd
+  platform:   megacd
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }

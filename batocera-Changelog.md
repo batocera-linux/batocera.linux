@@ -7,6 +7,7 @@
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
 - Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
+- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 ### Hardware
 - Add OrangePi 4a board support

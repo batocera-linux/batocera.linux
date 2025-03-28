@@ -746,7 +746,7 @@ def createLibretroConfig(
         "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0,
                                             "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ] },
                             "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
-                            "segacd" : { "device": 516, "p2": 0,
+                            "megacd" : { "device": 516, "p2": 0,
                                          "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ]} },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame"          : { "default" : { "p1": 0, "p2": 1, "p3": 2 } },
