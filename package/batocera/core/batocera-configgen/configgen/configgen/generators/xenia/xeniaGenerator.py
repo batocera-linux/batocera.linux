@@ -67,6 +67,9 @@ class XeniaGenerator(Generator):
         else:
             _logger.debug("*** Vulkan driver required is not available on the system!!! ***")
             sys.exit()
+        
+        # Use wine proton
+        wine.set_wine_runner("wine-proton")
 
         # set to 64bit environment by default
         os.environ['WINEARCH'] = 'win64'
@@ -101,7 +104,7 @@ class XeniaGenerator(Generator):
             with (canarypath / 'portable.txt').open('w'):
                 pass
 
-        wine.install_wine_trick(wineprefix, 'vcrun2019')
+        wine.install_wine_trick(wineprefix, 'vcrun2022')
 
         dll_files = ["d3d12.dll", "d3d12core.dll", "d3d11.dll", "d3d10core.dll", "d3d9.dll", "d3d8.dll", "dxgi.dll"]
         # Create symbolic links for 64-bit DLLs

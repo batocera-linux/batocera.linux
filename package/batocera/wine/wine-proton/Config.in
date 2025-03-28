@@ -1,0 +1,11 @@
+config BR2_PACKAGE_WINE_PROTON
+	bool "wine-proton"
+    depends on BR2_i386 || BR2_x86_64
+	help
+      Proton is a Wine build modified by Valve and other contributors.
+      It contains many useful patches (primarily for a better gaming experience),
+      some of them are unique and not present in other builds.
+      The differences from the official Steam's Proton are the lack of the Proton's python script
+      and the lack of some builtin dlls (like DXVK and vkd3d-proton).
+
+	  https://github.com/Kron4ek/Wine-Builds
