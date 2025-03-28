@@ -35,7 +35,7 @@ trylock() {
 trylock
 checkRunningPIDAndExit1
 
-CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "OpenFIRE FIRECon$") # remove the joystick from the event cause it duplicates events
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb | grep -vE "OpenFIRE FIRECon P[1-4]$") # remove the joystick from the event cause it duplicates events
 NDEVS=$(echo "${CHILDREN}" | wc -l)
 
     # Based on the enclosed instruction book from official Github
