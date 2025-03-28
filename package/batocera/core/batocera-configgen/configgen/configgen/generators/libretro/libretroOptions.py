@@ -1720,7 +1720,7 @@ def _picodrive_options(
 
     # Sega MegaCD
     # Emulate the Backup RAM Cartridge for games save (ex: Shining Force CD)
-    _set(coreSettings, 'picodrive_ramcart', 'enabled' if system.name == 'segacd' else 'disabled')
+    _set(coreSettings, 'picodrive_ramcart', 'enabled' if system.name == 'megacd' else 'disabled')
 
 
 # Sega Saturn
