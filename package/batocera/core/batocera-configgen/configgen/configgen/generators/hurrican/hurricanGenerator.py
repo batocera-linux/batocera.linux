@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 
 class HurricanGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         try:
             os.chdir(ROMS / "hurrican" / "data" / "levels/")
             os.chdir(ROMS / "hurrican")

@@ -30,7 +30,7 @@ class CitraGenerator(Generator):
         }
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         CitraGenerator.writeCITRAConfig(CONFIGS / "citra-emu" / "qt-config.ini", system, playersControllers)
 
         if Path('/usr/bin/citra-qt').exists():

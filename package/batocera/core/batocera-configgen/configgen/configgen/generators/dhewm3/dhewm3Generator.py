@@ -29,7 +29,7 @@ class Dhewm3Generator(Generator):
             }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         # Set the paths using Path objects
         romDir = ROMS / "doom3"

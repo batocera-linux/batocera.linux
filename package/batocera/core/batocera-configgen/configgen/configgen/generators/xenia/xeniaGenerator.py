@@ -41,7 +41,7 @@ class XeniaGenerator(Generator):
             # Copy and overwrite the files from source to destination
             shutil.copy2(src_path, dest_path)
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         wineprefix = HOME / 'wine-bottles' / 'xbox360'
         xeniaConfig = CONFIGS / 'xenia'
         xeniaCache = CACHE / 'xenia'

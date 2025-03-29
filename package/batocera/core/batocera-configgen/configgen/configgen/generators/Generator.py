@@ -23,6 +23,7 @@ class Generator(metaclass=ABCMeta):
         rom: Path,
         playersControllers: Controllers,
         metadata: Mapping[str, str],
+        esmetadata: Mapping[str, str],
         guns: Guns,
         wheels: DeviceInfoMapping,
         gameResolution: Resolution,

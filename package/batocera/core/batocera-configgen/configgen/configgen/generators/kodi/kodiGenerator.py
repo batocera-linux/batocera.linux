@@ -14,7 +14,7 @@ class KodiGenerator(Generator):
 
     # Main entry of the module
     # Configure kodi inputs and return the command to run
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         kodiConfig.writeKodiConfig(playersControllers)
         commandArray = ['/usr/bin/batocera-kodilauncher']
         return Command.Command(array=commandArray)

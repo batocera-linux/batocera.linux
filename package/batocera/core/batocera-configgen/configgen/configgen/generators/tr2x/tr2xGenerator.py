@@ -38,7 +38,7 @@ class TR2XGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F5", "restore_state": "KEY_F6" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         tr2xRomPath = rom.parent
         tr2xConfigPath = tr2xRomPath / "cfg" / "TR2X.json5"
         tr2xSourcePath = Path("/usr/bin/tr2x")

@@ -89,7 +89,7 @@ class Pcsx2Generator(Generator):
             wheel_type = "Virtual"
         return wheel_type
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         pcsx2Patches = _PCSX2_BIOS / "patches.zip"
 
         # Remove older config files if present

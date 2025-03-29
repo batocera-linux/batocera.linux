@@ -32,7 +32,7 @@ class OpenmsxGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "restore_state": "KEY_F6" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         share_dir = openMSX_Homedir / "share"
         source_settings = openMSX_Config / "settings.xml"
         settings_xml = share_dir / "settings.xml"

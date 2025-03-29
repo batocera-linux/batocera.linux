@@ -26,7 +26,7 @@ class RedreamGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         redream_exec = redreamConfig / "redream"
 
         mkdir_if_not_exists(redreamConfig)

@@ -57,7 +57,7 @@ class MameGenerator(Generator):
                       "restore_state": [ "KEY_LEFTSHIFT", "KEY_F7" ] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # Extract "<romfile.zip>"
         romBasename = rom.name
         romDirname  = rom.parent

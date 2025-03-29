@@ -55,7 +55,7 @@ class LibretroGenerator(Generator):
 
     # Main entry of the module
     # Configure retroarch and return a command
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # Fix for the removed MESS/MAMEVirtual cores
         if system.config.core in [ 'mess', 'mamevirtual' ]:
             system.config['core'] = 'mame'
@@ -116,7 +116,7 @@ class LibretroGenerator(Generator):
             if system.config.get_bool('forceNoBezel'):
                 bezel = None
 
-            libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend)
+            libretroConfig.writeLibretroConfig(self, retroconfig, system, playersControllers, metadata, esmetadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend)
             retroconfig.write()
 
             # duplicate config to mapping files while ra now split in 2 parts

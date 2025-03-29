@@ -25,7 +25,7 @@ class TheForceEngineGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": [ "KEY_LEFTALT", "KEY_F5" ], "restore_state": [ "KEY_LEFTALT", "KEY_F9" ] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         # Check if the directories exist, if not create them
         mkdir_if_not_exists(forceConfigDir)

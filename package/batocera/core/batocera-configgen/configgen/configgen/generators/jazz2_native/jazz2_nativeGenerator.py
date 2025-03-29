@@ -19,7 +19,7 @@ class Jazz2_NativeGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         dbfile = Path("/usr/share/jazz2/gamecontrollerdb.txt")
         write_sdl_controller_db(playersControllers, dbfile)
