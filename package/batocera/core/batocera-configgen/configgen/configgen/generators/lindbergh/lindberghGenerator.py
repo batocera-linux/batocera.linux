@@ -1,3 +1,16 @@
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 from __future__ import annotations
 
 import logging
@@ -111,18 +124,8 @@ class LindberghGenerator(Generator):
                 executable_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
                 file_path.chmod(executable_permissions)
                 _logger.debug("Made %s executable", exe_file)
-
-        # Run command
-        if system.config.get_bool("lindbergh_test"):
-            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
-        elif system.config.get_bool("lindbergh_zink"):
-            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-z"]
-        else:
-            commandArray: list[str | Path] = [str(romDir / "lindbergh")]
-
-        return Command.Command(
-            array=commandArray,
-            env={
+        
+        environment={
                 # Libraries
                 "LD_LIBRARY_PATH": f"/lib32:/lib32/extralibs:/lib:/usr/lib:{romDir}",
                 # Graphics
@@ -136,7 +139,21 @@ class LindberghGenerator(Generator):
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0",
             }
-        )
+        
+        if system.config.get_bool("lindbergh_zink"):
+            environment.update(
+                {
+                    "MESA_LOADER_DRIVER_OVERRIDE": "zink"
+                }
+            )
+
+        # Run command
+        if system.config.get_bool("lindbergh_test"):
+            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
+        else:
+            commandArray: list[str | Path] = [str(romDir / "lindbergh")]
+
+        return Command.Command(array=commandArray, env=environment)
 
     @staticmethod
     def extract_tar_xz(file_path: IO[bytes], extract_to: Path) -> None:
@@ -300,7 +317,7 @@ class LindberghGenerator(Generator):
             _logger.debug("Unable to retrieve IP address.")
 
         # Primeval Hunt mode (touch screen)
-        if "primeval" in romName.lower() or "primehunt" in romName.lower():
+        if "primeva" in romName.lower() or "primehunt" in romName.lower():
             self.setConf(conf, "PRIMEVAL_HUNT_MODE", system.config.get("lindbergh_hunt", "1"))
 
         ## Guns
