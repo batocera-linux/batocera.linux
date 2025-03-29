@@ -281,7 +281,7 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "EMULATE_CARDREADER", 0)
 
         # House of the Dead 4 - CPU speed
-        cpu_speed = self.get_cpu_speed()
+        cpu_speed = self.get_cpu_min_speed()
         if cpu_speed is not None:
             _logger.debug("Current CPU Speed: %.2f GHz", cpu_speed)
             if "hotd" in romName.lower() and system.config.get_bool("lindbergh_speed"):
@@ -876,29 +876,30 @@ class LindberghGenerator(Generator):
         # copy the config file in the rom dir, where it is used
         shutil.copy2(LINDBERGH_CONFIG_FILE, romDir / "lindbergh.conf")
 
-    def get_cpu_speed(self):
+    def get_cpu_min_speed(self):
         try:
-            # Run the dmidecode command to get processor information
+            # Run lscpu to get CPU frequency information
             result = subprocess.run(
-                ["dmidecode", "-t", "processor"],
+                ["lscpu"],
                 capture_output=True,
                 text=True,
                 check=True
             )
             output = result.stdout
 
-            # Find the "Current Speed" value as our base frequency
-            match = re.search(r"Current Speed:\s+(\d+)\s+MHz", output)
+            # Find the "CPU min MHz" value
+            match = re.search(r"CPU min MHz:\s+([\d.]+)", output)
             if match:
-                current_speed_mhz = int(match.group(1))
+                min_speed_mhz = float(match.group(1))
                 # Convert to GHz
-                return current_speed_mhz / 1000
+                _logger.debug(f"CPU min MHz is {min_speed_mhz}.")
+                return min_speed_mhz / 1000
 
-            _logger.debug("Current Speed information not found.")
+            _logger.debug("CPU min MHz information not found.")
             return None
 
         except subprocess.CalledProcessError as e:
-            _logger.debug("Error running dmidecode: %s", e)
+            _logger.debug("Error running lscpu: %s", e)
             return None
 
     def get_ip_address(self, destination: str = "1.1.1.1", port: int = 80) -> Any | None:
