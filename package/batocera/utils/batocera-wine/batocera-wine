@@ -76,7 +76,7 @@ get_setting() {
 find_wine_dir() {
     local WINE_VERSION="$1"
     # check if we're using a custom wine runner
-    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" && "$WINE_VERSION" != "wine-proton" ]]; then
         # now check if the folder exists
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "/userdata/system/wine/custom"
@@ -97,7 +97,7 @@ find_wine_dir() {
 
 update_wine_version() {
     local WINE_VERSION="$1"
-    if [[ "$WINE_VERSION" != "wine-tkg" ]]; then
+    if [[ "$WINE_VERSION" != "wine-tkg" && "$WINE_VERSION" != "wine-proton" ]]; then
         if [[ -e "/userdata/system/wine/custom/${WINE_VERSION}" ]]; then
             echo "$WINE_VERSION"
         else
@@ -896,8 +896,10 @@ init_wine() {
     # to help with the transition from previous runners.
     [[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
     
-    if [[ "${WINE_VERSION}" == "lutris" || "${WINE_VERSION}" == "proton" ]]; then
+    if [[ "${WINE_VERSION}" == "lutris" ]]; then
         WINE_VERSION="wine-tkg"
+    elif [[ "${WINE_VERSION}" == "proton" ]]; then
+        WINE_VERSION="wine-proton"
     fi
     echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
     
