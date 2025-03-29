@@ -170,9 +170,7 @@ def generateControllerConfig(
                 config[f'input_player{controller.player_number}_{jsvalue}_minus_axis'] = f'+{input.id}'
                 config[f'input_player{controller.player_number}_{jsvalue}_plus_axis'] = f'-{input.id}'
 
-    if not lightgun:
-        # dont touch to it when there are connected lightguns
-        config[f'input_player{controller.player_number}_mouse_index'] = mouseIndex
+    config[f'input_player{controller.player_number}_mouse_index'] = mouseIndex
     return config
 
 
