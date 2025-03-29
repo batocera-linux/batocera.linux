@@ -27,7 +27,7 @@ class PlayGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # Create necessary directories
         mkdir_if_not_exists(playConfig)
         mkdir_if_not_exists(playSaves)

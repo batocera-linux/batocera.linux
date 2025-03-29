@@ -31,7 +31,7 @@ class LexaloffleGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"], "menu": "KEY_ENTER", "reset": [ "KEY_LEFTCTRL", "KEY_R" ] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         if (system.name == "pico8"):
             BIN_PATH=PICO8_BIN_PATH
             CONTROLLERS=PICO8_CONTROLLERS

@@ -31,7 +31,7 @@ class AzaharGenerator(Generator):
         }
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         AzaharGenerator.writeAZAHARConfig(CONFIGS / "azahar" / "qt-config.ini", system, playersControllers)
 
         commandArray = ['/usr/bin/azahar', rom]

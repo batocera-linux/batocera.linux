@@ -12,7 +12,7 @@ _CONFIG_DIR: Final = CONFIGS / 'applewin'
 _CONFIG_FILE: Final = _CONFIG_DIR / 'config.txt'
 
 class AppleWinGenerator(Generator):
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_CONFIG_DIR)
 
         config = UnixSettings(_CONFIG_FILE, separator=' ')

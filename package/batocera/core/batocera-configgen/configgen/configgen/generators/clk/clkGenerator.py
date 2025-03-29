@@ -38,7 +38,7 @@ def openzip_file(file_path):
 
 class ClkGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         romzip = openzip_file(rom)
         commandArray = ["clksignal", romzip,  "--rompath=/userdata/bios/"]

@@ -27,7 +27,7 @@ class VPinballGenerator(Generator):
             "keys": { "exit": "KEY_F4", "coin": "KEY_5", "menu": "KEY_ESC", "pause": "KEY_ESC", "reset": "KEY_F3" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # files
         vpinballConfigPath     = CONFIGS / "vpinball"
         vpinballConfigFile     = vpinballConfigPath  / "VPinballX.ini"

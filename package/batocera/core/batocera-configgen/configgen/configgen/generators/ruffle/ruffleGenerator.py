@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class RuffleGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         commandArray = ["ruffle", rom]
         return Command.Command(
             array=commandArray)

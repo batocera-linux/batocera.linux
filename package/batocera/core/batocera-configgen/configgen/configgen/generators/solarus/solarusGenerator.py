@@ -27,7 +27,7 @@ class SolarusGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         # basis
         commandArray: list[str | Path] = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]

@@ -31,7 +31,7 @@ class CorsixTHGenerator(Generator):
                       "save_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_S"], "restore_state": ["KEY_LEFTALT", "KEY_LEFTSHIFT", "KEY_L"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # Create corsixth config directory if needed
         mkdir_if_not_exists(corsixthConfigPath)
 

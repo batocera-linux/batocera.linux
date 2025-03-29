@@ -23,7 +23,7 @@ class MupenGenerator(Generator):
             "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_P", "pause": "KEY_P" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         # Read the configuration file
         iniConfig = CaseSensitiveConfigParser(interpolation=None)

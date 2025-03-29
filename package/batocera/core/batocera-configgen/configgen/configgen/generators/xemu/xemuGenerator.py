@@ -20,7 +20,7 @@ class XemuGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         xemuConfig.writeIniFile(system, rom, playersControllers, gameResolution)
 
         # copy the hdd if it doesn't exist

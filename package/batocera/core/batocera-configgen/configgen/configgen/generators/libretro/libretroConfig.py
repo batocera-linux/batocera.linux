@@ -119,6 +119,7 @@ def writeLibretroConfig(
     system: Emulator,
     controllers: Controllers,
     metadata: Mapping[str, str],
+    esmetadata: Mapping[str, str],
     guns: Guns,
     wheels: DeviceInfoMapping,
     rom: Path,
@@ -128,7 +129,7 @@ def writeLibretroConfig(
     gfxBackend: str,
     /,
 ) -> None:
-    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(generator, system, controllers, metadata, esmetadata, guns, wheels, rom, bezel, shaderBezel, gameResolution, gfxBackend))
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(
@@ -136,6 +137,7 @@ def createLibretroConfig(
     system: Emulator,
     controllers: Controllers,
     metadata: Mapping[str, str],
+    esmetadata: Mapping[str, str],
     guns: Guns,
     wheels: DeviceInfoMapping,
     rom: Path,
@@ -806,10 +808,10 @@ def createLibretroConfig(
 
     # Bezel option
     try:
-        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+        writeBezelConfig(generator, bezel, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns), esmetadata)
     except Exception as e:
         # error with bezels, disabling them
-        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+        writeBezelConfig(generator, None, shaderBezel, retroarchConfig, rom, gameResolution, system, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns), esmetadata)
         _logger.error("Error with bezel %s: %s", bezel, e, exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
@@ -988,6 +990,7 @@ def writeBezelConfig(
     system: Emulator,
     gunsBordersSize: str | None,
     gunsBordersRatio: str | None,
+    esmetadata: Mapping[str, str],
     /,
 ) -> None:
     # disable the overlay
@@ -1127,6 +1130,7 @@ def writeBezelConfig(
     bezel_stretch = system.config.get_bool('bezel_stretch')
 
     tattoo_output_png = Path("/tmp/bezel_tattooed.png")
+    qrcode_output_png = Path("/tmp/bezel_qrcode.png")
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -1141,15 +1145,16 @@ def writeBezelConfig(
         else:
             # The logic to cache system bezels is not always true anymore now that we have tattoos
             output_png_file = Path("/tmp") / f"{overlay_png_file.stem}_adapted.png"
-            if system.config.get('bezel.tattoo', '0') != "0":
+            if system.config.get('bezel.tattoo', '0') != "0" or system.config.get('bezel.qrcode', '0') != "0":
                 create_new_bezel_file = True
             else:
-                if not tattoo_output_png.exists() and output_png_file.exists():
+                if not tattoo_output_png.exists() and not qrcode_output_png.exists() and output_png_file.exists():
                     create_new_bezel_file = False
                     _logger.debug("Using cached bezel file %s", output_png_file)
                 else:
                     try:
                         tattoo_output_png.unlink()
+                        qrcode_output_png.unlink()
                     except Exception:
                         pass
                     create_new_bezel_file = True
@@ -1204,6 +1209,10 @@ def writeBezelConfig(
         if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
+        if system.config.get('bezel.qrcode', '0') != "0":
+            if "cheevosId" in esmetadata and esmetadata["cheevosId"] != "0":
+                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, esmetadata["cheevosId"], system)
+                overlay_png_file = qrcode_output_png
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
@@ -1215,6 +1224,10 @@ def writeBezelConfig(
         if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
+        if system.config.get('bezel.qrcode', '0') != "0":
+            if "cheevosId" in esmetadata and esmetadata["cheevosId"] != "0":
+                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, esmetadata["cheevosId"], system)
+                overlay_png_file = qrcode_output_png
 
     if gunsBordersSize is not None:
         _logger.debug("Draw gun borders")

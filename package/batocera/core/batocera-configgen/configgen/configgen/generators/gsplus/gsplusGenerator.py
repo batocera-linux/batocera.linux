@@ -22,7 +22,7 @@ class GSplusGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F4", "pause": "KEY_F4" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_CONFIGDIR)
 
         config = UnixSettings(_CONFIGFILE, separator=' ')

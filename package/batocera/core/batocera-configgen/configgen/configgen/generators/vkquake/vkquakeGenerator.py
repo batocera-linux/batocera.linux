@@ -20,7 +20,7 @@ class VKQuakeGenerator(Generator):
             "keys": { "exit": "KEY_F10", "save_state": "KEY_F6", "restore_state": "KEY_F9" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         romName = rom.name
 
         commandArray = ['/usr/bin/vkquake', '-basedir', str(vkquakeRomPath)]

@@ -29,7 +29,7 @@ class HatariGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         model_mapping = {
             "520st_auto":       { "machine": "st",      "tos": "auto" },
             "520st_100":        { "machine": "st",      "tos": "100"  },

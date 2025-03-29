@@ -95,7 +95,7 @@ class Xash3dFwgsGenerator(Generator):
             "keys": { "exit": "KEY_F10", "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         game = rom.stem
 
         arch_suffix = _get_arch_suffix()

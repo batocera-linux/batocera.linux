@@ -29,7 +29,7 @@ class Rpcs3Generator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
 

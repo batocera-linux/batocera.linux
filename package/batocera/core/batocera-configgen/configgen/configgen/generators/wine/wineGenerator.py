@@ -22,7 +22,7 @@ class WineGenerator(Generator):
             "keys": { "exit": "/usr/bin/batocera-wine windows stop" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         if system.name == "windows_installers":
             commandArray = ["batocera-wine", "windows", "install", rom]
             return Command.Command(array=commandArray)

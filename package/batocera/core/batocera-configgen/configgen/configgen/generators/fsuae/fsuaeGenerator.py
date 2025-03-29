@@ -55,7 +55,7 @@ class FsuaeGenerator(Generator):
             return rom.stem
         return rom.stem[:-1]
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
         commandArray = ['/usr/bin/fs-uae', "--fullscreen",

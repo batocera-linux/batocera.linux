@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, TypedDict
 
 from PIL import Image, ImageOps
+import qrcode
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
 from ..exceptions import BatoceraException
@@ -158,6 +159,34 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
         else:
             imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
         imgout.save(output_png, mode="RGBA", format="PNG")
+
+def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: Emulator):
+    url = f"https://retroachievements.org/game/{code}"
+
+    bxsize = 3
+    bdsize = 2
+    qr = qrcode.QRCode(version=1, box_size=bxsize, border=bdsize)
+    qr.add_data(url)
+    qr.make()
+    qrimg = qr.make_image(back_color = (120, 120, 120))
+
+    x = 29 * bxsize + bdsize * bxsize * 2
+
+    w,h = fast_image_size(input_png)
+    newBezel = Image.open(input_png)
+    qrimg    = qrimg.convert("RGBA")
+    newBezel = newBezel.convert("RGBA")
+
+    corner = system.config.get('bezel.qrcode_corner', 'NE')
+    if (corner.upper() == 'NW'):
+        newBezel.paste(qrimg, (0, 0, x, x))
+    elif (corner.upper() == 'SE'):
+        newBezel.paste(qrimg, (w-x, h-x, w, h))
+    elif (corner.upper() == 'SW'):
+        newBezel.paste(qrimg, (0, h-x, x, h))
+    else: # default = NE
+        newBezel.paste(qrimg, (w-x, 0, w, x))
+    newBezel.save(output_png)
 
 def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
     if system.config['bezel.tattoo'] == 'system':

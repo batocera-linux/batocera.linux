@@ -25,7 +25,7 @@ class MelonDSGenerator(Generator):
             "keys": {"exit": ["KEY_LEFTALT", "KEY_F4"]}
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # Verify paths
         mkdir_if_not_exists(_MELONDS_SAVES)
         mkdir_if_not_exists(_MELONDS_CHEATS)

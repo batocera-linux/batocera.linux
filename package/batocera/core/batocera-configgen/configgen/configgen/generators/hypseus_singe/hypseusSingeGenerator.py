@@ -77,7 +77,7 @@ class HypseusSingeGenerator(Generator):
         return width, height
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         # copy input.ini file templates
         hypseusConfigSource = _SHARE_DIR / "hypinput_gamepad.ini"
 

@@ -42,7 +42,7 @@ class TR1XGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F5", "restore_state": "KEY_F6" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         tr1xRomPath = rom.parent
         tr1xSourcePath = Path("/usr/bin/tr1x")
         musicDir = tr1xRomPath / "music"
