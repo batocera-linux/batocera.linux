@@ -76,16 +76,16 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
 
     target_system = 'arcade' if system in _ARCADE_SYSTEMS else system
 
-    for system_element in root.iterfind('./system[@name]'):
-        if target_system not in system_element.attrib['name'].split(','):
+    for system_element in root.iterfind('./system[@id]'):
+        if target_system not in system_element.attrib['id'].split(','):
             continue
 
         # search the game named default
-        if (default_element := system_element.find('./game[@name="default"]')) is not None:
+        if (default_element := system_element.find('./game[@id="default"]')) is not None:
             _update_metadata_from_element(metadata, default_element, extra_log_text=' (system level)')
 
-        for game_element in system_element.iterfind('./game[@name!="default"]'):
-            if game_element.attrib['name'] not in game:
+        for game_element in system_element.iterfind('./game[@id!="default"]'):
+            if game_element.attrib['id'] not in game:
                 continue
 
             _update_metadata_from_element(metadata, game_element)
