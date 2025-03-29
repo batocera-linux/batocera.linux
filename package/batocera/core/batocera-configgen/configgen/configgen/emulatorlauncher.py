@@ -30,6 +30,7 @@ from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
+from .utils.virtualmouse import generateVirtualMouse, destroyVirtualMouse
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -84,6 +85,9 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
         mouseChanged = False
         exitCode = 0
         try:
+            #generate a virtual mouse for supported emulators
+            virtualMouseProc = generateVirtualMouse(system.config['emulator'])
+
             # lower the resolution if mode is auto
             newsystemMode = systemMode  # newsystemMode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
             if system.config.video_mode == "" or system.config.video_mode == "default":
@@ -180,6 +184,12 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                     videoMode.changeMouse(False)
                 except Exception:
                     pass  # don't fail
+
+            if virtualMouseProc:
+                try:
+                    destroyVirtualMouse(virtualMouseProc)
+                except Exception:
+                    pass # don't fail
 
     # exit
     return exitCode
