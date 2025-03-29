@@ -1357,6 +1357,16 @@ msgctxt "game_options"
 msgid "3D ENGINE"
 msgstr "3D 引擎"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (bottom side)"
+msgstr ""
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (right side)"
+msgstr ""
+
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "3MB"
@@ -3235,6 +3245,11 @@ msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
 msgstr "Atari XE Game System 卡带"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Attack"
+msgstr ""
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "August"
@@ -3538,6 +3553,11 @@ msgstr "光晕"
 msgctxt "game_options"
 msgid "BOBBA FETT FIX"
 msgstr "波巴·费特修正"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "BOOST RENDER RES"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -5430,6 +5450,16 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "循环正时检查"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle next"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle previous"
+msgstr ""
+
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -5912,7 +5942,7 @@ msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
 msgstr "禁用以访问系统的设置，如时间和语言。"
 
-#. TRANSLATION: bigpemu, corsixth, duckstation, flycast, libretro/beetle-saturn, ...
+#. TRANSLATION: bigpemu, bstone, corsixth, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "禁用"
@@ -5922,7 +5952,7 @@ msgctxt "game_options"
 msgid "Disabled (Beatle Interpreter)"
 msgstr "禁用（Beatle解释器）"
 
-#. TRANSLATION: cemu, cgenius, corsixth, devilutionx, duckstation, ...
+#. TRANSLATION: bstone, cemu, cgenius, corsixth, devilutionx, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "禁用（默认）"
@@ -6308,7 +6338,7 @@ msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "启用时间拉伸"
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: bstone, model2emu, play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
 msgstr "启用宽屏"
@@ -6786,17 +6816,22 @@ msgctxt "game_options"
 msgid "Enable vertical sync to avoid tearing in some cases."
 msgstr "在某些情况下，启用垂直同步以避免撕裂。"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "Enable widescreen support for game rendering."
+msgstr ""
+
 #. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "Enable widescreen support."
 msgstr "启用宽屏支持。"
 
-#. TRANSLATION: bigpemu, cemu, cgenius, corsixth, devilutionx, ...
+#. TRANSLATION: bigpemu, bstone, cemu, cgenius, corsixth, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "启用"
 
-#. TRANSLATION: corsixth, duckstation, libretro/mame, libretro/swanstation, mame/pcsx2, ...
+#. TRANSLATION: bstone, corsixth, duckstation, libretro/mame, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "启用（默认）"
@@ -7508,7 +7543,7 @@ msgctxt "game_options"
 msgid "Fix screen tearing, but may drop frames."
 msgstr "修复屏幕撕裂。但可能会掉帧。"
 
-#. TRANSLATION: bigpemu, cemu, dxx-rebirth, iortcw, openbor/openbor7530, ...
+#. TRANSLATION: bigpemu, bstone, cemu, dxx-rebirth, iortcw, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "修复屏幕撕裂。"
@@ -7558,6 +7593,13 @@ msgstr "修复了多个控制器检测可能出现的错误。"
 msgctxt "game_options"
 msgid "Fixes flickering."
 msgstr "修复闪烁."
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 "
+"franchise for non Nvidia GPUs."
+msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -8723,9 +8765,9 @@ msgstr "水平"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid ""
-"House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+"House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
 "your processor."
-msgstr "《死亡之屋 4》速度修正。将游戏设置为您的处理器的 CPU 基准频率."
+msgstr ""
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -10329,10 +10371,40 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "菜单"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu N"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu Y"
+msgstr ""
+
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "返回菜单"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu down"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu enter"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu escape"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu up"
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -10484,7 +10556,7 @@ msgctxt "keys_files"
 msgid "Move back / down"
 msgstr "向后/向下移动"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
 msgstr "向后移动"
@@ -10509,7 +10581,7 @@ msgctxt "keys_files"
 msgid "Move camera up"
 msgstr "向上移动相机"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
 msgstr "向前移动"
@@ -10519,12 +10591,12 @@ msgctxt "keys_files"
 msgid "Move forward / up"
 msgstr "向前/向上移动"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move left"
 msgstr "向左移动"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move right"
 msgstr "向右移动"
@@ -10900,6 +10972,11 @@ msgstr "未启用许可证"
 msgctxt "game_options"
 msgid "No skipping"
 msgstr "不跳过"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "No touch screen (Default)"
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce, drastic, fallout1-ce, fallout2-ce, ...
 msgctxt "game_options"
@@ -11609,6 +11686,11 @@ msgstr "首选SPU螺纹"
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
 msgstr "演示模式"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "PRIMEVAL HUNT MODE"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -12731,7 +12813,7 @@ msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
 msgstr "震动包（自动）"
 
-#. TRANSLATION: catacomb.keys, quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, catacomb.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Run"
 msgstr "奔跑"
@@ -13205,6 +13287,11 @@ msgctxt "game_options"
 msgid "STRETCH TO FILL"
 msgstr "拉伸填充"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "STRETCH UI MENU"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRICT RENDERING MODE"
@@ -13532,6 +13619,11 @@ msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
 msgstr "通过MAME菜单设置系统范围的控制"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Set the Primeval Hunt mode (touch screen)."
+msgstr ""
+
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
 msgid "Set the color palette to use."
@@ -13757,6 +13849,11 @@ msgstr "分流8"
 msgctxt "game_options"
 msgid "Shunt 9"
 msgstr "分流9"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Side by side"
+msgstr ""
 
 #. TRANSLATION: dosbox, libretro/gambatte, libretro/o2em
 msgctxt "game_options"
@@ -14297,6 +14394,11 @@ msgctxt "game_options"
 msgid "Static Interpreter"
 msgstr "静态解释器"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Stats"
+msgstr ""
+
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Steering Wheel"
@@ -14327,12 +14429,12 @@ msgctxt "keys_files"
 msgid "Strafe Right"
 msgstr "向右闪避"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
 msgstr "攻击左边"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
 msgstr "攻击右边"
@@ -15289,6 +15391,11 @@ msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "使用方向盘"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "USE ZINK FOR RENDERING"
+msgstr ""
+
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid "USER DISK"
@@ -15510,6 +15617,11 @@ msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
 msgstr "用于2D层的高比例过滤器, 需要新的3D引擎."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Upscale rendering resolution to display size."
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "Upscale textures on 3D objects."
@@ -15519,6 +15631,11 @@ msgstr "放大3D物体上的纹理。"
 msgctxt "game_options"
 msgid "Uruguay"
 msgstr "乌拉圭"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Use"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -15847,7 +15964,7 @@ msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
 msgstr "可视化推动强度"
 
-#. TRANSLATION: bigpemu, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citra, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "垂直同步"
@@ -16324,6 +16441,16 @@ msgstr "放大以隐藏黑色边框。"
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "放大以隐藏黑色边框。每个游戏的边框不同。"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon in"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon out"
+msgstr ""
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -17129,6 +17256,12 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Hide the bezel"
 #~ msgstr "隐藏挡板"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+#~ "your processor."
+#~ msgstr "《死亡之屋 4》速度修正。将游戏设置为您的处理器的 CPU 基准频率."
 
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"

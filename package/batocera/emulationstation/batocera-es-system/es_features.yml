@@ -13656,6 +13656,22 @@ lindbergh-loader:
       choices:
         "Off (Default)": 0
         "On":            1
+    lindbergh_boost:
+      group: GAME OPTIONS
+      prompt: BOOST RENDER RES
+      description: Upscale rendering resolution to display size.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_hunt:
+      group: GAME OPTIONS
+      prompt: PRIMEVAL HUNT MODE
+      description: Set the Primeval Hunt mode (touch screen).
+      choices:
+        "No touch screen (Default)": 1
+        "Side by side":              2
+        "3DS mode (right side)":     3
+        "3DS mode (bottom side)":    4
     lindbergh_card:
       group: GAME OPTIONS
       prompt: CARD READER
@@ -13666,7 +13682,7 @@ lindbergh-loader:
     lindbergh_speed:
       group: GAME OPTIONS
       prompt: CPU SPEED
-      description: House of the Dead 4 speed fix. Sets the game to the CPU base frequency of your processor.
+      description: House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of your processor.
       choices:
         "Off (Default)": 0
         "On":            1
@@ -13681,6 +13697,13 @@ lindbergh-loader:
       group: ADVANCED OPTIONS
       prompt: RUN TEST MODE
       description: Run the game in test mode to configure certain game options.
+      choices:
+        "Off (Default)": 0
+        "On":            1
+    lindbergh_zink:
+      group: ADVANCED OPTIONS
+      prompt: USE ZINK FOR RENDERING
+      description: Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 franchise for non Nvidia GPUs.
       choices:
         "Off (Default)": 0
         "On":            1
@@ -13734,3 +13757,26 @@ tr1x:
 tr2x:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+
+bstone:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    bstone_widescreen:
+      prompt: ENABLE WIDESCREEN
+      description: Enable widescreen support for game rendering.
+      choices:
+        "Disabled (Default)": 0
+        "Enabled":            1
+    bstone_vsync:
+      prompt: VSYNC
+      description: Fix screen tearing.
+      choices:
+        "Disabled":          0
+        "Enabled (Default)": 1
+    bstone_ui_stretched:
+      prompt: STRETCH UI MENU
+      decription: Stretch the menu & game to the full width of the display. Enable widescreen also for better in game rendering.
+      choices:
+        "Disabled (Default)": 0
+        "Enabled":            1

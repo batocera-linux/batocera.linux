@@ -57,7 +57,7 @@ class LindberghGenerator(Generator):
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
         "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
         "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True, "CPU_FREQ_GHZ":              True,
-        "OR2_IP":                    True, "PLAYER_1_COIN":             True
+        "OR2_IP":                    True, "PLAYER_1_COIN":             True, "BOOST_RENDER_RES":          True,
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
@@ -115,6 +115,8 @@ class LindberghGenerator(Generator):
         # Run command
         if system.config.get_bool("lindbergh_test"):
             commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
+        elif system.config.get_bool("lindbergh_zink"):
+            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "--zink"]
         else:
             commandArray: list[str | Path] = [str(romDir / "lindbergh")]
 
@@ -263,6 +265,7 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "DEBUG_MSGS",                system.config.get_bool("lindbergh_debug", return_values=(1, 0)))
         self.setConf(conf, "HUMMER_FLICKER_FIX",        system.config.get_bool("lindbergh_hummer", return_values=(1, 0)))
         self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", system.config.get_bool("lindbergh_lens", return_values=(1, 0)))
+        self.setConf(conf, "BOOST_RENDER_RES",          system.config.get_bool("lindbergh_boost", return_values=(1, 0)))
         self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", 1 if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else 0)
         self.setConf(conf, "SRAM_PATH",   f"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}")
         self.setConf(conf, "EEPROM_PATH", f"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}")
@@ -278,7 +281,7 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "EMULATE_CARDREADER", 0)
 
         # House of the Dead 4 - CPU speed
-        cpu_speed = self.get_cpu_speed()
+        cpu_speed = self.get_cpu_min_speed()
         if cpu_speed is not None:
             _logger.debug("Current CPU Speed: %.2f GHz", cpu_speed)
             if "hotd" in romName.lower() and system.config.get_bool("lindbergh_speed"):
@@ -295,6 +298,10 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, "OR2_IP", ip)
         else:
             _logger.debug("Unable to retrieve IP address.")
+
+        # Primeval Hunt mode (touch screen)
+        if "primeval" in romName.lower() or "primehunt" in romName.lower():
+            self.setConf(conf, "PRIMEVAL_HUNT_MODE", system.config.get("lindbergh_hunt", "1"))
 
         ## Guns
         if system.config.use_guns and guns:
@@ -821,23 +828,18 @@ class LindberghGenerator(Generator):
                 shutil.copy2("/lib32/extralibs/libCg.so.harley", destCg)
                 _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
+                shutil.copy2("/lib32/extralibs/libCgGL.so.harley", destCgGL)
                 _logger.debug("Copied: %s", destCgGL)
 
-        if "stage 4" in romName.lower() or "initiad4" in romName.lower():
-            destination = Path(romDir) / "libCgGL.so"
-            if not destination.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destination)
-                _logger.debug("Copied: %s", destination)
-
-        if "tennis" in romName.lower():
+        # fixes shadows and textures
+        if any(keyword in romName.lower() for keyword in ("initiad", "letsgoju", "tennis")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
             if not destCg.exists():
-                shutil.copy2("/lib32/extralibs/libCg.so.tennis", destCg)
+                shutil.copy2("/lib32/extralibs/libCg.so.other", destCg)
                 _logger.debug("Copied: %s", destCg)
             if not destCgGL.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.tennis", destCgGL)
+                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
                 _logger.debug("Copied: %s", destCgGL)
 
         # remove any legacy libsegaapi.so
@@ -874,29 +876,30 @@ class LindberghGenerator(Generator):
         # copy the config file in the rom dir, where it is used
         shutil.copy2(LINDBERGH_CONFIG_FILE, romDir / "lindbergh.conf")
 
-    def get_cpu_speed(self):
+    def get_cpu_min_speed(self):
         try:
-            # Run the dmidecode command to get processor information
+            # Run lscpu to get CPU frequency information
             result = subprocess.run(
-                ["dmidecode", "-t", "processor"],
+                ["lscpu"],
                 capture_output=True,
                 text=True,
                 check=True
             )
             output = result.stdout
 
-            # Find the "Current Speed" value as our base frequency
-            match = re.search(r"Current Speed:\s+(\d+)\s+MHz", output)
+            # Find the "CPU min MHz" value
+            match = re.search(r"CPU min MHz:\s+([\d.]+)", output)
             if match:
-                current_speed_mhz = int(match.group(1))
+                min_speed_mhz = float(match.group(1))
                 # Convert to GHz
-                return current_speed_mhz / 1000
+                _logger.debug(f"CPU min MHz is {min_speed_mhz}.")
+                return min_speed_mhz / 1000
 
-            _logger.debug("Current Speed information not found.")
+            _logger.debug("CPU min MHz information not found.")
             return None
 
         except subprocess.CalledProcessError as e:
-            _logger.debug("Error running dmidecode: %s", e)
+            _logger.debug("Error running lscpu: %s", e)
             return None
 
     def get_ip_address(self, destination: str = "1.1.1.1", port: int = 80) -> Any | None:

@@ -1140,6 +1140,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
     # CatacombGL
 	select BR2_PACKAGE_CATACOMBGL    if BR2_x86_64
 
+	# Blake Stone
+	select BR2_PACKAGE_BSTONE    # ALL
+
 	help
 	  Ports
 

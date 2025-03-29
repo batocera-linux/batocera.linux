@@ -1353,6 +1353,16 @@ msgctxt "game_options"
 msgid "3D ENGINE"
 msgstr "3D ENGINE"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (bottom side)"
+msgstr ""
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (right side)"
+msgstr ""
+
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "3MB"
@@ -3245,6 +3255,11 @@ msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
 msgstr "Kazety pro herní systém Atari XE"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Attack"
+msgstr ""
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "August"
@@ -3552,6 +3567,11 @@ msgstr "BLOOM"
 msgctxt "game_options"
 msgid "BOBBA FETT FIX"
 msgstr "BOBBA FETT FIX"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "BOOST RENDER RES"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -5490,6 +5510,16 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "Kontrola Načasování Cyklu"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle next"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle previous"
+msgstr ""
+
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -5973,7 +6003,7 @@ msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
 msgstr "Zakázat přístup k nastavení systému, jako je čas a jazyk."
 
-#. TRANSLATION: bigpemu, corsixth, duckstation, flycast, libretro/beetle-saturn, ...
+#. TRANSLATION: bigpemu, bstone, corsixth, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Zakázáno"
@@ -5983,7 +6013,7 @@ msgctxt "game_options"
 msgid "Disabled (Beatle Interpreter)"
 msgstr "Zakázaný (Beatle Tlumočník)"
 
-#. TRANSLATION: cemu, cgenius, corsixth, devilutionx, duckstation, ...
+#. TRANSLATION: bstone, cemu, cgenius, corsixth, devilutionx, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Zakázáno (Výchozí)"
@@ -6383,7 +6413,7 @@ msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "UMOŽNIT ČASOVÉ PROTAŽENÍ"
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: bstone, model2emu, play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
 msgstr "POVOLIT ŠIROKOÚHLOU OBRAZOVKU"
@@ -6891,17 +6921,22 @@ msgid "Enable vertical sync to avoid tearing in some cases."
 msgstr ""
 "Povoluje verti. synchronizaci, aby se v některých případech zabránilo trhání."
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "Enable widescreen support for game rendering."
+msgstr ""
+
 #. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "Enable widescreen support."
 msgstr "Povolení podpory širokoúhlého zobrazení."
 
-#. TRANSLATION: bigpemu, cemu, cgenius, corsixth, devilutionx, ...
+#. TRANSLATION: bigpemu, bstone, cemu, cgenius, corsixth, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Povoleno"
 
-#. TRANSLATION: corsixth, duckstation, libretro/mame, libretro/swanstation, mame/pcsx2, ...
+#. TRANSLATION: bstone, corsixth, duckstation, libretro/mame, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Povoleno (Výchozí)"
@@ -7648,7 +7683,7 @@ msgctxt "game_options"
 msgid "Fix screen tearing, but may drop frames."
 msgstr "Oprava trhání obrazovky, ale může dojít k poklesu snímků."
 
-#. TRANSLATION: bigpemu, cemu, dxx-rebirth, iortcw, openbor/openbor7530, ...
+#. TRANSLATION: bigpemu, bstone, cemu, dxx-rebirth, iortcw, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "Oprava trhání obrazovky."
@@ -7702,6 +7737,13 @@ msgstr "Opravuje možnou chybu při detekci více ovladačů."
 msgctxt "game_options"
 msgid "Fixes flickering."
 msgstr "Opravuje blikání."
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 "
+"franchise for non Nvidia GPUs."
+msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -8882,11 +8924,9 @@ msgstr "Horizontální"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid ""
-"House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+"House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
 "your processor."
 msgstr ""
-"House of the Dead 4 oprava rychlosti. Nastaví hru na základní frekvenci "
-"procesoru."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -10521,10 +10561,40 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "Menu"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu N"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu Y"
+msgstr ""
+
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "Menu zpět"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu down"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu enter"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu escape"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu up"
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -10676,7 +10746,7 @@ msgctxt "keys_files"
 msgid "Move back / down"
 msgstr "Pohyb zpět / dolů"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
 msgstr "Pohyb zpět"
@@ -10701,7 +10771,7 @@ msgctxt "keys_files"
 msgid "Move camera up"
 msgstr "Posunutí kamery nahoru"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
 msgstr "Pohyb vpřed"
@@ -10711,12 +10781,12 @@ msgctxt "keys_files"
 msgid "Move forward / up"
 msgstr "Pohyb vpřed / nahoru"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move left"
 msgstr "Pohyb vlevo"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move right"
 msgstr "Pohyb vpravo"
@@ -11098,6 +11168,11 @@ msgstr "Nejsou povoleny žádné licence"
 msgctxt "game_options"
 msgid "No skipping"
 msgstr "Žádné přeskakování"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "No touch screen (Default)"
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce, drastic, fallout1-ce, fallout2-ce, ...
 msgctxt "game_options"
@@ -11817,6 +11892,11 @@ msgstr "PREFEROVANÁ VLÁKNA SPU"
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
 msgstr "REŽIM PREZENTACE"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "PRIMEVAL HUNT MODE"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -12961,7 +13041,7 @@ msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
 msgstr "Vibrační Pak (automaticky)"
 
-#. TRANSLATION: catacomb.keys, quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, catacomb.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Run"
 msgstr "Spustit"
@@ -13436,6 +13516,11 @@ msgctxt "game_options"
 msgid "STRETCH TO FILL"
 msgstr "ROZTAŽENÍ K VYPLNĚNÍ"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "STRETCH UI MENU"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRICT RENDERING MODE"
@@ -13778,6 +13863,11 @@ msgid "Set system-wide controls via MAME menu"
 msgstr ""
 "Nastavení ovládacích prvků pro celý systém prostřednictvím nabídky MAME"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Set the Primeval Hunt mode (touch screen)."
+msgstr ""
+
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
 msgid "Set the color palette to use."
@@ -14008,6 +14098,11 @@ msgstr "Bočník 8"
 msgctxt "game_options"
 msgid "Shunt 9"
 msgstr "Bočník 9"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Side by side"
+msgstr ""
 
 #. TRANSLATION: dosbox, libretro/gambatte, libretro/o2em
 msgctxt "game_options"
@@ -14556,6 +14651,11 @@ msgctxt "game_options"
 msgid "Static Interpreter"
 msgstr "Statický Překladač"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Stats"
+msgstr ""
+
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Steering Wheel"
@@ -14588,12 +14688,12 @@ msgctxt "keys_files"
 msgid "Strafe Right"
 msgstr "Útok vpravo"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
 msgstr "Útok vlevo"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
 msgstr "Útok vpravo"
@@ -15571,6 +15671,11 @@ msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "POUŽITÍ KOL"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "USE ZINK FOR RENDERING"
+msgstr ""
+
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid "USER DISK"
@@ -15794,6 +15899,11 @@ msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
 msgstr "Upscale filtr použitý pro 2D vrstvy. Vyžaduje nový 3D engine."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Upscale rendering resolution to display size."
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "Upscale textures on 3D objects."
@@ -15803,6 +15913,11 @@ msgstr "Vylepší rozlišení textur na 3D objektech."
 msgctxt "game_options"
 msgid "Uruguay"
 msgstr "Uruguay"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Use"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -16153,7 +16268,7 @@ msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
 msgstr "Síla vizuálního šťouchnutí"
 
-#. TRANSLATION: bigpemu, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citra, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -16636,6 +16751,16 @@ msgstr "Přiblíží a skryje černé okraje."
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "Přiblíží a skryje černé okraje. Ohraničení se liší podle hry."
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon in"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon out"
+msgstr ""
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -18021,6 +18146,14 @@ msgstr "žlutá/modrá"
 #~ msgctxt "game_options"
 #~ msgid "Horizontal - GBAs on Bottom"
 #~ msgstr "Horizontální - GBA na spodní straně"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+#~ "your processor."
+#~ msgstr ""
+#~ "House of the Dead 4 oprava rychlosti. Nastaví hru na základní frekvenci "
+#~ "procesoru."
 
 #~ msgctxt "game_options"
 #~ msgid "How the emulator should sort transparent objects."

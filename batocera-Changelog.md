@@ -45,6 +45,8 @@
   AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
 - gun : option to hide the crosshair in ES
 - Azahar 3DS emulator: Version 2120.1
+- Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
+- Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
@@ -61,6 +63,7 @@
 - Batocera-wine: add saves directory and save files options
 - Libretro-virtualjaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
+- Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 ### Updated
 - Amiberry to v7.0.4
 - AppleWin to 8th of Feb build
@@ -104,7 +107,7 @@
 - Vice to 3.9
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
-- Xemu to v0.8.41
+- Xemu to v0.8.45
 - Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79

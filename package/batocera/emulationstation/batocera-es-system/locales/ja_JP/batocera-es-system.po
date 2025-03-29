@@ -1353,6 +1353,16 @@ msgctxt "game_options"
 msgid "3D ENGINE"
 msgstr "3D エンジン"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (bottom side)"
+msgstr ""
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (right side)"
+msgstr ""
+
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "3MB"
@@ -3243,6 +3253,11 @@ msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
 msgstr "Atari XE Game System カートリッジ"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Attack"
+msgstr ""
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "August"
@@ -3550,6 +3565,11 @@ msgstr "BLOOM"
 msgctxt "game_options"
 msgid "BOBBA FETT FIX"
 msgstr "BOBBA FETT 修正"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "BOOST RENDER RES"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -5470,6 +5490,16 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "サイクルタイミング確認"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle next"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle previous"
+msgstr ""
+
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -5952,7 +5982,7 @@ msgctxt "game_options"
 msgid "Disable to access the system's settings, like time and language."
 msgstr "時間や言語などの設定をスキップします"
 
-#. TRANSLATION: bigpemu, corsixth, duckstation, flycast, libretro/beetle-saturn, ...
+#. TRANSLATION: bigpemu, bstone, corsixth, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "使用しない"
@@ -5962,7 +5992,7 @@ msgctxt "game_options"
 msgid "Disabled (Beatle Interpreter)"
 msgstr "無効 (Beatle インタープリター)"
 
-#. TRANSLATION: cemu, cgenius, corsixth, devilutionx, duckstation, ...
+#. TRANSLATION: bstone, cemu, cgenius, corsixth, devilutionx, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "無効（標準）"
@@ -6358,7 +6388,7 @@ msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "タイムストレッチを有効"
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: bstone, model2emu, play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
 msgstr "ワイドスクリーン 有効"
@@ -6859,17 +6889,22 @@ msgctxt "game_options"
 msgid "Enable vertical sync to avoid tearing in some cases."
 msgstr "場合によっては画面ずれ回避のために、垂直同期を有効にします"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "Enable widescreen support for game rendering."
+msgstr ""
+
 #. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "Enable widescreen support."
 msgstr "ワイドスクリーンのサポートを有効にします"
 
-#. TRANSLATION: bigpemu, cemu, cgenius, corsixth, devilutionx, ...
+#. TRANSLATION: bigpemu, bstone, cemu, cgenius, corsixth, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "使用（有効）"
 
-#. TRANSLATION: corsixth, duckstation, libretro/mame, libretro/swanstation, mame/pcsx2, ...
+#. TRANSLATION: bstone, corsixth, duckstation, libretro/mame, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "使用する (標準)"
@@ -7606,7 +7641,7 @@ msgctxt "game_options"
 msgid "Fix screen tearing, but may drop frames."
 msgstr "画面のずれを修正しますが、フレームドロップする可能性があります"
 
-#. TRANSLATION: bigpemu, cemu, dxx-rebirth, iortcw, openbor/openbor7530, ...
+#. TRANSLATION: bigpemu, bstone, cemu, dxx-rebirth, iortcw, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "画面のずれを修正します"
@@ -7662,6 +7697,13 @@ msgstr "コントローラー検出で発生する可能性のあるバグを修
 msgctxt "game_options"
 msgid "Fixes flickering."
 msgstr "ちらつきを修正"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 "
+"franchise for non Nvidia GPUs."
+msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -8839,11 +8881,9 @@ msgstr "横表示"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid ""
-"House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+"House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
 "your processor."
 msgstr ""
-"House of the Dead 4のスピードを修正します\n"
-"(ゲームをプロセッサのCPU基本周波数に設定)"
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -10467,10 +10507,40 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "メニュー"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu N"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu Y"
+msgstr ""
+
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "メニューに戻る"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu down"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu enter"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu escape"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu up"
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -10622,7 +10692,7 @@ msgctxt "keys_files"
 msgid "Move back / down"
 msgstr "後退/下に移動"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
 msgstr "後退"
@@ -10647,7 +10717,7 @@ msgctxt "keys_files"
 msgid "Move camera up"
 msgstr "カメラを上に移動"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
 msgstr "前進"
@@ -10657,12 +10727,12 @@ msgctxt "keys_files"
 msgid "Move forward / up"
 msgstr "前進/上に移動"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move left"
 msgstr "左移動"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move right"
 msgstr "右移動"
@@ -11041,6 +11111,11 @@ msgstr "有効にしない"
 msgctxt "game_options"
 msgid "No skipping"
 msgstr "スキップなし"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "No touch screen (Default)"
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce, drastic, fallout1-ce, fallout2-ce, ...
 msgctxt "game_options"
@@ -11757,6 +11832,11 @@ msgstr "推奨SPUスレッド"
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
 msgstr "表示モード"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "PRIMEVAL HUNT MODE"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -12890,7 +12970,7 @@ msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
 msgstr "振動パック (自動)"
 
-#. TRANSLATION: catacomb.keys, quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, catacomb.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Run"
 msgstr "走る"
@@ -13364,6 +13444,11 @@ msgctxt "game_options"
 msgid "STRETCH TO FILL"
 msgstr "画面全体に引き伸ばす"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "STRETCH UI MENU"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRICT RENDERING MODE"
@@ -13697,6 +13782,11 @@ msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
 msgstr "MAMEメニューからシステム設定の変更を可能にします"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Set the Primeval Hunt mode (touch screen)."
+msgstr ""
+
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
 msgid "Set the color palette to use."
@@ -13924,6 +14014,11 @@ msgstr "変更 8"
 msgctxt "game_options"
 msgid "Shunt 9"
 msgstr "変更 9"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Side by side"
+msgstr ""
 
 #. TRANSLATION: dosbox, libretro/gambatte, libretro/o2em
 msgctxt "game_options"
@@ -14469,6 +14564,11 @@ msgctxt "game_options"
 msgid "Static Interpreter"
 msgstr "スタティック インタープリタ"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Stats"
+msgstr ""
+
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Steering Wheel"
@@ -14501,12 +14601,12 @@ msgctxt "keys_files"
 msgid "Strafe Right"
 msgstr "機銃掃射 右"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
 msgstr "機銃掃射 左"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
 msgstr "機銃掃射 右"
@@ -15476,6 +15576,11 @@ msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "ホイール(ハンドル)を使用"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "USE ZINK FOR RENDERING"
+msgstr ""
+
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid "USER DISK"
@@ -15697,6 +15802,11 @@ msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
 msgstr "2D レイヤーに使用される高級フィルタ。新しい 3D エンジンが必要"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Upscale rendering resolution to display size."
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "Upscale textures on 3D objects."
@@ -15706,6 +15816,11 @@ msgstr "3Dオブジェクトのテクスチャをアップスケールします"
 msgctxt "game_options"
 msgid "Uruguay"
 msgstr "ウルグアイ"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Use"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -16048,7 +16163,7 @@ msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
 msgstr "視覚的なナッジの強さ"
 
-#. TRANSLATION: bigpemu, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citra, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC(垂直同期)有効"
@@ -16530,6 +16645,16 @@ msgstr "拡大して黒い境界線を非表示にします"
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "拡大して黒い境界線を隠します（境界線はゲームごとに異なります）"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon in"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon out"
+msgstr ""
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -17100,6 +17225,14 @@ msgstr "黄/青"
 #~ msgctxt "keys_files"
 #~ msgid "Graphics filtering on/off"
 #~ msgstr "グラフィックフィルタリングのオン/オフ"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+#~ "your processor."
+#~ msgstr ""
+#~ "House of the Dead 4のスピードを修正します\n"
+#~ "(ゲームをプロセッサのCPU基本周波数に設定)"
 
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"

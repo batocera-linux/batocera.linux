@@ -412,6 +412,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/wine/wine-x86/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/wine/wine-tkg/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/wine/wine-mono/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/wine/wine-proton/Config.in"
   endmenu
 
   menu "ports"
@@ -457,6 +458,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/vkquake3/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr1x/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr2x/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/bstone/Config.in"
   endmenu
 
   menu "dhewm3"

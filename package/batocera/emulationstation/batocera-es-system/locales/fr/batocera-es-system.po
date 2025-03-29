@@ -1353,6 +1353,16 @@ msgctxt "game_options"
 msgid "3D ENGINE"
 msgstr "MOTEUR 3D"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (bottom side)"
+msgstr ""
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "3DS mode (right side)"
+msgstr ""
+
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
 msgid "3MB"
@@ -3257,6 +3267,11 @@ msgctxt "game_options"
 msgid "Atari XE Game System cartridges"
 msgstr "Cartouches Atari XE Game System"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Attack"
+msgstr ""
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "August"
@@ -3567,6 +3582,11 @@ msgstr "FLORAISON"
 msgctxt "game_options"
 msgid "BOBBA FETT FIX"
 msgstr "PATCH BOBBA FETT"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "BOOST RENDER RES"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -5522,6 +5542,16 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "Vérification de la synchronisation du cycle"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle next"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle previous"
+msgstr ""
+
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -6012,7 +6042,7 @@ msgstr ""
 "Désactiver pour accéder aux paramètres du système, comme l'heure et la "
 "langue."
 
-#. TRANSLATION: bigpemu, corsixth, duckstation, flycast, libretro/beetle-saturn, ...
+#. TRANSLATION: bigpemu, bstone, corsixth, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Disabled"
 msgstr "Désactivé"
@@ -6022,7 +6052,7 @@ msgctxt "game_options"
 msgid "Disabled (Beatle Interpreter)"
 msgstr "Désactivé (interpréteur Beatle)"
 
-#. TRANSLATION: cemu, cgenius, corsixth, devilutionx, duckstation, ...
+#. TRANSLATION: bstone, cemu, cgenius, corsixth, devilutionx, ...
 msgctxt "game_options"
 msgid "Disabled (Default)"
 msgstr "Désactivé (Défaut)"
@@ -6424,7 +6454,7 @@ msgctxt "game_options"
 msgid "ENABLE TIME STRETCHING"
 msgstr "ACTIVER L'ÉTIREMENT DU TEMPS"
 
-#. TRANSLATION: model2emu, play
+#. TRANSLATION: bstone, model2emu, play
 msgctxt "game_options"
 msgid "ENABLE WIDESCREEN"
 msgstr "ACTIVER L'ÉCRAN LARGE"
@@ -6943,17 +6973,22 @@ msgstr ""
 "Activer la synchronisation verticale pour éviter les déchirures dans "
 "certains cas."
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "Enable widescreen support for game rendering."
+msgstr ""
+
 #. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
 msgid "Enable widescreen support."
 msgstr "Activer le support d'écran large."
 
-#. TRANSLATION: bigpemu, cemu, cgenius, corsixth, devilutionx, ...
+#. TRANSLATION: bigpemu, bstone, cemu, cgenius, corsixth, ...
 msgctxt "game_options"
 msgid "Enabled"
 msgstr "Activé"
 
-#. TRANSLATION: corsixth, duckstation, libretro/mame, libretro/swanstation, mame/pcsx2, ...
+#. TRANSLATION: bstone, corsixth, duckstation, libretro/mame, libretro/swanstation, ...
 msgctxt "game_options"
 msgid "Enabled (Default)"
 msgstr "Activé (par défaut)"
@@ -7703,7 +7738,7 @@ msgctxt "game_options"
 msgid "Fix screen tearing, but may drop frames."
 msgstr "Corrige l'effet de déchirure d'écran, mais peut perdre des images."
 
-#. TRANSLATION: bigpemu, cemu, dxx-rebirth, iortcw, openbor/openbor7530, ...
+#. TRANSLATION: bigpemu, bstone, cemu, dxx-rebirth, iortcw, ...
 msgctxt "game_options"
 msgid "Fix screen tearing."
 msgstr "Correction du déchirement de l'écran."
@@ -7758,6 +7793,13 @@ msgstr "Corrige un bogue possible avec la détection de plusieurs contrôleurs."
 msgctxt "game_options"
 msgid "Fixes flickering."
 msgstr "Corrige le scintillement."
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid ""
+"Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 "
+"franchise for non Nvidia GPUs."
+msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -8944,11 +8986,9 @@ msgstr "Horizontal"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid ""
-"House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+"House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
 "your processor."
 msgstr ""
-"House of the Dead 4 speed fix. Règle le jeu sur la fréquence de base de "
-"votre processeur."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -10597,10 +10637,40 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "Menu"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu N"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu Y"
+msgstr ""
+
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "Retour au menu"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu down"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu enter"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu escape"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu up"
+msgstr ""
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -10754,7 +10824,7 @@ msgctxt "keys_files"
 msgid "Move back / down"
 msgstr "Reculer / descendre"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move backward"
 msgstr "Reculer"
@@ -10779,7 +10849,7 @@ msgctxt "keys_files"
 msgid "Move camera up"
 msgstr "Lève la caméra"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move forward"
 msgstr "Avancer"
@@ -10789,12 +10859,12 @@ msgctxt "keys_files"
 msgid "Move forward / up"
 msgstr "Avancer / monter"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move left"
 msgstr "Déplacer vers la gauche"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Move right"
 msgstr "Déplacer vers la droite"
@@ -11176,6 +11246,11 @@ msgstr "Aucune licence activée"
 msgctxt "game_options"
 msgid "No skipping"
 msgstr "Ne pas passer"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "No touch screen (Default)"
+msgstr ""
 
 #. TRANSLATION: dolphin, dolphin_triforce, drastic, fallout1-ce, fallout2-ce, ...
 msgctxt "game_options"
@@ -11903,6 +11978,11 @@ msgstr "PRÉFÉRENCE SUR LES THREADS SPU"
 msgctxt "game_options"
 msgid "PRESENTATION MODE"
 msgstr "MODE DE PRÉSENTATION"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "PRIMEVAL HUNT MODE"
+msgstr ""
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -13059,7 +13139,7 @@ msgctxt "game_options"
 msgid "Rumble Pak (Automatic)"
 msgstr "Vibration Pak (Automatique)"
 
-#. TRANSLATION: catacomb.keys, quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, catacomb.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Run"
 msgstr "Run"
@@ -13534,6 +13614,11 @@ msgctxt "game_options"
 msgid "STRETCH TO FILL"
 msgstr "ÉTIRER POUR REMPLIR"
 
+#. TRANSLATION: bstone
+msgctxt "game_options"
+msgid "STRETCH UI MENU"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "STRICT RENDERING MODE"
@@ -13875,6 +13960,11 @@ msgctxt "game_options"
 msgid "Set system-wide controls via MAME menu"
 msgstr "Définir les commandes à l'échelle du système via le menu MAME"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Set the Primeval Hunt mode (touch screen)."
+msgstr ""
+
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
 msgid "Set the color palette to use."
@@ -14104,6 +14194,11 @@ msgstr "Dérivation 8"
 msgctxt "game_options"
 msgid "Shunt 9"
 msgstr "Dérivation 9"
+
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Side by side"
+msgstr ""
 
 #. TRANSLATION: dosbox, libretro/gambatte, libretro/o2em
 msgctxt "game_options"
@@ -14661,6 +14756,11 @@ msgctxt "game_options"
 msgid "Static Interpreter"
 msgstr "Interpréteur statique"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Stats"
+msgstr ""
+
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Steering Wheel"
@@ -14693,12 +14793,12 @@ msgctxt "keys_files"
 msgid "Strafe Right"
 msgstr "Mitrailler à droite"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe left"
 msgstr "Mitrailler vers la gauche"
 
-#. TRANSLATION: quake2.keys, rott.keys
+#. TRANSLATION: bstone.keys, quake2.keys, rott.keys
 msgctxt "keys_files"
 msgid "Strafe right"
 msgstr "Mitrailler vers la droite"
@@ -15686,6 +15786,11 @@ msgctxt "game_options"
 msgid "USE WHEELS"
 msgstr "UTILISER LES VOLANTS"
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "USE ZINK FOR RENDERING"
+msgstr ""
+
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid "USER DISK"
@@ -15911,6 +16016,11 @@ msgstr ""
 "Filtre de mise à l'échelle utilisé pour les calques 2D. Nécessite un nouveau "
 "moteur 3D."
 
+#. TRANSLATION: lindbergh-loader
+msgctxt "game_options"
+msgid "Upscale rendering resolution to display size."
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "Upscale textures on 3D objects."
@@ -15920,6 +16030,11 @@ msgstr "Textures agrandies sur des objets 3D."
 msgctxt "game_options"
 msgid "Uruguay"
 msgstr "Uruguay"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Use"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -16274,7 +16389,7 @@ msgctxt "game_options"
 msgid "VISUAL NUDGE STRENGTH"
 msgstr "FORCE DU NUDGE VISUEL"
 
-#. TRANSLATION: bigpemu, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citra, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -16765,6 +16880,16 @@ msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr ""
 "Agrandir pour masquer les bordures noires. Les bordures sont différentes par "
 "match."
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon in"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon out"
+msgstr ""
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -18140,6 +18265,14 @@ msgstr "jaune/bleu"
 #~ msgctxt "keys_files"
 #~ msgid "Hide the bezel"
 #~ msgstr "Cacher la décoration"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "House of the Dead 4 speed fix. Sets the game to the CPU base frequency of "
+#~ "your processor."
+#~ msgstr ""
+#~ "House of the Dead 4 speed fix. Règle le jeu sur la fréquence de base de "
+#~ "votre processeur."
 
 #~ msgctxt "game_options"
 #~ msgid "How the emulator should sort transparent objects."
