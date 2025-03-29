@@ -116,7 +116,7 @@ class LindberghGenerator(Generator):
         if system.config.get_bool("lindbergh_test"):
             commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-t"]
         elif system.config.get_bool("lindbergh_zink"):
-            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "--zink"]
+            commandArray: list[str | Path] = [str(romDir / "lindbergh"), "-z"]
         else:
             commandArray: list[str | Path] = [str(romDir / "lindbergh")]
 
