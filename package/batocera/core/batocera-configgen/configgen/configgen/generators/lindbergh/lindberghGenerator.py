@@ -57,7 +57,7 @@ class LindberghGenerator(Generator):
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
         "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
         "EMULATE_CARDREADER":        True, "CARDFILE_01":               True, "CARDFILE_02":               True, "CPU_FREQ_GHZ":              True,
-        "OR2_IP":                    True, "PLAYER_1_COIN":             True
+        "OR2_IP":                    True, "PLAYER_1_COIN":             True, "BOOST_RENDER_RES":          True,
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
