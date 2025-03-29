@@ -37,6 +37,7 @@ from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
 from .utils.evmapy import evmapy
+from .utils.virtualmouse import virtualmouse
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -158,10 +159,12 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
             callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
 
             # run the emulator
+
             _evmapy_instance = evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns)
             with (
                 _evmapy_instance,
-                set_hotkeygen_context(generator, system)
+                set_hotkeygen_context(generator, system),
+                virtualmouse(generator)
             ):
                 # change directory if wanted
                 executionDirectory = generator.executionDirectory(system.config, rom)

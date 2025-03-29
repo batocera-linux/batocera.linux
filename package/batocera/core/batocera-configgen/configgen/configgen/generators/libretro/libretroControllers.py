@@ -64,6 +64,9 @@ def writeControllersConfig(
             deviceList = getDevicesInformation()
             mousePath = getAssociatedMouse(deviceList, controller.device_path)
             mouseIndex = find_mouse_index_bydevice(mousePath)
+        #use the virtual mouse by default
+        if mouseIndex is None:
+            mouseIndex = find_mouse_index_byname('Virtual_Multi_Mouse')
         if mouseIndex is None:
             mouseIndex = '0'
         writeControllerConfig(retroconfig, controller, controller.player_number, system, lightgun, mouseIndex)
