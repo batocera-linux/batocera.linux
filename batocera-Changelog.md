@@ -65,50 +65,50 @@
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 ### Updated
+- Amiberry to v7.0.4
+- AppleWin to 8th of Feb build
 - BigPEmu to v118
 - Cemu to 2.6
+- DevilutionX to 1.5.4
 - Dolphin-Emu to 2412-268
+- Dosbox Staging to v0.82.0
+- Dosbox-X to v2025.02.01
+- DXX-Rebirth to 12th of Jan build
+- EDuke to 26th of Dec build
 - ETLegacy to v2.83.2
-- Jazz2 to 3.2.0
 - GroovyMAME to 0.274
 - Gzdoom to g4.14.1
+- Hurrican to 24th of Nov build
+- Hypseus Singe to 2.11.4
+- IOQuake3 to 25th December build
+- Jazz2 to 3.2.0
 - Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.274
 - Libretro-Play! 4th Feb build
-- RetroArch to v1.20.0
-- Ruffle to Nightly-2024-12-28
-- RPCS3 to v0.0.35
-- ScummVM to v2.9.0
+- Libretro-PPSSPP to 28th February build
+- Libretro-Wasm4 to v2.7.1
+- MelonDS to 17th Jan build
+- OpenMSX to release 20.0
 - PCSX2 to v2.3.185
 - Play! to 4th Feb build
-- Xemu to v0.8.45
-- Triforce to use a Crediar build (Nov 29, 2024)
-- Vice to 3.9
-- TheXTech to v1.3.7-hotfix2
-- DXX-Rebirth to 12th of Jan build
-- EDuke to 26th of Dec build
-- Hurrican to 24th of Nov build
+- PPSSPP to 28th February build
+- Raze to 1.11.0
+- RetroArch to v1.20.0
+- Ruffle to nightly-2025-02-12
+- RPCS3 to v0.0.35
+- ScummVM to v2.9.0
+- Snes9x to 24th Jan build
+- Solarus Engine to 18th Jan build
 - Sonic3 Air to v25.02.15.0-test
 - Taradino to 18th of Feb build
 - TheForceEngine to 20th Feb build
-- Xash3d-fwgs to 20th of Feb build
-- AppleWin to 8th of Feb build
-- MelonDS to 17th Jan build
-- Snes9x to 24th Jan build
-- Solarus Engine to 18th Jan build
-- IOQuake3 to 25th December build
-- Amiberry to v7.0.4
-- Libretro-Wasm4 to v2.7.1
-- Dosbox Staging to v0.82.0
-- Dosbox-X to v2025.02.01
-- DevilutionX to 1.5.4
-- OpenMSX to release 20.0
-- Ruffle to nightly-2025-02-12
-- Raze to 1.11.0
-- PPSSPP to 28th February build
-- Libretro-PPSSPP to 28th February build
-- Xenia to build 5979274 (Jan 24, 2025)
+- TheXTech to v1.3.7-hotfix2
+- Triforce to use a Crediar build (Nov 29, 2024)
+- Vice to 3.9
 - Vita3k to 3rd of March 2025 build
+- Xash3d-fwgs to 20th of Feb build
+- Xemu to v0.8.45
+- Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79
 - Buildroot to 2024.11.x with supporting package updates

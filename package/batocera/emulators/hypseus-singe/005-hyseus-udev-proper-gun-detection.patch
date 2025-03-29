@@ -15,20 +15,20 @@ diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 index 6a85063..13a86bf 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -119,13 +119,14 @@ find_package(SDL2 REQUIRED)
- find_package(SDL2TTF REQUIRED)
+@@ -105,13 +105,14 @@
  find_package(SDL2_IMAGE REQUIRED)
+ find_package(SDL2_MIXER REQUIRED)
  find_package(Vorbis REQUIRED)
 +find_package(Udev REQUIRED)
- 
+
  if(APPLE)
      set( SDL2_LIBRARIES ${SDL2_LIBRARY} )
  endif(APPLE)
- 
+
  add_executable( hypseus hypseus.cpp globals.h )
--target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} )
-+target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} ${UDEV_LIBRARY} )
- 
+-target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} )
++target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} ${UDEV_LIBRARY} )
+
  if(ASAN)
      target_link_options(hypseus PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
 diff --git a/src/cmake/modules/FindUdev.cmake b/src/cmake/modules/FindUdev.cmake
