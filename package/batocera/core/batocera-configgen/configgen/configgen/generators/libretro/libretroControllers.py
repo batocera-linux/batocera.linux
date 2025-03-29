@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Literal
+
+import pyudev
 
 from ...controllersConfig import getAssociatedMouse, getDevicesInformation
 
@@ -56,9 +59,11 @@ def writeControllersConfig(
 
     for controller in controllers:
         mouseIndex: str | None = None
+        #find associated touchpad if controller have it
         if system.name in ['nds', '3ds']:
             deviceList = getDevicesInformation()
-            mouseIndex = getAssociatedMouse(deviceList, controller.device_path)
+            mousePath = getAssociatedMouse(deviceList, controller.device_path)
+            mouseIndex = find_mouse_index_bydevice(mousePath)
         if mouseIndex is None:
             mouseIndex = '0'
         writeControllerConfig(retroconfig, controller, controller.player_number, system, lightgun, mouseIndex)
@@ -198,3 +203,58 @@ def getAnalogMode(controller: Controller, system: Emulator, /) -> Literal['0', '
         if dirkey in controller.inputs and (controller.inputs[dirkey].type == 'button' or controller.inputs[dirkey].type == 'hat'):
             return '1'
     return '0'
+
+def extract_prefix_and_number(string: str):
+    # Use regex to separate text from numbers
+    match = re.match(r'([a-zA-Z]+)(\d+)', string)
+    if match:
+        prefix, number = match.groups()
+        return (prefix, int(number))
+    return (string, 0)  # Default case if no match
+
+def get_udev_mouses(udev_context, type: str, devices_name) -> list[int]:
+    mouse_list = []
+    name = ''
+    for device in udev_context.list_devices(subsystem='input').match_property(type, '1'):
+        if device.sys_name.startswith('input'):
+            name = device.get('NAME').lstrip('"').strip('"')
+            continue
+        if device.sys_name.startswith('event'):
+            if name != '':
+                devices_name[device.sys_name] = name
+            mouse_list.append(device.sys_name)
+            name = 'unknown'
+    return sorted(mouse_list, key=extract_prefix_and_number)
+
+def get_mouse_index() -> dict:
+    context = pyudev.Context()
+
+    mouse_list = []
+    touchpad_list = []
+    devices_name = {}
+    mouse_list = get_udev_mouses(context, 'ID_INPUT_MOUSE', devices_name)
+    touchpad_list = get_udev_mouses(context, 'ID_INPUT_TOUCHPAD', devices_name)
+    mouse_list.extend(touchpad_list)
+
+    res = {}
+    index = 0
+    for sys_name in mouse_list:
+        res[index] = {}
+        res[index]['name'] = devices_name[sys_name]
+        res[index]['sys_name'] = sys_name
+        index = index + 1
+    return res
+
+def find_mouse_index_byname(device_name: str) -> int | None:
+    mouses_index = get_mouse_index()
+    for index in mouses_index:
+        if mouses_index[index]['name'] == device_name:
+             return index
+    return None
+
+def find_mouse_index_bydevice(device_path: str) -> int | None:
+    mouses_index = get_mouse_index()
+    for index in mouses_index:
+        if '/dev/input/' + mouses_index[index]['sys_name'] == device_path:
+             return index
+    return None
