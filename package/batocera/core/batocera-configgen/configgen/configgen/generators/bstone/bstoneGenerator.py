@@ -1,3 +1,16 @@
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 from __future__ import annotations
 
 import logging
@@ -11,38 +24,52 @@ from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
+    from ... import SystemConfig
 
 _logger = logging.getLogger(__name__)
 
 _BSTONE_CONFIG: Final = CONFIGS / "bstone"
 _BSTONE_CONFIG_FILE = _BSTONE_CONFIG / "bstone_config.txt"
 
-def update_or_create_config(gameResolution):
-    default_config = f"""// BStone configuration file
-// WARNING! This is auto-generated file.
 
-vid_width "{str(gameResolution['width'])}"
-vid_height "{str(gameResolution['height'])}"
-"""
-    
+def update_or_create_config(gameResolution: dict[str, int], system: SystemConfig):
+    config_lines: list[str] = []
+
+    config_lines.append(f'vid_width "{gameResolution["width"]}"\n')
+    config_lines.append(f'vid_height "{gameResolution["height"]}"\n')
+
+    # Configuration options
+    config_lines.append(f'vid_is_widescreen "{1 if system.config.get_bool("bstone_widescreen") else 0}"\n')
+    config_lines.append(f'vid_is_vsync "{1 if system.config.get_bool("bstone_vsync") else 0}"\n')
+    config_lines.append(f'vid_is_ui_stretched "{1 if system.config.get_bool("bstone_ui_stretched") else 0}"\n')
+
+    # Handle existing file or create a new file
     if _BSTONE_CONFIG_FILE.exists():
+        existing_lines = []
         with _BSTONE_CONFIG_FILE.open("r") as f:
-            lines = f.readlines()
-        
-        updated_lines = []
-        for line in lines:
-            if line.startswith("vid_width"):
-                updated_lines.append(f'vid_width "{str(gameResolution["width"])}"\n')
-            elif line.startswith("vid_height"):
-                updated_lines.append(f'vid_height "{str(gameResolution["height"])}"\n')
-            else:
-                updated_lines.append(line)
-        
+            existing_lines = f.readlines()
+
         with _BSTONE_CONFIG_FILE.open("w") as f:
-            f.writelines(updated_lines)
+            for line in config_lines:
+                # Check for a match in the existing lines
+                match = False
+                for i, existing_line in enumerate(existing_lines):
+                    if line.split('"')[0] in existing_line:
+                        existing_lines[i] = line
+                        match = True
+                        break
+
+                # If there was no match, add to the config
+                if not match:
+                    existing_lines.append(line)
+
+            f.writelines(existing_lines)
+
     else:
+        # Create new file with all config lines
         with _BSTONE_CONFIG_FILE.open("w") as f:
-            f.write(default_config)
+            f.writelines(config_lines)
+
 
 class BstoneGenerator(Generator):
 
@@ -60,7 +87,7 @@ class BstoneGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_BSTONE_CONFIG)
-        update_or_create_config(gameResolution)
+        update_or_create_config(gameResolution, system)
 
         romdir = rom.parent
 
@@ -87,4 +114,6 @@ class BstoneGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        return 16 / 9
+        if config.get_bool("bstone_widescreen") or config.get_bool("bstone_ui_stretched"):
+            return 16/9
+        return 4/3
