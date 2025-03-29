@@ -59,6 +59,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'tr1x': ('tr1x.tr1xGenerator', 'TR1XGenerator'),
     'tr2x': ('tr2x.tr2xGenerator', 'TR2XGenerator'),
     'clk': ('clk.clkGenerator', 'ClkGenerator'),
+    'bstone': ('bstone.bstoneGenerator', 'BstoneGenerator'),
 }
 
 def get_generator(emulator: str) -> Generator:

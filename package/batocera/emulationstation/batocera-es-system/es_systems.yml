@@ -5779,3 +5779,32 @@ oricatmos:
     Emulateur pour Oric Atmos (et Oric 1)
     Il vous faut au moins le fichier rom /userdata/bios/Oric/basic11.rom
     Trouvez la documentation ici : https://wiki.batocera.org/systems:oricatmos
+
+bstone:
+  name: Blake Stone
+  manufacturer: Ports
+  release: 1993
+  hardware: port
+  extensions: [bstone]
+  platform: pc
+  group: ports
+  emulators:
+    bstone:
+      bstone: { requireAnyOf: [BR2_PACKAGE_BSTONE] }
+  comment_en: |
+    Create a directory for the Balke Stone game you wish to launch.
+    i.e. `Aliens Of Gold` or `Aliens Of Gold (Shareware)` or `Planet Strike`.
+    Add the games files into the appropriate directory.
+    
+    Aliens Of Gold Shareware we only need the .BS1 files.
+    Aliens Of Gold we only need the .BS6 files.
+    Planet Strike we only need the .VSI files
+
+    Then create a blank launch file with a .bstone extension to be able to start the game from ES.
+    i.e. `Aliens Of Gold.bstone` or `Aliens Of Gold (Shareware).bstone` or `Planet Strike.bstone`.
+
+    For more info: https://wiki.batocera.org/systems:bstone
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:bstone
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:bstone
