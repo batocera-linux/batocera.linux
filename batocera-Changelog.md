@@ -61,6 +61,7 @@
 - Batocera-wine: add saves directory and save files options
 - Libretro-virtualjaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
+- Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 ### Updated
 - BigPEmu to v118
 - Cemu to 2.6
