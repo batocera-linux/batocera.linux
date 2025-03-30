@@ -2,46 +2,42 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Final
-from pathlib import Path
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, ROMS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...types import HotkeysContext
-    from ... import SystemConfig
-
-_logger = logging.getLogger(__name__)
+    from ...config import SystemConfig
+    from ...types import HotkeysContext, Resolution
 
 _BSTONE_CONFIG: Final = CONFIGS / "bstone"
-_BSTONE_CONFIG_FILE = _BSTONE_CONFIG / "bstone_config.txt"
+_BSTONE_CONFIG_FILE: Final = _BSTONE_CONFIG / "bstone_config.txt"
 
 
-def update_or_create_config(gameResolution: dict[str, int], system: SystemConfig):
+def _update_or_create_config(gameResolution: Resolution, config: SystemConfig, /) -> None:
     config_lines: list[str] = []
 
     config_lines.append(f'vid_width "{gameResolution["width"]}"\n')
     config_lines.append(f'vid_height "{gameResolution["height"]}"\n')
 
     # Configuration options
-    config_lines.append(f'vid_is_widescreen "{1 if system.config.get_bool("bstone_widescreen") else 0}"\n')
-    config_lines.append(f'vid_is_vsync "{1 if system.config.get_bool("bstone_vsync") else 0}"\n')
-    config_lines.append(f'vid_is_ui_stretched "{1 if system.config.get_bool("bstone_ui_stretched") else 0}"\n')
+    config_lines.append(f'vid_is_widescreen "{1 if config.get_bool("bstone_widescreen") else 0}"\n')
+    config_lines.append(f'vid_is_vsync "{1 if config.get_bool("bstone_vsync") else 0}"\n')
+    config_lines.append(f'vid_is_ui_stretched "{1 if config.get_bool("bstone_ui_stretched") else 0}"\n')
 
     # Handle existing file or create a new file
     if _BSTONE_CONFIG_FILE.exists():
@@ -85,9 +81,9 @@ class BstoneGenerator(Generator):
             },
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_BSTONE_CONFIG)
-        update_or_create_config(gameResolution, system)
+        _update_or_create_config(gameResolution, system.config)
 
         romdir = rom.parent
 

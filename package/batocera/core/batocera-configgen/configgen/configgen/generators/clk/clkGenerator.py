@@ -1,50 +1,55 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-import os
-import zipfile
 import shutil
+import zipfile
 from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...controller import generate_sdl_game_controller_config
+from ...exceptions import BatoceraException
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 # Static temp file for extraction as CLK doens't support zipped roms
-TMP_DIR="/tmp/clk_extracted"
+_TMP_DIR: Final = Path("/tmp/clk_extracted")
+_QUICKLOAD_SYSTEMS: Final = {
+    "oricatmos", "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
+    "c20", "cplus4", "zx81", "zxspectrum"
+}
 
 
-def openzip_file(file_path):
+def _openzip_file(file_path: Path, /) -> Path | None:
     if not file_path.is_file():
         return None
 
-    if os.path.exists(TMP_DIR):
-        shutil.rmtree(TMP_DIR) # Remove extracted zip files (can't be done upon return from configgen)
-    
+    if _TMP_DIR.exists():
+        shutil.rmtree(_TMP_DIR)  # Remove extracted zip files (can't be done upon return from configgen)
+
     if str(file_path).lower().endswith('.zip'):
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            zip_ref.extractall(TMP_DIR)
+            zip_ref.extractall(_TMP_DIR)
             extracted_files = zip_ref.namelist()
-            
+
             if extracted_files:
-                extracted_file_path = os.path.join(TMP_DIR, extracted_files[0])  # Assume single file in zip
-                return extracted_file_path
+                return _TMP_DIR / extracted_files[0]  # Assume single file in zip
 
     return file_path  # Return original file if it's not a zip
 
 
 class ClkGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        romzip = _openzip_file(rom)
 
-        romzip = openzip_file(rom)
+        if romzip is None:
+            raise BatoceraException(f'ROM is a directory: {rom}')
+
         commandArray = ["clksignal", romzip,  "--rompath=/userdata/bios/"]
 
-        if system.name in ["oricatmos", "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
-                      "c20", "cplus4", "zx81", "zxspectrum" ]:
+        if system.name in _QUICKLOAD_SYSTEMS:
             commandArray.extend(["--quickload"])
 
         return Command.Command(
