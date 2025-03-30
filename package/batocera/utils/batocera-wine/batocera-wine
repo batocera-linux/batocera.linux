@@ -782,9 +782,6 @@ createAutorunCmd() {
             echo "#CMD=start.exe"
         ) > "${WINEPOINT}/autorun.cmd"
     fi
-
-						
-					
     return 0
 }
 
@@ -1038,7 +1035,7 @@ case "${ACTION}" in
 	exit $?
 	;;
 
-    "autorun")
+    "autorun"|"autorun-list")
         # Create autorunfile, works only in SSH mode, recommended is arg1=gamepath, arg2=searchmask
         # It's held small: "batocera-wine windows autorun . bin" will search current directory in dir bin
         [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
@@ -1046,6 +1043,9 @@ case "${ACTION}" in
         pushd "${GAMENAME}" > /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'" >&2; exit 1; }
         GAMENAME="$PWD"
         createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
+        #show only list of exes if autorun-list is set otherwise...
+        [[ "${ACTION}" == "autorun-list" ]] && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}"; exit 0; }
+        #...show list with entries numbers to select
         if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
             echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
             echo "0) Enter 0 or CTRL+C to abort creation of autorun.cmd"
