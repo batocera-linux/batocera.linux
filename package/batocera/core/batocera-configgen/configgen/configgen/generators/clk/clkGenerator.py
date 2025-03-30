@@ -41,7 +41,7 @@ def _openzip_file(file_path: Path, /) -> Path | None:
 
 class ClkGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         romzip = _openzip_file(rom)
 
         if romzip is None:
