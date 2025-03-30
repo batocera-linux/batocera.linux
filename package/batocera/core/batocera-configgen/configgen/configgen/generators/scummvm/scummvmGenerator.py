@@ -23,7 +23,7 @@ class ScummVMGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": ["KEY_LEFTCTRL", "KEY_F5"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # crete /userdata/bios/scummvm/extra folder if it doesn't exist
         mkdir_if_not_exists(scummExtra)
 

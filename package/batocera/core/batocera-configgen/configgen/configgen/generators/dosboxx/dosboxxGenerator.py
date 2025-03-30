@@ -16,7 +16,7 @@ _CONFIG: Final = _CONFIG_DIR / 'dosboxx.conf'
 
 class DosBoxxGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
         gameConfFile = rom / "dosbox.cfg"
 

@@ -18,7 +18,7 @@ class ShGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # in case of squashfs, the root directory is passed
         runsh = rom / "run.sh"
         shrom = runsh if runsh.exists() else rom

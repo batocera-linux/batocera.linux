@@ -28,7 +28,7 @@ class ECWolfGenerator(Generator):
             }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         ecwolfConfigDir = CONFIGS / "ecwolf"
         ecwolfConfigFile = ecwolfConfigDir / "ecwolf.cfg"
         ecwolfSaves = SAVES / "ecwolf" / rom.name

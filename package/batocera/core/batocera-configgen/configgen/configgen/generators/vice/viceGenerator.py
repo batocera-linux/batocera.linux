@@ -28,7 +28,7 @@ class ViceGenerator(Generator):
 
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         mkdir_if_not_exists(_VICE_CONFIG_DIR)
 

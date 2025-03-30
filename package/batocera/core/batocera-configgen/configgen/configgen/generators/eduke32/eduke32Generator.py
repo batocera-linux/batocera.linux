@@ -24,7 +24,7 @@ class EDuke32Generator(Generator):
             "keys": { "exit": "killall -9 eduke32; killall -9 fury", "menu": "KEY_ESC", "pause": "KEY_ESC", "save_state": "KEY_F6", "restore_state": "KEY_F9" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Core is either eduke32 or fury
         core = system.config.core
         config_dir = CONFIGS / f"{core}"

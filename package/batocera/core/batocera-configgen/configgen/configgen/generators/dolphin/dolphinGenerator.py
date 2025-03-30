@@ -29,7 +29,7 @@ _logger = logging.getLogger(__name__)
 
 class DolphinGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(DOLPHIN_INI.parent)
 
         # Dir required for saves

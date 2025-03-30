@@ -25,7 +25,7 @@ class DrasticGenerator(Generator):
             "keys": { "exit": "KEY_ESC", "save_state": "KEY_F5", "restore_state": "KEY_F7", "menu": "KEY_F1", "fastforward": "KEY_TAB", "swap_screen": "KEY_F2" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         drastic_root = CONFIGS / "drastic"
         drastic_bin = drastic_root / "drastic"

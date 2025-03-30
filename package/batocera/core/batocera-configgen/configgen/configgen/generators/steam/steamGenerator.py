@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class SteamGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         basename = rom.name
         gameId = None
         if basename != "Steam.steam":

@@ -27,7 +27,7 @@ class OpenborGenerator(Generator):
         }
 
     # Main entry of the module
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         configDir = CONFIGS / 'openbor'
         mkdir_if_not_exists(configDir)
         mkdir_if_not_exists(SAVES / 'openbor')

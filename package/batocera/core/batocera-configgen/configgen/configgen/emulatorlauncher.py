@@ -32,7 +32,7 @@ from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
+    from collections.abc import Iterable
     from types import FrameType
 
     from .Command import Command
@@ -69,7 +69,6 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
     # metadata
     metadata = controllers.getGamesMetaData(systemName, rom)
-    gameinfos = extractGameInfosFromXml(args.gameinfoxml)
 
     guns = Gun.get_and_precalibrate_all(system, rom)
 
@@ -146,13 +145,13 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                 if executionDirectory is not None:
                     os.chdir(executionDirectory)
 
-                cmd = generator.generate(system, rom, player_controllers, metadata, gameinfos, guns, wheels, gameResolution)
+                cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
 
                 if system.config.get_bool('hud_support'):
-                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns), gameinfos)
+                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
                     if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
                         cmd.env["MANGOHUD_DLSYM"] = "1"
-                        hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, gameinfos, hud_bezel)
+                        hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, hud_bezel)
                         hud_config_file = Path('/var/run/hud.config')
                         with hud_config_file.open('w') as f:
                             f.write(hudconfig)
@@ -184,7 +183,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
     # exit
     return exitCode
 
-def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None, esmetadata: Mapping[str, str]):
+def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolution: Resolution, bordersSize: str | None, bordersRatio: str | None):
     if generator.supportsInternalBezels():
         _logger.debug("skipping bezels for emulator %s", system.config.emulator)
         return None
@@ -315,11 +314,11 @@ def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolutio
         output_png_file = Path("/tmp/bezel_tattooed.png")
         bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
         overlay_png_file = output_png_file
-    if bezel_qrcode != "0":
-        if "cheevosId" in esmetadata and esmetadata["cheevosId"] != "0":
-            output_png_file = Path("/tmp/bezel_qrcode.png")
-            bezelsUtil.addQRCode(overlay_png_file, output_png_file, esmetadata["cheevosId"], system)
-            overlay_png_file = output_png_file
+
+    if bezel_qrcode != "0" and (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
+        output_png_file = Path("/tmp/bezel_qrcode.png")
+        bezelsUtil.addQRCode(overlay_png_file, output_png_file, cheevos_id, system)
+        overlay_png_file = output_png_file
 
     # borders
     if bordersSize is not None:
@@ -332,21 +331,6 @@ def getHudBezel(system: Emulator, generator: Generator, rom: Path, gameResolutio
 
     _logger.debug("applying bezel %s", overlay_png_file)
     return overlay_png_file
-
-def extractGameInfosFromXml(xml: str) -> dict[str, str]:
-    import xml.etree.ElementTree as ET
-
-    vals: dict[str, str] = {}
-    try:
-        tree = ET.parse(xml)
-        root = tree.getroot()
-        for child in root:
-            for metadata in child:
-                vals[metadata.tag] = metadata.text
-        return vals
-    except:
-        _logger.debug("An error occurred while reading es metadata")
-        return vals
 
 def callExternalScripts(folder: Path, event: str, args: Iterable[str | Path]) -> None:
     if not folder.is_dir():
@@ -365,7 +349,7 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
         return ""
     return str(string)
 
-def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, gameinfos: Mapping[str, str], bezel: Path | None) -> str:
+def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, bezel: Path | None) -> str:
     configstr = ""
 
     if bezel != "" and bezel != "none" and bezel is not None:
@@ -387,12 +371,8 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
     if emulator != core and core is not None:
         emulatorstr += f"/{core}"
 
-    gameName = ""
-    if "name" in gameinfos:
-        gameName = gameinfos["name"]
-    gameThumbnail = ""
-    if "thumbnail" in gameinfos:
-        gameThumbnail = gameinfos["thumbnail"]
+    gameName = system.es_game_info.get("name", "")
+    gameThumbnail = system.es_game_info.get("thumbnail", "")
 
     # predefined values
     if mode == "perf":

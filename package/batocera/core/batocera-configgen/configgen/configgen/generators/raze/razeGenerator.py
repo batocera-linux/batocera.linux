@@ -88,7 +88,7 @@ class RazeGenerator(Generator):
             "Ins": "togglerotate",
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         architecture = get_cpu_architecture()
         _logger.debug("*** Detected architecture is: %s ***", architecture)

@@ -20,7 +20,7 @@ class MugenGenerator(Generator):
             "keys": {"exit": ["/usr/bin/batocera-wine mugen stop"]}
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Define the key mappings for evmapy
         p1_keys = {
             "Jump": "273",
