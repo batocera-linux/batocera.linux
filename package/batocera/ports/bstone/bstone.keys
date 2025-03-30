@@ -75,26 +75,14 @@
         {
             "trigger": "left",
             "type": "key",
-            "target": "KEY_Q",
-            "description": "Cycle previous"
+            "target": "KEY_LEFT",
+            "description": "Menu left"
         },
         {
             "trigger": "right",
             "type": "key",
-            "target": "KEY_E",
-            "description": "Cycle next"
-        },
-        {
-            "trigger": "start",
-            "type": "key",
-            "target": "KEY_Y",
-            "description": "Menu Y"
-        },
-        {
-            "trigger": "select",
-            "type": "key",
-            "target": "KEY_N",
-            "description": "Menu N"
+            "target": "KEY_RIGHT",
+            "description": "Menu right"
         },
         {
             "trigger": "x",
@@ -115,10 +103,28 @@
             "description": "Zoom in"
         },
         {
-            "trigger": "l2",
+            "trigger": "select",
             "type": "key",
             "target": "KEY_ESC",
-            "description": "Menu escape"
+            "description": "Menu back / exit"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_P",
+            "description": "Pause"
+        },
+        {
+            "trigger": ["hotkey", "left"],
+            "type": "key",
+            "target": "KEY_Q",
+            "description": "Previous weapon"
+        },
+        {
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": "KEY_E",
+            "description": "Next weapon"
         }
     ]
 }
