@@ -81,7 +81,7 @@ class BstoneGenerator(Generator):
             },
         }
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_BSTONE_CONFIG)
         _update_or_create_config(gameResolution, system.config)
 
