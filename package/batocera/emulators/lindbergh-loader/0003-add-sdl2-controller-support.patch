@@ -1,4 +1,4 @@
-From 04ef0c3356a8a55b7f1506c094d3430f4b5ce7dd Mon Sep 17 00:00:00 2001
+From 05bae83faf7a6b42f1f8cc3ccd84a62f1fea3ab3 Mon Sep 17 00:00:00 2001
 From: Daniel Martin <dmanlfc@gmail.com>
 Date: Sat, 11 Jan 2025 21:33:16 +1000
 Subject: [PATCH] add sdl2 controller support - best for driving & fighting
@@ -11,10 +11,10 @@ Subject: [PATCH] add sdl2 controller support - best for driving & fighting
  src/lindbergh/config.h     |   2 +-
  src/lindbergh/evdevinput.c |   4 +-
  src/lindbergh/glxhooks.c   |   3 +
- src/lindbergh/input.c      | 572 +++++++++++++++++++++++++++++++++----
+ src/lindbergh/input.c      | 574 +++++++++++++++++++++++++++++++++----
  src/lindbergh/lindbergh.c  |   2 +-
  src/lindbergh/sdlcalls.c   |  19 ++
- 9 files changed, 604 insertions(+), 95 deletions(-)
+ 9 files changed, 606 insertions(+), 95 deletions(-)
 
 diff --git a/docs/guide.md b/docs/guide.md
 index 0f45eb8..955476d 100644
@@ -201,7 +201,7 @@ index c78ba3f..3c6cdbc 100644
          drawGameBorder(config->width, config->height, config->whiteBorderPercentage, config->blackBorderPercentage);
  
 diff --git a/src/lindbergh/input.c b/src/lindbergh/input.c
-index f1ae296..92eb397 100644
+index f1ae296..6d638d8 100644
 --- a/src/lindbergh/input.c
 +++ b/src/lindbergh/input.c
 @@ -20,6 +20,7 @@
@@ -587,7 +587,7 @@ index f1ae296..92eb397 100644
      default:
          break;
      }
-@@ -778,17 +1013,117 @@ void sdlEventABC(SDL_Event *event)
+@@ -778,17 +1013,119 @@ void sdlEventABC(SDL_Event *event)
              setAnalogue(ANALOGUE_3, event->type == SDL_KEYDOWN ? pow(2, jvsAnalogueInBits) * 0.8 : pow(2, jvsAnalogueInBits) * 0.5);
          else if (event->key.keysym.sym == SDLK_z)
              setSwitch(PLAYER_1, BUTTON_DOWN, event->type == SDL_KEYDOWN);
@@ -689,6 +689,8 @@ index f1ae296..92eb397 100644
 +                    if (abs(event->caxis.value) > DEADZONE) {
 +                        normalizedValue = event->caxis.value / AXIS_MAX;
 +                        setAnalogue(ANALOGUE_3, (normalizedValue + 1.0f) * (pow(2, jvsAnalogueInBits) - 1) / 2);
++                    } else {
++                        setAnalogue(ANALOGUE_3, pow(2, jvsAnalogueInBits) * 0.5); // Neutral when released
 +                    }
 +                }
 +                // Decrease Speed
@@ -708,7 +710,7 @@ index f1ae296..92eb397 100644
      default:
          break;
      }
-@@ -810,13 +1145,15 @@ void sdlEventHarley(SDL_Event *event)
+@@ -810,13 +1147,15 @@ void sdlEventHarley(SDL_Event *event)
          else if (event->key.keysym.sym == SDLK_1)
              setSwitch(PLAYER_1, BUTTON_START, event->type == SDL_KEYDOWN);
          else if (event->key.keysym.sym == SDLK_UP)
@@ -728,7 +730,7 @@ index f1ae296..92eb397 100644
          else if (event->key.keysym.sym == SDLK_q)
              setSwitch(PLAYER_1, BUTTON_1, event->type == SDL_KEYDOWN);
          else if (event->key.keysym.sym == SDLK_w)
-@@ -827,26 +1164,112 @@ void sdlEventHarley(SDL_Event *event)
+@@ -827,26 +1166,112 @@ void sdlEventHarley(SDL_Event *event)
              setSwitch(PLAYER_1, BUTTON_4, event->type == SDL_KEYDOWN);
          else if (event->key.keysym.sym == SDLK_z)
              setSwitch(PLAYER_1, BUTTON_DOWN, event->type == SDL_KEYDOWN); // Hummer - SegaTV view change
@@ -847,7 +849,7 @@ index f1ae296..92eb397 100644
      default:
          break;
      }
-@@ -861,83 +1284,116 @@ void sdlEventMahjong(SDL_Event *event)
+@@ -861,83 +1286,116 @@ void sdlEventMahjong(SDL_Event *event)
      {
          if (event->key.keysym.sym == SDLK_t)
              setSwitch(SYSTEM, BUTTON_TEST, event->type == SDL_KEYDOWN);
