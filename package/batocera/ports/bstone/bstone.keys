@@ -25,7 +25,7 @@
             "description": "Strafe right"
         },
         {
-            "trigger": "y",
+            "trigger": "l2",
             "type": "key",
             "target": "KEY_LEFTSHIFT",
             "description": "Run"
@@ -61,7 +61,7 @@
             "description": "Move right"
         },
         {
-            "trigger": "a",
+            "trigger": "x",
             "type": "key",
             "target": "KEY_SPACE",
             "description": "Use"
@@ -85,7 +85,7 @@
             "description": "Menu right"
         },
         {
-            "trigger": "x",
+            "trigger": "start",
             "type": "key",
             "target": "KEY_TAB",
             "description": "Stats"
@@ -109,19 +109,19 @@
             "description": "Menu back / exit"
         },
         {
-            "trigger": "start",
+            "trigger": ["hotkey", "b"],
             "type": "key",
             "target": "KEY_P",
             "description": "Pause"
         },
         {
-            "trigger": ["hotkey", "left"],
+            "trigger": "y",
             "type": "key",
             "target": "KEY_Q",
             "description": "Previous weapon"
         },
         {
-            "trigger": ["hotkey", "right"],
+            "trigger": "a",
             "type": "key",
             "target": "KEY_E",
             "description": "Next weapon"
