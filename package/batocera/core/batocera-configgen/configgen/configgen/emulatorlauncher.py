@@ -17,7 +17,6 @@ import subprocess
 import time
 from pathlib import Path
 from sys import exit
-import xml.etree.ElementTree as ET
 from typing import TYPE_CHECKING
 
 from . import controllersConfig as controllers
@@ -70,7 +69,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
     # metadata
     metadata = controllers.getGamesMetaData(systemName, rom)
-    esmetadata = getESMetadata()
+    gameinfos = extractGameInfosFromXml(args.gameinfoxml)
 
     guns = Gun.get_and_precalibrate_all(system, rom)
 
@@ -147,12 +146,11 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                 if executionDirectory is not None:
                     os.chdir(executionDirectory)
 
-                cmd = generator.generate(system, rom, player_controllers, metadata, esmetadata, guns, wheels, gameResolution)
+                cmd = generator.generate(system, rom, player_controllers, metadata, gameinfos, guns, wheels, gameResolution)
 
                 if system.config.get_bool('hud_support'):
-                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns), esmetadata)
+                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns), gameinfos)
                     if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
-                        gameinfos = extractGameInfosFromXml(args.gameinfoxml)
                         cmd.env["MANGOHUD_DLSYM"] = "1"
                         hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, gameinfos, hud_bezel)
                         hud_config_file = Path('/var/run/hud.config')
@@ -339,20 +337,16 @@ def extractGameInfosFromXml(xml: str) -> dict[str, str]:
     import xml.etree.ElementTree as ET
 
     vals: dict[str, str] = {}
-
     try:
-        infos = ET.parse(xml)
-        try:
-            vals["name"] = infos.find("./game/name").text
-        except Exception:
-            pass
-        try:
-            vals["thumbnail"] = infos.find("./game/thumbnail").text
-        except Exception:
-            pass
-    except Exception:
-        pass
-    return vals
+        tree = ET.parse(xml)
+        root = tree.getroot()
+        for child in root:
+            for metadata in child:
+                vals[metadata.tag] = metadata.text
+        return vals
+    except:
+        _logger.debug("An error occurred while reading es metadata")
+        return vals
 
 def callExternalScripts(folder: Path, event: str, args: Iterable[str | Path]) -> None:
     if not folder.is_dir():
@@ -531,20 +525,6 @@ def launch() -> None:
         _logger.debug("Exiting configgen with status %s", exitcode)
 
         exit(exitcode)
-
-def getESMetadata():
-    res = {}
-    try:
-        esmetadata_file = "/tmp/game.xml"
-        tree = ET.parse(esmetadata_file)
-        root = tree.getroot()
-        for child in root:
-            for metadata in child:
-                res[metadata.tag] = metadata.text
-        return res
-    except:
-        _logger.debug("An error occurred while reading es metadata")
-        return {}
 
 if __name__ == '__main__':
     launch()
