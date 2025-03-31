@@ -25,7 +25,7 @@ class Sonic3AIRGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F5", "restore_state": "KEY_F8" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         config_file = SYSTEM_DIR / "config.json"
         oxygen_file = SYSTEM_DIR / "oxygenproject.json"

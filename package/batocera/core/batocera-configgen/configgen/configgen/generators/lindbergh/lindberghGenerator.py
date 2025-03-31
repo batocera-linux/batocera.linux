@@ -2,11 +2,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -79,7 +79,7 @@ class LindberghGenerator(Generator):
             "keys": { "exit": "KEY_T", "coin": "KEY_5" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         romDir = rom.parent
         romName = rom.name
         _logger.debug("ROM path: %s", romDir)
@@ -124,7 +124,7 @@ class LindberghGenerator(Generator):
                 executable_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
                 file_path.chmod(executable_permissions)
                 _logger.debug("Made %s executable", exe_file)
-        
+
         environment={
                 # Libraries
                 "LD_LIBRARY_PATH": f"/lib32:/lib32/extralibs:/lib:/usr/lib:{romDir}",
@@ -139,7 +139,7 @@ class LindberghGenerator(Generator):
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0",
             }
-        
+
         if system.config.get_bool("lindbergh_zink"):
             environment.update(
                 {

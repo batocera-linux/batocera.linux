@@ -289,7 +289,7 @@ class OpenJazzGenerator(Generator):
         _logger.info("Axes: %s", cfg.axes)
         _logger.info("Hats: %s", cfg.hats)
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Load configuration file
         cfg = _OpenJazzConfig.load(_CONFIG)
         self.print_config(cfg)

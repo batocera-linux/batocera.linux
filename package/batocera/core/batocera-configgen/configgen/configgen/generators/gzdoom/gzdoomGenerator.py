@@ -48,7 +48,7 @@ class GZDoomGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_store": "KEY_F6", "restore_store": "KEY_F9" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # check the path is added to the ini file
         fm_banks = f"Path={_FM_BANKS_DIR}\n"
         sound_fonts = f"Path={_SOUND_FONTS_DIR}\n"

@@ -22,7 +22,7 @@ class Fba2xGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         iniConfig = CaseSensitiveConfigParser()
         if fbaCustom.exists():
             iniConfig.read(fbaCustom)

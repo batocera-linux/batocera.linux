@@ -28,7 +28,7 @@ class DuckstationGenerator(Generator):
                      }
     }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Test if it's a m3u file
         if rom.suffix == ".m3u":
             rom = rewriteM3uFullPath(rom)

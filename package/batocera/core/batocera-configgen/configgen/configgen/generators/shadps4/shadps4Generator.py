@@ -27,7 +27,7 @@ class shadPS4Generator(Generator):
             "keys": {"exit": ["KEY_LEFTALT", "KEY_F4"]}
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Set the paths using Path objects
         configPath = CONFIGS / "shadps4"

@@ -30,7 +30,7 @@ class AmiberryGenerator(Generator):
             "keys": { "exit": "KEY_F10" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_RETROARCH_CUSTOM.parent)
 
         retroconfig = UnixSettings(_RETROARCH_CUSTOM, separator=' ')

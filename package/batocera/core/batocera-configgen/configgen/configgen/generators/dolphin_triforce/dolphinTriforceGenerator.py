@@ -35,7 +35,7 @@ class DolphinTriforceGenerator(Generator):
                       "save_state":    ["KEY_LEFTSHIFT", "KEY_F1"] }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(DOLPHIN_TRIFORCE_INI.parent)
 
         # Dir required for saves

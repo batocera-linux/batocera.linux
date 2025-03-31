@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class FlatpakGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         romId = None
         with rom.open() as f:

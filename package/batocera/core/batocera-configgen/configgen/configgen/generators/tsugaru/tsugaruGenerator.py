@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class TsugaruGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Start emulator fullscreen
         commandArray = ["/usr/bin/Tsugaru_CUI", BIOS / "fmtowns"]

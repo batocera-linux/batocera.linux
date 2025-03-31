@@ -14,7 +14,7 @@ class DosBoxStagingGenerator(Generator):
 
     # Main entry of the module
     # Return command
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
         batFile = rom / "dosbox.bat"
         gameConfFile = rom / "dosbox.cfg"

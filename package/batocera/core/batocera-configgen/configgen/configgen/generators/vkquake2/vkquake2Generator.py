@@ -26,7 +26,7 @@ class VKQuake2Generator(Generator):
             "keys": { "exit": "KEY_F10", "save_state": "KEY_F6", "restore_state": "KEY_F7" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         romName = rom.name
 
         # Copy updated binary files if they don't exist or if the source is newer

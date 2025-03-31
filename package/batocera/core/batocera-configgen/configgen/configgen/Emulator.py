@@ -4,7 +4,7 @@ import logging
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping
 from dataclasses import InitVar, dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 
@@ -88,9 +88,31 @@ class Emulator:
     name: str = field(init=False)
     config: SystemConfig = field(init=False)
     renderconfig: Config = field(init=False)
+    game_info_xml: str = field(init=False)
+    __es_game_info: dict[str, str] | None = field(init=False, default=None)
+
+    @property
+    def es_game_info(self) -> Mapping[str, str]:
+        if self.__es_game_info is not None:
+            return self.__es_game_info
+
+        self.__es_game_info = {}
+        vals = self.__es_game_info
+
+        try:
+            tree = ET.parse(self.game_info_xml)
+            root = cast('ET.Element', tree.getroot())
+            for child in root:
+                for metadata in child:
+                    vals[metadata.tag] = metadata.text or ''
+        except Exception:
+            _logger.debug("An error occurred while reading ES metadata")
+
+        return vals
 
     def __post_init__(self, args: Namespace, rom: Path, /) -> None:
         self.name = args.system
+        self.game_info_xml = args.gameinfoxml
 
         # read the configuration from the system name
         system_data = _load_system_config(

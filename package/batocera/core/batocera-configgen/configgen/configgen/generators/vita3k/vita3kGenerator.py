@@ -27,7 +27,7 @@ class Vita3kGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTCTRL", "KEY_Q"], "menu": "KEY_ENTER", "pause": "KEY_ENTER" }
         }
 
-    def generate(self, system, rom, playersControllers, metadata, esmetadata, guns, wheels, gameResolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Create save folder
         mkdir_if_not_exists(vitaSaves)
