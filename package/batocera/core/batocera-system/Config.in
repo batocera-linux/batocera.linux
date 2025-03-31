@@ -1143,6 +1143,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Blake Stone
 	select BR2_PACKAGE_BSTONE    # ALL
 
+	# Jedi Knight - Dark Forces 2
+	select BR2_PACKAGE_OPENJKDF2    if BR2_x86_64
+
 	help
 	  Ports
 

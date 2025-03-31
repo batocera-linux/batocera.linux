@@ -1,0 +1,10 @@
+config BR2_PACKAGE_OPENJKDF2
+	bool "openjkdf2"
+	select BR2_PACKAGE_GAMENETWORKINGSOCKETS
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_SDL2
+	help
+	  A cross-platform reimplementation of
+	  Jedi Knight Dark Forces 2 written in C.
+
+	  https://github.com/shinyquagsire23/OpenJKDF2

@@ -459,6 +459,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr1x/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/tr2x/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/bstone/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/openjkdf2/Config.in"
   endmenu
 
   menu "dhewm3"
@@ -648,6 +649,8 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_ttf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_mixer/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/sdl3_image/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/gamenetworkingsockets/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-cog/Config.in"
 endmenu
 
 menu "Audio"
