@@ -68,6 +68,7 @@ class LibretroGenerator(Generator):
         altDecoration = videoMode.getAltDecoration(system.name, rom, 'retroarch')
         gameShader = None
         shaderBezel = False
+        video_shader: Path | None = None
         if altDecoration == "0":
             if 'shader' in renderConfig:
                 gameShader = renderConfig['shader']
@@ -323,7 +324,7 @@ class LibretroGenerator(Generator):
             configToAppend.append(overlayFile)
 
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
-        if 'shader' in renderConfig and gameShader is not None:
+        if video_shader is not None:
             commandArray.extend(["--set-shader", video_shader])
 
         # Generate the append

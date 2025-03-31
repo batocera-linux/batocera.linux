@@ -73,19 +73,20 @@ class FsuaeGenerator(Generator):
         # extract zip here
         TEMP_DIR = Path("/tmp/fsuae")
         diskNames: list[str] = []
+        zf: zipfile.ZipFile | None = None
 
         # read from zip
         if rom.suffix.lower() == ".zip":
             zf = zipfile.ZipFile(rom, 'r')
             for name in zf.namelist():
                 d = name.lower()
-                if (d.endswith(("ipf", "adf", "dms", "adz"))):
+                if d.endswith(("ipf", "adf", "dms", "adz")):
                     diskNames.append(name)
 
             _logger.debug("Amount of disks in zip %s", len(diskNames))
 
         # if 2+ files, we have a multidisk ZIP (0=no zip)
-        if (len(diskNames) > 1):
+        if len(diskNames) > 1 and zf is not None:
             _logger.debug("extracting...")
             shutil.rmtree(TEMP_DIR, ignore_errors=True) # cleanup
             zf.extractall(TEMP_DIR)

@@ -55,12 +55,12 @@ def writeControllersConfig(
     retroconfig.save('input_grab_mouse_toggle',   '"nul"')
 
     for controller in controllers:
-        mouseIndex = None
+        mouseIndex: str | None = None
         if system.name in ['nds', '3ds']:
             deviceList = getDevicesInformation()
             mouseIndex = getAssociatedMouse(deviceList, controller.device_path)
         if mouseIndex is None:
-            mouseIndex = 0
+            mouseIndex = '0'
         writeControllerConfig(retroconfig, controller, controller.player_number, system, lightgun, mouseIndex)
     writeHotKeyConfig(retroconfig, controllers)
 
@@ -90,7 +90,7 @@ def writeControllerConfig(
     playerIndex: int,
     system: Emulator,
     lightgun: bool,
-    mouseIndex: int | None = 0,
+    mouseIndex: str,
     /,
 ):
     generatedConfig = generateControllerConfig(controller, system, lightgun, mouseIndex)
@@ -105,7 +105,7 @@ def generateControllerConfig(
     controller: Controller,
     system: Emulator,
     lightgun: bool,
-    mouseIndex: int | None = 0,
+    mouseIndex: str,
     /,
 ) -> dict[str, object]:
 # Map an emulationstation button name to the corresponding retroarch name

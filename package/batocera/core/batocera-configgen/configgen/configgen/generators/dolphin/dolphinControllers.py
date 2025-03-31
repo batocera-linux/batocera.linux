@@ -593,7 +593,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
 
     return False
 
-def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int | None, reverse: bool, hotkey_id: str | None, gcz_ids: Mapping[str, str] | None) -> None:
+def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int, reverse: bool, hotkey_id: str | None, gcz_ids: Mapping[str, str] | None) -> None:
     f.write(f"{keyname} = ")
     if hotkey_id is not None:
         f.write(f"`Button {hotkey_id}` & ")

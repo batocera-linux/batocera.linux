@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 import struct
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, cast
 
-from PIL import Image, ImageOps
 import qrcode
+from PIL import Image, ImageOps
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
 from ..exceptions import BatoceraException
@@ -14,6 +14,7 @@ from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
     from PIL.ImageFile import ImageFile
+    from qrcode.image.pil import PilImage
 
     from ..config import SystemConfig
     from ..Emulator import Emulator
@@ -168,13 +169,13 @@ def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: 
     qr = qrcode.QRCode(version=1, box_size=bxsize, border=bdsize)
     qr.add_data(url)
     qr.make()
-    qrimg = qr.make_image(back_color = (120, 120, 120))
+    qrimg = cast('PilImage', qr.make_image(back_color = (120, 120, 120)))
 
     x = 29 * bxsize + bdsize * bxsize * 2
 
     w,h = fast_image_size(input_png)
     newBezel = Image.open(input_png)
-    qrimg    = qrimg.convert("RGBA")
+    qrimg    = cast('Image.Image', qrimg.convert("RGBA"))
     newBezel = newBezel.convert("RGBA")
 
     corner = system.config.get('bezel.qrcode_corner', 'NE')
@@ -188,34 +189,40 @@ def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: 
         newBezel.paste(qrimg, (w-x, 0, w, x))
     newBezel.save(output_png)
 
-def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
+def tatooImage(input_png: Path, output_png: Path, system: Emulator) -> None:
+    tattoo_file: ImageFile | None = None
+
     if system.config['bezel.tattoo'] == 'system':
-        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
+        tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
         try:
-            if not tattoo_file.exists():
-                tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
-            tattoo = Image.open(tattoo_file)
+            if not tattoo_path.exists():
+                tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
+            tattoo_file = Image.open(tattoo_path)
         except Exception:
-            _logger.error("Error opening controller overlay: %s", tattoo_file)
-    elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
+            _logger.error("Error opening controller overlay: %s", tattoo_path)
+    elif system.config['bezel.tattoo'] == 'custom' and (tattoo_path := Path(system.config['bezel.tattoo_file'])).exists():
         try:
-            tattoo = Image.open(tattoo_file)
+            tattoo_file = Image.open(tattoo_path)
         except Exception:
-            _logger.error("Error opening custom file: %s", tattoo_file)
+            _logger.error("Error opening custom file: %s", tattoo_path)
     else:
-        tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
+        tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
         try:
-            tattoo = Image.open(tattoo_file)
+            tattoo_file = Image.open(tattoo_path)
         except Exception:
-            _logger.error("Error opening custom file: %s", tattoo_file)
+            _logger.error("Error opening custom file: %s", tattoo_path)
+
+    if tattoo_file is None:
+        raise BatoceraException(f'Tattoo image could not be opened: {tattoo_path}')
+
     # Open the existing bezel...
     back = Image.open(input_png)
     # Convert it otherwise it implodes later on...
     back = back.convert("RGBA")
-    tattoo = tattoo.convert("RGBA")
+    tattoo = tattoo_file.convert("RGBA")
     # Quickly grab the sizes.
     w,h = fast_image_size(input_png)
-    tw,th = fast_image_size(tattoo_file)
+    tw,th = fast_image_size(tattoo_path)
     if not system.config.get_bool("bezel.resize_tattoo", True):
         # Maintain the image's original size.
         # Failsafe for if the image is too large.
@@ -281,7 +288,7 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
         imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
     imgout.save(output_png, mode="RGBA", format="PNG")
 
-def gunBordersSize(bordersSize: str) -> tuple[int, int]:
+def gunBordersSize(bordersSize: str | None) -> tuple[int, int]:
     if bordersSize == "thin":
         return 1, 0
     if bordersSize == "medium":
