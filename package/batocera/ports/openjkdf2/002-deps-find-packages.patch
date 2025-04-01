@@ -1,0 +1,178 @@
+diff --git a/cmake_modules/config_platform_deps.cmake b/cmake_modules/config_platform_deps.cmake
+index b3e60d94a3..2985434a3e 100644
+--- a/cmake_modules/config_platform_deps.cmake
++++ b/cmake_modules/config_platform_deps.cmake
+@@ -63,14 +63,32 @@ if (NOT TARGET_USE_BASICSOCKETS AND NOT TARGET_USE_GAMENETWORKINGSOCKETS)
+     set(TARGET_USE_NOSOCKETS TRUE)
+ endif()
+ 
++# Attempt to find the system-installed zlib
++message(STATUS "Looking for system-installed zlib 1.2.13")
+ 
+-message(STATUS "Going to build “zlib 1.2.13” from Git module")
+-include(build_zlib)
++# Try to find the system version of zlib
++find_package(ZLIB 1.2.13 REQUIRED)
++
++if(ZLIB_FOUND)
++    message(STATUS "Found system-installed zlib: ${ZLIB_LIBRARIES}")
++    add_compile_definitions(PLATFORM_ZLIB)
++else()
++    message(STATUS "zlib 1.2.13 not found, going to build from Git module")
++    include(build_zlib)
++endif()
+ 
+ if(TARGET_USE_PHYSFS)
+-    message(STATUS "Going to build “PhysFS 3.2.0” from Git module")
+-    include(build_physfs)
+-    add_compile_definitions(PLATFORM_PHYSFS)
++    message(STATUS "Looking for system-installed PhysFS 3.2.0")
++    find_package(PhysFS 3.2.0 REQUIRED)
++    
++    if(PhysFS_FOUND)
++        message(STATUS "Found system-installed PhysFS 3.2.0")
++        add_compile_definitions(PLATFORM_PHYSFS)
++    else()
++    	message(STATUS "Going to build “PhysFS 3.2.0” from Git module")
++    	include(build_physfs)
++    	add_compile_definitions(PLATFORM_PHYSFS)
++    endif()
+ endif()
+ 
+ if(TARGET_USE_GAMENETWORKINGSOCKETS)
+@@ -124,8 +142,15 @@ if(TARGET_USE_NOSOCKETS AND NOT TARGET_HOOKS)
+     add_definitions(-DPLATFORM_NOSOCKETS)
+ endif()
+ 
+-message(STATUS "Going to build “libpng 1.6.39” from Git module")
+-include(build_libpng)
++message(STATUS "Looking for system-installed libpng 1.6.39")
++find_package(PNG 1.6.39 REQUIRED)
++if(PNG_FOUND)
++    message(STATUS "Found system-installed libpng: ${PNG_LIBRARIES}")
++    add_compile_definitions(PLATFORM_LIBPNG)
++else()
++    message(STATUS "libpng 1.6.39 not found, going to build from Git module")
++    include(build_libpng)
++endif()
+ 
+ if(TARGET_USE_LIBSMACKER)
+     list(APPEND ENGINE_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/external/libsmacker/smacker.c ${PROJECT_SOURCE_DIR}/src/external/libsmacker/smk_bitstream.c ${PROJECT_SOURCE_DIR}/src/external/libsmacker/smk_hufftree.c)
+@@ -135,19 +160,38 @@ if(TARGET_USE_LIBSMUSHER)
+     list(APPEND ENGINE_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/external/libsmusher/src/smush.c ${PROJECT_SOURCE_DIR}/src/external/libsmusher/src/codec48.c)
+ endif()
+ 
+-# Build SDL2 from sources (n/a for WASM)
+-if(TARGET_USE_SDL2 AND NOT PLAT_WASM)
+-    message(STATUS "Going to build “SDL 2.26.5” from Git module")
+-    include(build_sdl)
+-
+-    if(TARGET_USE_OPENAL)
+-        message(STATUS "Going to build “SDL_mixer 2.6.3” from Git module")
+-        include(build_sdl_mixer)
+-    endif()
+-endif()
+-
+ # SDL2 Platform/
+ if(TARGET_USE_SDL2)
++    find_package(SDL2 REQUIRED)
++    if(SDL2_FOUND AND NOT CMAKE_CROSSCOMPILING)
++        message(STATUS "Found SDL2: ${SDL2_LIBRARIES}")
++        include_directories(${SDL2_INCLUDE_DIRS})
++
++        if(TARGET_USE_OPENAL)
++            find_package(SDL2_mixer REQUIRED)
++            if(SDL2_mixer_FOUND AND NOT CMAKE_CROSSCOMPILING)
++                message(STATUS "Found SDL2_mixer: ${SDL2_mixer_LIBRARIES}")
++                include_directories(${SDL2_mixer_INCLUDE_DIRS})
++            else()
++                message(STATUS "SDL_mixer not found or cross-compiling, building from Git module")
++                include(build_sdl_mixer)
++                set(SDL2_mixer_FOUND TRUE)  # To prevent potential issues
++                set(SDL2_mixer_LIBRARIES SDL2_mixer-NOTFOUND) # To prevent warnings
++            endif()
++        endif()
++    else()
++        message(STATUS "SDL2 not found or cross-compiling, building from Git module")
++        include(build_sdl)
++        set(SDL2_FOUND TRUE)  # To prevent potential issues
++        set(SDL2_LIBRARIES SDL2-NOTFOUND) # To prevent warnings
++        if(TARGET_USE_OPENAL)
++            message(STATUS "Building SDL_mixer 2.6.3 from Git module")
++            include(build_sdl_mixer)
++            set(SDL2_mixer_FOUND TRUE)  # To prevent potential issues
++            set(SDL2_mixer_LIBRARIES SDL2_mixer-NOTFOUND) # To prevent warnings
++        endif()
++    endif()
++
+     file(GLOB TARGET_SDL2_SRCS ${PROJECT_SOURCE_DIR}/src/Platform/SDL2/*.c)
+     list(APPEND ENGINE_SOURCE_FILES ${TARGET_SDL2_SRCS})
+     add_compile_definitions(SDL2_RENDER)
+@@ -246,67 +290,3 @@ if(TARGET_WIN32)
+     endif()
+ endif()
+ 
+-
+-# Really, really ugly hack, protoc needs some LD_LIBRARY_PATH junk probably but idk
+-# WHYYY???? Does protoc not just take relative libz paths???
+-# Also why did this break in the first place I didn't change anything??
+-if(TARGET_USE_GAMENETWORKINGSOCKETS)
+-    if(PLAT_MSVC)
+-        if(ZLIB_USE_STATIC_LIBS)
+-            set(HACK_ZLIB_SRC ${ZLIB_STATIC_LIBRARY_PATH})
+-            set(HACK_ZLIB_SRC_DIR ${ZLIB_SHARED_LIBRARY_DIR})
+-        else()
+-            set(HACK_ZLIB_SRC ${ZLIB_SHARED_LIBRARY_PATH})
+-            set(HACK_ZLIB_SRC_DIR ${ZLIB_SHARED_LIBRARY_DIR})
+-        endif()
+-    elseif(CMAKE_CROSSCOMPILING)
+-        set(HACK_ZLIB_SRC ${ZLIB_HOST_SHARED_LIBRARY_PATH})
+-        set(HACK_ZLIB_SRC_DIR ${ZLIB_HOST_SHARED_LIBRARY_DIR})
+-    else()
+-        set(HACK_ZLIB_SRC ${ZLIB_SHARED_LIBRARY_PATH})
+-        set(HACK_ZLIB_SRC_DIR ${ZLIB_SHARED_LIBRARY_DIR})
+-    endif()
+-
+-
+-    set(GNS_PROTOC_HACK_ZLIB ${GameNetworkingSockets_ROOT}/src/.copied_hack)
+-    set(GNS_PROTOC_HACK_ZLIB_DIR ${GameNetworkingSockets_ROOT}/src)
+-    set(GNS_PROTOC_HACK_ZLIB_DIR_2 ${Protobuf_ROOT}/lib)
+-    if(NOT CMAKE_CROSSCOMPILING OR NOT Protoc_ROOT)
+-        set(GNS_PROTOC_HACK_ZLIB_DIR_3 ${Protobuf_ROOT}/lib) # HACK
+-    else()
+-        set(GNS_PROTOC_HACK_ZLIB_DIR_3 ${Protoc_ROOT}/lib)
+-    endif()
+-    set(GNS_PROTOC_HACK_ZLIB_WILDCARD ${GameNetworkingSockets_ROOT}/src/${CMAKE_SHARED_LIBRARY_PREFIX}${ZLIB_HOST_LIBRARIES}${CMAKE_SHARED_LIBRARY_SUFFIX})
+-
+-    if(PLAT_MSVC)
+-        add_custom_command(OUTPUT "${GNS_PROTOC_HACK_ZLIB}" 
+-                           COMMAND ${CMAKE_COMMAND} -E make_directory "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E make_directory "${HACK_ZLIB_SRC_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC}" "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E touch "${GNS_PROTOC_HACK_ZLIB}"
+-                           )
+-    else()
+-        add_custom_command(OUTPUT "${GNS_PROTOC_HACK_ZLIB}" 
+-                           COMMAND ${CMAKE_COMMAND} -E make_directory "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E make_directory "${HACK_ZLIB_SRC_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E touch "${HACK_ZLIB_SRC_DIR}/hack.dylib"
+-                           COMMAND ${CMAKE_COMMAND} -E touch "${HACK_ZLIB_SRC_DIR}/hack.dll"
+-                           COMMAND ${CMAKE_COMMAND} -E touch "${HACK_ZLIB_SRC_DIR}/hack.so"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dylib" "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dll" "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.so" "${GNS_PROTOC_HACK_ZLIB_DIR}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dylib" "${GNS_PROTOC_HACK_ZLIB_DIR_2}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dll" "${GNS_PROTOC_HACK_ZLIB_DIR_2}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.so" "${GNS_PROTOC_HACK_ZLIB_DIR_2}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dylib" "${GNS_PROTOC_HACK_ZLIB_DIR_3}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.dll" "${GNS_PROTOC_HACK_ZLIB_DIR_3}"
+-                           COMMAND ${CMAKE_COMMAND} -E copy "${HACK_ZLIB_SRC_DIR}/*.so" "${GNS_PROTOC_HACK_ZLIB_DIR_3}"
+-                           COMMAND ${CMAKE_COMMAND} -E touch "${GNS_PROTOC_HACK_ZLIB}"
+-                           )
+-    endif()
+-
+-    add_custom_target(GNS_HACK_ZLIB DEPENDS ${GNS_PROTOC_HACK_ZLIB})
+-    add_dependencies(GameNetworkingSockets::GameNetworkingSockets GNS_HACK_ZLIB)
+-    add_dependencies(GameNetworkingSockets::GameNetworkingSockets_s GNS_HACK_ZLIB)
+-    add_dependencies(GNS_HACK_ZLIB PROTOBUF)
+-endif()

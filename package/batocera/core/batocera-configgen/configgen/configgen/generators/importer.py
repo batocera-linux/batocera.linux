@@ -60,6 +60,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'tr2x': ('tr2x.tr2xGenerator', 'TR2XGenerator'),
     'clk': ('clk.clkGenerator', 'ClkGenerator'),
     'bstone': ('bstone.bstoneGenerator', 'BstoneGenerator'),
+    'openjkdf2': ('openjkdf2.openjkdf2Generator', 'OpenJKDF2Generator'),
 }
 
 def get_generator(emulator: str) -> Generator:

@@ -1,0 +1,33 @@
+diff --git a/cmake_modules/target_linux_all.cmake b/cmake_modules/target_linux_all.cmake
+index 4b607434e8..2a78af55e2 100644
+--- a/cmake_modules/target_linux_all.cmake
++++ b/cmake_modules/target_linux_all.cmake
+@@ -1,10 +1,11 @@
+ macro(plat_link_and_package)
+     target_link_libraries(sith_engine PRIVATE PNG::PNG ZLIB::ZLIB)
+-    target_link_libraries(sith_engine PRIVATE ${SDL2_COMMON_LIBS} GL ${OPENAL_LIBRARY} GLEW::GLEW ${GTK3_LIBRARIES})
++    target_link_libraries(sith_engine PRIVATE ${SDL2_LIBRARIES} GL ${OPENAL_LIBRARY} GLEW::GLEW ${GTK3_LIBRARIES})
+      
+     if(TARGET_USE_PHYSFS)
+-        target_link_libraries(sith_engine PRIVATE PhysFS::PhysFS_s)
+-        target_link_libraries(${BIN_NAME} PRIVATE PhysFS::PhysFS_s)
++        target_include_directories(sith_engine PRIVATE ${PHYSFS_INCLUDE_DIRS})
++        target_link_libraries(sith_engine PRIVATE physfs)
++        target_link_libraries(${BIN_NAME} PRIVATE physfs)
+     endif()
+     if(TARGET_USE_GAMENETWORKINGSOCKETS)
+         target_link_libraries(sith_engine PRIVATE GameNetworkingSockets::GameNetworkingSockets)
+@@ -32,11 +33,4 @@ macro(plat_extra_deps)
+         add_definitions(${LIBCURL_STATIC_CFLAGS_OTHER})
+     endif()
+ 
+-    if(TARGET_USE_GAMENETWORKINGSOCKETS)
+-        add_custom_command(
+-            TARGET ${BIN_NAME}
+-            POST_BUILD 
+-            COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/GameNetworkingSockets/bin/libGameNetworkingSockets.so ${PROJECT_BINARY_DIR}
+-        )
+-    endif()
+-endmacro()
+\ No newline at end of file
++endmacro()

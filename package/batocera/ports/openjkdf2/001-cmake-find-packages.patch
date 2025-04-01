@@ -1,0 +1,65 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2b074c0567..576a8899b0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -174,8 +174,23 @@ include_directories(
+     ${PROJECT_SOURCE_DIR}/src/external/nativefiledialog-extended
+ )
+ 
++find_package(PkgConfig REQUIRED)
++
+ if(TARGET_USE_SDL2)
+-    include_directories(${SDL_INCLUDE_DIRS} ${SDL_MIXER_INCLUDE_DIRS})
++	pkg_check_modules(SDL2 REQUIRED sdl2)
++	pkg_check_modules(SDL2_mixer REQUIRED SDL2_mixer)
++
++	if (SDL2_FOUND)
++		message(STATUS "Found SDL2: ${SDL2_LIBRARIES}")
++	else()
++		message(FATAL_ERROR "SDL2 not found!")
++	endif()
++
++	if (SDL2_mixer_FOUND)
++		message(STATUS "Found SDL2_mixer: ${SDL2_mixer_LIBRARIES}")
++	else()
++		message(FATAL_ERROR "SDL2_mixer not found!")
++	endif()
+ endif()
+ 
+ if(TARGET_USE_OPENAL AND NOT OPENAL_COMPILING_FROM_SRC)
+@@ -214,6 +229,19 @@ include(cmake_modules/precompile_globals.cmake)
+ add_library(sith_engine OBJECT ${ENGINE_SOURCE_FILES})
+ plat_specific_deps()
+ 
++if(TARGET_USE_PHYSFS)
++    pkg_check_modules(PHYSFS REQUIRED physfs)
++    message(STATUS "Looking for system-installed PhysFS 3.2.0")
++    find_package(PhysFS 3.2.0 REQUIRED)
++
++    if(PhysFS_FOUND)
++        message(STATUS "Found PhysFS: ${PhysFS_LIBRARIES}")
++        add_compile_definitions(PLATFORM_PHYSFS)
++    else()
++        message(FATAL_ERROR "PhysFS 3.2.0 not found on the system. Please install it.")
++    endif()
++endif()
++
+ if(TARGET_ANDROID)
+     add_library(${BIN_NAME} SHARED ${GAME_MAIN_SOURCE_FILES})
+     target_link_libraries(${BIN_NAME} PRIVATE ${SDL2_COMMON_LIBS} sith_engine)
+@@ -228,7 +256,14 @@ elseif(TARGET_HOOKS)
+     target_link_libraries(${BIN_NAME}_kvm PRIVATE  ${SDL2_COMMON_LIBS} sith_engine)
+ else()
+     add_executable(${BIN_NAME} ${GAME_MAIN_SOURCE_FILES})
+-    target_link_libraries(${BIN_NAME} PRIVATE ${SDL2_COMMON_LIBS} sith_engine)
++    target_link_libraries(${BIN_NAME} PRIVATE sith_engine)
++
++    if(SDL2_FOUND)
++        target_link_libraries(${BIN_NAME} PRIVATE ${SDL2_LIBRARIES})
++    endif()
++    if(SDL2_mixer_FOUND)
++        target_link_libraries(${BIN_NAME} PRIVATE ${SDL2_mixer_LIBRARIES})
++    endif()
+ 
+     if(TARGET_BUILD_TESTS AND TARGET_MACOS)
+         add_executable(rle_test src/Tests/rle_test.c)

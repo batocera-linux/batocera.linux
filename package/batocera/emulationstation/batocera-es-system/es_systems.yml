@@ -5808,3 +5808,26 @@ bstone:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:bstone
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bstone
+
+jkdf2:
+  name: Jedi Knight - Dark Forces 2
+  manufacturer: Ports
+  release: 1993
+  hardware: port
+  extensions: [jedi]
+  platform: pc
+  group: ports
+  emulators:
+    openjkdf2:
+      openjkdf2: { requireAnyOf: [BR2_PACKAGE_OPENJKDF2] }
+  comment_en: |
+    Add the Jedi Knight - Dark Forces 2 game files into this directory.
+
+    Then create a blank launch file with a .jedi extension to be able to start the game from ES.
+    i.e. `Jedi Knight - Dark Forces 2.jedi`.
+
+    For more info: https://wiki.batocera.org/systems:jkdf2
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:jkdf2
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:jkdf2
