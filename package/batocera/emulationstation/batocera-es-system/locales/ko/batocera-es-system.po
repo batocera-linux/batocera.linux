@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-03-22 15:24+0000\n"
+"PO-Revision-Date: 2025-03-30 13:39+0900\n"
 "Last-Translator: DDinghoya <ddinghoya@gmail.com>\n"
 "Language-Team: Korean (KO)\n"
-"Language: ko-KO\n"
+"Language: ko_KO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Loco-Source-Locale: ko_KR\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 3.5\n"
 "X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
@@ -1358,12 +1358,12 @@ msgstr "3D 엔진"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "3DS mode (bottom side)"
-msgstr ""
+msgstr "3DS 모드 (아래쪽)"
 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "3DS mode (right side)"
-msgstr ""
+msgstr "3DS 모드 (오른쪽)"
 
 #. TRANSLATION: libretro/np2kai, libretro/px68k
 msgctxt "game_options"
@@ -3257,7 +3257,7 @@ msgstr "아타리 XE 게임 시스템 카트리지"
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
 msgid "Attack"
-msgstr ""
+msgstr "공격"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -3572,7 +3572,7 @@ msgstr "BOBBA FETT FIX"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "BOOST RENDER RES"
-msgstr ""
+msgstr "렌더링 해상도 향상"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -5501,6 +5501,16 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "사이클 타이밍 확인"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle next"
+msgstr "다음 사이클"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Cycle previous"
+msgstr "이전 사이클"
+
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -6898,7 +6908,7 @@ msgstr "경우에 따라 찢어짐 현상을 방지하기 위해 수직 동기�
 #. TRANSLATION: bstone
 msgctxt "game_options"
 msgid "Enable widescreen support for game rendering."
-msgstr ""
+msgstr "게임 렌더링에 와이드스크린 지원을 활성화합니다."
 
 #. TRANSLATION: model2emu, play, theforceengine
 msgctxt "game_options"
@@ -7708,6 +7718,8 @@ msgid ""
 "Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 "
 "franchise for non Nvidia GPUs. May need the FPS limiter option enabled."
 msgstr ""
+"Nvidia GPU가 아닌 버추어 테니스 3 및 버추어 파이터 5 프랜차이즈의 일부 그림자"
+"와 텍스처를 수정합니다. FPS 리미터 옵션을 활성화해야 할 수 있습니다."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -8887,6 +8899,8 @@ msgid ""
 "House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
 "your processor."
 msgstr ""
+"하우스 오브 더 데드 4 속도 수정합니다. 게임을 프로세서의 CPU 최소 주파수로 설"
+"정합니다."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -10515,6 +10529,16 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "메뉴"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu N"
+msgstr "메뉴 N"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu Y"
+msgstr "메뉴 Y"
+
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
@@ -10522,33 +10546,23 @@ msgstr "메뉴 뒤로가기"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
-msgid "Menu back / exit"
-msgstr ""
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
 msgid "Menu down"
-msgstr ""
+msgstr "메뉴 아래"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
 msgid "Menu enter"
-msgstr ""
+msgstr "메뉴 엔터"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
-msgid "Menu left"
-msgstr ""
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Menu right"
-msgstr ""
+msgid "Menu escape"
+msgstr "메뉴 이스케이프"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
 msgid "Menu up"
-msgstr ""
+msgstr "메뉴 위"
 
 #. TRANSLATION: libretro/snes9x
 msgctxt "game_options"
@@ -11083,7 +11097,7 @@ msgctxt "keys_files"
 msgid "Next slot"
 msgstr "다음 슬ㄹ"
 
-#. TRANSLATION: bstone.keys, quake2.keys
+#. TRANSLATION: quake2.keys
 msgctxt "keys_files"
 msgid "Next weapon"
 msgstr "다음 무기"
@@ -11126,7 +11140,7 @@ msgstr "건너뛰기 없음"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "No touch screen (Default)"
-msgstr ""
+msgstr "터치 스크린 없음 (기본)"
 
 #. TRANSLATION: dolphin, dolphin_triforce, drastic, fallout1-ce, fallout2-ce, ...
 msgctxt "game_options"
@@ -11849,7 +11863,7 @@ msgstr "프레젠테이션 패션"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "PRIMEVAL HUNT MODE"
-msgstr ""
+msgstr "원시 사냥 모드"
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -11959,11 +11973,6 @@ msgstr "부분적"
 msgctxt "game_options"
 msgid "Passes all physical keyboard events for Pad2Key."
 msgstr "패드투키에 대한 모든 물리적 키보드 이벤트를 전달합니다."
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Pause"
-msgstr ""
 
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
@@ -12322,11 +12331,6 @@ msgstr "이전 아이템"
 msgctxt "keys_files"
 msgid "Previous slot"
 msgstr "이전 슬ㄹ"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Previous weapon"
-msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -13475,7 +13479,7 @@ msgstr "채우기 위해 늘리기"
 #. TRANSLATION: bstone
 msgctxt "game_options"
 msgid "STRETCH UI MENU"
-msgstr ""
+msgstr "늘이기 UI 메뉴"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -13814,7 +13818,7 @@ msgstr "마메 메뉴를 통해 시스템 전체 컨트롤 설정"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Set the Primeval Hunt mode (touch screen)."
-msgstr ""
+msgstr "원시 사냥 모드 (터치 스크린) 설정합니다."
 
 #. TRANSLATION: libretro/gambatte
 msgctxt "game_options"
@@ -14048,7 +14052,7 @@ msgstr "션트 9"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Side by side"
-msgstr ""
+msgstr "나란히"
 
 #. TRANSLATION: dosbox, libretro/gambatte, libretro/o2em
 msgctxt "game_options"
@@ -14602,7 +14606,7 @@ msgstr "정적 해석기"
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
 msgid "Stats"
-msgstr ""
+msgstr "상태"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -15612,7 +15616,7 @@ msgstr "핸들 사용"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "USE ZINK FOR RENDERING"
-msgstr ""
+msgstr "렌더링에 ZINK 사용"
 
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
@@ -15840,7 +15844,7 @@ msgstr "2D 레이어에 사용되는 업스케일 필터입니다. 새로운 3D 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid "Upscale rendering resolution to display size."
-msgstr ""
+msgstr "디스플레이 크기에 맞춰 렌더링 해상도를 높입니다."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -15855,7 +15859,7 @@ msgstr "우루과이"
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
 msgid "Use"
-msgstr ""
+msgstr "사용"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -16656,11 +16660,6 @@ msgctxt "game_options"
 msgid "Zone for which the game doesn't react to the wheel (in degrees)"
 msgstr "게임이 핸들에 반응하지 않는 영역 (°)"
 
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoom in"
-msgstr ""
-
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Zoom in the camera"
@@ -16670,11 +16669,6 @@ msgstr "카메라 확대"
 msgctxt "keys_files"
 msgid "Zoom in x5"
 msgstr "5배 확대"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoom out"
-msgstr ""
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -16695,6 +16689,16 @@ msgstr "확대하여 검은색 테두리를 숨깁니다."
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "확대/축소하여 검은색 테두리를 숨깁니다. 테두리는 게임마다 다릅니다."
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon in"
+msgstr "확대"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoon out"
+msgstr "축소"
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
