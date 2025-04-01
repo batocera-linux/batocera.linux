@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from ... import Command
 from ...batoceraPaths import CONFIGS
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...exceptions import BatoceraException
 from ..Generator import Generator
 from . import moonlightConfig
 from .moonlightPaths import MOONLIGHT_GAME_LIST, MOONLIGHT_STAGING_CONFIG
@@ -48,10 +49,9 @@ class MoonlightGenerator(Generator):
             }
         )
 
-    def getRealGameNameAndConfigFile(self, rom: Path) -> tuple[str | None, Path]:
+    def getRealGameNameAndConfigFile(self, rom: Path) -> tuple[str, Path]:
         # find the real game name
         f = MOONLIGHT_GAME_LIST.open()
-        gfeGame = None
         for line in f:
             try:
                 gfeRom, gfeGame, confFileString = line.rstrip().split(';')
@@ -65,5 +65,5 @@ class MoonlightGenerator(Generator):
                 # return it
                 f.close()
                 return gfeGame, confFile
-        # If nothing is found (old gamelist file format ?)
-        return gfeGame, MOONLIGHT_STAGING_CONFIG
+
+        raise BatoceraException(f'{rom.stem} was not found in the Moonlight game list')

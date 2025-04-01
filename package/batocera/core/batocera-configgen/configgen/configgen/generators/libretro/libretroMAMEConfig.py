@@ -345,7 +345,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                             if software.attrib and software.get('name') == romDrivername:
                                 for info in software.iter('info'):
                                     if info.get('name') == 'usage':
-                                        autoRunCmd = info.get('value') + '\\n'
+                                        autoRunCmd = f'{info.get('value')}\\n'
 
                 # if still undefined, default autoRunCmd based on media type
                 if autoRunCmd == "":

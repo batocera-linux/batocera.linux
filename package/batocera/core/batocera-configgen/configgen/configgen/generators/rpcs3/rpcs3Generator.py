@@ -10,6 +10,7 @@ from ruamel.yaml import YAML
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...exceptions import BatoceraException
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -17,6 +18,8 @@ from . import rpcs3Controllers
 from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext, Resolution
 
 _logger = logging.getLogger(__name__)
@@ -242,11 +245,17 @@ class Rpcs3Generator(Generator):
         shutil.copytree('/usr/share/rpcs3/Icons/', icon_target, dirs_exist_ok=True, copy_function=shutil.copy2)
 
         # determine the rom name
+
         if rom.suffix == ".psn":
+            romName: Path | None = None
+
             with rom.open() as fp:
                 for line in fp:
                     if len(line) >= 9:
                         romName = RPCS3_CONFIG_DIR / "dev_hdd0" / "game" / line.strip().upper() / "USRDIR" / "EBOOT.BIN"
+
+            if romName is None:
+                raise BatoceraException(f'No game ID found in {rom}')
         else:
             romName = rom / "PS3_GAME" / "USRDIR" / "EBOOT.BIN"
 
@@ -254,7 +263,7 @@ class Rpcs3Generator(Generator):
         dbfile = RPCS3_CONFIG_DIR / "input_configs" / "gamecontrollerdb.txt"
         write_sdl_controller_db(playersControllers, dbfile)
 
-        commandArray = [RPCS3_BIN, romName]
+        commandArray: list[Path | str] = [RPCS3_BIN, romName]
 
         if not system.config.get_bool("rpcs3_gui"):
             commandArray.append("--no-gui")

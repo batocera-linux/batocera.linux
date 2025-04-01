@@ -4,7 +4,7 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Final, NotRequired, TypedDict, cast
 
 import pyudev
 
@@ -132,7 +132,7 @@ def getDevicesInformation() -> DeviceInfoDict:
                 if isMouse:
                     mouses.append(eventId)
                 devices[eventId] = {
-                    "node": ev.device_node,
+                    "node": cast('str', ev.device_node),
                     "sysfs_path": str((Path(ev.sys_path) / "device" / "device").resolve()),
                     "group": group,
                     "isJoystick": isJoystick,
@@ -144,7 +144,7 @@ def getDevicesInformation() -> DeviceInfoDict:
                         devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
                     if group not in groups:
                         groups[group] = []
-                    groups[group].append(ev.device_node)
+                    groups[group].append(cast('str', ev.device_node))
     mouses.sort()
     joysticks.sort()
     res: DeviceInfoDict = {}

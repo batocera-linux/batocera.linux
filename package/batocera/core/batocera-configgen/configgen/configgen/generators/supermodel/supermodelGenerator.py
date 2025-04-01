@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Final
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import Controller, generate_sdl_game_controller_config
+from ...exceptions import BatoceraException
 from ...gun import Guns, guns_need_crosses
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -351,7 +352,7 @@ def transformElement(elt: str, playersControllers: Controllers, mapping: dict[st
 
     matches = re.search("^JOY([12])_BUTTON([0-9]*)$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping[f"button{matches.group(2)}"])
+        return input2input(playersControllers, matches.group(1), mapping[f"button{matches.group(2)}"])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
         # check joystick type if it's hat or axis
@@ -362,7 +363,7 @@ def transformElement(elt: str, playersControllers: Controllers, mapping: dict[st
             key_up = "axisY"
         mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_up, mapping, mapping_fallback)
         print(mp)
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
+        return input2input(playersControllers, matches.group(1), mp, -1)
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
         joy_type = hatOrAxis(playersControllers, matches.group(1))
@@ -371,7 +372,7 @@ def transformElement(elt: str, playersControllers: Controllers, mapping: dict[st
         else:
             key_down = "axisY"
         mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_down, mapping, mapping_fallback)
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
+        return input2input(playersControllers, matches.group(1), mp, 1)
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
         joy_type = hatOrAxis(playersControllers, matches.group(1))
@@ -380,7 +381,7 @@ def transformElement(elt: str, playersControllers: Controllers, mapping: dict[st
         else:
             key_left = "axisX"
         mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_left, mapping, mapping_fallback)
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
+        return input2input(playersControllers, matches.group(1), mp, -1)
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
         joy_type = hatOrAxis(playersControllers, matches.group(1))
@@ -389,17 +390,17 @@ def transformElement(elt: str, playersControllers: Controllers, mapping: dict[st
         else:
             key_right = "axisX"
         mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), key_right, mapping, mapping_fallback)
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
+        return input2input(playersControllers, matches.group(1), mp, 1)
 
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping[f"axis{matches.group(2)}"])
+        return input2input(playersControllers, matches.group(1), mapping[f"axis{matches.group(2)}"])
     matches = re.search("^JOY([12])_(R?[XYZ])AXIS_NEG$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping[f"axis{matches.group(2)}"], -1)
+        return input2input(playersControllers, matches.group(1), mapping[f"axis{matches.group(2)}"], -1)
     matches = re.search("^JOY([12])_(R?[XYZ])AXIS_POS$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping[f"axis{matches.group(2)}"], 1)
+        return input2input(playersControllers, matches.group(1), mapping[f"axis{matches.group(2)}"], 1)
     if matches:
         return None
     return elt
@@ -418,7 +419,8 @@ def joy2realjoyid(playersControllers: Controllers, joy: str):
     joy_number = int(joy)
     if pad := Controller.find_player_number(playersControllers, joy_number):
         return pad.index
-    return None
+
+    raise BatoceraException(f'Cannot find joystick {joy}')
 
 def hatOrAxis(playersControllers: Controllers, player: str):
     player_number = int(player)
@@ -433,9 +435,10 @@ def hatOrAxis(playersControllers: Controllers, player: str):
                 type = "axis"
     return type
 
-def input2input(playersControllers: Controllers, player: str, joynum: int | None, button: str | None, axisside: int | None = None):
+def input2input(playersControllers: Controllers, player: str, button: str | None, axisside: int | None = None):
     player_number = int(player)
     if (pad := Controller.find_player_number(playersControllers, player_number)) and button in pad.inputs:
+        joynum = joy2realjoyid(playersControllers, player)
         input = pad.inputs[button]
         if input.type == "button":
             return f"JOY{joynum+1}_BUTTON{int(input.id)+1}"

@@ -7,7 +7,7 @@ import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SCREENSHOTS, mkdir_if_not_exists
@@ -56,7 +56,7 @@ class OpenmsxGenerator(Generator):
         tree = ET.parse(settings_xml)
         root = tree.getroot()
 
-        settings_elem = root.find("settings")
+        settings_elem = cast('ET.Element', root.find("settings"))
         fullspeed_elem = ET.Element("setting", {"id": "fullspeedwhenloading"})
         fullspeed_elem.text = system.config.get("openmsx_loading", "true")
 

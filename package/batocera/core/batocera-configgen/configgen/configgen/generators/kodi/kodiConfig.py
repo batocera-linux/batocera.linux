@@ -17,8 +17,6 @@ _KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
 def writeKodiConfigs(kodiJoystick: Path, currentControllers: Controllers, provider: str):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
     kodireversepositions = {'joystick1up': 'joystick1down', 'joystick1left': 'joystick1right', 'joystick2up': 'joystick2down', 'joystick2left': 'joystick2right' }
-    kodiaxes             = { 'joystick1up': True, 'joystick1down': True, 'joystick1left': True, 'joystick1right': True,
-                             'joystick2up': True, 'joystick2down': True, 'joystick2left': True, 'joystick2right': True }
 
     kodimapping = {
         # buttons
@@ -28,7 +26,9 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: Controllers, provid
 
         # hats or axis
         "up": "up", "down": "down", "left": "left", "right": "right",
+    }
 
+    kodiaxismapping = {
         # axes
         "joystick1up":    { "name": "leftstick",  "sens": "up"    },
         "joystick1down":  { "name": "leftstick",  "sens": "down"  },
@@ -70,9 +70,22 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: Controllers, provid
         sticksNode: dict[str, minidom.Element] = {}
 
         alreadyset = {}
-        for x in cur.inputs:
-            input = cur.inputs[x]
-            if input.name in kodimapping:
+        for input in cur.inputs.values():
+            if input.type == 'axis' and input.name in kodiaxismapping:
+                mapping = kodiaxismapping[input.name]
+                if mapping["name"] not in sticksNode:
+                    sticksNode[mapping["name"]] = config.createElement('feature')
+                    sticksNode[mapping["name"]].attributes["name"] = mapping["name"]
+                for sens in [input.name, kodireversepositions[input.name]]:
+                    xmlsens = config.createElement(kodiaxismapping[sens]["sens"])
+                    val = input.id
+                    if (int(input.value) >= 0 and sens == input.name) or (int(input.value) < 0 and sens != input.name):
+                        val =  f"+{val}"
+                    else:
+                        val =  f"-{val}"
+                    xmlsens.attributes["axis"] = val
+                    sticksNode[kodiaxismapping[sens]["name"]].appendChild(xmlsens)
+            elif input.name in kodimapping:
                     if input.type == 'button':
                         if f"btn_{int(input.id)}" not in alreadyset:
                             xmlbutton = config.createElement('feature')
@@ -94,20 +107,7 @@ def writeKodiConfigs(kodiJoystick: Path, currentControllers: Controllers, provid
                         xmlhat.attributes["name"] = kodihatspositions[int(input.value)]
                         xmlcontroller.appendChild(xmlhat)
 
-                    elif input.type == 'axis' and input.name in kodiaxes:
-                        if kodimapping[input.name]["name"] not in sticksNode:
-                            sticksNode[kodimapping[input.name]["name"]] = config.createElement('feature')
-                            sticksNode[kodimapping[input.name]["name"]].attributes["name"] = kodimapping[input.name]["name"]
-                        for sens in [input.name, kodireversepositions[input.name]]:
-                            xmlsens = config.createElement(kodimapping[sens]["sens"])
-                            val = input.id
-                            if (int(input.value) >= 0 and sens == input.name) or (int(input.value) < 0 and sens != input.name):
-                                val =  f"+{val}"
-                            else:
-                                val =  f"-{val}"
-                            xmlsens.attributes["axis"] = val
-                            sticksNode[kodimapping[sens]["name"]].appendChild(xmlsens)
-                    elif input.type == 'axis' and input.name not in kodiaxes:
+                    elif input.type == 'axis':
                         xmlaxis = config.createElement('feature')
                         val = input.id
                         if int(input.value) >= 0:

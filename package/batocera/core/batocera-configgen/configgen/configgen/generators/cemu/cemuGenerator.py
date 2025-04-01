@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 from os import environ
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from xml.dom import minidom
 
 from ... import Command
@@ -266,7 +266,7 @@ class CemuGenerator(Generator):
             xml_elt = xml_elt[0]
 
         if xml_elt.hasChildNodes():
-            xml_elt.firstChild.data = value
+            cast('minidom.Text', xml_elt.firstChild).data = value
         else:
             xml_elt.appendChild(config.createTextNode(value))
 
