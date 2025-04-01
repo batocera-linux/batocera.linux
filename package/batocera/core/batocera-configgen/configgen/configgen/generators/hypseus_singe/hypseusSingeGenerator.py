@@ -221,6 +221,11 @@ class HypseusSingeGenerator(Generator):
                     if abs(new_width / gameResolution["height"] - 4/3) < 0.01:
                         bezelRequired = True
                         xratio = 4/3
+                    # unique xratio formula for fast draw game (video is 3:4)
+                    # e.g.: (16/9) / (3/4) = 64/27 = ~2.37
+                    elif "fastdraw" in romName.lower():
+                        bezelRequired = True
+                        xratio = (video_resolution[1] * gameResolution["width"]) / (video_resolution[0] * gameResolution["height"])
                     else:
                         bezelRequired = False
                 else:
