@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
 from ... import Command
 from ...batoceraPaths import CONFIGS
 from ...controller import generate_sdl_game_controller_config
@@ -22,6 +21,9 @@ class TaradinoGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         commandArray = [ "taradino" ]
+
+        with open(str(rom),"r") as f:
+            commandArray += (f.readline().split())
 
         return Command.Command(
             array=commandArray,
