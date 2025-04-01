@@ -1,0 +1,14 @@
+diff --git a/src/joystick/SDL_gamecontroller.c b/src/joystick/SDL_gamecontroller.c
+index a98735a..368baee 100644
+--- a/src/joystick/SDL_gamecontroller.c
++++ b/src/joystick/SDL_gamecontroller.c
+@@ -28,7 +28,8 @@
+ #include "SDL_sysjoystick.h"
+ #include "SDL_joystick_c.h"
+ #include "SDL_steam_virtual_gamepad.h"
+-#include "SDL_gamecontrollerdb.h"
++//#include "SDL_gamecontrollerdb.h"
++static const char *s_ControllerMappings[] = {};
+ #include "controller_type.h"
+ #include "usb_ids.h"
+ #include "hidapi/SDL_hidapi_nintendo.h"
