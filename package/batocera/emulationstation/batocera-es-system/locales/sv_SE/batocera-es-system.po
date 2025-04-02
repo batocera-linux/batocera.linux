@@ -5514,16 +5514,6 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "Kontroll av cykeltider"
 
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Cycle next"
-msgstr "Växla nästa"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Cycle previous"
-msgstr "Växla föregående"
-
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -7314,8 +7304,8 @@ msgid ""
 "configuration file."
 msgstr ""
 "Extra DMD-fönster (Dot Matrix Display) för att visa poängen för bord utan "
-"rom. Som standard kommer inställningarna från konfigurationsfilen "
-"VPinballX.ini."
+"rom. Som standard kommer inställningarna från konfigurationsfilen VPinballX."
+"ini."
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -10576,20 +10566,15 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "Meny"
 
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Menu N"
-msgstr "Meny N"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Menu Y"
-msgstr "Meny Y"
-
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "Meny tillbaka"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu back / exit"
+msgstr ""
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
@@ -10603,8 +10588,13 @@ msgstr "Meny Enter"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
-msgid "Menu escape"
-msgstr "Avsluta meny"
+msgid "Menu left"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu right"
+msgstr ""
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
@@ -11144,7 +11134,7 @@ msgctxt "keys_files"
 msgid "Next slot"
 msgstr "Nästa plats"
 
-#. TRANSLATION: quake2.keys
+#. TRANSLATION: bstone.keys, quake2.keys
 msgctxt "keys_files"
 msgid "Next weapon"
 msgstr "Nästa vapen"
@@ -12020,6 +12010,11 @@ msgctxt "game_options"
 msgid "Passes all physical keyboard events for Pad2Key."
 msgstr "Skickar alla fysiska tangentbordshändelser för Pad2Key."
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Pause"
+msgstr ""
+
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Pentagon 1024"
@@ -12357,8 +12352,8 @@ msgstr "Förinläsning är omöjlig från ES."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the "
-"VPinballX.ini file to fine tune performance."
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
 msgstr ""
 "Förinställningar som kan förbättra prestandan utan att manuellt redigera "
 "filen VPinballX.ini för att finjustera prestandan."
@@ -12382,6 +12377,11 @@ msgstr "Föregående objekt"
 msgctxt "keys_files"
 msgid "Previous slot"
 msgstr "Föregående plats"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Previous weapon"
+msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -13850,8 +13850,8 @@ msgctxt "game_options"
 msgid ""
 "Set if you want to limit the FPS in games that are not limited like OutRun2."
 msgstr ""
-"Ställ in om du vill begränsa bildfrekvens i spel som inte är begränsade, "
-"t.ex. OutRun2."
+"Ställ in om du vill begränsa bildfrekvens i spel som inte är begränsade, t."
+"ex. OutRun2."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -16736,6 +16736,11 @@ msgctxt "game_options"
 msgid "Zone for which the game doesn't react to the wheel (in degrees)"
 msgstr "Zon som spelet inte reagerar på ratten för (i grader)"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoom in"
+msgstr ""
+
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Zoom in the camera"
@@ -16745,6 +16750,11 @@ msgstr "Zooma in kameran"
 msgctxt "keys_files"
 msgid "Zoom in x5"
 msgstr "Zooma in x5"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoom out"
+msgstr ""
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -16765,16 +16775,6 @@ msgstr "Zooma in för att dölja svarta kanter."
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "Zooma in för att dölja svarta kanter. Kanter är olika för olika spel."
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoon in"
-msgstr "Zooma in"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoon out"
-msgstr "Zooma ut"
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -17243,5 +17243,33 @@ msgstr "gul/blå"
 #~ msgstr "512 KB"
 
 #~ msgctxt "keys_files"
+#~ msgid "Cycle next"
+#~ msgstr "Växla nästa"
+
+#~ msgctxt "keys_files"
+#~ msgid "Cycle previous"
+#~ msgstr "Växla föregående"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu N"
+#~ msgstr "Meny N"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu Y"
+#~ msgstr "Meny Y"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu escape"
+#~ msgstr "Avsluta meny"
+
+#~ msgctxt "keys_files"
 #~ msgid "Restart Game"
 #~ msgstr "Omstarta Spel"
+
+#~ msgctxt "keys_files"
+#~ msgid "Zoon in"
+#~ msgstr "Zooma in"
+
+#~ msgctxt "keys_files"
+#~ msgid "Zoon out"
+#~ msgstr "Zooma ut"
