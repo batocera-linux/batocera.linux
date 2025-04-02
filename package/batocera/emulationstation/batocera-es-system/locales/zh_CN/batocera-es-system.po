@@ -5450,16 +5450,6 @@ msgctxt "game_options"
 msgid "Cycle Timing Check"
 msgstr "循环正时检查"
 
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Cycle next"
-msgstr "循环至下一项"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Cycle previous"
-msgstr "循环至上一项"
-
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
 msgid "Cycle-exact"
@@ -10373,20 +10363,15 @@ msgctxt "keys_files"
 msgid "Menu"
 msgstr "菜单"
 
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Menu N"
-msgstr "菜单N"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Menu Y"
-msgstr "菜单Y"
-
 #. TRANSLATION: mugen.keys, rott.keys
 msgctxt "keys_files"
 msgid "Menu back"
 msgstr "返回菜单"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu back / exit"
+msgstr ""
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
@@ -10400,8 +10385,13 @@ msgstr "菜单确认"
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
-msgid "Menu escape"
-msgstr "菜单退出"
+msgid "Menu left"
+msgstr ""
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Menu right"
+msgstr ""
 
 #. TRANSLATION: bstone.keys
 msgctxt "keys_files"
@@ -10935,7 +10925,7 @@ msgctxt "keys_files"
 msgid "Next slot"
 msgstr "下一个插槽"
 
-#. TRANSLATION: quake2.keys
+#. TRANSLATION: bstone.keys, quake2.keys
 msgctxt "keys_files"
 msgid "Next weapon"
 msgstr "下个武器"
@@ -11801,6 +11791,11 @@ msgctxt "game_options"
 msgid "Passes all physical keyboard events for Pad2Key."
 msgstr "通过Pad2Key的所有物理键盘事件。"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Pause"
+msgstr ""
+
 #. TRANSLATION: libretro/fuse
 msgctxt "game_options"
 msgid "Pentagon 1024"
@@ -12156,6 +12151,11 @@ msgstr "上个物品"
 msgctxt "keys_files"
 msgid "Previous slot"
 msgstr "上一个插槽"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Previous weapon"
+msgstr ""
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -16414,6 +16414,11 @@ msgctxt "game_options"
 msgid "Zone for which the game doesn't react to the wheel (in degrees)"
 msgstr "游戏中不响应方向的区域（以度数表示）"
 
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoom in"
+msgstr ""
+
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
 msgid "Zoom in the camera"
@@ -16423,6 +16428,11 @@ msgstr "放大相机"
 msgctxt "keys_files"
 msgid "Zoom in x5"
 msgstr "放大x5"
+
+#. TRANSLATION: bstone.keys
+msgctxt "keys_files"
+msgid "Zoom out"
+msgstr ""
 
 #. TRANSLATION: corsixth.keys
 msgctxt "keys_files"
@@ -16443,16 +16453,6 @@ msgstr "放大以隐藏黑色边框。"
 msgctxt "game_options"
 msgid "Zooms in to hide black borders. Borders are different per game."
 msgstr "放大以隐藏黑色边框。每个游戏的边框不同。"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoon in"
-msgstr "放大"
-
-#. TRANSLATION: bstone.keys
-msgctxt "keys_files"
-msgid "Zoon out"
-msgstr "缩小"
 
 #. TRANSLATION: suyu
 msgctxt "game_options"
@@ -17094,6 +17094,14 @@ msgstr "黄色/蓝色"
 #~ msgstr "继续/暂停模拟器"
 
 #~ msgctxt "keys_files"
+#~ msgid "Cycle next"
+#~ msgstr "循环至下一项"
+
+#~ msgctxt "keys_files"
+#~ msgid "Cycle previous"
+#~ msgstr "循环至上一项"
+
+#~ msgctxt "keys_files"
 #~ msgid "Digital Down"
 #~ msgstr "数字键下"
 
@@ -17304,6 +17312,18 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Mech Tilt"
 #~ msgstr "机械倾斜"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu N"
+#~ msgstr "菜单N"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu Y"
+#~ msgstr "菜单Y"
+
+#~ msgctxt "keys_files"
+#~ msgid "Menu escape"
+#~ msgstr "菜单退出"
 
 #~ msgctxt "game_options"
 #~ msgid "N64 (Limited Hotkeys)"
@@ -17600,6 +17620,14 @@ msgstr "黄色/蓝色"
 #~ msgctxt "game_options"
 #~ msgid "User Provided Runner"
 #~ msgstr "用户提供的启动器"
+
+#~ msgctxt "keys_files"
+#~ msgid "Zoon in"
+#~ msgstr "放大"
+
+#~ msgctxt "keys_files"
+#~ msgid "Zoon out"
+#~ msgstr "缩小"
 
 #~ msgctxt "keys_files"
 #~ msgid "exit game"
