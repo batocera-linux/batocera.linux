@@ -1,0 +1,13 @@
+diff --git a/transport/wired.c b/transport/wired.c
+index 924d6a1..facbd2f 100644
+--- a/transport/wired.c
++++ b/transport/wired.c
+@@ -552,7 +552,7 @@ static const struct usb_device_id xone_wired_id_table[] = {
+ 	{ XONE_WIRED_VENDOR(0x1532) }, /* Razer */
+ 	{ XONE_WIRED_VENDOR(0x24c6) }, /* PowerA */
+ 	{ XONE_WIRED_VENDOR(0x20d6) }, /* BDA */
+-	{ XONE_WIRED_VENDOR(0x044f) }, /* Thrustmaster */
++	//{ XONE_WIRED_VENDOR(0x044f) }, /* Thrustmaster */
+ 	{ XONE_WIRED_VENDOR(0x10f5) }, /* Turtle Beach */
+ 	{ XONE_WIRED_VENDOR(0x2e24) }, /* Hyperkin */
+ 	{ XONE_WIRED_VENDOR(0x3285) }, /* Nacon */
