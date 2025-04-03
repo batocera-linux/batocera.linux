@@ -46,4 +46,12 @@ define OPENJKDF2_INSTALL_TARGET_CMDS
     cp $(@D)/buildroot-build/openjkdf2 $(TARGET_DIR)/usr/bin/
 endef
 
+define OPENJKDF2_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/openjkdf2/openjkdf2.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
+endef
+
+OPENJKDF2_POST_INSTALL_TARGET_HOOKS += OPENJKDF2_EVMAPY
+
 $(eval $(cmake-package))
