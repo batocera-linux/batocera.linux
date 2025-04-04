@@ -43,9 +43,10 @@ stopWineServer() {
 
     #try to cleanly exit wineserver
     WINEPREFIX=${WINEPOINT} "${WINESERVER}" -k &
+    PID=$!
     #wait 10s for clean exit
     echo "${FUNCNAME[0]}: waiting wineserver shutdown" >&2
-    if waitWineServer 10; then
+    if waitWineServer 10 $PID; then
         echo "${FUNCNAME[0]}: wineserver has cleanly exited" >&2
         return 0
     fi
@@ -110,13 +111,15 @@ update_wine_version() {
 }
 
 waitWineServer() {
+    local ret=0
+    [[ -z $2 ]] && { echo "${FUNCNAME[0]}: ${FUNCNAME[1]} reported emtpy PID for ${WINESERVER}" >&2; return 1; }
     #from: https://unix.stackexchange.com/a/427133
     #timeout will report not 0 if setted value is reached
-    if pgrep -f "${WINESERVER}"; then
-        echo "Waiting WineServer: ${WINESERVER}"
-        timeout "$1" tail -q --pid=$(pgrep -f "${WINESERVER}") -f /dev/null
-        echo "Finished waiting for WineServer: ${WINESERVER}"
-    fi
+    echo "Waiting WineServer: ${WINESERVER}"
+    timeout "$1" tail -q --pid=$2 -f /dev/null
+    ret=$?
+    echo "Finished waiting for WineServer with errorcode($ret)"
+    return $ret
 }
 
 wine_options() {
@@ -334,12 +337,12 @@ reg_install() {
     if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
         if ! grep -q "\"DisableHidraw\"=dword:00000000" "${WINEPOINT}/system.reg"; then
             WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
-            waitWineServer 0
+            waitWineServer 0 $(pgrep -f "${WINESERVER}")
         fi
     else
         if ! grep -q "\"DisableHidraw\"=dword:00000001" "${WINEPOINT}/system.reg"; then
             WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
-            waitWineServer 0
+            waitWineServer 0 $(pgrep -f "${WINESERVER}")
         fi
     fi
     return 0
@@ -555,7 +558,7 @@ play_wine() {
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
 }
 
 play_pc() {
@@ -586,7 +589,7 @@ play_pc() {
     else
         (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
 }
 
 trick_wine() {
@@ -623,7 +626,7 @@ play_exe() {
     dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} wine "${ROMGAMENAME}")
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
 }
 
 play_winetgz() {
@@ -657,7 +660,7 @@ play_winetgz() {
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
 }
 
 # Function to safely unmount a mount point with multiple attempts
@@ -739,7 +742,7 @@ play_squashfs() {
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
     fi
 
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
 }
 
 createAutorunCmd() {
@@ -794,7 +797,7 @@ install_exe_msi() {
     createWineDirectory "${WINEPOINT}"
     [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} wine "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${GAMENAME}"
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
     createAutorunCmd "${WINEPOINT}" "drive_c/P*"
 }
 
@@ -818,7 +821,7 @@ install_iso() {
 	    rm -f "${WINEPOINT}/dosdevices/d:"
     fi
 
-    waitWineServer 0
+    waitWineServer 0 $(pgrep -f "${WINESERVER}")
     createAutorunCmd "${WINEPOINT}" "drive_c/P*"
 
 }
