@@ -1,0 +1,43 @@
+# Xtension 2 Player Plus
+target_devices:
+  - name: Xtension 2P Player 1
+    type: joystick
+    mapping:
+      "key:up":        "abs:hat0y:-1"
+      "key:down":      "abs:hat0y:1"
+      "key:left":      "abs:hat0x:-1"
+      "key:right":     "abs:hat0x:1"
+      "key:leftshift": "btn:south"
+      "key:enter":     "btn:south"
+      "key:z":         "btn:east"
+      "key:leftctrl":  "btn:west"
+      "key:leftalt":   "btn:north"
+      "key:space":     "btn:tl"
+      "key:x":         "btn:tr"
+      "key:c":         "btn:start"
+      "key:1":         "btn:start"
+      "key:v":         "btn:select"
+      "key:5":         "btn:select"
+  - name: Xtension 2P Player 2
+    type: joystick
+    mapping:
+      "key:r": "abs:hat0y:-1"
+      "key:f": "abs:hat0y:1"
+      "key:d": "abs:hat0x:-1"
+      "key:g": "abs:hat0x:1"
+      "key:w": "btn:south"
+      "key:i": "btn:east"
+      "key:a": "btn:west"
+      "key:s": "btn:north"
+      "key:q": "btn:tl"
+      "key:k": "btn:tr"
+      "key:j": "btn:start"
+      "key:2": "btn:start"
+      "key:l": "btn:select"
+      "key:6": "btn:select"
+  - name: Xtension hotkeys
+    type: hotkeys
+    mapping:
+      "key:tab": "key:menu"
+      "key:p":   "key:pause"
+      "key:esc": "key:exit"
