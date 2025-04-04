@@ -522,7 +522,8 @@ megacd:
   release: 1991
   hardware: console
   extensions: [cue, iso, chd, m3u]
-  platform:   megacd
+  platform:   segacd
+  theme:      segacd
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
