@@ -159,7 +159,7 @@ class OpenJKDF2Generator(Generator):
         return {
             "name": "openjkdf2",
             "keys": {
-                "exit": ["KEY_LEFTALT", "KEY_F4"],
+                "exit": "KEY_F10",
                 "save_state": "KEY_F9",
                 "screenshot": "KEY_F12"
             }
