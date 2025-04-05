@@ -36,31 +36,37 @@ case "${ACTION}" in
         MODE="$2"
         case "${MODE}" in
             auto)
-                ARCH=$(cat /usr/share/batocera/batocera.arch)
-                BOARD=$(cat /boot/boot/batocera.board)
+                BT_SINK=$(LANG=C pactl list short sinks | grep bluez_output | awk '{print $2}' | head -n1)
+                if [ -n "$BT_SINK" ]; then
+                    MODE="$BT_SINK"
+                    LANG=C pactl set-default-sink "${MODE}" || exit 1
+                else
+                    ARCH=$(cat /usr/share/batocera/batocera.arch)
+                    BOARD=$(cat /boot/boot/batocera.board)
 
-                case "${ARCH}" in
-                    "rk3399")
-                        MODE=alsa_output.platform-hdmi-sound.stereo-fallback
-                        LANG=C pactl set-default-sink "${MODE}" || exit 1
-                        ;;
-                    "s922x")
-                        if [[ "$BOARD" == "ogu" ]]; then
+                    case "${ARCH}" in
+                        "rk3399")
+                            MODE=alsa_output.platform-hdmi-sound.stereo-fallback
+                            LANG=C pactl set-default-sink "${MODE}" || exit 1
+                            ;;
+                        "s922x")
+                            if [[ "$BOARD" == "ogu" ]]; then
+                                LANG=C pactl set-default-sink INTERNAL
+                                amixer -c 0 -q sset "Master" 100%
+                                amixer -c 0 sset 'Playback Mux' SPK
+                                amixer -c 0 -q sset 'FRDDR_A SINK 1 SEL' 'OUT 1'
+                                amixer -c 0 -q sset 'FRDDR_A SRC 1 EN' 'on'
+                            fi
+                            ;;
+                        "rk3326")
                             LANG=C pactl set-default-sink INTERNAL
-                            amixer -c 0 -q sset "Master" 100%
-                            amixer -c 0 sset 'Playback Mux' SPK
-                            amixer -c 0 -q sset 'FRDDR_A SINK 1 SEL' 'OUT 1'
-                            amixer -c 0 -q sset 'FRDDR_A SRC 1 EN' 'on'
-                        fi
-                        ;;
-                    "rk3326")
-                        LANG=C pactl set-default-sink INTERNAL
-                        amixer -c 0 cset name='Playback Path' SPK
-                        ;;
-                    *)
-                        # do nothing!
-                        ;;
-                esac
+                            amixer -c 0 cset name='Playback Path' SPK
+                            ;;
+                        *)
+                            # do nothing!
+                            ;;
+                    esac
+                fi
                 ;;
             *)
                 LANG=C pactl set-default-sink "${MODE}" || exit 1

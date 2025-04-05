@@ -11,6 +11,7 @@ import time
 import os
 import logging
 import signal
+import subprocess
 from gi.repository import GLib
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
@@ -250,10 +251,9 @@ def interfaces_added(path, interfaces):
 def interfaces_removed(path, interfaces):
   global gdevices
 
-  if path in gdevices:
+  # Remove from gdevices only if the Device1 interface itself is removed
+  if "org.bluez.Device1" in interfaces and path in gdevices:
     listing_dev_event(path, gdevices[path], False)
-
-  if path in gdevices:
     del gdevices[path]
 
 def propertiesToStr(properties):
@@ -287,18 +287,23 @@ def properties_changed(interface, changed, invalidated, path):
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
     connect_device(path, gdevices[path]["Address"], gdevices[path], True, getBluetoothWantedAddr())
+    refresh_audio_on_connect(gdevices[path])
     return
   
   # ok, it is now connected, what else ?
   if "Connected" in changed and changed["Connected"] == True:
+    refresh_audio_on_connect(gdevices[path])
     return
 
   if "Connected" in changed and changed["Connected"] == False:
     logging.info("Skipping (property Connected changed to False)");
+    refresh_audio_on_disconnect()
     return
 
   if "Address" in gdevices[path]:
     connect_device(path, gdevices[path]["Address"], gdevices[path], False, getBluetoothWantedAddr())
+
+  refresh_audio_on_connect(gdevices[path])
 
 def merge2dicts(d1, d2):
   res = d1.copy()
@@ -377,6 +382,30 @@ def user_signal_stop_discovery(signum, frame):
       gadapter.StopDiscovery()
   except:
     pass
+
+def refresh_audio_on_connect(properties):
+  # Skip if the device is not an audio device
+  if "Icon" not in properties or not prop2str(properties["Icon"]).startswith("audio-"):
+    return
+
+  logging.info("Bluetooth audio device connected. Waiting for sink to appear...")
+
+  # Wait up to 10 seconds for a 'bluez_' to appear
+  for i in range(100):
+    sinks = subprocess.check_output(["pactl", "list", "short", "sinks"], encoding='utf-8')
+    if "bluez_" in sinks:
+      current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
+      subprocess.run(["batocera-audio", "set", current_output])
+      logging.info("Bluetooth audio sink detected: proceeding with audio refresh.")
+      return
+    time.sleep(0.1)
+
+  logging.warning("Bluetooth sink not detected within timeout.")
+
+def refresh_audio_on_disconnect():
+  current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
+  subprocess.run(["batocera-audio", "set", current_output])
+  logging.info("Bluetooth audio disconnected. Refreshing audio output.")
 
 class Agent(dbus.service.Object):
   exit_on_release = True
