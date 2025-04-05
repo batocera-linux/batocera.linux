@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import codecs
-import csv
 import logging
 import os
 import shutil
@@ -11,7 +10,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
-from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
+from ...batoceraPaths import BIOS, CONFIGS, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
+from ..mame import mameCommon
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -84,6 +84,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
         messMode = -1
         messModel = ''
+        messSystem = None
     else:
         # Set up command line for MESS or MAMEVirtual
         softDir = Path("/var/run/mame_software")
@@ -98,27 +99,15 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             softList = 'fmtowns_cd'
 
         # Determine MESS system name (if needed)
-        openFile = (DEFAULTS_DIR / "data" / "mame" / "messSystems.csv").open()
-        messSystems: list[str] = []
-        messSysName: list[str] = []
-        messRomType: list[str] = []
-        messAutoRun: list[str] = []
-        with openFile:
-            messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
-            for row in messDataList:
-                messSystems.append(row[0])
-                messSysName.append(row[1])
-                messRomType.append(row[2])
-                messAutoRun.append(row[3])
-        messMode = messSystems.index(system.name)
+        messSystem = mameCommon.get_mess_system(system.name)
 
         # Alternate system for machines that have different configs (ie computers with different hardware)
-        messModel = messSysName[messMode]
+        messModel = '' if not messSystem else messSystem['model_name']
         if altmodel := system.config.get("altmodel"):
             messModel = altmodel
         commandLine += [ messModel ]
 
-        if messSysName[messMode] == "":
+        if not messSystem or messSystem['model_name'] == "":
             # Command line for non-arcade, non-system ROMs (lcdgames, plugnplay)
             if system.config.get_bool("customcfg"):
                 cfgPath = CONFIGS / corePath / "custom"
@@ -236,7 +225,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                         else:
                             commandLine += [ "-flop1" ]
                     else:
-                        commandLine += [ "-" + messRomType[messMode] ]
+                        commandLine += [ "-" + messSystem['rom_type'] ]
                 else:
                     if boot_disk:
                         if (altromtype == "flop1" or not altromtype) and boot_disk in [ "macos30", "macos608", "macos701", "macos75" ]:
@@ -244,12 +233,12 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                         elif altromtype:
                             commandLine += [ "-" + altromtype ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + messSystem['rom_type'] ]
                     else:
                         if altromtype:
                             commandLine += [ "-" + altromtype ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + messSystem['rom_type'] ]
                 # Use the full filename for MESS non-softlist ROMs
                 commandLine += [ f'"{rom}"' ]
                 commandLine += [ "-rompath", f'"{rom.parent};/userdata/bios/"' ]
@@ -295,11 +284,11 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
 
             # MESS config folder
             if system.config.get_bool("customcfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / "custom"
+                cfgPath = CONFIGS / corePath / messSystem['model_name'] / "custom"
             else:
-                cfgPath = SAVES / "mame" / "cfg" / messSysName[messMode]
+                cfgPath = SAVES / "mame" / "cfg" / messSystem['model_name']
             if system.config.get_bool("pergamecfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / rom.name
+                cfgPath = CONFIGS / corePath / messSystem['model_name'] / rom.name
             mkdir_if_not_exists(cfgPath)
             commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
 
@@ -363,24 +352,14 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                             autoRunCmd = f'LOADM \"{romDrivername}\":EXEC\\n'
 
                 # check for a user override
-                autoRunFile = CONFIGS / 'mame' / 'autoload' / f'{system.name}_{romType}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row and not row[0].startswith('#') and row[0].casefold() == romDrivername.casefold():
-                                autoRunCmd = row[1] + "\\n"
+                if user_autorun_cmd := mameCommon.get_user_autorun_command(system.name, romType, romDrivername):
+                    autoRunCmd = user_autorun_cmd
             else:
                 # Check for an override file, otherwise use generic (if it exists)
-                autoRunCmd = messAutoRun[messMode]
-                autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / f'{softList}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row[0].casefold() == rom.stem.casefold():
-                                autoRunCmd = row[1] + "\\n"
-                                autoRunDelay = 3
+                autoRunCmd = messSystem['autorun']
+                if (softlist_autorun_cmd := mameCommon.get_softlist_autorun_command(softList, rom.stem)) is not None:
+                    autoRunCmd = softlist_autorun_cmd
+                    autoRunDelay = 3
 
             inipath = SAVES / 'mame' / 'mame' / 'ini'
             commandLine += [ '-inipath', f'"{inipath}"' ]
@@ -453,7 +432,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         cmdFile.close()
 
     # Call Controller Config
-    if messMode == -1:
+    if not messSystem:
         generateMAMEPadConfig(cfgPath, playersControllers, system, "", rom, specialController, guns)
     else:
         generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, rom, specialController, guns)
@@ -479,63 +458,6 @@ def prepSoftwareList(subdirSoftList: Sequence[str], softList: str, softDir: Path
         (softDir / softList).symlink_to(romParent.parent, target_is_directory=True)
     else:
         (softDir / softList).symlink_to(romParent, target_is_directory=True)
-
-def getMameControlScheme(system: Emulator, rom: Path) -> str:
-    # Game list files
-    mame_data_dir = DEFAULTS_DIR / 'data' / 'mame'
-    mameCapcom = mame_data_dir / 'mameCapcom.txt'
-    mameKInstinct = mame_data_dir / 'mameKInstinct.txt'
-    mameMKombat = mame_data_dir / 'mameMKombat.txt'
-    mameNeogeo = mame_data_dir / 'mameNeogeo.txt'
-    mameTwinstick = mame_data_dir / 'mameTwinstick.txt'
-    mameRotatedstick = mame_data_dir / 'mameRotatedstick.txt'
-
-    # Controls for games with 5-6 buttons or other unusual controls
-    controllerType = system.config.get("altlayout", "auto")
-
-    if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
-        return controllerType
-
-    capcomList = set(mameCapcom.read_text().split())
-    mkList = set(mameMKombat.read_text().split())
-    kiList = set(mameKInstinct.read_text().split())
-    neogeoList = set(mameNeogeo.read_text().split())
-    twinstickList = set(mameTwinstick.read_text().split())
-    qbertList = set(mameRotatedstick.read_text().split())
-
-    romName = rom.stem
-    if romName in capcomList:
-        if controllerType in [ "auto", "snes" ]:
-            return "sfsnes"
-        if controllerType == "megadrive":
-            return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
-    elif romName in mkList:
-        if controllerType in [ "auto", "snes" ]:
-            return "mksnes"
-        if controllerType == "megadrive":
-            return "mkmegadrive"
-        if controllerType == "fightstick":
-            return "mkstick"
-    elif romName in kiList:
-        if controllerType in [ "auto", "snes" ]:
-            return "kisnes"
-        if controllerType == "megadrive":
-            return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
-    elif romName in  neogeoList:
-        return "neomini"
-    elif romName in  twinstickList:
-        return "twinstick"
-    elif romName in  qbertList:
-        return "qbert"
-    else:
-        if controllerType == "fightstick":
-            return "fightstick"
-
-    return "default"
 
 def generateMAMEPadConfig(
     cfgPath: Path,
@@ -564,27 +486,19 @@ def generateMAMEPadConfig(
         overwriteMAME = True
 
     # Get controller scheme
-    altButtons = getMameControlScheme(system, rom)
+    altButtons = mameCommon.get_mame_control_scheme(system, rom)
+    if altButtons == "mddefault":
+        altButtons = "default"
 
-    # Load standard controls from csv
-    controlFile = DEFAULTS_DIR / 'data' / 'mame' / 'mameControls.csv'
-    controlDict: dict[str, dict[str, str]] = {}
-    with controlFile.open() as openFile:
-        controlList = csv.reader(openFile)
-        for row in controlList:
-            if row[0] not in controlDict:
-                controlDict[row[0]] = {}
-            controlDict[row[0]][row[1]] = row[2]
+    # Load standard controls from toml
+    controlDict = mameCommon.get_mame_controls()
 
     # Common controls
-    mappings: dict[str, str] = {}
-    for controlDef in controlDict['default']:
-        mappings[controlDef] = controlDict['default'][controlDef]
+    mappings = controlDict['default'].copy()
 
     # Buttons that change based on game/setting
-    if altButtons in controlDict:
-        for controlDef in controlDict[altButtons]:
-            mappings.update({controlDef: controlDict[altButtons][controlDef]})
+    if alt_control_mappings := controlDict.get(altButtons):
+        mappings.update(alt_control_mappings)
 
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
@@ -595,7 +509,6 @@ def generateMAMEPadConfig(
     xml_input = config.createElement("input")
     xml_system.appendChild(xml_input)
 
-    messControlDict = {}
     if messSysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
         if specialController == 'none':
             useControls = "bbc"
@@ -611,50 +524,9 @@ def generateMAMEPadConfig(
 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
-        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
-    if messSysName in specialControlList:
-        # Load mess controls from csv
-        messControlFile = DEFAULTS_DIR / 'data' / 'mame' / 'messControls.csv'
-        with messControlFile.open() as openMessFile:
-            controlList = csv.reader(openMessFile, delimiter=';')
-            for row in controlList:
-                if row[0] not in messControlDict:
-                    messControlDict[row[0]] = {}
-                messControlDict[row[0]][row[1]] = {}
-                currentEntry = messControlDict[row[0]][row[1]]
-                currentEntry['type'] = row[2]
-                currentEntry['player'] = int(row[3])
-                currentEntry['tag'] = row[4]
-                currentEntry['key'] = row[5]
-                if currentEntry['type'] in [ 'special', 'main' ]:
-                    currentEntry['mapping'] = row[6]
-                    currentEntry['useMapping'] = row[7]
-                    currentEntry['reversed'] = row[8]
-                    currentEntry['mask'] = row[9]
-                    currentEntry['default'] = row[10]
-                elif currentEntry['type'] == 'analog':
-                    currentEntry['incMapping'] = row[6]
-                    currentEntry['decMapping'] = row[7]
-                    currentEntry['useMapping1'] = row[8]
-                    currentEntry['useMapping2'] = row[9]
-                    currentEntry['reversed'] = row[10]
-                    currentEntry['mask'] = row[11]
-                    currentEntry['default'] = row[12]
-                    currentEntry['delta'] = row[13]
-                    currentEntry['axis'] = row[14]
-                if currentEntry['type'] == 'combo':
-                    currentEntry['kbMapping'] = row[6]
-                    currentEntry['mapping'] = row[7]
-                    currentEntry['useMapping'] = row[8]
-                    currentEntry['reversed'] = row[9]
-                    currentEntry['mask'] = row[10]
-                    currentEntry['default'] = row[11]
-                if currentEntry['reversed'] == 'False':
-                    currentEntry['reversed'] = False
-                else:
-                    currentEntry['reversed'] = True
+    messControlDict = mameCommon.get_mess_controls(messSysName, useControls)
 
+    if messControlDict is not None:
         config_alt = minidom.Document()
         configFile_alt = cfgPath / f"{messSysName}.cfg"
         if configFile_alt.exists():
@@ -728,9 +600,8 @@ def generateMAMEPadConfig(
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
             xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
 
-        if useControls in messControlDict:
-            for controlDef in messControlDict[useControls]:
-                thisControl = messControlDict[useControls][controlDef]
+        if messControlDict:
+            for thisControl in messControlDict.values():
                 if nplayer == thisControl['player']:
                     if thisControl['type'] == 'special':
                         xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
@@ -756,7 +627,7 @@ def generateMAMEPadConfig(
                 mameXml.write(dom_string)
 
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if messSysName in specialControlList and overwriteSystem:
+        if messControlDict is not None and overwriteSystem:
             with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
                 dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
                 mameXml_alt.write(dom_string_alt)
