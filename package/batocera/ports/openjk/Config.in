@@ -1,0 +1,11 @@
+config BR2_PACKAGE_OPENJK
+	bool "openjk"
+	select BR2_PACKAGE_LIBJPEG
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ZLIB
+	help
+	  Community effort to maintain and improve Jedi Academy (SP & MP)
+	  and Jedi Outcast (SP only) released by Raven Software.
+
+	  https://github.com/JACoders/OpenJK
