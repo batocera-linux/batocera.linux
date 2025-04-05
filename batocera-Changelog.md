@@ -140,6 +140,7 @@
 - Wine Mono to 9.4.0
 - Syncthing to 1.29.3
 - Xone to Mar 13, 2025
+- FFMPEG to 7.1.1
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
