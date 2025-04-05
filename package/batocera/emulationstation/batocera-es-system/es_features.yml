@@ -13867,6 +13867,12 @@ openjkdf2:
       description: Set the crosshair size.
       preset: slider
       preset_parameters: 0.0 2.00 .20 1.00
+    jkdf2_cross_line:
+      submenu: GAMEPLAY
+      prompt: CROSSHAIR LINE THICKNESS
+      description: Set the crosshair line thickness.
+      preset: slider
+      preset_parameters: 1.00 3.00 .20 1.00
     jkdf2_pickup:
       submenu: WEAPON PICKUP
       prompt: PICKUP WEAPON
@@ -13973,6 +13979,33 @@ openjkdf2:
       submenu: DISPLAY
       prompt: SSAO
       description: Choose Screen Space Ambient Occlusion for better lighting.
+      choices:
+        "Disabled": False
+        "Enabled":  True
+    jkdf2_gamma:
+      submenu: DISPLAY
+      prompt: GAMMA
+      description: Choose the amount of Gamma which changes how light or dark mid-range tones appear.
+      preset: slider
+      preset_parameters: 0.40 3.00 .20 1.00
+    jkdf2_hud_scale:
+      submenu: DISPLAY
+      prompt: HUD SCALE
+      description: Choose the size of the heads-up display.
+      preset: slider
+      preset_parameters: 0.40 3.00 .20 2.00
+    jkdf2_ssaa_multiple:
+      submenu: DISPLAY
+      prompt: SSAA Multiplier
+      description: Enhancement. Smooth out jagged edges on 3D object polygons.
+      choices:
+        "1x (Default)": 1.0
+        "2x":           2.0
+        "4x":           4.0
+    jkdf2_corpses:
+      group: ADVANCED OPTIONS
+      prompt: KEEP CORPSES
+      description: Choose to keep corpses present.
       choices:
         "Disabled": False
         "Enabled":  True
