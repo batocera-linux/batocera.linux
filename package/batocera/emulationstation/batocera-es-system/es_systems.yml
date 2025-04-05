@@ -5822,12 +5822,13 @@ jkdf2:
     openjkdf2:
       openjkdf2: { requireAnyOf: [BR2_PACKAGE_OPENJKDF2] }
   comment_en: |
-    Add the Jedi Knight - Dark Forces 2 game files into this directory.
+    Create an appropriate directory here for Jedi Knight - Dark Forces 2 or Mysteries of the Sith.
+    Add the files for each game into the appropriate directory.
 
-    Then create a blank launch file with a .jedi extension to be able to start the game from ES.
-    i.e. `Jedi Knight - Dark Forces 2.jedi`.
+    Then create a blank launch file with a .jedi extension in the created directory to be able to start the game from ES.
+    i.e. `Jedi Knight - Dark Forces 2.jedi` or `Mysteries of the Sith.jedi`.
 
-    Jedi Knight - Dark Forces 2 is designed to be best played with a mouse and keyboard.
+    Jedi Knight - Dark Forces 2 is ideally designed to be best played with a mouse and keyboard.
     We have however mapped a gamepad style controller to the default keyboard for controller use.
     
     Do not enable the joystick option in OpenJKDF2 as the controls aren't ideal.
