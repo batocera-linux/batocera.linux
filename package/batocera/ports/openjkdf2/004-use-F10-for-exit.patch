@@ -1,0 +1,62 @@
+diff --git a/src/Win95/Window.c b/src/Win95/Window.c
+index cbff6d3140..e011e981ec 100644
+--- a/src/Win95/Window.c
++++ b/src/Win95/Window.c
+@@ -702,6 +702,10 @@ void Window_UpdateHeadless()
+ 
+ void Window_SdlUpdate()
+ {
++    if (g_should_exit) {
++        return;
++    }
++
+     if (Main_bHeadless)
+     {
+         Window_UpdateHeadless();
+@@ -716,6 +720,15 @@ void Window_SdlUpdate()
+ 
+     while (SDL_PollEvent(&event))
+     {
++        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F10) {
++            stdPlatform_Printf("INSTANT QUIT key (F10) pressed! Requesting shutdown.\n");
++            if (jkPlayer_bHasLoadedSettingsOnce) {
++                jkPlayer_WriteConf(jkPlayer_playerShortName);
++            }
++            g_should_exit = 1;
++            return;
++        }
++
+         switch (event.type)
+         {
+             case SDL_JOYDEVICEADDED: {
+@@ -737,6 +750,9 @@ void Window_SdlUpdate()
+                 Window_HandleWindowEvent(&event);
+                 break;
+             case SDL_KEYDOWN:
++                if (event.key.keysym.sym == SDLK_F10) {
++                    continue; // Prevent F10 from being processed further
++                }
+                 //handleKey(&event.key.keysym, WM_KEYDOWN, 0x1);
+                 if (event.key.keysym.sym == SDLK_ESCAPE)
+                 {
+@@ -820,6 +836,9 @@ void Window_SdlUpdate()
+                 //    stdControl_SetSDLKeydown(event.key.keysym.scancode, 1, event.key.timestamp);
+                 break;
+             case SDL_KEYUP:
++                if (event.key.keysym.sym == SDLK_F10) {
++                    continue; // Prevent F10 from being processed further
++                }
+                 if (event.key.keysym.sym == SDLK_ESCAPE)
+                 {
+                     Window_msg_main_handler(g_hWnd, WM_KEYUP, VK_ESCAPE, 0);
+@@ -963,8 +982,8 @@ void Window_SdlUpdate()
+                     jkPlayer_WriteConf(jkPlayer_playerShortName);
+                 }
+                 
+-                exit(-1);
+-                break;
++                g_should_exit = 1;
++                return;
+             default:
+                 break;
+         }
