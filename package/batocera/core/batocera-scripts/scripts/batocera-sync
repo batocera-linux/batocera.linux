@@ -65,7 +65,7 @@ rs_fix_min_dates() {
 rs_sync() {
     FSID=$1
     FSDEV=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-    FSTYPE=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^.* TYPE=\"\([^\"]*\)\"$'+'\1'+)
+    FSTYPE=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^.* TYPE=\"\([^\"]*\)\".*$'+'\1'+)
     MOUNTPOINT="/var/run/batocera-sync"
     
     if test -z "${FSDEV}"
