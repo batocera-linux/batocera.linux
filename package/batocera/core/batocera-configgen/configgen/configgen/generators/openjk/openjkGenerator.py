@@ -45,13 +45,26 @@ class OpenJKGenerator(Generator):
 
     def generate(self, system, rom: Path, playersControllers: dict, metadata: dict, guns: list, wheels: list, gameResolution: Resolution):
 
-        # Paths
+        # Setup the paths variations
         romdir = rom.parent
-        binary_src_path = Path("/usr/bin/JediAcademy")
-        binary_src = binary_src_path / "openjk_sp.x86_64"
-        binary_dest = romdir / "openjk_sp.x86_64"
-        config_path = CONFIGS / "openjk" / "base"
-        config_file_path = config_path / "openjk_sp.cfg"
+        if "academy" in rom.name.lower():
+            _logger.info("Found Jedi Academy!")
+            binary_src_path = Path("/usr/bin/JediAcademy")
+            binary_src = binary_src_path / "openjk_sp.x86_64"
+            binary_dest = romdir / "openjk_sp.x86_64"
+            config_path = CONFIGS / "openjk" / "base"
+            config_file_path = config_path / "openjk_sp.cfg"
+        elif "outcast" in rom.name.lower():
+            _logger.info("Found Jedi Outcast!")
+            binary_src_path = Path("/usr/bin/JediOutcast")
+            binary_src = binary_src_path / "openjo_sp.x86_64"
+            binary_dest = romdir / "openjo_sp.x86_64"
+            config_path = CONFIGS / "openjo" / "base"
+            config_file_path = config_path / "openjo_sp.cfg"
+        else:
+            _logger.info("Could not determine which game you're using!")
+            _logger.info("Rename your .jedi file as per the _infot.txt file")
+            return
         
         ## Configuration 
         mkdir_if_not_exists(config_path)
