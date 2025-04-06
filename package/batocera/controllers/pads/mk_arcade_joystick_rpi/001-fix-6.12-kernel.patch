@@ -1,0 +1,14 @@
+diff --git a/mk_arcade_joystick_rpi.c b/mk_arcade_joystick_rpi.c
+old mode 100755
+new mode 100644
+index 09a609271a..58ddf738b8
+--- a/mk_arcade_joystick_rpi.c
++++ b/mk_arcade_joystick_rpi.c
+@@ -26,6 +26,7 @@
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/of.h>
+ #include <linux/kernel.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
