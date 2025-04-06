@@ -5871,8 +5871,33 @@ jknight:
     openjk:
       openjk: { requireAnyOf: [BR2_PACKAGE_OPENJK] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:jkdf2
+    Create an appropriate directory here for Star Wars Jedi Knight - Jedi Academy or Star Wars Jedi Knight II - Jedi Outcast.
+    Add the files for each game into the appropriate directory.
+    i.e. Copy the `base` folder containing the .pk3 files from your game into the directory you made.
+
+    Then create a blank launch file with a .jedi extension in the created directory to be able to start the game from ES.
+    i.e. `Star Wars Jedi Knight - Jedi Academy.jedi` or `Star Wars Jedi Knight II - Jedi Outcast.jedi`.
+
+    jkight
+    |
+    |---Star Wars Jedi Knight - Jedi Academy
+        |
+        |---Star Wars Jedi Knight - Jedi Academy.jedi
+        |---base
+            |
+            |---assets0.pk3
+            |---assets1.pk3...
+    
+    Batocera will copy the appropriate files to launch the game.
+
+    These Jedi Knight games are ideally designed to be best played with a mouse and keyboard.
+    We have however mapped a gamepad style controller to the default keyboard for controller use.
+    
+    Do not enable the joystick option in OpenJK as the controls aren't ideal.
+    Do not adjust the keyboard keys if planning on using the controller mapping.    
+
+    For more info: https://wiki.batocera.org/systems:jknight
   comment_fr: |
-    Trouvez la documentation ici : https://wiki.batocera.org/systems:jkdf2
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:jknight
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:jkdf2
+    Para mais informações: https://wiki.batocera.org/systems:jknight
