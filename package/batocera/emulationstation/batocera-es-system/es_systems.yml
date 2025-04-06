@@ -5858,3 +5858,21 @@ jkdf2:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:jkdf2
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:jkdf2
+
+jknight:
+  name: Star Wars - Jedi Academy
+  manufacturer: Ports
+  release: 2003
+  hardware: port
+  extensions: [jedi]
+  platform: pc
+  group: ports
+  emulators:
+    openjk:
+      openjk: { requireAnyOf: [BR2_PACKAGE_OPENJK] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:jkdf2
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:jkdf2
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:jkdf2
