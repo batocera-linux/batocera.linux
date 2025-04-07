@@ -9032,13 +9032,13 @@ ppsspp:
             choices:
                 "OpenGL": 0 (OPENGL)
                 "Vulkan": 3 (VULKAN)
-        rendering_mode:
+        skip_buffer_effects:
             group: ADVANCED OPTIONS
-            prompt: RENDERING MODE
-            description: Skip buffer disables auto frameskip and renders at display output resolution.
+            prompt: SKIP BUFFER EFFECTS
+            description: Skip buffer effects disables auto frameskip and renders at display output resolution.
             choices:
-                "Skip buffer effects": 0
-                "Buffered rendering":  1
+                "Buffered rendering":  false
+                "Skip buffer effects": true
         internal_resolution:
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
