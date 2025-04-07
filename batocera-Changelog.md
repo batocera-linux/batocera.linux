@@ -118,6 +118,8 @@
 - Buildroot to 2024.11.x with supporting package updates
 - Mesa3D to 25.0.3
 - Linux Kernel to 6.14
+- RPi Kernel to 6.12.21
+- RPi firmware to match Kernel 6.12.21
 - GStreamer codecs to 1.26.0
 - SDL2 to 2.30.11
 - Vulkan stack to v1.4.304
