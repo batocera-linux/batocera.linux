@@ -1,0 +1,21 @@
+diff --git a/gamecon_gpio_rpi.c b/gamecon_gpio_rpi.c
+index 95f63b94ee..687d6392ed 100644
+--- a/gamecon_gpio_rpi.c
++++ b/gamecon_gpio_rpi.c
+@@ -26,6 +26,7 @@
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/of.h>
+ #include <linux/kernel.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
+@@ -101,7 +102,7 @@ static u32 __init gc_bcm_peri_base_probe(void) {
+ 	return base_address == 1 ? 0x02000000 : base_address;
+ }
+ 
+-void delayMicrosecondsHard (unsigned int howLong)
++static void delayMicrosecondsHard (unsigned int howLong)
+ {
+     ktime_t start_time, end_time;
+     start_time = end_time = ktime_get();
