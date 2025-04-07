@@ -103,7 +103,7 @@ setValue_rpi4None() {
 
 setValue_rpi5None() {
     preBootRWConfig || return 1
-    for entry in over_voltage_delta arm_freq gpu_freq
+    for entry in over_voltage_delta arm_freq gpu_freq v3d_freq
     do
 	sed -i "/^${entry}/d" "${GRPICONFFILE}"
     done
@@ -186,6 +186,7 @@ setValue_rpi5PutVars() {
     over_voltage_delta=$1
     arm_freq=$2
     gpu_freq=$3
+	v3d_freq=$4
 
     preBootRWConfig || return 1
 
@@ -195,7 +196,7 @@ setValue_rpi5PutVars() {
         echo >> "${GRPICONFFILE}"
         echo "[Overclock]" >> "${GRPICONFFILE}"
     fi
-    for entry in over_voltage_delta arm_freq gpu_freq
+    for entry in over_voltage_delta arm_freq gpu_freq v3d_freq
     do
 	if ! grep -q "${entry}" "${GRPICONFFILE}"
 	then
@@ -210,6 +211,7 @@ setValue_rpi5PutVars() {
     sed -i "s/#\?over_voltage_delta=.*/over_voltage_delta=${over_voltage_delta}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?arm_freq=.*/arm_freq=${arm_freq}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g" "${GRPICONFFILE}" || return 1
+	sed -i "s/#\?v3d_freq=.*/v3d_freq=${v3d_freq}/g" "${GRPICONFFILE}" || return 1
 
     postBootRWConfig || return 1
 }
@@ -327,16 +329,16 @@ setValue() {
 		    setValue_rpi5None
 		    ;;
 		"high")
-		    setValue_rpi5PutVars 50000 2600 850
+		    setValue_rpi5PutVars 250000 2600 950 1000
 		    ;;
 		"turbo")
-		    setValue_rpi5PutVars 50000 2800 900
+		    setValue_rpi5PutVars 250000 2800 970 1050
 		    ;;
 		"extreme")
-		    setValue_rpi5PutVars 50000 2900 950
+		    setValue_rpi5PutVars 250000 2900 980 1080
             ;;
 		"ruinsane")
-		    setValue_rpi5PutVars 50000 3000 1000
+		    setValue_rpi5PutVars 250000 3000 1000 1100
 	    esac
 	    ;;
     "rpizero2")
