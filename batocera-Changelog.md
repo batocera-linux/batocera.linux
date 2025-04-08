@@ -130,7 +130,7 @@
 - LLVM to 19.1.7
 - Wine-TKG to 10.4
 - Faudio to 25.02
-- DXVK to 2.6
+- DXVK to 2.6.1
 - DXVK-NVApi to 0.9.0
 - VKD3D-Proton to 2.14.1
 - Linux Firmware to 20250109
