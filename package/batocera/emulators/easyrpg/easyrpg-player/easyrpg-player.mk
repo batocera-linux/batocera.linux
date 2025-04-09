@@ -3,8 +3,8 @@
 # easyrpg-player
 #
 ################################################################################
-# Version: v0.8 with fmt 10 fixes
-EASYRPG_PLAYER_VERSION = a4672d2e30db4e4918c8f3580236faed3c9d04c1
+
+EASYRPG_PLAYER_VERSION = 0.8.1
 EASYRPG_PLAYER_LICENSE = MIT
 EASYRPG_PLAYER_SITE = $(call github,EasyRPG,Player,$(EASYRPG_PLAYER_VERSION))
 EASYRPG_PLAYER_SUPPORTS_IN_SOURCE_BUILD = NO
