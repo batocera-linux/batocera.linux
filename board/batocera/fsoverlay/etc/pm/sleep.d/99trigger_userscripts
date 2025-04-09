@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Execute all user-defined scripts located in the EmulationStation scripts suspend and resume directories upon such events are triggered
+
+SCRIPTS_BASE_PATH=/userdata/system/configs/emulationstation/scripts
+case "$1" in
+    suspend)
+        if [[ -d "$SCRIPTS_BASE_PATH/suspend" ]]; then
+            for script in $SCRIPTS_BASE_PATH/suspend/*; do
+                [[ -x "$script" ]] && /bin/bash $script;
+            done
+        fi
+    ;;
+    resume|thaw)
+        if [[ -d "$SCRIPTS_BASE_PATH/resume" ]]; then
+            for script in $SCRIPTS_BASE_PATH/resume/*; do
+                [[ -x "$script" ]] && /bin/bash $script;
+            done
+        fi
+    ;;
+esac
+exit 0
