@@ -13,6 +13,22 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
+def get_mugen_version(settings_path: Path) -> str:
+
+    version = 'new'
+    with settings_path.open("r", encoding="utf-8-sig") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        stripped_line = line.strip()
+        if stripped_line.startswith('[') and stripped_line.endswith(']'):
+            current_section = stripped_line[1:-1]
+            if current_section == 'Video Win':
+                version = 'old'
+                break
+
+    return version
+
 class MugenGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
@@ -21,33 +37,95 @@ class MugenGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # Define the key mappings for evmapy
-        p1_keys = {
-            "Jump": "273",
-            "Crouch": "274",
-            "Left": "276",
-            "Right": "275",
-            "A": "44",
-            "B": "46",
-            "C": "47",
-            "X": "108",
-            "Y": "59",
-            "Z": "39",
-            "Start": "13"
-        }
 
-        p2_keys = {
-            "Jump": "119",
-            "Crouch": "115",
-            "Left": "97",
-            "Right": "100",
-            "A": "102",
-            "B": "103",
-            "C": "104",
-            "X": "114",
-            "Y": "116",
-            "Z": "121",
-            "Start": "117"
+        # Define the settings we want to update
+        presets = {
+            "old": {
+                # old mugen version don't have same key mapping value and is 640x480 max
+                "Video Win": {
+                    "FullScreen": "1",
+                    "Width": "640",
+                    "Height": "480",
+                    "DXmode": "Hardware"
+                },
+                "Input": {
+                    "P1.UseKeyboard": "1",
+                    "P2.UseKeyboard": "1",
+                    "P1.Joystick.type": "0",
+                    "P2.Joystick.type": "0"
+                },
+                # Define the key mappings for evmapy
+                "P1 Keys": {
+                    "Jump": "200",
+                    "Crouch": "208",
+                    "Left": "203",
+                    "Right": "205",
+                    "A": "51",
+                    "B": "52",
+                    "C": "53",
+                    "X": "26",
+                    "Y": "39",
+                    "Z": "40",
+                    "Start": "28"
+                },
+                "P2 Keys": {
+                    "Jump": "17",
+                     "Crouch": "31",
+                     "Left": "30",
+                     "Right": "32",
+                     "A": "33",
+                     "B": "34",
+                     "C": "35",
+                     "X": "19",
+                     "Y": "20",
+                     "Z": "21",
+                     "Start": "22"
+                }
+            },
+            "new": {
+                "Video": {
+                    "FullScreen": "1",
+                    "Width": str(gameResolution['width']),
+                    "Height": str(gameResolution['height'])
+                },
+                "Config": {
+                    "GameWidth": str(gameResolution['width']),
+                    "GameHeight": str(gameResolution['height'])
+                },
+                "Input": {
+                    "P1.UseKeyboard": "1",
+                    "P2.UseKeyboard": "1",
+                    "P1.Joystick.type": "0",
+                    "P2.Joystick.type": "0"
+                },
+                # Define the key mappings for evmapy
+                "P1 Keys": {
+                    "Jump": "273",
+                    "Crouch": "274",
+                    "Left": "276",
+                    "Right": "275",
+                    "A": "44",
+                    "B": "46",
+                    "C": "47",
+                    "X": "108",
+                    "Y": "59",
+                    "Z": "39",
+                    "Start": "13"
+                },
+                "P2 Keys": {
+                    "Jump": "119",
+                    "Crouch": "115",
+                    "Left": "97",
+                    "Right": "100",
+                    "A": "102",
+                    "B": "103",
+                    "C": "104",
+                    "X": "114",
+                    "Y": "116",
+                    "Z": "121",
+                    "Start": "117"
+                }
+            }
         }
 
         settings_path = rom / "data" / "mugen.cfg"
@@ -56,26 +134,8 @@ class MugenGenerator(Generator):
         if not settings_path.exists():
             raise BatoceraException(f"Configuration file not found: {settings_path}")
 
-        # Define the settings we want to update
-        sections_to_update = {
-            "Video": {
-                "FullScreen": "1",
-                "Width": str(gameResolution['width']),
-                "Height": str(gameResolution['height'])
-            },
-            "Config": {
-                "GameWidth": str(gameResolution['width']),
-                "GameHeight": str(gameResolution['height'])
-            },
-            "Input": {
-                "P1.UseKeyboard": "1",
-                "P2.UseKeyboard": "1",
-                "P1.Joystick.type": "0",
-                "P2.Joystick.type": "0"
-            },
-            "P1 Keys": p1_keys,
-            "P2 Keys": p2_keys
-        }
+        mugen_version = get_mugen_version(settings_path)
+        sections_to_update = presets[mugen_version]
 
         with settings_path.open("r", encoding="utf-8-sig") as f:
             lines = f.readlines()
