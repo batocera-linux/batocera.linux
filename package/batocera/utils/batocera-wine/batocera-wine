@@ -110,13 +110,15 @@ update_wine_version() {
 }
 
 waitWineServer() {
+    local ret=0 pid=$(pgrep -o -f "${WINESERVER}")
+    [[ -z "$pid" ]] && { echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} no process '${WINESERVER}' found - finished with hotkey?" >&2; return 0; }
     #from: https://unix.stackexchange.com/a/427133
     #timeout will report not 0 if setted value is reached
-    if pgrep -f "${WINESERVER}"; then
-        echo "Waiting WineServer: ${WINESERVER}"
-        timeout "$1" tail -q --pid=$(pgrep -f "${WINESERVER}") -f /dev/null
-        echo "Finished waiting for WineServer: ${WINESERVER}"
-    fi
+    echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} wait WineServer: [$pid] ${WINESERVER}"
+    timeout "$1" tail -q --pid=$pid -f /dev/null
+    ret=$?
+    echo "${FUNCNAME[0]}: Finished waiting for WineServer [$pid] with errorcode($ret)"
+    return $ret
 }
 
 wine_options() {
@@ -973,15 +975,18 @@ case "${ACTION}" in
 
 # case selections will provide 2 variables here, GAMENAME and WINEPOINT
    "play")
-   init_wine && requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+   init_wine
 	case "${GAMEEXT,,}" in
 	    "wine")
+		requestFileSystem "${GAMENAME}"
 		play_wine "${GAMENAME}" "${GAMENAME}"
 		;;
 	    "pc")
+		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		play_pc "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		;;
 	    "exe")
+		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		play_exe "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		;;
 #	    "iso")
@@ -989,9 +994,11 @@ case "${ACTION}" in
 #		;;
 	    "wsquashfs")
 		#Arguments, ROMNAME, WINEPREFIX as squashfs, SAVEDIR, WORKDIR
+		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}"
 		play_squashfs "${GAMENAME}" "/var/run/wine/${ROMGAMENAME}" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}.work"
 		;;
 	    "wtgz")
+		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}.wine"
 		play_winetgz "${GAMENAME}" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}.wine"
 		;;
 	    *)
