@@ -63,7 +63,7 @@ class MugenGenerator(Generator):
                     "A": "51",
                     "B": "52",
                     "C": "53",
-                    "X": "26",
+                    "X": "38",
                     "Y": "39",
                     "Z": "40",
                     "Start": "28"
