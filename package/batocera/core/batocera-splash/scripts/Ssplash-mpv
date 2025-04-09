@@ -123,7 +123,11 @@ do_videostart ()
 
     drm_mode="preferred"
     video_resize=$(batocera-settings-get-master splash.screen.resize)
-    if [[ $? -eq 0 ]]; then
+    # If splash screen resize is empty then try the es resolution
+    if [[ -z "$video_resize" ]]; then
+        video_resize=$(batocera-settings-get-master es.resolution)
+    fi
+    if [[ -n "$video_resize" ]]; then
         resize=$(echo "${video_resize}" | sed "s/x/:/")
         mpv_video="${mpv_video} --vf=scale=${resize}"
         drm_mode=$video_resize
