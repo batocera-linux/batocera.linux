@@ -41,16 +41,20 @@ class ScummVMGenerator(Generator):
         with ensure_parents_and_open(scummConfigFile, 'w') as configfile:
             scummConfig.write(configfile)
 
-        # Find rom path
+        # Find rom path and rom name
         if rom.is_dir():
           # rom is a directory: must contains a <game name>.scummvm file
           romPath = rom
           romName = next(rom.glob("*.scummvm")).stem
-        else:
+
+        if rom.is_file():
           # rom is a file: split in directory and file name
           romPath = rom.parent
-          # Get rom name without extension
-          romName = rom.stem
+          # obtain game ID within file
+          romName = Path(rom).read_text().strip()
+          # if value is empty get rom name without extension
+          if not romName:
+            romName = rom.stem
 
         # pad number
         id = 0
