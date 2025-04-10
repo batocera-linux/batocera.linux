@@ -5,10 +5,9 @@
 ################################################################################
 
 LIBLCF_VERSION = 0.8.1
-LIBLCF_DEPENDENCIES = expat icu
 LIBLCF_LICENSE = MIT
 LIBLCF_SITE = $(call github,EasyRPG,liblcf,$(LIBLCF_VERSION))
-LIBLCF_DEPENDENCIES = inih
+LIBLCF_DEPENDENCIES = expat icu inih
 
 LIBLCF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 
