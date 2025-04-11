@@ -48,18 +48,17 @@ class ScummVMGenerator(Generator):
           romName = next(rom.glob("*.scummvm"),0)
           if romName:
             romName = romName.stem
-        # rom is a file: split in directory and file name
+        # rom is a file: get the gameID from file content
         elif rom.is_file():
-          # obtain game ID within file
           romPath = rom.parent
           romName = Path(rom).read_text().strip()
 
         # if value is empty get gameID name without extension from file/dirname
         if not romName:
           romName = rom.stem
-        # if value is not a valid gameID then set autodetection
-        if not romName.islower():
-          romName = "--auto-detect"
+          # No valid gameID then set autodetection: "monkey2" is a valid one
+          if not romName.islower():
+            romName = "--auto-detect"
 
         # pad number
         id = 0
