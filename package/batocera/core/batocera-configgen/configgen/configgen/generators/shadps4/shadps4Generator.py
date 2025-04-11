@@ -1,3 +1,16 @@
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 from __future__ import annotations
 
 import logging
@@ -31,13 +44,17 @@ class shadPS4Generator(Generator):
 
         # Set the paths using Path objects
         configPath = CONFIGS / "shadps4"
+        userConfigPath = configPath / "user"
+        toml_file = userConfigPath / "config.toml"
+        savesPath = Path("/userdata/saves/shadps4")
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
 
-        mkdir_if_not_exists(configPath)
+        mkdir_if_not_exists(userConfigPath)
+        mkdir_if_not_exists(savesPath)
 
         # Check Vulkan first before doing anything
-        discrete_index = 0
+        discrete_index = -1
         if vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
             vulkan_version = vulkan.get_version()
@@ -61,81 +78,144 @@ class shadPS4Generator(Generator):
 
         # Adjust the config.toml file
         config: dict[str, dict[str, object]] = {}
-        toml_file = configPath / "user" / "config.toml"
 
         # Check if the file exists
         if toml_file.is_file():
-            with toml_file.open() as f:
-                config = toml.load(f)
-        else:
-            config = {
-                "Settings": {"consoleLanguage": 1},
-                "GUI": {
-                    "mw_width": 1920,
-                    "gameTableMode": 0,
-                    "theme": 0,
-                    "geometry_y": 0,
-                    "geometry_h": 1080,
-                    "geometry_w": 1920,
-                    "geometry_x": 0,
-                    "addonInstallDir": str(dlcPath),
-                    "pkgDirs": [],
-                    "recentFiles": [],
-                    "installDir": str(romDir),
-                    "sliderPosGrid": 0,
-                    "emulatorLanguage": "en",
-                    "iconSize": 36,
-                    "elfDirs": [],
-                    "sliderPos": 0,
-                    "iconSizeGrid": 69,
-                    "mw_height": 1080
-                },
-                "Debug": {"DebugDump": False},
-                "Vulkan": {
-                    "crashDiagnostic": False,
-                    "rdocEnable": False,
-                    "validation_gpu": False,
-                    "validation_sync": False,
-                    "rdocMarkersEnable": False,
-                    "validation": False,
-                    "gpuId": int(discrete_index)
-                },
-                "GPU": {
-                    "dumpShaders": False,
-                    "vblankDivider": 1,
-                    "copyGPUBuffers": False,
-                    "nullGpu": False,
-                    "screenHeight": 720,
-                    "screenWidth": 1280
-                },
-                "Input": {
-                    "specialPadClass": 1,
-                    "useSpecialPad": False,
-                    "cursorHideTimeout": 5,
-                    "cursorState": 1
-                },
+            try:
+                with toml_file.open("r") as f:
+                    config = toml.load(f)
+            except Exception as e:
+                 _logger.error("Failed to load existing shadps4 config: %s. Will create default.", e)
+
+        # If config is empty, create default structure
+        if not config:
+             _logger.info("Creating default shadps4 config at %s", toml_file)
+             config = {
                 "General": {
-                    "backButtonBehavior": "left",
+                    "isPS4Pro": False,
+                    "isTrophyPopupDisabled": False,
+                    "trophyNotificationDuration": 6.0,
+                    "playBGM": False,
+                    "BGMvolume": 50,
+                    "enableDiscordRPC": False,
+                    "logFilter": "",
+                    "logType": "async",
+                    "userName": "Batocera",
+                    "updateChannel": "Release",
+                    "chooseHomeTab": "General",
                     "showSplash": False,
                     "autoUpdate": False,
-                    "userName": "Batocera",
-                    "logType": "sync",
-                    "BGMvolume": 50,
-                    "playBGM": False,
-                    "updateChannel": "",
-                    "logFilter": "",
+                    "alwaysShowChangelog": False,
+                    "sideTrophy": "right",
+                    "separateUpdateEnabled": False,
+                    "compatibilityEnabled": False,
+                    "checkCompatibilityOnStartup": False,
+                },
+                "Input": {
+                    "cursorState": 1,
+                    "cursorHideTimeout": 5,
+                    "backButtonBehavior": "left",
+                    "useSpecialPad": False,
+                    "specialPadClass": 1,
+                    "isMotionControlsEnabled": True,
+                    "useUnifiedInputConfig": True,
+                },
+                "GPU": {
+                    "screenWidth": int(gameResolution["width"]),
+                    "screenHeight": int(gameResolution["height"]),
+                    "nullGpu": False,
+                    "copyGPUBuffers": False,
+                    "dumpShaders": False,
+                    "patchShaders": True,
+                    "vblankDivider": 1,
                     "Fullscreen": True,
-                    "isPS4Pro": False
-                }
-            }
+                    "FullscreenMode": "Fullscreen (Borderless)",
+                    "allowHDR": False,
+                },
+                "Vulkan": {
+                    "gpuId": int(discrete_index),
+                    "validation": False,
+                    "validation_sync": False,
+                    "validation_gpu": False,
+                    "crashDiagnostic": False,
+                    "hostMarkers": False,
+                    "guestMarkers": False,
+                    "rdocEnable": False,
+                },
+                "Debug": {
+                    "DebugDump": False,
+                    "CollectShader": False,
+                    "isSeparateLogFilesEnabled": False,
+                    "FPSColor": True,
+                },
+                "Keys": {
+                    "TrophyKey": ""
+                 },
+                "GUI": {
+                    "installDirs": [str(romDir)],
+                    "saveDataPath": str(savesPath),
+                    "loadGameSizeEnabled": True,
+                    "addonInstallDir": str(dlcPath),
+                    "emulatorLanguage": "en_US",
+                    "backgroundImageOpacity": 50,
+                    "showBackgroundImage": True,
+                    "mw_width": int(gameResolution["width"]),
+                    "mw_height": int(gameResolution["height"]),
+                    "theme": 0,
+                    "iconSize": 36,
+                    "sliderPos": 0,
+                    "iconSizeGrid": 69,
+                    "sliderPosGrid": 0,
+                    "gameTableMode": 0,
+                    "geometry_x": 0,
+                    "geometry_y": 0,
+                    "geometry_w": int(gameResolution["width"]),
+                    "geometry_h": int(gameResolution["height"]),
+                    "pkgDirs": [str(romDir)],
+                    "elfDirs": [],
+                    "recentFiles": [],
+                },
+                "Settings": {
+                    "consoleLanguage": 1
+                },
+             }
 
-        # If the file exists, update the relevant sections
-        config.setdefault("General", {})["Fullscreen"] = True
-        config["General"]["autoUpdate"] = False
-        config["General"]["userName"] = "Batocera"
-        config.setdefault("GUI", {})["installDir"] = str(romDir)
-        config["GUI"]["addonInstallDir"] = str(dlcPath)
+        # --- Apply Batocera Specific Overrides ---
+        # General
+        config.setdefault("General", {})["autoUpdate"] = False
+        config.setdefault("General", {})["enableDiscordRPC"] = False
+        config.setdefault("General", {})["userName"] = "Batocera"
+
+        # GPU
+        gpu_config = config.setdefault("GPU", {})
+        gpu_config["Fullscreen"] = True
+        gpu_config["FullscreenMode"] = "Fullscreen (Borderless)"
+        gpu_config["screenWidth"] = int(gameResolution["width"])
+        gpu_config["screenHeight"] = int(gameResolution["height"])
+
+        # GUI
+        gui_config = config.setdefault("GUI", {})
+        gui_config["addonInstallDir"] = str(dlcPath)
+        gui_config["installDirs"] = [str(romDir)]
+        gui_config["saveDataPath"] = str(savesPath)
+        gui_config["mw_width"] = int(gameResolution["width"])
+        gui_config["mw_height"] = int(gameResolution["height"])
+        gui_config["geometry_w"] = int(gameResolution["width"])
+        gui_config["geometry_h"] = int(gameResolution["height"])
+        gui_config["pkgDirs"] = [str(romDir)]
+
+        # Vulkan - Set the detected GPU ID
         config.setdefault("Vulkan", {})["gpuId"] = int(discrete_index)
+
+        # Options
+        if system.config.get_bool("shadps4_hdr"):
+            gpu_config["allowHDR"] = True
+        else:
+            gpu_config["allowHDR"] = False
+        if system.config.get("shadps4_console_lang"):
+            config["Settings"]["consoleLanguage"] = int(system.config["shadps4_console_lang"])
+        else:
+            config["Settings"]["consoleLanguage"] = 1
 
         # Create necessary directories if they do not exist
         mkdir_if_not_exists(toml_file.parent)

@@ -52,6 +52,7 @@
 - OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith.
 - OpenJK to play Jedi Academy & Jedi Outcast
 - Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
+- ShadPS4 emulator for PlayStation 4 gaming
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
