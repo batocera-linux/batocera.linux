@@ -1,0 +1,13 @@
+diff --git a/codemp/rd-rend2/CMakeLists.txt b/codemp/rd-rend2/CMakeLists.txt
+index 786cf25..44ecef9 100644
+--- a/codemp/rd-rend2/CMakeLists.txt
++++ b/codemp/rd-rend2/CMakeLists.txt
+@@ -193,7 +193,7 @@ if (NOT WIN32 AND NOT APPLE)
+ 	target_compile_definitions(compact_glsl PRIVATE "ARCH_STRING=\"${Architecture}\"")
+ endif()
+ target_include_directories(compact_glsl PRIVATE "${MPRend2IncludeDirectories}")
+-if (WIN32 OR APPLE)
++if (WIN32 OR APPLE OR CMAKE_CROSSCOMPILING)
+ add_custom_command(
+ 	OUTPUT
+ 		${CMAKE_CURRENT_BINARY_DIR}/glsl_shaders.cpp
