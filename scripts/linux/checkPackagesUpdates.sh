@@ -146,6 +146,7 @@ PACKAGES_EMULATORS="amiberry
                     bigpemu
                     cemu
                     citra
+                    citron
                     hypseus-singe
                     dolphin-emu
                     dolphin-triforce
@@ -187,7 +188,6 @@ PACKAGES_EMULATORS="amiberry
                     sugarbox
                     supermodel
                     supermodel-es
-                    suyu
                     thextech
                     tsugaru
                     vice
@@ -457,20 +457,20 @@ hataritagdate_GETNET() {
   wget -qO - "${1}/tag/?id=v${2}" | grep "tag date" | sed -e s#'.*</td><td>\(.*\) [0-9]*:.*$'#'\1'#
 }
 
-suyugitlastcommit_GETNET() {
-  wget -qO - "https://git.suyu.dev/${1}${2}" | grep -m1 -Eio '/commit/[0-9a-f]{40}' | sed -e 's#/commit/##' | head -n 1
+citrongitlastcommit_GETNET() {
+  wget -qO - "https://git.citron-emu.org/${1}${2}" | grep -m1 -Eio '/commit/[0-9a-f]{40}' | sed -e 's#/commit/##' | head -n 1
 }
 
-suyugitcommitdate_GETNET() {
-  wget -qO - "https://git.suyu.dev/${1}/commit/${2}" | grep -m1 'relative-time' | sed -e s#'.*"true">\(.*\) [0-9]*:.*$'#'\1'#
+citrongitcommitdate_GETNET() {
+  wget -qO - "https://git.citron-emu.org/${1}/commit/${2}" | grep -m1 'relative-time' | sed -e s#'.*"true">\(.*\) [0-9]*:.*$'#'\1'#
 }
 
-suyugitlasttag_GETNET() {
-  wget -qO - "https://git.suyu.dev/${1}/tags" | grep -m1 "/tag/" | sed -e s#'.*>\(.*\)<.*$'#'\1'#
+citrongitlasttag_GETNET() {
+  wget -qO - "https://git.citron-emu.org/${1}/tags" | grep -m1 "/tag/" | sed -e s#'.*>\(.*\)<.*$'#'\1'#
 }
 
-suyugittagdate_GETNET() {
-  suyugitcommitdate_GETNET "${1}" "$(wget -qO - "https://git.suyu.dev/${1}/releases/tag/${2}" | grep -m1 -Eio '/commit/[0-9a-f]{40}' | sed -e 's#/commit/##')"
+citrongittagdate_GETNET() {
+  citrongitcommitdate_GETNET "${1}" "$(wget -qO - "https://git.citron-emu.org/${1}/releases/tag/${2}" | grep -m1 -Eio '/commit/[0-9a-f]{40}' | sed -e 's#/commit/##')"
 }
 
 sourcehutlasttag_GETNET() {
@@ -774,29 +774,29 @@ create_pkg_functions_Hatari() {
   }"
 }
 
-create_pkg_functions_Suyu() {
+create_pkg_functions_Citron() {
   GH_VERS=$(pkg_GETCURVERSION "${1}")
   if test "$(echo "${GH_VERS}" | wc -c)" = 41 # git full checksum is 40 plus null char
   then
     eval "${1}_GETNET() {
-      X1=\$(suyugitlastcommit_GETNET ${2} ${3})
-      X2=\$(suyugitcommitdate_GETNET ${2} \${X1})
+      X1=\$(citrongitlastcommit_GETNET ${2} ${3})
+      X2=\$(citrongitcommitdate_GETNET ${2} \${X1})
       echo \"\${X1} - \${X2}\"
     }"
     eval "${1}_GETCUR() {
       X1=\$(pkg_GETCURVERSION ${1})
-      X2=\$(suyugitcommitdate_GETNET ${2} \${X1})
+      X2=\$(citrongitcommitdate_GETNET ${2} \${X1})
       echo \"\${X1} - \${X2}\"
     }"
   else
     eval "${1}_GETNET() {
-      X1=\$(suyugitlasttag_GETNET ${2})
-      X2=\$(suyugittagdate_GETNET ${2} \${X1})
+      X1=\$(citrongitlasttag_GETNET ${2})
+      X2=\$(citrongittagdate_GETNET ${2} \${X1})
       echo \"\${X1} - \${X2}\"
     }"
     eval "${1}_GETCUR() {
       X1=\$(pkg_GETCURVERSION ${1})
-      X2=\$(suyugittagdate_GETNET ${2} \${X1})
+      X2=\$(citrongittagdate_GETNET ${2} \${X1})
       echo \"\${X1} - \${X2}\"
     }"
   fi
@@ -1114,10 +1114,10 @@ source_site_eval() {
             *"git.tuxfamily.org"* )
               create_pkg_functions_Hatari "${pkg}" "${TESTSTRING%/*}"
             ;;
-            *"git.suyu.dev"* )
-              REPOPATH=$(echo "$TESTSTRING" | sed -e s#'^.*suyu\.dev/\(.*\)\.git.*'#'\1'#)
+            *"git.citron-emu.org"* )
+              REPOPATH=$(echo "$TESTSTRING" | sed -e s#'^.*citron-emu\.org/\(.*\)\.git.*'#'\1'#)
               [ -n "$BRANCH" ] && BRANCH="/src/branch/${BRANCH}"
-              create_pkg_functions_Suyu "${pkg}" "${REPOPATH}" "$BRANCH"
+              create_pkg_functions_Citron "${pkg}" "${REPOPATH}" "$BRANCH"
             ;;
             *"git.kernel.org"* )
               create_pkg_functions_AllLinuxFirmware "${pkg}" "${TESTSTRING%/snapshot*}"
