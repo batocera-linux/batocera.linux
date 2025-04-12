@@ -3,7 +3,7 @@
 # citron
 #
 ################################################################################
-# Version: Commits on Apr 10, 2025
+
 CITRON_VERSION = v0.6.1-canary-refresh
 CITRON_SITE = https://git.citron-emu.org/Citron/Citron.git
 CITRON_SITE_METHOD=git
