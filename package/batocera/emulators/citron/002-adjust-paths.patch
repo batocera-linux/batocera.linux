@@ -1,0 +1,20 @@
+diff --git a/src/common/fs/path_util.cpp b/src/common/fs/path_util.cpp
+index f92cbe0f7b..9e3dcd9c18 100644
+--- a/src/common/fs/path_util.cpp
++++ b/src/common/fs/path_util.cpp
+@@ -121,12 +121,12 @@ public:
+         GenerateCitronPath(CitronPath::ConfigDir, citron_path_config);
+         GenerateCitronPath(CitronPath::CrashDumpsDir, citron_path / CRASH_DUMPS_DIR);
+         GenerateCitronPath(CitronPath::DumpDir, citron_path / DUMP_DIR);
+-        GenerateCitronPath(CitronPath::KeysDir, citron_path / KEYS_DIR);
++        GenerateCitronPath(CitronPath::KeysDir, "/userdata/bios/switch");
+         GenerateCitronPath(CitronPath::LoadDir, citron_path / LOAD_DIR);
+-        GenerateCitronPath(CitronPath::LogDir, citron_path / LOG_DIR);
++        GenerateCitronPath(CitronPath::LogDir, "/userdata/system/logs");
+         GenerateCitronPath(CitronPath::NANDDir, citron_path / NAND_DIR);
+         GenerateCitronPath(CitronPath::PlayTimeDir, citron_path / PLAY_TIME_DIR);
+-        GenerateCitronPath(CitronPath::ScreenshotsDir, citron_path / SCREENSHOTS_DIR);
++        GenerateCitronPath(CitronPath::ScreenshotsDir, "/userdata/screenshots/switch/citron");
+         GenerateCitronPath(CitronPath::SDMCDir, citron_path / SDMC_DIR);
+         GenerateCitronPath(CitronPath::ShaderDir, citron_path / SHADER_DIR);
+         GenerateCitronPath(CitronPath::TASDir, citron_path / TAS_DIR);

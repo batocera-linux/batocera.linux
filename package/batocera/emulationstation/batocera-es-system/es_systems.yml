@@ -3698,16 +3698,16 @@ superbroswar:
      Super Mario War - esmague os adversários pisando neles, em um divertido jogo multijogador.
 
 switch:
-  name:       Switch
+  name: Switch
   manufacturer: Nintendo
   release: 2017
   hardware: console
-  platform:   switch
-  theme:      switch
+  platform: switch
+  theme: switch
   extensions: [xci, nsp]
   emulators:
-    suyu:
-      suyu: { requireAnyOf: [BR2_PACKAGE_SUYU] }
+    citron:
+      citron: { requireAnyOf: [BR2_PACKAGE_CITRON] }
     ryujinx:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
 
