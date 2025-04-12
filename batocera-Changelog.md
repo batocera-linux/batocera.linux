@@ -134,7 +134,7 @@
 - DXVK to 2.6.1
 - DXVK-NVApi to 0.9.0
 - VKD3D-Proton to 2.14.1
-- Linux Firmware to 20250109
+- Linux Firmware to 20250410
 - Sound Open Firmware to 2025.01
 - Intel Media Driver to 25.1.1
 - LibDRM to 2.4.124
