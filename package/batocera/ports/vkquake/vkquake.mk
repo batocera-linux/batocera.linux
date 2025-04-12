@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VKQUAKE_VERSION = 1.32.0
+VKQUAKE_VERSION = 1.32.1
 VKQUAKE_SITE = $(call github,Novum,vkQuake,$(VKQUAKE_VERSION))
 VKQUAKE_DEPENDENCIES = alsa-lib flac glslang mpg123 libvorbis opus opusfile sdl2
 VKQUAKE_DEPENDENCIES += spirv-tools vulkan-headers vulkan-loader
