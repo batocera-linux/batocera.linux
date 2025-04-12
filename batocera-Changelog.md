@@ -117,38 +117,37 @@
 - Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79
+- BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
-- Mesa3D to 25.0.3
-- Linux Kernel to 6.14.1
-- RPi Kernel to 6.12.21
-- RPi firmware to match Kernel 6.12.21
-- GStreamer codecs to 1.26.0
-- SDL2 to 2.30.11
-- Vulkan stack to v1.4.304
-- MPV to 0.40.0
-- Kodi to 21.2
-- Nvidia production driver to 570.133.07
-- LLVM to 19.1.7
-- Wine-TKG to 10.4
-- Faudio to 25.02
 - DXVK to 2.6.1
 - DXVK-NVApi to 0.9.0
-- VKD3D-Proton to 2.14.1
-- Linux Firmware to 20250410
-- Sound Open Firmware to 2025.01
-- Intel Media Driver to 25.2.0
-- LibDRM to 2.4.124
-- Pipewire to 1.2.7
-- Wireplumber to 0.5.8
-- Ryzenadj to v0.16.0
-- QT6 to 6.8.1
-- BTop to 1.4.0
-- Wine Mono to 9.4.0
-- Syncthing to 1.29.3
-- Xone to Mar 13, 2025
+- Faudio to 25.02
 - FFMPEG to 7.1.1
-- Intel MediaDriver to 25.1.4
+- GStreamer codecs to 1.26.0
 - Intel GMMLib to 22.7.1
+- Intel Media Driver to 25.2.0
+- Kodi to 21.2
+- LibDRM to 2.4.124
+- Linux Firmware to 20250410
+- Linux Kernel to 6.14.1
+- LLVM to 19.1.7
+- Mesa3D to 25.0.3
+- MPV to 0.40.0
+- Nvidia production driver to 570.133.07
+- Pipewire to 1.2.7
+- QT6 to 6.8.1
+- RPi firmware to match Kernel 6.12.21
+- RPi Kernel to 6.12.21
+- Ryzenadj to v0.16.0
+- SDL2 to 2.30.11
+- Sound Open Firmware to 2025.01
+- Syncthing to 1.29.3
+- VKD3D-Proton to 2.14.1
+- Vulkan stack to v1.4.304
+- Wine Mono to 9.4.0
+- Wine-TKG to 10.5
+- Wireplumber to 0.5.8
+- Xone to Mar 13, 2025
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes
