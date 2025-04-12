@@ -113,7 +113,7 @@
 - Vice to 3.9
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
-- Xemu to v0.8.45
+- Xemu to v0.8.49
 - Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79
