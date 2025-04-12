@@ -193,7 +193,7 @@ def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
     if emulator not in [ 'mame', 'retroarch' ]:
         return "standalone"
 
-    if systemName not in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex' ]:
+    if systemName not in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex', 'dice' ]:
         return "0"
 
     # Look for external file, exit if not set up
