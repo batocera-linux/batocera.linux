@@ -125,7 +125,7 @@
 - GStreamer codecs to 1.26.0
 - SDL2 to 2.30.11
 - Vulkan stack to v1.4.304
-- MPV to 0.39.0
+- MPV to 0.40.0
 - Kodi to 21.2
 - Nvidia production driver to 570.133.07
 - LLVM to 19.1.7
@@ -136,7 +136,7 @@
 - VKD3D-Proton to 2.14.1
 - Linux Firmware to 20250410
 - Sound Open Firmware to 2025.01
-- Intel Media Driver to 25.1.1
+- Intel Media Driver to 25.2.0
 - LibDRM to 2.4.124
 - Pipewire to 1.2.7
 - Wireplumber to 0.5.8
