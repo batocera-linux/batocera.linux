@@ -44,6 +44,10 @@ else
     DOLPHIN_TRIFORCE_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
 
+ifeq ($(BR2_PACKAGE_SPEEXDSP),y)
+    DOLPHIN_TRIFORCE_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lspeexdsp"
+endif
+
 define DOLPHIN_TRIFORCE_INI
     mkdir -p $(TARGET_DIR)/usr/share/triforce
     # copy extra ini files
