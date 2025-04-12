@@ -82,14 +82,14 @@
 - DXX-Rebirth to 12th of Jan build
 - EDuke to 26th of Dec build
 - ETLegacy to v2.83.2
-- GroovyMAME to 0.274
+- GroovyMAME to 0.276
 - Gzdoom to g4.14.1
 - Hurrican to 24th of Nov build
 - Hypseus Singe to 2.11.4
 - IOQuake3 to 25th December build
 - Jazz2 to 3.2.0
 - Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.274
+- Libretro-MAME to 0.276
 - Libretro-Play! 4th Feb build
 - Libretro-PPSSPP to 28th February build
 - Libretro-Wasm4 to v2.7.1
