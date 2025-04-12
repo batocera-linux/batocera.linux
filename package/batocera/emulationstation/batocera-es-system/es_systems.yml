@@ -5627,18 +5627,21 @@ ps4:
     shadps4:
       shadps4: { requireAnyOf: [BR2_PACKAGE_SHADPS4] }
   comment_en: |
-    Do not attempt to use this emulator unless you have a jailbroken PS4 console with back-up games.
-    PS4 emulation is very experiemental & required a high specified x86_64 PC.
+    PS4 emulation is very experiemental & requires a highly specified x86_64 PC.
+    Ideally your CPU supports the AVX2 instruction set and your GPU must support Vulkan 1.3 or later.
+
+    For compatibility check: https://shadps4.net/compatibility/
 
     Before you can play a game you must install the game via the associated .PKG file of your backed-up game using the F1 menu.
     Then in the new installation directory for the installed game, create a file with a .ps4 extension so EmularionStation will see it.
     i.e. /userdata/roms/ps4/CUSA03173/Bloodborne.ps4
 
-    Then you can launch the game from EmulationStation accordingly.
+    Afterwards you can launch the game from EmulationStation accordingly.
 
     DLC content will be stored in: /userdata/roms/ps4/DLC
 
-    Very important: To play games you typically need the system modules from your PS4 that has been jailbroken.
+    Very important: To play games you may need the system modules from your PS4 that has been jailbroken.
+    The log file may give an indication of any required system modules.
     Place the decrypted system module files in: /userdata/system/configs/shadps4/user/sys_modules
 
     For more info: https://wiki.batocera.org/systems:ps4
