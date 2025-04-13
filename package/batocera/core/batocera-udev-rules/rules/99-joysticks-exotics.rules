@@ -17,3 +17,6 @@ SUBSYSTEM=="input", ATTRS{name}=="Xarcade-to-Gamepad Device 2", MODE="0666", ENV
 
 # 1 button controller...
 SUBSYSTEM=="input", ATTRS{name}=="Xbox Wireless Controller Consumer Control", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0"
+
+# detected as a joystick (but having a single button) when plugged via usb
+SUBSYSTEM=="input", ATTRS{name}=="Microsoft Xbox Chatpad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0"
