@@ -52,8 +52,8 @@
 		status = "okay";
 
 		joypad-name = "GameForce ACE Gamepad";
-		joypad-product = <0x1000>;
-		joypad-revision = <0x0100>;
+		joypad-product = <0x0ace>;
+		joypad-revision = <0x0001>;
 
 		/* Analog sticks */
 		io-channels = <&saradc 2>, <&saradc 3>, <&saradc 4>, <&saradc 5>, <&ti_adc 6>, <&ti_adc 7>;
