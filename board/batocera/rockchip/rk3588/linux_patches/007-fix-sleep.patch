@@ -1,0 +1,47 @@
+From 0d1781e72fb7707a0bbc4419c8f1bc75a113f19a Mon Sep 17 00:00:00 2001
+From: baiywt <baiywt_gj@163.com>
+Date: Thu, 6 Apr 2023 09:26:13 +0800
+Subject: [PATCH] Fix some boards cannot enter deep sleep mode
+
+---
+ arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi | 2 +-
+ drivers/mfd/rk806-core.c                          | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
+index da5f147391a3c..0a1ad5180a0b8 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-pinctrl.dtsi
+@@ -1981,7 +1981,7 @@
+ 				/* pmic_int_l */
+ 				<0 RK_PA7 0 &pcfg_pull_up>,
+ 				/* pmic_sleep1 */
+-				<0 RK_PA2 1 &pcfg_pull_none>,
++				<0 RK_PA2 1 &pcfg_pull_down>,
+ 				/* pmic_sleep2 */
+ 				<0 RK_PA3 1 &pcfg_pull_none>,
+ 				/* pmic_sleep3 */
+diff --git a/drivers/mfd/rk806-core.c b/drivers/mfd/rk806-core.c
+index 5421ac95578f3..1fc1fffb46b91 100644
+--- a/drivers/mfd/rk806-core.c
++++ b/drivers/mfd/rk806-core.c
+@@ -520,6 +520,7 @@ static void rk806_irq_init(struct rk806 *rk806)
+ static int rk806_pinctrl_init(struct rk806 *rk806)
+ {
+ 	struct device *dev = rk806->dev;
++	int ret;
+ 
+ 	rk806->pins = devm_kzalloc(dev,
+ 				   sizeof(struct rk806_pin_info),
+@@ -539,6 +540,11 @@ static int rk806_pinctrl_init(struct rk806 *rk806)
+ 
+ 	if (IS_ERR(rk806->pins->default_st))
+ 		dev_err(dev, "no default pinctrl state\n");
++	else {
++		ret = pinctrl_select_state(rk806->pins->p, rk806->pins->default_st);
++		if (ret < 0)
++			dev_err(dev, "could not set pins\n");
++	}
+ 
+ 	rk806->pins->power_off = pinctrl_lookup_state(rk806->pins->p,
+ 						      "pmic-power-off");

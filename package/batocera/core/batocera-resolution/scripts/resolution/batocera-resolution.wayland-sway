@@ -190,7 +190,9 @@ case "${ACTION}" in
                 echo "Rotate 90 degrees" >> $log
                 swaymsg output "${PSCREEN}" transform 90
                 if [ -n "${TOUCHSCREEN}" ]; then
-                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 1 0 -1 0 1"
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" map_to_output \"${PSCREEN}\""
+                    echo "Mapped touchscreen to ${PSCREEN}" >> $log
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 -1 1 1 0 0"
                     echo "Touchscreen rotated 90 degrees" >> $log
                 fi
             ;;
@@ -198,6 +200,8 @@ case "${ACTION}" in
                 echo "Rotate 180 degrees" >> $log
                 swaymsg output "${PSCREEN}" transform 180
                 if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" map_to_output \"${PSCREEN}\""
+                    echo "Mapped touchscreen to ${PSCREEN}" >> $log
                     swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix -1 0 1 0 -1 1"
                     echo "Touchscreen rotated 180 degrees" >> $log
                 fi
@@ -206,6 +210,8 @@ case "${ACTION}" in
                 echo "Rotate 270 degrees" >> $log
                 swaymsg output "${PSCREEN}" transform 270
                 if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" map_to_output \"${PSCREEN}\""
+                    echo "Mapped touchscreen to ${PSCREEN}" >> $log
                     swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 -1 1 1 0 0"
                     echo "Touchscreen rotated 270 degrees" >> $log
                 fi
@@ -214,6 +220,8 @@ case "${ACTION}" in
             *)
                 swaymsg output "${PSCREEN}" transform normal
                 if [ -n "${TOUCHSCREEN}" ]; then
+                    swaymsg -t command "input \"${TOUCHSCREEN}\" map_to_output \"${PSCREEN}\""
+                    echo "Mapped touchscreen to ${PSCREEN}" >> $log
                     swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 1 0 0 0 1 0"
                     echo "Touchscreen rotated 0 degrees" >> $log
                 fi
