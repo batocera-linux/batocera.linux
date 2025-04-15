@@ -71,6 +71,9 @@ case "${ACTION}" in
         /etc/init.d/S08connman reload
         wait_for_ip down
         ;;
+    "getroute")
+        ip route show default | awk '/^default/ && $0 ~ /wl/ { print $3 }'
+        ;;
     *)
         do_help
         >&2 echo "error: invalid command ${ACTION}"
