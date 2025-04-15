@@ -24,7 +24,7 @@ OPENJK_SUPPORTS_IN_SOURCE_BUILD = NO
 OPENJK_LICENSE = GPL-2.0 license
 OPENJK_LICENSE_FILE = LICENSE.txt
 
-OPENJK_DEPENDENCIES += host-openjk host-libjpeg libjpeg-bato libpng sdl2 zlib
+OPENJK_DEPENDENCIES += host-openjk libjpeg-bato libpng sdl2 zlib
 
 OPENJK_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 OPENJK_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
@@ -34,10 +34,13 @@ OPENJK_CONF_OPTS += -DBuildJK2SPEngine=ON
 OPENJK_CONF_OPTS += -DBuildJK2SPGame=ON
 OPENJK_CONF_OPTS += -DBuildJK2SPRdVanilla=ON
 
+HOST_OPENJK_DEPENDENCIES = mesa3d
+
 HOST_OPENJK_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 HOST_OPENJK_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
-# Prevents cmake checking if sdl2 is installed (not needed for compact_glsl)
 HOST_OPENJK_CONF_OPTS += -DUseInternalSDL2=ON
+HOST_OPENJK_CONF_OPTS += -DUseInternalJPEG=ON
+HOST_OPENJK_CONF_OPTS += -DUseInternalPNG=ON
 
 HOST_OPENJK_BUILD_OPTS += --target compact_glsl
 
@@ -48,7 +51,8 @@ define OPENJK_EVMAPY
 endef
 
 define HOST_OPENJK_INSTALL_CMDS
-	$(INSTALL) -D -m 0755 $(HOST_OPENJK_BUILDDIR)/compact_glsl $(HOST_DIR)/usr/bin/compact_glsl
+	$(INSTALL) -D -m 0755 $(HOST_OPENJK_BUILDDIR)/compact_glsl \
+	    $(HOST_DIR)/usr/bin/compact_glsl
 endef
 
 OPENJK_POST_INSTALL_TARGET_HOOKS += OPENJK_EVMAPY
