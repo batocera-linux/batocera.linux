@@ -107,7 +107,7 @@
 - Solarus Engine to 18th Jan build
 - Sonic3 Air to v25.02.15.0-test
 - Taradino to 18th of Feb build
-- TheForceEngine to 20th Feb build
+- TheForceEngine to v1.22.300
 - TheXTech to v1.3.7-hotfix2
 - Triforce to use a Crediar build (Nov 29, 2024)
 - Vice to 3.9
