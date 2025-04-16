@@ -509,6 +509,40 @@ def _puae_options(
         _set_from_system(coreSettings, 'puae_cd32pad_options', system, default="disabled")
 
 
+# DICE
+def _dice_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Pointer-as-paddle, simplest mouse setup
+    _set_from_system(coreSettings, 'dice_use_mouse_pointer_for_paddle_1', system, 'ttl_use_mouse_pointer_for_paddle_1', default='disabled')
+    # DEVICE_RETRO_MOUSE control of paddles
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0', system, 'ttl_retromouse_paddle0', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1', system, 'ttl_retromouse_paddle1', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2', system, 'ttl_retromouse_paddle2', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3', system, 'ttl_retromouse_paddle3', default='disabled')
+    # Axes for mouse-paddles.  Default for mice, but allow overrides for spinner setups
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    # Miscellaneous input scaling tweaks
+    _set_from_system(coreSettings, 'dice_paddle_keyboard_sensitivity', system, 'ttl_paddle_keyboard_sensitivity', default='250')
+    _set_from_system(coreSettings, 'dice_paddle_joystick_sensitivity', system, 'ttl_paddle_joystick_sensitivity', default='500')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle_sensitivity', system, 'ttl_retromouse_paddle_sensitivity', default='125')
+    _set_from_system(coreSettings, 'dice_wheel_keyjoy_sensitivity', system, 'ttl_wheel_keyjoy_sensitivity', default='500')
+    _set_from_system(coreSettings, 'dice_throttle_keyjoy_sensitivity', system, 'ttl_throttle_keyjoy_sensitivity', default='250')
+    # DIP switches
+    _set_from_system(coreSettings, 'dice_dipswitch_1', system, 'ttl_dipswitch_1', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch_2', system, 'ttl_dipswitch_2', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch_3', system, 'ttl_dipswitch_3', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch16_1', system, 'ttl_dipswitch16_1', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch16_2', system, 'ttl_dipswitch16_2', default='-1')
+
+
 # Dolpin Wii
 def _dolphin_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2244,6 +2278,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'citra': _citra_options,
     'mupen64plus-next': _mupen64plus_next_options,
     'parallel_n64': _parallel_n64_options,
+    'dice': _dice_options,
     'desmume': _desmume_options,
     'melonds': _melonds_options,
     'melondsds': _melondsds_options,
