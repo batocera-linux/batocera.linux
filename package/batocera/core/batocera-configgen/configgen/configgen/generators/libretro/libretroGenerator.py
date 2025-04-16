@@ -419,7 +419,7 @@ def getGFXBackend(system: Emulator) -> str:
         if not setManually:
             # If set to glcore or gl, override setting for certain cores that require one or the other
             core = system.config.core
-            if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
+            if backend == "gl" and core in [ 'kronos', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
                 backend = "glcore"
             if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'boom3' ]:
                 backend = "gl"

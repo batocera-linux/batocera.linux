@@ -70,13 +70,6 @@ ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
 endif
 
-# citra
-ifeq ($(BR2_PACKAGE_CITRA),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
-  BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += citra.png
-endif
-
 # azahar
 ifeq ($(BR2_PACKAGE_AZAHAR),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-azahar
