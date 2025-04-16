@@ -2215,16 +2215,12 @@ x1:
       x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
 
 3ds:
-  name:       3DS
+  name: 3DS
   manufacturer: Nintendo
   release: 2011
   hardware: portable
   extensions: [3ds, 3dsx, cxi, axf, elf, app, squashfs]
   emulators:
-    citra:
-      citra:  { requireAnyOf: [BR2_PACKAGE_CITRA]          }
-    libretro:
-      citra:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
     azahar:
       azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR]         }
 

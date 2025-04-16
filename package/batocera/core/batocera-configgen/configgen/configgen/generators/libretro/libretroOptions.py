@@ -828,18 +828,6 @@ def _pcfx_options(
     # Remove 16-sprites-per-scanline hardware limit
     _set_from_system(coreSettings, 'pcfx_nospritelimit', system, 'pcfx_nospritelimit', default='enabled')
 
-
-# Nintendo 3DS
-def _citra_options(
-    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
-) -> None:
-    # TODO: Add CORE Options for 3DS
-    # Set OpenGL rendering
-    n3ds_config = RETROARCH_CONFIG / "3ds.cfg"
-    if not n3ds_config.exists():
-        n3ds_config.write_text("video_driver = \"glcore\"\n")
-
-
 # Nintendo 64
 def _mupen64plus_next_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2241,7 +2229,6 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'np2kai': _np2kai_options,
     'mednafen_supergrafx': _mednafen_supergrafx_options,
     'pcfx': _pcfx_options,
-    'citra': _citra_options,
     'mupen64plus-next': _mupen64plus_next_options,
     'parallel_n64': _parallel_n64_options,
     'desmume': _desmume_options,
