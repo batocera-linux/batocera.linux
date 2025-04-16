@@ -8,7 +8,7 @@ FSUAE_VERSION = bfa0c7522c6c5f73cceb340d677491d056febd01
 FSUAE_SITE = $(call github,FrodeSolheim,fs-uae,$(FSUAE_VERSION))
 FSUAE_LICENSE = GPLv2
 FSUAE_DEPENDENCIES += libpng libmpeg2 libglib2 libcapsimage openal
-FSUAE_DEPENDENCIES += sdl2 sdl2_ttf xserver_xorg-server zlib
+FSUAE_DEPENDENCIES += sdl2 sdl2_ttf zlib
 
 FSUAE_CONF_OPTS += --disable-codegen
 
