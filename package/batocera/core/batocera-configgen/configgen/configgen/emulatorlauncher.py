@@ -136,9 +136,11 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
             # run the emulator
             from .utils.evmapy import evmapy
+            from .utils.virtualmouse import virtualmouse
             with (
                 evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns),
-                set_hotkeygen_context(generator, system)
+                set_hotkeygen_context(generator, system),
+                virtualmouse(generator)
             ):
                 # change directory if wanted
                 executionDirectory = generator.executionDirectory(system.config, rom)
