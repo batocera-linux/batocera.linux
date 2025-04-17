@@ -6,9 +6,9 @@ diff -rupbN linux.orig/sound/soc/codecs/Kconfig linux/sound/soc/codecs/Kconfig
  	imply SND_SOC_AW87390
  	imply SND_SOC_AW88395
 +	imply SND_SOC_AW88166
+ 	imply SND_SOC_AW88081
  	imply SND_SOC_AW88261
  	imply SND_SOC_AW88399
- 	imply SND_SOC_BT_SCO
 @@ -672,6 +673,18 @@ config SND_SOC_AW88395
  	  digital Smart K audio amplifier with an integrated 10V
  	  smart boost convert.
