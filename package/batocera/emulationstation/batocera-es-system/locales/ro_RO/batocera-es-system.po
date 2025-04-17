@@ -2222,7 +2222,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "AJUSTEAZĂ FRECVENȚA POWERPC"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, citra, dolphin_triforce, ...
+#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "OPȚIUNI AVANSATE"
@@ -3258,15 +3258,6 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Aranjează amplasarea cu două ecrane."
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid ""
-"Arrange the dual screen layout. Separate windows can be changed with "
-"Hotkey+R2."
-msgstr ""
-"Aranjează amplasarea ecranelor. Ferestrele separate pot fi schimbate cu "
-"tasta rapidă+R2."
-
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3966,11 +3957,6 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Dedesubt (Implicit)"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Bottom Only"
-msgstr "Doar dedesubt"
-
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Bottom only"
@@ -4509,7 +4495,7 @@ msgctxt "game_options"
 msgid "CONTROLLERS"
 msgstr "CONTROLERE"
 
-#. TRANSLATION: dolphin, rpcs3, shared
+#. TRANSLATION: dolphin, libretro/dice, rpcs3, shared
 msgctxt "game_options"
 msgid "CONTROLS"
 msgstr "CONTROALE"
@@ -5270,7 +5256,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr "Alege ce fișier BIOS să fie boot-at pentru GSplus."
 
-#. TRANSLATION: cemu, citra, citron, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Alege ce bibliotecă API grafică să folosești."
@@ -5504,15 +5490,6 @@ msgid ""
 msgstr ""
 "Compilează shaderele la următoarea lansare a jocului (doar o dată). Reduce "
 "micro-blocările. Doar pentru Vulkan."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
-msgstr ""
-"Compilează shaderele folosind fire de execuție în fundal pentru a evita "
-"bâlbâielile. Poate cauza probleme grafice."
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5796,6 +5773,31 @@ msgctxt "game_options"
 msgid "DIGITAL SOUND PROCESSOR"
 msgstr "PROCESOR DE SUNET DIGITAL"
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 2"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 3"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH HEX 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH HEX 2"
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "DISABLE 4MB EXPANSION RAM PACK"
@@ -5825,11 +5827,6 @@ msgstr "DEZACTIVEAZĂ SINCRONIZAREA SUPRAFEȚELOR"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "DEZACTIVEAZĂ CACHE VERTEXURI"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "DISK SHADER CACHE"
-msgstr "CACHE SHADER PE DISC"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6046,7 +6043,7 @@ msgctxt "game_options"
 msgid "December"
 msgstr "Decembrie"
 
-#. TRANSLATION: citron, libretro/flycast, libretro/mesen, libretro/puae, libretro/puae2021, ...
+#. TRANSLATION: citron, libretro/dice, libretro/flycast, libretro/mesen, libretro/puae, ...
 msgctxt "game_options"
 msgid "Default"
 msgstr "Implicită"
@@ -6512,11 +6509,6 @@ msgstr "VITEZĂ EMULARE"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "ACTIVEAZĂ SERVICIUL DE TRADUCERE CU IA"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "ENABLE ASYNC SHADER COMPILATION"
-msgstr "ACTIVEAZĂ COMPILAREA SHADERELOR ASINCRON"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7385,7 +7377,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "Îmbunătățire. Crește rezoluția de redare."
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7765,11 +7757,6 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "DUPLICARE CADRE (ACCELERARE)"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "FRAME LIMIT"
-msgstr "LIMITĂ DE CADRE"
-
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -8030,7 +8017,7 @@ msgstr ""
 "sincronizarea video, exceptând cadrele întârziate (sub FPS-ul țintă), care "
 "sunt afișate imediat."
 
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, melonds, ...
+#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Repară ruperea ecranului. Solicitant pentru CPU."
@@ -8693,12 +8680,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "INTERFAȚA GRAFICĂ UTILIZATOR"
 
-#. TRANSLATION: citra, iortcw, theforceengine
+#. TRANSLATION: iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "GRAFICĂ"
 
-#. TRANSLATION: cemu, citra, citron, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "API GRAFIC"
@@ -9353,16 +9340,6 @@ msgstr "Hibrid"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hibrid + Bicubic"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Hybrid Screen Bottom"
-msgstr "Ecran hibrid dedesubt"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Hybrid Screen Top"
-msgstr "Ecran hibrid deasupra"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10208,7 +10185,7 @@ msgstr ""
 "LLVM este cel mai rapid, folosește setările interpretorului dacă sunt "
 "probleme."
 
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
+#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "ÎNCARCĂ TEXTURI PERSONALIZATE"
@@ -10227,16 +10204,6 @@ msgstr "MODEL LYNX"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Peisaj"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Large Bottom"
-msgstr "Dedesubt mare"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Large Top"
-msgstr "Deasupra mare"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10287,11 +10254,6 @@ msgstr "Magnasave stâng"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Maneta stângă"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Left/Right"
-msgstr "Stânga/Dreapta"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10621,6 +10583,46 @@ msgstr "MONTEAZĂ CACHE"
 msgctxt "game_options"
 msgid "MOUSE AS WIIMOTE POINTER"
 msgstr "MAUSUL CA CURSOR WII"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 1 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 1 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 2 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 2 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 3 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 3 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 4 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 4 VERTICAL"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -11179,10 +11181,50 @@ msgctxt "game_options"
 msgid "Mouse (1351)"
 msgstr "Maus (1351)"
 
-#. TRANSLATION: 3ds.azahar.keys, 3ds.citra.keys
+#. TRANSLATION: 3ds.azahar.keys
 msgctxt "keys_files"
 msgid "Mouse Click"
 msgstr "Clic cu mausul"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 1, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 1, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 2, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 2, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 3, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 3, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 4, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 4, vertical screen motion."
+msgstr ""
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -11199,7 +11241,7 @@ msgctxt "keys_files"
 msgid "Move Forward, Can be use to press W"
 msgstr "Mișcă înainte, poate fi folosit pentru a apăsa W"
 
-#. TRANSLATION: 3ds.azahar.keys, 3ds.citra.keys
+#. TRANSLATION: 3ds.azahar.keys
 msgctxt "keys_files"
 msgid "Move Stylet Pointer"
 msgstr "Mută pointerul stylet"
@@ -11314,11 +11356,6 @@ msgstr "REȚEA"
 msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "TIP REȚEA"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "NEW 3DS MODE"
-msgstr "MOD NOU 3DS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11841,7 +11878,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "Octombrie"
 
-#. TRANSLATION: cannonball, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Oprit"
@@ -11875,11 +11912,6 @@ msgstr "Oprit la început"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Oprit este mai sigur. Pornit pentru anumite jocuri."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Off will help some games, others will run too fast."
-msgstr "Oprit va ajuta în anumite jocuri, altele vor rula prea repede."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11926,7 +11958,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "Oman"
 
-#. TRANSLATION: cannonball, citra, dolphin_triforce, drastic, duckstation, ...
+#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Pornit"
@@ -12085,7 +12117,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (Compute shader)"
 
-#. TRANSLATION: citra, dolphin_triforce, flycast, gzdoom, play, ...
+#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Implicit)"
@@ -12185,6 +12217,21 @@ msgstr "Doar P1"
 msgctxt "game_options"
 msgid "P2 only"
 msgstr "Doar P2"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE ANALOG STICK SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE D-PAD SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE MOUSE SENSITIVITY"
+msgstr ""
 
 #. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -12875,7 +12922,7 @@ msgstr ""
 "Preferă „Înainte de NMI”, schimbă la „După NMI” doar dacă este necesar "
 "pentru joc."
 
-#. TRANSLATION: citra, duckstation
+#. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Preîncarcă"
@@ -12884,11 +12931,6 @@ msgstr "Preîncarcă"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Pre-încărcarea necesită mai mult RAM."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Preloading is impossible from ES."
-msgstr "Preîncărcarea este imposibilă din ES."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13131,7 +13173,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MOD REDARE"
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "REZOLUȚIA DE RANDARE"
@@ -13308,11 +13350,6 @@ msgstr "Roșu"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Micșorează timpul de încărcare cu costul acurateței."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Reduce stutter that happens when compiling shaders."
-msgstr "Redu bâlbâielile care apar în timpul compilării shaderelor."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13543,11 +13580,6 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Maneta dreaptă"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Right/Left"
-msgstr "Dreapta/Stânga"
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13739,7 +13771,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "ÎNCLINARE ECRAN"
 
-#. TRANSLATION: citra, drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "AMPLASARE ECRAN"
@@ -14419,10 +14451,30 @@ msgctxt "game_options"
 msgid "Selfie"
 msgstr "Selfie"
 
-#. TRANSLATION: citra
+#. TRANSLATION: libretro/dice
 msgctxt "game_options"
-msgid "Separate Windows"
-msgstr "Ferestre separate"
+msgid "Sensitivity when using D-pad for a paddle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using D-pad or analog stick for a throttle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using D-pad or analog stick for a wheel."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using analog stick for a paddle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using mouse for a paddle."
+msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -14571,6 +14623,31 @@ msgstr "Setează modul filtrului de scalare în timpul redării."
 msgctxt "game_options"
 msgid "Sets the window size to an integer size."
 msgstr "Setează mărimea ferestrei la o dimensiune întreagă."
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for 16-position DIP switch number 1."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for 16-position DIP switch number 2."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 1."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 2."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 3."
+msgstr ""
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
@@ -15038,7 +15115,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Netezește efectul sonor dur al unor jocuri."
 
-#. TRANSLATION: citra, duckstation, libretro/melondsds, melonds, pcsx2, ...
+#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
@@ -15746,6 +15823,11 @@ msgctxt "game_options"
 msgid "THREADED VIDEO"
 msgstr "VIDEO PE FIRE DE EXECUȚIE"
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "THROTTLE SENSITIVITY"
+msgstr ""
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "TI-99/4A Cartridges"
@@ -15890,11 +15972,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Thailand"
 msgstr "Tailanda"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-msgstr "Noul 3DS are un procesor mai rapid, butoane ZL/ZR și o manetă C."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -16070,11 +16147,6 @@ msgstr "Comută amplasare ecrane"
 msgctxt "game_options"
 msgid "Top"
 msgstr "Deasupra"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Top Only"
-msgstr "Doar deasupra"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -16356,6 +16428,31 @@ msgstr "FOLOSEȘTE BUTONUL DIN SUD AL JOYPAD-ULUI PENTRU A ADĂUGA CREDIT"
 msgctxt "game_options"
 msgid "USE LIGHT GUNS"
 msgstr "FOLOSEȘTE PISTOALELE LUMINOASE"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 2"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 3"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 4"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE POINTER FOR PADDLE 1"
+msgstr ""
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -16720,6 +16817,26 @@ msgstr ""
 "Folosește o configurație personalizată MAME, nu suprascrie configurația la "
 "lansare."
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 1, chosen by Port 1's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 2, chosen by Port 2's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 3, chosen by Port 3's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 4, chosen by Port 4's Mouse Index."
+msgstr ""
+
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
@@ -16781,6 +16898,13 @@ msgid ""
 msgstr ""
 "Folosește aceleași căi pentru artă ca un MAME de sine stătător - nu este "
 "recomandat dacă se utilizează rame sau shadere."
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid ""
+"Use the system mouse pointer as paddle controller 1.  Does not let you "
+"choose a specific mouse if you have several."
+msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -17019,7 +17143,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr ""
 
-#. TRANSLATION: bigpemu, bstone, cemu, citra, citron, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -17139,7 +17263,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "Vsync"
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -17213,6 +17337,11 @@ msgstr "MODEL VOLAN"
 msgctxt "game_options"
 msgid "WHEEL ROTATION"
 msgstr "ROTAȚIA VOLANULUI"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "WHEEL SENSITIVITY"
+msgstr ""
 
 #. TRANSLATION: pcsx2, shared
 msgctxt "game_options"
@@ -17432,6 +17561,11 @@ msgstr ""
 "Scrie bufferele de adâncime în memoria virtuală. Unele jocuri necesită asta "
 "pentru a elimina grafice greșite."
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "X"
+msgstr ""
+
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "X-INPUT"
@@ -17451,6 +17585,11 @@ msgstr "Licența XBLA activată (Implicit)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Y"
+msgstr ""
 
 #. TRANSLATION: libretro/vice_x128, libretro/vice_xpet, libretro/vice_xplus4, libretro/vice_xvic
 msgctxt "game_options"
@@ -18111,6 +18250,18 @@ msgstr "galben/albastru"
 #~ msgid "Analog 2 Up"
 #~ msgstr "Analog 2 Sus"
 
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Arrange the dual screen layout. Separate windows can be changed with "
+#~ "Hotkey+R2."
+#~ msgstr ""
+#~ "Aranjează amplasarea ecranelor. Ferestrele separate pot fi schimbate cu "
+#~ "tasta rapidă+R2."
+
+#~ msgctxt "game_options"
+#~ msgid "Bottom Only"
+#~ msgstr "Doar dedesubt"
+
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
 #~ msgstr "Arată meniul"
@@ -18135,6 +18286,14 @@ msgstr "galben/albastru"
 #~ msgid "Coin"
 #~ msgstr "Monedă"
 
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Compile shaders using background threads to avoid shader compilation "
+#~ "stutter. May cause graphical glitches."
+#~ msgstr ""
+#~ "Compilează shaderele folosind fire de execuție în fundal pentru a evita "
+#~ "bâlbâielile. Poate cauza probleme grafice."
+
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
 #~ msgstr "Meniu configurare"
@@ -18150,6 +18309,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Cycle previous"
 #~ msgstr "Ciclează anteriorul"
+
+#~ msgctxt "game_options"
+#~ msgid "DISK SHADER CACHE"
+#~ msgstr "CACHE SHADER PE DISC"
 
 #~ msgctxt "keys_files"
 #~ msgid "Digital Down"
@@ -18178,6 +18341,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Display the controller screen"
 #~ msgstr "Afișează ecranul controlerului"
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE ASYNC SHADER COMPILATION"
+#~ msgstr "ACTIVEAZĂ COMPILAREA SHADERELOR ASINCRON"
 
 #~ msgctxt "game_options"
 #~ msgid "Enable or disable monsters in battle."
@@ -18237,6 +18404,10 @@ msgstr "galben/albastru"
 #~ msgstr "Ieși din emulator"
 
 #~ msgctxt "game_options"
+#~ msgid "FRAME LIMIT"
+#~ msgstr "LIMITĂ DE CADRE"
+
+#~ msgctxt "game_options"
 #~ msgid "FRAMERATE"
 #~ msgstr "RATA DE CADRE"
 
@@ -18284,6 +18455,22 @@ msgstr "galben/albastru"
 #~ "Fix pentru viteză în House of the Dead 4. Setează jocul la viteza de bază "
 #~ "a CPU-ului tău."
 
+#~ msgctxt "game_options"
+#~ msgid "Hybrid Screen Bottom"
+#~ msgstr "Ecran hibrid dedesubt"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybrid Screen Top"
+#~ msgstr "Ecran hibrid deasupra"
+
+#~ msgctxt "game_options"
+#~ msgid "Large Bottom"
+#~ msgstr "Dedesubt mare"
+
+#~ msgctxt "game_options"
+#~ msgid "Large Top"
+#~ msgstr "Deasupra mare"
+
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"
 #~ msgstr "Aripa stângă"
@@ -18295,6 +18482,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Left Nudge"
 #~ msgstr "Înghiontire în stânga"
+
+#~ msgctxt "game_options"
+#~ msgid "Left/Right"
+#~ msgstr "Stânga/Dreapta"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -18328,6 +18519,10 @@ msgstr "galben/albastru"
 #~ msgid "N64 (Limited Hotkeys)"
 #~ msgstr "N64 (Taste rapide limitate)"
 
+#~ msgctxt "game_options"
+#~ msgid "NEW 3DS MODE"
+#~ msgstr "MOD NOU 3DS"
+
 #~ msgctxt "keys_files"
 #~ msgid "Next Disc (m3u)"
 #~ msgstr "Următorul disc (m3u)"
@@ -18335,6 +18530,10 @@ msgstr "galben/albastru"
 #~ msgctxt "game_options"
 #~ msgid "Not all games support all languages."
 #~ msgstr "Nu toate jocurile suportă toate limbile."
+
+#~ msgctxt "game_options"
+#~ msgid "Off will help some games, others will run too fast."
+#~ msgstr "Oprit va ajuta în anumite jocuri, altele vor rula prea repede."
 
 #~ msgctxt "keys_files"
 #~ msgid "Open Dolphin-triforce's menu"
@@ -18387,6 +18586,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Plunger"
 #~ msgstr "Piston"
+
+#~ msgctxt "game_options"
+#~ msgid "Preloading is impossible from ES."
+#~ msgstr "Preîncărcarea este imposibilă din ES."
 
 #~ msgctxt "keys_files"
 #~ msgid "Push 1"
@@ -18448,6 +18651,10 @@ msgstr "galben/albastru"
 #~ msgid "Quits the current level"
 #~ msgstr "Abandonează nivelul curent"
 
+#~ msgctxt "game_options"
+#~ msgid "Reduce stutter that happens when compiling shaders."
+#~ msgstr "Redu bâlbâielile care apar în timpul compilării shaderelor."
+
 #~ msgctxt "keys_files"
 #~ msgid "Reset the application"
 #~ msgstr "Resetează aplicația"
@@ -18476,6 +18683,10 @@ msgstr "galben/albastru"
 #~ msgid "Right Nudge"
 #~ msgstr "Înghiontire în dreapta"
 
+#~ msgctxt "game_options"
+#~ msgid "Right/Left"
+#~ msgstr "Dreapta/Stânga"
+
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Salvează stare"
@@ -18483,6 +18694,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Save State Slot 1"
 #~ msgstr "Salvează starea în slotul 1"
+
+#~ msgctxt "game_options"
+#~ msgid "Separate Windows"
+#~ msgstr "Ferestre separate"
 
 #~ msgctxt "keys_files"
 #~ msgid "Service menu"
@@ -18540,6 +18755,10 @@ msgstr "galben/albastru"
 #~ msgid "Take a screenshot"
 #~ msgstr "Fă o captură de ecran"
 
+#~ msgctxt "game_options"
+#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+#~ msgstr "Noul 3DS are un procesor mai rapid, butoane ZL/ZR și o manetă C."
+
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Screen Layout"
 #~ msgstr "Comută așezare ecran"
@@ -18547,6 +18766,10 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Speed Limit"
 #~ msgstr "Comută limită de viteză"
+
+#~ msgctxt "game_options"
+#~ msgid "Top Only"
+#~ msgstr "Doar deasupra"
 
 #~ msgctxt "game_options"
 #~ msgid ""

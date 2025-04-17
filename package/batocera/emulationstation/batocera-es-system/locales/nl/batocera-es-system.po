@@ -2225,7 +2225,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "POWERPC FREQUENTIE AANPASSEN"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, citra, dolphin_triforce, ...
+#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "GEAVANCEERDE OPTIES"
@@ -3264,15 +3264,6 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Schik de dubbel scherm indeling."
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid ""
-"Arrange the dual screen layout. Separate windows can be changed with "
-"Hotkey+R2."
-msgstr ""
-"Regel de dubbele schermindeling. Afzonderlijke vensters kunnen worden "
-"gewijzigd met Hotkey+R2."
-
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3974,11 +3965,6 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Onder (Standaard)"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Bottom Only"
-msgstr "Alleen onderin"
-
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "Bottom only"
@@ -4516,7 +4502,7 @@ msgctxt "game_options"
 msgid "CONTROLLERS"
 msgstr "CONTROLLERS"
 
-#. TRANSLATION: dolphin, rpcs3, shared
+#. TRANSLATION: dolphin, libretro/dice, rpcs3, shared
 msgctxt "game_options"
 msgid "CONTROLS"
 msgstr "CONTROLS"
@@ -5286,7 +5272,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr "Kies met welk BIOS-bestand GSplus moet opstarten."
 
-#. TRANSLATION: cemu, citra, citron, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Kies welke grafische API-bibliotheek u wilt gebruiken."
@@ -5520,15 +5506,6 @@ msgid ""
 msgstr ""
 "Compileer shaders bij de volgende lancering van het spel (eenmalig). "
 "Vermindert microbevriezingen. Alleen Vulkan."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
-msgstr ""
-"Compileer shaders met behulp van achtergrondthreads om haperen van de shader-"
-"compilatie te voorkomen. Kan grafische problemen veroorzaken."
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5811,6 +5788,31 @@ msgctxt "game_options"
 msgid "DIGITAL SOUND PROCESSOR"
 msgstr "DIGITALE GELUIDSPROCESSOR"
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 2"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH 3"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH HEX 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "DIP SWITCH HEX 2"
+msgstr ""
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid "DISABLE 4MB EXPANSION RAM PACK"
@@ -5840,11 +5842,6 @@ msgstr "UITSCHAKELEN OPPERVLAKTESYNC"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "SCHAKEL VERTEX CACHE UIT"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "DISK SHADER CACHE"
-msgstr "DISK SHADER CACHE"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6061,7 +6058,7 @@ msgctxt "game_options"
 msgid "December"
 msgstr "December"
 
-#. TRANSLATION: citron, libretro/flycast, libretro/mesen, libretro/puae, libretro/puae2021, ...
+#. TRANSLATION: citron, libretro/dice, libretro/flycast, libretro/mesen, libretro/puae, ...
 msgctxt "game_options"
 msgid "Default"
 msgstr "Standaard"
@@ -6526,11 +6523,6 @@ msgstr "EMULATIE SNELHEID"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "INSCHAKELEN AI VERTAALSERVICE"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "ENABLE ASYNC SHADER COMPILATION"
-msgstr "ASYNC SHADER COMPILATIE INSCHAKELEN"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7390,7 +7382,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "Verbetering. Verhoog de weergaveresolutie."
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7773,11 +7765,6 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "FRAME DUPING (VERSNELLEN)"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "FRAME LIMIT"
-msgstr "FRAME LIMIET"
-
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -8040,7 +8027,7 @@ msgstr ""
 "synchroniseert bij videosynchronisatie, behalve late frames (onder doel-FPS) "
 "die onmiddellijk worden weergegeven."
 
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, melonds, ...
+#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Verhelp screen tearing. Zwaar voor de CPU."
@@ -8705,12 +8692,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "GRAFISCHE GEBRUIKER INTERFACE"
 
-#. TRANSLATION: citra, iortcw, theforceengine
+#. TRANSLATION: iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "GRAPHICS"
 
-#. TRANSLATION: cemu, citra, citron, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "GRAPHICS API"
@@ -9369,16 +9356,6 @@ msgstr "Hybride"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hybride + Bicubic"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Hybrid Screen Bottom"
-msgstr "Hybride schermbodem"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Hybrid Screen Top"
-msgstr "Hybride scherm bovenaan"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10216,7 +10193,7 @@ msgstr ""
 "LLVM is het snelst. Gebruik de Interpreter-instellingen als er problemen "
 "zijn."
 
-#. TRANSLATION: citra, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
+#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "LAAD AANGEPASTE TEXTURES"
@@ -10235,16 +10212,6 @@ msgstr "LYNX MODEL"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Landschap"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Large Bottom"
-msgstr "Grote bodem"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Large Top"
-msgstr "Grote bovenkant"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10295,11 +10262,6 @@ msgstr "Links magnasave"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Linker stick"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Left/Right"
-msgstr "Links/Rechts"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -10630,6 +10592,46 @@ msgstr "MOUNT CACHE"
 msgctxt "game_options"
 msgid "MOUSE AS WIIMOTE POINTER"
 msgstr "MUIS ALS WIIMORE POINTER"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 1 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 1 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 2 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 2 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 3 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 3 VERTICAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 4 HORIZONTAL"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "MOUSE AXIS FOR PADDLE 4 VERTICAL"
+msgstr ""
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -11185,10 +11187,50 @@ msgctxt "game_options"
 msgid "Mouse (1351)"
 msgstr "Muis (1351)"
 
-#. TRANSLATION: 3ds.azahar.keys, 3ds.citra.keys
+#. TRANSLATION: 3ds.azahar.keys
 msgctxt "keys_files"
 msgid "Mouse Click"
 msgstr "Muisklik"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 1, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 1, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 2, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 2, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 3, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 3, vertical screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 4, horizontal screen motion."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Mouse axis for player 4, vertical screen motion."
+msgstr ""
 
 #. TRANSLATION: catacomb.keys
 msgctxt "keys_files"
@@ -11205,7 +11247,7 @@ msgctxt "keys_files"
 msgid "Move Forward, Can be use to press W"
 msgstr "Ga vooruit, kan worden gebruikt door op W te drukken"
 
-#. TRANSLATION: 3ds.azahar.keys, 3ds.citra.keys
+#. TRANSLATION: 3ds.azahar.keys
 msgctxt "keys_files"
 msgid "Move Stylet Pointer"
 msgstr "Verplaats Stylet Pointer"
@@ -11321,11 +11363,6 @@ msgstr "NETWERK"
 msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "NETWERK TYPE"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "NEW 3DS MODE"
-msgstr "NIEUWE 3DS MODUS"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11851,7 +11888,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "Oktober"
 
-#. TRANSLATION: cannonball, cemu, citra, dolphin, dolphin_triforce, ...
+#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Uit"
@@ -11885,12 +11922,6 @@ msgstr "Uit bij Start"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Uit is veiliger, Aan voor specifieke spellen."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Off will help some games, others will run too fast."
-msgstr ""
-"Uitgeschakeld zal sommige spellen helpen, anderen zullen te snel draaien."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11934,7 +11965,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "Oman"
 
-#. TRANSLATION: cannonball, citra, dolphin_triforce, drastic, duckstation, ...
+#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Aan"
@@ -12095,7 +12126,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (Compute shader)"
 
-#. TRANSLATION: citra, dolphin_triforce, flycast, gzdoom, play, ...
+#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Standaard)"
@@ -12194,6 +12225,21 @@ msgstr "Alleen P1"
 msgctxt "game_options"
 msgid "P2 only"
 msgstr "Alleen P2"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE ANALOG STICK SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE D-PAD SENSITIVITY"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "PADDLE MOUSE SENSITIVITY"
+msgstr ""
 
 #. TRANSLATION: libretro/atari800, libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -12885,7 +12931,7 @@ msgstr ""
 "Prefereer \"Voor NMI\", verander alleen naar Na NMI als het spel het nodig "
 "heeft."
 
-#. TRANSLATION: citra, duckstation
+#. TRANSLATION: duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Voorladen"
@@ -12894,11 +12940,6 @@ msgstr "Voorladen"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Voorladen benodigd meer RAM."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Preloading is impossible from ES."
-msgstr "Voorladen is onmogelijk vanuit ES."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13139,7 +13180,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "RENDERMODUS"
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "RENDERRESOLUTIE"
@@ -13315,11 +13356,6 @@ msgstr "Rood"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Verminder de laadtijd ten koste van de nauwkeurigheid."
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Reduce stutter that happens when compiling shaders."
-msgstr "Verminder stotteren wanneer shaderes gecompileerd worden."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13549,11 +13585,6 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Rechter stick"
 
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Right/Left"
-msgstr "Rechts/Links"
-
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13745,7 +13776,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "SCHERM HELLING"
 
-#. TRANSLATION: citra, drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "SCHERM LAY-OUT"
@@ -14425,10 +14456,30 @@ msgctxt "game_options"
 msgid "Selfie"
 msgstr "Selfie"
 
-#. TRANSLATION: citra
+#. TRANSLATION: libretro/dice
 msgctxt "game_options"
-msgid "Separate Windows"
-msgstr "Aparte Windows"
+msgid "Sensitivity when using D-pad for a paddle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using D-pad or analog stick for a throttle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using D-pad or analog stick for a wheel."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using analog stick for a paddle."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Sensitivity when using mouse for a paddle."
+msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -14579,6 +14630,31 @@ msgstr "Stelt de schaalfiltermodus in tijdens het renderen."
 msgctxt "game_options"
 msgid "Sets the window size to an integer size."
 msgstr "Stelt de venstergrootte in op een geheel getal."
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for 16-position DIP switch number 1."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for 16-position DIP switch number 2."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 1."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 2."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Setting for DIP switch 3."
+msgstr ""
 
 #. TRANSLATION: libretro/mrboom
 msgctxt "game_options"
@@ -15051,7 +15127,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Maak het hash geluid effect wat zachter in sommige games."
 
-#. TRANSLATION: citra, duckstation, libretro/melondsds, melonds, pcsx2, ...
+#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
@@ -15757,6 +15833,11 @@ msgctxt "game_options"
 msgid "THREADED VIDEO"
 msgstr "THREADED VIDEO"
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "THROTTLE SENSITIVITY"
+msgstr ""
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "TI-99/4A Cartridges"
@@ -15901,12 +15982,6 @@ msgstr "Thais"
 msgctxt "game_options"
 msgid "Thailand"
 msgstr "Thailand"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-msgstr ""
-"De Nieuwe 3DS heeft een snellere processor, ZL/ZR knoppen en een C-stick."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -16082,11 +16157,6 @@ msgstr "Schermindeling wisselen"
 msgctxt "game_options"
 msgid "Top"
 msgstr "Boven"
-
-#. TRANSLATION: citra
-msgctxt "game_options"
-msgid "Top Only"
-msgstr "Alleen boven"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -16368,6 +16438,31 @@ msgstr "GEBRUIK DE JOYPAD ZUID-KNOP OM CREDITS TOE TE VOEGEN"
 msgctxt "game_options"
 msgid "USE LIGHT GUNS"
 msgstr "GEBRUIK LIGHT GUNS"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 1"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 2"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 3"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE FOR PADDLE 4"
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "USE MOUSE POINTER FOR PADDLE 1"
+msgstr ""
 
 #. TRANSLATION: corsixth
 msgctxt "game_options"
@@ -16729,6 +16824,26 @@ msgstr ""
 "Gebruik een aangepaste MAME-configuratie, overschrijf de configuratie niet "
 "bij het opstarten."
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 1, chosen by Port 1's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 2, chosen by Port 2's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 3, chosen by Port 3's Mouse Index."
+msgstr ""
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Use a specific mouse for Paddle 4, chosen by Port 4's Mouse Index."
+msgstr ""
+
 #. TRANSLATION: libretro/atari800
 msgctxt "game_options"
 msgid "Use an alternate resolution. Some games need this."
@@ -16790,6 +16905,13 @@ msgid ""
 msgstr ""
 "Gebruik dezelfde paden als standalone MAME - niet aanbevolen als u "
 "decoraties of shaders gebruikt."
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid ""
+"Use the system mouse pointer as paddle controller 1.  Does not let you "
+"choose a specific mouse if you have several."
+msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -17030,7 +17152,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr "STEM"
 
-#. TRANSLATION: bigpemu, bstone, cemu, citra, citron, ...
+#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "V-SYNC"
@@ -17150,7 +17272,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "V-SYNC"
 
-#. TRANSLATION: citra, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -17224,6 +17346,11 @@ msgstr "STUURWIEL MODEL"
 msgctxt "game_options"
 msgid "WHEEL ROTATION"
 msgstr "WIEL ROTATIE"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "WHEEL SENSITIVITY"
+msgstr ""
 
 #. TRANSLATION: pcsx2, shared
 msgctxt "game_options"
@@ -17443,6 +17570,11 @@ msgstr ""
 "Schrijft dieptebufferwaarden naar VM-geheugen. Sommige spellen hebben dit "
 "nodig om kapotte graphics te repareren."
 
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "X"
+msgstr ""
+
 #. TRANSLATION: model2emu
 msgctxt "game_options"
 msgid "X-INPUT"
@@ -17462,6 +17594,11 @@ msgstr "XBLA licentie aan (Standaard)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
+
+#. TRANSLATION: libretro/dice
+msgctxt "game_options"
+msgid "Y"
+msgstr ""
 
 #. TRANSLATION: libretro/vice_x128, libretro/vice_xpet, libretro/vice_xplus4, libretro/vice_xvic
 msgctxt "game_options"
@@ -18017,3 +18154,89 @@ msgstr "yape-pal"
 msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "geel/blauw"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Arrange the dual screen layout. Separate windows can be changed with "
+#~ "Hotkey+R2."
+#~ msgstr ""
+#~ "Regel de dubbele schermindeling. Afzonderlijke vensters kunnen worden "
+#~ "gewijzigd met Hotkey+R2."
+
+#~ msgctxt "game_options"
+#~ msgid "Bottom Only"
+#~ msgstr "Alleen onderin"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Compile shaders using background threads to avoid shader compilation "
+#~ "stutter. May cause graphical glitches."
+#~ msgstr ""
+#~ "Compileer shaders met behulp van achtergrondthreads om haperen van de "
+#~ "shader-compilatie te voorkomen. Kan grafische problemen veroorzaken."
+
+#~ msgctxt "game_options"
+#~ msgid "DISK SHADER CACHE"
+#~ msgstr "DISK SHADER CACHE"
+
+#~ msgctxt "game_options"
+#~ msgid "ENABLE ASYNC SHADER COMPILATION"
+#~ msgstr "ASYNC SHADER COMPILATIE INSCHAKELEN"
+
+#~ msgctxt "game_options"
+#~ msgid "FRAME LIMIT"
+#~ msgstr "FRAME LIMIET"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybrid Screen Bottom"
+#~ msgstr "Hybride schermbodem"
+
+#~ msgctxt "game_options"
+#~ msgid "Hybrid Screen Top"
+#~ msgstr "Hybride scherm bovenaan"
+
+#~ msgctxt "game_options"
+#~ msgid "Large Bottom"
+#~ msgstr "Grote bodem"
+
+#~ msgctxt "game_options"
+#~ msgid "Large Top"
+#~ msgstr "Grote bovenkant"
+
+#~ msgctxt "game_options"
+#~ msgid "Left/Right"
+#~ msgstr "Links/Rechts"
+
+#~ msgctxt "game_options"
+#~ msgid "NEW 3DS MODE"
+#~ msgstr "NIEUWE 3DS MODUS"
+
+#~ msgctxt "game_options"
+#~ msgid "Off will help some games, others will run too fast."
+#~ msgstr ""
+#~ "Uitgeschakeld zal sommige spellen helpen, anderen zullen te snel draaien."
+
+#~ msgctxt "game_options"
+#~ msgid "Preloading is impossible from ES."
+#~ msgstr "Voorladen is onmogelijk vanuit ES."
+
+#~ msgctxt "game_options"
+#~ msgid "Reduce stutter that happens when compiling shaders."
+#~ msgstr "Verminder stotteren wanneer shaderes gecompileerd worden."
+
+#~ msgctxt "game_options"
+#~ msgid "Right/Left"
+#~ msgstr "Rechts/Links"
+
+#~ msgctxt "game_options"
+#~ msgid "Separate Windows"
+#~ msgstr "Aparte Windows"
+
+#~ msgctxt "game_options"
+#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+#~ msgstr ""
+#~ "De Nieuwe 3DS heeft een snellere processor, ZL/ZR knoppen en een C-stick."
+
+#~ msgctxt "game_options"
+#~ msgid "Top Only"
+#~ msgstr "Alleen boven"
