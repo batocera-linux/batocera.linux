@@ -53,7 +53,7 @@ endif
 
 define ETLEGACY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/share/etlegacy
-	cp $(@D)/buildroot-build/legacy/legacy_2.83-dirty.pk3 \
+	cp $(@D)/buildroot-build/legacy/legacy_batocera-5.24_dirty.pk3 \
 	    $(TARGET_DIR)/usr/share/etlegacy
     cp $(@D)/buildroot-build/etl \
 	    $(TARGET_DIR)/usr/bin/etl

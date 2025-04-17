@@ -1,6 +1,29 @@
 #!/bin/bash
 
-ARCHS="x86_64 odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 bcm2712 rk3128 rk3288 rk3326 rk3328 rk3399 rk3568 rk3588 s812 s905 s905gen2 s905gen3 s9gen4 s922x a3gen2 h3 h5 h6 h616 jh7110 sm8250 sm8550"
+# I don't understand the purpose here...
+# ARCHS="x86_64 odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 bcm2712 rk3128 rk3288 rk3326 rk3328 rk3399 rk3568 rk3588 s812 s905 s905gen2 s905gen3 s9gen4 s922x a3gen2 h3 h5 h6 h616 jh7110 sm8250 sm8550"
+
+CLASSIC_CFG=$(pwd)/.config
+
+if [[ -f ${CLASSIC_CFG} ]];then
+
+	ARCH=$(sed -nE 's/.*BR2_PACKAGE_BATOCERA_TARGET_([^=]+)=y.*/\L\1/p' ${CLASSIC_CFG})
+
+else 
+
+	CFG_TO_FIND=$(find ${BR2_EXTERNAL_BATOCERA_PATH} -name .config -type f -exec sed -nE 's/.*BR2_PACKAGE_BATOCERA_TARGET_([^=]+)=y.*/\L\1/p' {} \;)
+	
+	if [[ -n ${CFG_TO_FIND} ]];then 
+
+		ARCH="${CFG_TO_FIND}"
+
+	else
+
+		echo -en "\nWhat's your architecture ?\n"
+
+	fi
+
+fi
 
 BR_DIR=$1
 BATOCERA_BINARIES_DIR=$2
@@ -14,20 +37,16 @@ fi
 TMP_DIR="/tmp/br_systemreport_${$}"
 mkdir -p "${TMP_DIR}" || exit 1
 
-# create configs files
-for ARCH in ${ARCHS}
-do
-    echo "generating .config for ${ARCH}" >&2
-    TMP_CONFIG="${TMP_DIR}/configs_tmp/${ARCH}"
-    TMP_CONFIGS="${TMP_DIR}/configs"
-    mkdir -p "${TMP_CONFIG}" "${TMP_CONFIGS}" || exit 1
+echo "generating .config for ${ARCH}" >&2
+TMP_CONFIG="${TMP_DIR}/configs_tmp/${ARCH}"
+TMP_CONFIGS="${TMP_DIR}/configs"
+mkdir -p "${TMP_CONFIG}" "${TMP_CONFIGS}" || exit 1
 
-    # generate the defconfig
-    "${BR2_EXTERNAL_BATOCERA_PATH}/configs/createDefconfig.sh" "${BR2_EXTERNAL_BATOCERA_PATH}/configs/batocera-${ARCH}"
+# generate the defconfig
+"${BR2_EXTERNAL_BATOCERA_PATH}/configs/createDefconfig.sh" "${BR2_EXTERNAL_BATOCERA_PATH}/configs/batocera-${ARCH}"
 
-    (make O="${TMP_CONFIG}" -C ${BR_DIR} BR2_EXTERNAL="${BR2_EXTERNAL_BATOCERA_PATH}" "batocera-${ARCH}_defconfig" > /dev/null) || exit 1
-    cp "${TMP_CONFIG}/.config" "${TMP_CONFIGS}/config_${ARCH}" || exit 1
-done
+(make O="${TMP_CONFIG}" -C ${BR_DIR} BR2_EXTERNAL="${BR2_EXTERNAL_BATOCERA_PATH}" "batocera-${ARCH}_defconfig" > /dev/null) || exit 1
+cp "${TMP_CONFIG}/.config" "${TMP_CONFIGS}/config_${ARCH}" || exit 1
 
 # reporting
 ES_YML="${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/emulationstation/batocera-es-system/es_systems.yml"

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_TR_TR_VERSION = 11.0.78
+KODI21_RESOURCE_LANGUAGE_TR_TR_VERSION = 11.0.80
 KODI21_RESOURCE_LANGUAGE_TR_TR_SOURCE = \
     resource.language.tr_tr-$(KODI21_RESOURCE_LANGUAGE_TR_TR_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_TR_TR_SITE = \
