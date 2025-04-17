@@ -1,0 +1,24 @@
+diff --git a/src/imgui/renderer/CMakeLists.txt b/src/imgui/renderer/CMakeLists.txt
+index 5d74632..232d68e 100644
+--- a/src/imgui/renderer/CMakeLists.txt
++++ b/src/imgui/renderer/CMakeLists.txt
+@@ -3,8 +3,6 @@
+ 
+ project(ImGui_Resources)
+ 
+-add_executable(Dear_ImGui_FontEmbed ${CMAKE_SOURCE_DIR}/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp)
+-
+ set(FONT_LIST
+     NotoSansJP-Regular.ttf
+     ProggyVector-Regular.ttf
+@@ -22,8 +20,8 @@ FOREACH (FONT_FILE ${FONT_LIST})
+     add_custom_command(
+         OUTPUT "${OUTPUT}.g.cpp"
+         COMMAND ${CMAKE_COMMAND} -E make_directory "generated_fonts/imgui_fonts"
+-        COMMAND $<TARGET_FILE:Dear_ImGui_FontEmbed> -nostatic "${CMAKE_CURRENT_SOURCE_DIR}/fonts/${FONT_FILE}" ${fontname_cpp} > "${OUTPUT}.g.cpp"
+-        DEPENDS Dear_ImGui_FontEmbed "fonts/${FONT_FILE}"
++        COMMAND shadps4_Dear_ImGui_FontEmbed -nostatic "${CMAKE_CURRENT_SOURCE_DIR}/fonts/${FONT_FILE}" ${fontname_cpp} > "${OUTPUT}.g.cpp"
++        DEPENDS "fonts/${FONT_FILE}"
+         USES_TERMINAL
+     )
+     list(APPEND OutputList "${OUTPUT}.g.cpp")
