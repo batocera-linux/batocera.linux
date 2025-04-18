@@ -1,13 +1,16 @@
 # Steam Deck OLED default values
 
+# resolution
+es.resolution=800x1280.60.00
+
 # default card
 audio.device=alsa_output.pci-0000_04_00.5-platform-nau8821-max.pro-output-1
 audio.profile=pro-audio@alsa_card.pci-0000_04_00.5-platform-nau8821-max
 
-# default rotation
 # xorg rotation
-display.rotate.eDP=1
-display.rotate2.eDP=1
+display.rotate.eDP-1=1
+display.rotate2.eDP-1=1
+
 # drm rotation, for the splash screen
 display.rotate.EDP=1
 display.rotate2.EDP=1
