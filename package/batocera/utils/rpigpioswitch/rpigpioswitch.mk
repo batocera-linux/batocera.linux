@@ -17,6 +17,8 @@ define RPIGPIOSWITCH_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/bin/rpi-pin56-power
 	$(INSTALL) -D -m 0755 $(RPIGPIOSWITCH_SRC)/rpi-pin356-power.py \
 	    $(TARGET_DIR)/usr/bin/rpi-pin356-power
+	$(INSTALL) -D -m 0755 $(RPIGPIOSWITCH_SRC)/rpi-retroflag-64PiCase.py \
+	    $(TARGET_DIR)/usr/bin/rpi-retroflag-64PiCase
 	$(INSTALL) -D -m 0755 $(RPIGPIOSWITCH_SRC)/rpi-retroflag-GPiCase.py \
 	    $(TARGET_DIR)/usr/bin/rpi-retroflag-GPiCase
 	$(INSTALL) -D -m 0755 $(RPIGPIOSWITCH_SRC)/rpi-retroflag-AdvancedSafeShutdown.py \

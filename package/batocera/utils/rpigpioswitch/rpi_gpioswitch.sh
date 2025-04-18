@@ -31,10 +31,12 @@
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
 #v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
 #v3.1 - remove the RETROFLAG option in favor of RETROFLAG_ADV & add dtbo for retroflag cases - @dmanlfc
+#v3.2 - add Retroflag 64Pi case for Raspberry Pi 5 support.
 
 ### Array for Powerdevices, add/remove entries here
 
 powerdevices=(
+              RETROFLAG_64PI "Retroflag 64Pi case for Raspberry Pi 5" \
               RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
               ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
@@ -1018,6 +1020,9 @@ case "$CONFVALUE" in
     ;;
     "PIN356ONOFFRESET")
         pin356_$1
+    ;;
+    "RETROFLAG_64PI")
+        retroflag_$1 rpi-retroflag-64PiCase
     ;;
     "RETROFLAG_GPI")
         retroflag_$1 rpi-retroflag-GPiCase
