@@ -24,7 +24,7 @@ class ScummVMGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # crete /userdata/bios/scummvm/extra folder if it doesn't exist
+        # create /userdata/bios/scummvm/extra folder if it doesn't exist
         mkdir_if_not_exists(scummExtra)
 
         # create / modify scummvm config file as needed
@@ -43,14 +43,22 @@ class ScummVMGenerator(Generator):
 
         # Find rom path
         if rom.is_dir():
-          # rom is a directory: must contains a <game name>.scummvm file
           romPath = rom
-          romName = next(rom.glob("*.scummvm")).stem
+          romName = next(rom.glob("*.scummvm"),0)
         else:
           # rom is a file: split in directory and file name
           romPath = rom.parent
-          # Get rom name without extension
-          romName = rom.stem
+          romName = rom
+        # rom is a dir: it should contain a <game name>.scummvm file, otherwise fallback to autodetection
+        # rom is a file or file in dir detected: get gameID from file content or filename (like libretro does), otherwise fallback to autodetection
+        if romName:
+          if romName := Path(romName).read_text().strip():pass
+          else:
+            romName = romName.stem
+            if not romName.islower():
+              romName = "--auto-detect"
+        else:
+          romName = "--auto-detect"
 
         # pad number
         id = 0
