@@ -1,4 +1,4 @@
-From 05bae83faf7a6b42f1f8cc3ccd84a62f1fea3ab3 Mon Sep 17 00:00:00 2001
+From e1ee5bf1a2bbebbbea865f4f9f830a33e6f5d50e Mon Sep 17 00:00:00 2001
 From: Daniel Martin <dmanlfc@gmail.com>
 Date: Sat, 11 Jan 2025 21:33:16 +1000
 Subject: [PATCH] add sdl2 controller support - best for driving & fighting
@@ -17,7 +17,7 @@ Subject: [PATCH] add sdl2 controller support - best for driving & fighting
  9 files changed, 606 insertions(+), 95 deletions(-)
 
 diff --git a/docs/guide.md b/docs/guide.md
-index 0f45eb8..955476d 100644
+index 04ff8f8..770e425 100644
 --- a/docs/guide.md
 +++ b/docs/guide.md
 @@ -102,19 +102,40 @@ You will see the value `AUTO` by default for some of the config options. This is
@@ -66,7 +66,7 @@ index 0f45eb8..955476d 100644
  To list the available inputs you should type:
  
 diff --git a/docs/lindbergh.conf b/docs/lindbergh.conf
-index d9e124b..5b75430 100644
+index 5e04619..a714649 100644
 --- a/docs/lindbergh.conf
 +++ b/docs/lindbergh.conf
 @@ -14,10 +14,11 @@ HEIGHT AUTO
@@ -86,10 +86,10 @@ index d9e124b..5b75430 100644
  # Set to 1 if you want to disable SDL (Fixes SRTV boost bar)
  # NO_SDL 0
 diff --git a/src/lindbergh/config.c b/src/lindbergh/config.c
-index 1ae5b8c..9fcd278 100644
+index b1d8d08..e2b49c3 100644
 --- a/src/lindbergh/config.c
 +++ b/src/lindbergh/config.c
-@@ -1484,34 +1484,43 @@ int readConfig(FILE *configFile, EmulatorConfig *config)
+@@ -1497,34 +1497,43 @@ int readConfig(FILE *configFile, EmulatorConfig *config)
  KeyMapping getDefaultKeymap()
  {
      KeyMapping defaultKeyMapping;
@@ -159,7 +159,7 @@ index 1ae5b8c..9fcd278 100644
  }
  
 diff --git a/src/lindbergh/config.h b/src/lindbergh/config.h
-index 0f22635..1d15a92 100644
+index 9ce7933..574bf34 100644
 --- a/src/lindbergh/config.h
 +++ b/src/lindbergh/config.h
 @@ -279,7 +279,7 @@ typedef struct
@@ -172,10 +172,10 @@ index 0f22635..1d15a92 100644
      float whiteBorderPercentage;
      float blackBorderPercentage;
 diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
-index 6301fd4..899f55d 100644
+index 4dfa26d..e9bc252 100644
 --- a/src/lindbergh/evdevinput.c
 +++ b/src/lindbergh/evdevinput.c
-@@ -1228,8 +1228,8 @@ ControllerStatus getArcadeInputByName(char *name, ArcadeInput *input)
+@@ -1313,8 +1313,8 @@ ControllerStatus getArcadeInputByName(char *name, ArcadeInput *input)
  
  ControllerStatus startControllerThreads(Controllers *controllers)
  {
@@ -992,18 +992,18 @@ index f1ae296..6d638d8 100644
          break;
      }
 diff --git a/src/lindbergh/lindbergh.c b/src/lindbergh/lindbergh.c
-index cc900ed..0bd76f0 100644
+index 91732e6..d4c03e5 100644
 --- a/src/lindbergh/lindbergh.c
 +++ b/src/lindbergh/lindbergh.c
-@@ -12,7 +12,7 @@
+@@ -16,7 +16,7 @@
+ #define LD_LIBRARY_PATH "LD_LIBRARY_PATH"
  #define LD_PRELOAD "LD_PRELOAD"
  #define PRELOAD_FILE_NAME "lindbergh.so"
- #define PRELOAD_FILE_FLATPAK "/app/lib32/lindbergh.so"
 -#define TEAM "bobbydilley, retrofan, dkeruza-neo, doozer, francesco, rolel, caviar-x"
 +#define TEAM "bobbydilley, retrofan, dkeruza-neo, doozer, francesco, rolel, caviar-x, dmanlfc"
  #define LINDBERGH_CONFIG_PATH "LINDBERGH_CONFIG_PATH"
+ #define LINDBERGH_LOADER_CURRENT_DIR "LINDBERGH_LOADER_CURRENT_DIR"
  
- uint32_t elf_crc = 0;
 diff --git a/src/lindbergh/sdlcalls.c b/src/lindbergh/sdlcalls.c
 index 946e1c0..cd67569 100644
 --- a/src/lindbergh/sdlcalls.c
@@ -1061,6 +1061,3 @@ index 946e1c0..cd67569 100644
          default:
              break;
          }
--- 
-2.34.1
-
