@@ -1,0 +1,46 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          rk3588-audio-quirks
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Enable OUT2 for GameForce ACE
+### END INIT INFO
+
+MODEL=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+
+start() {
+    if [[ "$MODEL" == "GameForce_ACE" ]]; then
+        echo "Enabling OUT2 Switch for GameForce ACE"
+        amixer -c 0 cset name='OUT2 Switch' on
+    fi
+}
+
+stop() {
+    if [[ "$MODEL" == "GameForce_ACE" ]]; then
+        echo "Disabling OUT2 Switch for GameForce ACE"
+        amixer -c 0 cset name='OUT2 Switch' off
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
+
