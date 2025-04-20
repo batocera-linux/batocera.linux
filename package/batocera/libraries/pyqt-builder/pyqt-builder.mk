@@ -11,5 +11,8 @@ PYQT_BUILDER_LICENSE = BSD-2-Clause
 PYQT_BUILDER_LICENSE_FILES = LICENSE
 PYQT_BUILDER_SETUP_TYPE = setuptools
 
+PYQT_BUILDER_DEPENDENCIES += host-python-setuptools-scm
+HOST_PYQT_BUILDER_DEPENDENCIES += host-python-setuptools-scm
+
 $(eval $(python-package))
 $(eval $(host-python-package))
