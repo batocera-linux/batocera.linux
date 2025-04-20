@@ -420,8 +420,7 @@ class DolphinGenerator(Generator):
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_DATA_HOME": SAVES,
-                "XDG_CACHE_HOME": CACHE,
-                "QT_QPA_PLATFORM": "xcb"
+                "XDG_CACHE_HOME": CACHE
             }
         )
 

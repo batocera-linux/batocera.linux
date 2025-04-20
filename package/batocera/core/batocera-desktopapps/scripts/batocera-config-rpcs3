@@ -8,4 +8,6 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-XDG_CONFIG_HOME=/userdata/system/configs XDG_CACHE_HOME=/userdata/system/cache QT_QPA_PLATFORM=xcb /usr/bin/rpcs3
+XDG_CONFIG_HOME=/userdata/system/configs \
+XDG_CACHE_HOME=/userdata/system/cache \
+/usr/bin/rpcs3
