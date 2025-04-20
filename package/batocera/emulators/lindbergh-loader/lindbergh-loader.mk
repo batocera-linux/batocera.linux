@@ -23,7 +23,7 @@ LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
 
 ifeq ($(BR2_x86_64),y)
-LINDBERGH_LOADER_DEPENDENCIES = wine-x86 dmidecode
+LINDBERGH_LOADER_DEPENDENCIES = wine-x86 dmidecode ossp
 endif
 
 ifeq ($(BR2_i386),y)
