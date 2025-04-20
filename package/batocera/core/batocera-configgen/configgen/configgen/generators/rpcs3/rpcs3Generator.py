@@ -275,9 +275,8 @@ class Rpcs3Generator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_CACHE_HOME":CACHE,
-                "QT_QPA_PLATFORM":"xcb",
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CACHE_HOME": CACHE,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }

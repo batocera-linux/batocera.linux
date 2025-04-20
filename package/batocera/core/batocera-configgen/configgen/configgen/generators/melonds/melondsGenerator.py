@@ -195,7 +195,6 @@ class MelonDSGenerator(Generator):
             array=commandArray,
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
-                "XDG_DATA_HOME": SAVES,
-                "QT_QPA_PLATFORM": "xcb"
+                "XDG_DATA_HOME": SAVES
             }
         )

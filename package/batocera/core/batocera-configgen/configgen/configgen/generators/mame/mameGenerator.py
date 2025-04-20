@@ -552,7 +552,14 @@ class MameGenerator(Generator):
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
-        return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":SAVES})
+        return Command.Command(
+            array=commandArray,
+            env={
+                "PWD":"/usr/bin/mame/",
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CACHE_HOME": SAVES
+                }
+            )
 
     @staticmethod
     def writeBezelConfig(bezelSet: str | None, system: Emulator, rom: Path, messSys: str, gameResolution: Resolution, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:

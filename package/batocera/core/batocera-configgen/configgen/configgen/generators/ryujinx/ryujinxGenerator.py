@@ -188,11 +188,12 @@ class RyujinxGenerator(Generator):
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":CONFIGS, \
-            "XDG_DATA_HOME":SAVES / "switch", \
-            "XDG_CACHE_HOME":CACHE, \
-            "QT_QPA_PLATFORM":"xcb", \
-            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
+            env={"XDG_CONFIG_HOME": CONFIGS,
+            "XDG_DATA_HOME": SAVES / "switch",
+            "XDG_CACHE_HOME": CACHE,
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
+            }
+        )
 
 def writeControllerIntoJson(new_controller: dict[str, Any], filename: Path = ryujinxConfFile):
     with filename.open('r+') as file:

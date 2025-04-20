@@ -177,11 +177,11 @@ class FlycastGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_CONFIG_DIRS":CONFIGS,
-                "XDG_DATA_HOME":FLYCAST_SAVES.parent,
-                "FLYCAST_DATADIR":FLYCAST_SAVES.parent,
-                "FLYCAST_BIOS_PATH":FLYCAST_BIOS,
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CONFIG_DIRS": CONFIGS,
+                "XDG_DATA_HOME": FLYCAST_SAVES.parent,
+                "FLYCAST_DATADIR": FLYCAST_SAVES.parent,
+                "FLYCAST_BIOS_PATH": FLYCAST_BIOS,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }

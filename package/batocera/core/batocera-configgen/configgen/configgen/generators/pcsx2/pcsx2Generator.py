@@ -120,8 +120,7 @@ class Pcsx2Generator(Generator):
 
         # use their modified shaderc library
         envcmd = {
-            "XDG_CONFIG_HOME":CONFIGS,
-            "QT_QPA_PLATFORM":"xcb",
+            "XDG_CONFIG_HOME": CONFIGS,
             "SDL_JOYSTICK_HIDAPI": "0"
         }
 

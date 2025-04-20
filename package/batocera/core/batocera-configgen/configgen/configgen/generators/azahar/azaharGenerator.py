@@ -37,11 +37,10 @@ class AzaharGenerator(Generator):
         commandArray = ['/usr/bin/azahar', rom]
 
         return Command.Command(array=commandArray, env={
-            "XDG_CONFIG_HOME":CONFIGS,
-            "XDG_DATA_HOME":SAVES / "3ds",
-            "XDG_CACHE_HOME":CACHE,
-            "XDG_RUNTIME_DIR":SAVES / "3ds" / "azahar",
-            "QT_QPA_PLATFORM":"xcb",
+            "XDG_CONFIG_HOME": CONFIGS,
+            "XDG_DATA_HOME": SAVES / "3ds",
+            "XDG_CACHE_HOME": CACHE,
+            "XDG_RUNTIME_DIR": SAVES / "3ds" / "azahar",
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
