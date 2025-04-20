@@ -136,6 +136,7 @@
 - Nvidia production driver to 570.133.07
 - Pipewire to 1.2.7
 - QT6 to 6.8.1
+- RClone to v1.69.1
 - RPi firmware to match Kernel 6.12.21
 - RPi Kernel to 6.12.21
 - Ryzenadj to v0.16.0
