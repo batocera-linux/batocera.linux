@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_DICE_VERSION = v0.4.1
+LIBRETRO_DICE_VERSION = v0.4.0
 LIBRETRO_DICE_SITE = $(call github,mittonk,dice-libretro,$(LIBRETRO_DICE_VERSION))
 LIBRETRO_DICE_LICENSE = GPLv3
 LIBRETRO_DICE_DEPENDENCIES += retroarch
