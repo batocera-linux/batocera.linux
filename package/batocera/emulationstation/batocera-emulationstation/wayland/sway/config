@@ -23,9 +23,6 @@ bindsym Mod1+f fullscreen
 # Set a default rule to remove decorations for all windows
 default_border none
 
-# Attempt to make all normally tiled/floating windows fullscreen on launch
-for_window [window_type="normal"] fullscreen enable
-
 # F1 launched apps
 for_window [app_id="azahar"] fullscreen enable
 for_window [app_id="flycast"] fullscreen enable
@@ -34,13 +31,14 @@ for_window [app_id="dolphin-emu"] fullscreen enable
 for_window [app_id="info.cemu.Cemu"] fullscreen enable
 for_window [app_id="rpcs3"] fullscreen enable
 for_window [app_id="scummvm"] fullscreen enable
+for_window [app_id="net.shadps4.shadPS4"] fullscreen enable
 
 # Specific XWayland apps
 for_window [app_id="supermodel"] fullscreen enable
-for_window [app_id="xterm"] fullscreen enable
+for_window [class="XTerm"] fullscreen enable
 for_window [class="Play!"] fullscreen enable
 # Model 2
-for_window [class="emulator_multicpu.exe"] fullscreen enable
+for_window [instance="emulator_multicpu.exe"] fullscreen enable
 
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide
