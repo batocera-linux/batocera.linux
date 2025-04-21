@@ -13951,14 +13951,14 @@ openjkdf2:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   cfeatures:
-    jkdf2_difficulty:    
+    jkdf2_difficulty:
       prompt: DIFFICULTY
       description: Choose difficulty for the game.
       choices:
         "Easy":   0
         "Medium": 1
         "Hard":   2
-    jkdf2_scenes:    
+    jkdf2_scenes:
       submenu: GENERAL
       prompt: CUTSCENES
       choices:
@@ -14031,14 +14031,14 @@ openjkdf2:
       submenu: GAMEPLAY
       prompt: CROSSHAIR SIZE
       description: Set the crosshair size.
-      preset: slider
-      preset_parameters: 0.0 2.00 .20 1.00
+      preset: sliderauto
+      preset_parameters: 0.0 2.00 .20
     jkdf2_cross_line:
       submenu: GAMEPLAY
       prompt: CROSSHAIR LINE THICKNESS
       description: Set the crosshair line thickness.
-      preset: slider
-      preset_parameters: 1.00 3.00 .20 1.00
+      preset: sliderauto
+      preset_parameters: 1.00 3.00 .20
     jkdf2_pickup:
       submenu: WEAPON PICKUP
       prompt: PICKUP WEAPON
@@ -14092,8 +14092,8 @@ openjkdf2:
       submenu: DISPLAY
       prompt: FIELD OF VIEW
       description: Set the field of view.
-      preset: slider
-      preset_parameters: 40 170 5 90
+      preset: sliderauto
+      preset_parameters: 40 170 5
     jkdf2_fov_vert:
       submenu: DISPLAY
       prompt: FOV VERTICAL
@@ -14112,8 +14112,8 @@ openjkdf2:
       submenu: DISPLAY
       prompt: FPS LIMIT
       description: Set the fps limit.
-      preset: slider
-      preset_parameters: 0 360 10 0
+      preset: sliderauto
+      preset_parameters: 0 360 10
     jkdf2_vsync:
       submenu: DISPLAY
       prompt: VSYNC
@@ -14152,14 +14152,14 @@ openjkdf2:
       submenu: DISPLAY
       prompt: GAMMA
       description: Choose the amount of Gamma which changes how light or dark mid-range tones appear.
-      preset: slider
-      preset_parameters: 0.40 3.00 .20 1.00
+      preset: sliderauto
+      preset_parameters: 0.40 3.00 .20
     jkdf2_hud_scale:
       submenu: DISPLAY
       prompt: HUD SCALE
       description: Choose the size of the heads-up display.
-      preset: slider
-      preset_parameters: 0.40 3.00 .20 2.00
+      preset: sliderauto
+      preset_parameters: 0.40 3.00 .20
     jkdf2_ssaa_multiple:
       submenu: DISPLAY
       prompt: SSAA Multiplier
@@ -14237,8 +14237,8 @@ openjk:
       submenu: VIDEO
       prompt: BRIGHTNESS
       description: Change the game's brightness.
-      preset: slider
-      preset_parameters: 0.50 3.00 .10 1.00
+      preset: sliderauto
+      preset_parameters: 0.50 3.00 .10
     openjk_shadows:
       submenu: VIDEO
       prompt: SHADOWS
@@ -14275,8 +14275,8 @@ openjk:
       submenu: VIDEO
       prompt: ANISTROPIC FILTER
       description: Improves clarity of distant textures.
-      preset: slider
-      preset_parameters: 0.00 16.00 .50 16.00
+      preset: sliderauto
+      preset_parameters: 0.00 16.00 .50
     openjk_crosshair:
       prompt: DRAW CROSSHAIR
       choices:
