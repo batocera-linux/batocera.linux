@@ -451,9 +451,12 @@ class Daemon:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], True)
                             elif event.value == 0:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], False)
-                except (OSError, KeyError) as e:
+                #except (OSError, KeyError, FileNotFoundError) as e:
+                except (Exception) as e:
                     if fd == self.monitor.fileno():
-                        raise
+                        print("Exception happened on the monitor fd")
+                        print(e)
+                        #raise
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
@@ -469,9 +472,8 @@ class Daemon:
                                 input_device.close()
                             except:
                                 pass
-                except:
+                finally:
                     self.target.close()
-                    raise
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="hotkeygen")
