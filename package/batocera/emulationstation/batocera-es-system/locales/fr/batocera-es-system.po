@@ -2223,7 +2223,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "AJUSTER LA FRÉQUENCE DU POWERPC"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
+#. TRANSLATION: amiberry, azahar, bigpemu, cemu, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "OPTIONS AVANCÉES"
@@ -3264,6 +3264,15 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Règle la disposition à double écran."
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
+"Définir l'emplacement des deux écrans. Vous pouvez changer les fenêtres "
+"séparées en appuyuant sur Hotkey + R2."
+
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3966,6 +3975,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Bas (par défaut)"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr "En bas seulement"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -5275,7 +5289,7 @@ msgstr ""
 "Choisir l\n"
 "e fichier BIOS avec lequel GSplus doit démarrer."
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Choisir l'API graphique à utiliser."
@@ -5512,6 +5526,15 @@ msgid ""
 msgstr ""
 "Compiler les shaders au prochain lancement du jeu (une fois). Réduit les "
 "micro-freezes. Vulkan uniquement."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+"Compiler les shaders en tâche de fond pour éviter des ralentissements. Cela "
+"peut provoquer des artefacts graphiques."
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5850,6 +5873,11 @@ msgstr "DÉSACTIVER LA SYNCHRO DE SURFACE"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "DÉSACTIVER LE CACHE VERTEX"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "DISK SHADER CACHE"
+msgstr "CACHE DE SHADER DISQUE"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6537,6 +6565,11 @@ msgstr "VITESSE D'ÉMULATION"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "ACTIVER LE SERVICE DE TRADUCTION PAR IA"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr "ACTIVER LA COMPILATION ASYNCHRONE DES SHADERS"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7399,7 +7432,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "Amélioration. Augmenter la résolution du rendu."
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7775,6 +7808,11 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "TRAME DUPING (ACCÉLÉRER)"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "FRAME LIMIT"
+msgstr "LIMITE D'IMAGE"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -8037,7 +8075,7 @@ msgstr ""
 "synchronise sur la synchronisation vidéo, à l'exception des images tardives "
 "(en dessous du FPS cible) qui sont affichées immédiatement."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Correction du déchirement de l'écran. Coûteux en CPU."
@@ -8703,12 +8741,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "INTERFACE UTILISATEUR GRAPHIQUE"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: azahar, iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "GRAPHISMES"
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "API GRAPHIQUE"
@@ -9364,6 +9402,16 @@ msgstr "Hybride"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hybride + bicubique"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr "Écran hybride en bas"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr "Écran hybride en haut"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10206,7 +10254,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM est le plus rapide, utilisez l'interpréteur s'il y a des soucis."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "CHARGER DES TEXTURES PERSONNALISÉES"
@@ -10225,6 +10273,16 @@ msgstr "MODÈLE LYNX"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Paysage"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr "Le plus grand en bas"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Top"
+msgstr "Le plus grand en haut"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10275,6 +10333,11 @@ msgstr "Magnasave gauche"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Stick gauche"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr "Gauche / Droite"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11381,6 +11444,11 @@ msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "TYPE DE RÉSEAU"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "NEW 3DS MODE"
+msgstr "NEW 3DS MODE"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
@@ -11903,7 +11971,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "Octobre"
 
-#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
+#. TRANSLATION: azahar, cannonball, cemu, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Non"
@@ -11937,6 +12005,11 @@ msgstr "Désactivé au démarrage"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Désactivé est plus sûr, activé pour des jeux spécifiques."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Off will help some games, others will run too fast."
+msgstr "Désactiver aide certains jeux, d'autres tourneront trop vite."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11982,7 +12055,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "Oman"
 
-#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
+#. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Oui"
@@ -12141,7 +12214,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (Compute shader)"
 
-#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
+#. TRANSLATION: azahar, dolphin_triforce, flycast, gzdoom, play, ...
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (par défaut)"
@@ -12949,7 +13022,7 @@ msgstr ""
 "Privilégier \"Avant NMI\", changer pour \"Après NMI\" seulement si le jeu le "
 "nécessite."
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: azahar, duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Préchargement"
@@ -12958,6 +13031,11 @@ msgstr "Préchargement"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Le préchargement nécessite plus de RAM."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Preloading is impossible from ES."
+msgstr "Le préchargement est impossible depuis ES."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13201,7 +13279,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MODE DE RENDU"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "RÉSOLUTION DE RENDU"
@@ -13378,6 +13456,12 @@ msgstr "Rouge"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Réduire le temps de chargement au détriment de la précision."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Reduce stutter that happens when compiling shaders."
+msgstr ""
+"Réduit le bégaiement qui se produit lors de la compilation des shaders."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13607,6 +13691,11 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Stick droit"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr "Droite / Gauche"
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13797,7 +13886,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "INCLINAISON DE L'ÉCRAN"
 
-#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: azahar, drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "MISE EN PAGE DE L'ÉCRAN"
@@ -14503,6 +14592,11 @@ msgctxt "game_options"
 msgid "Sensitivity when using mouse for a paddle."
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr "Fenêtres séparées"
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "September"
@@ -15146,7 +15240,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Adoucir l'effet sonore de hachage de certains jeux."
 
-#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
+#. TRANSLATION: azahar, duckstation, libretro/melondsds, melonds, pcsx2, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Logiciel"
@@ -16002,6 +16096,12 @@ msgctxt "game_options"
 msgid "Thailand"
 msgstr "Thaïlande"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+msgstr ""
+"La New 3DS a un processeur plus rapide, des boutons ZL/ZR et un C-stick."
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
@@ -16180,6 +16280,11 @@ msgstr "Permuter disposition de l’écran"
 msgctxt "game_options"
 msgid "Top"
 msgstr "Haut"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Top Only"
+msgstr "En haut seulement"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17177,7 +17282,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr ""
 
-#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
+#. TRANSLATION: azahar, bigpemu, bstone, cemu, citron, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -17297,7 +17402,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "VSync"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -18519,14 +18624,6 @@ msgstr "jaune/bleu"
 #~ msgid "Analog 2 Up"
 #~ msgstr "Haut stick analogique 2"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Arrange the dual screen layout. Separate windows can be changed with "
-#~ "Hotkey+R2."
-#~ msgstr ""
-#~ "Définir l'emplacement des deux écrans. Vous pouvez changer les fenêtres "
-#~ "séparées en appuyuant sur Hotkey + R2."
-
 #~ msgctxt "keys_files"
 #~ msgid "Aspect ratio correction on/off"
 #~ msgstr "Correction d'aspect écran: oui/non"
@@ -18577,10 +18674,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "game_options"
 #~ msgid "Bilinear (no edge blending)"
 #~ msgstr "Bilinéaire (pas de fusion des bords)"
-
-#~ msgctxt "game_options"
-#~ msgid "Bottom Only"
-#~ msgstr "En bas seulement"
 
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
@@ -18723,14 +18816,6 @@ msgstr "jaune/bleu"
 #~ "Compiler les shaders au prochain lancement du jeu (une fois). Réduit les "
 #~ "micro-gels."
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Compile shaders using background threads to avoid shader compilation "
-#~ "stutter. May cause graphical glitches."
-#~ msgstr ""
-#~ "Compiler les shaders en tâche de fond pour éviter des ralentissements. "
-#~ "Cela peut provoquer des artefacts graphiques."
-
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
 #~ msgstr "Menu Configuration"
@@ -18750,10 +18835,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "game_options"
 #~ msgid "DE"
 #~ msgstr "DE"
-
-#~ msgctxt "game_options"
-#~ msgid "DISK SHADER CACHE"
-#~ msgstr "CACHE DE SHADER DISQUE"
 
 #~ msgctxt "game_options"
 #~ msgid "DS (default)"
@@ -18825,10 +18906,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "game_options"
 #~ msgid "EE timing hack (Try if all else fails)"
 #~ msgstr "Hack de synchronisation EE (À essayer si tout le reste échoue)"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE ASYNC SHADER COMPILATION"
-#~ msgstr "ACTIVER LA COMPILATION ASYNCHRONE DES SHADERS"
 
 #~ msgctxt "game_options"
 #~ msgid "ENABLE AUTO LOAD STATES"
@@ -19029,10 +19106,6 @@ msgstr "jaune/bleu"
 #~ msgstr "FR"
 
 #~ msgctxt "game_options"
-#~ msgid "FRAME LIMIT"
-#~ msgstr "LIMITE D'IMAGE"
-
-#~ msgctxt "game_options"
 #~ msgid "FRAMERATE"
 #~ msgstr "TAUX DE RAFRAÎCHISSEMENT"
 
@@ -19148,14 +19221,6 @@ msgstr "jaune/bleu"
 #~ msgstr "Comment l'émulateur doit-il trier les objets transparents."
 
 #~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Bottom"
-#~ msgstr "Écran hybride en bas"
-
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Top"
-#~ msgstr "Écran hybride en haut"
-
-#~ msgctxt "game_options"
 #~ msgid "Hybride"
 #~ msgstr "Hybride"
 
@@ -19199,14 +19264,6 @@ msgstr "jaune/bleu"
 #~ msgid "LIMIT FRAMERATE"
 #~ msgstr "LIMITER LA FRÉQUENCE D'AFFICHAGE"
 
-#~ msgctxt "game_options"
-#~ msgid "Large Bottom"
-#~ msgstr "Le plus grand en bas"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Top"
-#~ msgstr "Le plus grand en haut"
-
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"
 #~ msgstr "Flipper gauche"
@@ -19222,10 +19279,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "keys_files"
 #~ msgid "Left Nudge"
 #~ msgstr "Poussée vers la gauche"
-
-#~ msgctxt "game_options"
-#~ msgid "Left/Right"
-#~ msgstr "Gauche / Droite"
 
 #~ msgctxt "game_options"
 #~ msgid "Legacy (laggy)"
@@ -19301,10 +19354,6 @@ msgstr "jaune/bleu"
 #~ msgstr "N64 (Touches de raccourci limitées)"
 
 #~ msgctxt "game_options"
-#~ msgid "NEW 3DS MODE"
-#~ msgstr "NEW 3DS MODE"
-
-#~ msgctxt "game_options"
 #~ msgid "NL"
 #~ msgstr "NL"
 
@@ -19361,10 +19410,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "game_options"
 #~ msgid "Off (default)"
 #~ msgstr "Désactivé (par défaut)"
-
-#~ msgctxt "game_options"
-#~ msgid "Off will help some games, others will run too fast."
-#~ msgstr "Désactiver aide certains jeux, d'autres tourneront trop vite."
 
 #~ msgctxt "game_options"
 #~ msgid "On (slower)"
@@ -19456,10 +19501,6 @@ msgstr "jaune/bleu"
 #~ msgid "Preload TLB hack to avoid tlb miss on Goemon"
 #~ msgstr "Précharger le hack TLB pour éviter le manque de tlb sur Goemon"
 
-#~ msgctxt "game_options"
-#~ msgid "Preloading is impossible from ES."
-#~ msgstr "Le préchargement est impossible depuis ES."
-
 #~ msgctxt "keys_files"
 #~ msgid "Push 1"
 #~ msgstr "Appuyer sur 1"
@@ -19541,11 +19582,6 @@ msgstr "jaune/bleu"
 #~ msgstr "Recompilateur (le plus rapide)"
 
 #~ msgctxt "game_options"
-#~ msgid "Reduce stutter that happens when compiling shaders."
-#~ msgstr ""
-#~ "Réduit le bégaiement qui se produit lors de la compilation des shaders."
-
-#~ msgctxt "game_options"
 #~ msgid "Reduces wobbly polygongs & warping textures."
 #~ msgstr "Réduite les polygones qui bougent et les textures déformées."
 
@@ -19594,10 +19630,6 @@ msgstr "jaune/bleu"
 #~ msgstr "Poussée vers la droite"
 
 #~ msgctxt "game_options"
-#~ msgid "Right/Left"
-#~ msgstr "Droite / Gauche"
-
-#~ msgctxt "game_options"
 #~ msgid "Rotate"
 #~ msgstr "Tourner"
 
@@ -19640,10 +19672,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "keys_files"
 #~ msgid "Save State Slot 1"
 #~ msgstr "Ecrire la sauvegarde d'état à l'emplacement 1"
-
-#~ msgctxt "game_options"
-#~ msgid "Separate Windows"
-#~ msgstr "Fenêtres séparées"
 
 #~ msgctxt "keys_files"
 #~ msgid "Service menu"
@@ -19804,11 +19832,6 @@ msgstr "jaune/bleu"
 #~ msgstr "Couleur de cible (joueur 4)."
 
 #~ msgctxt "game_options"
-#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-#~ msgstr ""
-#~ "La New 3DS a un processeur plus rapide, des boutons ZL/ZR et un C-stick."
-
-#~ msgctxt "game_options"
 #~ msgid ""
 #~ "This option enables the ability to play Xbox Live Arcacde games. May "
 #~ "cause compatibility issues with non-XBLA games."
@@ -19833,10 +19856,6 @@ msgstr "jaune/bleu"
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Speed Limit"
 #~ msgstr "Activer la limitation de vitesse"
-
-#~ msgctxt "game_options"
-#~ msgid "Top Only"
-#~ msgstr "En haut seulement"
 
 #~ msgctxt "game_options"
 #~ msgid ""

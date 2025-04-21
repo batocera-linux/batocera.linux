@@ -2229,7 +2229,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "SESUAIKAN FREQUENSI POWERPC"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
+#. TRANSLATION: amiberry, azahar, bigpemu, cemu, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "PENGATURAN LANJUTAN"
@@ -3246,6 +3246,13 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Sejajarkan tata letak dua layar"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
+
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3935,6 +3942,11 @@ msgstr "Kedua tipe ini harus menahan D-pad selama pengisian daya awal."
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Bottom (Default)"
+msgstr ""
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Bottom Only"
 msgstr ""
 
 #. TRANSLATION: melonds
@@ -5220,7 +5232,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr ""
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Pilih perpustakaan API yang akan di pakai"
@@ -5449,6 +5461,13 @@ msgctxt "game_options"
 msgid ""
 "Compile shaders on next launch of game (one time). Reduces micro-freezes. "
 "Vulkan only."
+msgstr ""
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
 msgstr ""
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
@@ -5780,6 +5799,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "MATIKAN CACHE VERTEX"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "DISK SHADER CACHE"
+msgstr "CACHE DISK SHADER"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6451,6 +6475,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "HIDUPKAN LAYANAN PENERJEMAHAN AI"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7273,7 +7302,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr ""
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7647,6 +7676,11 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "FRAME DUPING (PERCEPATP)"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "FRAME LIMIT"
+msgstr "BATAS FRAME"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -7894,7 +7928,7 @@ msgid ""
 "except for late frames (below target FPS) which are displayed immediately."
 msgstr ""
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Perbaiki layar tearing. CPU berat"
@@ -8538,12 +8572,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "TAMPILAN GRAFIS PENGGUNA"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: azahar, iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr ""
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "GRAFIS API"
@@ -9195,6 +9229,16 @@ msgstr "Hibrid"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hybrid + Bicubic"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr ""
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr ""
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10018,7 +10062,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM tercepat, gunakan pengaturan Interpreter jika ada masalah."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "MUAT KOSTUM TEXTURES"
@@ -10037,6 +10081,16 @@ msgstr "MODEL LYNX"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Landscape"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr ""
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Top"
+msgstr ""
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10087,6 +10141,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Stcik Kiri"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr ""
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11175,6 +11234,11 @@ msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "NEW 3DS MODE"
+msgstr "MODE NEW 3DS"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
@@ -11691,7 +11755,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr ""
 
-#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
+#. TRANSLATION: azahar, cannonball, cemu, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Mati"
@@ -11725,6 +11789,12 @@ msgstr "Matikan ketika Mulai"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Nonaktif lebih aman, Aktif untuk game tertentu."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Off will help some games, others will run too fast."
+msgstr ""
+"Mati akan membantu beberapa games, yang lainnya akan berjalan terlalu cepat"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11762,7 +11832,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr ""
 
-#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
+#. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Hidup"
@@ -11917,7 +11987,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr ""
 
-#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
+#. TRANSLATION: azahar, dolphin_triforce, flycast, gzdoom, play, ...
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Standar)"
@@ -12713,7 +12783,7 @@ msgstr ""
 "Lebih suka \"Sebelum NMI\", ubah ke Setelah NMI hanya jika diperlukan oleh "
 "game."
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: azahar, duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Persiapan-pemuatan"
@@ -12722,6 +12792,11 @@ msgstr "Persiapan-pemuatan"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Persiapan-pemuatan membutuhkan RAM lebih"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Preloading is impossible from ES."
+msgstr "Pramuat mustahil dari ES"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12957,7 +13032,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MODE RENDERING"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "RESOLUSI RENDERING"
@@ -13134,6 +13209,11 @@ msgstr "Merah"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Kurangi waktu memuat dengan mengkorbankan akurasi"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Reduce stutter that happens when compiling shaders."
+msgstr "Mengurangi kegagapan saat membuat shader"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13354,6 +13434,11 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Stcik Kanan"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr ""
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13541,7 +13626,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr ""
 
-#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: azahar, drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "TATA LETAK LAYAR"
@@ -14237,6 +14322,11 @@ msgctxt "game_options"
 msgid "Sensitivity when using mouse for a paddle."
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr ""
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "September"
@@ -14862,7 +14952,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Hask efek suara lembut dari beberapa games"
 
-#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
+#. TRANSLATION: azahar, duckstation, libretro/melondsds, melonds, pcsx2, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Perangkat Lunak"
@@ -15702,6 +15792,11 @@ msgctxt "game_options"
 msgid "Thailand"
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+msgstr "3DS baru memiliki prosesor yang lebih cepat, tombol ZL/ZR, dan stik C"
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
@@ -15863,6 +15958,11 @@ msgstr ""
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Top"
+msgstr ""
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Top Only"
 msgstr ""
 
 #. TRANSLATION: melonds
@@ -16830,7 +16930,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr ""
 
-#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
+#. TRANSLATION: azahar, bigpemu, bstone, cemu, citron, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -16950,7 +17050,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr ""
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -17969,10 +18069,6 @@ msgstr "kuning/biru"
 #~ msgstr "Konversi DirectX 9/10/11/12 calls ke Vulkan."
 
 #~ msgctxt "game_options"
-#~ msgid "DISK SHADER CACHE"
-#~ msgstr "CACHE DISK SHADER"
-
-#~ msgctxt "game_options"
 #~ msgid "Delay VIF1 Stalls (For SOCOM2 & Spy Hunter)"
 #~ msgstr "Jeda VIF1 Stalls (Untuk SOCOM2 & Spy Hunter)"
 
@@ -18041,10 +18137,6 @@ msgstr "kuning/biru"
 #~ msgctxt "game_options"
 #~ msgid "FPU Negative Div hack (For Gundam Games)"
 #~ msgstr "FPU Negative Div hack (Untuk Gundam Games)"
-
-#~ msgctxt "game_options"
-#~ msgid "FRAME LIMIT"
-#~ msgstr "BATAS FRAME"
 
 #~ msgctxt "game_options"
 #~ msgid "For digital controller mode."
@@ -18130,10 +18222,6 @@ msgstr "kuning/biru"
 #~ msgstr "Mungkin Ddpat memperbaiki grafik yang rusak di beberapa game."
 
 #~ msgctxt "game_options"
-#~ msgid "NEW 3DS MODE"
-#~ msgstr "MODE NEW 3DS"
-
-#~ msgctxt "game_options"
 #~ msgid "Namco GunCon (Rumble)"
 #~ msgstr "Namco GunCon (Getaran)"
 
@@ -18152,12 +18240,6 @@ msgstr "kuning/biru"
 #~ msgctxt "game_options"
 #~ msgid "Off (default)"
 #~ msgstr "Mati (Standar)"
-
-#~ msgctxt "game_options"
-#~ msgid "Off will help some games, others will run too fast."
-#~ msgstr ""
-#~ "Mati akan membantu beberapa games, yang lainnya akan berjalan terlalu "
-#~ "cepat"
 
 #~ msgctxt "game_options"
 #~ msgid "POLYGON SORT ACCURACY"
@@ -18185,20 +18267,12 @@ msgstr "kuning/biru"
 #~ "persiapan muat ulang peretasan TLB menghindari kehilangan tlb di Goemon"
 
 #~ msgctxt "game_options"
-#~ msgid "Preloading is impossible from ES."
-#~ msgstr "Pramuat mustahil dari ES"
-
-#~ msgctxt "game_options"
 #~ msgid "RAW CONTROLLER INPUT"
 #~ msgstr "MASUKAN PENGONTROL RAW"
 
 #~ msgctxt "game_options"
 #~ msgid "Recompiler (Fastest)"
 #~ msgstr "Kompilasi-Ulang (Cepat)"
-
-#~ msgctxt "game_options"
-#~ msgid "Reduce stutter that happens when compiling shaders."
-#~ msgstr "Mengurangi kegagapan saat membuat shader"
 
 #~ msgctxt "game_options"
 #~ msgid "Reduces wobbly polygongs & warping textures."
@@ -18279,11 +18353,6 @@ msgstr "kuning/biru"
 #~ msgctxt "game_options"
 #~ msgid "TV MODE"
 #~ msgstr "MODE TV"
-
-#~ msgctxt "game_options"
-#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-#~ msgstr ""
-#~ "3DS baru memiliki prosesor yang lebih cepat, tombol ZL/ZR, dan stik C"
 
 #~ msgctxt "game_options"
 #~ msgid "Toggle MSAA/SSAA. Depends on anti-aliasing being enabled."
