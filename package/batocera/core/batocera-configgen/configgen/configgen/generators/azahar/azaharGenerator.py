@@ -32,7 +32,7 @@ class AzaharGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        AzaharGenerator.writeAZAHARConfig(CONFIGS / "azahar" / "qt-config.ini", system, playersControllers)
+        AzaharGenerator.writeAZAHARConfig(CONFIGS / "azaharplus-emu" / "qt-config.ini", system, playersControllers)
 
         commandArray = ['/usr/bin/azahar', rom]
 
@@ -40,7 +40,7 @@ class AzaharGenerator(Generator):
             "XDG_CONFIG_HOME": CONFIGS,
             "XDG_DATA_HOME": SAVES / "3ds",
             "XDG_CACHE_HOME": CACHE,
-            "XDG_RUNTIME_DIR": SAVES / "3ds" / "azahar",
+            "XDG_RUNTIME_DIR": SAVES / "3ds" / "azaharplus-emu",
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
