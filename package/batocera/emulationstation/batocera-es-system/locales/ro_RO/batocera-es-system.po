@@ -2222,7 +2222,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "AJUSTEAZĂ FRECVENȚA POWERPC"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
+#. TRANSLATION: amiberry, azahar, bigpemu, cemu, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "OPȚIUNI AVANSATE"
@@ -3258,6 +3258,15 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Aranjează amplasarea cu două ecrane."
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
+"Aranjează amplasarea ecranelor. Ferestrele separate pot fi schimbate cu "
+"tasta rapidă+R2."
+
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3956,6 +3965,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Dedesubt (Implicit)"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr "Doar dedesubt"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -5256,7 +5270,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr "Alege ce fișier BIOS să fie boot-at pentru GSplus."
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Alege ce bibliotecă API grafică să folosești."
@@ -5490,6 +5504,15 @@ msgid ""
 msgstr ""
 "Compilează shaderele la următoarea lansare a jocului (doar o dată). Reduce "
 "micro-blocările. Doar pentru Vulkan."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+"Compilează shaderele folosind fire de execuție în fundal pentru a evita "
+"bâlbâielile. Poate cauza probleme grafice."
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5827,6 +5850,11 @@ msgstr "DEZACTIVEAZĂ SINCRONIZAREA SUPRAFEȚELOR"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "DEZACTIVEAZĂ CACHE VERTEXURI"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "DISK SHADER CACHE"
+msgstr "CACHE SHADER PE DISC"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6509,6 +6537,11 @@ msgstr "VITEZĂ EMULARE"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "ACTIVEAZĂ SERVICIUL DE TRADUCERE CU IA"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr "ACTIVEAZĂ COMPILAREA SHADERELOR ASINCRON"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7377,7 +7410,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "Îmbunătățire. Crește rezoluția de redare."
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7757,6 +7790,11 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "DUPLICARE CADRE (ACCELERARE)"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "FRAME LIMIT"
+msgstr "LIMITĂ DE CADRE"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -8017,7 +8055,7 @@ msgstr ""
 "sincronizarea video, exceptând cadrele întârziate (sub FPS-ul țintă), care "
 "sunt afișate imediat."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Repară ruperea ecranului. Solicitant pentru CPU."
@@ -8680,12 +8718,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "INTERFAȚA GRAFICĂ UTILIZATOR"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: azahar, iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "GRAFICĂ"
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "API GRAFIC"
@@ -9340,6 +9378,16 @@ msgstr "Hibrid"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hibrid + Bicubic"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr "Ecran hibrid dedesubt"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr "Ecran hibrid deasupra"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10185,7 +10233,7 @@ msgstr ""
 "LLVM este cel mai rapid, folosește setările interpretorului dacă sunt "
 "probleme."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "ÎNCARCĂ TEXTURI PERSONALIZATE"
@@ -10204,6 +10252,16 @@ msgstr "MODEL LYNX"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Peisaj"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr "Dedesubt mare"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Top"
+msgstr "Deasupra mare"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10254,6 +10312,11 @@ msgstr "Magnasave stâng"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Maneta stângă"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr "Stânga/Dreapta"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11357,6 +11420,11 @@ msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "TIP REȚEA"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "NEW 3DS MODE"
+msgstr "MOD NOU 3DS"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
@@ -11878,7 +11946,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "Octombrie"
 
-#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
+#. TRANSLATION: azahar, cannonball, cemu, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Oprit"
@@ -11912,6 +11980,11 @@ msgstr "Oprit la început"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Oprit este mai sigur. Pornit pentru anumite jocuri."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Off will help some games, others will run too fast."
+msgstr "Oprit va ajuta în anumite jocuri, altele vor rula prea repede."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11958,7 +12031,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "Oman"
 
-#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
+#. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Pornit"
@@ -12117,7 +12190,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (Compute shader)"
 
-#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
+#. TRANSLATION: azahar, dolphin_triforce, flycast, gzdoom, play, ...
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Implicit)"
@@ -12922,7 +12995,7 @@ msgstr ""
 "Preferă „Înainte de NMI”, schimbă la „După NMI” doar dacă este necesar "
 "pentru joc."
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: azahar, duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Preîncarcă"
@@ -12931,6 +13004,11 @@ msgstr "Preîncarcă"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Pre-încărcarea necesită mai mult RAM."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Preloading is impossible from ES."
+msgstr "Preîncărcarea este imposibilă din ES."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13173,7 +13251,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "MOD REDARE"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "REZOLUȚIA DE RANDARE"
@@ -13350,6 +13428,11 @@ msgstr "Roșu"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Micșorează timpul de încărcare cu costul acurateței."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Reduce stutter that happens when compiling shaders."
+msgstr "Redu bâlbâielile care apar în timpul compilării shaderelor."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13580,6 +13663,11 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Maneta dreaptă"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr "Dreapta/Stânga"
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13771,7 +13859,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "ÎNCLINARE ECRAN"
 
-#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: azahar, drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "AMPLASARE ECRAN"
@@ -14476,6 +14564,11 @@ msgctxt "game_options"
 msgid "Sensitivity when using mouse for a paddle."
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr "Ferestre separate"
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "September"
@@ -15115,7 +15208,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Netezește efectul sonor dur al unor jocuri."
 
-#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
+#. TRANSLATION: azahar, duckstation, libretro/melondsds, melonds, pcsx2, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Software"
@@ -15973,6 +16066,11 @@ msgctxt "game_options"
 msgid "Thailand"
 msgstr "Tailanda"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+msgstr "Noul 3DS are un procesor mai rapid, butoane ZL/ZR și o manetă C."
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
@@ -16147,6 +16245,11 @@ msgstr "Comută amplasare ecrane"
 msgctxt "game_options"
 msgid "Top"
 msgstr "Deasupra"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Top Only"
+msgstr "Doar deasupra"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17143,7 +17246,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr ""
 
-#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
+#. TRANSLATION: azahar, bigpemu, bstone, cemu, citron, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -17263,7 +17366,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "Vsync"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -18250,18 +18353,6 @@ msgstr "galben/albastru"
 #~ msgid "Analog 2 Up"
 #~ msgstr "Analog 2 Sus"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Arrange the dual screen layout. Separate windows can be changed with "
-#~ "Hotkey+R2."
-#~ msgstr ""
-#~ "Aranjează amplasarea ecranelor. Ferestrele separate pot fi schimbate cu "
-#~ "tasta rapidă+R2."
-
-#~ msgctxt "game_options"
-#~ msgid "Bottom Only"
-#~ msgstr "Doar dedesubt"
-
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
 #~ msgstr "Arată meniul"
@@ -18286,14 +18377,6 @@ msgstr "galben/albastru"
 #~ msgid "Coin"
 #~ msgstr "Monedă"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Compile shaders using background threads to avoid shader compilation "
-#~ "stutter. May cause graphical glitches."
-#~ msgstr ""
-#~ "Compilează shaderele folosind fire de execuție în fundal pentru a evita "
-#~ "bâlbâielile. Poate cauza probleme grafice."
-
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
 #~ msgstr "Meniu configurare"
@@ -18309,10 +18392,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Cycle previous"
 #~ msgstr "Ciclează anteriorul"
-
-#~ msgctxt "game_options"
-#~ msgid "DISK SHADER CACHE"
-#~ msgstr "CACHE SHADER PE DISC"
 
 #~ msgctxt "keys_files"
 #~ msgid "Digital Down"
@@ -18341,10 +18420,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Display the controller screen"
 #~ msgstr "Afișează ecranul controlerului"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE ASYNC SHADER COMPILATION"
-#~ msgstr "ACTIVEAZĂ COMPILAREA SHADERELOR ASINCRON"
 
 #~ msgctxt "game_options"
 #~ msgid "Enable or disable monsters in battle."
@@ -18404,10 +18479,6 @@ msgstr "galben/albastru"
 #~ msgstr "Ieși din emulator"
 
 #~ msgctxt "game_options"
-#~ msgid "FRAME LIMIT"
-#~ msgstr "LIMITĂ DE CADRE"
-
-#~ msgctxt "game_options"
 #~ msgid "FRAMERATE"
 #~ msgstr "RATA DE CADRE"
 
@@ -18455,22 +18526,6 @@ msgstr "galben/albastru"
 #~ "Fix pentru viteză în House of the Dead 4. Setează jocul la viteza de bază "
 #~ "a CPU-ului tău."
 
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Bottom"
-#~ msgstr "Ecran hibrid dedesubt"
-
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Top"
-#~ msgstr "Ecran hibrid deasupra"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Bottom"
-#~ msgstr "Dedesubt mare"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Top"
-#~ msgstr "Deasupra mare"
-
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"
 #~ msgstr "Aripa stângă"
@@ -18482,10 +18537,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Left Nudge"
 #~ msgstr "Înghiontire în stânga"
-
-#~ msgctxt "game_options"
-#~ msgid "Left/Right"
-#~ msgstr "Stânga/Dreapta"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -18519,10 +18570,6 @@ msgstr "galben/albastru"
 #~ msgid "N64 (Limited Hotkeys)"
 #~ msgstr "N64 (Taste rapide limitate)"
 
-#~ msgctxt "game_options"
-#~ msgid "NEW 3DS MODE"
-#~ msgstr "MOD NOU 3DS"
-
 #~ msgctxt "keys_files"
 #~ msgid "Next Disc (m3u)"
 #~ msgstr "Următorul disc (m3u)"
@@ -18530,10 +18577,6 @@ msgstr "galben/albastru"
 #~ msgctxt "game_options"
 #~ msgid "Not all games support all languages."
 #~ msgstr "Nu toate jocurile suportă toate limbile."
-
-#~ msgctxt "game_options"
-#~ msgid "Off will help some games, others will run too fast."
-#~ msgstr "Oprit va ajuta în anumite jocuri, altele vor rula prea repede."
 
 #~ msgctxt "keys_files"
 #~ msgid "Open Dolphin-triforce's menu"
@@ -18586,10 +18629,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Plunger"
 #~ msgstr "Piston"
-
-#~ msgctxt "game_options"
-#~ msgid "Preloading is impossible from ES."
-#~ msgstr "Preîncărcarea este imposibilă din ES."
 
 #~ msgctxt "keys_files"
 #~ msgid "Push 1"
@@ -18651,10 +18690,6 @@ msgstr "galben/albastru"
 #~ msgid "Quits the current level"
 #~ msgstr "Abandonează nivelul curent"
 
-#~ msgctxt "game_options"
-#~ msgid "Reduce stutter that happens when compiling shaders."
-#~ msgstr "Redu bâlbâielile care apar în timpul compilării shaderelor."
-
 #~ msgctxt "keys_files"
 #~ msgid "Reset the application"
 #~ msgstr "Resetează aplicația"
@@ -18683,10 +18718,6 @@ msgstr "galben/albastru"
 #~ msgid "Right Nudge"
 #~ msgstr "Înghiontire în dreapta"
 
-#~ msgctxt "game_options"
-#~ msgid "Right/Left"
-#~ msgstr "Dreapta/Stânga"
-
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Salvează stare"
@@ -18694,10 +18725,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Save State Slot 1"
 #~ msgstr "Salvează starea în slotul 1"
-
-#~ msgctxt "game_options"
-#~ msgid "Separate Windows"
-#~ msgstr "Ferestre separate"
 
 #~ msgctxt "keys_files"
 #~ msgid "Service menu"
@@ -18755,10 +18782,6 @@ msgstr "galben/albastru"
 #~ msgid "Take a screenshot"
 #~ msgstr "Fă o captură de ecran"
 
-#~ msgctxt "game_options"
-#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-#~ msgstr "Noul 3DS are un procesor mai rapid, butoane ZL/ZR și o manetă C."
-
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Screen Layout"
 #~ msgstr "Comută așezare ecran"
@@ -18766,10 +18789,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Speed Limit"
 #~ msgstr "Comută limită de viteză"
-
-#~ msgctxt "game_options"
-#~ msgid "Top Only"
-#~ msgstr "Doar deasupra"
 
 #~ msgctxt "game_options"
 #~ msgid ""

@@ -2227,7 +2227,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "调整 PowerPC 频率"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
+#. TRANSLATION: amiberry, azahar, bigpemu, cemu, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "高级选项"
@@ -3244,6 +3244,13 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "排列双屏布局。"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr "排列双屏布局。 使用热键+R2可以更改单独的窗口。"
+
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3933,6 +3940,11 @@ msgstr "两种类型都需要在初始充电过程中按住十字方向键。"
 msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "底部（默认）"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr "仅限底部"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -5207,7 +5219,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr "选择GSplus启动时使用的BIOS文件."
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "选择要使用的图形API库。"
@@ -5433,6 +5445,13 @@ msgid ""
 "Compile shaders on next launch of game (one time). Reduces micro-freezes. "
 "Vulkan only."
 msgstr "在下次启动游戏时编译着色器(仅一次). 减少微冻结. 仅适用于Vulkan."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr "使用后台线程编译着色器以避免着色器编译造成的卡顿，可能会导致图形故障。"
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5761,6 +5780,11 @@ msgstr "禁用表面同步"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "禁用顶点缓存"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "DISK SHADER CACHE"
+msgstr "磁盘着色器缓存"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6425,6 +6449,11 @@ msgstr "模拟器速度"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "启用AI翻译服务"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr "启用异步着色器编译"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7227,7 +7256,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "增强, 提高渲染分辨率."
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7594,6 +7623,11 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "帧重复（加速）"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "FRAME LIMIT"
+msgstr "帧限制"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -7845,7 +7879,7 @@ msgstr ""
 "修复屏幕撕裂现象，自适应同步（默认设置）会根据视频同步进行同步，但对于低于目"
 "标帧率的延迟帧会立即显示."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "修复屏幕撕裂。会增加CPU占用。"
@@ -8494,12 +8528,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "图形用户界面"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: azahar, iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "图形"
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "图形API"
@@ -9144,6 +9178,16 @@ msgstr "混合"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "混合 + 双三次插值"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr "混合屏幕底部"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr "混合屏幕顶部"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -9962,7 +10006,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM是最快的，如果有问题，请使用解释器设置。"
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "加载自定义纹理"
@@ -9981,6 +10025,16 @@ msgstr "Lynx机型"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "景观"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr "底部加大"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Top"
+msgstr "顶部加大"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10031,6 +10085,11 @@ msgstr "左磁力保护"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "左摇杆"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr "左/右"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11111,6 +11170,11 @@ msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "网络类型"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "NEW 3DS MODE"
+msgstr "New 3DS模式"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
@@ -11628,7 +11692,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "十月"
 
-#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
+#. TRANSLATION: azahar, cannonball, cemu, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "关闭"
@@ -11662,6 +11726,11 @@ msgstr "启动时关闭"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "关闭更安全，对于特定游戏打开。"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Off will help some games, others will run too fast."
+msgstr "关闭将有助于某些游戏，而其他游戏则会跑得太快。"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11700,7 +11769,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "阿曼"
 
-#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
+#. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "开启"
@@ -11852,7 +11921,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (计算着色器)"
 
-#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
+#. TRANSLATION: azahar, dolphin_triforce, flycast, gzdoom, play, ...
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL（默认）"
@@ -12648,7 +12717,7 @@ msgctxt "game_options"
 msgid "Prefer \"Before NMI\", change to After NMI only if needed by the game."
 msgstr "首选“NMI之前”，仅在游戏需要时更改为“NMI之后”。"
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: azahar, duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "预加载"
@@ -12657,6 +12726,11 @@ msgstr "预加载"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "预加载需要更多的RAM。"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Preloading is impossible from ES."
+msgstr "无法从ES进行预加载。"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12892,7 +12966,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "渲染模式"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "渲染分辨率"
@@ -13067,6 +13141,11 @@ msgstr "红色"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "以准确性为代价，减少加载时间。"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Reduce stutter that happens when compiling shaders."
+msgstr "减少编译着色器时发生的卡顿。"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13283,6 +13362,11 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "右摇杆"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr "右/左"
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13472,7 +13556,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "屏幕倾斜度"
 
-#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: azahar, drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "屏幕布局"
@@ -14168,6 +14252,11 @@ msgctxt "game_options"
 msgid "Sensitivity when using mouse for a paddle."
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr "单独窗口"
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "September"
@@ -14795,7 +14884,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "软化某些游戏的哈希音效。"
 
-#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
+#. TRANSLATION: azahar, duckstation, libretro/melondsds, melonds, pcsx2, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "软件"
@@ -15631,6 +15720,11 @@ msgctxt "game_options"
 msgid "Thailand"
 msgstr "泰国"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+msgstr "New 3DS有更快的处理器、ZL/ZR按钮和一个C摇杆。"
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
@@ -15794,6 +15888,11 @@ msgstr "截图屏幕布局"
 msgctxt "game_options"
 msgid "Top"
 msgstr "顶部"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Top Only"
+msgstr "仅限顶部"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -16757,7 +16856,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr "语音"
 
-#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
+#. TRANSLATION: azahar, bigpemu, bstone, cemu, citron, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "垂直同步"
@@ -16877,7 +16976,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "垂直同步"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -17888,18 +17987,8 @@ msgstr "黄色/蓝色"
 #~ msgstr "模拟摇杆2 上"
 
 #~ msgctxt "game_options"
-#~ msgid ""
-#~ "Arrange the dual screen layout. Separate windows can be changed with "
-#~ "Hotkey+R2."
-#~ msgstr "排列双屏布局。 使用热键+R2可以更改单独的窗口。"
-
-#~ msgctxt "game_options"
 #~ msgid "Backglass disabled"
 #~ msgstr "禁用背景玻璃"
-
-#~ msgctxt "game_options"
-#~ msgid "Bottom Only"
-#~ msgstr "仅限底部"
 
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
@@ -17935,13 +18024,6 @@ msgstr "黄色/蓝色"
 #~ "Compile shaders on next launch of game (one time). Reduces micro-freezes."
 #~ msgstr "在下次启动游戏时编译着色器（仅限一次）。可以减少细微卡顿。"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Compile shaders using background threads to avoid shader compilation "
-#~ "stutter. May cause graphical glitches."
-#~ msgstr ""
-#~ "使用后台线程编译着色器以避免着色器编译造成的卡顿，可能会导致图形故障。"
-
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
 #~ msgstr "配置菜单"
@@ -17957,10 +18039,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Cycle previous"
 #~ msgstr "循环至上一项"
-
-#~ msgctxt "game_options"
-#~ msgid "DISK SHADER CACHE"
-#~ msgstr "磁盘着色器缓存"
 
 #~ msgctxt "keys_files"
 #~ msgid "Digital Down"
@@ -17989,10 +18067,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Display the controller screen"
 #~ msgstr "显示控制器屏幕"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE ASYNC SHADER COMPILATION"
-#~ msgstr "启用异步着色器编译"
 
 #~ msgctxt "game_options"
 #~ msgid "ENABLE BILINEAR FILTER"
@@ -18075,10 +18149,6 @@ msgstr "黄色/蓝色"
 #~ msgstr "退出模拟器"
 
 #~ msgctxt "game_options"
-#~ msgid "FRAME LIMIT"
-#~ msgstr "帧限制"
-
-#~ msgctxt "game_options"
 #~ msgid "FRAMERATE"
 #~ msgstr "帧速率"
 
@@ -18142,22 +18212,6 @@ msgstr "黄色/蓝色"
 #~ "your processor."
 #~ msgstr "《死亡之屋 4》速度修正。将游戏设置为您的处理器的 CPU 基准频率."
 
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Bottom"
-#~ msgstr "混合屏幕底部"
-
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Top"
-#~ msgstr "混合屏幕顶部"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Bottom"
-#~ msgstr "底部加大"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Top"
-#~ msgstr "顶部加大"
-
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"
 #~ msgstr "左翻转器"
@@ -18173,10 +18227,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Left Nudge"
 #~ msgstr "左推"
-
-#~ msgctxt "game_options"
-#~ msgid "Left/Right"
-#~ msgstr "左/右"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -18218,10 +18268,6 @@ msgstr "黄色/蓝色"
 #~ msgid "N64 (Limited Hotkeys)"
 #~ msgstr "N64（有限热键）"
 
-#~ msgctxt "game_options"
-#~ msgid "NEW 3DS MODE"
-#~ msgstr "New 3DS模式"
-
 #~ msgctxt "keys_files"
 #~ msgid "Next Disc (m3u)"
 #~ msgstr "下一个光盘（m3u）"
@@ -18233,10 +18279,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "game_options"
 #~ msgid "Off (default)"
 #~ msgstr "关闭（默认）"
-
-#~ msgctxt "game_options"
-#~ msgid "Off will help some games, others will run too fast."
-#~ msgstr "关闭将有助于某些游戏，而其他游戏则会跑得太快。"
 
 #~ msgctxt "keys_files"
 #~ msgid "Open Dolphin-triforce's menu"
@@ -18310,10 +18352,6 @@ msgstr "黄色/蓝色"
 #~ msgid "Plunger"
 #~ msgstr "撞针杆"
 
-#~ msgctxt "game_options"
-#~ msgid "Preloading is impossible from ES."
-#~ msgstr "无法从ES进行预加载。"
-
 #~ msgctxt "keys_files"
 #~ msgid "Press N for Novice"
 #~ msgstr "按N键选择新手模式"
@@ -18378,10 +18416,6 @@ msgstr "黄色/蓝色"
 #~ msgid "Quits the current level"
 #~ msgstr "退出当前关卡"
 
-#~ msgctxt "game_options"
-#~ msgid "Reduce stutter that happens when compiling shaders."
-#~ msgstr "减少编译着色器时发生的卡顿。"
-
 #~ msgctxt "keys_files"
 #~ msgid "Reset the application"
 #~ msgstr "重置应用程序"
@@ -18415,10 +18449,6 @@ msgstr "黄色/蓝色"
 #~ msgstr "右推"
 
 #~ msgctxt "game_options"
-#~ msgid "Right/Left"
-#~ msgstr "右/左"
-
-#~ msgctxt "game_options"
 #~ msgid ""
 #~ "Runners simplify compatibility of running Windows games. If choosing "
 #~ "Custom, you must have a runner in /userdata/system/wine/custom."
@@ -18437,10 +18467,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Save State Slot 1"
 #~ msgstr "保存状态插槽1"
-
-#~ msgctxt "game_options"
-#~ msgid "Separate Windows"
-#~ msgstr "单独窗口"
 
 #~ msgctxt "keys_files"
 #~ msgid "Service menu"
@@ -18497,10 +18523,6 @@ msgstr "黄色/蓝色"
 #~ msgstr "截屏"
 
 #~ msgctxt "game_options"
-#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-#~ msgstr "New 3DS有更快的处理器、ZL/ZR按钮和一个C摇杆。"
-
-#~ msgctxt "game_options"
 #~ msgid ""
 #~ "This option enables the ability to play Xbox Live Arcacde games. May "
 #~ "cause compatibility issues with non-XBLA games."
@@ -18518,10 +18540,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Speed Limit"
 #~ msgstr "切换速度限制"
-
-#~ msgctxt "game_options"
-#~ msgid "Top Only"
-#~ msgstr "仅限顶部"
 
 #~ msgctxt "game_options"
 #~ msgid ""

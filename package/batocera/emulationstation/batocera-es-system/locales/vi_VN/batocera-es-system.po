@@ -2223,7 +2223,7 @@ msgctxt "game_options"
 msgid "ADJUST POWERPC FREQUENCY"
 msgstr "ADJUST POWERPC FREQUENCY"
 
-#. TRANSLATION: amiberry, bigpemu, cemu, dolphin_triforce, drastic, ...
+#. TRANSLATION: amiberry, azahar, bigpemu, cemu, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "ADVANCED OPTIONS"
 msgstr "TÙY CHỌN NÂNG CAO"
@@ -3258,6 +3258,15 @@ msgctxt "game_options"
 msgid "Arrange the dual screen layout."
 msgstr "Sắp xếp bố cục màn hình kép."
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Arrange the dual screen layout. Separate windows can be changed with "
+"Hotkey+R2."
+msgstr ""
+"Sắp xếp bố cục màn hình kép. Có thể thay đổi các cửa sổ riêng biệt bằng "
+"Hotkey+R2."
+
 #. TRANSLATION: libretro/np2kai
 msgctxt "game_options"
 msgid "Arrows"
@@ -3956,6 +3965,11 @@ msgstr "Cả hai loại đều yêu cầu giữ D-pad trong lần sạc đầu t
 msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Dưới (Mặc định)"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Bottom Only"
+msgstr "Chỉ bên dưới"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -5254,7 +5268,7 @@ msgctxt "game_options"
 msgid "Choose which BIOS file for GSplus to boot with."
 msgstr ""
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Choose which graphics API library to use."
 msgstr "Chọn thư viện API đồ họa nào sẽ sử dụng."
@@ -5488,6 +5502,15 @@ msgid ""
 msgstr ""
 "Biên dịch các shader vào lần chạy trò chơi tiếp theo (một lần). Giảm đóng "
 "băng vi mô. Chỉ Vulkan."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid ""
+"Compile shaders using background threads to avoid shader compilation "
+"stutter. May cause graphical glitches."
+msgstr ""
+"Biên dịch các shader bằng cách sử dụng các luồng nền để tránh tình trạng "
+"giật hình khi biên dịch shader. Có thể gây ra trục trặc về đồ họa."
 
 #. TRANSLATION: libretro/snes9x, libretro/snes9x_next, redream
 msgctxt "game_options"
@@ -5826,6 +5849,11 @@ msgstr "DISABLE SURFACE SYNC"
 msgctxt "game_options"
 msgid "DISABLE VERTEX CACHE"
 msgstr "DISABLE VERTEX CACHE"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "DISK SHADER CACHE"
+msgstr "DISK SHADER CACHE"
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -6503,6 +6531,11 @@ msgstr "TỐC ĐỘ MÔ PHỎNG"
 msgctxt "game_options"
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr "BẬT DỊCH VỤ DỊCH BẰNG TRÍ TUỆ NHÂN TẠO"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "ENABLE ASYNC SHADER COMPILATION"
+msgstr "BẬT BIÊN DỊCH SHADER BẤT ĐỒNG BỘ"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -7360,7 +7393,7 @@ msgctxt "game_options"
 msgid "Enhancement. Increase the rendering resolution."
 msgstr "Tăng cường. Tăng độ phân giải kết xuất."
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid ""
 "Enhancement. Increase the rendering resolution. Makes 3D objects clearer."
@@ -7738,6 +7771,11 @@ msgctxt "game_options"
 msgid "FRAME DUPING (SPEED UP)"
 msgstr "KHUNG DUPING (TĂNG TỐC)"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "FRAME LIMIT"
+msgstr "GIỚI HẠN KHUNG HÌNH"
+
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
@@ -7998,7 +8036,7 @@ msgstr ""
 "hóa video, ngoại trừ các khung hình muộn (dưới FPS mục tiêu) được hiển thị "
 "ngay lập tức."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, melonds, pcsx2
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, melonds, ...
 msgctxt "game_options"
 msgid "Fix screen tearing. CPU heavy."
 msgstr "Sửa lỗi xé màn hình. CPU hoạt động nặng."
@@ -8657,12 +8695,12 @@ msgctxt "game_options"
 msgid "GRAPHICAL USER INTERFACE"
 msgstr "GIAO DIỆN ĐỒ HỌA NGƯỜI DÙNG"
 
-#. TRANSLATION: iortcw, theforceengine
+#. TRANSLATION: azahar, iortcw, theforceengine
 msgctxt "game_options"
 msgid "GRAPHICS"
 msgstr "ĐỒ HỌA"
 
-#. TRANSLATION: cemu, citron, dolphin, dolphin_triforce, duckstation, ...
+#. TRANSLATION: azahar, cemu, citron, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "GRAPHICS API"
 msgstr "API ĐỒ HỌA"
@@ -9313,6 +9351,16 @@ msgstr "Hybrid"
 msgctxt "game_options"
 msgid "Hybrid + Bicubic"
 msgstr "Hybrid + Bicubic"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Bottom"
+msgstr "Hybrid màn hình bên dưới"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Hybrid Screen Top"
+msgstr "Hybrid màn hình bên trên"
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -10144,7 +10192,7 @@ msgctxt "game_options"
 msgid "LLVM is fastest, use the Interpreter settings if there are issues."
 msgstr "LLVM là nhanh nhất, sử dụng cài đặt Interpreter nếu có vấn đề."
 
-#. TRANSLATION: dolphin, dolphin_triforce, duckstation, libretro/mesen, mupen64plus
+#. TRANSLATION: azahar, dolphin, dolphin_triforce, duckstation, libretro/mesen, ...
 msgctxt "game_options"
 msgid "LOAD CUSTOM TEXTURES"
 msgstr "TẢI TEXTURES CÁ NHÂN"
@@ -10163,6 +10211,16 @@ msgstr "LYNX MODEL"
 msgctxt "game_options"
 msgid "Landscape"
 msgstr "Landscape"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Bottom"
+msgstr "To bên dưới"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Large Top"
+msgstr "To bên trên"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -10213,6 +10271,11 @@ msgstr "Magnasave bên trái"
 msgctxt "game_options"
 msgid "Left stick"
 msgstr "Left stick"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Left/Right"
+msgstr "Trái/Phải"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -11315,6 +11378,11 @@ msgctxt "game_options"
 msgid "NETWORK TYPE"
 msgstr "LOẠI MẠNG"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "NEW 3DS MODE"
+msgstr "CHẾ ĐỘ 3DS MỚI"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "NO"
@@ -11838,7 +11906,7 @@ msgctxt "game_options"
 msgid "October"
 msgstr "Tháng 10"
 
-#. TRANSLATION: cannonball, cemu, dolphin, dolphin_triforce, drastic, ...
+#. TRANSLATION: azahar, cannonball, cemu, dolphin, dolphin_triforce, ...
 msgctxt "game_options"
 msgid "Off"
 msgstr "Tắt"
@@ -11872,6 +11940,11 @@ msgstr "Tắt khi bắt đầu"
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
 msgstr "Tắt an toàn hơn, bật cho một vài trò chơi cụ thể."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Off will help some games, others will run too fast."
+msgstr "Tắt sẽ giúp một số trò chơi, số khác sẽ chạy rất nhanh."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -11915,7 +11988,7 @@ msgctxt "game_options"
 msgid "Oman"
 msgstr "Ô-man"
 
-#. TRANSLATION: cannonball, dolphin_triforce, drastic, duckstation, easyrpg, ...
+#. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
 msgstr "Bật"
@@ -12073,7 +12146,7 @@ msgctxt "game_options"
 msgid "OpenGL (Compute shader)"
 msgstr "OpenGL (Tính toán Shader)"
 
-#. TRANSLATION: dolphin_triforce, flycast, gzdoom, play, scummvm
+#. TRANSLATION: azahar, dolphin_triforce, flycast, gzdoom, play, ...
 msgctxt "game_options"
 msgid "OpenGL (Default)"
 msgstr "OpenGL (Mặc định)"
@@ -12871,7 +12944,7 @@ msgctxt "game_options"
 msgid "Prefer \"Before NMI\", change to After NMI only if needed by the game."
 msgstr "Ưu tiên \"NMI Trước\", chỉ đổi thành NMI Sau nếu trò chơi cần."
 
-#. TRANSLATION: duckstation
+#. TRANSLATION: azahar, duckstation
 msgctxt "game_options"
 msgid "Preload"
 msgstr "Tải trước"
@@ -12880,6 +12953,11 @@ msgstr "Tải trước"
 msgctxt "game_options"
 msgid "Preload requires more RAM."
 msgstr "Tải trước yêu cầu nhiều RAM hơn."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Preloading is impossible from ES."
+msgstr "Không thể tải trước từ ES."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -13121,7 +13199,7 @@ msgctxt "game_options"
 msgid "RENDERING MODE"
 msgstr "CHẾ ĐỘ KẾT XUẤT"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, libretro/desmume, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "RENDERING RESOLUTION"
 msgstr "RENDERING RESOLUTION"
@@ -13296,6 +13374,11 @@ msgstr "Đỏ"
 msgctxt "game_options"
 msgid "Reduce load time at the cost of accuracy."
 msgstr "Giảm thời gian tải nhưng giảm độ chính xác."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Reduce stutter that happens when compiling shaders."
+msgstr "Giảm tình trạng giật hình xảy ra khi biên dịch trình đổ bóng."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13522,6 +13605,11 @@ msgctxt "game_options"
 msgid "Right stick"
 msgstr "Right stick"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Right/Left"
+msgstr "Phải/Trái"
+
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
 msgid "Robo Bitstik 2"
@@ -13716,7 +13804,7 @@ msgctxt "game_options"
 msgid "SCREEN INCLINATION"
 msgstr "ĐỘ NGHIÊNG MÀN HÌNH"
 
-#. TRANSLATION: drastic, libretro/desmume, libretro/melonds, melonds
+#. TRANSLATION: azahar, drastic, libretro/desmume, libretro/melonds, melonds
 msgctxt "game_options"
 msgid "SCREEN LAYOUT"
 msgstr "BỐ CỤC MÀN HÌNH"
@@ -14419,6 +14507,11 @@ msgctxt "game_options"
 msgid "Sensitivity when using mouse for a paddle."
 msgstr ""
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Separate Windows"
+msgstr "Cửa sổ riêng biệt"
+
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
 msgid "September"
@@ -15060,7 +15153,7 @@ msgctxt "game_options"
 msgid "Soften the hash sound effect from some games."
 msgstr "Làm mềm hiệu ứng âm thanh băm từ một số trò chơi."
 
-#. TRANSLATION: duckstation, libretro/melondsds, melonds, pcsx2, scummvm, ...
+#. TRANSLATION: azahar, duckstation, libretro/melondsds, melonds, pcsx2, ...
 msgctxt "game_options"
 msgid "Software"
 msgstr "Phần mềm"
@@ -15914,6 +16007,11 @@ msgctxt "game_options"
 msgid "Thailand"
 msgstr "Thái Lan"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
+msgstr "3DS Mới có bộ xử lý nhanh hơn, các nút ZL/ZR và thanh C."
+
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
 msgid ""
@@ -16085,6 +16183,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Top"
 msgstr "Trên"
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Top Only"
+msgstr "Chỉ bên trên"
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17073,7 +17176,7 @@ msgctxt "game_options"
 msgid "VOICE"
 msgstr ""
 
-#. TRANSLATION: bigpemu, bstone, cemu, citron, dolphin, ...
+#. TRANSLATION: azahar, bigpemu, bstone, cemu, citron, ...
 msgctxt "game_options"
 msgid "VSYNC"
 msgstr "VSYNC"
@@ -17193,7 +17296,7 @@ msgctxt "game_options"
 msgid "Vsync"
 msgstr "Vsync"
 
-#. TRANSLATION: citron, dolphin, dolphin_triforce, duckstation, flycast, ...
+#. TRANSLATION: azahar, citron, dolphin, dolphin_triforce, duckstation, ...
 msgctxt "game_options"
 msgid "Vulkan"
 msgstr "Vulkan"
@@ -18097,18 +18200,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Allow mapping Future Pinball with Pad to Keyboard."
 #~ msgstr "Cho phép ánh xạ Future Pinball với Pad tới Bàn phím."
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Arrange the dual screen layout. Separate windows can be changed with "
-#~ "Hotkey+R2."
-#~ msgstr ""
-#~ "Sắp xếp bố cục màn hình kép. Có thể thay đổi các cửa sổ riêng biệt bằng "
-#~ "Hotkey+R2."
-
-#~ msgctxt "game_options"
-#~ msgid "Bottom Only"
-#~ msgstr "Chỉ bên dưới"
-
 #~ msgctxt "keys_files"
 #~ msgid "Bring up menu"
 #~ msgstr "Ra Menu"
@@ -18129,14 +18220,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Coin"
 #~ msgstr "Tiền xu"
 
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Compile shaders using background threads to avoid shader compilation "
-#~ "stutter. May cause graphical glitches."
-#~ msgstr ""
-#~ "Biên dịch các shader bằng cách sử dụng các luồng nền để tránh tình trạng "
-#~ "giật hình khi biên dịch shader. Có thể gây ra trục trặc về đồ họa."
-
 #~ msgctxt "keys_files"
 #~ msgid "Configuration menu"
 #~ msgstr "Menu Cấu hình"
@@ -18145,17 +18228,9 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Continue/Pause emulation"
 #~ msgstr "Tiếp tục/Tạm dừng mô phỏng"
 
-#~ msgctxt "game_options"
-#~ msgid "DISK SHADER CACHE"
-#~ msgstr "DISK SHADER CACHE"
-
 #~ msgctxt "keys_files"
 #~ msgid "Display the controller screen"
 #~ msgstr "Hiển thị màn hình bộ điều khiển"
-
-#~ msgctxt "game_options"
-#~ msgid "ENABLE ASYNC SHADER COMPILATION"
-#~ msgstr "BẬT BIÊN DỊCH SHADER BẤT ĐỒNG BỘ"
 
 #~ msgctxt "keys_files"
 #~ msgid "Exit Dolphin"
@@ -18198,10 +18273,6 @@ msgstr "vàng/xanh da trời"
 #~ msgstr "Thoát khỏi trình giả lập"
 
 #~ msgctxt "game_options"
-#~ msgid "FRAME LIMIT"
-#~ msgstr "GIỚI HẠN KHUNG HÌNH"
-
-#~ msgctxt "game_options"
 #~ msgid "FRAMERATE"
 #~ msgstr "SỐ KHUNG HÌNH"
 
@@ -18233,22 +18304,6 @@ msgstr "vàng/xanh da trời"
 #~ "Sửa lỗi tốc độ House of the Dead 4. Đặt trò chơi theo tần số cơ bản CPU "
 #~ "của bộ xử lý của bạn."
 
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Bottom"
-#~ msgstr "Hybrid màn hình bên dưới"
-
-#~ msgctxt "game_options"
-#~ msgid "Hybrid Screen Top"
-#~ msgstr "Hybrid màn hình bên trên"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Bottom"
-#~ msgstr "To bên dưới"
-
-#~ msgctxt "game_options"
-#~ msgid "Large Top"
-#~ msgstr "To bên trên"
-
 #~ msgctxt "keys_files"
 #~ msgid "Left Flipper"
 #~ msgstr "Flipper Trái"
@@ -18260,10 +18315,6 @@ msgstr "vàng/xanh da trời"
 #~ msgctxt "keys_files"
 #~ msgid "Left Nudge"
 #~ msgstr "Đẩy Trái"
-
-#~ msgctxt "game_options"
-#~ msgid "Left/Right"
-#~ msgstr "Trái/Phải"
 
 #~ msgctxt "keys_files"
 #~ msgid "Load State"
@@ -18281,10 +18332,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "N64 (Limited Hotkeys)"
 #~ msgstr "N64 (Hạn chế phím nóng)"
 
-#~ msgctxt "game_options"
-#~ msgid "NEW 3DS MODE"
-#~ msgstr "CHẾ ĐỘ 3DS MỚI"
-
 #~ msgctxt "keys_files"
 #~ msgid "Next Disc (m3u)"
 #~ msgstr "Đĩa tiếp theo (m3u)"
@@ -18292,10 +18339,6 @@ msgstr "vàng/xanh da trời"
 #~ msgctxt "game_options"
 #~ msgid "Not all games support all languages."
 #~ msgstr "Không phải tất cả các trò chơi đều hỗ trợ tất cả các ngôn ngữ."
-
-#~ msgctxt "game_options"
-#~ msgid "Off will help some games, others will run too fast."
-#~ msgstr "Tắt sẽ giúp một số trò chơi, số khác sẽ chạy rất nhanh."
 
 #~ msgctxt "keys_files"
 #~ msgid "Open Dolphin-triforce's menu"
@@ -18320,10 +18363,6 @@ msgstr "vàng/xanh da trời"
 #~ msgctxt "keys_files"
 #~ msgid "Plunger"
 #~ msgstr "Pít tông"
-
-#~ msgctxt "game_options"
-#~ msgid "Preloading is impossible from ES."
-#~ msgstr "Không thể tải trước từ ES."
 
 #~ msgctxt "keys_files"
 #~ msgid "Quick Load"
@@ -18353,10 +18392,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Quits the current level"
 #~ msgstr "Thoát level hiện tại"
 
-#~ msgctxt "game_options"
-#~ msgid "Reduce stutter that happens when compiling shaders."
-#~ msgstr "Giảm tình trạng giật hình xảy ra khi biên dịch trình đổ bóng."
-
 #~ msgctxt "keys_files"
 #~ msgid "Reset the application"
 #~ msgstr "Đặt lại ứng dụng"
@@ -18385,10 +18420,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Right Nudge"
 #~ msgstr "Đẩy Phải"
 
-#~ msgctxt "game_options"
-#~ msgid "Right/Left"
-#~ msgstr "Phải/Trái"
-
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Lưu"
@@ -18396,10 +18427,6 @@ msgstr "vàng/xanh da trời"
 #~ msgctxt "keys_files"
 #~ msgid "Save State Slot 1"
 #~ msgstr "Lưu trạng thái 1"
-
-#~ msgctxt "game_options"
-#~ msgid "Separate Windows"
-#~ msgstr "Cửa sổ riêng biệt"
 
 #~ msgctxt "keys_files"
 #~ msgid "Service menu"
@@ -18449,10 +18476,6 @@ msgstr "vàng/xanh da trời"
 #~ msgid "Take a screenshot"
 #~ msgstr "Chụp ảnh màn hình"
 
-#~ msgctxt "game_options"
-#~ msgid "The New 3DS has a faster processor, ZL/ZR buttons and a C-stick."
-#~ msgstr "3DS Mới có bộ xử lý nhanh hơn, các nút ZL/ZR và thanh C."
-
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Screen Layout"
 #~ msgstr "Đổi bố cục màn hình"
@@ -18460,10 +18483,6 @@ msgstr "vàng/xanh da trời"
 #~ msgctxt "keys_files"
 #~ msgid "Toggle Speed Limit"
 #~ msgstr "Đổi giới hạn tốc độ"
-
-#~ msgctxt "game_options"
-#~ msgid "Top Only"
-#~ msgstr "Chỉ bên trên"
 
 #~ msgctxt "keys_files"
 #~ msgid "exit game"
