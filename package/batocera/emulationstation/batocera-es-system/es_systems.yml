@@ -2222,7 +2222,7 @@ x1:
   extensions: [3ds, 3dsx, cxi, axf, elf, app, squashfs]
   emulators:
     azahar:
-      azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR]         }
+      azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR] }
 
 openbor:
   name: OpenBOR
