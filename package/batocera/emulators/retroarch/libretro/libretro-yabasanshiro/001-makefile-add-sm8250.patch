@@ -19,7 +19,7 @@ index 1c0e809..a5916d1 100644
 +	FORCE_GLES = 1
 +	USE_AARCH64_DRC = 1
 +	DYNAREC_DEVMIYAX = 1
-+	FLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++	FLAGS += -mcpu=cortex-a77 -mtune=cortex-a77
 +
  # Rockchip RK3288 / RK3399 - 32-bit userspace
  else ifneq (,$(findstring RK,$(platform)))

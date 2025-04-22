@@ -7,7 +7,11 @@ unset WAYLAND_DISPLAY
 # Log and configuration file paths
 LOG_FILE="/userdata/system/logs/display.log"
 SWAY_CONF_FILE="/var/run/sway-display.conf"
-SWAY_LOG_FILE="/userdata/system/logs/sway.log"
+SWAY_LOG_FILE="/var/log/sway.log"
+
+mkdir -p /userdata/system/logs
+mkdir -p /var/run
+mkdir -p /var/log
 
 # Log function for cleaner output
 log_message() {
@@ -66,4 +70,4 @@ fi
 log_message "Starting Sway..."
 # Use -d for debugging
 #WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway -d > "$SWAY_LOG_FILE" 2>&1
-WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway > "$SWAY_LOG_FILE"
+WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway > "$SWAY_LOG_FILE" 2>&1
