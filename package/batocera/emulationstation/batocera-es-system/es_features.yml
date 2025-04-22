@@ -13247,6 +13247,11 @@ vpinball:
       group: EXPERT SETTINGS
       description: This should not be necessary, unless you are not using the default pad2key mapping.
       preset: switchauto
+    vpinball_pbw:
+      group: EXPERT SETTINGS
+      prompt: ACCELEROMETER
+      description: Internal accelerometer. Disable if you experience random tilts or unexpected ball behavior.
+      preset: switchauto
 
 theforceengine:
   features: [padtokeyboard]
