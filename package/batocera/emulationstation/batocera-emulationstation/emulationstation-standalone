@@ -20,14 +20,6 @@ batocera-switch-screen-checker --init
 
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
-    ### LANGUAGE SETTINGS ###
-    settings_lang="$(batocera-settings-get system.language)"
-    [ -z "${settings_lang}" ] && settings_lang=en_US
-    export LC_ALL="${settings_lang}.UTF-8"
-    export LANG=${LC_ALL}
-    echo "Language set to ${LC_ALL}" >> $log
-    ###################
-
     ### VIDEO OUTPUT ###
     # Because of xinerama breaking es, enable only one screen at a time
     # /var/run/switch_screen_request is a file to request screen switch
