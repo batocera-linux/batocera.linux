@@ -472,8 +472,8 @@ class Daemon:
                                 input_device.close()
                             except:
                                 pass
-                finally:
-                    self.target.close()
+        # never happening, but should be done to quit
+        self.target.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="hotkeygen")
