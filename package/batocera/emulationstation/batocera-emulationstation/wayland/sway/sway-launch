@@ -66,4 +66,4 @@ fi
 log_message "Starting Sway..."
 # Use -d for debugging
 #WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway -d > "$SWAY_LOG_FILE" 2>&1
-WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway > "$SWAY_LOG_FILE" 2>&1
+WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/sway > "$SWAY_LOG_FILE"

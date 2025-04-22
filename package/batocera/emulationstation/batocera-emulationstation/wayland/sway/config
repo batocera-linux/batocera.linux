@@ -9,9 +9,10 @@ seat * hide_cursor 500
 # Default wallpaper
 output * bg /usr/share/emulationstation/resources/logo.png fill
 
-# Set keyboard layout (default US)
+# Set keyboard layout based on environment variables set (default US)
 input * {
-    xkb_layout "us"
+    xkb_layout $XKB_LAYOUT
+    xkb_variant $XKB_VARIANT
 }
 
 # kill focused window
@@ -22,6 +23,13 @@ bindsym Mod1+f fullscreen
 
 # Set a default rule to remove decorations for all windows
 default_border none
+
+# Make NORMAL windows fullscreen (should exclude dialogs)
+for_window [window_type="normal"] fullscreen enable
+
+# Optionally, ensure dialogs explicitly float if needed (often default anyway)
+for_window [window_type="dialog"] floating enable
+for_window [window_role="dialog"] floating enable
 
 # F1 launched apps
 for_window [app_id="azahar"] fullscreen enable
