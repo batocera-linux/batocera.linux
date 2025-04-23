@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -24,7 +25,7 @@ class ScummVMGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # crete /userdata/bios/scummvm/extra folder if it doesn't exist
+        # create /userdata/bios/scummvm/extra folder if it doesn't exist
         mkdir_if_not_exists(scummExtra)
 
         # create / modify scummvm config file as needed
@@ -42,15 +43,26 @@ class ScummVMGenerator(Generator):
             scummConfig.write(configfile)
 
         # Find rom path
+        # 1. If a .scummvm file exists and contains a valid <game id>, use the <game id>
+        # 2. If an empty <game id>.scummvm file exists, use the <game id>
+        # 3. Otherwise, auto detect the game
+
         if rom.is_dir():
-          # rom is a directory: must contains a <game name>.scummvm file
-          romPath = rom
-          romName = next(rom.glob("*.scummvm")).stem
+            # squashfs: find a <game name>.scummvm file
+            rom_file = next(rom.glob("*.scummvm"), None)
+            rom_path = rom
         else:
-          # rom is a file: split in directory and file name
-          romPath = rom.parent
-          # Get rom name without extension
-          romName = rom.stem
+            # .scummvm: use rom as file
+            rom_file = rom
+            rom_path = rom.parent
+
+        target = "--auto-detect"
+
+        if rom_file is not None:
+            game_id = rom_file.read_text().strip().lower() or rom_file.stem
+
+            if re.match(r'^(?:[a-z0-9-]+:)?[a-z0-9-]+$', game_id) is not None:
+                target = game_id
 
         # pad number
         id = 0
@@ -60,9 +72,7 @@ class ScummVMGenerator(Generator):
         commandArray = ["/usr/bin/scummvm", "-f"]
 
         # set the resolution
-        window_width = str(gameResolution["width"])
-        window_height = str(gameResolution["height"])
-        commandArray.append(f"--window-size={window_width},{window_height}")
+        commandArray.append(f"--window-size={gameResolution['width']},{gameResolution['height']}")
 
         ## user options
 
@@ -90,8 +100,8 @@ class ScummVMGenerator(Generator):
             [f"--joystick={id}",
             f"--screenshotspath={SCREENSHOTS}",
             f"--extrapath={scummExtra}",
-            f"--path={romPath}",
-            f"{romName}"]
+            f"--path={rom_path}",
+            f"{target}"]
         )
 
         return Command.Command(
