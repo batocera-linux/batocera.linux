@@ -14,8 +14,8 @@ index e1fa9a8..3d827ca 100644
 +   LDFLAGS += $(PTHREAD_FLAGS)
 +   FLAGS += $(PTHREAD_FLAGS)
 +   IS_X86 = 0
-+   FLAGS += -mcpu=cortex-a76
-+   ASFLAGS += -mcpu=cortex-a76
++   FLAGS += -mcpu=cortex-a77
++   ASFLAGS += -mcpu=cortex-a77
 +
  # iOS
  else ifneq (,$(findstring ios,$(platform)))
