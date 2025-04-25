@@ -11259,7 +11259,6 @@ wine:
             choices:
                 "Off": 0
                 "On": 1
-            default: 0
         gamescope_nested_resolution:
             submenu: GAMESCOPE
             prompt: GAME NESTED RESOLUTION
@@ -11274,7 +11273,6 @@ wine:
                 "2560x1440": "2560x1440"
                 "3840x2160": "3840x2160"
                 "4096x2160": "4096x2160"
-            default: "1920x1080"
         gamescope_output_resolution:
             submenu: GAMESCOPE
             prompt: OUTPUT RESOLUTION
@@ -11289,7 +11287,6 @@ wine:
                 "2560x1444": "2560x1444"
                 "3840x2160": "3840x2160"
                 "4096x2160": "4096x2160"
-            default: "1920x1080"
         gamescope_nested_refresh:
             submenu: GAMESCOPE
             prompt: GAME REFRESH RATE
@@ -11314,7 +11311,6 @@ wine:
                 "390Hz": 390
                 "480Hz": 480
                 "540Hz": 540
-            default: 60
         gamescope_framerate_limit:
             submenu: GAMESCOPE
             prompt: FRAMERATE LIMIT
@@ -11329,7 +11325,6 @@ wine:
                 "15": 15
                 "30": 30
                 "60": 60
-            default: off
         gamescope_scaler:
             submenu: GAMESCOPE
             prompt: GAMESCOPE SCALER
@@ -11339,7 +11334,6 @@ wine:
                 "fit": fit
                 "fill": fill
                 "stretch": stretch
-            default: stretch
         gamescope_filter:
             submenu: GAMESCOPE
             prompt: GAMESCOPE FILTER
@@ -11350,7 +11344,6 @@ wine:
                 "fsr": fsr
                 "nis": nis
                 "pixel": pixel
-            default: linear
         gamescope_sharpness:
             submenu: GAMESCOPE
             prompt: GAMESCOPE SHARPNESS
@@ -11362,7 +11355,6 @@ wine:
                 "10": 10
                 "15": 15
                 "20": 20
-            default: 0
         gamescope_borderless:
             submenu: GAMESCOPE
             prompt: GAMESCOPE BORDERLESS
@@ -11370,7 +11362,6 @@ wine:
             choices:
                 "Off": 0
                 "On": 1
-            default: 0
         gamescope_fullscreen:
             submenu: GAMESCOPE
             prompt: GAMESCOPE FULLSCREEN
@@ -11378,12 +11369,10 @@ wine:
             choices:
                 "Off": 0
                 "On": 1
-            default: 0
         gamescope_reshade_effect:
             submenu: GAMESCOPE
             prompt: GAMESCOPE RESHADE EFFECT
             description: Specify a ReShade shader effect to use with GameScope.
-            default: ""
         gamescope_hdr:
             submenu: GAMESCOPE
             prompt: GAMESCOPE HDR
@@ -11391,7 +11380,6 @@ wine:
             choices:
                 "Off": 0
                 "On": 1
-            default: 0
         gamescope_sdr_gamut_wideness:
             submenu: GAMESCOPE
             prompt: SDR GAMUT WIDENESS
@@ -11403,13 +11391,12 @@ wine:
                 "0.5": 0.5
                 "0.75": 0.75
                 "1": 1
-            default: "off"
         gamescope_hdr_sdr_content_nits:
             submenu: GAMESCOPE
             prompt: HDR SDR CONTENT NITS
             description: Set the luminance of SDR content in nits. Default: 400 nits.
             choices:
-                "Off": off
+                "Off": "off"
                 "100": 100
                 "200": 200
                 "300": 300
@@ -11420,7 +11407,6 @@ wine:
                 "800": 800
                 "900": 900
                 "1000": 1000
-            default: off
         gamescope_hdr_itm_enabled:
             submenu: GAMESCOPE
             prompt: HDR ITM ENABLED
@@ -11428,13 +11414,12 @@ wine:
             choices:
                 "Off": 0
                 "On": 1
-            default: 0
         gamescope_hdr_itm_sdr_nits:
             submenu: GAMESCOPE
             prompt: HDR ITM SDR NITS
             description: Set the luminance (in nits) of SDR content used as input for inverse tone mapping. Default: 100 nits, Max: 1000 nits.
             choices:
-                "Off": off
+                "Off": "off"
                 "100": 100
                 "200": 200
                 "300": 300
@@ -11445,13 +11430,12 @@ wine:
                 "800": 800
                 "900": 900
                 "1000": 1000
-            default: off
         gamescope_hdr_itm_target_nits:
             submenu: GAMESCOPE
             prompt: HDR ITM TARGET NITS
             description: Set the target luminance (in nits) of the inverse tone mapping process. Default: 1000 nits, Max: 10000 nits.
             choices:
-                "Off": off
+                "Off": "off"
                 "1000": 1000
                 "2000": 2000
                 "3000": 3000
@@ -11462,7 +11446,6 @@ wine:
                 "8000": 8000
                 "9000": 9000
                 "10000": 10000
-            default: off
 
 solarus:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
