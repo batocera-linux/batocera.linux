@@ -1,0 +1,23 @@
+config BR2_PACKAGE_CITRON
+    bool "citron"
+    depends on BR2_x86_64
+    depends on BR2_PACKAGE_XORG7
+    select BR2_PACKAGE_JSON_FOR_MODERN_CPP
+    select BR2_PACKAGE_BATOCERA_QT6
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_FMT
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_CONTEXT
+    select BR2_PACKAGE_FFMPEG  
+    select BR2_PACKAGE_ZSTD
+    select BR2_PACKAGE_ZLIB
+    select BR2_PACKAGE_LIBZIP
+    select BR2_PACKAGE_LZ4
+    select BR2_PACKAGE_CATCH2
+    select BR2_PACKAGE_OPUS
+    select BR2_PACKAGE_ENET
+    select BR2_PACKAGE_STB
+    help
+      A familiar, open source, and powerful Nintendo Switch emulator.
+
+	    https://citron-emu.org

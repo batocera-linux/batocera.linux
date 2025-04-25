@@ -1,0 +1,188 @@
+diff --git a/src/core/devices/random_device.cpp b/src/core/devices/random_device.cpp
+index 50934e3b89..625336c3a7 100644
+--- a/src/core/devices/random_device.cpp
++++ b/src/core/devices/random_device.cpp
+@@ -2,6 +2,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ 
+ #include <cstdlib>
++#include <ctime>
+ #include "common/logging/log.h"
+ #include "random_device.h"
+ 
+@@ -75,4 +76,4 @@ s64 RandomDevice::pwrite(const void* buf, size_t nbytes, u64 offset) {
+     return 0;
+ }
+ 
+-} // namespace Core::Devices
+\ No newline at end of file
++} // namespace Core::Devices
+diff --git a/src/core/devices/srandom_device.cpp b/src/core/devices/srandom_device.cpp
+index ab78ddbe25..55b44c9bc1 100644
+--- a/src/core/devices/srandom_device.cpp
++++ b/src/core/devices/srandom_device.cpp
+@@ -2,6 +2,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ 
+ #include <cstdlib>
++#include <ctime>
+ #include "common/logging/log.h"
+ #include "srandom_device.h"
+ 
+@@ -76,4 +77,4 @@ s64 SRandomDevice::pwrite(const void* buf, size_t nbytes, u64 offset) {
+     return 0;
+ }
+ 
+-} // namespace Core::Devices
+\ No newline at end of file
++} // namespace Core::Devices
+diff --git a/src/core/devices/urandom_device.cpp b/src/core/devices/urandom_device.cpp
+index c001aab832..f01449eb78 100644
+--- a/src/core/devices/urandom_device.cpp
++++ b/src/core/devices/urandom_device.cpp
+@@ -2,6 +2,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ 
+ #include <cstdlib>
++#include <ctime>
+ #include "common/logging/log.h"
+ #include "urandom_device.h"
+ 
+@@ -76,4 +77,4 @@ s64 URandomDevice::pwrite(const void* buf, size_t nbytes, u64 offset) {
+     return 0;
+ }
+ 
+-} // namespace Core::Devices
+\ No newline at end of file
++} // namespace Core::Devices
+diff --git a/src/core/libraries/libc_internal/libc_internal_math.cpp b/src/core/libraries/libc_internal/libc_internal_math.cpp
+index 5a33c09928..93f7155ca9 100644
+--- a/src/core/libraries/libc_internal/libc_internal_math.cpp
++++ b/src/core/libraries/libc_internal/libc_internal_math.cpp
+@@ -1,6 +1,7 @@
+ // SPDX-FileCopyrightText: Copyright 2024 shadPS4 Emulator Project
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ 
++#include <cmath>
+ #include "common/assert.h"
+ #include "common/logging/log.h"
+ #include "core/libraries/error_codes.h"
+@@ -13,7 +14,7 @@ double PS4_SYSV_ABI internal_sin(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_sinf(float x) {
+-    return std::sinf(x);
++    return sinf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_cos(double x) {
+@@ -21,7 +22,7 @@ double PS4_SYSV_ABI internal_cos(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_cosf(float x) {
+-    return std::cosf(x);
++    return cosf(x);
+ }
+ 
+ void PS4_SYSV_ABI internal_sincos(double x, double* sinp, double* cosp) {
+@@ -30,8 +31,8 @@ void PS4_SYSV_ABI internal_sincos(double x, double* sinp, double* cosp) {
+ }
+ 
+ void PS4_SYSV_ABI internal_sincosf(float x, float* sinp, float* cosp) {
+-    *sinp = std::sinf(x);
+-    *cosp = std::cosf(x);
++    *sinp = sinf(x);
++    *cosp = cosf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_tan(double x) {
+@@ -39,7 +40,7 @@ double PS4_SYSV_ABI internal_tan(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_tanf(float x) {
+-    return std::tanf(x);
++    return tanf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_asin(double x) {
+@@ -47,7 +48,7 @@ double PS4_SYSV_ABI internal_asin(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_asinf(float x) {
+-    return std::asinf(x);
++    return asinf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_acos(double x) {
+@@ -55,7 +56,7 @@ double PS4_SYSV_ABI internal_acos(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_acosf(float x) {
+-    return std::acosf(x);
++    return acosf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_atan(double x) {
+@@ -63,7 +64,7 @@ double PS4_SYSV_ABI internal_atan(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_atanf(float x) {
+-    return std::atanf(x);
++    return atanf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_atan2(double y, double x) {
+@@ -71,7 +72,7 @@ double PS4_SYSV_ABI internal_atan2(double y, double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_atan2f(float y, float x) {
+-    return std::atan2f(y, x);
++    return atan2f(y, x);
+ }
+ 
+ double PS4_SYSV_ABI internal_exp(double x) {
+@@ -79,7 +80,7 @@ double PS4_SYSV_ABI internal_exp(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_expf(float x) {
+-    return std::expf(x);
++    return expf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_exp2(double x) {
+@@ -87,7 +88,7 @@ double PS4_SYSV_ABI internal_exp2(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_exp2f(float x) {
+-    return std::exp2f(x);
++    return exp2f(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_pow(double x, double y) {
+@@ -95,7 +96,7 @@ double PS4_SYSV_ABI internal_pow(double x, double y) {
+ }
+ 
+ float PS4_SYSV_ABI internal_powf(float x, float y) {
+-    return std::powf(x, y);
++    return powf(x, y);
+ }
+ 
+ double PS4_SYSV_ABI internal_log(double x) {
+@@ -103,7 +104,7 @@ double PS4_SYSV_ABI internal_log(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_logf(float x) {
+-    return std::logf(x);
++    return logf(x);
+ }
+ 
+ double PS4_SYSV_ABI internal_log10(double x) {
+@@ -111,7 +112,7 @@ double PS4_SYSV_ABI internal_log10(double x) {
+ }
+ 
+ float PS4_SYSV_ABI internal_log10f(float x) {
+-    return std::log10f(x);
++    return log10f(x);
+ }
+ 
+ void RegisterlibSceLibcInternalMath(Core::Loader::SymbolsResolver* sym) {

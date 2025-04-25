@@ -1,0 +1,8 @@
+config BR2_PACKAGE_BSTONE
+	bool "bstone"
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_SDL2
+	help
+	  Unofficial source port for Blake Stone series.
+
+	  https://github.com/bibendovsky/bstone

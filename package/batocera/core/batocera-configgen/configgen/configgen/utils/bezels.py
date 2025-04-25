@@ -3,15 +3,18 @@ from __future__ import annotations
 import logging
 import struct
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, cast
 
+import qrcode
 from PIL import Image, ImageOps
 
 from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
+from ..exceptions import BatoceraException
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
     from PIL.ImageFile import ImageFile
+    from qrcode.image.pil import PilImage
 
     from ..config import SystemConfig
     from ..Emulator import Emulator
@@ -158,35 +161,69 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
             imgout = ImageOps.pad(imgin, (screen_width, screen_height), color=fillcolor, centering=(0.5,0.5))
         imgout.save(output_png, mode="RGBA", format="PNG")
 
-def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) -> None:
+def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: Emulator):
+    url = f"https://retroachievements.org/game/{code}"
+
+    bxsize = 3
+    bdsize = 2
+    qr = qrcode.QRCode(version=1, box_size=bxsize, border=bdsize)
+    qr.add_data(url)
+    qr.make()
+    qrimg = cast('PilImage', qr.make_image(back_color = (120, 120, 120)))
+
+    x = 29 * bxsize + bdsize * bxsize * 2
+
+    w,h = fast_image_size(input_png)
+    newBezel = Image.open(input_png)
+    qrimg    = cast('Image.Image', qrimg.convert("RGBA"))
+    newBezel = newBezel.convert("RGBA")
+
+    corner = system.config.get('bezel.qrcode_corner', 'NE')
+    if (corner.upper() == 'NW'):
+        newBezel.paste(qrimg, (0, 0, x, x))
+    elif (corner.upper() == 'SE'):
+        newBezel.paste(qrimg, (w-x, h-x, w, h))
+    elif (corner.upper() == 'SW'):
+        newBezel.paste(qrimg, (0, h-x, x, h))
+    else: # default = NE
+        newBezel.paste(qrimg, (w-x, 0, w, x))
+    newBezel.save(output_png)
+
+def tatooImage(input_png: Path, output_png: Path, system: Emulator) -> None:
+    tattoo_file: ImageFile | None = None
+
     if system.config['bezel.tattoo'] == 'system':
+        tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
-            if not tattoo_file.exists():
-                tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
-            tattoo = Image.open(tattoo_file)
-        except:
-            _logger.error("Error opening controller overlay: %s", tattoo_file)
-    elif system.config['bezel.tattoo'] == 'custom' and (tattoo_file := Path(system.config['bezel.tattoo_file'])).exists():
+            if not tattoo_path.exists():
+                tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
+            tattoo_file = Image.open(tattoo_path)
+        except Exception:
+            _logger.error("Error opening controller overlay: %s", tattoo_path)
+    elif system.config['bezel.tattoo'] == 'custom' and (tattoo_path := Path(system.config['bezel.tattoo_file'])).exists():
         try:
-            tattoo = Image.open(tattoo_file)
-        except:
-            _logger.error("Error opening custom file: %s", tattoo_file)
+            tattoo_file = Image.open(tattoo_path)
+        except Exception:
+            _logger.error("Error opening custom file: %s", tattoo_path)
     else:
+        tattoo_path = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
         try:
-            tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / 'generic.png'
-            tattoo = Image.open(tattoo_file)
-        except:
-            _logger.error("Error opening custom file: %s", tattoo_file)
+            tattoo_file = Image.open(tattoo_path)
+        except Exception:
+            _logger.error("Error opening custom file: %s", tattoo_path)
+
+    if tattoo_file is None:
+        raise BatoceraException(f'Tattoo image could not be opened: {tattoo_path}')
+
     # Open the existing bezel...
     back = Image.open(input_png)
     # Convert it otherwise it implodes later on...
     back = back.convert("RGBA")
-    tattoo = tattoo.convert("RGBA")
+    tattoo = tattoo_file.convert("RGBA")
     # Quickly grab the sizes.
     w,h = fast_image_size(input_png)
-    tw,th = fast_image_size(tattoo_file)
-    if system.isOptSet("bezel.resize_tattoo") and not system.getOptBoolean('bezel.resize_tattoo'):
+    tw,th = fast_image_size(tattoo_path)
+    if not system.config.get_bool("bezel.resize_tattoo", True):
         # Maintain the image's original size.
         # Failsafe for if the image is too large.
         if tw > w or th > h:
@@ -206,10 +243,7 @@ def tatooImage(input_png: str | Path, output_png: str | Path, system: Emulator) 
     tattooCanvas = Image.new("RGBA", back.size)
     # Margin for the tattoo
     margin = int((20 / 1080) * h)
-    if system.isOptSet('bezel.tattoo_corner'):
-        corner = system.config['bezel.tattoo_corner']
-    else:
-        corner = 'NW'
+    corner = system.config.get('bezel.tattoo_corner', 'NW')
     if (corner.upper() == 'NE'):
         tattooCanvas.paste(tattoo, (w-tw,margin)) # 20 pixels vertical margins (on 1080p)
     elif (corner.upper() == 'SE'):
@@ -229,8 +263,8 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
     imgin = Image.open(input_png)
     # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
     # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-    if not 'transparency' in imgin.info:
-        raise Exception("no transparent pixels in the image, abort")
+    if 'transparency' not in imgin.info:
+        raise BatoceraException("No transparent pixels in the bezel image")
     alpha = imgin.split()[-1]  # alpha from original palette + alpha
     ix,iy = fast_image_size(input_png)
     sx,sy = screensize
@@ -254,7 +288,7 @@ def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, 
         imgout = ImageOps.pad(imgnew, screensize, color=fillcolor, centering=(0.5,0.5))
     imgout.save(output_png, mode="RGBA", format="PNG")
 
-def gunBordersSize(bordersSize: str) -> tuple[int, int]:
+def gunBordersSize(bordersSize: str | None) -> tuple[int, int]:
     if bordersSize == "thin":
         return 1, 0
     if bordersSize == "medium":
@@ -346,5 +380,5 @@ def gunsBordersColorFomConfig(config: SystemConfig) -> str:
 def createTransparentBezel(output_png: Path, width: int, height: int) -> None:
     from PIL import ImageDraw
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
-    imgnewdraw = ImageDraw.Draw(imgnew)
+    ImageDraw.Draw(imgnew)
     imgnew.save(output_png, mode="RGBA", format="PNG")

@@ -37,9 +37,7 @@ class PPSSPPGenerator(Generator):
             ppssppControllers.generateControllerConfig(controller)
 
         # The command to run
-        commandArray = ['/usr/bin/PPSSPP']
-        commandArray.append(rom)
-        commandArray.append("--fullscreen")
+        commandArray = ['/usr/bin/PPSSPP', rom, '--fullscreen']
 
         # Adapt the menu size to low defenition
         # I've played with this option on PC to fix menu size in Hi-Resolution and it not working fine. I'm almost sure this option break the emulator (Darknior)
@@ -47,14 +45,14 @@ class PPSSPPGenerator(Generator):
             commandArray.extend(["--dpi", "0.5"])
 
         # state_slot option
-        if system.isOptSet('state_filename'):
-            commandArray.append(f"--state={system.config['state_filename']}")
+        if state_filename := system.config.get('state_filename'):
+            commandArray.append(f"--state={state_filename}")
 
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_DATA_HOME":SAVES,
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_DATA_HOME": SAVES,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers, ignore_buttons = ["hotkey"]) # the hotkey button is used to open the menu
             }
         )

@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import logging
 import platform
-from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
+from ...exceptions import InvalidConfiguration
 from ...utils.buildargs import parse_args
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 _logger = logging.getLogger(__name__)
@@ -31,7 +33,7 @@ class RazeGenerator(Generator):
     # A script file with console commands that are always ran when a game starts
     script_file = config_dir / "raze.cfg"
     # Names that Raze uses for game series specific sections in the config file
-    game_names = [
+    game_names: ClassVar = [
         "Blood",
         "Duke",
         "Exhumed",
@@ -42,7 +44,7 @@ class RazeGenerator(Generator):
     ]
     # Options for config file that has more sensible controls and defaults, but only on first boot so overrides persist
     # Raze does not support global bindings; set defaults for each game series
-    config_defaults = {}
+    config_defaults: ClassVar = {}
     for name in game_names:
         config_defaults[f"{name}.ConsoleVariables"] = {
             "hud_size": 8,  # fullscreen / minimal HUD
@@ -102,14 +104,14 @@ class RazeGenerator(Generator):
                         config.write(f"{key}={value}\n")
                     config.write("\n")
 
-        config_backup = None
+        config_backup = []
         if self.config_file.exists():
             with self.config_file.open("r") as original_file:
                 config_backup = original_file.readlines()
 
         with self.config_file.open("w") as config_file:
             global_settings_found = False
-            modified_global_settings = False
+            raze_api = system.config.get("raze_api")
             for line in config_backup:
                 # Check for the [GlobalSettings] section
                 if line.strip() == "[GlobalSettings]":
@@ -118,9 +120,10 @@ class RazeGenerator(Generator):
                 # Modify options in the [GlobalSettings] section
                 if global_settings_found:
                     # always set gl_es to true for arm
+                    raze_api = system.config.get("raze_api")
                     if line.strip().startswith("gl_es="):
-                        if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
-                            if system.isOptSet("raze_api") and system.config["raze_api"] == "0":
+                        if raze_api and raze_api != "2":
+                            if raze_api == "0":
                                 if architecture in ["x86_64", "amd64", "i686", "i386"]:
                                     line = "gl_es=false\n"
                                 else:
@@ -128,11 +131,9 @@ class RazeGenerator(Generator):
                                     line = "gl_es=true\n"
                         else:
                             line = "gl_es=true\n"
-                        modified_global_settings = True
                     elif line.strip().startswith("vid_preferbackend="):
-                        if system.isOptSet("raze_api"):
-                            line = f"vid_preferbackend={system.config['raze_api']}\n"
-                            modified_global_settings = True
+                        if raze_api:
+                            line = f"vid_preferbackend={raze_api}\n"
                         else:
                             line = "vid_preferbackend=2\n"
 
@@ -143,31 +144,30 @@ class RazeGenerator(Generator):
             if not global_settings_found:
                 _logger.debug("Global Settings NOT found")
                 config_file.write("[GlobalSettings]\n")
-                if system.isOptSet("raze_api") and system.config["raze_api"] != "2":
-                    if system.isOptSet("raze_api") and system.config["raze_api"] == "0":
+                if raze_api and raze_api != "2":
+                    if raze_api == "0":
                         if architecture in ["x86_64", "amd64", "i686", "i386"]:
                             line = "gl_es=false\n"
                         else:
                             _logger.debug("*** Architecture isn't intel it's: %s therefore es is true ***", architecture)
                             line = "gl_es=true\n"
-                if system.isOptSet("raze_api"):
-                    config_file.write(f"vid_preferbackend={system.config['raze_api']}\n")
+                if raze_api:
+                    config_file.write(f"vid_preferbackend={raze_api}\n")
                 else:
                     config_file.write("vid_preferbackend=2\n")
-                modified_global_settings = True
 
         with self.script_file.open("w") as script:
             script.write(
                 "# This file is automatically generated by razeGenerator.py\n"
-                f"vid_fps {'true' if system.getOptBoolean('showFPS') else 'false'}\n"
+                f"vid_fps {'true' if system.config.show_fps else 'false'}\n"
                 "echo BATOCERA\n"  # easy check that script ran in console
             )
 
         # Launch arguments
         launch_args: list[str | Path] = ["raze"]
-        result = parse_args(launch_args, Path(rom))
+        result = parse_args(launch_args, rom)
         if not result.okay:
-            raise Exception(result.message)
+            raise InvalidConfiguration(result.message)
 
         launch_args += [
             "-exec", self.script_file,
@@ -175,7 +175,7 @@ class RazeGenerator(Generator):
             "-nojoy",
             "-width", str(gameResolution["width"]),
             "-height", str(gameResolution["height"]),
-            "-nologo" if system.getOptBoolean("nologo") else "",
+            "-nologo" if system.config.get_bool("nologo") else "",
         ]
 
         return Command.Command(

@@ -1,0 +1,12 @@
+config BR2_PACKAGE_SDL3_TTF
+	bool "sdl3_ttf"
+	depends on !BR2_STATIC_LIBS
+	select BR2_PACKAGE_SDL3
+	help
+	  This library is a wrapper around the FreeType and Harfbuzz libraries,
+	  allowing you to use TrueType fonts to render text in SDL applications.
+
+	  https://github.com/libsdl-org/SDL_ttf
+
+comment "SDL3_ttf needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS

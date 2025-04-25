@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_VOLK_VERSION = 1.4.304
+VULKAN_VOLK_VERSION = vulkan-sdk-1.4.309.0
 VULKAN_VOLK_SITE = https://github.com/zeux/volk
 VULKAN_VOLK_SITE_METHOD=git
 VULKAN_VOLK_DEPENDENCIES = vulkan-headers

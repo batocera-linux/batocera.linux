@@ -99,15 +99,16 @@ build-docker-image: _check_docker
 	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-.ba-docker-image-available: _check_docker
+.ba-docker-image-available:
+	@$(MAKE) -s _check_docker
 	@$(DOCKER) pull $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
-batocera-docker-image: $(if $(DIRECT_BUILD),,$(.ba-docker-image-available))
+batocera-docker-image: $(if $(DIRECT_BUILD),,.ba-docker-image-available)
 
 update-docker-image: _check_docker
 	-@rm .ba-docker-image-available > /dev/null
-	@$(MAKE) batocera-docker-image
+	@$(MAKE) -s batocera-docker-image
 
 publish-docker-image: _check_docker
 	@$(DOCKER) push $(DOCKER_REPO)/$(IMAGE_NAME):latest
@@ -237,11 +238,11 @@ endif
 	done
 
 find-dl-dups:
-	@$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -print0 -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
+	@$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
 
 remove-dl-dups:
-	@while [ -n "`$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -print0 -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ] ; do \
-		$(FIND) $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -print0 -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | xargs rm -rf ; \
+	@while [ -n "`$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ] ; do \
+		$(FIND) $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | xargs rm -rf ; \
 	done
 
 uart:

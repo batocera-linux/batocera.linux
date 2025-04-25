@@ -19,8 +19,8 @@ default:
   emulator: libretro
   core:     opera
 3ds:
-  emulator: citra
-  core:     citra
+  emulator: azahar
+  core:     azahar
 abuse:
   emulator: abuse
   core:     abuse
@@ -92,6 +92,9 @@ atomiswave:
 bbc:
   emulator: libretro
   core:     mame
+bstone:
+  emulator: bstone
+  core:     bstone
 c64:
   emulator: libretro
   core:     vice_x64
@@ -156,6 +159,9 @@ daphne:
 devilutionx:
   emulator: devilutionx
   core:     devilutionx
+dice:
+  emulator: libretro
+  core:     dice
 doom3:
   emulator: dhewm3
   core:     dhewm3
@@ -294,6 +300,12 @@ jaguarcd:
 jazz2:
   emulator: jazz2-native
   core:     jazz2-native
+jkdf2:
+  emulator: openjkdf2
+  core:     openjkdf2
+jknight:
+  emulator: openjk
+  core:     openjk
 kodi:
   emulator: kodi
   options:
@@ -430,6 +442,9 @@ openbor:
 openjazz:
   emulator: openjazz
   core:     openjazz
+oricatmos:
+  emulator: clk
+  core:     clk
 
 # P-S
 
@@ -546,7 +561,7 @@ sdlpop:
 sega32x:
   emulator: libretro
   core:     picodrive
-segacd:
+megacd:
   emulator: libretro
   core:     genesisplusgx
 sg1000:
@@ -606,8 +621,8 @@ supervision:
   emulator: libretro
   core:     potator
 switch:
-  emulator: suyu
-  core:     suyu
+  emulator: citron
+  core:     citron
   options:
     hud_support: false
 systemsp:
@@ -731,6 +746,9 @@ xbox360:
   core:     xenia-canary
   options:
     hud_support: false
+chihiro:
+  emulator: xemu
+  core:     xemu
 zc210:
   emulator: libretro
   core:     zc210

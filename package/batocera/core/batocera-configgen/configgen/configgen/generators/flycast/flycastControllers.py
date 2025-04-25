@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import configparser
 import logging
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 from ...batoceraPaths import mkdir_if_not_exists
 from .flycastPaths import FLYCAST_MAPPING
@@ -11,6 +11,60 @@ if TYPE_CHECKING:
     from ...controller import Controller
 
 _logger = logging.getLogger(__name__)
+
+
+_flycast_input_mappings: Final = {
+    'dreamcast': {
+        # Directions
+        # The DPAD can be an axis (for gpio sticks for example) or a hat
+        # We don't map DPad2
+        'up' :            {'button': 'btn_dpad1_up', 'hat': 'btn_dpad1_up', 'axis': 'btn_dpad1_up'},
+        'down' :          {'button': 'btn_dpad1_down', 'hat': 'btn_dpad1_down'},
+        'left' :          {'button': 'btn_dpad1_left', 'hat': 'btn_dpad1_left', 'axis': 'btn_dpad1_left'},
+        'right' :         {'button': 'btn_dpad1_right', 'hat': 'btn_dpad1_right'},
+        'joystick1left' : {'axis': 'btn_analog_left'},
+        'joystick1up' :   {'axis': 'btn_analog_up'},
+        'joystick2left' : {'axis': 'axis2_left'},
+        'joystick2up' :   {'axis': 'axis2_up'},
+        # Buttons
+        'b' :             {'button': 'btn_a'},
+        'a' :             {'button': 'btn_b'},
+        'y' :             {'button': 'btn_x'},
+        'x' :             {'button': 'btn_y'},
+        # Triggers
+        'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'},
+        'r2' :            {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
+        # System Buttons
+        'start' :         {'button': 'btn_start'}
+    },
+    'arcade': {
+        # Directions
+        'up' :            {'button': 'btn_dpad1_up', 'hat': 'btn_dpad1_up', 'axis': 'btn_dpad1_up'},
+        'down' :          {'button': 'btn_dpad1_down', 'hat': 'btn_dpad1_down'},
+        'left' :          {'button': 'btn_dpad1_left', 'hat': 'btn_dpad1_left', 'axis': 'btn_dpad1_left'},
+        'right' :         {'button': 'btn_dpad1_right', 'hat': 'btn_dpad1_right'},
+        'joystick1left' : {'axis': 'btn_analog_left'},
+        'joystick1up' :   {'axis': 'btn_analog_up'},
+        'joystick2left' : {'axis': 'axis2_left'},
+        'joystick2up' :   {'axis': 'axis2_up'},
+        # Buttons
+        'b' :             {'button': 'btn_a'},
+        'a' :             {'button': 'btn_b'},
+        'y':              {'button': 'btn_c'},
+        'x' :             {'button': 'btn_x'},
+        'pageup' :        {'button': 'btn_y'},
+        'pagedown':       {'button': 'btn_z'},
+        'l3':             {'button': 'btn_dpad2_up'},
+        'r3':             {'button': 'btn_dpad2_down'},
+        # Triggers
+        'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'},
+        'r2' :            {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
+        # System Buttons
+        'start' :         {'button': 'btn_start'},
+        # coin
+        'select':         {'button': 'btn_d'}
+    },
+}
 
 
 flycastMapping = { # Directions
@@ -63,7 +117,14 @@ flycastArcadeMapping = { # Directions
                          'select':         {'button': 'btn_d'}
 }
 
-sections = ( 'analog', 'digital', 'emulator' )
+_sections: Final = ( 'analog', 'digital', 'emulator' )
+
+_hat_code_mapping: Final = {
+    'up': 256,
+    'down': 257,
+    'left': 258,
+    'right': 259,
+}
 
 # Create the controller configuration file
 def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 'arcade']):
@@ -80,42 +141,30 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
     mkdir_if_not_exists(configFileName.parent)
 
     # create ini sections
-    for section in sections:
+    for section in _sections:
         Config.add_section(section)
 
     # Parse controller inputs
     _logger.debug("*** Controller Name = %s ***", controller.real_name)
     analogbind = 0
     digitalbind = 0
+    input_mapping = _flycast_input_mappings[type]
     for index in controller.inputs:
         input = controller.inputs[index]
-        if type == 'dreamcast':
-            if input.name not in flycastMapping:
-                continue
-            if input.type not in flycastMapping[input.name]:
-                _logger.debug("Input type: %s / %s - not in mapping", input.type, input.name)
-                continue
-            var = flycastMapping[input.name][input.type]
-        if type == 'arcade':
-            if input.name not in flycastArcadeMapping:
-                continue
-            if input.type not in flycastArcadeMapping[input.name]:
-                _logger.debug("Input type: %s - not in mapping", input.type)
-                continue
-            var = flycastArcadeMapping[input.name][input.type]
+        if input.name not in input_mapping:
+            continue
+
+        if input.type not in input_mapping[input.name]:
+            _logger.debug("Input type: %s / %s - not in mapping", input.type, input.name)
+            continue
+
+        var = input_mapping[input.name][input.type]
         _logger.debug("Input Name = %s, Var = %s, Type = %s", input.name, var, input.type)
         # batocera doesn't retrieve the code for hats, however
         # SDL is 256 for up, 257 for down, 258 for left & 259 for right
         if input.type == 'hat':
             section = 'digital'
-            if input.name == 'up':
-                code = 256
-            if input.name == 'down':
-                code = 257
-            if input.name == 'left':
-                code = 258
-            if input.name == 'right':
-                code = 259
+            code = _hat_code_mapping[input.name]
             option = f"bind{digitalbind}"
             digitalbind = digitalbind +1
             val = f"{code}:{var}"

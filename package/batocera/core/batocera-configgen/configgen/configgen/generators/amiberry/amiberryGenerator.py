@@ -56,7 +56,7 @@ class AmiberryGenerator(Generator):
             commandArray: list[str | Path] = [ "/usr/bin/amiberry", "-G" ]
             if romType != 'WHDL' :
                 commandArray.append("--model")
-                commandArray.append(system.config['core'])
+                commandArray.append(system.config.core)
 
             if romType == 'WHDL' :
                 commandArray.append("--autoload")
@@ -71,17 +71,13 @@ class AmiberryGenerator(Generator):
                 commandArray.append(rom)
             elif romType == 'DISK':
                 # floppies
-                n = 0
-                for img in self.floppiesFromRom(rom):
-                    if n < 4:
-                        commandArray.append(f"-{n}")
-                        commandArray.append(img)
-                    n += 1
+                for n, img in enumerate(self.floppiesFromRom(rom)[:4]):
+                    commandArray.append(f"-{n}")
+                    commandArray.append(img)
                 # floppy path
                 commandArray.append("-s")
                 # Use disk folder as floppy path
-                romPathIndex = rom.rfind('/')
-                commandArray.append(f"amiberry.floppy_path={rom[0:romPathIndex]}")
+                commandArray.append(f"amiberry.floppy_path={rom.parent}")
 
             # controller
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers, True)
@@ -120,73 +116,38 @@ class AmiberryGenerator(Generator):
             commandArray.append("joyport2=")
 
             # remove interlace artifacts
-            if system.isOptSet("amiberry_flickerfixer") and system.config['amiberry_flickerfixer'] == 'true':
-                commandArray.append("-s")
-                commandArray.append("gfx_flickerfixer=true")
-            else:
-                commandArray.append("-s")
-                commandArray.append("gfx_flickerfixer=false")
+            commandArray.append("-s")
+            commandArray.append(f'gfx_flickerfixer={system.config.get_bool("amiberry_flickerfixer", return_values=("true", "false"))}')
 
             # auto height
-            if system.isOptSet("amiberry_auto_height") and system.config['amiberry_auto_height'] == 'true':
-                commandArray.append("-s")
-                commandArray.append("amiberry.gfx_auto_height=true")
-            else:
-                commandArray.append("-s")
-                commandArray.append("amiberry.gfx_auto_height=false")
+            commandArray.append("-s")
+            commandArray.append(f'amiberry.gfx_auto_height={system.config.get_bool("amiberry_auto_height", return_values=("true", "false"))}')
 
             # line mode
-            if system.isOptSet("amiberry_linemode"):
-                if system.config['amiberry_linemode'] == 'none':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_linemode=none")
-                elif system.config['amiberry_linemode'] == 'scanlines':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_linemode=scanlines")
-                elif system.config['amiberry_linemode'] == 'double':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_linemode=double")
-            else:
-                commandArray.append("-s")
-                commandArray.append("gfx_linemode=double")
+            commandArray.append("-s")
+            commandArray.append(f"gfx_linemode={system.config.get('amiberry_linemode', 'double')}")
 
             # video resolution
-            if system.isOptSet("amiberry_resolution"):
-                if system.config['amiberry_resolution'] == 'lores':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_resolution=lores")
-                elif system.config['amiberry_resolution'] == 'superhires':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_resolution=superhires")
-                elif system.config['amiberry_resolution'] == 'hires':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_resolution=hires")
-            else:
-                commandArray.append("-s")
-                commandArray.append("gfx_resolution=hires")
+            commandArray.append("-s")
+            commandArray.append(f"gfx_resolution={system.config.get('amiberry_resolution', 'hires')}")
 
             # Scaling method
-            if system.isOptSet("amiberry_scalingmethod"):
-                if system.config['amiberry_scalingmethod'] == 'automatic':
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=false")
-                    commandArray.append("-s")
-                    commandArray.append("amiberry.scaling_method=-1")
-                elif system.config['amiberry_scalingmethod'] == 'smooth':
+            match system.config.get("amiberry_scalingmethod"):
+                case "smooth":
                     commandArray.append("-s")
                     commandArray.append("gfx_lores_mode=true")
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=1")
-                elif system.config['amiberry_scalingmethod'] == 'pixelated':
+                case "pixelated":
                     commandArray.append("-s")
                     commandArray.append("gfx_lores_mode=true")
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=0")
-            else:
-                commandArray.append("-s")
-                commandArray.append("gfx_lores_mode=false")
-                commandArray.append("-s")
-                commandArray.append("amiberry.scaling_method=-1")
+                case _:
+                    commandArray.append("-s")
+                    commandArray.append("gfx_lores_mode=false")
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=-1")
 
             # display vertical centering
             commandArray.append("-s")
@@ -205,55 +166,54 @@ class AmiberryGenerator(Generator):
         # otherwise, unknown format
         return Command.Command(array=[])
 
-    def floppiesFromRom(self, rom: str):
-        rom_path = Path(rom)
+    def floppiesFromRom(self, rom: Path):
         floppies: list[Path] = []
-        indexDisk = rom_path.name.rfind("(Disk 1")
+        indexDisk = rom.name.rfind("(Disk 1")
 
         # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
         # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
-        if rom_path.stem[-1:].isdigit():
+        if rom.stem[-1:].isdigit():
             # path without the number
-            fileprefix = rom_path.stem[:-1]
+            fileprefix = rom.stem[:-1]
 
             # special case for 0 while numerotation can start at 1
-            zero_file = rom_path.with_name(f"{fileprefix}0{rom_path.suffix}")
+            zero_file = rom.with_name(f"{fileprefix}0{rom.suffix}")
             if zero_file.is_file():
                 floppies.append(zero_file)
 
             # adding all other files
             n = 1
-            while (floppy := rom_path.with_name(f"{fileprefix}{n}{rom_path.suffix}")).is_file():
+            while (floppy := rom.with_name(f"{fileprefix}{n}{rom.suffix}")).is_file():
                 floppies.append(floppy)
                 n += 1
         # (Disk 1 of 2) format
         elif indexDisk != -1:
                 # Several disks
-                floppies.append(rom_path)
-                prefix = rom_path.name[0:indexDisk+6]
-                postfix = rom_path.name[indexDisk+7:]
+                floppies.append(rom)
+                prefix = rom.name[0:indexDisk+6]
+                postfix = rom.name[indexDisk+7:]
                 n = 2
-                while (floppy := rom_path.with_name(f"{prefix}{n}{postfix}")).is_file():
+                while (floppy := rom.with_name(f"{prefix}{n}{postfix}")).is_file():
                     floppies.append(floppy)
                     n += 1
         else:
            #Single ADF
-           return [rom_path]
+           return [rom]
 
         return floppies
 
-    def getRomType(self, filepath: str):
-        extension = Path(filepath).suffix[1:].lower()
+    def getRomType(self, filepath: Path):
+        extension = filepath.suffix[1:].lower()
 
         if extension == "lha":
             return 'WHDL'
-        elif extension == 'hdf' :
+        if extension == 'hdf' :
             return 'HDF'
-        elif extension in ['iso','cue', 'chd'] :
+        if extension in ['iso','cue', 'chd'] :
             return 'CD'
-        elif extension in ['adf','ipf']:
+        if extension in ['adf','ipf']:
             return 'DISK'
-        elif extension == "zip":
+        if extension == "zip":
             # can be either whdl or adf
             with zipfile.ZipFile(filepath) as zip:
                 for zipfilename in zip.namelist():
@@ -261,10 +221,10 @@ class AmiberryGenerator(Generator):
                         extension = Path(zipfilename).suffix[1:]
                         if extension == "info":
                             return 'WHDL'
-                        elif extension == 'lha' :
+                        if extension == 'lha' :
                             _logger.warning("Amiberry doesn't support .lha inside a .zip")
                             return 'UNKNOWN'
-                        elif extension == 'adf' :
+                        if extension == 'adf' :
                             return 'DISK'
             # no info or adf file found
             return 'UNKNOWN'

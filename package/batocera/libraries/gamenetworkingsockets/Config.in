@@ -1,0 +1,10 @@
+config BR2_PACKAGE_GAMENETWORKINGSOCKETS
+	bool "gamenetworkingsockets"
+	select BR2_PACKAGE_PROTOBUF
+	select BR2_PACKAGE_OPENSSL
+	help
+	  Reliable & unreliable messages over UDP.
+	  Robust message fragmentation & reassembly.
+	  P2P networking / NAT traversal. Encryption. 
+
+	  https://github.com/ValveSoftware/GameNetworkingSockets

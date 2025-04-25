@@ -40,9 +40,9 @@ else
 endif
 
 # currently duckstation build fails if you set vulkan off when headers & loader are present
-#ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
+    DUCKSTATION_DEPENDENCIES += vulkan-headers vulkan-loader
 else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
@@ -57,10 +57,6 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
     cp -R $(@D)/buildroot-build/bin/resources \
         $(TARGET_DIR)/usr/share/duckstation/
     rm -f $(TARGET_DIR)/usr/share/duckstation/resources/gamecontrollerdb.txt
-
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys \
-        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 define DUCKSTATION_TRANSLATIONS

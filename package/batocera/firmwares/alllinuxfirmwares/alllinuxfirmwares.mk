@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20250211
+ALLLINUXFIRMWARES_VERSION = 20250410
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
-ALLLINUXFIRMWARES_SITE = https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot
+ALLLINUXFIRMWARES_SITE = https://www.kernel.org/pub/linux/kernel/firmware
 
 # exclude some dirs not required on batocera
 ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
@@ -29,7 +29,7 @@ ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_EXTRALINUXFIRMWARES
 endif
 
 # Remove qualcomm firmware if not buidling Qualcomm Board
-ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/qcom
 endif
 

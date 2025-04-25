@@ -52,7 +52,7 @@ def getInvertButtonsValue() -> bool:
         if elem is not None:
             return elem.get('value') == 'true'
         return False  # Return False if not found
-    except:
+    except Exception:
         return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
@@ -66,26 +66,26 @@ ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom", "full"]
 
 # Define system emulated by bluemsx core
-systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
+systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' }
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
 coreToRetroachievements = {'arduous', 'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'flycastvl', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'neocd', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'sameduck', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'uzem', 'vb', 'vba-m', 'vecx', 'virtualjaguar', 'wasm4'}
 
 # Define systems NOT compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn', 'dice'}
 # 'o2em', 'mame', 'neogeocd', 'fbneo'
 
 # Define systems NOT compatible with run-ahead option (warning: this option is CPU intensive!)
-systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
+systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'dice'}
 
 # Define the libretro device type corresponding to the libretro CORE (when needed)
-coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'};
-coreToP2Device = {'atari800': '513', 'fuse': '513'};
+coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'}
+coreToP2Device = {'atari800': '513', 'fuse': '513'}
 
 # Define the libretro device type corresponding to the libretro SYSTEM (when needed)
-systemToP1Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' };
-systemToP2Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' };
+systemToP1Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' }
+systemToP2Device = {'msx': '1', 'msx1': '1', 'msx2': '1', 'colecovision': '1' }
 
 # Netplay modes
 systemNetplayModes = {'host', 'client', 'spectator'}
@@ -101,17 +101,17 @@ def connected_to_internet() -> bool:
     if process.returncode == 0:
         _logger.debug("Connected to the internet")
         return True
-    else:
-        # Try dns.google if one.one.one.one fails
-        cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "dns.google"]
-        process = subprocess.Popen(cmd)
-        process.wait()
-        if process.returncode == 0:
-            _logger.debug("Connected to the internet")
-            return True
-        else:
-            _logger.error("Not connected to the internet")
-            return False
+
+    # Try dns.google if one.one.one.one fails
+    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "dns.google"]
+    process = subprocess.Popen(cmd)
+    process.wait()
+    if process.returncode == 0:
+        _logger.debug("Connected to the internet")
+        return True
+
+    _logger.error("Not connected to the internet")
+    return False
 
 def writeLibretroConfig(
     generator: Generator,
@@ -164,13 +164,12 @@ def createLibretroConfig(
     if system.name == 'atarist':
         libretroOptions.generateHatariConf(HATARI_CONFIG / 'hatari.cfg')
 
-    if system.config['core'] in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
+    if system.config.core in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom, guns)
 
     retroarchConfig: dict[str, object] = {}
-    systemConfig = system.config
     renderConfig = system.renderconfig
-    systemCore = system.config['core']
+    systemCore = system.config.core
     # Get value from ES settings
     swapButtons = '"false"' if getInvertButtonsValue() else '"true"'
 
@@ -184,60 +183,42 @@ def createLibretroConfig(
 
     retroarchConfig['video_driver'] = f'"{gfxBackend}"'  # needed for the ozone menu
     # Set Vulkan
-    if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
-        if vulkan.is_available():
-            _logger.debug("Vulkan driver is available on the system.")
-            if vulkan.has_discrete_gpu():
-                _logger.debug("A discrete GPU is available on the system. We will use that for performance")
-                discrete_index = vulkan.get_discrete_gpu_index()
-                if discrete_index:
-                    _logger.debug("Using Discrete GPU Index: %s for RetroArch", discrete_index)
-                    retroarchConfig["vulkan_gpu_index"] = f'"{discrete_index}"'
-                else:
-                    _logger.debug("Couldn't get discrete GPU index")
+    if system.config.get("gfxbackend") == "vulkan" and vulkan.is_available():
+        _logger.debug("Vulkan driver is available on the system.")
+        if vulkan.has_discrete_gpu():
+            _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+            discrete_index = vulkan.get_discrete_gpu_index()
+            if discrete_index:
+                _logger.debug("Using Discrete GPU Index: %s for RetroArch", discrete_index)
+                retroarchConfig["vulkan_gpu_index"] = f'"{discrete_index}"'
             else:
-                _logger.debug("Discrete GPU is not available on the system. Using default.")
+                _logger.debug("Couldn't get discrete GPU index")
+        else:
+            _logger.debug("Discrete GPU is not available on the system. Using default.")
 
-    retroarchConfig['audio_driver'] = '"pulse"'
-    if (system.isOptSet("audio_driver")):
-        retroarchConfig['audio_driver'] = system.config['audio_driver']
+    retroarchConfig['audio_driver'] = system.config.get("audio_driver", '"pulse"')
+    retroarchConfig['audio_latency'] = system.config.get("audio_latency", '64')  # 64 = best balance with audio perf
+    retroarchConfig['audio_volume'] = system.config.get("audio_volume", '0')
 
-    retroarchConfig['audio_latency'] = '64'                     # best balance with audio perf
-    if (system.isOptSet("audio_latency")):
-        retroarchConfig['audio_latency'] = system.config['audio_latency']
-
-    retroarchConfig['audio_volume'] = '0'
-    if (system.isOptSet("audio_volume")):
-        retroarchConfig['audio_volume'] = system.config['audio_volume']
-
-    if system.isOptSet("display.rotate") and not videoMode.supportSystemRotation(): # only for systems that don't support global rotation (xorg, wayland, ...)
+    display_rotate = system.config.get_str("display.rotate")
+    if display_rotate and not videoMode.supportSystemRotation(): # only for systems that don't support global rotation (xorg, wayland, ...)
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
-        if system.config["display.rotate"] == "0":
+        if display_rotate == "0":
             retroarchConfig['video_rotation'] = "0"
-        elif system.config["display.rotate"] == "1":
+        elif display_rotate == "1":
             retroarchConfig['video_rotation'] = "3"
-        elif system.config["display.rotate"] == "2":
+        elif display_rotate == "2":
             retroarchConfig['video_rotation'] = "2"
-        elif system.config["display.rotate"] == "3":
+        elif display_rotate == "3":
             retroarchConfig['video_rotation'] = "1"
     else:
         retroarchConfig['video_rotation'] = '0'
 
-    if system.isOptSet('video_threaded') and system.getOptBoolean('video_threaded') == True:
-        retroarchConfig['video_threaded'] = 'true'
-    else:
-        retroarchConfig['video_threaded'] = 'false'
-
-    if system.isOptSet('video_allow_rotate') and system.getOptBoolean('video_allow_rotate') == False:
-        retroarchConfig['video_allow_rotate'] = 'false'
-    else:
-        retroarchConfig['video_allow_rotate'] = 'true'
+    retroarchConfig['video_threaded'] = system.config.get_bool('video_threaded', return_values=('true', 'false'))
+    retroarchConfig['video_allow_rotate'] = system.config.get_bool('video_allow_rotate', True, return_values=('true', 'false'))
 
     # variable refresh rate
-    if system.isOptSet("vrr_runloop_enable") and system.getOptBoolean("vrr_runloop_enable") == True:
-        retroarchConfig['vrr_runloop_enable'] = 'true'
-    else:
-        retroarchConfig['vrr_runloop_enable'] = 'false'
+    retroarchConfig['vrr_runloop_enable'] = system.config.get_bool('vrr_runloop_enable', return_values=('true', 'false'))
 
     # required at least for vulkan (to get the correct resolution)
     retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
@@ -261,7 +242,7 @@ def createLibretroConfig(
     retroarchConfig['savefile_directory'] = SAVES / system.name
 
     # Forced values (so that if the config is not correct, fix it)
-    if system.config['core'] == 'tgbdual':
+    if system.config.core == 'tgbdual':
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # Reset each time in this function
 
     # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
@@ -276,7 +257,7 @@ def createLibretroConfig(
     retroarchConfig['input_libretro_device_p2'] = '1'
 
     # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
-    if system.config['core'] == 'puae' or system.config['core'] == 'puae2021' or system.config['core'] == 'vice_x64':
+    if system.config.core == 'puae' or system.config.core == 'puae2021' or system.config.core == 'vice_x64':
         retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
@@ -288,145 +269,99 @@ def createLibretroConfig(
     retroarchConfig['load_dummy_on_core_shutdown'] = '"false"'
 
     ## Specific choices
-    if(system.config['core'] in coreToP1Device):
-        retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
-    if(system.config['core'] in coreToP2Device):
-        retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
+    if system.config.core in coreToP1Device:
+        retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config.core]
+    if system.config.core in coreToP2Device:
+        retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config.core]
 
     ## AMIGA BIOS files are in /userdata/bios/amiga
-    if (system.config['core'] == 'puae') or (system.config['core'] == 'puae2021') or (system.config['core'] == 'uae4arm'):
+    if system.config.core == 'puae' or system.config.core == 'puae2021' or system.config.core == 'uae4arm':
         retroarchConfig['system_directory'] = '"/userdata/bios/amiga/"'
 
     ## AMIGA OCS-ECS/AGA/CD32
-    if system.config['core'] == 'puae' or system.config['core'] == 'puae2021':
+    if system.config.core == 'puae' or system.config.core == 'puae2021':
         if system.name != 'amigacd32':
-            if system.isOptSet('controller1_puae'):
-                retroarchConfig['input_libretro_device_p1'] = system.config['controller1_puae']
-            else:
-                retroarchConfig['input_libretro_device_p1'] = '1'
-            if system.isOptSet('controller2_puae'):
-                retroarchConfig['input_libretro_device_p2'] = system.config['controller2_puae']
-            else:
-                retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_puae', '1')
+            retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_puae', '1')
         else:
             retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
-    if(system.name in systemToBluemsx):
-        if system.config['core'] == 'bluemsx':
-            retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
-            retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+    if system.name in systemToBluemsx and system.config.core == 'bluemsx':
+        retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
+        retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
 
     ## SNES9x and SNES9x_next (2010) controller
-    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
-        if system.isOptSet('controller1_snes9x'):
+    if system.config.core == 'snes9x' or system.config.core == 'snes9x_next':
+        if 'controller1_snes9x' in system.config:
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x']
-        elif system.isOptSet('controller1_snes9x_next'):
+        elif 'controller1_snes9x_next' in system.config:
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x_next']
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
         # Player 2
-        if system.isOptSet('controller2_snes9x'):
+        if 'controller2_snes9x' in system.config:
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x']
-        elif system.isOptSet('controller2_snes9x_next'):
+        elif 'controller2_snes9x_next' in system.config:
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x_next']
         elif len(controllers) > 2:                              # More than 2 controller connected
             retroarchConfig['input_libretro_device_p2'] = '257'
         else:
             retroarchConfig['input_libretro_device_p2'] = '1'
         # Player 3
-        if system.isOptSet('controller3_snes9x'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_snes9x']
-        else:
-            retroarchConfig['input_libretro_device_p3'] = '1'
+        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_snes9x', '1')
 
     ## NES controller
-    if system.config['core'] == 'fceumm':
-        if system.isOptSet('controller1_nes'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_nes']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
-        if system.isOptSet('controller2_nes'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_nes']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+    if system.config.core == 'fceumm':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_nes', '1')
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_nes', '1')
 
     ## PlayStation controller
-    if (system.config['core'] == 'mednafen_psx'):               # Madnafen
-        if system.isOptSet('beetle_psx_hw_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_hw_Controller1']
-            if system.config['beetle_psx_hw_Controller1'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        if system.isOptSet('beetle_psx_hw_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_hw_Controller2']
-            if system.config['beetle_psx_hw_Controller2'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
-    if (system.config['core'] == 'pcsx_rearmed'):               # PCSX Rearmed
-        if system.isOptSet('controller1_pcsx'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
-            if system.config['controller1_pcsx'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        if system.isOptSet('controller2_pcsx'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
-            if system.config['controller2_pcsx'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+    if system.config.core == 'mednafen_psx':               # Madnafen
+        if psx_controller_1 := system.config.get('beetle_psx_hw_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = psx_controller_1
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0' if psx_controller_1 != '1' else '1'
+        if psx_controller_2 := system.config.get('beetle_psx_hw_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = psx_controller_2
+            retroarchConfig['input_player2_analog_dpad_mode'] = '0' if psx_controller_2 != '1' else '1'
+
+    if system.config.core == 'pcsx_rearmed':               # PCSX Rearmed
+        if psx_controller_1 := system.config.get('controller1_pcsx'):
+            retroarchConfig['input_libretro_device_p1'] = psx_controller_1
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0' if psx_controller_1 != '1' else '1'
+        if psx_controller_2 := system.config.get('controller2_pcsx'):
+            retroarchConfig['input_libretro_device_p2'] = psx_controller_2
+            retroarchConfig['input_player2_analog_dpad_mode'] = '0' if psx_controller_2 != '1' else '1'
 
         # wheel
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
+        if system.config.use_wheels:
             deviceInfos = controllersConfig.getDevicesInformation()
             for pad in controllers:
-                if pad.device_path in deviceInfos:
-                    if deviceInfos[pad.device_path]["isWheel"]:
-                        retroarchConfig[f'input_player{pad.player_number}_analog_dpad_mode'] = '1'
-                        if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
-                            retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 773 # Negcon
-                        else:
-                            retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 517 # DualShock Controller
+                if pad.device_path in deviceInfos and deviceInfos[pad.device_path]["isWheel"]:
+                    retroarchConfig[f'input_player{pad.player_number}_analog_dpad_mode'] = '1'
+                    if "wheel_type" in metadata and metadata["wheel_type"] == "negcon" :
+                        retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 773 # Negcon
+                    else:
+                        retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 517 # DualShock Controller
 
     ## Sega Dreamcast controller
-    if system.config['core'] == 'flycast':
-        if system.isOptSet('controller1_dc'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
-        if system.isOptSet('controller2_dc'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dc']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
-        if system.isOptSet('controller3_dc'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_dc']
-        else:
-            retroarchConfig['input_libretro_device_p3'] = '1'
-        if system.isOptSet('controller4_dc'):
-            retroarchConfig['input_libretro_device_p4'] = system.config['controller4_dc']
-        else:
-            retroarchConfig['input_libretro_device_p4'] = '1'
+    if system.config.core == 'flycast':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_dc', '1')
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_dc', '1')
+        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_dc', '1')
+        retroarchConfig['input_libretro_device_p4'] = system.config.get('controller4_dc', '1')
 
         # wheel
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+        if system.config.use_wheels and wheels:
             retroarchConfig['input_libretro_device_p1'] = '2049' # Race Controller
 
     ## Sega Megadrive controller
-    if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':
-        if system.isOptSet('controller1_md'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_md']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '513' # 6 button
-        if system.isOptSet('controller2_md'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_md']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '513' # 6 button
+    if system.config.core == 'genesisplusgx' and system.name == 'megadrive':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_md', '513')  # 513 = 6 button
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_md', '513')  # 513 = 6 button
 
     ## Sega Megadrive style controller remap
-    if system.config['core'] in ['genesisplusgx', 'picodrive']:
+    if system.config.core in ['genesisplusgx', 'picodrive']:
 
         valid_megadrive_controller_guids = [
         # 8bitdo m30
@@ -458,125 +393,78 @@ def createLibretroConfig(
             for btn, value in remap_values.items():
                 retroarchConfig[f'input_player{controller_number}_{btn}'] = value
 
-        if system.config['core'] == 'genesisplusgx':
+        if system.config.core == 'genesisplusgx':
             option = 'gx'
-        if system.config['core'] == 'picodrive':
+        else:  # picodrive
             option = 'pd'
 
         for i in range(1, min(5, len(controllers) + 1)):
             pad = controllers[i - 1]
-            if (pad.guid in valid_megadrive_controller_guids and pad.name in valid_megadrive_controller_names) or (system.isOptSet(f'{option}_controller{i}_mapping') and system.config[f'{option}_controller{i}_mapping'] != 'retropad'):
+            if (pad.guid in valid_megadrive_controller_guids and pad.name in valid_megadrive_controller_names) or system.config.get(f'{option}_controller{i}_mapping', 'retropad') != 'retropad':
                 update_megadrive_controller_config(i)
 
     ## Sega Mastersystem controller
-    if system.config['core'] == 'genesisplusgx' and system.name == 'mastersystem':
-        if system.isOptSet('controller1_ms'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_ms']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '769'
-        if system.isOptSet('controller2_ms'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_ms']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '769'
+    if system.config.core == 'genesisplusgx' and system.name == 'mastersystem':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_ms', '769')
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_ms', '769')
 
     ## Sega Saturn controller
-    if system.config['core'] in ['yabasanshiro', 'beetle-saturn'] and system.name == 'saturn':
-        if system.isOptSet('controller1_saturn'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_saturn']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1' # Saturn pad
-        if system.isOptSet('controller2_saturn'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_saturn']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1' # Saturn pad
+    if system.config.core in ['yabasanshiro', 'beetle-saturn'] and system.name == 'saturn':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_saturn', '1')  # 1 = Saturn pad
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_saturn', '1')  # 1 = Saturn pad
 
     # wheel
-    if system.config['core'] == 'beetle-saturn' and system.name == 'saturn':
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels'):
-            retroarchConfig['input_libretro_device_p1'] = '517' # Arcade Racer
+    if system.config.core == 'beetle-saturn' and system.name == 'saturn' and system.config.use_wheels:
+        retroarchConfig['input_libretro_device_p1'] = '517' # Arcade Racer
 
     ## NEC PCEngine controller
-    if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
-        if system.isOptSet('controller1_pce'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pce']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+    if system.config.core == 'pce' or system.config.core == 'pce_fast':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_pce', '1')
 
     ## WII controller
-    if system.config['core'] == 'dolphin' or system.config['core'] == 'dolphin':
+    if system.config.core == 'dolphin' or system.config.core == 'dolphin':
         # Controller 1 Type
-        if system.isOptSet('controller1_wii'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_wii']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_wii', '1')
         # Controller 2 Type
-        if system.isOptSet('controller2_wii'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_wii']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_wii', '1')
         # Controller 3 Type
-        if system.isOptSet('controller3_wii'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_wii']
-        else:
-            retroarchConfig['input_libretro_device_p3'] = '1'
+        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_wii', '1')
         # Controller 4 Type
-        if system.isOptSet('controller4_wii'):
-            retroarchConfig['input_libretro_device_p4'] = system.config['controller4_wii']
-        else:
-            retroarchConfig['input_libretro_device_p4'] = '1'
+        retroarchConfig['input_libretro_device_p4'] = system.config.get('controller4_wii', '1')
 
     ## MS-DOS controller
-    if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
-        if system.isOptSet('controller1_dosbox_pure'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
-            if system.config['controller1_dosbox_pure'] != '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-        if system.isOptSet('controller2_dosbox_pure'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
-            if system.config['controller2_dosbox_pure'] != '3':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+    if system.config.core == 'dosbox_pure':               # Dosbox-Pure
+        if controller1 := system.config.get('controller1_dosbox_pure'):
+            retroarchConfig['input_libretro_device_p1'] = controller1
+            retroarchConfig['input_player1_analog_dpad_mode'] = controller1 if controller1 == '3' else '0'
+        if controller2 := system.config.get('controller2_dosbox_pure'):
+            retroarchConfig['input_libretro_device_p2'] = controller2
+            retroarchConfig['input_player2_analog_dpad_mode'] = controller2 if controller2 == '3' else '0'
 
     ## PS1 Swanstation
-    if (system.config['core'] == 'swanstation'):
-        if system.isOptSet('swanstation_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['swanstation_Controller1']
-            if system.config['swanstation_Controller1'] != '261' and system.config['swanstation_Controller1'] != '517':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
-            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-        if system.isOptSet('swanstation_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['swanstation_Controller2']
-            if system.config['swanstation_Controller2'] != '261' and system.config['swanstation_Controller2'] != '517':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
-            retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+    if system.config.core == 'swanstation':
+        controller1 = system.config.get('swanstation_Controller1', '1')
+        retroarchConfig['input_libretro_device_p1'] = controller1
+        retroarchConfig['input_player1_analog_dpad_mode'] = '0' if controller1 not in ['261', '517'] else '1'
+
+        controller2 = system.config.get('swanstation_Controller2', '1')
+        retroarchConfig['input_libretro_device_p2'] = controller2
+        retroarchConfig['input_player2_analog_dpad_mode'] = '0' if controller2 not in ['261', '517'] else '1'
 
     ## Wonder Swan & Wonder Swan Color
-    if (system.config['core'] == "mednafen_wswan"):             # Beetle Wonderswan
+    if system.config.core == "mednafen_wswan":             # Beetle Wonderswan
         # If set manually, proritize that.
         # Otherwise, set to portrait for games listed as 90 degrees, manual (default) if not.
-        if not system.isOptSet('wswan_rotate_display'):
-            wswanGameRotation = videoMode.getAltDecoration(system.name, rom, 'retroarch')
-            if wswanGameRotation == "90":
-                wswanOrientation = "portrait"
-            else:
-                wswanOrientation = "manual"
+        if (rotate_display := system.config.get('wswan_rotate_display')) is not system.config.MISSING:
+            wswanOrientation = rotate_display
         else:
-            wswanOrientation = system.config['wswan_rotate_display']
+            wswanGameRotation = videoMode.getAltDecoration(system.name, rom, 'retroarch')
+            wswanOrientation = "portrait" if wswanGameRotation == "90" else "manual"
+
         retroarchConfig['wswan_rotate_display'] = wswanOrientation
 
     ## N64 Controller Remap
-    if system.config['core'] in ['mupen64plus-next', 'parallel_n64']:
+    if system.config.core in ['mupen64plus-next', 'parallel_n64']:
 
         valid_n64_controller_guids = [
             # official nintendo switch n64 controller
@@ -603,67 +491,47 @@ def createLibretroConfig(
                 retroarchConfig[f'input_player{controller_number}_{btn}'] = value
 
 
-        if system.config['core'] == 'mupen64plus-next':
+        if system.config.core == 'mupen64plus-next':
             option = 'mupen64plus'
-        elif system.config['core'] == 'parallel_n64':
+        else:  # parallel_n64
             option = 'parallel-n64'
 
         for i in range(1, min(5, len(controllers) + 1)):
             pad = controllers[i - 1]
-            if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.isOptSet(f'{option}-controller{i}') and system.config[f'{option}-controller{i}'] != 'retropad'):
+            if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.config.get(f'{option}-controller{i}', 'retropad') != 'retropad'):
                 update_n64_controller_config(i)
 
     ## PORTS
     ## Quake
-    if (system.config['core'] == 'tyrquake'):
-        if system.isOptSet('tyrquake_controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['tyrquake_controller1']
-            if system.config['tyrquake_controller1'] == '773' or system.config['tyrquake_controller1'] == '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+    if system.config.core == 'tyrquake':
+        controller1 = system.config.get('tyrquake_controller1')
+        retroarchConfig['input_libretro_device_p1'] = controller1 or '1'
+        if controller1:
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0' if controller1 in ['773', '3'] else '1'
 
     ## DOOM
-    if (system.config['core'] == 'prboom'):
-        if system.isOptSet('prboom_controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['prboom_controller1']
-            if system.config['prboom_controller1'] != '1' or system.config['prboom_controller1'] == '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+    if system.config.core == 'prboom':
+        controller1 = system.config.get('prboom_controller1')
+        retroarchConfig['input_libretro_device_p1'] = controller1 or '1'
+        if controller1:
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0' if controller1 != '1' else '1'
 
     ## ZX Spectrum
-    if (system.config['core'] == 'fuse'):
-        if system.isOptSet('controller1_zxspec'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_zxspec']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '769'                               #Sinclair 1 controller - most used on games
-        if system.isOptSet('controller2_zxspec'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_zxspec']
-        else:
-            retroarchConfig['input_libretro_device_p2'] = '1025'                              #Sinclair 2 controller
-        if system.isOptSet('controller3_zxspec'):
-            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_zxspec']
-        else:
-            retroarchConfig['input_libretro_device_p3'] = '259'
+    if system.config.core == 'fuse':
+        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_zxspec', '769') # 769 = Sinclair 1 controller - most used on games
+        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_zxspec', '1025') # 1025 = Sinclair 2 controller
+        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_zxspec', '259')
 
     ## Mr. Boom
-    if system.config['core'] == 'mrboom':
+    if system.config.core == 'mrboom':
         bezel = None
 
     # Smooth option
-    if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
-        retroarchConfig['video_smooth'] = 'true'
-    else:
-        retroarchConfig['video_smooth'] = 'false'
+    retroarchConfig['video_smooth'] = system.config.get_bool('smooth', return_values=('true', 'false'))
 
     # Shader option
     if 'shader' in renderConfig:
-        if renderConfig['shader'] != None and renderConfig['shader'] != "none":
+        if renderConfig['shader'] is not None and renderConfig['shader'] != "none":
             retroarchConfig['video_shader_enable'] = 'true'
             retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
     else:
@@ -671,12 +539,12 @@ def createLibretroConfig(
 
      # Ratio option
     retroarchConfig['aspect_ratio_index'] = ''              # reset in case config was changed (or for overlays)
-    if defined('ratio', systemConfig):
+    if ratio := system.config.get_str('ratio'):
         index = '22'    # default value (core)
-        if systemConfig['ratio'] in ratioIndexes:
-            index = ratioIndexes.index(systemConfig['ratio'])
+        if ratio in ratioIndexes:
+            index = ratioIndexes.index(ratio)
         # Check if game natively supports widescreen from metadata (not widescreen hack) (for easy scalability ensure all values for respective systems start with core name and end with "-autowidescreen")
-        elif system.isOptSet(f"{systemCore}-autowidescreen") and system.config[f"{systemCore}-autowidescreen"] == "True":
+        elif system.config.get_bool(f"{systemCore}-autowidescreen"):
             metadata = controllersConfig.getGamesMetaData(system.name, rom)
             if metadata.get("video_widescreen") == "true":
                 index = str(ratioIndexes.index("16/9"))
@@ -687,66 +555,50 @@ def createLibretroConfig(
         retroarchConfig['aspect_ratio_index'] = index
 
     # Rewind option
-    retroarchConfig['rewind_enable'] = 'false'
-    if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
-        if(not system.name in systemNoRewind):
-            retroarchConfig['rewind_enable'] = 'true'
-        else:
-            retroarchConfig['rewind_enable'] = 'false'
-    else:
-        retroarchConfig['rewind_enable'] = 'false'
+    retroarchConfig['rewind_enable'] = 'true' if system.name not in systemNoRewind and system.config.get_bool('rewind') else 'false'
 
     # Run-ahead option (latency reduction)
     retroarchConfig['run_ahead_enabled'] = 'false'
     retroarchConfig['preemptive_frames_enable'] = 'false'
     retroarchConfig['run_ahead_frames'] = '0'
     retroarchConfig['run_ahead_secondary_instance'] = 'false'
-    if system.isOptSet('runahead') and int(system.config['runahead']) >0:
-       if (not system.name in systemNoRunahead):
-          if system.isOptSet('preemptiveframes') and system.getOptBoolean('preemptiveframes') == True:
-             retroarchConfig['preemptive_frames_enable'] = 'true'
-          else:
-             retroarchConfig['run_ahead_enabled'] = 'true'
-          retroarchConfig['run_ahead_frames'] = system.config['runahead']
-          if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
-              retroarchConfig['run_ahead_secondary_instance'] = 'true'
+    if (runahead := system.config.get_int('runahead')) > 0 and system.name not in systemNoRunahead:
+        if system.config.get_bool('preemptiveframes'):
+            retroarchConfig['preemptive_frames_enable'] = 'true'
+        else:
+            retroarchConfig['run_ahead_enabled'] = 'true'
+        retroarchConfig['run_ahead_frames'] = runahead
+
+        if system.config.get_bool('secondinstance'):
+            retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
     # Auto frame delay (input delay reduction via frame timing)
-    if system.isOptSet('video_frame_delay_auto') and system.getOptBoolean('video_frame_delay_auto') == True:
-        retroarchConfig['video_frame_delay_auto'] = 'true'
-    else:
-        retroarchConfig['video_frame_delay_auto'] = 'false'
+    retroarchConfig['video_frame_delay_auto'] = system.config.get_bool('video_frame_delay_auto', return_values=('true', 'false'))
 
     # Retroachievement option
-    if system.isOptSet("retroachievements.sound") and system.config["retroachievements.sound"] != "none":
+    if (ra_sound := system.config.get("retroachievements.sound", "none")) != "none":
         retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
-        retroarchConfig['cheevos_unlock_sound'] = system.config["retroachievements.sound"]
+        retroarchConfig['cheevos_unlock_sound'] = ra_sound
     else:
         retroarchConfig['cheevos_unlock_sound_enable'] = 'false'
 
     # Autosave option
-    if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
-        retroarchConfig['savestate_auto_save'] = 'true'
-        retroarchConfig['savestate_auto_load'] = 'true'
-    else:
-        retroarchConfig['savestate_auto_save'] = 'false'
-        retroarchConfig['savestate_auto_load'] = 'false'
+    autosave = system.config.get_bool('autosave', return_values=('true', 'false'))
+    retroarchConfig['savestate_auto_save'] = autosave
+    retroarchConfig['savestate_auto_load'] = autosave
 
-    if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
-        retroarchConfig['savestate_auto_index'] = 'false'
-        retroarchConfig['savestate_max_keep'] = '50'
-    else:
+    if system.config.get_bool('incrementalsavestates', True):
         retroarchConfig['savestate_auto_index'] = 'true'
         retroarchConfig['savestate_max_keep'] = '0'
+    else:
+        retroarchConfig['savestate_auto_index'] = 'false'
+        retroarchConfig['savestate_max_keep'] = '50'
 
     # state_slot option
-    if system.isOptSet('state_slot'):
-        retroarchConfig['state_slot'] = system.config['state_slot']
-    else:
-        retroarchConfig['state_slot'] = '0'
+    retroarchConfig['state_slot'] = system.config.get('state_slot', '0')
 
     # in case of the auto state_filename, do an autoload
-    if system.isOptSet('state_filename') and system.config['state_filename'][-5:] == ".auto":
+    if (state_filename := system.config.get_str('state_filename')) and state_filename.endswith('.auto'):
         retroarchConfig['savestate_auto_load'] = 'true'
 
     # Retroachievements option
@@ -759,87 +611,63 @@ def createLibretroConfig(
     retroarchConfig['cheevos_start_active'] = 'false'
     retroarchConfig['cheevos_richpresence_enable'] = 'false'
 
-    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
-        if (system.config['core'] in coreToRetroachievements) or (system.isOptSet('cheevos_force') and system.getOptBoolean('cheevos_force') == True):
+    if system.config.get_bool('retroachievements'):
+        if system.config.core in coreToRetroachievements or system.config.get_bool('cheevos_force'):
             retroarchConfig['cheevos_enable'] = 'true'
-            retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
+            retroarchConfig['cheevos_username'] = system.config.get('retroachievements.username', "")
             retroarchConfig['cheevos_password'] = "" # clear the password - only use the token
-            retroarchConfig['cheevos_token'] = systemConfig.get('retroachievements.token', "")
+            retroarchConfig['cheevos_token'] = system.config.get('retroachievements.token', "")
             retroarchConfig['cheevos_cmd'] = DEFAULTS_DIR / "call_achievements_hooks.sh"
             # retroachievements_hardcore_mode
-            if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
-                retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
-            else:
-                retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
+            retroarchConfig['cheevos_hardcore_mode_enable'] = system.config.get_bool('retroachievements.hardcore', return_values=('true', 'false'))
             # retroachievements_leaderboards
-            if system.isOptSet('retroachievements.leaderboards') and system.getOptBoolean('retroachievements.leaderboards') == True:
-                retroarchConfig['cheevos_leaderboards_enable'] = 'true'
-            else:
-                retroarchConfig['cheevos_leaderboards_enable'] = 'false'
+            retroarchConfig['cheevos_leaderboards_enable'] = system.config.get_bool('retroachievements.leaderboards', return_values=('true', 'false'))
             # retroachievements_verbose_mode
-            if system.isOptSet('retroachievements.verbose') and system.getOptBoolean('retroachievements.verbose') == True:
-                retroarchConfig['cheevos_verbose_enable'] = 'true'
-            else:
-                retroarchConfig['cheevos_verbose_enable'] = 'false'
+            retroarchConfig['cheevos_verbose_enable'] = system.config.get_bool('retroachievements.verbose', return_values=('true', 'false'))
             # retroachievements_automatic_screenshot
-            if system.isOptSet('retroachievements.screenshot') and system.getOptBoolean('retroachievements.screenshot') == True:
-                retroarchConfig['cheevos_auto_screenshot'] = 'true'
-            else:
-                retroarchConfig['cheevos_auto_screenshot'] = 'false'
+            retroarchConfig['cheevos_auto_screenshot'] = system.config.get_bool('retroachievements.screenshot', return_values=('true', 'false'))
             # retroarchievements_challenge_indicators
-            if system.isOptSet('retroachievements.challenge_indicators') and system.getOptBoolean('retroachievements.challenge_indicators') == True:
-                retroarchConfig['cheevos_challenge_indicators'] = 'true'
-            else:
-                retroarchConfig['cheevos_challenge_indicators'] = 'false'
+            retroarchConfig['cheevos_challenge_indicators'] = system.config.get_bool('retroachievements.challenge_indicators', return_values=('true', 'false'))
             # retroarchievements_encore_mode
-            if system.isOptSet('retroachievements.encore') and system.getOptBoolean('retroachievements.encore') == True:
-                retroarchConfig['cheevos_start_active'] = 'true'
-            else:
-                retroarchConfig['cheevos_start_active'] = 'false'
+            retroarchConfig['cheevos_start_active'] = system.config.get_bool('retroachievements.encore', return_values=('true', 'false'))
             # retroarchievements_rich_presence
-            if system.isOptSet('retroachievements.richpresence') and system.getOptBoolean('retroachievements.richpresence') == True:
-                retroarchConfig['cheevos_richpresence_enable'] = 'true'
-            else:
-                retroarchConfig['cheevos_richpresence_enable'] = 'false'
+            retroarchConfig['cheevos_richpresence_enable'] = system.config.get_bool('retroachievements.richpresence', return_values=('true', 'false'))
             if not connected_to_internet():
                 retroarchConfig['cheevos_enable'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
 
-    if system.isOptSet('integerscale') and system.getOptBoolean('integerscale') == True:
-        retroarchConfig['video_scale_integer'] = 'true'
-    else:
-        retroarchConfig['video_scale_integer'] = 'false'
+    retroarchConfig['video_scale_integer'] = system.config.get_bool('integerscale', return_values=('true', 'false'))
 
     # Netplay management
-    if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
+    if (netplay_mode := system.config.get('netplay.mode')) in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
         retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
         # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
         retroarchConfig['netplay_mode']              = "false"
-        retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.port', "")
-        retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
+        retroarchConfig['netplay_ip_port']           = system.config.get('netplay.port', "")
+        retroarchConfig['netplay_delay_frames']      = system.config.get('netplay.frames', "")
+        retroarchConfig['netplay_nickname']          = system.config.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
-        if system.config['netplay.mode'] == 'client' or system.config['netplay.mode'] == 'spectator':
+        if netplay_mode == 'client' or system.config['netplay.mode'] == 'spectator':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
-            retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
-            retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
+            retroarchConfig['netplay_ip_address']        = system.config.get('netplay.server.ip', "")
+            retroarchConfig['netplay_ip_port']           = system.config.get('netplay.server.port', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
 
         # Connect as client
-        if system.config['netplay.mode'] == 'client':
-            if 'netplay.password' in system.config:
-                retroarchConfig['netplay_password'] = f'"{systemConfig.get("netplay.password", "")}"'
+        if netplay_mode == 'client':
+            if netplay_password := system.config.get_str('netplay.password'):
+                retroarchConfig['netplay_password'] = f'"{netplay_password}"'
             else:
                 retroarchConfig['netplay_password'] = ""
 
         # Connect as spectator
-        if system.config['netplay.mode'] == 'spectator':
+        if netplay_mode == 'spectator':
             retroarchConfig['netplay_start_as_spectator'] = "true"
-            if 'netplay.password' in system.config:
-                retroarchConfig['netplay_spectate_password'] = f'"{systemConfig.get("netplay.password", "")}"'
+            if netplay_password := system.config.get_str('netplay.password'):
+                retroarchConfig['netplay_spectate_password'] = f'"{netplay_password}"'
             else:
                 retroarchConfig['netplay_spectate_password'] = ""
         else:
@@ -847,41 +675,29 @@ def createLibretroConfig(
 
          # Netplay host passwords
         if system.config['netplay.mode'] == 'host':
-            retroarchConfig['netplay_password'] = f'"{systemConfig.get("netplay.password", "")}"'
-            retroarchConfig['netplay_spectate_password'] = f'"{systemConfig.get("netplay.spectatepassword", "")}"'
+            retroarchConfig['netplay_password'] = f'"{system.config.get("netplay.password", "")}"'
+            retroarchConfig['netplay_spectate_password'] = f'"{system.config.get("netplay.spectatepassword", "")}"'
 
         # Netplay hide the gameplay
-        if system.isOptSet('netplay_public_announce') and system.getOptBoolean('netplay_public_announce') == False:
-            retroarchConfig['netplay_public_announce'] = 'false'
-        else:
-            retroarchConfig['netplay_public_announce'] = 'true'
+        retroarchConfig['netplay_public_announce'] = system.config.get_bool('netplay_public_announce', True, return_values=('true', 'false'))
 
         # Enable or disable server spectator mode
-        if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
-            retroarchConfig['netplay_spectator_mode_enable'] = 'true'
-        else:
-            retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+        retroarchConfig['netplay_spectator_mode_enable'] = system.config.get_bool('netplay.spectator', return_values=('true', 'false'))
 
         # Relay
-        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" and system.config['netplay.relay'] != "none" :
+        if (netplay_relay := system.config.get('netplay.relay')) and netplay_relay != "none":
             retroarchConfig['netplay_use_mitm_server'] = "true"
-            retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
-            if system.config['netplay.relay'] == "custom" and system.isOptSet('netplay.customserver'):
-                retroarchConfig['netplay_custom_mitm_server'] = systemConfig.get('netplay.customserver', "")
+            retroarchConfig['netplay_mitm_server'] = netplay_relay
+            if netplay_relay == "custom" and (netplay_customserver := system.config.get('netplay.customserver')) is not system.config.MISSING:
+                retroarchConfig['netplay_custom_mitm_server'] = netplay_customserver
         else:
             retroarchConfig['netplay_use_mitm_server'] = "false"
 
     # Display FPS
-    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
-        retroarchConfig['fps_show'] = 'true'
-    else:
-        retroarchConfig['fps_show'] = 'false'
+    retroarchConfig['fps_show'] = 'true' if system.config.show_fps else 'false'
 
     # rumble (to reduce force feedback on devices like RG552)
-    if system.isOptSet('rumble_gain'):
-        retroarchConfig['input_rumble_gain'] = systemConfig.get('rumble_gain', "")
-    else:
-        retroarchConfig['input_rumble_gain'] = ""
+    retroarchConfig['input_rumble_gain'] = system.config.get('rumble_gain', "")
 
     # On-Screen Display
     retroarchConfig['width']  = gameResolution["width"]  # default value
@@ -896,29 +712,20 @@ def createLibretroConfig(
         retroarchConfig['video_font_size'] = '11'
 
     # AI option (service for game translations)
-    if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
+    if system.config.get_bool('ai_service_enabled'):
         retroarchConfig['ai_service_enable'] = 'true'
         retroarchConfig['ai_service_mode'] = '0'
         retroarchConfig['ai_service_source_lang'] = '0'
-        if system.isOptSet('ai_target_lang'):
-            chosen_lang=system.config['ai_target_lang']
-        else:
-            chosen_lang='En'
-        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
-            retroarchConfig['ai_service_url'] = f"{system.config['ai_service_url']}&mode=Fast&output=png&target_lang={chosen_lang}"
-        else:
-            retroarchConfig['ai_service_url'] = f'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang={chosen_lang}'
-        if system.isOptSet('ai_service_pause') and system.getOptBoolean('ai_service_pause') == True:
-            retroarchConfig['ai_service_pause'] = 'true'
-        else:
-            retroarchConfig['ai_service_pause'] = 'false'
+        chosen_lang = system.config.get('ai_target_lang', 'En')
+        retroarchConfig['ai_service_url'] = f'{system.config.get("ai_service_url", "http://ztranslate.net/service?api_key=BATOCERA")}&mode=Fast&output=png&target_lang={chosen_lang}'
+        retroarchConfig['ai_service_pause'] = system.config.get_bool('ai_service_pause', return_values=('true', 'false'))
     else:
         retroarchConfig['ai_service_enable'] = 'false'
 
     # Guns
     # clear premapping for each player gun to make new one. Useful for libretro-mame and flycast-dreamcast
-    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-        for g in range(0, len(guns)):
+    if system.config.use_guns:
+        for g in range(len(guns)):
             clearGunInputsForPlayer(g+1, retroarchConfig)
 
     gun_mapping: dict[str, dict[str, _GunMappingItem]] = {
@@ -939,7 +746,7 @@ def createLibretroConfig(
         "genesisplusgx" : { "megadrive" : { "device": 516, "p2": 0,
                                             "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ] },
                             "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
-                            "segacd" : { "device": 516, "p2": 0,
+                            "megacd" : { "device": 516, "p2": 0,
                                          "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ]} },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame"          : { "default" : { "p1": 0, "p2": 1, "p3": 2 } },
@@ -957,13 +764,13 @@ def createLibretroConfig(
     }
 
     # apply mapping
-    if system.isOptSet('use_guns') and system.getOptBoolean('use_guns'):
-        if system.config['core'] in gun_mapping:
+    if system.config.use_guns:
+        if system.config.core in gun_mapping:
             # conf from general mapping
-            if system.name in gun_mapping[system.config['core']]:
-                ragunconf = gun_mapping[system.config['core']][system.name]
+            if system.name in gun_mapping[system.config.core]:
+                ragunconf = gun_mapping[system.config.core][system.name]
             else:
-                ragunconf = gun_mapping[system.config['core']]["default"]
+                ragunconf = gun_mapping[system.config.core]["default"]
             raguncoreconf: dict[str, str] = {}
 
             # overwrite configuration by gungames.xml
@@ -983,7 +790,7 @@ def createLibretroConfig(
                             retroarchConfig[f'input_libretro_device_p{nplayer}'] = ragunconf["device"]
                         else:
                             retroarchConfig[f'input_libretro_device_p{nplayer}'] = ""
-                    configureGunInputsForPlayer(nplayer, guns[ragunconf[f"p{nplayer}"]], controllers, retroarchConfig, system.config['core'], metadata, system)
+                    configureGunInputsForPlayer(nplayer, guns[ragunconf[f"p{nplayer}"]], controllers, retroarchConfig, system.config.core, metadata, system)
 
             # override core settings
             for key in raguncoreconf:
@@ -1006,8 +813,7 @@ def createLibretroConfig(
         _logger.error("Error with bezel %s: %s", bezel, e, exc_info=e, stack_info=True)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
-    for key, value in systemConfig.items(starts_with='retroarch.'):
-        retroarchConfig[key] = value
+    retroarchConfig.update(system.config.items(starts_with='retroarch.'))
 
     return retroarchConfig
 
@@ -1098,7 +904,7 @@ def configureGunInputsForPlayer(
         retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = 4
 
     if core == "flycast":
-        if system.isOptSet('flycast_offscreen_reload') and system.getOptBoolean('flycast_offscreen_reload'):
+        if system.config.get_bool('flycast_offscreen_reload'):
             retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = ''
             retroarchConfig[f'input_player{n}_gun_select_mbtn'        ] = ''
             retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = ''
@@ -1212,7 +1018,7 @@ def writeBezelConfig(
         h5 = bezelsUtil.gunsBorderSize(w, h, innerSize, outerSize)
 
         # could be better to compute the ratio while on ra it is forced to 4/3...
-        ratio = generator.getInGameRatio(system.config, gameResolution, str(rom))
+        ratio = generator.getInGameRatio(system.config, gameResolution, rom)
         top    = h5
         left   = h5
         bottom = h5
@@ -1233,16 +1039,16 @@ def writeBezelConfig(
         if bz_infos is None:
             return
 
-    overlay_info_file: Path = cast(Path, bz_infos["info"])
-    overlay_png_file: Path  = cast(Path, bz_infos["png"])
-    bezel_game: bool  = cast(bool, bz_infos["specific_to_game"])
+    overlay_info_file: Path = cast("Path", bz_infos["info"])
+    overlay_png_file: Path  = cast("Path", bz_infos["png"])
+    bezel_game: bool  = cast("bool", bz_infos["specific_to_game"])
 
     # only the png file is mandatory
     if overlay_info_file.exists():
         try:
             with overlay_info_file.open() as f:
                 infos = cast('BezelInfo', json.load(f))
-        except:
+        except Exception:
             infos = {}
     else:
         infos = {}
@@ -1259,38 +1065,36 @@ def writeBezelConfig(
         if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
             if gameRatio < 1.6 and gunsBordersSize is None: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios ; don't skip if gun borders are needed
                 return
-            else:
-                bezelNeedAdaptation = True
+
+            bezelNeedAdaptation = True
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
-        if defined('ratio', system.config):
-            if system.config['ratio'] in ratioIndexes:
-                retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
-                retroarchConfig['video_aspect_ratio_auto'] = 'false'
+        if defined('ratio', system.config) and system.config['ratio'] in ratioIndexes:
+            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
+            retroarchConfig['video_aspect_ratio_auto'] = 'false'
 
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
         if gameRatio < 1.6 and gunsBordersSize is None: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios ; don't skip if gun borders are needed
             return
-        else:
-            # No info on the bezel, let's get the bezel image width and height and apply the
-            # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
-            try:
-                infos["width"], infos["height"] = bezelsUtil.fast_image_size(overlay_png_file)
-                infos["top"]    = int(infos["height"] * 2 / 1080)
-                infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
-                infos["bottom"] = int(infos["height"] * 2 / 1080)
-                infos["right"]  = int(infos["width"] * 241 / 1920)
-                bezelNeedAdaptation = True
-            except:
-                pass # outch, no ratio will be applied.
+
+        # No info on the bezel, let's get the bezel image width and height and apply the
+        # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
+        try:
+            infos["width"], infos["height"] = bezelsUtil.fast_image_size(overlay_png_file)
+            infos["top"]    = int(infos["height"] * 2 / 1080)
+            infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
+            infos["bottom"] = int(infos["height"] * 2 / 1080)
+            infos["right"]  = int(infos["width"] * 241 / 1920)
+            bezelNeedAdaptation = True
+        except Exception:
+            pass # outch, no ratio will be applied.
         if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
             bezelNeedAdaptation = False
         if not shaderBezel:
-            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
-            if defined('ratio', system.config):
-                if system.config['ratio'] in ratioIndexes:
-                    retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
-                    retroarchConfig['video_aspect_ratio_auto'] = 'false'
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom"))
+            if defined('ratio', system.config) and system.config['ratio'] in ratioIndexes:
+                retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(system.config['ratio'])
+                retroarchConfig['video_aspect_ratio_auto'] = 'false'
 
 
     if not shaderBezel:
@@ -1320,12 +1124,10 @@ def writeBezelConfig(
         retroarchConfig["video_viewport_bias_y"] = "1.000000"
 
     # stretch option
-    if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
-        bezel_stretch = True
-    else:
-        bezel_stretch = False
+    bezel_stretch = system.config.get_bool('bezel_stretch')
 
     tattoo_output_png = Path("/tmp/bezel_tattooed.png")
+    qrcode_output_png = Path("/tmp/bezel_qrcode.png")
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -1340,16 +1142,17 @@ def writeBezelConfig(
         else:
             # The logic to cache system bezels is not always true anymore now that we have tattoos
             output_png_file = Path("/tmp") / f"{overlay_png_file.stem}_adapted.png"
-            if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+            if system.config.get('bezel.tattoo', '0') != "0" or system.config.get('bezel.qrcode', '0') != "0":
                 create_new_bezel_file = True
             else:
-                if (not tattoo_output_png.exists()) and output_png_file.exists():
+                if not tattoo_output_png.exists() and not qrcode_output_png.exists() and output_png_file.exists():
                     create_new_bezel_file = False
                     _logger.debug("Using cached bezel file %s", output_png_file)
                 else:
                     try:
                         tattoo_output_png.unlink()
-                    except:
+                        qrcode_output_png.unlink()
+                    except Exception:
                         pass
                     create_new_bezel_file = True
             if create_new_bezel_file:
@@ -1357,19 +1160,19 @@ def writeBezelConfig(
                 fadapted.sort(key=lambda x: x.stat().st_mtime)
                 # Keep only last 10 generated bezels to save space on tmpfs /tmp
                 if len(fadapted) >= 10:
-                    for i in range (10):
+                    for _ in range(10):
                         fadapted.pop()
                     _logger.debug("Removing unused bezel file: %s", fadapted)
                     for fr in fadapted:
                         try:
                             fr.unlink()
-                        except:
+                        except Exception:
                             pass
 
         if bezel_stretch:
             borderx = 0
             viewportRatio = (float(infos["width"])/float(infos["height"]))
-            if (viewportRatio - gameRatio > 0.01):
+            if viewportRatio - gameRatio > 0.01:
                 new_x = int(infos["width"]*gameRatio/viewportRatio)
                 delta = int(infos["width"]-new_x)
                 borderx = delta//2
@@ -1400,9 +1203,13 @@ def writeBezelConfig(
                 _logger.debug("Failed to create the adapated image: %s", e)
                 return
         overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
-        if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+        if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
+        if system.config.get('bezel.qrcode', '0') != "0":
+            if (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
+                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
+                overlay_png_file = qrcode_output_png
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
@@ -1411,15 +1218,19 @@ def writeBezelConfig(
             retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
-        if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+        if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
+        if system.config.get('bezel.qrcode', '0') != "0":
+            if (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
+                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
+                overlay_png_file = qrcode_output_png
 
     if gunsBordersSize is not None:
         _logger.debug("Draw gun borders")
         output_png_file = Path("/tmp/bezel_gunborders.png")
         innerSize, outerSize = bezelsUtil.gunBordersSize(gunsBordersSize)
-        borderSize = bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
+        bezelsUtil.gunBorderImage(overlay_png_file, output_png_file, gunsBordersRatio, innerSize, outerSize, bezelsUtil.gunsBordersColorFomConfig(system.config))
         overlay_png_file = output_png_file
 
     _logger.debug("Bezel file set to %s", overlay_png_file)

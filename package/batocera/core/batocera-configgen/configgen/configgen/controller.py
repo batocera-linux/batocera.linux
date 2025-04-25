@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
 
 from .batoceraPaths import BATOCERA_ES_DIR, HOME, USER_ES_DIR
+from .exceptions import BatoceraException
 from .input import Input, InputDict, InputMapping
 
 if TYPE_CHECKING:
@@ -51,21 +52,26 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
     """
     if input.type == 'button':
         return f'{keyname}:b{input.id}'
-    elif input.type == 'hat':
+
+    if input.type == 'hat':
         return f'{keyname}:h{input.id}.{input.value}'
-    elif input.type == 'axis':
+
+    if input.type == 'axis':
         if 'joystick' in input.name:
             return f"{keyname}:a{input.id}{'~' if int(input.value) > 0 else ''}"
-        elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
+
+        if keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
             return f"{keyname}:{'-' if int(input.value) < 0 else '+'}a{input.id}"
-        elif 'trigger' in keyname:
+
+        if 'trigger' in keyname:
             return f"{keyname}:a{input.id}{'~' if int(input.value) < 0 else ''}"
-        else:
-            return f'{keyname}:a{input.id}'
-    elif input.type == 'key':
+
+        return f'{keyname}:a{input.id}'
+
+    if input.type == 'key':
         return None
-    else:
-        raise ValueError(f'unknown key type: {input.type!r}')
+
+    raise BatoceraException(f'Unknown controller input type: {input.type!r}')
 
 
 def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> ET.Element:
@@ -86,7 +92,7 @@ def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> 
         if element is not None:
             return element
 
-    raise Exception(f'Could not find controller data for "{name}" with GUID "{guid}"')
+    raise BatoceraException(f'Could not find controller data for "{name}" with GUID "{guid}"')
 
 
 class _RelaxedDict(TypedDict):
@@ -196,7 +202,7 @@ class Controller:
             if input.type == "axis":
                 # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
                 # 3 possible initial positions <1----------------|-------2-------|----------------3>
-                if (val := code_values.get(int(cast(str, input.code)))) is not None:
+                if (val := code_values.get(int(cast('str', input.code)))) is not None:
                     res[x] = { "centered":  val > -4000 and val < 4000, "reversed": val > 4000 }
                 else:
                     res[x] = { "centered":  True, "reversed": False }
@@ -231,8 +237,8 @@ class Controller:
 
         input_config = _find_input_config(roots, real_name, guid)
         return cls(
-            name=cast(str, input_config.get("deviceName")),
-            type=cast(Literal['keyboard', 'joystick'], input_config.get("type")),
+            name=cast('str', input_config.get("deviceName")),
+            type=cast('Literal["keyboard", "joystick"]', input_config.get("type")),
             guid=guid,
             inputs_=Input.from_parent_element(input_config),
             player_number=player_number,

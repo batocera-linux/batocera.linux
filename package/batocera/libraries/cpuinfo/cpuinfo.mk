@@ -3,8 +3,8 @@
 # cpuinfo
 #
 ################################################################################
-# Version: Commits on Aug 31, 2024
-CPUINFO_VERSION = fa1c679da8d19e1d87f20175ae1ec10995cd3dd3
+# Version: Commits on Mar 28, 2025
+CPUINFO_VERSION = 39ea79a3c132f4e678695c579ea9353d2bd29968
 CPUINFO_SITE = https://github.com/pytorch/cpuinfo.git
 CPUINFO_SITE_METHOD = git
 CPUINFO_INSTALL_STAGING = YES

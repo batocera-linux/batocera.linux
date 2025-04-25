@@ -4,7 +4,7 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Final, NotRequired, TypedDict, cast
 
 import pyudev
 
@@ -76,16 +76,16 @@ def getGamesMetaData(system: str, rom: str | Path) -> dict[str, str]:
 
     target_system = 'arcade' if system in _ARCADE_SYSTEMS else system
 
-    for system_element in root.iterfind('./system[@name]'):
-        if target_system not in system_element.attrib['name'].split(','):
+    for system_element in root.iterfind('./system[@id]'):
+        if target_system not in system_element.attrib['id'].split(','):
             continue
 
         # search the game named default
-        if (default_element := system_element.find('./game[@name="default"]')) is not None:
+        if (default_element := system_element.find('./game[@id="default"]')) is not None:
             _update_metadata_from_element(metadata, default_element, extra_log_text=' (system level)')
 
-        for game_element in system_element.iterfind('./game[@name!="default"]'):
-            if game_element.attrib['name'] not in game:
+        for game_element in system_element.iterfind('./game[@id!="default"]'):
+            if game_element.attrib['id'] not in game:
                 continue
 
             _update_metadata_from_element(metadata, game_element)
@@ -132,7 +132,7 @@ def getDevicesInformation() -> DeviceInfoDict:
                 if isMouse:
                     mouses.append(eventId)
                 devices[eventId] = {
-                    "node": ev.device_node,
+                    "node": cast('str', ev.device_node),
                     "sysfs_path": str((Path(ev.sys_path) / "device" / "device").resolve()),
                     "group": group,
                     "isJoystick": isJoystick,
@@ -144,7 +144,7 @@ def getDevicesInformation() -> DeviceInfoDict:
                         devices[eventId]["wheel_rotation"] = int(ev.properties["WHEEL_ROTATION_ANGLE"])
                     if group not in groups:
                         groups[group] = []
-                    groups[group].append(ev.device_node)
+                    groups[group].append(cast('str', ev.device_node))
     mouses.sort()
     joysticks.sort()
     res: DeviceInfoDict = {}

@@ -76,12 +76,4 @@ define CEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
 endef
 
-define CEMU_INSTALL_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cemu/wiiu.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
-endef
-
-CEMU_POST_INSTALL_TARGET_HOOKS = CEMU_INSTALL_EVMAPY
-
 $(eval $(cmake-package))

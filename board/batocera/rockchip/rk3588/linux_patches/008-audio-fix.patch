@@ -1,0 +1,175 @@
+diff -rupbN linux.orig/sound/soc/codecs/es8323.c linux/sound/soc/codecs/es8323.c
+--- linux.orig/sound/soc/codecs/es8323.c	2024-09-12 23:28:11.746075255 +0000
++++ linux/sound/soc/codecs/es8323.c	2024-09-13 04:16:42.123776243 +0000
+@@ -25,6 +25,11 @@
+ #include <sound/soc-dapm.h>
+ #include <sound/initval.h>
+ #include <linux/proc_fs.h>
++#include <linux/gpio/consumer.h>
++#include <linux/delay.h>
++#include <linux/gpio.h>
++#include <linux/of_gpio.h>
++
+ #include "es8323.h"
+ 
+ #define NR_SUPPORTED_MCLK_LRCK_RATIOS 5
+@@ -33,6 +38,9 @@ static const unsigned int supported_mclk
+ };
+ 
+ #define es8323_DEF_VOL	0x1b
++//extern struct gpio_desc *g_spk_ctl_gpio;
++static int es8323_mute(struct snd_soc_dai *dai, int mute, int stream);
++static void es8323_pcm_shutdown(struct snd_pcm_substream *substream, struct snd_soc_dai *dai);
+ 
+ static int es8323_set_bias_level(struct snd_soc_component *component,
+ 				 enum snd_soc_bias_level level);
+@@ -93,6 +101,7 @@ struct es8323_priv {
+ 	struct snd_pcm_hw_constraint_list sysclk_constraints;
+ 	struct snd_soc_component *component;
+ 	struct regmap *regmap;
++	struct gpio_desc *spk_ctl_gpio;
+ };
+ 
+ static int es8323_reset(struct snd_soc_component *component)
+@@ -388,8 +397,8 @@ static const struct _coeff_div coeff_div
+ 	{12000000, 22050, 544, 0x6, 0x1},
+ 
+ 	/* 32k */
+-	{8192000, 32000, 256, 0x2, 0x0},
+-	{16384000, 32000, 512, 0x4, 0x0},
++	{8192000, 16000, 256, 0x2, 0x0},
++	{16384000, 16000, 512, 0x4, 0x0},
+ 	{12288000, 32000, 384, 0x3, 0x0},
+ 	{18432000, 32000, 576, 0x5, 0x0},
+ 	{12000000, 32000, 375, 0x4, 0x1},
+@@ -546,6 +555,11 @@ static int es8323_pcm_startup(struct snd
+ 	return 0;
+ }
+ 
++static void es8323_pcm_shutdown(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
++{
++	return;
++}
++
+ static int es8323_pcm_hw_params(struct snd_pcm_substream *substream,
+ 				struct snd_pcm_hw_params *params,
+ 				struct snd_soc_dai *dai)
+@@ -622,7 +636,30 @@ static int es8323_pcm_hw_params(struct s
+ 
+ static int es8323_mute(struct snd_soc_dai *dai, int mute, int stream)
+ {
+-	return 0;
++	// struct snd_soc_component *component = dai->component;
++	// struct es8323_priv *es8323 = snd_soc_component_get_drvdata(component);
++
++	// gpiod_set_value_cansleep(es8323->spk_ctl_gpio, mute ? 0 : 1);
++
++	int hp = 0;
++	hp = gpio_get_value(102);//hp det
++
++	// printk("gsy hp =%d\n",hp);
++
++	if (hp) {
++	// printk("gsy es8323_mute\n");
++	// gsy add 
++    if (mute) {
++        gpio_direction_output(133, 0);// spk ctl
++		gpio_set_value(133, 0);
++    } else {
++        gpio_direction_output(133, 1);
++		gpio_set_value(133, 1);
++    }
++	}
++	// gsy end
++	usleep_range(5000, 7000);
++	return snd_soc_component_update_bits(dai->component, ES8323_DACCONTROL3, ES8323_DACCONTROL3_DACMUTE, mute ? ES8323_DACCONTROL3_DACMUTE : 0);
+ }
+ 
+ static int es8323_set_bias_level(struct snd_soc_component *component,
+@@ -651,6 +688,8 @@ static int es8323_set_bias_level(struct
+ 		snd_soc_component_write(component, ES8323_CHIPLOPOW2, 0x00);
+ 		snd_soc_component_write(component, ES8323_CHIPPOWER, 0x00);
+ 		snd_soc_component_write(component, ES8323_ADCPOWER, 0x59);
++		// printk("gsy SND_SOC_BIAS_PREPARE\n");
++		usleep_range(50000, 51000);
+ 		break;
+ 	case SND_SOC_BIAS_STANDBY:
+ 		dev_dbg(component->dev, "%s standby\n", __func__);
+@@ -659,6 +698,7 @@ static int es8323_set_bias_level(struct
+ 		snd_soc_component_write(component, ES8323_CHIPLOPOW2, 0x00);
+ 		snd_soc_component_write(component, ES8323_CHIPPOWER, 0x00);
+ 		snd_soc_component_write(component, ES8323_ADCPOWER, 0x59);
++		// printk("gsy SND_SOC_BIAS_STANDBY\n");
+ 		break;
+ 	case SND_SOC_BIAS_OFF:
+ 		dev_dbg(component->dev, "%s off\n", __func__);
+@@ -668,6 +708,7 @@ static int es8323_set_bias_level(struct
+ 		snd_soc_component_write(component, ES8323_CHIPLOPOW2, 0xFF);
+ 		snd_soc_component_write(component, ES8323_CHIPPOWER, 0xFF);
+ 		snd_soc_component_write(component, ES8323_ANAVOLMANAG, 0x7B);
++		// printk("gsy SND_SOC_BIAS_OFF\n");
+ 		break;
+ 	}
+ 	return 0;
+@@ -680,6 +721,7 @@ static int es8323_set_bias_level(struct
+ 
+ static struct snd_soc_dai_ops es8323_ops = {
+ 	.startup = es8323_pcm_startup,
++	.shutdown = es8323_pcm_shutdown,
+ 	.hw_params = es8323_pcm_hw_params,
+ 	.set_fmt = es8323_set_dai_fmt,
+ 	.set_sysclk = es8323_set_dai_sysclk,
+@@ -749,6 +791,12 @@ static int es8323_probe(struct snd_soc_c
+ 	struct es8323_priv *es8323 = snd_soc_component_get_drvdata(component);
+ 	int ret = 0;
+ 
++	es8323->spk_ctl_gpio = devm_gpiod_get_optional(component->dev,
++							"spk-con",
++							GPIOD_OUT_LOW);
++	if (IS_ERR(es8323->spk_ctl_gpio))
++		return PTR_ERR(es8323->spk_ctl_gpio);
++	
+ 	es8323->mclk = devm_clk_get(component->dev, "mclk");
+ 	if (IS_ERR(es8323->mclk)) {
+ 		dev_err(component->dev, "%s mclk is missing or invalid\n", __func__);
+@@ -879,6 +927,7 @@ static int es8323_i2c_probe(struct i2c_c
+ static void es8323_i2c_remove(struct i2c_client *client)
+ {
+ 	snd_soc_unregister_component(&client->dev);
++	return;
+ }
+ 
+ static const struct i2c_device_id es8323_i2c_id[] = {
+diff -rupbN linux.orig/sound/soc/codecs/es8323.h linux/sound/soc/codecs/es8323.h
+--- linux.orig/sound/soc/codecs/es8323.h	2024-09-12 23:28:11.746075255 +0000
++++ linux/sound/soc/codecs/es8323.h	2024-09-13 04:09:17.706248594 +0000
+@@ -80,7 +80,7 @@
+ 
+ #define ES8323_ADC_MUTE         ES8323_ADCCONTROL7
+ #define ES8323_DAC_MUTE         ES8323_DACCONTROL3
+-
++#define ES8323_DACCONTROL3_DACMUTE (1 << 2)
+ 
+ 
+ #define ES8323_IFACE            ES8323_MASTERMODE
+diff -rupbN linux.orig/sound/soc/rockchip/rockchip_multicodecs.c linux/sound/soc/rockchip/rockchip_multicodecs.c
+--- linux.orig/sound/soc/rockchip/rockchip_multicodecs.c	2024-09-12 23:28:11.790076230 +0000
++++ linux/sound/soc/rockchip/rockchip_multicodecs.c	2024-09-13 04:09:17.706248594 +0000
+@@ -279,12 +279,16 @@ static int mc_hp_event(struct snd_soc_dapm_widget *w,
+ {
+ 	struct snd_soc_card *card = w->dapm->card;
+ 	struct multicodecs_data *mc_data = snd_soc_card_get_drvdata(card);
++	
++	struct snd_soc_jack *jack_headset = mc_data->jack_headset;
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_POST_PMU:
+ 		if (mc_data->pre_poweron_delayms)
+ 			msleep(mc_data->pre_poweron_delayms);
+-		gpiod_set_value_cansleep(mc_data->hp_ctl_gpio, 1);
++		//gpiod_set_value_cansleep(mc_data->hp_ctl_gpio, 1);
++		if (!(jack_headset->status & SND_JACK_HEADPHONE))
++		    gpiod_set_value_cansleep(mc_data->spk_ctl_gpio, 1);
+ 		break;
+ 	case SND_SOC_DAPM_PRE_PMD:
+ 		gpiod_set_value_cansleep(mc_data->hp_ctl_gpio, 0);

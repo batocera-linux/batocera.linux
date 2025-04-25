@@ -3,9 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Mar 6, 2025
+# Version: Commits on Mar 31, 2025
 # uses standalone tree for now
-VPINBALL_VERSION = ececff7d0105d52c18872cbf0a84d0840408fc29
+VPINBALL_VERSION = c3e8134bebae535689c52f8d841f86a970a89acb
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -18,13 +18,15 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
     SOURCE_DIR = linux-aarch64
     ARCH = aarch64
     VPINBALL_CONF_OPTS += "-DBUILD_RK3588=ON"
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
     SOURCE = CMakeLists_gl-linux-aarch64.txt
     SOURCE_DIR = linux-aarch64
     ARCH = aarch64
     VPINBALL_CONF_OPTS += "-DBUILD_RPI=ON"
+else ifeq ($(BR2_aarch64),y)
+    SOURCE = CMakeLists_gl-linux-aarch64.txt
+    SOURCE_DIR = linux-aarch64
+    ARCH = aarch64
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)

@@ -9,9 +9,10 @@ seat * hide_cursor 500
 # Default wallpaper
 output * bg /usr/share/emulationstation/resources/logo.png fill
 
-# Set keyboard layout (default US)
+# Set keyboard layout based on environment variables set (default US)
 input * {
-    xkb_layout "us"
+    xkb_layout $XKB_LAYOUT
+    xkb_variant $XKB_VARIANT
 }
 
 # kill focused window
@@ -23,18 +24,29 @@ bindsym Mod1+f fullscreen
 # Set a default rule to remove decorations for all windows
 default_border none
 
-# Set a default rule to start all applications in fullscreen mode
-for_window [app_id=".*"] fullscreen
-for_window [class=".*"] fullscreen
+# Make NORMAL windows fullscreen (should exclude dialogs)
+for_window [window_type="normal"] fullscreen enable
 
-# Hide decorations for specific XWayland apps
-for_window [instance="supermodel"] border none, fullscreen
-for_window [instance="dolphin-emu"] border none, fullscreen
-for_window [instance="batocera-config-dolphin"] border none, fullscreen
-for_window [instance="batocera-config-scummvm"] border none, fullscreen
-for_window [instance="scummvm"] border none, fullscreen
-for_window [instance="duckstation-qt"] border none, fullscreen
-for_window [instance="xterm"] border none, fullscreen
+# Optionally, ensure dialogs explicitly float if needed (often default anyway)
+for_window [window_type="dialog"] floating enable
+for_window [window_role="dialog"] floating enable
+
+# F1 launched apps
+for_window [app_id="azahar"] fullscreen enable
+for_window [app_id="flycast"] fullscreen enable
+for_window [app_id="duckstation-qt"] fullscreen enable
+for_window [app_id="dolphin-emu"] fullscreen enable
+for_window [app_id="info.cemu.Cemu"] fullscreen enable
+for_window [app_id="rpcs3"] fullscreen enable
+for_window [app_id="scummvm"] fullscreen enable
+for_window [app_id="net.shadps4.shadPS4"] fullscreen enable
+
+# Specific XWayland apps
+for_window [app_id="supermodel"] fullscreen enable
+for_window [class="XTerm"] fullscreen enable
+for_window [class="Play!"] fullscreen enable
+# Model 2
+for_window [instance="emulator_multicpu.exe"] fullscreen enable
 
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide

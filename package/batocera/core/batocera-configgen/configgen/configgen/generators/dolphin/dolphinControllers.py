@@ -5,6 +5,7 @@ import logging
 import re
 from typing import TYPE_CHECKING
 
+from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
 from .dolphinPaths import DOLPHIN_CONFIG
 
@@ -23,18 +24,18 @@ _logger = logging.getLogger(__name__)
 def generateControllerConfig(system: Emulator, playersControllers: Controllers, metadata: Mapping[str, str], wheels: DeviceInfoMapping, rom: Path, guns: Guns) -> None:
 
     if system.name == "wii":
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns:
+        if system.config.use_guns and guns:
             generateControllerConfig_guns("WiimoteNew.ini", "Wiimote", metadata, guns)
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
-        elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
+        elif not system.config.get_bool('emulatedwiimotes', True):
             # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
-        elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
+        elif system.config.get_bool('emulatedwiimotes'):
             # Generate if hardcoded
             generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
-        elif (".cc." in rom.name or ".pro." in rom.name or ".side." in rom.name or ".is." in rom.name or ".it." in rom.name or ".in." in rom.name or ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name or ".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or system.isOptSet("sideWiimote"):
+        elif (".cc." in rom.name or ".pro." in rom.name or ".side." in rom.name or ".is." in rom.name or ".it." in rom.name or ".in." in rom.name or ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name or ".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or "sideWiimote" in system.config:
             # Generate if auto and name extensions are present
             generateControllerConfig_emulatedwiimotes(system, playersControllers, {}, rom)
             removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
@@ -43,16 +44,15 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
             generateControllerConfig_gamecube(system, playersControllers, {}, rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
         used_wheels: DeviceInfoMapping = {}
-        if system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0:
+        if system.config.use_wheels and wheels:
             if "wheel_type" in metadata:
                 if metadata["wheel_type"] == "Steering Wheel":
                     used_wheels = wheels
-            elif "dolphin_wheel_type" in system.config:
-                if system.config["dolphin_wheel_type"] == "Steering Wheel":
-                    used_wheels = wheels
+            elif system.config.get("dolphin_wheel_type") == "Steering Wheel":
+                used_wheels = wheels
         generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
     else:
-        raise ValueError(f"Invalid system name : '{system.name}'")
+        raise BatoceraException(f"Invalid system name: '{system.name}'")
 
 # https://docs.libretro.com/library/dolphin/
 
@@ -92,10 +92,11 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
 
     extraOptions: dict[str, str] = {}
     extraOptions["Source"] = "1"
+    controller_mode = system.config.get("controller_mode")
 
     # Side wiimote
     # l2 for shaking actions
-    if (".side." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'cc'):
+    if (".side." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode != 'disabled' and controller_mode != 'cc'):
         extraOptions["Options/Sideways Wiimote"] = "1"
         wiiMapping['x']  = 'Buttons/B'
         wiiMapping['y']  = 'Buttons/A'
@@ -109,10 +110,10 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
 
     # i
-    if (".is." in rom.name or ".it." in rom.name or ".in." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'in' and system.config['controller_mode'] != 'cc'):
+    if (".is." in rom.name or ".it." in rom.name or ".in." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode != 'disabled' and controller_mode != 'in' and controller_mode != 'cc'):
         wiiMapping['joystick1up']   = 'IR/Up'
         wiiMapping['joystick1left'] = 'IR/Left'
-    if (".si." in rom.name or ".ti." in rom.name or ".ni." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in' and system.config['controller_mode'] != 'cc'):
+    if (".si." in rom.name or ".ti." in rom.name or ".ni." in rom.name) or (controller_mode is not system.config.MISSING and controller_mode == 'in' and controller_mode != 'cc'):
         wiiMapping['joystick2up']   = 'IR/Up'
         wiiMapping['joystick2left'] = 'IR/Left'
 
@@ -120,7 +121,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     if ".si." in rom.name or ".st." in rom.name or ".sn." in rom.name:
         wiiMapping['joystick1up']   = 'Swing/Up'
         wiiMapping['joystick1left'] = 'Swing/Left'
-    if (".is." in rom.name or ".ts." in rom.name or ".ns." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'is'):
+    if (".is." in rom.name or ".ts." in rom.name or ".ns." in rom.name) or (controller_mode == 'is'):
         wiiMapping['joystick2up']   = 'Swing/Up'
         wiiMapping['joystick2left'] = 'Swing/Left'
 
@@ -128,12 +129,12 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
     if ".ti." in rom.name or ".ts." in rom.name or ".tn." in rom.name:
         wiiMapping['joystick1up']   = 'Tilt/Forward'
         wiiMapping['joystick1left'] = 'Tilt/Left'
-    if (".it." in rom.name or ".st." in rom.name or ".nt." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'it'):
+    if (".it." in rom.name or ".st." in rom.name or ".nt." in rom.name) or (controller_mode == 'it'):
         wiiMapping['joystick2up']   = 'Tilt/Forward'
         wiiMapping['joystick2left'] = 'Tilt/Left'
 
     # n
-    if (".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in') or (system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True):
+    if (".ni." in rom.name or ".ns." in rom.name or ".nt." in rom.name) or (controller_mode == 'in') or (system.config.get_bool("dsmotion")):
         extraOptions['Extension']   = 'Nunchuk'
         wiiMapping['l2'] = 'Nunchuk/Buttons/C'
         wiiMapping['r2'] = 'Nunchuk/Buttons/Z'
@@ -148,7 +149,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
 
     # cc : Classic Controller Settings / pro : Classic Controller Pro Settings
     # Swap shoulder with triggers and vice versa if cc
-    if (".cc." in rom.name or ".pro." in rom.name) or (system.isOptSet("controller_mode") and system.config['controller_mode'] in ('cc', 'pro')):
+    if (".cc." in rom.name or ".pro." in rom.name) or (controller_mode in ('cc', 'pro')):
         extraOptions['Extension']   = 'Classic'
         wiiMapping['x'] = 'Classic/Buttons/X'
         wiiMapping['y'] = 'Classic/Buttons/Y'
@@ -164,7 +165,7 @@ def generateControllerConfig_emulatedwiimotes(system: Emulator, playersControlle
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
-        if (".cc." in rom.name or (system.isOptSet('controller_mode') and system.config['controller_mode'] == 'cc')):
+        if (".cc." in rom.name or (controller_mode == 'cc')):
             wiiMapping['pageup'] = 'Classic/Buttons/ZL'
             wiiMapping['pagedown'] = 'Classic/Buttons/ZR'
             wiiMapping['l2'] = 'Classic/Triggers/L'
@@ -250,213 +251,204 @@ def removeControllerConfig_gamecube() -> None:
 
 def generateControllerConfig_realwiimotes(filename: str, anyDefKey: str) -> None:
     configFileName = DOLPHIN_CONFIG / filename
-    f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
-    nplayer = 1
-    while nplayer <= 4:
-        f.write(f"[{anyDefKey}{nplayer}]\n")
-        f.write("Source = 2\n")
-        nplayer += 1
-    f.write("[BalanceBoard]\nSource = 2\n")
-    f.write
-    f.close()
+    with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
+        nplayer = 1
+        while nplayer <= 4:
+            f.write(f"[{anyDefKey}{nplayer}]\n")
+            f.write("Source = 2\n")
+            nplayer += 1
+        f.write("[BalanceBoard]\nSource = 2\n")
+
 
 def generateControllerConfig_guns(filename: str, anyDefKey: str, metadata: Mapping[str, str], guns: Guns) -> None:
     configFileName = DOLPHIN_CONFIG / filename
-    f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
 
-    # In case of two pads having the same name, dolphin wants a number to handle this
-    double_pads: dict[str, int] = {}
+    with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
+        # In case of two pads having the same name, dolphin wants a number to handle this
+        double_pads: dict[str, int] = {}
 
-    nplayer = 1
-    while nplayer <= 4:
-        if len(guns) >= nplayer:
-            f.write(f"[{anyDefKey}{nplayer}]\n")
-            f.write("Source = 1\n")
-            f.write("Extension = Nunchuk\n")
+        nplayer = 1
+        while nplayer <= 4:
+            if len(guns) >= nplayer:
+                f.write(f"[{anyDefKey}{nplayer}]\n")
+                f.write("Source = 1\n")
+                f.write("Extension = Nunchuk\n")
 
-            dolphinMappingNames = {
-                "a":             "Buttons/A",
-                "b":             "Buttons/B",
-                "home":          "Buttons/Home",
-                "-":             "Buttons/-",
-                "1":             "Buttons/1",
-                "2":             "Buttons/2",
-                "+":             "Buttons/+",
-                "up":            "D-Pad/Up",
-                "down":          "D-Pad/Down",
-                "left":          "D-Pad/Left",
-                "right":         "D-Pad/Right",
-                "tiltforward":   "Tilt/Forward",
-                "tiltbackward":  "Tilt/Backward",
-                "tiltleft":      "Tilt/Left",
-                "tiltright":     "Tilt/Right",
-                "shake":         "Shake/Z",
-                "c":             "Nunchuk/Buttons/C",
-                "z":             "Nunchuk/Buttons/Z"
-            }
+                dolphinMappingNames = {
+                    "a":             "Buttons/A",
+                    "b":             "Buttons/B",
+                    "home":          "Buttons/Home",
+                    "-":             "Buttons/-",
+                    "1":             "Buttons/1",
+                    "2":             "Buttons/2",
+                    "+":             "Buttons/+",
+                    "up":            "D-Pad/Up",
+                    "down":          "D-Pad/Down",
+                    "left":          "D-Pad/Left",
+                    "right":         "D-Pad/Right",
+                    "tiltforward":   "Tilt/Forward",
+                    "tiltbackward":  "Tilt/Backward",
+                    "tiltleft":      "Tilt/Left",
+                    "tiltright":     "Tilt/Right",
+                    "shake":         "Shake/Z",
+                    "c":             "Nunchuk/Buttons/C",
+                    "z":             "Nunchuk/Buttons/Z"
+                }
 
-            gunMapping = {
-                "a":            "action",
-                "b":            "trigger",
-                "home":         "sub3",
-                "-":            "select",
-                "1":            "sub1",
-                "2":            "sub2",
-                "+":            "start",
-                "up":           "up",
-                "down":         "down",
-                "left":         "left",
-                "right":        "right",
-                "tiltforward":  "",
-                "tiltbackward": "",
-                "tiltleft":     "",
-                "tiltright":    "",
-                "shake":        "",
-                "c":            "",
-                "z":            ""
-            }
+                gunMapping = {
+                    "a":            "action",
+                    "b":            "trigger",
+                    "home":         "sub3",
+                    "-":            "select",
+                    "1":            "sub1",
+                    "2":            "sub2",
+                    "+":            "start",
+                    "up":           "up",
+                    "down":         "down",
+                    "left":         "left",
+                    "right":        "right",
+                    "tiltforward":  "",
+                    "tiltbackward": "",
+                    "tiltleft":     "",
+                    "tiltright":    "",
+                    "shake":        "",
+                    "c":            "",
+                    "z":            ""
+                }
 
-            gunButtons = {
-                "trigger": { "code": "BTN_LEFT",   "button": "left"   },
-                "action":  { "code": "BTN_RIGHT",  "button": "right"  },
-                "start":   { "code": "BTN_MIDDLE", "button": "middle" },
-                "select":  { "code": "BTN_1",      "button": "1"      },
-                "sub1":    { "code": "BTN_2",      "button": "2"      },
-                "sub2":    { "code": "BTN_3",      "button": "3"      },
-                "sub3":    { "code": "BTN_4",      "button": "4"      },
-                "up":      { "code": "BTN_5",      "button": "5"      },
-                "down":    { "code": "BTN_6",      "button": "6"      },
-                "left":    { "code": "BTN_7",      "button": "7"      },
-                "right":   { "code": "BTN_8",      "button": "8"      }
-            }
+                gunButtons = {
+                    "trigger": { "code": "BTN_LEFT",   "button": "left"   },
+                    "action":  { "code": "BTN_RIGHT",  "button": "right"  },
+                    "start":   { "code": "BTN_MIDDLE", "button": "middle" },
+                    "select":  { "code": "BTN_1",      "button": "1"      },
+                    "sub1":    { "code": "BTN_2",      "button": "2"      },
+                    "sub2":    { "code": "BTN_3",      "button": "3"      },
+                    "sub3":    { "code": "BTN_4",      "button": "4"      },
+                    "up":      { "code": "BTN_5",      "button": "5"      },
+                    "down":    { "code": "BTN_6",      "button": "6"      },
+                    "left":    { "code": "BTN_7",      "button": "7"      },
+                    "right":   { "code": "BTN_8",      "button": "8"      }
+                }
 
-            gundevname = guns[nplayer-1].name
+                gundevname = guns[nplayer-1].name
 
-            # Handle x pads having the same name
-            nsamepad = 0
-            if gundevname.strip() in double_pads:
-                nsamepad = double_pads[gundevname.strip()]
-            else:
+                # Handle x pads having the same name
                 nsamepad = 0
-                double_pads[gundevname.strip()] = nsamepad+1
+                if gundevname.strip() in double_pads:
+                    nsamepad = double_pads[gundevname.strip()]
+                else:
+                    nsamepad = 0
+                    double_pads[gundevname.strip()] = nsamepad+1
 
-            f.write(f"[{anyDefKey}{nplayer}]\n")
-            f.write(f"Device = evdev/{str(nsamepad).strip()}/{gundevname.strip()}\n")
+                f.write(f"[{anyDefKey}{nplayer}]\n")
+                f.write(f"Device = evdev/{str(nsamepad).strip()}/{gundevname.strip()}\n")
 
-            buttons = guns[nplayer-1].buttons
-            _logger.debug("Gun : %s", buttons)
+                buttons = guns[nplayer-1].buttons
+                _logger.debug("Gun : %s", buttons)
 
-            # custom remapping
-            # erase values
-            for btn in gunButtons:
-                if f"gun_{btn}" in metadata:
-                    for mval in metadata[f"gun_{btn}"].split(","):
-                        if mval in gunMapping:
-                            for x in gunMapping:
-                                if gunMapping[x] == btn:
-                                    _logger.info("erasing %s", x)
-                                    gunMapping[x] = ""
+                # custom remapping
+                # erase values
+                for btn in gunButtons:
+                    if f"gun_{btn}" in metadata:
+                        for mval in metadata[f"gun_{btn}"].split(","):
+                            if mval in gunMapping:
+                                for x in gunMapping:
+                                    if gunMapping[x] == btn:
+                                        _logger.info("erasing %s", x)
+                                        gunMapping[x] = ""
+                            else:
+                                _logger.info("custom gun mapping ignored for %s => %s (invalid value)", btn, mval)
+                # setting values
+                for btn in gunButtons:
+                    if f"gun_{btn}" in metadata:
+                        for mval in metadata[f"gun_{btn}"].split(","):
+                            if mval in gunMapping:
+                                gunMapping[mval] = btn
+                                _logger.info("setting %s to %s", mval, btn)
+
+                # write buttons
+                for btn in dolphinMappingNames:
+                    val = ""
+                    if btn in gunMapping and gunMapping[btn] != "":
+                        if gunMapping[btn] in gunButtons:
+                            if gunButtons[gunMapping[btn]]["button"] in buttons:
+                                val = gunButtons[gunMapping[btn]]["code"]
+                            else:
+                                _logger.debug("gun has not the button %s", gunButtons[gunMapping[btn]]["button"])
                         else:
-                            _logger.info("custom gun mapping ignored for %s => %s (invalid value)", btn, mval)
-            # setting values
-            for btn in gunButtons:
-                if f"gun_{btn}" in metadata:
-                    for mval in metadata[f"gun_{btn}"].split(","):
-                        if mval in gunMapping:
-                            gunMapping[mval] = btn
-                            _logger.info("setting %s to %s", mval, btn)
+                            _logger.debug("cannot map the button %s", gunMapping[btn])
+                    f.write(f"{dolphinMappingNames[btn]} = `{val}`\n")
 
-            # write buttons
-            for btn in dolphinMappingNames:
-                val = ""
-                if btn in gunMapping and gunMapping[btn] != "":
-                    if gunMapping[btn] in gunButtons:
-                        if gunButtons[gunMapping[btn]]["button"] in buttons:
-                            val = gunButtons[gunMapping[btn]]["code"]
-                        else:
-                            _logger.debug("gun has not the button %s", gunButtons[gunMapping[btn]]["button"])
-                    else:
-                        _logger.debug("cannot map the button %s", gunMapping[btn])
-                f.write(f"{dolphinMappingNames[btn]} = `{val}`\n")
+                # map ir
+                if "gun_ir_up" not in metadata:
+                    f.write("IR/Up = `Axis 1-`\n")
+                if "gun_ir_down" not in metadata:
+                    f.write("IR/Down = `Axis 1+`\n")
+                if "gun_ir_left" not in metadata:
+                    f.write("IR/Left = `Axis 0-`\n")
+                if "gun_ir_right" not in metadata:
+                    f.write("IR/Right = `Axis 0+`\n")
 
-            # map ir
-            if "gun_ir_up" not in metadata:
-                f.write("IR/Up = `Axis 1-`\n")
-            if "gun_ir_down" not in metadata:
-                f.write("IR/Down = `Axis 1+`\n")
-            if "gun_ir_left" not in metadata:
-                f.write("IR/Left = `Axis 0-`\n")
-            if "gun_ir_right" not in metadata:
-                f.write("IR/Right = `Axis 0+`\n")
+                # specific games configurations
+                specifics = {
+                    "vertical_offset": "IR/Vertical Offset",
+                    "yaw":             "IR/Total Yaw",
+                    "pitch":           "IR/Total Pitch",
+                    "ir_up":           "IR/Up",
+                    "ir_down":         "IR/Down",
+                    "ir_left":         "IR/Left",
+                    "ir_right":        "IR/Right",
+                }
+                for spe in specifics:
+                    if f"gun_{spe}" in metadata:
+                        f.write(f"{specifics[spe]} = {metadata[f'gun_{spe}']}\n")
+            nplayer += 1
 
-            # specific games configurations
-            specifics = {
-                "vertical_offset": "IR/Vertical Offset",
-                "yaw":             "IR/Total Yaw",
-                "pitch":           "IR/Total Pitch",
-                "ir_up":           "IR/Up",
-                "ir_down":         "IR/Down",
-                "ir_left":         "IR/Left",
-                "ir_right":        "IR/Right",
-            }
-            for spe in specifics:
-                if f"gun_{spe}" in metadata:
-                    f.write(f"{specifics[spe]} = {metadata[f'gun_{spe}']}\n")
-        nplayer += 1
-    f.write
-    f.close()
 
 def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str | None]) -> dict[str, str | None]:
     mapping = dict(anyMapping)
     # Fixes default gamecube style controller mapping for ES from es_input (gc A confirm/gc B cancel)
-    if system.isOptSet(f"dolphin_port_{nplayer}_type") and system.config[f'dolphin_port_{nplayer}_type'] == '6b':
+    if system.config.get(f"dolphin_port_{nplayer}_type") == '6b':
         mapping['a'] = 'Buttons/B'
         mapping['b'] = 'Buttons/A'
 
     # Only rotate inputs for standard controller type so it doesn't effect other controller types.
-    if not system.isOptSet(f"dolphin_port_{nplayer}_type") or system.config.get(f'dolphin_port_{nplayer}_type') == '6a':
-        # Check for rotate mappings settings and adjust
-        if system.isOptSet(f"alt_mappings_{nplayer}") and system.getOptBoolean(f"alt_mappings_{nplayer}") == True:
-
-            mapping['a'] = 'Buttons/X'
-            mapping['b'] = 'Buttons/A'
-            mapping['y'] = 'Buttons/B'
-            mapping['x'] = 'Buttons/Y'
+    if (system.config.get(f"dolphin_port_{nplayer}_type", '6a') == '6a') and system.config.get_bool(f"alt_mappings_{nplayer}"):
+        mapping['a'] = 'Buttons/X'
+        mapping['b'] = 'Buttons/A'
+        mapping['y'] = 'Buttons/B'
+        mapping['x'] = 'Buttons/Y'
 
     return mapping
 
 def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
-    f = codecs.open(str(configFileName), "w", encoding="utf_8_sig")
-    nplayer = 1
-    nsamepad = 0
+    with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
+        nplayer = 1
+        nsamepad = 0
 
-    # In case of two pads having the same name, dolphin wants a number to handle this
-    double_pads: dict[str, int] = {}
+        # In case of two pads having the same name, dolphin wants a number to handle this
+        double_pads: dict[str, int] = {}
 
-    for pad in playersControllers:
-        # Handle x pads having the same name
-        if pad.real_name.strip() in double_pads:
-            nsamepad = double_pads[pad.real_name.strip()]
-        else:
-            nsamepad = 0
-        double_pads[pad.real_name.strip()] = nsamepad+1
+        for pad in playersControllers:
+            # Handle x pads having the same name
+            nsamepad = double_pads.get(pad.real_name.strip(), 0)
+            double_pads[pad.real_name.strip()] = nsamepad+1
 
-        f.write(f"[{anyDefKey}{nplayer}]\n")
-        f.write(f"Device = evdev/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
+            f.write(f"[{anyDefKey}{nplayer}]\n")
+            f.write(f"Device = evdev/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
 
-        if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
-            if not generateControllerConfig_any_from_profiles(f, pad, system):
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
-        else:
-            if pad.device_path in wheels:
-                generateControllerConfig_wheel(f, pad, nplayer)
+            if system.config.get_bool("use_pad_profiles"):
+                if not generateControllerConfig_any_from_profiles(f, pad, system):
+                    generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
             else:
-                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
+                if pad.device_path in wheels:
+                    generateControllerConfig_wheel(f, pad, nplayer)
+                else:
+                    generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
 
-        nplayer += 1
-    f.write
-    f.close()
+            nplayer += 1
+
 
 def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller, nplayer: int) -> None:
     wheelMapping = {
@@ -480,9 +472,9 @@ def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller
 
     _logger.debug("configuring wheel for pad %s", pad.real_name)
 
-    f.write(f"Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
-    f.write(f"Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
-    f.write(f"Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
+    f.write("Rumble/Motor = Constant\n") # only Constant works on my wheel. maybe some other values could be good
+    f.write("Rumble/Motor/Range = -100.\n") # value must be negative, otherwise the center is located in extremes (left/right)
+    f.write("Main Stick/Dead Zone = 0.\n") # not really needed while this is the default
 
     for x in pad.inputs:
         input = pad.inputs[x]
@@ -535,7 +527,7 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
         if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
             write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.axis_count, True, None, None)
         # DualShock Motion control
-        if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
+        if system.config.get_bool("dsmotion"):
             f.write(f"IMUGyroscope/Pitch Up = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro X-`\n")
             f.write(f"IMUGyroscope/Pitch Down = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro X+`\n")
             f.write(f"IMUGyroscope/Roll Left = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Gyro Z-`\n")
@@ -550,29 +542,26 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
             f.write(f"IMUAccelerometer/Up = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Accel Y-`\n")
             f.write(f"IMUAccelerometer/Down = `evdev/{str(nsamepad).strip()}/{pad.real_name.strip()} Motion Sensors:Accel Y+`\n")
         # Mouse to emulate Wiimote
-        if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
+        if system.config.get_bool("mouseir"):
             f.write("IR/Up = `Cursor Y-`\n")
             f.write("IR/Down = `Cursor Y+`\n")
             f.write("IR/Left = `Cursor X-`\n")
             f.write("IR/Right = `Cursor X+`\n")
         # Rumble option
-        if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
+        if system.config.get_bool("rumble"):
             f.write("Rumble/Motor = Weak\n")
         # Deadzone setting
-        if system.isOptSet(f"deadzone_{nplayer}"):
-            f.write(f"Main Stick/Dead Zone = {system.config[f'deadzone_{nplayer}']}\n")
-            f.write(f"C-Stick/Dead Zone = {system.config[f'deadzone_{nplayer}']}\n")
-        else:
-            f.write(f"Main Stick/Dead Zone = 5.0\n")
-            f.write(f"C-Stick/Dead Zone = 5.0\n")
+        deadzone = system.config.get(f"deadzone_{nplayer}", "5.0")
+        f.write(f"Main Stick/Dead Zone = {deadzone}\n")
+        f.write(f"C-Stick/Dead Zone = {deadzone}\n")
         # JS gate size
-        if system.isOptSet(f"jsgate_size_{nplayer}") and system.config[f'jsgate_size_{nplayer}'] != 'normal':
-            if system.config[f'jsgate_size_{nplayer}'] == 'smaller':
-                f.write(f"Main Stick/Gate Size = 64.0\n")
-                f.write(f"C-Stick/Gate Size = 56.0\n")
-            if system.config[f'jsgate_size_{nplayer}'] == 'larger':
-                f.write(f"Main Stick/Gate Size = 95.0\n")
-                f.write(f"C-Stick/Gate Size = 88.0\n")
+        match system.config.get(f"jsgate_size_{nplayer}"):
+            case 'smaller':
+                f.write("Main Stick/Gate Size = 64.0\n")
+                f.write("C-Stick/Gate Size = 56.0\n")
+            case 'larger':
+                f.write("Main Stick/Gate Size = 95.0\n")
+                f.write("C-Stick/Gate Size = 88.0\n")
 
 def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad: Controller, system: Emulator) -> bool:
     glob_path: Path | None = None
@@ -593,19 +582,18 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
             _logger.debug("Profile device : %s", profileDevice)
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
-            if deviceVals is not None:
-                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.real_name.strip():
-                    _logger.debug("Eligible profile device found")
-                    for key, val in profileConfig.items("Profile"):
-                        if key != "Device":
-                            f.write(f"{key} = {val}\n")
-                    return True
-        except:
+            if deviceVals is not None and deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.real_name.strip():
+                _logger.debug("Eligible profile device found")
+                for key, val in profileConfig.items("Profile"):
+                    if key != "Device":
+                        f.write(f"{key} = {val}\n")
+                return True
+        except Exception:
             _logger.error("profile %s : FAILED", profileFile)
 
     return False
 
-def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int | None, reverse: bool, hotkey_id: str | None, gcz_ids: Mapping[str, str] | None) -> None:
+def write_key(f: codecs.StreamReaderWriter, keyname: str, input_type: str, input_id: str, input_value: str, input_global_id: int, reverse: bool, hotkey_id: str | None, gcz_ids: Mapping[str, str] | None) -> None:
     f.write(f"{keyname} = ")
     if hotkey_id is not None:
         f.write(f"`Button {hotkey_id}` & ")

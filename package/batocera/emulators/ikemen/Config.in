@@ -2,6 +2,7 @@ config BR2_PACKAGE_IKEMEN
     bool "ikemen"
     depends on BR2_PACKAGE_HOST_GO_TARGET_ARCH_SUPPORTS
     depends on BR2_PACKAGE_XORG7
+    select BR2_PACKAGE_HOST_GO
     select BR2_PACKAGE_MESA3D
     select BR2_PACKAGE_LIBGTK3
     select BR2_PACKAGE_OPENAL

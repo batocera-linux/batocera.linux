@@ -70,13 +70,6 @@ ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
 endif
 
-# citra
-ifeq ($(BR2_PACKAGE_CITRA),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
-  BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += citra.png
-endif
-
 # azahar
 ifeq ($(BR2_PACKAGE_AZAHAR),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-azahar
@@ -110,11 +103,11 @@ ifeq ($(BR2_PACKAGE_BAUH),y)
   BATOCERA_DESKTOPAPPS_APPS    += flatpak-config.desktop
 endif
 
-# suyu
-ifeq ($(BR2_PACKAGE_SUYU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-suyu
-  BATOCERA_DESKTOPAPPS_APPS    += suyu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += suyu.png
+# citron
+ifeq ($(BR2_PACKAGE_CITRON),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citron
+  BATOCERA_DESKTOPAPPS_APPS    += citron-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += citron.png
 endif
 
 # ryujinx

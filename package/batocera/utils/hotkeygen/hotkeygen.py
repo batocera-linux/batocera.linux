@@ -191,7 +191,7 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
             with GDEFAULTMAPPING_FILE.open() as fd:
                 data = json.load(fd)
         if GUSERDEFAULTMAPPING_FILE.exists():
-            if debug:
+            if gdebug:
                 print(f"use user mapping file {GUSERDEFAULTMAPPING_FILE}")
             with GUSERDEFAULTMAPPING_FILE.open() as fd:
                 userdata = json.load(fd)
@@ -230,7 +230,7 @@ def print_mapping(
                         print(
                             f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_names}"
                         )
-                    if isinstance(key_codes, str):
+                    elif isinstance(key_codes, str):
                         print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_codes}")
                     else:
                         print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {ECODES_NAMES[key_codes]}")
@@ -451,9 +451,12 @@ class Daemon:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], True)
                             elif event.value == 0:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], False)
-                except (OSError, KeyError) as e:
+                #except (OSError, KeyError, FileNotFoundError) as e:
+                except (Exception) as e:
                     if fd == self.monitor.fileno():
-                        raise
+                        print("Exception happened on the monitor fd")
+                        print(e)
+                        #raise
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
@@ -469,9 +472,8 @@ class Daemon:
                                 input_device.close()
                             except:
                                 pass
-                except:
-                    self.target.close()
-                    raise
+        # never happening, but should be done to quit
+        self.target.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="hotkeygen")

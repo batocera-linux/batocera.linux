@@ -52,6 +52,10 @@ USER_SCRIPTS: Final = HOME / 'scripts'
 SYSTEM_SCRIPTS: Final = DEFAULTS_DIR / 'scripts'
 
 
+def configure_emulator(rom: Path, /) -> bool:
+    return str(rom) == 'config'
+
+
 def mkdir_if_not_exists(dir: Path, /) -> None:
     if not dir.exists():
         dir.mkdir(parents=True)

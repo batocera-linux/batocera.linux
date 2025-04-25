@@ -56,52 +56,49 @@ class FsuaeGenerator(Generator):
         return rom.stem[:-1]
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         fsuaeControllers.generateControllerConfig(system, playersControllers)
 
         commandArray = ['/usr/bin/fs-uae', "--fullscreen",
-                                           f"--amiga-model={system.config['core']}",
+                                           f"--amiga-model={system.config.core}",
                                            f"--base_dir={FSUAE_CONFIG_DIR!s}",
                                            f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
-                                           f"--save_states_dir={FSUAE_SAVES / system.config['core'] / self.filePrefix(rom_path)}",
+                                           f"--save_states_dir={FSUAE_SAVES / system.config.core / self.filePrefix(rom)}",
                                            "--zoom=auto"
                        ]
 
         device_type = "floppy"
-        if system.config['core'] in ["CD32", "CDTV"]:
+        if system.config.core in ["CD32", "CDTV"]:
             device_type = "cdrom"
 
         # extract zip here
         TEMP_DIR = Path("/tmp/fsuae")
         diskNames: list[str] = []
+        zf: zipfile.ZipFile | None = None
 
         # read from zip
-        if (rom.lower().endswith("zip")):
+        if rom.suffix.lower() == ".zip":
             zf = zipfile.ZipFile(rom, 'r')
             for name in zf.namelist():
                 d = name.lower()
-                if (d.endswith("ipf") or d.endswith("adf") or d.endswith("dms") or d.endswith("adz")):
+                if d.endswith(("ipf", "adf", "dms", "adz")):
                     diskNames.append(name)
 
             _logger.debug("Amount of disks in zip %s", len(diskNames))
 
         # if 2+ files, we have a multidisk ZIP (0=no zip)
-        if (len(diskNames) > 1):
+        if len(diskNames) > 1 and zf is not None:
             _logger.debug("extracting...")
             shutil.rmtree(TEMP_DIR, ignore_errors=True) # cleanup
             zf.extractall(TEMP_DIR)
 
-            n = 0
-            for disk in diskNames:
+            for n, disk in enumerate(diskNames):
                 commandArray.append(f"--{device_type}_image_{n}={TEMP_DIR / disk}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
                     commandArray.append(f"--{device_type}_drive_{n}={TEMP_DIR / disk}")
-                n += 1
 
         else:
             n = 0
-            for img in self.floppiesFromRom(rom_path):
+            for img in self.floppiesFromRom(rom):
                 commandArray.append(f"--{device_type}_image_{n}={img}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
                     commandArray.append(f"--{device_type}_drive_{n}={img}")

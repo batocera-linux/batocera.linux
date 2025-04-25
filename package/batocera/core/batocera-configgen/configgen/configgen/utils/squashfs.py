@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import mkdir_if_not_exists
+from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -17,9 +18,7 @@ _SQUASHFS_DIR: Final = Path("/var/run/squashfs/")
 
 
 @contextmanager
-def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
-    rom = Path(rom)
-
+def squashfs_rom(rom: Path, /) -> Iterator[Path]:
     _logger.debug("squashfs_rom(%s)", rom)
     mount_point = _SQUASHFS_DIR / rom.stem
 
@@ -33,7 +32,7 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
             mount_point.rmdir()
         except (FileNotFoundError, OSError):
             _logger.debug("squashfs_rom: failed to rmdir %s", mount_point)
-            yield str(mount_point)
+            yield mount_point
             # No cleanup is necessary
             return
 
@@ -47,22 +46,22 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
             mount_point.rmdir()
         except (FileNotFoundError, OSError):
             pass
-        raise Exception(f"unable to mount the file {rom}")
+        raise BatoceraException(f"Unable to mount the file {rom}")
 
     try:
         # if the squashfs contains a single file with the same name, take it as the rom file
         rom_single = mount_point / rom.stem
         if len(list(mount_point.iterdir())) == 1 and rom_single.exists():
             _logger.debug("squashfs: single rom %s", rom_single)
-            yield str(rom_single)
+            yield rom_single
         else:
             try:
                 rom_linked = (mount_point / ".ROM").resolve(strict=True)
             except OSError:
-                yield str(mount_point)
+                yield mount_point
             else:
                 _logger.debug("squashfs: linked rom %s", rom_linked)
-                yield str(rom_linked)
+                yield rom_linked
     finally:
         _logger.debug("squashfs_rom: cleaning up %s", mount_point)
 
@@ -70,7 +69,7 @@ def squashfs_rom(rom: str | Path, /) -> Iterator[str]:
         return_code = subprocess.call(["umount", mount_point])
         if return_code != 0:
             _logger.debug("squashfs_rom: unmounting %s failed", mount_point)
-            raise Exception(f"unable to unmount the file {mount_point}")
+            raise BatoceraException(f"Unable to unmount the file {mount_point}")
 
         # cleaning the empty directory
         mount_point.rmdir()

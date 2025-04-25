@@ -50,14 +50,14 @@ def generateControllerConfig(system: Emulator, viceConfigFile: Path, playersCont
     # vjm file
     viceFile = viceConfigFile / "sdl-joymap.vjm"
     # vic20 uses a slightly different port
-    if(system.config['core'] == 'xvic'):
+    if(system.config.core == 'xvic'):
         joy_port = "0"
     else:
         joy_port = "1"
 
     mkdir_if_not_exists(viceFile.parent)
 
-    listVice: list[str] = [];
+    listVice: list[str] = []
     listVice.append("# Batocera configured controllers")
     listVice.append("")
     listVice.append("!CLEAR")

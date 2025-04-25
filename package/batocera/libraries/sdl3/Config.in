@@ -1,0 +1,71 @@
+config BR2_PACKAGE_SDL3
+	bool "sdl3"
+	depends on !BR2_STATIC_LIBS
+	help
+	  Simple DirectMedia Layer 3 - Simple DirectMedia Layer is a 
+	  cross-platform development library designed to provide low level 
+	  access to audio, keyboard, mouse, joystick, and graphics 
+	  hardware via OpenGL and Direct3D. 
+
+	  http://www.libsdl.org/
+
+if BR2_PACKAGE_SDL3
+
+config BR2_PACKAGE_SDL3_KMSDRM
+	bool "KMS/DRM video driver"
+	depends on BR2_TOOLCHAIN_HAS_THREADS  # libdrm
+	depends on BR2_PACKAGE_HAS_LIBGBM
+	depends on BR2_PACKAGE_HAS_LIBEGL
+	depends on BR2_PACKAGE_SDL3_OPENGL || BR2_PACKAGE_SDL3_OPENGLES
+	select BR2_PACKAGE_LIBDRM
+
+comment "KMS/DRM video driver needs a toolchain w/ threads"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS
+
+comment "KMS/DRM video driver needs a GBM provider, and OpenGL or OpenGLES+EGL"
+	depends on !BR2_PACKAGE_HAS_LIBGBM || \
+		!BR2_PACKAGE_HAS_LIBEGL || \
+		!(BR2_PACKAGE_SDL3_OPENGL || BR2_PACKAGE_SDL3_OPENGLES)
+
+config BR2_PACKAGE_SDL3_OPENGL
+	bool "OpenGL (GLX)"
+	depends on BR2_PACKAGE_HAS_LIBGL
+	depends on BR2_PACKAGE_XORG7
+	depends on BR2_USE_MMU # X11 video driver
+	select BR2_PACKAGE_SDL3_X11
+
+comment "OpenGL support needs X11 and an OpenGL provider"
+	depends on BR2_USE_MMU
+	depends on !BR2_PACKAGE_HAS_LIBGL || !BR2_PACKAGE_XORG7
+
+config BR2_PACKAGE_SDL3_OPENGLES
+	bool "OpenGL ES"
+	depends on BR2_PACKAGE_HAS_LIBGLES
+
+comment "OpenGL ES support needs an OpenGL ES provider"
+	depends on !BR2_PACKAGE_HAS_LIBGLES
+
+endif
+
+config BR2_PACKAGE_SDL3_WAYLAND
+    bool "SDL3 Wayland support"
+    depends on BR2_PACKAGE_WAYLAND
+    select BR2_PACKAGE_WAYLAND_PROTOCOLS
+    select BR2_PACKAGE_LIBXKBCOMMON
+
+comment "SDL3 Wayland support needs wayland"
+	depends on !BR2_PACKAGE_WAYLAND
+
+config BR2_PACKAGE_SDL3_X11
+	bool "X11 video driver"
+	depends on BR2_PACKAGE_XORG7
+	depends on BR2_USE_MMU # fork()
+	select BR2_PACKAGE_XLIB_LIBX11
+	select BR2_PACKAGE_XLIB_LIBXEXT
+
+comment "X11 video driver needs X.org"
+	depends on !BR2_PACKAGE_XORG7
+	depends on BR2_USE_MMU
+
+comment "SDL3 needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS

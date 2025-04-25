@@ -19,7 +19,7 @@ class TyrianGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         try:
             os.chdir(ROMS / "tyrian" / "data")
-        except:
+        except Exception:
             _logger.error("ERROR: Game assets not installed. You can get them from the Batocera Content Downloader.")
         commandArray = ["opentyrian"]
 

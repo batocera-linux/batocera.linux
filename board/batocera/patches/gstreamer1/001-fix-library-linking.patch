@@ -1,11 +1,11 @@
 diff --git a/meson.build b/meson.build
-index 830a6014e8..8bb12a9ad8 100644
+index f1be50c777..79bcd7e3df 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -598,7 +598,7 @@ gir_init_section = [ '--add-init-section=extern void gst_init(gint*,gchar**);' +
-     'g_setenv("GST_REGISTRY_1.0", "/no/way/this/exists.reg", TRUE);' + \
+@@ -610,7 +610,7 @@ gir_init_section = [ '--add-init-section=extern void gst_init(gint*,gchar**);' +
      'g_setenv("GST_PLUGIN_PATH_1_0", "", TRUE);' + \
      'g_setenv("GST_PLUGIN_SYSTEM_PATH_1_0", "", TRUE);' + \
+     'g_setenv("GST_TRACERS", "", TRUE);' + \
 -    'gst_init(NULL,NULL);', '--quiet']
 +    'gst_init(NULL,NULL);', '--quiet', '--extra-library=gstreamer-1.0' ]
  

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA_OPEN_DRIVER_VERSION = 570.124.04
+NVIDIA_OPEN_DRIVER_VERSION = 575.51.02
 NVIDIA_OPEN_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA_OPEN_DRIVER_SITE = \
     http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA_OPEN_DRIVER_SUFFIX)/$(NVIDIA_OPEN_DRIVER_VERSION)
@@ -54,7 +54,7 @@ NVIDIA_OPEN_DRIVER_LIBS_MISC = \
 	libnvidia-cfg.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-egl-gbm.so.1.1.2 \
-	libnvidia-egl-wayland.so.1.1.18 \
+	libnvidia-egl-wayland.so.1.1.19 \
 	libnvidia-glcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(NVIDIA_OPEN_DRIVER_VERSION) \

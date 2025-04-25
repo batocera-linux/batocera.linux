@@ -12,14 +12,14 @@ BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2711/fsoverlay"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
-# Linux headers same as kernel, a 6.6 series
+# Linux headers same as kernel, a 6.12 series
 BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_6=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_12=y
 
-# Kernel - Version: 6.6.56
+# Kernel - Version: 6.12.21
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,e53eefbc711622f0702e887f88d69f867aa0bf1a)/e53eefbc711622f0702e887f88d69f867aa0bf1a.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,2a536bfca932b9df066dff0b03444dfe4a35b592)/2a536bfca932b9df066dff0b03444dfe4a35b592.tar.gz"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/bcm2711/linux-defconfig.config"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/broadcom/linux_patches"
@@ -45,5 +45,5 @@ BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 # Batocera system
 BR2_PACKAGE_BATOCERA_KODI21=y
 
-# HW Accelation
-#BR2_PACKAGE_RPI_HEVC=y
+# FFMPEG HW Accelation
+BR2_PACKAGE_RPI_HEVC=y

@@ -1,0 +1,71 @@
+#!/bin/bash
+
+test "${ACTION}" = "add" || exit 0
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+PARENTHASH=$(evsieve-helper parent "${DEVNAME}" input usb)
+BASEFILE="/var/run/virtual-onehit-devices.${PARENTHASH}"
+PIDFILE="${BASEFILE}.pid"
+LOCKFILE="${BASEFILE}.lock"
+LOGFILE="${BASEFILE}.log"
+
+unlockAndExit() {
+    rmdir "${LOCKFILE}"
+    exit "${1}"
+}
+
+checkRunningPIDAndExit1() {
+    test ! -e "${PIDFILE}" && return 0
+    LPID=$(cat "${PIDFILE}")
+    test ! -d "/proc/${LPID}" && return 0
+    unlockAndExit 1
+}
+
+trylock() {
+    # lock
+    N=0
+    while ! mkdir "${LOCKFILE}"
+    do
+	sleep 1
+	let N++
+	test "${N}" -gt 30 && exit 1 # give up
+    done
+}
+
+trylock
+checkRunningPIDAndExit1
+
+CHILDREN=$(evsieve-helper children "${PARENTHASH}" input usb)
+NDEVS=$(echo "${CHILDREN}" | wc -l)
+
+    # Trigger         : BTN_LEFT
+    # L. side button  : BTN_RIGHT
+    # R. side button  : BTN_MIDDLE
+    # DPad UP         : ABS_Y 0
+    # DPad DOWN       : ABS_Y 4095
+    # DPad LEFT       : ABS_X 0
+    # DPad RIGHT      : ABS_X 4095
+
+
+if test "${NDEVS}" = 3
+then
+    DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
+    DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
+    DEV3=$(echo "${CHILDREN}" | head -3 | tail -1 | cut -f 1)
+
+    nohup evsieve                                              \
+            --input "${DEV1}" "${DEV3}" persist=exit           \
+            --input "${DEV2}" domain=dpad persist=exit         \
+            --map abs:y:0@dpad              btn:5:1            \
+            --map abs:y:2048@dpad           btn:5:0 btn:6:0    \
+            --map abs:y:4095@dpad           btn:6:1            \
+            --map abs:x:0@dpad              btn:7:1            \
+            --map abs:x:2048@dpad           btn:7:0 btn:8:0    \
+            --map abs:x:4095@dpad           btn:8:1            \
+            --output name="OneHit light gun" >/dev/null 2>"${LOGFILE}" &
+    echo $! > "${PIDFILE}"
+else
+    unlockAndExit 1
+fi
+
+unlockAndExit 0

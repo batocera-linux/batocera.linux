@@ -23,16 +23,10 @@ def writeCfgFile(system: Emulator, filename: Path, init_line: str, defaults_to_a
             for line in defaults_to_add:
                 file.write(line)
 
-            if system.isOptSet('ioquake3_mem'):
-                file.write(f'seta com_hunkMegs "{system.config['ioquake3_mem']}"\n')
-            else:
-                file.write('seta com_hunkMegs "256"\n')
+            file.write(f'seta com_hunkMegs "{system.config.get('ioquake3_mem', '256')}"\n')
 
-            if system.config["core"] == 'vkquake3':
-                if system.isOptSet('vkquake3_api'):
-                    file.write(f"seta cl_renderer \"{system.config["vkquake3_api"]}\"\n")
-                else:
-                    file.write('seta cl_renderer "opengl2"\n')
+            if system.config.core == 'vkquake3':
+                file.write(f'seta cl_renderer "{system.config.get("vkquake3_api", "opengl2")}"\n')
 
             for line in controls_to_add:
                 file.write(line)
@@ -61,17 +55,11 @@ def writeCfgFile(system: Emulator, filename: Path, init_line: str, defaults_to_a
                 ## User options
                 # Memory
                 elif line.startswith('seta com_hunkMegs'):
-                    if system.isOptSet('ioquake3_mem'):
-                        line = f"seta com_hunkMegs \"{system.config["ioquake3_mem"]}\"\n"
-                    else:
-                        line = 'seta com_hunkMegs "256"\n'
+                    line = f'seta com_hunkMegs "{system.config.get("ioquake3_mem", "256")}"\n'
                 # API
                 elif line.startswith('seta cl_renderer'):
-                    if system.config["core"] == 'vkquake3':
-                        if system.isOptSet('vkquake3_api'):
-                            line = f"seta cl_renderer \"{system.config["vkquake3_api"]}\"\n"
-                        else:
-                            line = 'seta cl_renderer "opengl2"\n'
+                    if system.config.core == 'vkquake3':
+                        line = f'seta cl_renderer "{system.config.get("vkquake3_api", "opengl2")}"\n'
                     else:
                         line = ''  # ioquake3 doesn't use this, so remove it if a vkquake3 setting gets added
 

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBJPEG_BATO_VERSION = 9e
+LIBJPEG_BATO_VERSION = 9f
 LIBJPEG_BATO_SITE = http://www.ijg.org/files
 LIBJPEG_BATO_SOURCE = jpegsrc.v$(LIBJPEG_BATO_VERSION).tar.gz
 LIBJPEG_BATO_LICENSE = IJG

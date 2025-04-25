@@ -9,6 +9,8 @@ from ...controller import Controller, generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...input import Input
@@ -28,13 +30,12 @@ class SolarusGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # basis
-        commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
+        commandArray: list[str | Path] = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no"]
 
         # hotkey to exit
         for nplayer, pad in enumerate(playersControllers, start=1):
-            if nplayer == 1:
-                if "hotkey" in pad.inputs and "start" in pad.inputs:
-                    commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
+            if nplayer == 1 and "hotkey" in pad.inputs and "start" in pad.inputs:
+                commandArray.append(f"-quit-combo={pad.inputs['hotkey'].id}+{pad.inputs['start'].id}")
             commandArray.append(f"-joypad-num{nplayer}={pad.index}")
 
         # player pad
@@ -68,29 +69,21 @@ class SolarusGenerator(Generator):
             "left": "right"
         }
 
-        if system.isOptSet('joystick'):
-            if system.config['joystick'] == "joystick1":
-                keymapping["up"]    = "joystick1up"
-                keymapping["down"]  = "joystick1down"
-                keymapping["left"]  = "joystick1left"
-                keymapping["right"] = "joystick1right"
-            elif system.config['joystick'] == "joystick2":
-                keymapping["up"]    = "joystick2up"
-                keymapping["down"]  = "joystick2down"
-                keymapping["left"]  = "joystick2left"
-                keymapping["right"] = "joystick2right"
+        match system.config.get('joystick'):
+            case "joystick1" | "joystick2" as joystick:
+                keymapping["up"]    = f"{joystick}up"
+                keymapping["down"]  = f"{joystick}down"
+                keymapping["left"]  = f"{joystick}left"
+                keymapping["right"] = f"{joystick}right"
 
         mkdir_if_not_exists(_CONFIG_DIR)
-        f = codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii")
-
-        if pad := Controller.find_player_number(playersControllers, 1):
-            for key in keymapping:
-                if keymapping[key] in pad.inputs:
-                    f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
-                if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
-                    f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
-
-        f.close()
+        with codecs.open(str(_CONFIG_DIR / "pads.ini"), "w", encoding="ascii") as f:
+            if pad := Controller.find_player_number(playersControllers, 1):
+                for key in keymapping:
+                    if keymapping[key] in pad.inputs:
+                        f.write(f"{key}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], False)}\n")
+                    if key in reverseAxis and pad.inputs[keymapping[key]].type == "axis":
+                        f.write(f"{reverseAxis[key]}={SolarusGenerator.key2val(pad.inputs[keymapping[key]], True)}\n")
 
     @staticmethod
     def key2val(input: Input, reverse: bool):
@@ -107,7 +100,6 @@ class SolarusGenerator(Generator):
                 return "hat 0 left"
         if input.type == "axis":
             if (reverse and input.value == "-1") or (not reverse and input.value == "1"):
-                return f"axis {str(input.id)} +"
-            else:
-                return f"axis {str(input.id)} -"
+                return f"axis {input.id} +"
+            return f"axis {input.id} -"
         return None

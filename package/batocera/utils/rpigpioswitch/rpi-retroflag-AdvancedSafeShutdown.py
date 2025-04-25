@@ -44,7 +44,7 @@ def handle_gpio_event(event_line_offset):
             elif output:
                 subprocess.run("batocera-es-swissknife --restart", shell=True, check=True)
             else:
-                subprocess.run("shutdown -r now", shell=True, check=True)
+                subprocess.run("reboot", shell=True, check=True)
         except Exception as e:
             print(f"Reset command error: {e}")
     
@@ -53,9 +53,9 @@ def handle_gpio_event(event_line_offset):
         try:
             output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
             if output:
-                subprocess.run("batocera-es-swissknife --shutdown", shell=True, check=True)
+                subprocess.run("batocera-es-swissknife --reboot", shell=True, check=True)
             else:
-                subprocess.run("shutdown -h now", shell=True, check=True)
+                subprocess.run("reboot", shell=True, check=True)
         except Exception as e:
             print(f"Poweroff command error: {e}")
 

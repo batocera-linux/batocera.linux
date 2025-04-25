@@ -5,6 +5,8 @@ from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
 from typing import IO, TYPE_CHECKING
 
+from ..exceptions import BatoceraException
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
-class DownloadException(Exception): ...
+class DownloadException(BatoceraException): ...
 
 
 @contextmanager

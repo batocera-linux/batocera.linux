@@ -4,14 +4,6 @@ default:
       opera:
         explanation: |
           Only available on selected boards; requires a powerful one.
-  3ds:
-    citra:
-      citra: &citra_standalone_core
-        explanation: |
-          Standalone citra works better, but lacks mouse and bezels support which libretro/citra has.
-    libretro:
-      citra: *citra_standalone_core
-
   amiga:
     amiberry:
       A1200: &amiberry_multicore

@@ -1,13 +1,13 @@
 ################################################################################
 #
-# LIBLCF
+# liblcf
 #
 ################################################################################
-# Version.: Release on Apr 29, 2023
-LIBLCF_VERSION = 0.8
-LIBLCF_DEPENDENCIES = expat icu
+
+LIBLCF_VERSION = 0.8.1
 LIBLCF_LICENSE = MIT
 LIBLCF_SITE = $(call github,EasyRPG,liblcf,$(LIBLCF_VERSION))
+LIBLCF_DEPENDENCIES = expat icu inih
 
 LIBLCF_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 

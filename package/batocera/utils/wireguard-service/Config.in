@@ -1,0 +1,5 @@
+config BR2_PACKAGE_WIREGUARD_SERVICE
+    bool "wireguard-service"
+    select BR2_PACKAGE_WIREGUARD_TOOLS
+    help
+      Service that runs wg-quick on /userdata/system/wireguard/*.conf

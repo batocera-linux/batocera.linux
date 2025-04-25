@@ -4,17 +4,18 @@ import logging
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping
 from dataclasses import InitVar, dataclass, field
-from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 
 from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
 from .config import Config, SystemConfig
+from .exceptions import MissingEmulator
 from .settings.unixSettings import UnixSettings
 
 if TYPE_CHECKING:
     from argparse import Namespace
+    from pathlib import Path
     from typing_extensions import deprecated
 
     from .gun import Guns
@@ -82,16 +83,36 @@ def _load_system_config(system_name: str, default_yml: Path, default_arch_yml: P
 @dataclass(slots=True)
 class Emulator:
     args: InitVar[Namespace]
-    rom: InitVar[str]
+    rom: InitVar[Path]
 
     name: str = field(init=False)
     config: SystemConfig = field(init=False)
     renderconfig: Config = field(init=False)
+    game_info_xml: str = field(init=False)
+    __es_game_info: dict[str, str] | None = field(init=False, default=None)
 
-    def __post_init__(self, args: Namespace, rom: str, /) -> None:
+    @property
+    def es_game_info(self) -> Mapping[str, str]:
+        if self.__es_game_info is not None:
+            return self.__es_game_info
+
+        self.__es_game_info = {}
+        vals = self.__es_game_info
+
+        try:
+            tree = ET.parse(self.game_info_xml)
+            root = cast('ET.Element', tree.getroot())
+            for child in root:
+                for metadata in child:
+                    vals[metadata.tag] = metadata.text or ''
+        except Exception:
+            _logger.debug("An error occurred while reading ES metadata")
+
+        return vals
+
+    def __post_init__(self, args: Namespace, rom: Path, /) -> None:
         self.name = args.system
-
-        rom_path = Path(rom)
+        self.game_info_xml = args.gameinfoxml
 
         # read the configuration from the system name
         system_data = _load_system_config(
@@ -102,11 +123,11 @@ class Emulator:
 
         if not system_data['emulator']:
             _logger.error('no emulator defined. exiting.')
-            raise Exception('No emulator found')
+            raise MissingEmulator
 
         # sanitize rule by EmulationStation
         # see FileData::getConfigurationName() on batocera-emulationstation
-        gsname = rom_path.name.replace('=', '').replace('#', '')
+        gsname = rom.name.replace('=', '').replace('#', '')
         _logger.info('game settings name: %s', gsname)
 
         # load configuration from batocera.conf
@@ -114,7 +135,7 @@ class Emulator:
 
         global_settings = settings.get_all('global')
         system_settings = settings.get_all(args.system)
-        folder_settings = settings.get_all(f'{args.system}.folder["{rom_path.parent}"]')
+        folder_settings = settings.get_all(f'{args.system}.folder["{rom.parent}"]')
         game_settings = settings.get_all(f'{args.system}["{gsname}"]')
 
         # update config

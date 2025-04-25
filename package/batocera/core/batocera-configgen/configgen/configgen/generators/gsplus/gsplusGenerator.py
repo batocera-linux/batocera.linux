@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -28,8 +27,7 @@ class GSplusGenerator(Generator):
 
         config = UnixSettings(_CONFIGFILE, separator=' ')
 
-        rom_path = Path(rom)
-        if (rom_path.suffix.lower() in ['.dsk', '.do', '.nib']):
+        if (rom.suffix.lower() in ['.dsk', '.do', '.nib']):
             config.save("s6d1", rom)
             config.save("s5d1", '')
             config.save("s7d1", '')
@@ -104,8 +102,7 @@ class GSplusGenerator(Generator):
             config.save("bram3[f0]", '00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00')
             config.save("g_limit_speed", "2")
 
-        gsplus_bios_filename = system.config["gsplus_bios_filename"] if system.isOptSet("gsplus_bios_filename") else "ROM.03"
-        config.save("g_cfg_rom_path", f"""{BIOS}/{gsplus_bios_filename}""")
+        config.save("g_cfg_rom_path", f"""{BIOS}/{system.config.get('gsplus_bios_filename', 'ROM.03')}""")
 
         config.write()
         commandArray = ["GSplus", "-fullscreen"]

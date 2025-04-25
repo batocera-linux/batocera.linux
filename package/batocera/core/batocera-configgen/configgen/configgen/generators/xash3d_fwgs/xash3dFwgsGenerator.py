@@ -55,7 +55,7 @@ def _get_server_lib_basename_from_liblist_gam(game: str) -> str | None:
     return None
 
 
-def _find_server_lib(server_lib: str, arch_suffix: str) -> Path:
+def _find_server_lib(server_lib: str | None, arch_suffix: str) -> Path:
     """Finds and returns the server library.
 
     Falls back to _DEFAULT_SERVER_LIB if none is found.
@@ -68,7 +68,7 @@ def _find_server_lib(server_lib: str, arch_suffix: str) -> Path:
     return _server_lib_path(_DEFAULT_SERVER_LIB, arch_suffix)
 
 
-def _find_client_lib(server_lib: str, arch_suffix: str) -> Path:
+def _find_client_lib(server_lib: str | None, arch_suffix: str) -> Path:
     """Finds and returns the client library.
 
     Falls back to the client library for _DEFAULT_SERVER_LIB if none is found.
@@ -96,7 +96,7 @@ class Xash3dFwgsGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        game = Path(rom).stem
+        game = rom.stem
 
         arch_suffix = _get_arch_suffix()
         server_lib = _get_server_lib_basename_from_liblist_gam(game)
@@ -120,7 +120,7 @@ class Xash3dFwgsGenerator(Generator):
         commandArray.append(game)
 
         commandArray.append('+showfps')
-        commandArray.append('1' if system.getOptBoolean('showFPS') == True else '0')
+        commandArray.append('1' if system.config.show_fps else '0')
 
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)

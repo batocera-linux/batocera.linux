@@ -46,12 +46,16 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in [ "pwm" ]:
-        return ('/sys/class/power_supply/qcom-battery/')
-    if model in [ "rgb" ]:
-        return ('/sys/class/power_supply/BAT0/')
+    if model in ["pwm", "rgbaddr"]:
+        for path in ["/sys/class/power_supply/qcom-battery", "/sys/class/power_supply/battery"]:
+            if os.path.exists(path):
+                return path
+    if model in ["rgb"]:
+        path = "/sys/class/power_supply/BAT0/"
+        if os.path.exists(path):
+            return path
     else:
-        print ("Device unsupported.")
+        print("Device unsupported.")
         return None
 
 # Read color from the config file

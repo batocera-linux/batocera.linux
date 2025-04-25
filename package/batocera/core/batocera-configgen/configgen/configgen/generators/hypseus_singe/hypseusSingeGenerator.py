@@ -49,7 +49,7 @@ class HypseusSingeGenerator(Generator):
         if (start_path / filename).exists():
             return start_path / filename
 
-        for root, dirs, files in os.walk(start_path):
+        for root, _, files in os.walk(start_path):
             if filename in files:
                 full_path = Path(root) / filename
                 _logger.debug("Found m2v file in path - %s", full_path)
@@ -78,8 +78,6 @@ class HypseusSingeGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         # copy input.ini file templates
         hypseusConfigSource = _SHARE_DIR / "hypinput_gamepad.ini"
 
@@ -98,7 +96,7 @@ class HypseusSingeGenerator(Generator):
             "dragon": ["dragon", "dragon_trainer"],
             "drugwars": ["drugwars", "drugwars-hd", "cp2dw_hd"],
             "daitarn": ["daitarn", "daitarn_3"],
-            "dle": ["dle", "dle_alt"],
+            "dle": ["dle", "dle_alt"],  # noqa: F601
             "fire_and_ice": ["fire_and_ice", "fire_and_ice_v2"],
             "galaxy": ["galaxy", "galaxyp"],
             "lair": ["lair", "lair_a", "lair_b", "lair_c", "lair_d", "lair_d2", "lair_e", "lair_f", "lair_ita", "lair_n1", "lair_x", "laireuro"],
@@ -145,10 +143,10 @@ class HypseusSingeGenerator(Generator):
             copy_resources(_SHARE_DIR / directory, _DATA_DIR / directory)
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
-        romName = rom_path.stem
-        frameFile = rom_path / f"{romName}.txt"
-        commandsFile = rom_path / f"{romName}.commands"
-        singeFile = rom_path / f"{romName}.singe"
+        romName = rom.stem
+        frameFile = rom / f"{romName}.txt"
+        commandsFile = rom / f"{romName}.commands"
+        singeFile = rom / f"{romName}.singe"
 
         bezelFile = find_bezel(romName.lower())
         if bezelFile is not None:
@@ -166,17 +164,17 @@ class HypseusSingeGenerator(Generator):
             _logger.debug("No .m2v files found in the text file.")
 
         # now get the resolution from the m2v file
-        video_path = rom_path / m2v_filename if m2v_filename is not None else rom_path
+        video_path = rom / m2v_filename if m2v_filename is not None else rom
 
         # check the path exists
         if not video_path.exists():
             _logger.debug("Could not find m2v file in path - %s", video_path)
-            video_path = self.find_file(rom_path, cast(str, m2v_filename))
+            video_path = self.find_file(rom, cast('str', m2v_filename))
 
         _logger.debug("Full m2v path is: %s", video_path)
 
         video_resolution: tuple[int, int] | None = None
-        if video_path != None:
+        if video_path is not None:
             video_resolution = self.get_resolution(video_path)
             _logger.debug("Resolution: %s", video_resolution)
 
@@ -192,79 +190,79 @@ class HypseusSingeGenerator(Generator):
                             "-romdir", _DAPHNE_ROM_DIR, "-homedir", _DATA_DIR]
 
         # controller config file
-        if system.isOptSet('hypseus_joy')  and system.getOptBoolean('hypseus_joy'):
-            commandArray.extend(['-keymapfile', 'custom.ini'])
-        else:
-            commandArray.extend(["-keymapfile", _CONFIG.name])
+        commandArray.extend([
+            '-keymapfile',
+            system.config.get_bool('hypseus_joy', return_values=('custom.ini', _CONFIG.name))
+        ])
 
         # Default -fullscreen behaviour respects game aspect ratio
         bezelRequired = False
         xratio = None
         # stretch
-        if system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "stretch":
-            commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
-            bezelRequired = False
-            if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
-                xratio = 4/3
-        # 4:3
-        elif system.isOptSet('hypseus_ratio') and system.config['hypseus_ratio'] == "force_ratio":
-            commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
-            commandArray.extend(["-force_aspect_ratio"])
-            xratio = 4/3
-            bezelRequired = True
-        # original
-        else:
-            if video_resolution and video_resolution[0]:
-                scaling_factor = gameResolution["height"] / video_resolution[1]
-                new_width = video_resolution[0] * scaling_factor
-                commandArray.extend(["-x", str(new_width), "-y", str(gameResolution["height"])])
-                # check if 4:3 for bezels
-                if abs(new_width / gameResolution["height"] - 4/3) < 0.01:
-                    bezelRequired = True
-                    xratio = 4/3
-                else:
-                    bezelRequired = False
-            else:
-                _logger.debug("Video resolution not found - using stretch")
+        match system.config.get('hypseus_ratio'):
+            case 'stretch':
                 commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
+                bezelRequired = False
                 if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
                     xratio = 4/3
+            case 'force_ratio':
+                # 4:3
+                commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
+                commandArray.extend(["-force_aspect_ratio"])
+                xratio = 4/3
+                bezelRequired = True
+            case _:
+                # original
+                if video_resolution and video_resolution[0]:
+                    scaling_factor = gameResolution["height"] / video_resolution[1]
+                    new_width = video_resolution[0] * scaling_factor
+                    commandArray.extend(["-x", str(new_width), "-y", str(gameResolution["height"])])
+                    # check if 4:3 for bezels
+                    if abs(new_width / gameResolution["height"] - 4/3) < 0.01:
+                        bezelRequired = True
+                        xratio = 4/3
+                    # unique xratio formula for fast draw game (video is 3:4)
+                    # e.g.: (16/9) / (3/4) = 64/27 = ~2.37
+                    elif "fastdraw" in romName.lower():
+                        bezelRequired = True
+                        xratio = (video_resolution[1] * gameResolution["width"]) / (video_resolution[0] * gameResolution["height"])
+                    else:
+                        bezelRequired = False
+                else:
+                    _logger.debug("Video resolution not found - using stretch")
+                    commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
+                    if abs(gameResolution["width"] / gameResolution["height"] - 4/3) < 0.01:
+                        xratio = 4/3
 
         # Don't set bezel if screeen resolution is not conducive to needing them (i.e. CRT)
         if gameResolution["width"] / gameResolution["height"] < 1.51:
             bezelRequired = False
 
         # Backend - Default OpenGL
-        if system.isOptSet("hypseus_api") and system.config["hypseus_api"] == 'Vulkan':
-            commandArray.append("-vulkan")
-        else:
-            commandArray.append("-opengl")
+        commandArray.append("-vulkan" if system.config.get("hypseus_api") == 'Vulkan' else "-opengl")
 
         # Enable Bilinear Filtering
-        if system.isOptSet('hypseus_filter') and system.getOptBoolean("hypseus_filter"):
+        if system.config.get_bool('hypseus_filter'):
             commandArray.append("-linear_scale")
 
         #The following options should only be set when system is singe.
         #-blend_sprites, -nocrosshair, -sinden or -manymouse
         if system.name == "singe":
             # Blend Sprites (Singe)
-            if system.isOptSet('singe_sprites') and system.getOptBoolean("singe_sprites"):
+            if system.config.get_bool("singe_sprites"):
                 commandArray.append("-blend_sprites")
 
             bordersSize = system.guns_borders_size_name(guns)
             if bordersSize is not None:
-
-                borderColor = "w"
-                if "controllers.guns.borderscolor" in system.config:
-                    borderColorOpt = system.config["controllers.guns.borderscolor"]
-                    if borderColorOpt == "white":
-                        borderColor = "w"
-                    elif borderColorOpt == "red":
+                match system.config.get("controllers.guns.borderscolor"):
+                    case "red":
                         borderColor = "r"
-                    elif borderColorOpt == "green":
+                    case "green":
                         borderColor = "g"
-                    elif borderColorOpt == "blue":
+                    case "blue":
                         borderColor = "b"
+                    case _:
+                        borderColor = "w"
 
                 if bordersSize == "thin":
                     commandArray.extend(["-sinden", "2", borderColor])
@@ -278,11 +276,11 @@ class HypseusSingeGenerator(Generator):
                     if xratio is not None:
                         commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
                 else:
-                    if system.isOptSet('singe_abs') and system.getOptBoolean("singe_abs"):
+                    if system.config.get_bool("singe_abs"):
                         commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
         # bezels
-        if system.isOptSet('hypseus_bezels') and system.getOptBoolean("hypseus_bezels") == False:
+        if not system.config.get_bool('hypseus_bezels', True):
             bezelRequired = False
 
         if bezelRequired:
@@ -292,30 +290,29 @@ class HypseusSingeGenerator(Generator):
                 commandArray.extend(["-bezel", bezelFile])
 
         # Invert HAT Axis
-        if system.isOptSet('hypseus_axis') and system.getOptBoolean("hypseus_axis"):
+        if system.config.get_bool("hypseus_axis"):
             commandArray.append("-tiphat")
 
         # Game rotation options for vertical screens, default is 0.
-        if system.isOptSet('hypseus_rotate') and system.config['hypseus_rotate'] == "90":
-            commandArray.extend(["-rotate", "90"])
-        elif system.isOptSet('hypseus_rotate') and system.config['hypseus_rotate'] == "270":
-            commandArray.extend(["-rotate", "270"])
+        match system.config.get('hypseus_rotate'):
+            case '90' | '270' as rotate:
+                commandArray.extend(["-rotate", rotate])
 
         # Singe joystick sensitivity, default is 5.
-        if system.name == "singe" and system.isOptSet('singe_joystick_range'):
-            commandArray.extend(["-js_range", system.config['singe_joystick_range']])
+        if system.name == "singe" and (joystick_range := system.config.get('singe_joystick_range')):
+            commandArray.extend(["-js_range", joystick_range])
 
         # Scanlines
-        if system.isOptSet('hypseus_scanlines') and system.config['hypseus_scanlines'] > "0":
-            commandArray.extend(["-scanlines", "-scanline_shunt", system.config['hypseus_scanlines']])
+        if (scanlines := system.config.get_int('hypseus_scanlines')) > 0:
+            commandArray.extend(["-scanlines", "-scanline_shunt", str(scanlines)])
 
         # Hide crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if guns and (not system.isOptSet('singe_crosshair') or ((system.isOptSet('singe_crosshair') and not system.getOptBoolean("singe_crosshair")))):
+        if guns and not system.config.get_bool('singe_crosshair'):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
-        if system.isOptSet('hypseus_texturestream') and system.getOptBoolean("hypseus_texturestream"):
+        if system.config.get_bool("hypseus_texturestream"):
             commandArray.append("-texturestream")
 
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
@@ -334,10 +331,6 @@ class HypseusSingeGenerator(Generator):
         )
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if "hypseus_ratio" in config:
-            if config['hypseus_ratio'] == "stretch":
-                return 16/9
-            if config['hypseus_ratio'] == "force_ratio":
-                return 4/3
-        else:
-            return 4/3
+        if config.get("hypseus_ratio") == "stretch":
+            return 16/9
+        return 4/3

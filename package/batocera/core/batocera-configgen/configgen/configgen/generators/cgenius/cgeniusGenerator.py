@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from configobj import ConfigObj
@@ -62,45 +61,30 @@ class CGeniusGenerator(Generator):
         if "Video" not in config:
             config["Video"] = {}
         # aspect
-        if system.isOptSet("cgenius_aspect"):
-            config["Video"]["aspect"] = system.config["cgenius_aspect"]
-        else:
-            config["Video"]["aspect"] = "4:3"
+        config["Video"]["aspect"] = system.config.get("cgenius_aspect", "4:3")
         # set false as we want the correct ratio
         config["Video"]["fullscreen"] = "false"
         config["Video"]["integerScaling"] = "false"
         # filter
-        if system.isOptSet("cgenius_filter"):
-            config["Video"]["filter"] = system.config["cgenius_filter"]
-        else:
-            config["Video"]["filter"] = "none"
+        config["Video"]["filter"] = system.config.get("cgenius_filter", "none")
         # quality
-        if system.isOptSet("cgenius_quality"):
-            config["Video"]["OGLfilter"] = system.config["cgenius_quality"]
-        else:
-            config["Video"]["OGLfilter"] = "nearest"
+        config["Video"]["OGLfilter"] = system.config.get("cgenius_quality", "nearest")
         # render resolution
-        if system.isOptSet("cgenius_render"):
-            if system.config["cgenius_render"] == "200":
-                config["Video"]["gameHeight"] = "200"
-                config["Video"]["gameWidth"] = "320"
-            if system.config["cgenius_render"] == "240":
+        match system.config.get("cgenius_render"):
+            case "240":
                 config["Video"]["gameHeight"] = "240"
                 config["Video"]["gameWidth"] = "320"
-            if system.config["cgenius_render"] == "360":
+            case "360":
                 config["Video"]["gameHeight"] = "360"
                 config["Video"]["gameWidth"] = "640"
-            if system.config["cgenius_render"] == "480":
+            case "480":
                 config["Video"]["gameHeight"] = "480"
                 config["Video"]["gameWidth"] = "640"
-        else:
-            config["Video"]["gameHeight"] = "200"
-            config["Video"]["gameWidth"] = "320"
+            case _:
+                config["Video"]["gameHeight"] = "200"
+                config["Video"]["gameWidth"] = "320"
         # mouse
-        if system.isOptSet("cgenius_cursor"):
-            config["Video"]["ShowCursor"] = system.config["cgenius_cursor"]
-        else:
-            config["Video"]["ShowCursor"] = "false"
+        config["Video"]["ShowCursor"] = system.config.get("cgenius_cursor", "false")
 
         # -= Controllers =-
         # Configure the first four controllers
@@ -124,7 +108,7 @@ class CGeniusGenerator(Generator):
         # now setup to run the rom
         commandArray = ["CGeniusExe"]
         # get rom path
-        rom_path = Path(rom).parent
+        rom_path = rom.parent
         rom_path = rom_path.relative_to(alt_config_dir) if rom_path.is_relative_to(alt_config_dir) else rom_path
         commandArray.append(f'dir="{rom_path}"')
 
@@ -141,10 +125,7 @@ class CGeniusGenerator(Generator):
         return True
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if 'cgenius_aspect' in config:
-            if config['cgenius_aspect'] == "16:9" or config['cgenius_aspect'] == "16:10":
-                return 16/9
-            else:
-                return 4/3
-        else:
-            return 4/3
+        aspect = config.get('cgenius_aspect')
+        if aspect == "16:9" or aspect == "16:10":
+            return 16/9
+        return 4/3

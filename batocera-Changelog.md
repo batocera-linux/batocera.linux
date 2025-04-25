@@ -1,4 +1,4 @@
-# 2025/xx/xx - batocera.linux 42 - xxx
+# 2025/xx/xx - batocera.linux 42 - Papilio Ulysses
 ### Special Notes
 - Quake 1 & 2 roms need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively.
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
@@ -7,6 +7,7 @@
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
 - Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
+- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 ### Hardware
 - Add OrangePi 4a board support
@@ -16,8 +17,11 @@
 - Initial support for XGunner light gun
 - Initial support for OpenFIRE light gun
 - Initial support for Fusion P.I.G.S. light gun
+- Initial support for OneHit light gun (AimTrak clone)
+- Ayn Odin2 and Odin2 Portal support
 ### Added
-- Wireguard VPN for RK3326 boards
+- WireGuard VPN for RK3326 boards
+- WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
 - Image scaling option for Drastic
 - A selection of Dhewm3 mods
 - CatacombGL port for running various Catacomb games
@@ -29,6 +33,7 @@
 - Steering wheel support added for :
   - Logitech: G923 (Xbox), PRO Racing Wheel
   - Speedlink: 4in1 Leather Power Feedback Wheel
+  - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
 - Sega Lindbergh loader
 - Variable Refresh Rate (VRR) support for modern AMD gpus
 - Support of Shanwan Twin USB Joystick (new revision)
@@ -36,7 +41,18 @@
 - Force Feedback on RP5 & RPmini
 - vkQuake 1, 2 & 3 for systems that support Vulkan.
 - TR1X & TR2X for Tomb Raider I & II support
-- gun : option to hide the crossair in es
+- Oric Atmos (and Oric 1) with CLK Clock Signal emulator
+- CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
+  AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
+- gun : option to hide the crosshair in ES
+- Azahar 3DS emulator: Version 2120.1
+- DICE libretro core for arcade machines without a CPU
+- Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
+- Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
+- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith.
+- OpenJK to play Jedi Academy & Jedi Outcast
+- Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
+- ShadPS4 emulator for PlayStation 4 gaming
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
@@ -53,74 +69,86 @@
 - Batocera-wine: add saves directory and save files options
 - Libretro-virtualjaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
+- Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 ### Updated
+- Amiberry to v7.0.4
+- AppleWin to 8th of Feb build
 - BigPEmu to v118
 - Cemu to 2.6
+- DevilutionX to 1.5.4
 - Dolphin-Emu to 2412-268
-- ETLegacy to v2.83.2
-- Jazz2 to 3.2.0
-- GroovyMAME to 0.274
-- Gzdoom to g4.14.1
-- Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.274
-- Libretro-Play! 4th Feb build
-- RetroArch to v1.20.0
-- Ruffle to Nightly-2024-12-28
-- RPCS3 to v0.0.35
-- ScummVM to v2.9.0
-- PCSX2 to v2.3.185
-- Play! to 4th Feb build
-- Xemu to v0.8.23
-- Triforce to use a Crediar build (Nov 29, 2024)
-- Vice to 3.9
-- TheXTech to v1.3.7-hotfix2
-- DXX-Rebirth to 12th of Jan build
-- EDuke to 26th of Dec build
-- Hurrican to 24th of Nov build
-- Sonic3 Air to v25.02.15.0-test
-- Taradino to 18th of Feb build
-- TheForceEngine to 20th Feb build
-- Xash3d-fwgs to 20th of Feb build
-- AppleWin to 8th of Feb build
-- MelonDS to 17th Jan build
-- Snes9x to 24th Jan build
-- Solarus Engine to 18th Jan build
-- IOQuake3 to 25th December build
-- Amiberry to v7.0.4
-- Libretro-Wasm4 to v2.7.1
 - Dosbox Staging to v0.82.0
 - Dosbox-X to v2025.02.01
-- DevilutionX to 1.5.4
-- OpenMSX to release 20.0
-- Ruffle to nightly-2025-02-12
-- Raze to 1.11.0
-- PPSSPP to 28th February build
+- DXX-Rebirth to 12th of Jan build
+- EDuke to 26th of Dec build
+- ETLegacy to v2.83.2
+- GroovyMAME to 0.276
+- Gzdoom to g4.14.1
+- Hurrican to 24th of Nov build
+- Hypseus Singe to 2.11.4
+- IOQuake3 to 25th December build
+- Jazz2 to 3.2.0
+- Libretro-Kronos to 2.7.0
+- Libretro-MAME to 0.276
+- Libretro-Play! 4th Feb build
 - Libretro-PPSSPP to 28th February build
+- Libretro-Wasm4 to v2.7.1
+- MelonDS to 17th Jan build
+- OpenMSX to release 20.0
+- PCSX2 to v2.3.185
+- Play! to 4th Feb build
+- PPSSPP to 28th February build
+- Raze to 1.11.0
+- RetroArch to v1.20.0
+- Ruffle to nightly-2025-02-12
+- RPCS3 to v0.0.35
+- ScummVM to v2.9.0
+- Snes9x to 24th Jan build
+- Solarus Engine to 18th Jan build
+- Sonic3 Air to v25.02.15.0-test
+- Taradino to 18th of Feb build
+- TheForceEngine to v1.22.300
+- TheXTech to v1.3.7-hotfix2
+- Triforce to use a Crediar build (Nov 29, 2024)
+- Vice to 3.9
+- Vita3k to 3rd of March 2025 build
+- Xash3d-fwgs to 20th of Feb build
+- Xemu to v0.8.49
+- Xenia to build 5979274 (Jan 24, 2025)
 ### System
 - Bluez to 5.79
+- BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
-- Mesa3D to 25.0.0
-- Linux Kernel to 6.13.3
-- GStreamer codecs to 1.24.12
-- SDL2 to 2.30.11
-- Vulkan stack to v1.4.304
-- MPV to 0.39.0
-- Kodi to 21.2
-- Nvidia production driver to 570.124.04
-- LLVM to 19.1.7
-- Wine-TKG to 10.1
+- DXVK to 2.6.1
+- DXVK-NVApi to 0.9.0
 - Faudio to 25.02
-- DXVK to 2.5.3
-- DXVK-NVAPI to 0.8.0
-- VKD3D-Proton to 2.14.1
-- Linux Firmware to 20250109
-- Sound Open Firmware to 2025.01
-- Intel Media Driver to 25.1.1
+- FFMPEG to 7.1.1
+- GStreamer codecs to 1.26.0
+- Intel GMMLib to 22.7.1
+- Intel Media Driver to 25.2.0
+- Kodi to 21.2
 - LibDRM to 2.4.124
+- Linux Firmware to 20250410
+- Linux Kernel to 6.14.2
+- LLVM to 19.1.7
+- Mesa3D to 25.0.4
+- MPV to 0.40.0
+- Nvidia production driver to 570.133.07
 - Pipewire to 1.2.7
-- Wireplumber to 0.5.8
-- Ryzenadj to v0.16.0
 - QT6 to 6.8.1
+- RClone to v1.69.1
+- RPi firmware to match Kernel 6.12.21
+- RPi Kernel to 6.12.21
+- Ryzenadj to v0.16.0
+- SDL2 to 2.30.11
+- Sound Open Firmware to 2025.01
+- Syncthing to 1.29.3
+- VKD3D-Proton to 2.14.1
+- Vulkan stack to v1.4.304
+- Wine Mono to 9.4.0
+- Wine-TKG to 10.5
+- Wireplumber to 0.5.8
+- Xone to Mar 13, 2025
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
 ### Special Notes

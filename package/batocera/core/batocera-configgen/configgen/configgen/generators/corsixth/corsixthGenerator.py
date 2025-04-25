@@ -45,7 +45,7 @@ class CorsixTHGenerator(Generator):
             os.chdir(corsixthDataPath / "INTRO")
             os.chdir(corsixthDataPath / "LEVELS")
             os.chdir(corsixthDataPath / "QDATA")
-        except:
+        except Exception:
             _logger.error("ERROR: Game assets not installed. You can get them from the game Theme Hospital.")
 
         # If config file already exists, delete it
@@ -66,22 +66,13 @@ class CorsixTHGenerator(Generator):
         source_config_file.write(f"height = {gameResolution['height']}\n")
 
         # Values coming from ES configuration : New Graphics
-        if system.isOptSet('cth_new_graphics'):
-          source_config_file.write(f"use_new_graphics = {system.config['cth_new_graphics']}\n")
-        else:
-          source_config_file.write("use_new_graphics = true\n")
+        source_config_file.write(f"use_new_graphics = {system.config.get('cth_new_graphics', 'true')}\n")
 
         # Values coming from ES configuration : Sandbox Mode
-        if system.isOptSet('cth_free_build_mode'):
-          source_config_file.write(f"free_build_mode = {system.config['cth_free_build_mode']}\n")
-        else:
-          source_config_file.write("free_build_mode = false\n")
+        source_config_file.write(f"free_build_mode = {system.config.get('cth_free_build_mode', 'false')}\n")
 
         # Values coming from ES configuration : Intro Movie
-        if system.isOptSet('cth_play_intro'):
-          source_config_file.write(f"play_intro = {system.config['cth_play_intro']}\n")
-        else:
-          source_config_file.write("play_intro = true\n")
+        source_config_file.write(f"play_intro = {system.config.get('cth_play_intro', 'true')}\n")
 
         # Now auto-set the language from batocera ES locale
         language_mapping = {
@@ -122,7 +113,7 @@ class CorsixTHGenerator(Generator):
         try:
             os.chdir(corsixthDataPath / "MP3")
             source_config_file.write(f"audio_music = [[{corsixthDataPath / 'MP3'}]]\n")
-        except:
+        except Exception:
             _logger.warning("NOTICE: Audio & Music system loaded, but found no external background tracks. Missing MP3 folder")
             source_config_file.write("audio_music = nil\n")
 

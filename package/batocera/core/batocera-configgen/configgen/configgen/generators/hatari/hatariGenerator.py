@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, mkdir_if_not_exists
+from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import HotkeysContext
@@ -28,8 +30,6 @@ class HatariGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         model_mapping = {
             "520st_auto":       { "machine": "st",      "tos": "auto" },
             "520st_100":        { "machine": "st",      "tos": "100"  },
@@ -64,40 +64,32 @@ class HatariGenerator(Generator):
         # tt should use tos 3.XX / emutos512k
         # falcon should use tos 4.XX / emutos512k
 
-        machine = "st"
-        tosversion = "auto"
-        if system.isOptSet("model") and system.config["model"] in model_mapping:
-            machine   = model_mapping[system.config["model"]]["machine"]
-            tosversion = model_mapping[system.config["model"]]["tos"]
-        toslang = "us"
-        if system.isOptSet("language"):
-            toslang = system.config["language"]
+        model = system.config.get("model", "none")
+        mapped = model_mapping.get(model, {"machine": "st", "tos": "auto"})
+        machine = mapped["machine"]
+        tosversion = mapped["tos"]
+        toslang = system.config.get("language", "us")
 
         commandArray += ["--machine", machine]
         tos = HatariGenerator.findBestTos(BIOS, machine, tosversion, toslang)
         commandArray += [ "--tos", tos]
 
         # RAM (ST Ram) options (0 for 512k, 1 for 1MB)
-        memorysize = 0
-        if system.isOptSet("ram"):
-            memorysize = system.config["ram"]
-        commandArray += ["--memsize", str(memorysize)]
+        memorysize = system.config.get_str("ram", "0")
+        commandArray += ["--memsize", memorysize]
 
-        rom_extension = rom_path.suffix.lower()
+        rom_extension = rom.suffix.lower()
         if rom_extension == ".hd":
-            if system.isOptSet("hatari_drive") and system.config["hatari_drive"] == "ACSI":
-                commandArray += ["--acsi", rom_path]
-            else:
-                commandArray += ["--ide-master", rom_path]
+            commandArray += ["--acsi" if system.config.get("hatari_drive") == "ACSI" else "--ide-master", rom]
         elif rom_extension == ".gemdos":
             blank_file = HATARI_CONFIG / "blank.st"
             if not blank_file.exists():
                 with blank_file.open('w'):
                     pass
-            commandArray += ["--harddrive", rom_path, blank_file]
+            commandArray += ["--harddrive", rom, blank_file]
         else:
             # Floppy (A) options
-            commandArray += ["--disk-a", rom_path]
+            commandArray += ["--disk-a", rom]
             # Floppy (B) options
             commandArray += ["--drive-b", "off"]
 
@@ -157,10 +149,7 @@ class HatariGenerator(Generator):
         # Screen
         if not config.has_section("Screen"):
             config.add_section("Screen")
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            config.set("Screen", "bShowStatusbar", "TRUE")
-        else:
-            config.set("Screen", "bShowStatusbar", "FALSE")
+        config.set("Screen", "bShowStatusbar", str(system.config.show_fps).upper())
 
         with configFileName.open('w') as configfile:
             config.write(configfile)
@@ -198,7 +187,7 @@ class HatariGenerator(Generator):
                     if tos_path.exists():
                         _logger.debug("tos filename: %s", tos_path.name)
                         return tos_path
-                    else:
-                        _logger.warning("tos filename %s not found", tos_path.name)
 
-        raise Exception(f"no bios found for machine {machine}")
+                    _logger.warning("tos filename %s not found", tos_path.name)
+
+        raise BatoceraException(f"No bios found for machine {machine}")

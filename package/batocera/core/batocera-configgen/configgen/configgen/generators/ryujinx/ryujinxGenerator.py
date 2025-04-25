@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 import evdev
 
 from ... import Command
-from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, ROMS, SAVES, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
@@ -111,7 +111,7 @@ class RyujinxGenerator(Generator):
         mkdir_if_not_exists(ryujinxConfFile.parent)
         try:
             conf = json.load(ryujinxConfFile.open("r"))
-        except:
+        except Exception:
             conf = {}
 
         # Set defaults
@@ -128,42 +128,17 @@ class RyujinxGenerator(Generator):
         conf["language_code"] = str(getLangFromEnvironment())
 
         # Console language, time & date
-        if system.isOptSet("ryujinx_language"):
-            conf["system_language"] = system.config["ryujinx_language"]
-        else:
-            conf["system_language"] = "AmericanEnglish"
-
-        if system.isOptSet("ryujinx_region"):
-            conf["system_region"] = system.config["ryujinx_region"]
-        else:
-            conf["system_region"] = "USA"
+        conf["system_language"] = system.config.get("ryujinx_language", "AmericanEnglish")
+        conf["system_region"] = system.config.get("ryujinx_region", "USA")
 
         conf["system_time_zone"] = "UTC"
-        if system.isOptSet("ryujinx_timeoffset"):
-            conf["system_time_offset"] = int(system.config["ryujinx_timeoffset"])
-        else:
-            conf["system_time_offset"]= 0
+        conf["system_time_offset"] = system.config.get_int("ryujinx_timeoffset", 0)
 
         # Graphics
-        if system.isOptSet("ryujinx_api"):
-            conf["graphics_backend"] = system.config["ryujinx_api"]
-        else:
-            conf["graphics_backend"] = "Vulkan"
-
-        if system.isOptSet("ryujinx_scale"):
-            conf["res_scale"] = int(system.config["ryujinx_scale"])
-        else:
-            conf["res_scale"] = 1
-
-        if system.isOptSet("ryujinx_ratio"):
-            conf["aspect_ratio"] = system.config["ryujinx_ratio"]
-        else:
-            conf["aspect_ratio"] = "Fixed16x9"
-
-        if system.isOptSet("ryujinx_filtering"):
-            conf["max_anisotropy"] = int(system.config["ryujinx_filtering"])
-        else:
-            conf["max_anisotropy"] = -1
+        conf["graphics_backend"] = system.config.get("ryujinx_api", "Vulkan")
+        conf["res_scale"] = system.config.get_int("ryujinx_scale", 1)
+        conf["aspect_ratio"] = system.config.get("ryujinx_ratio", "Fixed16x9")
+        conf["max_anisotropy"] = system.config.get_int("ryujinx_filtering", -1)
 
         conf["input_config"] = []
 
@@ -206,18 +181,19 @@ class RyujinxGenerator(Generator):
                     writeControllerIntoJson(ctrlConf)
                     break
 
-        if rom == "config":
+        if configure_emulator(rom):
             commandArray = [ryujinxExec]
         else:
             commandArray = [ryujinxExec, rom]
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":CONFIGS, \
-            "XDG_DATA_HOME":SAVES / "switch", \
-            "XDG_CACHE_HOME":CACHE, \
-            "QT_QPA_PLATFORM":"xcb", \
-            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
+            env={"XDG_CONFIG_HOME": CONFIGS,
+            "XDG_DATA_HOME": SAVES / "switch",
+            "XDG_CACHE_HOME": CACHE,
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
+            }
+        )
 
 def writeControllerIntoJson(new_controller: dict[str, Any], filename: Path = ryujinxConfFile):
     with filename.open('r+') as file:
@@ -233,5 +209,4 @@ def getLangFromEnvironment():
                            "nl_NL": 6, "zh_CN": 7, "zh_TW": 8, "ko_KR": 9 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]

@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Final, cast
 import evdev
 
 from .. import controllersConfig
+from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -204,7 +205,7 @@ def configure_wheels(
                     newdev, p = reconfigure_result
                     _logger.info("replacing device %s by device %s for player %s", controller.device_path, newdev, controller.player_number)
                     devices[newdev] = device.copy()
-                    devices[newdev]["eventId"] = cast(int, controllersConfig.dev2int(newdev))
+                    devices[newdev]["eventId"] = cast('int', controllersConfig.dev2int(newdev))
                     controller.physical_device_path = controller.device_path  # save the physical device for ffb
                     controller.device_path = newdev  # needs to recompute sdl ids
                     recompute_sdl_ids = True
@@ -274,12 +275,16 @@ def configure_wheels(
             _reset_controllers(procs)
         except Exception:
             _logger.error("hum, unable to reset wheel controllers !")
-            pass  # don't fail
+            # don't fail
 
 
 def _reconfigure_angle_rotation(
     controller: Controller, rotation_angle: int, wanted_rotation_angle: int, wanted_deadzone: int, wanted_midzone: int
 ) -> tuple[str, subprocess.Popen[bytes]] | None:
+
+    if "joystick1left" not in controller.inputs:
+        raise BatoceraException(f"Wheel {controller.real_name} has no joystick1left configured. Strange for a wheel.")
+
     wheel_axis = int(controller.inputs["joystick1left"].id)
     input_device = evdev.InputDevice(controller.device_path)
     caps = input_device.capabilities()

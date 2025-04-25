@@ -1,0 +1,28 @@
+diff --git a/src/bstone/src/3d_menu.cpp b/src/bstone/src/3d_menu.cpp
+index 7f026d36ff..f13b50f48b 100644
+--- a/src/bstone/src/3d_menu.cpp
++++ b/src/bstone/src/3d_menu.cpp
+@@ -2112,10 +2112,7 @@ bool CP_CheckQuick(
+ 		WindowX = WindowY = 0;
+ 		WindowW = 320;
+ 		WindowH = 160;
+-		if (Confirm(QuitToDosStr))
+-		{
+-			ExitGame();
+-		}
++		ExitGame();
+ 
+ 		refresh_screen = false;
+ 		WindowH = 200;
+@@ -3584,10 +3581,7 @@ void CustomControls(
+ 
+ void CP_Quit()
+ {
+-	if (Confirm(QuitToDosStr))
+-	{
+-		ExitGame();
+-	}
++	ExitGame();
+ 
+ 	DrawMainMenu();
+ }

@@ -1,0 +1,130 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_W",
+            "description": "Move forward"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_S",
+            "description": "Move backward"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_A",
+            "description": "Strafe left"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_D",
+            "description": "Strafe right"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_LEFTSHIFT",
+            "description": "Run"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Menu enter"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Menu up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Menu down"
+        },
+        {
+            "trigger": "joystick2left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Move left"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Move right"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "Use"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_LEFTCTRL",
+            "description": "Attack"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Menu left"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Menu right"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_TAB",
+            "description": "Stats"
+        },
+        {
+            "trigger": "l3",
+            "type": "key",
+            "target": "KEY_MINUS",
+            "description": "Zoom out"
+        },
+        {
+            "trigger": "r3",
+            "type": "key",
+            "target": "KEY_EQUAL",
+            "description": "Zoom in"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Menu back / exit"
+        },
+        {
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": "KEY_P",
+            "description": "Pause"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_Q",
+            "description": "Previous weapon"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_E",
+            "description": "Next weapon"
+        }
+    ]
+}

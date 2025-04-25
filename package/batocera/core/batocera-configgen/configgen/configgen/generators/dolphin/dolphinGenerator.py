@@ -30,15 +30,13 @@ _logger = logging.getLogger(__name__)
 class DolphinGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        rom_path = Path(rom)
-
         mkdir_if_not_exists(DOLPHIN_INI.parent)
 
         # Dir required for saves
         mkdir_if_not_exists(DOLPHIN_SAVES / "StateSaves")
 
         # Generate the controller config(s)
-        dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom_path, guns)
+        dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 
         ## [ Qt.ini ] ##
         qtIni = CaseSensitiveConfigParser(interpolation=None)
@@ -48,10 +46,7 @@ class DolphinGenerator(Generator):
         # Sections
         if not qtIni.has_section("Emulation"):
             qtIni.add_section("Emulation")
-        if system.isOptSet('state_slot'):
-            qtIni.set("Emulation", "StateSlot", str(system.config["state_slot"]))
-        else:
-            qtIni.set("Emulation", "StateSlot", "1")
+        qtIni.set("Emulation", "StateSlot", system.config.get_str("state_slot", "1"))
 
         # Save Qt.ini
         with DOLPHIN_QT_INI.open('w') as configfile:
@@ -85,10 +80,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("General", "ISOPaths", "2")
 
         # increment savestates
-        if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
-            dolphinSettings.set("General", "AutoIncrementSlot", "False")
-        else:
-            dolphinSettings.set("General", "AutoIncrementSlot", "True")
+        dolphinSettings.set("General", "AutoIncrementSlot", str(system.config.get_bool('incrementalsavestates', True)))
 
         # Don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
@@ -97,10 +89,7 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Interface", "UsePanicHandlers", "False")
 
         # Display message in game (Memory card save and many more...)
-        if system.isOptSet("ShowDpMsg") and system.getOptBoolean("ShowDpMsg"):
-            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
-        else:
-            dolphinSettings.set("Interface", "OnScreenDisplayMessages", "False")
+        dolphinSettings.set("Interface", "OnScreenDisplayMessages", str(system.config.get_bool("ShowDpMsg")))
 
         # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", "False")
@@ -110,43 +99,29 @@ class DolphinGenerator(Generator):
         dolphinSettings.remove_option("Display", "Fullscreen")
 
         # Enable Cheats
-        if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats"):
-            dolphinSettings.set("Core", "EnableCheats", "True")
-        else:
-            dolphinSettings.set("Core", "EnableCheats", "False")
+        dolphinSettings.set("Core", "EnableCheats", str(system.config.get_bool("enable_cheats")))
 
         # Speed up disc transfer rate
-        if system.isOptSet("enable_fastdisc") and system.getOptBoolean("enable_fastdisc"):
-            dolphinSettings.set("Core", "FastDiscSpeed", "True")
-        else:
-            dolphinSettings.set("Core", "FastDiscSpeed", "False")
+        dolphinSettings.set("Core", "FastDiscSpeed", str(system.config.get_bool("enable_fastdisc")))
 
         # Dual Core
-        if system.isOptSet("dual_core") and system.getOptBoolean("dual_core"):
-            dolphinSettings.set("Core", "CPUThread", "True")
-        else:
-            dolphinSettings.set("Core", "CPUThread", "False")
+        dolphinSettings.set("Core", "CPUThread", str(system.config.get_bool("dual_core")))
 
         # Gpu Sync
-        if system.isOptSet("gpu_sync") and system.getOptBoolean("gpu_sync"):
-            dolphinSettings.set("Core", "SyncGPU", "True")
-        else:
-            dolphinSettings.set("Core", "SyncGPU", "False")
+        dolphinSettings.set("Core", "SyncGPU", str(system.config.get_bool("gpu_sync")))
 
         # Gamecube Language
-        if system.isOptSet("gamecube_language"):
-            dolphinSettings.set("Core", "SelectedLanguage", system.config["gamecube_language"])
-        else:
-            dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment()))
+        dolphinSettings.set(
+            "Core",
+            "SelectedLanguage",
+            system.config.get_str("gamecube_language") or str(getGameCubeLangFromEnvironment())
+        )
 
         # Enable MMU
-        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
-            dolphinSettings.set("Core", "MMU", "True")
-        else:
-            dolphinSettings.set("Core", "MMU", "False")
+        dolphinSettings.set("Core", "MMU", str(system.config.get_bool("enable_mmu")))
 
         # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
+        if system.config.get("gfxbackend") == "Vulkan":
             dolphinSettings.set("Core", "GFXBackend", "Vulkan")
             # Check Vulkan
             if not vulkan.is_available():
@@ -159,28 +134,27 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "WiimoteContinuousScanning", "True")
 
         # Force OSD for RetroAchievements messages
-        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
+        if system.config.get_bool('retroachievements'):
             dolphinSettings.set("Interface", "OnScreenDisplayMessages", "True")
 
         # Gamecube ports
         # Create a for loop going 1 through to 4 and iterate through it:
         for i in range(4):
             key = f"dolphin_port_{i+1}_type"
-            if system.isOptSet(key):
-                value = system.config[key]
+            if value := system.config.get(key):
                 # Set value to 6 if it is 6a or 6b. This is to differentiate between Standard Controller and GameCube Controller type.
                 value = "6" if value in ["6a", "6b"] else value
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
                 dolphinSettings.set("Core", f"SIDevice{i}", value)
             else:
                 # if the pad is a wheel and on gamecube, use it
-                if system.name == "gamecube" and system.isOptSet('use_wheels') and system.getOptBoolean('use_wheels') and len(wheels) > 0 and i < len(playersControllers) and playersControllers[i].device_path in wheels:
+                if system.name == "gamecube" and system.config.use_wheels and wheels and i < len(playersControllers) and playersControllers[i].device_path in wheels:
                     dolphinSettings.set("Core", f"SIDevice{i}", "8")
                 else:
                     dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
         # HiResTextures for guns part 1/2 (see below the part 2)
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and ((system.isOptSet('dolphin-lightgun-hide-crosshair') == False and guns_need_crosses(guns) == False) or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
+        if system.config.use_guns and guns and system.config.get_bool('dolphin-lightgun-hide-crosshair', not guns_need_crosses(guns)):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
         else:
             dolphinSettings.remove_option("General", "CustomTexturesPath")
@@ -189,7 +163,7 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "AutoDiscChange", "True")
 
         # Skip Menu
-        if system.isOptSet("dolphin_SkipIPL") and system.getOptBoolean("dolphin_SkipIPL"):
+        if system.config.get_bool("dolphin_SkipIPL"):
             # check files exist to avoid crashes
             ipl_regions = ["USA", "EUR", "JAP"]
             if any((DOLPHIN_BIOS / region / "IPL.bin").exists() for region in ipl_regions):
@@ -204,7 +178,7 @@ class DolphinGenerator(Generator):
 
         # Dolby Pro Logic II for surround sound
         # DPL II requires DSPHLE to be disabled
-        if system.isOptSet("dplii") and system.getOptBoolean("dplii"):
+        if system.config.get_bool("dplii"):
             dolphinSettings.set("Core", "DPL2Decoder", "True")
             dolphinSettings.set("Core", "DSPHLE", "False")
             dolphinSettings.set("DSP", "EnableJIT", "True")
@@ -246,59 +220,47 @@ class DolphinGenerator(Generator):
                 _logger.debug("Discrete GPU is not available on the system. Using default.")
 
         # Graphics setting Aspect Ratio
-        if system.isOptSet('dolphin_aspect_ratio'):
-            dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
-        else:
-            # set to zero, which is 'Auto' in Dolphin & Batocera
-            dolphinGFXSettings.set("Settings", "AspectRatio", "0")
+        dolphinGFXSettings.set("Settings", "AspectRatio", system.config.get("dolphin_aspect_ratio", "0"))  # set to zero, which is 'Auto' in Dolphin & Batocera
 
         # Show fps
-        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            dolphinGFXSettings.set("Settings", "ShowFPS", "True")
-        else:
-            dolphinGFXSettings.set("Settings", "ShowFPS", "False")
+        dolphinGFXSettings.set("Settings", "ShowFPS", str(system.config.show_fps))
 
         # HiResTextures
-        if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures'):
-            dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
-            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
-        else:
-            dolphinGFXSettings.set("Settings", "HiresTextures",      "False")
-            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
+        hires_textures = str(system.config.get_bool('hires_textures'))
+        dolphinGFXSettings.set("Settings", "HiresTextures",      hires_textures)
+        dolphinGFXSettings.set("Settings", "CacheHiresTextures", hires_textures)
 
         # HiResTextures for guns part 2/2 (see upper part1)
-        if system.isOptSet('use_guns') and system.getOptBoolean('use_guns') and guns and (system.isOptSet('dolphin-lightgun-hide-crosshair') == False or system.getOptBoolean('dolphin-lightgun-hide-crosshair') == True):
+        if system.config.use_guns and guns and system.config.get_bool('dolphin-lightgun-hide-crosshair', True):
             # erase what can be set by the option hires_textures
             dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
 
         # Widescreen Hack
-        if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
-            # Prefer Cheats than Hack
-            if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
-                dolphinGFXSettings.set("Settings", "wideScreenHack", "False")
-            else:
-                dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
-        else:
-            dolphinGFXSettings.set("Settings", "wideScreenHack", "False")
+        dolphinGFXSettings.set(
+            "Settings",
+            "wideScreenHack",
+            str(
+                system.config.get_bool('widescreen_hack') and
+                # Prefer Cheats than Hack
+                not system.config.get_bool('enable_cheats')
+            )
+        )
 
         # Ubershaders (synchronous_ubershader by default)
-        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
-            dolphinGFXSettings.set("Settings", "ShaderCompilationMode", system.config["ubershaders"])
-        else:
-            dolphinGFXSettings.set("Settings", "ShaderCompilationMode", "0")
+        dolphinGFXSettings.set(
+            "Settings",
+            "ShaderCompilationMode",
+            ubershader
+            if (ubershader := system.config.get("ubershaders", "no_ubershader")) != "no_ubershader"
+            else "0"
+        )
 
         # Shader pre-caching
-        if system.isOptSet('wait_for_shaders') and system.getOptBoolean('wait_for_shaders'):
-            if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "Vulkan":
-                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "True")
-            else:
-                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
-        else:
-            dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", "False")
+        dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", str(system.config.get_bool('wait_for_shaders') and system.config.get("gfxbackend") == "Vulkan"))
 
         # Various performance hacks - Default Off
-        if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
+        if system.config.get_bool('perf_hacks'):
             dolphinGFXSettings.set("Hacks", "BBoxEnable", "False")
             dolphinGFXSettings.set("Hacks", "DeferEFBCopies", "True")
             dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", "False")
@@ -325,47 +287,26 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")
 
-        if system.isOptSet('vbi_hack') and system.getOptBoolean("vbi_hack"):
-            dolphinGFXSettings.set("Hacks", "VISkip", "True")
-        else:
-            dolphinGFXSettings.set("Hacks", "VISkip", "False")
+        dolphinGFXSettings.set("Hacks", "VISkip", str(system.config.get_bool('vbi_hack')))
 
         # Internal resolution settings
-        if system.isOptSet('internal_resolution'):
-            dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internal_resolution"])
-        else:
-            dolphinGFXSettings.set("Settings", "InternalResolution", "1")
+        dolphinGFXSettings.set("Settings", "InternalResolution", system.config.get("internal_resolution", "1"))
 
         # VSync
-        if system.isOptSet('vsync') and system.getOptBoolean("vsync") == False:
-            dolphinGFXSettings.set("Hardware", "VSync", "False")
-        else:
-            dolphinGFXSettings.set("Hardware", "VSync", "True")
+        dolphinGFXSettings.set("Hardware", "VSync", str(system.config.get_bool('vsync', True)))
 
         # Anisotropic filtering
-        if system.isOptSet('anisotropic_filtering'):
-            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
-        else:
-            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", "0")
+        dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config.get("anisotropic_filtering", "0"))
 
         # Anti aliasing
-        if system.isOptSet('antialiasing'):
-            dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
-        else:
-            dolphinGFXSettings.set("Settings", "MSAA", "0")
+        dolphinGFXSettings.set("Settings", "MSAA", system.config.get("antialiasing", "0"))
 
         # Anti aliasing mode
-        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa'):
-            dolphinGFXSettings.set("Settings", "SSAA", "True")
-        else:
-            dolphinGFXSettings.set("Settings", "SSAA", "False")
+        dolphinGFXSettings.set("Settings", "SSAA", str(system.config.get_bool('use_ssaa')))
 
         # Manual texture sampling
         # Setting on = speed hack off. Setting off = speed hack on
-        if system.isOptSet('manual_texture_sampling') and system.getOptBoolean('manual_texture_sampling'):
-            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "False")
-        else:
-            dolphinGFXSettings.set("Hacks", "FastTextureSampling", "True")
+        dolphinGFXSettings.set("Hacks", "FastTextureSampling", str(not system.config.get_bool('manual_texture_sampling')))
 
         # Save gfx.ini
         with DOLPHIN_GFX_INI.open('w') as configfile:
@@ -431,7 +372,7 @@ class DolphinGenerator(Generator):
         RacConfig = CaseSensitiveConfigParser(interpolation=None)
         # [Achievements]
         RacConfig.add_section('Achievements')
-        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements'):
+        if system.config.get_bool('retroachievements'):
             RacConfig.set('Achievements', 'Enabled', 'True')
             RacConfig.set('Achievements', 'AchievementsEnabled', 'True')
             username  = system.config.get('retroachievements.username', '')
@@ -471,16 +412,15 @@ class DolphinGenerator(Generator):
             commandArray = ["dolphin-emu-nogui", "-e", rom]
 
         # state_slot option
-        if system.isOptSet('state_filename'):
-            commandArray.extend(["--save_state", system.config['state_filename']])
+        if state_filename := system.config.get('state_filename'):
+            commandArray.extend(["--save_state", state_filename])
 
         return Command.Command(
             array=commandArray,
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_DATA_HOME": SAVES,
-                "XDG_CACHE_HOME": CACHE,
-                "QT_QPA_PLATFORM": "xcb"
+                "XDG_CACHE_HOME": CACHE
             }
         )
 
@@ -491,14 +431,11 @@ class DolphinGenerator(Generator):
 
         dolphin_aspect_ratio = dolphinGFXSettings.get("Settings", "AspectRatio")
         # What if we're playing a GameCube game with the widescreen patch or not?
-        if 'widescreen_hack' in config and config["widescreen_hack"] == "1":
-            wii_tv_mode = 1
-        else:
-            wii_tv_mode = 0
+        wii_tv_mode = config.get_bool('widescreen_hack', return_values=(1, 0))
 
         try:
             wii_tv_mode = dolphinSYSCONF.getRatioFromConfig(config, gameResolution)
-        except:
+        except Exception:
             pass
 
         # Auto
@@ -536,5 +473,4 @@ def getGameCubeLangFromEnvironment():
     availableLanguages = { "en_US": 0, "de_DE": 1, "fr_FR": 2, "es_ES": 3, "it_IT": 4, "nl_NL": 5 }
     if lang in availableLanguages:
         return availableLanguages[lang]
-    else:
-        return availableLanguages["en_US"]
+    return availableLanguages["en_US"]
