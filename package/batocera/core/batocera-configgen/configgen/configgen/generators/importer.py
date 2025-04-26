@@ -62,6 +62,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'bstone': ('bstone.bstoneGenerator', 'BstoneGenerator'),
     'openjkdf2': ('openjkdf2.openjkdf2Generator', 'OpenJKDF2Generator'),
     'openjk': ('openjk.openjkGenerator', 'OpenJKGenerator'),
+    'openmohaa': ('openmohaa.openmohaaGenerator', 'OpenMOHAAGenerator'),
 }
 
 def get_generator(emulator: str) -> Generator:

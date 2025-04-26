@@ -1,0 +1,10 @@
+config BR2_PACKAGE_OPENMOHAA
+    bool "openmohaa"
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_SDL2
+    help
+      Open re-implementation of Medal of Honor: Allied Assault
+      including Spearhead and Breakthrough expansions with modern features.
+      
+      https://github.com/openmoh/openmohaa

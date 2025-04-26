@@ -229,6 +229,7 @@ PACKAGES_PORTS="abuse
                 iortcw
                 jazz2-native
                 lindbergh-loader
+                openmohaa
                 openjazz
                 openjk
                 openjkdf2
