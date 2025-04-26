@@ -778,6 +778,32 @@ class LindberghGenerator(Generator):
             mappings_actions["2"] = "BUTTON_4"
             del mappings_actions["3"]
 
+        if shortRomName == "letsgojusp":
+            # if there is only one gun, let the player1 able to press BUTTON_4 of player 2 (required)
+            if len(guns) == 1:
+                mappings_actions["7"] = "BUTTON_4"
+                del mappings_actions["3"]
+                mapping = "8"
+                action = "BUTTON_4"
+                if mapping in mappings_codes:
+                    gun = guns[0]
+                    code = mappings_codes[mapping]
+                    self.setConf(conf, f"PLAYER_2_{action}", f"{gun.node}:KEY:{code}")
+                    del mappings_actions[mapping]
+            elif len(guns) > 1:
+                mappings_actions["right"] = "BUTTON_4"
+                del mappings_actions["3"]
+
+        if shortRomName == "letsgoju":
+            if len(guns) == 1:
+                mapping = "right"
+                action = "BUTTON_START"
+                if mapping in mappings_codes:
+                    gun = guns[0]
+                    code = mappings_codes[mapping]
+                    self.setConf(conf, f"PLAYER_2_{action}", f"{gun.node}:KEY:{code}")
+                    del mappings_actions[mapping]
+
         for nplayer, gun in enumerate(guns[:2], start=1):
             _logger.debug("lindbergh gun for player %s", nplayer)
             xplayer = 1+(nplayer-1)*2
