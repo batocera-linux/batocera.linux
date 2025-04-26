@@ -1363,7 +1363,7 @@ new file mode 100644
 index 00000000000..1784aaae4f8
 --- /dev/null
 +++ b/Source/Core/DolphinNoGUI/PlatformDRM.cpp
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,83 @@
 +// Copyright 2020 Dolphin Emulator Project
 +// Licensed under GPLv2+
 +// Refer to the license.txt file included.
@@ -1389,7 +1389,6 @@ index 00000000000..1784aaae4f8
 +#include <sys/types.h>
 +#include <termios.h>
 +#include <unistd.h>
-+#include "VideoCommon/RenderBase.h"
 +
 +namespace
 +{

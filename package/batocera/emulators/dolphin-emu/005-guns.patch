@@ -2,11 +2,10 @@ diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Sourc
 index 10be6d8..bab0f99 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -22,6 +22,9 @@
+@@ -22,6 +22,8 @@
  #include "Common/StringUtil.h"
  #include "Common/Thread.h"
  #include "InputCommon/ControllerInterface/ControllerInterface.h"
-+#include "VideoCommon/RenderBase.h"
 +#include "VideoCommon/Present.h"
 +#include "VideoCommon/FramebufferManager.h"
  
@@ -38,7 +37,7 @@ index 10be6d8..bab0f99 100644
  
 -    return (value - m_base) / m_range;
 +    // margins
-+    if(g_renderer != NULL) {
++    if(g_presenter != NULL) {
 +      if( ((float) g_framebuffer_manager->GetEFBWidth()) / ((float) g_framebuffer_manager->GetEFBHeight()) > ((float) g_presenter->GetTargetRectangle().GetWidth()) / ((float) g_presenter->GetTargetRectangle().GetHeight())) {
 +	if(m_code == ABS_Y) {
 +	  int sw = g_presenter->GetTargetRectangle().GetWidth();

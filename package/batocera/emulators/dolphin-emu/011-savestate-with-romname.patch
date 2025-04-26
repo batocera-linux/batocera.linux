@@ -33,15 +33,16 @@ diff --git a/Source/Core/Core/ConfigManager.h b/Source/Core/Core/ConfigManager.h
 index 4c0eac3..60fc668 100644
 --- a/Source/Core/Core/ConfigManager.h
 +++ b/Source/Core/Core/ConfigManager.h
-@@ -64,6 +64,8 @@ struct SConfig
+@@ -62,6 +62,9 @@ struct SConfig
+ 
    // TODO: remove this as soon as the ticket view hack in IOS/ES/Views is dropped.
    bool m_disc_booted_from_game_list = false;
- 
++  
 +  const std::string& GetBaseSaveState() const { return m_base_save_state; }
 +  void SetBaseSaveState(const std::string& base_save_state);
-   const std::string& GetGameID() const { return m_game_id; }
-   const std::string& GetGameTDBID() const { return m_gametdb_id; }
-   const std::string& GetTitleName() const { return m_title_name; }
+ 
+   const std::string GetGameID() const;
+   const std::string GetGameTDBID() const;
 @@ -118,6 +120,7 @@ private:
  
    static SConfig* m_Instance;
