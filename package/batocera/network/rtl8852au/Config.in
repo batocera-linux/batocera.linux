@@ -1,0 +1,10 @@
+comment "rtl8852au needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RTL8852AU
+	bool "rtl8852au"
+	depends on BR2_LINUX_KERNEL
+	help
+	  RTL8852AU wifi driver
+
+	  https://github.com/lwfinger/rtl8852au
