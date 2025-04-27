@@ -1161,6 +1161,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Star Wars - Jedi Academy
 	select BR2_PACKAGE_OPENJK       if BR2_x86_64
 
+	# Medal of Honor: Allied Assault
+	select BR2_PACKAGE_OPENMOHAA    if BR2_x86_64
+
 	help
 	  Ports
 
