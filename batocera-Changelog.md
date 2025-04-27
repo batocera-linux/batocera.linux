@@ -20,6 +20,7 @@
 - Initial support for OneHit light gun (AimTrak clone)
 - Ayn Odin2 and Odin2 Portal support
 - Add RTL8852AU wifi device support (x86_64)
+- Add OrangePi 5 Ultra board support
 ### Added
 - WireGuard VPN for RK3326 boards
 - WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
