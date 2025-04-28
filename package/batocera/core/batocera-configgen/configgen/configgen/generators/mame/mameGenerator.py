@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import csv
 import json
 import logging
 import os
@@ -18,7 +17,6 @@ from ...batoceraPaths import (
     BATOCERA_SHARE_DIR,
     BIOS,
     CONFIGS,
-    DEFAULTS_DIR,
     ROMS,
     SAVES,
     SCREENSHOTS,
@@ -28,13 +26,12 @@ from ...batoceraPaths import (
 from ...exceptions import BatoceraException
 from ...utils import bezels as bezelsUtil, videoMode
 from ..Generator import Generator
-from . import mameControllers
-from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, MAME_ROMS, MAME_SAVES
+from . import mameCommon, mameControllers
+from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_ROMS, MAME_SAVES
 
 if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext, Resolution
-    from .mameTypes import MameControlScheme
 
 _logger = logging.getLogger(__name__)
 
@@ -66,7 +63,6 @@ class MameGenerator(Generator):
 
         softDir = Path("/var/run/mame_software/")
         softList = ""
-        messModel = ""
         specialController = "none"
         subdirSoftList = [ "mac_hdd", "bbc_hdd", "cdi", "archimedes_hdd", "fmtowns_cd" ]
 
@@ -88,24 +84,10 @@ class MameGenerator(Generator):
         for checkPath in mamePaths:
             mkdir_if_not_exists(checkPath)
 
-        messSystems: list[str] = []
-        messSysName: list[str] = []
-        messRomType: list[str] = []
-        messAutoRun: list[str] = []
-
-        with (DEFAULTS_DIR / 'data' / 'mame' / 'messSystems.csv').open() as openFile:
-            messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
-            for row in messDataList:
-                messSystems.append(row[0])
-                messSysName.append(row[1])
-                messRomType.append(row[2])
-                messAutoRun.append(row[3])
+        messModel = ""
 
         # Identify the current system
-        try:
-            messMode = messSystems.index(system.name)
-        except ValueError:
-            messMode = -1
+        messSystem = mameCommon.get_mess_system(system.name)
 
         softList = system.config.get_str("softList", "none")
         softList = softList if softList != "none" else ""
@@ -119,7 +101,7 @@ class MameGenerator(Generator):
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
         commandArray += [ "-skip_gameinfo" ]
-        if messMode == -1:
+        if not messSystem:
             commandArray += [ "-rompath", f"{romDirname};{MAME_BIOS};{BIOS}" ]
         else:
             if softList in subdirSoftList:
@@ -148,7 +130,7 @@ class MameGenerator(Generator):
         # Set custom config path if option is selected or default path if not
         customCfg = system.config.get_bool("customcfg")
 
-        if system.name == "mame":
+        if not messSystem:  # system.name == "mame"
             if customCfg:
                 cfgPath = MAME_CONFIG / "custom"
             else:
@@ -156,16 +138,16 @@ class MameGenerator(Generator):
             mkdir_if_not_exists(MAME_CONFIG)
         else:
             if customCfg:
-                cfgPath = MAME_CONFIG / messSysName[messMode] / "custom"
+                cfgPath = MAME_CONFIG / messSystem['model_name'] / "custom"
             else:
-                cfgPath = MAME_CONFIG / messSysName[messMode]
-            mkdir_if_not_exists(MAME_CONFIG / messSysName[messMode])
+                cfgPath = MAME_CONFIG / messSystem['model_name']
+            mkdir_if_not_exists(MAME_CONFIG / messSystem['model_name'])
         mkdir_if_not_exists(cfgPath)
 
         # MAME will create custom configs per game for MAME ROMs and MESS ROMs with no system attached (LCD games, TV games, etc.)
         # This will allow an alternate config path per game for MESS console/computer ROMs that may need additional config.
-        if system.config.get_bool("pergamecfg") and messMode != -1 and messSysName[messMode] != "":
-            base_path = MAME_CONFIG / messSysName[messMode]
+        if system.config.get_bool("pergamecfg") and messSystem and messSystem['model_name'] != "":
+            base_path = MAME_CONFIG / messSystem['model_name']
             mkdir_if_not_exists(base_path)
             cfgPath = base_path / romBasename
             mkdir_if_not_exists(cfgPath)
@@ -248,7 +230,7 @@ class MameGenerator(Generator):
 
         # Mouse
         useMouse = False
-        if system.config.get_bool('use_mouse') or not (messSysName[messMode] == "" or messMode == -1):
+        if system.config.get_bool('use_mouse') or (messSystem and messSystem["model_name"] != ''):
             useMouse = True
             commandArray += [ "-dial_device", "mouse" ]
             commandArray += [ "-trackball_device", "mouse" ]
@@ -293,10 +275,10 @@ class MameGenerator(Generator):
 
         # Finally we pass game name
         # MESS will use the full filename and pass the system & rom type parameters if needed.
-        if messSysName[messMode] == "" or messMode == -1:
+        if not messSystem or messSystem["model_name"] == '':
             commandArray += [ romBasename ]
         else:
-            messModel = messSysName[messMode]
+            messModel = messSystem['model_name']
             # Alternate system for machines that have different configs (ie computers with different hardware)
             if altmodel := system.config.get("altmodel"):
                 messModel = altmodel
@@ -395,7 +377,7 @@ class MameGenerator(Generator):
                         else:
                             commandArray += [ "-cart" ]
                     else:
-                        commandArray += [ f'-{messRomType[messMode]}' ]
+                        commandArray += [ f'-{messSystem["rom_type"]}' ]
                 else:
                     if boot_disk:
                         if (altromtype == "flop1" or not altromtype) and boot_disk in [ "macos30", "macos608", "macos701", "macos75" ]:
@@ -403,12 +385,12 @@ class MameGenerator(Generator):
                         elif altromtype:
                             commandArray += [ f'-{altromtype}' ]
                         else:
-                            commandArray += [ f'-{messRomType[messMode]}' ]
+                            commandArray += [ f'-{messSystem["rom_type"]}' ]
                     else:
                         if altromtype:
                             commandArray += [ f'-{altromtype}' ]
                         else:
-                            commandArray += [ f'-{messRomType[messMode]}' ]
+                            commandArray += [ f'-{messSystem["rom_type"]}' ]
                 # Use the full filename for MESS ROMs
                 commandArray += [ rom ]
             else:
@@ -502,24 +484,15 @@ class MameGenerator(Generator):
                             autoRunCmd = f'LOADM \"{romName}\":EXEC\\n'
 
                 # check for a user override
-                autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
-                                autoRunCmd = f"{row[1]}\\n"
+                if user_autorun_cmd := mameCommon.get_user_autorun_command(system.name, romType, romName):
+                    autoRunCmd = user_autorun_cmd
             else:
                 # Check for an override file, otherwise use generic (if it exists)
-                autoRunCmd = messAutoRun[messMode]
-                autoRunFile = MAME_DEFAULT_DATA / f'{softList}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row[0].casefold() == romName.casefold():
-                                autoRunCmd = f"{row[1]}\\n"
-                                autoRunDelay = 3
+                autoRunCmd = messSystem['autorun']
+                if (softlist_autorun_cmd := mameCommon.get_softlist_autorun_command(softList, romName)) is not None:
+                    autoRunCmd = softlist_autorun_cmd
+                    autoRunDelay = 3
+
             if autoRunCmd != "":
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
@@ -531,16 +504,16 @@ class MameGenerator(Generator):
             bezelSet = None
 
         try:
-            if messMode != -1:
-                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSysName[messMode], gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+            if messSystem:
+                MameGenerator.writeBezelConfig(bezelSet, system, rom, messSystem['model_name'], gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
             else:
                 MameGenerator.writeBezelConfig(bezelSet, system, rom, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
         except Exception:
             MameGenerator.writeBezelConfig(None, system, rom, "", gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
 
-        buttonLayout = getMameControlScheme(system, rom)
+        buttonLayout = mameCommon.get_mame_control_scheme(system, rom)
 
-        if messMode == -1:
+        if not messSystem:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, "", buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
         else:
             mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
@@ -582,10 +555,7 @@ class MameGenerator(Generator):
 
         # bezels infos
         if bezelSet is None:
-            if gunsBordersSize is not None:
-                bz_infos = None
-            else:
-                return
+            bz_infos = None
         else:
             bz_infos = bezelsUtil.getBezelInfos(rom, bezelSet, system.name, 'mame')
             if bz_infos is None and gunsBordersSize is None:
@@ -617,15 +587,15 @@ class MameGenerator(Generator):
             pngFile = tmpZipDir / "default.png"
             pngFile.symlink_to(bz_infos["png"])
             if "info" in bz_infos and bz_infos["info"].exists():
-                bz_info_data = json.loads(bz_infos["info"].read_text())
+                bz_info_data: dict[str, int | float] = json.loads(bz_infos["info"].read_text())
 
-                img_width: int = bz_info_data["width"]
-                img_height: int = bz_info_data["height"]
-                bz_y: int = bz_info_data["top"]
-                bz_x: int = bz_info_data["left"]
-                bz_bottom: int = bz_info_data["bottom"]
-                bz_right: int = bz_info_data["right"]
-                bz_alpha: float = bz_info_data.get("opacity", 1.0)  # Just in case it's not set in the info file
+                img_width = bz_info_data["width"]
+                img_height = bz_info_data["height"]
+                bz_y = bz_info_data["top"]
+                bz_x = bz_info_data["left"]
+                bz_bottom = bz_info_data["bottom"]
+                bz_right = bz_info_data["right"]
+                bz_alpha = bz_info_data.get("opacity", 1.0)  # Just in case it's not set in the info file
 
                 bz_width = img_width - bz_x - bz_right
                 bz_height = img_height - bz_y - bz_bottom
@@ -738,61 +708,3 @@ class MameGenerator(Generator):
             return int(iwidth), int(iheight), int(irotate)
 
         raise BatoceraException("Display element not found")
-
-def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
-    # Game list files
-    mameCapcom = MAME_DEFAULT_DATA / 'mameCapcom.txt'
-    mameKInstinct = MAME_DEFAULT_DATA / 'mameKInstinct.txt'
-    mameMKombat = MAME_DEFAULT_DATA / 'mameMKombat.txt'
-    mameNeogeo = MAME_DEFAULT_DATA / 'mameNeogeo.txt'
-    mameTwinstick = MAME_DEFAULT_DATA / 'mameTwinstick.txt'
-    mameRotatedstick = MAME_DEFAULT_DATA / 'mameRotatedstick.txt'
-
-    # Controls for games with 5-6 buttons or other unusual controls
-    controllerType = system.config.get("altlayout", "auto")
-
-    if controllerType in [ "default", "neomini", "neocd", "twinstick", "qbert" ]:
-        return controllerType  # pyright: ignore[reportReturnType]
-
-    capcomList = set(mameCapcom.read_text().split())
-    mkList = set(mameMKombat.read_text().split())
-    kiList = set(mameKInstinct.read_text().split())
-    neogeoList = set(mameNeogeo.read_text().split())
-    twinstickList = set(mameTwinstick.read_text().split())
-    qbertList = set(mameRotatedstick.read_text().split())
-
-    romName = rom_path.stem
-    if romName in capcomList:
-        if controllerType in [ "auto", "snes" ]:
-            return "sfsnes"
-        if controllerType == "megadrive":
-            return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
-    elif romName in mkList:
-        if controllerType in [ "auto", "snes" ]:
-            return "mksnes"
-        if controllerType == "megadrive":
-            return "mkmegadrive"
-        if controllerType == "fightstick":
-            return "mkstick"
-    elif romName in kiList:
-        if controllerType in [ "auto", "snes" ]:
-            return "kisnes"
-        if controllerType == "megadrive":
-            return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
-    elif romName in  neogeoList:
-        return "neomini"
-    elif romName in  twinstickList:
-        return "twinstick"
-    elif romName in  qbertList:
-        return "qbert"
-    else:
-        if controllerType == "fightstick":
-            return "fightstick"
-        if controllerType == "megadrive":
-            return "mddefault"
-
-    return "default"
