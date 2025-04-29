@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import logging
 import os
-import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
@@ -44,15 +42,12 @@ class OpenMOHAAGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Setup the paths variations
         romdir = rom.parent
-        
+
         config_path = CONFIGS / "openmohaa"
         mkdir_if_not_exists(config_path)
 
         # Change Directory & Prepare Command
         os.chdir(romdir)
-        commandArray = ["/usr/bin/openmohaa/openmohaa"]
-        # Not the full config_path
-        commandArray.extend(["+set", "com_homepath", "configs/openmohaa"])
 
         # Setup version to play
         rom_name_lower = rom.name.lower()
@@ -67,9 +62,6 @@ class OpenMOHAAGenerator(Generator):
             _logger.info("Found Breakthrough!")
             variant_subdir = "maintt"
             target_game = "2"
-        
-        # Set the target game via command line argument
-        commandArray.extend(["+set", "com_target_game", target_game])
 
         # Construct paths based on the determined variant sub-directory
         variant_config_path = config_path / variant_subdir / "configs"
@@ -107,82 +99,103 @@ class OpenMOHAAGenerator(Generator):
         options_to_set["seta r_gamma"] = system.config.get_str("mohaa_brightness", "1.000000")
         # Texture Compression
         options_to_set["seta r_ext_compressed_textures"] = system.config.get_str("mohaa_compression", "0")
-        
+
         # -= Advanced Options =-
-        
+
         # View Model
         options_to_set["seta cg_drawviewmodel"] = system.config.get_str("mohaa_view", "2")
         # Shadows
         options_to_set["seta cg_shadows"] = system.config.get_str("mohaa_shadows", "1")
+
         # Terrain Detail
-        if system.config.get_str("mohaa_terrain") == "0":
-            options_to_set["seta ter_maxlod"] = "3"
-            options_to_set["seta ter_error"] = "10"
-        elif system.config.get_str("mohaa_terrain") == "1":
-            options_to_set["seta ter_maxlod"] = "4"
-            options_to_set["seta ter_error"] = "9"
-        elif system.config.get_str("mohaa_terrain") == "2":
-            options_to_set["seta ter_maxlod"] = "5"
-            options_to_set["seta ter_error"] = "7"
-        else:
-            options_to_set["seta ter_maxlod"] = "6"
-            options_to_set["seta ter_error"] = "4"
+        match system.config.get_str("mohaa_terrain"):
+            case "0":
+                ter_maxlod = "3"
+                ter_error = "10"
+            case "1":
+                ter_maxlod = "4"
+                ter_error = "9"
+            case "2":
+                ter_maxlod = "5"
+                ter_error = "7"
+            case _:
+                ter_maxlod = "6"
+                ter_error = "4"
+
+        options_to_set["seta ter_maxlod"] = ter_maxlod
+        options_to_set["seta ter_error"] = ter_error
+
         # Model Detail
-        if system.config.get_str("mohaa_model") == "0":
-            options_to_set["seta r_lodviewmodelcap"] = "0.25"
-            options_to_set["seta r_lodcap"] = "0.25"
-            options_to_set["seta r_lodscale"] = "0.25"                    
-        elif system.config.get_str("mohaa_model") == "1":
-            options_to_set["seta r_lodviewmodelcap"] = "0.25"
-            options_to_set["seta r_lodcap"] = "0.35"
-            options_to_set["seta r_lodscale"] = "0.35"
-        elif system.config.get_str("mohaa_model") == "2":
-            options_to_set["seta r_lodviewmodelcap"] = "0.45"
-            options_to_set["seta r_lodcap"] = "0.35"
-            options_to_set["seta r_lodscale"] = "0.45"
-        elif system.config.get_str("mohaa_model") == "3":
-            options_to_set["seta r_lodviewmodelcap"] = "0.55"
-            options_to_set["seta r_lodcap"] = "0.5"
-            options_to_set["seta r_lodscale"] = "0.55"
-        elif system.config.get_str("mohaa_model") == "4":
-            options_to_set["seta r_lodviewmodelcap"] = "0.9"
-            options_to_set["seta r_lodcap"] = "0.9"
-            options_to_set["seta r_lodscale"] = "0.9"
-        else:
-            options_to_set["seta r_lodviewmodelcap"] = "0.25"
-            options_to_set["seta r_lodcap"] = "0.35"
-            options_to_set["seta r_lodscale"] = "5"
+        match system.config.get_str("mohaa_model"):
+            case "0":
+                r_lodviewmodelcap = "0.25"
+                r_lodcap = "0.25"
+                r_lodscale = "0.25"
+            case "1":
+                r_lodviewmodelcap = "0.25"
+                r_lodcap = "0.35"
+                r_lodscale = "0.35"
+            case "2":
+                r_lodviewmodelcap = "0.45"
+                r_lodcap = "0.35"
+                r_lodscale = "0.45"
+            case "3":
+                r_lodviewmodelcap = "0.55"
+                r_lodcap = "0.5"
+                r_lodscale = "0.55"
+            case "4":
+                r_lodviewmodelcap = "0.9"
+                r_lodcap = "0.9"
+                r_lodscale = "0.9"
+            case _:
+                r_lodviewmodelcap = "0.25"
+                r_lodcap = "0.35"
+                r_lodscale = "5"
+
+        options_to_set["seta r_lodviewmodelcap"] = r_lodviewmodelcap
+        options_to_set["seta r_lodcap"] = r_lodcap
+        options_to_set["seta r_lodscale"] = r_lodscale
+
         # Effects Detail
-        if system.config.get_str("mohaa_effects") == "1":
-            options_to_set["seta cg_effectdetail"] = "0.3"
-            options_to_set["seta vss_maxcount"] = "23"            
-        elif system.config.get_str("mohaa_effects") == "2":
-            options_to_set["seta cg_effectdetail"] = "0.5"
-            options_to_set["seta vss_maxcount"] = "22"
-        elif system.config.get_str("mohaa_effects") == "3":
-            options_to_set["seta cg_effectdetail"] = "0.7"
-            options_to_set["seta vss_maxcount"] = "20"
-        elif system.config.get_str("mohaa_effects") == "4":
-            options_to_set["seta cg_effectdetail"] = "0.8"
-            options_to_set["seta vss_maxcount"] = "18"
-        elif system.config.get_str("mohaa_effects") == "5":
-            options_to_set["seta cg_effectdetail"] = "0.95"
-            options_to_set["seta vss_maxcount"] = "15"
-        elif system.config.get_str("mohaa_effects") == "6":
-            options_to_set["seta cg_effectdetail"] = "1.0"
-            options_to_set["seta vss_maxcount"] = "10"
-        else:
-            options_to_set["seta cg_effectdetail"] = "0.2"
-            options_to_set["seta vss_maxcount"] = "22"
+        match system.config.get_str("mohaa_effects"):
+            case "1":
+                cg_effectdetail = "0.3"
+                vss_maxcount = "23"
+            case "2":
+                cg_effectdetail = "0.5"
+                vss_maxcount = "22"
+            case "3":
+                cg_effectdetail = "0.7"
+                vss_maxcount = "20"
+            case "4":
+                cg_effectdetail = "0.8"
+                vss_maxcount = "18"
+            case "5":
+                cg_effectdetail = "0.95"
+                vss_maxcount = "15"
+            case "6":
+                cg_effectdetail = "1.0"
+                vss_maxcount = "10"
+            case _:
+                cg_effectdetail = "0.2"
+                vss_maxcount = "22"
+
+        options_to_set["seta cg_effectdetail"] = cg_effectdetail
+        options_to_set["seta vss_maxcount"] = vss_maxcount
+
         # Curve Detail
-        if system.config.get_str("mohaa_curve") == "0":
-            options_to_set["seta r_subdivisions"] = "20"
-        elif system.config.get_str("mohaa_curve") == "1":
-            options_to_set["seta r_subdivisions"] = "10"
-        elif system.config.get_str("mohaa_curve") == "3":
-            options_to_set["seta r_subdivisions"] = "3"
-        else:
-            options_to_set["seta r_subdivisions"] = "4"
+        match system.config.get_str("mohaa_curve"):
+            case "0":
+                r_subdivisions = "20"
+            case "1":
+                r_subdivisions = "10"
+            case "3":
+                r_subdivisions = "3"
+            case _:
+                r_subdivisions = "4"
+
+        options_to_set["seta r_subdivisions"] = r_subdivisions
+
         # Subtitles
         options_to_set["seta g_subtitle"] = system.config.get_str("mohaa_subtitles", "0")
         # Real Dynamic Lighting
@@ -225,7 +238,13 @@ class OpenMOHAAGenerator(Generator):
                     config_file.write(f"{key} \"{value}\"\n")
 
         # Now let's run
-        return Command.Command(array=commandArray)
+        return Command.Command(array=[
+            "/usr/bin/openmohaa/openmohaa",
+            # Not the full config_path
+            "+set", "com_homepath", "configs/openmohaa",
+            # Set the target game via command line argument
+            "+set", "com_target_game", target_game
+        ])
 
     # Show mouse on screen for the Config Screen
     def getMouseMode(self, config, rom):
