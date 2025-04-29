@@ -37,7 +37,6 @@ class OpenMOHAAGenerator(Generator):
                 "save_state": "KEY_F5",
                 "restore_state": "KEY_F9",
                 "menu": "KEY_ESC",
-                "screenshot": "KEY_F12",
                 "pause": "KEY_PAUSE"
             }
         }
