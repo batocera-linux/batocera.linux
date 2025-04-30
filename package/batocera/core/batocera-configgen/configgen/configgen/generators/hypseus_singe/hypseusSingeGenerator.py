@@ -306,9 +306,9 @@ class HypseusSingeGenerator(Generator):
         if (scanlines := system.config.get_int('hypseus_scanlines')) > 0:
             commandArray.extend(["-scanlines", "-scanline_shunt", str(scanlines)])
 
-        # Hide crosshair in supported games (e.g. ActionMax, ALG)
+        # Crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if guns and not system.config.get_bool('singe_crosshair'):
+        if guns and system.config.get('singe_crosshair') != '0':
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
