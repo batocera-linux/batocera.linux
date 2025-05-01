@@ -9,6 +9,8 @@
 - Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
 - The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
+- ScummVM libretro and standalone savegames share the same folders now.
+  If you have saved games from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
@@ -70,6 +72,7 @@
 - BigPEmu now supports .bigpimg CD images
 - ROG Ally gamepad support
 - Batocera-wine: add saves directory and save files options
+- Batocera-wine: improved autodetection for Windows executables, refer to our [Wikipedia](https://wiki.batocera.org/systems:windows#creating_autoruncmd_from_ssh)
 - Libretro-virtualjaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
