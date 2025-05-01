@@ -13,7 +13,7 @@ VPINBALL_DEPENDENCIES = host-libcurl libfreeimage libpinmame libaltsound libdmdu
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 # handle supported target platforms
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
     SOURCE = CMakeLists_gl-linux-aarch64.txt
     SOURCE_DIR = linux-aarch64
     ARCH = aarch64
