@@ -1,14 +1,11 @@
 config BR2_PACKAGE_LIBRETRO_SWANSTATION
     bool "libretro-swanstation"
-    depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
     depends on BR2_GCC_ENABLE_OPENMP
     select BR2_PACKAGE_FMT
     select BR2_PACKAGE_BOOST
     select BR2_PACKAGE_FFMPEG  
-      help
-        SwanStation - PlayStation 1, aka. PSX Emulator
+    help
+      SwanStation - PlayStation 1, aka. PSX Emulator
 
 	    https://github.com/libretro/swanstation
-
-

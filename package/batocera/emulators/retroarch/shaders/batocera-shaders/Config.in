@@ -1,9 +1,7 @@
 config BR2_PACKAGE_BATOCERA_SHADERS
     bool "batocera shaders"
-    depends on BR2_PACKAGE_RETROARCH
     select BR2_PACKAGE_COMMON_SHADERS
     select BR2_PACKAGE_GLSL_SHADERS
     select BR2_PACKAGE_SLANG_SHADERS
     help
       Batocera shaders for retroarch
-

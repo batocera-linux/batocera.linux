@@ -1,9 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_IMAME
     bool "libretro-imame"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-      help
-        A libretro imame4all core for ARM.
+    help
+      A libretro imame4all core for ARM.
 
 	  http://www.libretro.com
 

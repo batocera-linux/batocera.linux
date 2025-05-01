@@ -1,9 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_HOLANI
 	bool "libretro-holani"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
 	select BR2_PACKAGE_HOST_RUSTC
 	help
-	A cycle-stepped libretro Lynx emulator core.
+	  A cycle-stepped libretro Lynx emulator core.
 
-	https://docs.libretro.com/library/holani/
+	  https://docs.libretro.com/library/holani/

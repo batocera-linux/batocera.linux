@@ -1,9 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_SMSPLUS_GX
     bool "libretro-smsplus-gx"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-      help
-        Improved port of SMSPlus-GX by gameblabla for libretro.
+    help
+      Improved port of SMSPlus-GX by gameblabla for libretro.
 
 	  http://www.libretro.com
 

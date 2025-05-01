@@ -3,8 +3,8 @@
 # slang-shaders
 #
 ################################################################################
-# Version: Commits on Jan 29, 2025
-SLANG_SHADERS_VERSION = e2236e6a637a9396394ff238ea151bc0dbe4968e
+# Version: Commits on May 1, 2025
+SLANG_SHADERS_VERSION = 2a7c1e46ae9573302cf0c060413b33c94a1f9cfa
 SLANG_SHADERS_SITE = $(call github,libretro,slang-shaders,$(SLANG_SHADERS_VERSION))
 SLANG_SHADERS_LICENSE = GPL
 
@@ -25,9 +25,11 @@ define SLANG_SHADERS_BATOCERA_SHADERS_SLANG
     # Some shaders got the .slan(g) variants moved
     mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/interpolation/shaders
     mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/scalehq/shaders
-    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && cp -f pixel-art-scaling/sharp-bilinear-simple.slangp ./interpolation/ && \
+    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && \
+	    cp -f pixel-art-scaling/sharp-bilinear-simple.slangp ./interpolation/ && \
 		cp -f pixel-art-scaling/shaders/sharp-bilinear-simple.slang ./interpolation/shaders/
-    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && cp -f edge-smoothing/scalehq/2xScaleHQ.slangp ./scalehq/ && \
+    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && \
+	    cp -f edge-smoothing/scalehq/2xScaleHQ.slangp ./scalehq/ && \
 		cp -f ./edge-smoothing/scalehq/shaders/2xScaleHQ.slang ./scalehq/shaders/
 endef
 

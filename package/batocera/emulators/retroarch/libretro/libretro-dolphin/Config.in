@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_DOLPHIN
     bool "libretro-dolphin"
-	depends on BR2_PACKAGE_RETROARCH
     depends on BR2_PACKAGE_HAS_UDEV
     help
       A libretro core for GameCube / Wii emulation.

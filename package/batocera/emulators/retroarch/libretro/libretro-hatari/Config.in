@@ -1,13 +1,12 @@
 config BR2_PACKAGE_LIBRETRO_HATARI
 	bool "libretro-hatari"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_LIBCAPSIMAGE
 	select BR2_PACKAGE_ZLIB
-	  help
-	    A libretro Atari ST emulator core.
-		
-		http://www.libretro.com
+	help
+	  A libretro Atari ST emulator core.
+	  
+	  http://www.libretro.com
 
 comment "LIBRETRO_HATARI needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
