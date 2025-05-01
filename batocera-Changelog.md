@@ -149,7 +149,7 @@
 - VKD3D-Proton to 2.14.1
 - Vulkan stack to v1.4.304
 - Wine Mono to 9.4.0
-- Wine-TKG to 10.5
+- Wine-TKG to 10.6
 - Wireplumber to 0.5.8
 - Xone to Mar 13, 2025
 
