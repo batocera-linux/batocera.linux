@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 scummConfigDir: Final = CONFIGS / "scummvm"
 scummConfigFile: Final = scummConfigDir / "scummvm.ini"
 scummExtra: Final = BIOS / "scummvm" / "extra"
+scummSave: Final = SAVES / "scummvm"
 
 class ScummVMGenerator(Generator):
 
@@ -100,6 +101,7 @@ class ScummVMGenerator(Generator):
             [f"--joystick={id}",
             f"--screenshotspath={SCREENSHOTS}",
             f"--extrapath={scummExtra}",
+            f"--savepath={scummSave}",
             f"--path={rom_path}",
             f"{target}"]
         )
@@ -108,7 +110,6 @@ class ScummVMGenerator(Generator):
             array=commandArray,
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
-                "XDG_DATA_HOME": SAVES,
                 "XDG_CACHE_HOME": CACHE,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
             }
