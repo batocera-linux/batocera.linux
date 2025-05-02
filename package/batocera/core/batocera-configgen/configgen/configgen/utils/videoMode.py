@@ -63,7 +63,12 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     # output 1
     vo1 = getCurrentOutput()
     resolution1 = getCurrentResolution()
-    res.append({"width": resolution1["width"], "height": resolution1["height"], "x": 0, "y": 0})
+    res.append({
+        "width": resolution1["width"],
+        "height": resolution1["height"],
+        "x": 0,
+        "y": 0
+    })
 
     # output2
     vo2 = None
@@ -74,10 +79,17 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     for x in outputs:
         if x != vo1 and vo2 is None:
             vo2 = x
+
+    resolution2: Resolution | None = None
     if vo2 is not None:
         try:
             resolution2 = getCurrentResolution(vo2)
-            res.append({"width": resolution2["width"], "height": resolution2["height"], "x": resolution1["width"], "y": 0})
+            res.append({
+                "width": resolution2["width"],
+                "height": resolution2["height"],
+                "x": resolution1["width"],
+                "y": 0
+            })
         except Exception:
             pass # ignore bad information
 
@@ -90,10 +102,17 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     for x in outputs:
         if x != vo1 and x != vo2 and vo3 is None:
             vo3 = x
+
     if vo3 is not None:
         try:
             resolution3 = getCurrentResolution(vo3)
-            res.append({"width": resolution3["width"], "height": resolution3["height"], "x": resolution1["width"]+resolution2["width"], "y": 0})
+            res.append({
+                "width": resolution3["width"],
+                "height": resolution3["height"],
+                # if resolution2 can't be determined, place screen3 where screen2 would be
+                "x": resolution1["width"] + (0 if resolution2 is None else resolution2["width"]),
+                "y": 0
+            })
         except Exception:
             pass # ignore bad information
 

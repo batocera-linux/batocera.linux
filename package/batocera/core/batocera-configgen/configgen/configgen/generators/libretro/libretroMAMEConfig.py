@@ -609,6 +609,11 @@ def generateMAMEPadConfig(
     else:
         useControls = messSysName
 
+    config_alt: minidom.Document | None = None
+    xml_input_alt: minidom.Element | None = None
+    overwriteSystem = True
+    configFile_alt: Path | None = None
+
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
@@ -666,8 +671,6 @@ def generateMAMEPadConfig(
         perGameCfg = system.config.get_bool('pergamecfg')
         if configFile_alt.exists() and (customCfg or perGameCfg):
             overwriteSystem = False
-        else:
-            overwriteSystem = True
 
         xml_mameconfig_alt = getRoot(config_alt, "mameconfig")
         xml_mameconfig_alt.setAttribute("version", "10")
@@ -731,7 +734,7 @@ def generateMAMEPadConfig(
         if useControls in messControlDict:
             for controlDef in messControlDict[useControls]:
                 thisControl = messControlDict[useControls][controlDef]
-                if nplayer == thisControl['player']:
+                if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
                     if thisControl['type'] == 'special':
                         xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
                             retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
@@ -756,7 +759,7 @@ def generateMAMEPadConfig(
                 mameXml.write(dom_string)
 
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if messSysName in specialControlList and overwriteSystem:
+        if messSysName in specialControlList and overwriteSystem and config_alt is not None and configFile_alt is not None:
             with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
                 dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
                 mameXml_alt.write(dom_string_alt)

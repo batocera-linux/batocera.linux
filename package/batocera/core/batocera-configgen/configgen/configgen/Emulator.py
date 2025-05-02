@@ -4,7 +4,7 @@ import logging
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping
 from dataclasses import InitVar, dataclass, field
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
@@ -101,7 +101,7 @@ class Emulator:
 
         try:
             tree = ET.parse(self.game_info_xml)
-            root = cast('ET.Element', tree.getroot())
+            root = tree.getroot()
             for child in root:
                 for metadata in child:
                     vals[metadata.tag] = metadata.text or ''
