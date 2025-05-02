@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST
     bool "libretro-beetle-pce-fast"
-    depends on BR2_PACKAGE_RETROARCH
     depends on BR2_INSTALL_LIBSTDCPP
     help
       A libretro PCE-FAST emulator core for ARM.

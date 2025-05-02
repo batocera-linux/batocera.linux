@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_MELONDS_DS
     bool "libretro-melonds-ds"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_LIBPCAP
     help

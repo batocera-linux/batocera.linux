@@ -1,9 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_81
-        bool "libretro-81"
-	depends on BR2_PACKAGE_RETROARCH
+    bool "libretro-81"
 	depends on BR2_INSTALL_LIBSTDCPP
-        help
-          A libretro EightyOne ZX81 emulator core.
+    help
+      A libretro EightyOne ZX81 emulator core.
 
 	  http://www.libretro.com
 
