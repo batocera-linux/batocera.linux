@@ -1,12 +1,12 @@
 config BR2_PACKAGE_LIBRETRO_GEARSYSTEM
-  bool "libretro-gearsystem
-	depends on BR2_INSTALL_LIBSTDCPP
-  help
-    Gearsystem is a very accurate, cross-platform
-    Sega Master System / Game Gear / SG-1000 / Othello Multivision
-    emulator written in C++.
-
-	  https://github.com/drhelius/Gearsystem
+    bool "libretro-gearsystem"
+	  depends on BR2_INSTALL_LIBSTDCPP
+    help
+      Gearsystem is a very accurate, cross-platform
+      Sega Master System / Game Gear / SG-1000 / Othello Multivision
+      emulator written in C++.
+      
+      https://github.com/drhelius/Gearsystem
 
 comment "LIBRETRO_GEARSYSTEM needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
