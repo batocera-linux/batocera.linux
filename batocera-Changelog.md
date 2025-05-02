@@ -102,7 +102,7 @@
 - Play! to 4th Feb build
 - PPSSPP to 28th February build
 - Raze to 1.11.0
-- RetroArch to v1.20.0
+- RetroArch to v1.21.1
 - Ruffle to nightly-2025-02-12
 - RPCS3 to v0.0.35
 - ScummVM to v2.9.0
