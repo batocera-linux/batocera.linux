@@ -122,7 +122,7 @@
 - Xemu to v0.8.49
 - Xenia to build 5979274 (Jan 24, 2025)
 ### System
-- Bluez to 5.79
+- Bluez to 5.82
 - BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
 - DXVK to 2.6.1
