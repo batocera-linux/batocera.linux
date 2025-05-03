@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-DOSBOX_STAGING_VERSION = v0.82.0
+DOSBOX_STAGING_VERSION = v0.82.2
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
-DOSBOX_STAGING_DEPENDENCIES = alsa-lib sdl2 sdl2_net sdl2_image fluidsynth speexdsp
-DOSBOX_STAGING_DEPENDENCIES += zlib libpng libogg libvorbis opus opusfile slirp iir
+DOSBOX_STAGING_DEPENDENCIES = alsa-lib sdl2 sdl2_net sdl2_image fluidsynth
+DOSBOX_STAGING_DEPENDENCIES += libpng libogg libvorbis opus opusfile 
+DOSBOX_STAGING_DEPENDENCIES += slirp  speexdsp iir munt zlib 
 DOSBOX_STAGING_LICENSE = GPLv2
 
 DOSBOX_STAGING_CPPFLAGS = -DNDEBUG
@@ -15,7 +16,8 @@ DOSBOX_STAGING_CFLAGS   = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-
 DOSBOX_STAGING_CFLAGS   += -fassociative-math -frename-registers -ffunction-sections -fdata-sections
 DOSBOX_STAGING_CXXFLAGS = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-math
 DOSBOX_STAGING_CXXFLAGS += -fassociative-math -frename-registers -ffunction-sections -fdata-sections
-DOSBOX_STAGING_CONF_OPTS = -Duse_mt32emu=false
+
+DOSBOX_STAGING_CONF_OPTS = -Duse_mt32emu=true
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false

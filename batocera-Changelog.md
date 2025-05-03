@@ -83,7 +83,7 @@
 - Cemu to 2.6
 - DevilutionX to 1.5.4
 - Dolphin-Emu to 2503a-328
-- Dosbox Staging to v0.82.0
+- Dosbox Staging to v0.82.2
 - Dosbox-X to v2025.02.01
 - DXX-Rebirth to 12th of Jan build
 - EDuke to 26th of Dec build
