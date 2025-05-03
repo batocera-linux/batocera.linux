@@ -1,0 +1,15 @@
+diff --git a/scripts/src/osd/retro_modules.lua b/scripts/src/osd/retro_modules.lua
+index c54e1b89d420a..86b4007bad115 100644
+--- a/scripts/src/osd/retro_modules.lua
++++ b/scripts/src/osd/retro_modules.lua
+@@ -92,6 +92,10 @@ function osdmodulesbuild()
+ 		MAME_DIR .. "src/osd/modules/sound/none.cpp",
+ 	}
+ 
++	includedirs {
++		MAME_DIR .. "3rdparty/asio/include",
++	}
++
+ 	if _OPTIONS["targetos"]=="windows" then
+ 		includedirs {
+ 			MAME_DIR .. "3rdparty/winpcap/Include",

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_MAME_VERSION = lrmame0276
+LIBRETRO_MAME_VERSION = lrmame0277
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 
@@ -17,10 +17,16 @@ cpu_threads := $(shell nproc)
 jobs := $(shell echo $$(( $(memory_based_jobs) < $(cpu_threads) ? $(memory_based_jobs) : $(cpu_threads) )))
 LIBRETRO_MAME_JOBS := $(jobs)
 
+# Determine the correct make target based on architecture
+# Default to 'linux' for non-x86 architectures to avoid the -m64 flag issue
+LIBRETRO_MAME_ARCH = linux
+
 ifeq ($(BR2_x86_64),y)
-LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86
+LIBRETRO_MAME_ARCH = linux_x64
 else ifeq ($(BR2_i386),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
+LIBRETRO_MAME_ARCH = linux_x86
 else ifeq ($(BR2_RISCV_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=riscv64 PLATFORM=riscv64
 else ifeq ($(BR2_riscv),y)
@@ -45,7 +51,8 @@ define LIBRETRO_MAME_BUILD_CMDS
 	# create some dirs while with parallelism, sometimes it fails because this directory is missing
 	mkdir -p $(@D)/build/libretro/obj/x64/libretro/src/osd/libretro/libretro-internal
 
-	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -l$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
+	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -l$(LIBRETRO_MAME_JOBS) -C $(@D)/ $(LIBRETRO_MAME_ARCH) \
+	    OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
 		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)" \
 		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" \
