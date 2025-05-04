@@ -6,96 +6,55 @@
 
 DOSBOX_STAGING_VERSION = v0.82.2
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
-DOSBOX_STAGING_DEPENDENCIES = alsa-lib sdl2 sdl2_net sdl2_image fluidsynth
-DOSBOX_STAGING_DEPENDENCIES += libpng libogg libvorbis opus opusfile 
-DOSBOX_STAGING_DEPENDENCIES += slirp  speexdsp iir munt zlib 
+DOSBOX_STAGING_DEPENDENCIES = iir libpng libogg libvorbis opus opusfile
+DOSBOX_STAGING_DEPENDENCIES += sdl2 sdl2_image speexdsp zlib 
 DOSBOX_STAGING_LICENSE = GPLv2
 
-DOSBOX_STAGING_CPPFLAGS = -DNDEBUG
-DOSBOX_STAGING_CFLAGS   = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-math
-DOSBOX_STAGING_CFLAGS   += -fassociative-math -frename-registers -ffunction-sections -fdata-sections
-DOSBOX_STAGING_CXXFLAGS = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-math
-DOSBOX_STAGING_CXXFLAGS += -fassociative-math -frename-registers -ffunction-sections -fdata-sections
+DOSBOX_STAGING_CONF_OPTS = \
+    -Dtracy=false \
+    -Dunit_tests=disabled \
+    -Dnarrowing_warnings=false \
+    -Dautovec_info=false \
+    -Dasm=false \
+    -Dtime_trace=false
 
-DOSBOX_STAGING_CONF_OPTS = -Duse_mt32emu=true
+ifeq ($(BR2_PACKAGE_SDL2_NET),y)
+DOSBOX_STAGING_CONF_OPTS += -Duse_sdl2_net=true
+DOSBOX_STAGING_DEPENDENCIES += sdl2_net
+else
+DOSBOX_STAGING_CONF_OPTS += -Duse_sdl2_net=false
+endif
+
+ifeq ($(BR2_PACKAGE_FLUIDSYNTH),y)
+DOSBOX_STAGING_CONF_OPTS += -Duse_fluidsynth=true
+DOSBOX_STAGING_DEPENDENCIES += fluidsynth
+else
+DOSBOX_STAGING_CONF_OPTS += -Duse_fluidsynth=false
+endif
+
+ifeq ($(BR2_PACKAGE_MUNT),y)
+DOSBOX_STAGING_CONF_OPTS += -Duse_mt32emu=true
+DOSBOX_STAGING_DEPENDENCIES += munt
+else
+DOSBOX_STAGING_CONF_OPTS += -Duse_mt32emu=false
+endif
+
+ifeq ($(BR2_PACKAGE_SLIRP),y)
+DOSBOX_STAGING_CONF_OPTS += -Duse_slirp=true
+DOSBOX_STAGING_DEPENDENCIES += slirp
+else
+DOSBOX_STAGING_CONF_OPTS += -Duse_slirp=false
+endif
+
+ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
+DOSBOX_STAGING_CONF_OPTS += -Duse_alsa=true
+DOSBOX_STAGING_DEPENDENCIES += alsa-lib
+else
+DOSBOX_STAGING_CONF_OPTS += -Duse_alsa=false
+endif
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
-
-ifeq ($(BR2_arm1176jzf_s),y)
-DOSBOX_STAGING_CFLAGS   += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
-endif
-
-ifeq ($(BR2_cortex_a7),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
-endif
-
-ifeq ($(BR2_cortex_a9),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mtune=cortex-a9 -mfpu=neon-vfpv3 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mtune=cortex-a9 -mfpu=neon-vfpv3 -mfloat-abi=hard
-endif
-
-ifeq ($(BR2_cortex_a15_a7),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mcpu=cortex-a15.cortex-a7
-DOSBOX_STAGING_CFLAGS   += -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mcpu=cortex-a15.cortex-a72
-DOSBOX_STAGING_CXXFLAGS += -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-endif
-
-ifeq ($(BR2_cortex_a17),y)
-DOSBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mcpu=cortex-a17 -mtune=cortex-a17
-DOSBOX_STAGING_CFLAGS   += -mfpu=neon-vfpv4 -mfloat-abi=hard
-DOSBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mcpu=cortex-a17 -mtune=cortex-a17
-DOSBOX_STAGING_CXXFLAGS += -mfpu=neon-vfpv4 -mfloat-abi=hard
-endif
-
-ifeq ($(BR2_cortex_a35),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a35 -mtune=cortex-a35
-DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a35 -mtune=cortex-a35
-endif
-
-ifeq ($(BR2_cortex_a53),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
-DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
-endif
-
-ifeq ($(BR2_cortex_a72),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72
-DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72
-endif
-
-ifeq ($(BR2_cortex_a73_a53),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
-DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
-endif
-
-ifeq ($(BR2_cortex_a55),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8.2-a+crc+crypto -mcpu=cortex-a55 -mtune=cortex-a55
-DOSBOX_STAGING_CXXFLAGS += -march=armv8.2-a+crc+crypto -mcpu=cortex-a55 -mtune=cortex-a55
-endif
-
-ifeq ($(BR2_cortex_a75_a55),y)
-DOSBOX_STAGING_CFLAGS   += -march=armv8.2-a+crc -mcpu=cortex-a75.cortex-a55 -mtune=cortex-a75.cortex-a55
-DOSBOX_STAGING_CXXFLAGS += -march=armv8.2-a+crc -mcpu=cortex-a75.cortex-a55 -mtune=cortex-a75.cortex-a55
-endif
-
-ifeq ($(BR2_cortex_a76_a55),y)
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
-DOSBOX_STAGING_CFLAGS += -pipe -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2
-DOSBOX_STAGING_CXXFLAGS += -pipe -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2
-else
-DOSBOX_STAGING_CFLAGS   += -march=armv8.2-a+dotprod+rcpc+ssbs+sb
-DOSBOX_STAGING_CFLAGS   += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
-DOSBOX_STAGING_CXXFLAGS += -march=armv8.2-a+dotprod+rcpc+ssbs+sb -mcpu=cortex-a76.cortex-a55
-DOSBOX_STAGING_CXXFLAGS += -mtune=cortex-a76.cortex-a55
-endif
-endif
-
-define DOSBOX_STAGING_INSTALL_TARGET_CMDS
-        $(INSTALL) -D $(@D)/build/dosbox $(TARGET_DIR)/usr/bin/dosbox-staging
-endef
 
 $(eval $(meson-package))
