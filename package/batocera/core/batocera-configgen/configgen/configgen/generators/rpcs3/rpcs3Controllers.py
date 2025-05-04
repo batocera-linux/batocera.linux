@@ -278,7 +278,7 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: SDL\n')
                 # workaround controllers with commas in their name - like Nintendo
-                ctrlname = pad.real_name.split(',')[0].strip()
+                ctrlname = pad.real_name.replace(",", ".")
                 # rpcs3 appends a unique number per controller name
                 if ctrlname in controller_counts:
                     controller_counts[ctrlname] += 1
