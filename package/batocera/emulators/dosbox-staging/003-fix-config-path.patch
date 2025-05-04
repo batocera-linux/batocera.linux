@@ -1,0 +1,13 @@
+diff --git a/src/misc/cross.cpp b/src/misc/cross.cpp
+index 8ed61ebfb8..0da34ccfee 100644
+--- a/src/misc/cross.cpp
++++ b/src/misc/cross.cpp
+@@ -133,7 +133,7 @@ static std_fs::path get_or_create_config_dir()
+ 
+ static std_fs::path get_or_create_config_dir()
+ {
+-	const auto conf_path = get_xdg_config_home() / "dosbox";
++	const std_fs::path conf_path = "/userdata/system/configs/dosbox";
+ 	std::error_code ec   = {};
+ 
+ 	if (std_fs::exists(conf_path / GetPrimaryConfigName())) {

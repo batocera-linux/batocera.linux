@@ -17,7 +17,7 @@ class DosBoxStagingGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # Find rom path
         batFile = rom / "dosbox.bat"
-        gameConfFile = rom / "dosbox.cfg"
+        gameConfFile = rom / "dosbox-staging.conf"
 
         commandArray = [
             '/usr/bin/dosbox-staging',
@@ -30,9 +30,6 @@ class DosBoxStagingGenerator(Generator):
         if gameConfFile.is_file():
             commandArray.append("-conf")
             commandArray.append(gameConfFile)
-        else:
-            commandArray.append("-conf")
-            commandArray.append(CONFIGS / 'dosbox' / 'dosbox.conf')
 
         return Command.Command(array=commandArray)
 
