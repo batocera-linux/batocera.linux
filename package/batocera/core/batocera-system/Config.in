@@ -2001,6 +2001,17 @@ config BR2_PACKAGE_BATOCERA_WAYLAND_SWAY
 	select BR2_PACKAGE_SWAY
 	select BR2_PACKAGE_SWAYBG
 
+config BR2_PACKAGE_BATOCERA_WAYLAND_LABWC
+	bool "batocera.linux wayland labwc packages selection"
+
+	# Wayland Protocol
+	select BR2_PACKAGE_BATOCERA_WAYLAND
+
+	# Compositor for wayland
+	select BR2_PACKAGE_LABWC
+	select BR2_PACKAGE_SWAYBG
+	select BR2_PACKAGE_WLR_RANDR
+
 config BR2_PACKAGE_BATOCERA_XWAYLAND
 	bool "batocera.linux xwayland packages selection"
 

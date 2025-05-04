@@ -572,6 +572,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-led-handheld/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/moonlight-embedded/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wireguard-service/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/labwc/Config.in"
 endmenu
 
 menu "Cases"
@@ -656,6 +657,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/gamenetworkingsockets/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-cog/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pyqt-builder/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libsfdo/Config.in"
 endmenu
 
 menu "Audio"
