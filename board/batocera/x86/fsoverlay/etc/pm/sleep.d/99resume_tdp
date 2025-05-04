@@ -1,48 +1,45 @@
 #!/bin/bash
 
+# check we have a max system TDP value
+CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+# if not, we exit as the CPU is not supported by the TDP values
+if [ -z "$CPU_TDP" ]; then
+    echo "No CPU TDP value found."
+    exit 0
+fi
+
+TDP_SAVED="/var/run/amd_tdp_saved"
+
 # set the final TDP value
 set_tdp() {
-    echo "Setting AMD Processor TDP to ${1}W"
-    /usr/bin/batocera-amd-tdp $1
+    local TDP_VALUE=$1
+
+    echo "Setting AMD Processor TDP to ${TDP_VALUE}W"
+    /usr/bin/batocera-amd-tdp "${TDP_VALUE}"
 }
 
-# determine the new TDP value based on max TDP
-handle_tdp() {
-    TDP_PERCENTAGE=$1
-    MAX_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
-    # Check if MAX_TDP is defined and non-empty
-    if [ -n "$MAX_TDP" ]; then
-        # round the value up or down to make bash happy
-        TDP_VALUE=$(awk -v max_tdp="$MAX_TDP" -v tdp_percentage="$TDP_PERCENTAGE" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
-        set_tdp "${TDP_VALUE}"
-    else
-        echo "Max TDP is not defined, cannot set TDP."
-        exit 1
+save_tdp() {
+    local CURRENT_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
+
+    if [[ "$CURRENT_TDP" =~ ^[0-9]+$ && "$CPU_TDP" =~ ^[0-9]+$ ]] && [ "$CURRENT_TDP" -ne "$CPU_TDP" ]; then
+        echo "$CURRENT_TDP" > "$TDP_SAVED"
     fi
 }
 
 case "$1" in
+    suspend|hibernate)
+        # We want to save the current TDP to restore after resuming from suspend
+        save_tdp
+        ;;
     resume|thaw)
-        # check we have a max system TDP value
-        CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
-        # if not, we exit as the CPU is not supported by the TDP values
-        if [ -z "$CPU_TDP" ]; then
-            echo "No CPU TDP value found."
+        sleep 1 # Some BIOS may revert to defaults when resuming from suspend. Ensures that saved tdp is set after this.
+        if [ ! -s "$TDP_SAVED" ]; then
+            echo "No saved TDP value before suspending found."
             exit 0
         else
-            TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
-            if [ -z "${TDP_SETTING}" ]; then
-                TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
-                
-                if [ -n "${TDP_SETTING}" ]; then
-                    set_tdp "${TDP_SETTING}"
-                else
-                    echo "TDP setting is not defined, cannot set TDP."
-                    exit 1
-                fi
-            else
-                handle_tdp "${TDP_SETTING}"
-            fi
+            SAVED_VALUE=$(cat "$TDP_SAVED")
+            set_tdp "${SAVED_VALUE}"
+            rm -f "$TDP_SAVED"  # Clean up after restoring
         fi
         ;;
 esac
