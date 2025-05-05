@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 import toml
 
 from ... import Command
-from ...batoceraPaths import CACHE, CONFIGS, HOME, SAVES, configure_emulator, mkdir_if_not_exists
+from ...batoceraPaths import CACHE, CONFIGS, SAVES, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan, wine
 from ..Generator import Generator
@@ -42,12 +42,14 @@ class XeniaGenerator(Generator):
             shutil.copy2(src_path, dest_path)
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        wineprefix = HOME / 'wine-bottles' / 'xbox360'
+        # Use wine proton
+        wine_runner = wine.Runner("wine-proton", 'xbox360')
+
         xeniaConfig = CONFIGS / 'xenia'
         xeniaCache = CACHE / 'xenia'
         xeniaSaves = SAVES / 'xbox360'
-        emupath = wineprefix / 'xenia'
-        canarypath = wineprefix / 'xenia-canary'
+        emupath = wine_runner.bottle_dir / 'xenia'
+        canarypath = wine_runner.bottle_dir / 'xenia-canary'
 
         core = system.config.core
 
@@ -68,14 +70,11 @@ class XeniaGenerator(Generator):
             _logger.debug("*** Vulkan driver required is not available on the system!!! ***")
             sys.exit()
 
-        # Use wine proton
-        wine.set_wine_runner("wine-proton")
-
         # set to 64bit environment by default
         os.environ['WINEARCH'] = 'win64'
 
         # make system directories
-        mkdir_if_not_exists(wineprefix)
+        mkdir_if_not_exists(wine_runner.bottle_dir)
         mkdir_if_not_exists(xeniaConfig)
         mkdir_if_not_exists(xeniaCache)
         mkdir_if_not_exists(xeniaSaves)
@@ -104,14 +103,14 @@ class XeniaGenerator(Generator):
             with (canarypath / 'portable.txt').open('w'):
                 pass
 
-        wine.install_wine_trick(wineprefix, 'vcrun2022')
+        wine_runner.install_wine_trick('vcrun2022')
 
         dll_files = ["d3d12.dll", "d3d12core.dll", "d3d11.dll", "d3d10core.dll", "d3d9.dll", "d3d8.dll", "dxgi.dll"]
         # Create symbolic links for 64-bit DLLs
         for dll in dll_files:
             try:
                 src_path = wine.WINE_BASE / "dxvk" / "x64" / dll
-                dest_path = wineprefix / "drive_c" / "windows" / "system32" / dll
+                dest_path = wine_runner.bottle_dir / "drive_c" / "windows" / "system32" / dll
                 # Remove existing link if it already exists
                 if dest_path.exists() or dest_path.is_symlink():
                     dest_path.unlink()
@@ -123,7 +122,7 @@ class XeniaGenerator(Generator):
         for dll in dll_files:
             try:
                 src_path = wine.WINE_BASE / "dxvk" / "x32" / dll
-                dest_path = wineprefix / "drive_c" / "windows" / "syswow64" / dll
+                dest_path = wine_runner.bottle_dir / "drive_c" / "windows" / "syswow64" / dll
                 # Remove existing link if it already exists
                 if dest_path.exists() or dest_path.is_symlink():
                     dest_path.unlink()
@@ -291,16 +290,16 @@ class XeniaGenerator(Generator):
         # now setup the command array for the emulator
         if configure_emulator(rom):
             if core == 'xenia-canary':
-                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe']
+                commandArray = [wine_runner.wine64, canarypath / 'xenia_canary.exe']
             else:
-                commandArray = [wine.WINE64, emupath / 'xenia.exe']
+                commandArray = [wine_runner.wine64, emupath / 'xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = [wine.WINE64, canarypath / 'xenia_canary.exe', f'z:{rom}']
+                commandArray = [wine_runner.wine64, canarypath / 'xenia_canary.exe', f'z:{rom}']
             else:
-                commandArray = [wine.WINE64, emupath / 'xenia.exe', f'z:{rom}']
+                commandArray = [wine_runner.wine64, emupath / 'xenia.exe', f'z:{rom}']
 
-        environment = wine.get_wine_environment(wineprefix)
+        environment = wine_runner.get_environment()
         environment.update(
             {
                 'LD_LIBRARY_PATH': f'/usr/lib:{environment["LD_LIBRARY_PATH"]}',
