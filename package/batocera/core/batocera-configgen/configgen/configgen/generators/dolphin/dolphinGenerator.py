@@ -154,7 +154,7 @@ class DolphinGenerator(Generator):
                     dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
         # [Light Gun] HiResTextures for crosshair (part 1/2)
-        if system.config.use_guns and not system.config.get('dolphin_crosshair'):
+        if system.config.use_guns and guns and not system.config.get_bool('dolphin_crosshair'):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
         else:
             dolphinSettings.remove_option("General", "CustomTexturesPath")
@@ -231,7 +231,7 @@ class DolphinGenerator(Generator):
         dolphinGFXSettings.set("Settings", "CacheHiresTextures", hires_textures)
 
         # [Light Gun] HiResTextures for crosshair (part 2/2)
-        if system.config.use_guns and not system.config.get('dolphin_crosshair'):
+        if system.config.use_guns and guns and not system.config.get_bool('dolphin_crosshair'):
             # erase what can be set by the option hires_textures
             dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
