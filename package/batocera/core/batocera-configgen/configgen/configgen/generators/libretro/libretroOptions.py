@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING, Any
 from ... import controllersConfig
 from ...batoceraPaths import BIOS, ROMS, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
+from ...utils import videoMode
 from ...utils.configparser import CaseSensitiveConfigParser
-from ...utils import videoMode as videoMode
-from .libretroPaths import RETROARCH_CONFIG
 
 if TYPE_CHECKING:
     from collections.abc import Callable
