@@ -6,6 +6,7 @@ from ... import controllersConfig
 from ...batoceraPaths import BIOS, ROMS, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
 from ...utils.configparser import CaseSensitiveConfigParser
+from ...utils import videoMode as videoMode
 from .libretroPaths import RETROARCH_CONFIG
 
 if TYPE_CHECKING:
@@ -110,6 +111,18 @@ def _handy_options(
     # Set this option to start game at 'None' because it crash the emulator
     _set(coreSettings, 'handy_rot', 'None')
 
+# Bandai Wonder Swan & Wonder Swan Color
+def _mednafen_wswan_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Display rotation
+    if (rotate_display := system.config.get('wswan_rotate_display')) is not system.config.MISSING:
+        wswanOrientation = rotate_display
+    else:
+        wswanGameRotation = videoMode.getAltDecoration(system.name, rom, 'retroarch')
+        wswanOrientation = "portrait" if wswanGameRotation == "90" else "manual"
+
+    _set(coreSettings, 'wswan_rotate_display', wswanOrientation)
 
 # Commodore 64
 def _vice_x64_options(
@@ -2308,6 +2321,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'tyrquake': _tyrquake_options,
     'mrboom': _mrboom_options,
     'hatarib': _hatarib_options,
+    'mednafen_wswan': _mednafen_wswan_options,
 }
 
 
