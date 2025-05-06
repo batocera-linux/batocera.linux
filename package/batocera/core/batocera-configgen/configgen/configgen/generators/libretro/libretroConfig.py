@@ -11,7 +11,7 @@ from ... import controllersConfig
 from ...batoceraPaths import DEFAULTS_DIR, ES_SETTINGS, SAVES, mkdir_if_not_exists
 from ...controller import Controller
 from ...settings.unixSettings import UnixSettings
-from ...utils import bezels as bezelsUtil, videoMode as videoMode, vulkan
+from ...utils import bezels as bezelsUtil, videoMode, vulkan
 from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
