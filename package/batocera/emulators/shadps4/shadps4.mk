@@ -17,8 +17,8 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = v.0.7.0
-SHADPS4_SITE = https://github.com/shadps4-emu/shadPS4
+SHADPS4_VERSION = SHAD_PS4_PLUS_0_8_0_A
+SHADPS4_SITE = https://github.com/AzaharPlus/shadPS4Plus
 SHADPS4_SITE_METHOD=git
 SHADPS4_GIT_SUBMODULES=YES
 SHADPS4_LICENSE = GPLv2
@@ -36,6 +36,8 @@ SHADPS4_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 SHADPS4_CONF_OPTS += -DENABLE_QT_GUI=ON
 SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
+SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
+SHADPS4_CONF_OPTS += -DSDL_HIDAPI=OFF
 
 define SHADPS4_INSTALL_TARGET_CMDS
 	 mkdir -p $(TARGET_DIR)/usr/bin/shadps4
@@ -44,11 +46,13 @@ define SHADPS4_INSTALL_TARGET_CMDS
 endef
 
 define HOST_SHADPS4_BUILD_CMDS
-	$(CXX) $(@D)/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp -o $(@D)/shadps4_Dear_ImGui_FontEmbed
+	$(CXX) $(@D)/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp -o \
+	    $(@D)/shadps4_Dear_ImGui_FontEmbed
 endef
 
 define HOST_SHADPS4_INSTALL_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shadps4_Dear_ImGui_FontEmbed $(HOST_DIR)/usr/bin/shadps4_Dear_ImGui_FontEmbed
+	$(INSTALL) -D -m 0755 $(@D)/shadps4_Dear_ImGui_FontEmbed \
+	    $(HOST_DIR)/usr/bin/shadps4_Dear_ImGui_FontEmbed
 endef
 
 $(eval $(cmake-package))
