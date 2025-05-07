@@ -11,6 +11,11 @@
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 - ScummVM libretro and standalone savegames share the same folders now.
   If you have saved games from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
+- Flycast now names per-game VMU files based on game ID rather than ROM filename. Any per-game VMU files that are based on the
+  ROM's filename will be renamed by Flycast when the ROM is launched. This will have the most affect on multi-disc games
+  when using the **standalone** emulator because standalone did not remove `(Disc X)` from the ROM name when saving VMUs.
+  If you were using per-game saves with standalone, be sure to launch your multi-disc game with the disc you most recently
+  played so its VMU is renamed using the game ID.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
@@ -88,6 +93,7 @@
 - DXX-Rebirth to 12th of Jan build
 - EDuke to 26th of Dec build
 - ETLegacy to v2.83.2
+- Flycast and libretro-flycast to v2.5
 - GroovyMAME to 0.277
 - Gzdoom to g4.14.1
 - Hurrican to 24th of Nov build
