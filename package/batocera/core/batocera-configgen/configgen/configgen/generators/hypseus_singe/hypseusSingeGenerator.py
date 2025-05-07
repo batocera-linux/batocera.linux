@@ -308,7 +308,7 @@ class HypseusSingeGenerator(Generator):
 
         # Crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if guns and system.config.get('singe_crosshair') != '0':
+        if system.config.use_guns and guns and system.config.get_bool('singe_crosshair', True):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16
