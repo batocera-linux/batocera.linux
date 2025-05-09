@@ -138,7 +138,7 @@ class XeniaGenerator(Generator):
                 # Read only the first line of the file.
                 firstLine = openFile.readlines(1)[0]
                 # Strip of any new line characters.
-                firstLine = firstLine.strip('\n').strip('\r')
+                firstLine = firstLine.strip('\n').strip('\r').lstrip('/')
                 _logger.debug('Checking if specified disc installation / XBLA file actually exists...')
                 xblaFullPath = pathLead / firstLine
                 if xblaFullPath.exists():
