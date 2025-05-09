@@ -14,7 +14,7 @@ ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
 
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
     # rk3588 boards can allow for more varied pcie combo adapters
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
         ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/intel/avs \
             $(@D)/intel/catpt $(@D)/intel/ice $(@D)/intel/ipu $(@D)/intel/ish $(@D)/intel/vsc \
             $(@D)/i915 $(@D)/nvidia $(@D)/radeon $(@D)/s5p-* $(@D)/qat_* $(@D)/ql2*
@@ -39,7 +39,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # exclude some dirs not required on batocera
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
 
-    if [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)" = "y" ]; then \
+    if [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588" = "y" ] || [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO" = "y" ]; then \
         find $(@D)/intel -type f ! -name 'ibt-*' -delete; \
     fi
 
@@ -106,7 +106,7 @@ define ALLLINUXFIRMWARES_LINK_RTL_BT
         $(TARGET_DIR)/lib/firmware/rtl8852bu_config
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_RTL_BT
 endif
 
