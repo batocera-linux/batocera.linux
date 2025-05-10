@@ -1,0 +1,16 @@
+config BR2_PACKAGE_GAMESCOPE
+        bool "gamescope"
+        depends on BR2_x86_64
+        select BR2_PACKAGE_SDL2
+        select BR2_PACKAGE_LIBDRM
+        select BR2_PACKAGE_LIBX11
+        select BR2_PACKAGE_LIBXDAMAGE
+        select BR2_PACKAGE_LIBXEXT
+        select BR2_PACKAGE_LIBXFIXES
+        select BR2_PACKAGE_LIBXRENDER
+        select BR2_PACKAGE_LIBXRES
+        select BR2_PACKAGE_LIBXTST
+        help
+          SteamOS session compositing window manager
+
+          https://github.com/Plagman/gamescope
