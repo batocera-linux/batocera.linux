@@ -1627,6 +1627,9 @@ def _flycast_options(
     # Force Windows CE Mode
     _set_from_system(coreSettings, 'reicast_force_wince', system, 'reicast_force_wince', default='disabled')
 
+    # Per-game VMU
+    _set_from_system(coreSettings, 'reicast_per_content_vmus', system, 'reicast_per_content_vmus', default='disabled')
+
     # Widescreen Cheat
     if (
         system.config.get('reicast_widescreen_cheats') == 'enabled'
