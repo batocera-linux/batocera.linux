@@ -154,13 +154,6 @@ else
 WINE_TKG_CONF_OPTS += --without-v4l2
 endif
 
-ifeq ($(BR2_PACKAGE_MESA3D_OSMESA_GALLIUM),y)
-WINE_TKG_CONF_OPTS += --with-osmesa
-WINE_TKG_DEPENDENCIES += mesa3d
-else
-WINE_TKG_CONF_OPTS += --without-osmesa
-endif
-
 ifeq ($(BR2_PACKAGE_PCSC_LITE),y)
 WINE_TKG_CONF_OPTS += --with-pcsclite
 WINE_TKG_DEPENDENCIES += pcsc-lite

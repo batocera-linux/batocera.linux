@@ -1,0 +1,8 @@
+config BR2_PACKAGE_HOST_CBINDGEN
+	bool "host cbindgen"
+	depends on BR2_PACKAGE_HOST_RUSTC_ARCH_SUPPORTS
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  A project for generating C bindings from Rust code.
+
+	  https://github.com/mozilla/cbindgen
