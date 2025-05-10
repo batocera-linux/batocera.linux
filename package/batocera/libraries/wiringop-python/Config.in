@@ -1,0 +1,7 @@
+config BR2_PACKAGE_WIRINGOP_PYTHON
+    bool "wiringop-python"
+    select BR2_PACKAGE_LIBXCRYPT
+    help
+      An implementation of most of the Arduino Wiring functions for the Orange Pi.
+      
+      https://github.com/orangepi-xunlong/wiringOP-Python
