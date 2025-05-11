@@ -58,7 +58,7 @@
 - Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
 - ShadPS4 emulator for PlayStation 4 gaming
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
-- WiringOP-Python for OrangePi board GPIO control
+- WiringOP-Python for OrangePi board GPIO scripting.
 ### Fixed
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
@@ -135,8 +135,8 @@
 - Intel Media Driver to 25.2.0
 - Kodi to 21.2
 - LibDRM to 2.4.124
-- Linux Firmware to 20250410
-- Linux Kernel to 6.14.5
+- Linux Firmware to 20250509
+- Linux Kernel to 6.14.6
 - LLVM to 19.1.7
 - Mesa3D to 25.0.5
 - MPV to 0.40.0
