@@ -114,9 +114,9 @@ define PPSSPP_INSTALL_TARGET_CMDS
         $(TARGET_DIR)/usr/bin/PPSSPP
     mkdir -p $(TARGET_DIR)/usr/share/ppsspp
     cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
-    # Fix PSP font for languages like Japanese
-    # (font from https://github.com/minoryorg/Noto-Sans-CJK-JP/blob/master/fonts/)
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ppsspp/NotoSansCJKjp-DemiLight.ttf \
+    # Fix PSP font rendering for CJK languages
+    # (font from http://wenq.org/wqy2/index.cgi?Download#MicroHei_Beta)
+    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ppsspp/wqy-microhei.ttc \
         $(TARGET_DIR)/usr/share/ppsspp/PPSSPP/Roboto-Condensed.ttf
 endef
 
