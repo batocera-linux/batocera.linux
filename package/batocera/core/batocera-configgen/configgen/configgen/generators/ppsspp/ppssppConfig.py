@@ -104,6 +104,9 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
     # Texture Filtering
     iniConfig.set("Graphics", "TextureFiltering", system.config.get("texture_filtering", "1"))
 
+    # Display Integer Scale
+    iniConfig.set("Graphics", "DisplayIntegerScale", str(system.config.get_bool("display_integer_scale", False)))
+
    ## [SYSTEM PARAM]
     if not iniConfig.has_section("SystemParam"):
         iniConfig.add_section("SystemParam")
