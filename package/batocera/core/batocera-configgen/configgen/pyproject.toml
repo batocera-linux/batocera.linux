@@ -23,7 +23,8 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.hatch.version]
-path = "configgen/__version__.py"
+source = "code"
+path = "_version.py"
 
 [tool.hatch.build.targets.wheel]
 include = [
