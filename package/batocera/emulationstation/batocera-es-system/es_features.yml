@@ -9246,6 +9246,13 @@ ppsspp:
                 "Nearest":          2
                 "Linear":           3
                 "Auto Max Quality": 4
+        display_integer_scale:
+            group: ADVANCED OPTIONS
+            prompt: INTEGER SCALE
+            description: Enforce perfect pixel scaling. Prevents uneven scaling and blurring.
+            choices:
+                "Off": False
+                "On":  True
         enable_cheats:
             group: ADVANCED OPTIONS
             prompt: GAME CHEATS
