@@ -18,7 +18,8 @@ BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	ffmpeg-python \
 	python-pillow \
 	python-ruamel-yaml \
-	python-requests
+	python-requests \
+	python-qrcode
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 CONFIGGEN_DIR = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen
