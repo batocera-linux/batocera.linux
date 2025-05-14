@@ -146,6 +146,8 @@ class Emulator:
         system_data.update(folder_settings)
         system_data.update(game_settings)
 
+        system_data["language"] = settings.config.get('DEFAULT', 'system.language', fallback=None)
+
         try:
             es_config = ET.parse(ES_SETTINGS)
 
