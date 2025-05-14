@@ -6,6 +6,8 @@ from ... import Command
 from ..Generator import Generator
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ...types import HotkeysContext
 
 class DosBoxStagingGenerator(Generator):
@@ -18,7 +20,7 @@ class DosBoxStagingGenerator(Generator):
         gameConfFile_cfg = rom / "dosbox.cfg"
         gameConfFile_conf = rom / "dosbox.conf"
 
-        commandArray = [
+        commandArray: list[Path | str] = [
             '/usr/bin/dosbox-staging',
             "-fullscreen",
             "-userconf",
