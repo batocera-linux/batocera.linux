@@ -119,6 +119,8 @@ class FlycastGenerator(Generator):
         Config.set("config", "Dreamcast.AutoSaveState", system.config.get_str("flycast_savestate", "no"))
         # windows CE
         Config.set("config", "Dreamcast.ForceWindowsCE", system.config.get_str("flycast_winCE", "no"))
+        # Per-game VMU
+        Config.set("config", "PerGameVmu", system.config.get_bool("flycast_per_game_vmu", return_values=("yes", "no")))
         # DSP
         Config.set("config", "aica.DSPEnabled", system.config.get_str("flycast_DSP", "no"))
         # Guns (WIP)

@@ -1,17 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ee5e3b4..9ae8f5e 100644
+index f1cdda8..9d2f06e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -25,6 +25,7 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
- option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
+@@ -78,6 +78,7 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
  option(USE_DISCORD "Use Discord Presence API" OFF)
+ option(USE_LIBCDIO "Use libcdio for CDROM access" OFF)
 +option(USE_MALI "Use mali" OFF)
-
+ 
  if(IOS AND NOT LIBRETRO)
-	 set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -157,6 +158,10 @@ else()
- 	add_executable(${PROJECT_NAME} core/emulator.cpp)
+ 	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
+@@ -114,6 +115,10 @@ else()
+ 	set(GIT_HASH "000000000")
  endif()
  
 +if(USE_MALI)
@@ -19,5 +19,5 @@ index ee5e3b4..9ae8f5e 100644
 +endif()
 +
  if(WINDOWS_STORE)
- 	set(USE_OPENGL OFF)
- 	set(USE_VULKAN OFF)
+ 	string(REGEX REPLACE "[Vv]" "" MS_VERSION ${GIT_VERSION})
+ 	string(REPLACE "-" "." MS_VERSION ${MS_VERSION})
