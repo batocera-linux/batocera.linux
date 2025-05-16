@@ -44,7 +44,7 @@ LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
 endif
 
 # workaround -lasmjit linkage
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3288),y)
+ifeq ($(BR2_arm),y)
 LIBRETRO_MAME_EXTRA_ARGS += NOASM=1
 endif
 
