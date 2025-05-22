@@ -141,12 +141,17 @@ class Emulator:
         # update config
         system_data.update(settings.get_all_iter('display', keep_name=True, keep_defaults=True))
         system_data.update(settings.get_all_iter('controllers', keep_name=True))
+
+        language = settings.config.get('DEFAULT', 'system.language', fallback=None)
+        if language is not None:
+            # A few emulators have config options named "language", so "system.language" is chosen
+            # in order to prevent conflicts with config options from es_features.yaml
+            system_data['system.language'] = language
+
         system_data.update(global_settings)
         system_data.update(system_settings)
         system_data.update(folder_settings)
         system_data.update(game_settings)
-
-        system_data["language"] = settings.config.get('DEFAULT', 'system.language', fallback=None)
 
         try:
             es_config = ET.parse(ES_SETTINGS)

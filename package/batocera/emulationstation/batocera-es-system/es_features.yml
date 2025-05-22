@@ -2096,14 +2096,6 @@ libretro:
                 choices:
                     "Off": disabled
                     "On":  enabled
-            reicast_per_content_vmus:
-                group: ADVANCED OPTIONS
-                prompt:      PER-GAME VMU
-                description: When enabled, each game has its own set of VMU save files.
-                choices:
-                    "Off (Default)": disabled
-                    "Only A1":  "VMU A1"
-                    "All VMUs":  "All VMUs"
             flycast-autowidescreen:
                 prompt:      AUTO WIDESCREEN
                 description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
