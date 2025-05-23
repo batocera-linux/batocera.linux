@@ -411,8 +411,8 @@ def runCommand(command: Command) -> int:
     try:
         out, err = proc.communicate()
         exitcode = proc.returncode
-        _logger.debug(out.decode())
-        _logger.error(err.decode())
+        _logger.debug(out.decode(errors='backslashreplace'))
+        _logger.error(err.decode(errors='backslashreplace'))
     except BrokenPipeError:
         # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
         # Examine es-core/src/platform.cpp::runSystemCommand for additional context
