@@ -1,11 +1,20 @@
---- a/Makefile	2023-06-07 01:55:42.559364860 +0200
-+++ b/Makefile	2023-06-07 01:56:31.532469592 +0200
-@@ -1384,7 +1384,7 @@
- %.dtb: include/config/kernel.release scripts_dtc
- 	$(if $(filter $@,$(mesondtb)),\
- 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/amlogic/$@,\
--	$(Q)$(MAKE) $(build)=customer/$(dtstree) customer/$(dtstree)/$@)
-+	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@)
- else
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -1506,6 +1511,7 @@ ifneq ($(dtstree),)
+ 
  %.dtb: include/config/kernel.release scripts_dtc
  	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
++	$(Q)-cp -f $(dtstree)/$@ arch/$(SRCARCH)/boot/
+ 
+ %.dtbo: include/config/kernel.release scripts_dtc
+ 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
+@@ -2102,7 +2108,7 @@ endif # config-build
+ endif # mixed-build
+ endif # need-sub-make
+ 
+-ifdef CONFIG_AMLOGIC_DRIVER
++ifdef CONFIG_AMLOGIC_DRIVER_GIT
+ PHONY += FORCE
+ FORCE:
+ 	$(Q)-cp $(srctree)/scripts/amlogic/commit-msg $(srctree)/.git/hooks/
