@@ -11,8 +11,8 @@ RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-font
 # install in staging for debugging (gdb)
 RETROARCH_INSTALL_STAGING = YES
 
-RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads --enable-ozone \
-    --enable-xmb --disable-discord --enable-flac --enable-lua --enable-networking \
+RETROARCH_CONF_OPTS = --disable-oss --disable-qt --enable-threads --enable-ozone \
+    --enable-xmb --disable-discord --disable-builtinflac --enable-flac --enable-lua --enable-networking \
 	--enable-translate --enable-rgui --disable-cdrom
 
 ifeq ($(BR2_ENABLE_DEBUG),y)
@@ -103,7 +103,7 @@ ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
 endif
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)
-    RETROARCH_CONF_OPTS += --enable-zlib
+    RETROARCH_CONF_OPTS += --disable-builtinzlib --enable-zlib
     RETROARCH_DEPENDENCIES += zlib
 else
     RETROARCH_CONF_OPTS += --disable-zlib
@@ -153,6 +153,11 @@ endif
 ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
     RETROARCH_CONF_OPTS += --enable-vulkan
     RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader slang-shaders
+endif
+
+ifeq ($(BR2_PACKAGE_GLSLANG),y)
+    RETROARCH_CONF_OPTS += --disable-builtinglslang --enable-glslang
+    RETROARCH_DEPENDENCIES += glslang
 endif
 
 ifeq ($(BR2_riscv),y)
