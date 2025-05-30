@@ -147,7 +147,7 @@
 - LLVM to 19.1.7
 - Mesa3D to 25.1.0
 - MPV to 0.40.0
-- Nvidia production driver to 575.51.02
+- Nvidia production driver to 575.57.08
 - Pipewire to 1.2.7
 - QT6 to 6.8.1
 - RClone to v1.69.1

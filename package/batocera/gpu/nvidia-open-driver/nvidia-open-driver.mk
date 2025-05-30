@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA_OPEN_DRIVER_VERSION = 575.51.02
+NVIDIA_OPEN_DRIVER_VERSION = 575.57.08
 NVIDIA_OPEN_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA_OPEN_DRIVER_SITE = \
     http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA_OPEN_DRIVER_SUFFIX)/$(NVIDIA_OPEN_DRIVER_VERSION)
