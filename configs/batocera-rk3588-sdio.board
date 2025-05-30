@@ -31,7 +31,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-orangepi-5-ultra"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-orangepi-5-ultra rockchip/rk3588-orangepi-5-max"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 # Support DTB overlays
@@ -53,3 +53,4 @@ BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ZINK=y
 
 # Pre-Built Bootloader Packages
 BR2_PACKAGE_UBOOT_ORANGEPI_5_ULTRA=y
+BR2_PACKAGE_UBOOT_ORANGEPI_5_MAX=y
