@@ -2,11 +2,11 @@ diff --git a/drivers/input/joystick/xpad.c b/drivers/input/joystick/xpad.c
 index e2c1848..70eaa7e 100644
 --- a/drivers/input/joystick/xpad.c
 +++ b/drivers/input/joystick/xpad.c
-@@ -83,6 +83,7 @@
- #define MAP_SELECT_BUTTON		(1 << 3)
- #define MAP_PADDLES			(1 << 4)
- #define MAP_PROFILE_BUTTON		(1 << 5)
-+#define MAP_THRUSTMASTER_WHEEL		(1 << 6)
+@@ -84,6 +84,7 @@
+ #define MAP_PADDLES			BIT(4)
+ #define MAP_PROFILE_BUTTON		BIT(5)
+ #define MAP_SHARE_OFFSET		BIT(6)
++#define MAP_THRUSTMASTER_WHEEL		BIT(7)
  
  #define DANCEPAD_MAP_CONFIG	(MAP_DPAD_TO_BUTTONS |			\
  				MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
