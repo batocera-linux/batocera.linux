@@ -79,7 +79,7 @@ case "$1" in
                     fi
                 ;;
                 syn43711a0)
-                    if [ ${BOARD} = "orangepi-5-ultra" ]; then
+                    if [ ${BOARD} = "orangepi-5-ultra" ] || [ ${BOARD} = "orangepi-5-max" ]; then
                         rfkill unblock all
                         brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
                             --baudrate 1500000 --patchram /lib/firmware/SYN43711A0.hcd /dev/ttyS7 &
