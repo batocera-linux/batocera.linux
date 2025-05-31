@@ -1,0 +1,31 @@
+diff --git a/Makefile.common b/Makefile.common
+index c9ed198..5beda08 100644
+--- a/Makefile.common
++++ b/Makefile.common
+@@ -1904,10 +1904,6 @@ else ifeq ($(HAVE_GLSLANG),1)
+ 
+    # The order of these libs are somewhat specific
+    LIBS += $(GLSLANG_LIBS) \
+-           $(GLSLANG_MACHINEINDEPENDENT_LIBS) \
+-           $(GLSLANG_GENERICCODEGEN_LIBS) \
+-           $(GLSLANG_OSDEPENDENT_LIBS) \
+-           $(GLSLANG_OGLCOMPILER_LIBS) \
+            $(GLSLANG_SPIRV_LIBS) \
+            $(GLSLANG_SPIRV_TOOLS_OPT_LIBS) \
+            $(GLSLANG_SPIRV_TOOLS_LIBS)
+diff --git a/qb/config.libs.sh b/qb/config.libs.sh
+index c19fe32..fdd532e 100644
+--- a/qb/config.libs.sh
++++ b/qb/config.libs.sh
+@@ -669,11 +669,6 @@ if [ "$HAVE_GLSLANG" != no ]; then
+       glslang/SPIRV/GlslangToSpv.h
+ 
+    check_lib cxx GLSLANG -lglslang '' '-lSPIRV'
+-   check_lib cxx GLSLANG_OSDEPENDENT -lOSDependent
+-   check_lib cxx GLSLANG_OGLCOMPILER -lOGLCompiler
+-   check_lib cxx GLSLANG_MACHINEINDEPENDENT -lMachineIndependent
+-   check_lib cxx GLSLANG_GENERICCODEGEN -lGenericCodeGen
+-   check_lib cxx GLSLANG_HLSL -lHLSL '' '-lglslang -lSPIRV'
+    check_lib cxx GLSLANG_SPIRV -lSPIRV
+    check_lib cxx GLSLANG_SPIRV_TOOLS_OPT -lSPIRV-Tools-opt
+    check_lib cxx GLSLANG_SPIRV_TOOLS -lSPIRV-Tools
