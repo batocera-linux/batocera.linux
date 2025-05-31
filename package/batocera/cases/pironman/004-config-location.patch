@@ -1,0 +1,33 @@
+diff --git a/bin/pironman b/bin/pironman
+index a351c41f94..7a1e18bd24 100644
+--- a/bin/pironman
++++ b/bin/pironman
+@@ -16,9 +16,6 @@
+ ####
+ ####   -c,--check           show all configurations
+ ####
+-####   -a,--auto            [ on ],enable auto-start at boot
+-####                        [ off ], disable auto-start at boot
+-####
+ ####   -u,--unit            [ C/F ], set the unit of temperature,
+ ####                        C or F (Celsius/Fahrenheit)
+ ####
+@@ -51,7 +48,7 @@
+ ####
+ #!/bin/bash
+ 
+-CONF=/opt/pironman/config.txt
++CONF=/userdata/system/.config/pironman/config.txt
+ main='/opt/pironman/main.py'
+ # echo $main
+ # echo 'config file:'$CONF
+diff --git a/pironman/app_info.py b/pironman/app_info.py
+index db95856c5f..3267eb8c44 100644
+--- a/pironman/app_info.py
++++ b/pironman/app_info.py
+@@ -9,4 +9,4 @@ except:
+     username = os.popen("echo ${SUDO_USER:-$(who -m | awk '{ print $1 }')}"
+                         ).readline().strip()
+ 
+-config_file = f'/opt/{__app_name__}/config.txt'
++config_file = f'/userdata/system/.config/{__app_name__}/config.txt'

@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-PIRONMAN_VERSION = 34b74f2a69b6a0b0c8867e2f830e569dd8eb6e12
+PIRONMAN_VERSION = 997c361ed71fff859d832e171f63180fbbb4e314
 PIRONMAN_SITE = $(call github,sunfounder,pironman,$(PIRONMAN_VERSION))
 PIRONMAN_LICENSE = GPL-2.0
 PIRONMAN_LICENSE_FILE = LICENSE
 
 PIRONMAN_DEPENDENCIES += freetype getent i2c-tools libpng libxcb lirc-tools
-PIRONMAN_DEPENDENCIES += net-tools openjpeg python-rpi-gpio python-rpi-ws281x
+PIRONMAN_DEPENDENCIES += net-tools openjpeg python-gpiozero python-lgpio python-rpi-ws281x
 PIRONMAN_DEPENDENCIES += python-smbus-cffi python-spidev python3 tiff zlib rpi-eeprom
 
 define PIRONMAN_INSTALL_TARGET_CMDS
