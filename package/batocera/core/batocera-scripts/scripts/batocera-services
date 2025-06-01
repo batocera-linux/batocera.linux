@@ -25,9 +25,9 @@ call_service() {
     local argument="${2}"
 
     if [ -x "${service_file_path}" ]; then
-        "${service_file_path}" "${argument}" &
+        "${service_file_path}" "${argument}"
     else
-        bash "${service_file_path}" "${argument}" &
+        bash "${service_file_path}" "${argument}"
     fi
 }
 
