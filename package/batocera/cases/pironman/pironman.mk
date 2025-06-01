@@ -3,7 +3,7 @@
 # pironman
 #
 ################################################################################
-
+# Version: [2.2.9] - 2024-7-23
 PIRONMAN_VERSION = 997c361ed71fff859d832e171f63180fbbb4e314
 PIRONMAN_SITE = $(call github,sunfounder,pironman,$(PIRONMAN_VERSION))
 PIRONMAN_LICENSE = GPL-2.0
