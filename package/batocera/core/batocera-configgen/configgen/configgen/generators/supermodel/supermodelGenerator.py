@@ -17,7 +17,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...controller import Controllers
     from ...Emulator import Emulator
-    from ...types import HotkeysContext
+    from ...types import DeviceInfoMapping, HotkeysContext
 
 
 SUPERMODEL_SHARE: Final = Path('/usr/share/supermodel')
@@ -65,7 +65,7 @@ class SupermodelGenerator(Generator):
                     commandArray.append("-crosshairs=3")
 
         # force feedback
-        if system.config.get_bool("forceFeedback"):
+        if (system.config.use_wheels and wheels) or system.config.get_bool("forceFeedback"):
             commandArray.append("-force-feedback")
 
         # powerpc frequesncy
@@ -160,7 +160,7 @@ def copy_xml():
     if not dest_path.exists() or source_path.stat().st_mtime > dest_path.stat().st_mtime:
         shutil.copy2(source_path, dest_path)
 
-def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, guns: Guns, altControl: bool, sensitivity: str) -> None:
+def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, guns: Guns, wheel: DeviceInfoMapping, altControl: bool, sensitivity: str) -> None:
     if altControl:
         templateFile = SUPERMODEL_SHARE / "Supermodel-Driving.ini.template"
         mapping: dict[str, str | None] = {
@@ -232,7 +232,7 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, 
         for key, value in templateConfig.items(section):
             targetConfig.set(section, key, transformValue(value, playersControllers, mapping, mapping_fallback))
 
-    # apply guns
+    # apply guns and wheel
     for section in targetConfig.sections():
         if section.strip() in [ "Global", rom.stem ]:
             # for an input sytem
@@ -309,6 +309,32 @@ def configPadsIni(system: Emulator, rom: Path, playersControllers: Controllers, 
                             else:
                                 val = ""
                             targetConfig.set(section, key, f"MOUSE2_MIDDLE_BUTTON{val}")
+                    # wheel input system
+                elif system.config.use_wheels and wheels:
+                    if key == "InputSteering":
+                        targetConfig.set(section, key, wheels["wheel"])
+                    elif key == "InputAccelerator":
+                        targetConfig.set(section, key, wheels["accelerate"])
+                    elif key == "InputBrake":
+                        targetConfig.set(section, key, wheels["brake"])
+                    elif key == "InputGearShiftUp":
+                        targetConfig.set(section, key, wheels["upshift"])
+                    elif key == "InputGearShiftDown":
+                        targetConfig.set(section, key, wheels["downshift"])
+                    elif key == "InputViewChange":
+                        targetConfig.set(section, key, wheels["a"])
+                    elif key == "InputHandBrake" or key == "InputRearBrake":
+                        targetConfig.set(section, key, wheels["b"])
+                    elif key == "InputMusicSelect":
+                        targetConfig.set(section, key, wheels["x"])
+                    elif key == "InputVR1":
+                        targetConfig.set(section, key, wheels["up"])
+                    elif key == "InputVR2":
+                        targetConfig.set(section, key, wheels["down"])
+                    elif key == "InputVR3":
+                        targetConfig.set(section, key, wheels["left"])
+                    elif key == "InputVR4":
+                        targetConfig.set(section, key, wheels["right"])
                 else:
                     if key == "InputSystem":
                         targetConfig.set(section, key, "sdl")
