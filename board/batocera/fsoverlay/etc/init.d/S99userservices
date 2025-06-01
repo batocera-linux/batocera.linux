@@ -24,10 +24,10 @@ process_services() {
     local service_type="${1}"
     local service_dir="${2}"
     local service_state="${3}"
-    local BASE_SERVICE SERVICE SRVVAR BASE_SERVICE_SUGGEST
+    local i BASE_SERVICE SERVICE SRVVAR BASE_SERVICE_SUGGEST
 
-    find -L "${service_dir}" -type f |
-        while read SERVICE
+        readarray -t i < <(find -L "${service_dir}" -type f)
+        for SERVICE in "${i[@]}"
         do
             BASE_SERVICE=${SERVICE##*/}
             if is_valid_service_name "${BASE_SERVICE}"
@@ -35,6 +35,7 @@ process_services() {
                 SRVVAR=__SERVICE__${BASE_SERVICE}
                 if test "${!SRVVAR}" = 1; then
                     call_service "${SERVICE}" "${service_state}"
+                    PIDS+=($!)
                     echo "${service_type} Service: ${BASE_SERVICE} -> service is enabled [ok]"
                 else
                     echo "${service_type} Service: ${BASE_SERVICE} -> service is disabled [ok]"
@@ -69,4 +70,4 @@ process_services User /userdata/system/services "${1}"
 process_services System /usr/share/batocera/services "${1}"
 
 # wait for spawned scripts to finish on stop condition, after this shutdown can happen
-test "${1}" = "stop" && wait
+test "${1}" = "stop" && { echo "Waiting for PIDs: ${PIDS[@]}"; wait ${PIDS[@]}; }
