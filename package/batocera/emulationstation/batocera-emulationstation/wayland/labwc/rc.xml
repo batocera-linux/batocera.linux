@@ -8,8 +8,8 @@
       <action name="PreviousWindow" />
     </keybind>
     <keybind key="A-W-h">
-      <action name="HideCursor"/>
-      <action name="WarpCursor" x="-1" y="-1"/>
+      <action name="HideCursor" />
+      <action name="WarpCursor" x="-1" y="-1" />
     </keybind>
     <keybind key="A-F4">
       <action name="Close" />
@@ -42,4 +42,7 @@
       <action name="SnapToEdge" direction="down" />
     </keybind>
   </keyboard>
+  <apprules>
+    <apprule appid=".*" fullscreen="true" />
+  </apprules>
 </labwc_config>
