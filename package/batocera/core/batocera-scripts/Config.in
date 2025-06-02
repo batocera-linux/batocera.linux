@@ -1,12 +1,11 @@
 config BR2_PACKAGE_BATOCERA_SCRIPTS
 	bool "batocera-scripts"
-
 	select BR2_PACKAGE_BASH
 	select BR2_PACKAGE_PCIUTILS
 	select BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_DBUS_PYTHON                          # required for bluetooth scripts
 	select BR2_PACKAGE_JQ # for vulkan parsing
 	select BR2_PACKAGE_PYTHON_GOBJECT # for bluetooth agent
-
+	select BR2_PACKAGE_WTYPE    if BR2_PACKAGE_BATOCERA_WAYLAND_LABWC
 	help
 	  Batocera scripts
