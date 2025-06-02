@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.49
+XEMU_VERSION = v0.8.68
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -136,11 +136,43 @@ define XEMU_GET_SUBMODULES
 	
     # tomlplusplus
 	mkdir -p $(@D)/subprojects/tomlplusplus
-    $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/tomlplusplus.wrap))
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/tomlplusplus.wrap))
 	$(HOST_DIR)/bin/curl -L -o tomlplusplus.tar.gz \
 	    https://github.com/marzer/tomlplusplus/archive/$(REVISION).tar.gz
 	$(TAR) -xzf tomlplusplus.tar.gz --strip-components=1 -C $(@D)/subprojects/tomlplusplus
 	rm tomlplusplus.tar.gz
+
+	# glslang
+	mkdir -p $(@D)/subprojects/glslang
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/glslang.wrap))
+	$(HOST_DIR)/bin/curl -L -o glslang.tar.gz \
+	    https://github.com/KhronosGroup/glslang/archive/$(REVISION).tar.gz
+	$(TAR) -xzf glslang.tar.gz --strip-components=1 -C $(@D)/subprojects/glslang
+	rm glslang.tar.gz
+
+	# volk
+	mkdir -p $(@D)/subprojects/volk
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/volk.wrap))
+	$(HOST_DIR)/bin/curl -L -o volk.tar.gz \
+	    https://github.com/zeux/volk/archive/$(REVISION).tar.gz
+	$(TAR) -xzf volk.tar.gz --strip-components=1 -C $(@D)/subprojects/volk
+	rm volk.tar.gz
+
+	# SPIRV-Reflect
+	mkdir -p $(@D)/subprojects/SPIRV-Reflect
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/SPIRV-Reflect.wrap))
+	$(HOST_DIR)/bin/curl -L -o SPIRV-Reflect.tar.gz \
+	    https://github.com/KhronosGroup/SPIRV-Reflect/archive/$(REVISION).tar.gz
+	$(TAR) -xzf SPIRV-Reflect.tar.gz --strip-components=1 -C $(@D)/subprojects/SPIRV-Reflect
+	rm SPIRV-Reflect.tar.gz
+
+	# VulkanMemoryAllocator
+	mkdir -p $(@D)/subprojects/VulkanMemoryAllocator
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/VulkanMemoryAllocator.wrap))
+	$(HOST_DIR)/bin/curl -L -o VulkanMemoryAllocator.tar.gz \
+	    https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/$(REVISION).tar.gz
+	$(TAR) -xzf VulkanMemoryAllocator.tar.gz --strip-components=1 -C $(@D)/subprojects/VulkanMemoryAllocator
+	rm VulkanMemoryAllocator.tar.gz
 	
     # xxhash
 	mkdir -p $(@D)/subprojects/xxHash-0.8.3
