@@ -20,7 +20,7 @@ shared:
         "Balanced":         balanced
         "Power Saver":      powersaver
     tdp:
-      archs_include: [x86_64]
+      archs_include: [x86_64, x86-64-v3]
       group: POWER OPTIONS
       prompt: RYZEN THERMAL DESIGN POWER
       description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
@@ -7251,7 +7251,7 @@ hypseus-singe:
             prompt: SMOOTH GAMES (BILINEAR FILTERING)
             preset: switchauto
         hypseus_scanlines:
-            archs_include: [x86, x86_64]
+            archs_include: [x86, x86_64, x86-64-v3]
             group: ADVANCED OPTIONS
             prompt: SCANLINES
             choices:
