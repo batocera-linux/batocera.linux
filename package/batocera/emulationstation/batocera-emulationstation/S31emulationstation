@@ -15,7 +15,8 @@ case "$1" in
 	stop)
         emulationstation-standalone --stop-rebooting
 		killall openbox          2>/dev/null # for xorg
-		killall sway             2>/dev/null # for wayland
+		killall sway             2>/dev/null # for sway (wayland)
+		killall labwc            2>/dev/null # for labwc (wayland)
 		killall touchegg         2>/dev/null
 
 		# Kill emulationstation and then wait at least 20 seconds for it to exit.

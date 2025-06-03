@@ -79,13 +79,17 @@ _get_current_mode_string() {
         return 1
     fi
     
-    screen_block=$(_get_screen_block "${screen_name}") || return 1
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
     
     # Extract just the Modes section
     modes_section=$(echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | sed '$d')
     
     # Find the line with (current)
-    current_mode=$(echo "${modes_section}" | grep "(current)" | head -n1)
+    current_mode=$(echo "${modes_section}" | grep -E '\(preferred, current\)|\s\(current\)')
     
     if [ -n "${current_mode}" ]; then
         # Parse the mode line: "    1920x1080 px, 60.000000 Hz (current)"
@@ -109,18 +113,21 @@ _get_current_transform() {
         return 1
     fi
     
-    screen_block=$(_get_screen_block "${screen_name}") || return 1
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
     
     # Extract transform line
     transform_line=$(echo "${screen_block}" | grep "^[[:space:]]*Transform:")
     transform_val=$(echo "${transform_line}" | sed 's/^[[:space:]]*Transform:[[:space:]]*//')
     
-    # wlr-rand is anti-clockwise
     case "${transform_val}" in
         "normal"|"flipped"|"") echo "0" ;;
-        "270") echo "1" ;;
+        "90") echo "1" ;;
         "180") echo "2" ;;
-        "90") echo "3" ;;
+        "270") echo "3" ;;
         *) echo "0" ;;
     esac
 }
@@ -135,7 +142,11 @@ _get_available_modes() {
         return 1
     fi
     
-    screen_block=$(_get_screen_block "${screen_name}") || return 1
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
     
     # Extract modes section and process each mode line
     echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | \
@@ -178,6 +189,7 @@ f_minTomaxResolution() {
     
     # Get current mode
     CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+    _log "Current mode: ${CURRENT_MODE_STR}"
     if [ -z "${CURRENT_MODE_STR}" ]; then
         _log "f_minTomaxResolution: Could not get current mode for PSCREEN='${PSCREEN}'. Aborting."
         exit 1
@@ -410,24 +422,49 @@ case "${ACTION}" in
         ;;
 
     "setRotation")
-        # wlr-rand rotates anti-clockwise
         if [ -z "${PSCREEN}" ]; then 
             _log "setRotation: PSCREEN is empty."
             exit 1
         fi
-        
+
         ROTATE_VAL=$1
         case "${ROTATE_VAL}" in
-            "0") WLR_TRANSFORM="normal" ;;
-            "1") WLR_TRANSFORM="270" ;;
-            "2") WLR_TRANSFORM="180" ;;
-            "3") WLR_TRANSFORM="90" ;;
-            *) 
+            "0") WLR_TRANSFORM="normal"; MATRIX="1 0 0 0 1 0" ;;   # 0°
+            "1") WLR_TRANSFORM="90";     MATRIX="0 -1 1 1 0 0" ;;  # 90°
+            "2") WLR_TRANSFORM="180";    MATRIX="-1 0 1 0 -1 1" ;; # 180°
+            "3") WLR_TRANSFORM="270";    MATRIX="0 1 0 -1 0 1" ;;  # 270°
+            *)
                 _log "setRotation: Invalid rotation value '${ROTATE_VAL}'. Using normal."
-                WLR_TRANSFORM="normal" 
+                WLR_TRANSFORM="normal"
+                MATRIX="1 0 0 0 1 0"
                 ;;
         esac
+
         "${WLR_RANDR}" --output "${PSCREEN}" --transform "${WLR_TRANSFORM}"
+
+        # --- Check for touchscreen ---
+        TOUCHSCREEN=$(libinput list-devices | awk -F ':' '/Device:/ {dev=$2} /Touch/ {print dev}' | head -n1 | xargs)
+        if [ -n "${TOUCHSCREEN}" ]; then
+            CONFIG_FILE="${HOME}/.config/labwc/rc.xml"
+
+            if [ ! -f "$CONFIG_FILE" ]; then
+                _log "Touchscreen found, but rc.xml not present at: $CONFIG_FILE"
+                exit 1
+            fi
+
+            # Replace calibrationMatrix only inside touch device block if it's different
+            CURRENT_MATRIX=$(sed -n '/<device category="touch">/,/<\/device>/s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p' "$CONFIG_FILE")
+
+            if [ "$CURRENT_MATRIX" != "$MATRIX" ]; then
+                sed -i '/<device category="touch">/,/<\/device>/ s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix>'"$MATRIX"'</calibrationMatrix>|' "$CONFIG_FILE"
+                _log "Touchscreen '${TOUCHSCREEN}' detected. Updated calibrationMatrix from '$CURRENT_MATRIX' to: $MATRIX"
+                _log "REBOOT REQUIRED"
+            else
+                _log "Touchscreen '${TOUCHSCREEN}' detected. calibrationMatrix already set to: $MATRIX — no update needed."
+            fi
+        else
+            _log "No touchscreen found; skipped calibrationMatrix update"
+        fi
         ;;
 
     "getRotation")

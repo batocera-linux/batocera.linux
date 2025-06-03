@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>0</gap>
+    <adaptiveSync>yes</adaptiveSync>
+    <allowTearing>no</allowTearing>
+    <autoEnableOutputs>yes</autoEnableOutputs>
+    <reuseOutputMode>no</reuseOutputMode>
+    <xwaylandPersistence>no</xwaylandPersistence>
+  </core>
+  <libinput>
+    <device category="touch">
+      <calibrationMatrix>1 0 0 0 1 0</calibrationMatrix>
+    </device>
+  </libinput>
   <keyboard>
     <keybind key="A-Tab">
       <action name="NextWindow" />
