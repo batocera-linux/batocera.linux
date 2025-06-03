@@ -214,6 +214,8 @@ define BATOCERA_EMULATIONSTATION_WAYLAND_LABWC
 	    $(TARGET_DIR)/etc/profile.d/04-labwc.sh
 	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/rc.xml \
 	    $(TARGET_DIR)/usr/share/labwc/rc.xml
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/S14labwc \
+	    $(TARGET_DIR)/etc/init.d/S14labwc
     $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/autostart \
 	    $(TARGET_DIR)/usr/share/labwc/autostart
     $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/labwc-launch \

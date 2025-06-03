@@ -1,0 +1,33 @@
+#!/bin/sh
+
+SRC_DIR="/usr/share/labwc"
+DEST_DIR="/userdata/system/.config/labwc"
+
+start() {
+    echo "Initializing Labwc configuration..."
+
+    mkdir -p "$DEST_DIR"
+
+    for file in rc.xml autostart; do
+        if [ ! -f "$DEST_DIR/$file" ]; then
+            echo "Copying $file to $DEST_DIR"
+            cp "$SRC_DIR/$file" "$DEST_DIR/"
+        else
+            echo "$file already exists, skipping."
+        fi
+    done
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        ;;
+    *)
+        echo "Usage: $0 start"
+        exit 1
+        ;;
+esac
+
+exit 0

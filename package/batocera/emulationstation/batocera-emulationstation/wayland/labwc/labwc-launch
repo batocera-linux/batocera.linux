@@ -6,7 +6,7 @@ unset WAYLAND_DISPLAY
 
 # Log and configuration file paths
 LOG_FILE="/userdata/system/logs/display.log"
-LABWC_CONF_DIR="/usr/share/labwc"
+LABWC_CONF_DIR="/userdata/system/.config/labwc"
 LABWC_LOG_FILE="/var/log/labwc.log"
 
 mkdir -p /userdata/system/logs
