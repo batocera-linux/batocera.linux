@@ -1220,10 +1220,9 @@ def writeBezelConfig(
         if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
-        if system.config.get('bezel.qrcode', '0') != "0":
-            if (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
-                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
-                overlay_png_file = qrcode_output_png
+        if system.config.get('bezel.qrcode', '0') != "0" and (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
+            bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
+            overlay_png_file = qrcode_output_png
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
@@ -1235,10 +1234,9 @@ def writeBezelConfig(
         if system.config.get('bezel.tattoo', '0') != "0":
             bezelsUtil.tatooImage(overlay_png_file, tattoo_output_png, system)
             overlay_png_file = tattoo_output_png
-        if system.config.get('bezel.qrcode', '0') != "0":
-            if (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
-                bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
-                overlay_png_file = qrcode_output_png
+        if system.config.get('bezel.qrcode', '0') != "0" and (cheevos_id := system.es_game_info.get("cheevosId", "0")) != "0":
+            bezelsUtil.addQRCode(overlay_png_file, qrcode_output_png, cheevos_id, system)
+            overlay_png_file = qrcode_output_png
 
     if gunsBordersSize is not None:
         _logger.debug("Draw gun borders")
