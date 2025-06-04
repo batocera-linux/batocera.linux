@@ -26,7 +26,6 @@ process_services() {
     local service_state="${3}"
     local BASE_SERVICE SERVICE SRVVAR BASE_SERVICE_SUGGEST
 
-    find -L "${service_dir}" -type f |
         while read SERVICE
         do
             BASE_SERVICE=${SERVICE##*/}
@@ -43,7 +42,7 @@ process_services() {
                 BASE_SERVICE_SUGGEST=$(echo "$BASE_SERVICE" | sed -e 's/[^_A-Za-z0-9]//g' -e 's/^[0-9]*//')
                 echo "${service_type} Service: $BASE_SERVICE -> invalid service name, suggest rename service file to: '$BASE_SERVICE_SUGGEST' [failed]"
             fi
-        done
+        done < <(find -L "${service_dir}" -type f)
 }
 
 # custom.sh : deprecated
