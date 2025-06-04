@@ -19,7 +19,6 @@ import re
 import shutil
 import socket
 import stat
-import subprocess
 import tarfile
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, ClassVar, Final, Literal
@@ -384,9 +383,8 @@ class LindberghGenerator(Generator):
             self.setup_joysticks_evdev(conf, system, shortRomName, guns, wheels, playersControllers)
 
         # map service and test buttons for tests mode
-        if system.config.get_bool("lindbergh_test"):
-            if input_mode == 2:
-                self.setup_test_mode_evdev(conf, playersControllers)
+        if system.config.get_bool("lindbergh_test") and input_mode == 2:
+            self.setup_test_mode_evdev(conf, playersControllers)
 
     def setup_test_mode_evdev(
         self,
@@ -399,7 +397,7 @@ class LindberghGenerator(Generator):
             if input_name in pad.inputs and pad.inputs[input_name].type == "button":
                 self.setConf(conf, "TEST_BUTTON", f"{pad.device_path}:KEY:{pad.inputs[input_name].code}")
             input_name = "down"
-            if input_name in pad.inputs and pad.inputs[input_name].type == "hat":
+            if input_name in pad.inputs and pad.inputs[input_name].type == "hat":  # noqa: SIM102
                 if pad.inputs[input_name].value == "4": # down
                     # 16 is the HAT0 code, MAX for down/right
                     input_value = f"ABS:{16+1+int(pad.inputs[input_name].id)*2}:MAX"
@@ -410,7 +408,7 @@ class LindberghGenerator(Generator):
                     input_value = f"ABS_NEG:{pad.inputs[input_name].code}"
                 else:
                     input_value = f"ABS:{pad.inputs[input_name].code}"
-                self.setConf(conf, f"PLAYER_1_BUTTON_SERVICE", f"{pad.device_path}:{input_value}:MAX")
+                self.setConf(conf, "PLAYER_1_BUTTON_SERVICE", f"{pad.device_path}:{input_value}:MAX")
 
     def setup_joysticks_evdev(
         self,
@@ -796,15 +794,14 @@ class LindberghGenerator(Generator):
                 mappings_actions["right"] = "BUTTON_4"
                 del mappings_actions["3"]
 
-        if shortRomName == "letsgoju":
-            if len(guns) == 1:
-                mapping = "right"
-                action = "BUTTON_START"
-                if mapping in mappings_codes:
-                    gun = guns[0]
-                    code = mappings_codes[mapping]
-                    self.setConf(conf, f"PLAYER_2_{action}", f"{gun.node}:KEY:{code}")
-                    del mappings_actions[mapping]
+        if shortRomName == "letsgoju" and len(guns) == 1:
+            mapping = "right"
+            action = "BUTTON_START"
+            if mapping in mappings_codes:
+                gun = guns[0]
+                code = mappings_codes[mapping]
+                self.setConf(conf, f"PLAYER_2_{action}", f"{gun.node}:KEY:{code}")
+                del mappings_actions[mapping]
 
         for nplayer, gun in enumerate(guns[:2], start=1):
             _logger.debug("lindbergh gun for player %s", nplayer)
