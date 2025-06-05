@@ -458,7 +458,7 @@ case "${ACTION}" in
             if [ "$CURRENT_MATRIX" != "$MATRIX" ]; then
                 sed -i '/<device category="touch">/,/<\/device>/ s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix>'"$MATRIX"'</calibrationMatrix>|' "$CONFIG_FILE"
                 _log "Touchscreen '${TOUCHSCREEN}' detected. Updated calibrationMatrix from '$CURRENT_MATRIX' to: $MATRIX"
-                _log "REBOOT REQUIRED"
+                labwc --reconfigure
             else
                 _log "Touchscreen '${TOUCHSCREEN}' detected. calibrationMatrix already set to: $MATRIX — no update needed."
             fi
