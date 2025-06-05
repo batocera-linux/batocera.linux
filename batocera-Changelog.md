@@ -151,8 +151,8 @@
 - Pipewire to 1.2.7
 - QT6 to 6.8.1
 - RClone to v1.69.1
-- RPi firmware to match Kernel 6.12.21
-- RPi Kernel to 6.12.21
+- RPi firmware to match Kernel 6.12.25
+- RPi Kernel to 6.12.25
 - Ryzenadj to v0.16.0
 - SDL2 to 2.30.11
 - Sound Open Firmware to 2025.01
