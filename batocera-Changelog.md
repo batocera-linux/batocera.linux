@@ -66,6 +66,7 @@
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
 - WiringOP-Python for OrangePi board GPIO scripting.
 ### Fixed
+- Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
 - Fix handling of luks.enabled setting to allow disabling LUKS integration

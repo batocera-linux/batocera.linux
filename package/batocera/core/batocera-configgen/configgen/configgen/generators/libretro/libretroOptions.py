@@ -1677,7 +1677,7 @@ def _genesisplusgx_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Allows each game to have its own one brm file for save without lack of space
-    _set(coreSettings, 'genesis_plus_gx_bram', 'per game')
+    _set(coreSettings, 'genesis_plus_gx_system_bram', 'per game')
 
     # Sometimes needs to be forced to NTSC-U for MSU-MD to work (this is to avoid an intentionally coded lock-out screen):
     # https://arcadetv.github.io/msu-md-patches/wiki/Lockout-screen.html
