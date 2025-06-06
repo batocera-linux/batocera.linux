@@ -11,3 +11,16 @@ index d04d4effd7..c58e14d48b 100644
  		{
  			u32 version, region;
  			static constexpr u32 MIN_BIOS_SIZE = 4 * _1mb;
+diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
+index a5e87e6e6d..e25b15203d 100644
+--- a/pcsx2/Pcsx2Config.cpp
++++ b/pcsx2/Pcsx2Config.cpp
+@@ -1029,7 +1029,7 @@ void Pcsx2Config::CopyRuntimeConfig(Pcsx2Config& cfg)
+ 
+ void EmuFolders::SetDefaults(SettingsInterface& si)
+ {
+-	si.SetStringValue("Folders", "Bios", "bios");
++	si.SetStringValue("Folders", "Bios", "/userdata/bios/ps2");
+ 	si.SetStringValue("Folders", "MemoryCards", "memcards");
+ 	si.SetStringValue("Folders", "Cheats", "cheats");
+ 	si.SetStringValue("Folders", "CheatsWS", "cheats_ws");
