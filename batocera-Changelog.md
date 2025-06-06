@@ -112,7 +112,7 @@
 - OpenMSX to release 20.0
 - PCSX2 to v2.3.185
 - Play! to 4th Feb build
-- PPSSPP to 28th February build
+- PPSSPP to 1.19
 - Raze to 1.11.0
 - RetroArch to v1.21.0
 - Ruffle to nightly-2025-02-12
