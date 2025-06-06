@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Options file\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-17 13:14+0300\n"
+"PO-Revision-Date: 2025-06-03 14:43+0300\n"
 "Last-Translator: Serdar Sağlam <teknomobil@msn.com>\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -2957,7 +2957,7 @@ msgstr "Kullanıcının değiştirebileceği dokulara izin verir."
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Allows you to limit FPS to 60."
-msgstr "FPS sınırını 60 yapmanıza izin verir."
+msgstr "FPS sınırını 60 yapmanıza olanak tanır."
 
 #. TRANSLATION: libretro/opera
 msgctxt "game_options"
@@ -4812,7 +4812,7 @@ msgstr "Yavaşlamayı düzeltebilir. Sadece bazı sürücülerde çalışır."
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Can improve frame rate and responsiveness."
-msgstr "Kare hızını ve yanıt verme hızını iyileştirebilir."
+msgstr "Kare hızını ve tepki süresini artırabilir."
 
 #. TRANSLATION: mugen
 msgctxt "game_options"
@@ -4835,7 +4835,7 @@ msgstr ""
 #. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
-msgstr "CPU'yu zorlayan oyunlar için performansı artırabilir."
+msgstr "CPU zorlayan oyunlarda performansı artırabilir."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -5316,8 +5316,8 @@ msgid ""
 "Choose whether to pass SDL Game Controller config to the Windows game. "
 "Disabling may help with some games."
 msgstr ""
-"SDL Oyun Kontrolcü yapılandırmasının Windows oyununa aktarılıp "
-"aktarılmayacağını seçin. Devre dışı bırakmak bazı oyunlarda yardımcı "
+"SDL Oyun Kontrolcü yapılandırmasını Windows oyununa geçirip "
+"geçirmeyeceğinizi seçin. Devre dışı bırakmak bazı oyunlarda yardımcı "
 "olabilir."
 
 #. TRANSLATION: gsplus
@@ -5909,7 +5909,7 @@ msgstr "EKRAN MESAJLARINI DEVRE DIŞI BIRAK"
 #. TRANSLATION: vita3k
 msgctxt "game_options"
 msgid "DISABLE SURFACE SYNC"
-msgstr "YÜZEY SENKRONU DEVREDIŞI"
+msgstr "YÜZEY EŞİTLEMESİ DEVRE DIŞI"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -6059,12 +6059,12 @@ msgstr "DXVK ÖZELLİĞİ"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "DXVK HUD"
-msgstr "DXVK HUD"
+msgstr "DXVK GÖSTERGE"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "DXVK RESET CACHE"
-msgstr "DXVK ÖNBELLEĞİ SIFIRLA"
+msgstr "DXVK ÖNBELLEĞİNİ SIFIRLA"
 
 #. TRANSLATION: openjk
 msgctxt "game_options"
@@ -6173,7 +6173,7 @@ msgstr ""
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Define the resolution and a new dedicated window."
-msgstr "Çözünürlüğü ve yeni bir özel pencere tanımla."
+msgstr "Çözünürlüğü ve yeni özel pencereyi tanımlayın."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -6183,7 +6183,7 @@ msgstr "3D grafiklerin ölçeklendirilme derecesi. Yalnızca OpenGL oluşturucu.
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Delay freeing some memory."
-msgstr "Hafızanın bir kısmını boşaltmayı geciktir."
+msgstr "Belleğin bir kısmını boşaltmayı geciktirin."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -6287,7 +6287,7 @@ msgstr "Görev başlatma onayını devre dışı bırak."
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Disable support for memory write watches in ntdll."
-msgstr "Ntdll'de bellek yazma izleme desteğini devre dışı bırak."
+msgstr "Ntdll bellek yazma izleme desteğini devre dışı bırak."
 
 #. TRANSLATION: libretro/melonds
 msgctxt "game_options"
@@ -6652,7 +6652,7 @@ msgstr "GRAVIS ULTRASOUND ETKİNLEŞTİR"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "ENABLE HIDRAW"
-msgstr "HIDRAW ETKİNLEŞTİR"
+msgstr "HAM GİRİŞ CİHAZLARINI ETKİNLEŞTİR"
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -7036,9 +7036,9 @@ msgid ""
 "features (like gyroscope for example), but can break older games with x-"
 "input support only."
 msgstr ""
-"Oyun kolu HID ham erişimini etkinleştirin. Bu, modern oyunların özel oyun "
-"kolu özelliklerini (örneğin jiroskop gibi) kullanmasına olanak tanır, ancak "
-"eski oyunları yalnızca x girişi desteğiyle bozabilir."
+"Oyun kolu ham erişimini etkinleştirin. Bu, modern oyunların özel oyun kolu "
+"özelliklerini (örneğin jiroskop gibi) kullanmasına izin verir, ancak "
+"yalnızca x-giriş desteği olan eski oyunları bozabilir."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -7231,7 +7231,7 @@ msgstr ""
 msgctxt "game_options"
 msgid "Enable to display if your BIOS haas known problems."
 msgstr ""
-"BIOS üstünde bilinen sorunlar olup olmadığını görüntülemek için "
+"BİOS üstünde bilinen sorunlar olup olmadığını görüntülemek için "
 "etkinleştirin."
 
 #. TRANSLATION: lindbergh-loader
@@ -8328,13 +8328,12 @@ msgid ""
 "Force Nvidia GPUs to always be reported as AMD GPUs to workaround game "
 "issues."
 msgstr ""
-"Oyun sorunlarını geçici olarak çözmek için Nvidia GPU'larını her zaman AMD "
-"GPU'ları olarak bildirilmeye zorlayın."
+"Oyun sorunlarını çözmek için Nvidia GPU her zaman AMD GPU olarak bildirilsin."
 
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Force WINE to run games with large addresses."
-msgstr "WINE'ı büyük adresli oyunları çalıştırmaya zorlayın."
+msgstr "WINE büyük adresli oyunları çalıştırmasını zorunlu kıl."
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -9416,6 +9415,7 @@ msgctxt "game_options"
 msgid ""
 "House of the Dead 4 speed fix. Select CPU base frequency of your processor."
 msgstr ""
+"House of the Dead 4 hız düzeltmesi. İşlemcinizin CPU taban frekansını seçin."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -13151,8 +13151,8 @@ msgstr "ES üstünden ön yükleme yapılamaz."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the VPinballX."
-"ini file to fine tune performance."
+"Presets which can improve performance without manually editing the "
+"VPinballX.ini file to fine tune performance."
 msgstr ""
 "Performansta ince ayar yapmak için VPinballX.ini dosyasını el ile "
 "düzenlemeye gerek kalmadan performansı artırabilen ön ayarlar."
@@ -13655,8 +13655,8 @@ msgstr ""
 msgctxt "game_options"
 msgid "Renders game at a lower res then upscales to increase FPS."
 msgstr ""
-"Oyunu daha düşük bir çözünürlükte işler, ardından FPS'yi artırmak için "
-"yükseltir."
+"Oyunu daha düşük çözünürlükte işler ve ardından FPS artırmak için yukarı "
+"ölçekler."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -16999,7 +16999,7 @@ msgstr ""
 msgctxt "game_options"
 msgid "Upscale filter used for the 2D layers. Requires New 3D engine."
 msgstr ""
-"2D katmanları için Upscale (Çözünürlük arttırma) filtresi.Yeni 3D motoru "
+"2D katmanlar için kullanılan yukarı ölçekleme filtresi. Yeni 3D motor "
 "gerektirir."
 
 #. TRANSLATION: lindbergh-loader
@@ -17068,7 +17068,7 @@ msgstr ""
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
-msgstr "ROM'u tanımlamak için MAME yazılım listelerini kullanın"
+msgstr "ROM tanımlamak için MAME yazılım listelerini kullanın"
 
 #. TRANSLATION: libretro/genesisplusgx, libretro/picodrive
 msgctxt "game_options"
@@ -17262,7 +17262,8 @@ msgstr "Hızlı çalıştırmalar/hatalar için kullanışlıdır."
 msgctxt "game_options"
 msgid "Useful to troubleshoot when your Windows game won't start of crashes."
 msgstr ""
-"Windows oyununuz çökmeye başlamadığında sorun gidermek için kullanışlıdır."
+"Windows oyununuz başlamadığında veya çöktüğünde sorun gidermede "
+"kullanışlıdır."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -17692,7 +17693,7 @@ msgstr "PENCERELERİN KONUMLARI"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "WINE RUNNER"
-msgstr "WINE RUNNER"
+msgstr "WINE ÇALIŞTIRICI"
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -18473,18 +18474,6 @@ msgstr "sarı/mavi"
 #~ msgstr "Tüm VMU"
 
 #~ msgctxt "game_options"
-#~ msgid "HIDE LIGHT GUN CROSSHAIRS"
-#~ msgstr "SİLAH HEDEF İMLECİ GİZLE"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency "
-#~ "of your processor."
-#~ msgstr ""
-#~ "House of the Dead 4 hız düzeltmesi. Oyunu işlemcinizin en düşük CPU "
-#~ "frekansına ayarlar."
-
-#~ msgctxt "game_options"
 #~ msgid "Only A1"
 #~ msgstr "Sadece A1"
 
@@ -18493,3 +18482,7 @@ msgstr "sarı/mavi"
 #~ msgstr ""
 #~ "Etkinleştirildiğinde, her oyunun kendine ait bir VMU kayıt dosyaları seti "
 #~ "olur."
+
+#~ msgctxt "game_options"
+#~ msgid "HIDE LIGHT GUN CROSSHAIRS"
+#~ msgstr "SİLAH HEDEF İMLECİ GİZLE"

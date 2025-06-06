@@ -2891,6 +2891,11 @@ msgctxt "game_options"
 msgid "All Timers"
 msgstr "Todos os temporizadores"
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "All VMUs"
+msgstr "Todos os VMUs"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "All possible licenses (Not recommended)"
@@ -7375,7 +7380,7 @@ msgstr "Ligar irá suavizar a imagem."
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Enforce perfect pixel scaling. Prevents uneven scaling and blurring."
-msgstr ""
+msgstr "Aplicar escala de pixels perfeita. Evita o dimensionamento irregular e o desfoque."
 
 #. TRANSLATION: cemu, citron, dhewm3, etlegacy, flycast/dolphin, ...
 msgctxt "game_options"
@@ -9401,8 +9406,11 @@ msgstr "Horizontal"
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
 msgid ""
-"House of the Dead 4 speed fix. Select CPU base frequency of your processor."
+"House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of "
+"your processor."
 msgstr ""
+"Correção de velocidade 4 de House of the Dead. Define o jogo para a "
+"frequência mínima da CPU de o seu processador."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -9515,7 +9523,7 @@ msgstr "INTERFACE DE ENTRADA"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "INTEGER SCALE"
-msgstr ""
+msgstr "ESCALA INTEIRA"
 
 #. TRANSLATION: melonds, pcsx2
 msgctxt "game_options"
@@ -12084,7 +12092,7 @@ msgctxt "game_options"
 msgid "Off"
 msgstr "Desligado"
 
-#. TRANSLATION: cemu, flycast/dolphin, libretro/dosbox_pure, libretro/mame, libretro/mamevirtual, ...
+#. TRANSLATION: cemu, flycast/dolphin, libretro/dosbox_pure, libretro/flycast, libretro/mame, ...
 msgctxt "game_options"
 msgid "Off (Default)"
 msgstr "Desligado (Predefinição)"
@@ -12217,6 +12225,11 @@ msgstr "Ligado em conjunto com a mensagem de detecção do jogo"
 msgctxt "game_options"
 msgid "On with rewind support"
 msgstr "Ligado em conjunto com suporte para rebobinar"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "Only A1"
+msgstr "Somente A1"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -12535,10 +12548,10 @@ msgctxt "game_options"
 msgid "PER-GAME SAVES"
 msgstr "GRAVAÇÕES POR JOGO"
 
-#. TRANSLATION: flycast/dolphin
+#. TRANSLATION: flycast/dolphin, libretro/flycast
 msgctxt "game_options"
 msgid "PER-GAME VMU"
-msgstr ""
+msgstr "VMU POR JOGO"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -17751,7 +17764,12 @@ msgstr "Weave (campo superior primeiro)"
 #. TRANSLATION: flycast/dolphin
 msgctxt "game_options"
 msgid "When enabled, each game has its own VMU on port 1 of controller 1."
-msgstr ""
+msgstr "Quando ativado, cada jogo tem o seu próprio VMU na porta 1 do comando 1."
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "When enabled, each game has its own set of VMU save files."
+msgstr "Quando ativado, cada jogo tem o seu próprio conjunto de ficheiros guardados na VMU."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -18473,11 +18491,3 @@ msgstr "yape-pal"
 msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "amarelo/azul"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency "
-#~ "of your processor."
-#~ msgstr ""
-#~ "Correção de velocidade 4 de House of the Dead. Define o jogo para a "
-#~ "frequência mínima da CPU de o seu processador."
