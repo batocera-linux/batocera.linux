@@ -75,6 +75,7 @@
 - Fix MAME config for apple2p, apple2e, apple2ee
 - Fix GSPlus rom config and speed
 - DualShock 4 controller on Odroid XU4
+- Internal bezels still enabled for Libretro cores when a widescreen ratio selected
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images

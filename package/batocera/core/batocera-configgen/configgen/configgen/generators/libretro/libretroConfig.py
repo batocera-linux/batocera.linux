@@ -557,6 +557,8 @@ def createLibretroConfig(
         index = '22'    # default value (core)
         if ratio in ratioIndexes:
             index = ratioIndexes.index(ratio)
+        if ratio == "full":
+            bezel = None
         # Check if game natively supports widescreen from metadata (not widescreen hack) (for easy scalability ensure all values for respective systems start with core name and end with "-autowidescreen")
         elif system.config.get_bool(f"{systemCore}-autowidescreen"):
             metadata = controllersConfig.getGamesMetaData(system.name, rom)
@@ -564,6 +566,19 @@ def createLibretroConfig(
                 index = str(ratioIndexes.index("16/9"))
                 # Easy way to disable bezels if setting to 16/9
                 bezel = None
+
+        # Independently check if the ratio is numerically widescreen to disable bezels.
+        # This handles cases like "16/9", "16/10", etc., where bezels are not wanted.
+        try:
+            # Check if the ratio string contains a '/' to see if it's numerical
+            if '/' in ratio:
+                numerator, denominator = map(float, ratio.split('/'))
+                # If the calculated ratio is wider than 4/3, disable the bezel.
+                if denominator != 0 and (numerator / denominator) > (4/3):
+                    _logger.debug("Bezel set to none for widescreen ratio. Ratio %s:%s selected", int(numerator), int(denominator))
+                    bezel = None
+        except (ValueError, TypeError):
+            pass
 
         retroarchConfig['video_aspect_ratio_auto'] = 'false'
         retroarchConfig['aspect_ratio_index'] = index

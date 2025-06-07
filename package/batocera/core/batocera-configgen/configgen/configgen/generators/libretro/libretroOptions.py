@@ -2064,9 +2064,43 @@ def _pcsx2_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Fast Boot
-    _set_from_system(coreSettings, 'pcsx2_fast_boot', system, 'lr_pcsx2_fast_boot', default='disabled')
-
-
+    _set_from_system(coreSettings, 'pcsx2_fastboot', system, 'lr_pcsx2_fast_boot', default='disabled')
+    # Fast CD/DVD Access
+    _set_from_system(coreSettings, 'pcsx2_fastcdvd', system, 'lr_pcsx2_fast_cdvd', default='disabled')
+    # Enable Cheats
+    _set_from_system(coreSettings, 'pcsx2_enable_cheats', system, 'lr_pcsx2_fast_cheats', default='disabled')
+    # Language Unlock
+    _set_from_system(coreSettings, 'pcsx2_hint_language_unlock', system, 'lr_pcsx2_language_unlock', default='disabled')
+    # Graphics API
+    gfxbackend = system.config.get("gfxbackend")
+    if gfxbackend == "vulkan":
+        _set(coreSettings, 'pcsx2_renderer', 'Vulkan')
+    else:
+        _set(coreSettings, 'pcsx2_renderer', 'OpenGL')
+    # Render resolution
+    _set_from_system(coreSettings, 'pcsx2_upscale_multiplier', system, 'lr_pcsx2_resolution', default='1x Native (PS2)')
+    # Texture Filtering
+    _set_from_system(coreSettings, 'pcsx2_texture_filtering', system, 'lr_pcsx2_texture_filtering', default='Bilinear (PS2)')
+    # Trilinear Filtering
+    _set_from_system(coreSettings, 'pcsx2_trilinear_filtering', system, 'lr_pcsx2_trilinear_filtering', default='Automatic')
+    # Anisotropic Filtering
+    _set_from_system(coreSettings, 'pcsx2_anisotropic_filtering', system, 'lr_pcsx2_anisotropic', default='disabled')
+    # Dithering
+    _set_from_system(coreSettings, 'pcsx2_dithering', system, 'lr_pcsx2_dithering', default='Unscaled')
+    # Blending Accuracy
+    _set_from_system(coreSettings, 'pcsx2_blending_accuracy', system, 'lr_pcsx2_blending', default='Basic')
+    # Widescreen hint
+    widescreenhint = system.config.get("ratio")
+    if widescreenhint == "16/9" or widescreenhint == "full":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (16:9)')
+    elif widescreenhint == "16/10":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (16:10)')
+    elif widescreenhint == "21/9":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (21:9)')
+    elif widescreenhint == "32/9":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (32:9)')
+    else:
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'disabled')
 def _pcsx_rearmed_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
