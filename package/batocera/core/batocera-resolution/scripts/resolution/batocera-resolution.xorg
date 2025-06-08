@@ -43,11 +43,33 @@ f_minTomaxResolution() {
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+
+    # This logic finds the highest resolution with the highest refresh rate >= 59Hz.
+    IDEAL_MODE_INFO=$(xrandr --listModes "${PSCREEN}" | \
+        grep -oE '[0-9]+x[0-9]+[[:space:]]+[0-9]+\.[0-9]+' | \
+        # Keep only modes with a refresh rate of 59Hz or higher
+        awk '$2 >= 59 {print $0}' | \
+        awk '{ split($1, res, "x"); print res[1], res[2], $2 }' | \
+        # sort the resolutions and rates
+        sort -k1,1nr -k2,2nr -k3,3nr | \
+        # Get the top-most (best) result
+        head -n 1)
+
+    if [ -n "$IDEAL_MODE_INFO" ]; then
+        IDEAL_WIDTH=$(echo "$IDEAL_MODE_INFO" | awk '{print $1}')
+        IDEAL_HEIGHT=$(echo "$IDEAL_MODE_INFO" | awk '{print $2}')
+        IDEAL_RATE=$(echo "$IDEAL_MODE_INFO" | awk '{print $3}')
+        echo "Auto-detected ideal mode: ${IDEAL_WIDTH}x${IDEAL_HEIGHT} @ ${IDEAL_RATE}Hz" >> "$log"
+    else
+        echo "Could not find any ideal mode with a refresh rate >= 59Hz." >> "$log"
+    fi
+    
+    # Priority 1: An argument was passed to the script
     if [ -n "$MWIDTH" ] && [ -n "$MHEIGHT" ] && [ "$MWIDTH" -ne 0 ] && [ "$MHEIGHT" -ne 0 ]; then
         echo "Requested $MWIDTH x $MHEIGHT" >> "$log"
         MAXWIDTH="$MWIDTH"
         MAXHEIGHT="$MHEIGHT"
-    # check if a resolution is set
+    # Priority 2: A resolution is set in the boot configuration
     elif [ -n "${BOOTRESOLUTION}" ]; then
         RESOLUTION=$(echo "$BOOTRESOLUTION" | sed 's/max-//;s/\..*//')
         MAXWIDTH=$(echo "$RESOLUTION" | cut -d 'x' -f 1)
@@ -59,7 +81,13 @@ f_minTomaxResolution() {
         else
             echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
-    # otherwise grab the value from the mpv.log if it exists
+    # Priority 3: No user setting, so we use our calculated ideal mode
+    elif [ -n "$IDEAL_WIDTH" ]; then
+        echo "Using ideal resolution: $IDEAL_WIDTH x $IDEAL_HEIGHT @ $IDEAL_RATE Hz" >> "$log"
+        MAXWIDTH=$IDEAL_WIDTH
+        MAXHEIGHT=$IDEAL_HEIGHT
+        MAXRATE=$IDEAL_RATE
+    # Priority 4: Last resort, grab the value from the mpv.log if it exists
     else
         if [ -f "$mpvlog" ]; then
             selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
