@@ -1922,24 +1922,30 @@ def _fbneo_options(
     _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-Controls", 'Light Gun' if system.config.use_guns and guns else 'Joystick')
 
     # NEOGEO
-    if system.name == 'neogeo':
-        # Neogeo Mode
-        if mode_switch := system.config.get('fbneo-neogeo-mode-switch'):
-            _set(coreSettings, "fbneo-neogeo-mode", 'DIPSWITCH')
-            if mode_switch == 'MVS Asia/Europe':
-                _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",  'MVS Asia/Europe ver. 5 (1 slot)')
-            elif mode_switch == 'MVS USA':
-                _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",  'MVS USA ver. 5 (2 slot)')
-            elif mode_switch == 'MVS Japan':
-                _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",  'MVS Japan ver. 5 (? slot)')
-            elif mode_switch == 'AES Asia':
-                _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",  'AES Asia')
-            elif mode_switch == 'AES Japan':
-                _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",  'AES Japan')
-            else:
-                _set(coreSettings, "fbneo-neogeo-mode", 'UNIBIOS')
-        else:
-            _set(coreSettings, "fbneo-neogeo-mode",     'UNIBIOS')
+    neogeo_mode = 'DIPSWITCH'
+
+    match system.config.get('fbneo-neogeo-mode-switch', 'Universe BIOS'):
+        case 'MVS Asia/Europe':
+            neogeo_bios = 'MVS Asia/Europe ver. 5 (1 slot)'
+        case 'MVS USA':
+            neogeo_bios = 'MVS USA ver. 5 (2 slot)'
+        case 'MVS Japan':
+            neogeo_bios = 'MVS Japan ver. 5 (? slot)'
+        case mode_switch if mode_switch in ('AES Asia', 'AES Japan'):
+            neogeo_bios = mode_switch
+        case _:
+            neogeo_mode = 'UNIBIOS'
+            neogeo_bios = 'Universe BIOS ver. 4.0'
+
+    _set(coreSettings, "fbneo-neogeo-mode", neogeo_mode)
+    _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS", neogeo_bios)
+
+    if neogeo_mode == 'UNIBIOS':
+        _set(
+            coreSettings,
+            f'fbneo-dipswitch-{rom.stem}-Unibios_mode',
+            system.config.get('fbneo-neogeo-unibios-mode', 'MVS')
+        )
             # _set(coreSettings, f"fbneo-dipswitch-{rom.stem}-BIOS",      'Universe BIOS ver. 4.0')
         # Memory card mode
         _set_from_system(coreSettings, 'fbneo-memcard-mode', system, 'fbneo-memcard-mode', default='per-game')

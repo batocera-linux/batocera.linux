@@ -1856,14 +1856,21 @@ libretro:
             neogeo:
                 cfeatures:
                     fbneo-neogeo-mode-switch:
+                        group:       BIOS
                         prompt:      NEO GEO BIOS
                         choices:
-                            "Console AES World":                   AES Asia
-                            "Console AES Japan":                   AES Japan
-                            "Arcade MVS Europe":                   MVS Asia/Europe
-                            "Arcade MVS USA":                      MVS USA
-                            "Arcade MVS Japan":                    MVS Japan
-                            "Arcade Universe BIOS (Cheats)":       Universe BIOS
+                            "Console AES World":           AES Asia
+                            "Console AES Japan":           AES Japan
+                            "Arcade MVS Europe":           MVS Asia/Europe
+                            "Arcade MVS USA":              MVS USA
+                            "Arcade MVS Japan":            MVS Japan
+                            "Universe BIOS (Cheats)":      Universe BIOS
+                    fbneo-neogeo-unibios-mode:
+                        group:  BIOS
+                        prompt: UNIVERSE BIOS MODE
+                        choices:
+                            "Mode Arcade (Default)":       MVS
+                            "Mode Console":                AES
                     fbneo-memcard-mode:
                         group: ADVANCED OPTIONS
                         prompt:      MEMORY CARD MODE
