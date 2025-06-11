@@ -34,6 +34,9 @@ endif
 define LIBRETRO_PS2_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/bin/pcsx2_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/pcsx2_libretro.so
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/pcsx2/resources
+    cp -f $(@D)/bin/resources/GameIndex.yaml \
+        $(TARGET_DIR)/usr/share/batocera/datainit/bios/pcsx2/resources
 endef
 
 $(eval $(cmake-package))
