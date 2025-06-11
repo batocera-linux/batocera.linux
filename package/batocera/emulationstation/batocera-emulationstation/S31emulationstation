@@ -8,21 +8,43 @@ case "$1" in
 	start)
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
 		if [ "$enabled" != "0" ]; then
-		%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
+			%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
 		fi
 		;;
 
 	stop)
-		emulationstation-standalone --stop-rebooting
-		killall openbox          2>/dev/null # for xorg
-		killall sway             2>/dev/null # for sway (wayland)
-		killall labwc            2>/dev/null # for labwc (wayland)
+		COMPOSITOR=""
+		if pidof openbox >/dev/null; then
+			COMPOSITOR="openbox"
+		elif pidof sway >/dev/null; then
+			COMPOSITOR="sway"
+		elif pidof labwc >/dev/null; then
+			COMPOSITOR="labwc"
+		fi
+
+		emulationstation-standalone --stop-rebooting 2>/dev/null
+
+		if [ -n "$COMPOSITOR" ]; then
+			case "$COMPOSITOR" in
+				openbox) openbox --exit 2>/dev/null ;;
+				sway)    swaymsg exit 2>/dev/null ;;
+				labwc)   labwc --exit 2>/dev/null ;;
+			esac
+		fi
+
+		# Send the standard terminate signal (SIGTERM) to other processes.
 		killall touchegg         2>/dev/null
-
-		# Kill emulationstation and then wait at least 20 seconds for it to exit, after 25s in total send SIGTERM
 		killall emulationstation 2>/dev/null
-		timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
 
+		# Forcefully kill the compositor if they're still running.
+		if [ -n "$COMPOSITOR" ] && pidof "$COMPOSITOR" >/dev/null; then
+			killall -9 "$COMPOSITOR" 2>/dev/null
+		fi
+
+		# Kill ES after 20 seconds if still active also
+		if pidof emulationstation >/dev/null; then
+		    timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
+		fi
 		;;
 
 	restart|reload)
@@ -36,4 +58,3 @@ case "$1" in
 esac
 
 exit $?
-
