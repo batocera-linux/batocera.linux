@@ -179,7 +179,9 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
-            elif controller_type == "Evdev":
+            #elif controller_type == "Evdev":
+            # use evdev as default until SDL3 fully embedded.
+            else:
                 _logger.debug("*** Using EVDEV configuration ***")
                 # evdev
                 f.write(f'Player {nplayer} Input:\n')
@@ -273,7 +275,8 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
-            else:
+            # comment out default SDL
+            '''else:
                 _logger.debug("*** Using default SDL2 configuration ***")
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: SDL\n')
@@ -367,4 +370,4 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Device Class Type: 0\n')
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
-                f.write('  Buddy Device: ""\n')
+                f.write('  Buddy Device: ""\n')'''

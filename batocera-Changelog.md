@@ -118,7 +118,7 @@
 - Raze to 1.11.0
 - RetroArch to v1.21.0
 - Ruffle to nightly-2025-02-12
-- RPCS3 to v0.0.35
+- RPCS3 to v0.0.37
 - ScummVM to v2.9.0
 - Snes9x to 24th Jan build
 - Solarus Engine to 18th Jan build
