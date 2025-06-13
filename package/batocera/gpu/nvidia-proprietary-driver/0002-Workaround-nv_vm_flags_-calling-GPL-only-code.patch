@@ -1,0 +1,104 @@
+From 3b4e78d1107a4da33a805b161ade8f718454bd2d Mon Sep 17 00:00:00 2001
+From: Eric Naim <dnaim@cachyos.org>
+Date: Tue, 20 May 2025 00:11:56 +0800
+Subject: [PATCH] Workaround nv_vm_flags_* calling GPL-only code
+
+Since 6.15, the main body of vma_start_write() was uninlined and has
+been made GPL-only code. This means that the closed modules can no
+longer use vma_start_write() and functions calling it. Fortunately for
+us, an NVIDIA driver hacker that tries to maintain the legacy drivers
+for newer kernels claims that all VMAs that the driver uses are all
+either initially mapped or already locked, this means that using
+vm_flags_reset is sufficient to replace vm_flags_* helpers.
+
+Signed-off-by: Eric Naim <dnaim@cachyos.org>
+---
+ kernel-open/nvidia-drm/nvidia-drm-gem-user-memory.c | 7 +++++++
+ kernel-open/nvidia-drm/nvidia-drm-gem.c             | 7 +++++++
+ kernel-open/nvidia-uvm/uvm.c                        | 7 +++++++
+ kernel-open/nvidia/nv-mmap.c                        | 7 +++++++
+ 4 files changed, 28 insertions(+)
+
+diff --git a/kernel/nvidia-drm/nvidia-drm-gem-user-memory.c b/kernel/nvidia-drm/nvidia-drm-gem-user-memory.c
+index 91d56ebb5..6e07bb023 100644
+--- a/kernel/nvidia-drm/nvidia-drm-gem-user-memory.c
++++ b/kernel/nvidia-drm/nvidia-drm-gem-user-memory.c
+@@ -44,6 +44,13 @@
+ #include <vm/vm_pageout.h>
+ #endif
+ 
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#define nv_vm_flags_set(v, f) vm_flags_reset((v), (v)->vm_flags | (f))
++#define nv_vm_flags_clear(v, f) vm_flags_reset((v), (v)->vm_flags & ~(f))
++#endif
++
+ static inline
+ void __nv_drm_gem_user_memory_free(struct nv_drm_gem_object *nv_gem)
+ {
+diff --git a/kernel/nvidia-drm/nvidia-drm-gem.c b/kernel/nvidia-drm/nvidia-drm-gem.c
+index 5ac597823..8dff0abe6 100644
+--- a/kernel/nvidia-drm/nvidia-drm-gem.c
++++ b/kernel/nvidia-drm/nvidia-drm-gem.c
+@@ -51,6 +51,13 @@
+ 
+ #include "nv-mm.h"
+ 
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#define nv_vm_flags_set(v, f) vm_flags_reset((v), (v)->vm_flags | (f))
++#define nv_vm_flags_clear(v, f) vm_flags_reset((v), (v)->vm_flags & ~(f))
++#endif
++
+ void nv_drm_gem_free(struct drm_gem_object *gem)
+ {
+     struct nv_drm_gem_object *nv_gem = to_nv_gem_object(gem);
+diff --git a/kernel/nvidia-uvm/uvm.c b/kernel/nvidia-uvm/uvm.c
+index a9c182f82..bfec14dc0 100644
+--- a/kernel/nvidia-uvm/uvm.c
++++ b/kernel/nvidia-uvm/uvm.c
+@@ -21,6 +21,8 @@
+ 
+ *******************************************************************************/
+ 
++#include <linux/version.h>
++
+ #include "uvm_api.h"
+ #include "uvm_global.h"
+ #include "uvm_gpu_replayable_faults.h"
+@@ -40,6 +42,11 @@
+ 
+ #define NVIDIA_UVM_DEVICE_NAME          "nvidia-uvm"
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#define nv_vm_flags_set(v, f) vm_flags_reset((v), (v)->vm_flags | (f))
++#define nv_vm_flags_clear(v, f) vm_flags_reset((v), (v)->vm_flags & ~(f))
++#endif
++
+ static dev_t g_uvm_base_dev;
+ static struct cdev g_uvm_cdev;
+ static const struct file_operations uvm_fops;
+diff --git a/kernel/nvidia/nv-mmap.c b/kernel/nvidia/nv-mmap.c
+index 33c7d2982..813264c8f 100644
+--- a/kernel/nvidia/nv-mmap.c
++++ b/kernel/nvidia/nv-mmap.c
+@@ -23,10 +23,17 @@
+ 
+ #define  __NO_VERSION__
+ 
++#include <linux/version.h>
++
+ #include "os-interface.h"
+ #include "nv-linux.h"
+ #include "nv_speculation_barrier.h"
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#define nv_vm_flags_set(v, f) vm_flags_reset((v), (v)->vm_flags | (f))
++#define nv_vm_flags_clear(v, f) vm_flags_reset((v), (v)->vm_flags & ~(f))
++#endif
++
+ /*
+  * The 'struct vm_operations' open() callback is called by the Linux
+  * kernel when the parent VMA is split or copied, close() when the
