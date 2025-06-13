@@ -131,7 +131,7 @@
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
 - Xemu to v0.8.68
-- Xenia to build 5979274 (Jan 24, 2025)
+- Xenia to build 1d7973a (June 10, 2025)
 ### System
 - Bluez to 5.82
 - BTop to 1.4.0
