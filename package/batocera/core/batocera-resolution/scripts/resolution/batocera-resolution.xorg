@@ -83,10 +83,20 @@ f_minTomaxResolution() {
         fi
     # Priority 3: No user setting, so we use our calculated ideal mode
     elif [ -n "$IDEAL_WIDTH" ]; then
-        echo "Using ideal resolution: $IDEAL_WIDTH x $IDEAL_HEIGHT @ $IDEAL_RATE Hz" >> "$log"
-        MAXWIDTH=$IDEAL_WIDTH
-        MAXHEIGHT=$IDEAL_HEIGHT
-        MAXRATE=$IDEAL_RATE
+        # Check if the current refresh rate is already ~60Hz.
+        ROUNDED_CURRENTRATE=$(printf "%.0f\n" "${CURRENTRATE}")
+        if [ "$ROUNDED_CURRENTRATE" -eq 60 ]; then
+            echo "Current refresh rate is ${CURRENTRATE}Hz (~60Hz). Keeping current resolution." >> "$log"
+            MAXWIDTH=$CURRENTWIDTH
+            MAXHEIGHT=$CURRENTHEIGHT
+            MAXRATE=$CURRENTRATE
+        else
+            # The current rate is NOT ~60Hz, so we proceed with using the ideal mode.
+            echo "Using ideal resolution: $IDEAL_WIDTH x $IDEAL_HEIGHT @ $IDEAL_RATE Hz" >> "$log"
+            MAXWIDTH=$IDEAL_WIDTH
+            MAXHEIGHT=$IDEAL_HEIGHT
+            MAXRATE=$IDEAL_RATE
+        fi
     # Priority 4: Last resort, grab the value from the mpv.log if it exists
     else
         if [ -f "$mpvlog" ]; then
