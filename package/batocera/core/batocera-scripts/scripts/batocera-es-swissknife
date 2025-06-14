@@ -5,8 +5,13 @@
 # Batocera version created, update check added                                     // 04.06.2019
 # Added --reset-ra to reset all settings from RetroArch cores                      // 27.06.2021
 # Small rewrite, rather use hotkeygen --send exit, errorcode emulator was finished // cyperghost
-# ec: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found       // 18.06.2025
+# ec: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found       // 13.06.2025
 # ec: 10-poweroff, 11-reboot, 1-general error, 0-okay
+
+
+# first argument is action, second is timeout or branch, default time_out=5, fractions allowed
+time_out=5
+
 # Get all childpids from calling process
 function getcpid() {
 local cpids="$(pgrep -P $1)"
@@ -26,24 +31,30 @@ function check_esrun() {
     echo $(pgrep -f -n emulationstation || echo 0)
 }
 
-# Kill emulators running in a proper way! (SAVE SRM STATE!)
+# Kill emulators running in a proper way! (SAVE SRM STATE!), timeout is 5s per default
 function emu_kill() {
     RC_PID=$(check_emurun)
     if [[ $RC_PID -ne 0 ]]; then
-        # 1. try, regular exit with hotkeygen command, after 5s use 2nd method
+        # 1. try, regular exit with hotkeygen command, after 5s or setted timeout use 2nd method
         # If there is a WINE process, do nothing additional, the hotkeygen command uses longer timeouts for WINE
-        timeout 5 hotkeygen --send exit && return 20
-        pgrep -f -n winedevice.exe && return 25
+        hotkeygen --send exit &
+        ret=20
+        # Detect WINE process and let hotkeygen with batocera-wine windows stop do it's pretty good job
+        pgrep -f -n winedevice.exe >/dev/null && return 25
+        # timeout reports 0 if process is finished before t/o
+        timeout ${time_out} tail -q --pid=${RC_PID} -f /dev/null 2>/dev/null && return $ret
+
         # 2. try, crawl PIDs recursiv and SIGKILL
         getcpid $RC_PID
         for ((z=${#pidarray[*]}-1; z>-1; z--)); do
             kill -9 ${pidarray[z]}
         done
         unset pidarray
-        return 22
+        ret=22
     else
-        return 21
+        ret=21
     fi
+    return $ret
 }
 
 # Future proof update check, depends just on build-date and build-time
@@ -67,10 +78,17 @@ case ${1,,} in
     --emupid)
         # This helps to detect emulator is running or not
         RC_PID=$(check_emurun); echo ${RC_PID}
-        [[ ${RC_PID} -ne 0 ]] && ret=0 || ret=21
+        if [[ ${RC_PID} -ne 0 ]]; then
+            getcpid ${RC_PID}; echo ${pidarray[@]}
+            unset pidarray
+            ret=0
+        else
+            ret=21
+        fi
     ;;
 
     --emukill|--shutdown|--reboot)
+        [[ $2 =~ ^[.[:digit:]]*$ ]] && time_out="$2"
         emu_kill; ret=$?
 
         ES_PID=$(check_esrun)
@@ -97,22 +115,9 @@ case ${1,,} in
 
     --version|--arch|--update)
         [[ ${2,,} == "butterfly" ]] && BRANCH=butterfly || BRANCH=stable
-        if [[ -f /usr/share/batocera/batocera.version ]]; then
-            VER=$(cat /usr/share/batocera/batocera.version)
-            ret=$?
-        else
-            VER="UNKNOWN"
-            ret=1
-        fi
-
-        if [[ -f /boot/boot/batocera.board ]]; then
-            BOARD=$(cat /boot/boot/batocera.board)
-            ret=$?
-            test "${BOARD}" = "rpi4" && BOARD=rpi464 # "temporarily" download on rpi464 for rpi4
-        else
-            BOARD="UNKNOWN"
-            ret=1
-        fi
+        [[ -f /usr/share/batocera/batocera.version ]] && { VER=$(cat /usr/share/batocera/batocera.version); ret=$?; } || { VER="UNKNOWN"; ret=1; }
+        [[ -f /boot/boot/batocera.board ]] &&            { BOARD=$(cat /boot/boot/batocera.board); ret=$?; } || { BOARD="UNKNOWN"; ret=1; }
+          test "${BOARD}" = "rpi4" && BOARD=rpi464 # "temporarily" download on rpi464 for rpi4
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
             URL="https://updates.batocera.org/$BOARD/$BRANCH/last/batocera.version"
@@ -184,28 +189,30 @@ case ${1,,} in
     *)
         cat <<-_EOF_
 		BATOCERA SWISS KNIFE FOR EmulationStation
-		  Please parse parameters to this script!
-		  --restart  will RESTART EmulationStation only
-		  --kodi     will startup KODI Media Center stopping ES
-		  --reboot   will REBOOT whole system
-		  --shutdown will SHUTDOWN whole system
-		  --emukill  will exit any running EMULATORS
-		  --espid    checks if EmulationStation is currently active
-		      This number is the real PID of the binary!
-		      If the ouput is 0, then ES isn't active
-		  --emupid   to check if an Emulator is running
-		      This number is just the PID of emulatorlauncher.py
-		      If output is 0 then there is no emulator active!
+		  usage: $(basename ${0}) [Option] <timeout in s> <butterfly>
+		  --restart       will RESTART EmulationStation only
+		  --kodi          will startup KODI Media Center stopping ES
+		  --reboot   <s>  will REBOOT whole system
+		  --shutdown <s>  will SHUTDOWN whole system
+		  --emukill  <s>  will exit any running EMULATORS
+		  --espid         checks if EmulationStation is currently active
+		             This number is the real PID of the binary!
+		             If the ouput is 0 or return 1 then ES isn't active
+		  --emupid        to check if an emulator is running
+		             The output is the full process-list till emulator
+		             If output is 0 or return not eq 0 no emulator is active
 
 		  --arch     Shows current architecture running
 		  --version  Shows current version of BATOCERA running
-		  --update   Shows possible update for your install
-		      default: stable, you can type --update butterfly
+		  --update   Shows possible update for your install opt. <butterfly>
 
 		  --overlay  will try to backup your overlay file
 		  --remount  toggle write access to <dir>, default /boot
-		      This switch can have serious effects for your setup
 		  --reset-ra will set all RA settings to default
+
+		EC: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found
+		    10-poweroff, 11-reboot, 1-general error, 0-okay
+
 		_EOF_
     ;;
 
