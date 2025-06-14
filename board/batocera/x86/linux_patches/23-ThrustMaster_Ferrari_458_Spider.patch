@@ -10,14 +10,14 @@ index e2c1848..70eaa7e 100644
  
  #define DANCEPAD_MAP_CONFIG	(MAP_DPAD_TO_BUTTONS |			\
  				MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
-@@ -136,6 +137,7 @@ static const struct xpad_device {
+@@ -144,6 +144,7 @@ static const struct xpad_device {
  	{ 0x044f, 0x0f07, "Thrustmaster, Inc. Controller", 0, XTYPE_XBOX },
  	{ 0x044f, 0x0f10, "Thrustmaster Modena GT Wheel", 0, XTYPE_XBOX },
  	{ 0x044f, 0xb326, "Thrustmaster Gamepad GP XID", 0, XTYPE_XBOX360 },
 +	{ 0x044f, 0xb671, "ThrustMaster, Inc. Ferrari 458 Spider", MAP_THRUSTMASTER_WHEEL, XTYPE_XBOXONE },
+ 	{ 0x044f, 0xd01e, "ThrustMaster, Inc. ESWAP X 2 ELDEN RING EDITION", 0, XTYPE_XBOXONE },
  	{ 0x045e, 0x0202, "Microsoft X-Box pad v1 (US)", 0, XTYPE_XBOX },
  	{ 0x045e, 0x0285, "Microsoft X-Box pad (Japan)", 0, XTYPE_XBOX },
- 	{ 0x045e, 0x0287, "Microsoft Xbox Controller S", 0, XTYPE_XBOX },
 @@ -1044,6 +1047,11 @@ static void xpadone_process_packet(struct usb_xpad *xpad, u16 cmd, unsigned char
  		input_report_key(dev, BTN_THUMBR, data[5] & BIT(7));
  
