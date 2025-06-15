@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CHANNEL="6"
-INTERFACE=$(ip link show | awk -F: '$2 ~ /wl/ { gsub(/ /, "", $2); print $2 }' | head -n1)
+INTERFACE=$(batocera-wifi get_interface)
 
 SSID=$(batocera-settings-get wifi.adhoc.ssid)
 PASSPHRASE=$(batocera-settings-get wifi.adhoc.key)

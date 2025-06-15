@@ -31,6 +31,24 @@ wait_for_ip() {
     done
 }
 
+get_route() {
+    echo $(ip route show default | awk '/^default/ && $0 ~ /wl/ { print $3 }')
+}
+
+get_interface() {
+    echo $(ip link show | awk -F: '$2 ~ /w[l]/ { gsub(/ /, "", $2); print $2 }' | head -n1)
+}
+
+has_ap_mode() {
+    WIFI_DEV=$(get_interface)
+    PHY=$(basename "$(readlink /sys/class/net/${WIFI_DEV}/phy80211)")
+    if iw phy "${PHY}" info | sed -n '/Supported interface modes/,/^[^*]*$/s|^.*[*] ||p' | grep -q 'AP'; then
+        exit 0
+    else
+        exit 1
+    fi
+}
+
 if [ $# -eq 0 ]; then
     do_help
     exit 1
@@ -71,8 +89,14 @@ case "${ACTION}" in
         /etc/init.d/S08connman reload
         wait_for_ip down
         ;;
-    "getroute")
-        ip route show default | awk '/^default/ && $0 ~ /wl/ { print $3 }'
+    "get_route")
+        get_route
+        ;;
+    "get_interface")
+        get_interface
+        ;;
+    "has_ap_mode")
+        has_ap_mode
         ;;
     *)
         do_help
