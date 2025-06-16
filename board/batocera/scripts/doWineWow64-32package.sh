@@ -102,7 +102,6 @@ echo
 cp -prv "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -prv "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
-cp -dpv "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
 cp -dpv "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
 cp -dpv "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
 cp -dpv "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
@@ -136,7 +135,6 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/libGL"* \
 "${G_TARGETDIR}/usr/lib/libGLX"* \
 "${G_TARGETDIR}/usr/lib/libGLdispatch"* \
-"${G_TARGETDIR}/usr/lib/libxatracker"* \
 "${G_TARGETDIR}/usr/lib/libXrandr"* \
 "${G_TARGETDIR}/usr/lib/libXft"* \
 "${G_TARGETDIR}/usr/lib/libXi"* \
