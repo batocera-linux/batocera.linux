@@ -5936,3 +5936,18 @@ mohaa:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:mohaa
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:mohaa
+
+namco22:
+  name: Namco System 22
+  manufacturer: Namco
+  release: 1992
+  hardware: arcade
+  extensions: [zip, 7z]
+  platform: namco, arcade
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Add your MAME compatible Namco System 22 roms here.
