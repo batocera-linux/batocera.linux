@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits on Dec 27, 2024
-NEW_LG4FF_VERSION = e5ca8d620c077d5829d24b0efa4ee0e52148d499
+NEW_LG4FF_VERSION = 2092db19f7b40854e0427a1b2e39eda9f8d0c3cd
 NEW_LG4FF_SITE = $(call github,berarma,new-lg4ff,$(NEW_LG4FF_VERSION))
 
 $(eval $(kernel-module))
