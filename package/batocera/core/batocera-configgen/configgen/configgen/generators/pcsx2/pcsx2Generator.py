@@ -118,10 +118,8 @@ class Pcsx2Generator(Generator):
             if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
                 _logger.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
 
-        # use their modified shaderc library
         envcmd = {
-            "XDG_CONFIG_HOME": CONFIGS,
-            "SDL_JOYSTICK_HIDAPI": "0"
+            "XDG_CONFIG_HOME": CONFIGS
         }
 
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
@@ -291,15 +289,15 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # Check Vulkan first to be sure
     if vulkan.is_available():
         _logger.debug("Vulkan driver is available on the system.")
-        renderer = "12"  # Default to OpenGL
+        renderer = "-1"
 
         if gfxbackend := system.config.get("pcsx2_gfxbackend"):
+            if gfxbackend == "12":
+                _logger.debug("User selected OpenGL")
             if gfxbackend == "13":
                 _logger.debug("User selected Software! Man you must have a fast CPU!")
-                renderer = "13"
             elif gfxbackend == "14":
                 _logger.debug("User selected Vulkan")
-                renderer = "14"
                 if vulkan.has_discrete_gpu():
                     _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_name = vulkan.get_discrete_gpu_name()
@@ -312,13 +310,14 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
                 else:
                     _logger.debug("Discrete GPU is not available on the system. Using default.")
                     pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
+            renderer = gfxbackend
         else:
-            _logger.debug("User selected or defaulting to OpenGL")
+            _logger.debug("User selected to Automatic")
 
         pcsx2INIConfig.set("EmuCore/GS", "Renderer", renderer)
     else:
-        _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
-        pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
+        _logger.debug("Vulkan driver is not available on the system. Falling back to Automatic")
+        pcsx2INIConfig.set("EmuCore/GS", "Renderer", "-1")
 
     # Ratio
     pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", system.config.get("pcsx2_ratio", "Auto 4:3/3:2"))
@@ -656,10 +655,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             pcsx2INIConfig.set(pad_num, "Right", sdl_num + "/DPadRight")
             pcsx2INIConfig.set(pad_num, "Down", sdl_num + "/DPadDown")
             pcsx2INIConfig.set(pad_num, "Left", sdl_num + "/DPadLeft")
-            pcsx2INIConfig.set(pad_num, "Triangle", sdl_num + "/Y")
-            pcsx2INIConfig.set(pad_num, "Circle", sdl_num + "/B")
-            pcsx2INIConfig.set(pad_num, "Cross", sdl_num + "/A")
-            pcsx2INIConfig.set(pad_num, "Square", sdl_num + "/X")
+            pcsx2INIConfig.set(pad_num, "Triangle", sdl_num + "/FaceNorth")
+            pcsx2INIConfig.set(pad_num, "Circle", sdl_num + "/FaceEast")
+            pcsx2INIConfig.set(pad_num, "Cross", sdl_num + "/FaceSouth")
+            pcsx2INIConfig.set(pad_num, "Square", sdl_num + "/FaceWest")
             pcsx2INIConfig.set(pad_num, "Select", sdl_num + "/Back")
             pcsx2INIConfig.set(pad_num, "Start", sdl_num + "/Start")
             pcsx2INIConfig.set(pad_num, "L1", sdl_num + "/LeftShoulder")

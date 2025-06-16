@@ -76,6 +76,7 @@
 - Fix GSPlus rom config and speed
 - DualShock 4 controller on Odroid XU4
 - Internal bezels still enabled for Libretro cores when a widescreen ratio selected
+- Centering of PCSX2 messages
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images
@@ -111,7 +112,7 @@
 - Libretro-Wasm4 to v2.7.1
 - MelonDS to 17th Jan build
 - OpenMSX to release 20.0
-- PCSX2 to v2.3.185
+- PCSX2 to v2.3.420
 - Play! to 4th Feb build
 - PPSSPP to 1.19
 - Raze to 1.11.0
