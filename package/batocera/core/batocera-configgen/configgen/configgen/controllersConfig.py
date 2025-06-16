@@ -54,6 +54,7 @@ _ARCADE_SYSTEMS: Final = {
     'gaelco',
     'cave3rd',
     'namco2x6',
+    'namco22',
 }
 
 
