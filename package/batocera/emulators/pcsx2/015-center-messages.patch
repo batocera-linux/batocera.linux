@@ -1,0 +1,22 @@
+diff --git a/pcsx2/ImGui/ImGuiManager.cpp b/pcsx2/ImGui/ImGuiManager.cpp
+index 438ef02e7d..e409ebeeca 100644
+--- a/pcsx2/ImGui/ImGuiManager.cpp
++++ b/pcsx2/ImGui/ImGuiManager.cpp
+@@ -730,7 +730,7 @@ void ImGuiManager::DrawOSDMessages(Common::Timer::Value current_time)
+ 	const float padding = std::ceil(8.0f * scale);
+ 	const float rounding = std::ceil(5.0f * scale);
+ 	const float max_width = s_window_width - (margin + padding) * 2.0f;
+-	float position_x = GSConfig.OsdMessagesPos == OsdOverlayPos::TopRight ? GetWindowWidth() - margin : margin;
++	float position_x = GSConfig.OsdMessagesPos == OsdOverlayPos::TopRight ? GetWindowWidth() - margin : GetWindowWidth() / 2.0f;
+ 	float position_y = margin;
+ 
+ 	auto iter = s_osd_active_messages.begin();
+@@ -798,7 +798,7 @@ void ImGuiManager::DrawOSDMessages(Common::Timer::Value current_time)
+ 		const ImVec2 text_size(
+ 			font->CalcTextSizeA(font->FontSize, max_width, max_width, msg.text.c_str(), msg.text.c_str() + msg.text.length()));
+ 		const ImVec2 size(text_size.x + padding * 2.0f, text_size.y + padding * 2.0f);
+-		const ImVec2 pos(position_x - (GSConfig.OsdMessagesPos == OsdOverlayPos::TopRight ? size.x : 0), actual_y);
++		const ImVec2 pos(position_x - (GSConfig.OsdMessagesPos == OsdOverlayPos::TopRight ? size.x : size.x / 2.0f), actual_y);
+ 		const ImVec4 text_rect(pos.x + padding, pos.y + padding, pos.x + size.x - padding, pos.y + size.y - padding);
+ 
+ 		ImDrawList* dl = ImGui::GetBackgroundDrawList();
