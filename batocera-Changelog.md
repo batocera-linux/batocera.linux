@@ -16,6 +16,7 @@
   when using the **standalone** emulator because standalone did not remove `(Disc X)` from the ROM name when saving VMUs.
   If you were using per-game saves with standalone, be sure to launch your multi-disc game with the disc you most recently
   played so its VMU is renamed using the game ID.
+- Bluetooth Xbox compatible controllers may need to be reconfigured under EmulationStation due to the driver change to `hid-microsoft`.
 ### Hardware
 - Add OrangePi 4a board support
 - Add OrangePi 3b board support
@@ -77,6 +78,7 @@
 - DualShock 4 controller on Odroid XU4
 - Internal bezels still enabled for Libretro cores when a widescreen ratio selected
 - Centering of PCSX2 messages
+- Xbox compatible bluetooth controllers not working in Steam.
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images
@@ -86,6 +88,7 @@
 - Libretro-virtualjaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
+- Moved to the `hid-microsoft` driver for Xbox compatible Bluetooth controllers
 ### Updated
 - Amiberry to v7.0.4
 - AppleWin to 8th of Feb build
