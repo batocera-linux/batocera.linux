@@ -109,6 +109,7 @@
 - Libretro-MAME to 0.277
 - Libretro-Play! 4th Feb build
 - Libretro-PPSSPP to 28th February build
+- Libretro-ScummVM to 3rd June 2025 build
 - Libretro-Wasm4 to v2.7.1
 - MelonDS to 17th Jan build
 - OpenMSX to release 20.0
@@ -119,7 +120,7 @@
 - RetroArch to v1.21.0
 - Ruffle to nightly-2025-02-12
 - RPCS3 to v0.0.37
-- ScummVM to v2.9.0
+- ScummVM to v2.9.1
 - Snes9x to 24th Jan build
 - Solarus Engine to 18th Jan build
 - Sonic3 Air to v25.02.15.0-test
