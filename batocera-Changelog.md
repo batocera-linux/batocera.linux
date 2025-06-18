@@ -89,7 +89,7 @@
 ### Updated
 - Amiberry to v7.0.4
 - AppleWin to 8th of Feb build
-- BigPEmu to v118
+- BigPEmu to 1.19
 - Cemu to 2.6
 - DevilutionX to 1.5.4
 - Dolphin-Emu to 2503a-328
