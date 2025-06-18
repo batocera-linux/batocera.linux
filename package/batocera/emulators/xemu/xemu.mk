@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.68
+XEMU_VERSION = v0.8.73
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -13,7 +13,8 @@ XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl2 libgbm libopenssl
 XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
 XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp
 
-XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
+XEMU_EXTRA_DOWNLOADS = \
+    https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
 XEMU_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
@@ -82,13 +83,13 @@ define XEMU_CONFIGURE_CMDS
 endef
 
 define XEMU_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
-		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-		    CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-            PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-            PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
-		$(MAKE) -C $(@D)
+$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+    CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
+	CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
+	CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+    PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+    PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+	$(MAKE) -C $(@D)
 endef
 
 define XEMU_INSTALL_TARGET_CMDS
