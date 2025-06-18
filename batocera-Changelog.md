@@ -116,6 +116,7 @@
 - PCSX2 to v2.3.420
 - Play! to 4th Feb build
 - PPSSPP to v1.19.2
+- Play! to 0.70
 - Raze to 1.11.0
 - RetroArch to v1.21.0
 - Ruffle to nightly-2025-02-12
