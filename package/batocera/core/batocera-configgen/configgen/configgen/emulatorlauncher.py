@@ -15,6 +15,7 @@ import os
 import signal
 import subprocess
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from sys import exit
 from typing import TYPE_CHECKING
@@ -336,13 +337,19 @@ def callExternalScripts(folder: Path, event: str, args: Iterable[str | Path]) ->
     if not folder.is_dir():
         return
 
-    for file in folder.iterdir():
-        if file.is_dir():
-            callExternalScripts(file, event, args)
-        else:
-            if os.access(file, os.X_OK):
-                _logger.debug("calling external script: %s", [file, event, *args])
-                subprocess.call([file, event, *args])
+    def collect_scripts(path: Path) -> list[Path]:
+        return [file for file in path.iterdir() if file.is_file() and os.access(file, os.X_OK)]
+
+    def run_script(script: Path):
+        eslog.debug(f"calling external script: {[script, event, *args]!s}")
+        subprocess.run([script, event, *args], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    scripts = collect_scripts(folder)
+
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(run_script, script) for script in scripts]
+        for f in futures:
+            f.result()
 
 def hudConfig_protectStr(string: str | Path | None) -> str:
     if string is None:
