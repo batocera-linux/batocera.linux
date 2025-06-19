@@ -68,8 +68,8 @@ fi
 ###
 
 V_BOARD=$(cat /boot/boot/batocera.board)
-V_CPUNB=$(LANG=C lscpu | grep 'Core(s) per socket' | awk '{print $4}' | head -n 1)
-V_CPUMAXNB=$(LANG=C lscpu | grep '^CPU(s):' | awk '{print $2}')
+V_CPUNB=$(LC_ALL=C lscpu | grep 'Core(s) per socket' | awk '{print $4}' | head -n 1)
+V_CPUMAXNB=$(LC_ALL=C lscpu | grep '^CPU(s):' | awk '{print $2}')
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
 # min freq : minimum freq among the max cpus ; consider only online cpus

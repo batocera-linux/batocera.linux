@@ -28,7 +28,7 @@ record_high_quality() {
 DISPLAY=$(batocera-resolution currentOutput)
 TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
 OUTPUT="/userdata/recordings/capture-${TIMESTAMP}.mkv"
-PULSEAUDIO_MONITOR=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
+PULSEAUDIO_MONITOR=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
 
 mkdir -p /userdata/recordings || exit 1
 
