@@ -36,7 +36,7 @@ check_pipewire_status() {
 }
 
 start_pipewire() {
-    LANG=C
+    LC_ALL=C
     printf "Starting PipeWire: "
     
     # Start PipeWire in the background

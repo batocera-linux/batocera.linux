@@ -9,7 +9,7 @@ RESOLUTION=$(batocera-resolution currentResolution)
 REFRESH_RATE=$(batocera-resolution refreshRate)
 OUTPUT="/userdata/recordings/capture-$(date +%Y.%m.%d-%Hh%M.%S).mkv"
 VAAPI_DEVICE="/dev/dri/renderD128"  # Default VAAPI device ?
-PULSEAUDIO_MONITOR=$(LANG=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
+PULSEAUDIO_MONITOR=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
 
 mkdir -p /userdata/recordings || exit 1
 
