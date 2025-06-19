@@ -67,6 +67,7 @@
 - ShadPS4 emulator for PlayStation 4 gaming
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
 - WiringOP-Python for OrangePi board GPIO scripting.
+- Libretro-BennuGD for compatible games
 ### Fixed
 - Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
 - Fix some problems in ES and Batocera with IPv6 networks
