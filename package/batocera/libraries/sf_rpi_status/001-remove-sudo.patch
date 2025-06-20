@@ -1,0 +1,22 @@
+diff --git a/sf_rpi_status/status.py b/sf_rpi_status/status.py.new
+index e9b0c5c8cb..f285f69c9a 100644
+--- a/sf_rpi_status/status.py
++++ b/sf_rpi_status/status.py.new
+@@ -401,7 +401,7 @@ def shutdown():
+         ha_api.shutdown()
+     else:
+         from os import system
+-        system('sudo shutdown -h now')
++        system('shutdown -h now')
+ 
+ class PWMFan():
+     # Systems that need to replace system pwm fan control
+@@ -467,7 +467,7 @@ class PWMFan():
+             elif level < 0:
+                 level = 0
+ 
+-            cmd = f"echo '{level}' | sudo tee -a /sys/class/thermal/cooling_device0/cur_state"
++            cmd = f"echo '{level}' | tee -a /sys/class/thermal/cooling_device0/cur_state"
+             result = subprocess.check_output(cmd, shell=True)
+ 
+             return result
