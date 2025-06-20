@@ -118,7 +118,7 @@ class Pcsx2Generator(Generator):
             if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
                 _logger.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
 
-        envcmd = {
+        envcmd: dict[str, str | Path] = {
             "XDG_CONFIG_HOME": CONFIGS
         }
 

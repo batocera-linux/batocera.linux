@@ -57,10 +57,10 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         else:
             _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
             iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
-    
+
     # Resolution
     iniConfig.set("Graphics", "InternalResolution", system.config.get_str("internal_resolution", "1"))
-    
+
     # Software rendering (always false)
     iniConfig.set("Graphics", "SoftwareRenderer", "False")
 
@@ -75,7 +75,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
 
     # Frame skipping type - Use number and not percent
     iniConfig.set("Graphics", "FrameSkipType", "0")
-    
+
     # Auto frameskip
     iniConfig.set("Graphics", "AutoFrameSkip", str(system.config.get_bool("autoframeskip", False)))
 
@@ -114,7 +114,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
 
     # Texture Scaling Level
     iniConfig.set("Graphics", "TexScalingLevel", system.config.get_str("texture_scaling_level", "1"))
-    
+
     # Texture Deposterize
     iniConfig.set("Graphics", "TexDeposterize", str(system.config.get_bool("texture_deposterize", False)))
 
@@ -131,7 +131,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
     iniConfig.set("Graphics", "ShowFPSCounter", "3" if system.config.show_fps else "0") # 1 for Speed%, 2 for FPS, 3 for both
 
     # Set other defaults
-    iniConfig.set("Graphics", "DisplayIntegerScale", "False")    
+    iniConfig.set("Graphics", "DisplayIntegerScale", "False")
 
    ## [SYSTEM PARAM]
     if not iniConfig.has_section("SystemParam"):
@@ -154,7 +154,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
 
     # First run, false
     iniConfig.set("General", "FirstRun", "False")
-    
+
     # Rewinding
     iniConfig.set("General", "RewindFlipFrequency", system.config.get_bool('rewind', return_values=("300", "0"))) # 300 = every 5 seconds
     # Cheats

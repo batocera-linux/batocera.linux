@@ -14,16 +14,13 @@
 from __future__ import annotations
 
 import logging
-import os
-import subprocess
-import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import toml
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, configure_emulator, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -31,8 +28,8 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
-class YmirGenerator(Generator):
 
+class YmirGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ymir",
@@ -40,7 +37,6 @@ class YmirGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-
         # Set the paths using Path objects
         configPath = CONFIGS / "ymir"
         toml_file = configPath / "Ymir.toml"
@@ -57,10 +53,9 @@ class YmirGenerator(Generator):
         # Check if the file exists
         if toml_file.is_file():
             try:
-                with toml_file.open("r") as f:
-                    config = toml.load(f)
+                config = toml.loads(toml_file.read_text())
             except Exception as e:
-                 _logger.error("Failed to load existing ymir config: %s. Will create default.", e)
+                _logger.error("Failed to load existing ymir config: %s. Will create default.", e)
 
         # If config is empty, create default structure
         if not config:
@@ -84,14 +79,14 @@ class YmirGenerator(Generator):
                     "ForceAspectRatio": True
                 }
             }
-        
+
         # --- Apply Batocera Specific Overrides ---
 
         # General
         general_config = config.setdefault("General", {})
         # adds [General.PathOverrides]
-        path_overrides = general_config.setdefault("PathOverrides", {})
-        
+        path_overrides = cast("dict[str, str]", general_config.setdefault("PathOverrides", {}))
+
         # Set the path values.
         path_overrides["BackupMemory"] = ''
         path_overrides["Dumps"] = ''
@@ -102,37 +97,26 @@ class YmirGenerator(Generator):
         path_overrides["SaveStates"] = str(savesPath)
 
         # Video
-        config.setdefault("Video", {})["AutoResizeWindow"] = False
-        config.setdefault("Video", {})["DisplayVideoOutputInWindow"] = False
-        config.setdefault("Video", {})["FullScreen"] = True
+        video_config = config.setdefault("Video", {})
+        video_config["AutoResizeWindow"] = False
+        video_config["DisplayVideoOutputInWindow"] = False
+        video_config["FullScreen"] = True
 
         # Options
-        video_config = config.setdefault("Video", {})
-        if system.config.get_bool("ymir_aspect"):
-            video_config["ForcedAspect"] = 1.7777777777777778
-        else:
-            video_config["ForcedAspect"] = 1.3333333333333333
-        if system.config.get("ymir_interlace") == "0":
-            video_config["Deinterlace"] = False
-        else:
-            video_config["Deinterlace"] = True
+        video_config["ForcedAspect"] = system.config.get_bool(
+            "ymir_aspect", return_values=(1.7777777777777778, 1.3333333333333333)
+        )
+        video_config["Deinterlace"] = system.config.get_bool('ymir_interlace', True)
 
         # Now write the updated toml
-        with toml_file.open("w") as f:
-            toml.dump(config, f)
+        toml_file.write_text(toml.dumps(config))
 
         # Run command
-        commandArray: list[str | Path] = [
-            "/usr/bin/ymir",
-            "-p",
-            configPath,
-            rom
-        ]
+        commandArray: list[str | Path] = ["/usr/bin/ymir", "-p", configPath, rom]
 
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
         if config.get_bool("ymir_aspect"):
             return 16 / 9
-        else:
-            return 4 / 3
+        return 4 / 3
