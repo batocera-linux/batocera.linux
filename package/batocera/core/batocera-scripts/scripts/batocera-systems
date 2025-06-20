@@ -131,8 +131,7 @@ systems = {
 
     # ---------- Sega ---------- #
     # https://docs.libretro.com/library/flycast/#bios
-    "dreamcast":    { "name": "Dreamcast", "biosFiles":   [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"  },
-                                                            { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin" } ] },
+    "dreamcast":    { "name": "Dreamcast", "biosFiles":   [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc/dc_boot.bin" } ] },
 
     # https://github.com/libretro/libretro-super/blob/master/dist/info/flycast_libretro.info
     "naomi":        { "name": "Naomi", "biosFiles":       [ { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/dc/naomi.zip"   } ] },
