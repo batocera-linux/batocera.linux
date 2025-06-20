@@ -5951,3 +5951,25 @@ namco22:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     Add your MAME compatible Namco System 22 roms here.
+
+bennugd:
+  name: Bennu Game Development
+  manufacturer: SplinterGU
+  release: 2008
+  hardware: computer
+  extensions: [dcb, dat]
+  platform: pc
+  emulators:
+    libretro:
+      bennugd: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BENNUGD] }
+  comment_en: |
+    Add your Bennu Game Development compatible games here.
+
+    We recommend to keep games in separate folders.
+    Each game must contain a .dcb or .dat launch file for the engine.
+    
+    For more info: https://wiki.batocera.org/systems:bennugd
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:bennugd
