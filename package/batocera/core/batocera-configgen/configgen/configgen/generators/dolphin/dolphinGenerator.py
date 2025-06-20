@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
-from ...gun import guns_need_crosses
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
