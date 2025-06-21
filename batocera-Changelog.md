@@ -108,7 +108,7 @@
 - GroovyMAME to 0.277
 - Gzdoom to g4.14.1
 - Hurrican to 24th of Nov build
-- Hypseus Singe to 2.11.4
+- Hypseus Singe to 2.11.5
 - IOQuake3 to 25th December build
 - Jazz2 to 3.2.0
 - Libretro-Kronos to 2.7.0
