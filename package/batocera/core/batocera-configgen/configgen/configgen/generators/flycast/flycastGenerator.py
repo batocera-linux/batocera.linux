@@ -184,7 +184,6 @@ class FlycastGenerator(Generator):
                 "XDG_DATA_HOME": FLYCAST_SAVES.parent,
                 "FLYCAST_DATADIR": FLYCAST_SAVES.parent,
                 "FLYCAST_BIOS_PATH": FLYCAST_BIOS,
-                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }
         )

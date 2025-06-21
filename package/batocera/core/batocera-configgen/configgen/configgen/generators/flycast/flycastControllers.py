@@ -181,8 +181,11 @@ def generateControllerConfig(controller: Controller, type: Literal['dreamcast', 
         if input.type == 'axis':
             section = 'analog'
             if input.name == 'l2' or input.name == 'r2':
-                # Use positive axis for full trigger control
-                code = f"{input.id}+"
+                #some wheels pedals hava reversed values
+                if int(input.value) < 0:
+                    code = f"{input.id}-"
+                else:
+                    code = f"{input.id}+"
             else:
                 code = f"{input.id}-"
             option = f"bind{analogbind}"
