@@ -1,0 +1,52 @@
+diff --git a/src/video/video.cpp b/src/video/video.cpp
+index 9df5070403..f771d1bc05 100644
+--- a/src/video/video.cpp
++++ b/src/video/video.cpp
+@@ -2233,6 +2233,10 @@ void draw_border(int s, int c) {
+ 
+     SDL_Rect tb, lb, rb, bb;
+     unsigned char r = 0xff, g = 0xff, b = 0xff;
++    int w, h;
++
++    // Get the display output size to calculate the border
++    SDL_GetRendererOutputSize(g_renderer, &w, &h);
+ 
+     switch(c)
+     {
+@@ -2252,13 +2256,29 @@ void draw_border(int s, int c) {
+ 
+     SDL_SetRenderDrawColor(g_renderer, r, g, b, SDL_ALPHA_OPAQUE);
+ 
+-    tb.x = lb.x = bb.x = g_border_rect.x;
+-    tb.y = lb.y = rb.y = g_border_rect.y;
+-    rb.x = (g_border_rect.w + g_border_rect.x) - s;
+-    bb.y = (g_border_rect.h - s) + g_border_rect.y;
+-    tb.w = bb.w = g_border_rect.w;
+-    tb.h = bb.h = lb.w = rb.w = s;
+-    lb.h = rb.h = g_border_rect.h;
++    // Top border
++    tb.x = 0;
++    tb.y = 0;
++    tb.w = w;
++    tb.h = s;
++
++    // Left border
++    lb.x = 0;
++    lb.y = 0;
++    lb.w = s;
++    lb.h = h;
++
++    // Right border
++    rb.x = w - s;
++    rb.y = 0;
++    rb.w = s;
++    rb.h = h;
++
++    // Bottom border
++    bb.x = 0;
++    bb.y = h - s;
++    bb.w = w;
++    bb.h = s;
+ 
+     SDL_RenderFillRect(g_renderer, &tb);
+     SDL_RenderFillRect(g_renderer, &lb);
