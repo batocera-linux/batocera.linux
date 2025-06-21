@@ -156,7 +156,7 @@
 - Linux Firmware to 20250509
 - Linux Kernel to 6.15.2
 - LLVM to 19.1.7
-- Mesa3D to 25.1.3
+- Mesa3D to 25.1.4
 - MPV to 0.40.0
 - Nvidia production driver to 575.64
 - Pipewire to 1.2.7
