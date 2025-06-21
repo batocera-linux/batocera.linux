@@ -265,20 +265,20 @@ class HypseusSingeGenerator(Generator):
                         borderColor = "w"
 
                 if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "2", borderColor])
-                elif bordersSize == "medium":
                     commandArray.extend(["-sinden", "4", borderColor])
+                elif bordersSize == "medium":
+                    commandArray.extend(["-sinden", "7", borderColor])
                 else:
-                    commandArray.extend(["-sinden", "6", borderColor])
+                    commandArray.extend(["-sinden", "9", borderColor])
+            
+            if guns: # enable manymouse for guns
+                commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                if xratio is not None:
+                    commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
             else:
-                if guns: # enable manymouse for guns
-                    commandArray.extend(["-manymouse"]) # sinden implies manymouse
-                    if xratio is not None:
-                        commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
-                else:
-                    if system.config.get_bool("singe_abs"):
-                        commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
-
+                if system.config.get_bool("singe_abs"):
+                    commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
+        
         # bezels
         if not system.config.get_bool('hypseus_bezels', True):
             bezelRequired = False
