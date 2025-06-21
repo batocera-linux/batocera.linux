@@ -137,7 +137,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                 if system.config.get_bool("ti99_32kram"):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if system.config.get_bool("ti99_speech", True):
-                    commandLine += ["-ioport:peb:slot3", "speech"]
+                    commandLine += ["-ioport", "speechsyn"]
 
             #Laser 310 Memory Expansion & joystick
             if system.name == "laser310":
