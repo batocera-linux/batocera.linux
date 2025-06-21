@@ -15,11 +15,11 @@ ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
     # rk3588 boards can allow for more varied pcie combo adapters
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
-        ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/intel/avs \
+        ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/amdnpu $(@D)/intel/avs \
             $(@D)/intel/catpt $(@D)/intel/ice $(@D)/intel/ipu $(@D)/intel/ish $(@D)/intel/vsc \
             $(@D)/i915 $(@D)/nvidia $(@D)/radeon $(@D)/s5p-* $(@D)/qat_* $(@D)/ql2*
     else
-        ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/intel \
+        ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amd $(@D)/amdgpu $(@D)/amdnpu $(@D)/intel \
             $(@D)/i915 $(@D)/nvidia $(@D)/radeon $(@D)/s5p-* $(@D)/qat_* $(@D)/ql2*
     endif
 endif
@@ -31,6 +31,16 @@ endif
 # Remove qualcomm firmware if not buidling Qualcomm Board
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_ODIN)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/qcom
+endif
+
+# Remove amlogic firmware if not building an Amlogic board
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/amlogic
+endif
+
+# Remove non-x86 specific firmware if building x86
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/arm $(@D)/imx $(@D)/sun $(@D)/ti-keystone $(@D)/sxg $(@D)/meson
 endif
 
 define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
