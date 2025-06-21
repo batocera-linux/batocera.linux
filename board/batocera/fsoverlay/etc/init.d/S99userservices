@@ -45,10 +45,12 @@ process_services() {
         done < <(find -L "${service_dir}" -type f)
 }
 
-# custom.sh : deprecated
-if test -e "/userdata/system/custom.sh"; then
-    #bash interpreter executes scripts without x-flag e.g. for vFAT
-    bash /userdata/system/custom.sh $1 &
+# custom.sh : deprecated in v43
+# mv custom.sh to servicedir, only once. If service is already present then ignore whole action
+if [[ -f /userdata/system/custom.sh && ! -f /userdata/system/services/custom_service ]]; then
+    [[ -d /userdata/system/services ]] || mkdir /userdata/system/services
+    mv /userdata/system/custom.sh /userdata/system/services/custom_service
+    batocera-services enable custom_service
 fi
 
 enabled_services="$(/usr/bin/batocera-settings-get system.services)"
