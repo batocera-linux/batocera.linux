@@ -1997,7 +1997,7 @@ apple2:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
 
 saturn:
-  name:       Saturn
+  name: Saturn
   manufacturer: Sega
   release: 1994
   hardware: console
@@ -2007,6 +2007,8 @@ saturn:
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN], incompatible_extensions: [zip] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS] }
       yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO], incompatible_extensions: [m3u] }
+    ymir:
+      ymir: { requireAnyOf: [BR2_PACKAGE_YMIR] }
 
 jaguar:
   name: Jaguar
@@ -5934,3 +5936,40 @@ mohaa:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:mohaa
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:mohaa
+
+namco22:
+  name: Namco System 22
+  manufacturer: Namco
+  release: 1992
+  hardware: arcade
+  extensions: [zip, 7z]
+  platform: namco, arcade
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Add your MAME compatible Namco System 22 roms here.
+
+bennugd:
+  name: Bennu Game Development
+  manufacturer: SplinterGU
+  release: 2008
+  hardware: computer
+  extensions: [dcb, dat]
+  platform: pc
+  emulators:
+    libretro:
+      bennugd: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BENNUGD] }
+  comment_en: |
+    Add your Bennu Game Development compatible games here.
+
+    We recommend to keep games in separate folders.
+    Each game must contain a .dcb or .dat launch file for the engine.
+    
+    For more info: https://wiki.batocera.org/systems:bennugd
+  comment_fr: |
+    Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:bennugd

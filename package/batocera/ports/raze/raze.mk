@@ -36,7 +36,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
         RAZE_DEPENDENCIES += xlib_libX11 vulkan-headers vulkan-loader
         RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
-    else ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
+    else ifeq ($(BR2_PACKAGE_WAYLAND),y)
         RAZE_DEPENDENCIES += wayland vulkan-headers vulkan-loader
         RAZE_CONF_OPTS += -DHAVE_VULKAN=ON
         RAZE_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON

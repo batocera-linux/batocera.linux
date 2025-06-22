@@ -27,7 +27,13 @@ num_devices() {
 has_discrete() {
     vulkaninfo | grep -q PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
     if [ $? -eq 0 ]; then
-        echo "true"
+        # allow override
+        radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
+        if [ "$radeon_prime" = "false" ]; then
+            echo "false"
+        else
+            echo "true"
+        fi
     else
         echo "false"
     fi

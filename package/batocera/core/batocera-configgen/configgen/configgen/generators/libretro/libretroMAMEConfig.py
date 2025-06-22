@@ -61,7 +61,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
     else:
         corePath = str(system.config.core)
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis', 'namco22' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.config.get_bool("customcfg"):
@@ -137,7 +137,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                 if system.config.get_bool("ti99_32kram"):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if system.config.get_bool("ti99_speech", True):
-                    commandLine += ["-ioport:peb:slot3", "speech"]
+                    commandLine += ["-ioport", "speechsyn"]
 
             #Laser 310 Memory Expansion & joystick
             if system.name == "laser310":

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# key combination is the same
+case "${1}" in
+    "show")
+	wtype -M alt -M logo h -m alt -m logo
+    ;;
+    "hide")
+	wtype -M alt -M logo h -m alt -m logo
+    ;;
+    *)
+	echo "${0} <show|hide>" >&2
+	exit 1
+esac
+exit 0

@@ -1,0 +1,24 @@
+################################################################################
+#
+# kddockwidgets
+#
+################################################################################
+
+KDDOCKWIDGETS_VERSION = v2.2.5
+KDDOCKWIDGETS_SITE = https://github.com/KDAB/KDDockWidgets
+KDDOCKWIDGETS_SITE_METHOD = git
+KDDOCKWIDGETS_GIT_SUBMODULES = YES
+KDDOCKWIDGETS_LICENSE = GPLv2 or GPLv3
+KDDOCKWIDGETS_LICENSE_FILES = LICENSE.GPL.txt LICENSE.txt
+KDDOCKWIDGETS_DEPENDENCIES = qt6base
+KDDOCKWIDGETS_SUPPORTS_IN_SOURCE_BUILD = NO
+
+KDDOCKWIDGETS_INSTALL_STAGING = YES
+
+KDDOCKWIDGETS_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+KDDOCKWIDGETS_CONF_OPTS += -DKDDockWidgets_FRONTENDS=qtwidgets
+KDDOCKWIDGETS_CONF_OPTS += -DKDDockWidgets_QT6=ON
+KDDOCKWIDGETS_CONF_OPTS += -DKDDockWidgets_EXAMPLES=OFF
+KDDOCKWIDGETS_CONF_OPTS += -DECM_MKSPECS_INSTALL_DIR=/usr/mkspecs/modules
+
+$(eval $(cmake-package))

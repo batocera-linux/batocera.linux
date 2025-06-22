@@ -308,7 +308,7 @@ class MameGenerator(Generator):
                 if system.config.get_bool("ti99_32kram", True):
                     commandArray += ["-ioport:peb:slot2", "32kmem"]
                 if system.config.get_bool("ti99_speech", True):
-                    commandArray += ["-ioport:peb:slot3", "speech"]
+                    commandArray += ["-ioport", "speechsyn"]
 
             #Laser 310 Memory Expansion & Joystick
             if system.name == "laser310":

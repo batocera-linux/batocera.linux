@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>0</gap>
+    <adaptiveSync>yes</adaptiveSync>
+    <allowTearing>no</allowTearing>
+    <autoEnableOutputs>yes</autoEnableOutputs>
+    <reuseOutputMode>no</reuseOutputMode>
+    <xwaylandPersistence>no</xwaylandPersistence>
+  </core>
+  <libinput>
+    <device category="touch">
+      <calibrationMatrix>1 0 0 0 1 0</calibrationMatrix>
+    </device>
+  </libinput>
+  <keyboard>
+    <keybind key="A-Tab">
+      <action name="NextWindow" />
+    </keybind>
+    <keybind key="A-S-Tab">
+      <action name="PreviousWindow" />
+    </keybind>
+    <keybind key="A-W-h">
+      <action name="HideCursor" />
+      <action name="WarpCursor" x="-1" y="-1" />
+    </keybind>
+    <keybind key="A-F4">
+      <action name="Close" />
+    </keybind>
+    <keybind key="W-a">
+      <action name="ToggleMaximize" />
+    </keybind>
+    <keybind key="A-Left">
+      <action name="MoveToEdge" direction="left" />
+    </keybind>
+    <keybind key="A-Right">
+      <action name="MoveToEdge" direction="right" />
+    </keybind>
+    <keybind key="A-Up">
+      <action name="MoveToEdge" direction="up" />
+    </keybind>
+    <keybind key="A-Down">
+      <action name="MoveToEdge" direction="down" />
+    </keybind>
+    <keybind key="W-Left">
+      <action name="SnapToEdge" direction="left" />
+    </keybind>
+    <keybind key="W-Right">
+      <action name="SnapToEdge" direction="right" />
+    </keybind>
+    <keybind key="W-Up">
+      <action name="SnapToEdge" direction="up" />
+    </keybind>
+    <keybind key="W-Down">
+      <action name="SnapToEdge" direction="down" />
+    </keybind>
+  </keyboard>
+  <apprules>
+    <apprule appid=".*" fullscreen="true" />
+  </apprules>
+</labwc_config>

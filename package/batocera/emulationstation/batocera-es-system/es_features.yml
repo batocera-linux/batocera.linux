@@ -20,7 +20,7 @@ shared:
         "Balanced":         balanced
         "Power Saver":      powersaver
     tdp:
-      archs_include: [x86_64]
+      archs_include: [x86_64, x86-64-v3]
       group: POWER OPTIONS
       prompt: RYZEN THERMAL DESIGN POWER
       description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
@@ -5005,11 +5005,101 @@ libretro:
       shared: [use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
             lr_pcsx2_fast_boot:
+                submenu: SYSTEM
                 prompt: BIOS FAST BOOT
                 description: Skip the bios boot logo, may cause default language issues.
                 choices:
                     "Disabled": disabled
                     "Enabled":  enabled
+            lr_pcsx2_fast_cdvd:
+                submenu: SYSTEM
+                prompt: FAST CD/DVD ACCESS
+                description: A small  number of games will have compatibility problems with this enabled.
+                choices:
+                    "Disabled": disabled
+                    "Enabled":  enabled
+            lr_pcsx2_cheats:
+                submenu: SYSTEM
+                prompt: CHEATS
+                description: Enables cheats files to be read from the `cheats` directory.
+                choices:
+                    "Disabled": disabled
+                    "Enabled":  enabled
+            lr_pcsx2_language_unlock:
+                submenu: SYSTEM
+                prompt: LANGUAGE UNLOCK
+                description: Helps forcing an international Japanese version to English. Unlocking more European languages etc.
+                choices:
+                    "Disabled": disabled
+                    "Enabled":  enabled
+            lr_pcsx2_resolution:
+                submenu: GRAPHICS
+                prompt: RENDERING RESOLUTION
+                description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+                choices:
+                    "1x Native (PS2)":        1x Native (PS2)
+                    "2x Native (~720p)":      2x Native (~720p)
+                    "3x Native (~1080p)":     3x Native (~1080p)
+                    "4x Native (~1440p/2K)":  4x Native (~1440p/2K)
+                    "5x Native (~1800p/3K)":  5x Native (~1800p/3K)
+                    "6x Native (~2160p/4K)":  6x Native (~2160p/4K)
+                    "7x Native (~2530p)":     7x Native (~2530p)
+                    "8x Native (~2880p/5K)":  8x Native (~2880p/5K)
+                    "9x Native (~3240p)":     9x Native (~3240p)
+                    "10x Native (~3600p/6K)": 10x Native (~3600p/6K)
+                    "11x Native (~3960p)":    11x Native (~3960p)
+                    "12x Native (~4320p/8K)": 12x Native (~4320p/8K)
+                    "13x Native (~5824p)":    13x Native (~5824p)
+                    "14x Native (~6272p)":    14x Native (~6272p)
+                    "15x Native (~6720p)":    15x Native (~6720p)
+                    "16x Native (~7168p)":    16x Native (~7168p)
+            lr_pcsx2_texture_filtering:
+                submenu: GRAPHICS
+                prompt: TEXTURE FILTERING
+                description: Enhancement. Smooth/upscale textures on 3D objects.
+                choices:
+                    "Nearest":                            Nearest
+                    "Bilinear (Forced)":                  Bilinear (Forced)
+                    "Bilinear (PS2)":                     Bilinear (PS2)
+                    "Bilinear (Forced excluding sprite)": Bilinear (Forced excluding sprite)
+            lr_pcsx2_trilinear_filtering:
+                submenu: GRAPHICS
+                prompt: TRILINEAR FILTERING
+                description: Control the texture's trilinear filtering of the emulation.
+                choices:
+                    "OFF":                OFF
+                    "Trilinear (PS2)":    Trilinear (PS2)
+                    "Trilinear (Forced)": Trilinear (Forced)
+            lr_pcsx2_anisotropic:
+                submenu: GRAPHICS
+                prompt: ANISOTROPIC FILTERING
+                description: Improves clarity of distant textures.
+                choices:
+                    "OFF": disabled
+                    "2x":  2x
+                    "4x":  4x
+                    "8x":  8x
+                    "16x": 16x
+            lr_pcsx2_dithering:
+                submenu: GRAPHICS
+                prompt: DITHERING
+                description: Reduces banding between colours and improves the preceived colour depth.
+                choices:
+                    "OFF":         OFF
+                    "Scaled":      Scaled
+                    "Unscaled":    Unscaled
+                    "Force 32bit": Force 32bit
+            lr_pcsx2_blending:
+                submenu: GRAPHICS
+                prompt: BLENDING ACCURACY
+                description: The higher the setting, the more blending is emulated in the shader accurately, and the higher the speed penalty will be.
+                choices:
+                    "Minimum": Minimum
+                    "Basic":   Basic
+                    "Medium":  Medium
+                    "High":    High
+                    "Full":    Full
+                    "Maximum": Maximum
     pcsx_rearmed:
       features: [cheevos]
       shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
@@ -7251,7 +7341,7 @@ hypseus-singe:
             prompt: SMOOTH GAMES (BILINEAR FILTERING)
             preset: switchauto
         hypseus_scanlines:
-            archs_include: [x86, x86_64]
+            archs_include: [x86, x86_64, x86-64-v3]
             group: ADVANCED OPTIONS
             prompt: SCANLINES
             choices:
@@ -9155,20 +9245,15 @@ ppsspp:
   shared: [powermode, tdp, videomode, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
   cfeatures:
         gfxbackend:
+            submenu: RENDERING
             archs_include: [x86, x86_64, x86-64-v3, bcm2711, bcm2712, a3gen2, sm8250, sm8550, rk3588, rk3588-sdio]
             prompt: GRAPHICS API
             description: Choose which graphics API library to use.
             choices:
                 "OpenGL": 0 (OPENGL)
                 "Vulkan": 3 (VULKAN)
-        skip_buffer_effects:
-            group: ADVANCED OPTIONS
-            prompt: SKIP BUFFER EFFECTS
-            description: Skip buffer effects disables auto frameskip and renders at display output resolution.
-            choices:
-                "Buffered rendering":  false
-                "Skip buffer effects": true
         internal_resolution:
+            submenu: RENDERING
             prompt: RENDERING RESOLUTION
             description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
             choices:
@@ -9183,8 +9268,16 @@ ppsspp:
                 "8x 4K (3840x2176)":    8
                 "9x (4320x2448)":       9
                 "10x (4800x2720)":      10
+        vsync:
+            submenu: RENDERING
+            prompt: VSYNC
+            description: Enable for more fluidity, disable if screen tearing.
+            choices:
+                "Disable": 0
+                "Enable":  1
         frameskip:
-            prompt: FRAMESKIP
+            submenu: FRAMESKIP CONTROL
+            prompt: FRAME SKIPPING
             description: Skip frames to improve performance, at the cost of choppy motion.
             choices:
                 "Off": 0
@@ -9193,47 +9286,110 @@ ppsspp:
                 "3":   3
                 "4":   4
                 "5":   5
+                "6":   6
+                "7":   7
+                "8":   8
         autoframeskip:
+            submenu: FRAMESKIP CONTROL
             prompt: AUTO FRAMESKIP
             description: Automatically reduce frameskip if the system has spare overhead.
             choices:
                 "Off": 0
                 "On":  1
-        vsyncinterval:
-            group: ADVANCED OPTIONS
-            prompt:      VSYNC INTERVAL
-            description: Enable for more fluidity, disable if screen tearing.
+        skip_buffer_effects:
+            submenu: SPEED HACKS
+            prompt: SKIP BUFFER EFFECTS
+            description: Skip buffer effects faster but may not render some games. Disables resolution, MSAA, auto frameskip and duplicate frames to 60Hz.
             choices:
-                "Disable":              0
-                "Enable":               1
+                "Buffered rendering":  false
+                "Skip buffer effects": true
+        disable_culling:
+            submenu: SPEED HACKS
+            prompt: DISABLE CULLING
+            description: The PSP will cull triangles that are outside a 4096x4096 clipping box, and also triangles crossing the Z=1 plane if clipping is enabled.
+            choices:
+                "Off": 0
+                "On":  1
+        skip_gpu_readbacks:
+            submenu: SPEED HACKS
+            prompt: SKIP GPU READBACKS
+            description: In some games, this can fix severe slowdowns, but can also cause graphical issues.
+            choices:
+                "No (Default)":    0
+                "Skip":            1
+                "Copy to texture": 2
+        lazy_texture_caching:
+            submenu: SPEED HACKS
+            prompt: LAZY TEXTURE CACHING
+            description: Faster but can cause text problems in some games.
+            choices:
+                "Off": 0
+                "On":  1
+        curves_quality:
+            submenu: SPEED HACKS
+            prompt: SPLINE/BEZIER CURVES QUALITY
+            description: Allows reducing the visual quality of these curves for higher performance.
+            choices:
+                "Low":    0
+                "Medium": 1
+                "High":   2
+        duplicate_frames:
+            submenu: PERFORMANCE
+            prompt: RENDER DUPLICATE FRAMES TO 60 HZ
+            description: If a game runs at 30hz, PPSSPP wtill push 60 frames to the monitor.
+            choices:
+                "Off": 0
+                "On":  1
+        buffer_graphics:
+            submenu: PERFORMANCE
+            prompt: BUFFER GRAPHICS COMMANDS
+            description: CPU-GPU latency limit. Lower values improve latency but may reduce performance.
+            choices:
+                "No Buffer":         1
+                "Up to 1":           2
+                "Up to 2 (Default)": 3
+        software_skinning:
+            submenu: PERFORMANCE
+            prompt: SOFTWARE SKINNING
+            description: Runs "skinning" on the CPU instead of the GPU, means that draw calls from the game can more easily be combined, which often improves things.
+            choices:
+                "Off": 0
+                "On":  1
+        hardware_tessellation:
+            submenu: PERFORMANCE
+            prompt: HARDWARE TESSELLATION
+            description: Uses hardware to make curves.
+            choices:
+                "Off": 0
+                "On":  1    
+        texture_scaling_type:
+            submenu: TEXTURE SCALING
+            prompt: TEXTURE UPSCALING TYPE
+            description: xBRZ - a sharpening upscale algorithm, Bicubic - a smooth look, Hybrid - uses bicubic for smooth areas.
+            choices:
+                "xBRZ (Default)":   0
+                "Hybrid":           1
+                "Bicubic":          2
+                "Hybrid + Bicubic": 3        
         texture_scaling_level:
-            group: ADVANCED OPTIONS
+            submenu: TEXTURE SCALING
             prompt: TEXTURE UPSCALING LEVEL
-            description: Enhancement. Enables texture upscaling textures and their size.
+            description: There is generally no point in going beyond 4x texture scaling unless you are running at very high resolutions.
             choices:
                 "Off (Default)": 1
                 "2x":            2
                 "3x":            3
                 "4x":            4
                 "5x":            5
-        texture_scaling_type:
-            group: ADVANCED OPTIONS
-            prompt: TEXTURE UPSCALING TYPE
-            description: The upscaling method used when enabled.
-            choices:
-                "xBRZ (Default)":   0
-                "Hybrid":           1
-                "Bicubic":          2
-                "Hybrid + Bicubic": 3
         texture_deposterize:
-            group: ADVANCED OPTIONS
+            submenu: TEXTURE SCALING
             prompt: TEXTURE DEPOSTERIZE
             description: Fix texture banding when upscaling.
             choices:
                 "Off": False
                 "On":  True
         anisotropic_filtering:
-            group: ADVANCED OPTIONS
+            submenu: TEXTURE FILTERING
             prompt: ANISOTROPIC FILTERING
             description: Improves clarity of distant textures.
             choices:
@@ -9243,7 +9399,7 @@ ppsspp:
                 "8x":  3
                 "16x": 4
         texture_filtering:
-            group: ADVANCED OPTIONS
+            submenu: TEXTURE FILTERING
             prompt: TEXTURE FILTERING
             description: Smooth textures on 3D objects.
             choices:
@@ -9251,10 +9407,10 @@ ppsspp:
                 "Nearest":          2
                 "Linear":           3
                 "Auto Max Quality": 4
-        display_integer_scale:
-            group: ADVANCED OPTIONS
-            prompt: INTEGER SCALE
-            description: Enforce perfect pixel scaling. Prevents uneven scaling and blurring.
+        smart_2d:
+            submenu: TEXTURE FILTERING
+            prompt: SMART 2D TEXTURE FILTERING
+            description: When enabled and upscaling, textures look better than linear filtering for a lot of 2D art.
             choices:
                 "Off": False
                 "On":  True
@@ -9958,7 +10114,7 @@ cgenius:
   cfeatures:
         cgenius_aspect:
             prompt: ASPECT RATIO
-            description: Choose your preferred aspect ratio..
+            description: Choose your preferred aspect ratio.
             choices:
                 "4x3 (Default)": "4:3"
                 "5x4":           "5:4"
@@ -13865,10 +14021,9 @@ lindbergh-loader:
     lindbergh_speed:
       group: GAME OPTIONS
       prompt: CPU SPEED
-      description: House of the Dead 4 speed fix. Sets the game to the CPU minimum frequency of your processor.
-      choices:
-        "Off (Default)": 0
-        "On":            1
+      description: House of the Dead 4 speed fix. Select CPU base frequency of your processor.
+      preset: sliderauto
+      preset_parameters: 0.5 6.0 0.1 GHz
     lindbergh_ip:
       group: GAME OPTIONS
       prompt: IP ADDRESS
@@ -14590,3 +14745,19 @@ openmohaa:
       choices:
         "Off": 0
         "On":  1
+ymir:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    ymir_aspect:
+      prompt: ASPECT RATIO
+      description: Change the output resolution ratio.
+      choices:
+        "4:3":  0
+        "16:9": 1
+    ymir_interlace:
+      prompt: DEINTERLACE
+      description: Choose deinterlace option.
+      choices:
+        "Interlaced":    0
+        "De-Interlaced": 1

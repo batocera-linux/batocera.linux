@@ -40,13 +40,11 @@ def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
 
 
 def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
-    with default_yml.open('r') as f:
-        defaults = yaml.load(f, Loader=yaml.CLoader)
+    defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
 
     arch_defaults: dict[str, Any] = {}
     if default_arch_yml.exists():
-        with default_arch_yml.open('r') as f:
-            loaded_arch_defaults = yaml.load(f, Loader=yaml.CLoader)
+        loaded_arch_defaults = yaml.load(default_arch_yml.read_text(), Loader=yaml.CLoader)
         if loaded_arch_defaults is not None:
             arch_defaults = loaded_arch_defaults
 
@@ -67,8 +65,12 @@ def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, 
     return config
 
 
-def _load_system_config(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
-    defaults = _load_defaults(system_name, default_yml, default_arch_yml)
+def _load_system_config(system_name: str, /) -> dict[str, Any]:
+    defaults = _load_defaults(
+        system_name,
+        DEFAULTS_DIR / 'configgen-defaults.yml',
+        DEFAULTS_DIR / 'configgen-defaults-arch.yml'
+    )
 
     # In the yaml files, the "options" structure is not flat, so we have to flatten it here
     # because the options are flat in batocera.conf to make it easier for end users to edit
@@ -115,15 +117,7 @@ class Emulator:
         self.game_info_xml = args.gameinfoxml
 
         # read the configuration from the system name
-        system_data = _load_system_config(
-            args.system,
-            DEFAULTS_DIR / 'configgen-defaults.yml',
-            DEFAULTS_DIR / 'configgen-defaults-arch.yml'
-        )
-
-        if not system_data['emulator']:
-            _logger.error('no emulator defined. exiting.')
-            raise MissingEmulator
+        system_data = _load_system_config(args.system)
 
         # sanitize rule by EmulationStation
         # see FileData::getConfigurationName() on batocera-emulationstation
@@ -152,6 +146,10 @@ class Emulator:
         system_data.update(system_settings)
         system_data.update(folder_settings)
         system_data.update(game_settings)
+
+        if not system_data['emulator']:
+            _logger.error('no emulator defined. exiting.')
+            raise MissingEmulator
 
         try:
             es_config = ET.parse(ES_SETTINGS)

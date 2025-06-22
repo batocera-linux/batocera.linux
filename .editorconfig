@@ -35,3 +35,10 @@ indent_size = tab
 
 [*.adoc]
 trim_trailing_whitespace = false
+
+[*.{py,pyi}]
+tab_width = 4
+
+[*.{yml,yaml}]
+indent_size = 2
+tab_width = 2

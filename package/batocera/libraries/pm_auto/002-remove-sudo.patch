@@ -1,0 +1,25 @@
+diff --git a/pm_auto/fan_control.py b/pm_auto/fan_control.py
+index 0ecee8ab0e..73a6721ab8 100644
+--- a/pm_auto/fan_control.py
++++ b/pm_auto/fan_control.py
+@@ -417,7 +417,7 @@ class PWMFan(Fan):
+             elif level < 0:
+                 level = 0
+ 
+-            cmd = f"echo '{level}' | sudo tee -a /sys/class/thermal/cooling_device0/cur_state"
++            cmd = f"echo '{level}' | tee -a /sys/class/thermal/cooling_device0/cur_state"
+             result = subprocess.check_output(cmd, shell=True)
+ 
+             return result
+diff --git a/pm_auto/utils.py b/pm_auto/utils.py
+index cb57f29cee..9aef686ea6 100644
+--- a/pm_auto/utils.py
++++ b/pm_auto/utils.py
+@@ -98,6 +98,6 @@ def softlink_gpiochip0_to_gpiochip4():
+     if not os.path.exists('/dev/gpiochip0'):
+         raise Exception('gpiochip0 device not found')
+     if not os.path.exists('/dev/gpiochip4'):
+-        status, result = run_command('sudo ln -s /dev/gpiochip0 /dev/gpiochip4')
++        status, result = run_command('ln -s /dev/gpiochip0 /dev/gpiochip4')
+         if status != 0:
+             raise Exception(f'Failed to softlink gpiochip0 to gpiochip4: {result}')

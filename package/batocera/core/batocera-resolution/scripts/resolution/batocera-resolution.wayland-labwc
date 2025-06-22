@@ -1,0 +1,496 @@
+#!/bin/sh
+
+log="/userdata/system/logs/display.log"
+WLR_RANDR="wlr-randr"
+
+_log() {
+    echo "$1" >> "${log}"
+}
+
+f_usage() {
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
+    echo "${0} currentOutput" >&2
+    echo "${0} setOutput <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
+    echo "${0} minTomaxResolution [<MAX_RESOLUTION>]" >&2
+    echo "${0} minTomaxResolution-secure [<MAX_RESOLUTION>]" >&2
+    echo "${0} setRotation (0|1|2|3)" >&2
+    echo "${0} getRotation" >&2
+    echo "${0} getDisplayMode" >&2
+}
+
+# Extract output block for a specific screen
+_get_screen_block() {
+    local screen_name="$1"
+    local wlr_output
+    local in_target_screen=0
+    local line
+    
+    if [ -z "${screen_name}" ]; then
+        _log "_get_screen_block: Error: screen_name is empty."
+        return 1
+    fi
+    
+    wlr_output=$("${WLR_RANDR}" 2>/dev/null) || return 1
+    
+    # Process line by line to extract the target screen block
+    echo "${wlr_output}" | while IFS= read -r line; do
+        # Check if this line starts a new screen block
+        case "${line}" in
+            "${screen_name} "*)
+                in_target_screen=1
+                echo "${line}"
+                ;;
+            *" \"*")
+                # This is another screen header
+                if [ "${in_target_screen}" = "1" ]; then
+                    # We've reached the next screen, stop processing
+                    break
+                fi
+                ;;
+            "  "*)
+                # Indented line - part of current screen block
+                if [ "${in_target_screen}" = "1" ]; then
+                    echo "${line}"
+                fi
+                ;;
+            *)
+                # Non-indented, non-screen-header line
+                if [ "${in_target_screen}" = "1" ]; then
+                    # End of our target screen block
+                    break
+                fi
+                ;;
+        esac
+    done
+}
+
+_get_current_mode_string() {
+    local screen_name="$1"
+    local screen_block
+    local modes_section
+    local current_mode
+    
+    if [ -z "${screen_name}" ]; then
+        _log "_get_current_mode_string: Error: screen_name is empty."
+        return 1
+    fi
+    
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
+    
+    # Extract just the Modes section
+    modes_section=$(echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | sed '$d')
+    
+    # Find the line with (current)
+    current_mode=$(echo "${modes_section}" | grep -E '\(preferred, current\)|\s\(current\)')
+    
+    if [ -n "${current_mode}" ]; then
+        # Parse the mode line: "    1920x1080 px, 60.000000 Hz (current)"
+        resolution=$(echo "${current_mode}" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\).*/\1/p')
+        refresh=$(echo "${current_mode}" | sed -n 's/.*[[:space:]]\([0-9]*\.[0-9]*\)[[:space:]]*Hz.*/\1/p')
+        
+        if [ -n "${resolution}" ] && [ -n "${refresh}" ]; then
+            printf "%s@%sHz\n" "${resolution}" "${refresh}"
+        fi
+    fi
+}
+
+_get_current_transform() {
+    local screen_name="$1"
+    local screen_block
+    local transform_line
+    local transform_val
+    
+    if [ -z "${screen_name}" ]; then 
+        _log "_get_current_transform: Error: screen_name empty."
+        return 1
+    fi
+    
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
+    
+    # Extract transform line
+    transform_line=$(echo "${screen_block}" | grep "^[[:space:]]*Transform:")
+    transform_val=$(echo "${transform_line}" | sed 's/^[[:space:]]*Transform:[[:space:]]*//')
+    
+    case "${transform_val}" in
+        "normal"|"flipped"|"") echo "0" ;;
+        "90") echo "1" ;;
+        "180") echo "2" ;;
+        "270") echo "3" ;;
+        *) echo "0" ;;
+    esac
+}
+
+# Get all available modes for a screen
+_get_available_modes() {
+    local screen_name="$1"
+    local screen_block
+    local modes_section
+    
+    if [ -z "${screen_name}" ]; then
+        return 1
+    fi
+    
+    screen_block=$(_get_screen_block "${screen_name}")
+    if [ $? -ne 0 ]; then
+        _log "Error: Failed to get screen block for screen '${screen_name}'"
+        return 1
+    fi
+    
+    # Extract modes section and process each mode line
+    echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | \
+        sed '1d;$d' | \
+        grep "^[[:space:]]*[0-9]*x[0-9]*" | \
+        while IFS= read -r mode_line; do
+            resolution=$(echo "${mode_line}" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\).*/\1/p')
+            refresh=$(echo "${mode_line}" | sed -n 's/.*[[:space:]]\([0-9]*\.[0-9]*\)[[:space:]]*Hz.*/\1/p')
+            
+            if [ -n "${resolution}" ] && [ -n "${refresh}" ]; then
+                printf "%s@%sHz\n" "${resolution}" "${refresh}"
+            elif [ -n "${resolution}" ]; then
+                printf "%s\n" "${resolution}"
+            fi
+        done
+}
+
+f_minTomaxResolution() {
+    local MAX_RES_PARAM="$1"
+    local MAXWIDTH MAXHEIGHT
+    local CURRENT_MODE_STR CURRENT_RESOLUTION
+    local CURRENTWIDTH CURRENTHEIGHT
+    local BEST_MODE="" BEST_AREA=0
+    
+    if [ -z "${PSCREEN}" ]; then 
+        _log "f_minTomaxResolution: PSCREEN is empty."
+        exit 1
+    fi
+    
+    # Parse max resolution parameter
+    if [ -n "${MAX_RES_PARAM}" ] && echo "${MAX_RES_PARAM}" | grep -qE '^[0-9]+x[0-9]+$'; then
+        MAXWIDTH=$(echo "${MAX_RES_PARAM}" | cut -dx -f1)
+        MAXHEIGHT=$(echo "${MAX_RES_PARAM}" | cut -dx -f2)
+    else
+        MAXWIDTH=1920
+        MAXHEIGHT=1080
+    fi
+    
+    _log "f_minTomaxResolution: Target max ${MAXWIDTH}x${MAXHEIGHT} for PSCREEN='${PSCREEN}'"
+    
+    # Get current mode
+    CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+    _log "Current mode: ${CURRENT_MODE_STR}"
+    if [ -z "${CURRENT_MODE_STR}" ]; then
+        _log "f_minTomaxResolution: Could not get current mode for PSCREEN='${PSCREEN}'. Aborting."
+        exit 1
+    fi
+    
+    CURRENT_RESOLUTION=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
+    CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f1)
+    CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f2)
+    
+    # Check if current resolution is already within limits
+    if [ "${CURRENTWIDTH}" -le "${MAXWIDTH}" ] && [ "${CURRENTHEIGHT}" -le "${MAXHEIGHT}" ]; then
+        _log "f_minTomaxResolution: Current res ${CURRENTWIDTH}x${CURRENTHEIGHT} is already within limits."
+        exit 0
+    fi
+    
+    # Find best suitable mode
+    _get_available_modes "${PSCREEN}" | while IFS= read -r mode; do
+        resolution=$(echo "${mode}" | cut -d'@' -f1)
+        width=$(echo "${resolution}" | cut -dx -f1)
+        height=$(echo "${resolution}" | cut -dx -f2)
+        
+        # Skip if dimensions are not numbers
+        if ! echo "${width}" | grep -qE '^[0-9]+$' || ! echo "${height}" | grep -qE '^[0-9]+$'; then
+            continue
+        fi
+        
+        # Check if within limits
+        if [ "${width}" -le "${MAXWIDTH}" ] && [ "${height}" -le "${MAXHEIGHT}" ]; then
+            area=$((width * height))
+            if [ "${area}" -gt "${BEST_AREA}" ]; then
+                BEST_MODE="${mode}"
+                BEST_AREA="${area}"
+            fi
+        fi
+    done
+    
+    if [ -n "${BEST_MODE}" ]; then
+        _log "f_minTomaxResolution: Best mode found: ${BEST_MODE}. Setting it."
+        if "${WLR_RANDR}" --output "${PSCREEN}" --mode "${BEST_MODE}"; then
+            exit 0
+        else
+            _log "f_minTomaxResolution: Failed to set mode ${BEST_MODE}."
+            # Try with just resolution
+            BEST_RESOLUTION=$(echo "${BEST_MODE}" | cut -d'@' -f1)
+            if [ "${BEST_MODE}" != "${BEST_RESOLUTION}" ]; then
+                _log "f_minTomaxResolution: Trying just resolution ${BEST_RESOLUTION}."
+                "${WLR_RANDR}" --output "${PSCREEN}" --mode "${BEST_RESOLUTION}"
+            fi
+        fi
+    else
+        _log "f_minTomaxResolution: No suitable resolution found within ${MAXWIDTH}x${MAXHEIGHT}."
+        exit 1
+    fi
+}
+
+# Detect primary screen
+_detect_primary_screen() {
+    local screen_list
+    local screen
+    
+    # Get list of all screens
+    screen_list=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
+    
+    # Try to find enabled screen first
+    for screen in ${screen_list}; do
+        if _get_screen_block "${screen}" | grep -q "^[[:space:]]*Enabled:[[:space:]]*yes"; then
+            echo "${screen}"
+            return 0
+        fi
+    done
+    
+    # Fallback to first screen
+    echo "${screen_list}" | head -n1
+}
+
+# --- Main script logic ---
+if [ $# -eq 0 ]; then
+    f_usage
+    exit 1
+fi
+
+PSCREEN_ARG=
+if [ "$1" = "--screen" ]; then
+    shift
+    PSCREEN_ARG=$1
+    shift
+fi
+
+# Set PSCREEN: use argument if provided, otherwise detect default
+if [ -n "${PSCREEN_ARG}" ]; then
+    PSCREEN="${PSCREEN_ARG}"
+else
+    PSCREEN=$(_detect_primary_screen)
+    _log "PSCREEN detected: '${PSCREEN}'"
+fi
+
+if [ -z "${PSCREEN}" ]; then
+    _log "Error: Could not determine a screen to operate on. PSCREEN is empty."
+    exit 1
+fi
+_log "Effective PSCREEN for operations: '${PSCREEN}'"
+
+ACTION=$1
+shift # Remove action from arguments, rest are parameters for the action
+
+case "${ACTION}" in
+    "currentMode")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "currentMode: PSCREEN is empty, cannot get mode."
+            echo "unknown.0"
+            exit 1
+        fi
+        
+        CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+        _log "currentMode: _get_current_mode_string returned: '${CURRENT_MODE_STR}'"
+        
+        if [ -n "${CURRENT_MODE_STR}" ]; then
+            RES_ONLY=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
+            REFRESH_HZ_STR=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
+            if [ -n "${REFRESH_HZ_STR}" ]; then
+                # Convert Hz to mHz (multiply by 1000)
+                REFRESH_MHZ=$(printf "%.0f" "$(echo "${REFRESH_HZ_STR} * 1000" | bc 2>/dev/null || echo "0")")
+                echo "${RES_ONLY}.${REFRESH_MHZ}"
+            else
+                echo "${RES_ONLY}.0"
+                _log "currentMode: Parsed mode string '${CURRENT_MODE_STR}' but no refresh rate found."
+            fi
+        else
+            echo "unknown.0"
+            _log "currentMode: _get_current_mode_string returned empty for PSCREEN '${PSCREEN}'. Outputting unknown.0."
+        fi
+        ;;
+
+    "listModes")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "listModes: PSCREEN is empty, cannot list modes."
+            exit 1
+        fi
+        
+        echo "max-1920x1080:maximum 1920x1080"
+        echo "max-640x480:maximum 640x480"
+        
+        _get_available_modes "${PSCREEN}" | while IFS= read -r mode; do
+            if echo "${mode}" | grep -q '@'; then
+                resolution=$(echo "${mode}" | cut -d'@' -f1)
+                refresh_hz=$(echo "${mode}" | sed 's/.*@\([0-9.]*\)Hz/\1/')
+                refresh_mhz=$(printf "%.0f" "$(echo "${refresh_hz} * 1000" | bc 2>/dev/null || echo "0")")
+                printf "%s.%s:%s %s Hz\n" "${resolution}" "${refresh_mhz}" "${resolution}" "${refresh_hz}"
+            else
+                printf "%s.0:%s 0.000 Hz\n" "${mode}" "${mode}"
+            fi
+        done
+        ;;
+
+    "setMode")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "setMode: PSCREEN is empty, cannot set mode."
+            exit 1
+        fi
+        
+        MODE_TO_SET=$1
+        if echo "${MODE_TO_SET}" | grep -qE '^max-'; then
+            SPMODE=$(echo "${MODE_TO_SET}" | sed -e 's+^max-++')
+            f_minTomaxResolution "${SPMODE}"
+        else
+            TARGET_MODE="${MODE_TO_SET}"
+            if echo "${MODE_TO_SET}" | grep -q "\."; then
+                PARTRES=$(echo "${MODE_TO_SET}" | cut -d'.' -f1)
+                PARTMHZ=$(echo "${MODE_TO_SET}" | cut -d'.' -f2-)
+                # Convert mHz back to Hz (divide by 1000)
+                PARTHZ=$(printf "%.6f" "$(echo "${PARTMHZ} / 1000" | bc -l 2>/dev/null || echo "0")")
+                TARGET_MODE="${PARTRES}@${PARTHZ}Hz"
+            fi
+            "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"
+        fi
+        ;;
+
+    "currentResolution")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "currentResolution: PSCREEN is empty."
+            echo "unknown"
+            exit 1
+        fi
+        
+        CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+        if [ -n "${CURRENT_MODE_STR}" ]; then
+            RAW_RESOLUTION=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
+        else
+            _log "currentResolution: Could not get current mode string."
+            echo "unknown"
+            exit 1
+        fi
+        
+        RAW_ROTATION=$(_get_current_transform "${PSCREEN}")
+        
+        # Swap width/height for 90/270 degree rotations
+        if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
+            WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
+            HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
+            echo "${HEIGHT}x${WIDTH}"
+        else
+            echo "${RAW_RESOLUTION}"
+        fi
+        ;;
+
+    "listOutputs")
+        "${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1
+        ;;
+
+    "currentOutput")
+        if [ -z "${PSCREEN}" ]; then 
+            echo "unknown"
+        else 
+            echo "${PSCREEN}"
+        fi
+        ;;
+    
+    "minTomaxResolution" | "minTomaxResolution-secure")
+        f_minTomaxResolution "$1"
+        ;;
+
+    "setOutput")
+        OUT1_TARGET=$1
+        if [ -z "${OUT1_TARGET}" ]; then 
+            _log "setOutput: No target output specified."
+            exit 1
+        fi
+        _log "setOutput: Attempting to configure ${OUT1_TARGET} and potentially others."
+        # Implementation would go here
+        ;;
+
+    "setRotation")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "setRotation: PSCREEN is empty."
+            exit 1
+        fi
+
+        ROTATE_VAL=$1
+        case "${ROTATE_VAL}" in
+            "0") WLR_TRANSFORM="normal"; MATRIX="1 0 0 0 1 0" ;;   # 0°
+            "1") WLR_TRANSFORM="90";     MATRIX="0 -1 1 1 0 0" ;;  # 90°
+            "2") WLR_TRANSFORM="180";    MATRIX="-1 0 1 0 -1 1" ;; # 180°
+            "3") WLR_TRANSFORM="270";    MATRIX="0 1 0 -1 0 1" ;;  # 270°
+            *)
+                _log "setRotation: Invalid rotation value '${ROTATE_VAL}'. Using normal."
+                WLR_TRANSFORM="normal"
+                MATRIX="1 0 0 0 1 0"
+                ;;
+        esac
+
+        "${WLR_RANDR}" --output "${PSCREEN}" --transform "${WLR_TRANSFORM}"
+
+        # --- Check for touchscreen ---
+        TOUCHSCREEN=$(libinput list-devices | awk -F ':' '/Device:/ {dev=$2} /Touch/ {print dev}' | head -n1 | xargs)
+        if [ -n "${TOUCHSCREEN}" ]; then
+            CONFIG_FILE="${HOME}/.config/labwc/rc.xml"
+
+            if [ ! -f "$CONFIG_FILE" ]; then
+                _log "Touchscreen found, but rc.xml not present at: $CONFIG_FILE"
+                exit 1
+            fi
+
+            # Replace calibrationMatrix only inside touch device block if it's different
+            CURRENT_MATRIX=$(sed -n '/<device category="touch">/,/<\/device>/s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p' "$CONFIG_FILE")
+
+            if [ "$CURRENT_MATRIX" != "$MATRIX" ]; then
+                sed -i '/<device category="touch">/,/<\/device>/ s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix>'"$MATRIX"'</calibrationMatrix>|' "$CONFIG_FILE"
+                _log "Touchscreen '${TOUCHSCREEN}' detected. Updated calibrationMatrix from '$CURRENT_MATRIX' to: $MATRIX"
+                labwc --reconfigure
+            else
+                _log "Touchscreen '${TOUCHSCREEN}' detected. calibrationMatrix already set to: $MATRIX — no update needed."
+            fi
+        else
+            _log "No touchscreen found; skipped calibrationMatrix update"
+        fi
+        ;;
+
+    "getRotation")
+        if [ -z "${PSCREEN}" ]; then 
+            _log "getRotation: PSCREEN is empty."
+            echo "unknown"
+            exit 1
+        fi
+        _get_current_transform "${PSCREEN}"
+        ;;
+        
+    "supportSystemRotation")
+        exit 0
+        ;;
+    "supportSystemReflection")
+        exit 0
+        ;;
+
+    "getDisplayMode")
+        echo "wayland"
+        ;;
+
+    *)
+        f_usage
+        exit 1
+        ;;
+esac
+
+exit 0

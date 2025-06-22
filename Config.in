@@ -335,6 +335,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-melonds-ds/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-vircon32/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-ps2/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-bennugd/Config.in"
      endmenu
   endmenu
 
@@ -405,6 +406,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lindbergh-loader/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/azahar/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/clk/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ymir/Config.in"
   endmenu
 
   menu "WINE"
@@ -576,6 +578,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/moonlight-embedded/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wireguard-service/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/labwc/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wtype/Config.in"
 endmenu
 
 menu "Cases"
@@ -662,6 +665,8 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pyqt-builder/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libsfdo/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/wiringop-python/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/plutosvg/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/kddockwidgets/Config.in"
 endmenu
 
 menu "Audio"

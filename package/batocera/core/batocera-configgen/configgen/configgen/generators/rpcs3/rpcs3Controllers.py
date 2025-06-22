@@ -273,6 +273,7 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
+            # comment out default SDL
             else:
                 _logger.debug("*** Using default SDL2 configuration ***")
                 f.write(f'Player {nplayer} Input:\n')

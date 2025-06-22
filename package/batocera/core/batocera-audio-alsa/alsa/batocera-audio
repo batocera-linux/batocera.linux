@@ -10,7 +10,7 @@ case "${ACTION}" in
 	"list")	
 		echo "auto"	
 		echo "custom"	
-		LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+	
+		LC_ALL=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+	
 	;;	
 
 	"get")	

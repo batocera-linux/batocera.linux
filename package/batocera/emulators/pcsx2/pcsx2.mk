@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_VERSION = v2.3.185
+PCSX2_VERSION = v2.3.420
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -13,10 +13,10 @@ PCSX2_LICENSE_FILE = COPYING.GPLv3
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
-PCSX2_DEPENDENCIES += alsa-lib ecm fmt freetype host-libcurl libaio libbacktrace
-PCSX2_DEPENDENCIES += libcurl libgtk3 libpcap libpng libsamplerate  host-clang
-PCSX2_DEPENDENCIES += libsoundtouch portaudio qt6base qt6svg qt6tools
-PCSX2_DEPENDENCIES += shaderc sdl2 webp wxwidgets xorgproto yaml-cpp zlib
+PCSX2_DEPENDENCIES += alsa-lib ecm fmt freetype host-clang host-libcurl kddockwidgets
+PCSX2_DEPENDENCIES += libaio libbacktrace libcurl libgtk3 libpcap libpng libsamplerate
+PCSX2_DEPENDENCIES += libsoundtouch plutosvg portaudio qt6base qt6svg qt6tools
+PCSX2_DEPENDENCIES += shaderc sdl3 webp wxwidgets xorgproto yaml-cpp zlib
 
 # Use clang for performance
 PCSX2_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang

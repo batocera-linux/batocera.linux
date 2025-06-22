@@ -1,0 +1,8 @@
+config BR2_PACKAGE_WTYPE
+	bool "wtype"
+	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_WAYLAND
+	help
+	  xdotool type for wayland.
+
+	  https://github.com/atx/wtype

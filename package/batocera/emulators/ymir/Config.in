@@ -1,0 +1,7 @@
+config BR2_PACKAGE_YMIR
+    bool "ymir"
+    select BR2_PACKAGE_SDL3
+    help
+      Sega Saturn emulator.
+
+      https://github.com/StrikerX3/Ymir

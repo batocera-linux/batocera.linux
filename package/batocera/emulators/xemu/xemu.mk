@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.49
+XEMU_VERSION = v0.8.73
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -13,7 +13,8 @@ XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl2 libgbm libopenssl
 XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
 XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp
 
-XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
+XEMU_EXTRA_DOWNLOADS = \
+    https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
 XEMU_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
@@ -82,13 +83,13 @@ define XEMU_CONFIGURE_CMDS
 endef
 
 define XEMU_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
-		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-		    CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-            PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-            PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
-		$(MAKE) -C $(@D)
+$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+    CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
+	CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
+	CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+    PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+    PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+	$(MAKE) -C $(@D)
 endef
 
 define XEMU_INSTALL_TARGET_CMDS
@@ -136,11 +137,43 @@ define XEMU_GET_SUBMODULES
 	
     # tomlplusplus
 	mkdir -p $(@D)/subprojects/tomlplusplus
-    $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/tomlplusplus.wrap))
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/tomlplusplus.wrap))
 	$(HOST_DIR)/bin/curl -L -o tomlplusplus.tar.gz \
 	    https://github.com/marzer/tomlplusplus/archive/$(REVISION).tar.gz
 	$(TAR) -xzf tomlplusplus.tar.gz --strip-components=1 -C $(@D)/subprojects/tomlplusplus
 	rm tomlplusplus.tar.gz
+
+	# glslang
+	mkdir -p $(@D)/subprojects/glslang
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/glslang.wrap))
+	$(HOST_DIR)/bin/curl -L -o glslang.tar.gz \
+	    https://github.com/KhronosGroup/glslang/archive/$(REVISION).tar.gz
+	$(TAR) -xzf glslang.tar.gz --strip-components=1 -C $(@D)/subprojects/glslang
+	rm glslang.tar.gz
+
+	# volk
+	mkdir -p $(@D)/subprojects/volk
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/volk.wrap))
+	$(HOST_DIR)/bin/curl -L -o volk.tar.gz \
+	    https://github.com/zeux/volk/archive/$(REVISION).tar.gz
+	$(TAR) -xzf volk.tar.gz --strip-components=1 -C $(@D)/subprojects/volk
+	rm volk.tar.gz
+
+	# SPIRV-Reflect
+	mkdir -p $(@D)/subprojects/SPIRV-Reflect
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/SPIRV-Reflect.wrap))
+	$(HOST_DIR)/bin/curl -L -o SPIRV-Reflect.tar.gz \
+	    https://github.com/KhronosGroup/SPIRV-Reflect/archive/$(REVISION).tar.gz
+	$(TAR) -xzf SPIRV-Reflect.tar.gz --strip-components=1 -C $(@D)/subprojects/SPIRV-Reflect
+	rm SPIRV-Reflect.tar.gz
+
+	# VulkanMemoryAllocator
+	mkdir -p $(@D)/subprojects/VulkanMemoryAllocator
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/VulkanMemoryAllocator.wrap))
+	$(HOST_DIR)/bin/curl -L -o VulkanMemoryAllocator.tar.gz \
+	    https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/$(REVISION).tar.gz
+	$(TAR) -xzf VulkanMemoryAllocator.tar.gz --strip-components=1 -C $(@D)/subprojects/VulkanMemoryAllocator
+	rm VulkanMemoryAllocator.tar.gz
 	
     # xxhash
 	mkdir -p $(@D)/subprojects/xxHash-0.8.3

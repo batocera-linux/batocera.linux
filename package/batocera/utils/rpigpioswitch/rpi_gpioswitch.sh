@@ -762,12 +762,13 @@ function pironman5_start()
         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
     fi
     # Check config.txt for spi
-    if grep -q "dtparam=spi=" "/boot/config.txt"; then
-        echo "*** Enabling Pironman spi config.txt parameter ***"
+    if grep -q "^#\?dtparam=spi=" "/boot/config.txt"; then
+        echo "*** Enabling Pironman5 SPI config.txt parameter ***"
         mount -o remount,rw /boot
-        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+        # Enable SPI if it's commented out or set to off
+        sed -i 's/^#\?dtparam=spi=.*/dtparam=spi=on/' /boot/config.txt
     else
-        echo "*** Adding Pironman spi config.txt parameter ***"
+        echo "*** Adding Pironman5 SPI config.txt parameter ***"
         mount -o remount,rw /boot
         echo "dtparam=spi=on" >> /boot/config.txt
     fi
@@ -775,12 +776,8 @@ function pironman5_start()
     mkdir -p /var/log/pironman5
     # ensure i2c is running
     modprobe i2c_dev
-    # setup user adjustable config file
-    site_packages_dir=$(python3 -c "import site; print(site.getsitepackages()[0])")
-    mkdir -p $site_packages_dir/pironman5
-    ln -sf /userdata/system/configs/pironman5/config.json $site_packages_dir/pironman5/config.json
     # start
-    /usr/bin/pironman5 start --background
+    /usr/bin/pironman5 start --background -cp /userdata/system/configs/pironman5/config.json
 }
 
 function pironman5_stop()

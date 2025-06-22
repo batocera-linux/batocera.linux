@@ -33,7 +33,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
         GZDOOM_DEPENDENCIES += xlib_libX11 vulkan-headers vulkan-loader
         GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
         GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=ON -DVULKAN_USE_WAYLAND=OFF
-    else ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
+    else ifeq ($(BR2_PACKAGE_WAYLAND),y)
         GZDOOM_DEPENDENCIES += wayland vulkan-headers vulkan-loader
         GZDOOM_CONF_OPTS += -DHAVE_VULKAN=ON
         GZDOOM_CONF_OPTS += -DVULKAN_USE_XLIB=OFF -DVULKAN_USE_WAYLAND=ON

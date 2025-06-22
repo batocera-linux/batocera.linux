@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from ...batoceraPaths import ensure_parents_and_open
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import Resolution
 
+_logger = logging.getLogger(__name__)
 
 def writeIniFile(system: Emulator, rom: Path, playersControllers: Controllers, gameResolution: Resolution) -> None:
     iniConfig = CaseSensitiveConfigParser(interpolation=None)
@@ -81,8 +83,11 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("audio", "use_dsp", system.config.get("xemu_use_dsp", "false"))
 
     # API
-    # use Vulkan as the default for a Mesa bug with some AMD GPU's
-    iniConfig.set("display", "renderer", f'"{system.config.get("xemu_api", "VULKAN")}"')
+    if system.name == "chihiro":
+        iniConfig.set("display", "renderer", '"OPENGL"')
+        _logger.debug("Chihiro system, defaulting to OpenGL due to a Xemu bug")
+    else:
+        iniConfig.set("display", "renderer", f'"{system.config.get("xemu_api", "VULKAN")}"')
 
     # Rendering resolution
     iniConfig.set("display.quality", "surface_scale", system.config.get("xemu_render", "1")) # render scale by default

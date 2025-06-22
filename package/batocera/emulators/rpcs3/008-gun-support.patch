@@ -1,7 +1,7 @@
-diff --git a/rpcs3/Input/evdev_gun_handler.cpp b/rpcs3/Input/evdev_gun_handler.cpp
+diff --git a/rpcs3/Emu/Io/evdev_gun_handler.cpp b/rpcs3/Emu/Io/evdev_gun_handler.cpp
 index e506920..293b9cb 100644
---- a/rpcs3/Input/evdev_gun_handler.cpp
-+++ b/rpcs3/Input/evdev_gun_handler.cpp
+--- a/rpcs3/Emu/Io/evdev_gun_handler.cpp
++++ b/rpcs3/Emu/Io/evdev_gun_handler.cpp
 @@ -214,7 +214,7 @@ bool evdev_gun_handler::init()
  
  	if (udev_enumerate* enumerate = udev_enumerate_new(m_udev))

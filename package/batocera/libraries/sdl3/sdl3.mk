@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SDL3_VERSION = 3.2.8
+SDL3_VERSION = 3.2.16
 SDL3_SOURCE = SDL3-$(SDL3_VERSION).tar.gz
 SDL3_SITE = http://www.libsdl.org/release
 SDL3_LICENSE = Zlib
@@ -17,9 +17,6 @@ SDL3_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SDL3_CONF_OPTS += -DSDL_RENDER_METAL=OFF
 SDL3_CONF_OPTS += -DSDL_CCACHE=ON
 SDL3_CONF_OPTS += -DSDL_JACK=OFF
-# We don't want HIDAPI yet
-SDL3_CONF_OPTS += -DSDL_HIDAPI=OFF
-SDL3_CONF_OPTS += -DSDL_HIDAPI_LIBUSB=OFF
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 SDL3_DEPENDENCIES += alsa-lib

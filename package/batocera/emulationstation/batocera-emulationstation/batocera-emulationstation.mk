@@ -3,8 +3,8 @@
 # batocera-emulationstation
 #
 ################################################################################
-# Last update: Commits on Mai 9, 2025
-BATOCERA_EMULATIONSTATION_VERSION = 18830cd6d94dc8c25666f5243c32febac7883deb
+# Last update: Commits on Jun 20, 2025
+BATOCERA_EMULATIONSTATION_VERSION = ee7116812c9a41fe8ca60adc66d06fe321845b57
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -188,6 +188,12 @@ BATOCERA_EMULATIONSTATION_DEPENDENCIES += sway
 BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_LABWC),y)
+BATOCERA_EMULATIONSTATION_CMD = labwc-launch
+BATOCERA_EMULATIONSTATION_DEPENDENCIES += labwc
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND_LABWC
+endif
+
 define BATOCERA_EMULATIONSTATION_XORG
 	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/xorg/xinitrc \
 	    $(BINARIES_DIR)/batocera-target/etc/X11/xinit/xinitrc
@@ -200,6 +206,20 @@ define BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
 	    $(TARGET_DIR)/etc/sway/config
     $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/sway/sway-launch \
 	    $(TARGET_DIR)/usr/bin/sway-launch
+endef
+
+define BATOCERA_EMULATIONSTATION_WAYLAND_LABWC
+    mkdir -p $(TARGET_DIR)/usr/share/labwc
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/04-labwc.sh \
+	    $(TARGET_DIR)/etc/profile.d/04-labwc.sh
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/rc.xml \
+	    $(TARGET_DIR)/usr/share/labwc/rc.xml
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/S14labwc \
+	    $(TARGET_DIR)/etc/init.d/S14labwc
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/autostart \
+	    $(TARGET_DIR)/usr/share/labwc/autostart
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/labwc-launch \
+	    $(TARGET_DIR)/usr/bin/labwc-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT

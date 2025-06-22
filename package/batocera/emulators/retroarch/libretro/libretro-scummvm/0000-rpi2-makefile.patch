@@ -1,0 +1,20 @@
+diff --git a/backends/platform/libretro/Makefile b/backends/platform/libretro/Makefile
+index 301ad0f791..814d473ddd 100644
+--- a/backends/platform/libretro/Makefile
++++ b/backends/platform/libretro/Makefile
+@@ -48,6 +48,15 @@ ifeq ($(platform), rpi1)
+    CXXFLAGS = $(CFLAGS) -frtti -std=c++11
+    HAVE_OPENGLES2 := 1
+ 
++# Raspberry Pi 2
++else ifeq ($(platform), rpi2)
++   TARGET = $(TARGET_NAME)_libretro.so
++   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
++   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
++   CFLAGS += -fPIC -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++   CFLAGS += -fomit-frame-pointer -ffast-math
++   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
++
+ # Raspberry Pi 3
+ else ifeq ($(platform), rpi3)
+    TARGET = $(TARGET_NAME)_libretro.so

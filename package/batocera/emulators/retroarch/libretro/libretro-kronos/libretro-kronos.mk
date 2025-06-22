@@ -3,11 +3,12 @@
 # libretro-kronos
 #
 ################################################################################
-
-LIBRETRO_KRONOS_VERSION = 2.7.0_official_release
-LIBRETRO_KRONOS_SITE = $(call github,FCare,kronos,$(LIBRETRO_KRONOS_VERSION))
+# don't bump
+LIBRETRO_KRONOS_VERSION = 146f4295eb7f5f76a2e6e6c84518c9bdf6a8398f
+LIBRETRO_KRONOS_SITE = https://github.com/libretro/yabause
+LIBRETRO_KRONOS_SITE_METHOD = git
+LIBRETRO_KRONOS_GIT_SUBMODULES = YES
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
-LIBRETRO_KRONOS_DEPENDENCIES += retroarch
 
 LIBRETRO_KRONOS_PLATFORM = $(LIBRETRO_PLATFORM)
 

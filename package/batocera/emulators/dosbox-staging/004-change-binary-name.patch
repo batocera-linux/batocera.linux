@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 9e66ead96a..c5d3a5efa7 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1228,7 +1228,7 @@ if host_machine.system() == 'windows'
+ endif
+ 
+ executable(
+-    'dosbox',
++    'dosbox-staging',
+     dosbox_sources,
+     dependencies: internal_deps + third_party_deps,
+     include_directories: incdir,
