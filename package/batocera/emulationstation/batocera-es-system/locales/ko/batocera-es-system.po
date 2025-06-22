@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-28 22:12+0900\n"
+"PO-Revision-Date: 2025-06-11 00:09+0900\n"
 "Last-Translator: DDinghoya <ddinghoya@gmail.com>\n"
 "Language-Team: Korean (KO)\n"
 "Language: ko_KO\n"
@@ -388,7 +388,7 @@ msgstr "10x 원본 (6400x5280)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "10x Native (~3600p/6K)"
-msgstr ""
+msgstr "10배 실기 (~3600p/6K)"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -413,7 +413,7 @@ msgstr "11x 원본 (7040x5808)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "11x Native (~3960p)"
-msgstr ""
+msgstr "11배 실기 (~3960p)"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -508,7 +508,7 @@ msgstr "8K용 12x 원본 (7680x6336)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "12x Native (~4320p/8K)"
-msgstr ""
+msgstr "12배 실기 (~4320p/8K)"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -533,7 +533,7 @@ msgstr "13일"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "13x Native (~5824p)"
-msgstr ""
+msgstr "13배 실기 (~5824p)"
 
 #. TRANSLATION: libretro/hatarib
 msgctxt "game_options"
@@ -578,7 +578,7 @@ msgstr "14일"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "14x Native (~6272p)"
-msgstr ""
+msgstr "14배 실기 (~6272p)"
 
 #. TRANSLATION: libretro/snes9x_next
 msgctxt "game_options"
@@ -628,7 +628,7 @@ msgstr "15일"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "15x Native (~6720p)"
-msgstr ""
+msgstr "15배 실기 (~6720p)"
 
 #. TRANSLATION: libretro/px68k
 msgctxt "game_options"
@@ -733,7 +733,7 @@ msgstr "16배 MSAA"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "16x Native (~7168p)"
-msgstr ""
+msgstr "16배 실기 (~7168p)"
 
 #. TRANSLATION: dolphin_triforce, duckstation, libretro/duckstation, libretro/swanstation
 msgctxt "game_options"
@@ -828,7 +828,7 @@ msgstr "1배 (720p/1080p)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "1x Native (PS2)"
-msgstr ""
+msgstr "1배 실기 (PS2)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -1828,7 +1828,7 @@ msgstr "5배 원본 (~1620p)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "5x Native (~1800p/3K)"
-msgstr ""
+msgstr "5배 실기 (~1800p/3K)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -2028,7 +2028,7 @@ msgstr "7배 원본 (~2520p)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "7x Native (~2530p)"
-msgstr ""
+msgstr "7배 실기 (~2530p)"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -2213,13 +2213,13 @@ msgstr "9x 원본 (5760x4752)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "9x Native (~3240p)"
-msgstr ""
+msgstr "9배 실기 (~3240p)"
 
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid ""
-"A small  number of games will have compatibility problems with this enabled."
-msgstr ""
+"A small  number of games will ahve compatibility problems with this enabled."
+msgstr "일부 게임에서는 이 기능을 활성화하면 호환성 문제가 발생할 수 있습니다."
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -2986,8 +2986,8 @@ msgstr "하위 채널 정보 없이 보호된 게임을 로드할 수 있습니�
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid ""
-"Allows reducing the visual quality of these curves for higher performance."
-msgstr ""
+"Allows reducing the visual quality of these curves for higher performance.."
+msgstr "더 높은 성능을 위해 이러한 곡선의 시각적 품질을 낮출 수 있습니다."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -3779,7 +3779,7 @@ msgstr "BT601_625/D65 (모든 EUR/AUS 개발 게임에 권장)"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "BUFFER GRAPHICS COMMANDS"
-msgstr ""
+msgstr "버퍼 그래픽 명령"
 
 #. TRANSLATION: quake2.keys
 msgctxt "keys_files"
@@ -3814,7 +3814,7 @@ msgstr "발트 해"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "Basic"
-msgstr ""
+msgstr "기보"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -4672,6 +4672,8 @@ msgid ""
 "CPU-GPU latency limit. Lower values improve latency but may reduce "
 "performance."
 msgstr ""
+"CPU-GPU 지연 시간 제한합니다. 값이 낮을수록 지연 시간은 개선되지만 성능이 저"
+"하될 수 있습니다."
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
@@ -5142,11 +5144,6 @@ msgstr ""
 "콘솔 언어를 선택하세요. 일부 게임에서는 언어 선택이 지원되지 않을 수 있습니"
 "다."
 
-#. TRANSLATION: ymir
-msgctxt "game_options"
-msgid "Choose deinterlace option."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "Choose difficulty for the game."
@@ -5490,9 +5487,14 @@ msgctxt "game_options"
 msgid "Choose your desired pixel aspect ratio."
 msgstr "원하는 픽셀 화면비를 선택하세요."
 
-#. TRANSLATION: cgenius, redream
+#. TRANSLATION: redream
 msgctxt "game_options"
 msgid "Choose your preferred aspect ratio."
+msgstr "원하는 화면비를 선택하세요."
+
+#. TRANSLATION: cgenius
+msgctxt "game_options"
+msgid "Choose your preferred aspect ratio.."
 msgstr "원하는 화면비를 선택하세요."
 
 #. TRANSLATION: scummvm
@@ -5709,7 +5711,7 @@ msgstr "다이렉트X 8/9/10/11/12 호출을 Vulkan으로 변환합니다."
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Copy to texture"
-msgstr ""
+msgstr "텍스처에 복사"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -5889,11 +5891,6 @@ msgctxt "game_options"
 msgid "DEFAULT POWER ON RAM STATE"
 msgstr "램 상태의 기본 전원"
 
-#. TRANSLATION: ymir
-msgctxt "game_options"
-msgid "DEINTERLACE"
-msgstr ""
-
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
 msgid "DEINTERLACING"
@@ -5962,7 +5959,7 @@ msgstr "4MB 확장 램 팩 비활성화"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "DISABLE CULLING"
-msgstr ""
+msgstr "컬링 비활성화"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -6203,11 +6200,6 @@ msgstr "진보라색"
 msgctxt "game_options"
 msgid "Darken"
 msgstr "어두워짐"
-
-#. TRANSLATION: ymir
-msgctxt "game_options"
-msgid "De-Interlaced"
-msgstr ""
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -7398,7 +7390,7 @@ msgstr ""
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "Enables cheats files to be read from the `cheats` directory."
-msgstr ""
+msgstr "`cheats` 디렉토리에서 치트 파일을 읽을 수 있도록 합니다."
 
 #. TRANSLATION: model2emu
 msgctxt "game_options"
@@ -7751,7 +7743,7 @@ msgstr "빠른 블리터 (호환성 낮음)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "FAST CD/DVD ACCESS"
-msgstr ""
+msgstr "빠른 CD/DVD 접소"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -7921,7 +7913,7 @@ msgstr "프레임 속도 제한"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "FRAME SKIPPING"
-msgstr ""
+msgstr "프레임 건너뛰기"
 
 #. TRANSLATION: libretro/desmume, libretro/fbneo, libretro/flycast, libretro/mame078plus, libretro/mgba, ...
 msgctxt "game_options"
@@ -7936,7 +7928,7 @@ msgstr "프레임 건너뛰기 (GL64MK2 전용)"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "FRAMESKIP CONTROL"
-msgstr ""
+msgstr "프레임스킵 제어"
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -8054,7 +8046,7 @@ msgstr "빠른 전진"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Faster but can cause text problems in some games."
-msgstr ""
+msgstr "더 빠르지만 일부 게임에서는 텍스트 문제가 발생할 수 있습니다."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -9176,7 +9168,7 @@ msgstr "하드 텍스처 캐시 메모리 제한"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "HARDWARE TESSELLATION"
-msgstr ""
+msgstr "하드웨어 테셀레이션"
 
 #. TRANSLATION: theforceengine
 msgctxt "game_options"
@@ -9356,9 +9348,11 @@ msgstr "너무 빠르거나 버그가 있는 게임을 도와주세요."
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid ""
-"Helps forcing an international Japanese version to English. Unlocking more "
+"Helps forcing an international Japenese version to English. Unlocking more "
 "European languages etc."
 msgstr ""
+"국제 일본어 버전을 영어로 변환하는 데 도움이 됩니다. 더 많은 유럽 언어 등을 "
+"지원합니다."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9479,6 +9473,7 @@ msgctxt "game_options"
 msgid ""
 "House of the Dead 4 speed fix. Select CPU base frequency of your processor."
 msgstr ""
+"하우스 오브 데드 4 속도 수정합니다. 프로세서의 CPU 기본 주파수를 선택하세요."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -9655,6 +9650,7 @@ msgstr "아이슬란드"
 msgctxt "game_options"
 msgid "If a game runs at 30hz, PPSSPP wtill push 60 frames to the monitor."
 msgstr ""
+"게임이 30hz로 실행되더라도 PPSSPP는 여전히 모니터에 60프레임을 전송합니다."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -9738,6 +9734,8 @@ msgid ""
 "In some games, this can fix severe slowdowns, but can also cause graphical "
 "issues."
 msgstr ""
+"일부 게임에서는 이 방법으로 심각한 속도 저하 문제를 해결할 수 있지만, 그래픽 "
+"문제가 발생할 수도 있습니다."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -9823,11 +9821,6 @@ msgstr "이미지 판독기 카드를 설치하여 idks 이미지 파일 읽기 
 msgctxt "game_options"
 msgid "Integer Scale"
 msgstr "정수 스케일"
-
-#. TRANSLATION: ymir
-msgctxt "game_options"
-msgid "Interlaced"
-msgstr ""
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -10289,7 +10282,7 @@ msgstr "언어"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "LANGUAGE UNLOCK"
-msgstr ""
+msgstr "언어 잠금 해제"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10299,7 +10292,7 @@ msgstr "대기 시간 감소"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "LAZY TEXTURE CACHING"
-msgstr ""
+msgstr "레이지 텍스처 캐싱"
 
 #. TRANSLATION: libretro/pokemini
 msgctxt "game_options"
@@ -11939,12 +11932,12 @@ msgstr "니카라과"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "No (Default)"
-msgstr ""
+msgstr "아니오 (기본)"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "No Buffer"
-msgstr ""
+msgstr "버퍼 없음"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -12622,7 +12615,7 @@ msgstr "게임당 비주얼 메모리 유닛(VMU)"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "PERFORMANCE"
-msgstr ""
+msgstr "성능"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -13438,7 +13431,7 @@ msgstr "렌더"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "RENDER DUPLICATE FRAMES TO 60 HZ"
-msgstr ""
+msgstr "중복 프레임을 60Hz로 렌더링"
 
 #. TRANSLATION: redream
 msgctxt "game_options"
@@ -14006,6 +13999,8 @@ msgid ""
 "Runs \"skinning\" on the CPU instead of the GPU, means that draw calls from "
 "the game can more easily be combined, which often improves things."
 msgstr ""
+"GPU 대신 CPU에서 \"스키닝\"을 실행하면 게임의 드로우 콜을 더 쉽게 결합할 수 "
+"있어 성능이 향상되는 경우가 많습니다."
 
 #. TRANSLATION: libretro/dosbox_pure, xenia, xenia-canary
 msgctxt "game_options"
@@ -14295,7 +14290,7 @@ msgstr "DS 시스템 메뉴 건너뛰기"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "SKIP GPU READBACKS"
-msgstr ""
+msgstr "GPU 리드백 건너뛰기"
 
 #. TRANSLATION: iortcw
 msgctxt "game_options"
@@ -14330,7 +14325,7 @@ msgstr "SMAA (향상된 서브픽셀 형태학적 안티에일리어싱)"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "SMART 2D TEXTURE FILTERING"
-msgstr ""
+msgstr "스마트 2D 텍스처 필터링"
 
 #. TRANSLATION: hypseus-singe, play, shared
 msgctxt "game_options"
@@ -14380,7 +14375,7 @@ msgstr "소프트웨어 목록"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "SOFTWARE SKINNING"
-msgstr ""
+msgstr "소프트웨어 스키닝"
 
 #. TRANSLATION: libretro/mgba, libretro/vba-m
 msgctxt "game_options"
@@ -14430,7 +14425,7 @@ msgstr "스피드 핵 (안전)"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "SPEED HACKS"
-msgstr ""
+msgstr "속도 ㅎ"
 
 #. TRANSLATION: soniccd
 msgctxt "game_options"
@@ -14440,7 +14435,7 @@ msgstr "스핀대시 유형"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "SPLINE/BEZIER CURVES QUALITY"
-msgstr ""
+msgstr "스플라인/베지어 곡선 품질"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -14585,7 +14580,7 @@ msgstr "동기화 렌더링"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "SYSTEM"
-msgstr ""
+msgstr "시스테"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -15286,6 +15281,8 @@ msgid ""
 "Skip buffer effects faster but may not render some games. Disables "
 "resolution, MSAA, auto frameskip and duplicate frames to 60Hz."
 msgstr ""
+"버퍼 효과를 더 빠르게 건너뛰지만 일부 게임은 렌더링되지 않을 수 있습니다. 해"
+"상도, MSAA, 자동 프레임 건너뛰기 및 프레임 복제를 60Hz로 비활성화합니다."
 
 #. TRANSLATION: iortcw.keys, theforceengine.keys
 msgctxt "keys_files"
@@ -16143,7 +16140,7 @@ msgstr "텍스처 교체"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "TEXTURE SCALING"
-msgstr ""
+msgstr "텍스처 스케일링"
 
 #. TRANSLATION: libretro/desmume
 msgctxt "game_options"
@@ -16351,6 +16348,8 @@ msgid ""
 "The PSP will cull triangles that are outside a 4096x4096 clipping box, and "
 "also triangles crossing the Z=1 plane if clipping is enabled."
 msgstr ""
+"PSP는 4096x4096 클리핑 상자 외부에 있는 삼각형을 제거하고, 클리핑이 활성화된 "
+"경우 Z=1 평면을 교차하는 삼각형도 제거합니다."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -16420,6 +16419,8 @@ msgid ""
 "There is generally no point in going beyond 4x texture scaling unless you "
 "are running at very high resolutions."
 msgstr ""
+"매우 높은 해상도에서 실행하지 않는 한, 텍스처 스케일링을 4배 이상으로 늘리는 "
+"것은 일반적으로 의미가 없습니다."
 
 #. TRANSLATION: openmsx
 msgctxt "game_options"
@@ -17065,7 +17066,7 @@ msgstr "Unsaturated v6 (파이어브랜드X)"
 #. TRANSLATION: libretro/pcsx2
 msgctxt "game_options"
 msgid "Unscaled"
-msgstr ""
+msgstr "비축소"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -17085,12 +17086,12 @@ msgstr "위쪽"
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Up to 1"
-msgstr ""
+msgstr "최대 1개"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Up to 2 (Default)"
-msgstr ""
+msgstr "최대 2개 (기본)"
 
 #. TRANSLATION: openjk.keys
 msgctxt "keys_files"
@@ -17378,7 +17379,7 @@ msgstr ""
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "Uses hardware to make curves."
-msgstr ""
+msgstr "하드웨어를 사용하여 곡선을 만듭니다."
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -17856,6 +17857,8 @@ msgid ""
 "When enabled and upscaling, textures look better than linear filtering for a "
 "lot of 2D art."
 msgstr ""
+"이 기능을 활성화하고 확장하면 많은 2D 아트에서 선형 필터링보다 텍스처가 더 좋"
+"아 보입니다."
 
 #. TRANSLATION: flycast/dolphin
 msgctxt "game_options"
@@ -18572,6 +18575,8 @@ msgid ""
 "xBRZ - a sharpening upscale algorithm, Bicubic - a smooth look, Hybrid - "
 "uses bicubic for smooth areas."
 msgstr ""
+"xBRZ - 선명도를 높이는 고급 알고리즘, Bicubic - 매끄러운 모양, Hybrid - 매끄"
+"러운 영역에 Bicubic을 사용합니다."
 
 #. TRANSLATION: libretro/vice_xplus4
 msgctxt "game_options"
@@ -18591,10 +18596,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "Choose the Dreamcast console language."
 #~ msgstr "드림캐스트 콘솔 언어를 선택하세요."
-
-#~ msgctxt "game_options"
-#~ msgid "Choose your preferred aspect ratio.."
-#~ msgstr "원하는 화면비를 선택하세요."
 
 #~ msgctxt "keys_files"
 #~ msgid "Cycle next"
