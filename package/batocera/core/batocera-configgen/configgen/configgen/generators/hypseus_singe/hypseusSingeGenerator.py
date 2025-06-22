@@ -104,7 +104,7 @@ class HypseusSingeGenerator(Generator):
             "maddog": ["maddog", "maddog-hd", "maddog_hd"],
             "maddog2": ["maddog2", "maddog2-hd", "maddog2_hd"],
             "jack": ["jack", "samurai_jack"],
-            "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd"],
+            "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd", "wsjr-hd"],
             "pussinboots": ["pussinboots", "puss_in_boots"],
             "spacepirates": ["spacepirates", "spacepirates-hd", "space_pirates_hd"],
         }
@@ -270,7 +270,7 @@ class HypseusSingeGenerator(Generator):
                     commandArray.extend(["-sinden", "7", borderColor])
                 else:
                     commandArray.extend(["-sinden", "9", borderColor])
-            
+
             if guns: # enable manymouse for guns
                 commandArray.extend(["-manymouse"]) # sinden implies manymouse
                 if xratio is not None:
@@ -278,7 +278,7 @@ class HypseusSingeGenerator(Generator):
             else:
                 if system.config.get_bool("singe_abs"):
                     commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
-        
+
         # bezels
         if not system.config.get_bool('hypseus_bezels', True):
             bezelRequired = False
