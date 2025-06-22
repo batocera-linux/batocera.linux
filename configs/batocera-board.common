@@ -112,3 +112,6 @@ BR2_PACKAGE_BATOCERA_VIDEO_CODECS=y
 
 # Enables ccache
 BR2_CCACHE=y
+
+# Don't purge locales
+BR2_ENABLE_LOCALE_PURGE=n
