@@ -144,6 +144,7 @@ class HypseusSingeGenerator(Generator):
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = rom.stem
+        zipFile = rom / f"{romName}.zip"
         frameFile = rom / f"{romName}.txt"
         commandsFile = rom / f"{romName}.commands"
         singeFile = rom / f"{romName}.singe"
@@ -179,10 +180,17 @@ class HypseusSingeGenerator(Generator):
             _logger.debug("Resolution: %s", video_resolution)
 
         if system.name == "singe":
-            commandArray = ['/usr/bin/hypseus',
-                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
-                            "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
-                            "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+            if zipFile.exists():
+                commandArray = ['/usr/bin/hypseus',
+                                "singe", "vldp", "-retropath", "-framefile", frameFile, "-zlua", zipFile,
+                                "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
+                                "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+            else:
+                commandArray = ['/usr/bin/hypseus',
+                                "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
+                                "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
+                                "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+
         else:
             commandArray = ['/usr/bin/hypseus',
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
