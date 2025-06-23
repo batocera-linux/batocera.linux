@@ -1,6 +1,7 @@
 config BR2_PACKAGE_LIBRETRO_KRONOS
 	bool "libretro-kronos"
 	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_MESA3D
     help
       A libretro saturn emulator core.
 	  
