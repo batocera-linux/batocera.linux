@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RYZENADJ_VERSION = v0.16.0
+RYZENADJ_VERSION = 7aeb2f4869ee52ac161ee4cb4871e29113487885
 RYZENADJ_SITE = $(call github,FlyGoat,RyzenAdj,$(RYZENADJ_VERSION))
 RYZENADJ_LICENSE = GPLv2
 RYZENADJ_DEPENDENCIES = pciutils libpciaccess

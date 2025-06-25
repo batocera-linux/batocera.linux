@@ -1,3 +1,16 @@
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 #!/bin/bash
 
 log="/userdata/system/logs/amd-tdp.log"
@@ -14,8 +27,8 @@ case "$1" in
             echo "*** ------------------------------------- ***" >> $log
             echo "" >> $log
             echo "Supported Ryzen Mobile Processor found for TDP..." > $log
-            MAX_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
-            # Check if MAX_TDP is defined and non-empty
+            MAX_TDP=$(/usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}')
+            # Check if MAX_TDP is defined and not-empty
             if [ -n "$MAX_TDP" ]; then
                 echo "Maximum reported TDP is $MAX_TDP Watts" >> $log
                 /usr/bin/batocera-settings-set system.cpu.tdp "${MAX_TDP}"
