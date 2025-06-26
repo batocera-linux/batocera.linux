@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
@@ -11,7 +13,6 @@
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
-#!/bin/bash
 
 # this configgen script leverages the S93amdtdp init.d and
 # the batocera-amd-tdp scripts to allow adjustments to TDP
