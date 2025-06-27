@@ -110,7 +110,7 @@
 - Hurrican to 24th of Nov build
 - Hypseus Singe to 2.11.5
 - IOQuake3 to 25th December build
-- Jazz2 to 3.2.0
+- Jazz2 to 3.3.0
 - Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.277
 - Libretro-Play! 4th Feb build

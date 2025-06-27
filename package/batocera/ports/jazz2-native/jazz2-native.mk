@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-JAZZ2_NATIVE_VERSION = 3.2.0
+JAZZ2_NATIVE_VERSION = 3.3.0
 JAZZ2_NATIVE_SITE = https://github.com/deathkiller/jazz2-native.git
 JAZZ2_NATIVE_SITE_METHOD = git
 JAZZ2_NATIVE_GIT_SUBMODULES = YES
