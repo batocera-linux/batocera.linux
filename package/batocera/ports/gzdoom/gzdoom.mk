@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GZDOOM_VERSION = g4.14.1
+GZDOOM_VERSION = g4.14.2
 GZDOOM_SITE = https://github.com/ZDoom/gzdoom.git
 GZDOOM_SITE_METHOD=git
 GZDOOM_GIT_SUBMODULES=YES

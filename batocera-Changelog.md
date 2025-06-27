@@ -106,7 +106,7 @@
 - ETLegacy to v2.83.2
 - Flycast and libretro-flycast to v2.5
 - GroovyMAME to 0.277
-- Gzdoom to g4.14.1
+- Gzdoom to g4.14.2
 - Hurrican to 24th of Nov build
 - Hypseus Singe to 2.11.5
 - IOQuake3 to 25th December build
