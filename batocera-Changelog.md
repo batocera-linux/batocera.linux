@@ -159,7 +159,7 @@
 - Mesa3D to 25.1.4
 - MPV to 0.40.0
 - Nvidia production driver to 575.64
-- Pipewire to 1.2.7
+- Pipewire to 1.4.6
 - QT6 to 6.8.1
 - RClone to v1.69.1
 - RPi firmware to match Kernel 6.12.25
@@ -172,7 +172,7 @@
 - Vulkan stack to v1.4.304
 - Wine Mono to 9.4.0
 - Wine-TKG to 10.7
-- Wireplumber to 0.5.8
+- Wireplumber to 0.5.10
 - Xone to Mar 13, 2025
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue
