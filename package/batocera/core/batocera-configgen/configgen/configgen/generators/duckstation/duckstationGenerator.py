@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
+from ...batoceraPaths import BIOS, CONFIGS, CACHE, SCREENSHOTS, SAVES, CHEATS, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -282,9 +282,13 @@ class DuckstationGenerator(Generator):
         if not settings.has_section("Folders"):
             settings.add_section("Folders")
         # Set other folder locations too
+        mkdir_if_not_exists(CACHE / "duckstation")
         settings.set("Folders", "Cache", "../../cache/duckstation")
+        mkdir_if_not_exists(SCREENSHOTS)
         settings.set("Folders", "Screenshots", "../../../screenshots")
+        mkdir_if_not_exists(SAVES / "duckstation")
         settings.set("Folders", "SaveStates", "../../../saves/duckstation")
+        mkdir_if_not_exists(CHEATS / "duckstation")
         settings.set("Folders", "Cheats", "../../../cheats/duckstation")
 
         ## [Pad]
