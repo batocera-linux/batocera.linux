@@ -141,6 +141,7 @@
 - Xemu to v0.8.73
 - Xenia to build 1d7973a (June 10, 2025)
 ### System
+- Alsa stack to 1.2.14
 - Bluez to 5.82
 - BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
