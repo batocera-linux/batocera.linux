@@ -3,9 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on May 31, 2025
+# Version: Commits on Jun 29, 2025
 # uses standalone tree for now
-VPINBALL_VERSION = be2431991b3a184e997950328f6cb62421bb9cfa
+VPINBALL_VERSION = d1924397b31131c233d2cdd1e92632d5941c443b
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
