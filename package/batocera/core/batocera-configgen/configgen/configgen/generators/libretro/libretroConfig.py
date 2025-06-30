@@ -514,7 +514,7 @@ def createLibretroConfig(
             pad = controllers[i - 1]
             if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.config.get(f'{option}-controller{i}', 'retropad') != 'retropad'):
                 update_n64_controller_config(i)
-    
+
     ## Bennu Game Development
     if system.config.core == 'bennugd':
         bezel = None
