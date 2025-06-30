@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _CONFIG_DIR: Final = CONFIGS / "gzdoom"
 _INI_FILE: Final = _CONFIG_DIR / "gzdoom.ini"
 _FM_BANKS_DIR: Final = _CONFIG_DIR / "fm_banks"
-_SOUND_FONTS_DIR: Final = _CONFIG_DIR / "soundfouts"
+_SOUND_FONTS_DIR: Final = _CONFIG_DIR / "soundfonts"
 
 def set_joystick_setting(ini_file: Path, set_gz_joystick: str) -> None:
     with ini_file.open("r") as file:
