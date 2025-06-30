@@ -5,7 +5,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import BIOS, CONFIGS, CACHE, SCREENSHOTS, SAVES, CHEATS, ensure_parents_and_open, mkdir_if_not_exists
+from ...batoceraPaths import (
+    BIOS,
+    CACHE,
+    CHEATS,
+    CONFIGS,
+    SAVES,
+    SCREENSHOTS,
+    ensure_parents_and_open,
+    mkdir_if_not_exists,
+)
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
