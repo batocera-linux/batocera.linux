@@ -290,8 +290,14 @@ HOST_WINE_TKG_CONF_OPTS += --without-gettext --without-gettextpo
 endif
 
 # Wine needs to enable 64-bit build tools on 64-bit host
-ifeq ($(HOSTARCH),x86_64)
+ifneq ($(filter $(HOSTARCH),x86_64 aarch64),)
 HOST_WINE_TKG_CONF_OPTS += --enable-win64
+endif
+
+ifeq ($(HOSTARCH),aarch64)
+# Even though we only compile the tools, the configure script still checks if it
+# can compile wine and needs help to find the right tools on aarch64
+HOST_WINE_TKG_CONF_OPTS += --enable-archs=x86_64 --host=aarch64-linux-gnu
 endif
 
 # Wine only needs the host tools to be built, so cut-down the
