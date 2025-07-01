@@ -1,0 +1,13 @@
+--- a/common_drivers/drivers/tee/tee.c
++++ b/common_drivers/drivers/tee/tee.c
+@@ -139,8 +139,8 @@
+ #define TVP_CMD_CHECK_OUT_MEM           3
+ #define TVP_CMD_REGISTER_MEM            4
+ 
+-#define PTA_TVP_UUID UUID_INIT(0x1a658fe8, 0x894e, 0x4403, \
+-			0xae, 0xa6, 0x5a, 0xe6, 0x91, 0xe8, 0xa3, 0x5f)
++#define PTA_TVP_UUID UUID_INIT(0x526fc4fc, 0x7ee6, 0x4a12, \
++			0x96, 0xe3, 0x83, 0xda, 0x95, 0x65, 0xbc, 0xe8)
+ 
+ /* stest pta related */
+ struct tee_sys_info {
