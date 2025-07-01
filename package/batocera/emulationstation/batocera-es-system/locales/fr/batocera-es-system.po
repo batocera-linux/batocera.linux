@@ -2998,8 +2998,8 @@ msgctxt "game_options"
 msgid ""
 "Allows reducing the visual quality of these curves for higher performance."
 msgstr ""
-"Permet de résuire la qualité visuelle des courbures, pour de "
-"meilleures performances."
+"Permet de résuire la qualité visuelle des courbures, pour de meilleures "
+"performances."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -4695,8 +4695,8 @@ msgid ""
 "CPU-GPU latency limit. Lower values improve latency but may reduce "
 "performance."
 msgstr ""
-"Limite de latence CPU-GPU. Des valeurs basses baissent la "
-"latence mais peuvent réduire les performances."
+"Limite de latence CPU-GPU. Des valeurs basses baissent la latence mais "
+"peuvent réduire les performances."
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
@@ -4886,8 +4886,8 @@ msgctxt "game_options"
 msgid ""
 "Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder."
 msgstr ""
-"Peut corriger les bugs de certains jeux. N'est utilse que pour le "
-"décodeur SPU LLVM ou dynamique."
+"Peut corriger les bugs de certains jeux. N'est utilse que pour le décodeur "
+"SPU LLVM ou dynamique."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -5703,11 +5703,6 @@ msgstr "Composite direct (FirebrandX)"
 msgctxt "game_options"
 msgid "Config"
 msgstr "Configuration"
-
-#. TRANSLATION: gzdoom
-msgctxt "game_options"
-msgid "Configuring controllers in GZDoom can cause problems."
-msgstr "Configurer les manettes dans GZDoom peut poser des problèmes."
 
 #. TRANSLATION: libretro/fbneo
 msgctxt "game_options"
@@ -7442,8 +7437,8 @@ msgstr "Polygones maillés activés pour la translucidité."
 msgctxt "game_options"
 msgid "Enabled or disable the mouse cursor. Useful for CG's menus."
 msgstr ""
-"Activation ou désactivation du curseur de la souris. Utile pour "
-"les menus de CG."
+"Activation ou désactivation du curseur de la souris. Utile pour les menus de "
+"CG."
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8138,8 +8133,7 @@ msgstr "Avance rapide"
 msgctxt "game_options"
 msgid "Faster but can cause text problems in some games."
 msgstr ""
-"Plus rapide, mais peut provoquer des problèmes "
-"de texte dans certains jeux."
+"Plus rapide, mais peut provoquer des problèmes de texte dans certains jeux."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -8291,7 +8285,7 @@ msgstr ""
 "boîte aux lettres peut avoir une latence plus faible mais peut perdre des "
 "images."
 
-#. TRANSLATION: xenia-canary
+#. TRANSLATION: gzdoom, xenia-canary
 msgctxt "game_options"
 msgid ""
 "Fix screen tearing. With Some games you need to turn VSync on in the games "
@@ -9579,8 +9573,8 @@ msgctxt "game_options"
 msgid ""
 "House of the Dead 4 speed fix. Select CPU base frequency of your processor."
 msgstr ""
-"Corrige la vitesse dans House of the Dead 4. Choisissez la fréquence "
-"de base de votre processeur."
+"Corrige la vitesse dans House of the Dead 4. Choisissez la fréquence de base "
+"de votre processeur."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -9842,8 +9836,8 @@ msgid ""
 "In some games, this can fix severe slowdowns, but can also cause graphical "
 "issues."
 msgstr ""
-"Dans certains jeux, cela peut réduire les ralentissements, mais "
-"cela peut aussi génerer des bugs graphiques."
+"Dans certains jeux, cela peut réduire les ralentissements, mais cela peut "
+"aussi génerer des bugs graphiques."
 
 #. TRANSLATION: bigpemu
 msgctxt "game_options"
@@ -15455,8 +15449,8 @@ msgid ""
 "Skip buffer effects faster but may not render some games. Disables "
 "resolution, MSAA, auto frameskip and duplicate frames to 60Hz."
 msgstr ""
-"Ignore les effets du tampon plus vite, mais peut poser des problèmes "
-"dans certains jeux. Désactive MSAA, sauts d'image et duplication a 60Hz."
+"Ignore les effets du tampon plus vite, mais peut poser des problèmes dans "
+"certains jeux. Désactive MSAA, sauts d'image et duplication a 60Hz."
 
 #. TRANSLATION: iortcw.keys, theforceengine.keys
 msgctxt "keys_files"
@@ -16537,8 +16531,8 @@ msgid ""
 "The PSP will cull triangles that are outside a 4096x4096 clipping box, and "
 "also triangles crossing the Z=1 plane if clipping is enabled."
 msgstr ""
-"La PSP va ignorer les triangles en dehors d'une zone de 4096x4096. ainsi "
-"que les triangles dans le plan Z=1 si le clipping est activé."
+"La PSP va ignorer les triangles en dehors d'une zone de 4096x4096. ainsi que "
+"les triangles dans le plan Z=1 si le clipping est activé."
 
 #. TRANSLATION: mupen64plus
 msgctxt "game_options"
@@ -17003,11 +16997,6 @@ msgstr "UTILISER LE DSP AUDIO"
 msgctxt "game_options"
 msgid "USE FIRMWARE SETTINGS"
 msgstr "UTILISER LES PARAMÈTRES DU FIRMWARE"
-
-#. TRANSLATION: gzdoom
-msgctxt "game_options"
-msgid "USE GZDOOM JOYSTICK CONFIGURATION"
-msgstr "UTILISE LA CONFIGURATION DES MANETTES DANS GZDOOM"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -19361,6 +19350,10 @@ msgstr "jaune/bleu"
 #~ msgid "Configuration menu"
 #~ msgstr "Menu Configuration"
 
+#~ msgctxt "game_options"
+#~ msgid "Configuring controllers in GZDoom can cause problems."
+#~ msgstr "Configurer les manettes dans GZDoom peut poser des problèmes."
+
 #~ msgctxt "keys_files"
 #~ msgid "Continue/Pause emulation"
 #~ msgstr "Pauser/Continuer l'émulation"
@@ -20457,6 +20450,10 @@ msgstr "jaune/bleu"
 #~ "graphique (recommandé). S'il est désactivé, vous devez modifier "
 #~ "manuellement le fichier de configuration (experts uniquement - non "
 #~ "recommandé)."
+
+#~ msgctxt "game_options"
+#~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
+#~ msgstr "UTILISE LA CONFIGURATION DES MANETTES DANS GZDOOM"
 
 #~ msgctxt "game_options"
 #~ msgid "USE ZINK RENDERER"
