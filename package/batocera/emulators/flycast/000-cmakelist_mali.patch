@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f1cdda8..9d2f06e 100644
+index 1210802f9b..e1ee21ab04 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -78,6 +78,7 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
@@ -10,14 +10,14 @@ index f1cdda8..9d2f06e 100644
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -114,6 +115,10 @@ else()
- 	set(GIT_HASH "000000000")
- endif()
+@@ -235,6 +236,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
+ 		CMAKE_CXX_STANDARD 20
+ 		CMAKE_CXX_STANDARD_REQUIRED ON)
  
 +if(USE_MALI)
-+  target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
++        target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
 +endif()
 +
  if(WINDOWS_STORE)
- 	string(REGEX REPLACE "[Vv]" "" MS_VERSION ${GIT_VERSION})
- 	string(REPLACE "-" "." MS_VERSION ${MS_VERSION})
+ 	set(USE_OPENGL OFF)
+ 	set(USE_VULKAN OFF)
