@@ -212,7 +212,13 @@ case "${ACTION}" in
                 if [ -n "${TOUCHSCREEN}" ]; then
                     swaymsg -t command "input \"${TOUCHSCREEN}\" map_to_output \"${PSCREEN}\""
                     echo "Mapped touchscreen to ${PSCREEN}" >> $log
-                    swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 -1 1 1 0 0"
+                    # this touchscreen doesn't need a rotated matrix
+                    if [ "${TOUCHSCREEN}" = "0:0:generic_ft5x06_(a0)" ]; then
+                        echo "Applying normal matrix for ${TOUCHSCREEN} at 270 degrees" >> $log
+                        swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 1 0 0 0 1 0"
+                    else
+                        swaymsg -t command "input \"${TOUCHSCREEN}\" calibration_matrix 0 1 0 -1 0 1"
+                    fi
                     echo "Touchscreen rotated 270 degrees" >> $log
                 fi
             ;;
