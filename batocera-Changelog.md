@@ -145,7 +145,7 @@
 - Bluez to 5.82
 - BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
-- DXVK to 2.6.1
+- DXVK to 2.7
 - DXVK-NVApi to 0.9.0
 - Faudio to 25.02
 - FFMPEG to 7.1.1
