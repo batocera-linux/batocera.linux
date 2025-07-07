@@ -12,7 +12,7 @@ GZDOOM_GIT_SUBMODULES = YES
 GZDOOM_LICENSE = GPLv3
 GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic libvpx webp
 GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
- 
+
 # We need the tools from the host package to build the target package
 HOST_GZDOOM_DEPENDENCIES = zlib bzip2 host-webp
 HOST_GZDOOM_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -85,9 +85,9 @@ define GZDOOM_PREPARE_VERSION_INFO
 	export FALLBACK_GIT_TAG=$(GZDOOM_VERSION); \
 	export FALLBACK_GIT_HASH=$(GZDOOM_HASH); \
 	export FALLBACK_GIT_TIMESTAMP="$(shell date -u -Iseconds)"; \
-	$(HOST_DIR)/bin/cmake -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
+	$(BR2_CMAKE) -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
         $(@D)/src/gitinfo.h
-	$(HOST_DIR)/bin/cmake -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
+	$(BR2_CMAKE) -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
         $(GZDOOM_BUILDDIR)/src/gitinfo.h
 endef
 
