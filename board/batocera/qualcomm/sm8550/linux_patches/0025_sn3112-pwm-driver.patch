@@ -38,14 +38,14 @@ diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
 index c5ec9e168ee7c..f46223a7b9a52 100644
 --- a/drivers/pwm/Makefile
 +++ b/drivers/pwm/Makefile
-@@ -51,6 +51,7 @@ obj-$(CONFIG_PWM_RZ_MTU3)	+= pwm-rz-mtu3.o
+@@ -53,6 +53,7 @@ obj-$(CONFIG_PWM_RZ_MTU3)	+= pwm-rz-mtu3.o
  obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
  obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
  obj-$(CONFIG_PWM_SL28CPLD)	+= pwm-sl28cpld.o
 +obj-$(CONFIG_PWM_SN3112)	+= pwm-sn3112.o
+ obj-$(CONFIG_PWM_SOPHGO_SG2042)	+= pwm-sophgo-sg2042.o
  obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
  obj-$(CONFIG_PWM_SPRD)		+= pwm-sprd.o
- obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
 diff --git a/drivers/pwm/pwm-sn3112.c b/drivers/pwm/pwm-sn3112.c
 new file mode 100644
 index 0000000000000..38ef948602a3c
