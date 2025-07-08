@@ -129,6 +129,12 @@ do_videostart ()
     fi
     if [[ -n "$video_resize" ]]; then
         resolution_only="${video_resize%%.*}"
+        if [[ "${video_rotation}" -eq 90 || "${video_rotation}" -eq 270 ]]; then
+            # invert the resolution
+            width="${resolution_only%x*}"
+            height="${resolution_only#*x}"
+            resolution_only="${height}x${width}"
+        fi
         resize="${resolution_only/x/:}"
         mpv_video="${mpv_video} --vf=scale=${resize}"
         drm_mode=$resolution_only
