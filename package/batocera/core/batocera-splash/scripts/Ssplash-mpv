@@ -128,9 +128,10 @@ do_videostart ()
         video_resize=$(batocera-settings-get-master es.resolution)
     fi
     if [[ -n "$video_resize" ]]; then
-        resize=$(echo "${video_resize}" | sed "s/x/:/")
+        resolution_only="${video_resize%%.*}"
+        resize="${resolution_only/x/:}"
         mpv_video="${mpv_video} --vf=scale=${resize}"
-        drm_mode=$video_resize
+        drm_mode=$resolution_only
     fi
     
     video_subtitle=$(batocera-settings-get splash.screen.subtitle)
