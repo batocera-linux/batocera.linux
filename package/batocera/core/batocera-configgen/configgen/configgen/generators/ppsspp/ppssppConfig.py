@@ -172,6 +172,21 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
     iniConfig.set("Upgrade", "UpgradeVersion", "")
     iniConfig.set("Upgrade", "DismissedVersion", "")
 
+    ## [RetroAchievements]
+    if not iniConfig.has_section("Achievements"):
+        iniConfig.add_section("Achievements")
+
+    if system.config.get_bool('retroachievements'):
+        iniConfig.set("Achievements", "AchievementsUserName", system.config.get_str("retroachievements.username", ""))
+        iniConfig.set("Achievements", "AchievementsChallengeMode", str(system.config.get_bool("retroachievements.hardcore", False)))
+        iniConfig.set("Achievements", "AchievementsEncoreMode", str(system.config.get_bool("retroachievements.encore", False)))
+        iniConfig.set("Achievements", "AchievementsUnofficial", str(system.config.get_bool("retroachievements.unofficial", False)))
+        iniConfig.set("Achievements", "AchievementsSoundEffects", "True")
+        iniConfig.set("Achievements", "AchievementsEnable", "True")
+    else:
+        iniConfig.set("Achievements", "AchievementsEnable", "False")
+        iniConfig.set("Achievements", "AchievementsChallengeMode", "False")
+
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for section_option, user_config_value in system.config.items(starts_with='ppsspp.'):
         custom_section, _, custom_option = section_option.partition('.')

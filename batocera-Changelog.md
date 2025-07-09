@@ -7,7 +7,7 @@
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
 - Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
-- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
+- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`).
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 - ScummVM libretro and standalone savegames share the same folders now.
   If you have saved games from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
@@ -42,7 +42,7 @@
 - DuckStation cheat list
 - Game Specific color palette for gambette core
 - Non-Micro GUN4IR light gun hardware support
-- Steering wheel support added for :
+- Steering wheel support added for:
   - Logitech: G923 (Xbox), PRO Racing Wheel
   - Speedlink: 4in1 Leather Power Feedback Wheel
   - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
@@ -51,7 +51,7 @@
 - Support of Shanwan Twin USB Joystick (new revision)
 - Libretro-PS2 core
 - Force Feedback on RP5 & RPmini
-- vkQuake 1, 2 & 3 for systems that support Vulkan.
+- vkQuake 1, 2 & 3 for systems that support Vulkan
 - TR1X & TR2X for Tomb Raider I & II support
 - Oric Atmos (and Oric 1) with CLK Clock Signal emulator
 - CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
@@ -61,13 +61,15 @@
 - DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
 - Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
-- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith.
+- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith
 - OpenJK to play Jedi Academy & Jedi Outcast
 - Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
 - ShadPS4 emulator for PlayStation 4 gaming
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
-- WiringOP-Python for OrangePi board GPIO scripting.
+- WiringOP-Python for OrangePi board GPIO scripting
 - Libretro-BennuGD for compatible games
+- RetroAchievements: support for unofficial achievements
+- PPSSPP standalone Retroachievements support (log through the UI the first time)
 ### Fixed
 - Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
 - Fix some problems in ES and Batocera with IPv6 networks
@@ -80,7 +82,7 @@
 - DualShock 4 controller on Odroid XU4
 - Internal bezels still enabled for Libretro cores when a widescreen ratio selected
 - Centering of PCSX2 messages
-- Xbox compatible bluetooth controllers not working in Steam.
+- Xbox compatible bluetooth controllers not working in Steam
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images

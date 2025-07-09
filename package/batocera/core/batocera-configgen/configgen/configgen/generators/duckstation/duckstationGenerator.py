@@ -227,12 +227,13 @@ class DuckstationGenerator(Generator):
             settings.add_section("Cheevos")
         # RetroAchievements
         if system.config.get_bool('retroachievements'):
-            username  = system.config.get('retroachievements.username', "")
-            hardcore  = system.config.get('retroachievements.hardcore', "")
-            presence  = system.config.get('retroachievements.richpresence', "")
-            indicator = system.config.get('retroachievements.challenge_indicators', "")
-            leaderbd  = system.config.get('retroachievements.leaderboards', "")
-            token     = system.config.get('retroachievements.token', "")
+            username   = system.config.get('retroachievements.username', "")
+            hardcore   = system.config.get('retroachievements.hardcore', "")
+            presence   = system.config.get('retroachievements.richpresence', "")
+            indicator  = system.config.get('retroachievements.challenge_indicators', "")
+            leaderbd   = system.config.get('retroachievements.leaderboards', "")
+            token      = system.config.get('retroachievements.token', "")
+            unofficial = system.config.get('retroachievements.unofficial', "")
             settings.set("Cheevos", "Enabled",       "true")
             settings.set("Cheevos", "Username",      username)
             settings.set("Cheevos", "Token",         token)
@@ -252,6 +253,10 @@ class DuckstationGenerator(Generator):
                 settings.set("Cheevos", "Leaderboards",  "true")
             else:
                 settings.set("Cheevos", "Leaderboards",  "false")
+            if unofficial == '1':
+                settings.set("Cheevos", "UnofficialTestMode",  "true")
+            else:
+                settings.set("Cheevos", "UnofficialTestMode",  "false")
             #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
             #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
         else:
