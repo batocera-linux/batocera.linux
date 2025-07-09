@@ -54,13 +54,23 @@ do_start () {
     [ -e /dev/fb0 ] && fbv ${FBV_OPTS} -i "${image}"
 }
 
+do_stop () {
+    if [ -e /dev/fb0 ]; then
+        dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
+    fi
+}
+
 case "$1" in
     start)
         do_start &
         ;;
     stop)
+        do_stop
         ;;
     *)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
 esac
 
 exit $?
