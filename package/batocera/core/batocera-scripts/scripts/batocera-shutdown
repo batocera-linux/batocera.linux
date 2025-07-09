@@ -1,19 +1,382 @@
-#!/bin/bash 
+#!/bin/bash
 #
-# Suspend or shutdown
+# Suspend, shutdown, or fake suspend
 #
 
+################################################################################
+# FAKE SUSPEND/RESUME HELPER FUNCTIONS
+# (Inspired by ROCKNIX)
+################################################################################
+
+FAKE_SUSPEND_FLAG="/var/run/batocera-fake-suspend.flag"
+# State files
+ACTIVE_DISPLAYS_FILE="/var/run/active_displays.list"
+CPU_GOV_STATE_FILE="/var/run/cpu_governor.state"
+GPU_GOV_STATE_FILE="/var/run/gpu_governor.state"
+BT_STATE_FILE="/var/run/bluetooth.state"
+
+# The LED init.d control script
+BATOLED_INIT_SCRIPT="/etc/init.d/S51led-handheld"
+
+# --- IMPORTANT: Input Whitelist ---
+# Add substrings of device names that should NOT be blocked.
+# This is CRITICAL to ensure the power button can wake the device.
+# To find your power button's name, you can run: cat /proc/bus/input/devices
+# Look for an entry with "power" or "pwr" in the name.
+INPUT_WHITELIST_PATTERNS=(
+    "Power"      # Matches "Power Button"
+    "power"      # Matches "powerkey"
+    "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
+)
+
+# --- Display Functions ---
+display_off() {
+    echo "Turning display OFF"
+    if pgrep -x "sway" >/dev/null; then
+        swaymsg "output * power off"
+    elif pgrep -x "labwc" >/dev/null; then
+        # For labwc, find active displays, save their names, then turn them off.
+        local active_displays
+        active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: Saved active displays to state file: $(cat ${ACTIVE_DISPLAYS_FILE})"
+
+            for output in ${active_displays}; do
+                echo "INFO: Turning off output '${output}'"
+                wlr-randr --output "${output}" --off
+            done
+        else
+            echo "INFO: No active displays found to turn off."
+        fi
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        local active_displays=$(xrandr | grep " connected " | awk '{print $1}')
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: [X11] Saved active displays: $(cat ${ACTIVE_DISPLAYS_FILE})"
+            for o in $active_displays; do
+                echo "INFO: [X11] Turning off output '${o}'"
+                xrandr --output "${o}" --off
+            done
+        fi
+    fi
+}
+
+display_on() {
+    echo "Turning display ON"
+    if pgrep -x "sway" >/dev/null; then
+        swaymsg "output * power on"
+    elif pgrep -x "labwc" >/dev/null; then
+        # For labwc, restore displays using the saved state file.
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable
+            outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+
+            if [ -n "${outputs_to_enable}" ]; then
+                echo "INFO: Restoring displays using 'batocera-resolution setOutput ${outputs_to_enable}'"
+                batocera-resolution setOutput ${outputs_to_enable}
+            fi
+            # Clean up the state file after use.
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: No active display state file found. Restoring all outputs."
+			# Turn all detected outputs back on.
+			for output in $(wlr-randr | awk '/^[^ ]/ {print $1}'); do
+				echo "INFO: Turning on output '${output}'"
+				wlr-randr --output "${output}" --on
+			done
+        fi
+    elif pgrep -x "xinit" >/dev/null; then
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+            if [ -n "${outputs_to_enable}" ]; then
+                export DISPLAY=:0
+                batocera-resolution setOutput ${outputs_to_enable}
+                echo "INFO: [X11] Re-enabling displays with 'xrandr --auto'..."
+                for o in $outputs_to_enable; do
+                    xrandr --output "${o}" --auto
+                done
+            fi
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: No active display state file found."
+        fi
+    fi
+}
+
+# --- Audio Functions ---
+mute_audio() {
+    echo "Muting audio"
+    pactl set-sink-mute @DEFAULT_SINK@ true
+}
+
+unmute_audio() {
+    echo "Unmuting audio"
+    pactl set-sink-mute @DEFAULT_SINK@ false
+}
+
+# --- CPU Core Functions ---
+park_cores() {
+    echo "Parking additional CPU cores"
+    for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
+        echo 0 > "${core}"
+    done
+}
+
+unpark_cores() {
+    echo "Unparking additional CPU cores"
+    for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
+        echo 1 > "${core}"
+    done
+}
+
+# --- Input Blocking Functions (with Whitelist) ---
+block_input() {
+    echo "Blocking input devices (excluding whitelisted power buttons)"
+    for device_path in /dev/input/event*; do
+        # Get the device name from sysfs
+        local event_node=$(basename "${device_path}")
+        local device_name=$(cat "/sys/class/input/${event_node}/device/name")
+
+        local found_in_whitelist=0
+        # Check if the device name contains any of the whitelist patterns
+        for pattern in "${INPUT_WHITELIST_PATTERNS[@]}"; do
+            if [[ "${device_name}" == *"${pattern}"* ]]; then
+                found_in_whitelist=1
+                echo "INFO: Whitelisting '${device_name}' (matches pattern '${pattern}'). Not blocking."
+                break
+            fi
+        done
+
+        # If the device was not found in the whitelist, block it.
+        if (( ! found_in_whitelist )); then
+            echo "INFO: Blocking '${device_name}' (${device_path})"
+            /usr/bin/evtest --grab "${device_path}" > /dev/null &
+        fi
+    done
+}
+
+unblock_input() {
+    echo "Unblocking input devices"
+    # Kill all evtest processes started by block_input
+    killall -q evtest
+}
+
+# --- Wifi Control Functions ---
+disable_wifi() {
+    batocera-wifi disable
+}
+
+enable_wifi() {
+    batocera-wifi enable
+}
+
+# --- LED Daemon Control Functions ---
+suspend_led_daemon() {
+    # Stop the LED daemon service if it's running
+    if [ -f "/var/run/led-handheld.pid" ] && [ -x "${BATOLED_INIT_SCRIPT}" ]; then
+        echo "INFO: Stopping LED daemon service."
+        ${BATOLED_INIT_SCRIPT} stop >/dev/null 2>&1
+    fi
+}
+
+resume_led_daemon() {
+    # Restart the LED daemon service if the init script exists
+    if [ -x "${BATOLED_INIT_SCRIPT}" ]; then
+        # Check the config setting to see if we should restart it
+        local led_enabled
+        led_enabled=$(batocera-settings-get system.led-handheld)
+        if [ "$led_enabled" != "0" ]; then
+            echo "INFO: Starting LED daemon service."
+            ${BATOLED_INIT_SCRIPT} start >/dev/null 2>&1
+        fi
+    fi
+}
+
+# --- CPU/GPU Power Saving Functions ---
+_get_gpu_governor_path() {
+    find -L /sys/class/devfreq/ \( -name "governor" -o -name "scaling_governor" \) -print -quit
+}
+
+set_low_power_governor() {
+    echo "INFO: Setting CPU/GPU to low power mode..."
+    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > "${CPU_GOV_STATE_FILE}"
+    for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+	    echo "powersave" > "${cpu_gov}"
+	done
+    local gpu_gov_file_path=$(_get_gpu_governor_path)
+    if [ -n "${gpu_gov_file_path}" ]; then
+        echo "INFO: Found GPU governor at ${gpu_gov_file_path}"
+        cat "${gpu_gov_file_path}" > "${GPU_GOV_STATE_FILE}"
+        echo "powersave" > "${gpu_gov_file_path}"
+    else
+        echo "INFO: Could not find a GPU governor file."
+    fi
+}
+
+restore_default_governor() {
+    echo "INFO: Restoring CPU/GPU to default power mode..."
+    if [ -f "${CPU_GOV_STATE_FILE}" ]; then
+        i=0
+		while IFS= read -r gov; do
+		    echo "${gov}" > "/sys/devices/system/cpu/cpu${i}/cpufreq/scaling_governor"
+			i=$((i+1))
+		done < "${CPU_GOV_STATE_FILE}"
+		rm -f "${CPU_GOV_STATE_FILE}"
+    fi
+    local gpu_gov_file_path=$(_get_gpu_governor_path)
+    if [ -n "${gpu_gov_file_path}" ] && [ -f "${GPU_GOV_STATE_FILE}" ]; then
+        echo "INFO: Restoring GPU governor at ${gpu_gov_file_path}"
+        cat "${GPU_GOV_STATE_FILE}" > "${gpu_gov_file_path}"
+		rm -f "${GPU_GOV_STATE_FILE}"
+    fi
+}
+
+# --- AMD TDP Power Saving Functions ---
+_is_amd_tdp_supported() {
+    # First, check if it's an AMD CPU at all.
+    if ! lscpu | grep -q AuthenticAMD; then
+        return 1
+    fi
+    # Next, check if ryzenadj supports this specific model.
+    if ! ryzenadj -i 2>/dev/null | head -n 1 | grep -q "unsupported model"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+set_low_power_tdp() {
+    if ! _is_amd_tdp_supported; then
+        return
+    fi
+    
+    # 3W is a common and safe low-power value for standby.
+    local low_tdp_value=3
+    echo "INFO: AMD TDP supported. Setting to low power mode (${low_tdp_value}W)."
+    /usr/bin/batocera-amd-tdp "${low_tdp_value}"
+}
+
+restore_default_tdp() {
+    if ! _is_amd_tdp_supported; then
+        return
+    fi
+
+    echo "INFO: AMD TDP supported. Restoring user-configured TDP."
+    
+    # Get the system's absolute maximum TDP, which is stored by the init.d script.
+    local max_tdp
+    max_tdp=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+    
+    if [ -z "${max_tdp}" ]; then
+        echo "WARNING: Max TDP not defined in settings. Cannot restore TDP."
+        return
+    fi
+    
+    # Get the desired TDP percentage from global settings.
+    local tdp_percentage
+    tdp_percentage=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
+
+    local final_tdp_value
+    # If the user has a percentage set, calculate the wattage.
+    if [ -n "${tdp_percentage}" ] && [ "${tdp_percentage}" -ge 10 ]; then
+        final_tdp_value=$(awk -v max_tdp="$max_tdp" -v tdp_percentage="$tdp_percentage" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
+    else
+        # Otherwise, restore to the default (maximum) TDP.
+        final_tdp_value="${max_tdp}"
+    fi
+    
+    echo "INFO: Restoring TDP to ${final_tdp_value}W."
+    /usr/bin/batocera-amd-tdp "${final_tdp_value}"
+}
+
+# --- Bluetooth Control Functions ---
+disable_bluetooth() {
+    if rfkill list bluetooth | grep -q "Soft blocked: no"; then
+        echo "INFO: Bluetooth is active, disabling it..."
+		touch "${BT_STATE_FILE}"
+		rfkill block bluetooth
+    fi
+}
+
+enable_bluetooth() {
+    if [ -f "${BT_STATE_FILE}" ]; then
+        echo "INFO: Re-enabling Bluetooth..."
+		rfkill unblock bluetooth
+		rm -f "${BT_STATE_FILE}"
+    fi
+}
+
+# --- EmulationStation Functions
+stop_es() {
+	/etc/init.d/S31emulationstation stop
+}
+
+start_es() {
+	/etc/init.d/S31emulationstation start
+}
+
+# --- Main Fake Suspend/Resume Action Groups ---
+do_fake_suspend() {
+    echo "--- Entering Fake Suspend ---"
+	stop_es
+	suspend_led_daemon
+	disable_wifi
+	disable_bluetooth
+	set_low_power_governor
+	set_low_power_tdp
+	mute_audio
+	park_cores
+	block_input
+	display_off
+	touch "${FAKE_SUSPEND_FLAG}"
+	echo "--- Fake Suspend Complete ---"
+}
+
+do_fake_resume() {
+    echo "--- Resuming from Fake Suspend ---"
+	unblock_input
+	display_on
+	unmute_audio
+	unpark_cores
+	restore_default_governor
+	restore_default_tdp
+	start_es
+	resume_led_daemon
+	enable_bluetooth
+	enable_wifi
+	rm -f "${FAKE_SUSPEND_FLAG}"
+	echo "--- Resume Complete ---"
+}
+
+################################################################################
+# MAIN SCRIPT LOGIC
+################################################################################
+
 SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
-# because on rg552, it is too easy to push on the shutdown button
+SETACTION=$1 # 1 for press, 0 for release
+
+# --- Handle Fake Suspend Mode First ---
+if [ "${SUSPEND_MODE}" = "fake" ]; then
+    # We only care about the button press event (1).
+    if [ "${SETACTION}" = "1" ]; then
+        if [ -f "${FAKE_SUSPEND_FLAG}" ]; then
+            do_fake_resume
+        else
+            do_fake_suspend
+        fi
+    fi
+    exit 0
+fi
+
+# --- Script Logic for Hardware Suspend/Shutdown ---
+
 SHUTDOWNDELAY="$(/usr/bin/batocera-settings-get-master system.shutdowndelay)"
 if [ "${SHUTDOWNDELAY}" = "" ]; then
     SHUTDOWNDELAY=0
 fi
-
-###############################
-# 1 when pressed
-# 0 when released
-SETACTION=$1
 
 do_es_menu() {
     # display the menu only when es is up and no game is running
