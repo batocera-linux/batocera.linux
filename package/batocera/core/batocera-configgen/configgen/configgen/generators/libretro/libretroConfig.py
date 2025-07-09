@@ -665,6 +665,8 @@ def createLibretroConfig(
             retroarchConfig['cheevos_start_active'] = system.config.get_bool('retroachievements.encore', return_values=('true', 'false'))
             # retroarchievements_rich_presence
             retroarchConfig['cheevos_richpresence_enable'] = system.config.get_bool('retroachievements.richpresence', return_values=('true', 'false'))
+            # retroarchievements_unofficial
+            retroarchConfig['cheevos_test_unofficial'] = system.config.get_bool('retroachievements.unofficial', return_values=('true', 'false'))
             if not connected_to_internet():
                 retroarchConfig['cheevos_enable'] = 'false'
     else:
