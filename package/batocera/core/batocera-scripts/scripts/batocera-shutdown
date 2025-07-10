@@ -29,6 +29,29 @@ INPUT_WHITELIST_PATTERNS=(
     "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
 )
 
+# --- Backlight Control Functions ---
+save_and_turn_off_backlight() {
+    current_brightness=$(batocera-brightness)
+    stored_brightness=$(batocera-settings-get display.brightness)
+    if [ "$stored_brightness" != "$current_brightness" ]; then
+        if [ -e "/userdata/system/batocera.conf" ]; then
+            batocera-settings-set display.brightness "$current_brightness"
+        fi
+    fi
+	batocera-brightness 0
+}
+
+restore_backlight() {
+    # don't set if under 5%, while it can cause false positive issues
+    stored_brightness=$(batocera-settings-get display.brightness)
+    if [ $? -eq 0 ]; then
+        if [ "$stored_brightness" -lt 5 ]; then
+            stored_brightness=5
+        fi
+        batocera-brightness "$stored_brightness"
+    fi
+}
+
 # --- Display Functions ---
 display_off() {
     echo "Turning display OFF"
@@ -52,6 +75,7 @@ display_off() {
         fi
     elif pgrep -x "xinit" >/dev/null; then
         export DISPLAY=:0
+		save_and_turn_off_backlight
         local active_displays=$(xrandr | grep " connected " | awk '{print $1}')
         if [ -n "${active_displays}" ]; then
             echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
@@ -61,6 +85,8 @@ display_off() {
                 xrandr --output "${o}" --off
             done
         fi
+		echo "INFO: [X11] Forcing DPMS off"
+		xset dpms force off
     fi
 }
 
@@ -89,10 +115,12 @@ display_on() {
 			done
         fi
     elif pgrep -x "xinit" >/dev/null; then
+	    export DISPLAY=:0
+		echo "INFO: [X11] Forcing DPMS on"
+		xset dpms force on
         if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
             local outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
             if [ -n "${outputs_to_enable}" ]; then
-                export DISPLAY=:0
                 batocera-resolution setOutput ${outputs_to_enable}
                 echo "INFO: [X11] Re-enabling displays with 'xrandr --auto'..."
                 for o in $outputs_to_enable; do
@@ -101,8 +129,10 @@ display_on() {
             fi
             rm -f "${ACTIVE_DISPLAYS_FILE}"
         else
-            echo "WARNING: No active display state file found."
+            echo "WARNING: No active display state file found, running 'xrandr --auto' on all outputs."
+            xrandr --auto
         fi
+		restore_backlight
     fi
 }
 
@@ -318,10 +348,42 @@ start_es() {
 	/etc/init.d/S31emulationstation start
 }
 
+stop_other_services() {
+	/etc/init.d/S03system-splash stop
+	/etc/init.d/S25lircd stop
+	/etc/init.d/S32bluetooth stop
+	/etc/init.d/S49ntp stop
+	/etc/init.d/S50avahi-daemon stop
+	/etc/init.d/S50dropbear stop
+	/etc/init.d/S60nfs stop
+	if [ -f /etc/init.d/S90battery_checker ]; then
+		/etc/init.d/S90battery_checker stop
+    fi
+	/etc/init.d/S90hotkeygen stop
+	/etc/init.d/S91smb stop
+	/etc/init.d/S97joycond stop
+}
+
+start_other_services() {
+	/etc/init.d/S25lircd start
+	/etc/init.d/S32bluetooth start
+	/etc/init.d/S49ntp start
+	/etc/init.d/S50avahi-daemon start
+	/etc/init.d/S50dropbear start
+	if [ -f /etc/init.d/S90battery_checker ]; then
+	    /etc/init.d/S90battery_checker start
+    fi
+	/etc/init.d/S60nfs start
+    /etc/init.d/S90hotkeygen start
+    /etc/init.d/S91smb start
+    /etc/init.d/S97joycond start
+}
+
 # --- Main Fake Suspend/Resume Action Groups ---
 do_fake_suspend() {
     echo "--- Entering Fake Suspend ---"
-	stop_es
+	block_input
+	stop_other_services
 	suspend_led_daemon
 	disable_wifi
 	disable_bluetooth
@@ -329,8 +391,9 @@ do_fake_suspend() {
 	set_low_power_tdp
 	mute_audio
 	park_cores
-	block_input
 	display_off
+	sleep 1s
+	stop_es
 	touch "${FAKE_SUSPEND_FLAG}"
 	echo "--- Fake Suspend Complete ---"
 }
@@ -347,6 +410,7 @@ do_fake_resume() {
 	resume_led_daemon
 	enable_bluetooth
 	enable_wifi
+	start_other_services
 	rm -f "${FAKE_SUSPEND_FLAG}"
 	echo "--- Resume Complete ---"
 }
