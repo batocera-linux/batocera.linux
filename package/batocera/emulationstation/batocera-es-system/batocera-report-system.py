@@ -136,11 +136,23 @@ class EsSystemConf:
 
         for emulator in sorted(emulators):
             emulatorData = data["emulators"][emulator]
+
+            if not EsSystemConf.archValid(arch, emulatorData):
+                continue
+
             result_cores = {}
-            for core in sorted(emulatorData):
+            
+            core_keys = [key for key in emulatorData if key not in ["archs_include", "archs_exclude"]]
+
+            for core in sorted(core_keys):
+                coreData = emulatorData[core]
                 result_cores[core] = {}
                 nb_all_variants += 1
-                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
+
+                if "requireAnyOf" in coreData and \
+                   EsSystemConf.isValidRequirements(config, coreData["requireAnyOf"]) and \
+                   EsSystemConf.archValid(arch, coreData):
+                    
                     result_cores[core]["enabled"] = True
                     nb_variants += 1
                     # tell why this core is selected
@@ -207,6 +219,12 @@ class EsSystemConf:
             except KeyError:
                 return False
         return True
+
+    @staticmethod
+    def archValid(arch, obj):
+        if "archs_exclude" in obj and arch in obj["archs_exclude"]:
+            return False
+        return "archs_include" not in obj or arch in obj["archs_include"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

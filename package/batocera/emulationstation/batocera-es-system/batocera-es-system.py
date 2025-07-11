@@ -66,7 +66,7 @@ class EsSystemConf:
             data = {}
             if rules[system]:
                 data = rules[system]
-            es_system += EsSystemConf.generateSystem(system, data, config, defaultEmulator, defaultCore)
+            es_system += EsSystemConf.generateSystem(system, data, config, defaultEmulator, defaultCore, arch)
         es_system += "</systemList>\n"
         EsSystemConf.createEsSystem(es_system, esSystemFile)
 
@@ -93,7 +93,7 @@ class EsSystemConf:
         print("generating the " + romsdirtarget + " folder...")
         for system in sortedRules:
             if rules[system]:
-                if EsSystemConf.needFolder(system, rules[system], config):
+                if EsSystemConf.needFolder(system, rules[system], config, arch):
                     EsSystemConf.createFolders(system, rules[system], romsdirsource, romsdirtarget)
                     EsSystemConf.infoSystem(system, rules[system], romsdirtarget)
                 else:
@@ -101,16 +101,27 @@ class EsSystemConf:
 
     # check if the folder is required
     @staticmethod
-    def needFolder(system, data, config):
+    def needFolder(system, data, config, arch):
         # no emulator
         if "emulators" not in data:
             return False
 
         for emulator in sorted(data["emulators"]):
             emulatorData = data["emulators"][emulator]
-            for core in sorted(emulatorData):
-                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
+
+            if not EsSystemConf.archValid(arch, emulatorData):
+                continue
+
+            core_keys = [key for key in emulatorData if key not in ["archs_include", "archs_exclude"]]
+
+            for core in sorted(core_keys):
+                coreData = emulatorData[core]
+
+                if "requireAnyOf" in coreData and \
+                   EsSystemConf.archValid(arch, coreData) and \
+                   EsSystemConf.isValidRequirements(config, coreData["requireAnyOf"]):
                     return True
+        
         return False
 
     # Loads the .config file
@@ -128,8 +139,8 @@ class EsSystemConf:
 
     # Generate emulator system
     @staticmethod
-    def generateSystem(system, data, config, defaultEmulator, defaultCore):
-        listEmulatorsTxt = EsSystemConf.listEmulators(data, config, defaultEmulator, defaultCore)
+    def generateSystem(system, data, config, defaultEmulator, defaultCore, arch):
+        listEmulatorsTxt = EsSystemConf.listEmulators(data, config, defaultEmulator, defaultCore, arch)
         if listEmulatorsTxt == "" and not("force" in data and data["force"] == True) :
           return ""
 
@@ -422,7 +433,7 @@ class EsSystemConf:
     @staticmethod
     def archValid(arch, obj):
         if "archs_exclude" in obj and arch in obj["archs_exclude"]:
-            return false
+            return False
         return "archs_include" not in obj or arch in obj["archs_include"]
 
     # Write the information in the es_features.cfg file
@@ -642,7 +653,7 @@ class EsSystemConf:
 
     # Returns the enabled cores in the .config file for the emulator
     @staticmethod
-    def listEmulators(data, config, defaultEmulator, defaultCore):
+    def listEmulators(data, config, defaultEmulator, defaultCore, arch):
         listEmulatorsTxt = ""
         emulators = {}
         if "emulators" in data:
@@ -652,16 +663,22 @@ class EsSystemConf:
         for emulator in sorted(emulators):
             emulatorData = data["emulators"][emulator]
 
+            if not EsSystemConf.archValid(arch, emulatorData):
+                continue
+
             emulatorTxt = "            <emulator name=\"%s\">\n" % (emulator)
             emulatorTxt += "                <cores>\n"
 
             # CORES
             coresTxt = ""
-            for core in sorted(emulatorData):
-                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
+            # Get a list of actual cores, filtering out our architecture keys
+            core_keys = [key for key in emulatorData if key not in ["archs_include", "archs_exclude"]]
+            for core in sorted(core_keys):
+                coreData = emulatorData[core]
+                if EsSystemConf.isValidRequirements(config, coreData["requireAnyOf"]) and EsSystemConf.archValid(arch, coreData):
                     incompatible_extensionsTxt = ""
-                    if "incompatible_extensions" in emulatorData[core]:
-                        for ext in emulatorData[core]["incompatible_extensions"]:
+                    if "incompatible_extensions" in coreData:
+                        for ext in coreData["incompatible_extensions"]:
                             if incompatible_extensionsTxt != "":
                                 incompatible_extensionsTxt += " "
                             incompatible_extensionsTxt += "." + str(ext).lower()

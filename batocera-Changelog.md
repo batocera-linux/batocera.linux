@@ -114,7 +114,7 @@
 - IOQuake3 to 25th December build
 - Jazz2 to 3.3.0
 - Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.277
+- Libretro-MAME to 0.278
 - Libretro-Play! 4th Feb build
 - Libretro-PPSSPP v1.19.2
 - Libretro-ScummVM to 3rd June 2025 build
