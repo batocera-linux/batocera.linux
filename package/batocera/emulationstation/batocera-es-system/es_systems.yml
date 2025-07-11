@@ -2998,7 +2998,7 @@ sonicretro:
     A opção do menu de desenvolvimento é necessária para executar modificações (mods).
 
 model2:
-  name:       Model 2
+  name: Model 2
   manufacturer: Sega
   release: 1993
   hardware: arcade
@@ -3007,6 +3007,9 @@ model2:
   emulators:
     model2emu:
       model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
   comment_en: |
     ---------------------------------
     ## SEGA MODEL 2 IMPORTANT INFO ##
