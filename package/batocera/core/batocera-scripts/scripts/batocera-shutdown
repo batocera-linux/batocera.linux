@@ -232,11 +232,6 @@ _get_gpu_governor_path() {
 }
 
 set_low_power_governor() {
-    echo "INFO: Setting CPU/GPU to low power mode..."
-    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > "${CPU_GOV_STATE_FILE}"
-    for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-	    echo "powersave" > "${cpu_gov}"
-	done
     echo "INFO: Clamping CPU max frequency to minimum..."
     for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
         if [ -d "${cpu_policy_dir}" ]; then
@@ -249,6 +244,11 @@ set_low_power_governor() {
             echo "${min_freq}" > "${max_freq_file}"
         fi
     done
+    echo "INFO: Setting CPU/GPU to low power mode..."
+    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > "${CPU_GOV_STATE_FILE}"
+    for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+	    echo "powersave" > "${cpu_gov}"
+	done
     local gpu_gov_file_path=$(_get_gpu_governor_path)
     if [ -n "${gpu_gov_file_path}" ]; then
         echo "INFO: Found GPU governor at ${gpu_gov_file_path}"
@@ -422,6 +422,8 @@ do_fake_suspend() {
 	display_off
 	sleep 1s
 	stop_es
+	# restart triggerhappy to fix hung state from gui standby
+	/etc/init.d/S50triggerhappy restart
 	touch "${FAKE_SUSPEND_FLAG}"
 	echo "--- Fake Suspend Complete ---"
 }
