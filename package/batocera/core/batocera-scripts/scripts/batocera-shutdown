@@ -488,9 +488,9 @@ do_es_menu() {
     curl "http://localhost:1234/quit?confirm=menu"
 }
 
-if [ "${SETACTION}" = 1 ]; then
+if [ "${SETACTION}" = "1" ]; then
     ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
-    if [ "${SUSPEND_MODE}" = "" -a "${SHUTDOWNDELAY}" = "" ]; then
+    if [ "${SUSPEND_MODE}" = "" ] && [ "${SHUTDOWNDELAY}" = "0" ]; then
 		/sbin/shutdown -h now
     else
 		touch "/var/run/shutdown-delay.flag"
