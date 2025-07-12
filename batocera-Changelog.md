@@ -137,6 +137,7 @@
 - TheForceEngine to v1.22.300
 - TheXTech to v1.3.7-hotfix2
 - Triforce to use a Crediar build (Nov 29, 2024)
+- Tsugaru to v20250513
 - Vice to 3.9
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
