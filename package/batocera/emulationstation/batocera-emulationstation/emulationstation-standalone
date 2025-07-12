@@ -279,10 +279,21 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
 
     # ES flag when rebooting (https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-core/src/platform.cpp#L194)
-    if [ -e "/tmp/restart.please" -o -e "/tmp/shutdown.please" ]; then
+    if [ -e "/tmp/shutdown.please" ] || [ -e "/tmp/reboot.please" ]; then
+        echo "System shutdown/reboot requested. Exiting launcher script." >> $log
         rm -f "${REBOOT_FLAG}"
+        break
+    elif [ -e "/tmp/restart.please" ]; then
+        echo "ES restart requested. Looping to relaunch." >> $log
+    else
+        echo "ES exited without flags. Assuming suspend state. Waiting on FIFO pipe..." >> $log
+        # The 'read' command will block the script until 'resume' is called.
+        read < "/tmp/es-resume.fifo"
+        echo "Resume signal received. Relaunching ES." >> $log
     fi
-
     GAMELAUNCH=0
 done
+
+# Cleanup when the script finally exits (only after a shutdown/reboot)
+rm -f "/tmp/es-resume.fifo"
 exit 0

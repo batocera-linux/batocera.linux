@@ -4,8 +4,15 @@ BOOTCONF="/boot/batocera-boot.conf"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
+# Define the path for our communication pipe
+FIFO_PATH="/tmp/es-resume.fifo"
+
 case "$1" in
 	start)
+		# Clean up any old pipe and create a new one for communication
+		rm -f "${FIFO_PATH}"
+		mkfifo -m 666 "${FIFO_PATH}"
+
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
 		if [ "$enabled" != "0" ]; then
 			%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
@@ -45,6 +52,26 @@ case "$1" in
 		if pidof emulationstation >/dev/null; then
 		    timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
 		fi
+		
+		# Clean up the communication pipe on a full system stop
+		rm -f "${FIFO_PATH}"
+		;;
+
+	suspend)
+		echo "Suspending EmulationStation process only..."
+		# Tell the running ES process to quit gracefully.
+		# The launcher script will catch this and wait on the FIFO pipe.
+		curl -s --connect-timeout 2 "http://localhost:1234/quit" > /dev/null
+		;;
+
+	resume)
+		echo "Resuming EmulationStation process..."
+		# Write to the pipe to unblock the waiting 'read' command in the launcher script.
+		if [ -p "${FIFO_PATH}" ]; then
+			echo "resume" > "${FIFO_PATH}"
+		else
+			echo "Error: FIFO pipe not found. Cannot resume. Is the ES service running?" >&2
+		fi
 		;;
 
 	restart|reload)
@@ -53,7 +80,7 @@ case "$1" in
 		;;
 
 	*)
-		echo "Usage: $0 {start|stop|restart}"
+		echo "Usage: $0 {start|stop|restart|suspend|resume}"
 		exit 1
 esac
 

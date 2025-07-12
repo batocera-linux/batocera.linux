@@ -12,6 +12,7 @@ FAKE_SUSPEND_FLAG="/var/run/batocera-fake-suspend.flag"
 # State files
 ACTIVE_DISPLAYS_FILE="/var/run/active_displays.list"
 CPU_GOV_STATE_FILE="/var/run/cpu_governor.state"
+CPU_MAX_FREQ_STATE_FILE="/var/run/cpu_max_freq.state"
 GPU_GOV_STATE_FILE="/var/run/gpu_governor.state"
 BT_STATE_FILE="/var/run/bluetooth.state"
 
@@ -236,6 +237,18 @@ set_low_power_governor() {
     for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
 	    echo "powersave" > "${cpu_gov}"
 	done
+    echo "INFO: Clamping CPU max frequency to minimum..."
+    for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
+        if [ -d "${cpu_policy_dir}" ]; then
+            local max_freq_file="${cpu_policy_dir}/scaling_max_freq"
+            local min_freq_file="${cpu_policy_dir}/scaling_min_freq"
+            cat "${max_freq_file}" >> "${CPU_MAX_FREQ_STATE_FILE}"
+            local min_freq
+            min_freq=$(cat "${min_freq_file}")
+            echo "INFO: Setting max freq for ${cpu_policy_dir##*/} to ${min_freq}"
+            echo "${min_freq}" > "${max_freq_file}"
+        fi
+    done
     local gpu_gov_file_path=$(_get_gpu_governor_path)
     if [ -n "${gpu_gov_file_path}" ]; then
         echo "INFO: Found GPU governor at ${gpu_gov_file_path}"
@@ -248,6 +261,19 @@ set_low_power_governor() {
 
 restore_default_governor() {
     echo "INFO: Restoring CPU/GPU to default power mode..."
+    if [ -f "${CPU_MAX_FREQ_STATE_FILE}" ]; then
+        echo "INFO: Restoring original CPU max frequencies..."
+        local i=0
+        while IFS= read -r original_max_freq; do
+            local max_freq_file="/sys/devices/system/cpu/cpu${i}/cpufreq/scaling_max_freq"
+            if [ -f "${max_freq_file}" ]; then
+                echo "INFO: Restoring max freq for cpu${i} to ${original_max_freq}"
+                echo "${original_max_freq}" > "${max_freq_file}"
+            fi
+            i=$((i + 1))
+        done < "${CPU_MAX_FREQ_STATE_FILE}"
+        rm -f "${CPU_MAX_FREQ_STATE_FILE}"
+    fi
     if [ -f "${CPU_GOV_STATE_FILE}" ]; then
         i=0
 		while IFS= read -r gov; do
@@ -341,15 +367,16 @@ enable_bluetooth() {
 
 # --- EmulationStation Functions
 stop_es() {
-	/etc/init.d/S31emulationstation stop
+	/etc/init.d/S31emulationstation suspend
 }
 
 start_es() {
-	/etc/init.d/S31emulationstation start
+	/etc/init.d/S31emulationstation resume
 }
 
 stop_other_services() {
 	/etc/init.d/S03system-splash stop
+	/etc/init.d/S13irqbalance stop
 	/etc/init.d/S25lircd stop
 	/etc/init.d/S32bluetooth stop
 	/etc/init.d/S49ntp stop
@@ -365,6 +392,7 @@ stop_other_services() {
 }
 
 start_other_services() {
+	/etc/init.d/S13irqbalance start
 	/etc/init.d/S25lircd start
 	/etc/init.d/S32bluetooth start
 	/etc/init.d/S49ntp start
@@ -429,7 +457,14 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
         if [ -f "${FAKE_SUSPEND_FLAG}" ]; then
             do_fake_resume
         else
-            do_fake_suspend
+            # Before entering fake suspend, check if a game is running.
+            HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+            if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
+                # A game is running. Log it and do nothing.
+                echo "INFO: Fake suspend request ignored because a game is running."
+            else
+                do_fake_suspend
+            fi
         fi
     fi
     exit 0
