@@ -16,6 +16,7 @@ _logger = logging.getLogger(__name__)
 
 ppssppConfig: Final   = PPSSPP_PSP_SYSTEM_DIR / 'ppsspp.ini'
 ppssppControls: Final = PPSSPP_PSP_SYSTEM_DIR / 'controls.ini'
+ppssppRetroach: Final = PPSSPP_PSP_SYSTEM_DIR / 'ppsspp_retroachievements.dat'
 
 def writePPSSPPConfig(system: Emulator):
     iniConfig = CaseSensitiveConfigParser(interpolation=None)
@@ -29,6 +30,12 @@ def writePPSSPPConfig(system: Emulator):
     # Save the ini file
     with ensure_parents_and_open(ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
+
+def writeRetroAchievements(token: str):
+    if token:
+        with ensure_parents_and_open(ppssppRetroach, 'w') as retroach_file:
+            retroach_file.write(token)
+
 
 def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
 
@@ -183,6 +190,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         iniConfig.set("Achievements", "AchievementsUnofficial", str(system.config.get_bool("retroachievements.unofficial", False)))
         iniConfig.set("Achievements", "AchievementsSoundEffects", "True")
         iniConfig.set("Achievements", "AchievementsEnable", "True")
+        writeRetroAchievements(str(system.config.get_str("retroachievements.token", None)))
     else:
         iniConfig.set("Achievements", "AchievementsEnable", "False")
         iniConfig.set("Achievements", "AchievementsChallengeMode", "False")
