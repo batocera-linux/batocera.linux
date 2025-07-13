@@ -1,18 +1,15 @@
 #!/bin/bash
 #
-# Script for BATOCERA to terminate every emulator instance
-# or to give feedback about state of EmulationStation and active EMULATORS
-# or to give some basic info about your build
+# Script for BATOCERA to terminate every emulator instance, some more info see --help
 # by cyperghost aka crcerror // 18.03.2019
-# Batocera versions // 04.06.2019
-# Added /bin/usr script // 22.09.2019
-# Added sigterm level, added second parameter to activate sigterm during smart_wait function
-# Added architecture and version information // 05.01.2020
-# Added update information + butterfly branch // 10.02.2020
-# Added --reboot // 26.02.2020
-# Added --overlay and --remount // 13.04.2020
-# Updated version detection only depended from build-date and build-time now
-# Added --reset-ra to reset all settings from RetroArch cores // 27.06.2021
+# Batocera version created, update check added                                     // 04.06.2019
+# Added --reset-ra to reset all settings from RetroArch cores                      // 27.06.2021
+# Small rewrite, rather use hotkeygen --send exit, errorcode emulator was finished // cyperghost
+# ec: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found       // 13.06.2025
+# ec: 10-poweroff, 11-reboot, 1-general error, 0-okay
+
+# first argument is action, second is timeout or branch, default waitTimer=5, fractions allowed
+waitTimer=5
 
 # Get all childpids from calling process
 function getcpid() {
@@ -23,58 +20,37 @@ local cpids="$(pgrep -P $1)"
     done
 }
 
-# Get a sleep while process is active in background
-# if PID is still active then use kill -9 switch
-function smart_wait() {
-    local PID=$2
-    local disablekill9=$1
-    local watchdog=0
-    sleep 1
-    while [[ -e /proc/$PID ]]; do
-        sleep 0.25
-        ((watchdog++))
-        [[ $disablekill9 -eq 1 ]] && [[ watchdog -gt 12 ]] && kill -9 $PID
-        [[ watchdog -gt 12 ]] && return
-    done
-}
-
 # Emulator currently running?
 function check_emurun() {
-    local RC_PID="$(pgrep -f -n emulatorlauncher)"
-    echo $RC_PID
+    echo $(pgrep -f -n emulatorlauncher || echo 0)
 }
 
 # Emulationstation currently running?
 function check_esrun() {
-    local ES_PID="$(pgrep -f -n emulationstation)"
-    echo $ES_PID
+    echo $(pgrep -f -n emulationstation || echo 0)
 }
 
-# Wine processes currently running?
-function check_winerun() {
-    local EXE=$1
-    local ES_PID="$(pgrep -f -n $EXE)"
-    echo $ES_PID
-}
-
-# Kill emulators running in a proper way! (SAVE SRM STATE!)
+# Kill emulators running in a proper way! (SAVE SRM STATE!), timeout is 5s per default
 function emu_kill() {
     RC_PID=$(check_emurun)
-    if [[ -n $RC_PID ]]; then
+    if [[ $RC_PID -ne 0 ]]; then
+        # 1. try, regular exit with hotkeygen command, after 5s (default) use 2nd method
+        hotkeygen --send exit &
+        # Detect WINE process and let hotkeygen with batocera-wine windows stop do it's pretty good job, reason is that WINE can took longer to finish
+        # timeout reports 0 if process is finished before t/o
+        pgrep -f -n winedevice.exe >/dev/null && return 25 || ret=20
+        timeout ${waitTimer} tail -q --pid=${RC_PID} -f /dev/null 2>/dev/null && return $ret
+        # 2. try, crawl PIDs recursiv and SIGKILL
         getcpid $RC_PID
         for ((z=${#pidarray[*]}-1; z>-1; z--)); do
-            kill ${pidarray[z]}
-            smart_wait 1 ${pidarray[z]}
+            kill -9 ${pidarray[z]}; sleep 1
         done
         unset pidarray
+        ret=22
+    else
+        ret=21
     fi
-    WINE_PID=$(check_winerun winedevice.exe)
-    if [[ -n $WINE_PID ]]; then
-            for P in winedevice.exe plugplay.exe svchost.exe tabtip.exe services.exe explorer.exe rpcss.exe wineserver ; do
-                # the usual (gentle) way keeps Zombie processes, blame wine.
-                killall -9 "$P" 2>/dev/null
-            done
-    fi
+    return $ret
 }
 
 # Future proof update check, depends just on build-date and build-time
@@ -87,80 +63,69 @@ function version_update() {
 case ${1,,} in
     --restart)
         ES_PID=$(check_esrun)
-        /etc/init.d/S31emulationstation stop
-        [[ -z $ES_PID ]] || smart_wait 0 $ES_PID
-        /etc/init.d/S31emulationstation start
+        [[ ${ES_PID} -ne 0 ]] && kill ${ES_PID} && ret=0 || ret=1
     ;;
 
     --espid)
         # Display ES PID to stdout
-        ES_PID=$(check_esrun)
-        [[ -n $ES_PID ]] && echo $ES_PID || echo 0
+        ES_PID=$(check_esrun); echo ${ES_PID}
+        [[ ${ES_PID} -ne 0 ]] && ret=0 || ret=1
     ;;
 
     --emupid)
         # This helps to detect emulator is running or not
-        RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && echo $RC_PID || echo 0
+        RC_PID=$(check_emurun); echo ${RC_PID}
+        if [[ ${RC_PID} -ne 0 ]]; then
+            getcpid ${RC_PID}; echo ${pidarray[@]}
+            unset pidarray
+            ret=0
+        else
+            ret=21
+        fi
     ;;
 
     --emukill|--shutdown|--reboot)
-        RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && sleep 2
+        [[ $2 =~ ^[0-9]*[.]?[0-9]+$ ]] && waitTimer="$2"
+        emu_kill; ret=$?
 
         ES_PID=$(check_esrun)
-        if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
+        if [[ "${1,,}" == "--shutdown" && $ES_PID -ne 0 ]]; then
             /etc/init.d/S31emulationstation stop
-            shutdown -h now
-        elif [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
+            shutdown -h now; ret=11
+        elif [[ "${1,,}" == "--reboot" && $ES_PID -ne 0 ]]; then
             /etc/init.d/S31emulationstation stop
-            reboot
+            shutdown -r now; ret=10
         fi
     ;;
 
     --kodi)
-        RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && sleep 2
+        [[ $(check_emurun) -ne 0 ]] && emu_kill
 
-        /etc/init.d/S31emulationstation stop
+        /etc/init.d/S31emulationstation suspend
         batocera-kodilauncher &
         wait $!
-        exitcode=$?
-        [[ $exitcode -eq 0 ]] && /etc/init.d/S31emulationstation start
-        [[ $exitcode -eq 10 ]] && shutdown -r now
-        [[ $exitcode -eq 11 ]] && shutdown -h now
+        ret=$?
+        [[ $ret -eq 0 ]] && /etc/init.d/S31emulationstation resume
+        [[ $ret -eq 10 ]] && shutdown -r now
+        [[ $ret -eq 11 ]] && shutdown -h now
     ;;
 
     --version|--arch|--update)
         [[ ${2,,} == "butterfly" ]] && BRANCH=butterfly || BRANCH=stable
-        if [[ -f /usr/share/batocera/batocera.version ]]; then
-            VER=$(cat /usr/share/batocera/batocera.version)
-            ret=$?
-        else
-            VER="UNKNOWN"
-            ret=1
-        fi
-
-        if [[ -f /boot/boot/batocera.board ]]; then
-            BOARD=$(cat /boot/boot/batocera.board)
-            ret=$?
-            test "${BOARD}" = "rpi4" && BOARD=rpi464 # "temporarily" download on rpi464 for rpi4
-        else
-            BOARD="UNKNOWN"
-            ret=1
-        fi
+        [[ -f /usr/share/batocera/batocera.version ]] && { VER=$(cat /usr/share/batocera/batocera.version); ret=$?; } || { VER="UNKNOWN"; ret=1; }
+        [[ -f /boot/boot/batocera.board ]] &&            { BOARD=$(cat /boot/boot/batocera.board); ret=$(($?+ret)); } || { BOARD="UNKNOWN"; ret=1; }
+          test "${BOARD}" = "rpi4" && BOARD=rpi464 # "temporarily" download on rpi464 for rpi4
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
             URL="https://updates.batocera.org/$BOARD/$BRANCH/last/batocera.version"
-            NET_VERSION=$(wget -q -O - "$URL")
-            [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"
-            NET_VER=$(echo "$NET_VER" | head -n1)
+            NET_VER=$(wget -q -O - "$URL")
+            [[ $? -eq 0 ]] || NET_VER="Connection failed!"
             echo "Installed:   $VER"
-            echo "Webversion:  $NET_VERSION"
+            echo "Webversion:  $NET_VER"
             echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $BOARD"
-            if [[ $(version_update "$VER") -lt $(version_update "$NET_VERSION") ]]; then
+            if [[ $(version_update "$VER") -lt $(version_update "$NET_VER") ]]; then
                 echo "Status:      Possible Update found!"
                 ret=0
             else
@@ -171,7 +136,6 @@ case ${1,,} in
             [[ ${1,,} == "--version" ]] && batocera-version
             [[ ${1,,} == "--arch" ]] && echo "$BOARD"
         fi
-        exit $ret
     ;;
 
     --remount)
@@ -221,29 +185,32 @@ case ${1,,} in
     *)
         cat <<-_EOF_
 		BATOCERA SWISS KNIFE FOR EmulationStation
-		  Please parse parameters to this script!
-		  --restart  will RESTART EmulationStation only
-		  --kodi     will startup KODI Media Center stopping ES
-		  --reboot   will REBOOT whole system
-		  --shutdown will SHUTDOWN whole system
-		  --emukill  will exit any running EMULATORS
-		  --espid    checks if EmulationStation is currently active
-		      This number is the real PID of the binary!
-		      If the ouput is 0, then ES isn't active
-		  --emupid   to check if an Emulator is running
-		      This number is just the PID of emulatorlauncher.py
-		      If output is 0 then there is no emulator active!
+		  usage: $(basename ${0}) [Option] <Timeout in s> <butterfly>
+		  --restart       will RESTART EmulationStation only
+		  --kodi          will startup KODI Media Center stopping ES
+		  --reboot   <s>  will REBOOT whole system
+		  --shutdown <s>  will SHUTDOWN whole system
+		  --emukill  <s>  will exit any running EMULATORS
+		  --espid         checks if EmulationStation is currently active
+		             This number is the real PID of the binary!
+		             If the ouput is 0 or return 1 then ES isn't active
+		  --emupid        to check if an Emulator is running
+		             The output is the full process-list till emulator
+		             If output is 0 or return not eq 0 no emulator active!
 
 		  --arch     Shows current architecture running
 		  --version  Shows current version of BATOCERA running
-		  --update   Shows possible update for your install
-		      default: stable, you can type --update butterfly
+		  --update   Shows possible update for your install opt. <butterfly>
 
 		  --overlay  will try to backup your overlay file
 		  --remount  toggle write access to <dir>, default /boot
-		      This switch can have serious effects for your setup
 		  --reset-ra will set all RA settings to default
+
+		EC: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found
+		    10-poweroff, 11-reboot, 1-general error, 0-okay
+
 		_EOF_
     ;;
 
 esac
+exit $ret
