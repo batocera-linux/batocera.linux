@@ -2336,6 +2336,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'scummvm': _scummvm_options,
     'flycast': _flycast_options,
     'genesisplusgx': _genesisplusgx_options,
+    'genesisplusgx-expanded': _genesisplusgx_options,
     'picodrive': _picodrive_options,
     'yabasanshiro': _yabasanshiro_options,
     'kronos': _kronos_options,
