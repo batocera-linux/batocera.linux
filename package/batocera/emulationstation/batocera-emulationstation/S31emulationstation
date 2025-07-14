@@ -20,14 +20,9 @@ case "$1" in
 		;;
 
 	stop)
-		COMPOSITOR=""
-		if pidof openbox >/dev/null; then
-			COMPOSITOR="openbox"
-		elif pidof sway >/dev/null; then
-			COMPOSITOR="sway"
-		elif pidof labwc >/dev/null; then
-			COMPOSITOR="labwc"
-		fi
+		for COMPOSITOR in openbox sway labwc; do
+			pidof $COMPOSITOR >/dev/null && break || COMPOSITOR=
+		done
 
 		emulationstation-standalone --stop-rebooting 2>/dev/null
 
