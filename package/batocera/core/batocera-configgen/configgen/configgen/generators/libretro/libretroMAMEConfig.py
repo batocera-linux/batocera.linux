@@ -426,10 +426,12 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         if system.config.get_bool("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME (except TI99)
+    # Share plugins with standalone MAME (except TI99)
     if system.name != "ti99":
         commandLine += [ "-pluginspath", f"/usr/bin/mame/plugins/;{SAVES / 'mame' / 'plugins'}" ]
         commandLine += [ "-homepath" , SAVES / 'mame' / 'plugins' ]
+    # Share samples with standalone MAME (except gamecom and TI99)
+    if system.name not in ['gamecom', 'ti99']:
         commandLine += [ "-samplepath", BIOS / "mame" / "samples" ]
     mkdir_if_not_exists(SAVES / "mame" / "plugins")
     mkdir_if_not_exists(BIOS / "mame" / "samples")
