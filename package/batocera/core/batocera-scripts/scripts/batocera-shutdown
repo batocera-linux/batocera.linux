@@ -57,7 +57,21 @@ restore_backlight() {
 display_off() {
     echo "Turning display OFF"
     if pgrep -x "sway" >/dev/null; then
-        swaymsg "output * power off"
+        # Get list of active outputs from sway
+        local active_displays
+        active_displays=$(swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
+
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: [Sway] Saved active displays to state file: $(cat ${ACTIVE_DISPLAYS_FILE})"
+
+            for output in ${active_displays}; do
+                echo "INFO: [Sway] Turning off output '${output}'"
+                swaymsg "output ${output} power off"
+            done
+        else
+            echo "INFO: [Sway] No active displays found to turn off."
+        fi
     elif pgrep -x "labwc" >/dev/null; then
         # For labwc, find active displays, save their names, then turn them off.
         local active_displays
@@ -76,7 +90,7 @@ display_off() {
         fi
     elif pgrep -x "xinit" >/dev/null; then
         export DISPLAY=:0
-		save_and_turn_off_backlight
+        save_and_turn_off_backlight
         local active_displays=$(xrandr | grep " connected " | awk '{print $1}')
         if [ -n "${active_displays}" ]; then
             echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
@@ -86,15 +100,30 @@ display_off() {
                 xrandr --output "${o}" --off
             done
         fi
-		echo "INFO: [X11] Forcing DPMS off"
-		xset dpms force off
+        echo "INFO: [X11] Forcing DPMS off"
+        xset dpms force off
     fi
 }
 
 display_on() {
     echo "Turning display ON"
     if pgrep -x "sway" >/dev/null; then
-        swaymsg "output * power on"
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable
+            outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+
+            for output in ${outputs_to_enable}; do
+                echo "INFO: [Sway] Restoring output '${output}'"
+                swaymsg "output ${output} power on"
+            done
+
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: [Sway] No active display state file found. Restoring all outputs."
+            for output in $(swaymsg -t get_outputs | jq -r '.[].name'); do
+                swaymsg "output ${output} power on"
+            done
+        fi
     elif pgrep -x "labwc" >/dev/null; then
         # For labwc, restore displays using the saved state file.
         if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
@@ -116,9 +145,9 @@ display_on() {
 			done
         fi
     elif pgrep -x "xinit" >/dev/null; then
-	    export DISPLAY=:0
-		echo "INFO: [X11] Forcing DPMS on"
-		xset dpms force on
+        export DISPLAY=:0
+        echo "INFO: [X11] Forcing DPMS on"
+        xset dpms force on
         if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
             local outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
             if [ -n "${outputs_to_enable}" ]; then
@@ -133,7 +162,7 @@ display_on() {
             echo "WARNING: No active display state file found, running 'xrandr --auto' on all outputs."
             xrandr --auto
         fi
-		restore_backlight
+        restore_backlight
     fi
 }
 
