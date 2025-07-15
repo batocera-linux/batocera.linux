@@ -3,6 +3,8 @@
 # Suspend, shutdown, or fake suspend
 #
 
+exec 1> >(tee >(logger -t batocera-shutdown -s)) 2>&1
+
 ################################################################################
 # FAKE SUSPEND/RESUME HELPER FUNCTIONS
 # (Inspired by ROCKNIX)
@@ -57,9 +59,23 @@ restore_backlight() {
 display_off() {
     echo "Turning display OFF"
     if pgrep -x "sway" >/dev/null; then
-        # Get list of active outputs from sway
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn off display."
+            return
+        fi
+        
+        echo "INFO: [Sway] Found socket file at: $sway_sock"
+        
         local active_displays
-        active_displays=$(swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
+        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
 
         if [ -n "${active_displays}" ]; then
             echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
@@ -67,7 +83,7 @@ display_off() {
 
             for output in ${active_displays}; do
                 echo "INFO: [Sway] Turning off output '${output}'"
-                swaymsg "output ${output} power off"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
             done
         else
             echo "INFO: [Sway] No active displays found to turn off."
@@ -108,20 +124,35 @@ display_off() {
 display_on() {
     echo "Turning display ON"
     if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn on display."
+            return
+        fi
+        
+        echo "INFO: [Sway] Found socket file at: $sway_sock"
+
         if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
             local outputs_to_enable
             outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
 
             for output in ${outputs_to_enable}; do
                 echo "INFO: [Sway] Restoring output '${output}'"
-                swaymsg "output ${output} power on"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
             done
 
             rm -f "${ACTIVE_DISPLAYS_FILE}"
         else
             echo "WARNING: [Sway] No active display state file found. Restoring all outputs."
-            for output in $(swaymsg -t get_outputs | jq -r '.[].name'); do
-                swaymsg "output ${output} power on"
+            for output in $(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[].name'); do
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
             done
         fi
     elif pgrep -x "labwc" >/dev/null; then
@@ -261,23 +292,32 @@ _get_gpu_governor_path() {
 }
 
 set_low_power_governor() {
+    echo "INFO: Saving original CPU max frequencies..."
+    for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
+        if [ -d "${cpu_policy_dir}" ]; then
+            local max_freq_file="${cpu_policy_dir}/scaling_max_freq"
+            cat "${max_freq_file}" >> "${CPU_MAX_FREQ_STATE_FILE}"
+        fi
+    done
+
     echo "INFO: Clamping CPU max frequency to minimum..."
     for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
         if [ -d "${cpu_policy_dir}" ]; then
             local max_freq_file="${cpu_policy_dir}/scaling_max_freq"
             local min_freq_file="${cpu_policy_dir}/scaling_min_freq"
-            cat "${max_freq_file}" >> "${CPU_MAX_FREQ_STATE_FILE}"
             local min_freq
             min_freq=$(cat "${min_freq_file}")
             echo "INFO: Setting max freq for ${cpu_policy_dir##*/} to ${min_freq}"
             echo "${min_freq}" > "${max_freq_file}"
         fi
     done
+
     echo "INFO: Setting CPU/GPU to low power mode..."
     cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > "${CPU_GOV_STATE_FILE}"
     for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
 	    echo "powersave" > "${cpu_gov}"
 	done
+
     local gpu_gov_file_path=$(_get_gpu_governor_path)
     if [ -n "${gpu_gov_file_path}" ]; then
         echo "INFO: Found GPU governor at ${gpu_gov_file_path}"
