@@ -69,7 +69,7 @@
 - WiringOP-Python for OrangePi board GPIO scripting
 - Libretro-BennuGD for compatible games
 - RetroAchievements: support for unofficial achievements
-- PPSSPP standalone Retroachievements support (log through the UI the first time)
+- PPSSPP standalone Retroachievements support
 ### Fixed
 - Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
 - Fix some problems in ES and Batocera with IPv6 networks
@@ -116,14 +116,14 @@
 - Libretro-Kronos to 2.7.0
 - Libretro-MAME to 0.278
 - Libretro-Play! 4th Feb build
-- Libretro-PPSSPP v1.19.2
+- Libretro-PPSSPP v1.19.3
 - Libretro-ScummVM to 3rd June 2025 build
 - Libretro-Wasm4 to v2.7.1
 - MelonDS to 17th Jan build
 - OpenMSX to release 20.0
 - PCSX2 to v2.3.420
 - Play! to 4th Feb build
-- PPSSPP to v1.19.2
+- PPSSPP to v1.19.3
 - Play! to 0.70
 - Raze to 1.11.0
 - RetroArch to v1.21.0

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PPSSPP_VERSION = v1.19.2
+PPSSPP_VERSION = v1.19.3
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
