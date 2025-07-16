@@ -1,0 +1,102 @@
+#!/bin/bash
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+do_start() {
+
+    #######################################
+    # Controller quirks for X86 handhelds #
+    #######################################
+
+    MODEL=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+
+    if [[ "$MODEL" == "Claw_A1M" ]]; then
+        # This script changes the MSI Claw's built-in controller to D-Input mode.
+        # It will only run if the system model is detected as "Claw_A1M".
+
+        # From - https://github.com/zezba9000/MSI-Claw-Gamepad-Mode/blob/main/main.c
+
+        #// send xpad mode change Report to the Device
+        #memset(buf, 0x0, sizeof(buf));
+        #i = 0;
+        #buf[i++] = 15;// report id
+        #buf[i++] = 0;
+        #buf[i++] = 0;
+        #buf[i++] = 60;
+        #buf[i++] = 36;// we want to switch mode
+        #buf[i++] = 1;// XInput mode
+        #buf[i++] = 0;
+        #buf[i++] = 0;
+
+        #/* NOTE: gamepad mode options
+        #Offline = 0,
+        #XInput = 1,
+        #DInput = 2,
+        #MSI = 3,
+        #Desktop = 4,
+        #BIOS = 5,
+        #Testing = 6
+        #*/
+
+        # X-Input 15006036100 or (0f00003c24010000)
+        # D-Input 15006036200 or (0f00003c24020000)
+
+        TARGET_VENDOR="0db0"
+        TARGET_PRODUCT="1901"
+        # We use D-Input since X-Input isn't working well in some Linux environments
+        MODE_CHANGE_HEX="0f00003c24020000"
+        for dev in /dev/hidraw*; do
+            if [ ! -c "$dev" ]; then continue; fi
+            udev_info_walk=$(udevadm info -a -n "$dev")
+            vendor=$(echo "$udev_info_walk" | grep -m 1 'ATTRS{idVendor}' | awk -F\" '{print $2}')
+            product=$(echo "$udev_info_walk" | grep -m 1 'ATTRS{idProduct}' | awk -F\" '{print $2}')
+
+            if [[ "$vendor" == "$TARGET_VENDOR" && "$product" == "$TARGET_PRODUCT" ]]; then
+                echo "Found matching device: $dev (VID/PID: ${vendor}:${product})"
+                echo "Sending mode change command... $MODE_CHANGE_HEX"
+                if (echo -n "$MODE_CHANGE_HEX" | xxd -r -ps | dd of="$dev" bs=8 count=1 status=none); then
+                    echo "Successfully sent command to $dev."
+                    exit 0
+                else
+                    echo "Error: Failed to write to $dev. Try running as root." >&2
+                    exit 1
+                fi
+            fi
+        done
+    fi
+}
+
+do_stop() {
+    # Claw doesn't need any changes back, leave this for other potential quirks
+}
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart)
+        do_stop
+        do_start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
