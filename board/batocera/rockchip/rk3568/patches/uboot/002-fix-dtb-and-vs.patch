@@ -1,0 +1,13 @@
+diff --git a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+index 043769dfe0..b44c0b63fe 100644
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -45,7 +45,7 @@
+ #define SARADC_INPUT_SRC_MSK	0x7
+ #define SARADC_POWER_CTRL	BIT(3)
+ 
+-#define DTB_DIR			"rockchip/"
++#define DTB_DIR			""
+ 
+ struct rg3xx_model {
+ 	const u16 adc_value;

@@ -5,54 +5,49 @@ BR2_aarch64=y
 BR2_cortex_a55=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_RK3568=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a55 -mtune=cortex-a55"
-#BR2_TARGET_GENERIC_GETTY_PORT="tty1"
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/anbernic-rgxx3/fsoverlay"
 
-# Linux headers same as kernel, a 6.4 series
-BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_4=y
-
 # Kernel
-# Keep at 6.4.16 until Anbernic boot issue is adressed with later kernels
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.4.16"
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.15.6"
+BR2_KERNEL_HEADERS_6_15=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/linux-defconfig.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3566-odroid-m1s rockchip/rk3568-rock-3a rockchip/rk3568-odroid-m1 rockchip/rk3566-roc-pc rockchip/rk3566-anbernic-rg353p rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg353v rockchip/rk3566-anbernic-rg353vs rockchip/rk3566-anbernic-rg503"
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-rock-3c.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3568-firefly-roc-pc.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-anbernic-rg353v-v2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566-orangepi-3b-v2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3566.dtsi $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk356x.dtsi $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rk3568-pinctrl.dtsi $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/dts/rockchip-pinconf.dtsi"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3566-orangepi-3b-v2.1 rockchip/rk3566-odroid-m1s rockchip/rk3568-rock-3a rockchip/rk3566-rock-3c rockchip/rk3568-roc-pc rockchip/rk3568-odroid-m1 rockchip/rk3566-roc-pc rockchip/rk3566-anbernic-rg353p rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg353v rockchip/rk3566-anbernic-rg353vs rockchip/rk3566-anbernic-rg503 rockchip/rk3566-anbernic-rg-arc-d rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg-arc-s rockchip/rk3566-powkiddy-rgb30 rockchip/rk3566-powkiddy-rk2023 rockchip/rk3566-powkiddy-rgb10max3"
 
 # Bootloader
 BR2_PACKAGE_UBOOT_ROCK_3A=y
 BR2_PACKAGE_UBOOT_ROCK_3C=y
-BR2_PACKAGE_UBOOT_ANBERNIC_RGXX3=y
 BR2_PACKAGE_UBOOT_FIREFLY_STATION_M2=y
 BR2_PACKAGE_UBOOT_FIREFLY_STATION_P2=y
 BR2_PACKAGE_UBOOT_ODROID_M1=y
 BR2_PACKAGE_UBOOT_ODROID_M1S=y
 BR2_PACKAGE_UBOOT_ORANGEPI_3B=y
 
-# Odroid-M1S U-Boot
+# Anbernic RGXX3 U-Boot
 BR2_TARGET_UBOOT=y
 BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
 BR2_TARGET_UBOOT_CUSTOM_VERSION=y
-BR2_TARGET_UBOOT_CUSTOM_GIT=y
-BR2_TARGET_UBOOT_CUSTOM_REPO_URL="https://github.com/Kwiboo/u-boot-rockchip"
-BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION="rk3xxx-2024.07"
-BR2_TARGET_UBOOT_BOARD_DEFCONFIG="odroid-m1s-rk3566"
+BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2025.07"
+BR2_TARGET_UBOOT_BOARD_DEFCONFIG="anbernic-rgxx3-rk3566"
 BR2_TARGET_UBOOT_NEEDS_PYLIBFDT=y
+BR2_TARGET_UBOOT_NEEDS_PYELFTOOLS=y
 BR2_TARGET_UBOOT_NEEDS_OPENSSL=y
 BR2_TARGET_UBOOT_NEEDS_PYELFTOOLS=y
 BR2_TARGET_UBOOT_NEEDS_ROCKCHIP_RKBIN=y
+BR2_TARGET_UBOOT_USE_BINMAN=y
+BR2_TARGET_UBOOT_NEEDS_GNUTLS=y
+BR2_TARGET_UBOOT_NEEDS_UTIL_LINUX=y
+#BR2_TARGET_UBOOT_CUSTOM_MAKEOPTS="ARCH=arm64"
 BR2_PACKAGE_HOST_UBOOT_TOOLS_FIT_SUPPORT=y
 BR2_PACKAGE_HOST_DOSFSTOOLS=y
 BR2_PACKAGE_HOST_DTC=y
@@ -60,7 +55,7 @@ BR2_PACKAGE_HOST_GENIMAGE=y
 BR2_PACKAGE_HOST_MTOOLS=y
 BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 BR2_PACKAGE_ROCKCHIP_RKBIN=y
-BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk35/rk3566_ddr_1056MHz_v1.21.bin"
+BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk35/rk3568_ddr_1056MHz_v1.23.bin"
 BR2_PACKAGE_ROCKCHIP_RKBIN_BL31_FILENAME="bin/rk35/rk3568_bl31_v1.44.elf"
 
 # System
