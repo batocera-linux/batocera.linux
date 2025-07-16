@@ -94,6 +94,7 @@
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 - Moved to the `hid-microsoft` driver for Xbox compatible Bluetooth controllers
 - Dreamcast bios now goes into `bios/dc/dc_boot.bin`
+- MSI Claw devices now get the appropriate controller config on boot
 ### Updated
 - Amiberry to v7.0.4
 - AppleWin to 8th of Feb build
@@ -160,7 +161,7 @@
 - Linux Firmware to 20250708
 - Linux Kernel to 6.15.6
 - LLVM to 19.1.7
-- Mesa3D to 25.1.5
+- Mesa3D to 25.1.6
 - MPV to 0.40.0
 - Nvidia production driver to 575.64
 - Pipewire to 1.4.6
