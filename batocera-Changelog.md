@@ -153,8 +153,8 @@
 - Faudio to 25.02
 - FFMPEG to 7.1.1
 - GStreamer codecs to 1.26.0
-- Intel GMMLib to 22.7.1
-- Intel Media Driver to 25.2.0
+- Intel GMMLib to 22.8.1
+- Intel Media Driver to 25.3.0
 - Kodi to 21.2
 - LibDRM to 2.4.124
 - Linux Firmware to 20250708
