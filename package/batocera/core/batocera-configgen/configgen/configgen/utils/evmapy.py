@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
@@ -202,10 +203,15 @@ class evmapy(AbstractContextManager[None, None]):
             if (actions := pad_action_config.get(f'actions_gun{ngun}')) is not None:
                 self.__write_gun_config(gun, actions, keys_file)
 
-        # configure each player
-        for pad in self.controllers:
-            if (actions := pad_action_config.get(f'actions_player{pad.player_number}')) is not None:
-                self.__write_controller_config(pad, actions, keys_file)
+        # configure each player in parallel
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(self.__write_controller_config, pad, pad_action_config[f'actions_player{pad.player_number}'], keys_file)
+                for pad in self.controllers
+                if f'actions_player{pad.player_number}' in pad_action_config
+            ]
+            for f in futures:
+                f.result()
 
         return True
 
@@ -249,6 +255,9 @@ class evmapy(AbstractContextManager[None, None]):
         known_button_codes: dict[str, str] = {}
         known_button_aliases: dict[str, str] = {}
         known_axis_codes: set[str] = set()
+
+        # Cache axis data so it's only called once per controller
+        axis_ranges = self.__get_all_axis_min_max(controller.device_path)
 
         for input in controller.inputs.values():
             if input.type == 'button':
@@ -310,7 +319,7 @@ class evmapy(AbstractContextManager[None, None]):
                         axis_name = input.name
 
                     if (axis_id and axis_name) or axis_id == '_OTHERS_':
-                        axis_min, axis_max = self.__get_pad_min_max_axis(controller.device_path, int(input.code))
+                        axis_min, axis_max = axis_ranges.get(int(input.code), (0, 0))
 
                         known_button_names.add(f'ABS{axis_id}{axis_name}:min')
                         known_button_names.add(f'ABS{axis_id}{axis_name}:max')
@@ -517,19 +526,16 @@ class evmapy(AbstractContextManager[None, None]):
 
         return trigger
 
-    def __get_pad_min_max_axis(self, device_path: str, axis_code: int, /) -> tuple[int, int]:
+    def __get_all_axis_min_max(self, device_path: str) -> dict[int, tuple[int, int]]:
         import evdev
 
         device = evdev.InputDevice(device_path)
-        capabilities = device.capabilities(False)
-
-        for event_type in capabilities:
-            if event_type == 3:  # "EV_ABS"
-                for abs_code, val in capabilities[event_type]:
-                    if abs_code == axis_code:
-                        return val.min, val.max
-
-        return 0, 0  # not found
+        axis_ranges = {}
+        for event_type, items in device.capabilities(False).items():
+            if event_type == 3:
+                for abs_code, val in items:
+                    axis_ranges[abs_code] = (val.min, val.max)
+        return axis_ranges
 
     def __get_pad_min_max_axis_for_keys(self, min: float, max: float, /) -> tuple[float, float]:
         val_range = (max - min) / 2  # for each side
