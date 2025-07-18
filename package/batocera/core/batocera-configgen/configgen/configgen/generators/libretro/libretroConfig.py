@@ -47,13 +47,12 @@ def getInvertButtonsValue() -> bool:
     try:
         tree = ET.parse(ES_SETTINGS)
         root = tree.getroot()
-        # Find the InvertButtons element and return value
-        elem = root.find(".//bool[@name='InvertButtons']")
-        if elem is not None:
-            return elem.get('value') == 'true'
-        return False  # Return False if not found
-    except Exception:
-        return False # when file is not yet here or malformed
+        for child in root:
+            if child.tag == "bool" and child.get("name") == "InvertButtons":
+                return child.get("value") == "true"
+        return False
+    except:
+        return False
 
 # return true if the option is considered defined
 def defined(key: str, dict: Mapping[str, Any] | SystemConfig, /) -> bool:
