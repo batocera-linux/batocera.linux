@@ -1,7 +1,7 @@
-diff --git a/rk3566-anbernic-rg353v.dts b/rk3566-anbernic-rg353v.dts
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353v.dts b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353v.dts
 index 488e947677..6a6a4fb5ed 100644
---- a/rk3566-anbernic-rg353v.dts
-+++ b/rk3566-anbernic-rg353v.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353v.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353v.dts
 @@ -262,3 +262,15 @@ &sdhci {
  	vqmmc-supply = <&vcc_1v8>;
  	status = "okay";
