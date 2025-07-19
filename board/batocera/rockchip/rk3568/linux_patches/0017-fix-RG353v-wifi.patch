@@ -1,0 +1,20 @@
+diff --git a/rk3566-anbernic-rg353v.dts b/rk3566-anbernic-rg353v.dts
+index 488e947677..6a6a4fb5ed 100644
+--- a/rk3566-anbernic-rg353v.dts
++++ b/rk3566-anbernic-rg353v.dts
+@@ -262,3 +262,15 @@ &sdhci {
+ 	vqmmc-supply = <&vcc_1v8>;
+ 	status = "okay";
+ };
++
++&sdmmc2 {
++	/*
++	 * The RG353V board exhibits SDIO signal integrity issues even at
++	 * High Speed mode (up to 50MHz). By deleting the sd-uhs-sdr50
++	 * property and explicitly setting a max-frequency of 25MHz, we
++	 * force the bus to negotiate the slower and more stable SDR25
++	 * mode, which should allow the Wi-Fi chip to function reliably.
++	 */
++	/delete-property/ sd-uhs-sdr50;
++	max-frequency = <25000000>;
++};
