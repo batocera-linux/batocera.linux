@@ -12,7 +12,7 @@ FIRMWARE_ARMBIAN_TARGET_DIR=$(TARGET_DIR)/lib/firmware/
 
 define FIRMWARE_ARMBIAN_INSTALL_TARGET_CMDS
 	mkdir -p $(FIRMWARE_ARMBIAN_TARGET_DIR)
-	cp -aRf $(@D)/* $(FIRMWARE_ARMBIAN_TARGET_DIR)/
+	rsync -au --checksum --force $(@D)/ $(FIRMWARE_ARMBIAN_TARGET_DIR)/
 endef
 
 $(eval $(generic-package))
