@@ -5,7 +5,8 @@
 ################################################################################
 # Keep the version aligned to buildroot ffmpeg 
 # We overwrite that version for hwaccel
-FFMPEG_ROCKCHIP_VERSION = 6a166dcef156898ca69ba3654ff26fcd75d204ff
+# Version: Commits on Jul 4, 2025 (7.1 branch)
+FFMPEG_ROCKCHIP_VERSION = a8c04e01e7d3bed7efb086ac8b51045bedd08a0d
 FFMPEG_ROCKCHIP_SITE = https://github.com/nyanmisaka/ffmpeg-rockchip.git
 FFMPEG_ROCKCHIP_SITE_METHOD = git
 FFMPEG_ROCKCHIP_GIT_SUBMODULES = YES
@@ -58,7 +59,7 @@ FFMPEG_ROCKCHIP_CONF_OPTS = \
 	--disable-doc
 
 # batocera - ensure rockchip hwaccel is enabled
-ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_ROCKCHIP_RGA),yy)
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_ROCKCHIP_MPP),yy)
 FFMPEG_ROCKCHIP_CONF_OPTS += --enable-rkmpp --enable-rkrga --enable-version3
 FFMPEG_ROCKCHIP_DEPENDENCIES += rockchip-rga rockchip-mpp
 endif
