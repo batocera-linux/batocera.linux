@@ -1,0 +1,74 @@
+#!/bin/bash
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# batocera-xtract, a script as universal extractor tool and to mimic file-roller base functions
+# MimeTypes=application/x-7z-compressed;application/gzip;application/vnd.rar;application/x-tar;application/x-compressed-tar;
+#           application/x-xz-compressed-tar;application/x-xz;application/zip;
+
+# inital idea and inspired by brunoeduardobrasil, 07/19/2025 cyperghost aka crcerror
+
+case "$1" in
+    x|X) #for CLI as universal extraction tool
+        FILE="$2"; DEST="$3"
+        [[ -f "$FILE" ]] || { echo "Error! Archive '$FILE' not found"; exit 1; }
+        if [[ -z "$DEST" ]]; then
+            FILENAME="$(basename "${FILE%.*}")"
+            echo "No Destination directory entered!"
+            echo "(y/Y) to extract to: '$PWD'"
+            echo "(n/N) to extract to: '$FILENAME' in '$PWD'"
+            read -p "Select (y/n) and press Enter: " yn
+            case ${yn:0:1} in
+                y|Y) DEST="$PWD" ;;
+                n|N) mkdir "$FILENAME"; DEST="${PWD}/${FILENAME}" ;;
+                *)   echo "...Aborted!"; exit 1
+            esac
+        fi
+        [[ -d "$DEST" ]] || { echo "Error! Destionation directory '$DEST' not found"; exit 1; }
+    ;;
+    --extract)
+        FILE="$2" 
+        DEST=$(yad --title "Choose destination folder" --file --directory)
+        [[ -z "$DEST" ]] && exit 1
+    ;;
+    --extract-to)
+        FILE="$3"
+        DEST="${2/file:\/\/}"
+    ;;
+    *)  [ -t 1 ] || yad --title "Error" --geometry=400x100 --text "Action: '$1' is unknown"
+        echo "Usage: $(basename "$0") x [ARCHIVEFILE] [DESTINATION-DIR]"; echo
+        echo "If parameter DESTINATION-DIR is left empty, extraction takes place in current directory"
+        echo "or basename of archive file is created if you select 'no'";echo
+        echo "Supported archives: zip 7z rar tar gz xz tar.gz tar.xz"
+        exit 1
+esac
+
+FILENAME="$(basename "$FILE")"
+for EXT in tar.gz tar.xz tar gz xz zip rar 7z; do
+    [[ "${FILENAME,,}" =~ ^.*\."$EXT"$ ]] && break || EXT=
+done
+[[ -z "$EXT" ]] && exit 11
+
+case "$EXT" in
+    zip) unzip "$FILE" -d "$DEST" ;;
+    rar) unrar x "$FILE" "$DEST/" ;;
+    7z)  7zr x "$FILE" -o "$DEST/" ;;
+    gz)  gunzip -c "$FILE" > "$DEST/${FILENAME%.*}" ;;
+    xz)  unxz -c "$FILE" > "$DEST/${FILENAME%.*}" ;;
+    tar) tar -xf "$FILE" -C "$DEST" ;;
+    # Multiple TAR variants
+    tar.xz) tar -xJf "$FILE" -C "$DEST" ;;
+    tar.gz) tar -xzf "$FILE" -C "$DEST" ;;
+esac
