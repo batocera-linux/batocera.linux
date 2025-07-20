@@ -263,6 +263,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	# Used for screen rotation (SDL, Retroarch, Moonlight)
 	select BR2_PACKAGE_ROCKCHIP_RGA    if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || \
 	                                      BR2_PACKAGE_BATOCERA_TARGET_RK3128 || \
+										  BR2_PACKAGE_BATOCERA_TARGET_RK3568 || \
 										  BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 										  BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 

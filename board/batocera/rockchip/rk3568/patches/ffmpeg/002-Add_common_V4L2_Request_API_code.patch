@@ -1,0 +1,766 @@
+From patchwork Tue Aug  6 09:06:01 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50901
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1907440vqb;
+        Tue, 6 Aug 2024 02:07:03 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCUKvpVOtVW3O8qkX/8gxvIJna18B43H8vFmaG7vlQgjoY4jURGeScJzC0E6PFSuCmFyMChIcBQzE/MuZFB5Ab4YYCqdRFeLvMWuiA==
+X-Google-Smtp-Source: 
+ AGHT+IEd8/NxcdaPUlj9Xjp0NuAQyG3LEP+2+4fDqsO7d46psL+FUWzl/YjYUrz6TEj56A8c0KNc
+X-Received: by 2002:a05:6512:3d09:b0:52d:582e:4117 with SMTP id
+ 2adb3069b0e04-530bb6c7c39mr10182721e87.54.1722935223372;
+        Tue, 06 Aug 2024 02:07:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722935223; cv=none;
+        d=google.com; s=arc-20160816;
+        b=GKa/pPlcGO/u/iwoLgKRVWQdJs5ly3FGRy1CCI5JVhMgnjlja9oKbq0Ijilgm5n9mJ
+         SLWXbLBecatvqczlmC3hh2F+0Tup7r2kahA+LUxVL8Lfxe5Ojsks24hFLXwjZuTo1+JD
+         8IVyuIZQR5mS6JIN0bwvsl3GfATFKK2Q+o+BtHzpYm72+Vz2muPWuAaMzTYAQwx/DtQM
+         4g3P9Ratf4BDfYXAqrIoZfQjY0hnOBR/knHBAtqUYdT8Jzfs2LRi1hrTuHqftKmRPxBj
+         Z7Ufq0VkjP+O/aJPiv7JWCjfinNpQz0tOrD70p/XQW3HrEz5smo+n7SFBRMcD6v1d8f6
+         TXXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=h3Dy6kih6K9VUAqNy1QSx1Y2L0DRCbHyUsP8iiHrWoQ=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=ffoa/PRrFXSR1qnsN1BxpImtVa18m/mJqRrd8cPgnSWnCRtevYsGPwKAyH4tFm/Awp
+         s6+pNw6/tBkIh9ws4Br/PDxOjTHq4/nGZ/qpcxkNczoaPgV8OOaQD23IgpZXnlNksA2X
+         apg3Mnnw75lguaqL2Dh4TDWCuyj4L3hNN+6aLPuPYfkjZ25lHMzWqrk+y/iFdvHb6IhP
+         njaR8ev6FSItNXFIZTzoETSm9DR2doNPfopf9sfIUqBO4iSvddeMxfJoorSpkeraN41p
+         v/5C8yCwL1lcXd6Ll1NfVP+dcOFHslQMKq8YUeIlr+jcOxq9PUnmdsJmMsGv53dbFd+H
+         LURg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=ff56tu+Y;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ 2adb3069b0e04-530bba27796si2912255e87.222.2024.08.06.02.07.02;
+        Tue, 06 Aug 2024 02:07:03 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=ff56tu+Y;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id 2600F68D981;
+	Tue,  6 Aug 2024 12:06:38 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [164.92.70.200])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id 6B9D868D96D
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:31 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935186; bh=cuKa2q+G0h1sEDxUwB1yJa4HSE+RzXsFF/fWOBzDgD4=;
+ b=ff56tu+Y72FEvYpD9jZgK8PU+Lcdew4p5K0jRGrTS/MgbPIlHtzRA8e2V2f1Tu+x26yg/fPJI
+ Nt7rTYHL/2p1KcbuwBo33e13IWxQnJ37XX32KsspHPxeAGppNz1PxihxahjV6SfBHhN4HxEknQU
+ Fb6SBzwOr2keuT3bvqVUfh96q4xIzoyyjEKMmgINAGrvdlx+q1poflhz9+dT484sq/gvLzLNuyw
+ gdTOQgGxTh3sCEiqO6MEmtQv/Z9RKl4P7x/EDqT3SjLZQriUSpkm5s+EdXN77Nonxeyv6jfZ9qu
+ sR4S0kSKpWN3ECpffYlIbXhjm5AjE+IbQUKrSJnFD+gg==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:01 +0000
+Message-ID: <20240806090607.43240-3-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 164.92.70.200
+X-ForwardEmail-ID: 66b1e7908ac7bd7d98d34c4c
+Subject: [FFmpeg-devel] [PATCH v2 2/8] avcodec: Add common V4L2 Request API
+ code
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: G4m+LoG16adF
+
+Add common helpers for supporting V4L2 Request API hwaccels.
+
+Basic flow for initialization follow the kernel Memory-to-memory
+Stateless Video Decoder Interface > Initialization [1].
+
+In init video devices is probed and when a capable device is found it is
+initialized for decoding. Codec specific CONTROLs may be set to assist
+kernel driver. A supported CAPTURE format is selected. A hw frame ctx is
+created and CAPTURE buffers is allocated. OUTPUT buffers and request
+objects for a circular queue is also allocated.
+
+In frame_params a buffer pool is created and configured to allocate
+CAPTURE buffers.
+
+In flush all queued OUTPUT and CAPTURE buffers is dequeued.
+
+In uninit any pending request is flushed, also video and media device is
+closed. The media device is not closed when ownership of the media_fd
+has been transfered to the hwdevice.
+
+[1] https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
+
+Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Co-developed-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+I am also adding myself as a maintainer for the v4l2_request files as I
+would like to be CC on patches related to v4l2_request.
+---
+ MAINTAINERS                        |   1 +
+ libavcodec/Makefile                |   1 +
+ libavcodec/v4l2_request.c          | 441 +++++++++++++++++++++++++++++
+ libavcodec/v4l2_request.h          |  84 ++++++
+ libavcodec/v4l2_request_internal.h |  42 +++
+ 5 files changed, 569 insertions(+)
+ create mode 100644 libavcodec/v4l2_request.c
+ create mode 100644 libavcodec/v4l2_request.h
+ create mode 100644 libavcodec/v4l2_request_internal.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6ce8bc8639..cce7472c87 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -262,6 +262,7 @@ Hardware acceleration:
+   d3d11va*                              Steve Lhomme
+   d3d12va_encode*                       Tong Wu
+   mediacodec*                           Matthieu Bouron, Aman Gupta, Zhao Zhili
++  v4l2_request*                         Jonas Karlman (CC jonas@kwiboo.se)
+   vaapi*                                Haihao Xiang
+   vaapi_encode*                         Mark Thompson, Haihao Xiang
+   vdpau*                                Philip Langdale, Carl Eugen Hoyos
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 262d0a3d3e..b851401c7a 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -174,6 +174,7 @@ OBJS-$(CONFIG_VP3DSP)                  += vp3dsp.o
+ OBJS-$(CONFIG_VP56DSP)                 += vp56dsp.o
+ OBJS-$(CONFIG_VP8DSP)                  += vp8dsp.o
+ OBJS-$(CONFIG_V4L2_M2M)                += v4l2_m2m.o v4l2_context.o v4l2_buffers.o v4l2_fmt.o
++OBJS-$(CONFIG_V4L2_REQUEST)            += v4l2_request.o
+ OBJS-$(CONFIG_WMA_FREQS)               += wma_freqs.o
+ OBJS-$(CONFIG_WMV2DSP)                 += wmv2dsp.o
+ 
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+new file mode 100644
+index 0000000000..436c8de4a4
+--- /dev/null
++++ b/libavcodec/v4l2_request.c
+@@ -0,0 +1,441 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "config.h"
++
++#include <fcntl.h>
++#include <sys/ioctl.h>
++#include <sys/mman.h>
++#include <unistd.h>
++
++#include "libavutil/hwcontext_v4l2request.h"
++#include "libavutil/mem.h"
++#include "decode.h"
++#include "v4l2_request_internal.h"
++
++static const AVClass v4l2_request_context_class = {
++    .class_name = "V4L2RequestContext",
++    .item_name  = av_default_item_name,
++    .version    = LIBAVUTIL_VERSION_INT,
++};
++
++int ff_v4l2_request_query_control(AVCodecContext *avctx,
++                                  struct v4l2_query_ext_ctrl *control)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++
++    if (ioctl(ctx->video_fd, VIDIOC_QUERY_EXT_CTRL, control) < 0) {
++        // Skip error logging when driver does not support control id (EINVAL)
++        if (errno != EINVAL) {
++            av_log(ctx, AV_LOG_ERROR, "Failed to query control %u: %s (%d)\n",
++                   control->id, strerror(errno), errno);
++        }
++        return AVERROR(errno);
++    }
++
++    return 0;
++}
++
++int ff_v4l2_request_query_control_default_value(AVCodecContext *avctx,
++                                                uint32_t id)
++{
++    struct v4l2_query_ext_ctrl control = {
++        .id = id,
++    };
++    int ret;
++
++    ret = ff_v4l2_request_query_control(avctx, &control);
++    if (ret < 0)
++        return ret;
++
++    return control.default_value;
++}
++
++int ff_v4l2_request_set_request_controls(V4L2RequestContext *ctx, int request_fd,
++                                         struct v4l2_ext_control *control, int count)
++{
++    struct v4l2_ext_controls controls = {
++        .controls = control,
++        .count = count,
++        .request_fd = request_fd,
++        .which = (request_fd >= 0) ? V4L2_CTRL_WHICH_REQUEST_VAL : 0,
++    };
++
++    if (!control || !count)
++        return 0;
++
++    if (ioctl(ctx->video_fd, VIDIOC_S_EXT_CTRLS, &controls) < 0)
++        return AVERROR(errno);
++
++    return 0;
++}
++
++int ff_v4l2_request_set_controls(AVCodecContext *avctx,
++                                 struct v4l2_ext_control *control, int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    int ret;
++
++    ret = ff_v4l2_request_set_request_controls(ctx, -1, control, count);
++    if (ret < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to set %d control(s): %s (%d)\n",
++               count, strerror(errno), errno);
++    }
++
++    return ret;
++}
++
++static int v4l2_request_buffer_alloc(V4L2RequestContext *ctx,
++                                     V4L2RequestBuffer *buf,
++                                     enum v4l2_buf_type type)
++{
++    struct v4l2_plane planes[1] = {};
++    struct v4l2_create_buffers buffers = {
++        .count = 1,
++        .memory = V4L2_MEMORY_MMAP,
++        .format.type = type,
++    };
++
++    // Get format details for the buffer to be created
++    if (ioctl(ctx->video_fd, VIDIOC_G_FMT, &buffers.format) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to get format of type %d: %s (%d)\n",
++               type, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    // Create the buffer
++    if (ioctl(ctx->video_fd, VIDIOC_CREATE_BUFS, &buffers) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to create buffer of type %d: %s (%d)\n",
++               type, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    if (V4L2_TYPE_IS_MULTIPLANAR(type)) {
++        buf->width = buffers.format.fmt.pix_mp.width;
++        buf->height = buffers.format.fmt.pix_mp.height;
++        buf->size = buffers.format.fmt.pix_mp.plane_fmt[0].sizeimage;
++        buf->buffer.length = 1;
++        buf->buffer.m.planes = planes;
++    } else {
++        buf->width = buffers.format.fmt.pix.width;
++        buf->height = buffers.format.fmt.pix.height;
++        buf->size = buffers.format.fmt.pix.sizeimage;
++    }
++
++    buf->index = buffers.index;
++    buf->capabilities = buffers.capabilities;
++    buf->used = 0;
++
++    buf->buffer.type = type;
++    buf->buffer.memory = V4L2_MEMORY_MMAP;
++    buf->buffer.index = buf->index;
++
++    // Query more details of the created buffer
++    if (ioctl(ctx->video_fd, VIDIOC_QUERYBUF, &buf->buffer) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to query buffer %d of type %d: %s (%d)\n",
++               buf->index, type, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    // Output buffers is mapped and capture buffers is exported
++    if (V4L2_TYPE_IS_OUTPUT(type)) {
++        off_t offset = V4L2_TYPE_IS_MULTIPLANAR(type) ?
++                       buf->buffer.m.planes[0].m.mem_offset :
++                       buf->buffer.m.offset;
++        void *addr = mmap(NULL, buf->size, PROT_READ | PROT_WRITE, MAP_SHARED,
++                          ctx->video_fd, offset);
++        if (addr == MAP_FAILED) {
++            av_log(ctx, AV_LOG_ERROR, "Failed to map output buffer %d: %s (%d)\n",
++                   buf->index, strerror(errno), errno);
++            return AVERROR(errno);
++        }
++
++        // Raw bitstream data is appended to output buffers
++        buf->addr = (uint8_t *)addr;
++    } else {
++        struct v4l2_exportbuffer exportbuffer = {
++            .type = type,
++            .index = buf->index,
++            .flags = O_RDONLY,
++        };
++
++        if (ioctl(ctx->video_fd, VIDIOC_EXPBUF, &exportbuffer) < 0) {
++            av_log(ctx, AV_LOG_ERROR, "Failed to export capture buffer %d: %s (%d)\n",
++                   buf->index, strerror(errno), errno);
++            return AVERROR(errno);
++        }
++
++        // Used in the AVDRMFrameDescriptor for decoded frames
++        buf->fd = exportbuffer.fd;
++
++        /*
++         * Use buffer index as base for V4L2 frame reference.
++         * This works because a capture buffer is closely tied to a AVFrame
++         * and FFmpeg handle all frame reference tracking for us.
++         */
++        buf->buffer.timestamp.tv_usec = buf->index + 1;
++    }
++
++    return 0;
++}
++
++static void v4l2_request_buffer_free(V4L2RequestBuffer *buf)
++{
++    // Unmap output buffers
++    if (buf->addr) {
++        munmap(buf->addr, buf->size);
++        buf->addr = NULL;
++    }
++
++    // Close exported capture buffers or requests for output buffers
++    if (buf->fd >= 0) {
++        close(buf->fd);
++        buf->fd = -1;
++    }
++}
++
++static void v4l2_request_frame_free(void *opaque, uint8_t *data)
++{
++    V4L2RequestFrameDescriptor *desc = (V4L2RequestFrameDescriptor *)data;
++
++    v4l2_request_buffer_free(&desc->capture);
++
++    av_free(data);
++}
++
++static AVBufferRef *v4l2_request_frame_alloc(void *opaque, size_t size)
++{
++    V4L2RequestContext *ctx = opaque;
++    V4L2RequestFrameDescriptor *desc;
++    AVBufferRef *ref;
++    uint8_t *data;
++
++    data = av_mallocz(size);
++    if (!data)
++        return NULL;
++
++    ref = av_buffer_create(data, size, v4l2_request_frame_free, ctx, 0);
++    if (!ref) {
++        av_free(data);
++        return NULL;
++    }
++
++    desc = (V4L2RequestFrameDescriptor *)data;
++    desc->capture.fd = -1;
++
++    // Create a V4L2 capture buffer for this AVFrame
++    if (v4l2_request_buffer_alloc(ctx, &desc->capture, ctx->format.type) < 0) {
++        av_buffer_unref(&ref);
++        return NULL;
++    }
++
++    // TODO: Set AVDRMFrameDescriptor of this AVFrame
++
++    return ref;
++}
++
++static void v4l2_request_hwframe_ctx_free(AVHWFramesContext *hwfc)
++{
++    av_buffer_pool_uninit(&hwfc->pool);
++}
++
++int ff_v4l2_request_frame_params(AVCodecContext *avctx,
++                                 AVBufferRef *hw_frames_ctx)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    AVHWFramesContext *hwfc = (AVHWFramesContext *)hw_frames_ctx->data;
++
++    hwfc->format = AV_PIX_FMT_DRM_PRIME;
++    // TODO: Set sw_format based on capture buffer format
++    hwfc->sw_format = AV_PIX_FMT_NONE;
++
++    if (V4L2_TYPE_IS_MULTIPLANAR(ctx->format.type)) {
++        hwfc->width = ctx->format.fmt.pix_mp.width;
++        hwfc->height = ctx->format.fmt.pix_mp.height;
++    } else {
++        hwfc->width = ctx->format.fmt.pix.width;
++        hwfc->height = ctx->format.fmt.pix.height;
++    }
++
++    hwfc->pool = av_buffer_pool_init2(sizeof(V4L2RequestFrameDescriptor), ctx,
++                                      v4l2_request_frame_alloc, NULL);
++    if (!hwfc->pool)
++        return AVERROR(ENOMEM);
++
++    hwfc->free = v4l2_request_hwframe_ctx_free;
++
++    hwfc->initial_pool_size = 1;
++
++    switch (avctx->codec_id) {
++    case AV_CODEC_ID_VP9:
++        hwfc->initial_pool_size += 8;
++        break;
++    case AV_CODEC_ID_VP8:
++        hwfc->initial_pool_size += 3;
++        break;
++    default:
++        hwfc->initial_pool_size += 2;
++    }
++
++    return 0;
++}
++
++int ff_v4l2_request_uninit(AVCodecContext *avctx)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++
++    if (ctx->video_fd >= 0) {
++        // TODO: Flush and wait on all pending requests
++
++        // Stop output queue
++        if (ioctl(ctx->video_fd, VIDIOC_STREAMOFF, &ctx->output_type) < 0) {
++            av_log(ctx, AV_LOG_WARNING, "Failed to stop output streaming: %s (%d)\n",
++                   strerror(errno), errno);
++        }
++
++        // Stop capture queue
++        if (ioctl(ctx->video_fd, VIDIOC_STREAMOFF, &ctx->format.type) < 0) {
++            av_log(ctx, AV_LOG_WARNING, "Failed to stop capture streaming: %s (%d)\n",
++                   strerror(errno), errno);
++        }
++
++        // Release output buffers
++        for (int i = 0; i < FF_ARRAY_ELEMS(ctx->output); i++) {
++            v4l2_request_buffer_free(&ctx->output[i]);
++        }
++
++        // Close video device file descriptor
++        close(ctx->video_fd);
++        ctx->video_fd = -1;
++    }
++
++    // Ownership of media device file descriptor may belong to hwdevice
++    if (ctx->device_ref) {
++        av_buffer_unref(&ctx->device_ref);
++        ctx->media_fd = -1;
++    } else if (ctx->media_fd >= 0) {
++        close(ctx->media_fd);
++        ctx->media_fd = -1;
++    }
++
++    ff_mutex_destroy(&ctx->mutex);
++
++    return 0;
++}
++
++static int v4l2_request_init_context(AVCodecContext *avctx)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    int ret;
++
++    // Initialize context state
++    ff_mutex_init(&ctx->mutex, NULL);
++    for (int i = 0; i < FF_ARRAY_ELEMS(ctx->output); i++) {
++        ctx->output[i].index = i;
++        ctx->output[i].fd = -1;
++    }
++    atomic_init(&ctx->next_output, 0);
++    atomic_init(&ctx->queued_output, 0);
++    atomic_init(&ctx->queued_request, 0);
++    atomic_init(&ctx->queued_capture, 0);
++
++    // Get format details for capture buffers
++    if (ioctl(ctx->video_fd, VIDIOC_G_FMT, &ctx->format) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to get capture format: %s (%d)\n",
++               strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    // Create frame context and allocate initial capture buffers
++    ret = ff_decode_get_hw_frames_ctx(avctx, AV_HWDEVICE_TYPE_V4L2REQUEST);
++    if (ret < 0)
++        goto fail;
++
++    // Allocate output buffers for circular queue
++    for (int i = 0; i < FF_ARRAY_ELEMS(ctx->output); i++) {
++        ret = v4l2_request_buffer_alloc(ctx, &ctx->output[i], ctx->output_type);
++        if (ret < 0)
++            goto fail;
++    }
++
++    // Allocate requests for circular queue
++    for (int i = 0; i < FF_ARRAY_ELEMS(ctx->output); i++) {
++        if (ioctl(ctx->media_fd, MEDIA_IOC_REQUEST_ALLOC, &ctx->output[i].fd) < 0) {
++            av_log(ctx, AV_LOG_ERROR, "Failed to allocate request %d: %s (%d)\n",
++                   i, strerror(errno), errno);
++            ret = AVERROR(errno);
++            goto fail;
++        }
++    }
++
++    // Start output queue
++    if (ioctl(ctx->video_fd, VIDIOC_STREAMON, &ctx->output_type) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to start output streaming: %s (%d)\n",
++               strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    // Start capture queue
++    if (ioctl(ctx->video_fd, VIDIOC_STREAMON, &ctx->format.type) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to start capture streaming: %s (%d)\n",
++               strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    return 0;
++
++fail:
++    ff_v4l2_request_uninit(avctx);
++    return ret;
++}
++
++int ff_v4l2_request_init(AVCodecContext *avctx,
++                         uint32_t pixelformat, uint32_t buffersize,
++                         struct v4l2_ext_control *control, int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    AVV4L2RequestDeviceContext *hwctx = NULL;
++
++    // Set initial default values
++    ctx->av_class = &v4l2_request_context_class;
++    ctx->media_fd = -1;
++    ctx->video_fd = -1;
++
++    // Try to use media device file descriptor opened and owned by hwdevice
++    if (avctx->hw_device_ctx) {
++        AVHWDeviceContext *device_ctx = (AVHWDeviceContext *)avctx->hw_device_ctx->data;
++        if (device_ctx->type == AV_HWDEVICE_TYPE_V4L2REQUEST && device_ctx->hwctx) {
++            hwctx = device_ctx->hwctx;
++            ctx->media_fd = hwctx->media_fd;
++        }
++    }
++
++    // TODO: Probe for a capable media and video device
++
++    // Transfer (or return) ownership of media device file descriptor to hwdevice
++    if (hwctx) {
++        hwctx->media_fd = ctx->media_fd;
++        ctx->device_ref = av_buffer_ref(avctx->hw_device_ctx);
++    }
++
++    // Create buffers and finalize init
++    return v4l2_request_init_context(avctx);
++}
+diff --git a/libavcodec/v4l2_request.h b/libavcodec/v4l2_request.h
+new file mode 100644
+index 0000000000..621caaf28c
+--- /dev/null
++++ b/libavcodec/v4l2_request.h
+@@ -0,0 +1,84 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifndef AVCODEC_V4L2_REQUEST_H
++#define AVCODEC_V4L2_REQUEST_H
++
++#include <stdatomic.h>
++#include <stdbool.h>
++
++#include <linux/videodev2.h>
++
++#include "libavutil/hwcontext_drm.h"
++#include "libavutil/thread.h"
++
++typedef struct V4L2RequestBuffer {
++    int index;
++    int fd;
++    uint8_t *addr;
++    uint32_t width;
++    uint32_t height;
++    uint32_t size;
++    uint32_t used;
++    uint32_t capabilities;
++    struct v4l2_buffer buffer;
++} V4L2RequestBuffer;
++
++typedef struct V4L2RequestContext {
++    const AVClass *av_class;
++    AVBufferRef *device_ref;
++    int media_fd;
++    int video_fd;
++    struct v4l2_format format;
++    enum v4l2_buf_type output_type;
++    AVMutex mutex;
++    V4L2RequestBuffer output[4];
++    atomic_int_least8_t next_output;
++    atomic_uint_least32_t queued_output;
++    atomic_uint_least32_t queued_request;
++    atomic_uint_least64_t queued_capture;
++    int (*post_probe)(AVCodecContext *avctx);
++} V4L2RequestContext;
++
++typedef struct V4L2RequestPictureContext {
++    V4L2RequestBuffer *output;
++    V4L2RequestBuffer *capture;
++} V4L2RequestPictureContext;
++
++int ff_v4l2_request_query_control(AVCodecContext *avctx,
++                                  struct v4l2_query_ext_ctrl *control);
++
++int ff_v4l2_request_query_control_default_value(AVCodecContext *avctx,
++                                                uint32_t id);
++
++int ff_v4l2_request_set_request_controls(V4L2RequestContext *ctx, int request_fd,
++                                         struct v4l2_ext_control *control, int count);
++
++int ff_v4l2_request_set_controls(AVCodecContext *avctx,
++                                 struct v4l2_ext_control *control, int count);
++
++int ff_v4l2_request_frame_params(AVCodecContext *avctx,
++                                 AVBufferRef *hw_frames_ctx);
++
++int ff_v4l2_request_uninit(AVCodecContext *avctx);
++
++int ff_v4l2_request_init(AVCodecContext *avctx,
++                         uint32_t pixelformat, uint32_t buffersize,
++                         struct v4l2_ext_control *control, int count);
++
++#endif /* AVCODEC_V4L2_REQUEST_H */
+diff --git a/libavcodec/v4l2_request_internal.h b/libavcodec/v4l2_request_internal.h
+new file mode 100644
+index 0000000000..554b663ab4
+--- /dev/null
++++ b/libavcodec/v4l2_request_internal.h
+@@ -0,0 +1,42 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifndef AVCODEC_V4L2_REQUEST_INTERNAL_H
++#define AVCODEC_V4L2_REQUEST_INTERNAL_H
++
++#include <linux/media.h>
++
++#include "internal.h"
++#include "v4l2_request.h"
++
++typedef struct V4L2RequestFrameDescriptor {
++    AVDRMFrameDescriptor base;
++    V4L2RequestBuffer capture;
++} V4L2RequestFrameDescriptor;
++
++static inline V4L2RequestContext *v4l2_request_context(AVCodecContext *avctx)
++{
++    return (V4L2RequestContext *)avctx->internal->hwaccel_priv_data;
++}
++
++static inline V4L2RequestFrameDescriptor *v4l2_request_framedesc(AVFrame *frame)
++{
++    return (V4L2RequestFrameDescriptor *)frame->data[0];
++}
++
++#endif /* AVCODEC_V4L2_REQUEST_INTERNAL_H */

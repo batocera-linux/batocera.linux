@@ -1,0 +1,712 @@
+From patchwork Tue Aug  6 09:06:03 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50902
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1911984vqb;
+        Tue, 6 Aug 2024 02:16:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCVEAt4cpRe9BVVzpmEjK0XtThsubO149t6uM5pKfRBeNvMC4PcGTWFSwNn07kvYUSAd5ueSDNDW+QUR70ocWWCv6L1+XD+Z5zqmzA==
+X-Google-Smtp-Source: 
+ AGHT+IF4hKLymYXurrfrkvqCrbxJyPtLH7vZFnK0P/nrtm0A2BkHjKGS/tb8L+No6oIHUmP8Zma0
+X-Received: by 2002:a17:907:7d8f:b0:a7a:b43e:86d5 with SMTP id
+ a640c23a62f3a-a7dc51bc82bmr915595766b.56.1722935768490;
+        Tue, 06 Aug 2024 02:16:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722935768; cv=none;
+        d=google.com; s=arc-20160816;
+        b=sHiEPOKUecUuV+oRsVVzIp6mQ9nC7HDf4ZXE3ijHY/ae7FpzNuDgMwTt73KgxMiFZx
+         HAYs6RLDsQtNtiINA/A7wBhfobLkHJ9sV07RHDdkLAih2XEnS5Z/VM+RzI/vC/Tf9oZJ
+         bnhoS6JDtt1OHeCB7FxxZ5sTSu+o5zKtzz+unORu2deZYyk41u1930JMmnm+FNlJ3AnI
+         2rG9y+Ms2uMrwG/4Rcv+zWAOf6REbph2Vj3r+eQgCQXWZoIWR9WQzBlElbTA0jjASf4j
+         roTfUDCS+Vamfl6MEr22Nib3joKavEDGmzY++Pnljxcvur7Jy73/UVB3liTuNI/UaRZv
+         eiwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=QC4BAMkejLAqWW6x/KM62QH+D9+fS+hT+8KQRY8VVg4=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=zf/GJluEAofg+XH4Mtez1dWUwk0cIR/jYV+p2wyvzGZQpjtQpdelGTeoKTIHM1Dz2M
+         cvznQ2MR6Ivu19EmDgvey3DcHfYxPe5p8CMbrUgipRo7w7VD3uhFyULWYASDfzaQdxS+
+         mgdSSJdIvWy7TVuanKDfeLPfvFZftJMSX4Sb8Ka/MAaU4Cfjt+xOtPTv0Eee7OOstbon
+         w4PTZw6UIdCcuxKgR3pAV84pAiAWR1dTevqOOedG2A3wMipFEcPBiPWUvwqlNwHiIsGw
+         UEmKXszXvXMqARzJpMKMVfmfgEVU0Ldw8sbhQpqt56N1KbiuPvxIhQmNEe59gC4/UZUU
+         q+Tw==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=NPEBVBM9;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ a640c23a62f3a-a7dc9bd4f17si556165266b.54.2024.08.06.02.16.08;
+        Tue, 06 Aug 2024 02:16:08 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=NPEBVBM9;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id 7B72968D9B4;
+	Tue,  6 Aug 2024 12:06:42 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [164.92.70.200])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id 2FAAA68D979
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:35 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935192; bh=QSc2HBK8WKdp+Z6KUcqluTxrU5hmEY/VqeM9XDK4dH0=;
+ b=NPEBVBM9Dzf97NBaGbSV09Q1bD4GQAtenhyFuMXG8hr8aarK2C63ZdDK7Mn+iTr4vMuwqBLDD
+ u46ACqgODTtr2OFycefv5mG5hZQmcx0He7AElnPngINkhgsKe1qXcQUfHKDvvq8p+al63yVIar4
+ AjOCKYYb/XGQIvoYU3+LMgd+ME8YVE2cVJ1y24NPuVgTaWK0IX0d+RWjCaVQUfbZRyOyRn09+16
+ U4LAy0XYxQl6G0mtei6ruP0Or4AZ/xUMZ2pKdxni599TU5X1vT6M6DvyDAA/zPzVuwa+VM4Cygm
+ waQ7KXkDTvyskTSzmy1VHXTpWqzl6VwF13SnBFU2LgiQ==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:03 +0000
+Message-ID: <20240806090607.43240-5-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 164.92.70.200
+X-ForwardEmail-ID: 66b1e7948ac7bd7d98d34c72
+Subject: [FFmpeg-devel] [PATCH v2 4/8] avcodec/v4l2request: Add common
+ decode support for hwaccels
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: FD/pdRLwaK34
+
+Add common support for decoding using the V4L2 Request API.
+
+Basic flow for decoding follow the kernel Memory-to-memory Stateless
+Video Decoder Interface > Decoding [1].
+
+A codec hwaccel typically handle decoding as follow:
+
+In start_frame next OUTPUT buffer and its related request object is
+picked from a circular queue and any codec specific CONTROLs is prepared.
+
+In decode_slice the slice bitstream data is appended to the OUTPUT
+buffer.
+
+In end_frame a CAPTURE buffer tied to the AVFrame is queued, it will be
+used as the decoding target by the driver / hw decoder. The prepared
+codec specific CONTROLs get queued as part of the request object.
+Finally the request object is submitted for decoding.
+
+For slice based hw decoders only the request for the final slice of the
+frame is submitted in end_frame, remaining is submitted in decode_slice.
+
+[1] https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#decoding
+
+Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Co-developed-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ configure                        |   3 +-
+ libavcodec/Makefile              |   2 +-
+ libavcodec/hwconfig.h            |   2 +
+ libavcodec/v4l2_request.c        |   3 +-
+ libavcodec/v4l2_request.h        |  23 ++
+ libavcodec/v4l2_request_decode.c | 459 +++++++++++++++++++++++++++++++
+ 6 files changed, 489 insertions(+), 3 deletions(-)
+ create mode 100644 libavcodec/v4l2_request_decode.c
+
+diff --git a/configure b/configure
+index a5e01fecc3..af6d12f7bb 100755
+--- a/configure
++++ b/configure
+@@ -3151,7 +3151,7 @@ dxva2_deps="dxva2api_h DXVA2_ConfigPictureDecode ole32 user32"
+ ffnvcodec_deps_any="libdl LoadLibrary"
+ mediacodec_deps="android mediandk"
+ nvdec_deps="ffnvcodec"
+-v4l2_request_deps="linux_media_h v4l2_timeval_to_ns libdrm libudev"
++v4l2_request_deps="linux_media_h v4l2_timeval_to_ns v4l2_m2m_hold_capture_buf libdrm libudev"
+ vaapi_x11_deps="xlib_x11"
+ videotoolbox_hwaccel_deps="videotoolbox pthreads"
+ videotoolbox_hwaccel_extralibs="-framework QuartzCore"
+@@ -7177,6 +7177,7 @@ if enabled v4l2_m2m; then
+ fi
+ 
+ if enabled v4l2_request; then
++    check_cc v4l2_m2m_hold_capture_buf linux/videodev2.h "int i = V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF"
+     check_func_headers "linux/media.h linux/videodev2.h" v4l2_timeval_to_ns
+     check_pkg_config libudev libudev libudev.h udev_new
+ fi
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index f1db822568..590d2e3bc2 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -174,7 +174,7 @@ OBJS-$(CONFIG_VP3DSP)                  += vp3dsp.o
+ OBJS-$(CONFIG_VP56DSP)                 += vp56dsp.o
+ OBJS-$(CONFIG_VP8DSP)                  += vp8dsp.o
+ OBJS-$(CONFIG_V4L2_M2M)                += v4l2_m2m.o v4l2_context.o v4l2_buffers.o v4l2_fmt.o
+-OBJS-$(CONFIG_V4L2_REQUEST)            += v4l2_request.o v4l2_request_probe.o
++OBJS-$(CONFIG_V4L2_REQUEST)            += v4l2_request.o v4l2_request_probe.o v4l2_request_decode.o
+ OBJS-$(CONFIG_WMA_FREQS)               += wma_freqs.o
+ OBJS-$(CONFIG_WMV2DSP)                 += wmv2dsp.o
+ 
+diff --git a/libavcodec/hwconfig.h b/libavcodec/hwconfig.h
+index ee29ca631d..159064a1f1 100644
+--- a/libavcodec/hwconfig.h
++++ b/libavcodec/hwconfig.h
+@@ -79,6 +79,8 @@ void ff_hwaccel_uninit(AVCodecContext *avctx);
+     HW_CONFIG_HWACCEL(0, 0, 1, D3D11VA_VLD,  NONE,         ff_ ## codec ## _d3d11va_hwaccel)
+ #define HWACCEL_D3D12VA(codec) \
+     HW_CONFIG_HWACCEL(1, 1, 0, D3D12,        D3D12VA,      ff_ ## codec ## _d3d12va_hwaccel)
++#define HWACCEL_V4L2REQUEST(codec) \
++    HW_CONFIG_HWACCEL(1, 0, 0, DRM_PRIME,    V4L2REQUEST,  ff_ ## codec ## _v4l2request_hwaccel)
+ 
+ #define HW_CONFIG_ENCODER(device, frames, ad_hoc, format, device_type_) \
+     &(const AVCodecHWConfigInternal) { \
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 6f44c5d826..aae719ead6 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -303,7 +303,8 @@ int ff_v4l2_request_uninit(AVCodecContext *avctx)
+     V4L2RequestContext *ctx = v4l2_request_context(avctx);
+ 
+     if (ctx->video_fd >= 0) {
+-        // TODO: Flush and wait on all pending requests
++        // Flush and wait on all pending requests
++        ff_v4l2_request_flush(avctx);
+ 
+         // Stop output queue
+         if (ioctl(ctx->video_fd, VIDIOC_STREAMOFF, &ctx->output_type) < 0) {
+diff --git a/libavcodec/v4l2_request.h b/libavcodec/v4l2_request.h
+index 621caaf28c..62248feb48 100644
+--- a/libavcodec/v4l2_request.h
++++ b/libavcodec/v4l2_request.h
+@@ -81,4 +81,27 @@ int ff_v4l2_request_init(AVCodecContext *avctx,
+                          uint32_t pixelformat, uint32_t buffersize,
+                          struct v4l2_ext_control *control, int count);
+ 
++uint64_t ff_v4l2_request_get_capture_timestamp(AVFrame *frame);
++
++int ff_v4l2_request_append_output(AVCodecContext *avctx,
++                                  V4L2RequestPictureContext *pic,
++                                  const uint8_t *data, uint32_t size);
++
++int ff_v4l2_request_decode_slice(AVCodecContext *avctx,
++                                 V4L2RequestPictureContext *pic,
++                                 struct v4l2_ext_control *control, int count,
++                                 bool first_slice, bool last_slice);
++
++int ff_v4l2_request_decode_frame(AVCodecContext *avctx,
++                                 V4L2RequestPictureContext *pic,
++                                 struct v4l2_ext_control *control, int count);
++
++int ff_v4l2_request_reset_picture(AVCodecContext *avctx,
++                                  V4L2RequestPictureContext *pic);
++
++int ff_v4l2_request_start_frame(AVCodecContext *avctx,
++                                V4L2RequestPictureContext *pic, AVFrame *frame);
++
++void ff_v4l2_request_flush(AVCodecContext *avctx);
++
+ #endif /* AVCODEC_V4L2_REQUEST_H */
+diff --git a/libavcodec/v4l2_request_decode.c b/libavcodec/v4l2_request_decode.c
+new file mode 100644
+index 0000000000..8e7e241e36
+--- /dev/null
++++ b/libavcodec/v4l2_request_decode.c
+@@ -0,0 +1,459 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "config.h"
++
++#include <poll.h>
++#include <sys/ioctl.h>
++
++#include "decode.h"
++#include "v4l2_request_internal.h"
++
++#define INPUT_BUFFER_PADDING_SIZE   (AV_INPUT_BUFFER_PADDING_SIZE * 4)
++
++uint64_t ff_v4l2_request_get_capture_timestamp(AVFrame *frame)
++{
++    V4L2RequestFrameDescriptor *desc = v4l2_request_framedesc(frame);
++
++    /*
++     * The capture buffer index is used as a base for V4L2 frame reference.
++     * This works because frames are decoded into a capture buffer that is
++     * closely tied to an AVFrame.
++     */
++    return desc ? v4l2_timeval_to_ns(&desc->capture.buffer.timestamp) : 0;
++}
++
++static int v4l2_request_queue_buffer(V4L2RequestContext *ctx, int request_fd,
++                                     V4L2RequestBuffer *buf, uint32_t flags)
++{
++    struct v4l2_plane planes[1] = {};
++    struct v4l2_buffer buffer = {
++        .index = buf->index,
++        .type = buf->buffer.type,
++        .memory = buf->buffer.memory,
++        .timestamp = buf->buffer.timestamp,
++        .bytesused = buf->used,
++        .request_fd = request_fd,
++        .flags = ((request_fd >= 0) ? V4L2_BUF_FLAG_REQUEST_FD : 0) | flags,
++    };
++
++    if (V4L2_TYPE_IS_MULTIPLANAR(buffer.type)) {
++        planes[0].bytesused = buf->used;
++        buffer.bytesused = 0;
++        buffer.length = 1;
++        buffer.m.planes = planes;
++    }
++
++    // Queue the buffer
++    if (ioctl(ctx->video_fd, VIDIOC_QBUF, &buffer) < 0)
++        return AVERROR(errno);
++
++    // Mark the buffer as queued
++    if (V4L2_TYPE_IS_OUTPUT(buffer.type))
++        atomic_fetch_or(&ctx->queued_output, 1 << buffer.index);
++    else
++        atomic_fetch_or(&ctx->queued_capture, 1 << buffer.index);
++
++    return 0;
++}
++
++static int v4l2_request_dequeue_buffer(V4L2RequestContext *ctx,
++                                       enum v4l2_buf_type type)
++{
++    struct v4l2_plane planes[1] = {};
++    struct v4l2_buffer buffer = {
++        .type = type,
++        .memory = V4L2_MEMORY_MMAP,
++    };
++
++    if (V4L2_TYPE_IS_MULTIPLANAR(buffer.type)) {
++        buffer.length = 1;
++        buffer.m.planes = planes;
++    }
++
++    // Dequeue next completed buffer
++    if (ioctl(ctx->video_fd, VIDIOC_DQBUF, &buffer) < 0)
++        return AVERROR(errno);
++
++    // Mark the buffer as dequeued
++    if (V4L2_TYPE_IS_OUTPUT(buffer.type))
++        atomic_fetch_and(&ctx->queued_output, ~(1 << buffer.index));
++    else
++        atomic_fetch_and(&ctx->queued_capture, ~(1 << buffer.index));
++
++    return 0;
++}
++
++static inline int v4l2_request_dequeue_completed_buffers(V4L2RequestContext *ctx,
++                                                         enum v4l2_buf_type type)
++{
++    int ret;
++
++    do {
++        ret = v4l2_request_dequeue_buffer(ctx, type);
++    } while (!ret);
++
++    return ret;
++}
++
++static int v4l2_request_wait_on_capture(V4L2RequestContext *ctx,
++                                        V4L2RequestBuffer *capture)
++{
++    struct pollfd pollfd = {
++        .fd = ctx->video_fd,
++        .events = POLLIN,
++    };
++
++    ff_mutex_lock(&ctx->mutex);
++
++    // Dequeue all completed capture buffers
++    if (atomic_load(&ctx->queued_capture))
++        v4l2_request_dequeue_completed_buffers(ctx, ctx->format.type);
++
++    // Wait on the specific capture buffer, when needed
++    while (atomic_load(&ctx->queued_capture) & (1 << capture->index)) {
++        int ret = poll(&pollfd, 1, 2000);
++        if (ret <= 0)
++            goto fail;
++
++        ret = v4l2_request_dequeue_buffer(ctx, ctx->format.type);
++        if (ret < 0 && ret != AVERROR(EAGAIN))
++            goto fail;
++    }
++
++    ff_mutex_unlock(&ctx->mutex);
++    return 0;
++
++fail:
++    ff_mutex_unlock(&ctx->mutex);
++    av_log(ctx, AV_LOG_ERROR, "Failed waiting on capture buffer %d\n",
++           capture->index);
++    return AVERROR(EINVAL);
++}
++
++static V4L2RequestBuffer *v4l2_request_next_output(V4L2RequestContext *ctx)
++{
++    int index;
++    V4L2RequestBuffer *output;
++    struct pollfd pollfd = {
++        .fd = ctx->video_fd,
++        .events = POLLOUT,
++    };
++
++    ff_mutex_lock(&ctx->mutex);
++
++    // Use next output buffer in the circular queue
++    index = atomic_load(&ctx->next_output);
++    output = &ctx->output[index];
++    atomic_store(&ctx->next_output, (index + 1) % FF_ARRAY_ELEMS(ctx->output));
++
++    // Dequeue all completed output buffers
++    if (atomic_load(&ctx->queued_output))
++        v4l2_request_dequeue_completed_buffers(ctx, ctx->output_type);
++
++    // Wait on the specific output buffer, when needed
++    while (atomic_load(&ctx->queued_output) & (1 << output->index)) {
++        int ret = poll(&pollfd, 1, 2000);
++        if (ret <= 0)
++            goto fail;
++
++        ret = v4l2_request_dequeue_buffer(ctx, ctx->output_type);
++        if (ret < 0 && ret != AVERROR(EAGAIN))
++            goto fail;
++    }
++
++    ff_mutex_unlock(&ctx->mutex);
++
++    // Reset used state
++    output->used = 0;
++
++    return output;
++
++fail:
++    ff_mutex_unlock(&ctx->mutex);
++    av_log(ctx, AV_LOG_ERROR, "Failed waiting on output buffer %d\n",
++           output->index);
++    return NULL;
++}
++
++static int v4l2_request_wait_on_request(V4L2RequestContext *ctx,
++                                        V4L2RequestBuffer *output)
++{
++    struct pollfd pollfd = {
++        .fd = output->fd,
++        .events = POLLPRI,
++    };
++
++    // Wait on the specific request to complete, when needed
++    while (atomic_load(&ctx->queued_request) & (1 << output->index)) {
++        int ret = poll(&pollfd, 1, 2000);
++        if (ret <= 0)
++            break;
++
++        // Mark request as dequeued
++        if (pollfd.revents & (POLLPRI | POLLERR)) {
++            atomic_fetch_and(&ctx->queued_request, ~(1 << output->index));
++            break;
++        }
++    }
++
++    // Reinit the request object
++    if (ioctl(output->fd, MEDIA_REQUEST_IOC_REINIT, NULL) < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to reinit request object %d: %s (%d)\n",
++               output->fd, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    // Ensure request is marked as dequeued
++    atomic_fetch_and(&ctx->queued_request, ~(1 << output->index));
++
++    return 0;
++}
++
++int ff_v4l2_request_append_output(AVCodecContext *avctx,
++                                  V4L2RequestPictureContext *pic,
++                                  const uint8_t *data, uint32_t size)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++
++    // Append data to output buffer and ensure there is enough space for padding
++    if (pic->output->used + size + INPUT_BUFFER_PADDING_SIZE <= pic->output->size) {
++        memcpy(pic->output->addr + pic->output->used, data, size);
++        pic->output->used += size;
++        return 0;
++    } else {
++        av_log(ctx, AV_LOG_ERROR,
++               "Failed to append %u bytes data to output buffer %d (%u of %u used)\n",
++               size, pic->output->index, pic->output->used, pic->output->size);
++        return AVERROR(ENOMEM);
++    }
++}
++
++static int v4l2_request_queue_decode(AVCodecContext *avctx,
++                                     V4L2RequestPictureContext *pic,
++                                     struct v4l2_ext_control *control, int count,
++                                     bool first_slice, bool last_slice)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    uint32_t flags;
++    int ret;
++
++    if (first_slice) {
++        /*
++         * Wait on dequeue of the target capture buffer, when needed. Otherwise
++         * V4L2 decoder may use a different capture buffer than hwaccel expects.
++         *
++         * Normally decoding has already completed when a capture buffer is
++         * reused so this is more or less a no-op, however in some situations
++         * FFmpeg may reuse an AVFrame early, i.e. when no output frame was
++         * produced prior time, and a syncronization is necessary.
++         */
++        ret = v4l2_request_wait_on_capture(ctx, pic->capture);
++        if (ret < 0)
++            return ret;
++    }
++
++    ff_mutex_lock(&ctx->mutex);
++
++    /*
++     * The output buffer tied to prior use of current request object can
++     * independently be dequeued before the full decode request has been
++     * completed. This may happen when a decoder use multi stage decoding,
++     * e.g. rpivid. In such case we can start reusing the output buffer,
++     * however we must wait on the prior request to fully complete before we
++     * can reuse the request object, and a syncronization is necessary.
++     */
++    ret = v4l2_request_wait_on_request(ctx, pic->output);
++    if (ret < 0)
++        goto fail;
++
++    /*
++     * Dequeue any completed output buffers, this is strictly not necessary,
++     * however if a syncronization was necessary for the capture and/or request
++     * there is more than likely one or more output buffers that can be dequeued.
++     */
++    if (atomic_load(&ctx->queued_output))
++        v4l2_request_dequeue_completed_buffers(ctx, ctx->output_type);
++
++    // Set codec controls for current request
++    ret = ff_v4l2_request_set_request_controls(ctx, pic->output->fd, control, count);
++    if (ret < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to set %d control(s) for request %d: %s (%d)\n",
++               count, pic->output->fd, strerror(errno), errno);
++        goto fail;
++    }
++
++    // Ensure there is zero padding at the end of bitstream data
++    memset(pic->output->addr + pic->output->used, 0, INPUT_BUFFER_PADDING_SIZE);
++
++    // Use timestamp of the capture buffer for V4L2 frame reference
++    pic->output->buffer.timestamp = pic->capture->buffer.timestamp;
++
++    /*
++     * Queue the output buffer of current request. The capture buffer may be
++     * hold by the V4L2 decoder unless this is the last slice of a frame.
++     */
++    flags = last_slice ? 0 : V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF;
++    ret = v4l2_request_queue_buffer(ctx, pic->output->fd, pic->output, flags);
++    if (ret < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to queue output buffer %d for request %d: %s (%d)\n",
++               pic->output->index, pic->output->fd, strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    if (first_slice) {
++        /*
++         * Queue the target capture buffer, hwaccel expect and depend on that
++         * this specific capture buffer will be used as decode target for
++         * current request, otherwise frames may be output in wrong order or
++         * wrong capture buffer could get used as a reference frame.
++         */
++        ret = v4l2_request_queue_buffer(ctx, -1, pic->capture, 0);
++        if (ret < 0) {
++            av_log(ctx, AV_LOG_ERROR, "Failed to queue capture buffer %d for request %d: %s (%d)\n",
++                   pic->capture->index, pic->output->fd, strerror(errno), errno);
++            ret = AVERROR(errno);
++            goto fail;
++        }
++    }
++
++    // Queue current request
++    ret = ioctl(pic->output->fd, MEDIA_REQUEST_IOC_QUEUE, NULL);
++    if (ret < 0) {
++        av_log(ctx, AV_LOG_ERROR, "Failed to queue request object %d: %s (%d)\n",
++               pic->output->fd, strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    // Mark current request as queued
++    atomic_fetch_or(&ctx->queued_request, 1 << pic->output->index);
++
++    ret = 0;
++fail:
++    ff_mutex_unlock(&ctx->mutex);
++    return ret;
++}
++
++int ff_v4l2_request_decode_slice(AVCodecContext *avctx,
++                                 V4L2RequestPictureContext *pic,
++                                 struct v4l2_ext_control *control, int count,
++                                 bool first_slice, bool last_slice)
++{
++    /*
++     * Fallback to queue each slice as a full frame when holding capture
++     * buffers is not supported by the driver.
++     */
++    if ((pic->output->capabilities & V4L2_BUF_CAP_SUPPORTS_M2M_HOLD_CAPTURE_BUF) !=
++         V4L2_BUF_CAP_SUPPORTS_M2M_HOLD_CAPTURE_BUF)
++        return v4l2_request_queue_decode(avctx, pic, control, count, true, true);
++
++    return v4l2_request_queue_decode(avctx, pic, control, count,
++                                     first_slice, last_slice);
++}
++
++int ff_v4l2_request_decode_frame(AVCodecContext *avctx,
++                                 V4L2RequestPictureContext *pic,
++                                 struct v4l2_ext_control *control, int count)
++{
++    return v4l2_request_queue_decode(avctx, pic, control, count, true, true);
++}
++
++static int v4l2_request_post_process(void *logctx, AVFrame *frame)
++{
++    V4L2RequestFrameDescriptor *desc = v4l2_request_framedesc(frame);
++    FrameDecodeData *fdd = (FrameDecodeData*)frame->private_ref->data;
++    V4L2RequestContext *ctx = fdd->hwaccel_priv;
++
++    // Wait on capture buffer before returning the frame to application
++    return v4l2_request_wait_on_capture(ctx, &desc->capture);
++}
++
++int ff_v4l2_request_reset_picture(AVCodecContext *avctx, V4L2RequestPictureContext *pic)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++
++    // Get and wait on next output buffer from circular queue
++    pic->output = v4l2_request_next_output(ctx);
++    if (!pic->output)
++        return AVERROR(EINVAL);
++
++    return 0;
++}
++
++int ff_v4l2_request_start_frame(AVCodecContext *avctx,
++                                V4L2RequestPictureContext *pic,
++                                AVFrame *frame)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    V4L2RequestFrameDescriptor *desc = v4l2_request_framedesc(frame);
++    FrameDecodeData *fdd = (FrameDecodeData*)frame->private_ref->data;
++    int ret;
++
++    // Get next output buffer from circular queue
++    ret = ff_v4l2_request_reset_picture(avctx, pic);
++    if (ret)
++        return ret;
++
++    // Ensure capture buffer is dequeued before reuse
++    ret = v4l2_request_wait_on_capture(ctx, &desc->capture);
++    if (ret)
++        return ret;
++
++    // Wait on capture buffer in post_process() before returning to application
++    fdd->hwaccel_priv = ctx;
++    fdd->post_process = v4l2_request_post_process;
++
++    // Capture buffer used for current frame
++    pic->capture = &desc->capture;
++
++    return 0;
++}
++
++void ff_v4l2_request_flush(AVCodecContext *avctx)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct pollfd pollfd = {
++        .fd = ctx->video_fd,
++        .events = POLLOUT,
++    };
++
++    ff_mutex_lock(&ctx->mutex);
++
++    // Dequeue all completed output buffers
++    if (atomic_load(&ctx->queued_output))
++        v4l2_request_dequeue_completed_buffers(ctx, ctx->output_type);
++
++    // Wait on any remaining output buffer
++    while (atomic_load(&ctx->queued_output)) {
++        int ret = poll(&pollfd, 1, 2000);
++        if (ret <= 0)
++            break;
++
++        ret = v4l2_request_dequeue_buffer(ctx, ctx->output_type);
++        if (ret < 0 && ret != AVERROR(EAGAIN))
++            break;
++    }
++
++    // Dequeue all completed capture buffers
++    if (atomic_load(&ctx->queued_capture))
++        v4l2_request_dequeue_completed_buffers(ctx, ctx->format.type);
++
++    ff_mutex_unlock(&ctx->mutex);
++}

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCKCHIP_MPP_VERSION = 1.0.7
+ROCKCHIP_MPP_VERSION = 1.0.9
 ROCKCHIP_MPP_SITE = $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
 ROCKCHIP_MPP_LICENSE = Apache-2.0 & MIT
 ROCKCHIP_MPP_LICENSE_FILES = LICENSES/Apache-2.0 & LICENSES/MIT
@@ -19,6 +19,7 @@ ROCKCHIP_MPP_CONF_OPTS = \
 	-DENABLE_MPEG2D=ON \
 	-DENABLE_MPEG4D=ON \
 	-DENABLE_VP8D=ON \
+	-DENABLE_VP9D=ON \
 	-DENABLE_JPEGD=OFF
 
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
