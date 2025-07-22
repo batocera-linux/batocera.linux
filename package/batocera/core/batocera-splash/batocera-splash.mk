@@ -23,13 +23,14 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
         # drm doesn't work on my nvidia card. sdl runs smoothly.
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=yes
-    else ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=auto
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3568),y)
+        # use v4l2request-copy for the VeriSilicon Hantro decoder
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=v4l2request-copy
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
         # use v4l2m2m-copy for the Iris decoder
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=v4l2m2m-copy
+    else ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=auto
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS=
     else
