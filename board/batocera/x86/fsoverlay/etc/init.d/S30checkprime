@@ -64,7 +64,7 @@ case "$1" in
             fi
         fi
     else
-        echo "Only one GPU detected in the system" > "$display_log"
+        echo "Only one GPU detected in the system" >> "$display_log"
     fi
     ;;
   stop)
