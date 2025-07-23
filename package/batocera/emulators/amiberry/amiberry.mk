@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = v7.0.4
+AMIBERRY_VERSION = v7.1.0
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -44,6 +44,7 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/amiberry
 	cp -pr $(@D)/buildroot-build/whdboot $(TARGET_DIR)/usr/share/amiberry/
 	cp -pr $(@D)/buildroot-build/data $(TARGET_DIR)/usr/share/amiberry/
+	cp -p $(@D)/data/AmigaTopaz.ttf $(TARGET_DIR)/usr/share/amiberry/
 endef
 
 define AMIBERRY_EVMAP

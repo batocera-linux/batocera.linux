@@ -96,7 +96,7 @@
 - Dreamcast bios now goes into `bios/dc/dc_boot.bin`
 - MSI Claw devices now get the appropriate controller config on boot
 ### Updated
-- Amiberry to v7.0.4
+- Amiberry to v7.1.0
 - AppleWin to 8th of Feb build
 - BigPEmu to 1.19
 - Cemu to 2.6

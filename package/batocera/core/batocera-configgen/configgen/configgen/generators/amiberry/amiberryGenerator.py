@@ -27,7 +27,7 @@ class AmiberryGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "amiberry",
-            "keys": { "exit": "KEY_F10" }
+            "keys": { "exit": "KEY_F9" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -35,7 +35,8 @@ class AmiberryGenerator(Generator):
 
         retroconfig = UnixSettings(_RETROARCH_CUSTOM, separator=' ')
         amiberryconf = UnixSettings(_CONFIG, separator=' ')
-        amiberryconf.save('default_quit_key', 'F10')
+        amiberryconf.save('default_quit_key', 'F9')
+        amiberryconf.save('default_open_gui_key', 'F8') # also quits, needs to be fixed
         amiberryconf.save('saveimage_dir', '/userdata/saves/amiga/')
         amiberryconf.save('savestate_dir', '/userdata/saves/amiga/')
         amiberryconf.save('screenshot_dir', '/userdata/screenshots/')
@@ -48,6 +49,7 @@ class AmiberryGenerator(Generator):
         amiberryconf.save('default_vkbd_hires', 'yes') # TODO: make an option in ES
         amiberryconf.save('default_vkbd_transparency', '60') # TODO: make an option in ES
         amiberryconf.save('default_vkbd_toggle', 'leftstick')
+        amiberryconf.save('write_logfile', 'yes')
         amiberryconf.write()
 
         romType = self.getRomType(rom)
@@ -160,8 +162,11 @@ class AmiberryGenerator(Generator):
             commandArray.append("sound_frequency=48000")
 
             return Command.Command(array=commandArray,env={
-                "AMIBERRY_DATA_DIR": "/usr/share/amiberry/",
-                "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry/",
+                 "AMIBERRY_DATA_DIR": "/usr/share/amiberry/",
+                 "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry/",
+                 "AMIBERRY_CONFIG_DIR": "/userdata/system/configs/amiberry/conf/",
+                 "AMIBERRY_PLUGINS_DIR": "/userdata/system/configs/amiberry/plugins",
+                 "XDG_DATA_HOME": "/userdata/system/configs/amiberry/",
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
         # otherwise, unknown format
         return Command.Command(array=[])
