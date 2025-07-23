@@ -93,6 +93,10 @@ fi
 if [ -f /var/run/boot.log ]; then
     f_cp /var/run/boot.log                                     "${DSYSTEM}"
 fi
+# amd.log
+if [ -f /var/run/amd.log ]; then
+    f_cp /var/run/amd.log                                      "${DSYSTEM}"
+fi
 
 # clear passwords
 # filter some dangerous options (may include some path with /userdata)
