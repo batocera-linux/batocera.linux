@@ -176,6 +176,15 @@ do_videostart ()
     VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
     batocera-audio setSystemVolume "${VOLUME}"
 
+    # On some systems, the graphics driver may take an extra moment to become fully
+    # ready after detection. Check for a user-configurable delay.
+    splash_delay=$(batocera-settings-get splash.delay)
+
+    # Check if the setting was found and is a number greater than 0
+    if [[ "${splash_delay}" =~ ^[0-9]+$ ]] && [ "${splash_delay}" -gt 0 ]; then
+        sleep "${splash_delay}"
+    fi
+
     if [ -n "$drm_connector" ] && [ -n "$card_path" ]; then
         start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% --drm-mode=$drm_mode --drm-connector=$drm_connector --drm-device=$card_path --log-file=/userdata/system/logs/mpv.log $mpv_audio $mpv_video "$video"
     else
