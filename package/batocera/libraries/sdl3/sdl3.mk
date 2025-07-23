@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SDL3_VERSION = 3.2.16
+SDL3_VERSION = 3.2.18
 SDL3_SOURCE = SDL3-$(SDL3_VERSION).tar.gz
 SDL3_SITE = http://www.libsdl.org/release
 SDL3_LICENSE = Zlib

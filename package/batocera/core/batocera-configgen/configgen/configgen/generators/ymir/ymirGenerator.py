@@ -33,7 +33,7 @@ class YmirGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ymir",
-            "keys": {"exit": ["KEY_LEFTALT", "KEY_F4"]}
+            "keys": { "exit": "killall -9 ymir" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -101,12 +101,15 @@ class YmirGenerator(Generator):
         video_config["AutoResizeWindow"] = False
         video_config["DisplayVideoOutputInWindow"] = False
         video_config["FullScreen"] = True
+        video_config["ThreadedDeinterlacer"] = True
+        video_config["ForceAspectRatio"] = True
+        video_config["ForceIntegerScaling"] = False
 
         # Options
-        video_config["ForcedAspect"] = system.config.get_bool(
-            "ymir_aspect", return_values=(1.7777777777777778, 1.3333333333333333)
-        )
-        video_config["Deinterlace"] = system.config.get_bool('ymir_interlace', True)
+        video_config["ForcedAspect"] = system.config.get_float("ymir_aspect", 1.5)
+        video_config["Deinterlace"] = system.config.get_bool("ymir_interlace", True)
+        video_config["TransparentMeshes"] = system.config.get_bool("ymir_meshes", False)
+        video_config["Rotation"] = system.config.get_str("ymir_rotation", "Normal")
 
         # Now write the updated toml
         toml_file.write_text(toml.dumps(config))
@@ -117,6 +120,6 @@ class YmirGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if config.get_bool("ymir_aspect"):
-            return 16 / 9
-        return 4 / 3
+        if config.get_float("ymir_aspect") == "1.3333333333333333":
+            return 4 / 3
+        return 16 / 9
