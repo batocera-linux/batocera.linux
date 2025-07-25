@@ -9,7 +9,7 @@ AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
 
-AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2
+AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libpcap libxml2 libmpeg2
 AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib libenet
 
 AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
