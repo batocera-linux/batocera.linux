@@ -6,11 +6,13 @@ BOOTCONF="/boot/batocera-boot.conf"
 
 # Define the path for our communication pipe
 FIFO_PATH="/tmp/es-resume.fifo"
+SUSPEND_FLAG="/tmp/suspend.please"
 
 case "$1" in
 	start)
 		# Clean up any old pipe and create a new one for communication
 		rm -f "${FIFO_PATH}"
+		rm -f "${SUSPEND_FLAG}"
 		mkfifo -m 666 "${FIFO_PATH}"
 
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
@@ -50,12 +52,14 @@ case "$1" in
 		
 		# Clean up the communication pipe on a full system stop
 		rm -f "${FIFO_PATH}"
+		rm -f "${SUSPEND_FLAG}"
 		;;
 
 	suspend)
 		echo "Suspending EmulationStation process only..."
-		# Tell the running ES process to quit gracefully.
-		# The launcher script will catch this and wait on the FIFO pipe.
+		# Create the suspend flag file before telling ES to quit.
+		touch "${SUSPEND_FLAG}"
+		# Now, tell the running ES process to quit gracefully.
 		curl -s --connect-timeout 2 "http://localhost:1234/quit" > /dev/null
 		;;
 
