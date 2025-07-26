@@ -285,11 +285,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
         break
     elif [ -e "/tmp/restart.please" ]; then
         echo "ES restart requested. Looping to relaunch." >> $log
-    else
-        echo "ES exited without flags. Assuming suspend state. Waiting on FIFO pipe..." >> $log
-        # The 'read' command will block the script until 'resume' is called.
-        read < "/tmp/es-resume.fifo"
-        echo "Resume signal received. Relaunching ES." >> $log
     fi
     GAMELAUNCH=0
 done
