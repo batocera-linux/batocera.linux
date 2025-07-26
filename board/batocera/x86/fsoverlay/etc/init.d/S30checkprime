@@ -14,7 +14,11 @@ case "$1" in
     nvidia_conditions_met=false
 
     if [ "$gpu_count" -eq 2 ]; then
-        echo "Two GPUs detected in the system" >> "$display_log"
+        splash_set=$(batocera-settings-get splash.screen.enabled)
+        if [ "$splash_set" = "1" ]; then
+            echo "Two GPUs detected in the system" >> "$display_log"
+        else
+            echo "Two GPUs detected in the system" > "$display_log"
         echo "Setting best primary GPU..." >> "$display_log"
 
         # Check for NVIDIA GPUs

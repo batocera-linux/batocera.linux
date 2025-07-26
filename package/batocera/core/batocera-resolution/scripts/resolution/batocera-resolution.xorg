@@ -38,10 +38,24 @@ f_usage() {
 
 f_minTomaxResolution() {
     
+    BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     if [ -z "$1" ]; then
         # reinit the screen (in case it was off)
-        echo "No specific resolution requested, re-initializing screen with --auto" >> "$log"
-        xrandr --output "${PSCREEN}" --auto
+        if [ -n "${BOOTRESOLUTION}" ] && [ "${BOOTRESOLUTION}" != "auto" ]; then
+            BOOT_RES=$(echo "${BOOTRESOLUTION}" | cut -d'.' -f1)
+            BOOT_RATE=$(echo "${BOOTRESOLUTION}" | cut -s -d'.' -f2-)
+            if [ -n "$BOOT_RATE" ]; then
+                echo "es.resolution setting found. Initializing screen to: ${BOOT_RES} @ ${BOOT_RATE}Hz" >> "$log"
+                xrandr --output "${PSCREEN}" --mode "${BOOT_RES}" --rate "${BOOT_RATE}"
+            else
+                echo "es.resolution setting found. Initializing screen to: ${BOOT_RES}" >> "$log"
+                xrandr --output "${PSCREEN}" --mode "${BOOT_RES}"
+            fi
+        else
+            # No global setting or it's 'auto'. Re-initialize with --auto.
+            echo "No specific resolution requested, re-initializing screen with --auto" >> "$log"
+            xrandr --output "${PSCREEN}" --auto
+        fi
     fi
     
     CURRENT_RESOLUTION=$(xrandr --currentResolution "${PSCREEN}")
@@ -52,7 +66,6 @@ f_minTomaxResolution() {
     echo "Current resolution: $CURRENTWIDTH x $CURRENTHEIGHT @ $CURRENTRATE Hz" >> "$log"
     echo "Current rotation: ${CURRENT_ROTATION}" >> "$log"
     
-    BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
 
@@ -60,7 +73,8 @@ f_minTomaxResolution() {
     IDEAL_MODE_INFO=$(xrandr --listModes "${PSCREEN}" | \
         grep -oE '[0-9]+x[0-9]+[[:space:]]+[0-9]+\.[0-9]+' | \
         # Keep only modes with a refresh rate of 59Hz or higher
-        awk '$2 >= 59 {print $0}' | \
+        # and not the excluded resolution on some 4k TV's - 4096x2160
+        awk '$1 != "4096x2160" && $2 >= 59 {print $0}' | \
         awk '{ split($1, res, "x"); print res[1], res[2], $2 }' | \
         # sort the resolutions and rates
         sort -k1,1nr -k2,2nr -k3,3nr | \
@@ -78,7 +92,7 @@ f_minTomaxResolution() {
     
     # Priority 1: An argument was passed to the script
     if [ -n "$MWIDTH" ] && [ -n "$MHEIGHT" ] && [ "$MWIDTH" -ne 0 ] && [ "$MHEIGHT" -ne 0 ]; then
-        echo "Requested $MWIDTH x $MHEIGHT" >> "$log"
+        echo "Requested: $MWIDTH x $MHEIGHT" >> "$log"
         MAXWIDTH="$MWIDTH"
         MAXHEIGHT="$MHEIGHT"
     # Priority 2: A resolution is set in the boot configuration
