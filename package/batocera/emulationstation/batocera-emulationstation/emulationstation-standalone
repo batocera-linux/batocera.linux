@@ -285,10 +285,17 @@ while [ -e "${REBOOT_FLAG}" ]; do
         break
     elif [ -e "/tmp/restart.please" ]; then
         echo "ES restart requested. Looping to relaunch." >> $log
+    elif [ -e "/tmp/suspend.please" ]; then
+        echo "ES exited for fake suspend. Waiting for resume signal on FIFO pipe..." >> $log
+        rm -f "/tmp/suspend.please"
+        # The 'read' command will block the script until 'resume' is called.
+        read < "/tmp/es-resume.fifo"
+        echo "Resume signal received. Relaunching ES." >> $log
     fi
     GAMELAUNCH=0
 done
 
 # Cleanup when the script finally exits (only after a shutdown/reboot)
 rm -f "/tmp/es-resume.fifo"
+rm -f "/tmp/suspend.please"
 exit 0
