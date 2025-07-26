@@ -1271,8 +1271,8 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Commander X16
 	select BR2_PACKAGE_X16EMU    # ALL
 
-	# CLK - Oric Atmos and other old computers
-	select BR2_PACKAGE_CLK    if BR2_PACKAGE_HAS_LIBGL
+	# CLK - Oric Atmos and other old computers (requires OpenGL 3.2 or higher)
+	select BR2_PACKAGE_CLK    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_SM8550 || BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
 	help
 	  Old computers
