@@ -14,11 +14,27 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 
-# batocera-xtract, a script as universal extractor tool and to mimic file-roller base functions
+# batocera-xtract, a script as universal extractor tool and to mimic file-roller base function
 # MimeTypes=application/x-7z-compressed;application/gzip;application/vnd.rar;application/x-tar;application/x-compressed-tar;
 #           application/x-xz-compressed-tar;application/x-xz;application/zip;
 
 # inital idea and inspired by brunoeduardobrasil, 07/19/2025 cyperghost aka crcerror
+
+# Are we in a terminal session, as we use a virtual session test -t will not work
+pgrep pcmanfm >/dev/null && TERMINAL=0 || TERMINAL=1
+
+open_archives() {
+    # We try just to obtain the file names .... that would be faster
+    # For unzip we can use Z1, unrar lb, 7zr l -ba ... bla bla
+    # We set file and archive type
+    case "$1" in
+        zip) readarray -t array < <(unzip -Z1 "$2") ;;
+        rar) readarray -t array < <(unrar lb "$2") ;;
+        7z)  readarray -t array < <(7zr l -ba "$2" | awk '{$1=$2=$3=$4=""; print $0}' |  sed 's/[ ]*[0-9]*[ ]//') ;;
+        tar) readarray -t array < <(tar -tvf "$2" | awk '{ for(i=6; i<NF; ++i) printf $i" "; print $NF }') ;;
+        *)   [ $TERMINAL -eq 1 ] && yad --title "Error" --text "Archive type: '$1' is not yet supported for '$2'"; exit 1
+    esac
+}
 
 case "$1" in
     x|X) #for CLI as universal extraction tool
@@ -27,12 +43,12 @@ case "$1" in
         if [[ -z "$DEST" ]]; then
             FILENAME="$(basename "${FILE%.*}")"
             echo "No Destination directory entered!"
-            echo "(y/Y) to extract to: '$PWD'"
-            echo "(n/N) to extract to: '$FILENAME' in '$PWD'"
-            read -p "Select (y/n) and press Enter: " yn
+            echo "C or 1) to extract to CURRENT: '$PWD'"
+            echo "B or 2) to extract to BASEDIR: '$FILENAME' in '$PWD'"
+            read -p "Select (C/B) and press Enter: " yn
             case ${yn:0:1} in
-                y|Y) DEST="$PWD" ;;
-                n|N) mkdir "$FILENAME"; DEST="${PWD}/${FILENAME}" ;;
+                c|C|1) DEST="$PWD" ;;
+                b|B|2) mkdir "$FILENAME"; DEST="${PWD}/${FILENAME}" ;;
                 *)   echo "...Aborted!"; exit 1
             esac
         fi
@@ -40,17 +56,37 @@ case "$1" in
     ;;
     --extract)
         FILE="$2" 
-        DEST=$(yad --title "Choose destination folder" --file --directory)
-        [[ -z "$DEST" ]] && exit 1
+        DEST=$(yad --title "Choose destination folder" --file --directory) || exit 1
     ;;
     --extract-to)
         FILE="$3"
         DEST="${2/file:\/\/}"
     ;;
-    *)  [ -t 1 ] || yad --title "Error" --geometry=400x100 --text "Action: '$1' is unknown"
-        echo "Usage: $(basename "$0") x [ARCHIVEFILE] [DESTINATION-DIR]"; echo
-        echo "If parameter DESTINATION-DIR is left empty, extraction takes place in current directory"
-        echo "or basename of archive file is created if you select 'no'";echo
+    --open|open|l)
+        FILE="$2"
+        EXT="${FILE##*.}"
+        open_archives "$EXT" "$FILE"
+        [[ "$1" == "l" ]] && { printf '%s\n' "${array[@]}"; exit 0; }
+        #This can take a while depends how much files are in an archive
+        #Options needs to be added to PCmanFM "file-roller --open"
+        cmd=(yad --title="Extract Files" --list --separator= --column=Filename)
+        files=("$(${cmd[@]} "${array[@]}")")
+        [[ $? -ne 0 || ${#files[@]} -eq 0 ]] && exit 0 #Canceld or no file tickt -- for future, this is already an array and capable to hold several files!
+        DEST="$(readlink -f "$(dirname "${FILE}")")"
+    ;;
+    --add)
+        # We remove $0 and $1, create filename.zip if single dir/file, create dirname.zip for several files
+        FILE=("${@:2}")
+        [[ ${#FILE[@]} -gt 1 ]] && { DEST="${FILE%/*}"; DEST="${DEST}/$(basename "${DEST}")"; }
+        [[ ${#FILE[@]} -eq 1 ]] && { DEST="$(basename "${FILE%.*}")"; DEST="$(dirname "$(readlink -f "${FILE}")")/${DEST}"; }
+        [[ -f "${DEST}.zip" ]] && DEST="${DEST}_$(printf '%x' $(date +%s)).zip" || DEST="${DEST}.zip"
+        zip -q -r "$DEST" "${FILE[@]}" && { yad --title "Created zip" --text "Created '$DEST' and added ${#FILE[@]} files \n $(printf '%s\n' "${FILE[@]}")"; exit 0; }
+        exit 1
+    ;;
+   *)  [ $TERMINAL -eq 1 ] || yad --title "Error" --text "Action: '$1' is unknown"
+        echo "Usage: $(basename "$0") <SWITCHES> [ARCHIVEFILE] {DESTINATION-DIR}"; echo
+        echo "x: extraction of current archivfile"
+        echo "l: list archive content";echo
         echo "Supported archives: zip 7z rar tar gz xz tar.gz tar.xz"
         exit 1
 esac
@@ -62,12 +98,12 @@ done
 [[ -z "$EXT" ]] && exit 11
 
 case "$EXT" in
-    zip) unzip "$FILE" -d "$DEST" ;;
-    rar) unrar x "$FILE" "$DEST/" ;;
+    zip) unzip "$FILE" "${files[@]}" -d "$DEST" ;;
+    rar) unrar x "$FILE" "${files[@]}" "$DEST/" ;;
     7z)  7zr x "$FILE" -o "$DEST/" ;;
     gz)  gunzip -c "$FILE" > "$DEST/${FILENAME%.*}" ;;
     xz)  unxz -c "$FILE" > "$DEST/${FILENAME%.*}" ;;
-    tar) tar -xf "$FILE" -C "$DEST" ;;
+    tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" ;;
     # Multiple TAR variants
     tar.xz) tar -xJf "$FILE" -C "$DEST" ;;
     tar.gz) tar -xzf "$FILE" -C "$DEST" ;;
