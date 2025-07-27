@@ -154,7 +154,7 @@
 - DXVK-NVApi to 0.9.0
 - Faudio to 25.02
 - FFMPEG to 7.1.1
-- GStreamer codecs to 1.26.0
+- GStreamer codecs to 1.26.4
 - Intel GMMLib to 22.8.1
 - Intel Media Driver to 25.3.0
 - Kodi to 21.2
