@@ -31,6 +31,7 @@
 - Add OrangePi 5 Max board support
 - Add RetroidPocket Mini v2 (thanks Spycat)
 - Add support for the Pironman5 Mini & Max cases
+- Add CoolPi 4b board support
 ### Added
 - WireGuard VPN for RK3326 boards
 - WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
