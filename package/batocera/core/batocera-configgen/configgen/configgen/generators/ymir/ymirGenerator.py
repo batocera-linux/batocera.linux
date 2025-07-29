@@ -33,7 +33,11 @@ class YmirGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "ymir",
-            "keys": { "exit": "killall -9 ymir" }
+            "keys": {
+                "exit": "killall -9 ymir",
+                "save_state": "KEY_F2",
+                "restore_state": "KEY_F3"
+            }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
