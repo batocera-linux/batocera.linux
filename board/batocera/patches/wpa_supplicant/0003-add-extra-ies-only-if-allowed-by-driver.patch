@@ -1,0 +1,220 @@
+diff --git a/src/drivers/driver.h b/src/drivers/driver.h
+index 3e77474..4c2803e 100644
+--- a/src/drivers/driver.h
++++ b/src/drivers/driver.h
+@@ -2450,6 +2450,10 @@ struct wpa_driver_capa {
+ 	unsigned int mbssid_max_interfaces;
+ 	/* Maximum profile periodicity for enhanced MBSSID advertisement */
+ 	unsigned int ema_max_periodicity;
++
++	/* Maximum number of bytes of extra IE(s) that can be added to Probe
++	 * Request frames */
++	size_t max_probe_req_ie_len;
+ };
+ 
+ 
+diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
+index e6fbad9..f8f2949 100644
+--- a/src/drivers/driver_nl80211.c
++++ b/src/drivers/driver_nl80211.c
+@@ -11124,7 +11124,8 @@ static int wpa_driver_nl80211_status(void *priv, char *buf, size_t buflen)
+ 				  "capa.max_sched_scan_plan_interval=%u\n"
+ 				  "capa.max_sched_scan_plan_iterations=%u\n"
+ 				  "capa.mbssid_max_interfaces=%u\n"
+-				  "capa.ema_max_periodicity=%u\n",
++				  "capa.ema_max_periodicity=%u\n"
++				  "capa.max_probe_req_ie_len=%zu\n",
+ 				  drv->capa.key_mgmt,
+ 				  drv->capa.enc,
+ 				  drv->capa.auth,
+@@ -11149,7 +11150,8 @@ static int wpa_driver_nl80211_status(void *priv, char *buf, size_t buflen)
+ 				  drv->capa.max_sched_scan_plan_interval,
+ 				  drv->capa.max_sched_scan_plan_iterations,
+ 				  drv->capa.mbssid_max_interfaces,
+-				  drv->capa.ema_max_periodicity);
++				  drv->capa.ema_max_periodicity,
++				  drv->capa.max_probe_req_ie_len);
+ 		if (os_snprintf_error(end - pos, res))
+ 			return pos - buf;
+ 		pos += res;
+diff --git a/src/drivers/driver_nl80211_capa.c b/src/drivers/driver_nl80211_capa.c
+index dc16bd4..9ce6334 100644
+--- a/src/drivers/driver_nl80211_capa.c
++++ b/src/drivers/driver_nl80211_capa.c
+@@ -959,6 +959,10 @@ static int wiphy_info_handler(struct nl_msg *msg, void *arg)
+ 		capa->max_scan_ssids =
+ 			nla_get_u8(tb[NL80211_ATTR_MAX_NUM_SCAN_SSIDS]);
+ 
++	if (tb[NL80211_ATTR_MAX_SCAN_IE_LEN])
++		capa->max_probe_req_ie_len =
++			nla_get_u16(tb[NL80211_ATTR_MAX_SCAN_IE_LEN]);
++
+ 	if (tb[NL80211_ATTR_MAX_NUM_SCHED_SCAN_SSIDS])
+ 		capa->max_sched_scan_ssids =
+ 			nla_get_u8(tb[NL80211_ATTR_MAX_NUM_SCHED_SCAN_SSIDS]);
+@@ -1196,6 +1200,10 @@ static int wpa_driver_nl80211_get_info(struct wpa_driver_nl80211_data *drv,
+ 	info->capa = &drv->capa;
+ 	info->drv = drv;
+ 
++	/* Default to large buffer of extra IE(s) to maintain previous behavior
++	 * if the driver does not support reporting an accurate limit. */
++	info->capa->max_probe_req_ie_len = 1500;
++
+ 	feat = get_nl80211_protocol_features(drv);
+ 	if (feat & NL80211_PROTOCOL_FEATURE_SPLIT_WIPHY_DUMP)
+ 		flags = NLM_F_DUMP;
+diff --git a/src/drivers/driver_nl80211_scan.c b/src/drivers/driver_nl80211_scan.c
+index b055e68..184df49 100644
+--- a/src/drivers/driver_nl80211_scan.c
++++ b/src/drivers/driver_nl80211_scan.c
+@@ -224,6 +224,11 @@ nl80211_scan_common(struct i802_bss *bss, u8 cmd,
+ 	if (params->extra_ies) {
+ 		wpa_hexdump(MSG_MSGDUMP, "nl80211: Scan extra IEs",
+ 			    params->extra_ies, params->extra_ies_len);
++		if (params->extra_ies_len > drv->capa.max_probe_req_ie_len)
++			wpa_printf(MSG_INFO,
++				   "nl80211: Extra IEs for scan do not fit driver limit (%zu > %zu) - this is likely to fail",
++				   params->extra_ies_len,
++				   drv->capa.max_probe_req_ie_len);
+ 		if (nla_put(msg, NL80211_ATTR_IE, params->extra_ies_len,
+ 			    params->extra_ies))
+ 			goto fail;
+diff --git a/wpa_supplicant/mbo.c b/wpa_supplicant/mbo.c
+index 59b15da..117b30c 100644
+--- a/wpa_supplicant/mbo.c
++++ b/wpa_supplicant/mbo.c
+@@ -460,6 +460,10 @@ void wpas_mbo_scan_ie(struct wpa_supplicant *wpa_s, struct wpabuf *ie)
+ {
+ 	u8 *len;
+ 
++	if (wpa_s->drv_max_probe_req_ie_len <
++	    9 + ((wpa_s->enable_oce & OCE_STA) ? 3 : 0))
++		return;
++
+ 	wpabuf_put_u8(ie, WLAN_EID_VENDOR_SPECIFIC);
+ 	len = wpabuf_put(ie, 1);
+ 
+diff --git a/wpa_supplicant/mesh.c b/wpa_supplicant/mesh.c
+index 85c1ea8..29b18e0 100644
+--- a/wpa_supplicant/mesh.c
++++ b/wpa_supplicant/mesh.c
+@@ -602,7 +602,8 @@ void wpa_supplicant_mesh_add_scan_ie(struct wpa_supplicant *wpa_s,
+ 	/* EID + 0-length (wildcard) mesh-id */
+ 	size_t ielen = 2;
+ 
+-	if (wpabuf_resize(extra_ie, ielen) == 0) {
++	if (ielen <= wpa_s->drv_max_probe_req_ie_len &&
++	    wpabuf_resize(extra_ie, ielen) == 0) {
+ 		wpabuf_put_u8(*extra_ie, WLAN_EID_MESH_ID);
+ 		wpabuf_put_u8(*extra_ie, 0);
+ 	}
+diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
+index 8b59e40..a600502 100644
+--- a/wpa_supplicant/scan.c
++++ b/wpa_supplicant/scan.c
+@@ -750,17 +750,20 @@ static struct wpabuf * wpa_supplicant_extra_ies(struct wpa_supplicant *wpa_s)
+ 	ext_capab_len = wpas_build_ext_capab(wpa_s, ext_capab,
+ 					     sizeof(ext_capab), NULL);
+ 	if (ext_capab_len > 0 &&
++	    (size_t) ext_capab_len < wpa_s->drv_max_probe_req_ie_len &&
+ 	    wpabuf_resize(&extra_ie, ext_capab_len) == 0)
+ 		wpabuf_put_data(extra_ie, ext_capab, ext_capab_len);
+ 
+ #ifdef CONFIG_INTERWORKING
+ 	if (wpa_s->conf->interworking &&
++	    wpa_s->drv_max_probe_req_ie_len >= 2 &&
+ 	    wpabuf_resize(&extra_ie, 100) == 0)
+ 		wpas_add_interworking_elements(wpa_s, extra_ie);
+ #endif /* CONFIG_INTERWORKING */
+ 
+ #ifdef CONFIG_MBO
+-	if (wpa_s->enable_oce & OCE_STA)
++	if ((wpa_s->enable_oce & OCE_STA) &&
++	    wpa_s->drv_max_probe_req_ie_len >= 5)
+ 		wpas_fils_req_param_add_max_channel(wpa_s, &extra_ie);
+ #endif /* CONFIG_MBO */
+ 
+@@ -774,17 +777,19 @@ static struct wpabuf * wpa_supplicant_extra_ies(struct wpa_supplicant *wpa_s)
+ 						&wpa_s->wps->dev,
+ 						wpa_s->wps->uuid, req_type,
+ 						0, NULL);
+-		if (wps_ie) {
+-			if (wpabuf_resize(&extra_ie, wpabuf_len(wps_ie)) == 0)
+-				wpabuf_put_buf(extra_ie, wps_ie);
+-			wpabuf_free(wps_ie);
+-		}
++		if (wps_ie &&
++		    wpabuf_len(wps_ie) <= wpa_s->drv_max_probe_req_ie_len &&
++		    wpabuf_resize(&extra_ie, wpabuf_len(wps_ie)) == 0)
++			wpabuf_put_buf(extra_ie, wps_ie);
++		wpabuf_free(wps_ie);
+ 	}
+ 
+ #ifdef CONFIG_P2P
+ 	if (wps) {
+ 		size_t ielen = p2p_scan_ie_buf_len(wpa_s->global->p2p);
+-		if (wpabuf_resize(&extra_ie, ielen) == 0)
++
++		if (ielen <= wpa_s->drv_max_probe_req_ie_len &&
++		    wpabuf_resize(&extra_ie, ielen) == 0)
+ 			wpas_p2p_scan_ie(wpa_s, extra_ie);
+ 	}
+ #endif /* CONFIG_P2P */
+@@ -794,12 +799,14 @@ static struct wpabuf * wpa_supplicant_extra_ies(struct wpa_supplicant *wpa_s)
+ #endif /* CONFIG_WPS */
+ 
+ #ifdef CONFIG_HS20
+-	if (wpa_s->conf->hs20 && wpabuf_resize(&extra_ie, 9) == 0)
++	if (wpa_s->conf->hs20 && wpa_s->drv_max_probe_req_ie_len >= 9 &&
++	    wpabuf_resize(&extra_ie, 9) == 0)
+ 		wpas_hs20_add_indication(extra_ie, -1, 0);
+ #endif /* CONFIG_HS20 */
+ 
+ #ifdef CONFIG_FST
+ 	if (wpa_s->fst_ies &&
++	    wpa_s->drv_max_probe_req_ie_len >= wpabuf_len(wpa_s->fst_ies) &&
+ 	    wpabuf_resize(&extra_ie, wpabuf_len(wpa_s->fst_ies)) == 0)
+ 		wpabuf_put_buf(extra_ie, wpa_s->fst_ies);
+ #endif /* CONFIG_FST */
+@@ -813,7 +820,8 @@ static struct wpabuf * wpa_supplicant_extra_ies(struct wpa_supplicant *wpa_s)
+ 	if (wpa_s->vendor_elem[VENDOR_ELEM_PROBE_REQ]) {
+ 		struct wpabuf *buf = wpa_s->vendor_elem[VENDOR_ELEM_PROBE_REQ];
+ 
+-		if (wpabuf_resize(&extra_ie, wpabuf_len(buf)) == 0)
++		if (wpa_s->drv_max_probe_req_ie_len >= wpabuf_len(buf) &&
++		    wpabuf_resize(&extra_ie, wpabuf_len(buf)) == 0)
+ 			wpabuf_put_buf(extra_ie, buf);
+ 	}
+ 
+diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
+index 037bfa3..940042f 100644
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -7393,12 +7393,15 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
+ 		    capa.mac_addr_rand_sched_scan_supported)
+ 			wpa_s->mac_addr_rand_supported |=
+ 				(MAC_ADDR_RAND_SCHED_SCAN | MAC_ADDR_RAND_PNO);
++		wpa_s->drv_max_probe_req_ie_len = capa.max_probe_req_ie_len;
+ 
+ 		wpa_drv_get_ext_capa(wpa_s, WPA_IF_STATION);
+ 		if (wpa_s->extended_capa &&
+ 		    wpa_s->extended_capa_len >= 3 &&
+ 		    wpa_s->extended_capa[2] & 0x40)
+ 			wpa_s->multi_bss_support = 1;
++	} else {
++		wpa_s->drv_max_probe_req_ie_len = 1500;
+ 	}
+ #ifdef CONFIG_PASN
+ 	wpa_pasn_sm_set_caps(wpa_s->wpa, wpa_s->drv_flags2);
+diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+index 110a864..8b7993f 100644
+--- a/wpa_supplicant/wpa_supplicant_i.h
++++ b/wpa_supplicant/wpa_supplicant_i.h
+@@ -922,6 +922,7 @@ struct wpa_supplicant {
+ 	unsigned int drv_enc;
+ 	unsigned int drv_rrm_flags;
+ 	unsigned int drv_max_acl_mac_addrs;
++	size_t drv_max_probe_req_ie_len;
+ 
+ 	/*
+ 	 * A bitmap of supported protocols for probe response offload. See
