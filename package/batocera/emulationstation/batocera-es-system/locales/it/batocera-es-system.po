@@ -746,7 +746,7 @@ msgctxt "game_options"
 msgid "17th"
 msgstr "17"
 
-#. TRANSLATION: libretro/mesen, melonds, moonlight
+#. TRANSLATION: libretro/mesen, melonds, moonlight, ymir
 msgctxt "game_options"
 msgid "180 degrees"
 msgstr "180 gradi"
@@ -2176,6 +2176,16 @@ msgctxt "game_options"
 msgid "90 degrees"
 msgstr "90 gradi"
 
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "90 degrees clockwise"
+msgstr ""
+
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "90 degrees counter-clockwise"
+msgstr ""
+
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
 msgid "90fps"
@@ -2221,7 +2231,8 @@ msgctxt "game_options"
 msgid ""
 "A small  number of games will have compatibility problems with this enabled."
 msgstr ""
-"Un numero minore di giochi avra' problemi di compatibilita' con questo abilitato."
+"Un numero minore di giochi avra' problemi di compatibilita' con questo "
+"abilitato."
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -2991,7 +3002,8 @@ msgctxt "game_options"
 msgid ""
 "Allows reducing the visual quality of these curves for higher performance."
 msgstr ""
-"Permetti di ridurre la qualita' visiva di queste curve in favore della performance."
+"Permetti di ridurre la qualita' visiva di queste curve in favore della "
+"performance."
 
 #. TRANSLATION: mame
 msgctxt "game_options"
@@ -4681,8 +4693,8 @@ msgid ""
 "CPU-GPU latency limit. Lower values improve latency but may reduce "
 "performance."
 msgstr ""
-"Limite latenza CPU-GPU. Valori bassi migliorano la latenza ma riducono la"
-"performance."
+"Limite latenza CPU-GPU. Valori bassi migliorano la latenza ma riducono "
+"laperformance."
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual
 msgctxt "game_options"
@@ -5069,6 +5081,11 @@ msgctxt "game_options"
 msgid "Change the output resolution ratio."
 msgstr "Cambia l'aspetto della risoluzione audio."
 
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "Change the rotation of the rendered image."
+msgstr ""
+
 #. TRANSLATION: supermodel
 msgctxt "game_options"
 msgid "Change the speed of the emulated PowerPC chip (fixes some issues)."
@@ -5365,6 +5382,11 @@ msgid ""
 msgstr ""
 "Scegli di rendere le texture grafiche in alta definizione. Richiede OpenGL, "
 "True Colour e il file enhanced.gob."
+
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "Choose to render meshes as transparent polygons."
+msgstr ""
 
 #. TRANSLATION: openjkdf2, theforceengine
 msgctxt "game_options"
@@ -9517,7 +9539,8 @@ msgctxt "game_options"
 msgid ""
 "House of the Dead 4 speed fix. Select CPU base frequency of your processor."
 msgstr ""
-"Fix per velocita' di House of the Dead 4. Selezione la frequeza base della tua CPU."
+"Fix per velocita' di House of the Dead 4. Selezione la frequeza base della "
+"tua CPU."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -9698,7 +9721,8 @@ msgstr "Se un gioco va' a 30hz, PPSPP forza 60 frames verso lo schermo."
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "If game crashes, try ASMJIT. If still crashing, try Fast Interpreter."
-msgstr "Se il gioco si blocca, prova ASMJIT. Se continua, prova l'interprete veloce."
+msgstr ""
+"Se il gioco si blocca, prova ASMJIT. Se continua, prova l'interprete veloce."
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -13646,6 +13670,11 @@ msgctxt "game_options"
 msgid "ROTATE FACE BUTTONS"
 msgstr "RUOTA I BOTTONI FRONTALI"
 
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "ROTATION"
+msgstr ""
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "ROV"
@@ -14078,8 +14107,9 @@ msgid ""
 "Runs \"skinning\" on the CPU instead of the GPU, means that draw calls from "
 "the game can more easily be combined, which often improves things."
 msgstr ""
-"Avvia \"skinning\" sulla CPU al posto della GPU, vuol dire che le chiamate di "
-"disegno possono essere combinate piu' facilmente, con frequenti miglioramenti."
+"Avvia \"skinning\" sulla CPU al posto della GPU, vuol dire che le chiamate "
+"di disegno possono essere combinate piu' facilmente, con frequenti "
+"miglioramenti."
 
 #. TRANSLATION: libretro/dosbox_pure, xenia, xenia-canary
 msgctxt "game_options"
@@ -16335,6 +16365,11 @@ msgctxt "game_options"
 msgid "TRAINER MODE"
 msgstr "MODALITÀ ALLENATORE"
 
+#. TRANSLATION: ymir
+msgctxt "game_options"
+msgid "TRANSPARENT MESHES"
+msgstr ""
+
 #. TRANSLATION: libretro/pcsx2, model2emu, pcsx2
 msgctxt "game_options"
 msgid "TRILINEAR FILTERING"
@@ -17954,13 +17989,14 @@ msgid ""
 "When enabled and upscaling, textures look better than linear filtering for a "
 "lot of 2D art."
 msgstr ""
-"Quando abilitato e upscaling, le textures sono migliori che col linear filtering "
-"per molti disegni 2D."
+"Quando abilitato e upscaling, le textures sono migliori che col linear "
+"filtering per molti disegni 2D."
 
 #. TRANSLATION: flycast/dolphin
 msgctxt "game_options"
 msgid "When enabled, each game has its own VMU on port 1 of controller 1."
-msgstr "Quando abilitato, ogni gioco ha la sua VMU sulla porta 1 del controller 1."
+msgstr ""
+"Quando abilitato, ogni gioco ha la sua VMU sulla porta 1 del controller 1."
 
 #. TRANSLATION: drastic
 msgctxt "game_options"
@@ -18677,8 +18713,8 @@ msgid ""
 "xBRZ - a sharpening upscale algorithm, Bicubic - a smooth look, Hybrid - "
 "uses bicubic for smooth areas."
 msgstr ""
-"xBRZ - un algoritmo di upscale sharpening, Bicubic - un apparenza piu' soffice, "
-"Hybrid - usa il bicubico per addolcire le aree."
+"xBRZ - un algoritmo di upscale sharpening, Bicubic - un apparenza piu' "
+"soffice, Hybrid - usa il bicubico per addolcire le aree."
 
 #. TRANSLATION: libretro/vice_xplus4
 msgctxt "game_options"
