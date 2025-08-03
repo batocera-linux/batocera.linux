@@ -481,17 +481,19 @@ def createLibretroConfig(
     if system.config.core in ['mupen64plus-next', 'parallel_n64']:
 
         valid_n64_controller_guids = [
-            # official nintendo switch n64 controller
-            "050000007e0500001920000001800000",
-            # 8bitdo n64 modkit
-            "05000000c82d00006928000000010000",
+            "050000007e0500001920000001800000", # official nintendo switch n64 controller
+            "05000000c82d00006928000000010000", # 8bitdo n64 modkit
             "030000007e0500001920000011810000",
+            "05000000c82d00001930000001000000", # 8bitdo n64 bt
+            "03000000c82d00001930000011010000", # 8bitdo n64 wired
         ]
 
         valid_n64_controller_names = [
             "N64 Controller",
             "Nintendo Co., Ltd. N64 Controller",
             "8BitDo N64 Modkit",
+            "8BitDo 64 BT",
+            "8BitDo 8BitDo 64 Bluetooth Controller",
         ]
 
         def update_n64_controller_config(controller_number: int, /):
