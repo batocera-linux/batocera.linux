@@ -36,15 +36,19 @@ def handle_gpio_event(event_line_offset):
     if event_line_offset == RESET_PIN:
         print("RESET button pressed")
         try:
-            output = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))
-            output_rc = int(subprocess.check_output(['batocera-es-swissknife', '--emupid']))
-            
-            if output_rc:
+            emu_process = subprocess.run(['batocera-es-swissknife', '--emupid'], capture_output=True, text=True)
+            if emu_process.returncode == 0:
+                print("Emulator is running, killing it.")
                 subprocess.run("batocera-es-swissknife --emukill", shell=True, check=True)
-            elif output:
-                subprocess.run("batocera-es-swissknife --restart", shell=True, check=True)
             else:
-                subprocess.run("reboot", shell=True, check=True)
+                es_pid = int(subprocess.check_output(['batocera-es-swissknife', '--espid']))              
+                if es_pid:
+                    print("EmulationStation is running, restarting it.")
+                    subprocess.run("batocera-es-swissknife --restart", shell=True, check=True)
+                else:
+                    print("Nothing is running, rebooting system.")
+                    subprocess.run("reboot", shell=True, check=True)
+
         except Exception as e:
             print(f"Reset command error: {e}")
     
