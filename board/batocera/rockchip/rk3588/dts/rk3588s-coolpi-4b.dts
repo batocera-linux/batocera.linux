@@ -374,23 +374,6 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	vcc_mipidphy0: vcc-mipi-dphy0 {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc_mipidphy0";
-		regulator-min-microvolt = <1200000>;
-		regulator-max-microvolt = <1200000>;
-		gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_HIGH>;
-		regulator-always-on;
-		regulator-boot-on;
-		enable-active-high;
-		vin-supply = <&vcc_3v3_s3>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&cam_en>;
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
-	};
-
 	vcc_3v3_sd_s0: vcc-3v3-sd-s0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_3v3_sd_s0";
@@ -411,15 +394,6 @@
 		BT,reset_gpio    = <&gpio0 RK_PD3 GPIO_ACTIVE_HIGH>;
 		BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
 		BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
-		status = "okay";
-	};
-
-	wireless_wlan: wireless-wlan {
-		compatible = "wlan-platdata";
-		wifi_chip_type = "ap6256";
-		pinctrl-names = "default";
-		pinctrl-0 = <&wifi_host_wake_irq>;
-		WIFI,host_wake_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 };
@@ -630,6 +604,7 @@
 };
 
 &rga3_core0 {
+	rga-supply = <&vdd_log_s0>;
 	status = "okay";
 };
 
@@ -652,11 +627,11 @@
 &rknpu {
 	rknpu-supply = <&vdd_npu_s0>;
 	mem-supply = <&vdd_npu_mem_s0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &rknpu_mmu {
-	status = "okay";
+	status = "disabled";
 };
 
 &rkvdec_ccu {
@@ -664,6 +639,7 @@
 };
 
 &rkvdec0 {
+	rkvdec-supply = <&vdd_log_s0>;
 	status = "okay";
 };
 
@@ -672,6 +648,7 @@
 };
 
 &rkvdec1 {
+	rkvdec-supply = <&vdd_log_s0>;
 	status = "okay";
 };
 
@@ -684,6 +661,7 @@
 };
 
 &rkvenc0 {
+	venc-supply = <&vdd_vdenc_s0>;
 	status = "okay";
 };
 
@@ -837,6 +815,7 @@
 
 &vop {
 	assigned-clock-rates = <800000000>;
+	vop-supply = <&vdd_gpu_s0>;
 	status = "okay";
 };
 
@@ -1062,83 +1041,6 @@
 	};
 };
 
-/*mipi csi*/
-&i2c8 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&i2c8m2_xfer>;
-
-	ov5647: ov5647@36 {
-		status = "okay";
-		compatible = "ovti,ov5647";
-		reg = <0x36>;
-		clocks = <&cru CLK_MIPI_CAMARAOUT_M0>;
-		clock-names = "xvclk";
-		power-domains = <&power RK3588_PD_VI>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&cam_clkout0>;
-		avdd-supply = <&vcc_mipidphy0>;
-		rockchip,camera-module-index = <1>;
-		rockchip,camera-module-facing = "front";
-		rockchip,camera-module-name = "THDS11073LarganCAM0";
-		rockchip,camera-module-lens-name = "40122a1";
-
-		port {
-			ov5647_out: endpoint {
-				remote-endpoint = <&mipidphy0_in_ucam0>;
-				data-lanes = <1 2>;
-			};
-		};
-	};
-
-	imx477: imx477@1a {
-		compatible = "sony,imx477";
-		reg = <0x1a>;
-		clocks = <&cru CLK_MIPI_CAMARAOUT_M0>;
-		clock-names = "xvclk";
-		power-domains = <&power RK3588_PD_VI>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&cam_clkout0>;
-		avdd-supply = <&vcc_mipidphy0>;
-		rockchip,camera-module-index = <1>;
-		rockchip,camera-module-facing = "front";
-		rockchip,camera-module-name = "COOLPIIMXCAM0";
-		rockchip,camera-module-lens-name = "IMX477";
-
-		port {
-			imx477_out: endpoint {
-				remote-endpoint = <&mipidphy0_in_ucam1>;
-				data-lanes = <1 2>;
-			};
-		};
-	};
-
-	imx219: imx219@10 {
-		compatible = "sony,imx219";
-		status = "okay";
-		reg = <0x10>;
-		clocks = <&cru CLK_MIPI_CAMARAOUT_M0>;
-		clock-names = "xvclk";
-		pinctrl-names = "default";
-		pinctrl-0 = <&cam_clkout0>;
-		power-domains = <&power RK3588_PD_VI>;
-		avdd-supply = <&vcc_mipidphy0>;
-		rockchip,camera-module-index = <1>;
-		rockchip,camera-module-facing =  "front";
-		rockchip,camera-module-name = "GEIR180089";
-		rockchip,camera-module-lens-name = "LG500627G";
-		port {
-			imx219_out: endpoint {
-				remote-endpoint = <&mipidphy0_in_ucam2>;
-				data-lanes = <1 2>;
-				clock-noncontinuous;
-				link-frequencies =
-					/bits/ 64 <456000000>;
-			};
-		};
-	};
-};
-
 &csi2_dphy0 {
 	status = "okay";
 
@@ -1149,24 +1051,6 @@
 			reg = <0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
-			mipidphy0_in_ucam0: endpoint@1 {
-				reg = <1>;
-				remote-endpoint = <&ov5647_out>;
-				data-lanes = <1 2>;
-			};
-
-			mipidphy0_in_ucam1: endpoint@2 {
-				reg = <2>;
-				remote-endpoint = <&imx477_out>;
-				data-lanes = <1 2>;
-			};
-
-			mipidphy0_in_ucam2: endpoint@3 {
-				reg = <3>;
-				remote-endpoint = <&imx219_out>;
-				data-lanes = <1 2>;
-			};
 		};
 		port@1 {
 			reg = <1>;
@@ -1337,26 +1221,6 @@
 	};
 };
 
-&spi0 {
-	pinctrl-names = "default";
-	status = "okay";
-
-	max-freq = <48000000>; /* spi internal clk, don't modify */
-	spi_dev@0 {
-		compatible = "rockchip,spidev";
-		reg = <0>;
-		spi-max-frequency = <12000000>;
-		spi-lsb-first;
-	};
-
-    spi_dev@1 {
-		compatible = "rockchip,spidev";
-		reg = <1>;
-		spi-max-frequency = <12000000>;
-		spi-lsb-first;
-	};
-};
-
 &spi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi2m2_cs0 &spi2m2_pins>;
@@ -1364,6 +1228,7 @@
 	status = "okay";
 };
 
+/* bt */
 &uart9 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -1398,15 +1263,6 @@
 	rtl8111 {
 		rtl8111_isolate: rtl8111-isolate {
 			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-	};
-
-	cam {
-		cam_clkout0: cam-clkout0 {
-			rockchip,pins = <1 RK_PB6 1 &pcfg_pull_none>;
-		};
-		cam_en: cam-en {
-			rockchip,pins = <1 RK_PA6 1 &pcfg_pull_none>;
 		};
 	};
 

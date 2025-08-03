@@ -86,6 +86,13 @@ case "$1" in
                         sleep 2
                     fi
                 ;;
+                aic8800)
+                    if [ ${BOARD} = "coolpi-4b" ]; then
+                        rfkill unblock all
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 &
+                        sleep 2
+                    fi
+                ;;
             esac
         done
 
