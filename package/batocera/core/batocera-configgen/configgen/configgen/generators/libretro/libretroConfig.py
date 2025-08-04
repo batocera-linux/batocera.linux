@@ -70,7 +70,7 @@ systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecov
 
 # Define Retroarch Core compatible with retroachievements
 # List taken from https://docs.libretro.com/guides/retroachievements/#cores-compatibility
-coreToRetroachievements = {'arduous', 'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'flycastvl', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-wide', 'handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'neocd', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'sameduck', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'uzem', 'vb', 'vba-m', 'vecx', 'virtualjaguar', 'wasm4'}
+coreToRetroachievements = {'arduous', 'beetle-saturn', 'blastem', 'bluemsx', 'bsnes', 'bsnes_hd', 'cap32', 'desmume', 'duckstation', 'fbneo', 'fceumm', 'flycast', 'flycastvl', 'freechaf', 'freeintv', 'gambatte', 'genesisplusgx', 'genesisplusgx-expanded', 'genesisplusgx-wide','handy', 'kronos', 'mednafen_lynx', 'mednafen_ngp', 'mednafen_psx', 'mednafen_supergrafx', 'mednafen_wswan', 'melonds', 'mesen', 'mesens', 'mgba', 'mupen64plus-next', 'neocd', 'o2em', 'opera', 'parallel_n64', 'pce', 'pce_fast', 'pcfx', 'pcsx_rearmed', 'picodrive', 'pokemini', 'potator', 'ppsspp', 'prosystem', 'quasi88', 'snes9x', 'sameduck', 'snes9x_next', 'stella', 'stella2014', 'swanstation', 'uzem', 'vb', 'vba-m', 'vecx', 'virtualjaguar', 'wasm4'}
 
 # Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn', 'dice'}
@@ -370,12 +370,12 @@ def createLibretroConfig(
             retroarchConfig['input_libretro_device_p1'] = '2049' # Race Controller
 
     ## Sega Megadrive controller
-    if system.config.core == 'genesisplusgx' and system.name == 'megadrive':
+    if (system.config.core == 'genesisplusgx' or system.config.core == 'genesisplusgx-expanded') and system.name == 'megadrive':
         retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_md', '513')  # 513 = 6 button
         retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_md', '513')  # 513 = 6 button
 
     ## Sega Megadrive style controller remap
-    if system.config.core in ['genesisplusgx', 'picodrive']:
+    if system.config.core in ['genesisplusgx', 'genesisplusgx-expanded', 'picodrive']:
 
         valid_megadrive_controller_guids = [
         # 8bitdo m30
@@ -407,7 +407,7 @@ def createLibretroConfig(
             for btn, value in remap_values.items():
                 retroarchConfig[f'input_player{controller_number}_{btn}'] = value
 
-        if system.config.core == 'genesisplusgx':
+        if system.config.core == 'genesisplusgx' or system.config.core == 'genesisplusgx-expanded':
             option = 'gx'
         else:  # picodrive
             option = 'pd'
@@ -481,17 +481,19 @@ def createLibretroConfig(
     if system.config.core in ['mupen64plus-next', 'parallel_n64']:
 
         valid_n64_controller_guids = [
-            # official nintendo switch n64 controller
-            "050000007e0500001920000001800000",
-            # 8bitdo n64 modkit
-            "05000000c82d00006928000000010000",
+            "050000007e0500001920000001800000", # official nintendo switch n64 controller
+            "05000000c82d00006928000000010000", # 8bitdo n64 modkit
             "030000007e0500001920000011810000",
+            "05000000c82d00001930000001000000", # 8bitdo n64 bt
+            "03000000c82d00001930000011010000", # 8bitdo n64 wired
         ]
 
         valid_n64_controller_names = [
             "N64 Controller",
             "Nintendo Co., Ltd. N64 Controller",
             "8BitDo N64 Modkit",
+            "8BitDo 64 BT",
+            "8BitDo 8BitDo 64 Bluetooth Controller",
         ]
 
         def update_n64_controller_config(controller_number: int, /):
@@ -514,7 +516,7 @@ def createLibretroConfig(
             pad = controllers[i - 1]
             if (pad.guid in valid_n64_controller_guids and pad.name in valid_n64_controller_names) or (system.config.get(f'{option}-controller{i}', 'retropad') != 'retropad'):
                 update_n64_controller_config(i)
-    
+
     ## Bennu Game Development
     if system.config.core == 'bennugd':
         bezel = None
@@ -665,6 +667,8 @@ def createLibretroConfig(
             retroarchConfig['cheevos_start_active'] = system.config.get_bool('retroachievements.encore', return_values=('true', 'false'))
             # retroarchievements_rich_presence
             retroarchConfig['cheevos_richpresence_enable'] = system.config.get_bool('retroachievements.richpresence', return_values=('true', 'false'))
+            # retroarchievements_unofficial
+            retroarchConfig['cheevos_test_unofficial'] = system.config.get_bool('retroachievements.unofficial', return_values=('true', 'false'))
             if not connected_to_internet():
                 retroarchConfig['cheevos_enable'] = 'false'
     else:
@@ -781,6 +785,8 @@ def createLibretroConfig(
                             "mastersystem" : { "device": 260, "p1": 0, "p2": 1 },
                             "megacd" : { "device": 516, "p2": 0,
                                          "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ]} },
+        "genesisplusgx-expanded" : { "megadrive" : { "device": 516, "p2": 0,
+                                            "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "772" } ] } },
         "fbneo"         : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "mame"          : { "default" : { "p1": 0, "p2": 1, "p3": 2 } },
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
@@ -927,7 +933,7 @@ def configureGunInputsForPlayer(
             retroarchConfig[f'input_player{n}_gun_aux_b_mbtn'         ] = 3
             retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = 4
 
-    if core == "genesisplusgx":
+    if core == "genesisplusgx" or core == "genesisplusgx-expanded":
         retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = ''
         retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = ''
         retroarchConfig[f'input_player{n}_gun_select_mbtn'        ] = ''

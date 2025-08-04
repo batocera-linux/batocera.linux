@@ -1,0 +1,16 @@
+diff '--color=auto' -uri amiberry-v7.1.0-orig/src/osdep/amiberry.cpp amiberry-v7.1.0/src/osdep/amiberry.cpp
+--- amiberry-v7.1.0-orig/src/osdep/amiberry.cpp	2025-07-09 14:01:05.000000000 -0700
++++ amiberry-v7.1.0/src/osdep/amiberry.cpp	2025-07-23 09:30:24.737904046 -0700
+@@ -4398,8 +4398,10 @@
+ 		if (!my_existsdir(xdg_config_home.c_str()))
+ 			my_mkdir(xdg_config_home.c_str());
+ 
+-		amiberry_conf_file = xdg_config_home + "/amiberry.conf";
+-		amiberry_ini_file = xdg_config_home + "/amiberry.ini";
++		//amiberry_conf_file = xdg_config_home + "/amiberry.conf";
++		//amiberry_ini_file = xdg_config_home + "/amiberry.ini";
++		amiberry_conf_file = std::string("/userdata/system/configs/amiberry/conf/amiberry.conf");
++		amiberry_ini_file = std::string("/userdata/system/configs/amiberry/conf/amiberry.ini");
+ 	}
+ 	return my_existsfile2(amiberry_conf_file.c_str());
+ }

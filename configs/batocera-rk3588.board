@@ -20,7 +20,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/armbian/linux-rockchip.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="7754a95dba532f05b62cfc3c3398265c9710db91"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="5b801c24d1e7ecbca0bc3f5b39485c81b9ec4f49"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
@@ -30,7 +30,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-nanopi-m6 rockchip/rk3588-bananapi-m7 rockchip/rk3588s-rock-5c rockchip/rk3588-rock-5b rockchip/rk3588-radxa-rock-5b+ rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-orangepi-5-pro rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-khadas-edge2 rockchip/rk3588s-roc-pc"
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-coolpi-4b.dts"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 # Support DTB overlays
@@ -61,6 +61,9 @@ BR2_PACKAGE_UBOOT_NANOPI_M6=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5B=y
 
+# U-Boot dependency
+BR2_TARGET_UBOOT_NEEDS_GNUTLS=y
+
 # Rock5B U-Boot
 BR2_TARGET_UBOOT=y
 BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
@@ -79,5 +82,5 @@ BR2_PACKAGE_HOST_GENIMAGE=y
 BR2_PACKAGE_HOST_MTOOLS=y
 BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 BR2_PACKAGE_ROCKCHIP_RKBIN=y
-BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin"
-BR2_PACKAGE_ROCKCHIP_RKBIN_BL31_FILENAME="bin/rk35/rk3588_bl31_v1.45.elf"
+BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.18.bin"
+BR2_PACKAGE_ROCKCHIP_RKBIN_BL31_FILENAME="bin/rk35/rk3588_bl31_v1.48.elf"

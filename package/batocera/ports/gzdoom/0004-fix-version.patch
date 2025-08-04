@@ -1,0 +1,79 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt.new
+index 95b67a2d87..fa587f4317 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt.new
+@@ -312,10 +312,10 @@ endif()
+ 
+ # Update gitinfo.h
+ 
+-add_custom_target( revision_check ALL
+-	COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/tools/updaterevision/UpdateRevision.cmake" src/gitinfo.h
+-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-)
++#add_custom_target( revision_check ALL
++#	COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/tools/updaterevision/UpdateRevision.cmake" src/gitinfo.h
++#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++#)
+ 
+ # required libraries
+ 
+@@ -1337,7 +1337,7 @@ include_directories(
+ 	${SYSTEM_SOURCES_DIR}
+ )
+ 
+-add_dependencies( zdoom revision_check )
++#add_dependencies( zdoom revision_check )
+ 
+ # Due to some quirks, we need to do this in this order
+ if( NOT ZDOOM_OUTPUT_OLDSTYLE )
+diff --git a/tools/updaterevision/UpdateRevision.cmake b/tools/updaterevision/UpdateRevision.cmake
+index 619a86862a..1ab6caf421
+--- a/tools/updaterevision/UpdateRevision.cmake
++++ b/tools/updaterevision/UpdateRevision.cmake
+@@ -15,6 +16,11 @@ endmacro()
+ # Populate variables "Hash", "Tag", and "Timestamp" with relevant information
+ # from source repository.  If anything goes wrong return something in "Error."
+ function(query_repo_info)
++	# Do not run git if we are in a fallback scenario
++	if(DEFINED ENV{FALLBACK_GIT_TAG})
++		return()
++	endif()
++
+ 	execute_process(
+ 		COMMAND git describe --tags --dirty=-m
+ 		RESULT_VARIABLE Error
+@@ -71,11 +77,30 @@ function(main)
+ 	get_filename_component(ScriptDir "${CMAKE_SCRIPT_MODE_FILE}" DIRECTORY)
+ 
+ 	query_repo_info()
++
++	# If Hash is not set, it means git failed. Now we check for fallback environment variables.
+ 	if(NOT Hash)
+-		message("Failed to get commit info: ${Error}")
+-		set(Hash "0")
+-		set(Tag "<unknown version>")
+-		set(Timestamp "")
++		if(DEFINED ENV{FALLBACK_GIT_TAG})
++			message("Git repository not found. Using fallback environment variables.")
++			set(Tag "$ENV{FALLBACK_GIT_TAG}")
++			
++			if(DEFINED ENV{FALLBACK_GIT_HASH})
++				set(Hash "$ENV{FALLBACK_GIT_HASH}")
++			else()
++				set(Hash "0000000")
++			endif()
++
++			if(DEFINED ENV{FALLBACK_GIT_TIMESTAMP})
++				set(Timestamp "$ENV{FALLBACK_GIT_TIMESTAMP}")
++			else()
++				set(Timestamp "")
++			endif()
++		else()
++			message("Failed to get commit info: ${Error}. No fallback variables found.")
++			set(Hash "0")
++			set(Tag "<unknown version>")
++			set(Timestamp "")
++		endif()
+ 	endif()
+ 
+ 	get_existing_hash("${OutputFile}")

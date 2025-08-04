@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-GZDOOM_VERSION = g4.14.1
+GZDOOM_VERSION = g4.14.2
+GZDOOM_HASH = 99aa489 # get from the tag
 GZDOOM_SITE = https://github.com/ZDoom/gzdoom.git
-GZDOOM_SITE_METHOD=git
-GZDOOM_GIT_SUBMODULES=YES
+GZDOOM_SITE_METHOD = git
+GZDOOM_GIT_SUBMODULES = YES
 GZDOOM_LICENSE = GPLv3
 GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic libvpx webp
 GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
- 
+
 # We need the tools from the host package to build the target package
 HOST_GZDOOM_DEPENDENCIES = zlib bzip2 host-webp
 HOST_GZDOOM_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -26,6 +27,7 @@ endef
 GZDOOM_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 GZDOOM_CONF_OPTS += -DFORCE_CROSSCOMPILE=ON
 GZDOOM_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+GZDOOM_CONF_OPTS += -DNO_SDL_JOYSTICK=OFF
 GZDOOM_CONF_OPTS += -DIMPORT_EXECUTABLES="$(HOST_GZDOOM_BUILDDIR)/ImportExecutables.cmake"
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
@@ -57,7 +59,8 @@ endif
 #
 # See https://github.com/ZDoom/gzdoom/issues/1485
 define GZDOOM_PATCH_USE_GLES2
-	$(SED) 's%#define USE_GLES2 0%#define USE_GLES2 1%' $(@D)/src/common/rendering/gles/gles_system.h
+	$(SED) 's%#define USE_GLES2 0%#define USE_GLES2 1%' \
+        $(@D)/src/common/rendering/gles/gles_system.h
 	$(SED) '1i #define __ANDROID__' $(@D)/src/common/rendering/gles/gles_system.cpp
 endef
 
@@ -76,10 +79,19 @@ define GZDOOM_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/buildroot-build/*.pk3 $(TARGET_DIR)/usr/share/gzdoom
 	cp -pr $(@D)/buildroot-build/fm_banks $(TARGET_DIR)/usr/share/gzdoom
 	cp -pr $(@D)/buildroot-build/soundfonts $(TARGET_DIR)/usr/share/gzdoom
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/gzdoom/gzdoom.keys \
-	    $(TARGET_DIR)/usr/share/evmapy
 endef
+
+define GZDOOM_PREPARE_VERSION_INFO
+	export FALLBACK_GIT_TAG=$(GZDOOM_VERSION); \
+	export FALLBACK_GIT_HASH=$(GZDOOM_HASH); \
+	export FALLBACK_GIT_TIMESTAMP="$(shell date -u -Iseconds)"; \
+	$(BR2_CMAKE) -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
+        $(@D)/src/gitinfo.h
+	$(BR2_CMAKE) -P $(@D)/tools/updaterevision/UpdateRevision.cmake \
+        $(GZDOOM_BUILDDIR)/src/gitinfo.h
+endef
+
+GZDOOM_POST_CONFIGURE_HOOKS += GZDOOM_PREPARE_VERSION_INFO
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))

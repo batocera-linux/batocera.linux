@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AZAHAR_VERSION = AZAHARPLUS_2120_2_C
+AZAHAR_VERSION = AZAHAR_PLUS_2122_A
 AZAHAR_SITE = https://github.com/AzaharPlus/AzaharPlus
 AZAHAR_SITE_METHOD = git
 AZAHAR_GIT_SUBMODULES = YES
@@ -27,6 +27,12 @@ AZAHAR_CONF_OPTS += -DUSE_SYSTEM_BOOST=OFF
 AZAHAR_CONF_OPTS += -DENABLE_SDL2=ON
 AZAHAR_CONF_OPTS += -DUSE_SYSTEM_SDL2=ON    # important to avoid HIDAPI
 AZAHAR_CONF_OPTS += -DENABLE_LTO=OFF
+
+ifeq ($(BR2_X86_CPU_HAS_SSE42),y)
+    AZAHAR_CONF_OPTS += -DENABLE_SSE42=ON
+else
+    AZAHAR_CONF_OPTS += -DENABLE_SSE42=OFF
+endif
 
 ifeq ($(BR2_PACKAGE_QT6),y)
     AZAHAR_DEPENDENCIES += qt6base qt6tools qt6multimedia

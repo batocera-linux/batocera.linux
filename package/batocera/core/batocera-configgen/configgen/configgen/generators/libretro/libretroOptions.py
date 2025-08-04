@@ -1864,6 +1864,7 @@ def _px68k_options(
     _set(coreSettings, 'px68k_joytype1', joytype)
     _set(coreSettings, 'px68k_joytype2', joytype)
 
+
 # Sinclair ZX81
 def _81_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2101,6 +2102,8 @@ def _pcsx2_options(
         _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (32:9)')
     else:
         _set(coreSettings, 'pcsx2_widescreen_hint', 'disabled')
+
+
 def _pcsx_rearmed_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
@@ -2333,6 +2336,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'scummvm': _scummvm_options,
     'flycast': _flycast_options,
     'genesisplusgx': _genesisplusgx_options,
+    'genesisplusgx-expanded': _genesisplusgx_options,
     'picodrive': _picodrive_options,
     'yabasanshiro': _yabasanshiro_options,
     'kronos': _kronos_options,

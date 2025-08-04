@@ -9,7 +9,7 @@ LIBRETRO_HOLANI_SITE = $(call github,lleny,holani-retro,$(LIBRETRO_HOLANI_VERSIO
 LIBRETRO_HOLANI_LICENSE = GPLv3
 LIBRETRO_HOLANI_DEPENDENCIES = host-rustc host-rust-bin host-clang retroarch
 
-LIBRETRO_HOLANI_CARGO_MODE = $(if $(BR2_ENABLE_DEBUG),,release)
+LIBRETRO_HOLANI_CARGO_MODE = $(if $(BR2_ENABLE_DEBUG),debug,release)
 LIBRETRO_HOLANI_BIN_DIR = target/$(RUSTC_TARGET_NAME)/$(LIBRETRO_HOLANI_CARGO_MODE)
 
 # Temporary fix for 'stddef.h file not found'

@@ -4,9 +4,17 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20250613
+ALLLINUXFIRMWARES_VERSION = 20250708
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
 ALLLINUXFIRMWARES_SITE = https://www.kernel.org/pub/linux/kernel/firmware
+
+ifeq ($(BR2_PACKAGE_FIRMWARE_ARMBIAN),y)
+ALLLINUXFIRMWARES_DEPENDENCIES += firmware-armbian
+endif
+
+ifeq ($(BR2_PACKAGE_FIRMWARE_ORANGEPI),y)
+ALLLINUXFIRMWARES_DEPENDENCIES += firmware-orangepi
+endif
 
 # exclude some dirs not required on batocera
 ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
@@ -56,7 +64,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # -n is mandatory while some other packages provides firmwares too
     # this is not ideal, but i don't know how to tell to buildroot to install this package first
     # (and not worry about all packages installing firmwares)
-    cp --remove-destination -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
+    rsync -au --checksum $(@D)/ $(TARGET_DIR)/lib/firmware/
 
     # Some firmware are distributed as a symlink, for drivers to load them using a
     # defined name other than the real one. Since 9cfefbd7fbda ("Remove duplicate
@@ -66,11 +74,10 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # here, adding symlink only for firmwares installed in the target directory.
     cd $(TARGET_DIR)/lib/firmware ; \
         sed -r -e '/^Link: (.+) -> (.+)$$/!d; s//\1 \2/' $(@D)/WHENCE | \
-        while read f d; do \
-            if test -f $$(readlink -m $$(dirname "$$f")/$$d); then \
-                if test -f $(TARGET_DIR)/lib/firmware/$$(dirname "$$f")/$$d; then \
-                    ln -sf $$d "$$f" || exit 1; \
-                fi \
+        while read -r f d; do \
+            if test -f "$$(readlink -m "$$(dirname "$$f")/$${d}")"; then \
+                mkdir -p "$$(dirname "$$f")" && \
+                ln -sf "$$d" "$$f" || exit 1; \
             fi ; \
         done
 endef

@@ -3,12 +3,12 @@
 # libdof
 #
 ################################################################################
-# Version: Commits on May 27, 2025
-LIBDOF_VERSION = 6a5c15c3f16d76e77bc2bc8b3abcb1c1f8856d23
+# Version: Commits on Jun 29, 2025
+LIBDOF_VERSION = 6d221ab092ff4577a6103ca4083ca6cdebced2a2
 LIBDOF_SITE = $(call github,jsm174,libdof,$(LIBDOF_VERSION))
 LIBDOF_LICENSE = BSD-3-Clause
 LIBDOF_LICENSE_FILES = LICENSE
-LIBDOF_DEPENDENCIES = libserialport hidapi sockpp cargs
+LIBDOF_DEPENDENCIES = libusb libserialport hidapi libftdi1
 LIBDOF_SUPPORTS_IN_SOURCE_BUILD = NO
 # Install to staging to build Visual Pinball Standalone
 LIBDOF_INSTALL_STAGING = YES

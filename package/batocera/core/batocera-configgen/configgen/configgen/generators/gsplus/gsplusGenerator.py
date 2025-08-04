@@ -19,7 +19,7 @@ class GSplusGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "gsplus",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F4", "pause": "KEY_F4" }
+            "keys": { "exit": ["KEY_LEFTSHIFT", "KEY_F6"], "menu": "KEY_F4", "pause": "KEY_F4" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

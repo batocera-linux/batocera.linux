@@ -25,7 +25,7 @@ shared:
       prompt: RYZEN THERMAL DESIGN POWER
       description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
       preset: slider
-      preset_parameters: 10 130 5 100 %
+      preset_parameters: 10 120 5 100 %
     videomode:
       prompt: VIDEO MODE
       description: Set the display's resolution. Does not affect the rendering resolution.
@@ -496,6 +496,8 @@ libretro:
                     #"None":          0
                     "Saturn Pad":    1
                     "Saturn 3D Pad": 261
+    bennugd:
+      features: [padtokeyboard]
     fmsx:
        features: [netplay, cheevos]
        shared: [rewind, autosave]
@@ -2327,6 +2329,51 @@ libretro:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
     genesisplusgx:
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
+      cfeatures:
+            gpgx_region:
+                prompt:      REGION
+                description: Games may run faster/slower than normal if the incorrect region is selected.
+                choices:
+                    "NTSC-U":             ntsc-u
+                    "PAL":                pal
+                    "NTSC-J":             ntsc-j
+            gpgx_no_sprite_limit:
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Enhancement. Remove the eighty sprites per line limit.
+                choices:
+                    "Off":                disabled
+                    "On":                 enabled
+            gx_controller1_mapping:
+                submenu:     CONTROLLERS
+                prompt:      CONTROLLER 1 INPUT MAPPING
+                description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+                choices:
+                    "Retropad (Default)": retropad
+                    "Megadrive":          megadrive
+            gx_controller2_mapping:
+                submenu:     CONTROLLERS
+                prompt:      CONTROLLER 2 INPUT MAPPING
+                description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+                choices:
+                    "Retropad (Default)": retropad
+                    "Megadrive":          megadrive
+            gx_controller3_mapping:
+                submenu:     CONTROLLERS
+                prompt:      CONTROLLER 3 INPUT MAPPING
+                description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+                choices:
+                    "Retropad (Default)": retropad
+                    "Megadrive":          megadrive
+            gx_controller4_mapping:
+                submenu:     CONTROLLERS
+                prompt:      CONTROLLER 4 INPUT MAPPING
+                description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+                choices:
+                    "Retropad (Default)": retropad
+                    "Megadrive":          megadrive
+    genesisplusgx-expanded:
       features: [netplay, cheevos]
       shared: [rewind, autosave]
       cfeatures:
@@ -12940,18 +12987,18 @@ gzdoom:
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
   features: [padtokeyboard]
   cfeatures:
-    gz_joystick:
-      prompt: USE GZDOOM JOYSTICK CONFIGURATION
-      description: Configuring controllers in GZDoom can cause problems.
-      choices:
-        "Disabled (Default)": "false"
-        "Enabled":            "true"
     gz_api:
       prompt: GRAPHICS API
       description: Choose which graphics API library to use.
       choices:
         "OpenGL (Default)": 0
         "Vulkan":           1
+    gz_vsync:
+      prompt: VSYNC
+      description: Fix screen tearing. With Some games you need to turn VSync on in the games options.
+      choices:
+        "Disabled": False
+        "Enabled":  True
 
 corsixth:
   shared: [powermode, tdp, videomode]
@@ -14753,11 +14800,31 @@ ymir:
       prompt: ASPECT RATIO
       description: Change the output resolution ratio.
       choices:
-        "4:3":  0
-        "16:9": 1
+        "4:3":   1.3333333333333333
+        "3:2":   1.5
+        "16:10": 1.6
+        "16:9":  1.7777777777777778
+    ymir_rotation:
+      prompt: ROTATION
+      description: Change the rotation of the rendered image.
+      choices:
+        "Normal":                       Normal
+        "90 degrees clockwise":         90CW
+        "180 degrees":                  180
+        "90 degrees counter-clockwise": 90CCW
     ymir_interlace:
       prompt: DEINTERLACE
       description: Choose deinterlace option.
       choices:
         "Interlaced":    0
         "De-Interlaced": 1
+    ymir_meshes:
+      prompt: TRANSPARENT MESHES
+      description: Choose to render meshes as transparent polygons.
+      choices:
+        "Off": 0
+        "On":  1
+
+clk:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]

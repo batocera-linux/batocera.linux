@@ -7,7 +7,7 @@
 - Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
   If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
 - Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
-- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
+- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`).
 - Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
 - ScummVM libretro and standalone savegames share the same folders now.
   If you have saved games from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
@@ -31,6 +31,7 @@
 - Add OrangePi 5 Max board support
 - Add RetroidPocket Mini v2 (thanks Spycat)
 - Add support for the Pironman5 Mini & Max cases
+- Add CoolPi 4b board support
 ### Added
 - WireGuard VPN for RK3326 boards
 - WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
@@ -42,7 +43,7 @@
 - DuckStation cheat list
 - Game Specific color palette for gambette core
 - Non-Micro GUN4IR light gun hardware support
-- Steering wheel support added for :
+- Steering wheel support added for:
   - Logitech: G923 (Xbox), PRO Racing Wheel
   - Speedlink: 4in1 Leather Power Feedback Wheel
   - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
@@ -51,23 +52,25 @@
 - Support of Shanwan Twin USB Joystick (new revision)
 - Libretro-PS2 core
 - Force Feedback on RP5 & RPmini
-- vkQuake 1, 2 & 3 for systems that support Vulkan.
+- vkQuake 1, 2 & 3 for systems that support Vulkan
 - TR1X & TR2X for Tomb Raider I & II support
 - Oric Atmos (and Oric 1) with CLK Clock Signal emulator
 - CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
   AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
 - gun : option to hide the crosshair in ES
-- Azahar 3DS emulator: Version 2120.1
+- Azahar 3DS emulator: Version 2122
 - DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
 - Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
-- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith.
+- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith
 - OpenJK to play Jedi Academy & Jedi Outcast
 - Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
 - ShadPS4 emulator for PlayStation 4 gaming
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
-- WiringOP-Python for OrangePi board GPIO scripting.
+- WiringOP-Python for OrangePi board GPIO scripting
 - Libretro-BennuGD for compatible games
+- RetroAchievements: support for unofficial achievements
+- PPSSPP standalone Retroachievements support
 ### Fixed
 - Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
 - Fix some problems in ES and Batocera with IPv6 networks
@@ -80,7 +83,7 @@
 - DualShock 4 controller on Odroid XU4
 - Internal bezels still enabled for Libretro cores when a widescreen ratio selected
 - Centering of PCSX2 messages
-- Xbox compatible bluetooth controllers not working in Steam.
+- Xbox compatible bluetooth controllers not working in Steam
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images
@@ -92,8 +95,9 @@
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 - Moved to the `hid-microsoft` driver for Xbox compatible Bluetooth controllers
 - Dreamcast bios now goes into `bios/dc/dc_boot.bin`
+- MSI Claw devices now get the appropriate controller config on boot
 ### Updated
-- Amiberry to v7.0.4
+- Amiberry to v7.1.0
 - AppleWin to 8th of Feb build
 - BigPEmu to 1.19
 - Cemu to 2.6
@@ -106,22 +110,23 @@
 - ETLegacy to v2.83.2
 - Flycast and libretro-flycast to v2.5
 - GroovyMAME to 0.277
-- Gzdoom to g4.14.1
+- Gzdoom to g4.14.2
 - Hurrican to 24th of Nov build
 - Hypseus Singe to 2.11.5
 - IOQuake3 to 25th December build
-- Jazz2 to 3.2.0
+- Jazz2 to 3.3.0
+- Libretro-FBNeo to July 25, 2025 build
 - Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.277
+- Libretro-MAME to 0.278
 - Libretro-Play! 4th Feb build
-- Libretro-PPSSPP v1.19.2
+- Libretro-PPSSPP v1.19.3
 - Libretro-ScummVM to 3rd June 2025 build
 - Libretro-Wasm4 to v2.7.1
 - MelonDS to 17th Jan build
 - OpenMSX to release 20.0
 - PCSX2 to v2.3.420
 - Play! to 4th Feb build
-- PPSSPP to v1.19.2
+- PPSSPP to v1.19.3
 - Play! to 0.70
 - Raze to 1.11.0
 - RetroArch to v1.21.0
@@ -135,31 +140,33 @@
 - TheForceEngine to v1.22.300
 - TheXTech to v1.3.7-hotfix2
 - Triforce to use a Crediar build (Nov 29, 2024)
+- Tsugaru to v20250513
 - Vice to 3.9
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
 - Xemu to v0.8.73
 - Xenia to build 1d7973a (June 10, 2025)
 ### System
+- Alsa stack to 1.2.14
 - Bluez to 5.82
 - BTop to 1.4.0
 - Buildroot to 2024.11.x with supporting package updates
-- DXVK to 2.6.1
+- DXVK to 2.7
 - DXVK-NVApi to 0.9.0
 - Faudio to 25.02
 - FFMPEG to 7.1.1
-- GStreamer codecs to 1.26.0
-- Intel GMMLib to 22.7.1
-- Intel Media Driver to 25.2.0
+- GStreamer codecs to 1.26.4
+- Intel GMMLib to 22.8.1
+- Intel Media Driver to 25.3.0
 - Kodi to 21.2
 - LibDRM to 2.4.124
-- Linux Firmware to 20250613
-- Linux Kernel to 6.15.3
+- Linux Firmware to 20250708
+- Linux Kernel to 6.15.9
 - LLVM to 19.1.7
-- Mesa3D to 25.1.4
+- Mesa3D to 25.1.7
 - MPV to 0.40.0
 - Nvidia production driver to 575.64
-- Pipewire to 1.2.7
+- Pipewire to 1.4.6
 - QT6 to 6.8.1
 - RClone to v1.69.1
 - RPi firmware to match Kernel 6.12.25
@@ -172,7 +179,7 @@
 - Vulkan stack to v1.4.304
 - Wine Mono to 9.4.0
 - Wine-TKG to 10.7
-- Wireplumber to 0.5.8
+- Wireplumber to 0.5.10
 - Xone to Mar 13, 2025
 
 # 2025/01/06 - batocera.linux 41 - Golden-rayed Blue

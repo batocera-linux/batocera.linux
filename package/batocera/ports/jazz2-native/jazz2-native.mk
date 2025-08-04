@@ -4,14 +4,14 @@
 #
 ################################################################################
 
-JAZZ2_NATIVE_VERSION = 3.2.0
+JAZZ2_NATIVE_VERSION = 3.3.0
 JAZZ2_NATIVE_SITE = https://github.com/deathkiller/jazz2-native.git
 JAZZ2_NATIVE_SITE_METHOD = git
 JAZZ2_NATIVE_GIT_SUBMODULES = YES
 JAZZ2_NATIVE_LICENSE = GPL-3.0
 JAZZ2_NATIVE_LICENSE_FILE = LICENSE
 
-JAZZ2_NATIVE_DEPENDENCIES += sdl2 openal libopenmpt zlib
+JAZZ2_NATIVE_DEPENDENCIES += libcurl sdl2 openal libopenmpt zlib
 
 JAZZ2_NATIVE_SUPPORTS_IN_SOURCE_BUILD = NO
 

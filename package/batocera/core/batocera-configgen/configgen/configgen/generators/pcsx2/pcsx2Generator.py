@@ -18,7 +18,7 @@ from ...batoceraPaths import (
     ensure_parents_and_open,
     mkdir_if_not_exists,
 )
-from ...controller import Controllers, generate_sdl_game_controller_config, write_sdl_controller_db
+from ...controller import Controllers, write_sdl_controller_db
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -122,11 +122,6 @@ class Pcsx2Generator(Generator):
             "XDG_CONFIG_HOME": CONFIGS
         }
 
-        # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
-        # wheel metadata
-        if not Pcsx2Generator.useEmulatorWheels(playingWithWheel, Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)):
-            envcmd["SDL_GAMECONTROLLERCONFIG"] = generate_sdl_game_controller_config(playersControllers)
-
         # ensure we have the patches.zip file to avoid message.
         mkdir_if_not_exists(pcsx2Patches.parent)
         if not pcsx2Patches.exists():
@@ -185,6 +180,26 @@ def configureAudio(config_directory: Path) -> None:
 
 def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: Path, controllers: Controllers, metadata: Mapping[str, str], guns: Guns, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
+
+    valid_sony_guids = [
+        # ds3
+        "030000004c0500006802000011010000",
+        "030000004c0500006802000011810000",
+        "050000004c0500006802000000800000",
+        "050000004c0500006802000000000000",
+        # ds4
+        "030000004c050000c405000011810000",
+        "050000004c050000c405000000810000",
+        "030000004c050000cc09000011010000",
+        "050000004c050000cc09000000010000",
+        "030000004c050000cc09000011810000",
+        "050000004c050000cc09000000810000",
+        "030000004c050000a00b000011010000",
+        "030000004c050000a00b000011810000",
+        # ds5
+        "030000004c050000e60c000011810000",
+        "050000004c050000e60c000000810000"
+    ]
 
     mkdir_if_not_exists(configFileName.parent)
 
@@ -271,6 +286,8 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         pcsx2INIConfig.set("Achievements", "PrimedIndicators", system.config.get_bool('retroachievements.challenge_indicators', return_values=("true", "false")))
         pcsx2INIConfig.set("Achievements", "RichPresence", system.config.get_bool('retroachievements.richpresence', return_values=("true", "false")))
         pcsx2INIConfig.set("Achievements", "Leaderboards", system.config.get_bool('retroachievements.leaderboards', return_values=("true", "false")))
+        pcsx2INIConfig.set("Achievements", "EncoreMode", system.config.get_bool('retroachievements.encore', return_values=("true", "false")))
+        pcsx2INIConfig.set("Achievements", "UnofficialTestMode", system.config.get_bool('retroachievements.unofficial', return_values=("true", "false")))
     # set other settings
     pcsx2INIConfig.set("Achievements", "TestMode", "false")
     pcsx2INIConfig.set("Achievements", "UnofficialTestMode", "false")
@@ -387,7 +404,6 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     pcsx2INIConfig.set("InputSources", "Keyboard", "true")
     pcsx2INIConfig.set("InputSources", "Mouse", "true")
     pcsx2INIConfig.set("InputSources", "SDL", "true")
-    pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
 
     ## [Hotkeys]
     if not pcsx2INIConfig.has_section("Hotkeys"):
@@ -628,6 +644,11 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
 
     # Now add Controllers
     for nplayer, pad in enumerate(controllers, start=1):
+        if pad.guid in valid_sony_guids:
+            pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
+        else:
+            pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "false")
+        
         # only configure the number of controllers set
         if nplayer <= multiTap:
             pad_index = nplayer

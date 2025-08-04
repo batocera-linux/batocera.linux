@@ -131,7 +131,7 @@ fi
 # TDP
 CPU_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
 if ! [ -z "$CPU_TDP" ]; then
-    MAX_TDP=$(ryzenadj -i | grep 'PPT LIMIT FAST' | awk '{printf "%.0f\n", $6}')
+    MAX_TDP=$(/usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}')
     echo "Ryzen Mobile TDP: ${MAX_TDP}W"
 fi
 

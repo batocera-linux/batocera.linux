@@ -1,29 +1,42 @@
 #!/bin/bash
 
-# Early script to set the TDP
-# We should call / set the TDP per emulator based on user selection
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify  
+# it under the terms of the GNU General Public License as published by  
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# A script to set the TDP for supported AMD APUs based on detected or pre-determine values.
+# It allows a TDPWatt input and implicitly handles overclocking up to a safe ceiling.
 
 log="/userdata/system/logs/amd-tdp.log"
+TDP_INPUT="$1"
 
-TDP_MIN=5
-TDP_MAX=100
+# --- Helper Function ---
+get_firmware_max_tdp() {
+    /usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}'
+}
 
-TDP=$1
-
-# Check we have a ryzenadj supported CPU
-ryzenadj_output=$(ryzenadj -i)
-if [[ $ryzenadj_output =~ "unsupported model" ]]; then
-  echo "Unsupported CPU for RyzenAdj"
+# --- Sanity Checks ---
+if [[ "$(/usr/bin/ryzenadj -i)" =~ "unsupported model" ]]; then
+  echo "Unsupported CPU for RyzenAdj. Aborting." >> "$log"
   exit 1
 fi
 
-# Add to the array with dmi name, marketing name, min & max TDP values
-# Of models we know of / support
+# --- Device-Specific Configurations ---
 declare -A tdp_ranges
 tdp_ranges=(
     ["Loki_Zero"]="AYN Loki Zero;5;20"
     ["83E1"]="Lenovo Legion Go;5;30"
-    ["AYANEO_2S"]="Ayaneo 2S;5;30"
+    ["AYANEO_2S"]="Ayaneo 2S;15;28"
     ["AIR_Plus"]="Ayaneo Air Plus;5;28"
     ["Jupiter"]="Steam Deck LCD;3;15"
     ["Galileo"]="Steam Deck OLED;3;15"
@@ -33,54 +46,64 @@ tdp_ranges=(
     ["ROG_Ally_X_RC72LA"]="ROG Ally X;9;30"
 )
 
-# Handle various AMD handhelds
-info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+# Determine device's standard min/max TDP
+TDP_MIN=5 # Default min fallback
+BASE_TDP_MAX=35 # Default max fallback
 
-# Get marketing name and TDP range for the detected device
-device_info="${tdp_ranges[$info_output]}"
-if [ -n "$device_info" ]; then
-    IFS=';' read -r -a info_array <<< "$device_info"
-    marketing_name=${info_array[0]}
-    tdp_min=${info_array[1]}
-    tdp_max=${info_array[2]}
-    echo "Device: $marketing_name detected. Minumum TDP: $tdp_min Watts. Maximum TDP: $tdp_max Watts" >> "$log"
-    TDP_MIN=$tdp_min
-    TDP_MAX=$tdp_max
+device_model=$(batocera-info | awk -F': ' '/^Model:/ {print $2; exit}')
+
+if [[ -v tdp_ranges["$device_model"] ]]; then
+    IFS=';' read -r -a info <<< "${tdp_ranges[$device_model]}"
+    TDP_MIN=${info[1]}
+    BASE_TDP_MAX=${info[2]}
+    echo "Device: ${info[0]} detected. Standard range: ${TDP_MIN}W - ${BASE_TDP_MAX}W." >> "$log"
 else
-    echo "Unknown device detected." >> "$log"
+    firmware_max=$(get_firmware_max_tdp)
+    if [[ -n "$firmware_max" && "$firmware_max" -gt 0 ]]; then
+        BASE_TDP_MAX=$firmware_max
+        echo "Using firmware max of ${BASE_TDP_MAX}W." >> "$log"
+    else
+        echo "Could not read firmware. Using default max of ${BASE_TDP_MAX}W." >> "$log"
+    fi
 fi
 
-# Check if TDP is null or not provided. If so, set to 10w
-if [ -z "$TDP" ]; then
-    TDP=10
-    echo "No TDP detected, using TDP of $TDP Watts" >> "$log"
-fi
+# --- TDP Calculation & Clamping ---
 
-# Align to the TDP_MIN if it's below it
+# Calculate the absolute overclocking ceiling (+20%)
+OC_CEILING=$(awk -v max="$BASE_TDP_MAX" 'BEGIN {printf "%.0f\n", max * 1.20}')
+
+# Use user input, or default to 15W if not provided
+TDP=${TDP_INPUT:-15}
+echo "User input requested: ${TDP}W." >> "$log"
+
+# Clamp the values if needed
 if (( TDP < TDP_MIN )); then
-    echo "Requested TDP of $TDP Watts is below the minimum" >> "$log"
+    echo "Request is below minimum. Clamping to ${TDP_MIN}W." >> "$log"
     TDP=$TDP_MIN
-    echo "Using TDP of $TDP" >> "$log"
+elif (( TDP > OC_CEILING )); then
+    echo "Request exceeds overclock ceiling. Clamping to ${OC_CEILING}W." >> "$log"
+    TDP=$OC_CEILING
 fi
 
-# Cap TDP at TDP_MAX if it exceeds it
-if (( TDP > TDP_MAX )); then
-    echo "Requested TDP of $TDP Watts is above the maximum" >> "$log"
-    TDP=$TDP_MAX
-    echo "Using TDP of $TDP Watts" >> "$log"
-fi
-
-# Calculate WATTS based on TDP
+# --- Apply Settings ---
 WATTS=$((TDP * 1000))
+SLOW_WATTS=$((WATTS * 60 / 100)) # set to 60% of TDP
 
-# Set TDP using ryzenadj
-if /usr/bin/ryzenadj --stapm-limit="${WATTS}" --fast-limit="${WATTS}" --slow-limit="$((WATTS * 80 / 100))" --tctl-temp=95; then
-    echo "TDP of $TDP Watts has been set" >> "$log"
+echo "Applying final TDP: ${TDP}W (STAPM/Fast: ${WATTS}mW, Slow: ${SLOW_WATTS}mW, Temp Limit: 90C)" >> "$log"
+
+if /usr/bin/ryzenadj \
+    --stapm-limit="${WATTS}" \
+    --fast-limit="${WATTS}" \
+    --slow-limit="${SLOW_WATTS}" \
+    --tctl-temp=90; then
+    echo "Successfully set TDP to ${TDP}W." >> "$log"
 else
-    echo "Error setting TDP. Please check the logs for more information." >> "$log"
+    echo "ERROR: ryzenadj command failed. Power limits may not have been applied." >> "$log"
     exit 1
 fi
 
 echo "" >> "$log"
 echo "*** ------------------------------------- ***" >> "$log"
 echo "" >> "$log"
+
+exit 0

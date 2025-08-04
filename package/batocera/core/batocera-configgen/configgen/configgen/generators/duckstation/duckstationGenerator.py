@@ -5,7 +5,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
+from ...batoceraPaths import (
+    BIOS,
+    CACHE,
+    CHEATS,
+    CONFIGS,
+    SAVES,
+    SCREENSHOTS,
+    ensure_parents_and_open,
+    mkdir_if_not_exists,
+)
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -218,12 +227,13 @@ class DuckstationGenerator(Generator):
             settings.add_section("Cheevos")
         # RetroAchievements
         if system.config.get_bool('retroachievements'):
-            username  = system.config.get('retroachievements.username', "")
-            hardcore  = system.config.get('retroachievements.hardcore', "")
-            presence  = system.config.get('retroachievements.richpresence', "")
-            indicator = system.config.get('retroachievements.challenge_indicators', "")
-            leaderbd  = system.config.get('retroachievements.leaderboards', "")
-            token     = system.config.get('retroachievements.token', "")
+            username   = system.config.get('retroachievements.username', "")
+            hardcore   = system.config.get('retroachievements.hardcore', "")
+            presence   = system.config.get('retroachievements.richpresence', "")
+            indicator  = system.config.get('retroachievements.challenge_indicators', "")
+            leaderbd   = system.config.get('retroachievements.leaderboards', "")
+            token      = system.config.get('retroachievements.token', "")
+            unofficial = system.config.get('retroachievements.unofficial', "")
             settings.set("Cheevos", "Enabled",       "true")
             settings.set("Cheevos", "Username",      username)
             settings.set("Cheevos", "Token",         token)
@@ -243,6 +253,10 @@ class DuckstationGenerator(Generator):
                 settings.set("Cheevos", "Leaderboards",  "true")
             else:
                 settings.set("Cheevos", "Leaderboards",  "false")
+            if unofficial == '1':
+                settings.set("Cheevos", "UnofficialTestMode",  "true")
+            else:
+                settings.set("Cheevos", "UnofficialTestMode",  "false")
             #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
             #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
         else:
@@ -282,9 +296,13 @@ class DuckstationGenerator(Generator):
         if not settings.has_section("Folders"):
             settings.add_section("Folders")
         # Set other folder locations too
+        mkdir_if_not_exists(CACHE / "duckstation")
         settings.set("Folders", "Cache", "../../cache/duckstation")
+        mkdir_if_not_exists(SCREENSHOTS)
         settings.set("Folders", "Screenshots", "../../../screenshots")
+        mkdir_if_not_exists(SAVES / "duckstation")
         settings.set("Folders", "SaveStates", "../../../saves/duckstation")
+        mkdir_if_not_exists(CHEATS / "duckstation")
         settings.set("Folders", "Cheats", "../../../cheats/duckstation")
 
         ## [Pad]

@@ -25,47 +25,30 @@ f_usage() {
 # Extract output block for a specific screen
 _get_screen_block() {
     local screen_name="$1"
-    local wlr_output
-    local in_target_screen=0
-    local line
     
     if [ -z "${screen_name}" ]; then
         _log "_get_screen_block: Error: screen_name is empty."
         return 1
     fi
-    
-    wlr_output=$("${WLR_RANDR}" 2>/dev/null) || return 1
-    
-    # Process line by line to extract the target screen block
-    echo "${wlr_output}" | while IFS= read -r line; do
-        # Check if this line starts a new screen block
-        case "${line}" in
-            "${screen_name} "*)
-                in_target_screen=1
-                echo "${line}"
-                ;;
-            *" \"*")
-                # This is another screen header
-                if [ "${in_target_screen}" = "1" ]; then
-                    # We've reached the next screen, stop processing
-                    break
-                fi
-                ;;
-            "  "*)
-                # Indented line - part of current screen block
-                if [ "${in_target_screen}" = "1" ]; then
-                    echo "${line}"
-                fi
-                ;;
-            *)
-                # Non-indented, non-screen-header line
-                if [ "${in_target_screen}" = "1" ]; then
-                    # End of our target screen block
-                    break
-                fi
-                ;;
-        esac
-    done
+
+    "${WLR_RANDR}" 2>/dev/null | awk -v screen="${screen_name}" '
+        # Rule 1: If a line starts with our target screen name, we enter the block.
+        $0 ~ "^" screen " " {
+            in_block = 1
+        }
+        
+        # Rule 2: If we are already in a block, and we find a new screen header
+        # (a line that is NOT indented and NOT our original screen name), we must exit the block.
+        # This rule MUST come before the print rule.
+        in_block && !/^[[:space:]]/ && !($0 ~ "^" screen " ") {
+            in_block = 0
+        }
+
+        # Rule 3: If we are in the block, print the current line.
+        in_block {
+            print
+        }
+    '
 }
 
 _get_current_mode_string() {
@@ -412,13 +395,75 @@ case "${ACTION}" in
         ;;
 
     "setOutput")
-        OUT1_TARGET=$1
-        if [ -z "${OUT1_TARGET}" ]; then 
-            _log "setOutput: No target output specified."
+        TARGET_OUT1=$1
+        TARGET_OUT2=$2
+        TARGET_OUT3=$3
+
+        if [ -z "${TARGET_OUT1}" ]; then 
+            _log "setOutput: Error: No target output specified."
+            echo "Error: At least one output must be specified." >&2
             exit 1
         fi
-        _log "setOutput: Attempting to configure ${OUT1_TARGET} and potentially others."
-        # Implementation would go here
+
+        DESIRED_OUTPUTS="${TARGET_OUT1}"
+        [ -n "${TARGET_OUT2}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT2}"
+        [ -n "${TARGET_OUT3}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT3}"
+        
+        _log "setOutput: Desired active outputs: ${DESIRED_OUTPUTS}"
+
+        # Get a list of all available outputs from the system
+        ALL_OUTPUTS=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
+
+        # Ensure all desired outputs actually exist
+        for target in ${DESIRED_OUTPUTS}; do
+            if ! echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
+                _log "setOutput: Error: Target output '${target}' not found."
+                echo "Error: Output '${target}' not found." >&2
+                exit 1
+            fi
+        done
+
+        set --
+
+        # Iterate through ALL connected outputs
+        for connected_output in ${ALL_OUTPUTS}; do
+            IS_TARGET=0
+            
+            # Check if this connected output is in our DESIRED list
+            for target in ${DESIRED_OUTPUTS}; do
+                if [ "${connected_output}" = "${target}" ]; then
+                    IS_TARGET=1
+                    break
+                fi
+            done
+
+            # Construct the argument based on whether it's a target or not
+            if [ "${IS_TARGET}" -eq 1 ]; then
+                # It's desired: Add --output <name> --on to the list
+                set -- "$@" --output "${connected_output}" --on
+                _log "setOutput: Queuing ON for ${connected_output}"
+            else
+                # It's connected but not desired: Add --output <name> --off
+                set -- "$@" --output "${connected_output}" --off
+                _log "setOutput: Queuing OFF for ${connected_output}"
+            fi
+        done
+
+        # Execute with all the collected arguments
+        _log "Executing: ${WLR_RANDR} $*"
+        if "${WLR_RANDR}" "$@"; then
+            _log "setOutput: Successfully configured outputs."
+        else
+            _log "setOutput: The main wlr-randr command failed."
+            
+            # Fallback: Build a new, simpler argument list
+            set --
+            for target in ${DESIRED_OUTPUTS}; do
+                set -- "$@" --output "${target}" --on
+            done
+            _log "setOutput: Fallback: Trying to enable targets only: ${WLR_RANDR} $*"
+            "${WLR_RANDR}" "$@"
+        fi
         ;;
 
     "setRotation")
@@ -443,7 +488,7 @@ case "${ACTION}" in
         "${WLR_RANDR}" --output "${PSCREEN}" --transform "${WLR_TRANSFORM}"
 
         # --- Check for touchscreen ---
-        TOUCHSCREEN=$(libinput list-devices | awk -F ':' '/Device:/ {dev=$2} /Touch/ {print dev}' | head -n1 | xargs)
+        TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
         if [ -n "${TOUCHSCREEN}" ]; then
             CONFIG_FILE="${HOME}/.config/labwc/rc.xml"
 

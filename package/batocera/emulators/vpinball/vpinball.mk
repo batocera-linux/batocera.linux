@@ -3,9 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on May 31, 2025
+# Version: Commits on Jun 29, 2025
 # uses standalone tree for now
-VPINBALL_VERSION = be2431991b3a184e997950328f6cb62421bb9cfa
+VPINBALL_VERSION = d1924397b31131c233d2cdd1e92632d5941c443b
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -65,6 +65,8 @@ define VPINBALL_INSTALL_TARGET_CMDS
     cp -R $(@D)/buildroot-build/assets $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/scripts $(TARGET_DIR)/usr/bin/vpinball/
     cp -R $(@D)/buildroot-build/shader10.8.0 $(TARGET_DIR)/usr/bin/vpinball/
+    $(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/vpinball/batocera-vpx-scraper.py \
+        $(TARGET_DIR)/usr/bin/batocera-vpx-scraper
 endef
 
 define VPINBALL_EVMAPY

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_PYGAME_VERSION = e3238c736dfbde20d7ee402828ec57d89586d4de
+BATOCERA_PYGAME_VERSION = 44324a3cf678462eb8d87279ac82fd7bed16f295
 RETROTRIVIA_VERSION = 1.3
 BATOCERA_PYGAME_LICENSE = GPLv3
 BATOCERA_PYGAME_SITE = $(call github,lbrpdx,retrotrivia,$(BATOCERA_PYGAME_VERSION))

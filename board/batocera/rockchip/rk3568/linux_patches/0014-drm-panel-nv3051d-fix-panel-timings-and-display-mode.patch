@@ -1,0 +1,39 @@
+From 10b4706c6d238d29d9ff93c3ea8e160b46bd0a03 Mon Sep 17 00:00:00 2001
+From: sydarn <sydarn@proton.me>
+Date: Sun, 31 Dec 2023 12:16:13 +0100
+Subject: [PATCH] drm/panel: nv3051d: fix panel timings and display mode for
+ RK2023
+
+---
+ drivers/gpu/drm/panel/panel-newvision-nv3051d.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-newvision-nv3051d.c b/drivers/gpu/drm/panel/panel-newvision-nv3051d.c
+index 5d115ecd5dd4..9464704d8871 100644
+--- a/drivers/gpu/drm/panel/panel-newvision-nv3051d.c
++++ b/drivers/gpu/drm/panel/panel-newvision-nv3051d.c
+@@ -480,14 +480,14 @@ static const struct drm_display_mode nv3051d_rgxx3_modes[] = {
+ static const struct drm_display_mode nv3051d_rk2023_modes[] = {
+ 	{
+ 		.hdisplay       = 640,
+-		.hsync_start    = 640 + 40,
+-		.hsync_end      = 640 + 40 + 2,
+-		.htotal         = 640 + 40 + 2 + 80,
++		.hsync_start    = 640 + 64,
++		.hsync_end      = 640 + 64 + 2,
++		.htotal         = 640 + 64 + 2 + 80,
+ 		.vdisplay       = 480,
+-		.vsync_start    = 480 + 18,
+-		.vsync_end      = 480 + 18 + 2,
+-		.vtotal         = 480 + 18 + 2 + 4,
+-		.clock          = 24150,
++		.vsync_start    = 480 + 2,
++		.vsync_end      = 480 + 2 + 4,
++		.vtotal         = 480 + 2 + 4 + 3,
++		.clock          = 23040,
+ 		.flags          = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+ 	},
+ };
+-- 
+2.34.1
+

@@ -263,6 +263,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	# Used for screen rotation (SDL, Retroarch, Moonlight)
 	select BR2_PACKAGE_ROCKCHIP_RGA    if BR2_PACKAGE_BATOCERA_TARGET_RK3326 || \
 	                                      BR2_PACKAGE_BATOCERA_TARGET_RK3128 || \
+										  BR2_PACKAGE_BATOCERA_TARGET_RK3568 || \
 										  BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 										  BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
@@ -295,6 +296,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_FLATPAK				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # flatpak app packaging system
 	select BR2_PACKAGE_BAUH					if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # flatpak gui
 	select BR2_PACKAGE_RYZENADJ				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # ryzen apu configuration
+	select BR2_PACKAGE_RYZEN_SMU			if BR2_PACKAGE_RYZENADJ # ryzen smu kernel module
 	select BR2_PACKAGE_SYNCTHING				# sync files across multiple batoceras
 	select BR2_PACKAGE_RCLONE				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # sync files in the cloud (require x86_64)
 	select BR2_PACKAGE_BTOP					# htop alternative
@@ -381,6 +383,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	 								   !BR2_PACKAGE_BATOCERA_TARGET_H3		&& \
 									   !BR2_PACKAGE_BATOCERA_TARGET_RK3326	&& \
 									   !BR2_PACKAGE_BATOCERA_TARGET_RK3128	&& \
+									   !BR2_PACKAGE_BATOCERA_TARGET_RK3568	&& \
 									   !BR2_PACKAGE_BATOCERA_TARGET_ODIN	&& \
 									   !BR2_PACKAGE_BATOCERA_TARGET_SM8250  && \
 									   !BR2_PACKAGE_BATOCERA_TARGET_SM8550  && \
@@ -392,7 +395,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 												BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 												BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
-	select BR2_PACKAGE_RTL88X2BU		if BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 # kernels 6.12+ should now use rtw88
+	select BR2_PACKAGE_RTL88X2BU		if BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 || BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # kernels 6.12+ should now use rtw88
 	select BR2_PACKAGE_RTL8723BU		if BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 || BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_RTL8188EU		if BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 || BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_RTL8821CU		if BR2_PACKAGE_BATOCERA_TARGET_S922X   || \
@@ -418,7 +421,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_AIC8800      if BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 	                                   BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
-	#select BR2_PACKAGE_RTL8852AU    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_RTL8852AU    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	# ethernet
 	#select BR2_PACKAGE_R8125		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -582,7 +585,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_S905
 	default "rockchip/rk3399/orangepi-800 rockchip/rk3399/rg552 rockchip/rk3399/rockpro64 rockchip/rk3399/rock960 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4 rockchip/rk3399/nanopi-m4v2 rockchip/rk3399/hugsun-x99" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-	default "rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5b-plus rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
+	default "rockchip/rk3588/coolpi-4b rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5b-plus rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
 	default "rockchip/rk3588-sdio/orangepi-5-ultra rockchip/rk3588-sdio/orangepi-5-max" if BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 	default "rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
@@ -1211,7 +1214,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_VICE	# ALL
 
 	# Commodore Amiga
-	select BR2_PACKAGE_AMIBERRY		if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+	select BR2_PACKAGE_AMIBERRY		if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && (!BR2_riscv || !BR2_RISCV_64) # No dynamic recompiler for riscv
 	select BR2_PACKAGE_FSUAE		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_LIBRETRO_PUAE	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3
 	select BR2_PACKAGE_LIBRETRO_PUAE2021	if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -1268,8 +1271,8 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Commander X16
 	select BR2_PACKAGE_X16EMU    # ALL
 
-	# CLK - Oric Atmos and other old computers
-	select BR2_PACKAGE_CLK    if BR2_PACKAGE_HAS_LIBGL
+	# CLK - Oric Atmos and other old computers (requires OpenGL 3.2 or higher)
+	select BR2_PACKAGE_CLK    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_SM8550 || BR2_PACKAGE_BATOCERA_TARGET_SM8250
 
 	help
 	  Old computers
@@ -1402,7 +1405,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_SHADPS4			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# Wii U
-	select BR2_PACKAGE_CEMU				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_SM8550
+	select BR2_PACKAGE_CEMU				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # BR2_PACKAGE_BATOCERA_TARGET_SM8550 (aarch64 currently crashes)
 
 	# Pinball
 	select BR2_PACKAGE_VPINBALL			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY  || \
@@ -1454,12 +1457,13 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_BEETLE_VB		# ALL
 
 	# Sega 8-bit/16-range (Mark III / Master System, Game Gear, Genesis / Megadrive, SegaCD / MegaCD, 32X)
-	select BR2_PACKAGE_LIBRETRO_PICODRIVE		# ALL
-	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX	# ALL
-	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_LIBRETRO_BLASTEM		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_LIBRETRO_SMSPLUS_GX		# ALL
-	select BR2_PACKAGE_LIBRETRO_GEARSYSTEM		# ALL
+	select BR2_PACKAGE_LIBRETRO_PICODRIVE		          # ALL
+	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX	          # ALL
+	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_EXPANDED    # ALL
+	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX_WIDE	      if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_LIBRETRO_BLASTEM		              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_LIBRETRO_SMSPLUS_GX		          # ALL
+	select BR2_PACKAGE_LIBRETRO_GEARSYSTEM		          # ALL
 
 	# Atari 2600
 	select BR2_PACKAGE_LIBRETRO_STELLA		# ALL

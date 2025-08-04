@@ -336,6 +336,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-vircon32/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-ps2/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-bennugd/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-genesisplusgx-expanded/Config.in"
      endmenu
   endmenu
 
@@ -579,6 +580,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wireguard-service/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/labwc/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wtype/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/ryzen-smu/Config.in"
 endmenu
 
 menu "Cases"

@@ -14,7 +14,7 @@ endif
 
 define FIRMWARE_ORANGEPI_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/lib/firmware
-	rsync -a --checksum $(@D)/ $(TARGET_DIR)/lib/firmware/
+	rsync -au --checksum $(@D)/ $(TARGET_DIR)/lib/firmware/
 	# symlinks for compatibility
 	ln -sf /lib/firmware/fw_syn43711a0_sdio.bin \
 	    $(TARGET_DIR)/lib/firmware/ap6275p/fw_syn43711a0_sdio.bin

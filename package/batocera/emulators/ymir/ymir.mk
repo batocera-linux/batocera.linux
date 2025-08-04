@@ -16,8 +16,8 @@
 # ymir
 #
 ################################################################################
-# Version: Commits on Jun 19, 2025
-YMIR_VERSION = bfe7bbdc45abe271b801cc2700a0d3b34f9b44f0
+
+YMIR_VERSION = v0.1.6
 YMIR_SITE = https://github.com/StrikerX3/Ymir
 YMIR_SITE_METHOD=git
 YMIR_GIT_SUBMODULES=YES
@@ -42,6 +42,7 @@ YMIR_CONF_OPTS += -DYmir_ENABLE_SANDBOX=OFF
 YMIR_CONF_OPTS += -DYmir_ENABLE_TESTS=OFF
 YMIR_CONF_OPTS += -DYmir_ENABLE_YMDASM=OFF
 YMIR_CONF_OPTS += -DYmir_INCLUDE_PACKAGING=OFF
+YMIR_CONF_OPTS += -DYmir_ENABLE_IPO=ON
 
 ifeq ($(BR2_X86_CPU_HAS_AVX2),y)
     YMIR_CONF_OPTS += -DYmir_AVX2=ON

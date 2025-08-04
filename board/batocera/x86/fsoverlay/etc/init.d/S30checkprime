@@ -5,7 +5,7 @@ mkdir -p "/userdata/system/logs"
 
 display_log="/userdata/system/logs/display.log"
 nvidia_log="/var/log/nvidia.log"
-amd_log="/userdata/system/logs/amd.log"
+amd_log="/var/log/amd.log"
 
 case "$1" in
   start)
@@ -14,7 +14,11 @@ case "$1" in
     nvidia_conditions_met=false
 
     if [ "$gpu_count" -eq 2 ]; then
-        echo "Two GPUs detected in the system" >> "$display_log"
+        splash_set=$(batocera-settings-get splash.screen.enabled)
+        if [ "$splash_set" = "1" ]; then
+            echo "Two GPUs detected in the system" >> "$display_log"
+        else
+            echo "Two GPUs detected in the system" > "$display_log"
         echo "Setting best primary GPU..." >> "$display_log"
 
         # Check for NVIDIA GPUs
@@ -34,19 +38,19 @@ case "$1" in
         if [ "$nvidia_conditions_met" = "false" ]; then
             radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
             if [ "$radeon_prime" = "false" ]; then
-                echo "'radeon-prime' manually set to false, skipping checks" > "$amd_log"
+                echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
             else
                 mapfile -t all_amd_gpus < <(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
                 gpu_count=${#all_amd_gpus[@]}
                 gpu_name=""
                 if [ "$gpu_count" -eq 0 ]; then
-                    echo "No AMD/ATI GPU found." > "$amd_log"
+                    echo "No AMD/ATI GPU found." >> "$amd_log"
                 elif [ "$gpu_count" -eq 1 ]; then
                     gpu_name="${all_amd_gpus[0]}"
-                    echo "Found a single AMD/ATI GPU: $gpu_name" > "$amd_log"
+                    echo "Found a single AMD/ATI GPU: $gpu_name" >> "$amd_log"
                 elif [ "$gpu_count" -ge 2 ]; then
                     # Two or more found. Log all and select the second GPU.
-                    echo "Found $gpu_count AMD/ATI GPUs. Selecting the second entry for PRIME." > "$amd_log"
+                    echo "Found $gpu_count AMD/ATI GPUs. Selecting the second entry for PRIME." >> "$amd_log"
                     printf "    - %s\n" "${all_amd_gpus[@]}" >> "$amd_log"
                     gpu_name="${all_amd_gpus[1]}"
                     echo "Setting AMD/ATI Prime to use GPU: $gpu_name" >> "$amd_log"
@@ -64,7 +68,7 @@ case "$1" in
             fi
         fi
     else
-        echo "Only one GPU detected in the system" > "$display_log"
+        echo "Only one GPU detected in the system" >> "$display_log"
     fi
     ;;
   stop)

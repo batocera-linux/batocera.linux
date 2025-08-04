@@ -1,0 +1,40 @@
+From 6dc776df6e601d83129c6519d1387f94d6996232 Mon Sep 17 00:00:00 2001
+From: Danil Zagoskin <z@gosk.in>
+Date: Tue, 16 Apr 2024 02:28:56 +0300
+Subject: [PATCH] arm64: dts: rockchip: add support for mali bifrost driver
+
+---
+ arch/arm64/boot/dts/rockchip/rk356x-base.dtsi | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi b/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
+index 0ee0ada6f0ab..6ef97c2802c3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
+@@ -559,9 +559,22 @@ gpu: gpu@fde60000 {
+ 		interrupt-names = "job", "mmu", "gpu";
+ 		clocks = <&scmi_clk 1>, <&cru CLK_GPU>;
+ 		clock-names = "gpu", "bus";
++		resets = <&cru SRST_GPU>;
+ 		#cooling-cells = <2>;
+ 		power-domains = <&power RK3568_PD_GPU>;
+-		status = "disabled";
++		power_policy = "always_on";
++		status = "disabled";
++		power_model@0 {
++			compatible = "arm,mali-simple-power-model";
++			static-coefficient = <100000>;
++			dynamic-coefficient = <953>;
++			ts = <(-108890) 63610 (-1355) 20>;
++			thermal-zone = "gpu-thermal";
++		};
++		power_model@1 {
++			compatible = "arm,mali-g52-power-model";
++			scale = <5>;
++		};
+ 	};
+ 
+ 	vpu: video-codec@fdea0400 {
+-- 
+2.34.1
+
