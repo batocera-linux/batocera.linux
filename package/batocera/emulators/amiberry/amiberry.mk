@@ -32,6 +32,8 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	cp -prn $(@D)/buildroot-build/controllers/gamecontrollerdb.txt \
 	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/saves/amiga/nvram
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/plugins
+
 
 	# Copy AROS (open source alternative BIOS)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga
@@ -44,7 +46,7 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/amiberry
 	cp -pr $(@D)/buildroot-build/whdboot $(TARGET_DIR)/usr/share/amiberry/
 	cp -pr $(@D)/buildroot-build/data $(TARGET_DIR)/usr/share/amiberry/
-	cp -p $(@D)/data/AmigaTopaz.ttf $(TARGET_DIR)/usr/share/amiberry/
+	cp -p $(@D)/data/AmigaTopaz.ttf $(TARGET_DIR)/usr/share/amiberry/data
 endef
 
 define AMIBERRY_EVMAP
