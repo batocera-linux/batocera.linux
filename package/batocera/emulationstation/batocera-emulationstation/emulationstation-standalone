@@ -15,6 +15,16 @@ touch "${REBOOT_FLAG}" || exit 1
 # Environment
 export HOME=/userdata/system
 
+# Picom for Xorg
+if [ -z "$WAYLAND_DISPLAY" ] && which picom > /dev/null 2>&1; then
+    if ! pgrep -x picom > /dev/null; then
+        echo "Standalone: Starting Picom compositor for transparent overlays..." >> "$log"
+        picom -b --config /etc/xdg/picom/picom.conf >> "$log" 2>&1
+    else
+        echo "Standalone: Picom compositor is already running." >> "$log"
+    fi
+fi
+
 _wait_for_compositor() {
     # If not in a Wayland session, no need to wait.
     if [ -z "$WAYLAND_DISPLAY" ]; then return 0; fi

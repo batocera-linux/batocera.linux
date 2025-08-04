@@ -51,6 +51,7 @@
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
+- MangiHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
 - PCSX2 variant for capable aarch64 devices
 - Removed Libretro-Puae2021
@@ -141,6 +142,7 @@
 - LabWC to 0.20.1
 - Linux Firmware to 20260622
 - Mesa3D to 26.1.6
+- MangoHud to v0.8.4
 - Nvidia Open Production driver to 610.43.03
 - Nvidia 580 Legacy driver to 580.173.02
 - QT to 6.11.1
