@@ -17,7 +17,7 @@ index c4ef196ba4..629c1ade67 100644
 +                if (emuenv.display.vblank_thread) {
 +                    emuenv.display.vblank_thread->join();
 +                }
-+                return false;
++                exit(0);
 +            }
 +            
              const auto get_sce_ctrl_btn_from_scancode = [&emuenv](const SDL_Scancode scancode) {
