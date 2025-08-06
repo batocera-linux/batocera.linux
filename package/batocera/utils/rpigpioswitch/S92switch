@@ -14,7 +14,7 @@ fi
 case "$1" in
     start)
         if [ -n "$powerswitch" ]; then
-            $RUN start "$powerswitch"
+            $RUN start "$powerswitch" &
         fi
     ;;
 
