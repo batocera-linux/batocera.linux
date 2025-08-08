@@ -17,10 +17,13 @@ define PIRONMAN5_INSTALL_OVERLAY
     $(INSTALL) -D -m 0755 $(@D)/bin/pironman5 $(TARGET_DIR)/usr/bin/
 	mkdir -p $(BINARIES_DIR)/pironman5/
 	$(INSTALL) -D -m 0644 $(@D)/sunfounder-pironman5*.dtbo $(BINARIES_DIR)/pironman5/
-	# move the config.json
+	# copy our default config.json
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/pironman5
-	mv $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/pironman5/config.json \
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/pironman5/config.json \
 	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/pironman5/
+	# create a symbolic link to userdata to avoid multiple config.json files
+	ln -sf /userdata/system/configs/pironman5/config.json \
+	    $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/pironman5/config.json
 endef
 
 PIRONMAN5_POST_INSTALL_TARGET_HOOKS = PIRONMAN5_INSTALL_OVERLAY

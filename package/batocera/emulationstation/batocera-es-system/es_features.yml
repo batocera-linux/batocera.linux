@@ -7208,14 +7208,43 @@ amiberry:
             prompt:      REMOVE INTERLACE ARTIFACTS
             description: Fix flickering in a static screen like Workbench.
             choices:
-                "ON":                          true
-                "OFF":                         false
+                "OFF": false
+                "ON":  true
         amiberry_auto_height:
             prompt:      AUTO HEIGHT
             description: Resize automatically screen height.
             choices:
-                "ON":                          true
-                "OFF":                         false
+                "OFF": false
+                "ON":  true
+        amiberry_virtual_keyboard:
+            group: KEYBOARD OPTIONS
+            prompt:      VIRTUAL KEYBOARD
+            description: Enable the Virtual Keyboard.
+            choices:
+                "OFF": 0
+                "ON":  1
+        amiberry_hires_keyboard:
+            group: KEYBOARD OPTIONS
+            prompt:      LARGER KEYBOARD
+            description: High-Resolution Keyboard, which is larger and might be easier to see.
+            choices:
+                "OFF": 0
+                "ON":  1
+        amiberry_vkbd_language:
+            group: KEYBOARD OPTIONS
+            prompt:      KEYBOARD LAYOUT
+            description: This setting controls the default language layout for the virtual keyboard.
+            choices:
+                "US (Default)": US
+                "UK":           UK
+                "FR":           FR
+                "DE":           DE
+        amiberry_vkbd_transparency:
+            group: KEYBOARD OPTIONS
+            prompt:      KEYBOARD TRANSPARENCY
+            description: Set the on-screen keyboard transparency (0-100%).
+            preset: slider
+            preset_parameters: 0 100 5 60
 
 cannonball:
   shared: [powermode, tdp, videomode]
@@ -9408,7 +9437,7 @@ ppsspp:
             description: Uses hardware to make curves.
             choices:
                 "Off": 0
-                "On":  1    
+                "On":  1
         texture_scaling_type:
             submenu: TEXTURE SCALING
             prompt: TEXTURE UPSCALING TYPE
@@ -9417,7 +9446,7 @@ ppsspp:
                 "xBRZ (Default)":   0
                 "Hybrid":           1
                 "Bicubic":          2
-                "Hybrid + Bicubic": 3        
+                "Hybrid + Bicubic": 3
         texture_scaling_level:
             submenu: TEXTURE SCALING
             prompt: TEXTURE UPSCALING LEVEL

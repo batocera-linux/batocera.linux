@@ -20,3 +20,6 @@ SUBSYSTEM=="input", ATTRS{name}=="Xbox Wireless Controller Consumer Control", MO
 
 # detected as a joystick (but having a single button) when plugged via usb
 SUBSYSTEM=="input", ATTRS{name}=="Microsoft Xbox Chatpad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0"
+
+# KADE USB
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="KADE USB Keyboard Encoder", ENV{ID_INPUT_KEYBOARD}=="1", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_JOYSTICK}="1"
