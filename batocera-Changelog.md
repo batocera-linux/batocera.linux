@@ -144,7 +144,7 @@
 - Vice to 3.9
 - Vita3k to 3rd of March 2025 build
 - Xash3d-fwgs to 20th of Feb build
-- Xemu to v0.8.73
+- Xemu to v0.8.96
 - Xenia to build 1d7973a (June 10, 2025)
 ### System
 - Alsa stack to 1.2.14
