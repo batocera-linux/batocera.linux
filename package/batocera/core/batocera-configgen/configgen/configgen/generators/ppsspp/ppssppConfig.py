@@ -190,7 +190,7 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         iniConfig.set("Achievements", "AchievementsUnofficial", str(system.config.get_bool("retroachievements.unofficial", False)))
         iniConfig.set("Achievements", "AchievementsSoundEffects", "True")
         iniConfig.set("Achievements", "AchievementsEnable", "True")
-        writeRetroAchievements(str(system.config.get_str("retroachievements.token", None)))
+        writeRetroAchievements(system.config.get_str("retroachievements.token", ""))
     else:
         iniConfig.set("Achievements", "AchievementsEnable", "False")
         iniConfig.set("Achievements", "AchievementsChallengeMode", "False")
