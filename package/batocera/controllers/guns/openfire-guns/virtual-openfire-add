@@ -46,7 +46,13 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
     # Foot pedal / C                    : BTN_SIDE
     # Alt pedal                         : BTN_EXTRA
     # Start                             : KEY_1
+    # Start (P2)                        : KEY_2
+    # Start (P3)                        : KEY_4
+    # Start (P4)                        : KEY_4
     # Select                            : KEY_5
+    # Select (P2)                       : KEY_6
+    # Select (P3)                       : KEY_7
+    # Select (P4)                       : KEY_8
     # D-pad up                          : KEY_UP
     # D-pad down                        : KEY_DOWN
     # D-pad left                        : KEY_LEFT
@@ -56,7 +62,7 @@ if test "${NDEVS}" = 2
 then
     DEV1=$(echo "${CHILDREN}" | head -1           | cut -f 1)
     DEV2=$(echo "${CHILDREN}" | head -2 | tail -1 | cut -f 1)
-    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield btn:side btn:right --map yield key:1 btn:middle --map yield key:5 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="OpenFIRE light gun" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve --input "${DEV1}" "${DEV2}" persist=exit --map yield btn:middle btn:2 --map yield btn:side btn:right --map yield key:1 btn:middle --map yield key:2 btn:middle --map yield key:3 btn:middle --map yield key:4 btn:middle --map yield key:5 btn:1 --map yield key:6 btn:1 --map yield key:7 btn:1 --map yield key:8 btn:1 --map yield key:up btn:5 --map yield key:down btn:6 --map yield key:left btn:7 --map yield key:right btn:8 --output name="OpenFIRE light gun" >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 else
     unlockAndExit 1
