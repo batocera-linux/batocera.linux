@@ -21,47 +21,57 @@
 # inital idea and inspired by brunoeduardobrasil, 07/19/2025 cyperghost aka crcerror
 # ec-codes: ec-0 okay, ec-1 error, ec-10 parameter l used
 # ec-11 archives not supported for extraction, ec-12 archives not supported for showing content
-# ec-21 to 28 -- file extraction error zip rar 7z gz xy tar tar.xz tar.gz
+# ec-21 to 28 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz
 
 # Is pcmanfm is active then use yad as output. test -t will not work because pcmanfm creates a virtual terminal
 pgrep pcmanfm >/dev/null && TERMINAL=0 || TERMINAL=1
 ret=0
 
-get_extension () {
-    FILENAME="$(basename "${1,,}")"
-    for EXT in tar.gz tar.xz tar gz xz zip rar 7z; do
-        [[ "${FILENAME}" =~ ^.*\."$EXT"$ ]] && { echo $EXT; return 0; }
-    done
-    return 1
-}
 list_archive () {
-    # We try just to obtain the file names with minimal filters
-    # For unzip -Z1, unrar lb, 7zr l -ba ... and some awk/sed tools
+    # We obtain the file names, dirs, date+time and size with minimal filters, unzip -Z1, unrar lb, 7zr l -ba ... and some awk magic
+    # 7z and iso play again the rules and use empty strings for dirs or uncompressed files, so NF changes and we need to check if there are digits
     case "$1" in
-        zip) readarray -t array < <(unzip -Z1 "$2") ;;
-        rar) readarray -t array < <(unrar lb "$2") ;;
-        7z)  readarray -t array < <(7zr l -ba "$2" | awk '{$1=$2=$3=$4=""; print $0}' |  sed 's/^[ ]*[0-9]*[ ]//') ;;
-        tar) readarray -t array < <(tar -tvf "$2" | awk '{ for(i=6; i<NF; ++i) printf $i" "; print $NF }') ;;
-        *)   [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Archive type '$1' is not yet supported.\nFailed to open '$2'"; return 12; }
-             [[ $TERMINAL -eq 1 ]] && { echo "Error: Archive type '$1' is not yet supported. Failed to open '$2'"; return 12; }
+        *.zip) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        *.iso) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=4; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        *.rar) readarray -t array < <(printf "FALSE\n%s\nna\nna\n" $(unrar lb "$FILE")) ;;
+        *.7z)  readarray -t array < <(7z l -ba "$FILE" | awk '{ print "FALSE"; for(i=5; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        # Unlike gzip is xy only compression formats for single files, so always open with tar extension and do not use the single compression types
+        *.tar) readarray -t array < <(tar -tvf "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;;
+        *.tar.gz|*.tgz) readarray -t array < <(tar -tvzf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;;
+        *.gz) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2;; }') ;;
+        *.tar.xz) readarray -t array < <(tar -tvJf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else $3; print $4, $5; }') ;; 
+        *) return 12
     esac
 
     # Just output for CLI as list - usefull for further scripting
-    [[ "${3}" == "l" ]] && { printf '%s\n' "${array[@]}"; return 10; }
-
-    # Rebuild array with a second column to handle files in yad, set to true if you want checkmarks setted
-    readarray -t array <<< $(printf 'FALSE\n%s\n' "${array[@]}")
+    [[ "${2}" == "l" ]] && { printf '%s!Z#%s!Z#%s%s\n' "${array[@]}" | awk -F!Z# '{ print $2 }'; return 10; }
 
     #Options needs to be added to PCmanFM "file-roller --open"
-    readarray -t files <<< $(yad --title="Extract Files" --list --checklist --print-column=2 --separator= --column=Extract:chk --column=Filename:text "${array[@]}" || echo "ABORT" )
-    [[ ${#files[@]} -eq 0 || ${files} == "ABORT" ]] && return 1 #Canceld or no file ticked
-    return 0
+    readarray -t files <<< $(yad --title="Extract Files" --list --checklist --print-column=2 --separator= --column=Extract:chk --column=Filename:text --column=Size:text --column=Date:text "${array[@]}")
+    [[ -z "${files[0]}" ]] && return 1 || return 0 # No file ticked or Cancel pressed
+}
+
+extract_archive () {
+    case  "$1" in
+        # Multiple dotted extensions at first
+        *.tar.xz) tar -xJf "$FILE" "${files[@]}" -C "$DEST" || return 27 ;;
+        *.tar.gz|*.tgz) tar -xzf "$FILE" "${files[@]}" -C "$DEST" || return 28 ;;
+        # Single dotted extensions later
+        # 7z is better to handle zip files, 7z extracts all files from selected dir
+        #*.zip) unzip -o "$FILE" "${files[@]}" -d "$DEST" || return 21 ;;
+        *.zip) 7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 21 ;;
+        *.rar) unrar x "$FILE" "${files[@]}" "$DEST/" || return 22 ;;
+        *.7z)  7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 23 ;;
+        *.gz)  7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
+        *.iso) 7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 25 ;;
+        *.tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" || return 26 ;;
+        *) return 11
+    esac
 }
 
 case "$1" in
     x|X) #for CLI as universal extraction tool
         FILE="$2"; DEST="$3"
-        EXT=$(get_extension "${FILE}") || { echo "Error: Archive type: '$EXT' is not yet supported. Failed to open '$FILE'"; exit 11; }
         [[ -f "$FILE" ]] || { echo "Error! Archive '$FILE' not found"; exit 1; }
         if [[ -z "$DEST" ]]; then
             FILENAME="$(basename "${FILE%.*}")"
@@ -75,23 +85,23 @@ case "$1" in
                 *)   echo "...Aborted!"; exit 1
             esac
         fi
-        [[ -d "$DEST" ]] || { echo "Error! Destionation directory '$DEST' not found"; exit 1; }
+        [[ -d "$DEST" ]] && extract_archive "${FILE,,}" || ret=3
     ;;
     --extract)
         FILE="$2"
-        EXT=$(get_extension "${FILE}") || ret=11
         DEST=$(yad --title "Choose destination folder" --file --directory) || exit 1
+        extract_archive "${FILE,,}" || ret=$?
     ;;
     --extract-to)
         FILE="$3"
-        EXT=$(get_extension "${FILE}") || ret=11
         DEST="${2/file:\/\/}"
+        extract_archive "${FILE,,}" || ret=$?
     ;;
     --open|open|l|L)
         FILE="$2"
         DEST="$(readlink -f "$(dirname "${FILE}")")"
-        EXT=$(get_extension "${FILE}") || ret=11
-        list_archive "${EXT,,}" "$FILE" "${1,,}" || exit $?
+        list_archive "$(basename "${FILE,,}")" "${1,,}" || exit $?
+        extract_archive "$(basename "${FILE,,}")" || ret=$?
     ;;
     --add)
         # We remove $0 and $1, create filename.zip if single dir/file, create subdirname.zip for several files/dirs, we need the work-dir to have the relative pathes
@@ -104,32 +114,29 @@ case "$1" in
         FILE=("${FILE[@]/*\/}")   #strip pathes to avoid to build archives with absolue pathes
         zip -q -r "$DEST" "${FILE[@]}" && { yad --title "Created zip" --text "Created '$(readlink -f $DEST)' and added ${#FILE[@]} files:\n$(printf '%s\n' "${FILE[@]}")"; exit 0; } || exit 1
     ;;
-   *)   [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 1; }
+   *) ret=2
+esac
+
+case $ret in
+    0|1) true ;;
+    2) # Action not defined
+        [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 2; }
         echo "Usage: $(basename "$0") <SWITCHES> [ARCHIVEFILE] {DESTINATION-DIR}"; echo
         echo "    x: extraction of current archivfile"
         echo "    l: list archive content"; echo
-        echo "Supported archives for extraction: zip 7z rar tar gz xz tar.gz tar.xz"
-        echo "Supported archives for list/open : zip 7z rar tar"; echo
+        echo "Supported archives for extraction: zip 7z rar tar gz iso tar.gz/tgz tar.xz"
+        echo "Supported archives for list/open : zip 7z rar tar gz iso tar.gz/tgz tar.xz"; echo
         echo "error-codes/return codes:"
-        echo "  ec-0 no error, ec-10 parameter 'l', okay -- ec-1 general error"
+        echo "  ec-0 no error, ec-10 parameter 'l', okay -- ec-1 general error -- ec-2 unknown action"
         echo "  ec-11 to 12  -- archive type not supported for extraction, listing"
-        echo "  eec-21 to 28 -- file extraction error zip rar 7z gz xy tar tar.xz tar.gz";echo
-        exit 1
+        echo "  eec-21 to 28 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz";echo
+    ;;
+    3)  echo "Error! Destionation directory '$DEST' not found" ;; #CLI Destination dir not found
+    11|12) # Extension not supported for extraction or listing
+        [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Archive type: '${FILE##*.}' is not yet supported.\nFailed to open '$FILE'"; }
+        [[ $TERMINAL -eq 1 ]] && { echo "Error: Archive type: '${FILE##*.}' is not yet supported. Failed to open '$FILE'"; }
+    ;;
+   2[1-8]) echo "Extraction error for archive type: $ret" ;;
 esac
-
-case $EXT in
-    zip) unzip "$FILE" "${files[@]}" -d "$DEST" || ret=21;;
-    rar) unrar x "$FILE" "${files[@]}" "$DEST/" || ret=22;;
-    7z)  7zr x "$FILE" "${files[@]}" -o"$DEST" || ret=23;;
-    gz)  gunzip -c "$FILE" > "$DEST/$(basename "${FILE%.*}")" || ret=24 ;;
-    xz)  unxz -c "$FILE" > "$DEST/$(basename "${FILE%.*}")" || ret=25;;
-    tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" || ret=26;;
-    # Multiple TAR variants
-    tar.xz) tar -xJf "$FILE" -C "$DEST" || ret=27;;
-    tar.gz) tar -xzf "$FILE" -C "$DEST" || ret=28;;
-    *)   ret=11
-         [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Archive type: '$EXT' is not yet supported.\nFailed to open '$FILE'"; }
-         [[ $TERMINAL -eq 1 ]] && { echo "Error: Archive type: '$EXT' is not yet supported. Failed to open '$FILE'"; }
-    esac
-
+echo "Exit with code: $ret"
 exit $ret
