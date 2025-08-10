@@ -1,36 +1,51 @@
 ################################################################################
 #
-# batocera triggerhappy
+# batocera-triggerhappy
 #
 ################################################################################
 
-BATOCERA_TRIGGERHAPPY_VERSION = 1.1
+BATOCERA_TRIGGERHAPPY_VERSION = 1.2
 BATOCERA_TRIGGERHAPPY_LICENSE = GPL
 BATOCERA_TRIGGERHAPPY_DEPENDENCIES = triggerhappy
 BATOCERA_TRIGGERHAPPY_SOURCE=
 
+BATOCERA_TRIGGERHAPPY_SOURCE_PATH = \
+    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy
+
 define BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 	mkdir -p $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	mkdir -p $(BINARIES_DIR)/batocera-target/etc/init.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys.conf          $(TARGET_DIR)/etc/triggerhappy/triggers.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_disabled.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/triggerhappy.service  $(BINARIES_DIR)/batocera-target/etc/init.d/S50triggerhappy
+	cp $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/multimedia_keys.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/multimedia_keys_disabled.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	install -m 0755 $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/triggerhappy.service \
+	    $(BINARIES_DIR)/batocera-target/etc/init.d/S50triggerhappy
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3326_CONFIG
-    cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3326/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
+    cp -v $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/rk3326/*.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3399_CONFIG
-	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3399/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
+	cp -v $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/rk3399/*.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_RK3128_CONFIG
-	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/rk3128/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
+	cp -v $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/rk3128/*.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
-	cp -v $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/x86_64/*.conf      $(TARGET_DIR)/etc/triggerhappy/triggers.d/
+	cp -v $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/x86_64/*.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d/
+endef
+
+define BATOCERA_TRIGGERHAPPY_INSTALL_SM8250_CONFIG
+	cp -v $(BATOCERA_TRIGGERHAPPY_SOURCE_PATH)/conf/sm8250/*.conf \
+	    $(TARGET_DIR)/etc/triggerhappy/triggers.d/
 endef
 
 BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
@@ -49,6 +64,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_X86_64_CONFIG
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_SM8250_CONFIG
 endif
 
 $(eval $(generic-package))
