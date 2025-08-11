@@ -21,14 +21,19 @@ def batocera_model():
     # Generic check for modern joystick ring LEDs from ayaneo-platform/ayn-platform
     if glob.glob('/sys/class/leds/*:rgb:joystick_rings/multi_intensity'):
         return "rgb"
-
-    # Fallback checks for other known hardware
+    # Legion Go S check
+    l = '/sys/class/leds/go_s:rgb:joystick_rings/effect'
+    if os.path.exists(l):
+        return("legiongos")
+    # Standard RGB check
     l = '/sys/class/leds/multicolor:chassis/multi_intensity'
     if os.path.exists(l):
         return("rgb")
+    # Addressable RGB check
     c = glob.glob('/sys/class/leds/l:b?')
     if c:
         return("rgbaddr")
+    # PWM check
     c = glob.glob('/sys/class/pwm/pwmchip*/device/name')
     for t in c:
         with open (t) as f:
@@ -65,6 +70,134 @@ def batoconf_color():
         print (f"batocera.conf said led.colour = {r} {g} {b}")
     return [ r, g, b ]
 
+
+####################
+# Handhelds that use the Lenovo Legion Go S interface
+class legiongosled(object):
+    def __init__(self):
+        self.bpath           = '/sys/class/leds/go_s:rgb:joystick_rings/'
+        self.effect_file     = self.bpath + 'effect'
+        self.mode_file       = self.bpath + 'mode'
+        self.speed_file      = self.bpath + 'speed'
+        # NOTE: The following are standard kernel LED class files, assumed to exist
+        self.color_file      = self.bpath + 'multi_intensity'
+        self.brightness_file = self.bpath + 'brightness'
+        self.max_brightness  = self.bpath + 'max_brightness'
+
+        # Per documentation, mode must be 'custom' for Linux control
+        try:
+            with open(self.mode_file, 'w') as f:
+                f.write('custom')
+            if DEBUG:
+                print("Set Legion Go S LED mode to 'custom'")
+        except Exception as e:
+            if DEBUG:
+                print(f"Could not set Legion Go S mode: {e}")
+
+    def set_color (self, rgb):
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
+            print (f'Error Color {rgb} is invalid')
+            return
+
+        # Always ensure the LEDs are on, unless explicitly turned off
+        self.set_brightness_conf()
+
+        try:
+            if rgb == "PULSE":
+                if DEBUG: print('Set effect to: breathe')
+                with open (self.effect_file, 'w') as p: p.write('breathe')
+                return
+            elif rgb == "RAINBOW":
+                if DEBUG: print('Set effect to: rainbow')
+                with open (self.effect_file, 'w') as p: p.write('rainbow')
+                return
+            elif rgb == "OFF":
+                self.turn_off()
+                return
+
+            # For static colors, set effect to monocolor first
+            if DEBUG: print('Set effect to: monocolor')
+            with open (self.effect_file, 'w') as p: p.write('monocolor')
+
+            if rgb == "ESCOLOR":
+                r, g, b = batoconf_color()
+                out = f'{r} {g} {b}'
+            else:
+                r, g, b = rgb[0:2], rgb[2:4], rgb[4:6]
+                out = f'{hex_to_dec(r)} {hex_to_dec(g)} {hex_to_dec(b)}'
+
+            if DEBUG: print (f'Set color to: {out}')
+            with open (self.color_file, 'w') as p:
+                p.write(out)
+
+        except Exception as e:
+            if DEBUG:
+                print(f'Error setting Legion Go S color: {e}')
+
+    def get_color (self) -> str:
+        try:
+            with open (self.color_file, 'r') as p:
+                rgb = p.readline().strip()
+                [ r, g, b ] = rgb.split(" ")
+                out = f'{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}'
+                return (out)
+        except:
+            return "000000"
+
+    def set_color_dec (self, rgb):
+        try:
+            if DEBUG: print('Set effect to: monocolor')
+            with open (self.effect_file, 'w') as p: p.write('monocolor')
+            if DEBUG: print (f'Set color to: {rgb}')
+            with open (self.color_file, 'w') as p:
+                p.write(rgb)
+        except Exception as e:
+            if DEBUG: print(f"Error setting dec color: {e}")
+
+
+    def get_color_dec (self) -> str:
+        try:
+            with open (self.color_file, 'r') as p:
+                return p.readline().strip()
+        except:
+            return "0 0 0"
+
+    def rainbow_effect(self):
+        self.set_color("RAINBOW")
+
+    def pulse_effect(self):
+        self.set_color("PULSE")
+
+    def turn_off(self):
+        if DEBUG: print('Turning off LED')
+        self.set_brightness(0)
+
+    def set_brightness (self, b):
+        try:
+            with open (self.brightness_file, 'w') as p:
+                p.write(str(b))
+        except Exception as e:
+            if DEBUG: print(f"Could not set brightness: {e}")
+
+    def set_brightness_conf (self):
+        b = batoconf("led.brightness")
+        if b is None:
+            try:
+                with open(self.max_brightness, 'r') as m:
+                    b = m.readline().strip()
+            except:
+                b = 255 # Fallback
+        self.set_brightness(b)
+
+    def get_brightness (self):
+        try:
+            with open (self.brightness_file, 'r') as p:
+                b = p.readline().strip()
+            with open (self.max_brightness, 'r') as m:
+                x = m.readline().strip()
+            return (b, x)
+        except:
+            return ("-1", "-1")
 
 ####################
 # Handhelds that use a direct RGB interface (easy peasy)
@@ -179,7 +312,7 @@ class pwmled(object):
         self.led = []
         for t in c:
             ret = self.pwmchip_init(t)
-            if ret: 
+            if ret:
                 self.led.append(ret)
         self.brightness     = -1
         self.max_brightness = -1
@@ -442,8 +575,10 @@ class led(object):
             return rgbled()
         elif m == "rgbaddr":
             return rgbledaddr()
+        elif m == "legiongos":
+            return legiongosled()
         else:
-            print(m) 
+            print(m)
 
 ####################
 # Helper functions and effects

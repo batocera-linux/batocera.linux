@@ -8,6 +8,7 @@
 - TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
 ### Hardware
 - Odin 2 Mini initial support
+- Legion Go S Controller & LED updates
 ### Added
 - LED colour control for Arm based handhelds
 - The ability to turn the controller LED's off
