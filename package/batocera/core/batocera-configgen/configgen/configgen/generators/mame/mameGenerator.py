@@ -6,6 +6,7 @@ import logging
 import os
 import shutil
 import subprocess
+import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -512,7 +513,56 @@ class MameGenerator(Generator):
                         autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
                         for row in autoRunList:
                             if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
-                                autoRunCmd = f"{row[1]}\\n"
+                                autoRunCmd = f"{row[1]}\\n"  
+            elif system.name == "atom":
+                autoRunDelay = 1
+                autoRunCmd = messAutoRun[messMode]
+                # Define the comprehensive list of known floppy disk extensions for the Atom system
+                floppy_extensions = [
+                    ".mfi", ".dfi", ".hfe", ".mfm", ".td0", ".imd", ".d77", ".d88",
+                    ".1dd", ".cqm", ".cqi", ".dsk", ".40t"
+                ]
+                is_compressed_flop = False
+                if romExt.casefold() == ".zip":
+                    try:
+                        with zipfile.ZipFile(rom, 'r') as zip_ref:
+                            for filename_in_zip in zip_ref.namelist():
+                                internal_ext = Path(filename_in_zip).suffix.lower()
+                                if internal_ext in floppy_extensions:
+                                    is_compressed_flop = True
+                                    break
+                    except zipfile.BadZipFile:
+                        _logger.warning(f"Could not read zip file: {rom}")
+                elif romExt.casefold() == ".7z":
+                    _7z_executable = "/usr/bin/7z"
+                    try:
+                        proc = subprocess.run([_7z_executable, "l", "-ba", str(rom)], capture_output=True, text=True, check=False)
+                        if proc.returncode == 0:
+                            for line in proc.stdout.splitlines():
+                                internal_ext = Path(line.strip()).suffix.lower()
+                                if internal_ext in floppy_extensions:
+                                    is_compressed_flop = True
+                                    break
+                        else:
+                            _logger.warning(f"7z command failed for {rom}: {proc.stderr}")
+                    except FileNotFoundError:
+                        _logger.error(f"The executable was not found at {_7z_executable}. Cannot inspect .7z files.")
+                # Check if the media being used is a floppy type
+                is_flop_media = (
+                    (altromtype == "flop1") or
+                    (softList and softList.endswith("flop")) or
+                    (romExt.casefold() in floppy_extensions) or
+                    is_compressed_flop
+                )
+                if is_flop_media:
+                    autoRunFile = MAME_DEFAULT_DATA / 'atom_flop_autoload.csv'
+                    if autoRunFile.exists():
+                        with autoRunFile.open() as openARFile:
+                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                            for row in autoRunList:
+                                if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
+                                    autoRunCmd = f"{row[1]}\\n"
+                                    break
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
