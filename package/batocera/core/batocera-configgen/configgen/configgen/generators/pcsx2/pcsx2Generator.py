@@ -648,7 +648,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
         else:
             pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "false")
-        
+
         # only configure the number of controllers set
         if nplayer <= multiTap:
             pad_index = nplayer
