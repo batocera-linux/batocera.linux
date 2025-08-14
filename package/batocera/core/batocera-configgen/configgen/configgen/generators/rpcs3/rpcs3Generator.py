@@ -256,16 +256,17 @@ class Rpcs3Generator(Generator):
 
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
+        elif rom.name == "config":
+            romName: Path | None = None
         else:
             romName = rom / "PS3_GAME" / "USRDIR" / "EBOOT.BIN"
 
-        # write our own gamecontrollerdb.txt file before launching the game
-        dbfile = RPCS3_CONFIG_DIR / "input_configs" / "gamecontrollerdb.txt"
-        write_sdl_controller_db(playersControllers, dbfile)
+        if romName:
+            commandArray: list[Path | str] = [RPCS3_BIN, romName]
+        else:
+            commandArray: list[Path | str] = [RPCS3_BIN]
 
-        commandArray: list[Path | str] = [RPCS3_BIN, romName]
-
-        if not system.config.get_bool("rpcs3_gui"):
+        if not system.config.get_bool("rpcs3_gui") and romName:
             commandArray.append("--no-gui")
 
         # firmware not installed and available : instead of starting the game, install it
@@ -276,9 +277,7 @@ class Rpcs3Generator(Generator):
             array=commandArray,
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
-                "XDG_CACHE_HOME": CACHE,
-                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
-                "SDL_JOYSTICK_HIDAPI": "0"
+                "XDG_CACHE_HOME": CACHE
             }
         )
 
