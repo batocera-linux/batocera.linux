@@ -1,0 +1,34 @@
+diff --git a/es-app/src/main.cpp b/es-app/src/main.cpp
+index 7ca5573..4d313e5 100644
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -679,7 +679,7 @@ int main(int argc, char* argv[])
+ 			{
+ 				TRYCATCH("InputManager::parseEvent", InputManager::getInstance()->parseEvent(event, &window));
+ 
+-				if (event.type == SDL_QUIT)
++				if ((event.key.keysym.mod & KMOD_SHIFT) != 0 && (event.key.keysym.mod & KMOD_ALT) != 0 && event.key.keysym.sym == SDLK_F4)
+ 					running = false;
+ 			} 
+ 			while(SDL_PollEvent(&event));
+diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
+index 3579fa8..b2b73c6 100644
+--- a/es-core/src/InputManager.cpp
++++ b/es-core/src/InputManager.cpp
+@@ -587,16 +587,6 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
+ 		if (ev.key.repeat)
+ 			return false;
+ 
+-#if !WIN32
+-		if (ev.key.keysym.sym == SDLK_F4)
+-		{
+-			SDL_Event* quit = new SDL_Event();
+-			quit->type = SDL_QUIT;
+-			SDL_PushEvent(quit);
+-			return false;
+-		}
+-#endif
+-
+ 		window->input(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 1, false));
+ 		return true;
+ 
