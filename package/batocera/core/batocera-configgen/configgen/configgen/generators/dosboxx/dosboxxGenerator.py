@@ -50,7 +50,7 @@ class DosBoxxGenerator(Generator):
                         "-c", "c:",
                         "-c", "dosbox.bat",
                         "-fastbioslogo",
-                        f"-conf {customConfFile!s}"]
+                        "-conf", f"{customConfFile!s}"]
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS})
 
