@@ -1,21 +1,34 @@
 diff --git a/es-app/src/main.cpp b/es-app/src/main.cpp
-index 7ca5573..4d313e5 100644
+index 7ca5573..45f28ae 100644
 --- a/es-app/src/main.cpp
 +++ b/es-app/src/main.cpp
-@@ -679,7 +679,7 @@ int main(int argc, char* argv[])
+@@ -679,8 +679,9 @@ int main(int argc, char* argv[])
  			{
  				TRYCATCH("InputManager::parseEvent", InputManager::getInstance()->parseEvent(event, &window));
  
 -				if (event.type == SDL_QUIT)
-+				if ((event.key.keysym.mod & KMOD_SHIFT) != 0 && (event.key.keysym.mod & KMOD_ALT) != 0 && event.key.keysym.sym == SDLK_F4)
- 					running = false;
+-					running = false;
++				if (Utils::Platform::ExitRequest::user == 1) {
++				  running = false;
++				}
  			} 
  			while(SDL_PollEvent(&event));
+ 
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index 3579fa8..b2b73c6 100644
+index 3579fa8..4973c42 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -587,16 +587,6 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
+@@ -581,22 +581,16 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
+ 		return true;
+ 
+ 	case SDL_KEYDOWN:
++	  if ((ev.key.keysym.mod & KMOD_SHIFT) != 0 && (ev.key.keysym.mod & KMOD_ALT) != 0 && ev.key.keysym.sym == SDLK_F4) {
++	    Utils::Platform::ExitRequest::user = 1;
++	  }
++
+ 		if (ev.key.keysym.sym == SDLK_BACKSPACE && SDL_IsTextInputActive())
+ 			window->textInput("\b");
+ 
  		if (ev.key.repeat)
  			return false;
  
@@ -32,3 +45,41 @@ index 3579fa8..b2b73c6 100644
  		window->input(getInputConfigByDevice(DEVICE_KEYBOARD), Input(DEVICE_KEYBOARD, TYPE_KEY, ev.key.keysym.sym, 1, false));
  		return true;
  
+diff --git a/es-core/src/utils/Platform.cpp b/es-core/src/utils/Platform.cpp
+index 9d31250..e801292 100644
+--- a/es-core/src/utils/Platform.cpp
++++ b/es-core/src/utils/Platform.cpp
+@@ -30,6 +30,8 @@ namespace Utils
+ {
+ 	namespace Platform
+ 	{
++	  int ExitRequest::user = 0;
++
+ 		ProcessStartInfo::ProcessStartInfo()
+ 		{ 			
+ 			window = nullptr; 
+@@ -219,6 +221,8 @@ namespace Utils
+ 				break;
+ 			}
+ 
++			ExitRequest::user = 1;
++
+ 			SDL_Event* quit = new SDL_Event();
+ 			quit->type = SDL_QUIT;
+ 			SDL_PushEvent(quit);
+diff --git a/es-core/src/utils/Platform.h b/es-core/src/utils/Platform.h
+index 50bb7d2..fb1a411 100644
+--- a/es-core/src/utils/Platform.h
++++ b/es-core/src/utils/Platform.h
+@@ -17,6 +17,11 @@ namespace Utils
+ {
+ 	namespace Platform
+ 	{
++	  class ExitRequest {
++	  public:
++	    static int user;
++	  };
++
+ 		enum QuitMode
+ 		{
+ 			QUIT = 0,
