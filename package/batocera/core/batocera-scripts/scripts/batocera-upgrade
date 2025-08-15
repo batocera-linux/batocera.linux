@@ -63,7 +63,7 @@ test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 # force a default value in case the value is removed or miswritten
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly" && updatetype="stable"
 
-# custom the url directory
+# custom the url directory from batocera.conf settings
 DWD_HTTP_DIR="${updateurl}/${board}/${updatetype}/last"
 
 # custom CLI url
@@ -74,8 +74,10 @@ test $# -eq 1 && DWD_HTTP_DIR="$1"
 
 # --- Prepare file downloads ---
 
-# Check if "manual" argument is provided
-if [ "$1" == "manual" ]; then
+# Check if "manual", "butterfly" or "stable" arguments are provided
+# This will overcome to apply batocera-check-upgrade URL
+if [ "${1,,}" == "manual" ]; then
+    DWD_HTTP_DIR=
     # Check if the local file exists
     if [ -f "/userdata/system/upgrade/boot.tar.xz" ]; then
         size=$(du -m "/userdata/system/upgrade/boot.tar.xz" | awk '{print $1}')
@@ -84,7 +86,11 @@ if [ "$1" == "manual" ]; then
         echo "Error: Local file /userdata/system/upgrade/boot.tar.xz not found."
         exit 1
     fi
-else
+elif [ "${1,,}" == "butterfly" ] || [ "${1,,}" == "stable" ]; then
+    DWD_HTTP_DIR="${updateurl}/${board}/${1,,}/last"
+fi
+
+if [ -n "${DWD_HTTP_DIR}" ]; then
     # download directory
     mkdir -p /userdata/system/upgrade || exit 1
 
@@ -100,7 +106,7 @@ else
 fi
 
 # check free space on fs
-if [ "$1" != "manual" ]; then
+if [ -n "${DWD_HTTP_DIR}" ]; then
     filesystems="/userdata/system /boot"
 else
     filesystems="/boot"
@@ -120,7 +126,7 @@ done
 
 ##### Up to this the GUI was not used, now do_upgmsg will automatically decide which output to use
 # download
-if [ "$1" != "manual" ]; then
+if [ -n "${DWD_HTTP_DIR}" ]; then
     if [ $TERMINAL -eq 0 ]; then
         # download inside ES with badge
         touch "/userdata/system/upgrade/boot.tar.xz"
@@ -136,7 +142,7 @@ if [ "$1" != "manual" ]; then
 fi
 
 # try to download an md5 checksum
-if [ "$1" != "manual" ]; then
+if [ -n "${DWD_HTTP_DIR}" ]; then
     curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
 fi
 if test -e "/userdata/system/upgrade/boot.tar.xz.md5"
