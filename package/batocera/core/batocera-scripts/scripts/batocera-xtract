@@ -16,35 +16,39 @@
 
 # batocera-xtract, a script as universal extractor tool and to mimic file-roller base functions
 # MimeTypes=application/x-7z-compressed;application/gzip;application/vnd.rar;application/x-tar;application/x-compressed-tar;
-#           application/x-xz-compressed-tar;application/x-xz;application/zip;
+#           application/x-xz-compressed-tar;application/x-iso;application/zip;
 
 # inital idea and inspired by brunoeduardobrasil, 07/19/2025 cyperghost aka crcerror
 # ec-codes: ec-0 okay, ec-1 error, ec-10 parameter l used
 # ec-11 archives not supported for extraction, ec-12 archives not supported for showing content
-# ec-21 to 28 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz
+# ec-21 to 28 -- file extraction error zip rar 7z gz xy tar tar.xz tar.gz
 
 # Is pcmanfm is active then use yad as output. test -t will not work because pcmanfm creates a virtual terminal
-pgrep pcmanfm >/dev/null && TERMINAL=0 || TERMINAL=1
+# SSH_CONNECTION and SSH_TTY are active if SSH connection is used
+pgrep pcmanfm >/dev/null && [[ -z "$SSH_CONNECTION" ]] && TERMINAL=0 || TERMINAL=1
 ret=0
+# get path to 7z binary... the so lib is borked, can't use alias 'which'
+bin7z=$(command -v 7z)
 
 list_archive () {
     # We obtain the file names, dirs, date+time and size with minimal filters, unzip -Z1, unrar lb, 7zr l -ba ... and some awk magic
     # 7z and iso play again the rules and use empty strings for dirs or uncompressed files, so NF changes and we need to check if there are digits
+    # overwrite of old file os 7z -y, unrar -o+ and tar does it always
     case "$1" in
-        *.zip) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
-        *.iso) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=4; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        *.zip) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        *.iso) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=4; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
         *.rar) readarray -t array < <(printf "FALSE\n%s\nna\nna\n" $(unrar lb "$FILE")) ;;
-        *.7z)  readarray -t array < <(7z l -ba "$FILE" | awk '{ print "FALSE"; for(i=5; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
+        *.7z)  readarray -t array < <($bin7z l -ba "$FILE" | awk '{ print "FALSE"; for(i=5; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
         # Unlike gzip is xy only compression formats for single files, so always open with tar extension and do not use the single compression types
         *.tar) readarray -t array < <(tar -tvf "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;;
         *.tar.gz|*.tgz) readarray -t array < <(tar -tvzf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;;
-        *.gz) readarray -t array < <(7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2;; }') ;;
+        *.gz) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2 }') ;;
         *.tar.xz) readarray -t array < <(tar -tvJf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else $3; print $4, $5; }') ;; 
         *) return 12
     esac
 
     # Just output for CLI as list - usefull for further scripting
-    [[ "${2}" == "l" ]] && { printf '%s!Z#%s!Z#%s%s\n' "${array[@]}" | awk -F!Z# '{ print $2 }'; return 10; }
+    [[ "${2}" == "l" ]] && { printf '%s\t%s\t%s%s\n' "${array[@]}" | awk -F'\t' '{ print $2 }'; return 10; }
 
     #Options needs to be added to PCmanFM "file-roller --open"
     readarray -t files <<< $(yad --title="Extract Files" --list --checklist --print-column=2 --separator= --column=Extract:chk --column=Filename:text --column=Size:text --column=Date:text "${array[@]}")
@@ -59,11 +63,11 @@ extract_archive () {
         # Single dotted extensions later
         # 7z is better to handle zip files, 7z extracts all files from selected dir
         #*.zip) unzip -o "$FILE" "${files[@]}" -d "$DEST" || return 21 ;;
-        *.zip) 7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 21 ;;
-        *.rar) unrar x "$FILE" "${files[@]}" "$DEST/" || return 22 ;;
-        *.7z)  7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 23 ;;
-        *.gz)  7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
-        *.iso) 7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 25 ;;
+        *.zip) $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 21 ;;
+        *.rar) unrar x -o+ "$FILE" "${files[@]}" "$DEST/" || return 22 ;;
+        *.7z)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 23 ;;
+        *.gz)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
+        *.iso) $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 25 ;;
         *.tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" || return 26 ;;
         *) return 11
     esac
@@ -120,7 +124,7 @@ esac
 case $ret in
     0|1) true ;;
     2) # Action not defined
-        [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 2; }
+        [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 1; }
         echo "Usage: $(basename "$0") <SWITCHES> [ARCHIVEFILE] {DESTINATION-DIR}"; echo
         echo "    x: extraction of current archivfile"
         echo "    l: list archive content"; echo
