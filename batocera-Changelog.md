@@ -1,56 +1,61 @@
-# 2025/xx/xx - batocera.linux 42 - Papilio Ulysses
+# 2025/09/xx - Batocera.linux 42 - Papilio Ulysses
 ### Special Notes
-- Quake 1 & 2 roms need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively.
+- Quake 1 & 2 ROMs need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
-  vkQuake3 replaces ioQuake3 for systems that support Vulkan. Saved games should continue to work.
+  vkQuake3 replaces ioquake3 for systems that support Vulkan. saves should continue to work.
   The libretro cores will continue to run as before.
-- Removed the buggy Libretro-Openlara in favor of the standalone TRX1 Tomb Raider port.
-  If you have saved games, it is recommended to stick with v41 or earlier as the same data is not compatible.
-- Zedmd upgraded. You need firmware zedmd 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration.
-- The folder for SegaCD/MegaCD roms is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`).
-- Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux.
-- ScummVM libretro and standalone savegames share the same folders now.
-  If you have saved games from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
+- Removed the buggy libretro-OpenLara in favor of the standalone TR1X Tomb Raider port
+  If you have saves, it is recommended to stick with v41 or earlier as the same data is not compatible.
+- ZeDMD upgraded. You need firmware ZeDMD 5.1.5. See https://wiki.batocera.org/hardware:diy_zedmd?s[]=dmd#zedmd_configuration
+- The folder for Sega CD/Mega CD ROMs is now called `megacd` to keep consistency (like `megadrive` is used, not `genesis`)
+- Removed Future Pinball in favor of Visual Pinball which has been available for some time and runs native on Linux
+- ScummVM libretro and standalone saves share the same folders now
+  If you have saves from the standalone core, it is recommended to move them from `/userdata/saves/scummvm/saves` to `/userdata/saves/scummvm`
 - Flycast now names per-game VMU files based on game ID rather than ROM filename. Any per-game VMU files that are based on the
   ROM's filename will be renamed by Flycast when the ROM is launched. This will have the most affect on multi-disc games
   when using the **standalone** emulator because standalone did not remove `(Disc X)` from the ROM name when saving VMUs.
   If you were using per-game saves with standalone, be sure to launch your multi-disc game with the disc you most recently
   played so its VMU is renamed using the game ID.
-- Bluetooth Xbox compatible controllers may need to be reconfigured under EmulationStation due to the driver change to `hid-microsoft`.
+- Bluetooth Xbox compatible controllers may need to be reconfigured under EmulationStation due to the driver change to `hid-microsoft`
 ### Hardware
-- Add OrangePi 4a board support
-- Add OrangePi 3b board support
-- Add Anbernic RG351V support
-- Initial support for RS3 Reaper light gun
-- Initial support for XGunner light gun
-- Initial support for OpenFIRE light gun
-- Initial support for Fusion P.I.G.S. light gun
-- Initial support for OneHit light gun (AimTrak clone)
-- Ayn Odin2 and Odin2 Portal support
-- Add OrangePi 5 Ultra board support
-- Add OrangePi 5 Max board support
-- Add RetroidPocket Mini v2 (thanks Spycat)
+- New board support
+ - Orange Pi 5 Ultra
+ - Orange Pi 5 Max
+ - Orange Pi 4a
+ - Orange Pi 3b
+ - CoolPi 4b board support
+- New handheld support
+ - Anbernic RG351V
+ - Odin2 & Odin2 Portal
+ - RetroidPocket Mini v2 (thanks Spycat)
+- New light guns support
+ - RS3 Reaper
+ - XGunner
+ - OpenFIRE
+ - Fusion P.I.G.S
+ - OneHit (AimTrak clone)
 - Add support for the Pironman5 Mini & Max cases
-- Add CoolPi 4b board support
+- New steering wheel support
+ - Logitech: G923 (Xbox), PRO Racing Wheel
+ - Speedlink: 4in1 Leather Power Feedback Wheel
+ - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
+- Add PowerA Microsoft XBox Controller support
+- Add new 8BitDo N64 controller (select `d` on the back for d-input)
 ### Added
 - WireGuard VPN for RK3326 boards
 - WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
 - Image scaling option for Drastic
-- A selection of Dhewm3 mods
+- A selection of dhewm3 mods
 - CatacombGL port for running various Catacomb games
 - Holani libretro core
 - Squashfs support for SGB-MSU1
 - DuckStation cheat list
-- Game Specific color palette for gambette core
+- Game Specific color palette for Gambatte core
 - Non-Micro GUN4IR light gun hardware support
-- Steering wheel support added for:
-  - Logitech: G923 (Xbox), PRO Racing Wheel
-  - Speedlink: 4in1 Leather Power Feedback Wheel
-  - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
-- Sega Lindbergh loader
+- Sega Lindbergh loader (visit wiki page for more information)
 - Variable Refresh Rate (VRR) support for modern AMD gpus
 - Support of Shanwan Twin USB Joystick (new revision)
-- Libretro-PS2 core
+- libretro-PS2 core
 - Force Feedback on RP5 & RPmini
 - vkQuake 1, 2 & 3 for systems that support Vulkan
 - TR1X & TR2X for Tomb Raider I & II support
@@ -62,40 +67,50 @@
 - DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
 - Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
-- OpenJKDF2 to play Jedi Knight Dark Forces 2 and Mysteries of the Sith
+- OpenJKDF2 to play Jedi Knight: Dark Forces II and Mysteries of the Sith
 - OpenJK to play Jedi Academy & Jedi Outcast
-- Intel Quick Sync Video acceleration to ffmpeg for supported Intel GPUs
+- Intel Quick Sync Video acceleration to FFmpeg for supported Intel GPUs
 - ShadPS4 emulator for PlayStation 4 gaming
 - OpenMOHAA to play Medal of Honor: Allied Assault including Spearhead and Breakthrough expansions
-- WiringOP-Python for OrangePi board GPIO scripting
-- Libretro-BennuGD for compatible games
+- WiringOP-Python for Orange Pi board GPIO scripting
+- libretro-BennuGD for compatible games
 - RetroAchievements: support for unofficial achievements
-- PPSSPP standalone Retroachievements support
+- PPSSPP standalone RetroAchievements support
+- Fake standby and suspend
+- libretro-Genesis-Plus-GX core (expanded MAXROMSIZE for Sega Channel Revival and P4PR1UM Compatibility)
+- Archive extractor and PCManFM integration (`batocera-xtract` command)
 ### Fixed
-- Fix CD System BRAM core option for Genesis Plus GX to use the per game setting
+- Fix CD System BRAM core option for Genesis Plus GX to use the per-game setting
 - Fix some problems in ES and Batocera with IPv6 networks
 - Fix ES behavior with usb network tethering
 - Fix handling of luks.enabled setting to allow disabling LUKS integration
-- X86_64, choose a better refresh rate or resolution if the TV / Monitors default is too low.
+- X86_64, choose a better refresh rate or resolution if the TV / Monitors default is too low
 - Fix potential issue of having race condition with sequential numbering
 - Fix MAME config for apple2p, apple2e, apple2ee
-- Fix GSPlus rom config and speed
+- Fix GSPlus ROM config and speed
 - DualShock 4 controller on Odroid XU4
-- Internal bezels still enabled for Libretro cores when a widescreen ratio selected
+- Internal bezels still enabled for libretro cores when a widescreen ratio selected
 - Centering of PCSX2 messages
-- Xbox compatible bluetooth controllers not working in Steam
+- Xbox compatible Bluetooth controllers not working in Steam
+- Fix qualcomm devices Wi-Fi after resume
+- Fix controllers on PCSX2
+- Fix internet status in EmulationStation
 ### Changed / Improved
 - Significantly improve ES shutdown time, especially with large and medium collections
 - BigPEmu now supports .bigpimg CD images
 - ROG Ally gamepad support
 - Batocera-wine: add saves directory and save files options
 - Batocera-wine: improved autodetection for Windows executables, refer to our [Wikipedia](https://wiki.batocera.org/systems:windows#creating_autoruncmd_from_ssh)
-- Libretro-virtualjaguar core can now load .zip ROMs
+- libretro-VirtualJaguar core can now load .zip ROMs
 - Updated BlamCon code to new firmware (now compatible with 4 light guns)
 - Xenia now uses Wine-Proton for more compatibility (i.e. Halo 4)
 - Moved to the `hid-microsoft` driver for Xbox compatible Bluetooth controllers
 - Dreamcast bios now goes into `bios/dc/dc_boot.bin`
 - MSI Claw devices now get the appropriate controller config on boot
+- GZDoom controller config instead of evmapy
+- RTL8852AU reenabled
+- libretro-MAME can be selected as a core in Model 2 system collection
+- Replace ALT-F4 by SHIFT-ALT-F4 to quit
 ### Updated
 - Amiberry to v7.1.0
 - AppleWin to 8th of Feb build
@@ -103,26 +118,26 @@
 - Cemu to 2.6
 - DevilutionX to 1.5.4
 - Dolphin-Emu to 2503a-328
-- Dosbox Staging to v0.82.2
-- Dosbox-X to v2025.02.01
+- DOSBox Staging to v0.82.2
+- DOSBox Staging-X to v2025.02.01
 - DXX-Rebirth to 12th of Jan build
 - EDuke to 26th of Dec build
 - ETLegacy to v2.83.2
-- Flycast and libretro-flycast to v2.5
+- Flycast and libretro-Flycast to v2.5
 - GroovyMAME to 0.277
-- Gzdoom to g4.14.2
+- GZDoom to g4.14.2
 - Hurrican to 24th of Nov build
 - Hypseus Singe to 2.11.5
-- IOQuake3 to 25th December build
+- ioquake3 to 25th December build
 - Jazz2 to 3.3.0
-- Libretro-FBNeo to July 25, 2025 build
-- Libretro-Kronos to 2.7.0
-- Libretro-MAME to 0.278
-- Libretro-Play! 4th Feb build
-- Libretro-PPSSPP v1.19.3
-- Libretro-ScummVM to 3rd June 2025 build
-- Libretro-Wasm4 to v2.7.1
-- MelonDS to 17th Jan build
+- libretro-FBNeo to July 25, 2025 build
+- libretro-Kronos to 2.7.0
+- libretro-MAME to 0.278
+- libretro-Play! 4th Feb build
+- libretro-PPSSPP v1.19.3
+- libretro-ScummVM to 3rd June 2025 build
+- libretro-Wasm4 to v2.7.1
+- melonDS to 17th Jan build
 - OpenMSX to release 20.0
 - PCSX2 to v2.3.420
 - Play! to 4th Feb build
@@ -137,12 +152,13 @@
 - Solarus Engine to 18th Jan build
 - Sonic3 Air to v25.02.15.0-test
 - Taradino to 18th of Feb build
-- TheForceEngine to v1.22.300
+- The Force Engine (TFE) to v1.22.300
 - TheXTech to v1.3.7-hotfix2
 - Triforce to use a Crediar build (Nov 29, 2024)
 - Tsugaru to v20250513
-- Vice to 3.9
+- VICE to 3.9
 - Vita3k to 3rd of March 2025 build
+- Visual Pinball to 29th Jun 2025 build
 - Xash3d-fwgs to 20th of Feb build
 - Xemu to v0.8.96
 - Xenia to build 1d7973a (June 10, 2025)
@@ -154,7 +170,7 @@
 - DXVK to 2.7
 - DXVK-NVApi to 0.9.0
 - Faudio to 25.02
-- FFMPEG to 7.1.1
+- FFmpeg to 7.1.1
 - GStreamer codecs to 1.26.4
 - Intel GMMLib to 22.8.1
 - Intel Media Driver to 25.3.0
