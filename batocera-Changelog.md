@@ -178,7 +178,7 @@
 - Kodi to 21.2
 - LibDRM to 2.4.124
 - Linux Firmware to 20250708
-- Linux Kernel to 6.15.9
+- Linux Kernel to 6.15.10
 - LLVM to 19.1.7
 - Mesa3D to 25.1.7
 - MPV to 0.40.0
