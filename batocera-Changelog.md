@@ -41,6 +41,7 @@
  - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
 - Add PowerA Microsoft XBox Controller support
 - Add new 8BitDo N64 controller (select `d` on the back for d-input)
+- Panther Lake Audio support
 ### Added
 - WireGuard VPN for RK3326 boards
 - WireGuard system service which runs [wg-quick](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8) on `/userdata/system/wireguard/*.conf`
@@ -189,7 +190,7 @@
 - RPi Kernel to 6.12.25
 - Ryzenadj to v0.16.0
 - SDL2 to 2.32.8
-- Sound Open Firmware to 2025.01
+- Sound Open Firmware to 2025.05
 - Syncthing to 1.29.3
 - VKD3D-Proton to 2.14.1
 - Vulkan stack to v1.4.304
