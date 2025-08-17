@@ -1,0 +1,67 @@
+From 8398462dbf9a4a355f8b3b6ed7d67925ca506a7c Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Wed, 30 Apr 2025 21:49:44 +0100
+Subject: [PATCH] arm64: dts: qcom: sm8250: add support for Retroid Pocket
+ Flip2
+
+---
+ .../dts/qcom/sm8250-retroidpocket-flip2.dts   | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-flip2.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-flip2.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-flip2.dts
+new file mode 100644
+index 000000000000..cab80e1c81e5
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-flip2.dts
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2025, ROCKNIX <https://rocknix.org>.
++ */
++
++/dts-v1/;
++
++#include <dt-bindings/input/gpio-keys.h>
++#include "sm8250-retroidpocket-rp5.dts"
++
++/ {
++	model = "Retroid Pocket Flip2";
++	compatible = "retroidpocket,rpflip2", "qcom,sm8250";
++
++	gpio-keys-lid {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hall_sensor_default>;
++
++		hall-sensor {
++			label = "Hall Sensor";
++			gpios = <&tlmm 123 GPIO_ACTIVE_LOW>;
++			linux,can-disable;
++			linux,code = <SW_LID>;
++			linux,input-type = <EV_SW>;
++			wakeup-source;
++		};
++	};
++};
++
++&apps_rsc {
++	regulators-1 {
++		vreg_l8c_1p8: ldo8 {
++			regulator-always-on;
++		};
++	};
++};
++
++
++&tlmm {
++	hall_sensor_default: hall-sensor-default-state {
++		pins = "gpio123";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-disable;
++	};
++};
+-- 
+2.34.1
+
