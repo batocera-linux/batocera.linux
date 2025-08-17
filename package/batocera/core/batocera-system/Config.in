@@ -571,7 +571,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86_64"										if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default "x86-64-v3"										if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sd845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_ODIN
-	default "qualcomm/sm8250/rp5 qualcomm/sm8250/rpmini qualcomm/sm8250/rpminiv2"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
+	default "qualcomm/sm8250/rpflip2 qualcomm/sm8250/rp5 qualcomm/sm8250/rpmini qualcomm/sm8250/rpminiv2"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
 	default "qualcomm/sm8550/odin2 qualcomm/sm8550/odin2portal"					if BR2_PACKAGE_BATOCERA_TARGET_SM8550
 	default "starfive/jh7110"   							if BR2_PACKAGE_BATOCERA_TARGET_JH7110
 	default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
