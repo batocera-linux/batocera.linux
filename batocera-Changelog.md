@@ -19,27 +19,27 @@
 - Bluetooth Xbox compatible controllers may need to be reconfigured under EmulationStation due to the driver change to `hid-microsoft`
 ### Hardware
 - New board support
- - Orange Pi 5 Ultra
- - Orange Pi 5 Max
- - Orange Pi 4a
- - Orange Pi 3b
- - CoolPi 4b board support
+  - Orange Pi 5 Ultra
+  - Orange Pi 5 Max
+  - Orange Pi 4a
+  - Orange Pi 3b
+  - CoolPi 4b board support
 - New handheld support
- - Anbernic RG351V
- - Odin2 & Odin2 Portal
- - RetroidPocket Mini v2 (thanks Spycat)
- - RetroidPocket Flip2 (thanks Spycat)
+  - Anbernic RG351V
+  - Odin2 & Odin2 Portal
+  - RetroidPocket Mini v2 (thanks Spycat)
+  - RetroidPocket Flip2 (thanks Spycat)
 - New light guns support
- - RS3 Reaper
- - XGunner
- - OpenFIRE
- - Fusion P.I.G.S
- - OneHit (AimTrak clone)
+  - RS3 Reaper
+  - XGunner
+  - OpenFIRE
+  - Fusion P.I.G.S
+  - OneHit (AimTrak clone)
 - Add support for the Pironman5 Mini & Max cases
 - New steering wheel support
- - Logitech: G923 (Xbox), PRO Racing Wheel
- - Speedlink: 4in1 Leather Power Feedback Wheel
- - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
+  - Logitech: G923 (Xbox), PRO Racing Wheel
+  - Speedlink: 4in1 Leather Power Feedback Wheel
+  - HORI: Mario Kart Racing Wheel Pro Deluxe for Nintendo Switch (DP mode)
 - Add PowerA Microsoft XBox Controller support
 - Add new 8BitDo N64 controller (select `d` on the back for d-input)
 - Panther Lake Audio support
@@ -64,7 +64,7 @@
 - Oric Atmos (and Oric 1) with CLK Clock Signal emulator
 - CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
   AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
-- gun : option to hide the crosshair in ES
+- Light guns: option to hide crosshairs in ES
 - Azahar 3DS emulator: Version 2122
 - DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
@@ -113,6 +113,7 @@
 - RTL8852AU reenabled
 - libretro-MAME can be selected as a core in Model 2 system collection
 - Replace ALT-F4 by SHIFT-ALT-F4 to quit
+- Fullscreen Sinden border in Hypseus Singe instead of forced 4:3
 ### Updated
 - Amiberry to v7.1.0
 - AppleWin to 8th of Feb build
