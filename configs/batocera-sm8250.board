@@ -21,7 +21,7 @@ BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8250/linux_sm8250-defconfig.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sm8250-retroidpocket-rp5 qcom/sm8250-retroidpocket-rpmini qcom/sm8250-retroidpocket-rpminiv2"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sm8250-retroidpocket-flip2 qcom/sm8250-retroidpocket-rp5 qcom/sm8250-retroidpocket-rpmini qcom/sm8250-retroidpocket-rpminiv2"
 
 # System
 BR2_PACKAGE_BATOCERA_USE_QCOM_FW=y

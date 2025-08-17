@@ -28,6 +28,7 @@
  - Anbernic RG351V
  - Odin2 & Odin2 Portal
  - RetroidPocket Mini v2 (thanks Spycat)
+ - RetroidPocket Flip2 (thanks Spycat)
 - New light guns support
  - RS3 Reaper
  - XGunner
