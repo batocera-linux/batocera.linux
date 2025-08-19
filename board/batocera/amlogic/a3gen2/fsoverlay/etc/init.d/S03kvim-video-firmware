@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if test "$1" != "start"
+then
+  exit 0
+fi
+
+printf "Preload VIMs video firmware: "
+
+# Load video firmware
+/sbin/modprobe -q tee
+/sbin/modprobe -q amlogic-tee
+/sbin/modprobe -q optee
+/usr/bin/tee-supplicant &
+sleep 1
+/usr/bin/tee_preload_fw /lib/firmware/video/video_ucode.bin
+
+echo "OK"
