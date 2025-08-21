@@ -124,6 +124,6 @@ class YmirGenerator(Generator):
         return Command.Command(array=commandArray)
 
     def getInGameRatio(self, config, gameResolution, rom):
-        if config.get_float("ymir_aspect") == "1.3333333333333333":
+        if config.get_float("ymir_aspect") == 1.3333333333333333:
             return 4 / 3
         return 16 / 9
