@@ -182,7 +182,7 @@
 - Linux Firmware to 20250708
 - Linux Kernel to 6.15.10
 - LLVM to 19.1.7
-- Mesa3D to 25.1.7
+- Mesa3D to 25.1.8
 - MPV to 0.40.0
 - Nvidia production driver to 575.64
 - Pipewire to 1.4.6
