@@ -12,6 +12,8 @@ PYSDL3_SETUP_TYPE = setuptools
 
 HOST_PYSDL3_NEEDS_HOST_PYTHON = python3
 
+PYSDL3_DEPENDENCIES = host-python-setuptools-scm
+
 PYSDL3_BIN_FOLDER = \
     $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/sdl3/bin
 
