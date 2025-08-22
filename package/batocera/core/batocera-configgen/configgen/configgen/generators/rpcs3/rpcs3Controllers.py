@@ -311,6 +311,14 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                     # Fallback to the old method if SDL3 failed or the controller was not found
                     _logger.warning(f"Could not find SDL3 name for Player {nplayer}. Falling back to pad.real_name.")
                     ctrlname = pad.real_name
+                
+                # Remove duplicate starting name if it does not start with a space
+                if not ctrlname.startswith(' '):
+                    words = ctrlname.split()
+                    if len(words) > 1 and words[0] == words[1]:
+                        ctrlname = " ".join(words[1:])
+                        _logger.debug(f"Duplicate word removed, new name: {ctrlname}")
+
                 # workaround controllers with commas in their name - like Nintendo
                 ctrlname = ctrlname.replace(",", ".")
                 # rpcs3 appends a unique number per controller name
