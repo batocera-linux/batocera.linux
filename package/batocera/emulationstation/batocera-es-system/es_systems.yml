@@ -65,8 +65,6 @@ cplus4:
       xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
 
 c128:
   name:       Commodore 128
@@ -93,8 +91,6 @@ c20:
       xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z,20,40,60] }
     libretro:
       vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
 
 pet:
   name:       Commodore PET
@@ -566,8 +562,6 @@ mastersystem:
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
       smsplus:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SMSPLUS_GX]}
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
 
 pico:
   name:       Sega Pico
@@ -998,8 +992,6 @@ colecovision:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     ## BIOS ##
 
@@ -1514,8 +1506,6 @@ atarist:
     libretro:
       hatarib: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARIB] }
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], incompatible_extensions: [ hd, gemdos ] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     To enable GEMDOS support,
     Create a directory within the roms folder that has a .gemdos extension.
@@ -1534,8 +1524,6 @@ amstradcpc:
   emulators:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
     "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
@@ -1559,8 +1547,6 @@ msx1:
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [ogv, openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     ## BIOS ##
 
@@ -1660,8 +1646,6 @@ msx2:
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     ## BIOS ##
 
@@ -1891,8 +1875,6 @@ zx81:
   emulators:
     libretro:
       '81': { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -1909,8 +1891,6 @@ zxspectrum:
   emulators:
     libretro:
       fuse: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FUSE] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
     ## Input Devices ##
 
@@ -1994,8 +1974,6 @@ apple2:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
     applewin:
       applewin: { requireAnyOf: [BR2_PACKAGE_APPLEWIN], incompatible_extensions: [chd] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
 
 saturn:
   name: Saturn
@@ -3155,8 +3133,6 @@ apple2gs:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqui, ima, img, ufi, 360, ipf, dc42, zip, 7z] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
           If your game does not start using LR-Mame. Ensure you choose the right floppy type for the rom extension.
           i.e. some extensions require you to choose the 3 1/2 inch floppy drive (Drive 3).
@@ -3404,8 +3380,6 @@ archimedes:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
           Requires MAME BIOS files aa310.zip and archimedes_keyboard.zip
           Using software list mode is recommended.
@@ -3446,8 +3420,6 @@ electron:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
           Requires MAME BIOS files electron.zip, electron64.zip, electron_plus1.zip, electron_plus3.zip
           Using software list mode (cassette) is recommended.
@@ -3926,8 +3898,6 @@ macintosh:
       mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
           MAME requires a number of BIOS and device files, place in the bios folder in zip format.
           Boot disks are from MAME's software lists, floppy images need to be extracted and renamed.
