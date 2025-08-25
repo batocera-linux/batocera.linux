@@ -75,7 +75,7 @@ index b416a53..70936a4 100644
      struct udev_list_entry *item = NULL;
  
 +    unsigned sorted_count = 0;
-+    struct joypad_udev_entry sorted[64];
++    struct joypad_udev_entry sorted[1024];
 +    int i;
 +
      if (!_this) {
@@ -89,7 +89,7 @@ index b416a53..70936a4 100644
 -            _this->syms.udev_device_unref(dev);
 -        }
 +         const char* devnode = _this->syms.udev_device_get_devnode(dev);
-+         if(devnode != NULL) {
++         if(devnode != NULL && sorted_count < 1024) {
 +        sorted[sorted_count].devnode = devnode;
 +        sorted[sorted_count].dev     = dev;
 +        sorted[sorted_count].item = item;

@@ -73,7 +73,7 @@ index 6df37b4..64ade4a 100644
    // Note: the Linux kernel is currently limited to just 32 event devices. If
    // this ever changes, hopefully udev will take care of this.
 +  unsigned sorted_count = 0;
-+  struct joypad_udev_entry sorted[64];
++  struct joypad_udev_entry sorted[1024];
 +  const char* devnode;
 +  int i;
  
@@ -88,7 +88,7 @@ index 6df37b4..64ade4a 100644
 -
 -    udev_device_unref(dev);
 +    devnode = udev_device_get_devnode(dev);
-+    if (devnode != NULL && sorted_count < 64) {
++    if (devnode != NULL && sorted_count < 1024) {
 +      sorted[sorted_count].devnode = devnode;
 +      sorted[sorted_count].dev     = dev;
 +      sorted_count++;
