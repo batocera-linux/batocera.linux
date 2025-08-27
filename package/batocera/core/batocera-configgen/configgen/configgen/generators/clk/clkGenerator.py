@@ -15,10 +15,11 @@ if TYPE_CHECKING:
 
 # Static temp file for extraction as CLK doens't support zipped roms
 _TMP_DIR: Final = Path("/tmp/clk_extracted")
-_QUICKLOAD_SYSTEMS: Final = {
-    "oricatmos", "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
-    "c20", "cplus4", "zx81", "zxspectrum"
-}
+_QUICKLOAD_SYSTEMS: Final = { "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
+    "oricatmos", "zxspectrum" }
+_SVIDEO_SYSTEMS: Final = { "colecovision", "mastersystem" }
+_RGB_SYSTEMS: Final = { "amstradcpc", "atarist", "electron", "msx1", "msx2",
+    "oricatmos", "zxspectrum" }
 
 
 def _openzip_file(file_path: Path, /) -> Path | None:
@@ -48,6 +49,12 @@ class ClkGenerator(Generator):
             raise BatoceraException(f'ROM is a directory: {rom}')
 
         commandArray = ["clksignal", romzip,  "--rompath=/userdata/bios/"]
+
+        if system.name in _SVIDEO_SYSTEMS:
+            commandArray.extend(["--output=SVideo"])
+
+        if system.name in _RGB_SYSTEMS:
+            commandArray.extend(["--output=RGB"])
 
         if system.name in _QUICKLOAD_SYSTEMS:
             commandArray.extend(["--quickload"])
