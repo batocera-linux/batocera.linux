@@ -6,6 +6,7 @@
 ### Added
 
 ### Fixed
+- Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 
 ### Changed / Improved
 

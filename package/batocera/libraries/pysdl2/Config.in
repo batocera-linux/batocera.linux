@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYSDL2
+	bool "pysdl2"
+	select BR2_PACKAGE_SDL2
+	help
+	  PySDL2 is a pure Python wrapper around the SDL2,
+	  SDL2_mixer, SDL2_image, SDL2_ttf, and SDL2_gfx libraries.
+
+	  http://pysdl2.readthedocs.org/
