@@ -19,7 +19,8 @@ BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	python-pillow \
 	python-ruamel-yaml \
 	python-requests \
-	python-qrcode
+	python-qrcode \
+	pysdl2
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 CONFIGGEN_DIR = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen
