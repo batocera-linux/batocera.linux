@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_SV_SE_VERSION = 11.0.87
+KODI21_RESOURCE_LANGUAGE_SV_SE_VERSION = 11.0.90
 KODI21_RESOURCE_LANGUAGE_SV_SE_SOURCE = \
     resource.language.sv_se-$(KODI21_RESOURCE_LANGUAGE_SV_SE_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_SV_SE_SITE = \
