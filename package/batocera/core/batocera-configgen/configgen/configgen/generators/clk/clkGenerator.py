@@ -54,7 +54,7 @@ class ClkGenerator(Generator):
             commandArray.extend(["--output=SVideo"])
 
         if system.name in _RGB_SYSTEMS:
-            commandArray.extend(["--output=SVideo"])
+            commandArray.extend(["--output=RGB"])
 
         if system.name in _QUICKLOAD_SYSTEMS:
             commandArray.extend(["--quickload"])
