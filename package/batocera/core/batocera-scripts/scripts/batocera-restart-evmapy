@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Lock file mechanism to prevent race conditions
+LOCK_DIR="/var/run/restart-evmapy.lock"
+trap 'rmdir "$LOCK_DIR" >/dev/null 2>&1' EXIT
+if ! mkdir "$LOCK_DIR" >/dev/null 2>&1; then
+    exit 0
+fi
+
+HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+CURL_EXIT_CODE=$?
+
+# Only run if a game is runnning
+if [ ${CURL_EXIT_CODE} -eq 0 ] && [ "${HTTP_STATUS}" = "200" ]; then
+    # Stop & reconfigure the controller for new input location
+    /usr/bin/batocera-evmapy stop >> "$LOG_FILE" 2>&1
+    python3 /usr/bin/reconfigure-evmapy.py >> "$LOG_FILE" 2>&1   
+    # Start evmapy again. It will now load the fresh config files.
+    /usr/bin/batocera-evmapy start >> "$LOG_FILE" 2>&1
+fi

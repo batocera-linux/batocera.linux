@@ -1,0 +1,1 @@
+SUBSYSTEM=="input", ENV{ID_INPUT_JOYSTICK}=="1", ACTION=="add|remove", RUN+="/usr/bin/batocera-restart-evmapy"
