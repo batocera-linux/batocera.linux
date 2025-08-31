@@ -45,12 +45,29 @@ class DosBoxxGenerator(Generator):
 
         # -fullscreen removed as it crashes on N2
         commandArray = ['/usr/bin/dosbox-x',
-                        "-exit",
+                        "-exit"]
+
+        # Find autoexec file
+        autoexecFile = rom / "dosbox.aut"
+        if autoexecFile.exists():
+            # Copy autoexec file at the end of the custom config file
+            f1 = open(customConfFile, 'a+')
+            f2 = open(autoexecFile, 'r')
+
+            f1.write(f2.read())
+
+            f1.close()
+            f2.close()
+        else:
+            # Otherwilse, we just mount the game directory as c: and launch dosbox.bat
+            commandArray.extend([
                         "-c", f"""mount c {rom!s}""",
                         "-c", "c:",
-                        "-c", "dosbox.bat",
+                        "-c", "dosbox.bat"])
+
+        commandArray.extend([
                         "-fastbioslogo",
-                        "-conf", f"{customConfFile!s}"]
+                        "-conf", f"{customConfFile!s}"])
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS})
 
