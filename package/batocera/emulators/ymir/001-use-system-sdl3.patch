@@ -1,0 +1,51 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 90d32811f2..2f91d074d0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -87,6 +87,9 @@ else ()
+     message(STATUS "IPO / LTO not supported: ${IPO_ERROR}")
+ endif ()
+ 
++# batocera - use system sdl3
++find_package(SDL3 REQUIRED)
++
+ ## Include third-party libraries
+ add_subdirectory(vendor)
+ 
+diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
+index 5893b1e167..13f12d65bf 100644
+--- a/vendor/CMakeLists.txt
++++ b/vendor/CMakeLists.txt
+@@ -35,19 +35,19 @@ message(STATUS "==> mio")
+ add_subdirectory(mio EXCLUDE_FROM_ALL)
+ 
+ # SDL - https://github.com/libsdl-org/SDL
+-message(STATUS "==> SDL")
+-set(SDL_DISABLE_UNINSTALL ON)
+-set(SDL_TEST_LIBRARY OFF)
+-set(SDL_TESTS OFF)
+-set(SDL_EXAMPLES OFF)
+-if (BUILD_SHARED_LIBS)
+-    set(SDL_SHARED ON)
+-    set(SDL_STATIC OFF)
+-else ()
+-    set(SDL_SHARED OFF)
+-    set(SDL_STATIC ON)
+-endif ()
+-add_subdirectory_quiet(SDL EXCLUDE_FROM_ALL)
++#message(STATUS "==> SDL")
++#set(SDL_DISABLE_UNINSTALL ON)
++#set(SDL_TEST_LIBRARY OFF)
++#set(SDL_TESTS OFF)
++#set(SDL_EXAMPLES OFF)
++#if (BUILD_SHARED_LIBS)
++#    set(SDL_SHARED ON)
++#    set(SDL_STATIC OFF)
++#else ()
++#    set(SDL_SHARED OFF)
++#    set(SDL_STATIC ON)
++#endif ()
++#add_subdirectory_quiet(SDL EXCLUDE_FROM_ALL)
+ 
+ # cxxopts - https://github.com/jarro2783/cxxopts
+ message(STATUS "==> cxxopts")
