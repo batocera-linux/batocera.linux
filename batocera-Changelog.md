@@ -65,7 +65,7 @@
 - CLK can also be chosen as an emulator for C+4, VIC20, MSX1 and 2, Sega Master System, Colecovision,
   AmstradCPC, AtariST, ZX81, ZXSpectrum, AppleII, AppleIIGS, Macintosh, Archimedes, Electron
 - Light guns: option to hide crosshairs in ES
-- Azahar 3DS emulator: Version 2122
+- Azahar 3DS emulator: Version 2123
 - DICE libretro core for arcade machines without a CPU
 - Wine Proton 9.0.4 as a Wine runner from Kron4ek's Wine-Builds
 - Blake Stone port Bstone to play Aliens Of Gold or Planet Strike
