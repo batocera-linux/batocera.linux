@@ -1,0 +1,35 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index ea73821c06..e38c37f6a8 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -313,10 +313,7 @@ static bool IsJoystick(const char *path, int *fd, char **name_return, Uint16 *ve
+         }
+     }
+ 
+-    name = SDL_CreateJoystickName(inpid.vendor, inpid.product, NULL, product_string);
+-    if (!name) {
+-        return false;
+-    }
++    name = SDL_strdup(product_string);
+ 
+     if (!IsVirtualJoystick(inpid.vendor, inpid.product, inpid.version, name) &&
+         SDL_JoystickHandledByAnotherDriver(&SDL_LINUX_JoystickDriver, inpid.vendor, inpid.product, inpid.version, name)) {
+diff --git a/src/joystick/SDL_gamepad.c b/src/joystick/SDL_gamepad.c
+index 7b76c57266..c5c34ef8f1 100644
+--- a/src/joystick/SDL_gamepad.c
++++ b/src/joystick/SDL_gamepad.c
+@@ -3360,13 +3360,7 @@ const char *SDL_GetGamepadName(SDL_Gamepad *gamepad)
+     SDL_LockJoysticks();
+     {
+         CHECK_GAMEPAD_MAGIC(gamepad, NULL);
+-
+-        if (SDL_strcmp(gamepad->name, "*") == 0 ||
+-            gamepad->joystick->steam_handle != 0) {
+-            result = SDL_GetJoystickName(gamepad->joystick);
+-        } else {
+-            result = SDL_GetPersistentString(gamepad->name);
+-        }
++        result = SDL_GetJoystickName(gamepad->joystick);
+     }
+     SDL_UnlockJoysticks();
+ 

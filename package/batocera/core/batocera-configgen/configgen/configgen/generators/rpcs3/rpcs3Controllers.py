@@ -26,28 +26,6 @@ class _InputMapping(TypedDict):
 
 # Method to get the SDL3 controller name for each connected controller
 def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path):
-    
-    sdl_joystick_names = []
-    if not sdl3.SDL_Init(sdl3.SDL_INIT_JOYSTICK):
-        _logger.error(f"Could not initialize SDL joystick subsystem: {sdl3.SDL_GetError().decode()}")
-    else:
-        try:
-            count = ctypes.c_int(0)
-            joystick_ids = sdl3.SDL_GetJoysticks(ctypes.byref(count))
-            if joystick_ids and count.value > 0:
-                _logger.debug(f"Found {count.value} joysticks via SDL3.")
-                for i in range(count.value):
-                    joystick_id = joystick_ids[i]
-                    name_bytes = sdl3.SDL_GetJoystickNameForID(joystick_id)
-                    if name_bytes:
-                        sdl_joystick_names.append(name_bytes.decode('utf-8', 'replace'))
-                    else:
-                        sdl_joystick_names.append("Unknown SDL Joystick")
-            
-            if joystick_ids:
-                sdl3.SDL_free(joystick_ids)
-        finally:
-            sdl3.SDL_Quit()
 
     mkdir_if_not_exists(_RPCS3_INPUT_DIR)
 
@@ -302,23 +280,7 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 _logger.debug("*** Using default SDL3 configuration ***")
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: SDL\n')
-                ctrlname = ""
-                # Check if our list of SDL3 names is populated and the current player index is valid
-                if sdl_joystick_names and (nplayer - 1) < len(sdl_joystick_names):
-                    ctrlname = sdl_joystick_names[nplayer - 1]
-                    _logger.debug(f"Using SDL3 name for Player {nplayer}: {ctrlname}")
-                else:
-                    # Fallback to the old method if SDL3 failed or the controller was not found
-                    _logger.warning(f"Could not find SDL3 name for Player {nplayer}. Falling back to pad.real_name.")
-                    ctrlname = pad.real_name
-                
-                # Remove duplicate starting name if it does not start with a space
-                if not ctrlname.startswith(' '):
-                    words = ctrlname.split()
-                    if len(words) > 1 and words[0] == words[1]:
-                        ctrlname = " ".join(words[1:])
-                        _logger.debug(f"Duplicate word removed, new name: {ctrlname}")
-
+                ctrlname = pad.real_name
                 # workaround controllers with commas in their name - like Nintendo
                 ctrlname = ctrlname.replace(",", ".")
                 # rpcs3 appends a unique number per controller name
