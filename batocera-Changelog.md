@@ -81,6 +81,7 @@
 - Fake standby and suspend
 - libretro-Genesis-Plus-GX core (expanded MAXROMSIZE for Sega Channel Revival and P4PR1UM Compatibility)
 - Archive extractor and PCManFM integration (`batocera-xtract` command)
+- Ymir Sega Saturn emulator for select systems
 ### Fixed
 - Fix CD System BRAM core option for Genesis Plus GX to use the per-game setting
 - Fix some problems in ES and Batocera with IPv6 networks

@@ -1,0 +1,181 @@
+diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
+index a19720cd81..73f9342aa2 100644
+--- a/apps/ymir-sdl3/src/app/app.hpp
++++ b/apps/ymir-sdl3/src/app/app.hpp
+@@ -38,6 +38,12 @@
+ namespace app {
+ 
+ class App {
++
++    std::unordered_map<SDL_JoystickID, SDL_Gamepad *> m_gamepads{};
++    std::unordered_map<SDL_JoystickID, int> m_gamepadPlayerIndexes{};
++
++    void MapConfiguredGamepads();
++
+ public:
+     App();
+ 
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
+index d8249b3885..51d9a46877 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp
+@@ -1567,19 +1567,17 @@ void App::RunEmulator() {
+     // Track connected gamepads and player indices
+     // NOTE: SDL3 has a bug with Windows raw input where new controllers are always assigned to player index 0.
+     // We'll manage player indices manually instead.
+-    std::unordered_map<SDL_JoystickID, SDL_Gamepad *> gamepads{};
+-    std::unordered_map<SDL_JoystickID, int> gamepadPlayerIndexes{};
+     std::set<int> freePlayerIndices;
+-    auto getGamepadPlayerIndex = [&](SDL_JoystickID id) {
+-        if (gamepadPlayerIndexes.contains(id)) {
+-            return gamepadPlayerIndexes.at(id);
++    auto getGamepadPlayerIndex = [this](SDL_JoystickID id) {
++        if (m_gamepadPlayerIndexes.contains(id)) {
++            return m_gamepadPlayerIndexes.at(id);
+         } else {
+             return -1;
+         }
+     };
+-    auto getFreePlayerIndex = [&]() -> int {
++    auto getFreePlayerIndex = [&, this]() -> int {
+         if (freePlayerIndices.empty()) {
+-            return gamepadPlayerIndexes.size();
++            return m_gamepadPlayerIndexes.size();
+         } else {
+             auto first = freePlayerIndices.begin();
+             int index = *first;
+@@ -1592,6 +1590,8 @@ void App::RunEmulator() {
+         assert(freePlayerIndices.insert(free).second);
+     };
+ 
++    MapConfiguredGamepads();
++
+     std::array<GUIEvent, 64> evts{};
+ 
+ #if Ymir_ENABLE_IMGUI_DEMO
+@@ -1820,26 +1820,33 @@ void App::RunEmulator() {
+ 
+             case SDL_EVENT_GAMEPAD_ADDED: //
+             {
++                // This logic now handles controllers plugged in *after* launch
++                SDL_JoystickID instanceID = evt.gdevice.which;
++                if (m_gamepads.count(instanceID)) {
++                    // This gamepad was already mapped at startup, do nothing.
++                    break;
++                }
++                
+-                SDL_Gamepad *gamepad = SDL_OpenGamepad(evt.gdevice.which);
++                SDL_Gamepad *gamepad = SDL_OpenGamepad(instanceID);
+                 if (gamepad != nullptr) {
+-                    // const int playerIndex = SDL_GetGamepadPlayerIndex(gamepad);
+                     const int playerIndex = getFreePlayerIndex();
+-                    gamepadPlayerIndexes[evt.gdevice.which] = playerIndex;
+-                    gamepads[evt.gdevice.which] = gamepad;
+-                    devlog::debug<grp::base>("Gamepad {} added -> player index {}", evt.gdevice.which, playerIndex);
+-                    inputContext.ConnectGamepad(playerIndex);
++                    m_gamepadPlayerIndexes[instanceID] = playerIndex;
++                    m_gamepads[instanceID] = gamepad;
++                    devlog::debug<grp::base>("Gamepad {} hot-plugged -> player index {}", instanceID, playerIndex);
++                    m_context.inputContext.ConnectGamepad(playerIndex);
+                 }
+                 break;
+             }
+             case SDL_EVENT_GAMEPAD_REMOVED: //
+             {
+-                const int playerIndex = gamepadPlayerIndexes[evt.gdevice.which];
+-                devlog::debug<grp::base>("Gamepad {} removed -> player index {}", evt.gdevice.which, playerIndex);
+-                SDL_CloseGamepad(gamepads.at(evt.gdevice.which));
+-                gamepadPlayerIndexes.erase(evt.gdevice.which);
++                SDL_JoystickID instanceID = evt.gdevice.which;
++                const int playerIndex = m_gamepadPlayerIndexes[instanceID];
++                devlog::debug<grp::base>("Gamepad {} removed -> player index {}", instanceID, playerIndex);
++                SDL_CloseGamepad(m_gamepads.at(instanceID));
++                m_gamepadPlayerIndexes.erase(instanceID);
+                 addFreePlayerIndex(playerIndex);
+-                gamepads.erase(evt.gdevice.which);
+-                inputContext.DisconnectGamepad(playerIndex);
++                m_gamepads.erase(instanceID);
++                m_context.inputContext.DisconnectGamepad(playerIndex);
+                 break;
+             }
+             case SDL_EVENT_GAMEPAD_REMAPPED: [[fallthrough]];
+@@ -4584,4 +4584,55 @@ void App::OnMidiInputReceived(double delta, std::vector<unsigned char> *msg, voi
+     app->m_context.EnqueueEvent(events::emu::ReceiveMidiInput(delta, std::move(*msg)));
+ }
+ 
++void App::MapConfiguredGamepads() {
++    int num_gamepads = 0;
++    SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_gamepads);
++    if (!joysticks) {
++        return;
++    }
++
++    const auto& p1_path_str = m_context.settings.input.port1.devicePath.string();
++    if (!p1_path_str.empty()) {
++        for (int i = 0; i < num_gamepads; ++i) {
++            SDL_JoystickID instanceID = joysticks[i];
++            const char* current_path = SDL_GetJoystickPathForID(instanceID);
++            if (current_path && p1_path_str == current_path) {
++                SDL_Gamepad* gamepad = SDL_OpenGamepad(instanceID);
++                if (gamepad) {
++                    const int player_index = 0;
++                    m_gamepadPlayerIndexes[instanceID] = player_index;
++                    m_gamepads[instanceID] = gamepad;
++                    m_context.inputContext.ConnectGamepad(player_index);
++                    devlog::debug<grp::base>("Device {} mapped to Port 1 (Player Index {})", current_path, player_index);
++                }
++                break;
++            }
++        }
++    }
++
++    const auto& p2_path_str = m_context.settings.input.port2.devicePath.string();
++    if (!p2_path_str.empty()) {
++        for (int i = 0; i < num_gamepads; ++i) {
++            SDL_JoystickID instanceID = joysticks[i];
++            if (m_gamepadPlayerIndexes.count(instanceID)) {
++                continue;
++            }
++            const char* current_path = SDL_GetJoystickPathForID(instanceID);
++            if (current_path && p2_path_str == current_path) {
++                SDL_Gamepad* gamepad = SDL_OpenGamepad(instanceID);
++                if (gamepad) {
++                    const int player_index = 1;
++                    m_gamepadPlayerIndexes[instanceID] = player_index;
++                    m_gamepads[instanceID] = gamepad;
++                    m_context.inputContext.ConnectGamepad(player_index);
++                    devlog::debug<grp::base>("Device {} mapped to Port 2 (Player Index {})", current_path, player_index);
++                }
++                break;
++            }
++        }
++    }
++
++    SDL_free(joysticks);
++}
++
+ } // namespace app
+diff --git a/apps/ymir-sdl3/src/app/settings.hpp b/apps/ymir-sdl3/src/app/settings.hpp
+index 854567324b..0f9924486e 100644
+--- a/apps/ymir-sdl3/src/app/settings.hpp
++++ b/apps/ymir-sdl3/src/app/settings.hpp
+@@ -272,6 +272,7 @@ struct Settings {
+     struct Input {
+         struct Port {
+             util::Observable<ymir::peripheral::PeripheralType> type;
++            std::filesystem::path devicePath;
+ 
+             struct ControlPad {
+                 struct Binds {
+diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
+index ed327c0579..c0e0221c98 100644
+--- a/apps/ymir-sdl3/src/app/settings.cpp
++++ b/apps/ymir-sdl3/src/app/settings.cpp
+@@ -970,6 +970,7 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
+         auto parsePort = [&](const char *name, Input::Port &portSettings) {
+             if (auto tblPort = tblInput[name]) {
+                 Parse(tblPort, "PeripheralType", portSettings.type);
++                Parse(tblPort, "DevicePath", portSettings.devicePath);
+ 
+                 auto parseControlPadBinds = [&](auto &tblBinds) {
+                     Parse(tblBinds, "A", portSettings.controlPad.binds.a);
