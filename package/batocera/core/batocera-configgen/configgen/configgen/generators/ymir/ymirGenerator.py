@@ -22,6 +22,7 @@ import toml
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
+from ...controller import Controllers
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -114,6 +115,73 @@ class YmirGenerator(Generator):
         video_config["Deinterlace"] = system.config.get_bool("ymir_interlace", True)
         video_config["TransparentMeshes"] = system.config.get_bool("ymir_meshes", False)
         video_config["Rotation"] = system.config.get_str("ymir_rotation", "Normal")
+
+        # Controllers
+        input_config = config.setdefault("Input", {})
+        input_config["GamepadAnalogToDigitalSensitivity"] = 0.20000000298023224
+        input_config["GamepadLSDeadzone"] = 0.15000000596046448
+        input_config["GamepadRSDeadzone"] = 0.15000000596046448
+
+        # Clear existing port configurations for the 2 supported ports
+        for i in range(1, 3):
+            if f"Port{i}" in input_config:
+                del input_config[f"Port{i}"]
+        
+        # Default keyboard binds for the AnalogPad profile
+        default_keyboard_maps = {
+            1: { # Player 1
+                "A": ["J"], "B": ["K"], "C": ["L"],
+                "X": ["U"], "Y": ["I"], "Z": ["O"],
+                "L": ["Q"], "R": ["E"],
+                "Up": ["W"], "Down": ["S"], "Left": ["A"], "Right": ["D"],
+                "Start": ["F", "G", "H"],
+                "SwitchMode": ["Ctrl+B"]
+            },
+            2: { # Player 2
+                "A": ["KeyPad1"], "B": ["KeyPad2"], "C": ["KeyPad3"],
+                "X": ["KeyPad4"], "Y": ["KeyPad5"], "Z": ["KeyPad6"],
+                "L": ["Insert", "KeyPad7"], "R": ["PageUp", "KeyPad9"],
+                "Up": ["Home", "Up"], "Down": ["End", "Down"], "Left": ["Delete", "Left"], "Right": ["PageDown", "Right"],
+                "Start": ["KeyPadEnter"],
+                "SwitchMode": ["KeyPadAdd"]
+            }
+        }
+
+        # Mapping of Ymir's binds to SDL Gamepad suffixes
+        ymir_sdl_map = {
+            "A": "GamepadX",
+            "B": "GamepadA",
+            "C": "GamepadB",
+            "X": "GamepadLeftBumper",
+            "Y": "GamepadY",
+            "Z": "GamepadRightBumper",
+            "Start": "GamepadStart",
+            "SwitchMode": "GamepadLeftThumb",
+            "DPad": "GamepadDPad",
+            "AnalogStick": "GamepadLeftStick",
+            "AnalogL": "GamepadLeftTrigger",
+            "AnalogR": "GamepadRightTrigger"
+        }
+
+        # Configure up to a maximum of two controllers
+        for pad in playersControllers[:2]:
+            port_key = f"Port{pad.player_number}"
+            port_config = cast("dict[str, object]", input_config.setdefault(port_key, {}))
+            port_config["PeripheralType"] = 'AnalogPad'
+
+            port_config["DevicePath"] = pad.device_path
+
+            analog_pad_config = cast("dict[str, object]", port_config.setdefault("AnalogPad", {}))
+            binds_config = cast("dict[str, list[str]]", analog_pad_config.setdefault("Binds", {}))
+            
+            player_keyboard_map = default_keyboard_maps.get(pad.player_number, {})
+
+            for key, val in player_keyboard_map.items():
+                binds_config[key] = val.copy()
+
+            for ymir_key, sdl_suffix in ymir_sdl_map.items():
+                bind_list = binds_config.setdefault(ymir_key, [])
+                bind_list.append(f'{sdl_suffix}@{pad.index}')
 
         # Now write the updated toml
         toml_file.write_text(toml.dumps(config))
