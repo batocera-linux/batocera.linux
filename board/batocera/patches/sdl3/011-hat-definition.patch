@@ -1,0 +1,13 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 4a00474..ab2525c 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -1173,6 +1173,8 @@ static bool GuessIfAxesAreDigitalHat(struct input_absinfo *absinfo_x, struct inp
+         return false;
+     }
+ 
++    return true;
++
+     // If the hint says so, treat all hats as digital.
+     if (SDL_GetHintBoolean(SDL_HINT_JOYSTICK_LINUX_DIGITAL_HATS, false)) {
+         return true;

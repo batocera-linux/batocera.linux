@@ -1,0 +1,56 @@
+diff --git a/src/video/x11/SDL_x11modes.c b/src/video/x11/SDL_x11modes.c
+index 37198a7..66c1dbf 100644
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -741,6 +741,9 @@ static bool X11_InitModes_XRandR(SDL_VideoDevice *_this)
+     int looking_for_primary;
+     int output;
+     int screen;
++    char* sdl_screen_env;
++
++    sdl_screen_env = SDL_getenv("SDL_SCREEN");
+ 
+     if (!X11_XRRQueryExtension(dpy, &data->xrandr_event_base, &xrandr_error_base)) {
+         return SDL_SetError("XRRQueryExtension failed");
+@@ -749,10 +752,12 @@ static bool X11_InitModes_XRandR(SDL_VideoDevice *_this)
+     for (looking_for_primary = 1; looking_for_primary >= 0; looking_for_primary--) {
+         for (screen = 0; screen < screencount; screen++) {
+ 
+-            // we want the primary output first, and then skipped later.
+-            if (looking_for_primary && (screen != default_screen)) {
+-                continue;
+-            }
++	  if (sdl_screen_env == NULL) {
++	    /* we want the primary output first, and then skipped later. */
++	    if (looking_for_primary && (screen != default_screen)) {
++	      continue;
++	    }
++	  }
+ 
+             XRRScreenResources *res = X11_GetScreenResources(dpy, screen);
+             if (!res) {
+@@ -760,11 +765,24 @@ static bool X11_InitModes_XRandR(SDL_VideoDevice *_this)
+             }
+ 
+             for (output = 0; output < res->noutput; output++) {
++	      if (sdl_screen_env == NULL) {
+                 // The primary output _should_ always be sorted first, but just in case...
+                 if ((looking_for_primary && (res->outputs[output] != primary)) ||
+                     (!looking_for_primary && (screen == default_screen) && (res->outputs[output] == primary))) {
+                     continue;
+                 }
++	      } else {
++		if (looking_for_primary) {
++		  XRROutputInfo *output_info;
++		  output_info = X11_XRRGetOutputInfo(dpy, res, res->outputs[output]);
++		  if(output_info != NULL) {
++		    if(strcmp(output_info->name, sdl_screen_env) != 0) {
++		      continue;
++		    }
++		  }
++		}
++	      }
++
+                 if (!X11_AddXRandRDisplay(_this, dpy, screen, res->outputs[output], res, false)) {
+                     break;
+                 }
