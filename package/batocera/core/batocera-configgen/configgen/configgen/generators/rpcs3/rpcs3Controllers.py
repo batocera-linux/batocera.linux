@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import codecs
-import ctypes
 import logging
-import sdl3
 from typing import TYPE_CHECKING, Final, TypedDict
 
 from ...batoceraPaths import mkdir_if_not_exists
@@ -24,7 +22,6 @@ class _InputMapping(TypedDict):
     config_name: str
     event_variations: list[tuple[str, str]]
 
-# Method to get the SDL3 controller name for each connected controller
 def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path):
 
     mkdir_if_not_exists(_RPCS3_INPUT_DIR)
