@@ -1,0 +1,20 @@
+diff --git a/src/joystick/SDL_gamepad.c b/src/joystick/SDL_gamepad.c
+index c5c34ef..f4683db 100644
+--- a/src/joystick/SDL_gamepad.c
++++ b/src/joystick/SDL_gamepad.c
+@@ -1178,8 +1178,13 @@ static bool SDL_PrivateParseGamepadElement(SDL_Gamepad *gamepad, const char *szG
+         bind.output_type = SDL_GAMEPAD_BINDTYPE_AXIS;
+         bind.output.axis.axis = axis;
+         if (axis == SDL_GAMEPAD_AXIS_LEFT_TRIGGER || axis == SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) {
+-            bind.output.axis.axis_min = 0;
+-            bind.output.axis.axis_max = SDL_JOYSTICK_AXIS_MAX;
++	  if (*szGameButton == '~') {
++	    bind.output.axis.axis_max = 0;
++	    bind.output.axis.axis_min = SDL_JOYSTICK_AXIS_MAX;
++	  } else {
++	    bind.output.axis.axis_min = 0;
++	    bind.output.axis.axis_max = SDL_JOYSTICK_AXIS_MAX;
++	  }
+         } else {
+             if (half_axis_output == '+') {
+                 bind.output.axis.axis_min = 0;
