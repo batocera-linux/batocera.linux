@@ -1,0 +1,24 @@
+diff -Naur a/kernel/conftest.sh b/kernel/conftest.sh
+--- a/kernel/conftest.sh	2024-05-10 16:44:09.219463660 +0000
++++ b/kernel/conftest.sh	2024-05-10 16:45:33.696827888 +0000
+@@ -196,7 +196,7 @@
+ }
+ 
+ build_cflags() {
+-    BASE_CFLAGS="-O2 -D__KERNEL__ \
++    BASE_CFLAGS="-O2 -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -D__KERNEL__ \
+ -DKBUILD_BASENAME=\"#conftest$$\" -DKBUILD_MODNAME=\"#conftest$$\" \
+ -nostdinc -isystem $ISYSTEM"
+ 
+diff -Naur a/kernel/uvm/conftest.sh b/kernel/uvm/conftest.sh
+--- a/kernel/uvm/conftest.sh	2024-05-10 16:44:09.206130218 +0000
++++ b/kernel/uvm/conftest.sh	2024-05-10 16:45:45.273592434 +0000
+@@ -196,7 +196,7 @@
+ }
+ 
+ build_cflags() {
+-    BASE_CFLAGS="-O2 -D__KERNEL__ \
++    BASE_CFLAGS="-O2 -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -D__KERNEL__ \
+ -DKBUILD_BASENAME=\"#conftest$$\" -DKBUILD_MODNAME=\"#conftest$$\" \
+ -nostdinc -isystem $ISYSTEM"
+ 
