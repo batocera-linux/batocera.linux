@@ -39,6 +39,8 @@ f_usage() {
 f_minTomaxResolution() {
     
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
+    CONFRESOLUTION="$(batocera-settings-get-master es.resolution)"
+
     if [ -z "$1" ]; then
         # reinit the screen (in case it was off)
         if [ -n "${BOOTRESOLUTION}" ] && [ "${BOOTRESOLUTION}" != "auto" ]; then
@@ -75,11 +77,14 @@ f_minTomaxResolution() {
         # Keep only modes with a refresh rate of 59Hz or higher
         # and not the excluded resolution on some 4k TV's - 4096x2160
         awk '$1 != "4096x2160" && $2 >= 59 {print $0}' | \
-        awk '{ split($1, res, "x"); print res[1], res[2], $2 }' | \
-        # sort the resolutions and rates
-        sort -k1,1nr -k2,2nr -k3,3nr | \
+        # Calculate total pixels (area) to sort by, ensuring largest resolution is chosen regardless of rotation.
+        awk '{ split($1, res, "x"); print (res[1] * res[2]), res[1], res[2], $2 }' | \
+        # Sort by total pixels (area) first (desc), then by refresh rate (desc).
+        sort -k1,1nr -k4,4nr | \
         # Get the top-most (best) result
-        head -n 1)
+        head -n 1 | \
+        # Remove the temporary area column, leaving only: WIDTH HEIGHT RATE
+        awk '{print $2, $3, $4}')
 
     if [ -n "$IDEAL_MODE_INFO" ]; then
         IDEAL_WIDTH=$(echo "$IDEAL_MODE_INFO" | awk '{print $1}')
@@ -107,7 +112,19 @@ f_minTomaxResolution() {
         else
             echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
-    # Priority 3: No user setting, so we use our calculated ideal mode
+    # Priority 3: A master resolution is set in the configuration
+    elif [ -n "${CONFRESOLUTION}" ]; then
+        RESOLUTION=$(echo "$CONFRESOLUTION" | sed 's/max-//;s/\..*//')
+        MAXWIDTH=$(echo "$RESOLUTION" | cut -d 'x' -f 1)
+        MAXHEIGHT=$(echo "$RESOLUTION" | cut -d 'x' -f 2)
+        # Extract refresh rate if present
+        MAXRATE=$(echo "$CONFRESOLUTION" | cut -s -d '.' -f 2-)
+        if [ -n "$MAXRATE" ]; then
+            echo "Using master ES resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
+        else
+            echo "Using master ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
+        fi
+    # Priority 4: No user setting, so we use our calculated ideal mode
     elif [ -n "$IDEAL_WIDTH" ]; then
         # Check if the current refresh rate is already ~60Hz.
         ROUNDED_CURRENTRATE=$(printf "%.0f\n" "${CURRENTRATE}")
@@ -123,7 +140,7 @@ f_minTomaxResolution() {
             MAXHEIGHT=$IDEAL_HEIGHT
             MAXRATE=$IDEAL_RATE
         fi
-    # Priority 4: Last resort, grab the value from the mpv.log if it exists
+    # Priority 5: Last resort, grab the value from the mpv.log if it exists
     else
         if [ -f "$mpvlog" ]; then
             selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
