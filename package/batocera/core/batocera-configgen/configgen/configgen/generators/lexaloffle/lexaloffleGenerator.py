@@ -33,10 +33,12 @@ class LexaloffleGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if (system.name == "pico8"):
+            LD_LIB="LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+str(BIOS / "pico-8")
             BIN_PATH=PICO8_BIN_PATH
             CONTROLLERS=PICO8_CONTROLLERS
             ROOT_PATH=PICO8_ROOT_PATH
         elif (system.name == "voxatron"):
+            LD_LIB="LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"+str(BIOS / "voxatron")
             BIN_PATH=VOX_BIN_PATH
             CONTROLLERS=VOX_CONTROLLERS
             ROOT_PATH=VOX_ROOT_PATH
@@ -50,7 +52,8 @@ class LexaloffleGenerator(Generator):
             raise BatoceraException(f"{BIN_PATH} is not set as executable")
 
         # the command to run
-        commandArray: list[str | Path] = [BIN_PATH]
+        commandArray: list[str | Path] = [LD_LIB]
+        commandArray.extend([BIN_PATH])
         commandArray.extend(["-desktop", SCREENSHOTS])  # screenshots
         commandArray.extend(["-windowed", "0"])                     # full screen
         # Display FPS
