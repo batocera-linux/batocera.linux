@@ -18,7 +18,7 @@ from ...batoceraPaths import (
     ensure_parents_and_open,
     mkdir_if_not_exists,
 )
-from ...controller import Controllers, write_sdl_controller_db
+from ...controller import Controllers, generate_sdl_game_controller_config, write_sdl_controller_db
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -121,6 +121,11 @@ class Pcsx2Generator(Generator):
         envcmd: dict[str, str | Path] = {
             "XDG_CONFIG_HOME": CONFIGS
         }
+
+        # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
+        # wheel metadata
+        if not Pcsx2Generator.useEmulatorWheels(playingWithWheel, Pcsx2Generator.getWheelType(metadata, playingWithWheel, system.config)):
+            envcmd["SDL_GAMECONTROLLERCONFIG"] = generate_sdl_game_controller_config(playersControllers)
 
         # ensure we have the patches.zip file to avoid message.
         mkdir_if_not_exists(pcsx2Patches.parent)
