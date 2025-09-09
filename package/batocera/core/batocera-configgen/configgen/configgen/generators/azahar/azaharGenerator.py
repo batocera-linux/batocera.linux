@@ -129,9 +129,9 @@ class AzaharGenerator(Generator):
         ## [RENDERER]
         if not azaharConfig.has_section("Renderer"):
             azaharConfig.add_section("Renderer")
-        # Force Hardware Rrendering / Shader or nothing works fine
+        # Use Hardware rendering with Hardware Shader by default; give user choice to disable it for some games
         azaharConfig.set("Renderer", "use_hw_renderer", "true")
-        azaharConfig.set("Renderer", "use_hw_shader",   "true")
+        azaharConfig.set("Renderer", "use_hw_shader", system.config.get_bool("azahar_use_hw_shader", True, return_values=("true", "false")))
         azaharConfig.set("Renderer", "use_shader_jit",  "true")
         # Software, OpenGL (default) or Vulkan
         azaharConfig.set("Renderer", "graphics_api", system.config.get("azahar_graphics_api", "1"))

@@ -14625,6 +14625,13 @@ azahar:
                 "Software":         0
                 "OpenGL (Default)": 1
                 "Vulkan":           2
+        azahar_use_hw_shader:
+            submenu: GRAPHICS
+            prompt: HARDWARE SHADER
+            description: Helps some games to launch when disabled. May affect performance.
+            choices:
+                "Off": 0
+                "On":  1
         azahar_use_vsync_new:
             submenu: GRAPHICS
             prompt: VSYNC
