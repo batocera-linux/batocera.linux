@@ -114,6 +114,7 @@ class evmapy(AbstractContextManager[None, None]):
         if self.__started:
             self.__started = False
             subprocess.call(['batocera-evmapy', 'stop'])
+            subprocess.call(['batocera-evmapy', 'clear'])
 
     def __build_merged_keys_file(self) -> Path | None:
         # consider files here in this order to get a configuration
