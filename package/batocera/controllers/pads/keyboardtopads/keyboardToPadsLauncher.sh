@@ -91,6 +91,7 @@ else
 	else
 	    # no config file found, do 1 to 1 mapping to enable keyboard
 	    # map the same, but this one will have ID_INPUT_KEYBOARD set to 1
+	    echo "no config file found" >&2
 	    if test -t 1 # check output is a tty
 	    then
 		evsieve --input "${1}" --output name="Default virtual keyboard"
