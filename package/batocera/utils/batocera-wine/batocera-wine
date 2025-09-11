@@ -6,7 +6,7 @@ TRICK=${4,,}                                                                    
 ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable: e.g. "Age of Empires.wine" or "AoE_inst.exe"
 ROMBASEDIR=$(dirname "${GAMENAME}")                                                  # gamedir or rootdir: eg "/userdata/roms/windows" if AoE is a wine.dir
 GAMEEXT="${GAMENAME##*.}"                                                            # gameextension: pc, wine, exe, msi
-# log wineserver running time  
+# log wineserver running time
 TIMESTAMP=$(date +%s)
 
 ## Folders
@@ -236,7 +236,7 @@ redist_install() {
         readarray -t i < <(find "${USER_DIR}/exe" -maxdepth 1 -type f -iname "*.exe" -printf "%p\n")
         [[ "${#i[@]}" -eq 0 ]] && { rmdir "${USER_DIR}/exe"; echo "${FUNCNAME[0]}: Place only exe-files to ${USER_DIR}/exe" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.exe"
-        
+
         for file in "${i[@]}"; do
             #We compare base-filename in lowercase only and execute the file stored in array
             ii="$(basename "$file")"; ii="${ii,,}"
@@ -296,7 +296,7 @@ msi_install() {
         readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.msi" -printf "%p\n")
         [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "${FUNCNAME[0]}: Place only msi-files to $ii" >&2; return 0; }
         mkdir -p "${USER_DIR}/installed.msi"
-        
+
         for file in "${i[@]}"; do
             echo "Executing file $file"
             WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${file}" /quiet /qn /norestart &>/dev/null || return 1
@@ -429,7 +429,7 @@ sandboxing_prefix() {
     fi
 
     echo "Remove Symblink"
-    # replace some links by folders. 
+    # replace some links by folders.
     # don't create all folders in case links doesn't exist to not create both Music and My Music at the same time (old wine uses My Music, new wine uses Musics)
     local DIR=""
 
@@ -564,7 +564,7 @@ play_pc() {
     echo "play_pc"
     GAMENAME="$1"
     WINEPOINT="$2"
-    
+
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
@@ -595,6 +595,7 @@ trick_wine() {
     GAMENAME="$1"
     WINEPOINT="$2"
     TRICK="$3"
+
     if [[ -e "${WINETRICKS}" ]]; then
         echo "Winetricks is installed"
     else
@@ -624,7 +625,7 @@ play_exe() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} wine "${ROMGAMENAME}")
+    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} "${WINE}" "${ROMGAMENAME}")
     waitWineServer 0
 }
 
@@ -794,7 +795,7 @@ install_exe_msi() {
     GAMENAME="$2"
     WINEPOINT="$3"
     createWineDirectory "${WINEPOINT}"
-    [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} wine "${GAMENAME}"
+    [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} "${WINE}" "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${GAMENAME}"
     waitWineServer 0
     createAutorunCmd "${WINEPOINT}" "drive_c/P*"
@@ -814,9 +815,9 @@ install_iso() {
     fi
 
     createWineDirectory "${WINEPOINT}"
-    
+
     if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"; then
-	    WINEPREFIX=${WINEPOINT} wine explorer "d:"
+	    WINEPREFIX=${WINEPOINT} "${WINE}" explorer "d:"
 	    rm -f "${WINEPOINT}/dosdevices/d:"
     fi
 
@@ -837,7 +838,7 @@ wine2squashfs() {
 wine2winetgz() {
     GAMEDIR="$1"
     WINETGZFILE="$2"
-    echo "Building compressed file: $(basename "${WINETGZFILE}") <- ${GAMEDIR}" 
+    echo "Building compressed file: $(basename "${WINETGZFILE}") <- ${GAMEDIR}"
     (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") && echo "File: $(basename "${WINETGZFILE}") build..." || return 1
     return 0
 }
@@ -890,18 +891,18 @@ init_wine() {
     ## Wine detection
     WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
     [[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
-    
+
     WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"
     # to help with the transition from previous runners.
     [[ -z "$WINE_VERSION" ]] && WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo "${WINE_RUNNER}")"
-    
+
     if [[ "${WINE_VERSION}" == "lutris" ]]; then
         WINE_VERSION="wine-tkg"
     elif [[ "${WINE_VERSION}" == "proton" ]]; then
         WINE_VERSION="wine-proton"
     fi
     echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
-    
+
     ## Wine executables
     DIR="$(find_wine_dir "$WINE_VERSION")"
     if [[ $? -eq 0 ]]; then
@@ -910,7 +911,7 @@ init_wine() {
         echo "can't find WINE version ${WINE_VERSION} directory, you should change the runner"
         exit 1
     fi
-    
+
     echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
     USER_DIR="/userdata/system/wine"
     # check 32-bit wine path
@@ -928,7 +929,7 @@ init_wine() {
     WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
     MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
     WINETRICKS="${DIR}/winetricks"
-    
+
     # Check lib64 directory
     if [[ -e "${DIR}/${WINE_VERSION}/lib64/wine" ]]; then
         WINE_LIB64_DIR="${DIR}/${WINE_VERSION}/lib64/wine"
@@ -941,7 +942,7 @@ init_wine() {
     else
         WINE_LIB32_DIR="${DIR}/${WINE_VERSION}/lib/wine"
     fi
-    
+
     ## Export Wine libs
     PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
     export LD_LIBRARY_PATH="/lib32:${WINE_LIB32_DIR}/i386-unix:/lib:/usr/lib:${WINE_LIB64_DIR}/x86_64-unix"
