@@ -4,7 +4,6 @@ import codecs
 import csv
 import logging
 import os
-import subprocess
 import shutil
 import xml.etree.ElementTree as ET
 import zipfile
@@ -13,6 +12,7 @@ from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
+from ..mame.mameCommon import is_atom_floppy
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -374,39 +374,11 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             elif system.name == "atom":
                 autoRunDelay = 2
                 autoRunCmd = messAutoRun[messMode]
-                floppy_extensions = [
-                    ".mfi", ".dfi", ".hfe", ".mfm", ".td0", ".imd", ".d77", ".d88",
-                    ".1dd", ".cqm", ".cqi", ".dsk", ".40t"
-                ]
-                is_compressed_flop = False
-                romExt = rom.suffix.lower()
-                if romExt == ".zip":
-                    try:
-                        with zipfile.ZipFile(rom, 'r') as zip_ref:
-                            for filename_in_zip in zip_ref.namelist():
-                                if Path(filename_in_zip).suffix.lower() in floppy_extensions:
-                                    is_compressed_flop = True
-                                    break
-                    except zipfile.BadZipFile:
-                        pass # Ignore bad zip files
-                elif romExt == ".7z":
-                    _7z_executable = "/usr/bin/7z"
-                    try:
-                        proc = subprocess.run([_7z_executable, "l", "-ba", str(rom)], capture_output=True, text=True, check=False)
-                        if proc.returncode == 0:
-                            for line in proc.stdout.splitlines():
-                                if Path(line.strip()).suffix.lower() in floppy_extensions:
-                                    is_compressed_flop = True
-                                    break
-                    except FileNotFoundError:
-                        pass # Ignore if 7z is not found
-                is_flop_media = (
+                if (
                     (altromtype == "flop1") or
                     (softList and softList.endswith("flop")) or
-                    (romExt in floppy_extensions) or
-                    is_compressed_flop
-                )
-                if is_flop_media:
+                    is_atom_floppy(rom)
+                ):
                     autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / 'atom_flop_autoload.csv'
                     if autoRunFile.exists():
                         with autoRunFile.open() as openARFile:
@@ -414,7 +386,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                             for row in autoRunList:
                                 if row and not row[0].startswith('#') and row[0].casefold() == rom.stem.casefold():
                                     autoRunCmd = row[1] + "\\n"
-                                    break          
+                                    break
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
