@@ -360,11 +360,11 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    LED battery indicator brightness: 10\n')
                 f.write('    Player LED enabled: true\n')
                 if rumble == "true":
-                    f.write(f'    Enable Large Vibration Motor: 100\n')
-                    f.write(f'    Enable Small Vibration Motor: 100\n')
+                    f.write('    Enable Large Vibration Motor: 100\n')
+                    f.write('    Enable Small Vibration Motor: 100\n')
                 else:
-                    f.write(f'    Enable Large Vibration Motor: 0\n')
-                    f.write(f'    Enable Small Vibration Motor: 0\n')
+                    f.write('    Enable Large Vibration Motor: 0\n')
+                    f.write('    Enable Small Vibration Motor: 0\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')
