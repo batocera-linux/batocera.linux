@@ -22,7 +22,6 @@ import toml
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ..Generator import Generator
-from ...controller import Controllers
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -126,7 +125,7 @@ class YmirGenerator(Generator):
         for i in range(1, 3):
             if f"Port{i}" in input_config:
                 del input_config[f"Port{i}"]
-        
+
         # Default keyboard binds for the AnalogPad profile
         default_keyboard_maps = {
             1: { # Player 1
@@ -173,7 +172,7 @@ class YmirGenerator(Generator):
 
             analog_pad_config = cast("dict[str, object]", port_config.setdefault("AnalogPad", {}))
             binds_config = cast("dict[str, list[str]]", analog_pad_config.setdefault("Binds", {}))
-            
+
             player_keyboard_map = default_keyboard_maps.get(pad.player_number, {})
 
             for key, val in player_keyboard_map.items():
