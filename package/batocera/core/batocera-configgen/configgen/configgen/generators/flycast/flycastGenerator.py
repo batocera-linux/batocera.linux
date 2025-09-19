@@ -59,7 +59,7 @@ class FlycastGenerator(Generator):
             Config.set("input", f'device{controller.player_number}.2', system.config.get_str(ctrlpackconfig, '1'))  # Sega VMU
             # Ensure controller(s) are on seperate Ports
             port = controller.player_number-1
-            Config.set("input", f'maple_sdl_joystick_{port}', str(controller.index))
+            Config.set("input", f'maple_sdl_joystick_{controller.index}', str(port))
 
         # add the keyboard mappings for hotkeys
         flycastControllers.generateKeyboardConfig()
