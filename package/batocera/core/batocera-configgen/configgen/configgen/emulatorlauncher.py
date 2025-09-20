@@ -119,7 +119,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
             if "core" in system.config and system.config.core is not None:
                 effectiveCore = system.config.core
 
-            if generator.getMouseMode(system.config, rom):
+            if generator.getMouseMode(system.config, rom, system):
                 mouseChanged = True
                 videoMode.changeMouse(True)
 
