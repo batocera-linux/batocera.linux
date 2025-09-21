@@ -81,6 +81,9 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
 # RS3 Reaper model
 # Same input as previous model, different layout
 # There is one extra button on the reaper model
+# BTN_MIDDLE is moved to the palm button
+# The stick buttons input Q, S, T, and Y respectively
+# E.g.: below is for player 1 light gun
 ############
 ############
 # Player 1
@@ -92,36 +95,6 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
 # Thumb button                       : BTN_RIGHT
 # Palm button (switchable)           : BTN_MIDDLE
 # Stick                              : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
-############
-# Player 2
-############
-# Trigger                            : BTN_LEFT
-# Front button 1                     : KEY_2
-# Front button 2 (hold -> KEY_ESC)   : KEY_6
-# Stick button                       : KEY_S
-# Thumb button                       : BTN_RIGHT
-# Palm button (switchable)           : BTN_MIDDLE
-# Stick                              : KEY_U, KEY_V, KEY_W, KEY_X
-############
-# Player 3
-############
-# Trigger                            : BTN_LEFT
-# Front button 1                     : KEY_3
-# Front button 2 (hold -> KEY_ESC)   : KEY_7
-# Stick button                       : KEY_T
-# Thumb button                       : BTN_RIGHT
-# Palm button (switchable)           : BTN_MIDDLE
-# Stick                              : KEY_R, KEY_F, KEY_D, KEY_G
-############
-# Player 4
-############
-# Trigger                            : BTN_LEFT
-# Front button 1                     : KEY_4
-# Front button 2 (hold -> KEY_ESC)   : KEY_8
-# Stick button                       : KEY_Y
-# Thumb button                       : BTN_RIGHT
-# Palm button (switchable)           : BTN_MIDDLE
-# Stick                              : KEY_I, KEY_K, KEY_J, KEY_L
 
 if test "${NDEVS}" = 2
 then
