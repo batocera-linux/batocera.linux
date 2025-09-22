@@ -67,6 +67,5 @@ class WineGenerator(Generator):
 
         raise BatoceraException("Invalid system: " + system.name)
 
-    def getMouseMode(self, config, rom, system):
-        return config.get_bool('force_mouse', system.name == "windows_installers")
-
+    def getMouseMode(self, config, rom):
+        return config.get_bool('force_mouse')
