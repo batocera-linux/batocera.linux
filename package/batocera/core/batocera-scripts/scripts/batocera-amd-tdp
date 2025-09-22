@@ -4,11 +4,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -19,11 +19,6 @@
 
 log="/userdata/system/logs/amd-tdp.log"
 TDP_INPUT="$1"
-
-# --- Helper Function ---
-get_firmware_max_tdp() {
-    /usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}'
-}
 
 # --- Sanity Checks ---
 if [[ "$(/usr/bin/ryzenadj -i)" =~ "unsupported model" ]]; then
@@ -49,6 +44,7 @@ tdp_ranges=(
 # Determine device's standard min/max TDP
 TDP_MIN=5 # Default min fallback
 BASE_TDP_MAX=35 # Default max fallback
+APPLY_TEMP_LIMIT=0 # Only set 90c for found handhelds
 
 device_model=$(batocera-info | awk -F': ' '/^Model:/ {print $2; exit}')
 
@@ -56,14 +52,16 @@ if [[ -v tdp_ranges["$device_model"] ]]; then
     IFS=';' read -r -a info <<< "${tdp_ranges[$device_model]}"
     TDP_MIN=${info[1]}
     BASE_TDP_MAX=${info[2]}
+    APPLY_TEMP_LIMIT=1
     echo "Device: ${info[0]} detected. Standard range: ${TDP_MIN}W - ${BASE_TDP_MAX}W." >> "$log"
 else
-    firmware_max=$(get_firmware_max_tdp)
-    if [[ -n "$firmware_max" && "$firmware_max" -gt 0 ]]; then
-        BASE_TDP_MAX=$firmware_max
-        echo "Using firmware max of ${BASE_TDP_MAX}W." >> "$log"
+    SYSTEM_TDP=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+    if [ -n "$SYSTEM_TDP" ]; then
+        BASE_TDP_MAX=$SYSTEM_TDP
+        echo "Detected reported max of ${BASE_TDP_MAX}W." >> "$log"
     else
-        echo "Could not read firmware. Using default max of ${BASE_TDP_MAX}W." >> "$log"
+        echo "No system TDP defined." >> "$log"
+        exit 1
     fi
 fi
 
@@ -87,15 +85,26 @@ fi
 
 # --- Apply Settings ---
 WATTS=$((TDP * 1000))
-SLOW_WATTS=$((WATTS * 60 / 100)) # set to 60% of TDP
+SLOW_WATTS=$((WATTS * 80 / 100)) # TODO: Rethink how amd tdp is applied between handhelds and everything else(if not handheld should porobably set all limits to same value)
 
-echo "Applying final TDP: ${TDP}W (STAPM/Fast: ${WATTS}mW, Slow: ${SLOW_WATTS}mW, Temp Limit: 90C)" >> "$log"
+if (( APPLY_TEMP_LIMIT )); then
+    echo "Applying final TDP: ${TDP}W, Temp Limit: 90C" >> "$log"
+else
+    echo "Applying final TDP: ${TDP}W" >> "$log"
+fi
 
-if /usr/bin/ryzenadj \
-    --stapm-limit="${WATTS}" \
-    --fast-limit="${WATTS}" \
-    --slow-limit="${SLOW_WATTS}" \
-    --tctl-temp=90; then
+cmd=(/usr/bin/ryzenadj
+    --stapm-limit="$WATTS"
+    --fast-limit="$WATTS"
+    --slow-limit="$SLOW_WATTS"
+)
+
+# Only set temp limit for known handhelds
+if (( APPLY_TEMP_LIMIT )); then
+    cmd+=(--tctl-temp=90)
+fi
+
+if "${cmd[@]}"; then
     echo "Successfully set TDP to ${TDP}W." >> "$log"
 else
     echo "ERROR: ryzenadj command failed. Power limits may not have been applied." >> "$log"
