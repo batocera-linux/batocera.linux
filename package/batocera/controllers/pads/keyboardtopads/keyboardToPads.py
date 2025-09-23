@@ -11,13 +11,31 @@ import evdev
 import re
 from pathlib import Path
 
+class Loader(yaml.SafeLoader):
+    pass
+
+def construct_mapping(self, node):
+    pairs = self.construct_pairs(node, deep=True)
+    try:
+        return dict(pairs)
+    except TypeError:
+        rv = {}
+        for key, value in pairs:
+            if isinstance(key, list):
+                key = tuple(key)
+            rv[key] = value
+        return rv
+
+Loader.construct_mapping = construct_mapping
+Loader.add_constructor('tag:yaml.org,2002:map', Loader.construct_mapping)
+
 class KeyboardController:
 
     def generateRules(self, configFile) -> str:
         rules = ""
         config = {}
         with open(configFile, 'r') as file:
-            config = yaml.safe_load(file)
+            config = yaml.load(file, Loader=Loader)
 
         if "target_devices" not in config:
             raise Exception("missing target_devices entry in config file")
@@ -38,10 +56,24 @@ class KeyboardController:
                 rules += "ENV{ID_INPUT_JOYSTICK}=\"1\", ENV{ID_INPUT_KEYBOARD}=\"0\", ENV{ID_INPUT_KEY}=\"0\"\n"
         return rules
 
+    def checkMapping(self, mapping):
+        mappingParts = mapping.split(':')
+        if len(mappingParts) not in [2, 3]:
+            raise Exception("invalid key "+mapping)
+        if mappingParts[0] not in ["key", "abs", "btn"]:
+            raise Exception("invalid key type "+mapping)
+
+    def checkValue(self, value):
+        valueParts   = value.split(':')
+        if len(valueParts) not in [2, 3]:
+            raise Exception("invalid key "+value)
+        if valueParts[0] not in ["key", "abs", "btn"]:
+            raise Exception("invalid key type "+value)
+
     def generateCommand(self, configFile, inputFile) -> list[str]:
         config = {}
         with open(configFile, 'r') as file:
-            config = yaml.safe_load(file)
+            config = yaml.load(file, Loader=Loader) # specific load for mapping as array (combination of keys ["key:a", "key:b"] : "key:exit")
 
         cmd = ["evsieve", "--input", inputFile, "persist=exit" ]
 
@@ -59,33 +91,46 @@ class KeyboardController:
 
             # check mappings and values
             for mapping, value in target_device["mapping"].items():
-                mappingParts = mapping.split(':')
-                valueParts   = value.split(':')
-                if len(mappingParts) not in [2, 3]:
-                    raise Exception("invalid key "+mapping)
-                if len(valueParts) not in [2, 3]:
-                    raise Exception("invalid key "+value)
-                if mappingParts[0] not in ["key", "abs", "btn"]:
-                    raise Exception("invalid key type "+mapping)
-                if valueParts[0] not in ["key", "abs", "btn"]:
-                    raise Exception("invalid key type "+value)
+                if type(mapping) is tuple:
+                    for t in mapping:
+                        self.checkMapping(t)
+                else:
+                    self.checkMapping(mapping)
+                self.checkValue(value)
 
-            # add mappings
+        # add key combinations first, to not block them (do, doing a first loop on all device for key combinations)
+        for target_device in config["target_devices"]:
+            for mapping_tuple, value in target_device["mapping"].items():
+                if type(mapping_tuple) is tuple:
+                    cmd.extend(["--hook"])
+                    for mapping in mapping_tuple:
+                        mappingParts = mapping.split(':')
+                        mappingtypename = mappingParts[0] + ":" + mappingParts[1]
+                        valueParts = value.split(':')
+                        valuetypename = valueParts[0] + ":" + valueParts[1]
+                        cmd.extend(["{}".format(mappingtypename)])
+                    cmd.extend(["send-key={}".format(valuetypename)]) # should be hotkeys only
+
+        # redo the loop to add the keys, without the checks this time
+        for target_device in config["target_devices"]:
+            # simple keys
             for mapping, value in target_device["mapping"].items():
-                mappingParts = mapping.split(':')
-                mappingtypename = mappingParts[0] + ":" + mappingParts[1]
-                valueParts = value.split(':')
-                valuetypename = valueParts[0] + ":" + valueParts[1]
-                cmd.extend(["--block", "{}:2".format(mappingtypename)]) # block the repeat keys
+                if type(mapping) is not tuple:
+                    # simple keys
+                    mappingParts = mapping.split(':')
+                    mappingtypename = mappingParts[0] + ":" + mappingParts[1]
+                    valueParts = value.split(':')
+                    valuetypename = valueParts[0] + ":" + valueParts[1]
+                    cmd.extend(["--block", "{}:2".format(mappingtypename)]) # block the repeat keys
 
-                if len(mappingParts) == 2 and len(valueParts) == 2:
-                    cmd.extend(["--map", "yield", mapping, value])
-                elif len(mappingParts) == 2 and len(valueParts) == 3:
-                    cmd.extend(["--map", "yield", "{}:1".format(mapping), value])
-                    cmd.extend(["--map", "yield", "{}:0".format(mapping), "{}:0".format(valuetypename)])
-                elif len(mappingParts) == 3 and len(valueParts) == 2:
-                    cmd.extend(["--map", "yield", mapping, "{}:1".format(value)])
-                    cmd.extend(["--map", "yield", "{}:0".format(mappingtypename), "{}:0".format(value)])
+                    if len(mappingParts) == 2 and len(valueParts) == 2:
+                        cmd.extend(["--map", "yield", mapping, value])
+                    elif len(mappingParts) == 2 and len(valueParts) == 3:
+                        cmd.extend(["--map", "yield", "{}:1".format(mapping), value])
+                        cmd.extend(["--map", "yield", "{}:0".format(mapping), "{}:0".format(valuetypename)])
+                    elif len(mappingParts) == 3 and len(valueParts) == 2:
+                        cmd.extend(["--map", "yield", mapping, "{}:1".format(value)])
+                        cmd.extend(["--map", "yield", "{}:0".format(mappingtypename), "{}:0".format(value)])
 
             # output device
             cmd.extend(["--output", "name={}".format(target_device["name"]), "device-id=ba10:ce8a"])
