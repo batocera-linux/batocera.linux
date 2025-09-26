@@ -13,8 +13,8 @@ function onSystem(infos) {
 function onGame(infos) {
     var html = "";
 
-    if(infos["boxart"]) {
-	html += "<div id=\"game_boxart\"><div id=\"game_boxart_internal\"><img src=\"" + infos["boxart"] + "\" /></div></div>";
+    if(infos["thumbnail"]) {
+	html += "<div id=\"game_boxart\"><div id=\"game_boxart_internal\"><img src=\"" + infos["thumbnail"] + "\" /></div></div>";
     } else {
 	if(infos["name"]) {
 	    html += "<div id=\"game_text\"><div id=\"game_text_internal\">" + infos["name"] + "</div></div>";
