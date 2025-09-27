@@ -80,7 +80,13 @@ NDEVS=$(echo "${CHILDREN}" | wc -l)
 ############
 # RS3 Reaper model
 # Same input as previous model, different layout
+# There is one extra button on the reaper model
+# BTN_MIDDLE is moved to the palm button
+# The stick buttons input Q, S, T, and Y respectively
 # E.g.: below is for player 1 light gun
+############
+############
+# Player 1
 ############
 # Trigger                            : BTN_LEFT
 # Front button 1                     : KEY_1
@@ -105,6 +111,7 @@ then
                 --map yield btn:middle     btn:2         \
                 --map yield key:1          btn:middle    \
                 --map yield key:5          btn:1         \
+                --map yield key:q          btn:3         \
                 --map yield key:up         btn:5         \
                 --map yield key:down       btn:6         \
                 --map yield key:left       btn:7         \
@@ -120,6 +127,7 @@ then
                 --map yield btn:middle     btn:2         \
                 --map yield key:2          btn:middle    \
                 --map yield key:6          btn:1         \
+                --map yield key:s          btn:3         \
                 --map yield key:u          btn:5         \
                 --map yield key:v          btn:6         \
                 --map yield key:w          btn:7         \
@@ -135,6 +143,7 @@ then
                 --map yield btn:middle     btn:2         \
                 --map yield key:3          btn:middle    \
                 --map yield key:7          btn:1         \
+                --map yield key:t          btn:3         \
                 --map yield key:r          btn:5         \
                 --map yield key:f          btn:6         \
                 --map yield key:d          btn:7         \
@@ -150,6 +159,7 @@ then
                 --map yield btn:middle     btn:2         \
                 --map yield key:4          btn:middle    \
                 --map yield key:8          btn:1         \
+                --map yield key:y          btn:3         \
                 --map yield key:i          btn:5         \
                 --map yield key:k          btn:6         \
                 --map yield key:j          btn:7         \
