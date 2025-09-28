@@ -1,4 +1,4 @@
-# 2025/09/xx - Batocera.linux 42 - Papilio Ulysses
+# 2025/10/xx - Batocera.linux 42 - Papilio Ulysses
 ### Special Notes
 - Quake 1 & 2 ROMs need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
