@@ -113,6 +113,15 @@ def generateControllerConfig(
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
                      'l3': 'l3', 'r3': 'r3', \
                      'start': 'start', 'select': 'select'}
+
+    # X Y L1 L2  ---> X Y R1 L1
+    # A B R1 R2  ---> A B R2 L2
+    if system.config.get('altlayout') == 'fightstick':
+        retroarchbtns['pageup'] = 'l2'
+        retroarchbtns['pagedown'] = 'l'
+        retroarchbtns['l2'] = 'r2'
+        retroarchbtns['r2'] = 'r'
+
     retroarchGunbtns = {'a': 'aux_a', 'b': 'aux_b', 'y': 'aux_c', \
                         'pageup': 'offscreen_shot', 'pagedown': 'trigger', \
                         'start': 'start', 'select': 'select'}
