@@ -8,3 +8,5 @@ fi
 OUTPUT=$(batocera-resolution currentOutput)
 
 grim -o "$OUTPUT" "$FILE" 2>/dev/null || exit 1
+# Visual feedback when screenshot is taken
+batocera-flash-screen 2>/dev/null
