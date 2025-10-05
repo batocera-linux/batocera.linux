@@ -1,5 +1,8 @@
 #!/bin/sh
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/wayland.sh
+
 FILE=$1
 if [ -z ${FILE} ]; then
     FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
