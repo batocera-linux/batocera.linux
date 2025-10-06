@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_RESOLUTION_VERSION = 1.5
+BATOCERA_RESOLUTION_VERSION = 1.6
 BATOCERA_RESOLUTION_LICENSE = GPL
 BATOCERA_RESOLUTION_DEPENDENCIES = pciutils
 BATOCERA_RESOLUTION_SOURCE=
@@ -37,6 +37,7 @@ endif
 define BATOCERA_RESOLUTION_INSTALL_TARGET_CMDS
 	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution.$(BATOCERA_SCRIPT_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
 	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-screenshot.$(BATOCERA_SCRIPT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-flash-screen.py $(TARGET_DIR)/usr/bin/batocera-flash-screen
 endef
 
 define BATOCERA_RESOLUTION_INSTALL_RK3128
