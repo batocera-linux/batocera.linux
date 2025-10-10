@@ -150,15 +150,15 @@ diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/
 index cfe6cccf0f44..d31e014d7bcb 100644
 --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
 +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-@@ -371,6 +371,8 @@ Code  Seq#    Include File                                           Comments
-                                                                      <mailto:thomas@winischhofer.net>
- 0xF6  all                                                            LTTng Linux Trace Toolkit Next Generation
-                                                                      <mailto:mathieu.desnoyers@efficios.com>
-+0xF7  00-0F  uapi/linux/winesync.h                                   Wine synchronization primitives
-+                                                                     <mailto:wine-devel@winehq.org>
- 0xF8  all    arch/x86/include/uapi/asm/amd_hsmp.h                    AMD HSMP EPYC system management interface driver
-                                                                      <mailto:nchatrad@amd.com>
- 0xFD  all    linux/dm-ioctl.h
+@@ -403,6 +403,8 @@ Code  Seq#    Include File                                             Comments
+                                                                        <mailto:thomas@winischhofer.net>
+ 0xF6  all                                                              LTTng Linux Trace Toolkit Next Generation
+                                                                        <mailto:mathieu.desnoyers@efficios.com>
++0xF7  00-0F  uapi/linux/winesync.h                                     Wine synchronization primitives
++                                                                       <mailto:wine-devel@winehq.org>
+ 0xF8  all    arch/x86/include/uapi/asm/amd_hsmp.h                      AMD HSMP EPYC system management interface driver
+                                                                        <mailto:nchatrad@amd.com>
+ 0xF9  00-0F  uapi/misc/amd-apml.h                                      AMD side band system management interface driver
 diff --git a/drivers/misc/winesync.c b/drivers/misc/winesync.c
 index 111f33c5676e..85cb6ccaa077 100644
 --- a/drivers/misc/winesync.c
