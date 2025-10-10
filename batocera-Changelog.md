@@ -13,6 +13,8 @@
 
 ### System
 - Linux Kernel to 6.17.1
+- Mesa3D to 25.2.4
+- LLVM Project to 20.1.8
 
 # 2025/10/xx - Batocera.linux 42 - Papilio Ulysses
 ### Special Notes
