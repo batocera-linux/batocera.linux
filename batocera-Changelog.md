@@ -11,8 +11,9 @@
 ### Changed / Improved
 
 ### Updated
+- Azahar Plus to AZAHAR_PLUS_2123_2_A
 - RPCS3 to v0.0.38
-- ShadPS4 to SHAD_PS4_PLUS_0_11_0
+- ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
 
 ### System
 - Linux Kernel to 6.17.1

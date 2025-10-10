@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AZAHAR_VERSION = AZAHAR_PLUS_2123_A
+AZAHAR_VERSION = AZAHAR_PLUS_2123_2_A
 AZAHAR_SITE = https://github.com/AzaharPlus/AzaharPlus
 AZAHAR_SITE_METHOD = git
 AZAHAR_GIT_SUBMODULES = YES
@@ -12,6 +12,12 @@ AZAHAR_LICENSE = GPLv2
 AZAHAR_SUPPORTS_IN_SOURCE_BUILD = NO
 
 AZAHAR_DEPENDENCIES += boost fdk-aac ffmpeg fmt openal sdl2
+
+AZAHAR_CMAKE_BACKEND = ninja
+# Use clang for performance
+AZAHAR_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
+AZAHAR_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+AZAHAR_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
 
 AZAHAR_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 AZAHAR_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
