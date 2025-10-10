@@ -10,6 +10,7 @@
 ### Changed / Improved
 
 ### Updated
+- RPCS3 to v0.0.38
 
 ### System
 - Linux Kernel to 6.17.1
