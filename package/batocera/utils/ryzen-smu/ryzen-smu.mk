@@ -3,8 +3,8 @@
 # ryzen-smu
 #
 ################################################################################
-# Version: Commits on Jun 4, 2025
-RYZEN_SMU_VERSION = 9f9569f889935f7c7294cc32c1467e5a4081701a
+# Version: Commits on Aug 10, 2025
+RYZEN_SMU_VERSION = 172c316f53ac8f066afd7cb9e1da517084273368
 RYZEN_SMU_SITE = $(call github,amkillam,ryzen_smu,$(RYZEN_SMU_VERSION))
 RYZEN_SMU_LICENSE = GPL-2.0
 RYZEN_SMU_LICENSE_FILES = LICENSE

@@ -1,8 +1,8 @@
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 52ea7d757d6a..8636d1d8ae71 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6521,6 +6521,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
+diff --git a/sound/hda/codecs/realtek/alc269.c b/sound/hda/codecs/realtek/alc269.c
+index f267437c96..91571c2f31 100644
+--- a/sound/hda/codecs/realtek/alc269.c
++++ b/sound/hda/codecs/realtek/alc269.c
+@@ -2545,6 +2545,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
  		alc_write_coef_idx(codec, 0x10, 0x0a20);
  }
  
@@ -23,15 +23,15 @@ index 52ea7d757d6a..8636d1d8ae71 100644
  static void alc294_fixup_gx502_hp(struct hda_codec *codec,
  					const struct hda_fixup *fix, int action)
  {
-@@ -7017,6 +7031,7 @@ enum {
+@@ -3466,6 +3480,7 @@ enum {
  	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
  	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET,
  	ALC269_FIXUP_HEADSET_MODE,
-+	ALC269_FIXUP_HEADSET_AYN_LOKI_ZERO,
++    ALC269_FIXUP_HEADSET_AYN_LOKI_ZERO,
  	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
  	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
  	ALC269_FIXUP_ASUS_X101_FUNC,
-@@ -9043,6 +9043,10 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -5011,6 +5026,10 @@ static const struct hda_fixup alc269_fixups[] = {
  			{ 0x1b, 0x90170152 } /* use as internal speaker (back) */
  		}
  	},
@@ -42,11 +42,11 @@ index 52ea7d757d6a..8636d1d8ae71 100644
  	[ALC299_FIXUP_PREDATOR_SPK] = {
  		.type = HDA_FIXUP_PINS,
  		.v.pins = (const struct hda_pintbl[]) {
-@@ -11426,6 +11426,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -7166,6 +7185,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1d72, 0x1945, "Redmi G", ALC256_FIXUP_ASUS_HEADSET_MIC),
  	SND_PCI_QUIRK(0x1d72, 0x1947, "RedmiBook Air", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
  	SND_PCI_QUIRK(0x1ee7, 0x2078, "HONOR BRB-X M1010", ALC2XX_FIXUP_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1f66, 0x0101, "Loki Zero", ALC269_FIXUP_HEADSET_AYN_LOKI_ZERO),
++    SND_PCI_QUIRK(0x1f66, 0x0101, "Loki Zero", ALC269_FIXUP_HEADSET_AYN_LOKI_ZERO),
  	SND_PCI_QUIRK(0x1f66, 0x0105, "Ayaneo Portable Game Player", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x2014, 0x800a, "Positivo ARN50", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
  	SND_PCI_QUIRK(0x2782, 0x0214, "VAIO VJFE-CL", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),

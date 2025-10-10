@@ -1,3 +1,19 @@
+# 2026/xx/xx - Batocera.linux 43 - Glasswing
+### Special Notes
+
+### Hardware
+
+### Added
+
+### Fixed
+
+### Changed / Improved
+
+### Updated
+
+### System
+- Linux Kernel to 6.17.1
+
 # 2025/10/xx - Batocera.linux 42 - Papilio Ulysses
 ### Special Notes
 - Quake 1 & 2 ROMs need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively

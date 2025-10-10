@@ -3,8 +3,8 @@
 # ayaneo-platform
 #
 ################################################################################
-# Version: Commits on Jul 17, 2024
-AYANEO_PLATFORM_VERSION = f29a4179d49b97a1035e379deca8bc53ba34f3ee
+# Version: Commits on May 22, 2025
+AYANEO_PLATFORM_VERSION = 8ccdf707e7dd7a7c97307b078122b80e92a4ca62
 AYANEO_PLATFORM_SITE = \
     $(call github,ShadowBlip,ayaneo-platform,$(AYANEO_PLATFORM_VERSION))
 AYANEO_PLATFORM_LICENSE = GPL-3.0
