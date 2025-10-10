@@ -1,0 +1,44 @@
+diff --git a/src/core/libraries/save_data/dialog/savedatadialog_ui.cpp b/src/core/libraries/save_data/dialog/savedatadialog_ui.cpp.new
+index 006a4a326f..c4f4fbcc80 100644
+--- a/src/core/libraries/save_data/dialog/savedatadialog_ui.cpp
++++ b/src/core/libraries/save_data/dialog/savedatadialog_ui.cpp.new
+@@ -99,9 +99,9 @@ SaveDialogState::SaveDialogState(const OrbisSaveDataDialogParam& param) {
+             param_sfo.Open(param_sfo_path);
+ 
+             auto last_write = param_sfo.GetLastWrite();
++            const time_t last_write_t = std::chrono::system_clock::to_time_t(last_write);
+             std::string date_str =
+-                fmt::format("{:%d %b, %Y %R}",
+-                            fmt::localtime(std::chrono::system_clock::to_time_t(last_write)));
++                fmt::format("{:%d %b, %Y %R}", *std::localtime(&last_write_t));
+ 
+             size_t size = Common::FS::GetDirectorySize(dir_path);
+             std::string size_str = SpaceSizeToString(size);
+@@ -850,4 +850,4 @@ void SaveDialogUi::DrawProgressBar() {
+     ProgressBar(static_cast<float>(bar_state.progress) / 100.0f,
+                 {PROGRESS_BAR_WIDTH * ws.x, BUTTON_SIZE.y});
+ }
+-}; // namespace Libraries::SaveData::Dialog
+\ No newline at end of file
++}; // namespace Libraries::SaveData::Dialog
+diff --git a/src/core/devtools/widget/frame_dump.cpp b/src/core/devtools/widget/frame_dump.cpp.new
+index 2445bdcb5f..39005121e9 100644
+--- a/src/core/devtools/widget/frame_dump.cpp
++++ b/src/core/devtools/widget/frame_dump.cpp.new
+@@ -118,7 +118,8 @@ void FrameDumpViewer::Draw() {
+         SameLine();
+         BeginDisabled(selected_cmd == -1);
+         if (SmallButton("Dump cmd")) {
+-            auto now_time = fmt::localtime(std::time(nullptr));
++            const auto time_now = std::time(nullptr);
++            auto now_time = *std::localtime(&time_now);
+             const auto fname = fmt::format("{:%F %H-%M-%S} {}_{}_{}.bin", now_time,
+                                            magic_enum::enum_name(selected_queue_type),
+                                            selected_submit_num, selected_queue_num2);
+@@ -204,4 +205,4 @@ void FrameDumpViewer::Draw() {
+ 
+ } // namespace Core::Devtools::Widget
+ 
+-#undef C_V
+\ No newline at end of file
++#undef C_V

@@ -17,18 +17,25 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = SHADPS4PLUS_0_9_0_A
+SHADPS4_VERSION = SHAD_PS4_PLUS_0_11_0
 SHADPS4_SITE = https://github.com/AzaharPlus/shadPS4Plus
-SHADPS4_SITE_METHOD=git
-SHADPS4_GIT_SUBMODULES=YES
+SHADPS4_SITE_METHOD = git
+SHADPS4_GIT_SUBMODULES = YES
 SHADPS4_LICENSE = GPLv2
 SHADPS4_LICENSE_FILE = LICENSE
+
+SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
+
 SHADPS4_DEPENDENCIES += host-shadps4 alsa-lib pulseaudio openal openssl libzlib
 SHADPS4_DEPENDENCIES += libedit udev libevdev jack2 qt6base qt6svg qt6tools
 SHADPS4_DEPENDENCIES += qt6multimedia vulkan-headers vulkan-loader
 SHADPS4_DEPENDENCIES += vulkan-validationlayers sdl3
 
-SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
+SHADPS4_CMAKE_BACKEND = ninja
+# Use clang for performance
+SHADPS4_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
+SHADPS4_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+SHADPS4_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
 
 SHADPS4_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SHADPS4_CONF_OPTS += -DCMAKE_INSTALL_PREFIX=/usr
