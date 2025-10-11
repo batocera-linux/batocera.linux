@@ -5775,6 +5775,11 @@ oricatmos:
   emulators:
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      
   comment_en: |
     Emulator for Oric Atmos (and Oric 1)
     You need at least the rom file /userdata/bios/Oric/basic11.rom
