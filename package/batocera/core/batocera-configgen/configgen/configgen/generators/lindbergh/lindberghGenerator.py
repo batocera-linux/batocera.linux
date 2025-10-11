@@ -770,7 +770,7 @@ class LindberghGenerator(Generator):
             del mappings_actions["3"]
 
         if shortRomName == "hotdex":
-            mappings_actions["2"] = "BUTTON_LEFT"
+            mappings_actions["right"] = "BUTTON_LEFT"
             del mappings_actions["7"]
             del mappings_actions["8"]
 
@@ -828,9 +828,10 @@ class LindberghGenerator(Generator):
                     code = mappings_codes[mapping]
                     action = mappings_actions[mapping]
 
-                    # in hotdex, player2 reload is on button right (et butto left for player 1...)
-                    if shortRomName == "hotdex" and nplayer == 2 and action == "BUTTON_LEFT":
+                    # in hotdex, player2 reload is on button right (and button left for player 1...)
+                    if shortRomName == "hotdex" and nplayer == 2 and mapping == "right":
                         action = "BUTTON_RIGHT"
+                        nplayer = 1
 
                     if not (action == "COIN" and nplayer != 1): # COIN is only for player 1
                         self.setConf(conf, f"PLAYER_{nplayer}_{action}", f"{evplayer}:KEY:{code}")
