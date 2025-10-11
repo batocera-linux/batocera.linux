@@ -119,23 +119,30 @@ def led_check(led):
                     led.set_color("000000") # Ensure the LED is physically off
                 time.sleep(CHECK_INTERVAL)
                 continue
-        with open(PATH + '/capacity', 'r') as tp, \
-                open(PATH + '/status','r') as st:
-            bt = tp.readline().strip()
-            ch = st.readline().strip()
-            if (ch == "Charging") or (ch == "Full"):
-                bt = '100'
-            if (ch == "Discharging") and (bt == "100"):
-                bt = '99'
-            block = read_color(bt, ledconfig)
-            prevblock = block
-            try:
-                if DEBUG:
-                    print(f"Set color to {block} for {bt}%")
-                if color_changes_allowed():
-                    led.set_color(block)
-            except Exception as e:
-                print (f"Error: {e}") 
+        except Exception:
+            pass
+
+        try:
+            with open(PATH + '/capacity', 'r') as tp, \
+                    open(PATH + '/status','r') as st:
+                bt = tp.readline().strip()
+                ch = st.readline().strip()
+                if (ch == "Charging") or (ch == "Full"):
+                    bt = '100'
+                if (ch == "Discharging") and (bt == "100"):
+                    bt = '99'
+                block = read_color(bt, ledconfig)
+                prevblock = block
+                try:
+                    if DEBUG:
+                        print(f"Set color to {block} for {bt}%")
+                    if color_changes_allowed():
+                        led.set_color(block)
+                except Exception as e:
+                    print (f"Error: {e}") 
+                time.sleep(CHECK_INTERVAL)
+        except Exception as e:
+            print(f"Error reading battery status: {e}")
             time.sleep(CHECK_INTERVAL)
 
 # Prevent color changes when entering color selection
