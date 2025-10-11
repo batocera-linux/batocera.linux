@@ -4,7 +4,8 @@
 ### Hardware
 
 ### Added
-
+- LED colour control for Arm based handhelds
+- The ability to turn the controller LED's off
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 
