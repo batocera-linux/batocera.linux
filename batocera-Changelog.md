@@ -1,6 +1,8 @@
 # 2026/xx/xx - Batocera.linux 43 - Glasswing
 ### Special Notes
-
+- x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86-64-v3 image using Wayland and the LabWC compositor.
+  Desktop devices should continue to use the x86-64 image with Xorg.
+  Note: Nvidia drivers are currently not included in the x86-64-v3 image.
 ### Hardware
 
 ### Added
@@ -8,15 +10,15 @@
 - The ability to turn the controller LED's off
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
-
 ### Changed / Improved
 
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_2_A
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
-
 ### System
+- GStreamer codecs to 1.26.6
+- Linux Firmware to 20251011
 - Linux Kernel to 6.17.1
 - LLVM Project to 20.1.8
 - Mesa3D to 25.2.4
