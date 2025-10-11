@@ -2,6 +2,7 @@
 """
 PWM + RGB unified LED driver 
 Written for Batocera - @lbrpdx
+Updated for kernel module updates - @dmanlfc
 """
 import os
 import time
@@ -17,7 +18,12 @@ DEFAULT_ES_COLOR = '255 0 165'
 ####################
 # Is your handheld supported by this library?
 def batocera_model():
-    l = '/sys/class/leds/multicolor:chassis/multi_intensity' 
+    # Generic check for modern joystick ring LEDs from ayaneo-platform/ayn-platform
+    if glob.glob('/sys/class/leds/*:rgb:joystick_rings/multi_intensity'):
+        return "rgb"
+
+    # Fallback checks for other known hardware
+    l = '/sys/class/leds/multicolor:chassis/multi_intensity'
     if os.path.exists(l):
         return("rgb")
     c = glob.glob('/sys/class/leds/l:b?')
@@ -64,7 +70,21 @@ def batoconf_color():
 # Handhelds that use a direct RGB interface (easy peasy)
 class rgbled(object):
     def __init__(self):
-        self.bpath           = '/sys/class/leds/multicolor:chassis/'
+        self.bpath = None
+        
+        # Use glob to find newer joystick ring LEDs dynamically
+        found_paths = glob.glob('/sys/class/leds/*:rgb:joystick_rings/')
+        if found_paths:
+            self.bpath = found_paths[0] # Take the first match
+        else:
+            # Fallback to the older multicolor path for other devices
+            fallback_path = '/sys/class/leds/multicolor:chassis/'
+            if os.path.exists(fallback_path):
+                self.bpath = fallback_path
+
+        if self.bpath is None:
+            raise RuntimeError("Could not find a valid RGB LED sysfs path.")
+
         self.base            = self.bpath + 'multi_intensity'
         self.brightness      = self.bpath + 'brightness'
         self.max_brightness  = self.bpath + 'max_brightness'
