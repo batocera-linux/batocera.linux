@@ -36,7 +36,7 @@ define LIBALTSOUND_BASS_HACKS
     cd $(@D)/tmp && $(HOST_DIR)/bin/curl -s \
         https://www.un4seen.com/files/bass24-linux.zip -o bass.zip
     cd $(@D)/tmp && unzip -x bass.zip
-    cp $(@D)/tmp/bass.h $(@D)/third-party/include
+    cp $(@D)/tmp/c/bass.h $(@D)/third-party/include
     cp $(@D)/tmp/libs/$(BASS_ARCH)/libbass.so \
         $(@D)/third-party/runtime-libs/linux/$(BUILD_ARCH)
 endef
