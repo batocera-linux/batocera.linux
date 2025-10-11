@@ -113,6 +113,12 @@ def led_check(led):
         print(ledconfig)
     prevblock = 0
     while True:
+        try:
+            if batoled.batoconf("led.enabled") == "0":
+                if color_changes_allowed():
+                    led.set_color("000000") # Ensure the LED is physically off
+                time.sleep(CHECK_INTERVAL)
+                continue
         with open(PATH + '/capacity', 'r') as tp, \
                 open(PATH + '/status','r') as st:
             bt = tp.readline().strip()
