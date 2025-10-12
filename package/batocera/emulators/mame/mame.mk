@@ -3,8 +3,8 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.277 - Switchres 2.21e
-MAME_VERSION = gm0277sr221e
+# Version: GroovyMAME 0.281 - Switchres 2.21f
+MAME_VERSION = gm0281sr221f
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES += expat flac fontconfig glm jpeg libpng lua pulseaudio
 MAME_DEPENDENCIES += rapidjson sdl2 sdl2_ttf sqlite zlib
@@ -54,6 +54,15 @@ MAME_CROSS_OPTS += NO_X11=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
 MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
+endif
+
+# Pipewire
+ifeq ($(BR2_PACKAGE_PIPEWIRE),y)
+MAME_DEPENDENCIES += pipewire
+MAME_CROSS_OPTS += USE_PIPEWIRE=1
+MAME_CFLAGS += -I$(STAGING_DIR)/usr/include/pipewire-0.3 -I$(STAGING_DIR)/usr/include/spa-0.2
+else
+MAME_CROSS_OPTS += NO_USE_PIPEWIRE=1
 endif
 
 # Wayland
