@@ -519,7 +519,30 @@ do_fake_resume() {
 ################################################################################
 
 SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
-SETACTION=$1 # 1 for press, 0 for release
+SETACTION=$1 # 1 for press, 0 for release & gui from, well the GUI :-)
+
+# --- Handle Direct Action Mode for the GUI ---
+if [ "${SETACTION}" = "gui" ]; then
+    case "${SUSPEND_MODE}" in
+        "suspend")
+            pm-is-supported --suspend && pm-suspend
+            ;;
+        "hybrid")
+            pm-is-supported --suspend-hybrid && pm-suspend-hybrid
+            ;;
+        "hibernate")
+            pm-is-supported --hibernate && pm-hibernate
+            ;;
+        "fake")
+            do_fake_suspend
+            ;;
+        *)
+            # Default action if mode is unset or invalid is shutdown.
+            /sbin/shutdown -h now
+            ;;
+    esac
+    exit 0
+fi
 
 # --- Handle Fake Suspend Mode First ---
 if [ "${SUSPEND_MODE}" = "fake" ]; then
