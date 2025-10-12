@@ -3,11 +3,14 @@
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86-64-v3 image using Wayland and the LabWC compositor.
   Desktop devices should continue to use the x86-64 image with Xorg.
   Note: Nvidia drivers are currently not included in the x86-64-v3 image.
+- The deprecated custom.sh script is abolished since this version. If you already used such a script, then it was one timed transformed to a service.
+  Please use the services for future scripts and refer to our [Wikipedia](https://wiki.batocera.org/scripting_services_rules_examples)
 ### Hardware
 
 ### Added
 - LED colour control for Arm based handhelds
 - The ability to turn the controller LED's off
+- batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 ### Changed / Improved
