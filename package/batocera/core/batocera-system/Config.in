@@ -207,6 +207,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_FBV				# very simple graphic file viewer for the framebuffer console, capable of displaying GIF, JPEG, PNG and BMP files using libungif, libjpeg and libpng
 	select BR2_PACKAGE_EUDEV_RULES_GEN		# fork of systemd-udev with the goal of obtaining better compatibility with existing software such as OpenRC and Upstart
 	select BR2_PACKAGE_BOOST_ATOMIC			# library that provides atomic data types and operations on these data types
+	select BR2_PACKAGE_BOOST_REGEX
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS	# library is used for smart adaptive formatting of tabular data
 	select BR2_PACKAGE_UTIL_LINUX_SETTERM		# Set terminal attributes
 	select BR2_PACKAGE_OPENVPN			         # OpenVPN support
