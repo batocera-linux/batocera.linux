@@ -2690,6 +2690,12 @@ model3:
     supermodel:
       supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
       supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
@@ -3003,6 +3009,9 @@ model2:
     libretro:
       archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      
   comment_en: |
     ---------------------------------
     ## SEGA MODEL 2 IMPORTANT INFO ##
