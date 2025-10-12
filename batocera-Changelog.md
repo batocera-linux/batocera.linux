@@ -1,4 +1,4 @@
-# 2026/xx/xx - Batocera.linux 43 - Glasswing
+# 2026/xx/xx - batocera.linux 43 - Glasswing
 ### Special Notes
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86-64-v3 image using Wayland and the LabWC compositor.
   Desktop devices should continue to use the x86-64 image with Xorg.
@@ -27,7 +27,7 @@
 - Nvidia production drivers to 580.95.05
 - Vulkan stack to 1.4.328.1
 
-# 2025/10/xx - Batocera.linux 42 - Papilio Ulysses
+# 2025/10/xx - batocera.linux 42 - Papilio Ulysses
 ### Special Notes
 - Quake 1 & 2 ROMs need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
