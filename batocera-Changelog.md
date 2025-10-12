@@ -14,6 +14,8 @@
 
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_2_A
+- Groovy MAME to 0.281
+- Libretro MAME to 0.281
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
 ### System
