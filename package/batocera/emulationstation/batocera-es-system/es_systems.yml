@@ -2694,6 +2694,7 @@ model3:
       archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
+      archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
   comment_en: |
@@ -3010,6 +3011,7 @@ model2:
       archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
+      archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
       
   comment_en: |
