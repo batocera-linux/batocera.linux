@@ -27,7 +27,7 @@
 - Nvidia production drivers to 580.95.05
 - Vulkan stack to 1.4.328.1
 
-# 2025/10/xx - batocera.linux 42 - Papilio Ulysses
+# 2025/10/12 - batocera.linux 42 - Papilio Ulysses
 ### Special Notes
 - Quake 1 & 2 ROMs need moving from tyrquake to quake & vitaquake2 to quake2 folders respectively
   See the _info.txt file for directory layouts & ES file launcher naming conventions.
