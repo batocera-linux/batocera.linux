@@ -53,18 +53,21 @@ index d8249b3885..51d9a46877 100644
      std::array<GUIEvent, 64> evts{};
  
  #if Ymir_ENABLE_IMGUI_DEMO
-@@ -1820,26 +1820,33 @@ void App::RunEmulator() {
+@@ -1895,31 +1895,38 @@ void App::RunEmulator() {
+                 }*/
+                 break;
  
-             case SDL_EVENT_GAMEPAD_ADDED: //
+-            case SDL_EVENT_GAMEPAD_ADDED: //
++	    case SDL_EVENT_GAMEPAD_ADDED: //
              {
+-                SDL_Gamepad *gamepad = SDL_OpenGamepad(evt.gdevice.which);
 +                // This logic now handles controllers plugged in *after* launch
 +                SDL_JoystickID instanceID = evt.gdevice.which;
 +                if (m_gamepads.count(instanceID)) {
 +                    // This gamepad was already mapped at startup, do nothing.
 +                    break;
 +                }
-+                
--                SDL_Gamepad *gamepad = SDL_OpenGamepad(evt.gdevice.which);
++
 +                SDL_Gamepad *gamepad = SDL_OpenGamepad(instanceID);
                  if (gamepad != nullptr) {
 -                    // const int playerIndex = SDL_GetGamepadPlayerIndex(gamepad);
@@ -82,23 +85,28 @@ index d8249b3885..51d9a46877 100644
              }
              case SDL_EVENT_GAMEPAD_REMOVED: //
              {
--                const int playerIndex = gamepadPlayerIndexes[evt.gdevice.which];
--                devlog::debug<grp::base>("Gamepad {} removed -> player index {}", evt.gdevice.which, playerIndex);
--                SDL_CloseGamepad(gamepads.at(evt.gdevice.which));
--                gamepadPlayerIndexes.erase(evt.gdevice.which);
+-                if (gamepads.contains(evt.gdevice.which)) {
+-                    const int playerIndex = gamepadPlayerIndexes[evt.gdevice.which];
+-                    devlog::debug<grp::base>("Gamepad {} removed -> player index {}", evt.gdevice.which, playerIndex);
+-                    SDL_CloseGamepad(gamepads.at(evt.gdevice.which));
+-                    gamepadPlayerIndexes.erase(evt.gdevice.which);
 +                SDL_JoystickID instanceID = evt.gdevice.which;
-+                const int playerIndex = m_gamepadPlayerIndexes[instanceID];
-+                devlog::debug<grp::base>("Gamepad {} removed -> player index {}", instanceID, playerIndex);
-+                SDL_CloseGamepad(m_gamepads.at(instanceID));
-+                m_gamepadPlayerIndexes.erase(instanceID);
-                 addFreePlayerIndex(playerIndex);
--                gamepads.erase(evt.gdevice.which);
--                inputContext.DisconnectGamepad(playerIndex);
-+                m_gamepads.erase(instanceID);
-+                m_context.inputContext.DisconnectGamepad(playerIndex);
++                if (m_gamepads.contains(instanceID)) {
++                    const int playerIndex = m_gamepadPlayerIndexes[instanceID];
++                    devlog::debug<grp::base>("Gamepad {} removed -> player index {}", instanceID, playerIndex);
++                    SDL_CloseGamepad(m_gamepads.at(instanceID));
++                    m_gamepadPlayerIndexes.erase(instanceID);
+                     addFreePlayerIndex(playerIndex);
+-                    inputContext.DisconnectGamepad(playerIndex);
+-                    gamepads.erase(evt.gdevice.which);
++                    m_context.inputContext.DisconnectGamepad(playerIndex);
++                    m_gamepads.erase(instanceID);
+                 } else {
+-                    devlog::warn<grp::base>("Gamepad {} removed, but it was not open!", evt.gdevice.which);
++                    devlog::warn<grp::base>("Gamepad {} removed, but it was not open!", instanceID);
+                 }
                  break;
              }
-             case SDL_EVENT_GAMEPAD_REMAPPED: [[fallthrough]];
 @@ -4584,4 +4584,55 @@ void App::OnMidiInputReceived(double delta, std::vector<unsigned char> *msg, voi
      app->m_context.EnqueueEvent(events::emu::ReceiveMidiInput(delta, std::move(*msg)));
  }
