@@ -2690,6 +2690,13 @@ model3:
     supermodel:
       supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
       supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
 
@@ -3003,6 +3010,10 @@ model2:
     libretro:
       archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      
   comment_en: |
     ---------------------------------
     ## SEGA MODEL 2 IMPORTANT INFO ##
@@ -3848,6 +3859,10 @@ samcoupe:
   emulators:
     samcoupe:
       samcoupe:  { requireAnyOf: [BR2_PACKAGE_SIMCOUPE] }
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 abuse:
   name:       Abuse
@@ -5775,6 +5790,11 @@ oricatmos:
   emulators:
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
   comment_en: |
     Emulator for Oric Atmos (and Oric 1)
     You need at least the rom file /userdata/bios/Oric/basic11.rom
