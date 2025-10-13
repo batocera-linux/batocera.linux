@@ -4,7 +4,7 @@
   Desktop devices should continue to use the x86-64 image with Xorg.
   Note: Nvidia drivers are currently not included in the x86-64-v3 image.
 ### Hardware
-
+- Odin 2 Mini initial support
 ### Added
 - LED colour control for Arm based handhelds
 - The ability to turn the controller LED's off
@@ -18,7 +18,7 @@
 - Libretro MAME to 0.281
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
-- Ymire to 0.2.0
+- Ymir to 0.2.0
 ### System
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251011
