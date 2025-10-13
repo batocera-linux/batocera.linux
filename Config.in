@@ -673,6 +673,12 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/kddockwidgets/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pysdl2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/pysdl3/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/cxxopts/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/date/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/tomlplusplus/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/semver/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/nghttp3/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/ngtcp2/Config.in"
 endmenu
 
 menu "Audio"

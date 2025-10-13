@@ -18,6 +18,7 @@
 - Libretro MAME to 0.281
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
+- Ymire to 0.2.0
 ### System
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251011
