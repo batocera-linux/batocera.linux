@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHS="x86_64 odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 bcm2712 rk3128 rk3288 rk3326 rk3328 rk3399 rk3568 rk3588 rk3588-sdio s812 s905 s905gen2 s905gen3 s9gen4 s922x a3gen2 h3 h5 h6 h616 jh7110 sm8250 sm8550"
+ARCHS="x86_64 odroidxu4 bcm2835 bcm2836 bcm2837 bcm2711 bcm2712 rk3128 rk3288 rk3326 rk3328 rk3399 rk3568 rk3588 rk3588-sdio s812 s905 s905gen2 s905gen3 s9gen4 s922x a3gen2 h3 h5 h6 h616 jh7110 sm8250 sm8550 zen3"
 
 BR_DIR=$1
 BATOCERA_BINARIES_DIR=$2
