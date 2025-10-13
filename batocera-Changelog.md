@@ -10,6 +10,7 @@
 - The ability to turn the controller LED's off
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
+- Odin 2 variants wifi not working in some regions
 ### Changed / Improved
 
 ### Updated
