@@ -35,17 +35,13 @@ mkdir -p /var/log
 mkdir -p /var/tmp
 mkdir -p /var/opt
 
-# populate the ld cache (for nvidia/wine, so x86_64 only) ; slow commands.
-ARCH=$(cat /usr/share/batocera/batocera.arch)
-if test "${ARCH}" = "x86_64"
-then
-    mkdir -p /etc
-    cat << EOF > /etc/ld.so.conf
+# populate the ld cache
+mkdir -p /etc
+cat << EOF > /etc/ld.so.conf
 /usr/lib
 /lib
 /lib32
 /usr/lib/mangohud
 EOF
-    # detached for perf issue (boot time)
-    ldconfig &
-fi
+# detached for perf issue (boot time)
+ldconfig &
