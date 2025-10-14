@@ -22,6 +22,7 @@
 - Libretro MAME to 0.281
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
+- TheForceEngine to v1.22.420
 - Ymir to 0.2.0
 ### System
 - GStreamer codecs to 1.26.6

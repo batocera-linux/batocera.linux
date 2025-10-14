@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-THEFORCEENGINE_VERSION = v1.22.300
+THEFORCEENGINE_VERSION = v1.22.420
 THEFORCEENGINE_SITE = https://github.com/luciusDXL/TheForceEngine.git
 THEFORCEENGINE_SITE_METHOD=git
 THEFORCEENGINE_GIT_SUBMODULES=YES
