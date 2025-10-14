@@ -26,6 +26,7 @@
 - Play! to 0.71
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
+- TheXTech to v1.3.7.1-2
 - TheForceEngine to v1.22.420
 - Xemu to v0.8.106
 - Ymir to 0.2.0
