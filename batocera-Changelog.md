@@ -17,7 +17,7 @@
 ### Changed / Improved
 
 ### Updated
-- Azahar Plus to AZAHAR_PLUS_2123_2_A
+- Azahar Plus to AZAHAR_PLUS_2123_3_A
 - Groovy MAME to 0.281
 - Libretro MAME to 0.281
 - Libretro Play! to 0.71

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AZAHAR_VERSION = AZAHAR_PLUS_2123_2_A
+AZAHAR_VERSION = AZAHAR_PLUS_2123_3_A
 AZAHAR_SITE = https://github.com/AzaharPlus/AzaharPlus
 AZAHAR_SITE_METHOD = git
 AZAHAR_GIT_SUBMODULES = YES
