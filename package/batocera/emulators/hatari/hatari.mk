@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HATARI_VERSION = v2.5.0
+HATARI_VERSION = v2.6.1
 HATARI_SOURCE = hatari-$(HATARI_VERSION).tar.gz
 HATARI_SITE = https://github.com/hatari/hatari.git
 HATARI_SITE_METHOD=git
