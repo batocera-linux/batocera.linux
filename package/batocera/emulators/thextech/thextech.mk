@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-THEXTECH_VERSION = v1.3.7-hotfix2
+THEXTECH_VERSION = v1.3.7.1-2
 THEXTECH_SITE = https://github.com/Wohlstand/TheXTech
 THEXTECH_SITE_METHOD = git
 THEXTECH_GIT_SUBMODULES = YES
