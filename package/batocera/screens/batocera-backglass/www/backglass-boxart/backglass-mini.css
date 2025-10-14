@@ -33,12 +33,16 @@ body {
 #game_boxart_internal {
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #game_boxart_internal img {
-    width: 100%;
     height: 100%;
-    object-fit: fill;
+    width: auto;
+    object-fit: contain;
+    display: block;
 }
 
 #system_logo {
