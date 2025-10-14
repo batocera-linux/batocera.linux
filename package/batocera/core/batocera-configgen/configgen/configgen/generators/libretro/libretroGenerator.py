@@ -53,6 +53,9 @@ class LibretroGenerator(Generator):
                      }
         }
 
+    def has_virtualmouse(self) -> bool:
+        return True
+
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
