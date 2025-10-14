@@ -3,13 +3,12 @@
 # libretro-play
 #
 ################################################################################
-# Version: Commits on Feb 4, 2025
-LIBRETRO_PLAY_VERSION = fbe1d81dfad0ca61a196001569fbba16d0d1ab56
+
+LIBRETRO_PLAY_VERSION = 0.71
 LIBRETRO_PLAY_SITE = https://github.com/jpd002/Play-.git
 LIBRETRO_PLAY_SITE_METHOD = git
 LIBRETRO_PLAY_GIT_SUBMODULES = YES
 LIBRETRO_PLAY_LICENSE = BSD
-LIBRETRO_PLAY_DEPENDENCIES += retroarch
 
 LIBRETRO_PLAY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_PLAY_CONF_OPTS += -DBUILD_STATIC_LIBS=ON
