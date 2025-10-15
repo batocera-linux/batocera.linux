@@ -14,8 +14,10 @@
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
+- Wifi country not being applied at boot
 ### Changed / Improved
-
+- Wifi country can now be chosen under the Network Setting option.
+  This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
 - Groovy MAME to 0.281
