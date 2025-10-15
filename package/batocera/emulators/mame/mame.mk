@@ -265,6 +265,11 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(MAME_CONF_INIT)/autoload
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/autoload \
 	    $(MAME_CONF_INIT)
+
+    # symblink mame tools to /usr/bin to make them available from every location
+    # chdman
+    ln -sf /usr/bin/mame/chdman  $(TARGET_DIR)/usr/bin/chdman
+
 endef
 
 $(eval $(generic-package))
