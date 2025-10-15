@@ -3,8 +3,9 @@
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86-64-v3 image using Wayland and the LabWC compositor.
   Desktop devices should continue to use the x86-64 image with Xorg.
   Note: Nvidia drivers are currently not included in the x86-64-v3 image.
-- The deprecated custom.sh script is abolished since this version. If you already used such a script, then it was one timed transformed to a service.
+- The ability to use a custom.sh script is deprecated in this version. If you already used such a script, then it will be one time transformed into a service.
   Please use the services for future scripts and refer to our [Wikipedia](https://wiki.batocera.org/scripting_services_rules_examples)
+- TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
 ### Hardware
 - Odin 2 Mini initial support
 ### Added
