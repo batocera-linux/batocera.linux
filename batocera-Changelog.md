@@ -35,6 +35,7 @@
 - Xemu to v0.8.106
 - Ymir to 0.2.0
 ### System
+- Bluez to 5.84
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251011
 - Linux Kernel to 6.17.1
