@@ -57,13 +57,13 @@ MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FO
 endif
 
 # Pipewire
-ifeq ($(BR2_PACKAGE_PIPEWIRE),y)
-MAME_DEPENDENCIES += pipewire
-MAME_CROSS_OPTS += USE_PIPEWIRE=1
-MAME_CFLAGS += -I$(STAGING_DIR)/usr/include/pipewire-0.3 -I$(STAGING_DIR)/usr/include/spa-0.2
-else
+#ifeq ($(BR2_PACKAGE_PIPEWIRE),y)
+#MAME_DEPENDENCIES += pipewire
+#MAME_CROSS_OPTS += USE_PIPEWIRE=1
+#MAME_CFLAGS += -I$(STAGING_DIR)/usr/include/pipewire-0.3 -I$(STAGING_DIR)/usr/include/spa-0.2
+#else
 MAME_CROSS_OPTS += NO_USE_PIPEWIRE=1
-endif
+#endif
 
 # Wayland
 ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND),y)
