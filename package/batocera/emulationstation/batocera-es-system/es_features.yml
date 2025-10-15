@@ -10151,18 +10151,6 @@ supermodel:
             choices:
                 "Off":      0
                 "On":       1
-        joystickSensitivity:
-            prompt: STEERING SENSITIVITY
-            description: For playing driving games with a game pad, it is sometimes a good idea to use a value larger than 100%% so that the steering feels less sensitive on a thumbstick.
-            preset: slider
-            preset_parameters: 70 200 10 100 %
-        pedalSwap:
-            group: ADVANCED OPTIONS
-            prompt:      MODERN PEDAL CONTROLS
-            description: Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down.
-            choices:
-                "Off":      0
-                "On":       1
         ppcFreq:
             group: ADVANCED OPTIONS
             prompt:      ADJUST POWERPC FREQUENCY
