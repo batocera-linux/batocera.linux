@@ -1,0 +1,45 @@
+From b7ad34bce41c21eef0a80ea45956c765cbedbfae Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Thu, 2 Oct 2025 12:42:40 -0500
+Subject: [PATCH 2/5] drm/amd: Stop exporting amdgpu_device_ip_suspend()
+ outside amdgpu_device
+
+amdgpu_device_ip_suspend() doesn't have a caller outside of
+amdgpu_device.c. Make it static.
+
+No intended functional changes.
+
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h        | 1 -
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index 1bb50f59b7a8..4a07ad132397 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -1516,7 +1516,6 @@ void amdgpu_driver_postclose_kms(struct drm_device *dev,
+ 				 struct drm_file *file_priv);
+ void amdgpu_driver_release_kms(struct drm_device *dev);
+ 
+-int amdgpu_device_ip_suspend(struct amdgpu_device *adev);
+ int amdgpu_device_prepare(struct drm_device *dev);
+ int amdgpu_device_suspend(struct drm_device *dev, bool fbcon);
+ int amdgpu_device_resume(struct drm_device *dev, bool fbcon);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 76ec8df560da..ff7631c3ad6b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -3662,7 +3662,7 @@ static int amdgpu_device_ip_suspend_phase2(struct amdgpu_device *adev)
+  * in each IP into a state suitable for suspend.
+  * Returns 0 on success, negative error code on failure.
+  */
+-int amdgpu_device_ip_suspend(struct amdgpu_device *adev)
++static int amdgpu_device_ip_suspend(struct amdgpu_device *adev)
+ {
+ 	int r;
+ 
+-- 
+2.43.0
+
