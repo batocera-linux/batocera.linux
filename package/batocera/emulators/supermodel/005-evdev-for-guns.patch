@@ -2,36 +2,37 @@ From b4e3c3acdaaff33e6012199a6fffb8b36c76afa4 Mon Sep 17 00:00:00 2001
 From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
 Date: Sat, 25 Mar 2023 19:24:58 +0000
 Subject: [PATCH] evdev for guns
-
+ 
 Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
+
 ---
  Makefiles/Makefile.UNIX            |   2 +-
  Makefiles/Rules.inc                |   1 +
- Src/OSD/SDL/Main.cpp               |   5 +
+ Src/OSD/SDL/Main.cpp               |   3 +
  Src/OSD/evdev/EvdevInputSystem.cpp | 287 +++++++++++++++++++++++++++++
  Src/OSD/evdev/EvdevInputSystem.h   |  51 +++++
- 5 files changed, 345 insertions(+), 1 deletion(-)
+ 5 files changed, 343 insertions(+), 1 deletion(-)
  create mode 100644 Src/OSD/evdev/EvdevInputSystem.cpp
  create mode 100644 Src/OSD/evdev/EvdevInputSystem.h
 
 diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
-index d499234..51c5b63 100644
+index af02998..3d1eeb6 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
-@@ -63,7 +63,7 @@ SDL2_LIBS = `sdl2-config --libs`
+@@ -73,7 +73,7 @@ endif
  #
  
  PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) -O3
 -PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread
 +PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -ludev
+ PLATFORM_BINARY_EXTENSION =
  
  
- ###############################################################################
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index 52f2b6a..7f1d91a 100644
+index 50bd817..17ecfe2 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
-@@ -149,6 +149,7 @@ SRC_FILES = \
+@@ -158,6 +158,7 @@ SRC_FILES = \
  	Src/Inputs/InputTypes.cpp \
  	Src/Inputs/MultiInputSource.cpp \
  	Src/OSD/SDL/SDLInputSystem.cpp \
@@ -40,31 +41,29 @@ index 52f2b6a..7f1d91a 100644
  	Src/OSD/Outputs.cpp \
  	Src/Sound/MPEG/MpegAudio.cpp \
 diff --git a/Src/OSD/SDL/Main.cpp b/Src/OSD/SDL/Main.cpp
-index 8033d7e..427b5cf 100644
+index 9bb806c..7daaea5 100644
 --- a/Src/OSD/SDL/Main.cpp
 +++ b/Src/OSD/SDL/Main.cpp
-@@ -68,6 +68,7 @@
- #include "Util/ConfigBuilders.h"
+@@ -86,6 +86,7 @@
+ #include "OSD/FileSystemPath.h"
  #include "GameLoader.h"
  #include "SDLInputSystem.h"
 +#include "EvdevInputSystem.h"
  #include "SDLIncludes.h"
  #include "Debugger/SupermodelDebugger.h"
  #include "Graphics/Legacy3D/Legacy3D.h"
-@@ -2048,6 +2049,10 @@ int main(int argc, char **argv)
-   // Create input system
-   if (selectedInputSystem == "sdl")
-     InputSystem = new CSDLInputSystem(s_runtime_config);
-+// ifdef udev
+@@ -2364,6 +2365,8 @@ int main(int argc, char **argv)
+     InputSystem = std::shared_ptr<CInputSystem>(new CSDLInputSystem(s_runtime_config, false));
+   else if (selectedInputSystem == "sdlgamepad")
+     InputSystem = std::shared_ptr<CInputSystem>(new CSDLInputSystem(s_runtime_config, true));
 +  else if (selectedInputSystem == "evdev")
-+    InputSystem = new CEvdevInputSystem(s_runtime_config);
-+//
++    InputSystem = std::shared_ptr<CInputSystem>(new CEvdevInputSystem(s_runtime_config));
  #ifdef SUPERMODEL_WIN32
    else if (selectedInputSystem == "dinput")
-     InputSystem = new CDirectInputSystem(s_runtime_config, s_window, false, false);
+     InputSystem = std::shared_ptr<CInputSystem>(new CDirectInputSystem(s_runtime_config, s_window, false, false));
 diff --git a/Src/OSD/evdev/EvdevInputSystem.cpp b/Src/OSD/evdev/EvdevInputSystem.cpp
 new file mode 100644
-index 0000000..66b5196
+index 0000000..ee695ba
 --- /dev/null
 +++ b/Src/OSD/evdev/EvdevInputSystem.cpp
 @@ -0,0 +1,287 @@
@@ -135,7 +134,7 @@ index 0000000..66b5196
 +  return event_strcmp_events(aa->devnode, bb->devnode);
 +}
 +
-+CEvdevInputSystem::CEvdevInputSystem(const Util::Config::Node& config) : CSDLInputSystem(config) {
++CEvdevInputSystem::CEvdevInputSystem(const Util::Config::Node& config) : CSDLInputSystem(config, true) {
 +  m_ndevices = 0;
 +  m_udev = NULL;
 +
@@ -413,5 +412,5 @@ index 0000000..6f8a2b2
 +
 +#endif  // INCLUDED_EVDEVINPUTSYSTEM_H
 -- 
-2.34.1
+2.48.1
 
