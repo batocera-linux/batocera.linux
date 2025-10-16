@@ -8350,17 +8350,6 @@ msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Для эмуляторов и контроллеров, поддерживающих вибрацию."
 
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"Для игр с вождением на геймпаде иногда полезно использовать значение больше "
-"100%%, чтобы управление было менее чувствительным при поворотах."
-
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "For use with HD texture packs."
@@ -9453,6 +9442,13 @@ msgstr ""
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
 msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
@@ -10958,11 +10954,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "ТИП МОДЕЛИ"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "MODERN PEDAL CONTROLS"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11722,6 +11713,11 @@ msgstr "N64 3-point"
 msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
@@ -14637,11 +14633,6 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "ЧУВСТВИТЕЛЬНОСТЬ РУЛЕВОГО УПРАВЛЕНИЯ"
-
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -17378,14 +17369,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Использовать предмет в инвентаре"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr ""
-"Используйте L2/R2 для тормоза/газа, а L1/R1 или R-стик вверх/вниз для "
-"переключения передач вверх/вниз."
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -19635,6 +19618,16 @@ msgstr "жёлтая/синяя"
 #~ msgid "For digital controller mode."
 #~ msgstr "Для цифрового контроллера."
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "Для игр с вождением на геймпаде иногда полезно использовать значение "
+#~ "больше 100%%, чтобы управление было менее чувствительным при поворотах."
+
 #~ msgctxt "game_options"
 #~ msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
 #~ msgstr "Заставить Nvidia GPU всегда указывать как AMD GPU."
@@ -19877,6 +19870,10 @@ msgstr "жёлтая/синяя"
 #~ msgctxt "game_options"
 #~ msgid "MICRO VU SPEED HACKS"
 #~ msgstr "MICRO VU SPEED HACKS"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "MODERN PEDAL CONTROLS"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -20284,6 +20281,10 @@ msgstr "жёлтая/синяя"
 #~ msgid "SSAA"
 #~ msgstr "SSAA"
 
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "ЧУВСТВИТЕЛЬНОСТЬ РУЛЕВОГО УПРАВЛЕНИЯ"
+
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Сохранение"
@@ -20519,6 +20520,13 @@ msgstr "жёлтая/синяя"
 #~ msgstr ""
 #~ "Используйте L2/R2 для ускорения/торможения и L1/R1 или правый стик вверх/"
 #~ "вниз для переключения передач."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "Используйте L2/R2 для тормоза/газа, а L1/R1 или R-стик вверх/вниз для "
+#~ "переключения передач вверх/вниз."
 
 #~ msgctxt "game_options"
 #~ msgid ""

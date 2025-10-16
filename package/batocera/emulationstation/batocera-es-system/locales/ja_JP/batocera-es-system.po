@@ -8297,17 +8297,6 @@ msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "フォースフィードバック(振動)可能時の設定"
 
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、ス"
-"ティックの感度を鈍くすることをお勧めします"
-
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "For use with HD texture packs."
@@ -9395,6 +9384,13 @@ msgstr ""
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
 msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
@@ -10891,11 +10887,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "モデルタイプ"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "ペダル制御設定"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11642,6 +11633,11 @@ msgstr "N64 3ポイントモード"
 msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
@@ -14534,11 +14530,6 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "ステアリング 感度"
-
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -17244,13 +17235,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "インベントリのアイテムを使用"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr ""
-"ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用します"
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -18693,6 +18677,16 @@ msgstr "黄/青"
 #~ msgstr ""
 #~ "強化：テクスチャのアップスケーリングテクスチャとそのサイズを有効にします"
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、"
+#~ "スティックの感度を鈍くすることをお勧めします"
+
 #~ msgctxt "game_options"
 #~ msgid "HIDE LIGHT GUN CROSSHAIRS"
 #~ msgstr "ガンコンクロスヘア(照準)を非表示"
@@ -18700,6 +18694,14 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "INTEGER SCALE"
 #~ msgstr "整数スケーリング"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "ペダル制御設定"
+
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "ステアリング 感度"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -18716,6 +18718,13 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM ジョイスティック構成を使用"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用しま"
+#~ "す"
 
 #~ msgctxt "game_options"
 #~ msgid "VSYNC INTERVAL"
