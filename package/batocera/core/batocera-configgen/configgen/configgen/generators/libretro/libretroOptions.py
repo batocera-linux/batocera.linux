@@ -1656,6 +1656,9 @@ def _flycast_options(
     _set_from_system(coreSettings, 'reicast_language', system, 'reicast_language', default='Default')
     _set_from_system(coreSettings, 'reicast_region', system, 'reicast_region', default='Default')
 
+    # Native Depth Interpolation
+    _set_from_system(coreSettings, 'reicast_native_depth_interpolation', system, 'reicast_native_depth_interpolation', default='disabled')
+
     ## Atomiswave / Naomi
 
     # Screen Orientation
