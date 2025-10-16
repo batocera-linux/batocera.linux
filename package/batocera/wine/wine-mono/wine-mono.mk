@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-WINE_MONO_VERSION = 10.1.0
+WINE_MONO_VERSION = 10.3.0
 WINE_MONO_SOURCE = wine-mono-$(WINE_MONO_VERSION)-x86.tar.xz
-WINE_MONO_SITE = https://dl.winehq.org/wine/wine-mono/$(WINE_MONO_VERSION)
+WINE_MONO_SITE = https://github.com/wine-mono/wine-mono/releases/download/wine-mono-$(WINE_MONO_VERSION)
 
 define WINE_MONO_INSTALL_TARGET_CMDS
     mkdir -p \

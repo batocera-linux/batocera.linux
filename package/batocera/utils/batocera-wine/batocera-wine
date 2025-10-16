@@ -38,6 +38,10 @@ AUTORUN_FOUNDEXE=
 # Use requestFileSystem() to check dirs and files for symlinks and filesystem, it's a small dev-tool for monitoring the entire script
 # Usage requestFileSystem "FILE" "DIR" "FILE"
 
+# Global variables for Wayland/X.org handling
+SYSTEM_DISPLAY_MODE=""
+CMD_PREFIX=""
+
 stopWineServer() {
     [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] && exit 0
 
@@ -123,8 +127,7 @@ waitWineServer() {
 
 wine_options() {
     WINEPOINT=$1
-    ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
-    FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
+    NTSYNC="$(get_setting ntsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
     FSR="$(get_setting fsr "${SYSTEM}" "${ROMGAMENAME}")"
     FPS_LIMIT="$(get_setting fps_limit "${SYSTEM}" "${ROMGAMENAME}")"
@@ -141,16 +144,34 @@ wine_options() {
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
+    WAYLAND_DRIVER="$(get_setting wayland_driver "${SYSTEM}" "${ROMGAMENAME}")"
 
     if [[ "${VIRTUAL_DESKTOP}" = 1 ]]; then
         VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
     fi
 
-    export WINEESYNC=1
-    [[ "${ESYNC}" = 0 ]] && WINEESYNC=0
+    # Handle Wayland driver option only if the system is running Wayland
+    if [[ "${SYSTEM_DISPLAY_MODE}" == "wayland" ]]; then
+        if [[ "${WAYLAND_DRIVER}" == "native" ]]; then
+            CMD_PREFIX="DISPLAY="
+            echo "*** System is Wayland and 'native' driver requested. Forcing Wine native Wayland mode. ***"
+        else
+            echo "*** System is Wayland, using XWayland by default or as requested. ***"
+            setxkbmap "${KEYBOARD}"
+        fi
+    else
+        # System is X.org, run as normal
+        echo "*** System is X.org. Running in standard X11 mode. ***"
+        setxkbmap "${KEYBOARD}"
+    fi
 
-    export WINEFSYNC=1
-    [[ "${FSYNC}" = 0 ]] && WINEFSYNC=0
+    # ESYNC and FSYNC are deprecated in favor of NTSYNC with modern Wine and kernel.
+    # NTSYNC is often enabled by default when supported.
+    # The option is provided to explicitly disable it if needed.
+    export WINE_DISABLE_FAST_SYNC=0
+    if [[ "${NTSYNC}" = 0 ]]; then
+        export WINE_DISABLE_FAST_SYNC=1
+    fi
 
     export PBA_ENABLE=0
     [[ "${PBA}" = 1 ]] && PBA_ENABLE=1
@@ -166,9 +187,6 @@ wine_options() {
 
     export VKD3D_DEBUG=none
     [[ "${WINE_DEBUG}" = 1 ]] && unset VKD3D_DEBUG
-
-    export VKD3D_SHADER_DEBUG=none
-    [[ "${WINE_DEBUG}" = 1 ]] && unset VKD3D_SHADER_DEBUG
 
     export VKD3D_SHADER_CACHE_PATH="/userdata/system/cache"
 
@@ -222,11 +240,10 @@ wine_options() {
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
     export __GL_SHADER_DISK_CACHE_PATH="${XDG_CACHE_HOME}"/nvidia
 
+    # While esync is deprecated, the ulimit is still important for Wine performance.
     if ! ulimit -n "${ULIMIT_SIZE}" 2>/dev/null; then
-        export WINEESYNC=0
+        echo "Warning: could not set file limit, which may impact performance." >&2
     fi
-
-    setxkbmap "${KEYBOARD}"
 }
 
 redist_install() {
@@ -244,13 +261,13 @@ redist_install() {
             case "${ii}" in
 
             "dxsetup.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /silent &>/dev/null || return 1
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" /silent &>/dev/null || return 1
                 "${WINESERVER}" -w
             ;;
 
             "vcredist_x64_2005.exe" | "vcredist_x86_2005.exe" | \
             "vcredist_x64_2008.exe" | "vcredist_x86_2008.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /q &>/dev/null || return 1
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" /q &>/dev/null || return 1
                 "${WINESERVER}" -w
             ;;
 
@@ -260,23 +277,23 @@ redist_install() {
             "vcredist_x64_2015.exe" | "vcredist_x86_2015.exe" | \
             "vcredist_x64_2017.exe" | "vcredist_x86_2017.exe" | \
             "vcredist_x64_2019.exe" | "vcredist_x86_2019.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
                 "${WINESERVER}" -w
             ;;
 
             "vcredist_x64_2015_2019.exe" | "vcredist_x86_2015_2019.exe" | \
             "vcredist_x64_2015_2022.exe" | "vcredist_x86_2015_2022.exe" )
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
                 "${WINESERVER}" -w
             ;;
 
             "oalinst.exe")
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /s &>/dev/null
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" /s &>/dev/null
                 "${WINESERVER}" -w
             ;;
 
             *)
-                WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" &>/dev/null
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${file}" &>/dev/null
                 "${WINESERVER}" -w
             ;;
             esac
@@ -299,7 +316,7 @@ msi_install() {
 
         for file in "${i[@]}"; do
             echo "Executing file $file"
-            WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${file}" /quiet /qn /norestart &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${MSIEXEC}" -i "${file}" /quiet /qn /norestart &>/dev/null || return 1
             "${WINESERVER}" -w
             echo "$(date '+%D %T') - Installed: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.msi"
@@ -314,8 +331,8 @@ reg_install() {
     local i; local ii
     ii="${USER_DIR}/regs"
     if [[ -e "/var/run/rawinput.reg" ]]; then
-        WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
-        WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
         rm /var/run/rawinput.reg
     fi
 
@@ -325,8 +342,8 @@ reg_install() {
         mkdir -p "${USER_DIR}/installed.regs"
 
         for file in "${i[@]}"; do
-            WINEPREFIX=${WINEPOINT} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
-            WINEPREFIX=${WINEPOINT} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
             echo "$(date '+%D %T') - Imported: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.regs"
         done
@@ -335,12 +352,12 @@ reg_install() {
 
     if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
         if ! grep -q "\"DisableHidraw\"=dword:00000000" "${WINEPOINT}/system.reg"; then
-            WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
             waitWineServer 0
         fi
     else
         if ! grep -q "\"DisableHidraw\"=dword:00000001" "${WINEPOINT}/system.reg"; then
-            WINEPREFIX=${WINEPOINT} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 1 /f
             waitWineServer 0
         fi
     fi
@@ -503,7 +520,7 @@ createWineDirectory() {
     # Workaround wine bottle creation issue with debug enabled
     export WINEDLLOVERRIDES="winegstreamer="
 
-    if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname; then
+    if ! WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" hostname; then
 	    rm -rf "${WINEPREFIX}"
 	    kill -15 "${BSODPID}"
         echo "+++ Failed initialising ${WINEPREFIX} +++"
@@ -553,9 +570,9 @@ play_wine() {
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     fi
     waitWineServer 0
 }
@@ -584,9 +601,9 @@ play_pc() {
 
     env
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     else
-        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     fi
     waitWineServer 0
 }
@@ -604,7 +621,7 @@ trick_wine() {
         chmod +x "${WINETRICKS}"
         echo "Winetricks is now installed"
     fi
-    WINEPREFIX=${WINEPOINT} "${WINETRICKS}" "${TRICK}"
+    WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINETRICKS}" "${TRICK}"
 }
 
 #play_iso() {
@@ -625,7 +642,7 @@ play_exe() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} "${WINE}" "${ROMGAMENAME}")
+    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${ROMGAMENAME}")
     waitWineServer 0
 }
 
@@ -656,9 +673,9 @@ play_winetgz() {
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     fi
     waitWineServer 0
 }
@@ -737,9 +754,9 @@ play_squashfs() {
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
-        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     else
-        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" "${WINE} ${VDESKTOP} ${WINE_CMD}")
+        (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     fi
 
     waitWineServer 0
@@ -795,8 +812,8 @@ install_exe_msi() {
     GAMENAME="$2"
     WINEPOINT="$3"
     createWineDirectory "${WINEPOINT}"
-    [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} "${WINE}" "${GAMENAME}"
-    [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${GAMENAME}"
+    [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${GAMENAME}"
+    [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${MSIEXEC}" -i "${GAMENAME}"
     waitWineServer 0
     createAutorunCmd "${WINEPOINT}" "drive_c/P*"
 }
@@ -817,7 +834,7 @@ install_iso() {
     createWineDirectory "${WINEPOINT}"
 
     if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"; then
-	    WINEPREFIX=${WINEPOINT} "${WINE}" explorer "d:"
+	    WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" explorer "d:"
 	    rm -f "${WINEPOINT}/dosdevices/d:"
     fi
 
@@ -960,6 +977,9 @@ init_wine() {
 
 ###### MAIN #######
 trap stopWineServer SIGHUP SIGINT SIGTERM
+
+# Check the system's display mode once at the start
+SYSTEM_DISPLAY_MODE=$(batocera-resolution getDisplayMode)
 
 #Init WINE Folders and Extension only if parameters are correct and a system is setted
 [[ -z "${SYSTEM}" ]] && SYSTEM="!missing!"

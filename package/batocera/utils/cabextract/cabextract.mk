@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CABEXTRACT_VERSION = 1.9.1
+CABEXTRACT_VERSION = 1.11
 CABEXTRACT_SOURCE = cabextract-$(CABEXTRACT_VERSION).tar.gz
 CABEXTRACT_SITE = https://www.cabextract.org.uk
 CABEXTRACT_DEPENDENCIES = libmspack

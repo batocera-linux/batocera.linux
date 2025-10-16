@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = proton-9.0-4
+WINE_PROTON_VERSION = proton-10.0-2
 WINE_PROTON_SOURCE = wine-$(WINE_PROTON_VERSION)-amd64.tar.xz
 WINE_PROTON_SITE = \
     https://github.com/Kron4ek/Wine-Builds/releases/download/$(WINE_PROTON_VERSION)

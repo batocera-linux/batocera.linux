@@ -11517,20 +11517,13 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
-        esync:
+        ntsync:
             group: ADVANCED OPTIONS
-            prompt: ESYNC
-            description: Can increase performance for games that stress the CPU.
+            prompt: NTSYNC
+            description: Improves frame rate and responsiveness.
             choices:
-                "Off": 0
-                "On":  1
-        fsync:
-            group: ADVANCED OPTIONS
-            prompt: FSYNC
-            description: Can improve frame rate and responsiveness.
-            choices:
-                "Off": 0
-                "On":  1
+                "Off":          0
+                "On (Default)": 1
         pba:
             group: ADVANCED OPTIONS
             prompt: PBA
@@ -11601,6 +11594,13 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        wayland_driver:
+            group: ADVANCED OPTIONS
+            prompt: WAYLAND DRIVER MODE
+            description: Choose the Wayland driver mode if on a handheld device. XWayland may have more compatibility.
+            choices:
+                "Native (Default)": "native"
+                "XWayland": "xwayland"
         wine_ntfs:
             group: ADVANCED OPTIONS
             prompt: ENABLE NTFS MODE

@@ -43,6 +43,7 @@
 - Ymir to 0.2.0
 ### System
 - Bluez to 5.84
+- DXVK to 2.7.1
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251011
 - Linux Kernel to 6.17.1
@@ -50,6 +51,8 @@
 - Mesa3D to 25.2.5
 - Nvidia production drivers to 580.95.05
 - Vulkan stack to 1.4.328.1
+- Wine-TKG to 10.16
+- Wine Proton to 10.0-2
 
 # 2025/10/12 - batocera.linux 42 - Papilio Ulysses
 ### Special Notes
