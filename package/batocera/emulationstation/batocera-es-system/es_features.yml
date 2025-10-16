@@ -2061,6 +2061,13 @@ libretro:
                     "2x":  2
                     "4x":  4
                     "6x":  6
+            reicast_native_depth_interpolation:
+                group: ADVANCED OPTIONS
+                prompt:      NATIVE DEPTH INTERPOLATION
+                description: Helps with texture corruption and depth issues on AMD GPUs. Can also help Intel GPUs in some cases.
+                choices:
+                    "Off": disabled
+                    "On":  enabled
             reicast_frame_skipping:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance, at the cost of choppy motion.
