@@ -8382,18 +8382,6 @@ msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Emülatörler ve kontrolcüler için kuvvet geri bildirimi desteklenir."
 
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"Bir oyun kolu ile sürüş oyunları oynamak için bazen %%100'den daha büyük bir "
-"değer kullanmak iyi bir fikir olabilir, böylece direksiyonun kontrol çubuğu "
-"üzerinde daha az hassas olması sağlanır."
-
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "For use with HD texture packs."
@@ -9481,6 +9469,13 @@ msgstr ""
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
 msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
@@ -10983,11 +10978,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "MODEL TÜRÜ"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "MODERN PEDAL KONTROLLERİ"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11747,6 +11737,11 @@ msgstr "N64 3-nokta"
 msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
@@ -14665,11 +14660,6 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "YÖNLENDİRME HASSASİYETİ"
-
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -17402,14 +17392,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Envanter Öğesini Kullan"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr ""
-"Fren/Hızlanma için L2/R2, Vites Yükseltme/Küçültme için L1/R1 veya R analok "
-"Yukarı/Aşağıyı kullanın."
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -18845,6 +18827,32 @@ msgstr "sarı/mavi"
 #~ msgid "Configuring controllers in GZDoom can cause problems."
 #~ msgstr "GZDoom kontrolcüleri yapılandırmak sorunlara neden olabilir."
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "Bir oyun kolu ile sürüş oyunları oynamak için bazen %%100'den daha büyük "
+#~ "bir değer kullanmak iyi bir fikir olabilir, böylece direksiyonun kontrol "
+#~ "çubuğu üzerinde daha az hassas olması sağlanır."
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "MODERN PEDAL KONTROLLERİ"
+
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "YÖNLENDİRME HASSASİYETİ"
+
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM JOYSTICK YAPILANDIRMASINI KULLAN"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "Fren/Hızlanma için L2/R2, Vites Yükseltme/Küçültme için L1/R1 veya R "
+#~ "analok Yukarı/Aşağıyı kullanın."

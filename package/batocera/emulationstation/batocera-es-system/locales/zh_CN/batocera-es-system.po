@@ -8189,17 +8189,6 @@ msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "用于支持力反馈的模拟器和控制器。"
 
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"玩驾驶游戏时如果使用游戏手柄, 有时使用大于 100%% 的数值会更好, 这样用拇指摇杆"
-"转向就不会过于灵敏."
-
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
 msgid "For use with HD texture packs."
@@ -9275,6 +9264,13 @@ msgstr "在不需要的时候通过设置CPU性能墙来帮助降低CPU功耗，
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
 msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
@@ -10750,11 +10746,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "型号类型"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "现代踏板控制"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11493,6 +11484,11 @@ msgstr "N64 3-point"
 msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT（网络地址转换）"
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
 
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
@@ -14364,11 +14360,6 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "转向灵敏度"
-
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -17042,12 +17033,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "使用物品"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr "使用L2/R2进行制动/加速, 使用L1/R1或R杆向上/向下进行换档."
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -18801,6 +18786,16 @@ msgstr "黄色/蓝色"
 #~ "当用摇杆玩驾驶游戏, 有时使用大于100%的值更好, 这样拇指操纵摇杆转向就不那么"
 #~ "灵敏了."
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "玩驾驶游戏时如果使用游戏手柄, 有时使用大于 100%% 的数值会更好, 这样用拇指"
+#~ "摇杆转向就不会过于灵敏."
+
 #~ msgctxt "keys_files"
 #~ msgid "Forward Nudge"
 #~ msgstr "前推"
@@ -18878,6 +18873,10 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "载入状态插槽1"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "现代踏板控制"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -19107,6 +19106,10 @@ msgstr "黄色/蓝色"
 #~ msgid "SSAA"
 #~ msgstr "SSAA抗锯齿"
 
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "转向灵敏度"
+
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "保存状态"
@@ -19215,6 +19218,11 @@ msgstr "黄色/蓝色"
 #~ msgid ""
 #~ "Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down."
 #~ msgstr "使用L2/R2进行加速/制动，使用L1/R1或右摇杆上/下进行升档/降档."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr "使用L2/R2进行制动/加速, 使用L1/R1或R杆向上/向下进行换档."
 
 #~ msgctxt "game_options"
 #~ msgid ""
