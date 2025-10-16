@@ -40,7 +40,7 @@
 - Linux Firmware to 20251011
 - Linux Kernel to 6.17.1
 - LLVM Project to 20.1.8
-- Mesa3D to 25.2.4
+- Mesa3D to 25.2.5
 - Nvidia production drivers to 580.95.05
 - Vulkan stack to 1.4.328.1
 
