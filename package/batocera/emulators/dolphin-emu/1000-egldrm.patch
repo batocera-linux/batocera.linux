@@ -1336,16 +1336,6 @@ index 0bf4df23b87..9faf1152de2 100644
  #endif
  
  #ifdef _WIN32
-@@ -141,7 +143,8 @@ int main(int argc, char* argv[])
-         "headless"
- #ifdef __linux__
-             ,
--            "fbdev"
-+            "fbdev",
-+            "drm"
- #endif
- #if HAVE_X11
-             ,
 diff --git a/Source/Core/DolphinNoGUI/Platform.h b/Source/Core/DolphinNoGUI/Platform.h
 index b0d98e58bef..bc8c57a3cef 100644
 --- a/Source/Core/DolphinNoGUI/Platform.h
@@ -1725,16 +1715,16 @@ diff --git a/Source/Core/DolphinNoGUI/MainNoGUI.cpp b/Source/Core/DolphinNoGUI/M
 index 9faf1152de2..143d059d04c 100644
 --- a/Source/Core/DolphinNoGUI/MainNoGUI.cpp
 +++ b/Source/Core/DolphinNoGUI/MainNoGUI.cpp
-@@ -143,8 +143,7 @@ int main(int argc, char* argv[])
-         "headless"
+@@ -201,7 +201,8 @@ int main(const int argc, char* argv[])
+       .choices({"headless"
  #ifdef __linux__
-             ,
--            "fbdev",
--            "drm"
-+            "fbdev", "drm"
+                 ,
+-                "fbdev"
++                "fbdev",
++                "drm"
  #endif
  #if HAVE_X11
-             ,
+                 ,
 
 From 0c523614eabd043b51d6addbb34cb0d6a85ec7e1 Mon Sep 17 00:00:00 2001
 From: Romain TISSERAND <romain.tisserand@gmail.com>

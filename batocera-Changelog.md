@@ -21,6 +21,7 @@
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
+- Dolphin-Emu to 2509-188
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
 - Groovy MAME to 0.281
