@@ -1,0 +1,13 @@
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
+index 9648613bec..5dc76dae1a 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp
+@@ -463,7 +463,7 @@ void App::RunEmulator() {
+         // Check if user has opted in or out of automatic updates
+         const bool onboarded = std::filesystem::is_regular_file(onboardedPath);
+         if (!onboarded) {
+-            m_updateOnboardingWindow.Open = true;
++            m_updateOnboardingWindow.Open = false;
+         }
+ 
+         // Start update checker thread and fire update check immediately if configured to do so
