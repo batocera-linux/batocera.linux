@@ -37,6 +37,7 @@
 - Taradino to 20250816
 - TheXTech to v1.3.7.1-2
 - TheForceEngine to v1.22.420
+- Xash3D FWGS engine to Oct 17 build
 - Xemu to v0.8.106
 - Ymir to 0.2.0
 ### System
