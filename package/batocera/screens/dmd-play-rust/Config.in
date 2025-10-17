@@ -1,0 +1,8 @@
+config BR2_PACKAGE_DMD_PLAY_RUST
+    bool "dmd-play-rust"
+    depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+    help
+      dmd-simulator player command that can send image to the simulator or to the libdmd server
+
+config BR2_PACKAGE_DMD_PLAY_RUST_DMD_PLAY_BIN
+    bool "dmd-play-rust-dmd-play-bin"
