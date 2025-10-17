@@ -124,7 +124,13 @@ f_minTomaxResolution() {
         else
             echo "Using master ES resolution setting of $MAXWIDTH x $MAXHEIGHT" >> "$log"
         fi
-    # Priority 4: No user setting, so we use our calculated ideal mode
+    # Priority 4: Check for 1920x1080 @ 60Hz from listModes
+    elif batocera-resolution listModes | grep -q "1920x1080.60.00"; then
+        echo "Found 1920x1080 @ 60.00 Hz in listModes. Setting it." >> "$log"
+        MAXWIDTH=1920
+        MAXHEIGHT=1080
+        MAXRATE=60.00
+    # Priority 5: No user setting, so we use our calculated ideal mode
     elif [ -n "$IDEAL_WIDTH" ]; then
         # Check if the current refresh rate is already ~60Hz.
         ROUNDED_CURRENTRATE=$(printf "%.0f\n" "${CURRENTRATE}")
@@ -140,7 +146,7 @@ f_minTomaxResolution() {
             MAXHEIGHT=$IDEAL_HEIGHT
             MAXRATE=$IDEAL_RATE
         fi
-    # Priority 5: Last resort, grab the value from the mpv.log if it exists
+    # Priority 6: Last resort, grab the value from the mpv.log if it exists
     else
         if [ -f "$mpvlog" ]; then
             selected_mode=$(grep -oE '\[.*\] Selected mode: .* \(([^)]+)\)' "$mpvlog" | awk -F '[()]' '{print $2}')
