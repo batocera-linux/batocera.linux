@@ -21,6 +21,7 @@
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
+- EDuke32 to Oct 10, 2025
 - Groovy MAME to 0.281
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
