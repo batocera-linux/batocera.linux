@@ -1,13 +1,13 @@
 diff --git a/pcsx2-qt/Settings/FolderSettingsWidget.cpp b/pcsx2-qt/Settings/FolderSettingsWidget.cpp
-index b097e8d5db..7fbf29b0e6 100644
+index 309f1e605c..5c4356e1b4 100644
 --- a/pcsx2-qt/Settings/FolderSettingsWidget.cpp
 +++ b/pcsx2-qt/Settings/FolderSettingsWidget.cpp
-@@ -33,7 +33,7 @@ FolderSettingsWidget::FolderSettingsWidget(SettingsDialog* dialog, QWidget* pare
- 	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.cheats, m_ui.cheatsBrowse, m_ui.cheatsOpen, m_ui.cheatsReset, "Folders", "Cheats", Path::Combine(EmuFolders::DataRoot, "cheats"));
- 	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.covers, m_ui.coversBrowse, m_ui.coversOpen, m_ui.coversReset, "Folders", "Covers", Path::Combine(EmuFolders::DataRoot, "covers"));
- 	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.snapshots, m_ui.snapshotsBrowse, m_ui.snapshotsOpen, m_ui.snapshotsReset, "Folders", "Snapshots", Path::Combine(EmuFolders::DataRoot, "snaps"));
+@@ -23,7 +23,7 @@ FolderSettingsWidget::FolderSettingsWidget(SettingsWindow* settings_dialog, QWid
+ 	connect(m_ui.organizeScreenshotsByGame, &QCheckBox::checkStateChanged, this, [](int state) {
+ 		GSConfig.OrganizeScreenshotsByGame = (state == Qt::Checked);
+ 	});
 -	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.saveStates, m_ui.saveStatesBrowse, m_ui.saveStatesOpen, m_ui.saveStatesReset, "Folders", "SaveStates", Path::Combine(EmuFolders::DataRoot, "sstates"));
 +	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.saveStates, m_ui.saveStatesBrowse, m_ui.saveStatesOpen, m_ui.saveStatesReset, "Folders", "Savestates", Path::Combine(EmuFolders::DataRoot, "sstates"));
- }
- 
- FolderSettingsWidget::~FolderSettingsWidget() = default;
+ 	SettingWidgetBinder::BindWidgetToFolderSetting(sif, m_ui.videoDumpingDirectory, m_ui.videoDumpingDirectoryBrowse, m_ui.videoDumpingDirectoryOpen, m_ui.videoDumpingDirectoryReset, "Folders", "Videos", Path::Combine(EmuFolders::DataRoot, "videos"));
+ 	dialog()->registerWidgetHelp(m_ui.organizeScreenshotsByGame, tr("Organize Screenshots by Game"), tr("Unchecked"),
+ 		tr("When enabled, screenshots will be saved in a folder with the game's name, instead of all being saved in the Snapshots folder"));

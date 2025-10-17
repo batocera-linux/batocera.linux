@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KDDOCKWIDGETS_VERSION = v2.2.5
+KDDOCKWIDGETS_VERSION = v2.3.0
 KDDOCKWIDGETS_SITE = https://github.com/KDAB/KDDockWidgets
 KDDOCKWIDGETS_SITE_METHOD = git
 KDDOCKWIDGETS_GIT_SUBMODULES = YES
