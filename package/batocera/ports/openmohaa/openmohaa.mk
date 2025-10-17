@@ -17,7 +17,7 @@
 #
 ################################################################################
 # Version: Commits on Apr 24, 2025
-OPENMOHAA_VERSION = c1efc0e066803944df607c046000e1060abb9cfb
+OPENMOHAA_VERSION = v0.82.1
 OPENMOHAA_SITE = https://github.com/openmoh/openmohaa
 OPENMOHAA_SITE_METHOD = git
 OPENMOHAA_SUPPORTS_IN_SOURCE_BUILD = NO
