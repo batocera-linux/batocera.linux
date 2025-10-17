@@ -2,8 +2,8 @@ diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
 index 5fd4c05791..0b126a0afc 100644
 --- a/pcsx2/VMManager.cpp
 +++ b/pcsx2/VMManager.cpp
-@@ -3197,14 +3197,14 @@ void VMManager::WarnAboutUnsafeSettings()
- 				TRANSLATE_SV("VMManager", "Debug device is enabled. This will massively reduce performance."));
+@@ -3217,14 +3217,14 @@ void VMManager::WarnAboutUnsafeSettings()
+ 				TRANSLATE_SV("VMManager", "Integer scaling is enabled. This may shrink the image."));
  		}
  		static bool render_change_warn = false;
 -		if (EmuConfig.GS.Renderer != GSRendererType::Auto && EmuConfig.GS.Renderer != GSRendererType::SW && !render_change_warn)
@@ -14,11 +14,11 @@ index 5fd4c05791..0b126a0afc 100644
 -			render_change_warn = true;
 +			//render_change_warn = true;
  
--			append(ICON_FA_EXCLAMATION_CIRCLE,
--				TRANSLATE_SV("VMManager", "Renderer is not set to Automatic. This may cause performance problems and graphical issues."));
+-			append(ICON_FA_CIRCLE_EXCLAMATION,
+-				TRANSLATE_SV("VMManager", "Graphics API is not set to Automatic. This may cause performance problems and graphical issues."));
 -		}
-+			//append(ICON_FA_EXCLAMATION_CIRCLE,
-+			//	TRANSLATE_SV("VMManager", "Renderer is not set to Automatic. This may cause performance problems and graphical issues."));
++			//append(ICON_FA_CIRCLE_EXCLAMATION,
++				//TRANSLATE_SV("VMManager", "Graphics API is not set to Automatic. This may cause performance problems and graphical issues."));
 +		//}
  	}
  	if (EmuConfig.GS.TextureFiltering != BiFiltering::PS2)
