@@ -1,5 +1,5 @@
 #!/bin/bash
 # Starts EmulationStation when loading labwc
 
-/usr/bin/batocera-mouse hide
-/usr/bin/emulationstation-standalone
+/usr/bin/batocera-mouse hide > /dev/null 2>&1
+/usr/bin/emulationstation-standalone > /dev/null 2>&1
