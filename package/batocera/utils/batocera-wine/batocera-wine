@@ -152,12 +152,12 @@ wine_options() {
 
     # Handle Wayland driver option only if the system is running Wayland
     if [[ "${SYSTEM_DISPLAY_MODE}" == "wayland" ]]; then
-        if [[ "${WAYLAND_DRIVER}" == "native" ]]; then
-            CMD_PREFIX="DISPLAY="
-            echo "*** System is Wayland and 'native' driver requested. Forcing Wine native Wayland mode. ***"
-        else
+        if [[ "${WAYLAND_DRIVER}" != "native" ]]; then
             echo "*** System is Wayland, using XWayland by default or as requested. ***"
             setxkbmap "${KEYBOARD}"
+        else
+            CMD_PREFIX="DISPLAY="
+            echo "*** System is Wayland and 'native' driver requested. Forcing Wine native Wayland mode. ***"
         fi
     else
         # System is X.org, run as normal
