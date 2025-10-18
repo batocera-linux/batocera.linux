@@ -159,6 +159,14 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns) -> None:
     templateFile = SUPERMODEL_SHARE / "Supermodel.ini.template"
     targetFile = SUPERMODEL_CONFIG / "Supermodel.ini"
 
+    # --- custom_config option: skip .ini generation if it already exists ---
+    custom_config = int(system.config.get("custom_config", 0))
+
+    if custom_config == 1 and targetFile.exists():
+        # Use the existing Supermodel.ini file as-is, do not copy or overwrite
+        return
+    # -----------------------------------------------------------------------
+
     # template
     templateConfig = CaseSensitiveConfigParser(interpolation=None)
     templateConfig.read(templateFile, encoding='utf_8_sig')
