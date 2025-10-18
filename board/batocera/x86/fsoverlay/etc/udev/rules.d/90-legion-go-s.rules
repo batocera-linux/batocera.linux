@@ -1,0 +1,5 @@
+# Rule for Lenovo Legion Go S Controller
+SUBSYSTEMS=="hid", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", ATTRS{bInterfaceNumber}=="03", \
+  ATTR{gamepad/mode}="xinput", \
+  ATTR{os_mode}="linux", \
+  ATTR{leds/go_s:rgb:joystick_rings/mode}="custom"
