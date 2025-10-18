@@ -5,7 +5,7 @@
 ################################################################################
 
 DUCKSTATION_VERSION = v0.1-7294
-DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
+DUCKSTATION_SITE = https://github.com/duckstation/old-releases.git
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
 DUCKSTATION_LICENSE = GPLv2
