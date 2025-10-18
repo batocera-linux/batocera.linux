@@ -15,6 +15,8 @@
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - in-game hotkeys configuration via emulationstation menus (and via batocera-hotkeys command)
 - dmd-play-rust is now used by default to play dmd images (performances)
+- New steering wheel support:
+ - Logitech Formula Vibration Feedback
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
