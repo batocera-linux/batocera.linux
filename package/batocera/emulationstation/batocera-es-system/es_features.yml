@@ -9101,6 +9101,35 @@ pcsx2:
             choices:
                 "Enabled (Default)":  "true"
                 "Disabled": "false"
+        pcsx2_osd_messages_position:
+            submenu: DISPLAY
+            prompt: OSD MESSAGES POSITION
+            description: Choose the on-screen position for system messages.
+            choices:
+                "Top Left":             1
+                "Top Center (Default)": 2
+                "Top Right":            3
+                "Center Left":          4
+                "Center":               5
+                "Center Right":         6
+                "Bottom Left":          7
+                "Bottom Center":        8
+                "Bottom Right":         9
+        pcsx2_osd_performance_position:
+            submenu: DISPLAY
+            prompt: OSD PERFORMANCE POSITION
+            description: Choose the on-screen position for performance metrics (FPS, CPU usage, etc.).
+            choices:
+                "None (Default)":  0
+                "Top Left":        1
+                "Top Center":      2
+                "Top Right":       3
+                "Center Left":     4
+                "Center":          5
+                "Center Right":    6
+                "Bottom Left":     7
+                "Bottom Center":   8
+                "Bottom Right":    9
         pcsx2_ratio:
             submenu: DISPLAY
             prompt: GAME ASPECT RATIO
