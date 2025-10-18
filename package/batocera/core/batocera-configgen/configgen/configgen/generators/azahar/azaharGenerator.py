@@ -229,10 +229,10 @@ class AzaharGenerator(Generator):
         if controller := Controller.find_player_number(playersControllers, 1):
             for x in azaharButtons:
                 azaharConfig.set("Controls", f"profiles\\1\\{x}", f'"{AzaharGenerator.setButton(azaharButtons[x], controller.guid, controller.inputs)}"')
-                azaharConfig.set("Controls", r"profiles\\1\\{x}\default", "false")
+                azaharConfig.set("Controls", f"profiles\\1\\{x}\\default", "false")
             for x in azaharAxis:
                 azaharConfig.set("Controls", f"profiles\\1\\{x}", f'"{AzaharGenerator.setAxis(azaharAxis[x], controller.guid, controller.inputs)}"')
-                azaharConfig.set("Controls", r"profiles\\1\\{x}\default", "false")
+                azaharConfig.set("Controls", f"profiles\\1\\{x}\\default", "false")
 
         ## Update the configuration file
         with ensure_parents_and_open(azaharConfigFile, 'w') as configfile:
