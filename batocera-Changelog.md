@@ -47,12 +47,16 @@
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251011
 - Linux Kernel to 6.17.1
+- LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.2.5
 - Nvidia production drivers to 580.95.05
 - Vulkan stack to 1.4.328.1
+- Wayland to 1.24.0
+- Wayland Protocols to 1.45
 - Wine-TKG to 10.16
 - Wine Proton to 10.0-2
+- WLRoots to 0.19.1
 
 # 2025/10/12 - batocera.linux 42 - Papilio Ulysses
 ### Special Notes
