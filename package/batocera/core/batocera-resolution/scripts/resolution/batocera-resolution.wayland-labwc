@@ -149,9 +149,9 @@ _get_available_modes() {
 
 f_minTomaxResolution() {
     local MAX_RES_PARAM="$1"
-    local MAXWIDTH MAXHEIGHT
+    local MAXWIDTH MAXHEIGHT MAX_PIXELS
     local CURRENT_MODE_STR CURRENT_RESOLUTION
-    local CURRENTWIDTH CURRENTHEIGHT
+    local CURRENTWIDTH CURRENTHEIGHT CURRENT_PIXELS
     local BEST_MODE="" BEST_AREA=0
     
     if [ -z "${PSCREEN}" ]; then 
@@ -167,8 +167,9 @@ f_minTomaxResolution() {
         MAXWIDTH=1920
         MAXHEIGHT=1080
     fi
+    MAX_PIXELS=$((MAXWIDTH * MAXHEIGHT))
     
-    _log "f_minTomaxResolution: Target max ${MAXWIDTH}x${MAXHEIGHT} for PSCREEN='${PSCREEN}'"
+    _log "f_minTomaxResolution: Target max ${MAXWIDTH}x${MAXHEIGHT} (Total pixels: ${MAX_PIXELS}) for PSCREEN='${PSCREEN}'"
     
     # Get current mode
     CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
@@ -181,27 +182,26 @@ f_minTomaxResolution() {
     CURRENT_RESOLUTION=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f2)
+    CURRENT_PIXELS=$((CURRENTWIDTH * CURRENTHEIGHT))
     
-    # Check if current resolution is already within limits
-    if [ "${CURRENTWIDTH}" -le "${MAXWIDTH}" ] && [ "${CURRENTHEIGHT}" -le "${MAXHEIGHT}" ]; then
-        _log "f_minTomaxResolution: Current res ${CURRENTWIDTH}x${CURRENTHEIGHT} is already within limits."
+    # It checks total pixels, which is safe for portrait and landscape screens.
+    if [ "${CURRENT_PIXELS}" -le "${MAX_PIXELS}" ]; then
+        _log "f_minTomaxResolution: Current resolution is within limits. Nothing to do."
         exit 0
     fi
     
-    # Find best suitable mode
+    # This part will only run if the current resolution is > 1080p, e.g. a 4K TV.
     _get_available_modes "${PSCREEN}" | while IFS= read -r mode; do
         resolution=$(echo "${mode}" | cut -d'@' -f1)
         width=$(echo "${resolution}" | cut -dx -f1)
         height=$(echo "${resolution}" | cut -dx -f2)
         
-        # Skip if dimensions are not numbers
         if ! echo "${width}" | grep -qE '^[0-9]+$' || ! echo "${height}" | grep -qE '^[0-9]+$'; then
             continue
         fi
         
-        # Check if within limits
-        if [ "${width}" -le "${MAXWIDTH}" ] && [ "${height}" -le "${MAXHEIGHT}" ]; then
-            area=$((width * height))
+        area=$((width * height))
+        if [ "${area}" -le "${MAX_PIXELS}" ]; then
             if [ "${area}" -gt "${BEST_AREA}" ]; then
                 BEST_MODE="${mode}"
                 BEST_AREA="${area}"
@@ -215,7 +215,6 @@ f_minTomaxResolution() {
             exit 0
         else
             _log "f_minTomaxResolution: Failed to set mode ${BEST_MODE}."
-            # Try with just resolution
             BEST_RESOLUTION=$(echo "${BEST_MODE}" | cut -d'@' -f1)
             if [ "${BEST_MODE}" != "${BEST_RESOLUTION}" ]; then
                 _log "f_minTomaxResolution: Trying just resolution ${BEST_RESOLUTION}."
@@ -223,7 +222,7 @@ f_minTomaxResolution() {
             fi
         fi
     else
-        _log "f_minTomaxResolution: No suitable resolution found within ${MAXWIDTH}x${MAXHEIGHT}."
+        _log "f_minTomaxResolution: No suitable resolution found within max pixels ${MAX_PIXELS}."
         exit 1
     fi
 }
