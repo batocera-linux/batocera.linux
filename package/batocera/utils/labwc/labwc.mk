@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LABWC_VERSION = 0.8.4
+LABWC_VERSION = 0.9.2
 LABWC_SITE = $(call github,labwc,labwc,$(LABWC_VERSION))
 LABWC_LICENSE = GPLv2
 LABWC_LICENSE_FILES = LICENSE
