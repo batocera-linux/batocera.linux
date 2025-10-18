@@ -395,6 +395,12 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # OSD messages
     pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", system.config.get("pcsx2_osd_messages", "true"))
 
+    # OSD Messages Position
+    pcsx2INIConfig.set("EmuCore/GS", "OsdMessagesPos", system.config.get("pcsx2_osd_messages_position", "2"))
+
+    # OSD Performance Position
+    pcsx2INIConfig.set("EmuCore/GS", "OsdPerformancePos", system.config.get("pcsx2_osd_performance_position", "0"))
+
     # TV Shader
     pcsx2INIConfig.set("EmuCore", "TVShader", system.config.get("pcsx2_shaderset", "0"))
 
