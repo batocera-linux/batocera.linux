@@ -597,6 +597,7 @@ endmenu
 
 menu "Screens"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/dmd-simulator/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/dmd-play-rust/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/screens/batocera-backglass/Config.in"
 endmenu
 
