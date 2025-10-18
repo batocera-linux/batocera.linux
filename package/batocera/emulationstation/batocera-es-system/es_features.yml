@@ -10104,6 +10104,11 @@ supermodel:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
+        custom_config:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE CUSTOM CONFIG
+            description: Use your own Supermodel.ini file and skip automatic configuration generation.
+            preset: switchauto
         engine3D:
             group: ADVANCED OPTIONS
             prompt:      3D ENGINE
