@@ -6,6 +6,8 @@
 - The ability to use a custom.sh script is deprecated in this version. If you already used such a script, then it will be one time transformed into a service.
   Please use the services for future scripts and refer to our [Wikipedia](https://wiki.batocera.org/scripting_services_rules_examples)
 - TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
+- Azahar Plus has been replaced with the source project Azahar.
+  3DS roms will need to be decrypted.
 ### Hardware
 - Odin 2 Mini initial support
 - Legion Go S Controller & LED updates
