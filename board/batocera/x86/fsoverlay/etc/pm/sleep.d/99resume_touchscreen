@@ -1,10 +1,66 @@
 #!/bin/bash
+
+BOOTCONF="/boot/batocera-boot.conf"
+
+_wait_for_display_server() {
+    local timeout=5
+    local waited=0
+    
+    local display_mode
+    while [ -z "$display_mode" ]; do
+        display_mode=$(batocera-resolution getDisplayMode 2>/dev/null)
+        if [ -n "$display_mode" ]; then break; fi
+        
+        sleep 0.1
+        waited=$(echo "$waited + 0.1" | bc)
+        if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+            echo "Timed out waiting for batocera-resolution getDisplayMode to respond." >> /userdata/system/logs/display.log
+            return 1
+        fi
+    done
+
+    case "${display_mode}" in
+        "wayland")
+            echo "Resume: Wayland detected. Waiting for compositor..." >> /userdata/system/logs/display.log
+            while ! wlr-randr > /dev/null 2>&1; do
+                sleep 0.1
+                waited=$(echo "$waited + 0.1" | bc)
+                if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+                    echo "Timed out waiting for Wayland compositor on resume." >> /userdata/system/logs/display.log
+                    return 1
+                fi
+            done
+            ;;
+        "xorg")
+            echo "Resume: Xorg detected. Waiting for X server..." >> /userdata/system/logs/display.log
+            if [ -z "${DISPLAY}" ]; then
+                export DISPLAY=:0.0
+            fi
+            while ! xrandr > /dev/null 2>&1; do
+                sleep 0.1
+                waited=$(echo "$waited + 0.1" | bc)
+                if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+                    echo "Timed out waiting for X server on resume." >> /userdata/system/logs/display.log
+                    return 1
+                fi
+            done
+            ;;
+    esac
+    return 0
+}
+
+
 case "$1" in
     resume|thaw)
-        # Run the touchscreen rotation script when resuming
-        if test -z "${DISPLAY}"; then
-            export DISPLAY=:0.0
+        # First, wait for the graphical environment to be ready.
+        if ! _wait_for_display_server; then
+            # The wait function failed and logged the error, so we exit.
+            exit 1
         fi
+        
+        # Now that we know the display server is ready, it's safe to proceed.
+        echo "Resume: Display server is ready. Applying touchscreen settings." >> /userdata/system/logs/display.log
+        
         CURRENT_ROTATION=$(batocera-resolution getRotation)
         if [ "${CURRENT_ROTATION}" != "0" ]; then
             bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
