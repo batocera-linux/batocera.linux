@@ -15,6 +15,7 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Fo
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech Logitech Driving Force Pro",                 MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G920 Driving Force Racing Wheel",            MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for PlayStation 4 and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech G923 Racing Wheel for PlayStation and PC", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="ThrustMaster, Inc. Ferrari 458 Spider",               MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T150RS",                    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster T80",                       MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="240"
