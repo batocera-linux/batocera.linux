@@ -1,5 +1,19 @@
 #!/bin/bash
 # Starts EmulationStation when loading labwc
 
+# Poll wlr-randr until it succeeds, which proves the compositor is ready.
+# Add a 5s timeout to prevent an infinite loop if something is wrong.
+timeout=5 
+waited=0
+while ! wlr-randr > /dev/null 2>&1; do
+  sleep 0.1
+  waited=$(echo "$waited + 0.1" | bc)
+  if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+    echo "Timed out waiting for Wayland compositor to become ready." >> /userdata/system/logs/display.log
+    exit 1
+  fi
+done
+
+# Now that we know the compositor is ready, launch our applications
 /usr/bin/batocera-mouse hide > /dev/null 2>&1
 /usr/bin/emulationstation-standalone > /dev/null 2>&1
