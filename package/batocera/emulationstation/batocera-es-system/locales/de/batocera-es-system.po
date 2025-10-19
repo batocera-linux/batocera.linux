@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-07 09:09+0000\n"
+"PO-Revision-Date: 2025-10-06 17:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: German (Germany)\n"
 "Language: de-DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: de_DE\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Parser: loco_parse_po\n"
+"X-Loco-Parser: loco_parse_po"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -3413,8 +3413,8 @@ msgid ""
 "Atari ST monitors had a visible border around the main screen area, but most "
 "software does not display anything in it."
 msgstr ""
-"Atari ST-Monitore hatten einen sichtbaren Rand um den "
-"Hauptbildschirmbereich, aber die meisten Programme zeigen darin nichts an."
+"Atari ST-Monitore hatten einen sichtbaren Rand um den Hauptbildschirmbereich,"
+" aber die meisten Programme zeigen darin nichts an."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -4067,25 +4067,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Unten (Standard)"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Nur unten"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4929,6 +4914,11 @@ msgstr ""
 "Kann mögliche Leistungsverluste beheben. Funktioniert nur bei einigen "
 "Treibern."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "Kann Bildrate und Reaktionsfähigkeit erhöhen."
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4948,7 +4938,7 @@ msgstr ""
 "Kann die Videoleistung verbessern. Nicht mit ActionMax-Spielen oder "
 "Scanlines verwenden."
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "Kann zur Leistungssteigerung bei CPU-lastigen Spielen führen."
@@ -5046,20 +5036,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Katalanisch"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Zentriert"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5270,13 +5250,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Wählen Sie das Parallel N64-Grafik-Plugin."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5370,17 +5343,6 @@ msgstr "Stufe der Geländedetails wählen."
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Textur-Detailgrad wählen."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -5714,8 +5676,8 @@ msgstr ""
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid ""
-"Compile shaders using background threads to avoid shader compilation "
-"stutter. May cause graphical glitches."
+"Compile shaders using background threads to avoid shader compilation stutter."
+" May cause graphical glitches."
 msgstr ""
 "Shader im Hintergrund kompilieren, um Ruckler zu vermeiden. Kann "
 "Grafikfehler verursachen."
@@ -6928,7 +6890,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -7252,8 +7214,8 @@ msgstr "Lichtschwert Auto-Kamera aktivieren."
 #. TRANSLATION: mame/pcsx2
 msgctxt "game_options"
 msgid ""
-"Enable mouse input for trackballs, spinners, lightguns (if no gun "
-"connected), and similar controls"
+"Enable mouse input for trackballs, spinners, lightguns (if no gun connected),"
+" and similar controls"
 msgstr ""
 "Aktivierung der Mauseingabe für Trackballs, Spinner, Lightguns (wenn nicht "
 "verbunden) und ähnliche Steuerungen"
@@ -7290,8 +7252,8 @@ msgid ""
 "Enable or disable bezels being added when content is a 4:3 aspect with a "
 "widescreen display."
 msgstr ""
-"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein "
-"4:3-Seitenverhältnis mit einem Widescreen-Display hat."
+"Aktiviere oder deaktiviere die Hinzufügung von Bezels, wenn der Inhalt ein 4:"
+"3-Seitenverhältnis mit einem Widescreen-Display hat."
 
 #. TRANSLATION: libretro/mame, mame/pcsx2
 msgctxt "game_options"
@@ -8101,7 +8063,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "FREE PLAY"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8214,8 +8176,9 @@ msgid ""
 msgstr ""
 "Bietet Rendering in nativer Auflösung, Unterstützung für analoge Controller "
 "und Mäuse, Freischaltung der Bildfrequenz bis zu 60Hz, eine verbesserte "
-"Kamera mit deaktivierbarer Neigungsoption, benutzerdefinierte Himmel-/"
-"Hintergrundfunktionalität und verschiedene andere Optimierungen und Optionen."
+"Kamera mit deaktivierbarer Neigungsoption, benutzerdefinierte Himmel-"
+"/Hintergrundfunktionalität und verschiedene andere Optimierungen und "
+"Optionen."
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -8435,6 +8398,18 @@ msgid "For emulators and controllers supporting force feedback."
 msgstr ""
 "Rumble-Funktion für Emulatoren und Controller, die Force-Feedback "
 "unterstützen."
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"Beim Spielen von Rennspielen mit einem Gamepad ist es manchmal besser, einen "
+"Wert größer als 100%% zu verwenden, damit sich die Lenkung auf einem "
+"Thumbstick weniger empfindlich anfühlt."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9328,7 +9303,7 @@ msgstr "FESTE TEXTUR CACHE SPEICHERBEGRENZUNG"
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "HARDWARE SHADER"
-msgstr ""
+msgstr "HARDWARE-SHADER"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9533,13 +9508,8 @@ msgstr ""
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
 msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
+"Wenn deaktiviert, starten manche Spiele besser. Kann die Leistung "
+"beeinflussen."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9902,11 +9872,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Verbessert Schärfe und Klarheit weit entfernter Texturen."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11063,6 +11028,11 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "MODELL TYP"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "MODERNE PEDALSTEUERUNG"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11828,11 +11798,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11973,11 +11938,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -12014,13 +11974,13 @@ msgstr "Namco GunCon"
 #. TRANSLATION: xemu
 msgctxt "game_options"
 msgid ""
-"Nat to access internet from xemu machine. Udp for System Link. Default "
-"(Auto) disables network access."
+"Nat to access internet from xemu machine. Udp for System Link. Default (Auto)"
+" disables network access."
 msgstr ""
 "Verwende Nat für den Internetzugang von einem xemu-Rechner aus. Udp für "
 "System Link. Standard (Auto) deaktiviert den Netzwerkzugang."
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Nativ"
@@ -12235,7 +12195,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Keine"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Keine (Standard)"
@@ -12376,16 +12336,6 @@ msgstr "OPTIMALES FRAME-PACING"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "BILDSCHIRMBENACHRICHTIGUNGEN"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13214,8 +13164,8 @@ msgstr "Per-Strip"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Per Table Folder requires all files to be in the associated rom table "
-"folder. If disabled, consult the Wiki for further details."
+"Per Table Folder requires all files to be in the associated rom table folder."
+" If disabled, consult the Wiki for further details."
 msgstr ""
 "Pro Tabellenordner erfordert, dass sich alle Dateien in dem zugehörigen "
 "Tabellenordner befinden. Wenn diese Funktion deaktiviert ist, finden Sie "
@@ -14296,8 +14246,8 @@ msgid ""
 "runner in it's own directory under /userdata/system/wine/custom."
 msgstr ""
 "Runner vereinfachen die Kompatibilität der laufenden Windows-Spiele. Sie "
-"müssen einen Runner in seinem eigenen Verzeichnis unter /userdata/system/"
-"wine/custom haben."
+"müssen einen Runner in seinem eigenen Verzeichnis unter "
+"/userdata/system/wine/custom haben."
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -14782,6 +14732,11 @@ msgstr "ST"
 msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
+
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "EMPFINDLICHKEIT DER LENKUNG"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -16894,30 +16849,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Oben"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Nur oben"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17561,6 +17496,14 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Inventargegenstand verwenden"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr ""
+"Benutze L2/R2 zum Bremsen/Beschleunigen und L1/R1 oder den rechten Stick "
+"nach oben/unten zum Hoch-/Runterschalten."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17586,8 +17529,8 @@ msgid ""
 "Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a "
 "higher performance cost."
 msgstr ""
-"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser "
-"aus, hat aber einen höheren Leistungsaufwand."
+"Verwende SSAA anstelle von MSAA für Antialiasing. SSAA sieht zwar besser aus,"
+" hat aber einen höheren Leistungsaufwand."
 
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, libretro/same_cdi
 msgctxt "game_options"
@@ -18111,11 +18054,6 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "WARNUNG VOR NICHT UNTERSTÜTZTEN FUNKTIONEN"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18431,11 +18369,6 @@ msgstr "XBLA-Lizenz aktiviert (Standard)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -19007,33 +18940,3 @@ msgstr "yape-pal"
 msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "gelb/blau"
-
-#~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "Kann Bildrate und Reaktionsfähigkeit erhöhen."
-
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "Beim Spielen von Rennspielen mit einem Gamepad ist es manchmal besser, "
-#~ "einen Wert größer als 100%% zu verwenden, damit sich die Lenkung auf "
-#~ "einem Thumbstick weniger empfindlich anfühlt."
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "MODERNE PEDALSTEUERUNG"
-
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "EMPFINDLICHKEIT DER LENKUNG"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "Benutze L2/R2 zum Bremsen/Beschleunigen und L1/R1 oder den rechten Stick "
-#~ "nach oben/unten zum Hoch-/Runterschalten."

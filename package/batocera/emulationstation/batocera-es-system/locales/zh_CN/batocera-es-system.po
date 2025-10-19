@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-10 17:17+0800\n"
+"PO-Revision-Date: 2025-10-13 12:20+0800\n"
 "Last-Translator: R.Chan\n"
 "Language-Team: Ray Chan\n"
 "Language: zh_CN\n"
@@ -4033,25 +4033,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "底部（默认）"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "仅限底部"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4883,6 +4868,11 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "可以修复减速。仅适用于某些驱动程序。"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "可以提高帧率和响应性。"
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4899,7 +4889,7 @@ msgid ""
 "Can improve video performance. Do not use with ActionMax games or scanlines."
 msgstr "可以提高视频性能。请勿与ActionMax游戏或扫描线一起使用。"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "可以提高CPU压力较大的游戏的性能。"
@@ -4994,20 +4984,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "加泰罗尼亚"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "居中"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5207,13 +5187,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "选择Parallel N64图形插件。"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5304,17 +5277,6 @@ msgstr "选择地形细节级别."
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "选择纹理细节的级别."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6822,7 +6784,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "eSync"
@@ -7910,7 +7872,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "免费游戏"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "fSync"
@@ -8226,6 +8188,17 @@ msgstr "适用于启用陀螺仪的游戏（绑定到右侧模拟摇杆）"
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "用于支持力反馈的模拟器和控制器。"
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"玩驾驶游戏时如果使用游戏手柄, 有时使用大于 100%% 的数值会更好, 这样用拇指摇杆"
+"转向就不会过于灵敏."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9103,7 +9076,7 @@ msgstr "硬纹理缓存内存限制"
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "HARDWARE SHADER"
-msgstr ""
+msgstr "硬件着色器"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9302,14 +9275,7 @@ msgstr "在不需要的时候通过设置CPU性能墙来帮助降低CPU功耗，
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
-msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
+msgstr "在禁用时有助于某些游戏的启动. 可能会影响性能."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9654,11 +9620,6 @@ msgstr "当启用MIP贴图时，能提高远处纹理的清晰度。"
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "提高远处纹理的清晰度。"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10789,6 +10750,11 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "型号类型"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "现代踏板控制"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11528,11 +11494,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT（网络地址转换）"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11673,11 +11634,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11718,7 +11674,7 @@ msgstr ""
 "如果要从xemu虚拟机访问互联网，请用NAT。如果需要使用系统链接，请用UDP。选择默"
 "认（自动）会禁用网络访问。"
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "原生"
@@ -11930,7 +11886,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "无"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "无（默认）"
@@ -12069,16 +12025,6 @@ msgstr "最佳帧率控制"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "屏幕消息"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -14418,6 +14364,11 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "转向灵敏度"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -16454,30 +16405,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "顶部"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "仅限顶部"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17111,6 +17042,12 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "使用物品"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr "使用L2/R2进行制动/加速, 使用L1/R1或R杆向上/向下进行换档."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17626,11 +17563,6 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "警告不支持的功能"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -17935,11 +17867,6 @@ msgstr "已启用XBLA许可证（默认）"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -18675,10 +18602,6 @@ msgstr "黄色/蓝色"
 #~ msgstr "控制器配置"
 
 #~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "可以提高帧率和响应性。"
-
-#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "居中（默认）"
 
@@ -18878,16 +18801,6 @@ msgstr "黄色/蓝色"
 #~ "当用摇杆玩驾驶游戏, 有时使用大于100%的值更好, 这样拇指操纵摇杆转向就不那么"
 #~ "灵敏了."
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "玩驾驶游戏时如果使用游戏手柄, 有时使用大于 100%% 的数值会更好, 这样用拇指"
-#~ "摇杆转向就不会过于灵敏."
-
 #~ msgctxt "keys_files"
 #~ msgid "Forward Nudge"
 #~ msgstr "前推"
@@ -18965,10 +18878,6 @@ msgstr "黄色/蓝色"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "载入状态插槽1"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "现代踏板控制"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -19198,10 +19107,6 @@ msgstr "黄色/蓝色"
 #~ msgid "SSAA"
 #~ msgstr "SSAA抗锯齿"
 
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "转向灵敏度"
-
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "保存状态"
@@ -19310,11 +19215,6 @@ msgstr "黄色/蓝色"
 #~ msgid ""
 #~ "Use L2/R2 for Accel/Brake and L1/R1 or R-stick Up/Down for Shift Up/Down."
 #~ msgstr "使用L2/R2进行加速/制动，使用L1/R1或右摇杆上/下进行升档/降档."
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr "使用L2/R2进行制动/加速, 使用L1/R1或R杆向上/向下进行换档."
 
 #~ msgctxt "game_options"
 #~ msgid ""

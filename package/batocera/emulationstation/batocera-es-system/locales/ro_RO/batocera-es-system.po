@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-24 20:20+0300\n"
+"PO-Revision-Date: 2025-10-12 19:25+0300\n"
 "Last-Translator: Mihai Vasiliu <mihai.vasiliu.93@gmail.com>\n"
 "Language-Team: \n"
 "Language: ro_RO\n"
@@ -4062,25 +4062,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Dedesubt (Implicit)"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Doar dedesubt"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4922,6 +4907,11 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Poate repara încetinirea. Funcționează doar cu unele drivere."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "Poate îmbunătăți rata de cadre și gradul de reacție."
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4940,7 +4930,7 @@ msgstr ""
 "Poate îmbunătăți performanța video. Nu folosi împreună cu jocurile ActionMax "
 "sau liniile de scanare."
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "Poate crește performanța pentru jocurile care stresează procesorul."
@@ -5037,20 +5027,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Catalană"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Centru"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5258,13 +5238,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Alege plugin-ul grafic Parallel N64."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5360,17 +5333,6 @@ msgstr "Alege nivelul de detaliu al terenului."
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Alege nivelul de detaliu al texturilor."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6918,7 +6880,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -8085,7 +8047,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "JOC LIBER"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8416,6 +8378,18 @@ msgstr ""
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Pentru emulatoarele și controlerele care suportă redarea forței."
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"Pentru a juca jocuri de condus cu un gamepad, este uneori o idee bună să "
+"folosești o valoarea mai mare de 100%% astfel ca direcția să fie mai puțin "
+"sensibilă cu o manetă."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9305,7 +9279,7 @@ msgstr "LIMITA HARD DE MEMORIE CACHE DE TEXTURI"
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "HARDWARE SHADER"
-msgstr ""
+msgstr "SHADER HARDWARE"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9509,13 +9483,8 @@ msgstr ""
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
 msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
+"Ajută unele jocuri să se poată lansa când este dezactivat. Poate afecta "
+"performanța."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9875,11 +9844,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Îmbunătățește claritatea texturilor îndepărtate."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11038,6 +11002,11 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "TIP MODEL"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "CONTROALE MODERNE PEDALĂ"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11796,11 +11765,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11941,11 +11905,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11988,7 +11947,7 @@ msgstr ""
 "NAT pentru accesarea internetului din mașina xemu. UDP pentru legătură "
 "sistem. Implicit (auto) dezactivează accesul la rețea."
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Nativ"
@@ -12202,7 +12161,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Fără"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Niciunul (Implicit)"
@@ -12341,16 +12300,6 @@ msgstr "PARCURGEREA OPTIMĂ A CADRELOR"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "MESAJE PE ECRAN"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13469,8 +13418,8 @@ msgstr "Preîncărcarea este imposibilă din ES."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the VPinballX."
-"ini file to fine tune performance."
+"Presets which can improve performance without manually editing the "
+"VPinballX.ini file to fine tune performance."
 msgstr ""
 "Grup de setări care îmbunătățesc performanța fără să editezi manual fișierul "
 "VPinballX.ini pentru a ajusta fin performanța."
@@ -14738,6 +14687,11 @@ msgstr "ST"
 msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
+
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "SENSIBILITATE DIRECȚIE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -16839,30 +16793,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Deasupra"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Doar deasupra"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17505,6 +17439,14 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Folosește element inventar"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr ""
+"Folosește L2/R2 pentru frână/accelerație și L1/R1 sau maneta analogică "
+"dreaptă sus/jos pentru comutare sus/jos."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -18051,11 +17993,6 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "AVERTIZEAZĂ DESPRE FUNCȚIILE NESUPORTATE"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18374,11 +18311,6 @@ msgstr "Licența XBLA activată (Implicit)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -19062,10 +18994,6 @@ msgstr "galben/albastru"
 #~ msgstr "CONFIGURAȚIE CONTROLER"
 
 #~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "Poate îmbunătăți rata de cadre și gradul de reacție."
-
-#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "Centru (Implicit)"
 
@@ -19222,17 +19150,6 @@ msgstr "galben/albastru"
 #~ "Repară niște umbre și texturi în franciza Virtua Tennis 3 și Virtua "
 #~ "Fighter 5 pentru GPU-uri non-Nvidia."
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "Pentru a juca jocuri de condus cu un gamepad, este uneori o idee bună să "
-#~ "folosești o valoarea mai mare de 100%% astfel ca direcția să fie mai "
-#~ "puțin sensibilă cu o manetă."
-
 #~ msgctxt "keys_files"
 #~ msgid "Forward Nudge"
 #~ msgstr "Înghiontire în față"
@@ -19290,10 +19207,6 @@ msgstr "galben/albastru"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "Încarcă starea din slotul 1"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "CONTROALE MODERNE PEDALĂ"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -19467,10 +19380,6 @@ msgstr "galben/albastru"
 #~ msgid "Right Nudge"
 #~ msgstr "Înghiontire în dreapta"
 
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "SENSIBILITATE DIRECȚIE"
-
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Salvează stare"
@@ -19557,13 +19466,6 @@ msgstr "galben/albastru"
 #~ msgstr ""
 #~ "Folosește L2/R2 pentru accelerație/frână și L1/R1 sau sus/jos al manetei "
 #~ "drepte pentru schimbare viteză sus/jos."
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "Folosește L2/R2 pentru frână/accelerație și L1/R1 sau maneta analogică "
-#~ "dreaptă sus/jos pentru comutare sus/jos."
 
 #~ msgctxt "game_options"
 #~ msgid ""

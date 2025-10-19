@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-08 23:01+0200\n"
+"PO-Revision-Date: 2025-10-07 20:00+0200\n"
 "Last-Translator: borysus\n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -4068,25 +4068,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Na dole (Domyślne)"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Tylko dół"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4927,6 +4912,11 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Możliwa naprawa spowolnienia. Działa tylko na niektórych sterownikach."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "Może poprawić częstotliwość odświeżania i szybkość reakcji."
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4945,7 +4935,7 @@ msgstr ""
 "Może poprawić wydajność wideo. Nie należy używać z grami ActionMax ani "
 "scanlines."
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "Może zwiększyć wydajność w grach, które obciążają procesor."
@@ -5041,20 +5031,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Katalonski"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Wyśrodkuj"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5266,13 +5246,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Wybierz wtyczkę graficzną Parallel N64."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5368,17 +5341,6 @@ msgstr "Wybierz poziom szczegółowości terenu."
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Wybierz poziom szczegółowości tekstur."
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6931,7 +6893,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -8092,7 +8054,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "FREE PLAY"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8423,6 +8385,18 @@ msgstr ""
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Dla emulatorów i kontrolerów obsługujących funkcję force feedback."
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"W przypadku grania w gry samochodowe za pomocą pada do gier, czasami dobrym "
+"pomysłem jest użycie wartości większej niż 100%%, aby sterowanie było mniej "
+"czułe na kciuku."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9314,7 +9288,7 @@ msgstr "TWARDY LIMIT PAMIĘCI PODRĘCZNEJ TEKSTUR"
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "HARDWARE SHADER"
-msgstr ""
+msgstr "SHADER SPRZĘTOWY"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9518,13 +9492,7 @@ msgstr ""
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
 msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
+"Pomaga uruchomić niektóre gry, gdy jest wyłączone. Może wpływać na wydajność."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9885,11 +9853,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Poprawia wyrazistość odległych tekstur."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11044,6 +11007,11 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "TYP MODELU"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "NOWOCZESNE STEROWANIE PEDAŁAMI"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11803,11 +11771,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11948,11 +11911,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11995,7 +11953,7 @@ msgstr ""
 "Nat, aby uzyskać dostęp do Internetu z maszyny xemu. Udp dla łącza "
 "systemowego. Domyślnie (Auto) wyłącza dostęp do sieci."
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Natywna"
@@ -12209,7 +12167,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Brak"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Brak (domyślnie)"
@@ -12349,16 +12307,6 @@ msgstr "OPTYMALNE TEMPO ODŚWIEŻANIA"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "KOMUNIKATY OSD"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -14742,6 +14690,11 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "CZUŁOŚĆ STEROWANIA"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -16839,30 +16792,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Na górze"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Tylko góra"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17503,6 +17436,14 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Użyj przedmiotu ekwipuntu"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr ""
+"Użyj L2/R2 do hamowania/przyśpieszania, a L1/R1 lub prawego drążka w górę/"
+"dół do zmiany biegów."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -18040,11 +17981,6 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "OSTRZEGAJ O NIEOBSŁUGIWANYCH FUNKCJACH"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18361,11 +18297,6 @@ msgstr "Włączona licencja XBLA (domyślnie)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -19461,10 +19392,6 @@ msgstr "żółty/niebieski"
 #~ msgstr "Potrafi naprawić uszkodzoną grafikę w niektórych grach."
 
 #~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "Może poprawić częstotliwość odświeżania i szybkość reakcji."
-
-#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "Wyśrodkuj (domyślnie)"
 
@@ -19953,17 +19880,6 @@ msgstr "żółty/niebieski"
 #~ "dobrym pomysłem jest użycie wartości większej niż 100%, aby sterowanie "
 #~ "było mniej czułe na kciuku."
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "W przypadku grania w gry samochodowe za pomocą pada do gier, czasami "
-#~ "dobrym pomysłem jest użycie wartości większej niż 100%%, aby sterowanie "
-#~ "było mniej czułe na kciuku."
-
 #~ msgctxt "game_options"
 #~ msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
 #~ msgstr ""
@@ -20228,10 +20144,6 @@ msgstr "żółty/niebieski"
 #~ msgctxt "game_options"
 #~ msgid "MICRO VU SPEED HACKS"
 #~ msgstr "HAKI MICRO VU SPEED"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "NOWOCZESNE STEROWANIE PEDAŁAMI"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -20681,10 +20593,6 @@ msgstr "żółty/niebieski"
 #~ msgid "SSAA"
 #~ msgstr "SSAA"
 
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "CZUŁOŚĆ STEROWANIA"
-
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Zapisywanie stanu"
@@ -20936,13 +20844,6 @@ msgstr "żółty/niebieski"
 #~ msgstr ""
 #~ "Użyj L2/R2 do sterowania przyspieszeniem/hamulcem, a L1/R1 lub prawego "
 #~ "drążkaw górę/dół do sterowania zmianą biegów w górę/dół."
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "Użyj L2/R2 do hamowania/przyśpieszania, a L1/R1 lub prawego drążka w górę/"
-#~ "dół do zmiany biegów."
 
 #~ msgctxt "game_options"
 #~ msgid ""

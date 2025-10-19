@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Batocera.linux Options\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-07-13 08:38+0200\n"
+"PO-Revision-Date: 2025-09-16 11:19+0200\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.7\n"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
 msgctxt "game_options"
@@ -2180,12 +2180,12 @@ msgstr "90 grader"
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "90 degrees clockwise"
-msgstr ""
+msgstr "90 grader medurs"
 
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "90 degrees counter-clockwise"
-msgstr ""
+msgstr "90 grader moturs"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
@@ -4059,25 +4059,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Botten (standard)"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Endast botten"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4915,6 +4900,11 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Kan fixa långsamhet. Fungerar bara på vissa drivrutiner."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "Kan förbättra bildfrekvensen och reaktionsförmågan."
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4933,7 +4923,7 @@ msgstr ""
 "Kan förbättra videoprestanda. Använd inte med ActionMax-spel eller "
 "skanlinjer."
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "Kan öka prestandan i spel som belastar processorn."
@@ -5030,20 +5020,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Katalanska"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Centrera"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5101,7 +5081,7 @@ msgstr "Ändra upplösningsförhållandet för utmatningen."
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "Change the rotation of the rendered image."
-msgstr ""
+msgstr "Ändra rotationen på den renderade bilden."
 
 #. TRANSLATION: supermodel
 msgctxt "game_options"
@@ -5253,13 +5233,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Välj Parallel N64-grafikinsticksmodul."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5355,17 +5328,6 @@ msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Välj nivån för texturdetaljer."
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
-
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
 msgid "Choose the preferred violence level."
@@ -5425,7 +5387,7 @@ msgstr ""
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "Choose to render meshes as transparent polygons."
-msgstr ""
+msgstr "Välj att rendera maskor som transparenta polygoner."
 
 #. TRANSLATION: openjkdf2, theforceengine
 msgctxt "game_options"
@@ -5940,7 +5902,7 @@ msgstr "DATAINSTICKSMODUL"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "DE"
-msgstr ""
+msgstr "DE"
 
 #. TRANSLATION: dolphin, mupen64plus
 msgctxt "game_options"
@@ -6911,7 +6873,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -7333,7 +7295,7 @@ msgstr ""
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "Enable the Virtual Keyboard."
-msgstr ""
+msgstr "Aktivera det virtuella tangentbordet."
 
 #. TRANSLATION: duckstation
 msgctxt "game_options"
@@ -7827,8 +7789,8 @@ msgid ""
 "configuration file."
 msgstr ""
 "Extra DMD-fönster (Dot Matrix Display) för att visa poängen för bord utan "
-"rom. Som standard kommer inställningarna från konfigurationsfilen VPinballX."
-"ini."
+"rom. Som standard kommer inställningarna från konfigurationsfilen "
+"VPinballX.ini."
 
 #. TRANSLATION: citron
 msgctxt "game_options"
@@ -7998,7 +7960,7 @@ msgstr "FPS-MÅL"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "FR"
-msgstr ""
+msgstr "FR"
 
 #. TRANSLATION: libretro/mednafen_psx
 msgctxt "game_options"
@@ -8055,7 +8017,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "FRITT SPEL"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8383,6 +8345,18 @@ msgstr "För spel med gyrofunktion (bunden till höger analoga spak)"
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "För emulatorer och styrenheter som stöder vibrationer."
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"För att spela bilspel med en gamepad kan det ibland vara bra att använda ett "
+"värde som är större än 100%% så att styrningen känns mindre känslig på en "
+"tumspak."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9268,11 +9242,6 @@ msgctxt "game_options"
 msgid "HARD TEXTURE CACHE MEMORY LIMIT"
 msgstr "GRÄNS FÖR MINNE I HÅRD TEXTURCACHE"
 
-#. TRANSLATION: azahar
-msgctxt "game_options"
-msgid "HARDWARE SHADER"
-msgstr ""
-
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "HARDWARE TESSELLATION"
@@ -9471,18 +9440,6 @@ msgstr ""
 "Hjälper till att minska CPU:ns strömförbrukning genom att strypa CPU:n när "
 "den inte behövs. Användbart för handdatorer."
 
-#. TRANSLATION: azahar
-msgctxt "game_options"
-msgid "Helps some games to launch when disabled. May affect performance."
-msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
-
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Hercules"
@@ -9546,7 +9503,7 @@ msgstr "Hög prestanda"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "High-Resolution Keyboard, which is larger and might be easier to see."
-msgstr ""
+msgstr "Högupplöst tangentbord som är större och kanske lättare att se."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -9836,11 +9793,6 @@ msgstr ""
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Förbättrar tydligheten i avlägsna texturer."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10278,12 +10230,12 @@ msgstr "BEHÅLL HUVUDSKÄRMEN ÖVERST"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "KEYBOARD LAYOUT"
-msgstr ""
+msgstr "TANGENTBORDSLAYOUT"
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "KEYBOARD OPTIONS"
-msgstr ""
+msgstr "TANGENTBORDSALTERNATIV"
 
 #. TRANSLATION: libretro/vice_x128, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xpet, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -10298,7 +10250,7 @@ msgstr "STÖD FÖR TANGENTBORD"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "KEYBOARD TRANSPARENCY"
-msgstr ""
+msgstr "TANGENTBORDETS TRANSPARENS"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -10447,7 +10399,7 @@ msgstr "LÅS UPP SPRÅK"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "LARGER KEYBOARD"
-msgstr ""
+msgstr "STÖRRE TANGENTBORD"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10993,6 +10945,11 @@ msgstr "MODELLSTYCKNING"
 msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "MODELLTYP"
+
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "MODERNA PEDALREGLAGE"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -11749,11 +11706,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11894,11 +11846,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11940,7 +11887,7 @@ msgstr ""
 "NAT för att komma åt internet från xemu-maskin. Udp för systemlänk. Standard "
 "(Auto) inaktiverar nätverksåtkomst."
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Inbyggd"
@@ -12154,7 +12101,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Ingen"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Ingen (standard)"
@@ -12294,16 +12241,6 @@ msgstr "OPTIMALT BILDTEMPO"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD-MEDDELANDEN"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13412,8 +13349,8 @@ msgstr "Förinläsning är omöjlig från ES."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the VPinballX."
-"ini file to fine tune performance."
+"Presets which can improve performance without manually editing the "
+"VPinballX.ini file to fine tune performance."
 msgstr ""
 "Förinställningar som kan förbättra prestandan utan att manuellt redigera "
 "filen VPinballX.ini för att finjustera prestandan."
@@ -13765,7 +13702,7 @@ msgstr "ROTERA HANDLINGSKNAPPAR"
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "ROTATION"
-msgstr ""
+msgstr "ROTATION"
 
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
@@ -14674,6 +14611,11 @@ msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "STYRNINGENS KÄNSLIGHET"
+
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "STRETCH BEZELS (4K & ULTRAWIDE)"
@@ -15057,8 +14999,8 @@ msgctxt "game_options"
 msgid ""
 "Set if you want to limit the FPS in games that are not limited like OutRun2."
 msgstr ""
-"Ställ in om du vill begränsa bildfrekvens i spel som inte är begränsade, t."
-"ex. OutRun2."
+"Ställ in om du vill begränsa bildfrekvens i spel som inte är begränsade, "
+"t.ex. OutRun2."
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -15133,7 +15075,7 @@ msgstr "Ställ in bildfrekvensgräns."
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "Set the on-screen keyboard transparency (0-100%)."
-msgstr ""
+msgstr "Ställ in transparensen för tangentbordet på skärmen (0-100%)."
 
 #. TRANSLATION: lindbergh-loader
 msgctxt "game_options"
@@ -16457,7 +16399,7 @@ msgstr "TRÄNINGSLÄGE"
 #. TRANSLATION: ymir
 msgctxt "game_options"
 msgid "TRANSPARENT MESHES"
-msgstr ""
+msgstr "GENOMSKINLIGA MASKOR"
 
 #. TRANSLATION: libretro/pcsx2, model2emu, pcsx2
 msgctxt "game_options"
@@ -16665,6 +16607,8 @@ msgctxt "game_options"
 msgid ""
 "This setting controls the default language layout for the virtual keyboard."
 msgstr ""
+"Den här inställningen styr standardspråklayouten för det virtuella "
+"tangentbordet."
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -16760,30 +16704,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Överst"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Endast topp"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17034,7 +16958,7 @@ msgstr "USA"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "US (Default)"
-msgstr ""
+msgstr "USA (standard)"
 
 #. TRANSLATION: citron, flycast/dolphin, libretro/flycast, libretro/neocd, ryujinx
 msgctxt "game_options"
@@ -17424,6 +17348,13 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Använd föremål"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr ""
+"Använd L2/R2 för broms/gas och L1/R1 eller R-stick Upp/Ner för Växla upp/ner."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17788,7 +17719,7 @@ msgstr "VIRTUELLT SKRIVBORD"
 #. TRANSLATION: amiberry
 msgctxt "game_options"
 msgid "VIRTUAL KEYBOARD"
-msgstr ""
+msgstr "VIRTUELLT TANGENTBORD"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -17959,11 +17890,6 @@ msgstr "VARNA FÖR BIOS-PROBLEM"
 msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "VARNA FÖR FUNKTIONER SOM INTE STÖDS"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
 
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
@@ -18280,11 +18206,6 @@ msgstr "XBLA-licens aktiverad (standard)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -18870,10 +18791,6 @@ msgstr "gul/blå"
 #~ "högre prestanda..."
 
 #~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "Kan förbättra bildfrekvensen och reaktionsförmågan."
-
-#~ msgctxt "game_options"
 #~ msgid "Choose the Dreamcast console language."
 #~ msgstr "Välj språk för Dreamcast-konsolen."
 
@@ -18903,17 +18820,6 @@ msgstr "gul/blå"
 #~ msgid "Enhancement. Enables texture upscaling textures and their size."
 #~ msgstr "Förbättring. Aktiverar uppskalning av texturer och deras storlek."
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "För att spela bilspel med en gamepad kan det ibland vara bra att använda "
-#~ "ett värde som är större än 100%% så att styrningen känns mindre känslig "
-#~ "på en tumspak."
-
 #~ msgctxt "game_options"
 #~ msgid "HIDE LIGHT GUN CROSSHAIRS"
 #~ msgstr "DÖLJ LJUSPISTOLENS HÅRKORS"
@@ -18933,10 +18839,6 @@ msgstr "gul/blå"
 #~ msgctxt "game_options"
 #~ msgid "INTEGER SCALE"
 #~ msgstr "HELTALSSKALA"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "MODERNA PEDALREGLAGE"
 
 #~ msgctxt "keys_files"
 #~ msgid "Menu N"
@@ -18959,10 +18861,6 @@ msgstr "gul/blå"
 #~ msgstr "Omstarta Spel"
 
 #~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "STYRNINGENS KÄNSLIGHET"
-
-#~ msgctxt "game_options"
 #~ msgid ""
 #~ "Skip buffer effects disables auto frameskip and renders at display output "
 #~ "resolution."
@@ -18977,13 +18875,6 @@ msgstr "gul/blå"
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "ANVÄND GZDOOM JOYSTICKKONFIGURATION"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "Använd L2/R2 för broms/gas och L1/R1 eller R-stick Upp/Ner för Växla upp/"
-#~ "ner."
 
 #~ msgctxt "game_options"
 #~ msgid "VSYNC INTERVAL"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-06 18:00+0900\n"
+"PO-Revision-Date: 2025-10-09 22:17+0900\n"
 "Last-Translator: DDinghoya <ddinghoya@gmail.com>\n"
 "Language-Team: Korean (KO)\n"
 "Language: ko_KO\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Loco-Source-Locale: ko_KR\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.7\n"
 "X-Loco-Parser: loco_parse_po\n"
 
 #. TRANSLATION: libretro/puae, libretro/puae2021
@@ -4050,25 +4050,10 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "하단 (기본)"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "하단만"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Bottom Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4906,6 +4891,11 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "속도 저하를 수정할 수 있습니다. 일부 드라이버에서만 작동합니다."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Can improve frame rate and responsiveness."
+msgstr "프레임 속도와 응답성을 향상시킬 수 있습니다."
+
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4924,7 +4914,7 @@ msgstr ""
 "비디오 성능을 향상시킬 수 있습니다. 액션 맥스 게임 또는 스캔라인과 함께 사용"
 "하지 마십시오."
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "CPU에 부하를 주는 게임의 성능을 향상시킬 수 있습니다."
@@ -5021,20 +5011,10 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "카탈로니아어"
 
-#. TRANSLATION: pcsx2, scummvm
+#. TRANSLATION: scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "중앙"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Left"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Center Right"
-msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5244,13 +5224,6 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Parallel N64 그래픽 플러그인을 선택하세요."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid ""
-"Choose the Wayland driver mode if on a handheld device. XWayland has more "
-"compatibility."
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5345,17 +5318,6 @@ msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "텍스처 세부 수준을 선택하세요."
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid ""
-"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Choose the on-screen position for system messages."
-msgstr ""
-
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
 msgid "Choose the preferred violence level."
@@ -5407,8 +5369,8 @@ msgid ""
 "Choose to render high definition graphics textures. Requires OpenGL, True "
 "Colour and the enhanced.gob file."
 msgstr ""
-"고화질 그래픽 텍스처를 렌더링하도록 선택합니다. OpenGL, True Colour, 향상된 ."
-"gob 파일이 필요합니다."
+"고화질 그래픽 텍스처를 렌더링하도록 선택합니다. OpenGL, True Colour, 향상"
+"된 .gob 파일이 필요합니다."
 
 #. TRANSLATION: ymir
 msgctxt "game_options"
@@ -6890,7 +6852,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -8023,7 +7985,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "무료 플레이"
 
-#. TRANSLATION: mugen
+#. TRANSLATION: mugen, wine
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8349,6 +8311,17 @@ msgstr "자이로 지원 게임용 (오른쪽 아날로그 스틱에 바인딩�
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "강제 피드백을 지원하는 에뮬레이터 및 컨트롤러용."
+
+#. TRANSLATION: supermodel
+#, c-format
+msgctxt "game_options"
+msgid ""
+"For playing driving games with a game pad, it is sometimes a good idea to "
+"use a value larger than 100%% so that the steering feels less sensitive on a "
+"thumbstick."
+msgstr ""
+"게임 패드로 운전 게임을 하는 경우, 엄지 스틱에 대한 조향의 민감성을 낮추기 위"
+"해 100%%보다 큰 값을 사용하는 것이 좋은 경우가 있습니다."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9235,7 +9208,7 @@ msgstr "하드 텍스처 캐시 메모리 제한"
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "HARDWARE SHADER"
-msgstr ""
+msgstr "하드웨어 셰이더"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -9439,13 +9412,8 @@ msgstr ""
 msgctxt "game_options"
 msgid "Helps some games to launch when disabled. May affect performance."
 msgstr ""
-
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid ""
-"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
-"Intel GPUs in some cases."
-msgstr ""
+"비활성화된 상태에서도 일부 게임을 실행하는 데 도움이 됩니다. 하지만 성능에 영"
+"향을 미칠 수 있습니다."
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9796,11 +9764,6 @@ msgstr "밉매핑이 활성화되면 멀리 있는 텍스처의 선명도가 향
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "멀리 있는 텍스처의 선명도를 향상시킵니다."
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Improves frame rate and responsiveness."
-msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10946,6 +10909,11 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "모델 유형"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "MODERN PEDAL CONTROLS"
+msgstr "현대식 페달 컨트롤"
+
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11697,11 +11665,6 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
-#. TRANSLATION: libretro/flycast
-msgctxt "game_options"
-msgid "NATIVE DEPTH INTERPOLATION"
-msgstr ""
-
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11842,11 +11805,6 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "NTSYNC"
-msgstr ""
-
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11889,7 +11847,7 @@ msgstr ""
 "Nat은 xemu 장치에서 인터넷에 접속합니다. 시스템 링크용 UDP입니다. 기본값 (자"
 "동)은 네트워크 접속을 비활성화합니다."
 
-#. TRANSLATION: wine, xemu
+#. TRANSLATION: xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "원본"
@@ -12103,7 +12061,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "없음"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "없음 (기본)"
@@ -12242,16 +12200,6 @@ msgstr "최적의 프레임 페이싱"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD 메시지"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD MESSAGES POSITION"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "OSD PERFORMANCE POSITION"
-msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13357,8 +13305,8 @@ msgstr "ES에서는 사전 로드가 불가능합니다."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the VPinballX."
-"ini file to fine tune performance."
+"Presets which can improve performance without manually editing the "
+"VPinballX.ini file to fine tune performance."
 msgstr ""
 "성능을 미세 조정하기 위해 VPinballX.ini 파일을 수동으로 편집하지 않고도 성능"
 "을 향상시킬 수 있는 사전 설정입니다."
@@ -14615,6 +14563,11 @@ msgstr "ST"
 msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
+
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid "STEERING SENSITIVITY"
+msgstr "조향 민감도"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -16684,30 +16637,10 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "상단"
 
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Center (Default)"
-msgstr ""
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Left"
-msgstr ""
-
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "상단만"
-
-#. TRANSLATION: pcsx2
-msgctxt "game_options"
-msgid "Top Right"
-msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17346,6 +17279,14 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "재고 항목 사용"
 
+#. TRANSLATION: supermodel
+msgctxt "game_options"
+msgid ""
+"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+msgstr ""
+"브레이크/가속 기어에는 L2/R2를 사용하고, 기어를 올리거나 내리려면 L1/R1 또는 "
+"R 스틱을 위/아래로 사용하세요."
+
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17878,11 +17819,6 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "지원되지 않는 기능에 대한 경고"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "WAYLAND DRIVER MODE"
-msgstr ""
-
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18196,11 +18132,6 @@ msgstr "XBLA 라이선스 활성화 (기본)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "엑스박스 라이브 아케이드"
-
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "XWayland (Default)"
-msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -18784,10 +18715,6 @@ msgstr "노란색/파란색"
 #~ msgstr "더 높은 성능을 위해 이러한 곡선의 시각적 품질을 낮출 수 있습니다."
 
 #~ msgctxt "game_options"
-#~ msgid "Can improve frame rate and responsiveness."
-#~ msgstr "프레임 속도와 응답성을 향상시킬 수 있습니다."
-
-#~ msgctxt "game_options"
 #~ msgid "Choose the Dreamcast console language."
 #~ msgstr "드림캐스트 콘솔 언어를 선택하세요."
 
@@ -18816,16 +18743,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "Enhancement. Enables texture upscaling textures and their size."
 #~ msgstr "향상. 텍스처 스케일링 텍스처와 크기를 늘릴 수 있습니다."
-
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "게임 패드로 운전 게임을 하는 경우, 엄지 스틱에 대한 조향의 민감성을 낮추"
-#~ "기 위해 100%%보다 큰 값을 사용하는 것이 좋은 경우가 있습니다."
 
 #~ msgctxt "game_options"
 #~ msgid "HIDE LIGHT GUN CROSSHAIRS"
@@ -18863,10 +18780,6 @@ msgstr "노란색/파란색"
 #~ msgid "INTEGER SCALE"
 #~ msgstr "정수 스케일"
 
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "현대식 페달 컨트롤"
-
 #~ msgctxt "keys_files"
 #~ msgid "Menu N"
 #~ msgstr "메뉴 N"
@@ -18882,10 +18795,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "Not all games support all languages."
 #~ msgstr "모든 게임이 모든 언어를 지원하는 것은 아닙니다."
-
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "조향 민감도"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -18910,13 +18819,6 @@ msgstr "노란색/파란색"
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM 조이스틱 구성 사용"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "브레이크/가속 기어에는 L2/R2를 사용하고, 기어를 올리거나 내리려면 L1/R1 또"
-#~ "는 R 스틱을 위/아래로 사용하세요."
 
 #~ msgctxt "game_options"
 #~ msgid "VSYNC INTERVAL"
