@@ -35,12 +35,4 @@ ifeq ($(BR2_PACKAGE_DMD_SIMULATOR_PLAYER),y)
 	DMD_SIMULATOR_POST_INSTALL_TARGET_HOOKS += DMD_SIMULATOR_INSTALL_DMD_SIMULATOR_PLAYER
 endif
 
-# clean-up the old files otherwise the upgrade fails
-define DMD_SIMULATOR_CLEANUP_OLD_BINARY
-    rm -f $(TARGET_DIR)/usr/bin/dmd-simulator
-	rm -f $(TARGET_DIR)/usr/bin/dmd-play-python
-endef
-
-DMD_SIMULATOR_PRE_INSTALL_TARGET_HOOKS += DMD_SIMULATOR_CLEANUP_OLD_BINARY
-
 $(eval $(python-package))
