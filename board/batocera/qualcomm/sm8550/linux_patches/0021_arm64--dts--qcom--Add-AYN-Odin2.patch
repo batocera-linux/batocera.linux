@@ -1,7 +1,7 @@
 diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts
 --- linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts	1970-01-01 00:00:00.000000000 +0000
 +++ linux/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts	2025-02-26 13:52:56.398992835 +0000
-@@ -0,0 +1,364 @@
+@@ -0,0 +1,353 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -29,6 +29,41 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pwm_backlight_default>;
 +		status = "okay";
++	};
++
++	hdmi-out {
++		compatible = "hdmi-connector";
++		type = "d";
++		hpd-gpios = <&tlmm 9 GPIO_ACTIVE_HIGH>;
++		hdmi-pwr-supply = <&vdd_hdmi_1v8>;
++
++		port {
++			hdmi_con: endpoint {
++				remote-endpoint = <&lt8912_out>;
++			};
++		};
++	};
++
++	vcc_hdmi_1v8: vcc-hdmi-1v8-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_hdmi_1v8";
++
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		gpio = <&tlmm 10 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	vdd_hdmi_1v8: vdd-hdmi-1v8-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_hdmi_1v8";
++
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		gpio = <&tlmm 6 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
 +	};
 +
 +	vdd_disp_2v8: vdd-disp-2v8-regulator {
@@ -149,7 +184,7 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +	vddio-supply = <&vreg_l12b_1p8>;
 +	vdd-supply = <&vdd_disp_2v8>;
 +
-+        backlight = <&backlight>;
++	backlight = <&backlight>;
 +	reset-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
 +
 +	rotation = <90>;
@@ -257,12 +292,6 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +	status = "okay";
 +};
 +
-+&remoteproc_cdsp {
-+	firmware-name = "qcom/sm8550/ayn/cdsp.mbn",
-+			"qcom/sm8550/ayn/cdsp_dtb.mbn";
-+	status = "okay";
-+};
-+
 +&spk_amp_l {
 +	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
 +};
@@ -271,98 +300,59 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
 +};
 +
-+&soc {
-+    qcom_tzlog: qcom_tzlog {
-+        status = "disabled";
-+    };
++&i2c_hub_0 {
++	clock-frequency = <100000>;
++	status = "okay";
 +
-+    arch_timer: arch_timer {
-+        status = "disabled";
-+    };
-+};
++	hdmi-bridge@48 {
++		compatible = "lontium,lt8912b";
++		reg = <0x48> ;
++		reset-gpios = <&tlmm 7 GPIO_ACTIVE_LOW>;
 +
-+/delete-node/ &sdhc_2;
++		vdd-supply = <&vdd_hdmi_1v8>;
++		vccmipirx-supply = <&vcc_hdmi_1v8>;
++		vccsysclk-supply = <&vcc_hdmi_1v8>;
++		vcclvdstx-supply = <&vcc_hdmi_1v8>;
++		vcchdmitx-supply = <&vcc_hdmi_1v8>;
++		vcclvdspll-supply = <&vcc_hdmi_1v8>;
++		vcchdmipll-supply = <&vcc_hdmi_1v8>;
 +
-+&soc {
-+	sdhc_2: sdhci@8804000 {
-+		compatible = "qcom,sdhci-msm-v5-downstream";
-+		reg = <0 0x08804000 0 0x1000>;
-+		reg-names = "hc_mem";
-+		interrupts = <GIC_SPI 207 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "hc_irq", "pwr_irq";
-+		bus-width = <4>;
-+		no-sdio;
-+		no-mmc;
-+		qcom,restore-after-cx-collapse;
-+		qcom,uses_level_shifter;
-+		qcom,dll_lock_bist_fail_wa;
-+		clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-+			<&gcc GCC_SDCC2_APPS_CLK>;
-+		clock-names = "iface", "core";
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
 +
-+		/*
-+		 * DLL HSR settings. Refer go/hsr - <Target> DLL settings.
-+		 * Note that the DLL_CONFIG_2 value is not passed from the
-+		 * device tree, but it is calculated in the driver.
-+		 */
-+		qcom,dll-hsr-list = <0x0007442C 0x0 0x10
-+					0x090106C0 0x80040868>;
++			port@0 {
++				reg = <0>;
 +
-+		iommus = <&apps_smmu 0x540 0x0>;
-+		dma-coherent;
-+		interconnects = <&aggre2_noc MASTER_SDCC_2 0 &mc_virt SLAVE_EBI1 0>,
-+				<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_SDCC_2 0>;
-+		interconnect-names = "sdhc-ddr", "cpu-sdhc";
-+
-+		qcom,msm-bus,name = "sdhc2";
-+		qcom,msm-bus,num-cases = <0x07>;
-+		qcom,msm-bus,num-paths = <0x02>;
-+		qcom,msm-bus,vectors-KBps = <0x00 0x00 0x00 0x00 0x416 0xc80 0x640 0x640 0xff50 0x3d090 0x186a0 0x208c8 0x1fe9e 0x3d090 0x208c8 0x208c8 0x3fd3e 0x3d090 0x249f0 0x208c8 0x3fd3e 0xc3500 0x493e0 0x493e0 0x146cc2 0x3e8000 0x146cc2 0x3e8000>;
-+		qcom,bus-bw-vectors-bps = <0x00 0x61a80 0x17d7840 0x2faf080 0x5f5e100 0xbebc200 0xffffffff>;
-+
-+		operating-points-v2 = <&sdhc2_opp_table>;
-+
-+		vdd-supply = <&vreg_l9b_2p9>;
-+		qcom,vdd-voltage-level = <0x2d0370 0x2d2a80>;
-+		qcom,vdd-current-level = <0x00 0xc3500>;
-+
-+		vdd-io-supply = <&vreg_l8b_1p8>;
-+		qcom,vdd-io-voltage-level = <0x1b7740 0x2d2a80>;
-+		qcom,vdd-io-current-level = <0x00 0x15e0>;
-+
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&sdc2_default &sdc2_card_det_n>;
-+		pinctrl-1 = <&sdc2_sleep &sdc2_card_det_n>;
-+
-+		cd-gpios = <&pm8550_gpios 12 GPIO_ACTIVE_LOW>;
-+		resets = <&gcc GCC_SDCC2_BCR>;
-+		reset-names = "core_reset";
-+
-+		qos0 {
-+			mask = <0xf0>;
-+			vote = <0x2c>;
-+		};
-+
-+		qos1 {
-+			mask = <0x0f>;
-+			vote = <0x2c>;
-+		};
-+
-+		sdhc2_opp_table: opp-table {
-+			compatible = "operating-points-v2";
-+
-+			opp-100000000 {
-+				opp-hz = <0x00 0x5f5e100>;
-+				opp-peak-kBps = <0x27100 0x186a0>;
-+				opp-avg-kBps = <0xc350 0x00>;
++				hdmi_out_in: endpoint {
++					data-lanes = <1 2 3 4>;
++					remote-endpoint = <&mdss_dsi0_out>;
++				};
 +			};
 +
-+			opp-202000000 {
-+				opp-hz = <0x00 0xc0a4680>;
-+				opp-peak-kBps = <0x30d40 0x1d4c0>;
-+				opp-avg-kBps = <0x19640 0x00>;
++			port@1 {
++				reg = <1>;
++
++				lt8912_out: endpoint {
++					remote-endpoint = <&hdmi_con>;
++				};
 +			};
 +		};
 +	};
 +};
++
++&mdss_dsi0 {
++	vdda-supply = <&vreg_l3e_1p2>;
++	status = "okay";
++};
++
++&mdss_dsi0_out {
++	remote-endpoint = <&hdmi_out_in>;
++	data-lanes = <0 1 2 3>;
++};
++
++&mdss_dsi0_phy {
++	vdds-supply = <&vreg_l1e_0p88>;
++	status = "okay";
++};
+
