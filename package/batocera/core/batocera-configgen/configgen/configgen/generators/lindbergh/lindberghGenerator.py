@@ -318,7 +318,7 @@ class LindberghGenerator(Generator):
             _logger.debug("Unable to retrieve IP address.")
 
         # Primeval Hunt mode (touch screen)
-        if "primeva" in romName.lower() or "primehunt" in romName.lower():
+        if "primevah" in romName.lower() or "primehunt" in romName.lower():
             self.setConf(conf, "PRIMEVAL_HUNT_MODE", system.config.get("lindbergh_hunt", "1"))
 
         ## Guns
@@ -812,12 +812,12 @@ class LindberghGenerator(Generator):
             self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
 
             # reverse axis for let's go jungle
-            if shortRomName == ("letsgoju"): # not for the p version
+            if shortRomName == ("letsgoju", "letsgojua"): # not for the special version
                 self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
 
             # add shake for hotd4
-            if shortRomName == "hotd4":
+            if shortRomName.startswith("hotd4")::
                 xplayerp4 = xplayer + 4
                 yplayerp4 = yplayer + 4
                 self.setConf(conf, f"ANALOGUE_{xplayerp4}", f"{evplayer}:ABS:0:SHAKE")
