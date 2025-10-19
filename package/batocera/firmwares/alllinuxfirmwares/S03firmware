@@ -3,8 +3,8 @@
 case "$1" in
     start)
         echo "Checking device model..."
-        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
-        if [[ $info_output == "SER9" ]]; then
+        model_output=$(batocera-model)
+        if [[ $model_output == "SER9" ]]; then
             echo "Model matches SER9. Setting up firmware links..."
             mkdir -p /var/tmp
             ln -sf /usr/share/batocera/firmware/dcn_3_5_dmcub.bin /var/tmp/dcn_3_5_dmcub.bin

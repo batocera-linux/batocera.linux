@@ -78,18 +78,11 @@ V_CPUMAXFREQ=$(for CPU in /sys/devices/system/cpu/cpu*; do getCpu "${CPU}"; done
 let V_CPUMINFREQ=${V_CPUMINFREQ}/1000
 let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 
-V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-if test -z "${V_BOARD_MODEL}"; then
-    # give an other chance with dmi
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-fi
-# 3rd time lucky
-if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"; then
-    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-fi
+V_BOARD_MODEL=$(batocera-model)
 if test -n "${V_BOARD_MODEL}"; then
     echo "Model: ${V_BOARD_MODEL}"
 fi
+
 echo "System: ${V_SYSTEM}"
 V_ARCH=$(uname -m)
 echo "Architecture: ${V_ARCH}"

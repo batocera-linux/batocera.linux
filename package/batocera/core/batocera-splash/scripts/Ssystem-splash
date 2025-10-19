@@ -12,16 +12,8 @@ do_start () {
         N=$((N+1))
     done
 
-    # V_BOARD_MODEL detection from batocera-info
-    V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-    if [ -z "${V_BOARD_MODEL}" ]; then
-        # Try again with DMI
-        V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-    fi
-    # Third time lucky?
-    if [ -z "${V_BOARD_MODEL}" ] || [ "${V_BOARD_MODEL}" = "Default_string" ]; then
-        V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
-    fi
+    # V_BOARD_MODEL detection from batocera-model
+    V_BOARD_MODEL=$(batocera-model)
 
     # Batocera boot logo
     image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"

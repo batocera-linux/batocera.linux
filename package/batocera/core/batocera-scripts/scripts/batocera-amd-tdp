@@ -46,7 +46,7 @@ TDP_MIN=5 # Default min fallback
 BASE_TDP_MAX=35 # Default max fallback
 APPLY_TEMP_LIMIT=0 # Only set 90c for found handhelds
 
-device_model=$(batocera-info | awk -F': ' '/^Model:/ {print $2; exit}')
+device_model=$(batocera-model)
 
 if [[ -v tdp_ranges["$device_model"] ]]; then
     IFS=';' read -r -a info <<< "${tdp_ranges[$device_model]}"

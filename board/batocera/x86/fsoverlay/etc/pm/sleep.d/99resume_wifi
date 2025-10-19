@@ -12,10 +12,10 @@ device_models=("Loki_Zero" "AIR_Plus" "AYANEO_2S")
 
 case "$1" in
     resume|thaw)
-        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+        model_output=$(batocera-model)
         # Check if the device model is in the list
         for model in "${device_models[@]}"; do
-            if [[ $info_output == "$model" ]]; then
+            if [[ $model_output == "$model" ]]; then
                 wifi_toggle
                 break
             fi

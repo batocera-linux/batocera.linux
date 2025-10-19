@@ -35,22 +35,28 @@ BATOCERA_RESOLUTION_DEPENDENCIES += grim wf-recorder
 endif
 
 define BATOCERA_RESOLUTION_INSTALL_TARGET_CMDS
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution.$(BATOCERA_SCRIPT_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-screenshot.$(BATOCERA_SCRIPT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-flash-screen.py $(TARGET_DIR)/usr/bin/batocera-flash-screen
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution.$(BATOCERA_SCRIPT_TYPE) \
+	    $(TARGET_DIR)/usr/bin/batocera-resolution
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-screenshot.$(BATOCERA_SCRIPT_TYPE) \
+	    $(TARGET_DIR)/usr/bin/batocera-screenshot
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/screenshot/batocera-flash-screen.py \
+	    $(TARGET_DIR)/usr/bin/batocera-flash-screen
 endef
 
 define BATOCERA_RESOLUTION_INSTALL_RK3128
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution-post-rk3128 $(TARGET_DIR)/usr/bin/batocera-resolution-post
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/resolution/batocera-resolution-post-rk3128 \
+	    $(TARGET_DIR)/usr/bin/batocera-resolution-post
 endef
 
 define BATOCERA_RESOLUTION_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/x86/fsoverlay/etc/X11/xorg.conf.d/20-amdgpu.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/20-amdgpu.conf
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/x86/fsoverlay/etc/X11/xorg.conf.d/20-amdgpu.conf \
+	    $(TARGET_DIR)/etc/X11/xorg.conf.d/20-amdgpu.conf
 endef
 
 define BATOCERA_RESOLUTION_INSTALL_RECORDER
-	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/recorder/batocera-record.$(BATOCERA_SCRIPT_TYPE) $(TARGET_DIR)/usr/bin/batocera-record
+	install -m 0755 $(BATOCERA_RESOLUTION_PATH)/recorder/batocera-record.$(BATOCERA_SCRIPT_TYPE) \
+	    $(TARGET_DIR)/usr/bin/batocera-record
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)

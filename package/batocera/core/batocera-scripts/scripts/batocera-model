@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Try getting model from device tree first (common for embedded/ARM)
+V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+
+if test -z "${V_BOARD_MODEL}"; then
+    # give another chance with DMI product_name (common for x86/x64)
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+
+# 3rd time lucky: try DMI board_name
+if test -z "${V_BOARD_MODEL}" || test "${V_BOARD_MODEL}" == "Default_string"; then
+    V_BOARD_MODEL=$(cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+fi
+
+# Output the model name only, if found
+if test -n "${V_BOARD_MODEL}"; then
+    echo "${V_BOARD_MODEL}"
+fi
+
