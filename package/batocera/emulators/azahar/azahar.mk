@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-AZAHAR_VERSION = AZAHAR_PLUS_2123_3_A
-AZAHAR_SITE = https://github.com/AzaharPlus/AzaharPlus
+AZAHAR_VERSION = 2123.3
+AZAHAR_SITE = https://github.com/azahar-emu/azahar
 AZAHAR_SITE_METHOD = git
 AZAHAR_GIT_SUBMODULES = YES
 AZAHAR_LICENSE = GPLv2
