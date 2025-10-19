@@ -1236,7 +1236,7 @@ quake:
     Create a blank launch file with a .quake extension to be able to start the game from ES.
     i.e. `Quake.quake` or `Quake Mission Pack 1 - Scourge of Armagon.quake`.
     Launch files should be in `/userdata/roms/quake`.
-    
+
     Mission Packs
     -------------
 
@@ -1265,7 +1265,7 @@ quake:
     The files are named in the pattern "tracknn". i.e. track02.ogg or track02.mp3 etc
 
     vkQuake supports OGG, MP3, FLAC, and WAV audio formats.
-    
+
     For more info: https://wiki.batocera.org/systems:quake
   comment_fr: |
     Placez ici vos fichiers .PAK pour Quake 1.
@@ -2214,7 +2214,7 @@ x1:
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [3ds, 3dsx, cxi, axf, elf, app, squashfs]
+  extensions: [cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
   emulators:
     azahar:
       azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR] }
@@ -3027,7 +3027,7 @@ model2:
     mame:
       archs_include: [x86_64, x86-64-v3]
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
-      
+
   comment_en: |
     ---------------------------------
     ## SEGA MODEL 2 IMPORTANT INFO ##
@@ -3187,7 +3187,7 @@ uzebox:
   extensions: [uze, bin, zip]
   emulators:
     libretro:
-      uzem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UZEM], incompatible_extensions: [bin, zip] }  
+      uzem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UZEM], incompatible_extensions: [bin, zip] }
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
@@ -3742,7 +3742,7 @@ quake2:
     -------------
 
     Copy necessary data file to `rogue` ("Ground Zero"), `xatrix` ("The Reckoning"), `zaero` ("Quake II: Zaero") and `smd` ("Slight Mechanical Destruction") directories respectively.
-    
+
     The libretro vitaquake2 supported mission pack ROMs are: xatrix, rogue, and zaero.
     If you have vkQuake2 the additional `smd` ("Slight Mechanical Destruction") pack is supported.
     vkQuake2 also supports the Capture the Flag mod using the `ctf` directory.
@@ -5833,7 +5833,7 @@ bstone:
     Create a directory for the Balke Stone game you wish to launch.
     i.e. `Aliens Of Gold` or `Aliens Of Gold (Shareware)` or `Planet Strike`.
     Add the games files into the appropriate directory.
-    
+
     Aliens Of Gold Shareware we only need the .BS1 files.
     Aliens Of Gold we only need the .BS6 files.
     Planet Strike we only need the .VSI files
@@ -5867,7 +5867,7 @@ jkdf2:
 
     Jedi Knight - Dark Forces 2 is ideally designed to be best played with a mouse and keyboard.
     We have however mapped a gamepad style controller to the default keyboard for controller use.
-    
+
     Do not enable the joystick option in OpenJKDF2 as the controls aren't ideal.
     Do not adjust the keyboard keys if planning on using the controller mapping.
 
@@ -5905,14 +5905,14 @@ jknight:
             |
             |---assets0.pk3
             |---assets1.pk3...
-    
+
     Batocera will copy the appropriate files to launch the game.
 
     These Jedi Knight games are ideally designed to be best played with a mouse and keyboard.
     We have however mapped a gamepad style controller to the default keyboard for controller use.
-    
+
     Do not enable the joystick option in OpenJK as the controls aren't ideal.
-    Do not adjust the keyboard keys if planning on using the controller mapping.    
+    Do not adjust the keyboard keys if planning on using the controller mapping.
 
     For more info: https://wiki.batocera.org/systems:jknight
   comment_fr: |
@@ -5984,7 +5984,7 @@ bennugd:
 
     We recommend to keep games in separate folders.
     Each game must contain a .dcb or .dat launch file for the engine.
-    
+
     For more info: https://wiki.batocera.org/systems:bennugd
   comment_fr: |
     Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
