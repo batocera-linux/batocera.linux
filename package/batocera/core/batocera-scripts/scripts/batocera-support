@@ -85,19 +85,24 @@ f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_input.cfg    "${DSYSTEM}"
 f_cp /boot/batocera-boot.conf                                  "${DSYSTEM}"
-f_cp /var/log/Xorg.0.log                                       "${DSYSTEM}"
+if [ -f /var/run/boot.log ]; then
+    f_cp /var/log/Xorg.0.log                                   "${DSYSTEM}"
+fi
 f_cp /var/log/bluetooth-agent.log                              "${DSYSTEM}"
-# resize.log
 if [ -f /tmp/resize.log ]; then
     f_cp /tmp/resize.log                                       "${DSYSTEM}"
 fi
-# boot.log
 if [ -f /var/run/boot.log ]; then
     f_cp /var/run/boot.log                                     "${DSYSTEM}"
 fi
-# amd.log
 if [ -f /var/run/amd.log ]; then
     f_cp /var/run/amd.log                                      "${DSYSTEM}"
+fi
+if [ -f /var/run/sway.log ]; then
+    f_cp /var/run/sway.log                                     "${DSYSTEM}"
+fi
+if [ -f /var/run/labwc.log ]; then
+    f_cp /var/run/labwc.log                                    "${DSYSTEM}"
 fi
 
 # clear passwords
