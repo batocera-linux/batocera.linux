@@ -22,6 +22,7 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="FGT Rumble Wheel",          
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Microsoft SideWinder Precision Racing Wheel USB version 1.0",    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="270"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Thrustmaster Thrustmaster Racing Wheel FFB",                     MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="900"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Logitech  PRO Racing Wheel",                    MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="1080"
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Formula Vibration Feedback Wheel",              MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="180"
 
 # Speedlink 4in1 Leather Power Feedback Wheel
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="XBOX Game Device", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1", ENV{WHEEL_ROTATION_ANGLE}="250"
