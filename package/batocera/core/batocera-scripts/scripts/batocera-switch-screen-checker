@@ -4,6 +4,7 @@
 export DISPLAY=$(getLocalXDisplay)
 # required for wayland
 [ -f /etc/profile.d/04-sway.sh ] && . /etc/profile.d/04-sway.sh
+[ -f /etc/profile.d/04-labwc.sh ] && . /etc/profile.d/04-labwc.sh
 
 if test "${1}" == "--init"
 then
