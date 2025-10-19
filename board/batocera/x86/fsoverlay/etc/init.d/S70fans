@@ -6,9 +6,9 @@
 
 case "$1" in
     start)
-        info_output=$(batocera-info)
+        model_output=$(batocera-model)
         # ayn loki zero
-        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+        if [[ $model_output == "Loki_Zero" ]]; then
             # fan speeds [0-255]
             echo 51 > /sys/class/hwmon/hwmon5/pwm1_auto_point1_pwm
             echo 83 > /sys/class/hwmon/hwmon5/pwm1_auto_point2_pwm
@@ -27,7 +27,7 @@ case "$1" in
         ;;
     stop)
         # bios controlled mode
-        if [[ $info_output == *"Model: Loki_Zero"* ]]; then
+        if [[ $model_output == "Loki_Zero" ]]; then
             echo 0 > /sys/class/hwmon/hwmon5/pwm1_mode
         fi
         ;;

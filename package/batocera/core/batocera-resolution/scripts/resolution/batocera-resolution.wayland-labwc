@@ -253,6 +253,12 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# If wlr-randr returns no output, it means the Wayland compositor isn't running yet.
+if ! "${WLR_RANDR}" 2>/dev/null | grep -q . ; then
+    _log "Wayland compositor not ready. Exiting gracefully."
+    exit 1
+fi
+
 PSCREEN_ARG=
 if [ "$1" = "--screen" ]; then
     shift
@@ -286,7 +292,7 @@ case "${ACTION}" in
         fi
         
         CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
-        _log "currentMode: _get_current_mode_string returned: '${CURRENT_MODE_STR}'"
+        _log "currentMode: '${CURRENT_MODE_STR}'"
         
         if [ -n "${CURRENT_MODE_STR}" ]; then
             RES_ONLY=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
@@ -301,7 +307,7 @@ case "${ACTION}" in
             fi
         else
             echo "unknown.0"
-            _log "currentMode: _get_current_mode_string returned empty for PSCREEN '${PSCREEN}'. Outputting unknown.0."
+            _log "currentMode: empty for PSCREEN '${PSCREEN}'. Outputting unknown.0."
         fi
         ;;
 

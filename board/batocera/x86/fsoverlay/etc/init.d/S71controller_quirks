@@ -20,7 +20,7 @@ do_start() {
     # Controller quirks for X86 handhelds #
     #######################################
 
-    MODEL=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+    MODEL=$(batocera-model)
 
     if [[ "$MODEL" == "Claw_A1M" ]]; then
         # This script changes the MSI Claw's built-in controller to D-Input mode.

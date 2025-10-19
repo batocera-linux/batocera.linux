@@ -9,7 +9,7 @@
 # Short-Description: Enable OUT2 for GameForce ACE
 ### END INIT INFO
 
-MODEL=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+MODEL=$(batocera-model)
 
 start() {
     if [[ "$MODEL" == "GameForce_ACE" ]]; then
