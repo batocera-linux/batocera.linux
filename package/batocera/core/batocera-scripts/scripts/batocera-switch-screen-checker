@@ -1,44 +1,40 @@
 #!/bin/bash
 
-# required for x
-export DISPLAY=$(getLocalXDisplay)
-# required for wayland
-[ -f /etc/profile.d/04-sway.sh ] && . /etc/profile.d/04-sway.sh
-[ -f /etc/profile.d/04-labwc.sh ] && . /etc/profile.d/04-labwc.sh
+LOG="/userdata/system/logs/display.log"
+LOCK_DIR="/var/run/batocera-switch-screen.lock"
+STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
 
-if test "${1}" == "--init"
-then
-    batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
-    exit 0
-fi
+_wait_for_emulationstation() {
+    local timeout=30; local waited=0
+    while [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:1234/isIdle)" == "000" ]; do
+        sleep 0.5; waited=$(echo "$waited + 0.5" | bc)
+        if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+            echo "Udev: Timed out waiting for EmulationStation web server." >> "$LOG"
+            return 1
+        fi
+    done
+    return 0
+}
 
-DELTANEW=$(batocera-resolution listOutputs | sort | diff /var/run/batocera-switch-screen-checker-status - | grep -E '^> ' | sed -e s/"^> "// | head -1)
-NDELTANEW=$(echo "${DELTANEW}" | wc -l)
+case "$1" in
+    "--init")
+        batocera-resolution listOutputs | sort > "${STATUS_FILE}"
+        exit 0
+        ;;
+    *)
+        if [ ! -f "${STATUS_FILE}" ]; then
+            exit 0
+        fi
 
-# reinit status
-batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
+        if ! mkdir "${LOCK_DIR}" 2>/dev/null; then exit 0; fi
+        trap 'rm -rf "${LOCK_DIR}"' EXIT
 
-# 1 new screen, switch on it
-if test "${NDELTANEW}" == 1 -a "${DELTANEW}" != ""
-then
-    # es not running or running game, exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
-    test $? != 0                 && exit 0
-    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle
-    
-    if echo "${DELTANEW}" > "/var/run/switch_screen_request"
-    then
-	# restart es
-	curl http://localhost:1234/quit
-    fi
-else
-    # es not (yet) running exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
-    test $? != 0                 && exit 0
-    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle # don't exit when es is not idle, it could be scrapping. and some screen shuts down after some time.
+        if ! _wait_for_emulationstation; then exit 1; fi
 
-    # in case the game is running, the restart will happen once the game is exited manually
-    # this is not perfect, but at least, it leaves a last chance to the user to replug the screen to save
-    touch /var/run/switch_screen_request # request to the default one
-    curl http://localhost:1234/quit
-fi
+        # This script's only job is to trigger a restart.
+        # The main standalone script will see the request file and handle all display logic.
+        echo "Udev: Triggering display re-scan." >> "$LOG"
+        touch "/var/run/switch_screen_request"
+        curl -s http://localhost:1234/quit
+        ;;
+esac

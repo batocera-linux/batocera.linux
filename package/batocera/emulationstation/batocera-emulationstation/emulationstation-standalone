@@ -5,21 +5,40 @@ REBOOT_FLAG=/var/run/emulationstation-standalone
 log="/userdata/system/logs/display.log"
 
 if [ "$1" = "--stop-rebooting" ]; then
-    rm -f "${REBOOT_FLAG}"
-    exit 0
+    rm -f "${REBOOT_FLAG}"; exit 0
 fi
 
 # Flag to reboot at each stop
 # ES is stopped : in case of crash, in case of some options are changed (language, video mode)
 touch "${REBOOT_FLAG}" || exit 1
-
 # Environment
 export HOME=/userdata/system
 
-batocera-switch-screen-checker --init
+_wait_for_compositor() {
+    # If not in a Wayland session, no need to wait.
+    if [ -z "$WAYLAND_DISPLAY" ]; then return 0; fi
+    local i=0
+    while [ "$i" -lt 50 ]; do # 5 second timeout
+        if wlr-randr > /dev/null 2>&1; then return 0; fi
+        sleep 0.1
+        i=$((i + 1))
+    done
+    echo "Standalone: Timed out waiting for Wayland compositor." >> "$log"
+    return 1
+}
 
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
+    # On every loop (initial start or restart), we must wait for the compositor
+    # to be ready before running any display commands.
+    if ! _wait_for_compositor; then
+        sleep 5; continue
+    fi
+
+    # Now that the compositor is ready, create the authoritative baseline
+    # for the current display setup.
+    batocera-switch-screen-checker --init
+
     ### LANGUAGE SETTINGS ###
     settings_lang="$(batocera-settings-get system.language)"
     [ -z "${settings_lang}" ] && settings_lang=en_US
@@ -156,10 +175,13 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ## It is not needed for other screens
     bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
     if [ -z "${bootresolution}" ]; then
-        batocera-resolution minTomaxResolution-secure
-    else
+        bootresolution="$(batocera-settings-get-master es.resolution)"
+    fi
+    if [ -n "${bootresolution}" ]; then
         batocera-resolution setMode "${bootresolution}"
-        echo "Resolution set to ${bootresolution}" >> $log
+        echo "Resolution set to ${bootresolution}" >> "$log"
+    else
+        batocera-resolution minTomaxResolution-secure
     fi
 
     # Other screens
