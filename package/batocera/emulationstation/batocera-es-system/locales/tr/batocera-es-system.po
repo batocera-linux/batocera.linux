@@ -4068,10 +4068,25 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Alt (Varsayılan)"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Sadece Alt"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4910,11 +4925,6 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Yavaşlamayı düzeltebilir. Sadece bazı sürücülerde çalışır."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Can improve frame rate and responsiveness."
-msgstr "Kare hızını ve tepki süresini artırabilir."
-
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4933,7 +4943,7 @@ msgstr ""
 "Video performansını artırabilir. ActionMax oyunları veya tarama çizgileri "
 "ile kullanmayın."
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "CPU zorlayan oyunlarda performansı artırabilir."
@@ -5030,10 +5040,20 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Katalanca"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: pcsx2, scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Orta"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Left"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Right"
+msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5244,6 +5264,13 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Paralel N64 grafik eklentisini seçin."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Choose the Wayland driver mode if on a handheld device. XWayland has more "
+"compatibility."
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5339,6 +5366,17 @@ msgstr "Arazi ayrıntı düzeyini seçin."
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Doku ayrıntı düzeyini seçin."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Choose the on-screen position for system messages."
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6887,7 +6925,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -8052,7 +8090,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "SERBEST OYNA"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8381,18 +8419,6 @@ msgstr "Gyro özellikli oyunlar için (sağ analog çubuğa bağlı)"
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Emülatörler ve kontrolcüler için kuvvet geri bildirimi desteklenir."
-
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"Bir oyun kolu ile sürüş oyunları oynamak için bazen %%100'den daha büyük bir "
-"değer kullanmak iyi bir fikir olabilir, böylece direksiyonun kontrol çubuğu "
-"üzerinde daha az hassas olması sağlanır."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9485,6 +9511,13 @@ msgstr ""
 "Bazı oyunların devre dışı bırakıldığında başlatılmasına yardımcı olur. "
 "Performansı etkileyebilir."
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
+msgstr ""
+
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "Hercules"
@@ -9835,6 +9868,11 @@ msgstr "Mip-mapping etkinleştirildiğinde uzak dokuların netliğini artırır.
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Uzaktaki dokuların netliğini artırır."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Improves frame rate and responsiveness."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10985,11 +11023,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "MODEL TÜRÜ"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "MODERN PEDAL KONTROLLERİ"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11750,6 +11783,11 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
+
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11890,6 +11928,11 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "NTSYNC"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11931,7 +11974,7 @@ msgstr ""
 "Nat, xemu makinesinden internete erişmek için. Sistem Bağlantısı için Udp. "
 "Varsayılan (Otomatik) ağ erişimini devre dışı bırakır."
 
-#. TRANSLATION: xemu
+#. TRANSLATION: wine, xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Doğal"
@@ -12145,7 +12188,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Yok"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Yok (Varsayılan)"
@@ -12284,6 +12327,16 @@ msgstr "İDEAL KARE İLERLEMESİ"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD MESAJLARI"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD MESSAGES POSITION"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD PERFORMANCE POSITION"
+msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13398,8 +13451,8 @@ msgstr "ES üstünden ön yükleme yapılamaz."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the "
-"VPinballX.ini file to fine tune performance."
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
 msgstr ""
 "Performansta ince ayar yapmak için VPinballX.ini dosyasını el ile "
 "düzenlemeye gerek kalmadan performansı artırabilen ön ayarlar."
@@ -14666,11 +14719,6 @@ msgstr "ST"
 msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
-
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "YÖNLENDİRME HASSASİYETİ"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -16758,10 +16806,30 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Üst"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Sadece Üst"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17404,14 +17472,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr "Envanter Öğesini Kullan"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr ""
-"Fren/Hızlanma için L2/R2, Vites Yükseltme/Küçültme için L1/R1 veya R analok "
-"Yukarı/Aşağıyı kullanın."
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17952,6 +18012,11 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "DESTEKLENMEYEN ÖZELLİKLER HAKKINDA UYARI"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "WAYLAND DRIVER MODE"
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18268,6 +18333,11 @@ msgstr "XBLA lisansı etkin (Varsayılan)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX CANLI ARCADE"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "XWayland (Default)"
+msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -18840,13 +18910,43 @@ msgid "yellow/blue"
 msgstr "sarı/mavi"
 
 #~ msgctxt "game_options"
+#~ msgid "Can improve frame rate and responsiveness."
+#~ msgstr "Kare hızını ve tepki süresini artırabilir."
+
+#~ msgctxt "game_options"
+#~ msgid "Choose your preferred aspect ratio.."
+#~ msgstr "Tercih ettiğiniz en boy oranını seçin."
+
+#~ msgctxt "game_options"
 #~ msgid "Configuring controllers in GZDoom can cause problems."
 #~ msgstr "GZDoom kontrolcüleri yapılandırmak sorunlara neden olabilir."
+
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "Bir oyun kolu ile sürüş oyunları oynamak için bazen %%100'den daha büyük "
+#~ "bir değer kullanmak iyi bir fikir olabilir, böylece direksiyonun kontrol "
+#~ "çubuğu üzerinde daha az hassas olması sağlanır."
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "MODERN PEDAL KONTROLLERİ"
+
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "YÖNLENDİRME HASSASİYETİ"
 
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM JOYSTICK YAPILANDIRMASINI KULLAN"
 
 #~ msgctxt "game_options"
-#~ msgid "Choose your preferred aspect ratio.."
-#~ msgstr "Tercih ettiğiniz en boy oranını seçin."
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "Fren/Hızlanma için L2/R2, Vites Yükseltme/Küçültme için L1/R1 veya R "
+#~ "analok Yukarı/Aşağıyı kullanın."

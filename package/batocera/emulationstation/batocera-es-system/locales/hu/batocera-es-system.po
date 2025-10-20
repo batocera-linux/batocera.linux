@@ -4067,10 +4067,25 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "Alsó (alapértelmezett)"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "Csak alul"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4912,11 +4927,6 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "Megoldhatja a lassulást. Csak néhány illesztőprogrammal működik."
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Can improve frame rate and responsiveness."
-msgstr "Javíthatja a képkockasebességet és a válaszkészséget."
-
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4935,7 +4945,7 @@ msgstr ""
 "Javíthatja a videó teljesítményét. Ne használja ActionMax játékokkal vagy "
 "scanline-okkal."
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "Növelheti a CPU-t megterhelő játékok teljesítményét."
@@ -5031,10 +5041,20 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "Katalán"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: pcsx2, scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "Közép"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Left"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Right"
+msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5244,6 +5264,13 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Válassza a Parallel N64 grafikus bővítményt."
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Choose the Wayland driver mode if on a handheld device. XWayland has more "
+"compatibility."
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5336,6 +5363,17 @@ msgstr ""
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "Válassza ki a textúra részletességének szintjét."
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Choose the on-screen position for system messages."
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6887,7 +6925,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -8056,7 +8094,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "INGYENES JÁTÉK"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -8385,18 +8423,6 @@ msgstr "For Gyro-enabled games (bound to right analog stick)"
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
 msgstr "Erővisszacsatolást támogató emulátorokhoz és vezérlőkhöz."
-
-#. TRANSLATION: supermodel
-#, c-format
-msgctxt "game_options"
-msgid ""
-"For playing driving games with a game pad, it is sometimes a good idea to "
-"use a value larger than 100%% so that the steering feels less sensitive on a "
-"thumbstick."
-msgstr ""
-"Ha vezetési játékokat szeretne játszani egy játékpaddal, néha érdemes 100%%-"
-"nál nagyobb értéket használni, hogy a kormányzás kevésbé érzékeny legyen a "
-"hüvelykujjra."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -9284,6 +9310,11 @@ msgctxt "game_options"
 msgid "HARD TEXTURE CACHE MEMORY LIMIT"
 msgstr "KEMÉNY TEXTÚRA GYORSÍTÓTÁR MEMÓRIA KORLÁT"
 
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "HARDWARE SHADER"
+msgstr ""
+
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
 msgid "HARDWARE TESSELLATION"
@@ -9479,6 +9510,18 @@ msgid ""
 msgstr ""
 "Segít csökkenteni a CPU energiafogyasztását azáltal, hogy leszabályozza a "
 "CPU-t, amikor nincs rá szükség. Hasznos kézi számítógépekhez."
+
+#. TRANSLATION: azahar
+msgctxt "game_options"
+msgid "Helps some games to launch when disabled. May affect performance."
+msgstr ""
+
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid ""
+"Helps with texture corruption and depth issues on AMD GPUs. Can also help "
+"Intel GPUs in some cases."
+msgstr ""
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
@@ -9835,6 +9878,11 @@ msgstr ""
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "Javítja a távoli textúrák tisztaságát."
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Improves frame rate and responsiveness."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -10990,11 +11038,6 @@ msgctxt "game_options"
 msgid "MODEL TYPE"
 msgstr "MODELLTÍPUS"
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "MODERN PEDAL CONTROLS"
-msgstr "MODERN PEDÁL KEZELŐSZERVEK"
-
 #. TRANSLATION: xenia, xenia-canary
 msgctxt "game_options"
 msgid "MOUNT CACHE"
@@ -11757,6 +11800,11 @@ msgctxt "game_options"
 msgid "NAT"
 msgstr "NAT"
 
+#. TRANSLATION: libretro/flycast
+msgctxt "game_options"
+msgid "NATIVE DEPTH INTERPOLATION"
+msgstr ""
+
 #. TRANSLATION: libretro/melonds, libretro/melondsds
 msgctxt "game_options"
 msgid "NDS VERSION"
@@ -11897,6 +11945,11 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "NTSYNC"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11939,7 +11992,7 @@ msgstr ""
 "Nat internet-hozzáférés a xemu gépről. Udp for System Link. Az "
 "alapértelmezett (Auto) letiltja a hálózati hozzáférést."
 
-#. TRANSLATION: xemu
+#. TRANSLATION: wine, xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "Native"
@@ -12153,7 +12206,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "Egyik sem"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "Nincs (alapértelmezett)"
@@ -12292,6 +12345,16 @@ msgstr "OPTIMÁLIS KÉPKOCKA ÜTEMEZÉS"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD ÜZENETEK"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD MESSAGES POSITION"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD PERFORMANCE POSITION"
+msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13410,8 +13473,8 @@ msgstr "Az ES előtöltése lehetetlen."
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the "
-"VPinballX.ini file to fine tune performance."
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
 msgstr ""
 "Előbeállítások, amelyek javíthatják a teljesítményt a VPinballX.ini fájl "
 "kézi szerkesztése nélkül a teljesítmény finomhangolásához."
@@ -14675,11 +14738,6 @@ msgstr "ST"
 msgctxt "game_options"
 msgid "STE"
 msgstr "STE"
-
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid "STEERING SENSITIVITY"
-msgstr "KORMÁNYZÁS ÉRZÉKENYSÉGE"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -16775,10 +16833,30 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "Felső"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "Csak felül"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17419,14 +17497,6 @@ msgctxt "keys_files"
 msgid "Use Inventory Item"
 msgstr ""
 
-#. TRANSLATION: supermodel
-msgctxt "game_options"
-msgid ""
-"Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-msgstr ""
-"Használja az L2/R2-t a fékezéshez/gyorsításhoz és az L1/R1-et vagy a jobb "
-"gomba fel/le gombot a fel/le váltáshoz."
-
 #. TRANSLATION: libretro/mame, libretro/mamevirtual, mame/pcsx2
 msgctxt "game_options"
 msgid "Use MAME software lists to identify ROM"
@@ -17966,6 +18036,11 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "FIGYELMEZTETÉS A NEM TÁMOGATOTT FUNKCIÓKRÓL"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "WAYLAND DRIVER MODE"
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18282,6 +18357,11 @@ msgstr "XBLA licenc engedélyezve (alapértelmezett)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE ARCADE"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "XWayland (Default)"
+msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -19013,6 +19093,10 @@ msgstr "sárga/kék"
 #~ msgstr "CONTROLLER PAK 4"
 
 #~ msgctxt "game_options"
+#~ msgid "Can improve frame rate and responsiveness."
+#~ msgstr "Javíthatja a képkockasebességet és a válaszkészséget."
+
+#~ msgctxt "game_options"
 #~ msgid "Center (Default)"
 #~ msgstr "Közép (Alap)"
 
@@ -19187,6 +19271,17 @@ msgstr "sárga/kék"
 #~ msgid "FlexDMD disabled"
 #~ msgstr "FlexDMD letíiltva"
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "Ha vezetési játékokat szeretne játszani egy játékpaddal, néha érdemes "
+#~ "100%%-nál nagyobb értéket használni, hogy a kormányzás kevésbé érzékeny "
+#~ "legyen a hüvelykujjra."
+
 #~ msgctxt "game_options"
 #~ msgid "Force Nvidia GPUs to always be reported as AMD GPUs."
 #~ msgstr ""
@@ -19260,6 +19355,10 @@ msgstr "sárga/kék"
 #~ msgctxt "keys_files"
 #~ msgid "Load State Slot 1"
 #~ msgstr "Betöltési állapot Slot 1"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "MODERN PEDÁL KEZELŐSZERVEK"
 
 #~ msgctxt "game_options"
 #~ msgid "MONSTERS"
@@ -19457,6 +19556,10 @@ msgstr "sárga/kék"
 #~ msgid "SSAA"
 #~ msgstr "SSAA"
 
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "KORMÁNYZÁS ÉRZÉKENYSÉGE"
+
 #~ msgctxt "keys_files"
 #~ msgid "Save State"
 #~ msgstr "Állam mentése"
@@ -19579,6 +19682,13 @@ msgstr "sárga/kék"
 #~ msgstr ""
 #~ "Használja az L2/R2-t a gyorsításhoz/fékezéshez és az L1/R1-et vagy az R-"
 #~ "stick Up/Down gombot a fel/le váltáshoz."
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "Használja az L2/R2-t a fékezéshez/gyorsításhoz és az L1/R1-et vagy a jobb "
+#~ "gomba fel/le gombot a fel/le váltáshoz."
 
 #~ msgctxt "game_options"
 #~ msgid ""

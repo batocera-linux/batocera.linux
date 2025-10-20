@@ -4048,10 +4048,25 @@ msgctxt "game_options"
 msgid "Bottom (Default)"
 msgstr "下 (標準)"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Bottom Only"
 msgstr "下画面のみ（切替不可）"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Bottom Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -4887,11 +4902,6 @@ msgctxt "game_options"
 msgid "Can fix slowdown. Only works on some drivers."
 msgstr "速度低下を修正します。一部のドライバーでのみ動作します"
 
-#. TRANSLATION: wine
-msgctxt "game_options"
-msgid "Can improve frame rate and responsiveness."
-msgstr "フレームレートと応答性が向上します"
-
 #. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can improve frame rates and responsiveness."
@@ -4908,7 +4918,7 @@ msgid ""
 "Can improve video performance. Do not use with ActionMax games or scanlines."
 msgstr "映像表示性能が向上します。ActionMaxゲームやスキャンラインでは使用不可"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "Can increase performance for games that stress the CPU."
 msgstr "CPU に負荷がかかるゲームの動作を向上させることができます"
@@ -5003,10 +5013,20 @@ msgctxt "game_options"
 msgid "Catalan"
 msgstr "カタロニア語"
 
-#. TRANSLATION: scummvm
+#. TRANSLATION: pcsx2, scummvm
 msgctxt "game_options"
 msgid "Center"
 msgstr "中央"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Left"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Center Right"
+msgstr ""
 
 #. TRANSLATION: libretro/mesen-s
 msgctxt "game_options"
@@ -5214,6 +5234,13 @@ msgctxt "game_options"
 msgid "Choose the Parallel N64 graphics plugin."
 msgstr "Parallel N64 グラフィックス プラグインを選択します"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid ""
+"Choose the Wayland driver mode if on a handheld device. XWayland has more "
+"compatibility."
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid ""
@@ -5307,6 +5334,17 @@ msgstr "地形の詳細レベルを選択します"
 msgctxt "game_options"
 msgid "Choose the level of texture detail."
 msgstr "テクスチャディテールレベルを選択します"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid ""
+"Choose the on-screen position for performance metrics (FPS, CPU usage, etc.)."
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Choose the on-screen position for system messages."
+msgstr ""
 
 #. TRANSLATION: fallout1-ce, fallout2-ce
 msgctxt "game_options"
@@ -6838,7 +6876,7 @@ msgctxt "game_options"
 msgid "EST5EDT"
 msgstr "EST5EDT"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "ESYNC"
 msgstr "ESYNC"
@@ -7967,7 +8005,7 @@ msgctxt "game_options"
 msgid "FREE PLAY"
 msgstr "フリープレイ"
 
-#. TRANSLATION: mugen, wine
+#. TRANSLATION: mugen
 msgctxt "game_options"
 msgid "FSYNC"
 msgstr "FSYNC"
@@ -9746,6 +9784,11 @@ msgstr "ミップマッピングの有効時、離れたテクスチャの明瞭
 msgctxt "game_options"
 msgid "Improves clarity of distant textures."
 msgstr "離れたテクスチャの鮮明度を向上させます"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "Improves frame rate and responsiveness."
+msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -11783,6 +11826,11 @@ msgctxt "game_options"
 msgid "NTSC-U/C"
 msgstr "NTSC-U/C"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "NTSYNC"
+msgstr ""
+
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
 msgid "NUMBER OF SHADER COMPILER THREADS"
@@ -11824,7 +11872,7 @@ msgstr ""
 "xemu からインターネットに接続する Nat設定(システムリンク用の UDP) \n"
 "標準 (自動) では、ネットワーク接続が無効になります"
 
-#. TRANSLATION: xemu
+#. TRANSLATION: wine, xemu
 msgctxt "game_options"
 msgid "Native"
 msgstr "標準"
@@ -12038,7 +12086,7 @@ msgctxt "game_options"
 msgid "None"
 msgstr "なし"
 
-#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, supermodel
+#. TRANSLATION: cgenius, iortcw, libretro/mame, mame/pcsx2, pcsx2, ...
 msgctxt "game_options"
 msgid "None (Default)"
 msgstr "なし (標準)"
@@ -12177,6 +12225,16 @@ msgstr "最適なフレームペーシング"
 msgctxt "game_options"
 msgid "OSD MESSAGES"
 msgstr "OSD メッセージを表示"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD MESSAGES POSITION"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "OSD PERFORMANCE POSITION"
+msgstr ""
 
 #. TRANSLATION: dolphin_triforce
 msgctxt "game_options"
@@ -13280,8 +13338,8 @@ msgstr "ESからの事前読込みは不可能です"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the "
-"VPinballX.ini file to fine tune performance."
+"Presets which can improve performance without manually editing the VPinballX."
+"ini file to fine tune performance."
 msgstr ""
 "VPinballX.ini ファイルを手動で編集して微調整することなく、動作を向上できるプ"
 "リセットを使用します"
@@ -16599,10 +16657,30 @@ msgctxt "game_options"
 msgid "Top"
 msgstr "上"
 
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Center (Default)"
+msgstr ""
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Left"
+msgstr ""
+
 #. TRANSLATION: azahar
 msgctxt "game_options"
 msgid "Top Only"
 msgstr "上画面のみ（切替不可）"
+
+#. TRANSLATION: pcsx2
+msgctxt "game_options"
+msgid "Top Right"
+msgstr ""
 
 #. TRANSLATION: melonds
 msgctxt "game_options"
@@ -17776,6 +17854,11 @@ msgctxt "game_options"
 msgid "WARN ABOUT UNSUPPORTED FEATURES"
 msgstr "サポートしていない機能についての警告"
 
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "WAYLAND DRIVER MODE"
+msgstr ""
+
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
 msgid "WEAPON PICKUP"
@@ -18087,6 +18170,11 @@ msgstr "XBLA有効 (標準)"
 msgctxt "game_options"
 msgid "XBOX LIVE ARCADE"
 msgstr "XBOX LIVE アーケード ライセンス"
+
+#. TRANSLATION: wine
+msgctxt "game_options"
+msgid "XWayland (Default)"
+msgstr ""
 
 #. TRANSLATION: libretro/dice
 msgctxt "game_options"
@@ -18656,36 +18744,15 @@ msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "黄/青"
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、"
-#~ "スティックの感度を鈍くすることをお勧めします"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "ペダル制御設定"
-
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "ステアリング 感度"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用しま"
-#~ "す"
-
 #~ msgctxt "game_options"
 #~ msgid ""
 #~ "Allows reducing the visual quality of these curves for higher "
 #~ "performance.."
 #~ msgstr "曲線の視覚的な品質を下げることでパフォーマンスを向上させます"
+
+#~ msgctxt "game_options"
+#~ msgid "Can improve frame rate and responsiveness."
+#~ msgstr "フレームレートと応答性が向上します"
 
 #~ msgctxt "game_options"
 #~ msgid "Choose your preferred aspect ratio.."
@@ -18706,6 +18773,16 @@ msgstr "黄/青"
 #~ msgstr ""
 #~ "強化：テクスチャのアップスケーリングテクスチャとそのサイズを有効にします"
 
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、"
+#~ "スティックの感度を鈍くすることをお勧めします"
+
 #~ msgctxt "game_options"
 #~ msgid "HIDE LIGHT GUN CROSSHAIRS"
 #~ msgstr "ガンコンクロスヘア(照準)を非表示"
@@ -18713,6 +18790,14 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "INTEGER SCALE"
 #~ msgstr "整数スケーリング"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "ペダル制御設定"
+
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "ステアリング 感度"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -18729,6 +18814,13 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM ジョイスティック構成を使用"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用しま"
+#~ "す"
 
 #~ msgctxt "game_options"
 #~ msgid "VSYNC INTERVAL"
