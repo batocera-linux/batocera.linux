@@ -113,7 +113,18 @@ while [ -e "${REBOOT_FLAG}" ]; do
         fi
     fi
 
-    # If screen1 is empty, take the first one found
+    LAST_PRIMARY_SCREEN=""
+    if [ -f "/var/run/switch_screen_current" ]; then
+        LAST_PRIMARY_SCREEN=$(cat "/var/run/switch_screen_current")
+    fi
+
+    if [ -z "${settings_output}" ] && [ -n "${LAST_PRIMARY_SCREEN}" ]; then
+        if batocera-resolution listOutputs | grep -qE "^${LAST_PRIMARY_SCREEN}$"; then
+            settings_output="${LAST_PRIMARY_SCREEN}"
+            echo "Restored last primary video output: ${settings_output}" >> $log
+        fi
+    fi
+
     if [ -z "${settings_output}" ]; then
         settings_output=$(batocera-resolution currentOutput)
         echo "First video output defaulted to: ${settings_output}" >> $log
@@ -138,9 +149,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### ROTATION ###
     display_rotate=
-    # Try to find a rotation for the custom output
-    # Read the final effective output
-    effective_output=$(batocera-resolution currentOutput)
+    effective_output="${settings_output}"
     if [ -n "${effective_output}" ]; then
         display_rotate=$(/usr/bin/batocera-settings-get-master "display.rotate.${effective_output}")
         echo "Rotation for output ${effective_output}: ${display_rotate}" >> $log
@@ -151,9 +160,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
 
     if [ -n "${effective_output}" ] && [ -n "${display_rotate}" ]; then
-        if batocera-resolution supportSystemRotation; then
-            batocera-resolution setRotation "${display_rotate}"
-            echo "System rotation set to ${display_rotate}" >> $log
+        if batocera-resolution --screen "${effective_output}" supportSystemRotation; then
+            batocera-resolution --screen "${effective_output}" setRotation "${display_rotate}"
+            echo "System rotation set to ${display_rotate} for ${effective_output}" >> $log
         else
             # When no rotation is available by the system, apply it
             EXTRA_OPTS="--screenrotate ${display_rotate}"
@@ -175,13 +184,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ## It is not needed for other screens
     bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
     if [ -z "${bootresolution}" ]; then
-        bootresolution="$(batocera-settings-get-master es.resolution)"
-    fi
-    if [ -n "${bootresolution}" ]; then
-        batocera-resolution setMode "${bootresolution}"
-        echo "Resolution set to ${bootresolution}" >> "$log"
+        batocera-resolution --screen "${settings_output}" minTomaxResolution-secure
     else
-        batocera-resolution minTomaxResolution-secure
+        batocera-resolution --screen "${settings_output}" setMode "${bootresolution}"
+        echo "Resolution set to ${bootresolution} for ${settings_output}" >> $log
     fi
 
     # Other screens
@@ -244,7 +250,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             fi
         else
             map_name=$(echo $settings_lang | cut -c 1-2)
-            if [ map_name="en" ]; then
+            if [ "$map_name" = "en" ]; then
                 map_name=$(echo $settings_lang | cut -c 4- | tr '[:upper:]' '[:lower:]')
             fi
             setxkbmap "${map_name}"
@@ -276,15 +282,13 @@ while [ -e "${REBOOT_FLAG}" ]; do
         GAMELAUNCHOPT="--no-startup-game"
     fi
 
-    # Save the current output in which es is started (used to switch screen, when unplugged)
-    batocera-resolution currentOutput > "/var/run/switch_screen_current"
-
+    echo "${settings_output}" > "/var/run/switch_screen_current"
     # DBUS launch is required for the gio/gvfs/trash:///...
     eval "$(dbus-launch --sh-syntax --exit-with-session)"
 
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
-            BGOFFSETX=$(batocera-resolution currentResolution | cut -d x -f 1)
+            BGOFFSETX=$(batocera-resolution --screen "${settings_output}" currentResolution | cut -d x -f 1)
             BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
             THEME="$(batocera-settings-get backglass.theme)"
             batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE} "${THEME}"

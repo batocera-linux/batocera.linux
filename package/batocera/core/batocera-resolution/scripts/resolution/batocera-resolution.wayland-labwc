@@ -152,7 +152,6 @@ f_minTomaxResolution() {
     local MAXWIDTH MAXHEIGHT MAX_PIXELS
     local CURRENT_MODE_STR CURRENT_RESOLUTION
     local CURRENTWIDTH CURRENTHEIGHT CURRENT_PIXELS
-    local BEST_MODE="" BEST_AREA=0
     
     if [ -z "${PSCREEN}" ]; then 
         _log "f_minTomaxResolution: PSCREEN is empty."
@@ -190,24 +189,29 @@ f_minTomaxResolution() {
         exit 0
     fi
     
-    # This part will only run if the current resolution is > 1080p, e.g. a 4K TV.
-    _get_available_modes "${PSCREEN}" | while IFS= read -r mode; do
-        resolution=$(echo "${mode}" | cut -d'@' -f1)
-        width=$(echo "${resolution}" | cut -dx -f1)
-        height=$(echo "${resolution}" | cut -dx -f2)
-        
-        if ! echo "${width}" | grep -qE '^[0-9]+$' || ! echo "${height}" | grep -qE '^[0-9]+$'; then
-            continue
-        fi
-        
-        area=$((width * height))
-        if [ "${area}" -le "${MAX_PIXELS}" ]; then
-            if [ "${area}" -gt "${BEST_AREA}" ]; then
-                BEST_MODE="${mode}"
-                BEST_AREA="${area}"
+    BEST_MODE=$(_get_available_modes "${PSCREEN}" | {
+        _BEST_MODE_SUB=""
+        _BEST_AREA_SUB=0
+
+        while IFS= read -r mode; do
+            resolution=$(echo "${mode}" | cut -d'@' -f1)
+            width=$(echo "${resolution}" | cut -dx -f1)
+            height=$(echo "${resolution}" | cut -dx -f2)
+            
+            if ! echo "${width}" | grep -qE '^[0-9]+$' || ! echo "${height}" | grep -qE '^[0-9]+$'; then
+                continue
             fi
-        fi
-    done
+            
+            area=$((width * height))
+            if [ "${area}" -le "${MAX_PIXELS}" ]; then
+                if [ "${area}" -gt "${_BEST_AREA_SUB}" ]; then
+                    _BEST_MODE_SUB="${mode}"
+                    _BEST_AREA_SUB="${area}"
+                fi
+            fi
+        done
+        echo "${_BEST_MODE_SUB}"
+    })
     
     if [ -n "${BEST_MODE}" ]; then
         _log "f_minTomaxResolution: Best mode found: ${BEST_MODE}. Setting it."
@@ -400,34 +404,19 @@ case "${ACTION}" in
         ;;
 
     "setOutput")
-        TARGET_OUT1=$1
-        TARGET_OUT2=$2
-        TARGET_OUT3=$3
+        # We receive TARGETS as positional parameters $1, $2, $3...
+        _log "setOutput: Received desired outputs (in order): $*"
 
-        if [ -z "${TARGET_OUT1}" ]; then 
-            _log "setOutput: Error: No target output specified."
-            echo "Error: At least one output must be specified." >&2
-            exit 1
-        fi
-
-        # Build the list of desired outputs in the correct, prioritized order.
-        DESIRED_OUTPUTS="${TARGET_OUT1}"
-        [ -n "${TARGET_OUT2}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT2}"
-        [ -n "${TARGET_OUT3}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT3}"
-        
-        _log "setOutput: Desired active outputs (in order): ${DESIRED_OUTPUTS}"
-
-        # Get a list of all available outputs from the system
         ALL_OUTPUTS=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
 
-        # Start with an empty command
-        set --
+        CMD_ARGS_VAR=""
 
         # 1. Add the --on commands for desired outputs, IN THE CORRECT ORDER.
-        for target in ${DESIRED_OUTPUTS}; do
-            # Ensure the output actually exists before trying to enable it.
+        for target in "$@"; do
+            if [ -z "$target" ]; then continue; fi
+
             if echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
-                set -- "$@" --output "${target}" --on
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --on"
                 _log "setOutput: Queuing ON for ${target}"
             else
                 _log "setOutput: Warning: Desired output '${target}' not found. Skipping."
@@ -437,25 +426,26 @@ case "${ACTION}" in
         # 2. Add the --off commands for any other connected outputs.
         for connected_output in ${ALL_OUTPUTS}; do
             IS_DESIRED=0
-            for target in ${DESIRED_OUTPUTS}; do
+            for target in "$@"; do
                 if [ "${connected_output}" = "${target}" ]; then
                     IS_DESIRED=1
                     break
                 fi
             done
-
             if [ "${IS_DESIRED}" -eq 0 ]; then
-                set -- "$@" --output "${connected_output}" --off
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${connected_output} --off"
                 _log "setOutput: Queuing OFF for ${connected_output}"
             fi
         done
 
-        # Execute with all the collected arguments
-        _log "Executing: ${WLR_RANDR} $*"
-        if ! "${WLR_RANDR}" "$@"; then
+        # Execute the command. The `eval` is needed to handle the string of arguments correctly.
+        _log "Executing: ${WLR_RANDR}${CMD_ARGS_VAR}"
+        if ! eval "${WLR_RANDR}${CMD_ARGS_VAR}"; then
             _log "setOutput: The main wlr-randr command failed. Trying fallback."
-            # Fallback for safety: just try to enable the primary.
-            "${WLR_RANDR}" --output "${TARGET_OUT1}" --on
+            # Fallback for safety: just try to enable the primary (the first argument).
+            if [ -n "$1" ]; then
+                "${WLR_RANDR}" --output "$1" --on
+            fi
         else
             _log "setOutput: Successfully configured outputs."
         fi
