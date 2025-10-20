@@ -817,7 +817,7 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
 
             # add shake for hotd4
-            if shortRomName.startswith("hotd4")::
+            if shortRomName.startswith("hotd4"):
                 xplayerp4 = xplayer + 4
                 yplayerp4 = yplayer + 4
                 self.setConf(conf, f"ANALOGUE_{xplayerp4}", f"{evplayer}:ABS:0:SHAKE")
