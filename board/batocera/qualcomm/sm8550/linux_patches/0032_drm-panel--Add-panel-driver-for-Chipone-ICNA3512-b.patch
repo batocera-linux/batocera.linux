@@ -50,7 +50,7 @@ new file mode 100644
 index 000000000000..cbda976df1db
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-chipone-icna3512.c
-@@ -0,0 +1,473 @@
+@@ -0,0 +1,459 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Chipone ICNA3512 Driver IC panels driver
@@ -84,7 +84,7 @@ index 000000000000..cbda976df1db
 +	enum drm_panel_orientation orientation;
 +
 +	struct gpio_desc *reset_gpio;
-+	struct regulator_bulk_data supplies[3];
++	struct regulator_bulk_data *supplies;
 +};
 +
 +struct panel_desc {
@@ -101,6 +101,14 @@ index 000000000000..cbda976df1db
 +	int (*init_sequence)(struct panel_info *pinfo);
 +
 +	struct drm_dsc_config dsc;
++};
++
++static const struct regulator_bulk_data panel_supplies[] = {
++	{ .supply = "vdd" },
++	{ .supply = "vddio" },
++	{ .supply = "vci" },
++	{ .supply = "disp" },
++	{ .supply = "blvdd" },
 +};
 +
 +static inline struct panel_info *to_panel_info(struct drm_panel *panel)
@@ -132,73 +140,61 @@ index 000000000000..cbda976df1db
 +
 +static int icna3512_init_sequence(struct panel_info *pinfo)
 +{
-+	struct mipi_dsi_device *dsi = pinfo->dsi;
-+	struct device *dev = &dsi->dev;
-+	int ret;
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
 +
 +	int cur_mode = icna3512_get_current_mode(pinfo);
 +	int cur_vrefresh = drm_mode_vrefresh(&pinfo->desc->modes[cur_mode]);
 +
-+	mipi_dsi_dcs_write_seq(dsi, 0x9F, 0x01);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x9F, 0x01);
 +	if (cur_vrefresh == 120) {
-+
-+		mipi_dsi_dcs_write_seq(dsi, 0xB3, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xB3, 
 +                   0x00, 0xE0, 0xA0, 0x10, 0xC8, 0x00, 0x02, 0x83, 
 +                   0x00, 0x10, 0x14, 0x00, 0x00, 0xC3, 0x00, 0x10, 
 +                   0x14, 0x00, 0x00, 0xE0, 0x10, 0x10, 0x9C, 0x00, 
 +                   0x00, 0xE0, 0xA0, 0x10, 0xC8, 0x22, 0x18, 0x18, 
 +                   0x18, 0x18, 0x18);
-+        mipi_dsi_dcs_write_seq(dsi, 0x9F, 0x07);
-+		mipi_dsi_dcs_write_seq(dsi, 0xB5, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x9F, 0x07);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xB5, 
 +                   0x04, 0x0C, 0x08, 0x0C, 0x04, 0x00, 0xC4);
-+        mipi_dsi_dcs_write_seq(dsi, 0xD9, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xD9, 
 +                   0x88, 0x40, 0x40, 0x88, 0x40, 0x40, 0x00, 0xEB, 
 +                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-+        mipi_dsi_dcs_write_seq(dsi, 0xCE, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xCE, 
 +                   0x01, 0x01, 0x01, 0x01, 0x04, 0x09, 0x2C);
-+        mipi_dsi_dcs_write_seq(dsi, 0x48, 0x00);
-+        mipi_dsi_dcs_write_seq(dsi, 0x48, 0x30);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x48, 0x00);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x48, 0x30);
 +	}
 +	else {
-+        mipi_dsi_dcs_write_seq(dsi, 0xB3, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xB3, 
 +                   0x00, 0xE0, 0xA0, 0x10, 0xC8, 0x00);
-+        mipi_dsi_dcs_write_seq(dsi, 0x9F, 0x07);
-+        mipi_dsi_dcs_write_seq(dsi, 0xB2, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x9F, 0x07);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xB2, 
 +                   0x04, 0x18, 0x08, 0x0C, 0x02, 0x00, 0xC4);
-+        mipi_dsi_dcs_write_seq(dsi, 0xD3, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xD3, 
 +                   0x88, 0x4A, 0x4A, 0x88, 0x4A, 0x4A, 0x00, 0xEB, 
 +                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-+        mipi_dsi_dcs_write_seq(dsi, 0xCB, 
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xCB, 
 +                   0x01, 0x01, 0x01, 0x01, 0x04, 0x09, 0x2C);
-+        mipi_dsi_dcs_write_seq(dsi, 0x48, 0x30);
-+        mipi_dsi_dcs_write_seq(dsi, 0x48, 0x00);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x48, 0x30);
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x48, 0x00);
 +	}
 +
-+    mipi_dsi_dcs_write_seq(dsi, 0x9C, 0xA5, 0xA5);
-+    mipi_dsi_dcs_write_seq(dsi, 0xFD, 0x5A, 0x5A);
-+    mipi_dsi_dcs_write_seq(dsi, 0x48, 0x00);
-+    mipi_dsi_dcs_write_seq(dsi, 0x53, 0xE0);
-+    mipi_dsi_dcs_write_seq(dsi, 0x35, 0x00);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x9C, 0xA5, 0xA5);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xFD, 0x5A, 0x5A);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x48, 0x00);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x53, 0xE0);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x35, 0x00);
 +
-+	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to exit sleep mode: %d\n", ret);
-+		return ret;
-+	}
++	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
 +
-+    mipi_dsi_dcs_write_seq(dsi, 0x51, 0x0D, 0xBB);
-+    mipi_dsi_dcs_write_seq(dsi, 0x9F, 0x0F);
-+    mipi_dsi_dcs_write_seq(dsi, 0xCE, 0x22);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x51, 0x0D, 0xBB);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x9F, 0x0F);
++	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xCE, 0x22);
 +
-+	msleep(120);
++	mipi_dsi_msleep(&dsi_ctx, 120);
++	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
 +
-+	ret = mipi_dsi_dcs_set_display_on(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to set display on: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
++	return dsi_ctx.accum_err;
 +}
 +
 +static const struct drm_display_mode icna3512_modes[] = {
@@ -266,7 +262,7 @@ index 000000000000..cbda976df1db
 +	struct drm_dsc_picture_parameter_set pps;
 +	int ret;
 +
-+    ret = regulator_bulk_enable(ARRAY_SIZE(pinfo->supplies), pinfo->supplies);
++	ret = regulator_bulk_enable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
 +	if (ret < 0) {
 +		dev_err(panel->dev, "failed to enable regulators: %d\n", ret);
 +		return ret;
@@ -276,7 +272,7 @@ index 000000000000..cbda976df1db
 +
 +	ret = pinfo->desc->init_sequence(pinfo);
 +	if (ret < 0) {
-+        regulator_bulk_disable(ARRAY_SIZE(pinfo->supplies), pinfo->supplies);
++		regulator_bulk_disable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
 +		dev_err(panel->dev, "failed to initialize panel: %d\n", ret);
 +		return ret;
 +	}
@@ -302,21 +298,14 @@ index 000000000000..cbda976df1db
 +static int icna3512_disable(struct drm_panel *panel)
 +{
 +	struct panel_info *pinfo = to_panel_info(panel);
-+	int ret;
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
 +
-+	ret = mipi_dsi_dcs_set_display_off(pinfo->dsi);
-+	if (ret < 0)
-+		dev_err(&pinfo->dsi->dev, "failed to set display off: %d\n", ret);
++	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
++	mipi_dsi_msleep(&dsi_ctx, 50);
++	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
++	mipi_dsi_msleep(&dsi_ctx, 120);
 +
-+	msleep(50);
-+
-+	ret = mipi_dsi_dcs_enter_sleep_mode(pinfo->dsi);
-+	if (ret < 0)
-+		dev_err(&pinfo->dsi->dev, "failed to enter sleep mode: %d\n", ret);
-+
-+	msleep(120);
-+
-+	return 0;
++	return dsi_ctx.accum_err;
 +}
 +
 +static int icna3512_unprepare(struct drm_panel *panel)
@@ -324,7 +313,7 @@ index 000000000000..cbda976df1db
 +	struct panel_info *pinfo = to_panel_info(panel);
 +
 +	gpiod_set_value_cansleep(pinfo->reset_gpio, 1);
-+    regulator_bulk_disable(ARRAY_SIZE(pinfo->supplies), pinfo->supplies);
++	regulator_bulk_disable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
 +
 +	return 0;
 +}
@@ -451,14 +440,11 @@ index 000000000000..cbda976df1db
 +	if (!pinfo)
 +		return -ENOMEM;
 +
-+	pinfo->supplies[0].supply = "blvdd";
-+	pinfo->supplies[1].supply = "iovdd";
-+	pinfo->supplies[2].supply = "vdd";
-+
-+	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(pinfo->supplies),
-+				      pinfo->supplies);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to get regulators\n");
++	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
++		panel_supplies, &pinfo->supplies);
++	if (ret < 0){
++		return dev_err_probe(dev, ret, "Failed to get regulators\n");
++	}
 +
 +	pinfo->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
 +	if (IS_ERR(pinfo->reset_gpio))
@@ -480,24 +466,24 @@ index 000000000000..cbda976df1db
 +
 +	pinfo->panel.prepare_prev_first = true;
 +
-+    pinfo->panel.backlight = icna3512_create_backlight(dsi);
++	pinfo->panel.backlight = icna3512_create_backlight(dsi);
 +	if (IS_ERR(pinfo->panel.backlight))
 +		return dev_err_probe(dev, PTR_ERR(pinfo->panel.backlight),
 +				     "Failed to create backlight\n");
 +
 +	drm_panel_add(&pinfo->panel);
 +
-+    pinfo->dsi->lanes = pinfo->desc->lanes;
-+    pinfo->dsi->format = pinfo->desc->format;
-+    pinfo->dsi->mode_flags = pinfo->desc->mode_flags;
-+    pinfo->dsi->dsc = &pinfo->desc->dsc;
++	pinfo->dsi->lanes = pinfo->desc->lanes;
++	pinfo->dsi->format = pinfo->desc->format;
++	pinfo->dsi->mode_flags = pinfo->desc->mode_flags;
++	pinfo->dsi->dsc = &pinfo->desc->dsc;
 +
-+    ret = mipi_dsi_attach(pinfo->dsi);
-+    if (ret < 0){
++	ret = mipi_dsi_attach(pinfo->dsi);
++	if (ret < 0){
 +		dev_err_probe(dev, ret, "Failed to attach to DSI host\n");
 +		drm_panel_remove(&pinfo->panel);
-+        return ret;
-+    }
++		return ret;
++	}
 +
 +	return 0;
 +}

@@ -410,45 +410,41 @@ case "${ACTION}" in
             exit 1
         fi
 
+        # Build the list of desired outputs in the correct, prioritized order.
         DESIRED_OUTPUTS="${TARGET_OUT1}"
         [ -n "${TARGET_OUT2}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT2}"
         [ -n "${TARGET_OUT3}" ] && DESIRED_OUTPUTS="${DESIRED_OUTPUTS} ${TARGET_OUT3}"
         
-        _log "setOutput: Desired active outputs: ${DESIRED_OUTPUTS}"
+        _log "setOutput: Desired active outputs (in order): ${DESIRED_OUTPUTS}"
 
         # Get a list of all available outputs from the system
         ALL_OUTPUTS=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
 
-        # Ensure all desired outputs actually exist
+        # Start with an empty command
+        set --
+
+        # 1. Add the --on commands for desired outputs, IN THE CORRECT ORDER.
         for target in ${DESIRED_OUTPUTS}; do
-            if ! echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
-                _log "setOutput: Error: Target output '${target}' not found."
-                echo "Error: Output '${target}' not found." >&2
-                exit 1
+            # Ensure the output actually exists before trying to enable it.
+            if echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
+                set -- "$@" --output "${target}" --on
+                _log "setOutput: Queuing ON for ${target}"
+            else
+                _log "setOutput: Warning: Desired output '${target}' not found. Skipping."
             fi
         done
 
-        set --
-
-        # Iterate through ALL connected outputs
+        # 2. Add the --off commands for any other connected outputs.
         for connected_output in ${ALL_OUTPUTS}; do
-            IS_TARGET=0
-            
-            # Check if this connected output is in our DESIRED list
+            IS_DESIRED=0
             for target in ${DESIRED_OUTPUTS}; do
                 if [ "${connected_output}" = "${target}" ]; then
-                    IS_TARGET=1
+                    IS_DESIRED=1
                     break
                 fi
             done
 
-            # Construct the argument based on whether it's a target or not
-            if [ "${IS_TARGET}" -eq 1 ]; then
-                # It's desired: Add --output <name> --on to the list
-                set -- "$@" --output "${connected_output}" --on
-                _log "setOutput: Queuing ON for ${connected_output}"
-            else
-                # It's connected but not desired: Add --output <name> --off
+            if [ "${IS_DESIRED}" -eq 0 ]; then
                 set -- "$@" --output "${connected_output}" --off
                 _log "setOutput: Queuing OFF for ${connected_output}"
             fi
@@ -456,18 +452,12 @@ case "${ACTION}" in
 
         # Execute with all the collected arguments
         _log "Executing: ${WLR_RANDR} $*"
-        if "${WLR_RANDR}" "$@"; then
-            _log "setOutput: Successfully configured outputs."
+        if ! "${WLR_RANDR}" "$@"; then
+            _log "setOutput: The main wlr-randr command failed. Trying fallback."
+            # Fallback for safety: just try to enable the primary.
+            "${WLR_RANDR}" --output "${TARGET_OUT1}" --on
         else
-            _log "setOutput: The main wlr-randr command failed."
-            
-            # Fallback: Build a new, simpler argument list
-            set --
-            for target in ${DESIRED_OUTPUTS}; do
-                set -- "$@" --output "${target}" --on
-            done
-            _log "setOutput: Fallback: Trying to enable targets only: ${WLR_RANDR} $*"
-            "${WLR_RANDR}" "$@"
+            _log "setOutput: Successfully configured outputs."
         fi
         ;;
 

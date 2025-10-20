@@ -3,7 +3,7 @@ new file mode 100644
 index 000000000000..58d9ab342fe9
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayn-common.dtsi
-@@ -0,0 +1,1593 @@
+@@ -0,0 +1,1598 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -1111,6 +1111,11 @@ index 000000000000..58d9ab342fe9
 +	};
 +};
 +
++&iris {
++	firmware-name = "qcom/vpu/vpu30_p4.mbn";
++	status = "disabled";
++};
++
 +&lpass_vamacro {
 +	qcom,dmic-sample-rate = <4800000>;
 +};
@@ -1597,4 +1602,3 @@ index 000000000000..58d9ab342fe9
 +&xo_board {
 +	clock-frequency = <76800000>;
 +};
-
