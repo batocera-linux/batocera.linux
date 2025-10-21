@@ -20,6 +20,7 @@ f_usage() {
     echo "${0} setRotation (0|1|2|3)" >&2
     echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
+    echo "${0} getDisplayComp" >&2
 }
 
 # Extract output block for a specific screen
@@ -515,6 +516,10 @@ case "${ACTION}" in
 
     "getDisplayMode")
         echo "wayland"
+        ;;
+    
+    "getDisplayComp")
+        echo "labwc"
         ;;
 
     *)

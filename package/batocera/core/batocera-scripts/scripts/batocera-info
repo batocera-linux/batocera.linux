@@ -141,6 +141,18 @@ MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
 MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
 echo "Available Memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
+# Get and display DISPLAY SERVER
+DISPLAY_SERVER=$(batocera-resolution getDisplayMode)
+if [ -n "$DISPLAY_SERVER" ]; then
+    echo "Display Server: ${DISPLAY_SERVER}"
+fi
+
+# Get and display DISPLAY COMPOSITOR
+DISPLAY_COMPOSITOR=$(batocera-resolution getDisplayComp)
+if [ -n "$DISPLAY_COMPOSITOR" ]; then
+    echo "Display Compositor: ${DISPLAY_COMPOSITOR}"
+fi
+
 # Current Resolution
 if test -z "${DISPLAY}"; then
     export DISPLAY=$(getLocalXDisplay)
