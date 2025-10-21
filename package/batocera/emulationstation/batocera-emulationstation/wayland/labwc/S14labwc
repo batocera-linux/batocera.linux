@@ -13,7 +13,12 @@ start() {
             echo "Copying $file to $DEST_DIR"
             cp "$SRC_DIR/$file" "$DEST_DIR/"
         else
-            echo "$file already exists, skipping."
+            if [ "$SRC_DIR/$file" -nt "$DEST_DIR/$file" ]; then
+                echo "Source $file is newer than destination, overwriting."
+                cp "$SRC_DIR/$file" "$DEST_DIR/"
+            else
+                echo "$file already exists and is up to date, skipping."
+            fi
         fi
     done
 }
