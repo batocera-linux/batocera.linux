@@ -33,6 +33,7 @@ f_usage() {
     echo "${0} setRotation (0|1|2|3)" >&2
     echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
+    echo "${0} getDisplayComp" >&2
     echo "${0} refreshRate" >&2
 }
 
@@ -237,10 +238,10 @@ shift
 
 case "${ACTION}" in
     "listModes")
-	echo "max-1920x1080:maximum 1920x1080"
-	echo "max-640x480:maximum 640x480"
-	xrandr --listModes "${PSCREEN}" | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
-    ;;
+        echo "max-1920x1080:maximum 1920x1080"
+        echo "max-640x480:maximum 640x480"
+        xrandr --listModes "${PSCREEN}" | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
+        ;;
     
     "setMode")
         MODE=$1
@@ -285,89 +286,89 @@ case "${ACTION}" in
                 exit 1
             fi
         fi
-    ;;
+        ;;
     
     "currentMode")
-	xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
-    ;;
+        xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e s+'\*$'++ -e s+'^\([^ ]*\) .*$'+"\1"+
+        ;;
 
     "refreshRate")
-    xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e 's/\*$//' -e 's/^\([^ ]*\) .*/\1/' | awk -F'[.]' '{print $2 "." $3}'
-    ;;
+        xrandr --listModes "${PSCREEN}" | grep -E '\*$' | sed -e 's/\*$//' -e 's/^\([^ ]*\) .*/\1/' | awk -F'[.]' '{print $2 "." $3}'
+        ;;
 
     "currentResolution")
-	xrandr --currentResolution "${PSCREEN}" | tail -n1
-    ;;
+        xrandr --currentResolution "${PSCREEN}" | tail -n1
+        ;;
     
     "listOutputs")
-	xrandr --listConnectedOutputs | sed -e s+"*$"++
-    ;;
+        xrandr --listConnectedOutputs | sed -e s+"*$"++
+        ;;
     
     "currentOutput")
-	echo "${PSCREEN}"
-    ;;
+        echo "${PSCREEN}"
+        ;;
     
     "setOutput")
-	MODE1=$1
-	MODE2=$2 # screen 2 (facultativ)
-	MODE3=$3 # screen 3 (facultativ)
-	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE1}$"; then # if there is at least the screen 1
-	    # disable all other outputs
-	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE1}$|^${MODE2}$|^${MODE3}$" |
-		while read OUTP
-		do
-		    echo "set ${OUTP} off" >&2
-		    xrandr --output "${OUTP}" --off
-		done
-	    # enable (in case of reboot of es)
-	    echo "set user output: ${MODE1} as primary" >&2 >> "$log"
-	    xrandr --output "${MODE1}" --primary
-	    PREVIOUS_SCREEN="${MODE1}"
-
-	    # screen 2
-	    if test -n "${MODE2}"
-	    then
-		if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE2}$"; then # if there is at least the screen 2
-		    echo "set user output: ${MODE2} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
-		    xrandr --output "${MODE2}" --right-of "${PREVIOUS_SCREEN}"
-		    PREVIOUS_SCREEN="${MODE2}"
-		fi
-	    fi
-
-	    # screen 3
-	    if test -n "${MODE3}"
-	    then
-		if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE3}$"; then # if there is at least the screen 3
-		    echo "set user output: ${MODE3} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
-		    xrandr --output "${MODE3}" --right-of "${PREVIOUS_SCREEN}"
-		    PREVIOUS_SCREEN="${MODE3}"
-		fi
-	    fi
-	else
-	    # disable all except the first one
-	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
-		(
-		    read FIRSTOUTPUT
-		    while read OUTP
-		    do
+        MODE1=$1
+        MODE2=$2 # screen 2 (facultativ)
+        MODE3=$3 # screen 3 (facultativ)
+        if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE1}$"; then # if there is at least the screen 1
+            # disable all other outputs
+            xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE1}$|^${MODE2}$|^${MODE3}$" |
+            while read OUTP
+            do
                 echo "set ${OUTP} off" >&2
                 xrandr --output "${OUTP}" --off
             done
-            
             # enable (in case of reboot of es)
-            echo "set ${FIRSTOUTPUT} as primary" >&2 >> "$log"
-            xrandr --output "${FIRSTOUTPUT}" --primary
-        )
-    fi
-    ;;
+            echo "set user output: ${MODE1} as primary" >&2 >> "$log"
+            xrandr --output "${MODE1}" --primary
+            PREVIOUS_SCREEN="${MODE1}"
+
+            # screen 2
+            if test -n "${MODE2}"
+            then
+            if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE2}$"; then # if there is at least the screen 2
+                echo "set user output: ${MODE2} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
+                xrandr --output "${MODE2}" --right-of "${PREVIOUS_SCREEN}"
+                PREVIOUS_SCREEN="${MODE2}"
+            fi
+            fi
+
+            # screen 3
+            if test -n "${MODE3}"
+            then
+            if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE3}$"; then # if there is at least the screen 3
+                echo "set user output: ${MODE3} as right of ${PREVIOUS_SCREEN}" >&2 >> "$log"
+                xrandr --output "${MODE3}" --right-of "${PREVIOUS_SCREEN}"
+                PREVIOUS_SCREEN="${MODE3}"
+            fi
+            fi
+        else
+            # disable all except the first one
+            xrandr --listConnectedOutputs | sed -e s+"*$"++ |
+            (
+                read FIRSTOUTPUT
+                while read OUTP
+                do
+                    echo "set ${OUTP} off" >&2
+                    xrandr --output "${OUTP}" --off
+                done
+                
+                # enable (in case of reboot of es)
+                echo "set ${FIRSTOUTPUT} as primary" >&2 >> "$log"
+                xrandr --output "${FIRSTOUTPUT}" --primary
+            )
+        fi
+        ;;
 
     "minTomaxResolution" | "minTomaxResolution-secure")
 	    f_minTomaxResolution "$1"
-    ;;
+        ;;
     
     "setDPI")
         xrandr --dpi $1
-    ;;
+        ;;
     
     "forceMode")
         REQUESTED=$1
@@ -389,15 +390,15 @@ case "${ACTION}" in
         xrandr --newmode ${MODE}
         xrandr --addmode "${OUTPUT}" "${MNAME}"
         xrandr --output "${OUTPUT}" --mode "${MNAME}"
-    ;;
+        ;;
 
     "supportSystemRotation")
 	    exit 0
-    ;;
+        ;;
 
     "supportSystemReflection")
 	    exit 0
-    ;;
+        ;;
 
     "setRotation")
         TRIES=5
@@ -421,37 +422,41 @@ case "${ACTION}" in
                 xrandr --output "${OUTPUT}" --rotate right
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
                 echo "Screen rotated right" >> $log
-            ;;
+                ;;
             "2")
                 xrandr --output "${OUTPUT}" --rotate inverted
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
                 echo "Screen rotated inverted" >> $log
-            ;;
+                ;;
             "3")
                 xrandr --output "${OUTPUT}" --rotate left
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
                 echo "Screen rotated left" >> $log
-            ;;
+                ;;
             *)
                 # in case of reboot of es
                 xrandr --output "${OUTPUT}" --rotate normal
                 [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
         esac
-    ;;
+        ;;
 
     "getRotation")
 	    xrandr --currentRotation "${PSCREEN}"
-    ;;
+        ;;
 
     "setReflection")
-            OUTPUT=${PSCREEN}
-            REFLECTION=$1
-            xrandr --output "${OUTPUT}" --reflect "${REFLECTION}"
-    ;;
+        OUTPUT=${PSCREEN}
+        REFLECTION=$1
+        xrandr --output "${OUTPUT}" --reflect "${REFLECTION}"
+        ;;
     
     "getDisplayMode")
         echo "xorg"
-    ;;
+        ;;
+
+    "getDisplayComp")
+        echo "openbox"
+        ;;
 
     *)
         f_usage
