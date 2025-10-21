@@ -168,9 +168,32 @@ wine_options() {
     # ESYNC and FSYNC are deprecated in favor of NTSYNC with modern Wine and kernel.
     # NTSYNC is often enabled by default when supported.
     # The option is provided to explicitly disable it if needed.
-    export WINE_DISABLE_FAST_SYNC=0
-    if [[ "${NTSYNC}" = 0 ]]; then
-        export WINE_DISABLE_FAST_SYNC=1
+    if [ "$NTSYNC" = "0" ]; then
+        # Disable ntsync module if loaded
+        if lsmod | grep -q ^ntsync; then
+            echo "Removing ntsync module..."
+            rmmod ntsync
+        else
+            echo "Ntsync module already not loaded"
+        fi
+        export WINEDISABLEFASTSYNC=1
+        echo "Ntsync disabled for Wine"
+    else
+        # Enable ntsync module if available and accessible
+        if lsmod | grep -q ^ntsync; then
+            echo "Ntsync module already loaded"
+        else
+            echo "Loading ntsync module..."
+            modprobe ntsync
+        fi
+
+        if [ -e /dev/ntsync ] && [ -r /dev/ntsync ]; then
+            export WINEDISABLEFASTSYNC=0
+            echo "Ntsync enabled for Wine"
+        else
+            echo "Warning: /dev/ntsync not accessible after module load, disabling ntsync in Wine"
+            export WINEDISABLEFASTSYNC=1
+        fi
     fi
 
     export PBA_ENABLE=0
