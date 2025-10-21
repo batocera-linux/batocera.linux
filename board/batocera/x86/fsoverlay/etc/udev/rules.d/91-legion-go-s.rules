@@ -1,0 +1,26 @@
+# Rule for Lenovo Legion Go S Controller
+SUBSYSTEMS=="hid", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", ATTRS{bInterfaceNumber}=="03", \
+  RUN+="/bin/sh -c '\
+    BASE=/sys$devpath; \
+    if [ -w \"$BASE/os_mode\" ]; then \
+      echo linux > \"$BASE/os_mode\"; \
+    fi; \
+    if [ -w \"$BASE/gamepad/mode\" ]; then \
+      echo xinput > \"$BASE/gamepad/mode\"; \
+    fi; \
+    if [ -w \"$BASE/gamepad/dpad_mode\" ]; then \
+      echo 8-way > \"$BASE/gamepad/dpad_mode\"; \
+    fi; \
+    if [ -w \"$BASE/gamepad/poll_rate\" ]; then \
+      echo 1000 > \"$BASE/gamepad/poll_rate\"; \
+    fi; \
+    if [ -w \"$BASE/gamepad/auto_sleep_time\" ]; then \
+      echo 0 > \"$BASE/gamepad/auto_sleep_time\"; \
+    fi; \
+    if [ -w \"$BASE/touchpad/linux_mode\" ]; then \
+      echo relative > \"$BASE/touchpad/linux_mode\"; \
+    fi; \
+    if [ -w /sys/class/leds/go_s:rgb:joystick_rings/mode ]; then \
+      echo custom > /sys/class/leds/go_s:rgb:joystick_rings/mode; \
+    fi' \
+  "
