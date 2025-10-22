@@ -32,7 +32,7 @@ class AzaharGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        AzaharGenerator.writeAZAHARConfig(CONFIGS / "azaharplus-emu" / "qt-config.ini", system, playersControllers)
+        AzaharGenerator.writeAZAHARConfig(CONFIGS / "azahar-emu" / "qt-config.ini", system, playersControllers)
 
         commandArray = ['/usr/bin/azahar', rom]
 
@@ -40,7 +40,7 @@ class AzaharGenerator(Generator):
             "XDG_CONFIG_HOME": CONFIGS,
             "XDG_DATA_HOME": SAVES / "3ds",
             "XDG_CACHE_HOME": CACHE,
-            "XDG_RUNTIME_DIR": SAVES / "3ds" / "azaharplus-emu",
+            "XDG_RUNTIME_DIR": SAVES / "3ds" / "azahar-emu",
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
@@ -129,15 +129,18 @@ class AzaharGenerator(Generator):
         azaharConfig.set("UI", r"calloutFlags\default", "false")
         # Close without confirmation
         azaharConfig.set("UI", "confirmClose", "false")
-        azaharConfig.set("UI", r"confirmclose\default", "false")
+        azaharConfig.set("UI", r"confirmClose\default", "false")
 
         # screenshots
         azaharConfig.set("UI", r"Paths\screenshotPath", "/userdata/screenshots")
         azaharConfig.set("UI", r"Paths\screenshotPath\default", "false")
-
-        # don't check updates
-        azaharConfig.set("UI", r"Updater\check_for_update_on_start", "false")
-        azaharConfig.set("UI", r"Updater\check_for_update_on_start\default", "false")
+        
+        ## [MISCELLANEOUS]
+        if not azaharConfig.has_section("Miscellaneous"):
+            azaharConfig.add_section("Miscellaneous")
+        # Don't check for update at start
+        azaharConfig.set("Miscellaneous", "check_for_update_on_start", "false")
+        azaharConfig.set("Miscellaneous", r"check_for_update_on_start\default", "false")        
 
         ## [RENDERER]
         if not azaharConfig.has_section("Renderer"):
