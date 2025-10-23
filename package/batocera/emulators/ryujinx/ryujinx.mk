@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-RYUJINX_VERSION = 1.2.86
-RYUJINX_SITE = https://github.com/Ryubing/Stable-Releases/releases/download/$(RYUJINX_VERSION)
+RYUJINX_VERSION = 1.3.3
+RYUJINX_SITE = https://git.ryujinx.app/api/v4/projects/1/packages/generic/Ryubing/$(RYUJINX_VERSION)
 RYUJINX_LICENSE = MIT
 RYUJINX_DEPENDENCIES = sdl2 openal hicolor-icon-theme adwaita-icon-theme librsvg
 

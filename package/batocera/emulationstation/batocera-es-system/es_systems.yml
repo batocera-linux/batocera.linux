@@ -3716,6 +3716,8 @@ switch:
       citron: { requireAnyOf: [BR2_PACKAGE_CITRON] }
     ryujinx:
       ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
+    ryujinx-canary:
+      ryujinx-canary: { requireAnyOf: [BR2_PACKAGE_RYUJINX_CANARY] }
 
 quake2:
   name: Quake II
