@@ -4,9 +4,11 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION = 11.0.93
-KODI21_RESOURCE_LANGUAGE_FR_FR_SOURCE = resource.language.fr_fr-$(KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION).zip
-KODI21_RESOURCE_LANGUAGE_FR_FR_SITE = https://mirrors.kodi.tv/addons/omega/resource.language.fr_fr
+KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION = 11.0.98
+KODI21_RESOURCE_LANGUAGE_FR_FR_SOURCE = \
+    resource.language.fr_fr-$(KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION).zip
+KODI21_RESOURCE_LANGUAGE_FR_FR_SITE = \
+    https://mirrors.kodi.tv/addons/omega/resource.language.fr_fr
 KODI21_RESOURCE_LANGUAGE_FR_FR_PLUGINNAME=resource.language.fr_fr
 
 KODI21_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons

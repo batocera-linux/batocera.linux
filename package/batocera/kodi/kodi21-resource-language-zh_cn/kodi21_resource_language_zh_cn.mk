@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_ZH_CN_VERSION = 11.0.87
+KODI21_RESOURCE_LANGUAGE_ZH_CN_VERSION = 11.0.90
 KODI21_RESOURCE_LANGUAGE_ZH_CN_SOURCE = resource.language.zh_cn-$(KODI21_RESOURCE_LANGUAGE_ZH_CN_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_ZH_CN_SITE = https://mirrors.kodi.tv/addons/omega/resource.language.zh_cn
 KODI21_RESOURCE_LANGUAGE_ZH_CN_PLUGINNAME=resource.language.zh_cn

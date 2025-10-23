@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION = 11.0.70
+KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION = 11.0.72
 KODI21_RESOURCE_LANGUAGE_EL_GR_SOURCE = \
     resource.language.el_gr-$(KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_EL_GR_SITE = \
