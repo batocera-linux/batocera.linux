@@ -7,11 +7,35 @@
 # Only copy values on shutdown/reboot
 [ "$1" = "stop" ] || exit 0
 
+BOOT_CONF="/boot/batocera-boot.conf"
+[ ! -f "${BOOT_CONF}" ] && exit 0
+
 set --
-for key in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key wifi.country splash.screen.enabled system.timezone es.resolution system.hostname luks.enabled
+
+# Cleanup stale per-display rotation keys
+effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
+correct_specific_key=""
+if [ -n "${effectiveDrmOutput}" ]; then
+    correct_specific_key="display.rotate.${effectiveDrmOutput}"
+fi
+
+existing_specific_keys=$(grep -oE '^[[:space:]]*display\.rotate\.[^=[:space:]]+' "${BOOT_CONF}")
+for existing_key in ${existing_specific_keys}; do
+    if [ "${existing_key}" != "${correct_specific_key}" ]; then
+        set -- "$@" "${existing_key}" ""
+    fi
+done
+
+# Sync current values from master config
+KEYS_TO_CHECK="wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key wifi.country splash.screen.enabled system.timezone es.resolution display.rotate system.hostname luks.enabled"
+if [ -n "${correct_specific_key}" ]; then
+    KEYS_TO_CHECK="${KEYS_TO_CHECK} ${correct_specific_key}"
+fi
+
+for key in ${KEYS_TO_CHECK}
 do
-    value="$(/usr/bin/batocera-settings-get "$key")" # in case it is empty, it must be set in the batocera-boot.conf file to erase any existing value
-    if [ "$value" != "$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf "$key")" ]
+    value="$(/usr/bin/batocera-settings-get-master "$key")" # in case it is empty, it must be set in the batocera-boot.conf file to erase any existing value
+    if [ "$value" != "$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "$key")" ]
     then
         set -- "$@" "$key" "$value"
     fi
@@ -20,7 +44,7 @@ done
 if [ $# -gt 0 ]
 then
     mount -o remount,rw /boot
-    /usr/bin/batocera-settings-set -f /boot/batocera-boot.conf "$@"
+    /usr/bin/batocera-settings-set -f "${BOOT_CONF}" "$@"
     mount -o remount,ro /boot
 fi
 

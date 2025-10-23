@@ -104,6 +104,9 @@ fi
 if [ -f /var/run/labwc.log ]; then
     f_cp /var/run/labwc.log                                    "${DSYSTEM}"
 fi
+if [ -f /var/run/splash.log ]; then
+    f_cp /var/run/splash.log                                   "${DSYSTEM}"
+fi
 
 # clear passwords
 # filter some dangerous options (may include some path with /userdata)
