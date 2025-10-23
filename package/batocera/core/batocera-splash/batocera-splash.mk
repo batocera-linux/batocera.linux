@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SPLASH_VERSION = 5.6
+BATOCERA_SPLASH_VERSION = 5.7
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE)
@@ -63,41 +63,36 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
     mkdir -p $(TARGET_DIR)/etc/init.d
-    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssystem-splash            $(TARGET_DIR)/etc/init.d/S03system-splash
-    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssplashscreencontrol      $(TARGET_DIR)/etc/init.d/S30splashscreencontrol
-    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/$(BATOCERA_SPLASH_SCRIPT) $(TARGET_DIR)/etc/init.d/S28splash
-    sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S28splash
+    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssystem-splash \
+        $(TARGET_DIR)/etc/init.d/S03system-splash
+    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/Ssplashscreencontrol \
+        $(TARGET_DIR)/etc/init.d/S30splashscreencontrol
+    install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/scripts/$(BATOCERA_SPLASH_SCRIPT) \
+        $(TARGET_DIR)/etc/init.d/S28splash
+    sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g \
+        $(TARGET_DIR)/etc/init.d/S28splash
 endef
 
 define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png"      "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-half.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-half.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png"  "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x240.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480p.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-640x480.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-720p.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1280x720.png"
-
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-720p-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-720x1280.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-800p-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-800x1280.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-1152-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1152x1920.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-1080p-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1080x1920.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-1080p-rotate-left.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-1200p-rotate.png"	   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-1200x1920.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" \
+        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
     cp $(BATO_SPLASH) $(TARGET_DIR)/usr/share/batocera/splash/splash.mp4
-    echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
+    echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > \
+        "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
 endef
 
 # Hack for CHA, custom Capcom splash video
 define BATOCERA_SPLASH_INSTALL_VIDEO_CAPCOM
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/Capcom.mp4 $(TARGET_DIR)/usr/share/batocera/splash/Capcom.mp4
-    echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
+    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/Capcom.mp4 \
+        $(TARGET_DIR)/usr/share/batocera/splash/Capcom.mp4
+    echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > \
+        "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
 endef
 
 define BATOCERA_SPLASH_INSTALL_IMAGE

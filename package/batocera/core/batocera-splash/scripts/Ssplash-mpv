@@ -108,7 +108,7 @@ do_videostart ()
     fi
 
     ## current drm output ##
-    effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -E '^0.0:' | sed -e s+"^0.0:\([^ ]*\) .*$"+"\1"+; done | head -1)
+    effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
     mpv_video=
     video_rotation=$(batocera-settings-get-master "display.rotate.${effectiveDrmOutput}")
     if test -z "${video_rotation}"

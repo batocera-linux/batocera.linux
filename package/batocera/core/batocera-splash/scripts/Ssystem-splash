@@ -3,47 +3,77 @@
 # This is the BATOCERA system splash service
 # It shows the unique BATOCERA logo in early boot stage
 
+LOG_FILE="/var/log/splash.log"
+
 do_start () {
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
     # are we sure all boards have fb0 ?!
+    LOG_DIR=$(dirname "${LOG_FILE}")
+    mkdir -p "${LOG_DIR}"
+    exec >> "${LOG_FILE}" 2>&1
+
     N=0
     while ! [ -e /dev/fb0 ] && [ $N -le 80 ]; do
         sleep 0.25
         N=$((N+1))
     done
 
-    # V_BOARD_MODEL detection from batocera-model
-    V_BOARD_MODEL=$(batocera-model)
-
-    # Batocera boot logo
-    image="/usr/share/batocera/splash/boot-logo-"$(cat /sys/class/graphics/fb0/virtual_size | sed 's/,/x/g')".png"
-    if [ ! -f "$image" ]; then
-        image="/usr/share/batocera/splash/boot-logo.png"
-        [ -f "$image" ] || exit 1
+    if ! [ -e /dev/fb0 ]; then
+        echo "Error: Framebuffer device /dev/fb0 not found." >> $LOG_FILE
+        exit 1
     fi
 
-    case "${V_BOARD_MODEL}" in
-        "Loki_Zero" | "Retroid_Pocket_5" | "AYN_Odin_2_Portal" | "AB05_AMD")
-            image="/usr/share/batocera/splash/boot-logo-1080x1920-left.png"
-            ;;
-    esac
+    image="/usr/share/batocera/splash/boot-logo.png"
+    if ! [ -f "$image" ]; then
+        echo "Error: Splash image not found at ${image}" >> $LOG_FILE
+        exit 1
+    fi
 
-    # don't display a rotate image if the screen is not horizontal
-    # we can't know if that's left or right, it depends on the device, so, just ignore
-    # maybe in some case we want the rotated image for some boards. add those boards here
-    if [ $(cat /sys/class/graphics/fb0/virtual_size | sed -e s+","+" -lt "+) ]; then
-        # just replace in case the basic image is displayed
-        if [ "${image}" = "/usr/share/batocera/splash/boot-logo.png" ]; then
-            image="/usr/share/batocera/splash/boot-logo-half.png"
+    FBV_OPTS="-f -e -i -y"
+    video_rotation=""
+    BOOT_CONF="/boot/batocera-boot.conf"
+
+    if [ -f "${BOOT_CONF}" ]; then
+        specific_key=$(grep -oE '^[[:space:]]*display\.rotate\.[^=[:space:]]+' "${BOOT_CONF}" | head -1)
+
+        if [ -n "${specific_key}" ]; then
+            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "${specific_key}")
+        fi
+
+        if [ -z "${video_rotation}" ]; then
+            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
         fi
     fi
 
-    FBV_OPTS="-f -e"
-    # FBV_OPTS can be set differently for some boards to work
-    MODELOPTS="/etc/opts.$V_BOARD_MODEL"
-    [ -e "${MODELOPTS}" ] && . "${MODELOPTS}"
+    if [ -z "${video_rotation}" ]; then
+        V_BOARD_MODEL=$(batocera-model)
+        MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
+        if [ -f "${MODEL_CONF}" ]; then
+            # Grep for lines starting with "display.rotate." that do not contain a hyphen in the key part
+            rotation_line=$(grep -E '^display\.rotate\.[^=-]+=' "${MODEL_CONF}" | head -1)
+            if [ -n "${rotation_line}" ]; then
+                video_rotation=$(echo "${rotation_line}" | cut -d'=' -f2)
+            fi
+        fi
+    fi
 
-    [ -e /dev/fb0 ] && fbv ${FBV_OPTS} -i "${image}"
+    echo "Final Rotation Value: [${video_rotation}]" >> $LOG_FILE
+
+    case "${video_rotation}" in
+        1|2|3)
+            FBV_OPTS="${FBV_OPTS} -o ${video_rotation}"
+            ;;
+    esac
+
+    V_BOARD_MODEL=$(batocera-model)
+    MODELOPTS="/etc/opts.$V_BOARD_MODEL"
+    if [ -e "${MODELOPTS}" ]; then
+        . "${MODELOPTS}"
+    fi
+
+    echo "Executing Command: fbv ${FBV_OPTS} \"${image}\"" >> $LOG_FILE
+
+    fbv ${FBV_OPTS} "${image}" >/dev/null 2>&1
 }
 
 do_stop () {
