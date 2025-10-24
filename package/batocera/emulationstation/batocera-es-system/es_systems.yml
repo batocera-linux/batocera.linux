@@ -2385,6 +2385,10 @@ dice:
   emulators:
     libretro:
       dice: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DICE] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
   comment_en: |
     Games without any ROM component use .dmy files as dummy launchers.
 
