@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Action
+Name=Toggle filenames upper-/lowercase
+Profiles=Desktop
+SelectionCount=<50
+
+[X-Action-Profile Desktop]
+MimeTypes=all/allfiles
+Exec=bash -c "cd %d; i=%b; [[ ${i:0:1} == [A-Z] ]] && { i=(%B); for f in \"${i[@]}\"; do mv \"$f\" \"${f,,}\"; done; } ||  { i=(%B); for f in \"${i[@]}\"; do mv \"$f\" \"${f^^}\"; done; }"
