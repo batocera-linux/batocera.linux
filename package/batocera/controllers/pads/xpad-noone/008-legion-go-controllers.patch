@@ -1,0 +1,38 @@
+diff --git a/xpad.c b/xpad.c
+index ebf24010af..c6e80e2bf3 100644
+--- a/xpad.c
++++ b/xpad.c
+@@ -256,7 +256,9 @@ static const struct xpad_device {
+ 	{ 0x1689, 0xfd01, "Razer Onza Classic Edition", 0, XTYPE_XBOX360 },
+ 	{ 0x1689, 0xfe00, "Razer Sabertooth", 0, XTYPE_XBOX360 },
+ 	{ 0x17ef, 0x6182, "Lenovo Legion Go", 0, XTYPE_XBOX360 },
++	{ 0x17ef, 0x61eb, "Lenovo Legion Go", 0, XTYPE_XBOX360 },
+ 	{ 0x1949, 0x041a, "Amazon Game Controller", 0, XTYPE_XBOX360 },
++	{ 0x1a86, 0xe310, "Lenovo Legion Go S", 0, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0002, "Harmonix Rock Band Guitar", 0, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0003, "Harmonix Rock Band Drumkit", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0130, "Ion Drum Rocker", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360 },
+@@ -400,7 +402,7 @@ static const struct usb_device_id xpad_table[] = {
+ 	{ USB_INTERFACE_INFO('X', 'B', 0) },	/* Xbox USB-IF not-approved class */
+ 	XPAD_XBOX360_VENDOR(0x0079),		/* GPD Win 2 controller */
+ 	XPAD_XBOX360_VENDOR(0x03eb),		/* Wooting Keyboards (Legacy) */
+-    XPAD_XBOX360_VENDOR(0x03f0),        /* HP HyperX Xbox 360 controllers */
++        XPAD_XBOX360_VENDOR(0x03f0),            /* HP HyperX Xbox 360 controllers */
+ 	XPAD_XBOX360_VENDOR(0x044f),		/* Thrustmaster Xbox 360 controllers */
+ 	XPAD_XBOX360_VENDOR(0x045e),		/* Microsoft Xbox 360 controllers */
+ 	XPAD_XBOX360_VENDOR(0x046d),		/* Logitech Xbox 360-style controllers */
+@@ -424,11 +426,12 @@ static const struct usb_device_id xpad_table[] = {
+ 	XPAD_XBOX360_VENDOR(0x15e4),		/* Numark Xbox 360 controllers */
+ 	XPAD_XBOX360_VENDOR(0x162e),		/* Joytech Xbox 360 controllers */
+ 	XPAD_XBOX360_VENDOR(0x1689),		/* Razer Onza */
+-    XPAD_XBOX360_VENDOR(0x17ef),        /* Lenovo Legion Go */
++        XPAD_XBOX360_VENDOR(0x17ef),            /* Lenovo Legion Go */
+ 	XPAD_XBOX360_VENDOR(0x1949),		/* Amazon controllers */
++	XPAD_XBOX360_VENDOR(0x1a86),            /* Lenovo Legion Go S */
+ 	XPAD_XBOX360_VENDOR(0x1bad),		/* Harmonix Rock Band guitar and drums */
+ 	XPAD_XBOX360_VENDOR(0x20d6),		/* PowerA controllers */
+-    XPAD_XBOX360_VENDOR(0x2345),        /* Machenike Controllers */
++        XPAD_XBOX360_VENDOR(0x2345),            /* Machenike Controllers */
+ 	XPAD_XBOX360_VENDOR(0x24c6),		/* PowerA controllers */
+ 	XPAD_XBOX360_VENDOR(0x2563),		/* OneXPlayer Gamepad */
+ 	XPAD_XBOX360_VENDOR(0x260d),		/* Dareu H101 */
