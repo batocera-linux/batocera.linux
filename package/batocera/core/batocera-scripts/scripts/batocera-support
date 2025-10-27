@@ -101,11 +101,11 @@ fi
 if [ -f /var/run/sway.log ]; then
     f_cp /var/run/sway.log                                     "${DSYSTEM}"
 fi
-if [ -f /var/run/labwc.log ]; then
-    f_cp /var/run/labwc.log                                    "${DSYSTEM}"
+if [ -f /var/log/labwc.log ]; then
+    f_cp /var/log/labwc.log                                    "${DSYSTEM}"
 fi
-if [ -f /var/run/splash.log ]; then
-    f_cp /var/run/splash.log                                   "${DSYSTEM}"
+if [ -f /var/log/splash.log ]; then
+    f_cp /var/log/splash.log                                   "${DSYSTEM}"
 fi
 
 # clear passwords

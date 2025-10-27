@@ -431,7 +431,10 @@ case "${ACTION}" in
             # Set EmulationStation to the primary output
             if [ -n "${PRIMARY_OUT}" ]; then
                 _log "Setting emulationstation window to output: ${PRIMARY_OUT}"
-                sed -i '/<windowRule title="emulationstation"/,/\/windowRule>/ s/output="[^"]*"/output="'"${PRIMARY_OUT}"'"/' "${RC_XML}"
+                # Update FocusOutput for emulationstation
+                sed -i '/<windowRule title="emulationstation"/,/\/windowRule>/ { /<action name="FocusOutput"/ s/output="[^"]*"/output="'"${PRIMARY_OUT}"'"/ }' "${RC_XML}"
+                # Update MoveToOutput for emulationstation
+                sed -i '/<windowRule title="emulationstation"/,/\/windowRule>/ { /<action name="MoveToOutput"/ s/output="[^"]*"/output="'"${PRIMARY_OUT}"'"/ }' "${RC_XML}"
             fi
 
             # Set backglass to the secondary output, or clear if no secondary output
