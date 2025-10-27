@@ -57,7 +57,13 @@
     </keybind>
   </keyboard>
   <windowRules>
-    <windowRule title="backglass" fullscreen="yes" serverDecoration="no" />
+    <windowRule title="emulationstation" serverDecoration="no">
+      <action name="FocusOutput" output=""/>
+      <action name="MoveToOutput" output=""/>
+    </windowRule>
+    <windowRule title="backglass" serverDecoration="no">
+      <action name="MoveToOutput" output=""/>
+    </windowRule>
     <windowRule title="dolphin" fullscreen="yes" serverDecoration="no" />
   </windowRules>
 </labwc_config>

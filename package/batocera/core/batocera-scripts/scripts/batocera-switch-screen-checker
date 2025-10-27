@@ -18,7 +18,14 @@ _wait_for_emulationstation() {
 
 case "$1" in
     "--init")
-        batocera-resolution listOutputs | sort > "${STATUS_FILE}"
+        OUTPUT_LIST=$(batocera-resolution listOutputs)
+        # Only log if outputs are found
+        if [ -n "${OUTPUT_LIST}" ]; then
+            LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
+            echo "Checker-Init: Storing current display list: [${LOGGABLE_OUTPUTS}]" >> "${LOG}"
+        fi
+        
+        echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
         exit 0
         ;;
     *)
@@ -34,6 +41,13 @@ case "$1" in
         # This script's only job is to trigger a restart.
         # The main standalone script will see the request file and handle all display logic.
         echo "Udev: Triggering display re-scan." >> "$LOG"
+        
+        OUTPUT_LIST=$(batocera-resolution listOutputs)
+        if [ -n "${OUTPUT_LIST}" ]; then
+            CURRENT_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
+            echo "Udev: Outputs before restart trigger: [${CURRENT_OUTPUTS}]" >> "${LOG}"
+        fi
+
         touch "/var/run/switch_screen_request"
         curl -s http://localhost:1234/quit
         ;;

@@ -16,4 +16,4 @@ mkdir -p /var/log
 # Start Labwc with specified environment variable, logging output
 echo "Starting Labwc..." >> "$LOG_FILE"
 
-WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/labwc -C $LABWC_CONF_DIR > "$LABWC_LOG_FILE" 2>&1
+WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/labwc -d -C $LABWC_CONF_DIR > "$LABWC_LOG_FILE" 2>&1

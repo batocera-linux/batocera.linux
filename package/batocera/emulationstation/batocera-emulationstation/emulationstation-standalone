@@ -18,8 +18,12 @@ _wait_for_compositor() {
     # If not in a Wayland session, no need to wait.
     if [ -z "$WAYLAND_DISPLAY" ]; then return 0; fi
     local i=0
+    echo "Standalone: Waiting for Wayland compositor..." >> "$log"
     while [ "$i" -lt 50 ]; do # 5 second timeout
-        if wlr-randr > /dev/null 2>&1; then return 0; fi
+        if wlr-randr > /dev/null 2>&1; then
+            echo "Standalone: Compositor is ready." >> "$log"
+            return 0
+        fi
         sleep 0.1
         i=$((i + 1))
     done
@@ -29,6 +33,7 @@ _wait_for_compositor() {
 
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
+    echo "Standalone: --- Top of display configuration loop ---" >> "$log"
     # On every loop (initial start or restart), we must wait for the compositor
     # to be ready before running any display commands.
     if ! _wait_for_compositor; then
@@ -37,9 +42,11 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # Now that the compositor is ready, create the authoritative baseline
     # for the current display setup.
+    echo "Standalone: Initializing screen checker baseline..." >> "$log"
     batocera-switch-screen-checker --init
 
     ### LANGUAGE SETTINGS ###
+    echo "Standalone: --- Applying Language Settings ---" >> "$log"
     settings_lang="$(batocera-settings-get system.language)"
     [ -z "${settings_lang}" ] && settings_lang=en_US
     export LC_ALL="${settings_lang}.UTF-8"
@@ -48,6 +55,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ###################
 
     ### VIDEO OUTPUT ###
+    echo "Standalone: --- Determining Video Outputs ---" >> "$log"
     # Because of xinerama breaking es, enable only one screen at a time
     # /var/run/switch_screen_request is a file to request screen switch
     if [ -e "/var/run/switch_screen_request" ]; then
@@ -78,6 +86,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         echo "Default video outputs: ${settings_output}, ${settings_output2}, ${settings_output3}" >> $log
     fi
 
+    echo "Standalone: Validating detected outputs..." >> "$log"
     # VALIDATE OUTPUTS
     #   The output must exists in listOutputs
     #   Output n-1 must be defined
@@ -130,6 +139,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         echo "First video output defaulted to: ${settings_output}" >> $log
         # currentOutput may be unplugged after an event of type unplugging it (/var/run/switch_screen_request)
         if ! batocera-resolution listOutputs | grep -qE "^${settings_output}$"; then
+            echo "Standalone: Default output '${settings_output}' not connected. Finding first available." >> "$log"
             settings_output=$(batocera-resolution listOutputs | head -1)
         fi
     fi
@@ -138,16 +148,58 @@ while [ -e "${REBOOT_FLAG}" ]; do
         user_output2="$(batocera-settings-get global.videooutput2)"
         if [ "${user_output2}" != "none" ]; then
             settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
+            if [ -n "${settings_output2}" ]; then
+                echo "Standalone: Auto-selected second video output: ${settings_output2}" >> "$log"
+            fi
         fi
     fi
 
     # We set the output to enable screens...
+    echo "Standalone: --- Enabling Outputs ---" >> "$log"
     batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
-
     echo "Updated video outputs: ${settings_output}, ${settings_output2}, ${settings_output3}" >> $log
     ###################
 
+    # And now we can apply the setting per output...
+    
+    ### RESOLUTION ###
+    echo "Standalone: --- Applying Resolutions ---" >> "$log"
+    ## The resolution for the first screen is on the boot file so that it is easier to change it
+    ## It is not needed for other screens
+    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
+    if [ -z "${bootresolution}" ]; then
+        echo "Standalone: No resolution in boot config for '${settings_output}'. Using minTomaxResolution-secure." >> "$log"
+        batocera-resolution --screen "${settings_output}" minTomaxResolution-secure
+    else
+        echo "Standalone: Setting resolution for '${settings_output}' to '${bootresolution}'." >> "$log"
+        batocera-resolution --screen "${settings_output}" setMode "${bootresolution}"
+    fi
+
+    # Other screens
+    if [ -n "${settings_output2}" ]; then
+        bootresolution2="$(batocera-settings-get es.resolution2)"
+        if [ -z "${bootresolution2}" ]; then
+            echo "Standalone: No resolution for '${settings_output2}'. Using minTomaxResolution-secure." >> "$log"
+            batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
+        else
+            echo "Standalone: Setting resolution for '${settings_output2}' to '${bootresolution2}'." >> "$log"
+            batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
+        fi
+    fi
+    if [ -n "${settings_output3}" ]; then
+        bootresolution3="$(batocera-settings-get es.resolution3)"
+        if [ -z "${bootresolution3}" ]; then
+            echo "Standalone: No resolution for '${settings_output3}'. Using minTomaxResolution-secure." >> "$log"
+            batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
+        else
+            echo "Standalone: Setting resolution for '${settings_output3}' to '${bootresolution3}'." >> "$log"
+            batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+        fi
+    fi
+    ###################
+
     ### ROTATION ###
+    echo "Standalone: --- Applying Rotations ---" >> "$log"
     display_rotate=
     effective_output="${settings_output}"
     if [ -n "${effective_output}" ]; then
@@ -157,76 +209,72 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     if [ -z "${display_rotate}" ]; then
         display_rotate="$(/usr/bin/batocera-settings-get-master display.rotate)"
+        if [ -n "${display_rotate}" ]; then
+            echo "Standalone: Using global rotation value: ${display_rotate}" >> "$log"
+        fi
     fi
 
     if [ -n "${effective_output}" ] && [ -n "${display_rotate}" ]; then
         if batocera-resolution --screen "${effective_output}" supportSystemRotation; then
+            echo "Standalone: Applying system rotation '${display_rotate}' for '${effective_output}'." >> "$log"
             batocera-resolution --screen "${effective_output}" setRotation "${display_rotate}"
-            echo "System rotation set to ${display_rotate} for ${effective_output}" >> $log
         else
             # When no rotation is available by the system, apply it
+            echo "Standalone: System rotation not supported. Using EmulationStation rotation." >> "$log"
             EXTRA_OPTS="--screenrotate ${display_rotate}"
         fi
+    fi
+    # Other screens
+    if [ -n "${settings_output2}" ]; then
+        display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate2.${settings_output2}")
+        # Add fallback to primary rotation key if specific key not found
+        if [ -z "${display_rotate2}" ]; then
+            display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output2}")
+        fi
+        if [ -z "${display_rotate2}" ]; then
+            display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+        fi
+        if [ -n "${display_rotate2}" ] && batocera-resolution --screen "${settings_output2}" supportSystemRotation; then
+            echo "Standalone: Applying system rotation '${display_rotate2}' for '${settings_output2}'." >> "$log"
+            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
+        fi
+    fi
+    if [ -n "${settings_output3}" ]; then
+        display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate3.${settings_output3}")
+        # Add fallback to primary rotation key if specific key not found
+        if [ -z "${display_rotate3}" ]; then
+            display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output3}")
+        fi
+        if [ -z "${display_rotate3}" ]; then
+            display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+        fi
+        if [ -n "${display_rotate3}" ] && batocera-resolution --screen "${settings_output3}" supportSystemRotation; then
+            echo "Standalone: Applying system rotation '${display_rotate3}' for '${settings_output3}'." >> "$log"
+            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
+        fi
+    fi
+    ###################
+
+    ### REPOSITION ###
+    if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
+        # Now that all screens are enabled and have their final resolution/rotation,
+        # we can correctly position them next to each other
+        echo "Standalone: --- Repositioning Outputs ---" >> "$log"
+        batocera-resolution repositionOutputs "${settings_output}" "${settings_output2}" "${settings_output3}"
     fi
     ###################
 
     ### REFLECTION ###
     if batocera-resolution supportSystemReflection; then
+        echo "Standalone: --- Applying Reflection ---" >> "$log"
         display_reflection="$(/usr/bin/batocera-settings-get-master display.reflection)"
         if [ -n "${display_reflection}" ]; then
+            echo "Standalone: Applying reflection '${display_reflection}'." >> "$log"
             batocera-resolution setReflection "${display_reflection}"
         fi
     fi
     ###################
-    
-    ### RESOLUTION ###
-    ## The resolution for the first screen is on the boot file so that it is easier to change it
-    ## It is not needed for other screens
-    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
-    if [ -z "${bootresolution}" ]; then
-        batocera-resolution --screen "${settings_output}" minTomaxResolution-secure
-    else
-        batocera-resolution --screen "${settings_output}" setMode "${bootresolution}"
-        echo "Resolution set to ${bootresolution} for ${settings_output}" >> $log
-    fi
 
-    # Other screens
-    if [ -n "${settings_output2}" ]; then
-        display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate2.${settings_output2}")
-        if [ -z "${display_rotate2}" ]; then
-            display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
-        fi
-        if batocera-resolution supportSystemRotation; then
-            batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
-        fi
-        bootresolution2="$(batocera-settings-get es.resolution2)"
-        if [ -z "${bootresolution2}" ]; then
-            batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
-        else
-            batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
-        fi
-    fi
-    if [ -n "${settings_output3}" ]; then
-        display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate3.${settings_output3}")
-        if [ -z "${display_rotate3}" ]; then
-            display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
-        fi
-        if batocera-resolution supportSystemRotation; then
-            batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
-        fi
-        bootresolution3="$(batocera-settings-get es.resolution3)"
-        if [ -z "${bootresolution3}" ]; then
-            batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
-        else
-            batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
-        fi
-    fi
-
-    # Now that all screens are enabled, rotated, resized... we reenable cause it may change the position in case of multi screens
-    if [ -n "${settings_output2}" -o -n "${settings_output3}" ]; then
-        batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
-    fi
-    ###################
 
     ### KEYBOARD ###
     # TODO: xorg/wayland
@@ -234,6 +282,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # TODO: Remove specific commands from emulationstation-standalone.
     if which xrandr; then # if xrandr available
+        echo "Standalone: --- Applying X.org Specific Settings ---" >> "$log"
         ### DPI override for nvidia gpus ###
         settings_output="$(batocera-settings-get global.dpi)"
         [ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
@@ -286,15 +335,20 @@ while [ -e "${REBOOT_FLAG}" ]; do
     # DBUS launch is required for the gio/gvfs/trash:///...
     eval "$(dbus-launch --sh-syntax --exit-with-session)"
 
+    ### BACKGLASS ###
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
             BGOFFSETX=$(batocera-resolution --screen "${settings_output}" currentResolution | cut -d x -f 1)
             BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
             THEME="$(batocera-settings-get backglass.theme)"
+                
+            echo "Launching backglass on '${settings_output2}' with OffsetX=${BGOFFSETX}, Size=${BGSIZE}" >> $log
             batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE} "${THEME}"
         fi
     fi
+    ###################
 
+    echo "Standalone: --- Launching EmulationStation ---" >> "$log"
     cd /userdata # ES need a PWD
     %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 
@@ -306,21 +360,22 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # ES flag when rebooting (https://github.com/batocera-linux/batocera-emulationstation/blob/master/es-core/src/platform.cpp#L194)
     if [ -e "/tmp/shutdown.please" ] || [ -e "/tmp/reboot.please" ]; then
-        echo "System shutdown/reboot requested. Exiting launcher script." >> $log
+        echo "Standalone: Shutdown or reboot requested by ES. Exiting loop." >> "$log"
         rm -f "${REBOOT_FLAG}"
         break
     elif [ -e "/tmp/restart.please" ]; then
-        echo "ES restart requested. Looping to relaunch." >> $log
+        echo "Standalone: ES restart requested. Continuing loop." >> "$log"
     elif [ -e "/tmp/suspend.please" ]; then
-        echo "ES exited for fake suspend. Waiting for resume signal on FIFO pipe..." >> $log
+        echo "Standalone: ES suspend requested. Waiting for resume signal." >> "$log"
         rm -f "/tmp/suspend.please"
         # The 'read' command will block the script until 'resume' is called.
         read < "/tmp/es-resume.fifo"
-        echo "Resume signal received. Relaunching ES." >> $log
+        echo "Standalone: Resume signal received. Continuing loop." >> "$log"
     fi
     GAMELAUNCH=0
 done
 
+echo "Standalone: Script finished." >> "$log"
 # Cleanup when the script finally exits (only after a shutdown/reboot)
 rm -f "/tmp/es-resume.fifo"
 rm -f "/tmp/suspend.please"
