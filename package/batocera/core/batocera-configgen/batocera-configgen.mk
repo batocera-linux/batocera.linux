@@ -133,7 +133,7 @@ define BATOCERA_CONFIGGEN_X86_HOOKS
 endef
 
 define BATOCERA_CONFIGGEN_SCRIPTS
-	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/batocera-hotkeys.py $(TARGET_DIR)/usr/bin/batocera-hotkeys
+	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/batocera-joysticks-hotkeys.py $(TARGET_DIR)/usr/bin/batocera-joysticks-hotkeys
 endef
 
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS = BATOCERA_CONFIGGEN_CONFIGS

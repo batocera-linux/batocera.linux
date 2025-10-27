@@ -165,7 +165,7 @@ def list_values(hotkeys_mapping):
     for key in sorted(hotkeys_mapping["by_names"]):
         print(key)
         
-parser = argparse.ArgumentParser(prog="batocera-hotkeys")
+parser = argparse.ArgumentParser(prog="batocera-joysticks-hotkeys")
 parser.add_argument("--values", action="store_true", help="list possible values. none and default can be used too.")
 parser.add_argument("--start", type=str, help="key for hotkey+start")
 parser.add_argument("--select", type=str, help="key for hotkey+select")
