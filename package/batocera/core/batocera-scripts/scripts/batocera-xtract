@@ -60,11 +60,11 @@ extract_archive () {
         *.zip) $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 21 ;;
         *.rar) unrar x -o+ "$FILE" "${files[@]}" "$DEST/" || return 22 ;;
         *.7z)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 23 ;;
-        *.gz)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
         *.iso) $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 25 ;;
         *.tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" || return 26 ;;
         *.tar.xz) tar -xJf "$FILE" "${files[@]}" -C "$DEST" || return 27 ;;
         *.tar.gz|*.tgz) tar -xzf "$FILE" "${files[@]}" -C "$DEST" || return 28 ;;
+        *.gz)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
         *.exe) innoextract -e -L -m "$FILE" -d "$DEST" || return 29 ;;
         *) return 11
     esac
@@ -96,7 +96,8 @@ case "$1" in
     ;;
     --extract-to)
         FILE="$3"
-        DEST="${2/file:\/\/}"
+        #from https://askubuntu.com/questions/53770/how-can-i-encode-and-decode-percent-encoded-strings-on-the-command-line --> URI 2 filenamespace
+        DEST="${2/file:\/\/}"; DEST=$(printf '%b' "${DEST//%/\\x}")
         extract_archive "${FILE,,}" || ret=$?
     ;;
     --open|open|l|L)
@@ -126,11 +127,11 @@ case $ret in
         echo "    x: extraction of current archivfile"
         echo " clix: extraction of current archive for without prompt (CLI)"
         echo "    l: list archive content"; echo
-        echo "Supported archives for extraction: zip 7z rar tar gz iso tar.gz/tgz tar.xz"
+        echo "Supported archives for extraction: zip 7z rar tar gz iso tar.gz/tgz tar.xz exe"
         echo "Supported archives for list/open : zip 7z rar tar gz iso tar.gz/tgz tar.xz"; echo
         echo "error-codes/return codes:"
         echo "  ec-0 no error, ec-10 parameter 'l', okay -- ec-1 general error -- ec-2 unknown action"
-        echo "  ec-11 to 12  -- archive type not supported for extraction, listing"
+        echo "  ec-11 to 12 -- archive type not supported for extraction, listing"
         echo "  ec-21 to 28 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz"
         echo "  ec-29       -- file extraction error for exe-files (InnoSetup)" ;echo
     ;;
