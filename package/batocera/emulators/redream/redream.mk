@@ -7,7 +7,7 @@
 REDREAM_VERSION = 1.5.0-1133-g03c2ae9
 REDREAM_SITE = https://redream.io/download
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+ifeq ($(BR2_aarch64),y)
 REDREAM_SOURCE = redream.universal-raspberry-linux-v$(REDREAM_VERSION).tar.gz
 else
 REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz

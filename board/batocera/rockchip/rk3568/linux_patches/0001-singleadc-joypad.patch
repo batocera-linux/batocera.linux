@@ -485,7 +485,7 @@ new file mode 100644
 index 000000000..3b942c4fc
 --- /dev/null
 +++ b/drivers/input/joystick/singleadcjoy.c
-@@ -0,0 +1,1087 @@
+@@ -0,0 +1,1081 @@
 +/*----------------------------------------------------------------------------*/
 +
 +/*
@@ -1129,43 +1129,37 @@ index 000000000..3b942c4fc
 +	amux->sel_a_gpio = of_get_named_gpio_flags(dev->of_node,
 +				"amux-a-gpios", 0, &flags);
 +	if (gpio_is_valid(amux->sel_a_gpio)) {
-+		ret = devm_gpio_request(dev, amux->sel_a_gpio, "amux-sel-a");
++		ret = devm_gpio_request_one(dev, amux->sel_a_gpio,
++						GPIOF_OUT_INIT_LOW, "amux-sel-a");
 +		if (ret < 0) {
 +			dev_err(dev, "%s : failed to request amux-sel-a %d\n",
 +				__func__, amux->sel_a_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_a_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
 +	}
 +
 +	amux->sel_b_gpio = of_get_named_gpio_flags(dev->of_node,
 +				"amux-b-gpios", 0, &flags);
 +	if (gpio_is_valid(amux->sel_b_gpio)) {
-+		ret = devm_gpio_request(dev, amux->sel_b_gpio, "amux-sel-b");
++		ret = devm_gpio_request_one(dev, amux->sel_b_gpio,
++						GPIOF_OUT_INIT_LOW, "amux-sel-b");
 +		if (ret < 0) {
 +			dev_err(dev, "%s : failed to request amux-sel-b %d\n",
 +				__func__, amux->sel_b_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_b_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
 +	}
 +
 +	amux->en_gpio = of_get_named_gpio_flags(dev->of_node,
 +				"amux-en-gpios", 0, &flags);
 +	if (gpio_is_valid(amux->en_gpio)) {
-+		ret = devm_gpio_request(dev, amux->en_gpio, "amux-en");
++		ret = devm_gpio_request_one(dev, amux->en_gpio,
++						GPIOF_OUT_INIT_LOW, "amux-en");
 +		if (ret < 0) {
 +			dev_err(dev, "%s : failed to request amux-en %d\n",
 +				__func__, amux->en_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->en_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
 +	}
 +	return	0;
 +err_out:
