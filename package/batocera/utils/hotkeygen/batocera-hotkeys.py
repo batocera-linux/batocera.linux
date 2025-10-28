@@ -58,6 +58,7 @@ def handle_event(device: evdev.InputDevice, event: evdev.InputEvent, pressures: 
                         if code_name not in pressures[device.path]["keys"]:
                                 pressures[device.path]["keys"][code_name] = { "count": 0 }
                         pressures[device.path]["keys"][code_name]["count"] += 1
+                        os.system("batocera-flash-screen 0.1 '#ff00ff'")
 
 def get_device_config_filename(device: evdev.InputDevice) -> str:
     name = re.sub('[^a-zA-Z0-9_]', '', device.name.replace(' ', '_'))
@@ -215,11 +216,13 @@ elif args.values:
 elif args.remove:
         if args.config and args.key:
                 do_set(args.config, args.key, None)
+                os.system("hotkeygen --reload") # reload the configuration
         else:
                 print("remove requires config and key arguments", file=sys.stderr)
 elif args.set:
         if args.config and args.key and args.action:
                 do_set(args.config, args.key, args.action)
+                os.system("hotkeygen --reload") # reload the configuration
         else:
                 print("set requires config, key and action arguments", file=sys.stderr)
 else:

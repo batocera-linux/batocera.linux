@@ -302,6 +302,10 @@ def do_new_context(context_name: str | None = None, context_json: str | None = N
     pid = int(read_pid())
     os.kill(pid, signal.SIGHUP)
 
+def do_reload_devices_config():
+    # inform the process
+    pid = int(read_pid())
+    os.kill(pid, signal.SIGHUP)
 
 def do_list() -> None:
     context = get_context()
@@ -410,6 +414,14 @@ class Daemon:
 
     def __handle_sighup(self, signum: int, frame: FrameType | None) -> None:
         self.context = get_context()
+        self.__reload_devices_configs()
+
+    def __reload_devices_configs(self) -> None:
+        # reload config files for devices
+        for fd in self.input_devices_by_fd:
+            input_device = self.input_devices_by_fd[fd]
+            mapping = get_mapping(input_device)
+            self.mappings_by_fd[fd] = mapping
 
     def run(self) -> None:
         if self.running:
@@ -484,6 +496,7 @@ if __name__ == "__main__":
     parser.add_argument("--default-context", action="store_true")
     parser.add_argument("--new-context", nargs=2, metavar=("new-context-name", "new-context-json"))
     parser.add_argument("--disable-common", action="store_true")
+    parser.add_argument("--reload", action="store_true")
     parser.add_argument("--permanent", action="store_true")
     args = parser.parse_args()
     if args.debug:
@@ -496,6 +509,8 @@ if __name__ == "__main__":
     elif args.new_context is not None:
         new_context_name, new_context_json = args.new_context
         do_new_context(new_context_name, new_context_json, not args.disable_common)
+    elif args.reload:
+        do_reload_devices_config()
     elif args.default_context:
         do_new_context()
     else:
