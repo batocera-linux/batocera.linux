@@ -10,6 +10,9 @@ BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
 BATOCERA_DESKTOPAPPS_APPS  = xterm.desktop
 BATOCERA_DESKTOPAPPS_ICONS =
 
+#file-roller integration for pcmanfm
+BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
+
 # wiimote
 BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
