@@ -128,28 +128,29 @@ def do_list():
         n = 0
         if not sys.stdout.isatty():
                 print("<hotkeys>")
-        for file in os.listdir(CONFIG_DIR):
-                path = Path(os.path.join(CONFIG_DIR, file))
-                if os.path.isfile(path) and file.endswith(".mapping"):
-                        values = {}
-                        with path.open() as fd:
-                                values = json.load(fd)
-                        fancy_name = getConfigFancyName(file)
-
-                        if sys.stdout.isatty():
-                                if n != 0:
-                                        print("")
-                                print(f"{fancy_name} ({file})")
-                                for key in values:
-                                        action = values[key]
-                                        print(f"  {key:<16} {action:<16}")
-                        else:
-                                print(f"  <device fancy_name=\"{fancy_name}\" config=\"{file}\">")
-                                for key in values:
-                                        action = values[key]
-                                        print(f"    <hotkey key=\"{key}\" action=\"{action}\" />")
-                                print("  </device>")
-                n = n+1
+        if os.path.exists(CONFIG_DIR):
+                for file in os.listdir(CONFIG_DIR):
+                        path = Path(os.path.join(CONFIG_DIR, file))
+                        if os.path.isfile(path) and file.endswith(".mapping"):
+                                values = {}
+                                with path.open() as fd:
+                                        values = json.load(fd)
+                                fancy_name = getConfigFancyName(file)
+                
+                                if sys.stdout.isatty():
+                                        if n != 0:
+                                                print("")
+                                        print(f"{fancy_name} ({file})")
+                                        for key in values:
+                                                action = values[key]
+                                                print(f"  {key:<16} {action:<16}")
+                                else:
+                                        print(f"  <device fancy_name=\"{fancy_name}\" config=\"{file}\">")
+                                        for key in values:
+                                                action = values[key]
+                                                print(f"    <hotkey key=\"{key}\" action=\"{action}\" />")
+                                        print("  </device>")
+                        n = n+1
         if not sys.stdout.isatty():
                 print("</hotkeys>")
 
@@ -158,19 +159,20 @@ def do_set(config, key, action):
         if not config.endswith(".mapping"):
                 print("invalid configuration file", file=sys.stderr)
                 return
-        if not os.path.isfile(path):
-                values = {}
-        else:
-                values = {}
+
+        values = {}
+        if os.path.isfile(path):
                 with path.open() as fd:
                         values = json.load(fd)
-                        if action == "none":
-                                values[key] = ""
-                        elif action is None:
-                                if key in values:
-                                        del values[key]
-                        else:
-                                values[key] = action
+        if action == "none":
+                values[key] = ""
+        elif action is None:
+                if key in values:
+                        del values[key]
+        else:
+                values[key] = action
+        if not os.path.exists(CONFIG_DIR):
+                os.makedirs(CONFIG_DIR)
         with open(path, "w") as fd:
                 json.dump(values, fd, indent=4)
 

@@ -346,6 +346,7 @@ class Daemon:
     monitor: pyudev.Monitor = field(init=False)
     poll: select.poll = field(init=False)
     target: evdev.UInput = field(init=False)
+    require_reconfig: bool = field(init=False, default=False)
 
     def __post_init__(self) -> None:
         self.udev_context = pyudev.Context()
@@ -375,7 +376,6 @@ class Daemon:
                             if gdebug:
                                 print(f"Adding device {device.device_node}: {input_device.name}")
                                 print_mapping(mapping, associations)
-
                             self.input_devices[device.device_node] = input_device
                             self.input_devices_by_fd[input_device.fileno()] = input_device
                             self.mappings_by_fd[input_device.fileno()] = mapping
@@ -414,7 +414,7 @@ class Daemon:
 
     def __handle_sighup(self, signum: int, frame: FrameType | None) -> None:
         self.context = get_context()
-        self.__reload_devices_configs()
+        self.require_reconfig = True # done outside of the event cause, to make it safely
 
     def __reload_devices_configs(self) -> None:
         # reload config files for devices
@@ -422,6 +422,11 @@ class Daemon:
             input_device = self.input_devices_by_fd[fd]
             mapping = get_mapping(input_device)
             self.mappings_by_fd[fd] = mapping
+
+        # try to load a device that had not configuration file before
+        for device in self.udev_context.list_devices(subsystem='input'):
+            if device.device_node not in self.input_devices:
+                self.__handle_actions('add', device)
 
     def run(self) -> None:
         if self.running:
@@ -447,7 +452,11 @@ class Daemon:
 
         # read all devices
         while True:
-            for fd, _ in self.poll.poll():
+            if self.require_reconfig:
+                self.require_reconfig = False
+                self.__reload_devices_configs()
+
+            for fd, _ in self.poll.poll(1000):
                 try:
                     if fd == self.monitor.fileno():
                         (action, device) = self.monitor.receive_device()
