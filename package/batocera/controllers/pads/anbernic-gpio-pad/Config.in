@@ -1,3 +1,5 @@
 config BR2_PACKAGE_ANBERNIC_GPIO_PAD
 	bool "anbernic-gpio-pad"
 	select BR2_PACKAGE_EVSIEVE
+	help
+	  Method to consolidate Anbernic & Powkiddy input devices to a single controller.

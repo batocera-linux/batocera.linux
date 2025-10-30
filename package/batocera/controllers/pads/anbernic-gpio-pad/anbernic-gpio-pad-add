@@ -17,7 +17,10 @@ unlockAndExit() {
 checkRunningPIDAndExit1() {
     test ! -e "${PIDFILE}" && return 0
     LPID=$(cat "${PIDFILE}")
-    test ! -d "/proc/${LPID}" && return 0
+    if ! test -d "/proc/${LPID}"; then
+        rm -f "${PIDFILE}"
+        return 0
+    fi
     unlockAndExit 1
 }
 
@@ -32,23 +35,33 @@ trylock() {
     done
 }
 
+EXPECTED_DEVS=3
+if [ "$(batocera-model)" = "Powkiddy_x55" ]; then
+    # If the model is Powkiddy_x55, we only expect 2 devices.
+    # there is no adc-keys we want to merge in (TBD)
+    EXPECTED_DEVS=2
+fi
+
 trylock
 checkRunningPIDAndExit1
 
-echo "${DEVNAME}" >> "${DEVSFILE}"
+# Check the new device on the list is not already there
+grep -qF "${DEVNAME}" "${DEVSFILE}" || echo "${DEVNAME}" >> "${DEVSFILE}"
 
 NDEVS=$(cat "${DEVSFILE}" | wc -l)
 
-if test "${NDEVS}" = 3
-then
-    DEV1=$(cat "${DEVSFILE}" | head -1)
-    DEV2=$(cat "${DEVSFILE}" | head -2 | tail -1)
-    DEV3=$(cat "${DEVSFILE}" | tail -1)
-    nohup evsieve --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
+if [ "${NDEVS}" -eq "${EXPECTED_DEVS}" ]; then
+    EVS_ARGS=$(cat "${DEVSFILE}" | xargs -I {} echo --input "{}")
+    nohup evsieve ${EVS_ARGS} persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
 
     echo $! > "${PIDFILE}"
+    unlockAndExit 0
 else
-    unlockAndExit 1
-fi
+    # This is a safety measure. Clean up and exit with an error.
+    if [ "${NDEVS}" -gt "${EXPECTED_DEVS}" ]; then
+        rm -f "${DEVSFILE}"
+        unlockAndExit 1
+    fi
 
-unlockAndExit 0
+    unlockAndExit 0
+fi
