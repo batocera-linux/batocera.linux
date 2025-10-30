@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RYUJINX_CANARY_VERSION = 1.3.185
+RYUJINX_CANARY_VERSION = 1.3.201
 RYUJINX_CANARY_SITE = https://git.ryujinx.app/api/v4/projects/68/packages/generic/Ryubing-Canary/$(RYUJINX_CANARY_VERSION)
 RYUJINX_CANARY_LICENSE = MIT
 RYUJINX_CANARY_DEPENDENCIES = sdl2 openal hicolor-icon-theme adwaita-icon-theme librsvg
