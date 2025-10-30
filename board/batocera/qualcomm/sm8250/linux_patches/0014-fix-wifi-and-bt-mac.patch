@@ -1,18 +1,6 @@
-From ef5a3345d6af58fbfa5d9b1ae2df11d6ac259498 Mon Sep 17 00:00:00 2001
-From: spycat88 <spycat88@users.noreply.github.com>
-Date: Thu, 23 Jan 2025 15:18:25 +0000
-Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
-
----
- drivers/bluetooth/btqca.c             | 100 ++++++++++++++++++++++-
- drivers/net/wireless/ath/ath11k/mac.c | 109 ++++++++++++++++++++++++--
- drivers/soc/qcom/socinfo.c            |  10 +++
- 3 files changed, 209 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
-index dfbbac92242a..dbe838040a67 100644
---- a/drivers/bluetooth/btqca.c
-+++ b/drivers/bluetooth/btqca.c
+diff -rupbN linux.orig/drivers/bluetooth/btqca.c linux/drivers/bluetooth/btqca.c
+--- linux.orig/drivers/bluetooth/btqca.c	2025-09-29 12:48:18.093601442 +0000
++++ linux/drivers/bluetooth/btqca.c	2025-09-29 13:03:15.325682481 +0000
 @@ -13,6 +13,78 @@
  
  #include "btqca.h"
@@ -92,7 +80,7 @@ index dfbbac92242a..dbe838040a67 100644
  int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
  			 enum qca_btsoc_type soc_type)
  {
-@@ -668,7 +740,7 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+@@ -714,7 +786,7 @@ int qca_set_bdaddr_rome(struct hci_dev *
  }
  EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
  
@@ -101,7 +89,7 @@ index dfbbac92242a..dbe838040a67 100644
  {
  	struct hci_rp_read_bd_addr *bda;
  	struct sk_buff *skb;
-@@ -739,6 +811,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+@@ -790,6 +862,7 @@ int qca_uart_setup(struct hci_dev *hdev,
  	u8 rom_ver = 0;
  	u32 soc_ver;
  	u16 boardid = 0;
@@ -109,7 +97,7 @@ index dfbbac92242a..dbe838040a67 100644
  
  	bt_dev_dbg(hdev, "QCA setup on UART");
  
-@@ -918,9 +991,30 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+@@ -993,9 +1066,30 @@ int qca_uart_setup(struct hci_dev *hdev,
  		break;
  	}
  
@@ -119,14 +107,14 @@ index dfbbac92242a..dbe838040a67 100644
 +	err = generate_bdaddr_from_serial(hdev, &generated_bdaddr);
 +	if (err) {
 +		bt_dev_err(hdev, "Failed to generate BD_ADDR from serial number");
-+		return err;
+ 		return err;
 +	}
 +
 +	/* Set the generated BD_ADDR */
 +	err = qca_set_bdaddr(hdev, &generated_bdaddr);
 +	if (err) {
 +		bt_dev_err(hdev, "Failed to set the generated BD_ADDR from serial number");
- 		return err;
++		return err;
 +	}
 +
 +	/* Update hdev->public_addr and hdev->bdaddr */
@@ -142,11 +130,10 @@ index dfbbac92242a..dbe838040a67 100644
  
  	bt_dev_info(hdev, "QCA setup on UART is completed");
  
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index f8068d2e848c..4f7ffc140596 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -165,6 +165,91 @@ static const struct ieee80211_channel ath11k_6ghz_channels[] = {
+diff -rupbN linux.orig/drivers/net/wireless/ath/ath11k/mac.c linux/drivers/net/wireless/ath/ath11k/mac.c
+--- linux.orig/drivers/net/wireless/ath/ath11k/mac.c	2025-09-29 12:48:19.413605908 +0000
++++ linux/drivers/net/wireless/ath/ath11k/mac.c	2025-09-29 13:05:05.964239071 +0000
+@@ -165,6 +165,91 @@ static const struct ieee80211_channel at
  	CHAN6G(2, 5935, 0),
  };
  
@@ -238,50 +225,43 @@ index f8068d2e848c..4f7ffc140596 100644
  static struct ieee80211_rate ath11k_legacy_rates[] = {
  	{ .bitrate = 10,
  	  .hw_value = ATH11K_HW_RATE_CCK_LP_1M },
-@@ -10312,6 +10397,7 @@ int ath11k_mac_register(struct ath11k_base *ab)
+@@ -10515,6 +10600,7 @@ int ath11k_mac_register(struct ath11k_ba
  	int i;
  	int ret;
- 	u8 mac_addr[ETH_ALEN] = {0};
+ 	u8 mac_addr[ETH_ALEN] = {};
 +	struct macaddr_t generated_macaddr;
  
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
  		return 0;
-@@ -10329,14 +10415,23 @@ int ath11k_mac_register(struct ath11k_base *ab)
+@@ -10532,6 +10618,10 @@ int ath11k_mac_register(struct ath11k_ba
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
  		ar = pdev->ar;
--		if (ab->pdevs_macaddr_valid) {
--			ether_addr_copy(ar->mac_addr, pdev->mac_addr);
 +
 +		ret = generate_macaddr_from_serial(ar, &generated_macaddr);
 +		if (ret) {
 +			ath11k_err(ab, "Failed to generate MAC_ADDR from serial number, falling back");
-+			if (ab->pdevs_macaddr_valid) {
-+				ether_addr_copy(ar->mac_addr, pdev->mac_addr);
-+			} else {
-+				if (is_zero_ether_addr(mac_addr))
-+					ether_addr_copy(ar->mac_addr, ab->mac_addr);
-+				else
-+					ether_addr_copy(ar->mac_addr, mac_addr);
+ 		if (ab->pdevs_macaddr_valid) {
+ 			ether_addr_copy(ar->mac_addr, pdev->mac_addr);
+ 		} else {
+@@ -10539,7 +10629,12 @@ int ath11k_mac_register(struct ath11k_ba
+ 				ether_addr_copy(ar->mac_addr, ab->mac_addr);
+ 			else
+ 				ether_addr_copy(ar->mac_addr, mac_addr);
+-			ar->mac_addr[4] += i;
 +				ar->mac_addr[4] += i; /* adjust offset per radio */
 +			}
- 		} else {
--			if (is_zero_ether_addr(mac_addr))
--				ether_addr_copy(ar->mac_addr, ab->mac_addr);
--			else
--				ether_addr_copy(ar->mac_addr, mac_addr);
--			ar->mac_addr[4] += i;
++		} else {
 +			/* If successful, use the newly generated MAC address. */
 +			ath11k_reverse_mac(ar->mac_addr, generated_macaddr.b);
 +			ath11k_info(ab, "MAC_ADDR set to %pMR", generated_macaddr.b);
  		}
  
  		idr_init(&ar->txmgmt_idr);
-diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
-index ecfd3da9d5e8..238f804e7fe0 100644
---- a/drivers/soc/qcom/socinfo.c
-+++ b/drivers/soc/qcom/socinfo.c
-@@ -163,6 +163,10 @@ struct smem_image_version {
+diff -rupbN linux.orig/drivers/soc/qcom/socinfo.c linux/drivers/soc/qcom/socinfo.c
+--- linux.orig/drivers/soc/qcom/socinfo.c	2025-09-29 12:48:19.737607005 +0000
++++ linux/drivers/soc/qcom/socinfo.c	2025-09-29 13:03:15.325682481 +0000
+@@ -171,6 +171,10 @@ struct smem_image_version {
  };
  #endif /* CONFIG_DEBUG_FS */
  
@@ -292,7 +272,7 @@ index ecfd3da9d5e8..238f804e7fe0 100644
  struct qcom_socinfo {
  	struct soc_device *soc_dev;
  	struct soc_device_attribute attr;
-@@ -795,6 +799,9 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
+@@ -817,6 +821,9 @@ static int qcom_socinfo_probe(struct pla
  							le32_to_cpu(info->serial_num));
  		if (!qs->attr.serial_number)
  			return -ENOMEM;
@@ -302,7 +282,7 @@ index ecfd3da9d5e8..238f804e7fe0 100644
  	}
  
  	qs->soc_dev = soc_device_register(&qs->attr);
-@@ -818,6 +825,9 @@ static void qcom_socinfo_remove(struct platform_device *pdev)
+@@ -840,6 +847,9 @@ static void qcom_socinfo_remove(struct p
  	soc_device_unregister(qs->soc_dev);
  
  	socinfo_debugfs_exit(qs);
@@ -312,6 +292,3 @@ index ecfd3da9d5e8..238f804e7fe0 100644
  }
  
  static struct platform_driver qcom_socinfo_driver = {
--- 
-2.34.1
-

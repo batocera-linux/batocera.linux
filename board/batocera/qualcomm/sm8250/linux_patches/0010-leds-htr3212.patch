@@ -1,20 +1,6 @@
-From 29f19de1ee9cac28246f2767ce9ae8c8fb4bba8c Mon Sep 17 00:00:00 2001
-From: Teguh Sobirin <teguh@sobir.in>
-Date: Thu, 21 Nov 2024 00:16:42 +0700
-Subject: [PATCH] leds: Add driver for HEROIC HTR3212 Signed-off-by: Teguh
- Sobirin <teguh@sobir.in>
-
----
- drivers/leds/Kconfig        |  10 ++
- drivers/leds/Makefile       |   1 +
- drivers/leds/leds-htr3212.c | 298 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 309 insertions(+)
- create mode 100644 drivers/leds/leds-htr3212.c
-
-diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
-index b784bb74a837..74dcaf546b4f 100644
---- a/drivers/leds/Kconfig
-+++ b/drivers/leds/Kconfig
+diff -rupbN linux.orig/drivers/leds/Kconfig linux/drivers/leds/Kconfig
+--- linux.orig/drivers/leds/Kconfig	2024-11-29 14:02:16.871088711 +0000
++++ linux/drivers/leds/Kconfig	2024-11-29 21:51:04.322306090 +0000
 @@ -211,6 +211,16 @@ config LEDS_EXPRESSWIRE
  	bool
  	depends on GPIOLIB
@@ -32,23 +18,20 @@ index b784bb74a837..74dcaf546b4f 100644
  config LEDS_TURRIS_OMNIA
  	tristate "LED support for CZ.NIC's Turris Omnia"
  	depends on LEDS_CLASS_MULTICOLOR
-diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
-index 18afbb5a23ee..e2277fa7f00d 100644
---- a/drivers/leds/Makefile
-+++ b/drivers/leds/Makefile
-@@ -32,6 +32,7 @@ obj-$(CONFIG_LEDS_DA9052)		+= leds-da9052.o
+diff -rupbN linux.orig/drivers/leds/Makefile linux/drivers/leds/Makefile
+--- linux.orig/drivers/leds/Makefile	2024-11-29 14:02:16.871088711 +0000
++++ linux/drivers/leds/Makefile	2024-11-29 21:51:47.395373459 +0000
+@@ -32,6 +32,7 @@ obj-$(CONFIG_LEDS_DA9052)		+= leds-da905
  obj-$(CONFIG_LEDS_GPIO)			+= leds-gpio.o
  obj-$(CONFIG_LEDS_GPIO_REGISTER)	+= leds-gpio-register.o
  obj-$(CONFIG_LEDS_HP6XX)		+= leds-hp6xx.o
-+obj-$(CONFIG_LEDS_HTR3212)		+= leds-htr3212.o
++obj-$(CONFIG_LEDS_HTR3212) 		+= leds-htr3212.o
  obj-$(CONFIG_LEDS_INTEL_SS4200)		+= leds-ss4200.o
  obj-$(CONFIG_LEDS_IP30)			+= leds-ip30.o
  obj-$(CONFIG_LEDS_IPAQ_MICRO)		+= leds-ipaq-micro.o
-diff --git a/drivers/leds/leds-htr3212.c b/drivers/leds/leds-htr3212.c
-new file mode 100644
-index 000000000000..e9367c4aad04
---- /dev/null
-+++ b/drivers/leds/leds-htr3212.c
+diff -rupbN linux.orig/drivers/leds/leds-htr3212.c linux/drivers/leds/leds-htr3212.c
+--- linux.orig/drivers/leds/leds-htr3212.c	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/leds/leds-htr3212.c	2024-11-29 21:52:16.844103551 +0000
 @@ -0,0 +1,298 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
@@ -348,6 +331,3 @@ index 000000000000..e9367c4aad04
 +MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in");
 +MODULE_DESCRIPTION("HEROIC HTR3212 LED Driver");
 +MODULE_LICENSE("GPL v2");
--- 
-2.34.1
-

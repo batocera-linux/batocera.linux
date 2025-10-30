@@ -1,38 +1,7 @@
-From 2a24f8868112aa6009979d25a0ade854707c59db Mon Sep 17 00:00:00 2001
-From: Teguh Sobirin <teguh@sobir.in>
-Date: Mon, 25 Nov 2024 02:19:13 +0700
-Subject: [PATCH] arm64: dts: qcom: add SM8250 Retroid Pocket variant
- Signed-off-by: Teguh Sobirin <teguh@sobir.in>
-
----
- arch/arm64/boot/dts/qcom/Makefile             |    2 +
- .../dts/qcom/sm8250-retroidpocket-common.dtsi | 1435 +++++++++++++++++
- .../dts/qcom/sm8250-retroidpocket-rp5.dts     |  100 ++
- .../dts/qcom/sm8250-retroidpocket-rpmini.dts  |   98 ++
- 4 files changed, 1635 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
- create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
-
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index ae002c7cf126..b015527b063f 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -242,6 +242,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-bahamut.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-griffin.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-hdk.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-mtp.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rp5.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rpmini.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx203.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx206.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-xiaomi-elish-boe.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
-new file mode 100644
-index 000000000000..58ca9d330a15
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
-@@ -0,0 +1,1435 @@
+diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi linux/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi
+--- linux.orig/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi	1970-01-01 00:00:00.000000000 +0000
++++ linux/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-common.dtsi	2025-01-06 00:18:20.339748070 +0000
+@@ -0,0 +1,1489 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2024, Retroid Pocket.
@@ -162,6 +131,10 @@ index 000000000000..58ca9d330a15
 +		regulator-min-microvolt = <4200000>;
 +		regulator-max-microvolt = <4200000>;
 +		regulator-always-on;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vdc_3v3: vdc-3v3-regulator {
@@ -171,6 +144,10 @@ index 000000000000..58ca9d330a15
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
 +		regulator-always-on;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vdc_5v: vdc-5v-regulator {
@@ -181,6 +158,10 @@ index 000000000000..58ca9d330a15
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +		vin-supply = <&vreg_l11c_3p3>;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vdda_panel: vdda-panel-regulator {
@@ -193,6 +174,10 @@ index 000000000000..58ca9d330a15
 +		gpio = <&tlmm 4 GPIO_ACTIVE_HIGH>;
 +		enable-active-high;
 +		regulator-boot-on;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vph_pwr: vph-pwr-regulator {
@@ -201,6 +186,10 @@ index 000000000000..58ca9d330a15
 +		regulator-min-microvolt = <3700000>;
 +		regulator-max-microvolt = <3700000>;
 +		regulator-always-on;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vreg_s4a_1p8: vreg-s4a-1p8 {
@@ -211,6 +200,10 @@ index 000000000000..58ca9d330a15
 +		regulator-always-on;
 +		regulator-boot-on;
 +		vin-supply = <&vph_pwr>;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	vreg_fan_pwr: vreg-fan-pwr-regulator {
@@ -239,6 +232,10 @@ index 000000000000..58ca9d330a15
 +		regulator-always-on;
 +		regulator-boot-on;
 +		enable-active-high;
++
++               regulator-state-mem {
++                       regulator-off-in-suspend;
++               };
 +	};
 +
 +	qca6390-pmu {
@@ -330,6 +327,13 @@ index 000000000000..58ca9d330a15
 +		cont_splash_mem: splash_region@9c000000 {
 +			reg = <0x0 0x9c000000 0x0 0x2300000>;
 +			no-map;
++		};
++
++		linux,cma {
++			compatible = "shared-dma-pool";
++			reusable;
++			size = <0x0 0x10000000>;
++			linux,cma-default;
 +		};
 +	};
 +};
@@ -591,6 +595,11 @@ index 000000000000..58ca9d330a15
 +	firmware-name = "qcom/sm8250/cdsp.mbn";
 +};
 +
++&slpi {
++	status = "okay";
++	firmware-name = "qcom/sm8250/Thundercomm/RB5/slpi.mbn";
++};
++
 +&gmu {
 +	status = "okay";
 +};
@@ -618,8 +627,8 @@ index 000000000000..58ca9d330a15
 +
 +		ledr_b1: led@1 {
 +			reg = <1>;
-+			label = "r:b1";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "r:r1";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledr_g1: led@2 {
 +			reg = <2>;
@@ -628,13 +637,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledr_r1: led@3 {
 +			reg = <3>;
-+			label = "r:r1";
-+			color = <LED_COLOR_ID_RED>;
++			label = "r:b1";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledr_b2: led@4 {
 +			reg = <4>;
-+			label = "r:b2";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "r:r2";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledr_g2: led@5 {
 +			reg = <5>;
@@ -643,13 +652,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledr_r2: led@6 {
 +			reg = <6>;
-+			label = "r:r2";
-+ 			color = <LED_COLOR_ID_RED>;
++			label = "r:b2";
++ 			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledr_b3: led@7 {
 +			reg = <7>;
-+			label = "r:b3";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "r:r3";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledr_g3: led@8 {
 +			reg = <8>;
@@ -658,13 +667,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledr_r3: led@9 {
 +			reg = <9>;
-+			label = "r:r3";
-+			color = <LED_COLOR_ID_RED>;
++			label = "r:b3";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledr_b4: led@10 {
 +			reg = <10>;
-+			label = "r:b4";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "r:r4";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledr_g4: led@11 {
 +			reg = <11>;
@@ -673,8 +682,8 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledr_r4: led@12 {
 +			reg = <12>;
-+			label = "r:r4";
-+			color = <LED_COLOR_ID_RED>;
++			label = "r:b4";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +	};
 +};
@@ -693,8 +702,8 @@ index 000000000000..58ca9d330a15
 +
 +		ledl_b1: led@1 {
 +			reg = <1>;
-+			label = "l:b1";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "l:r1";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledl_g1: led@2 {
 +			reg = <2>;
@@ -703,13 +712,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledl_r1: led@3 {
 +			reg = <3>;
-+			label = "l:r1";
-+			color = <LED_COLOR_ID_RED>;
++			label = "l:b1";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledl_b2: led@4 {
 +			reg = <4>;
-+			label = "l:b2";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "l:r2";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledl_g2: led@5 {
 +			reg = <5>;
@@ -718,13 +727,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledl_r2: led@6 {
 +			reg = <6>;
-+			label = "l:r2";
-+			color = <LED_COLOR_ID_RED>;
++			label = "l:b2";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledl_b3: led@7 {
 +			reg = <7>;
-+			label = "l:b3";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "l:r3";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledl_g3: led@8 {
 +			reg = <8>;
@@ -733,13 +742,13 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledl_r3: led@9 {
 +			reg = <9>;
-+			label = "l:r3";
-+			color = <LED_COLOR_ID_RED>;
++			label = "l:b3";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +		ledl_b4: led@10 {
 +			reg = <10>;
-+			label = "l:b4";
-+			color = <LED_COLOR_ID_BLUE>;
++			label = "l:r4";
++			color = <LED_COLOR_ID_RED>;
 +		};
 +		ledl_g4: led@11 {
 +			reg = <11>;
@@ -748,8 +757,8 @@ index 000000000000..58ca9d330a15
 +		};
 +		ledl_r4: led@12 {
 +			reg = <12>;
-+			label = "l:r4";
-+			color = <LED_COLOR_ID_RED>;
++			label = "l:b4";
++			color = <LED_COLOR_ID_BLUE>;
 +		};
 +	};
 +};
@@ -1157,9 +1166,23 @@ index 000000000000..58ca9d330a15
 +		"SpkrRight IN", "WSA_SPK2 OUT",
 +		"IN1_HPHL", "HPHL_OUT",
 +		"IN2_HPHR", "HPHR_OUT",	
-+		"MM_DL1",  "MultiMedia1 Playback",
-+		"MM_DL2",  "MultiMedia2 Playback",
-+		"MultiMedia3 Capture", "MM_UL3";
++		"AMIC1", "MIC BIAS1",
++		"AMIC2", "MIC BIAS2",
++		"AMIC3", "MIC BIAS3",
++		"AMIC4", "MIC BIAS3",
++		"AMIC5", "MIC BIAS4",
++		"TX SWR_ADC0", "ADC1_OUTPUT",
++		"TX SWR_ADC1", "ADC2_OUTPUT",
++		"TX SWR_ADC2", "ADC3_OUTPUT",
++		"TX SWR_ADC3", "ADC4_OUTPUT",
++		"TX SWR_DMIC0", "DMIC1_OUTPUT",
++		"TX SWR_DMIC1", "DMIC2_OUTPUT",
++		"TX SWR_DMIC2", "DMIC3_OUTPUT",
++		"TX SWR_DMIC3", "DMIC4_OUTPUT",
++		"TX SWR_DMIC4", "DMIC5_OUTPUT",
++		"TX SWR_DMIC5", "DMIC6_OUTPUT",
++		"TX SWR_DMIC6", "DMIC7_OUTPUT",
++		"TX SWR_DMIC7", "DMIC8_OUTPUT";
 +
 +	mm1-dai-link {
 +		link-name = "MultiMedia1";
@@ -1468,216 +1491,3 @@ index 000000000000..58ca9d330a15
 +&wsamacro {
 +	status = "okay";
 +};
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
-new file mode 100644
-index 000000000000..a059378fcbea
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rp5.dts
-@@ -0,0 +1,100 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (c) 2024, Retroid Pocket.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sm8250-retroidpocket-common.dtsi"
-+
-+/ {
-+	model = "Retroid Pocket 5";
-+	compatible = "retroidpocket,rp5", "qcom,sm8250";
-+
-+	chosen {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		framebuffer: framebuffer@9c000000 {
-+			compatible = "simple-framebuffer";
-+			reg = <0x0 0x9c000000 0x0 0x2300000>;
-+			width = <1080>;
-+			height = <1920>;
-+			stride = <(1080 * 4)>;
-+			format = "a8r8g8b8";
-+		};
-+	};
-+
-+	multi-ledr1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r1";
-+		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
-+	};
-+
-+	multi-ledl1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l1";
-+		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
-+	};
-+
-+	multi-ledr2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r2";
-+		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
-+	};
-+
-+	multi-ledl2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l2";
-+		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
-+	};
-+
-+	multi-ledr3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r3";
-+		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
-+	};
-+
-+	multi-ledl3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l3";
-+		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
-+	};
-+
-+	multi-ledr4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r4";
-+		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
-+	};
-+
-+	multi-ledl4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l4";
-+		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
-+	};
-+};
-+
-+&i2c13 {
-+	touchscreen@38 {
-+		touchscreen-size-x = <1080>;
-+		touchscreen-size-y = <1920>;
-+		touchscreen-inverted-x;
-+		touchscreen-inverted-y;
-+	};
-+};
-+
-+&mdss_dsi0 {
-+	panel@0 {
-+		compatible = "ch13726a,rp5";
-+		rotation = <270>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
-new file mode 100644
-index 000000000000..9f572e87b84e
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sm8250-retroidpocket-rpmini.dts
-@@ -0,0 +1,98 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (c) 2024, Retroid Pocket.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sm8250-retroidpocket-common.dtsi"
-+
-+/ {
-+	model = "Retroid Pocket Mini";
-+	compatible = "retroidpocket,rpmini", "qcom,sm8250";
-+
-+	chosen {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		framebuffer: framebuffer@9c000000 {
-+			compatible = "simple-framebuffer";
-+			reg = <0x0 0x9c000000 0x0 0x2300000>;
-+			width = <960>;
-+			height = <1280>;
-+			stride = <(960 * 4)>;
-+			format = "a8r8g8b8";
-+		};
-+	};
-+
-+	multi-ledr1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r1";
-+		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
-+	};
-+
-+	multi-ledl1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l1";
-+		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
-+	};
-+
-+	multi-ledr2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r2";
-+		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
-+	};
-+
-+	multi-ledl2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l2";
-+		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
-+	};
-+
-+	multi-ledr3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r3";
-+		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
-+	};
-+
-+	multi-ledl3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l3";
-+		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
-+	};
-+
-+	multi-ledr4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r4";
-+		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
-+	};
-+
-+	multi-ledl4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l4";
-+		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
-+	};
-+};
-+
-+&i2c13 {
-+	touchscreen@38 {
-+		touchscreen-size-x = <960>;
-+		touchscreen-size-y = <1280>;
-+	};
-+};
-+
-+&mdss_dsi0 {
-+	panel@0 {
-+		compatible = "ch13726a,rpmini";
-+		rotation = <90>;
-+	};
-+};
--- 
-2.34.1
-
