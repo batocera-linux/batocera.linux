@@ -54,7 +54,7 @@
 - DXVK to 2.7.1
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251021
-- Linux Kernel to 6.17.4
+- Linux Kernel to 6.17.5
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.2.5
