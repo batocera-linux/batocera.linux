@@ -1,0 +1,34 @@
+diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
+index 23ec5c3..19910e9 100644
+--- a/src/lindbergh/evdevinput.c
++++ b/src/lindbergh/evdevinput.c
+@@ -1143,6 +1143,21 @@ void *controllerThread(void *_args)
+ 		    }
+                 }
+ 
++		// handle the deadzone part separatly for switches to avoid cases when the switch is an axe and not coming back completly (from 255 to 126 (128 is the middle))
++		// relax the button
++		if((scaled > 0.4 && scaled < 0.6) && !args->controller->absTriggers[event.code].isAnalogue) {
++		  if (args->controller->absTriggers[event.code].minEnabled) {
++		    setSwitch(args->controller->absTriggers[event.code].minPlayer,
++			      args->controller->absTriggers[event.code].minChannel, 0);
++		  }
++
++		  if (args->controller->absTriggers[event.code].maxEnabled) {
++		    setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++			      args->controller->absTriggers[event.code].maxChannel, 0);
++
++		  }
++		} else {
++
+                 if(event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2)) {
+                   if (args->controller->absTriggers[event.code].minEnabled)
+                     {
+@@ -1170,6 +1185,7 @@ void *controllerThread(void *_args)
+ 		      }
+                     }
+                 }
++                }
+ 		if (args->controller->absTriggers[event.code].shakeEnabled)
+ 		  {
+ 		    int channel = args->controller->absTriggers[event.code].shakeChannel;
