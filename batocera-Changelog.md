@@ -11,6 +11,7 @@
 ### Hardware
 - Odin 2 Mini initial support
 - Legion Go S Controller & LED updates
+- Powkiddy X55 initial support
 ### Added
 - LED colour control for Arm based handhelds
 - The ability to turn the controller LED's off

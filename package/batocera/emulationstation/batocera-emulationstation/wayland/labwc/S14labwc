@@ -1,26 +1,13 @@
 #!/bin/sh
 
-SRC_DIR="/usr/share/labwc"
+SRC_FILE="/usr/share/labwc/rc.xml"
 DEST_DIR="/userdata/system/.config/labwc"
 
 start() {
     echo "Initializing Labwc configuration..."
-
     mkdir -p "$DEST_DIR"
-
-    for file in rc.xml autostart; do
-        if [ ! -f "$DEST_DIR/$file" ]; then
-            echo "Copying $file to $DEST_DIR"
-            cp "$SRC_DIR/$file" "$DEST_DIR/"
-        else
-            if [ "$SRC_DIR/$file" -nt "$DEST_DIR/$file" ]; then
-                echo "Source $file is newer than destination, overwriting."
-                cp "$SRC_DIR/$file" "$DEST_DIR/"
-            else
-                echo "$file already exists and is up to date, skipping."
-            fi
-        fi
-    done
+    echo "Copying $SRC_FILE to $DEST_DIR"
+    cp "$SRC_FILE" "$DEST_DIR/"
 }
 
 case "$1" in
