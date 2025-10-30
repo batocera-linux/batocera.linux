@@ -520,10 +520,18 @@ class LindberghGenerator(Generator):
                                 if nplayer == 1:
                                     self.setConf(conf, f"{button_name}", f"{controller_name}:{input_value}")
                             else:
+                                # here
+                                minmax_value = "MAX"
                                 if input_name == "joystick1left" or input_name == "joystick1up" or input_name == "joystick2left" or input_name == "joystick2up" or input_name == "left" or input_name == "up":
-                                    self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MIN")
-                                else:
-                                    self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:MAX")
+                                    minmax_value = "MIN"
+                                # reversed axis
+                                if input_name in relaxValues and relaxValues[input_name]["reversed"]:
+                                    if minmax_value == "MAX":
+                                        minmax_value == "MIN"
+                                    else:
+                                        minmax_value == "MAX"
+                                # set
+                                self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:{minmax_value}")
                         elif pad.inputs[input_base_name].type == "hat":
                             if pad.inputs[input_base_name].value == "1" or pad.inputs[input_base_name].value == "4": # up or down
                                 # 16 is the HAT0 code
