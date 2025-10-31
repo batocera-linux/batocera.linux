@@ -2128,7 +2128,7 @@ ps2:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u]  }
     libretro:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2], incompatible_extensions: [m3u] }
+      ps2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2], incompatible_extensions: [m3u] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u] }
