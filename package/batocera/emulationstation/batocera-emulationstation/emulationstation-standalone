@@ -177,7 +177,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # Other screens
     if [ -n "${settings_output2}" ]; then
-        bootresolution2="$(batocera-settings-get es.resolution2)"
+        bootresolution2="$(batocera-settings-get-master es.resolution2)"
         if [ -z "${bootresolution2}" ]; then
             echo "Standalone: No resolution for '${settings_output2}'. Using minTomaxResolution-secure." >> "$log"
             batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure

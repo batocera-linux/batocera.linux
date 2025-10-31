@@ -3,7 +3,7 @@ new file mode 100644
 index 000000000000..58d9ab342fe9
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocket-common.dtsi
-@@ -0,0 +1,1482 @@
+@@ -0,0 +1,1474 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -176,13 +176,6 @@ index 000000000000..58d9ab342fe9
 +		hyp_ext_tags_mem: hyp-ext-tags-region@fce00000 {
 +			reg = <0 0xfce00000 0 0x2900000>;
 +			no-map;
-+		};
-+
-+		linux,cma {
-+			compatible = "shared-dma-pool";
-+			size = <0x0 0x18000000>;
-+			reusable;
-+			linux,cma-default;
 +		};
 +	};
 +
@@ -1066,7 +1059,6 @@ index 000000000000..58d9ab342fe9
 +	no-sdio;
 +	no-mmc;
 +
-+	qcom,use-level-shifter;
 +	qcom,dll-config = <0x0007442c>;
 +//	/delete-property/ sdhci-caps-mask;
 +

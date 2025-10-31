@@ -21,7 +21,7 @@ BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/linux_sm8550-defconfig.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/qcs8550-ayn-odin2 qcom/qcs8550-ayn-odin2portal qcom/qcs8550-ayn-odin2mini"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/qcs8550-ayn-odin2 qcom/qcs8550-ayn-odin2portal qcom/qcs8550-ayn-odin2mini qcom/qcs8550-ayn-thor"
                                                                               
 # Filesystem tools
 BR2_PACKAGE_HOST_DOSFSTOOLS=y

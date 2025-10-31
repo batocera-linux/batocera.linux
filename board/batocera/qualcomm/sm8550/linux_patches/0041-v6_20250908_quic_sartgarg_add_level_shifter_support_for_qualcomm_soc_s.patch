@@ -1,0 +1,218 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v6 1/4] mmc: sdhci-msm: Enable tuning for SDR50 mode for SD
+ card
+From: Sarthak Garg <quic_sartgarg@quicinc.com>
+Date: Mon, 08 Sep 2025 16:11:19 +0530
+Message-Id: <20250908104122.2062653-2-quic_sartgarg@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+For Qualcomm SoCs which needs level shifter for SD card, extra delay is
+seen on receiver data path.
+
+To compensate this delay enable tuning for SDR50 mode for targets which
+has level shifter. SDHCI_SDR50_NEEDS_TUNING caps will be set for targets
+with level shifter on Qualcomm SOC's.
+
+Signed-off-by: Sarthak Garg <quic_sartgarg@quicinc.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ drivers/mmc/host/sdhci-msm.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
+index 66c0d1ba2a33..bf91cb96a0ea 100644
+--- a/drivers/mmc/host/sdhci-msm.c
++++ b/drivers/mmc/host/sdhci-msm.c
+@@ -81,6 +81,7 @@
+ #define CORE_IO_PAD_PWR_SWITCH_EN	BIT(15)
+ #define CORE_IO_PAD_PWR_SWITCH	BIT(16)
+ #define CORE_HC_SELECT_IN_EN	BIT(18)
++#define CORE_HC_SELECT_IN_SDR50	(4 << 19)
+ #define CORE_HC_SELECT_IN_HS400	(6 << 19)
+ #define CORE_HC_SELECT_IN_MASK	(7 << 19)
+ 
+@@ -1133,6 +1134,10 @@ static bool sdhci_msm_is_tuning_needed(struct sdhci_host *host)
+ {
+ 	struct mmc_ios *ios = &host->mmc->ios;
+ 
++	if (ios->timing == MMC_TIMING_UHS_SDR50 &&
++	    host->flags & SDHCI_SDR50_NEEDS_TUNING)
++		return true;
++
+ 	/*
+ 	 * Tuning is required for SDR104, HS200 and HS400 cards and
+ 	 * if clock frequency is greater than 100MHz in these modes.
+@@ -1201,6 +1206,8 @@ static int sdhci_msm_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ 	struct mmc_ios ios = host->mmc->ios;
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct sdhci_msm_host *msm_host = sdhci_pltfm_priv(pltfm_host);
++	const struct sdhci_msm_offset *msm_offset = msm_host->offset;
++	u32 config;
+ 
+ 	if (!sdhci_msm_is_tuning_needed(host)) {
+ 		msm_host->use_cdr = false;
+@@ -1217,6 +1224,14 @@ static int sdhci_msm_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ 	 */
+ 	msm_host->tuning_done = 0;
+ 
++	if (ios.timing == MMC_TIMING_UHS_SDR50 &&
++	    host->flags & SDHCI_SDR50_NEEDS_TUNING) {
++		config = readl_relaxed(host->ioaddr + msm_offset->core_vendor_spec);
++		config &= ~CORE_HC_SELECT_IN_MASK;
++		config |= CORE_HC_SELECT_IN_EN | CORE_HC_SELECT_IN_SDR50;
++		writel_relaxed(config, host->ioaddr + msm_offset->core_vendor_spec);
++	}
++
+ 	/*
+ 	 * For HS400 tuning in HS200 timing requires:
+ 	 * - select MCLK/2 in VENDOR_SPEC
+-- 
+2.34.1
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v6 2/4] dt-bindings: mmc: controller: Add max-sd-hs-hz
+ property
+From: Sarthak Garg <quic_sartgarg@quicinc.com>
+Date: Mon, 08 Sep 2025 16:11:20 +0530
+Message-Id: <20250908104122.2062653-3-quic_sartgarg@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Introduce a new optional device tree property max-sd-hs-hz to
+limit the maximum frequency (in Hz) used for SD cards operating in
+High-Speed (HS) mode due to any board electrical limitations.
+
+Signed-off-by: Sarthak Garg <quic_sartgarg@quicinc.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/mmc/mmc-controller-common.yaml    | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
+index 9a7235439759..7414d5522dfe 100644
+--- a/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
++++ b/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
+@@ -93,6 +93,14 @@ properties:
+     minimum: 400000
+     maximum: 384000000
+ 
++  max-sd-hs-hz:
++    description: |
++      Maximum frequency (in Hz) to be used for SD cards operating in
++      High-Speed (HS) mode.
++    minimum: 400000
++    maximum: 50000000
++    default: 50000000
++
+   disable-wp:
+     $ref: /schemas/types.yaml#/definitions/flag
+     description:
+-- 
+2.34.1
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v6 3/4] mmc: core: Introduce a new flag max-sd-hs-hz
+From: Sarthak Garg <quic_sartgarg@quicinc.com>
+Date: Mon, 08 Sep 2025 16:11:21 +0530
+Message-Id: <20250908104122.2062653-4-quic_sartgarg@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Introduce a new device tree flag to cap the maximum High-Speed (HS)
+mode frequency for SD cards, accommodating board-specific
+electrical limitations which cannot support the default 50Mhz HS
+frequency and others.
+
+Signed-off-by: Sarthak Garg <quic_sartgarg@quicinc.com>
+---
+ drivers/mmc/core/host.c  | 2 ++
+ drivers/mmc/core/sd.c    | 2 +-
+ include/linux/mmc/host.h | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index dacb5bd9bb71..3fe6ae56a6ae 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -302,6 +302,8 @@ int mmc_of_parse(struct mmc_host *host)
+ 	/* f_max is obtained from the optional "max-frequency" property */
+ 	device_property_read_u32(dev, "max-frequency", &host->f_max);
+ 
++	device_property_read_u32(dev, "max-sd-hs-hz", &host->max_sd_hs_hz);
++
+ 	/*
+ 	 * Configure CD and WP pins. They are both by default active low to
+ 	 * match the SDHCI spec. If GPIOs are provided for CD and / or WP, the
+diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
+index ec02067f03c5..67cd63004829 100644
+--- a/drivers/mmc/core/sd.c
++++ b/drivers/mmc/core/sd.c
+@@ -359,7 +359,7 @@ static int mmc_read_switch(struct mmc_card *card)
+ 	}
+ 
+ 	if (status[13] & SD_MODE_HIGH_SPEED)
+-		card->sw_caps.hs_max_dtr = HIGH_SPEED_MAX_DTR;
++		card->sw_caps.hs_max_dtr = card->host->max_sd_hs_hz ?: HIGH_SPEED_MAX_DTR;
+ 
+ 	if (card->scr.sda_spec3) {
+ 		card->sw_caps.sd3_bus_mode = status[13];
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index 68f09a955a90..a698b4b02d95 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -565,6 +565,7 @@ struct mmc_host {
+ 	int			hsq_depth;
+ 
+ 	u32			err_stats[MMC_ERR_MAX];
++	unsigned int		max_sd_hs_hz;
+ 	unsigned long		private[] ____cacheline_aligned;
+ };
+ 
+-- 
+2.34.1
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v6 4/4] arm64: dts: qcom: sm8550: Limit max SD HS mode
+ frequency by default
+From: Sarthak Garg <quic_sartgarg@quicinc.com>
+Date: Mon, 08 Sep 2025 16:11:22 +0530
+Message-Id: <20250908104122.2062653-5-quic_sartgarg@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Due to an implementation detail in this SoC, additional passive
+electrical components are required to achieve the maximum rated speed
+of the SD controller when paired with a High-Speed SD Card. Without
+them, the clock frequency must be limited to 37.5 MHz for link stability.
+
+Because the reference design does not contain these components, most
+(derivative) boards do not have them either. To accommodate for that,
+apply the frequency limit by default and delegate lifting it to the
+odd boards that do contain the necessary onboard hardware.
+
+Signed-off-by: Sarthak Garg <quic_sartgarg@quicinc.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sm8550.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+index 82cabf777cd2..3692a3a49634 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+@@ -3189,6 +3189,7 @@ &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>,
+ 					 &config_noc SLAVE_SDCC_2 QCOM_ICC_TAG_ACTIVE_ONLY>;
+ 			interconnect-names = "sdhc-ddr", "cpu-sdhc";
+ 			bus-width = <4>;
++			max-sd-hs-hz = <37500000>;
+ 			dma-coherent;
+ 
+ 			/* Forbid SDR104/SDR50 - broken hw! */
+-- 
+2.34.1
+

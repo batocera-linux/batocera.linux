@@ -1,11 +1,36 @@
-diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts
---- linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts	1970-01-01 00:00:00.000000000 +0000
-+++ linux/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts	2025-02-26 13:52:56.398992835 +0000
-@@ -0,0 +1,353 @@
+From d4c61eea0faae54d278058b39c5c568078025e60 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 27 Oct 2025 17:38:24 +0800
+Subject: [PATCH] arm64: dts: qcom: Add AYN Odin2
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ arch/arm64/boot/dts/qcom/Makefile             |   1 +
+ .../arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts | 323 ++++++++++++++++++
+ 2 files changed, 324 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 4bfa926b6a08..80e4d5b3a03d 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -126,6 +126,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= qcs6490-rb3gen2-industrial-mezzanine.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs6490-rb3gen2-vision-mezzanine.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8300-ride.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-aim300-aiot.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-ayn-odin2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs9100-ride.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs9100-ride-r3.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qdu1000-idp.dtb
+diff --git a/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts b/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts
+new file mode 100644
+index 000000000000..98cf638b24f4
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts
+@@ -0,0 +1,323 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
-+ * Copyright (c) 2025, ROCKNIX (https://github.com/ROCKNIX)
 + */
 +
 +/dts-v1/;
@@ -42,39 +67,6 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +				remote-endpoint = <&lt8912_out>;
 +			};
 +		};
-+	};
-+
-+	vcc_hdmi_1v8: vcc-hdmi-1v8-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_hdmi_1v8";
-+
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+
-+		gpio = <&tlmm 10 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	vdd_hdmi_1v8: vdd-hdmi-1v8-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vdd_hdmi_1v8";
-+
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+
-+		gpio = <&tlmm 6 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	vdd_disp_2v8: vdd-disp-2v8-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vdd_disp_2v8";
-+
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+
-+		gpio = <&tlmm 142 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
 +	};
 +
 +	led_left_side: led-controller-1 {
@@ -176,56 +168,59 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +			};
 +		};
 +	};
++
++	vcc_hdmi_1v8: vcc-hdmi-1v8-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_hdmi_1v8";
++
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		gpio = <&tlmm 10 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	vdd_disp_2v8: vdd-disp-2v8-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_disp_2v8";
++
++		regulator-min-microvolt = <2800000>;
++		regulator-max-microvolt = <2800000>;
++
++		gpio = <&tlmm 142 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	vdd_hdmi_1v8: vdd-hdmi-1v8-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_hdmi_1v8";
++
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		gpio = <&tlmm 6 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
 +};
 +
 +&display_panel {
 +	compatible = "syna,td4328";
 +
-+	vddio-supply = <&vreg_l12b_1p8>;
++	pinctrl-0 = <&dsi_p_rst_active>, <&dsi_p_te_active>;
++	pinctrl-1 = <&dsi_p_rst_suspend>, <&dsi_p_te_suspend>;
++	pinctrl-names = "default", "sleep";
++
 +	vdd-supply = <&vdd_disp_2v8>;
++	vddio-supply = <&vreg_l12b_1p8>;
 +
 +	backlight = <&backlight>;
++
 +	reset-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
 +
 +	rotation = <90>;
 +};
 +
-+&gpu {
-+	zap-shader {
-+		firmware-name = "qcom/sm8550/ayn/a740_zap.mbn";
-+	};
-+};
-+
-+&pmk8550_gpios {
-+	pmk8550_sleep_clk: sleep-clk-state {
-+		pins = "gpio3";
-+		function = "func1";
-+		input-disable;
-+		output-enable;
-+		bias-disable;
-+		power-source = <0>;
-+	};
-+
-+	pwm_backlight_default: pwm-backlight-default-state {
-+		pins = "gpio5";
-+		function = "func3";
-+		input-disable;
-+		output-low;
-+		output-enable;
-+		bias-disable;
-+		power-source = <0>;
-+		qcom,drive-strength = <2>;
-+	};
-+};
-+
-+&pmk8550_pwm {
-+	status = "okay";
-+};
-+
 +&i2c0 {
-+	clock-frequency = <400000>;
-+	status = "okay";
-+
 +	pwm_rgb_left: sn3112@54 {
 +		compatible = "si-en,sn3112-pwm";
 +		reg = <0x54>;
@@ -236,19 +231,17 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +};
 +
 +&i2c4 {
-+	clock-frequency = <400000>;
-+	status = "okay";
-+
 +	touchscreen@20 {
 +		compatible = "syna,rmi4-i2c";
 +		reg = <0x20>;
 +		#address-cells = <1>;
 +		#size-cells = <0>;
-+		interrupts-extended = <&tlmm 25 0x2008>;
++		interrupt-parent = <&tlmm>;
++		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
 +
 +		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&ts_int_default>;
-+		pinctrl-1 = <&ts_int_sleep>;
++		pinctrl-0 = <&ts_p_int_default>;
++		pinctrl-1 = <&ts_p_int_sleep>;
 +
 +		vio-supply = <&vreg_l12b_1p8>;
 +		
@@ -274,9 +267,6 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +};
 +
 +&i2c12 {
-+	clock-frequency = <400000>;
-+	status = "okay";
-+
 +	pwm_rgb_right: sn3112@54 {
 +		compatible = "si-en,sn3112-pwm";
 +		reg = <0x54>;
@@ -286,27 +276,14 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +	};
 +};
 +
-+&remoteproc_adsp {
-+	firmware-name = "qcom/sm8550/ayn/odin2/adsp.mbn",
-+			"qcom/sm8550/ayn/odin2/adsp_dtb.mbn";
-+	status = "okay";
-+};
-+
-+&spk_amp_l {
-+	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
-+};
-+
-+&spk_amp_r {
-+	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
-+};
-+
 +&i2c_hub_0 {
 +	clock-frequency = <100000>;
 +	status = "okay";
 +
-+	hdmi-bridge@48 {
++	lt8912_codec: hdmi-bridge@48 {
 +		compatible = "lontium,lt8912b";
 +		reg = <0x48> ;
++
 +		reset-gpios = <&tlmm 7 GPIO_ACTIVE_LOW>;
 +
 +		vdd-supply = <&vdd_hdmi_1v8>;
@@ -355,3 +332,25 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2.dts linux/arch
 +	vdds-supply = <&vreg_l1e_0p88>;
 +	status = "okay";
 +};
++
++&pmk8550_pwm {
++	status = "okay";
++};
++
++&remoteproc_adsp {
++	firmware-name = "qcom/sm8550/ayn/odin2/adsp.mbn",
++			"qcom/sm8550/ayn/odin2/adsp_dtb.mbn";
++	status = "okay";
++};
++
++&spk_amp_l {
++	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
++};
++
++&spk_amp_r {
++	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
++};
++
+-- 
+2.34.1
+
