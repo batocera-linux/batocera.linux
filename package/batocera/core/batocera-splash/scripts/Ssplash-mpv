@@ -139,7 +139,7 @@ do_videostart ()
         mpv_video="${mpv_video} --vf=scale=${resize}"
         drm_mode=$resolution_only
     fi
-    
+
     video_subtitle=$(batocera-settings-get splash.screen.subtitle)
     if [[ $? -eq 0 ]]; then
 	if test "${video_subtitle}" = 0
@@ -150,15 +150,35 @@ do_videostart ()
 
     # determine the output display to use for MPV
     # fixes splash video output where the user wants it
-    if preferred_display=$(batocera-settings-get global.videooutput); then
+    if preferred_display=$(batocera-settings-get-master global.videooutput); then
         echo "Splash: Preferred display is $preferred_display" > $log
-        display_type=$(echo "$preferred_display" | cut -d'-' -f1)
-        if [[ "$display_type" == "DisplayPort" ]]; then
-            # workaround some cards using DisplayPort as the xorg output name
-            display_type="DP"
+
+        for card_folder_path in /sys/class/drm/card*; do
+            # Construct the full path to the specific connector's status file
+            specific_connector_status_file="${card_folder_path}/${card_folder_path##*/}-${preferred_display}/status"
+
+            if [ -f "$specific_connector_status_file" ] && [ "$(cat "$specific_connector_status_file")" == "connected" ]; then
+                echo "Splash: Exactly matched preferred display '$preferred_display' and it is connected." >> "$log"
+                drm_connector="$preferred_display"
+                card_id=$(basename "$card_folder_path")
+                card_number=$(echo "$card_id" | sed -n 's/card\([0-9]\+\).*/\1/p')
+                card_path="/dev/dri/card$card_number"
+                echo "Splash: Selected DRM connector: $drm_connector" >> "$log"
+                echo "Splash: DRM connected card path: $card_path" >> "$log"
+                break # Found our exact match, exit this loop
+            fi
+        done
+
+        if [ -z "$drm_connector" ]; then
+            echo "Splash: Exact preferred display not found or not connected. Falling back to original method." >> $log
+            display_type=$(echo "$preferred_display" | cut -d'-' -f1)
+            if [[ "$display_type" == "DisplayPort" ]]; then
+                # workaround some cards using DisplayPort as the xorg output name
+                display_type="DP"
+            fi
+            echo "Splash: Display Type = $display_type" >> $log
+            read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
         fi
-        echo "Splash: Display Type = $display_type" >> $log
-        read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
     else
         # we choose the first connected display
         mpv_connector=$(mpv --drm-connector=help | grep "(connected)" | sed 's/ (connected)//' | sed 's/^[[:space:]]*//' | head -n1)

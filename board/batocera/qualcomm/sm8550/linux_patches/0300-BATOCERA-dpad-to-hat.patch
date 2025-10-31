@@ -1,0 +1,94 @@
+diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c.new
+index 353683b9bc..b0612f55b6 100644
+--- a/drivers/input/joystick/rsinput.c
++++ b/drivers/input/joystick/rsinput.c.new
+@@ -3,6 +3,7 @@
+  * RSInput Gamepad Driver
+  *
+  * Copyright (C) 2024 Teguh Sobirin <teguh@sobir.in>
++ * Copyright (C) 2025 Daniel Martin <dmanlfc@gmail.com>
+  *
+  */
+ #include <linux/errno.h>
+@@ -64,9 +65,9 @@ struct rsinput_driver {
+ 
+ static const unsigned int keymap[] = {
+     BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
+-    BTN_NORTH,   BTN_WEST,	    BTN_EAST,	   BTN_SOUTH,
+-    BTN_TL,	     BTN_TR,	    BTN_SELECT,	   BTN_START,
+-    BTN_THUMBL,  BTN_THUMBR,    BTN_MODE,	   BTN_BACK
++    BTN_NORTH,   BTN_WEST,	BTN_EAST,      BTN_SOUTH,
++    BTN_TL,	 BTN_TR,	BTN_SELECT,    BTN_START,
++    BTN_THUMBL,  BTN_THUMBR,    BTN_MODE,      BTN_BACK
+ };
+ 
+ static uint8_t compute_checksum(const uint8_t *data, size_t len) {
+@@ -219,12 +220,32 @@ static void handle_cmd_status(struct rsinput_driver *drv, const uint8_t *data, s
+     static unsigned long prev_states;
+     unsigned long keys = data[FRAME_POS_DATA_1] | (data[FRAME_POS_DATA_2] << 8);
+     unsigned long current_states = keys, changes;
++    unsigned long dpad_mask = BIT(0) | BIT(1) | BIT(2) | BIT(3);
++    unsigned long button_states = current_states & ~dpad_mask;
++    unsigned long button_prev = prev_states & ~dpad_mask;
+     int i;
+ 
+-    bitmap_xor(&changes, &current_states, &prev_states, ARRAY_SIZE(keymap));
++    // Process only non-dpad buttons
++    bitmap_xor(&changes, &button_states, &button_prev, ARRAY_SIZE(keymap));
+ 
+     for_each_set_bit(i, &changes, ARRAY_SIZE(keymap)) {
+-        input_report_key(drv->input, keymap[i], (current_states & BIT(i)));
++        input_report_key(drv->input, keymap[i], (button_states & BIT(i)));
++    }
++    
++    // Handle D-pad as HAT
++    int hat_x = 0;
++    int hat_y = 0;
++    
++    if (current_states & BIT(0)) {
++        hat_y = -1;
++    } else if (current_states & BIT(1)) {
++        hat_y = 1;
++    }
++
++    if (current_states & BIT(2)) {
++        hat_x = -1;
++    } else if (current_states & BIT(3)) {
++        hat_x = 1;
+     }
+ 
+     int raw_trig_l_current = GAMEPAD_RAW_SENSOR_FULL_RANGE_VAL - (data[FRAME_POS_DATA_3] | (data[FRAME_POS_DATA_4] << 8));
+@@ -236,6 +257,10 @@ static void handle_cmd_status(struct rsinput_driver *drv, const uint8_t *data, s
+     int scaled_z  = scale_trigger_signed_range(raw_l_clamped, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
+     int scaled_rz = scale_trigger_signed_range(raw_r_clamped, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
+ 
++
++    input_report_abs(drv->input, ABS_HAT0X, hat_x);
++    input_report_abs(drv->input, ABS_HAT0Y, hat_y);
++
+     input_report_abs(drv->input, ABS_Z, scaled_z);
+     input_report_abs(drv->input, ABS_RZ, scaled_rz);
+     input_report_abs(drv->input, ABS_X,
+@@ -414,7 +439,7 @@ static int rsinput_probe(struct serdev_device *serdev) {
+     drv->input->id.version = (u16)gamepad_rev;
+ 
+     __set_bit(EV_KEY, drv->input->evbit);
+-    for (int i = 0; i < ARRAY_SIZE(keymap); i++)
++    for (int i = 4; i < ARRAY_SIZE(keymap); i++)
+         input_set_capability(drv->input, EV_KEY, keymap[i]);
+ 
+     __set_bit(EV_ABS, drv->input->evbit);
+@@ -422,6 +447,8 @@ static int rsinput_probe(struct serdev_device *serdev) {
+         input_set_abs_params(drv->input, i, -0x580, 0x580,
+                      0, 0);
+ 
++    input_set_abs_params(drv->input, ABS_HAT0X, -1, 1, 0, 0);
++    input_set_abs_params(drv->input, ABS_HAT0Y, -1, 1, 0, 0);
+     input_set_abs_params(drv->input, ABS_Z, 0, 1830, 0, 30);
+     input_set_abs_params(drv->input, ABS_RZ, 0, 1830, 0, 30);
+ 
+@@ -474,3 +501,4 @@ module_serdev_device_driver(rsinput_driver);
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("RSInput Gamepad Driver");
+ MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
++MODULE_AUTHOR("Daniel Martin <dmanlfc@gmail.com>");

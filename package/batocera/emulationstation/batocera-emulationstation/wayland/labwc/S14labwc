@@ -1,13 +1,17 @@
 #!/bin/sh
 
-SRC_FILE="/usr/share/labwc/rc.xml"
+SRC_DIR="/usr/share/labwc"
 DEST_DIR="/userdata/system/.config/labwc"
 
 start() {
     echo "Initializing Labwc configuration..."
     mkdir -p "$DEST_DIR"
-    echo "Copying $SRC_FILE to $DEST_DIR"
-    cp "$SRC_FILE" "$DEST_DIR/"
+    for file in rc.xml autostart; do
+        echo "Copying $file to $DEST_DIR (overwriting)..."
+        cp "$SRC_DIR/$file" "$DEST_DIR/"
+    done
+
+    echo "Configuration copy complete."
 }
 
 case "$1" in
