@@ -95,28 +95,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
         echo "Standalone: Using pre-configured video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
     fi
 
-    # Because of xinerama breaking es, enable only one screen at a time
-    # /var/run/switch_screen_request is a file to request screen switch
-    if [ -e "/var/run/switch_screen_request" ]; then
-        echo "Standalone: Switch screen request" >> "$log"
-        requested_output=$(cat "/var/run/switch_screen_request")
-        
-        # Set the primary output to the requested screen
-        settings_output="$requested_output"
-        settings_output2=""
-        settings_output3=""
-
-        # Try to fill the second screen with a different, non-requested output
-        for output in $(batocera-settings-get global.videooutput) $(batocera-settings-get global.videooutput2) $(batocera-settings-get global.videooutput3); do
-            if [ "$output" != "$requested_output" ]; then
-                settings_output2="$output"
-                break
-            fi
-        done
-
-        rm "/var/run/switch_screen_request"
-    fi
-
     echo "Standalone: Validating detected outputs..." >> "$log"
     # VALIDATE OUTPUTS
     #   The output must exists in listOutputs
