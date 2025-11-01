@@ -51,6 +51,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
+    
+    # Use --init to get the current screens...
+    batocera-switch-screen-checker --init
 
     # Attempt to get video outputs from master settings first
     settings_output=$(batocera-settings-get-master global.videooutput)
@@ -65,12 +68,31 @@ while [ -e "${REBOOT_FLAG}" ]; do
         settings_output3=$(batocera-settings-get global.videooutput3)
     fi
 
-    # If no video output settings are found, initialize the screen checker
+    # If no video output settings are found, check for the screen checker's status file.
     if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
-        echo "Standalone: No video output settings found, initializing screen checker baseline..." >> "$log"
-        batocera-switch-screen-checker --init
+        echo "Standalone: No video output settings found, checking for screen checker baseline..." >> "$log"
+        status_file="/var/run/batocera-switch-screen-checker-status"
+        if [ -f "$status_file" ]; then
+            echo "Standalone: Found screen checker status file. Reading outputs." >> "$log"
+            # Read all lines from the status file into an array
+            mapfile -t outputs < "$status_file"
+            # Assign outputs from the array to the settings variables
+            # The -n check ensures we only assign if the value is not null
+            if [ -n "${outputs[0]}" ]; then
+                settings_output="${outputs[0]}"
+            fi
+            if [ -n "${outputs[1]}" ]; then
+                settings_output2="${outputs[1]}"
+            fi
+            if [ -n "${outputs[2]}" ]; then
+                settings_output3="${outputs[2]}"
+            fi
+            echo "Standalone: Assigned from file - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
+        else
+            echo "Standalone: Screen checker status file not found. No outputs assigned." >> "$log"
+        fi
     else
-        echo "Standalone: Using video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
+        echo "Standalone: Using pre-configured video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
     fi
 
     # Because of xinerama breaking es, enable only one screen at a time
