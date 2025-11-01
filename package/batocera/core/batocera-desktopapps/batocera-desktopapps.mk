@@ -10,6 +10,11 @@ BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
 BATOCERA_DESKTOPAPPS_APPS  = xterm.desktop
 BATOCERA_DESKTOPAPPS_ICONS =
 
+#file-roller integration for pcmanfm - open/list archives
+BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
+
+## System depended applets
+
 # wiimote
 BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
@@ -164,6 +169,9 @@ ifeq ($(BR2_PACKAGE_LINDBERGH_LOADER),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-lindbergh
 endif
 
+## Context Menu Actions
+BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
@@ -172,14 +180,21 @@ define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# apps
 	mkdir -p $(TARGET_DIR)/usr/share/applications
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_APPS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/apps/$(f) $(TARGET_DIR)/usr/share/applications/$(f)$(sep))
+	# default-mime types
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/mime/defaults.list $(TARGET_DIR)/usr/share/applications/defaults.list
 
 	# icons
 	mkdir -p $(TARGET_DIR)/usr/share/icons/batocera
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_ICONS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/icons/$(f) $(TARGET_DIR)/usr/share/icons/batocera/$(f)$(sep))
 
+	# context menu actions
+	mkdir -p $(TARGET_DIR)/usr/share/file-manager/actions
+	$(foreach f,$(BATOCERA_DESKTOPAPPS_ACTIONS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/contextactions/$(f) $(TARGET_DIR)/usr/share/file-manager/actions/$(f)$(sep))
+
 	# menu
 	mkdir -p $(TARGET_DIR)/etc/xdg/menus
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/menu/batocera-applications.menu $(TARGET_DIR)/etc/xdg/menus/batocera-applications.menu
+
 endef
 
 $(eval $(generic-package))
