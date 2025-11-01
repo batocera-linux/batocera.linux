@@ -430,21 +430,34 @@ case "${ACTION}" in
 
             # Set EmulationStation to the primary output
             if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting emulationstation window to output: ${PRIMARY_OUT}"
+                _log "Setting emulationstation window to output: ${PRIMARY_OUT}"               
                 # Update FocusOutput for emulationstation
-                sed -i '/<windowRule title="emulationstation"/,/\/windowRule>/ { /<action name="FocusOutput"/ s/output="[^"]*"/output="'"${PRIMARY_OUT}"'"/ }' "${RC_XML}"
+                sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="FocusOutput">/ {
+                    n
+                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+                } }' "${RC_XML}"
+                
                 # Update MoveToOutput for emulationstation
-                sed -i '/<windowRule title="emulationstation"/,/\/windowRule>/ { /<action name="MoveToOutput"/ s/output="[^"]*"/output="'"${PRIMARY_OUT}"'"/ }' "${RC_XML}"
+                sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                    n
+                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+                } }' "${RC_XML}"
             fi
 
             # Set backglass to the secondary output, or clear if no secondary output
+            BACKGLASS_OUT=""
             if [ -n "${SECONDARY_OUT}" ]; then
                 _log "Setting backglass window to output: ${SECONDARY_OUT}"
-                sed -i '/<windowRule title="backglass"/,/\/windowRule>/ s/output="[^"]*"/output="'"${SECONDARY_OUT}"'"/' "${RC_XML}"
+                BACKGLASS_OUT="${SECONDARY_OUT}"
             else
                 _log "No secondary output. Clearing backglass window output rule."
-                sed -i '/<windowRule title="backglass"/,/\/windowRule>/ s/output="[^"]*"/output=""/' "${RC_XML}"
+                # The variable is already empty, which is what we want.
             fi
+            
+            sed -i -e '/<windowRule.*title="backglass"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
+            } }' "${RC_XML}"
 
             # Trigger labwc to reload the configuration
             _reconfigure_labwc
@@ -493,48 +506,93 @@ case "${ACTION}" in
             _log "setOutput: Successfully configured outputs."
         fi
         ;;
+        
+        "repositionOutputs")
+        # This function arranges the specified outputs.
+        # For the AYN_Thor model, it stacks them vertically.
+        # For all other models, it arranges them horizontally.
 
-    "repositionOutputs")
-        # This function should be called AFTER resolutions and rotations are set.
-        # It arranges the specified outputs horizontally.
-        _log "repositionOutputs: Arranging outputs: $*"
+        # Check for the specific model
+        if [ "$(batocera-model)" = "AYN_Thor" ]; then
+            _log "repositionOutputs: AYN_Thor model detected. Arranging outputs vertically."
 
-        CMD_ARGS_VAR=""
-        CURRENT_X_POS=0
+            CMD_ARGS_VAR=""
+            CURRENT_Y_POS=0
 
-        for target in "$@"; do
-            if [ -z "$target" ]; then continue; fi
+            for target in "$@"; do
+                if [ -z "$target" ]; then continue; fi
 
-            # Set the position for the current screen
-            CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos ${CURRENT_X_POS},0"
-            _log "repositionOutputs: Setting ${target} to position ${CURRENT_X_POS},0"
+                # Set the position for the current screen (0,CURRENT_Y_POS)
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos 0,${CURRENT_Y_POS}"
+                _log "repositionOutputs: Setting ${target} to position 0,${CURRENT_Y_POS}"
 
-            # Get the current resolution and rotation to calculate the effective width
-            TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
-            if [ -z "${TARGET_RESOLUTION_STR}" ]; then
-                _log "repositionOutputs: Warning: Could not get resolution for '${target}'. Next screen position may be wrong."
-                continue
-            fi
+                # Get the current resolution and rotation to calculate the effective height
+                TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
+                if [ -z "${TARGET_RESOLUTION_STR}" ]; then
+                    _log "repositionOutputs: Warning: Could not get resolution for '${target}'. Next screen position may be wrong."
+                    continue
+                fi
 
-            RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
-            RAW_ROTATION=$(_get_current_transform "${target}")
-            
-            # Use the effective width (swapped for 90/270 degree rotations)
-            if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
-                # Rotated 90 or 270 degrees, so height becomes the effective width
-                EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
-            else
-                # Normal or 180 degree rotation, width is width
-                EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
-            fi
+                RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
+                RAW_ROTATION=$(_get_current_transform "${target}")
+                
+                # Use the effective height (swapped for 90/270 degree rotations)
+                if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
+                    # Rotated 90 or 270 degrees, so width becomes the effective height
+                    EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
+                else
+                    # Normal or 180 degree rotation, height is height
+                    EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
+                fi
 
-            if echo "${EFFECTIVE_WIDTH}" | grep -qE '^[0-9]+$'; then
-                CURRENT_X_POS=$((CURRENT_X_POS + EFFECTIVE_WIDTH))
-                _log "repositionOutputs: Effective width of ${target} is ${EFFECTIVE_WIDTH}. Next X position is ${CURRENT_X_POS}."
-            else
-                _log "repositionOutputs: Warning: Could not parse effective width for '${target}'."
-            fi
-        done
+                if echo "${EFFECTIVE_HEIGHT}" | grep -qE '^[0-9]+$'; then
+                    CURRENT_Y_POS=$((CURRENT_Y_POS + EFFECTIVE_HEIGHT))
+                    _log "repositionOutputs: Effective height of ${target} is ${EFFECTIVE_HEIGHT}. Next Y position is ${CURRENT_Y_POS}."
+                else
+                    _log "repositionOutputs: Warning: Could not parse effective height for '${target}'."
+                fi
+            done
+
+        else
+            _log "repositionOutputs: Arranging outputs horizontally: $*"
+
+            CMD_ARGS_VAR=""
+            CURRENT_X_POS=0
+
+            for target in "$@"; do
+                if [ -z "$target" ]; then continue; fi
+
+                # Set the position for the current screen
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos ${CURRENT_X_POS},0"
+                _log "repositionOutputs: Setting ${target} to position ${CURRENT_X_POS},0"
+
+                # Get the current resolution and rotation to calculate the effective width
+                TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
+                if [ -z "${TARGET_RESOLUTION_STR}" ]; then
+                    _log "repositionOutputs: Warning: Could not get resolution for '${target}'. Next screen position may be wrong."
+                    continue
+                fi
+
+                RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
+                RAW_ROTATION=$(_get_current_transform "${target}")
+                
+                # Use the effective width (swapped for 90/270 degree rotations)
+                if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
+                    # Rotated 90 or 270 degrees, so height becomes the effective width
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
+                else
+                    # Normal or 180 degree rotation, width is width
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
+                fi
+
+                if echo "${EFFECTIVE_WIDTH}" | grep -qE '^[0-9]+$'; then
+                    CURRENT_X_POS=$((CURRENT_X_POS + EFFECTIVE_WIDTH))
+                    _log "repositionOutputs: Effective width of ${target} is ${EFFECTIVE_WIDTH}. Next X position is ${CURRENT_X_POS}."
+                else
+                    _log "repositionOutputs: Warning: Could not parse effective width for '${target}'."
+                fi
+            done
+        fi
 
         if [ -n "${CMD_ARGS_VAR}" ]; then
             _log "Executing: ${WLR_RANDR}${CMD_ARGS_VAR}"

@@ -130,12 +130,12 @@ do_videostart ()
     if [[ -n "$video_resize" ]]; then
         resolution_only="${video_resize%%.*}"
         if [[ "${video_rotation}" -eq 90 || "${video_rotation}" -eq 270 ]]; then
-            # invert the resolution
+            # invert the resize resolution
             width="${resolution_only%x*}"
             height="${resolution_only#*x}"
-            resolution_only="${height}x${width}"
+            resize_rotate="${height}x${width}"
         fi
-        resize="${resolution_only/x/:}"
+        resize="${resize_rotate/x/:}"
         mpv_video="${mpv_video} --vf=scale=${resize}"
         drm_mode=$resolution_only
     fi
@@ -151,7 +151,11 @@ do_videostart ()
     # determine the output display to use for MPV
     # fixes splash video output where the user wants it
     if preferred_display=$(batocera-settings-get-master global.videooutput); then
-        echo "Splash: Preferred display is $preferred_display" > $log
+        if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
+            echo "Splash: Preferred display is $preferred_display" >> $log
+        else
+            echo "Splash: Preferred display is $preferred_display" > $log
+        fi
 
         for card_folder_path in /sys/class/drm/card*; do
             # Construct the full path to the specific connector's status file
