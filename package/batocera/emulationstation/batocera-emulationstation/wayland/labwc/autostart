@@ -14,6 +14,12 @@ while ! wlr-randr > /dev/null 2>&1; do
   fi
 done
 
+# Device quirks
+if [ "$(batocera-model)" = "AYN_Thor" ]; then
+    # Turn back on the bottom display
+    echo "on" > /sys/class/drm/card0-DSI-1/status
+fi
+
 # Now that we know the compositor is ready, launch our applications
 /usr/bin/batocera-mouse hide > /dev/null 2>&1
 /usr/bin/emulationstation-standalone > /dev/null 2>&1

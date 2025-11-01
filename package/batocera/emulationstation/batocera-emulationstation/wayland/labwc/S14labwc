@@ -1,17 +1,63 @@
 #!/bin/sh
 
+# This script initializes the Labwc configuration.
+# It first copies the default configuration files.
+# Then it immediately modifies the rc.xml file with the
+# primary and secondary video outputs defined in Batocera's settings.
+# This ensures labwc starts with the correct configuration from the beginning.
+
 SRC_DIR="/usr/share/labwc"
 DEST_DIR="/userdata/system/.config/labwc"
 
 start() {
-    echo "Initializing Labwc configuration..."
+    display_log="/userdata/system/logs/display.log"
+    mkdir -p "$(dirname "$display_log")"
+    echo "Initializing Labwc configuration..." > "$display_log"
     mkdir -p "$DEST_DIR"
     for file in rc.xml autostart; do
-        echo "Copying $file to $DEST_DIR (overwriting)..."
+        echo "Copying default $file to $DEST_DIR..." >> "$display_log"
         cp "$SRC_DIR/$file" "$DEST_DIR/"
     done
+    RC_XML_PATH="$DEST_DIR/rc.xml"
+    # Double check if the file exists before trying to modify it
+    if [ -f "${RC_XML_PATH}" ]; then
+        echo "Fetching video output settings to apply to ${RC_XML_PATH}..." >> "$display_log"
+        # Get the primary and secondary video outputs from Batocera's settings
+        PRIMARY_OUT=$(batocera-settings-get-master global.videooutput)
+        SECONDARY_OUT=$(batocera-settings-get-master global.videooutput2)
+        echo "Found Primary Output: ${PRIMARY_OUT:-'none'}" >> "$display_log"
+        echo "Found Secondary Output: ${SECONDARY_OUT:-'none'}" >> "$display_log"       
+        # Set EmulationStation to the primary output
+        if [ -n "${PRIMARY_OUT}" ]; then
+            echo "Applying window rules for EmulationStation -> ${PRIMARY_OUT}" >> "$display_log"
+            # Update FocusOutput for emulationstation
+            sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="FocusOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+            } }' "${RC_XML_PATH}"
+            # Update MoveToOutput for emulationstation
+            sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+            } }' "${RC_XML_PATH}"
+        else
+            echo "No primary output set. Skipping EmulationStation rules." >> "$display_log"
+        fi
+        # Set backglass to the secondary output, or clear if no secondary output
+        echo "Applying window rules for backglass..." >> "$display_log"
+        BACKGLASS_OUT=""
+        if [ -n "${SECONDARY_OUT}" ]; then
+            BACKGLASS_OUT="${SECONDARY_OUT}"
+        fi
+        sed -i -e '/<windowRule.*title="backglass"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+            n
+            s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
+        } }' "${RC_XML_PATH}"
 
-    echo "Configuration copy complete."
+        echo "Labwc configuration modification complete." >> "$display_log"
+    else
+        echo "ERROR: ${RC_XML_PATH} not found after copy. Cannot apply settings." >> "$display_log"
+    fi
 }
 
 case "$1" in

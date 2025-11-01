@@ -40,11 +40,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
         sleep 5; continue
     fi
 
-    # Now that the compositor is ready, create the authoritative baseline
-    # for the current display setup.
-    echo "Standalone: Initializing screen checker baseline..." >> "$log"
-    batocera-switch-screen-checker --init
-
     ### LANGUAGE SETTINGS ###
     echo "Standalone: --- Applying Language Settings ---" >> "$log"
     settings_lang="$(batocera-settings-get system.language)"
@@ -56,34 +51,48 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
+
+    # Attempt to get video outputs from master settings first
+    settings_output=$(batocera-settings-get-master global.videooutput)
+    settings_output2=$(batocera-settings-get-master global.videooutput2)
+    settings_output3=$(batocera-settings-get-master global.videooutput3)
+
+    # If master settings are not found, try the regular settings
+    if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
+        echo "Standalone: Master video outputs not found, trying default" >> "$log"
+        settings_output=$(batocera-settings-get global.videooutput)
+        settings_output2=$(batocera-settings-get global.videooutput2)
+        settings_output3=$(batocera-settings-get global.videooutput3)
+    fi
+
+    # If no video output settings are found, initialize the screen checker
+    if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
+        echo "Standalone: No video output settings found, initializing screen checker baseline..." >> "$log"
+        batocera-switch-screen-checker --init
+    else
+        echo "Standalone: Using video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
+    fi
+
     # Because of xinerama breaking es, enable only one screen at a time
     # /var/run/switch_screen_request is a file to request screen switch
     if [ -e "/var/run/switch_screen_request" ]; then
-        echo "Switch screen request" >> $log
-        settings_output=$(cat "/var/run/switch_screen_request")
-        settings_output2=
-        settings_output3=
+        echo "Standalone: Switch screen request" >> "$log"
+        requested_output=$(cat "/var/run/switch_screen_request")
+        
+        # Set the primary output to the requested screen
+        settings_output="$requested_output"
+        settings_output2=""
+        settings_output3=""
 
-        # Try to fill the screen 2
-        # Fill the screen2 with videooutput if <> from switch_screen_request, else videooutput2 if <> from switch_screen_request
-        if [ "${settings_output}" != "" ]; then
-            stmp="$(batocera-settings-get global.videooutput)"
-            if [ "${settings_output}" != "${stmp}" ]; then
-                settings_output2="${stmp}"
-            else
-                stmp="$(batocera-settings-get global.videooutput2)"
-                if [ "${settings_output}" != "${stmp}" ]; then
-                    settings_output2="${stmp}"
-                fi
+        # Try to fill the second screen with a different, non-requested output
+        for output in $(batocera-settings-get global.videooutput) $(batocera-settings-get global.videooutput2) $(batocera-settings-get global.videooutput3); do
+            if [ "$output" != "$requested_output" ]; then
+                settings_output2="$output"
+                break
             fi
-        fi
+        done
 
         rm "/var/run/switch_screen_request"
-    else
-        settings_output="$(batocera-settings-get global.videooutput)"
-        settings_output2="$(batocera-settings-get global.videooutput2)"
-        settings_output3="$(batocera-settings-get global.videooutput3)"
-        echo "Default video outputs: ${settings_output}, ${settings_output2}, ${settings_output3}" >> $log
     fi
 
     echo "Standalone: Validating detected outputs..." >> "$log"
@@ -95,7 +104,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     # Validate output 1
     if [ -n "${settings_output}" ]; then
         if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output}"'$'; then
-            echo "Invalid output: ${settings_output}" >> $log
+            echo "Standalone: Invalid output - ${settings_output}" >> $log
             settings_output=
         fi
     fi
@@ -105,7 +114,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             settings_output2=
         else
             if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output2}"'$'; then
-                echo "Invalid output: ${settings_output2}" >> $log
+                echo "Standalone: Invalid output - ${settings_output2}" >> $log
                 settings_output2=
             fi
         fi
@@ -116,7 +125,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             settings_output3=
         else
             if ! batocera-resolution listOutputs | grep -qE '^'"${settings_output3}"'$'; then
-                echo "Invalid output: ${settings_output3}" >> $log
+                echo "Standalone: Invalid output - ${settings_output3}" >> $log
                 settings_output3=
             fi
         fi
@@ -130,13 +139,13 @@ while [ -e "${REBOOT_FLAG}" ]; do
     if [ -z "${settings_output}" ] && [ -n "${LAST_PRIMARY_SCREEN}" ]; then
         if batocera-resolution listOutputs | grep -qE "^${LAST_PRIMARY_SCREEN}$"; then
             settings_output="${LAST_PRIMARY_SCREEN}"
-            echo "Restored last primary video output: ${settings_output}" >> $log
+            echo "Standalone: Restored last primary video output - ${settings_output}" >> $log
         fi
     fi
 
     if [ -z "${settings_output}" ]; then
         settings_output=$(batocera-resolution currentOutput)
-        echo "First video output defaulted to: ${settings_output}" >> $log
+        echo "Standalone: First video output defaulted to - ${settings_output}" >> $log
         # currentOutput may be unplugged after an event of type unplugging it (/var/run/switch_screen_request)
         if ! batocera-resolution listOutputs | grep -qE "^${settings_output}$"; then
             echo "Standalone: Default output '${settings_output}' not connected. Finding first available." >> "$log"
@@ -266,9 +275,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### REFLECTION ###
     if batocera-resolution supportSystemReflection; then
-        echo "Standalone: --- Applying Reflection ---" >> "$log"
         display_reflection="$(/usr/bin/batocera-settings-get-master display.reflection)"
         if [ -n "${display_reflection}" ]; then
+            echo "Standalone: --- Applying Reflection ---" >> "$log"
             echo "Standalone: Applying reflection '${display_reflection}'." >> "$log"
             batocera-resolution setReflection "${display_reflection}"
         fi
@@ -338,12 +347,27 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ### BACKGLASS ###
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
-            BGOFFSETX=$(batocera-resolution --screen "${settings_output}" currentResolution | cut -d x -f 1)
+            # Initialize offsets to 0
+            BGOFFSETX=0
+            BGOFFSETY=0
+
+            # Get resolution/size info
+            PRIMARY_RES=$(batocera-resolution --screen "${settings_output}" currentResolution)
             BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
             THEME="$(batocera-settings-get backglass.theme)"
-                
-            echo "Launching backglass on '${settings_output2}' with OffsetX=${BGOFFSETX}, Size=${BGSIZE}" >> $log
-            batocera-backglass enable ${BGOFFSETX} 0 ${BGSIZE} "${THEME}"
+
+            # Get the device model
+            MODEL="$(batocera-model)"
+
+            # For AYN_Thor, set a vertical (Y) offset. For all other models, use the default horizontal (X) offset.
+            if [ "${MODEL}" = "AYN_Thor" ]; then
+                BGOFFSETY=$(echo "${PRIMARY_RES}" | cut -d x -f 2) # Height of the primary screen
+            else
+                BGOFFSETX=$(echo "${PRIMARY_RES}" | cut -d x -f 1) # Width of the primary screen
+            fi
+            echo "Standalone: Launching backglass on '${settings_output2}' with OffsetX=${BGOFFSETX} and OffsetY=${BGOFFSETY} with Size=${BGSIZE}" >> $log
+            # Launch backglass with the calculated offsets and size
+            batocera-backglass enable ${BGOFFSETX} ${BGOFFSETY} ${BGSIZE} "${THEME}"
         fi
     fi
     ###################
