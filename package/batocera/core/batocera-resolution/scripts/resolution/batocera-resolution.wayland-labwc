@@ -15,7 +15,7 @@ f_usage() {
     echo "${0} listOutputs" >&2
     echo "${0} currentOutput" >&2
     echo "${0} setOutput <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
-    echo "${0} repositionOutputs <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
+    echo "${0} repositionOutputs <left-right|top-bottom> <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
     echo "${0} minTomaxResolution [<MAX_RESOLUTION>]" >&2
     echo "${0} minTomaxResolution-secure [<MAX_RESOLUTION>]" >&2
     echo "${0} setRotation (0|1|2|3)" >&2
@@ -534,10 +534,12 @@ case "${ACTION}" in
         # This function arranges the specified outputs.
         # For the AYN_Thor model, it stacks them vertically.
         # For all other models, it arranges them horizontally.
+        DISPLAY_POSITION=$1
+        shift
 
         # Check for the specific model
-        if [ "$(batocera-model)" = "AYN_Thor" ]; then
-            _log "repositionOutputs: AYN_Thor model detected. Arranging outputs vertically."
+        if [ "${DISPLAY_POSITION}" = "top-bottom" ]; then
+            _log "repositionOutputs: Arranging outputs vertically."
 
             CMD_ARGS_VAR=""
             CURRENT_Y_POS=0

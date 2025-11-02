@@ -15,10 +15,8 @@ while ! wlr-randr > /dev/null 2>&1; do
 done
 
 # Device quirks
-if [ "$(batocera-model)" = "AYN_Thor" ]; then
-    # Turn back on the bottom display
-    echo "on" > /sys/class/drm/card0-DSI-1/status
-fi
+BATOCERA_MODEL=$(batocera-model)
+test -e "/usr/share/labwc/autostart_${BATOCERA_MODEL}" && "/usr/share/labwc/autostart_${BATOCERA_MODEL}"
 
 # Now that we know the compositor is ready, launch our applications
 /usr/bin/batocera-mouse hide > /dev/null 2>&1
