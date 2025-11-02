@@ -269,7 +269,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
         # Now that all screens are enabled and have their final resolution/rotation,
         # we can correctly position them next to each other
         echo "Standalone: --- Repositioning Outputs ---" >> "$log"
-        batocera-resolution repositionOutputs "${settings_output}" "${settings_output2}" "${settings_output3}"
+	display_position=$(/usr/bin/batocera-settings-get-master "display.position")
+	if [ -n "${display_position}" ]; then
+            batocera-resolution repositionOutputs "${display_position}" "${settings_output}" "${settings_output2}" "${settings_output3}"
+	fi
     fi
     ###################
 
@@ -359,8 +362,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
             # Get the device model
             MODEL="$(batocera-model)"
 
-            # For AYN_Thor, set a vertical (Y) offset. For all other models, use the default horizontal (X) offset.
-            if [ "${MODEL}" = "AYN_Thor" ]; then
+            # For AYN_Thor, set a vertical (Y) offset (for mouse usage). For all other models, use the default horizontal (X) offset.
+            DISPLAY_POSITION=$(/usr/bin/batocera-settings-get-master "display.position")
+            if [ "${DISPLAY_POSITION}" = "top-bottom" ]; then
                 BGOFFSETY=$(echo "${PRIMARY_RES}" | cut -d x -f 2) # Height of the primary screen
             else
                 BGOFFSETX=$(echo "${PRIMARY_RES}" | cut -d x -f 1) # Width of the primary screen

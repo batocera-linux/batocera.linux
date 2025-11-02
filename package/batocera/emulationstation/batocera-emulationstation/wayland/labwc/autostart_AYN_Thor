@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Turn back on the bottom display
+echo "on" > /sys/class/drm/card0-DSI-1/status
