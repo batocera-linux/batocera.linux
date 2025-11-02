@@ -71,5 +71,16 @@
       </action>
     </windowRule>
     <windowRule title="dolphin" fullscreen="yes" serverDecoration="no" />
+    <windowRule identifier="azahar" serverDecoration="no">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="azahar" title="*Secondary Window*" serverDecoration="no">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+      <action name="ToggleFullscreen" />
+    </windowRule>
   </windowRules>
 </labwc_config>

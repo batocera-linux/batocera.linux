@@ -458,6 +458,29 @@ case "${ACTION}" in
                 n
                 s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
             } }' "${RC_XML}"
+         
+            # Set the main azahar window to the primary output
+            if [ -n "${PRIMARY_OUT}" ]; then
+                _log "Setting main azahar window to output: ${PRIMARY_OUT}"
+                sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                    n
+                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+                } }' "${RC_XML}"
+            fi
+
+            # Set the azahar Secondary Window to the secondary output
+            AZAHAR_SECONDARY_OUT=""
+            if [ -n "${SECONDARY_OUT}" ]; then
+                _log "Setting azahar Secondary Window to output: ${SECONDARY_OUT}"
+                AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
+            else
+                _log "No secondary output. Clearing azahar Secondary Window output rule."
+            fi
+
+            sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
+            } }' "${RC_XML}"
 
             # Trigger labwc to reload the configuration
             _reconfigure_labwc

@@ -54,6 +54,28 @@ start() {
             s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
         } }' "${RC_XML_PATH}"
 
+        echo "Applying window rules for azahar..." >> "$display_log"
+        if [ -n "${PRIMARY_OUT}" ]; then
+            echo "Setting main azahar window -> ${PRIMARY_OUT}" >> "$display_log"
+            sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+            } }' "${RC_XML_PATH}"
+        else
+            echo "No primary output set. Skipping main azahar rule." >> "$display_log"
+        fi
+        AZAHAR_SECONDARY_OUT=""
+        if [ -n "${SECONDARY_OUT}" ]; then
+            AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
+            echo "Setting azahar Secondary Window -> ${AZAHAR_SECONDARY_OUT}" >> "$display_log"
+        else
+            echo "No secondary output set. Clearing output for azahar Secondary Window." >> "$display_log"
+        fi
+        sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+            n
+            s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
+        } }' "${RC_XML_PATH}"
+
         echo "Labwc configuration modification complete." >> "$display_log"
     else
         echo "ERROR: ${RC_XML_PATH} not found after copy. Cannot apply settings." >> "$display_log"
