@@ -34,25 +34,12 @@ INPUT_WHITELIST_PATTERNS=(
 
 # --- Backlight Control Functions ---
 save_and_turn_off_backlight() {
-    current_brightness=$(batocera-brightness)
-    stored_brightness=$(batocera-settings-get display.brightness)
-    if [ "$stored_brightness" != "$current_brightness" ]; then
-        if [ -e "/userdata/system/batocera.conf" ]; then
-            batocera-settings-set display.brightness "$current_brightness"
-        fi
-    fi
-	batocera-brightness 0
+    /etc/init.d/S27brightness stop
+    batocera-brightness 0
 }
 
 restore_backlight() {
-    # don't set if under 5%, while it can cause false positive issues
-    stored_brightness=$(batocera-settings-get display.brightness)
-    if [ $? -eq 0 ]; then
-        if [ "$stored_brightness" -lt 5 ]; then
-            stored_brightness=5
-        fi
-        batocera-brightness "$stored_brightness"
-    fi
+    /etc/init.d/S27brightness start
 }
 
 # --- Display Functions ---
