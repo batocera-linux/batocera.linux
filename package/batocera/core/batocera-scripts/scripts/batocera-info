@@ -153,21 +153,45 @@ if [ -n "$DISPLAY_COMPOSITOR" ]; then
     echo "Display Compositor: ${DISPLAY_COMPOSITOR}"
 fi
 
-# Current Resolution
+# Current Resolution and Refresh Rate for single or multiple displays
+OUTPUTS=$(batocera-resolution listOutputs)
+set -- ${OUTPUTS}
+NUM_OUTPUTS=$#
+
 if test -z "${DISPLAY}"; then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-DISPLAYRES=$(batocera-resolution currentResolution)
-if [ ! -z "$WAYLAND_DISPLAY" ]; then # wayland
-    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
-elif test -f /var/run/drmMode; then  # drm
-    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $4}')
-else # xorg
-    DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
+if [ "${NUM_OUTPUTS}" -le 1 ]; then
+    echo "Display Output: ${OUTPUTS}"
+    DISPLAYRES=$(batocera-resolution currentResolution)
+    if [ ! -z "$WAYLAND_DISPLAY" ]; then # wayland
+        DISPLAYRATE=$(batocera-resolution currentMode | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
+    elif test -f /var/run/drmMode; then  # drm
+        DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $4}')
+    else # xorg
+        DISPLAYRATE=$(batocera-resolution currentMode | awk -F'\\.' '{print $2"."$3}')
+    fi
+    echo "Display Resolution: ${DISPLAYRES}"
+    echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
+else
+    i=1
+    for output in ${OUTPUTS}; do
+        echo "Display Output ${i}: ${output}"     
+        DISPLAYRES=$(batocera-resolution --screen "${output}" currentResolution)
+        CURRENT_MODE=$(batocera-resolution --screen "${output}" currentMode)
+        if [ ! -z "$WAYLAND_DISPLAY" ]; then # wayland
+            DISPLAYRATE=$(echo "${CURRENT_MODE}" | awk -F'[x.]' '{printf "%.3f", $3 / 1000}')
+        elif test -f /var/run/drmMode; then  # drm
+            DISPLAYRATE=$(echo "${CURRENT_MODE}" | awk -F'\\.' '{print $4}')
+        else # xorg
+            DISPLAYRATE=$(echo "${CURRENT_MODE}" | awk -F'\\.' '{print $2"."$3}')
+        fi
+        echo "Display Resolution ${i}: ${DISPLAYRES}"
+        echo "Display Refresh Rate ${i}: ${DISPLAYRATE}Hz"
+        i=$((i + 1))
+    done
 fi
-echo "Display Resolution: ${DISPLAYRES}"
-echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
 
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
