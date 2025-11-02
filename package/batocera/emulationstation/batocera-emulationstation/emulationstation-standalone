@@ -359,12 +359,8 @@ while [ -e "${REBOOT_FLAG}" ]; do
             # Get the device model
             MODEL="$(batocera-model)"
 
-            # For AYN_Thor, set a vertical (Y) offset. For all other models, use the default horizontal (X) offset.
-            if [ "${MODEL}" = "AYN_Thor" ]; then
-                BGOFFSETY=$(echo "${PRIMARY_RES}" | cut -d x -f 2) # Height of the primary screen
-            else
-                BGOFFSETX=$(echo "${PRIMARY_RES}" | cut -d x -f 1) # Width of the primary screen
-            fi
+            BGOFFSETX=$(echo "${PRIMARY_RES}" | cut -d x -f 1) # Width of the primary screen
+
             echo "Standalone: Launching backglass on '${settings_output2}' with OffsetX=${BGOFFSETX} and OffsetY=${BGOFFSETY} with Size=${BGSIZE}" >> $log
             # Launch backglass with the calculated offsets and size
             batocera-backglass enable ${BGOFFSETX} ${BGOFFSETY} ${BGSIZE} "${THEME}"

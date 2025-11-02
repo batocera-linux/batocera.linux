@@ -531,52 +531,6 @@ case "${ACTION}" in
         ;;
         
         "repositionOutputs")
-        # This function arranges the specified outputs.
-        # For the AYN_Thor model, it stacks them vertically.
-        # For all other models, it arranges them horizontally.
-
-        # Check for the specific model
-        if [ "$(batocera-model)" = "AYN_Thor" ]; then
-            _log "repositionOutputs: AYN_Thor model detected. Arranging outputs vertically."
-
-            CMD_ARGS_VAR=""
-            CURRENT_Y_POS=0
-
-            for target in "$@"; do
-                if [ -z "$target" ]; then continue; fi
-
-                # Set the position for the current screen (0,CURRENT_Y_POS)
-                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos 0,${CURRENT_Y_POS}"
-                _log "repositionOutputs: Setting ${target} to position 0,${CURRENT_Y_POS}"
-
-                # Get the current resolution and rotation to calculate the effective height
-                TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
-                if [ -z "${TARGET_RESOLUTION_STR}" ]; then
-                    _log "repositionOutputs: Warning: Could not get resolution for '${target}'. Next screen position may be wrong."
-                    continue
-                fi
-
-                RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
-                RAW_ROTATION=$(_get_current_transform "${target}")
-                
-                # Use the effective height (swapped for 90/270 degree rotations)
-                if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
-                    # Rotated 90 or 270 degrees, so width becomes the effective height
-                    EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
-                else
-                    # Normal or 180 degree rotation, height is height
-                    EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
-                fi
-
-                if echo "${EFFECTIVE_HEIGHT}" | grep -qE '^[0-9]+$'; then
-                    CURRENT_Y_POS=$((CURRENT_Y_POS + EFFECTIVE_HEIGHT))
-                    _log "repositionOutputs: Effective height of ${target} is ${EFFECTIVE_HEIGHT}. Next Y position is ${CURRENT_Y_POS}."
-                else
-                    _log "repositionOutputs: Warning: Could not parse effective height for '${target}'."
-                fi
-            done
-
-        else
             _log "repositionOutputs: Arranging outputs horizontally: $*"
 
             CMD_ARGS_VAR=""
@@ -615,16 +569,15 @@ case "${ACTION}" in
                     _log "repositionOutputs: Warning: Could not parse effective width for '${target}'."
                 fi
             done
-        fi
 
-        if [ -n "${CMD_ARGS_VAR}" ]; then
-            _log "Executing: ${WLR_RANDR}${CMD_ARGS_VAR}"
-            if ! eval "${WLR_RANDR}${CMD_ARGS_VAR}"; then
-                _log "repositionOutputs: Failed to apply final positions."
-            else
-                _log "repositionOutputs: Successfully positioned outputs."
+            if [ -n "${CMD_ARGS_VAR}" ]; then
+		_log "Executing: ${WLR_RANDR}${CMD_ARGS_VAR}"
+		if ! eval "${WLR_RANDR}${CMD_ARGS_VAR}"; then
+                    _log "repositionOutputs: Failed to apply final positions."
+		else
+                    _log "repositionOutputs: Successfully positioned outputs."
+		fi
             fi
-        fi
         ;;
 
     "setRotation")
