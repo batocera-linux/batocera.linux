@@ -13,7 +13,8 @@ from pathlib import Path
 import json
 
 DEVICES_EXCLUSION = ["batocera hotkeys"]
-CONFIG_DIR = Path("/userdata/system/configs/hotkeygen")
+CONFIG_USERDIR = Path("/userdata/system/configs/hotkeygen")
+CONFIG_SYSTEMDIR = Path("/usr/share/hotkeygen")
 HOTKEYGEN_MAPPING = Path("/etc/hotkeygen/default_mapping.conf")
 
 ECODES_NAMES = {
@@ -124,46 +125,84 @@ def getConfigFancyName(file):
         x = re.sub('[ ]+', ' ', x)
         return x.strip()
 
+def getAllConfigFiles():
+        res = {}
+        for XCONFIG in [CONFIG_SYSTEMDIR, CONFIG_USERDIR]:
+                if os.path.exists(XCONFIG):
+                        source = "system"
+                        if XCONFIG == CONFIG_USERDIR:
+                                source = "user"
+                        for file in os.listdir(XCONFIG):
+                                path = Path(os.path.join(XCONFIG, file))
+                                if os.path.isfile(path) and file.endswith(".mapping"):
+                                        res[file] = {"path": Path(path), "source": source }
+        return res
+
+def get_device_config_filename(device: evdev.InputDevice) -> str:
+    name = re.sub('[^a-zA-Z0-9_]', '', device.name.replace(' ', '_'))
+    return f"{name}-{device.info.vendor:02x}-{device.info.product:02x}.mapping"
+
+def getConfigsFromConnectedDevices():
+        res = {}
+        udev_context = pyudev.Context()
+        for device in udev_context.list_devices(subsystem='input'):
+            if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
+                    dev = evdev.InputDevice(device.device_node)
+                    res[get_device_config_filename(dev)] = {}
+        return res
+
+# to avoid listing all systems hotkeys (like almost nobody want to see the steamdeck hotkeys)
+# filter list to existing devices
 def do_list():
+        required_configs = getConfigsFromConnectedDevices()
+
         n = 0
         if not sys.stdout.isatty():
                 print("<hotkeys>")
-        if os.path.exists(CONFIG_DIR):
-                for file in os.listdir(CONFIG_DIR):
-                        path = Path(os.path.join(CONFIG_DIR, file))
-                        if os.path.isfile(path) and file.endswith(".mapping"):
-                                values = {}
-                                with path.open() as fd:
-                                        values = json.load(fd)
-                                fancy_name = getConfigFancyName(file)
-                
-                                if sys.stdout.isatty():
-                                        if n != 0:
-                                                print("")
-                                        print(f"{fancy_name} ({file})")
-                                        for key in values:
-                                                action = values[key]
-                                                print(f"  {key:<16} {action:<16}")
-                                else:
-                                        print(f"  <device fancy_name=\"{fancy_name}\" config=\"{file}\">")
-                                        for key in values:
-                                                action = values[key]
-                                                print(f"    <hotkey key=\"{key}\" action=\"{action}\" />")
-                                        print("  </device>")
-                        n = n+1
+        configs = getAllConfigFiles()
+        for file, infos in configs.items():
+                # remove system configs from not connected devices
+                if infos["source"] == "system" and file not in required_configs:
+                        continue
+                values = {}
+                with infos["path"].open() as fd:
+                        values = json.load(fd)
+                fancy_name = getConfigFancyName(file)
+        
+                if sys.stdout.isatty():
+                        if n != 0:
+                                print("")
+                        print(f"{fancy_name} ({file})")
+                        for key in values:
+                                action = values[key]
+                                print(f"  {key:<16} {action:<16}")
+                else:
+                        print(f"  <device fancy_name=\"{fancy_name}\" config=\"{file}\">")
+                        for key in values:
+                                action = values[key]
+                                print(f"    <hotkey key=\"{key}\" action=\"{action}\" />")
+                        print("  </device>")
+                n = n+1
         if not sys.stdout.isatty():
                 print("</hotkeys>")
 
 def do_set(config, key, action):
-        path = Path(os.path.join(CONFIG_DIR, config))
         if not config.endswith(".mapping"):
                 print("invalid configuration file", file=sys.stderr)
                 return
 
+        userpath   = Path(os.path.join(CONFIG_USERDIR, config))
+        systempath = Path(os.path.join(CONFIG_SYSTEMDIR, config))
         values = {}
-        if os.path.isfile(path):
-                with path.open() as fd:
+
+        # read the user file. if not, ready the system file (but always write in the user file)
+        if os.path.isfile(userpath):
+                with userpath.open() as fd:
                         values = json.load(fd)
+        elif os.path.isfile(systempath):
+                with systempath.open() as fd:
+                        values = json.load(fd)
+
         if action == "none":
                 values[key] = ""
         elif action is None:
@@ -171,9 +210,9 @@ def do_set(config, key, action):
                         del values[key]
         else:
                 values[key] = action
-        if not os.path.exists(CONFIG_DIR):
-                os.makedirs(CONFIG_DIR)
-        with open(path, "w") as fd:
+        if not os.path.exists(CONFIG_USERDIR):
+                os.makedirs(CONFIG_USERDIR)
+        with open(userpath, "w") as fd:
                 json.dump(values, fd, indent=4)
 
 def list_values(hotkeys_mapping):

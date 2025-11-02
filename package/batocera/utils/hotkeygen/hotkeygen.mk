@@ -21,7 +21,7 @@ define HOTKEYGEN_INSTALL_TARGET_CMDS
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_context.conf $(TARGET_DIR)/etc/hotkeygen/default_context.conf
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/common_context.conf $(TARGET_DIR)/etc/hotkeygen/common_context.conf
 	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_mapping.conf $(TARGET_DIR)/etc/hotkeygen/default_mapping.conf
-	install -m 0644 $(HOTKEYGEN_PATH)/conf/specific/Steam_Deck-28de-1205.mapping $(TARGET_DIR)/usr/share/hotkeygen/Steam_Deck-28de-1205.mapping
+	install -m 0644 $(HOTKEYGEN_PATH)/conf/specific/*.mapping $(TARGET_DIR)/usr/share/hotkeygen/
 	install -m 0755 $(HOTKEYGEN_PATH)/batocera-hotkeys.py $(TARGET_DIR)/usr/bin/batocera-hotkeys
 endef
 
@@ -31,14 +31,6 @@ endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
 	HOTKEYGEN_POST_INSTALL_TARGET_HOOKS += HOTKEYGEN_INSTALL_SM8250_CONFIG
-endif
-
-define HOTKEYGEN_INSTALL_SM8550_CONFIG
-	install -m 0644 $(HOTKEYGEN_PATH)/conf/default_mapping-sm8550.conf $(TARGET_DIR)/etc/hotkeygen/default_mapping.conf
-endef
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
-	HOTKEYGEN_POST_INSTALL_TARGET_HOOKS += HOTKEYGEN_INSTALL_SM8550_CONFIG
 endif
 
 $(eval $(generic-package))

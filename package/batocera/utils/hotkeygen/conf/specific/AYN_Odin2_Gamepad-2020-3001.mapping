@@ -1,0 +1,3 @@
+{
+    "BTN_BACK": "brightness-cycle"
+}
