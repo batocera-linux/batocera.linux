@@ -1,8 +1,22 @@
 #!/bin/sh
 
 # Find all backlight control directories
-DISPLAYS=$(find /sys/class/backlight/* 2>/dev/null | grep backlight)
+# sort to have the same order than in es and other places
+DISPLAYS=$(find /sys/class/backlight/* | sort 2>/dev/null | grep backlight)
 CYCLESTEP=20 # % additional brightness at each step
+
+if echo "${1}" | grep -qE "^-[0-9]$"
+then
+    NUM_DISPLAY=$1
+    shift
+    NDISPLAYS=$(echo "${DISPLAYS}" | wc -l)
+    if test -${NDISPLAYS} -gt ${NUM_DISPLAY}
+    then
+	echo "brightness not found" >&2
+	exit 1
+    fi
+    DISPLAYS=$(echo "${DISPLAYS}" | head ${NUM_DISPLAY} | tail -1)
+fi
 
 if [ -z "${DISPLAYS}" ]; then
     echo "no brightness found" >&2
