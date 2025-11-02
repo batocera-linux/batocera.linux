@@ -247,10 +247,23 @@ f_minTomaxResolution() {
 }
 
 # Detect primary screen
+_detect_primary_screen_from_configuration() {
+    # from config
+    FROM_CONFIG=$(xmllint  --xpath "/labwc_config/windowRules/windowRule[@identifier='emulationstation']/action[@name='FocusOutput']/output/text()" "${HOME}/.config/labwc/rc.xml")
+    if test -n "${FROM_CONFIG}"
+    then
+	echo "${FROM_CONFIG}"
+	return 0
+    fi
+
+    # failover
+    _detect_primary_screen
+}
+
 _detect_primary_screen() {
     local screen_list
     local screen
-    
+
     # Get list of all screens
     screen_list=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
     
@@ -289,7 +302,7 @@ fi
 if [ -n "${PSCREEN_ARG}" ]; then
     PSCREEN="${PSCREEN_ARG}"
 else
-    PSCREEN=$(_detect_primary_screen)
+    PSCREEN=$(_detect_primary_screen_from_configuration)
     _log "PSCREEN detected: '${PSCREEN}'"
 fi
 
