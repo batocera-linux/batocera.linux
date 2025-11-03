@@ -543,16 +543,39 @@ case "${ACTION}" in
         fi
         ;;
         
-        "repositionOutputs")
+    "repositionOutputs")
         # This function arranges the specified outputs.
-        # For the AYN_Thor model, it stacks them vertically.
+        # For the top-bottom devices (i.e. AYN_Thor), it stacks them vertically, centering them.
         # For all other models, it arranges them horizontally.
         DISPLAY_POSITION=$1
         shift
 
         # Check for the specific model
         if [ "${DISPLAY_POSITION}" = "top-bottom" ]; then
-            _log "repositionOutputs: Arranging outputs vertically."
+            _log "repositionOutputs: Arranging outputs vertically with centering."
+
+            MAX_WIDTH=0
+            for target in "$@"; do
+                if [ -z "$target" ]; then continue; fi
+
+                TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
+                if [ -z "${TARGET_RESOLUTION_STR}" ]; then continue; fi
+
+                RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
+                RAW_ROTATION=$(_get_current_transform "${target}")
+
+                # Determine effective width, swapping for 90/270 degree rotations
+                if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
+                else
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
+                fi
+
+                if [ "${EFFECTIVE_WIDTH}" -gt "${MAX_WIDTH}" ]; then
+                    MAX_WIDTH=${EFFECTIVE_WIDTH}
+                fi
+            done
+            _log "repositionOutputs: Determined maximum required width is ${MAX_WIDTH}px."
 
             CMD_ARGS_VAR=""
             CURRENT_Y_POS=0
@@ -560,11 +583,7 @@ case "${ACTION}" in
             for target in "$@"; do
                 if [ -z "$target" ]; then continue; fi
 
-                # Set the position for the current screen (0,CURRENT_Y_POS)
-                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos 0,${CURRENT_Y_POS}"
-                _log "repositionOutputs: Setting ${target} to position 0,${CURRENT_Y_POS}"
-
-                # Get the current resolution and rotation to calculate the effective height
+                # Get the current resolution and rotation again
                 TARGET_RESOLUTION_STR=$(_get_current_mode_string "${target}")
                 if [ -z "${TARGET_RESOLUTION_STR}" ]; then
                     _log "repositionOutputs: Warning: Could not get resolution for '${target}'. Next screen position may be wrong."
@@ -573,16 +592,21 @@ case "${ACTION}" in
 
                 RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
                 RAW_ROTATION=$(_get_current_transform "${target}")
-                
-                # Use the effective height (swapped for 90/270 degree rotations)
+
+                # Calculate effective dimensions
                 if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
-                    # Rotated 90 or 270 degrees, so width becomes the effective height
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
                     EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
                 else
-                    # Normal or 180 degree rotation, height is height
+                    EFFECTIVE_WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
                     EFFECTIVE_HEIGHT=$(echo "${RAW_RESOLUTION}" | cut -dx -f2)
                 fi
 
+                CURRENT_X_POS=$(( (MAX_WIDTH - EFFECTIVE_WIDTH) / 2 ))
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --pos ${CURRENT_X_POS},${CURRENT_Y_POS}"
+                _log "repositionOutputs: Setting ${target} to position ${CURRENT_X_POS},${CURRENT_Y_POS}"
+
+                # Update the Y position for the *next* screen
                 if echo "${EFFECTIVE_HEIGHT}" | grep -qE '^[0-9]+$'; then
                     CURRENT_Y_POS=$((CURRENT_Y_POS + EFFECTIVE_HEIGHT))
                     _log "repositionOutputs: Effective height of ${target} is ${EFFECTIVE_HEIGHT}. Next Y position is ${CURRENT_Y_POS}."
