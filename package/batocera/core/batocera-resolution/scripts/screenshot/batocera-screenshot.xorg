@@ -1,12 +1,52 @@
 #!/bin/sh
+
 export DISPLAY=$(getLocalXDisplay)
 
-FILE=$1
-if [ -z ${FILE} ]; then
-    FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+CAPTURE_ALL=false
+
+
+if [ "$1" = "--all" ]; then
+    CAPTURE_ALL=true
+    shift
 fi
 
-ffmpeg -f x11grab -i "${DISPLAY}" -vframes 1 "${FILE}" 2>/dev/null || exit 1
+FILE=$1
+if [ -z "${FILE}" ]; then
+    if [ "$CAPTURE_ALL" = true ]; then
+        FILE="/userdata/screenshots/screenshot-all-$(date +%Y.%m.%d-%Hh%M.%S).png"
+    else
+        FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+    fi
+fi
+
+mkdir -p "$(dirname "$FILE")"
+
+FFMPEG_CMD=""
+
+if [ "$CAPTURE_ALL" = true ]; then
+    echo "Capturing all outputs."
+    # Original behavior: capture the entire X screen layout
+    FFMPEG_CMD="ffmpeg -f x11grab -i \"${DISPLAY}\" -vframes 1 \"${FILE}\""
+else
+    echo "Capturing primary output."
+    # New default behavior: find the primary monitor and capture only that region.
+    # We get the geometry string (e.g., 1920x1080+0+0) from xrandr.
+    GEOMETRY=$(xrandr 2>/dev/null | grep " primary " | awk '{print $4}')
+
+    if [ -n "$GEOMETRY" ]; then
+        RESOLUTION=$(echo "$GEOMETRY" | cut -d'+' -f1)
+        POSITION=$(echo "$GEOMETRY" | sed 's/.*+\([0-9]*\)+\([0-9]*\)/\1,\2/')
+
+        echo "Found primary display at ${RESOLUTION} with offset ${POSITION}."
+        FFMPEG_CMD="ffmpeg -f x11grab -video_size ${RESOLUTION} -i \"${DISPLAY}+${POSITION}\" -vframes 1 \"${FILE}\""
+    else
+        # Fallback for safety: if no primary display is found, capture everything.
+        echo "Warning: Could not find a primary display. Capturing all outputs as a fallback."
+        FFMPEG_CMD="ffmpeg -f x11grab -i \"${DISPLAY}\" -vframes 1 \"${FILE}\""
+    fi
+fi
+
+eval "$FFMPEG_CMD" 2>/dev/null || exit 1
 
 # Visual feedback when screenshot is taken
 batocera-flash-screen 2>/dev/null

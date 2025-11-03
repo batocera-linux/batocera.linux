@@ -1,12 +1,42 @@
 #!/bin/sh
 
-FILE=$1
-if [ -z ${FILE} ]; then
-    FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+CAPTURE_ALL=false
+
+if [ "$1" = "--all" ]; then
+    CAPTURE_ALL=true
+    shift
 fi
 
-OUTPUT=$(batocera-resolution currentOutput)
+FILE=$1
+if [ -z "${FILE}" ]; then
+    # Use a slightly different default name for multi-screen captures for clarity
+    if [ "$CAPTURE_ALL" = true ]; then
+        FILE="/userdata/screenshots/screenshot-all-$(date +%Y.%m.%d-%Hh%M.%S).png"
+    else
+        FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
+    fi
+fi
 
-grim -o "$OUTPUT" "$FILE" 2>/dev/null || exit 1
+mkdir -p "$(dirname "$FILE")"
+
+GRIM_CMD="grim"
+
+if [ "$CAPTURE_ALL" = true ]; then
+    echo "Capturing all outputs."
+    # For capturing all screens, we don't specify an output.
+    # grim will capture the entire layout by default.
+    GRIM_CMD="$GRIM_CMD \"$FILE\""
+else
+    echo "Capturing current output."
+    OUTPUT=$(batocera-resolution currentOutput)
+    if [ -z "$OUTPUT" ]; then
+        echo "Error: Could not determine current output."
+        exit 1
+    fi
+    GRIM_CMD="$GRIM_CMD -o \"$OUTPUT\" \"$FILE\""
+fi
+
+eval "$GRIM_CMD" 2>/dev/null || exit 1
+
 # Visual feedback when screenshot is taken
 batocera-flash-screen 2>/dev/null
