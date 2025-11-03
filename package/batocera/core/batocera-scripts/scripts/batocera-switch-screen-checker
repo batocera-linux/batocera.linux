@@ -5,7 +5,7 @@ DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
 STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
 
 _wait_for_emulationstation() {
-    local timeout=30; local waited=0
+    local timeout=3; local waited=0
     while [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:1234/isIdle)" == "000" ]; do
         sleep 0.5; waited=$(echo "$waited + 0.5" | bc)
         if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
