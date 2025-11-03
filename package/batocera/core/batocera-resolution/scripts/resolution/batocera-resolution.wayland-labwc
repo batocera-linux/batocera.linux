@@ -697,6 +697,12 @@ case "${ACTION}" in
                 exit 1
             fi
 
+            _log "Ensuring touch device is mapped correctly in rc.xml."
+            sed -i \
+                -e "/<touch / s/deviceName=\"[^\"]*\"/deviceName=\"${TOUCHSCREEN}\"/" \
+                -e "/<touch / s/mapToOutput=\"[^\"]*\"/mapToOutput=\"${PSCREEN}\"/" \
+                "${CONFIG_FILE}"
+            
             # Replace calibrationMatrix only inside touch device block if it's different
             CURRENT_MATRIX=$(sed -n '/<device category="touch">/,/<\/device>/s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p' "$CONFIG_FILE")
 

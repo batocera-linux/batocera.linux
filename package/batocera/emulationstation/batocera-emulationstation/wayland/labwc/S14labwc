@@ -3,7 +3,8 @@
 # This script initializes the Labwc configuration.
 # It first copies the default configuration files.
 # Then it immediately modifies the rc.xml file with the
-# primary and secondary video outputs defined in Batocera's settings.
+# primary and secondary video outputs defined in Batocera's settings,
+# and applies the correct touch screen calibration matrix based on screen rotation.
 # This ensures labwc starts with the correct configuration from the beginning.
 
 SRC_DIR="/usr/share/labwc"
@@ -75,6 +76,25 @@ start() {
             n
             s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
         } }' "${RC_XML_PATH}"
+        
+        # Set the calibration matrix based on the primary output's rotation
+        if [ -n "${PRIMARY_OUT}" ]; then
+            echo "Fetching rotation for ${PRIMARY_OUT} to set calibration matrix..." >> "$display_log"
+            ROTATION=$(batocera-settings-get-master "display.rotate.${PRIMARY_OUT}")
+            echo "Found rotation value: ${ROTATION:-'default'}" >> "$display_log"
+            
+            case "${ROTATION}" in
+                "1") MATRIX="0 -1 1 1 0 0" ;;  # 90 degrees
+                "2") MATRIX="-1 0 1 0 -1 1" ;; # 180 degrees
+                "3") MATRIX="0 1 0 -1 0 1" ;;  # 270 degrees
+                *)   MATRIX="1 0 0 0 1 0" ;;   # Default 0 degrees
+            esac
+
+            echo "Applying calibration matrix: ${MATRIX}" >> "$display_log"
+            sed -i -e '/<calibrationMatrix>/s#<calibrationMatrix>.*</calibrationMatrix>#<calibrationMatrix>'"${MATRIX}"'</calibrationMatrix>#' "${RC_XML_PATH}"
+        else
+            echo "No primary output set. Skipping calibration matrix update." >> "$display_log"
+        fi
 
         echo "Labwc configuration modification complete." >> "$display_log"
     else
