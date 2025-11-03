@@ -11,6 +11,7 @@ exec 1> >(tee >(logger -t batocera-shutdown -s)) 2>&1
 ################################################################################
 
 FAKE_SUSPEND_FLAG="/var/run/batocera-fake-suspend.flag"
+FAKE_SUSPEND_MONITOR_PID="/var/run/batocera-fake-suspend-monitor.pid"
 # State files
 ACTIVE_DISPLAYS_FILE="/var/run/active_displays.list"
 CPU_GOV_STATE_FILE="/var/run/cpu_governor.state"
@@ -30,6 +31,7 @@ INPUT_WHITELIST_PATTERNS=(
     "Power"      # Matches "Power Button"
     "power"      # Matches "powerkey"
     "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
+    "gpio-keys"  # AYN Thor lid
 )
 
 # --- Backlight Control Functions ---
@@ -463,6 +465,66 @@ start_other_services() {
     /etc/init.d/S97joycond start
 }
 
+# --- Battery and Time Monitoring Functions for Fake Suspend ---
+get_battery_level() {
+    local battery_path
+    for bat in /sys/class/power_supply/BAT*; do
+        if [ -d "${bat}" ]; then
+            battery_path="${bat}"
+            break
+        fi
+    done
+
+    if [ -n "${battery_path}" ] && [ -f "${battery_path}/capacity" ]; then
+        cat "${battery_path}/capacity"
+    else
+        echo "100"
+    fi
+}
+
+start_background_monitor() {
+    local monitor_script="/tmp/batocera-fake-suspend-monitor.sh"
+    cat > "${monitor_script}" << EOF
+#!/bin/bash
+START_TIME=\$(date +%s)
+while true; do
+    sleep 60 # Check every minute
+
+    # Check elapsed time
+    CURRENT_TIME=\$(date +%s)
+    ELAPSED=\$((CURRENT_TIME - START_TIME))
+    if [ \${ELAPSED} -ge 3600 ]; then
+        echo "Fake suspend timeout reached. Shutting down."
+        /sbin/shutdown -h now
+        exit 0
+    fi
+
+    # Check battery level
+    BATTERY_LEVEL=\$(get_battery_level)
+    if [ \${BATTERY_LEVEL} -le 10 ]; then
+        echo "Low battery detected during fake suspend. Shutting down."
+        /sbin/shutdown -h now
+        exit 0
+    fi
+done
+EOF
+    chmod +x "${monitor_script}"
+    nohup "${monitor_script}" >/dev/null 2>&1 &
+    echo $! > "${FAKE_SUSPEND_MONITOR_PID}"
+}
+
+stop_background_monitor() {
+    if [ -f "${FAKE_SUSPEND_MONITOR_PID}" ]; then
+        local pid
+        pid=$(cat "${FAKE_SUSPEND_MONITOR_PID}")
+        if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+            kill "${pid}"
+        fi
+        rm -f "${FAKE_SUSPEND_MONITOR_PID}"
+    fi
+    rm -f "/tmp/batocera-fake-suspend-monitor.sh"
+}
+
 # --- Main Fake Suspend/Resume Action Groups ---
 do_fake_suspend() {
     echo "--- Entering Fake Suspend ---"
@@ -481,11 +543,13 @@ do_fake_suspend() {
 	# restart triggerhappy to fix hung state from gui standby
 	/etc/init.d/S50triggerhappy restart
 	touch "${FAKE_SUSPEND_FLAG}"
+    start_background_monitor
 	echo "--- Fake Suspend Complete ---"
 }
 
 do_fake_resume() {
     echo "--- Resuming from Fake Suspend ---"
+    stop_background_monitor
 	unblock_input
 	display_on
 	unmute_audio
@@ -521,7 +585,12 @@ if [ "${SETACTION}" = "gui" ]; then
             pm-is-supported --hibernate && pm-hibernate
             ;;
         "fake")
-            do_fake_suspend
+            if [ "$(get_battery_level)" -le 10 ]; then
+                echo "Battery too low for fake suspend, shutting down instead."
+                /sbin/shutdown -h now
+            else
+                do_fake_suspend
+            fi
             ;;
         *)
             # Default action if mode is unset or invalid is shutdown.
@@ -544,7 +613,12 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
                 # A game is running. Log it and do nothing.
                 echo "INFO: Fake suspend request ignored because a game is running."
             else
-                do_fake_suspend
+                if [ "$(get_battery_level)" -le 10 ]; then
+                    echo "Battery too low for fake suspend, shutting down instead."
+                    /sbin/shutdown -h now
+                else
+                    do_fake_suspend
+                fi
             fi
         fi
     fi
