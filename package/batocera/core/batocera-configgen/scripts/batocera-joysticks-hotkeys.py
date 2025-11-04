@@ -130,10 +130,14 @@ def list_hotkeys_text(config: dict, default_config: dict, hotkeys_mapping: dict)
 def update_hotkeys(config: dict, new_keys: dict, user_config_file: Path, default_config: dict):
     # update keys
     for new_key in new_keys:
+        if gdebug:
+            print(f"updating key {new_key}", file=sys.stderr)
         found = False
         for index, key in enumerate(config["actions_player1"]):
             if isSimpleKey(key):
                 if key["trigger"][1] == new_key:
+                    if gdebug:
+                        print(f"key {new_key} already set. reaffecting it.", file=sys.stderr)
                     found = True
                     if new_keys[new_key] == "none":
                         del config["actions_player1"][index]
@@ -148,15 +152,23 @@ def update_hotkeys(config: dict, new_keys: dict, user_config_file: Path, default
                             config["actions_player1"][index]["target"] = [ new_keys[new_key] ]
         # the key was removed, add it back from default config
         if not found:
+            if gdebug:
+                print(f"key {new_key} is not defined. affecting it.", file=sys.stderr)
             if new_keys[new_key] != "none":
+                found = False
                 for key in default_config["actions_player1"]:
                     if isSimpleKey(key):
                         if key["trigger"][1] == new_key:
                             # find the default key and append it
+                            found = True
+                            print(f"key {new_key} initialized with default value, before reaffecting.", file=sys.stderr)
                             if new_keys[new_key] != "default":
                                 key["target"] = [ new_keys[new_key] ]
                             config["actions_player1"].append(key)
-
+                if not found and new_keys[new_key] != "default":
+                    print(f"key {new_key} has no default value. affect a default mapping.", file=sys.stderr)
+                    key = { "trigger": [ "hotkey", new_key ], "type": "key", "target": [ new_keys[new_key] ] }
+                    config["actions_player1"].append(key)
     # save
     with open(user_config_file, "w") as fd:
         json.dump(config, fd, indent=4)
@@ -185,6 +197,7 @@ parser.add_argument("--l2", type=str, help="key for hotkey+l2")
 parser.add_argument("--r2", type=str, help="key for hotkey+r2")
 parser.add_argument("--l3", type=str, help="key for hotkey+l3")
 parser.add_argument("--r3", type=str, help="key for hotkey+r3")
+parser.add_argument("--debug", action="store_true")
 
 args = parser.parse_args()
 new_keys = {}
@@ -226,6 +239,7 @@ if args.l3:
 if args.r3:
     new_keys["r3"] = args.r3
 
+gdebug = args.debug
 hotkeys_mapping = read_hotkey_mapping(HOTKEYGEN_MAPPING)
 
 if args.values:
