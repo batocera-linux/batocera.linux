@@ -36,23 +36,26 @@ trylock() {
 }
 
 EXPECTED_DEVS=3
+VIRTUAL_PAD_NAME="Anbernic pad"
+EVS_DEVICE_ID_ARG=()
+
 if [ "$(batocera-model)" = "Powkiddy_x55" ]; then
     # If the model is Powkiddy_x55, we only expect 2 devices.
-    # there is no adc-keys we want to merge in (TBD)
     EXPECTED_DEVS=2
+    VIRTUAL_PAD_NAME="Powkiddy pad"
+    EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
 fi
 
 trylock
 checkRunningPIDAndExit1
 
-# Check the new device on the list is not already there
 grep -qF "${DEVNAME}" "${DEVSFILE}" || echo "${DEVNAME}" >> "${DEVSFILE}"
 
 NDEVS=$(cat "${DEVSFILE}" | wc -l)
 
 if [ "${NDEVS}" -eq "${EXPECTED_DEVS}" ]; then
     EVS_ARGS=$(cat "${DEVSFILE}" | xargs -I {} echo --input "{}")
-    nohup evsieve ${EVS_ARGS} persist=exit --output name="Anbernic pad" >/dev/null 2>"${LOGFILE}" &
+    nohup evsieve ${EVS_ARGS} persist=exit --output name="${VIRTUAL_PAD_NAME}" "${EVS_DEVICE_ID_ARG[@]}" >/dev/null 2>"${LOGFILE}" &
 
     echo $! > "${PIDFILE}"
     unlockAndExit 0
