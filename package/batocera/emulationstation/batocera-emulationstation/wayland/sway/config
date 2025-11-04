@@ -48,6 +48,11 @@ for_window [class="Play!"] fullscreen enable
 # Model 2
 for_window [instance="emulator_multicpu.exe"] fullscreen enable
 
+# batocera-flash-screen OSD
+for_window [title="Batocera OSD"] fullscreen disable
+for_window [title="Batocera OSD"] floating enable
+for_window [title="Batocera OSD"] move position 0px 2px
+
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide
 exec /usr/bin/emulationstation-standalone
