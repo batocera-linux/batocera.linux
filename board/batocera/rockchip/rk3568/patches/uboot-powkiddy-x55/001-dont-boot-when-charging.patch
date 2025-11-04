@@ -1,0 +1,12 @@
+diff --git a/configs/powkiddy-x55-rk3566_defconfig b/configs/powkiddy-x55-rk3566_defconfig
+index 2360bdbe84..45aff38364 100644
+--- a/configs/powkiddy-x55-rk3566_defconfig
++++ b/configs/powkiddy-x55-rk3566_defconfig
+@@ -4,6 +4,7 @@ CONFIG_COUNTER_FREQUENCY=24000000
+ CONFIG_ARCH_ROCKCHIP=y
+ CONFIG_DEFAULT_DEVICE_TREE="rockchip/rk3566-powkiddy-x55"
+ CONFIG_ROCKCHIP_RK3568=y
++CONFIG_ROCKCHIP_RK8XX_DISABLE_BOOT_ON_POWERON=y
+ CONFIG_SPL_SERIAL=y
+ CONFIG_DEBUG_UART_BASE=0xFE660000
+ CONFIG_DEBUG_UART_CLOCK=24000000

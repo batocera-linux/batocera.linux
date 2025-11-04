@@ -5,3 +5,5 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick"
 
 # virtual anbernic pad
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+# virtual powkiddy pad
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Powkiddy pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
