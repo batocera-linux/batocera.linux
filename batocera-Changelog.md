@@ -56,10 +56,10 @@
 - DXVK to 2.7.1
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251021
-- Linux Kernel to 6.17.5
+- Linux Kernel to 6.17.7
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
-- Mesa3D to 25.2.5
+- Mesa3D to 25.2.6
 - Nvidia production drivers to 580.95.05
 - Sway to 1.11
 - Vulkan stack to 1.4.328.1
