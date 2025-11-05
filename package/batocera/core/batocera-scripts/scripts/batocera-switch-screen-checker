@@ -31,6 +31,13 @@ case "$1" in
         # This script's only job is to trigger an ES restart.
         # The main standalone script will handle all display logic.
 
+        # Check for the existence of /tmp/no-hotplug
+        if [ -f "/tmp/no-hotplug" ]; then
+            # this is not a hotplug event, exit
+            rm /tmp/no-hotplug
+            exit 0
+        fi
+
         # Debounce lock to avoid multiple udev triggers
         if [ -f "${DEBOUNCE_LOCK}" ]; then
             exit 0
