@@ -26,7 +26,7 @@ f_usage() {
 
 _reconfigure_labwc() {
     local LABWC_PID
-    LABWC_PID=$(pidof labwc | cut -d' ' -f2)
+    LABWC_PID=$(pgrep -o -x labwc)
 
     if [ -n "${LABWC_PID}" ]; then
         _log "Found running labwc PID: ${LABWC_PID}. Executing Reconfigure action."
