@@ -45,7 +45,7 @@ f_minTomaxResolution() {
     if [ -z "$1" ]; then
         # reinit the screen (in case it was off)
         if [ -n "${BOOTRESOLUTION}" ] && [ "${BOOTRESOLUTION}" != "auto" ]; then
-            BOOT_RES=$(echo "${BOOTRESOLUTION}" | cut -d'.' -f1)
+            BOOT_RES=$(echo "${BOOTRESOLUTION}" | cut -d'.' -f1 | sed 's/max-//;s/\..*//')
             BOOT_RATE=$(echo "${BOOTRESOLUTION}" | cut -s -d'.' -f2-)
             if [ -n "$BOOT_RATE" ]; then
                 echo "es.resolution setting found. Initializing screen to: ${BOOT_RES} @ ${BOOT_RATE}Hz" >> "$log"
