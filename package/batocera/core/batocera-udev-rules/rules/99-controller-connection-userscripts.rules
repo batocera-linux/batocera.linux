@@ -1,0 +1,7 @@
+# Execute all user-defined scripts located in the EmulationStation scripts controller-connected and controller-disconnected directories upon such events are triggered
+
+ACTION=="add", KERNEL=="js[0-9]*", ENV{ID_INPUT_JOYSTICK}=="1", \
+RUN+="/usr/bin/setsid -f /bin/bash -c '(DIR=/userdata/system/configs/emulationstation/scripts/controller-connected; DEV=\"%E{DEVNAME}\"; LOG=/userdata/system/logs/udev.log; TS=$(date); echo \"$TS: $DEV connected\" >> \"$LOG\"; if [[ -d \"$DIR\" ]]; then for script in \"$DIR\"/*; do [ -x \"$script\" ] && (\"$script\" \"$DEV\" >> \"$LOG\" 2>&1 &); done; fi)'"
+
+ACTION=="remove", KERNEL=="js[0-9]*", ENV{ID_INPUT_JOYSTICK}=="1", \
+RUN+="/usr/bin/setsid -f /bin/bash -c '(DIR=/userdata/system/configs/emulationstation/scripts/controller-disconnected; DEV=\"%E{DEVNAME}\"; LOG=/userdata/system/logs/udev.log; TS=$(date); echo \"$TS: $DEV disconnected\" >> \"$LOG\"; if [[ -d \"$DIR\" ]]; then for script in \"$DIR\"/*; do [ -x \"$script\" ] && (\"$script\" \"$DEV\" >> \"$LOG\" 2>&1 &); done; fi)'"
