@@ -1,0 +1,484 @@
+From d9bb7241bbc8dfdf1c76293d28cb162c2688e2b6 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 18 Aug 2024 17:42:14 -0700
+Subject: [PATCH 1/2] meson: add detection logic for v4l2request support
+
+We will probably adjust this to look for a specific libavutil version after
+v4l2request support is merged upstream, but this check is fine for now.
+---
+ meson.build   | 9 +++++++++
+ meson.options | 1 +
+ 2 files changed, 10 insertions(+)
+
+diff --git a/meson.build b/meson.build
+index cbf703cae556d..94b5101ba8545 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1405,6 +1405,14 @@ if features['ios-gl']
+     sources += files('video/out/hwdec/hwdec_ios_gl.m')
+ endif
+ 
++v4l2request = get_option('v4l2request').require(
++    cc.has_header_symbol('libavutil/hwcontext.h', 'AV_HWDEVICE_TYPE_V4L2REQUEST')
++)
++features += {'v4l2request': v4l2request.allowed()}
++if features['v4l2request']
++    sources += files('video/v4l2request.c')
++endif
++
+ libva = dependency('libva', version: '>= 1.1.0', required: get_option('vaapi'))
+ 
+ vaapi_drm = dependency('libva-drm', version: '>= 1.1.0', required:
+@@ -1861,6 +1869,7 @@ summary({'d3d11': features['d3d11'],
+          'libmpv': get_option('libmpv'),
+          'lua': features['lua'],
+          'opengl': features['gl'],
++         'v4l2request': features['v4l2request'],
+          'vulkan': features['vulkan'],
+          'wayland': features['wayland'],
+          'x11': features['x11']},
+diff --git a/meson.options b/meson.options
+index dae0a333ef71b..3dba7a1451dab 100644
+--- a/meson.options
++++ b/meson.options
+@@ -99,6 +99,7 @@ option('d3d-hwaccel', type: 'feature', value: 'auto', description: 'D3D11VA hwac
+ option('d3d9-hwaccel', type: 'feature', value: 'auto', description: 'DXVA2 hwaccel')
+ option('gl-dxinterop-d3d9', type: 'feature', value: 'auto', description: 'OpenGL/DirectX DXVA2 hwaccel')
+ option('ios-gl', type: 'feature', value: 'auto', description: 'iOS OpenGL ES interop support')
++option('v4l2request', type: 'feature', value: 'auto', description: 'V4L2 Request API hwaccel')
+ option('videotoolbox-gl', type: 'feature', value: 'auto', description: 'Videotoolbox with OpenGL')
+ option('videotoolbox-pl', type: 'feature', value: 'auto', description: 'Videotoolbox with libplacebo')
+ 
+
+From 17a8ef7e8752e39f8c5284127b5d7ba1cce64f48 Mon Sep 17 00:00:00 2001
+From: Philip Langdale <philipl@overt.org>
+Date: Sun, 18 Aug 2024 17:43:41 -0700
+Subject: [PATCH 2/2] vo: hwdec: drmprime: add separate hwdecs for v4l2request
+
+With all the machinery in place, we can now add the v4l2request hwdecs with a
+different hw device type, and a different initialisation path. This applies to
+both the drmprime and drmprime_overlay hwdecs.
+
+At the moment, the device initialisation is done in the bare minimum way, but
+it can be extended to take a device path (for example) if that makes sense as
+we better understand what meaningful configuration will be.
+
+Co-authored-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ video/hwdec.c                            |   3 +
+ video/hwdec.h                            |   1 +
+ video/out/gpu/hwdec.c                    |   6 ++
+ video/out/hwdec/hwdec_drmprime.c         | 125 +++++++++++++++++------
+ video/out/hwdec/hwdec_drmprime_overlay.c |  81 +++++++++++++--
+ video/out/vo_dmabuf_wayland.c            |   1 +
+ video/v4l2request.c                      |  34 ++++++
+ 7 files changed, 210 insertions(+), 41 deletions(-)
+ create mode 100644 video/v4l2request.c
+
+diff --git a/video/hwdec.c b/video/hwdec.c
+index deba518e82c25..de2ffecc40917 100644
+--- a/video/hwdec.c
++++ b/video/hwdec.c
+@@ -125,6 +125,9 @@ static const struct hwcontext_fns *const hwcontext_fns[] = {
+ #if HAVE_DRM
+     &hwcontext_fns_drmprime,
+ #endif
++#if HAVE_V4L2REQUEST
++    &hwcontext_fns_v4l2request,
++#endif
+ #if HAVE_VAAPI
+     &hwcontext_fns_vaapi,
+ #endif
+diff --git a/video/hwdec.h b/video/hwdec.h
+index c83d20783d9a6..ad74fb9f0d7c7 100644
+--- a/video/hwdec.h
++++ b/video/hwdec.h
+@@ -121,6 +121,7 @@ extern const struct hwcontext_fns hwcontext_fns_cuda;
+ extern const struct hwcontext_fns hwcontext_fns_d3d11;
+ extern const struct hwcontext_fns hwcontext_fns_drmprime;
+ extern const struct hwcontext_fns hwcontext_fns_dxva2;
++extern const struct hwcontext_fns hwcontext_fns_v4l2request;
+ extern const struct hwcontext_fns hwcontext_fns_vaapi;
+ extern const struct hwcontext_fns hwcontext_fns_vdpau;
+ 
+diff --git a/video/out/gpu/hwdec.c b/video/out/gpu/hwdec.c
+index cb68c54be08a7..1d729f6285fe7 100644
+--- a/video/out/gpu/hwdec.c
++++ b/video/out/gpu/hwdec.c
+@@ -38,6 +38,8 @@ extern const struct ra_hwdec_driver ra_hwdec_drmprime;
+ extern const struct ra_hwdec_driver ra_hwdec_drmprime_overlay;
+ extern const struct ra_hwdec_driver ra_hwdec_aimagereader;
+ extern const struct ra_hwdec_driver ra_hwdec_vulkan;
++extern const struct ra_hwdec_driver ra_hwdec_v4l2request;
++extern const struct ra_hwdec_driver ra_hwdec_v4l2request_overlay;
+ 
+ const struct ra_hwdec_driver *const ra_hwdec_drivers[] = {
+ #if HAVE_VAAPI
+@@ -73,6 +75,10 @@ const struct ra_hwdec_driver *const ra_hwdec_drivers[] = {
+     &ra_hwdec_drmprime,
+     &ra_hwdec_drmprime_overlay,
+ #endif
++#if HAVE_V4L2REQUEST
++    &ra_hwdec_v4l2request,
++    &ra_hwdec_v4l2request_overlay,
++#endif
+ #if HAVE_ANDROID_MEDIA_NDK
+     &ra_hwdec_aimagereader,
+ #endif
+diff --git a/video/out/hwdec/hwdec_drmprime.c b/video/out/hwdec/hwdec_drmprime.c
+index 7869eb124a4f0..446f63de44388 100644
+--- a/video/out/hwdec/hwdec_drmprime.c
++++ b/video/out/hwdec/hwdec_drmprime.c
+@@ -77,7 +77,7 @@ static const char *forked_pix_fmt_names[] = {
+     "rpi4_10",
+ };
+ 
+-static int init(struct ra_hwdec *hw)
++static int pre_init(struct ra_hwdec *hw)
+ {
+     struct priv_owner *p = hw->priv;
+ 
+@@ -92,36 +92,12 @@ static int init(struct ra_hwdec *hw)
+         return -1;
+     }
+ 
+-    /*
+-     * The drm_params resource is not provided when using X11 or Wayland, but
+-     * there are extensions that supposedly provide this information from the
+-     * drivers. Not properly documented. Of course.
+-     */
+-    mpv_opengl_drm_params_v2 *params = ra_get_native_resource(hw->ra_ctx->ra,
+-                                                              "drm_params_v2");
+-
+-    /*
+-     * Respect drm_device option, so there is a way to control this when not
+-     * using a DRM gpu context. If drm_params_v2 are present, they will already
+-     * respect this option.
+-     */
+-    void *tmp = talloc_new(NULL);
+-    struct drm_opts *drm_opts = mp_get_config_group(tmp, hw->global, &drm_conf);
+-    const char *opt_path = drm_opts->device_path;
+-
+-    const char *device_path = params && params->render_fd > -1 ?
+-                              drmGetRenderDeviceNameFromFd(params->render_fd) :
+-                              opt_path ? opt_path : "/dev/dri/renderD128";
+-    MP_VERBOSE(hw, "Using DRM device: %s\n", device_path);
++    return 0;
++}
+ 
+-    int ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
+-                                     AV_HWDEVICE_TYPE_DRM,
+-                                     device_path, NULL, 0);
+-    talloc_free(tmp);
+-    if (ret != 0) {
+-        MP_VERBOSE(hw, "Failed to create hwdevice_ctx: %s\n", av_err2str(ret));
+-        return -1;
+-    }
++static int post_init(struct ra_hwdec *hw)
++{
++    struct priv_owner *p = hw->priv;
+ 
+     /*
+      * At the moment, there is no way to discover compatible formats
+@@ -154,6 +130,75 @@ static int init(struct ra_hwdec *hw)
+     return 0;
+ }
+ 
++static int init_drmprime(struct ra_hwdec *hw)
++{
++    struct priv_owner *p = hw->priv;
++
++    int ret = pre_init(hw);
++    if (ret < 0)
++        return ret;
++
++    /*
++     * The drm_params resource is not provided when using X11 or Wayland, but
++     * there are extensions that supposedly provide this information from the
++     * drivers. Not properly documented. Of course.
++     */
++    mpv_opengl_drm_params_v2 *params = ra_get_native_resource(hw->ra_ctx->ra,
++                                                              "drm_params_v2");
++
++    /*
++     * Respect drm_device option, so there is a way to control this when not
++     * using a DRM gpu context. If drm_params_v2 are present, they will already
++     * respect this option.
++     */
++    void *tmp = talloc_new(NULL);
++    struct drm_opts *drm_opts = mp_get_config_group(tmp, hw->global, &drm_conf);
++    const char *opt_path = drm_opts->device_path;
++
++    const char *device_path = params && params->render_fd > -1 ?
++                              drmGetRenderDeviceNameFromFd(params->render_fd) :
++                              opt_path ? opt_path : "/dev/dri/renderD128";
++    MP_VERBOSE(hw, "Using DRM device: %s\n", device_path);
++
++    ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
++                                 AV_HWDEVICE_TYPE_DRM,
++                                 device_path, NULL, 0);
++    talloc_free(tmp);
++    if (ret < 0) {
++        MP_VERBOSE(hw, "Failed to create hwdevice_ctx: %s\n", av_err2str(ret));
++        return ret;
++    }
++
++    return post_init(hw);
++}
++
++#if HAVE_V4L2REQUEST
++static int init_v4l2request(struct ra_hwdec *hw)
++{
++    struct priv_owner *p = hw->priv;
++
++    int ret = pre_init(hw);
++    if (ret < 0)
++        return ret;
++
++    /*
++     * AVCodecHWConfig contains a combo of a pixel format and hwdevice type,
++     * correct type must be created here or hwaccel will fail.
++     *
++     * FIXME: Create hwdevice based on type in AVCodecHWConfig
++     */
++    ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
++                                 AV_HWDEVICE_TYPE_V4L2REQUEST,
++                                 NULL, NULL, 0);
++    if (ret < 0) {
++        MP_VERBOSE(hw, "Failed to create hwdevice_ctx: %s\n", av_err2str(ret));
++        return ret;
++    }
++
++    return post_init(hw);
++}
++#endif
++
+ static void mapper_unmap(struct ra_hwdec_mapper *mapper)
+ {
+     struct priv_owner *p_owner = mapper->owner->priv;
+@@ -308,7 +353,7 @@ const struct ra_hwdec_driver ra_hwdec_drmprime = {
+     .priv_size = sizeof(struct priv_owner),
+     .imgfmts = {IMGFMT_DRMPRIME, 0},
+     .device_type = AV_HWDEVICE_TYPE_DRM,
+-    .init = init,
++    .init = init_drmprime,
+     .uninit = uninit,
+     .mapper = &(const struct ra_hwdec_mapper_driver){
+         .priv_size = sizeof(struct dmabuf_interop_priv),
+@@ -318,3 +363,21 @@ const struct ra_hwdec_driver ra_hwdec_drmprime = {
+         .unmap = mapper_unmap,
+     },
+ };
++
++#if HAVE_V4L2REQUEST
++const struct ra_hwdec_driver ra_hwdec_v4l2request = {
++    .name = "v4l2request",
++    .priv_size = sizeof(struct priv_owner),
++    .imgfmts = {IMGFMT_DRMPRIME, 0},
++    .device_type = AV_HWDEVICE_TYPE_V4L2REQUEST,
++    .init = init_v4l2request,
++    .uninit = uninit,
++    .mapper = &(const struct ra_hwdec_mapper_driver){
++        .priv_size = sizeof(struct dmabuf_interop_priv),
++        .init = mapper_init,
++        .uninit = mapper_uninit,
++        .map = mapper_map,
++        .unmap = mapper_unmap,
++    },
++};
++#endif
+diff --git a/video/out/hwdec/hwdec_drmprime_overlay.c b/video/out/hwdec/hwdec_drmprime_overlay.c
+index 61514f8e893d3..689e9b04e55a2 100644
+--- a/video/out/hwdec/hwdec_drmprime_overlay.c
++++ b/video/out/hwdec/hwdec_drmprime_overlay.c
+@@ -246,7 +246,7 @@ static void uninit(struct ra_hwdec *hw)
+     }
+ }
+ 
+-static int init(struct ra_hwdec *hw)
++static int pre_init(struct ra_hwdec *hw)
+ {
+     struct priv *p = hw->priv;
+     int draw_plane, drmprime_video_plane;
+@@ -267,15 +267,15 @@ static int init(struct ra_hwdec *hw)
+                                            drm_params->connector_id, draw_plane, drmprime_video_plane);
+         if (!p->ctx) {
+             mp_err(p->log, "Failed to retrieve DRM atomic context.\n");
+-            goto err;
++            return -1;
+         }
+         if (!p->ctx->drmprime_video_plane) {
+             mp_warn(p->log, "No drmprime video plane. You might need to specify it manually using --drm-drmprime-video-plane\n");
+-            goto err;
++            return -1;
+         }
+     } else {
+         mp_verbose(p->log, "Failed to retrieve DRM fd from native display.\n");
+-        goto err;
++        return -1;
+     }
+ 
+     drmModeCrtcPtr crtc;
+@@ -289,7 +289,7 @@ static int init(struct ra_hwdec *hw)
+     uint64_t has_prime;
+     if (drmGetCap(p->ctx->fd, DRM_CAP_PRIME, &has_prime) < 0) {
+         MP_ERR(hw, "Card does not support prime handles.\n");
+-        goto err;
++        return -1;
+     }
+ 
+     if (has_prime) {
+@@ -298,19 +298,67 @@ static int init(struct ra_hwdec *hw)
+ 
+     disable_video_plane(hw);
+ 
++    return 0;
++}
++
++static int init_drmprime(struct ra_hwdec *hw)
++{
++    struct priv *p = hw->priv;
++
++    int ret = pre_init(hw);
++    if (ret < 0)
++        goto err;
++
+     p->hwctx = (struct mp_hwdec_ctx) {
+         .driver_name = hw->driver->name,
+         .hw_imgfmt = IMGFMT_DRMPRIME,
+     };
+ 
+     char *device = drmGetDeviceNameFromFd2(p->ctx->fd);
+-    int ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
+-                                     AV_HWDEVICE_TYPE_DRM, device, NULL, 0);
++    ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
++                                 AV_HWDEVICE_TYPE_DRM, device, NULL, 0);
+ 
+     if (device)
+         free(device);
+ 
+-    if (ret != 0) {
++    if (ret < 0) {
++        MP_VERBOSE(hw, "Failed to create hwdevice_ctx: %s\n", av_err2str(ret));
++        goto err;
++    }
++
++    hwdec_devices_add(hw->devs, &p->hwctx);
++
++    return 0;
++
++err:
++    uninit(hw);
++    return ret;
++}
++
++#if HAVE_V4L2REQUEST
++static int init_v4l2request(struct ra_hwdec *hw)
++{
++    struct priv *p = hw->priv;
++
++    int ret = pre_init(hw);
++    if (ret < 0)
++        goto err;
++
++    p->hwctx = (struct mp_hwdec_ctx) {
++        .driver_name = hw->driver->name,
++        .hw_imgfmt = IMGFMT_DRMPRIME,
++    };
++
++    /*
++     * AVCodecHWConfig contains a combo of a pixel format and hwdevice type,
++     * correct type must be created here or hwaccel will fail.
++     *
++     * FIXME: Create hwdevice based on type in AVCodecHWConfig
++     */
++    ret = av_hwdevice_ctx_create(&p->hwctx.av_device_ref,
++                                 AV_HWDEVICE_TYPE_V4L2REQUEST,
++                                 NULL, NULL, 0);
++    if (ret < 0) {
+         MP_VERBOSE(hw, "Failed to create hwdevice_ctx: %s\n", av_err2str(ret));
+         goto err;
+     }
+@@ -321,15 +369,28 @@ static int init(struct ra_hwdec *hw)
+ 
+ err:
+     uninit(hw);
+-    return -1;
++    return ret;
+ }
++#endif
+ 
+ const struct ra_hwdec_driver ra_hwdec_drmprime_overlay = {
+     .name = "drmprime-overlay",
+     .priv_size = sizeof(struct priv),
+     .imgfmts = {IMGFMT_DRMPRIME, 0},
+     .device_type = AV_HWDEVICE_TYPE_DRM,
+-    .init = init,
++    .init = init_drmprime,
++    .overlay_frame = overlay_frame,
++    .uninit = uninit,
++};
++
++#if HAVE_V4L2REQUEST
++const struct ra_hwdec_driver ra_hwdec_v4l2request_overlay = {
++    .name = "v4l2request-overlay",
++    .priv_size = sizeof(struct priv),
++    .imgfmts = {IMGFMT_DRMPRIME, 0},
++    .device_type = AV_HWDEVICE_TYPE_V4L2REQUEST,
++    .init = init_v4l2request,
+     .overlay_frame = overlay_frame,
+     .uninit = uninit,
+ };
++#endif
+diff --git a/video/out/vo_dmabuf_wayland.c b/video/out/vo_dmabuf_wayland.c
+index 19144a77fb750..58637435050ba 100644
+--- a/video/out/vo_dmabuf_wayland.c
++++ b/video/out/vo_dmabuf_wayland.c
+@@ -857,6 +857,7 @@ static int preinit(struct vo *vo)
+     // Initialize all possible hwdec drivers.
+     ra_hwdec_ctx_init(&p->hwdec_ctx, vo->hwdec_devs, "vaapi", false);
+     ra_hwdec_ctx_init(&p->hwdec_ctx, vo->hwdec_devs, "drmprime", false);
++    ra_hwdec_ctx_init(&p->hwdec_ctx, vo->hwdec_devs, "v4l2request", false);
+ 
+     p->src = (struct mp_rect){0, 0, 0, 0};
+     return 0;
+diff --git a/video/v4l2request.c b/video/v4l2request.c
+new file mode 100644
+index 0000000000000..2aa4d14fea674
+--- /dev/null
++++ b/video/v4l2request.c
+@@ -0,0 +1,34 @@
++/*
++ * This file is part of mpv.
++ *
++ * mpv is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * mpv is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with mpv.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <libavutil/hwcontext.h>
++
++#include "hwdec.h"
++
++static struct AVBufferRef *v4l2request_create_standalone(struct mpv_global *global,
++        struct mp_log *log, struct hwcontext_create_dev_params *params)
++{
++    AVBufferRef* ref = NULL;
++    av_hwdevice_ctx_create(&ref, AV_HWDEVICE_TYPE_V4L2REQUEST, NULL, NULL, 0);
++
++    return ref;
++}
++
++const struct hwcontext_fns hwcontext_fns_v4l2request = {
++    .av_hwdevice_type = AV_HWDEVICE_TYPE_V4L2REQUEST,
++    .create_dev = v4l2request_create_standalone,
++};
