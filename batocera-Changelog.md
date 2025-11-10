@@ -14,14 +14,20 @@
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
 ### Added
-- LED colour control for Arm based handhelds
-- The ability to turn the controller LED's off
+- EmulationStation:
+ - New UI for configuring in-game controller hotkeys (plus batocera-joysticks-hotkeys command)
+ - global hotkeys configuration for any device (unused device buttons, any arcade special buttons or keyboard key), also via batocera-hotkeys command
+ - LED colour control for Arm based handhelds
+ - Ability to turn the controller LED's off
+ - Added missing characters on the on-screen AZERTY keyboard
+ - New sorting option: hardware type, then release year
+ - Control brightness on multiple screens (Ayn Thor)
+ - Wifi country selector
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
-- in-game joysticks hotkeys configuration via emulationstation menus (and via batocera-joysticks-hotkeys command)
-- global hotkeys configuration (buttons from any device (unused joystick buttons, arcade special buttons, any keyboard button)) via emulationstation menus (and via batocera-hotkeys command)
 - dmd-play-rust is now used by default to play dmd images (performances)
 - New steering wheel support:
  - Logitech Formula Vibration Feedback
+
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
