@@ -11539,6 +11539,12 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        winedevices:
+            prompt: ENABLE WINE DEVICES SERVICES
+            description: Allow wine to access raw io ports (usb, parallel, ...)
+            choices:
+                "Off": 0
+                "On":  1
         sdl_config:
             prompt: SDL CONFIG
             description: Choose whether to pass SDL Game Controller config to the Windows game. Disabling may help with some games.
