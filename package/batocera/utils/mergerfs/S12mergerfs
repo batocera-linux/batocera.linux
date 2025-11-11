@@ -1,0 +1,105 @@
+#!/bin/sh
+#
+# Define your mergergs pools in /boot/batocera-boot.conf with the syntax:
+# 
+# mergerfs=/userdata/roms@/media/BATO_HDD/roms:/media/SDCARD/path/to/roms
+#
+# you can mount external filesystems first through premerge commands in batocera-boot.conf:
+# premerge1=mkdir -p /media/SMB && mount.cifs //10.0.0.1/RetroAchievements /media/SMB -o guest
+#
+# Then you can mix and match local storage, removable media and network shares:
+# mergerfs=/userdata/roms@/media/BATO_HDD/roms:/media/SDCARD/path/to/roms:/media/SMB/roms=RO
+#
+# =RO means RO only for the SMB mount. You could also set RW(read/write) or NC(no creation)
+#
+SHARECONFFILE="/boot/batocera-boot.conf"
+MERGERFS_OPTS="-o cache.files=off,dropcacheonclose=false,category.create=mfs,allow_other,use_ino,moveonenospc=true,minfreespace=4G,xattr=passthrough"
+
+getMaxTryConfig() {
+	SHARECONFFILE=${1}
+
+	X=$(grep -E '^[ \t]*sharewait[ \t]*=' "${SHARECONFFILE}" | sed -e s+'^[ \t]*sharewait[ \t]*='+''+)
+	if echo "${X}" | grep -qE '^[0-9][0-9]*$'
+	then
+		echo "${X}"
+		return
+	fi
+	echo 15 # default value
+}
+
+MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
+
+if [ "$1" = "stop" ]
+then
+	if findmnt -nt fuse.mergerfs "$POOL" >/dev/null 2>&1; then
+		umount "$POOL"
+	fi
+fi
+
+if [ "$1" != "start" ]
+then
+    exit 0
+fi
+
+# Execute premerge commands with retry logic
+if grep -E '^[ ]*premerge[a-zA-Z0-9_-]*[ ]*=' "${SHARECONFFILE}" >/dev/null 2>&1; then
+	grep -E '^[ ]*premerge[a-zA-Z0-9_-]*[ ]*=' "${SHARECONFFILE}" |
+		sed -e s+'^[ ]*premerge[a-zA-Z0-9_-]*[ ]*=[ ]*\(.*\)$'+'\1'+ |
+		while read -r CMD
+		do
+			XWAIT=4 # N seconds between each try
+			XTRY=$((MAXTRY / XWAIT)) # X tries and give up
+			while [ "${XTRY}" -gt 0 ]
+			do
+				XTRY=$((XTRY-1))
+				echo "Executing premerge command: $CMD"
+				if eval "$CMD"
+				then
+					echo "success"
+					XTRY=0
+				else
+					echo "fail (${XTRY} tries remaining)"
+					# give up
+					if [ ${XTRY} -eq 0 ]
+					then
+						echo "giving up on premerge command"
+					else
+						sleep ${XWAIT} # wait n seconds between each try
+					fi
+				fi
+			done
+		done
+fi
+
+if ! grep -E '^[ ]*mergerfs[a-zA-Z0-9_-]*[ ]*=' "${SHARECONFFILE}" |
+	sed -e s+'^[ ]*mergerfs\([a-zA-Z0-9_-]*\)[ ]*=[ ]*\(.*\)$'+'\2 '+ |
+        while read -r CMD
+        do
+		POOL=$(echo "${CMD}" | cut -d'@' -f1)
+		BRANCHES=$(echo "${CMD}" | cut -d'@' -f2)
+		BASE=$(echo "${POOL}" | sed -e "s+\(.*\)/\([a-zA-Z0-1_-]*\)+\1/.\2+")
+		echo "Creating MergerFS pool $POOL from $BASE with $BRANCHES"
+		mkdir -p "$BASE"
+		# Move existing content from POOL to BASE if POOL exists and is not already mounted
+		if [ -d "$POOL" ] && ! findmnt -nt fuse.mergerfs "$POOL" >/dev/null 2>&1; then
+			if [ "$(ls -A "$POOL" 2>/dev/null)" ]; then
+				echo "Moving existing content from $POOL to $BASE"
+				mv "$POOL"/* "$BASE/" 2>/dev/null || true
+				mv "$POOL"/.[!.]* "$BASE/" 2>/dev/null || true
+			fi
+		fi
+		mkdir -p "$POOL"
+		# Keep base read-only for safety
+		mount -o remount,bind,ro "$BASE" 2>/dev/null || true
+		# If a pool is already mounted, unmount cleanly
+		if findmnt -nt fuse.mergerfs "$POOL" >/dev/null 2>&1; then
+			umount "$POOL"
+		fi
+		# Prefix base as NC so creates never go to OS disk
+		/usr/bin/mergerfs $MERGERFS_OPTS "$BASE=NC:${BRANCHES}" "$POOL"
+        done
+	echo "done."
+then
+	exit 0
+fi
+

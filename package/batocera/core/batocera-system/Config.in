@@ -236,6 +236,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_INNOEXTRACT			# Extract InnoSetup files (useful for Wine and GOG games)
 	select BR2_PACKAGE_TREE				# recursive directory listing (useful for generating documentation on rom directory structure)
 	select BR2_PACKAGE_FAKE_HWCLOCK			# Save/restore system clock on machines without working RTC hardware
+	select BR2_PACKAGE_MERGERFS			# Use FUSE to merge multiple directories into a single one
 
 	# Python and SSL
 	select BR2_PACKAGE_HOST_PYTHON3
