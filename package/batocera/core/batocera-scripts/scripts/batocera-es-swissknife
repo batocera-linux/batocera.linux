@@ -38,7 +38,7 @@ function emu_kill() {
         hotkeygen --send exit &
         # Detect WINE process and let hotkeygen with batocera-wine windows stop do it's pretty good job, reason is that WINE can took longer to finish
         # timeout reports 0 if process is finished before t/o
-        pgrep -f -n winedevice.exe >/dev/null && return 25 || ret=20
+        pgrep -f -n wineserver >/dev/null && return 25 || ret=20
         timeout ${waitTimer} tail -q --pid=${RC_PID} -f /dev/null 2>/dev/null && return $ret
         # 2. try, crawl PIDs recursiv and SIGKILL
         getcpid $RC_PID
