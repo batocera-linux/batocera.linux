@@ -101,7 +101,7 @@ fi
 
 # check free space on fs
 if [ "$1" != "manual" ]; then
-    filesystems="/userdata /boot"
+    filesystems="/userdata/system /boot"
 else
     filesystems="/boot"
 fi
