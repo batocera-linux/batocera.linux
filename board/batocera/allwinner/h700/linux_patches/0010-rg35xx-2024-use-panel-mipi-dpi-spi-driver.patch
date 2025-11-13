@@ -1,0 +1,25 @@
+From 2f1e85a50e10b7e0eb200c2c2face6b398cd644d Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Mon, 10 Feb 2025 21:57:52 +0100
+Subject: [PATCH] rg35xx-2024 use panel-mipi-dpi-spi driver
+
+---
+ .../boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts    | 3 ++-
+ 1 file changed, 1 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 360785601..aaeb00575 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -202,7 +202,7 @@ spi_lcd: spi {
+ 		num-chipselects = <1>;
+ 
+ 		panel: panel@0 {
+-			compatible = "anbernic,rg35xx-plus-panel";
++			compatible = "anbernic,rg35xx-plus-panel", "panel-mipi-dpi-spi";
+ 
+ 			reg = <0>;
+ 
+-- 
+2.48.1
+

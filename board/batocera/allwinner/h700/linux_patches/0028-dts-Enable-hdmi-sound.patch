@@ -1,0 +1,113 @@
+From 8bc70e0547259a102dfd335e93d391e8215968ce Mon Sep 17 00:00:00 2001
+From: tiopex <tiopxyz@gmail.com>
+Date: Wed, 28 May 2025 22:13:20 +0200
+Subject: [PATCH] dts: Enable hdmi sound
+
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 68 +++++++++++++++++++
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 13 ++++
+ 2 files changed, 81 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 8118e40d2..f630f779b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -813,6 +813,74 @@ codec: codec@5096000 {
+ 			status = "disabled";
+ 		};
+ 
++		ahub_dam_plat:ahub_dam_plat@5097000 {
++			#sound-dai-cells = <0>;
++			/* sound card without pcm for hardware mix setting */
++			compatible	= "allwinner,sunxi-snd-plat-ahub_dam";
++			reg		= <0x05097000 0x1000>;
++			resets		= <&ccu RST_BUS_AUDIO_HUB>;
++			clocks          = <&ccu CLK_AUDIO_CODEC_1X>,
++							  <&ccu CLK_AUDIO_CODEC_4X>,
++							  <&ccu CLK_AUDIO_HUB>,
++							  <&ccu CLK_BUS_AUDIO_HUB>;
++			clock-names     = "clk_pll_audio",
++							  "clk_pll_audio_4x",
++							  "clk_audio_hub",
++							  "clk_bus_audio_hub";
++			status		= "disabled";
++		};
++
++		ahub_dam_mach:ahub_dam_mach {
++			compatible = "allwinner,sunxi-snd-mach";
++			soundcard-mach,name = "ahubdam";
++			status		= "disabled";
++			soundcard-mach,cpu {
++				sound-dai = <&ahub_dam_plat>;
++			};
++			soundcard-mach,codec {
++			};
++		};
++
++		ahub1_plat:ahub1_plat {
++			#sound-dai-cells = <0>;
++			compatible	= "allwinner,sunxi-snd-plat-ahub";
++			apb_num		= <1>;	/* for dma port 4 */
++			dmas		= <&dma 4>, <&dma 4>;
++			dma-names	= "tx", "rx";
++			playback_cma	= <128>;
++			capture_cma	= <128>;
++			tx_fifo_size	= <128>;
++			rx_fifo_size	= <128>;
++
++			tdm_num		= <1>;
++			tx_pin		= <0>;
++			rx_pin		= <0>;
++			status		= "disabled";
++		};
++
++		ahub1_mach_hdmi:ahub1_mach_hdmi {
++			compatible = "allwinner,sunxi-snd-mach";
++			soundcard-mach,name = "HDMI";
++
++			soundcard-mach,format		= "i2s";
++			soundcard-mach,frame-master	= <&ahub1_cpu>;
++			soundcard-mach,bitclock-master	= <&ahub1_cpu>;
++			/* soundcard-mach,frame-inversion; */
++			/* soundcard-mach,bitclock-inversion; */
++			soundcard-mach,slot-num		= <2>;
++			soundcard-mach,slot-width	= <32>;
++
++			ahub1_cpu: soundcard-mach,cpu {
++				sound-dai = <&ahub1_plat>;
++				soundcard-mach,pll-fs	= <4>;
++				soundcard-mach,mclk-fs	= <0>;
++			};
++
++			ahub1_codec: soundcard-mach,codec {
++				sound-dai = <&hdmi>;
++			};
++		};
++
+ 		usbotg: usb@5100000 {
+ 			compatible = "allwinner,sun50i-h616-musb",
+ 				     "allwinner,sun8i-h3-musb";
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 9e18fb2a8..db64d1406 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -615,3 +615,16 @@ &pwm {
+ 	allwinner,pwm-paired-channel-clock-prescales = <0>, <0>, <0>;
+ 	status = "okay";
+ };
++
++&ahub_dam_plat {
++	status = "okay";
++};
++
++&ahub1_plat {
++	status = "okay";
++};
++
++&ahub1_mach_hdmi {
++	status = "okay";
++};
++
+-- 
+2.34.1
+

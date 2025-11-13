@@ -9,6 +9,7 @@
 - Azahar Plus has been replaced with the source project Azahar.
   3DS roms will need to be decrypted.
 ### Hardware
+- Anbernic RG35XX variant initial support
 - AYN Thor initial support
 - Legion Go S Controller & LED updates
 - Odin 2 Mini initial support

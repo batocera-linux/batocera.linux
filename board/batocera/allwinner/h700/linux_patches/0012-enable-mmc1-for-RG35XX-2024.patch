@@ -1,0 +1,51 @@
+From 72bcec4fc7f6f9da929ac8d0037033e02c409e66 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Mon, 20 Jan 2025 16:44:37 +0100
+Subject: [PATCH] enable mmc1 for RG35XX-2024
+
+---
+ .../dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts   | 9 +++++++++
+ .../dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts   | 8 --------
+ 2 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index e25160ef6..1d2d018a6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -391,6 +391,15 @@ &mmc0 {
+ 	status = "okay";
+ };
+ 
++&mmc1 {
++	vmmc-supply = <&reg_cldo4>;
++	vqmmc-supply = <&reg_aldo4>;
++	keep-power-in-suspend;
++	bus-width = <4>;
++	non-removable;
++	status = "okay";
++};
++
+ &mmc2 {
+ 	bus-width = <4>;
+ 	cd-gpios = <&pio 4 22 GPIO_ACTIVE_LOW>; /* PE22 */
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+index 95ca8e2ab..14e1e8867 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+@@ -23,11 +23,6 @@ wifi_pwrseq: pwrseq {
+ 
+ /* SDIO WiFi RTL8821CS */
+ &mmc1 {
+-	vmmc-supply = <&reg_cldo4>;
+-	vqmmc-supply = <&reg_aldo4>;
+	mmc-pwrseq = <&wifi_pwrseq>;
+-	bus-width = <4>;
+-	non-removable;
+-	status = "okay";
+
+ 	sdio_wifi: wifi@1 {
+ 		reg = <1>;
+ 		interrupt-parent = <&pio>;
+-- 
+2.47.1
+
