@@ -1,5 +1,6 @@
 # disable raw devices to merge them
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-control", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add"
 
@@ -7,3 +8,5 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick"
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 # virtual powkiddy pad
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Powkiddy pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+# virtual anbernic rg35xx pad
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic RG35XX pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"

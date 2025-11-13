@@ -1,0 +1,124 @@
+From 40f91520dc917c7fca6b13c0caea8c0ea213ba6a Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Mon, 20 Jan 2025 12:23:51 +0100
+Subject: [PATCH] enable uart5
+
+---
+ .../allwinner/sun50i-h700-anbernic-rg35xx-2024.dts |  9 ++++++++-
+ .../allwinner/sun50i-h700-anbernic-rg40xx-h.dts    | 14 ++++++++++++++
+ .../allwinner/sun50i-h700-anbernic-rg40xx-v.dts    | 14 ++++++++++++++
+ .../allwinner/sun50i-h700-anbernic-rgcubexx.dts    | 14 ++++++++++++++
+ 4 files changed, 50 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 7d89c5a19..6988f3ce4 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -23,6 +23,7 @@ aliases {
+ 		mmc1 = &mmc2;
+ 		mmc2 = &mmc1;
+ 		serial0 = &uart0;
++		serial1 = &uart5;
+ 	};
+ 
+ 	battery: battery {
+@@ -225,7 +226,7 @@ button-vol-down {
+ 		};
+ 	};
+ 
+-	leds {
++	leds: leds {
+ 		compatible = "gpio-leds";
+ 
+ 		led-0 {
+@@ -442,6 +443,12 @@ joy_mux_pin: joy-mux-pin {
+ 		pins = "PI0";
+ 		function = "gpio_out";
+ 	};
++
++	/omit-if-no-ref/
++	uart5_ph_pins: uart5-ph-pins {
++		pins = "PH2", "PH3";
++		function = "uart5";
++	};	
+ };
+ 
+ &gpadc {
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts
+index 0686b983d..71258c263 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts
+@@ -19,6 +19,20 @@ &joypad {
+ 	pinctrl-0 = <&joy_mux_pin>, <&pwm3_pin>;
+ };
+ 
++&uart5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart5_ph_pins>;
++	status = "okay";	
++};
++
++&leds {
++	led-rgb {
++		function = LED_FUNCTION_KBD_BACKLIGHT;
++		color = <LED_COLOR_ID_RGB>;
++		gpios = <&pio 8 7 GPIO_ACTIVE_HIGH>; /* PI7 */
++	};	
++};
++
+ &panel {
+ 	compatible = "anbernic,rg40xx-panel";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts
+index 79dc542af..1d109ca8c 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts
+@@ -17,6 +17,20 @@ &joypad {
+ 	pinctrl-0 = <&joy_mux_pin>, <&pwm3_pin>;
+ };
+ 
++&uart5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart5_ph_pins>;
++	status = "okay";	
++};
++
++&leds {
++	led-rgb {
++		function = LED_FUNCTION_KBD_BACKLIGHT;
++		color = <LED_COLOR_ID_RGB>;
++		gpios = <&pio 8 7 GPIO_ACTIVE_HIGH>; /* PI7 */
++	};	
++};
++
+ &panel {
+ 	compatible = "anbernic,rg40xx-panel";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts
+index 98f44cb48..b92412284 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts
+@@ -20,6 +20,20 @@ &joypad {
+ 	pinctrl-0 = <&joy_mux_pin>, <&pwm3_pin>;
+ };
+ 
++&uart5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart5_ph_pins>;
++	status = "okay";	
++};
++
++&leds {
++	led-rgb {
++		function = LED_FUNCTION_KBD_BACKLIGHT;
++		color = <LED_COLOR_ID_RGB>;
++		gpios = <&pio 8 7 GPIO_ACTIVE_HIGH>; /* PI7 */
++	};	
++};
++
+ &reg_lcd {
+ 	regulator-min-microvolt = <2800000>;
+ 	regulator-max-microvolt = <2800000>;
+-- 
+2.47.1
+

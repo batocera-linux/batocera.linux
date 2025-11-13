@@ -1,0 +1,495 @@
+From 83753f7dd56bbb36af578f0152d66cbe46272109 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Thu, 23 Jan 2025 23:39:15 +0100
+Subject: [PATCH 7/9] sun20i: add pwm driver
+
+---
+ arch/arm64/configs/defconfig |   1 +
+ drivers/pwm/Kconfig          |  10 +
+ drivers/pwm/Makefile         |   1 +
+ drivers/pwm/pwm-sun20i.c     | 428 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 440 insertions(+)
+ create mode 100644 drivers/pwm/pwm-sun20i.c
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index c62831e61..7d631556b 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1517,6 +1517,7 @@ CONFIG_PWM_RZ_MTU3=m
+ CONFIG_PWM_SAMSUNG=y
+ CONFIG_PWM_SL28CPLD=m
+ CONFIG_PWM_SUN4I=m
++CONFIG_PWM_SUN20I=m
+ CONFIG_PWM_TEGRA=m
+ CONFIG_PWM_TIECAP=m
+ CONFIG_PWM_TIEHRPWM=m
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 0915c1e7d..a4a7eb286 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -652,6 +652,16 @@ config PWM_SUN4I
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-sun4i.
+ 
++config PWM_SUN20I
++	tristate "Allwinner D1/H616 PWM support"
++	depends on ARCH_SUNXI || COMPILE_TEST
++	depends on HAS_IOMEM && COMMON_CLK
++	help
++	  Generic PWM framework driver for Newer Allwinner SoCs.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-sun20i.
++
+ config PWM_SUNPLUS
+ 	tristate "Sunplus PWM support"
+ 	depends on ARCH_SUNPLUS || COMPILE_TEST
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 9081e0c0e..85ad1fe0d 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -60,6 +60,7 @@ obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+ obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
+ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
++obj-$(CONFIG_PWM_SUN20I)	+= pwm-sun20i.o
+ obj-$(CONFIG_PWM_SUNPLUS)	+= pwm-sunplus.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+ obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
+diff --git a/drivers/pwm/pwm-sun20i.c b/drivers/pwm/pwm-sun20i.c
+new file mode 100644
+index 000000000..7262a99ab
+--- /dev/null
++++ b/drivers/pwm/pwm-sun20i.c
+@@ -0,0 +1,428 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Driver for Allwinner's new PWM Controller (such as D1 / H616 / T5 series)
++ *
++ * Copyright (C) 2024 Hironori KIKUCHI <kikuchan98@gmail.com>
++ *
++ */
++
++#include <linux/bitops.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/gcd.h>
++#include <linux/io.h>
++#include <linux/jiffies.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/reset.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++#include <linux/time.h>
++
++// SoC specific offsets
++#define SUN20I_REG_OFFSET_PER_SUN20I (0x0080)
++#define SUN20I_REG_OFFSET_PCR_SUN20I (0x0100 + 0x0000)
++#define SUN20I_REG_OFFSET_PPR_SUN20I (0x0100 + 0x0004)
++#define SUN20I_REG_OFFSET_PER_SUN50I (0x0040)
++#define SUN20I_REG_OFFSET_PCR_SUN50I (0x0060 + 0x0000)
++#define SUN20I_REG_OFFSET_PPR_SUN50I (0x0060 + 0x0004)
++
++// Register offsets
++#define SUN20I_REG_OFFSET_PCCR(chip, ch) (0x0020 + 0x04 * ((ch) >> 1))
++#define SUN20I_REG_OFFSET_PCGR(chip, ch) (0x0040)
++#define SUN20I_REG_OFFSET_PER(chip, ch)	 ((chip)->data->reg_per)
++#define SUN20I_REG_OFFSET_PCR(chip, ch)	 ((chip)->data->reg_pcr + 0x20 * (ch))
++#define SUN20I_REG_OFFSET_PPR(chip, ch)	 ((chip)->data->reg_ppr + 0x20 * (ch))
++
++// PCCR: PWMxx Clock Configuration Register
++#define SUN20I_REG_PCCR_CLK_SRC_MASK   GENMASK(8, 7)
++#define SUN20I_REG_PCCR_CLK_DIV_M_MASK GENMASK(3, 0)
++#define SUN20I_REG_PCCR_CLK_BYPASS(ch) BIT(5 + ((ch) & 1))
++#define SUN20I_REG_PCCR_CLK_GATING(ch) BIT(4)
++
++// PCGR: PWM Clock Gating Register
++#define SUN20I_REG_PCGR_CLK_BYPASS(ch) BIT(16 + (ch))
++#define SUN20I_REG_PCGR_CLK_GATING(ch) BIT(ch)
++
++// PER: PWM Enable Regsiter
++#define SUN20I_REG_PER_ENABLE(ch) BIT(ch)
++
++// PCR: PWM Control Register
++#define SUN20I_REG_PCR_ACT_STA	      BIT(8)
++#define SUN20I_REG_PCR_PRESCAL_K_MASK GENMASK(7, 0)
++
++// PPR: PWM Period Register
++#define SUN20I_REG_PPR_ENTIRE_CYCLE_MASK GENMASK(31, 16)
++#define SUN20I_REG_PPR_ACT_CYCLE_MASK	 GENMASK(15, 0)
++
++// Constants
++#define SUN20I_PWM_CHANNELS_MAX	   (16)
++#define SUN20I_PWM_CLOCK_SRC_HOSC  (0)
++#define SUN20I_PWM_CLOCK_SRC_APB   (1)
++#define SUN20I_PWM_DIV_M_SHIFT_MAX (8)
++#define SUN20I_PWM_PRESCALE_K_MAX  (256)
++#define SUN20I_PWM_ENT_CYCLE_MAX   (0xffffULL)
++
++// Configuration
++#define SUN20I_PWM_DIV_M_SHIFT_DEFAULT (0)
++#define SUN20I_PWM_CLOCK_SRC_DEFAULT   SUN20I_PWM_CLOCK_SRC_HOSC
++
++struct sun20i_pwm_data {
++	unsigned long reg_per;
++	unsigned long reg_pcr;
++	unsigned long reg_ppr;
++	bool has_pcgr;
++};
++
++struct sun20i_pwm_chip {
++	struct clk *clk_bus;
++	struct clk *clk_hosc;
++	struct clk *clk_apb;
++	struct reset_control *rst;
++	void __iomem *base;
++	spinlock_t ctrl_lock;
++	const struct sun20i_pwm_data *data;
++
++	unsigned int clk_src[(SUN20I_PWM_CHANNELS_MAX + 1) / 2];
++	unsigned int div_m_shift[(SUN20I_PWM_CHANNELS_MAX + 1) / 2];
++};
++
++static inline struct sun20i_pwm_chip *to_sun20i_pwm_chip(struct pwm_chip *chip)
++{
++	return pwmchip_get_drvdata(chip);
++}
++
++static inline u32 sun20i_pwm_readl(struct sun20i_pwm_chip *sun20i_chip, unsigned long offset)
++{
++	return readl(sun20i_chip->base + offset);
++}
++
++static inline void sun20i_pwm_writel(struct sun20i_pwm_chip *sun20i_chip, u32 val, unsigned long offset)
++{
++	writel(val, sun20i_chip->base + offset);
++}
++
++static inline bool sun20i_pwm_is_channel_enabled(struct sun20i_pwm_chip *sun20i_chip, int hwpwm)
++{
++	u32 val;
++	val = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PER(sun20i_chip, hwpwm));
++	return val & SUN20I_REG_PER_ENABLE(hwpwm) ? true : false;
++}
++
++static inline void sun20i_pwm_enable_channel(struct sun20i_pwm_chip *sun20i_chip, struct pwm_device *pwm, bool enable)
++{
++	u32 val;
++
++	// PWM Clock Configuration Register
++	u32 pccr = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCCR(sun20i_chip, pwm->hwpwm));
++	if (enable) {
++		unsigned int idx = pwm->hwpwm / 2;
++		// Set clock source
++		pccr &= ~SUN20I_REG_PCCR_CLK_SRC_MASK;
++		pccr |= FIELD_PREP(SUN20I_REG_PCCR_CLK_SRC_MASK, sun20i_chip->clk_src[idx]);
++
++		// Set DIV_M shift
++		pccr &= ~SUN20I_REG_PCCR_CLK_DIV_M_MASK;
++		pccr |= FIELD_PREP(SUN20I_REG_PCCR_CLK_DIV_M_MASK, sun20i_chip->div_m_shift[idx]);
++	}
++
++	if (sun20i_chip->data->has_pcgr) {
++		// PWM Clock Gating Register
++		val = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCGR(sun20i_chip, pwm->hwpwm));
++		if (enable) {
++			val &= ~SUN20I_REG_PCGR_CLK_BYPASS(pwm->hwpwm);
++			val |= SUN20I_REG_PCGR_CLK_GATING(pwm->hwpwm);
++		} else {
++			val &= ~SUN20I_REG_PCGR_CLK_GATING(pwm->hwpwm);
++		}
++		sun20i_pwm_writel(sun20i_chip, val, SUN20I_REG_OFFSET_PCGR(sun20i_chip, pwm->hwpwm));
++	} else {
++		// CLK_BYPASS and CLK_GATING are in PCCR otherwise
++		if (enable) {
++			pccr &= ~SUN20I_REG_PCCR_CLK_BYPASS(pwm->hwpwm);
++			pccr |= SUN20I_REG_PCCR_CLK_GATING(pwm->hwpwm);
++		} else if (!sun20i_pwm_is_channel_enabled(sun20i_chip, pwm->hwpwm ^ 1)) {
++			// drop the flag if and only if the counterpart is disabled
++			pccr &= ~SUN20I_REG_PCCR_CLK_GATING(pwm->hwpwm);
++		}
++	}
++
++	sun20i_pwm_writel(sun20i_chip, pccr, SUN20I_REG_OFFSET_PCCR(sun20i_chip, pwm->hwpwm));
++
++	// PWM Enabling
++	val = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PER(sun20i_chip, pwm->hwpwm));
++	if (enable)
++		val |= SUN20I_REG_PER_ENABLE(pwm->hwpwm);
++	else
++		val &= ~SUN20I_REG_PER_ENABLE(pwm->hwpwm);
++
++	sun20i_pwm_writel(sun20i_chip, val, SUN20I_REG_OFFSET_PER(sun20i_chip, pwm->hwpwm));
++}
++
++static inline u64 sun20i_pwm_get_clock_rate(struct sun20i_pwm_chip *sun20i_chip, unsigned int clksrc)
++{
++	switch (clksrc) {
++	case SUN20I_PWM_CLOCK_SRC_HOSC:
++		return clk_get_rate(sun20i_chip->clk_hosc);
++
++	case SUN20I_PWM_CLOCK_SRC_APB:
++		return clk_get_rate(sun20i_chip->clk_apb);
++
++	default:
++		return 0;
++	}
++}
++
++static int sun20i_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm, struct pwm_state *state)
++{
++	struct sun20i_pwm_chip *sun20i_chip = to_sun20i_pwm_chip(chip);
++	u64 clk_rate;
++
++	u32 pccr = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCCR(sun20i_chip, pwm->hwpwm));
++	u32 pcr = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCR(sun20i_chip, pwm->hwpwm));
++	u32 ppr = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PPR(sun20i_chip, pwm->hwpwm));
++
++	clk_rate = sun20i_pwm_get_clock_rate(sun20i_chip, FIELD_GET(SUN20I_REG_PCCR_CLK_SRC_MASK, pccr));
++	if (!clk_rate) {
++		dev_err(pwmchip_parent(chip), "Invalid CLK_SRC is detected\n");
++		return -EINVAL;
++	}
++
++	unsigned int prescale_k = FIELD_GET(SUN20I_REG_PCR_PRESCAL_K_MASK, pcr) + 1;
++	u32 ent_cycle = FIELD_GET(SUN20I_REG_PPR_ENTIRE_CYCLE_MASK, ppr) + 1;
++	u32 act_cycle = min(ent_cycle, FIELD_GET(SUN20I_REG_PPR_ACT_CYCLE_MASK, ppr));
++
++	unsigned int div_m_shift = FIELD_GET(SUN20I_REG_PCCR_CLK_DIV_M_MASK, pccr);
++	if (div_m_shift > SUN20I_PWM_DIV_M_SHIFT_MAX) {
++		dev_err(pwmchip_parent(chip), "Invalid DIV_M is detected\n");
++		return -EINVAL;
++	}
++	unsigned int div_m = 1 << div_m_shift;
++
++	// set to the state
++	state->enabled = sun20i_pwm_is_channel_enabled(sun20i_chip, pwm->hwpwm);
++	state->polarity = (pcr & SUN20I_REG_PCR_ACT_STA) ? PWM_POLARITY_NORMAL : PWM_POLARITY_INVERSED;
++	state->period = DIV_ROUND_CLOSEST_ULL(ent_cycle * prescale_k * div_m * NSEC_PER_SEC, clk_rate);
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(act_cycle * prescale_k * div_m * NSEC_PER_SEC, clk_rate);
++
++	return 0;
++}
++
++static inline unsigned long sun20i_pwm_find_prescale_k(unsigned long long ent_cycle, unsigned long long act_cycle)
++{
++	if (ent_cycle == 0 || ent_cycle > SUN20I_PWM_ENT_CYCLE_MAX * SUN20I_PWM_PRESCALE_K_MAX || ent_cycle < act_cycle)
++		return 0;
++
++	return clamp(DIV_ROUND_UP_ULL(ent_cycle, SUN20I_PWM_ENT_CYCLE_MAX), 1, SUN20I_PWM_PRESCALE_K_MAX);
++}
++
++static int sun20i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm, const struct pwm_state *state)
++{
++	struct sun20i_pwm_chip *sun20i_chip = to_sun20i_pwm_chip(chip);
++	u64 clk_rate;
++	u32 ctrl;
++
++	spin_lock(&sun20i_chip->ctrl_lock);
++
++	// Period and Duty cycle
++	if (state->duty_cycle != pwm->state.duty_cycle || state->period != pwm->state.period) {
++		unsigned int idx = pwm->hwpwm / 2;
++		clk_rate = sun20i_pwm_get_clock_rate(sun20i_chip, sun20i_chip->clk_src[idx]);
++		unsigned long div_m = 1U << sun20i_chip->div_m_shift[idx];
++		unsigned long long ent_cycle = DIV_ROUND_CLOSEST(state->period * clk_rate, NSEC_PER_SEC * div_m);
++		unsigned long long act_cycle = min(DIV_ROUND_CLOSEST(state->duty_cycle * clk_rate, NSEC_PER_SEC * div_m), ent_cycle);
++
++		unsigned long prescale_k = sun20i_pwm_find_prescale_k(ent_cycle, act_cycle);
++		if (!prescale_k)
++			goto err;
++
++		ent_cycle = clamp(DIV_ROUND_CLOSEST_ULL(ent_cycle, prescale_k), 1, SUN20I_PWM_ENT_CYCLE_MAX);
++		act_cycle = clamp(DIV_ROUND_CLOSEST_ULL(act_cycle, prescale_k), 0, ent_cycle);
++
++		// Set prescale_k
++		ctrl = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCR(sun20i_chip, pwm->hwpwm));
++		ctrl &= ~SUN20I_REG_PCR_PRESCAL_K_MASK;
++		ctrl |= FIELD_PREP(SUN20I_REG_PCR_PRESCAL_K_MASK, prescale_k - 1);
++		sun20i_pwm_writel(sun20i_chip, ctrl, SUN20I_REG_OFFSET_PCR(sun20i_chip, pwm->hwpwm));
++
++		// Set period and duty cycle
++		ctrl = (((ent_cycle - 1) & 0xFFFF) << 16) | (act_cycle & 0xFFFF);
++		sun20i_pwm_writel(sun20i_chip, ctrl, SUN20I_REG_OFFSET_PPR(sun20i_chip, pwm->hwpwm));
++	}
++
++	// Polarity
++	if (state->polarity != pwm->state.polarity) {
++		ctrl = sun20i_pwm_readl(sun20i_chip, SUN20I_REG_OFFSET_PCR(sun20i_chip, pwm->hwpwm));
++		if (state->polarity == PWM_POLARITY_NORMAL) {
++			ctrl |= SUN20I_REG_PCR_ACT_STA;
++		} else {
++			ctrl &= ~SUN20I_REG_PCR_ACT_STA;
++		}
++		sun20i_pwm_writel(sun20i_chip, ctrl, SUN20I_REG_OFFSET_PCR(sun20i_chip, pwm->hwpwm));
++	}
++
++	// Enable
++	if (state->enabled != pwm->state.enabled)
++		sun20i_pwm_enable_channel(sun20i_chip, pwm, state->enabled);
++
++	spin_unlock(&sun20i_chip->ctrl_lock);
++	return 0;
++
++err:
++	spin_unlock(&sun20i_chip->ctrl_lock);
++	return -EINVAL;
++}
++
++static const struct pwm_ops sun20i_pwm_ops = {
++	.apply = sun20i_pwm_apply,
++	.get_state = sun20i_pwm_get_state,
++};
++
++static const struct sun20i_pwm_data sun20i_d1_pwm_data = {
++	.reg_per = SUN20I_REG_OFFSET_PER_SUN20I,
++	.reg_pcr = SUN20I_REG_OFFSET_PCR_SUN20I,
++	.reg_ppr = SUN20I_REG_OFFSET_PPR_SUN20I,
++	.has_pcgr = true,
++};
++
++static const struct sun20i_pwm_data sun50i_h616_pwm_data = {
++	.reg_per = SUN20I_REG_OFFSET_PER_SUN50I,
++	.reg_pcr = SUN20I_REG_OFFSET_PCR_SUN50I,
++	.reg_ppr = SUN20I_REG_OFFSET_PPR_SUN50I,
++	.has_pcgr = false,
++};
++
++static const struct of_device_id sun20i_pwm_dt_ids[] = {
++	{
++		.compatible = "allwinner,sun20i-d1-pwm",
++		.data = &sun20i_d1_pwm_data,
++	},
++	{
++		.compatible = "allwinner,sun50i-h616-pwm",
++		.data = &sun50i_h616_pwm_data,
++	},
++	{
++		/* sentinel */
++	},
++};
++MODULE_DEVICE_TABLE(of, sun20i_pwm_dt_ids);
++
++static int sun20i_pwm_probe(struct platform_device *pdev)
++{
++	struct pwm_chip *chip;
++	const struct sun20i_pwm_data *data;
++	struct sun20i_pwm_chip *sun20i_chip;
++	u32 npwm;
++	int ret;
++
++	struct device_node *node = pdev->dev.of_node;
++
++	data = of_device_get_match_data(&pdev->dev);
++	if (!data)
++		return -ENODEV;
++
++	ret = of_property_read_u32(node, "allwinner,pwm-channels", &npwm);
++	if (ret)
++		return dev_err_probe(&pdev->dev, -EINVAL, "No PWM channels are configured\n");
++
++	if (npwm > SUN20I_PWM_CHANNELS_MAX)
++		return dev_err_probe(&pdev->dev, -EINVAL, "Too many PWM channels are configured\n");
++
++	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*sun20i_chip));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	sun20i_chip = to_sun20i_pwm_chip(chip);
++
++	sun20i_chip->data = data;
++
++	for (int i = 0; i < (npwm + 1) / 2; i++) {
++		sun20i_chip->clk_src[i] = SUN20I_PWM_CLOCK_SRC_DEFAULT;
++		sun20i_chip->div_m_shift[i] = SUN20I_PWM_DIV_M_SHIFT_DEFAULT;
++
++		const char *source;
++		ret = of_property_read_string_index(node, "allwinner,pwm-paired-channel-clock-sources", i, &source);
++		if (!ret) {
++			if (!strcasecmp(source, "hosc"))
++				sun20i_chip->clk_src[i] = SUN20I_PWM_CLOCK_SRC_HOSC;
++			else if (!strcasecmp(source, "apb"))
++				sun20i_chip->clk_src[i] = SUN20I_PWM_CLOCK_SRC_APB;
++			else
++				return dev_err_probe(&pdev->dev, -EINVAL, "Unknown clock source: %s\n", source);
++		}
++
++		u32 value;
++		ret = of_property_read_u32_index(node, "allwinner,pwm-paired-channel-clock-prescales", i, &value);
++		if (!ret) {
++			if (value <= SUN20I_PWM_DIV_M_SHIFT_MAX)
++				sun20i_chip->div_m_shift[i] = value;
++			else
++				return dev_err_probe(&pdev->dev, -EINVAL, "Invalid prescale value: %u\n", value);
++		}
++	}
++
++	sun20i_chip->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(sun20i_chip->base))
++		return PTR_ERR(sun20i_chip->base);
++
++	sun20i_chip->clk_bus = devm_clk_get_enabled(&pdev->dev, "bus");
++	if (IS_ERR(sun20i_chip->clk_bus))
++		return dev_err_probe(&pdev->dev, PTR_ERR(sun20i_chip->clk_bus), "Failed to get `bus` clock\n");
++
++	sun20i_chip->clk_hosc = devm_clk_get_enabled(&pdev->dev, "hosc");
++	if (IS_ERR(sun20i_chip->clk_hosc))
++		return dev_err_probe(&pdev->dev, PTR_ERR(sun20i_chip->clk_hosc), "Failed to get `hosc` clock\n");
++
++	sun20i_chip->clk_apb = devm_clk_get_enabled(&pdev->dev, "apb");
++	if (IS_ERR(sun20i_chip->clk_apb))
++		return dev_err_probe(&pdev->dev, PTR_ERR(sun20i_chip->clk_apb), "Failed to get `apb` clock\n");
++
++	sun20i_chip->rst = devm_reset_control_get_exclusive(&pdev->dev, NULL);
++	if (IS_ERR(sun20i_chip->rst))
++		return dev_err_probe(&pdev->dev, PTR_ERR(sun20i_chip->rst), "Failed to get bus reset\n");
++
++	ret = reset_control_deassert(sun20i_chip->rst);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret, "Failed to deassert reset control\n");
++
++	chip->ops = &sun20i_pwm_ops;
++
++	spin_lock_init(&sun20i_chip->ctrl_lock);
++
++	ret = pwmchip_add(chip);
++	if (ret < 0) {
++		reset_control_assert(sun20i_chip->rst);
++		return dev_err_probe(&pdev->dev, ret, "Failed to add PWM chip\n");
++	}
++
++	platform_set_drvdata(pdev, chip);
++
++	return 0;
++}
++
++static void sun20i_pwm_remove(struct platform_device *pdev)
++{
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct sun20i_pwm_chip *sun20i_chip = to_sun20i_pwm_chip(chip);
++
++	pwmchip_remove(chip);
++
++	reset_control_assert(sun20i_chip->rst);
++}
++
++static struct platform_driver sun20i_pwm_driver = {
++	.driver = {
++		.name = "sun20i-pwm",
++		.of_match_table = sun20i_pwm_dt_ids,
++	},
++	.probe = sun20i_pwm_probe,
++	.remove = sun20i_pwm_remove,
++};
++module_platform_driver(sun20i_pwm_driver);
++
++MODULE_ALIAS("platform:sun20i-pwm");
++MODULE_AUTHOR("Hironori KIKUCHI <kikuchan98@gmail.com>");
++MODULE_DESCRIPTION("Allwinner sun20i PWM driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.47.1
+
