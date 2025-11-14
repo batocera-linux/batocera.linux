@@ -9,6 +9,7 @@ do_usage() {
     echo "$1 set-profile {auto|<profile>}"
     echo "$1 getSystemVolume"
     echo "$1 setSystemVolume {mute|unmute|mute-toggle|[+-]<0...100>}"
+    echo "$1 getSystemMute"
     echo "$1 test"
 }
 
@@ -103,6 +104,10 @@ case "${ACTION}" in
 
     getSystemVolume)
         echo "${DETECT_VOLUME}"
+        ;;
+
+    getSystemMute)
+	    LC_ALL=C pactl get-sink-mute @DEFAULT_SINK@ | sed 's/.*: *\(.*\)/\1/' || exit 1
         ;;
 
     setSystemVolume)
