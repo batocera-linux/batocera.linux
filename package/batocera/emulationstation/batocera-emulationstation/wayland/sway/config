@@ -52,6 +52,12 @@ for_window [instance="emulator_multicpu.exe"] fullscreen enable
 for_window [title="Batocera OSD"] fullscreen disable
 for_window [title="Batocera OSD"] floating enable
 for_window [title="Batocera OSD"] move position 0px 2px
+for_window [title="Batocera OSD"] border none
+# batocera-controlcenter
+for_window [title="Batocera Control Center"] fullscreen disable
+for_window [title="Batocera Control Center"] floating enable
+for_window [title="Batocera Control Center"] move position 50ppt 1ppt
+for_window [title="Batocera Control Center"] border none
 
 # Starts EmulationStation when loading sway
 exec /usr/bin/batocera-mouse hide

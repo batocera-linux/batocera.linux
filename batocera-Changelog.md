@@ -26,6 +26,7 @@
  - New sorting option: hardware type, then release year
  - Control brightness on multiple screens (Ayn Thor)
  - Wifi country selector
+- Batocera Control Center (on-screen interface for global configuration and control, [hotkey][east] by default)
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
 ### Fixed
