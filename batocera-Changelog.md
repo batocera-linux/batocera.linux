@@ -8,15 +8,21 @@
 - TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
 - Azahar Plus has been replaced with the source project Azahar.
   3DS roms will need to be decrypted.
+- WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones.
+  `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
+  We recommend following the procedure described in our wiki to back up Windows savegames.
 ### Hardware
+- Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
 - Legion Go S Controller & LED updates
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
+- New steering wheel support:
+ - Logitech Formula Vibration Feedback
 ### Added
 - EmulationStation:
  - New UI for configuring in-game controller hotkeys (plus batocera-joysticks-hotkeys command)
- - global hotkeys configuration for any device (unused device buttons, any arcade special buttons or keyboard key), also via batocera-hotkeys command
+ - Global hotkeys configuration for any device (unused device buttons, any arcade special buttons or keyboard key), also via batocera-hotkeys command
  - LED colour control for Arm based handhelds
  - Ability to turn the controller LED's off
  - Added missing characters on the on-screen AZERTY keyboard
@@ -25,9 +31,6 @@
  - Wifi country selector
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
-- New steering wheel support:
- - Logitech Formula Vibration Feedback
-
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
