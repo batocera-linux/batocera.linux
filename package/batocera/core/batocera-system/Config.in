@@ -570,7 +570,8 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "allwinner/h5/tritium-h5 allwinner/h5/orangepi-pc2"					if BR2_PACKAGE_BATOCERA_TARGET_H5
 	default "allwinner/h6/orangepi-3-lts allwinner/h6/orangepi-3 allwinner/h6/orangepi-one-plus"	if BR2_PACKAGE_BATOCERA_TARGET_H6
 	default "allwinner/h616/orangepi-zero2 allwinner/h616/orangepi-zero3 allwinner/h616/x96-mate"	if BR2_PACKAGE_BATOCERA_TARGET_H616
-	default "allwinner/h700/anbernic-rg35xx-h"    if BR2_PACKAGE_BATOCERA_TARGET_H700
+	default "allwinner/h700/anbernic-rg28xx allwinner/h700/anbernic-rg34xx allwinner/h700/anbernic-rg34xx-sp allwinner/h700/anbernic-rg35xx-2024 allwinner/h700/anbernic-rg35xx-2024-rev6-panel allwinner/h700/anbernic-rg35xx-h allwinner/h700/anbernic-rg35xx-h-rev6-panel allwinner/h700/anbernic-rg35xx-plus allwinner/h700/anbernic-rg35xx-plus-rev6-panel allwinner/h700/anbernic-rg35xx-pro allwinner/h700/anbernic-rg35xx-sp allwinner/h700/anbernic-rg35xx-sp-v2-panel allwinner/h700/anbernic-rg40xx-h allwinner/h700/anbernic-rg40xx-v allwinner/h700/anbernic-rgcubexx" \
+	        if BR2_PACKAGE_BATOCERA_TARGET_H700
 	default "amlogic/s812"										if BR2_PACKAGE_BATOCERA_TARGET_S812
 	default "samsung/exynos5422/odroidxu4"								if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"											if BR2_PACKAGE_BATOCERA_TARGET_X86
