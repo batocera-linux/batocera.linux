@@ -1,0 +1,9 @@
+config BR2_PACKAGE_BATOCERA_CONTROLCENTER
+	bool "batocera-controlcenter"
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_EVDEV
+
+	help
+	  A flexible, XML-driven control panel for Batocera that provides
+	  an on-screen interface for system configuration and control.
+	  Works on both X11 and Wayland (Sway) with gamepad / touchscreen / keyboard.

@@ -19,6 +19,7 @@ menu "System"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-controller-overlays/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/swapit/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-resolution/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-controlcenter/Config.in"
 
   menu "Boot"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-initramfs/Config.in"
