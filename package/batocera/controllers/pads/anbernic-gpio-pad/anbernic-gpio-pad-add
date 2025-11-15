@@ -39,12 +39,24 @@ EXPECTED_DEVS=3
 VIRTUAL_PAD_NAME="Anbernic pad"
 EVS_DEVICE_ID_ARG=()
 
-if [ "$(batocera-model)" = "Powkiddy_x55" ]; then
-    # If the model is Powkiddy_x55, we only expect 2 devices.
-    EXPECTED_DEVS=2
-    VIRTUAL_PAD_NAME="Powkiddy pad"
-    EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
-fi
+# Get the device model
+MODEL=$(batocera-model)
+
+# Check the model and set device-specific variables
+case "${MODEL}" in
+    Powkiddy_x55)
+        # This model expects 2 devices.
+        EXPECTED_DEVS=2
+        VIRTUAL_PAD_NAME="Powkiddy pad"
+        EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
+        ;;
+    Anbernic_RG35XX*|Anbernic_RG28XX*|Anbernic_RG34XX*|Anbernic_RG40XX*|Anbernic_RGCUBEXX*)
+        # These models expect 2 devices for the "RG35xx" virtual pad.
+        EXPECTED_DEVS=2
+        VIRTUAL_PAD_NAME="Anbernic RG35XX pad"
+        EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
+        ;;
+esac
 
 trylock
 checkRunningPIDAndExit1

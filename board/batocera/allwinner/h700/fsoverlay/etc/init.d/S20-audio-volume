@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    /usr/bin/amixer -c 0 set 'DAC' 63 > /dev/null 2>&1
+    ;;
+  stop|restart|reload|force-reload)
+    # Nothing to do here
+    ;;
+  *)
+    echo "Usage: $0 start" >&2
+    exit 3
+    ;;
+esac
+
+exit 0

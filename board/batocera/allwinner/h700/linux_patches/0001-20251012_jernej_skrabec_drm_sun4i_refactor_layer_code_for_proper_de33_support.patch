@@ -1,0 +1,4556 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 1/30] drm/sun4i: mixer: Fix up DE33 channel macros
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:01 +0200
+Message-Id: <20251012192330.6903-2-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Properly define macros. Till now raw numbers and inappropriate macro was
+used.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index a1c1cbccc654..b5badfa2c997 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -39,6 +39,9 @@
+ #define DE3_CH_BASE				0x1000
+ #define DE3_CH_SIZE				0x0800
+ 
++#define DE33_CH_BASE				0x1000
++#define DE33_CH_SIZE				0x20000
++
+ #define SUN8I_MIXER_BLEND_PIPE_CTL(base)	((base) + 0)
+ #define SUN8I_MIXER_BLEND_ATTR_FCOLOR(base, x)	((base) + 0x4 + 0x10 * (x))
+ #define SUN8I_MIXER_BLEND_ATTR_INSIZE(base, x)	((base) + 0x8 + 0x10 * (x))
+@@ -242,7 +245,7 @@ static inline u32
+ sun8i_channel_base(struct sun8i_mixer *mixer, int channel)
+ {
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-		return mixer->cfg->map[channel] * 0x20000 + DE2_CH_SIZE;
++		return DE33_CH_BASE + mixer->cfg->map[channel] * DE33_CH_SIZE;
+ 	else if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_CH_BASE + channel * DE3_CH_SIZE;
+ 	else
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 2/30] drm/sun4i: mixer: Remove ccsc cfg for >= DE3
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:02 +0200
+Message-Id: <20251012192330.6903-3-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Those engine versions don't need ccsc argument, since CSC units are
+located on different position and for each layer.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 31a8409b98f4..f7f210a925f8 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -790,7 +790,6 @@ static const struct sun8i_mixer_cfg sun50i_a64_mixer1_cfg = {
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_h6_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
+ 	.de_type	= SUN8I_MIXER_DE3,
+ 	.mod_rate	= 600000000,
+ 	.scaler_mask	= 0xf,
+@@ -800,7 +799,6 @@ static const struct sun8i_mixer_cfg sun50i_h6_mixer0_cfg = {
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_h616_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
+ 	.de_type	= SUN8I_MIXER_DE33,
+ 	.mod_rate	= 600000000,
+ 	.scaler_mask	= 0xf,
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 3/30] drm/sun4i: de2: Initialize layer fields earlier
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:03 +0200
+Message-Id: <20251012192330.6903-4-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+drm_universal_plane_init() can already call some callbacks, like
+format_mod_supported, during initialization. Because of that, fields
+should be initialized beforehand.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 9 +++++----
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 9 +++++----
+ 2 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index f97be0040aab..9b786e5c7f3c 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -304,6 +304,11 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	if (!layer)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	layer->mixer = mixer;
++	layer->type = SUN8I_LAYER_TYPE_UI;
++	layer->channel = channel;
++	layer->overlay = 0;
++
+ 	if (index == 0)
+ 		type = DRM_PLANE_TYPE_PRIMARY;
+ 
+@@ -334,10 +339,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	}
+ 
+ 	drm_plane_helper_add(&layer->plane, &sun8i_ui_layer_helper_funcs);
+-	layer->mixer = mixer;
+-	layer->type = SUN8I_LAYER_TYPE_UI;
+-	layer->channel = channel;
+-	layer->overlay = 0;
+ 
+ 	return layer;
+ }
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index a09ee4097537..bd6c7915bbc4 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -485,6 +485,11 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	if (!layer)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	layer->mixer = mixer;
++	layer->type = SUN8I_LAYER_TYPE_VI;
++	layer->channel = index;
++	layer->overlay = 0;
++
+ 	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		formats = sun8i_vi_layer_de3_formats;
+ 		format_count = ARRAY_SIZE(sun8i_vi_layer_de3_formats);
+@@ -543,10 +548,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	}
+ 
+ 	drm_plane_helper_add(&layer->plane, &sun8i_vi_layer_helper_funcs);
+-	layer->mixer = mixer;
+-	layer->type = SUN8I_LAYER_TYPE_VI;
+-	layer->channel = index;
+-	layer->overlay = 0;
+ 
+ 	return layer;
+ }
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 4/30] drm/sun4i: ui_layer: Move check from update to check
+ callback
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:04 +0200
+Message-Id: <20251012192330.6903-5-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+DRM requires that all checks are done in atomic_check callback. Move
+one check from atomic_commit to atomic_update callback.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 9b786e5c7f3c..fce7b265c5d8 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -134,16 +134,11 @@ static int sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+ 	struct drm_plane_state *state = plane->state;
+ 	const struct drm_format_info *fmt;
+ 	u32 val, ch_base, hw_fmt;
+-	int ret;
+ 
+ 	ch_base = sun8i_channel_base(mixer, channel);
+ 
+ 	fmt = state->fb->format;
+-	ret = sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+-	if (ret || fmt->is_yuv) {
+-		DRM_DEBUG_DRIVER("Invalid format\n");
+-		return -EINVAL;
+-	}
++	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+ 	val = hw_fmt << SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_OFFSET;
+ 	regmap_update_bits(mixer->engine.regs,
+@@ -201,7 +196,9 @@ static int sun8i_ui_layer_atomic_check(struct drm_plane *plane,
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+ 	struct drm_crtc *crtc = new_plane_state->crtc;
+ 	struct drm_crtc_state *crtc_state;
+-	int min_scale, max_scale;
++	const struct drm_format_info *fmt;
++	int min_scale, max_scale, ret;
++	u32 hw_fmt;
+ 
+ 	if (!crtc)
+ 		return 0;
+@@ -211,6 +208,13 @@ static int sun8i_ui_layer_atomic_check(struct drm_plane *plane,
+ 	if (WARN_ON(!crtc_state))
+ 		return -EINVAL;
+ 
++	fmt = new_plane_state->fb->format;
++	ret = sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
++	if (ret || fmt->is_yuv) {
++		DRM_DEBUG_DRIVER("Invalid plane format\n");
++		return -EINVAL;
++	}
++
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 5/30] drm/sun4i: vi_layer: Move check from update to check
+ callback
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:05 +0200
+Message-Id: <20251012192330.6903-6-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+DRM requires that all check are done in atomic_check callback. Move
+one check from atomic_commit to atomic_update callback.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index bd6c7915bbc4..c80bdece5ffc 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -217,16 +217,11 @@ static int sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+ 	struct drm_plane_state *state = plane->state;
+ 	u32 val, ch_base, csc_mode, hw_fmt;
+ 	const struct drm_format_info *fmt;
+-	int ret;
+ 
+ 	ch_base = sun8i_channel_base(mixer, channel);
+ 
+ 	fmt = state->fb->format;
+-	ret = sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+-	if (ret) {
+-		DRM_DEBUG_DRIVER("Invalid format\n");
+-		return ret;
+-	}
++	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+ 	val = hw_fmt << SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_OFFSET;
+ 	regmap_update_bits(mixer->engine.regs,
+@@ -322,7 +317,9 @@ static int sun8i_vi_layer_atomic_check(struct drm_plane *plane,
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+ 	struct drm_crtc *crtc = new_plane_state->crtc;
+ 	struct drm_crtc_state *crtc_state;
+-	int min_scale, max_scale;
++	const struct drm_format_info *fmt;
++	int min_scale, max_scale, ret;
++	u32 hw_fmt;
+ 
+ 	if (!crtc)
+ 		return 0;
+@@ -332,6 +329,13 @@ static int sun8i_vi_layer_atomic_check(struct drm_plane *plane,
+ 	if (WARN_ON(!crtc_state))
+ 		return -EINVAL;
+ 
++	fmt = new_plane_state->fb->format;
++	ret = sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
++	if (ret) {
++		DRM_DEBUG_DRIVER("Invalid plane format\n");
++		return ret;
++	}
++
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 6/30] drm/sun4i: layers: Make atomic commit functions void
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:06 +0200
+Message-Id: <20251012192330.6903-7-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Functions called by atomic_commit callback should not fail. None of them
+actually returns error, so make them void.
+
+No functional change.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 20 +++++++-------------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 20 +++++++-------------
+ 2 files changed, 14 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index fce7b265c5d8..8baa1d0b53bd 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -46,9 +46,9 @@ static void sun8i_ui_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+ 			   mask, val);
+ }
+ 
+-static int sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-				       int overlay, struct drm_plane *plane,
+-				       unsigned int zpos)
++static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
++					int overlay, struct drm_plane *plane,
++					unsigned int zpos)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	u32 src_w, src_h, dst_w, dst_h;
+@@ -124,12 +124,10 @@ static int sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 	regmap_write(bld_regs,
+ 		     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
+ 		     outsize);
+-
+-	return 0;
+ }
+ 
+-static int sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+-					 int overlay, struct drm_plane *plane)
++static void sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
++					  int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	const struct drm_format_info *fmt;
+@@ -144,12 +142,10 @@ static int sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+ 	regmap_update_bits(mixer->engine.regs,
+ 			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay),
+ 			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_MASK, val);
+-
+-	return 0;
+ }
+ 
+-static int sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
++					 int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	struct drm_framebuffer *fb = state->fb;
+@@ -184,8 +180,6 @@ static int sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 	regmap_write(mixer->engine.regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_TOP_LADDR(ch_base, overlay),
+ 		     lower_32_bits(dma_addr));
+-
+-	return 0;
+ }
+ 
+ static int sun8i_ui_layer_atomic_check(struct drm_plane *plane,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index c80bdece5ffc..dae6f83cea6e 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -48,9 +48,9 @@ static void sun8i_vi_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+ 	}
+ }
+ 
+-static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-				       int overlay, struct drm_plane *plane,
+-				       unsigned int zpos)
++static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
++					int overlay, struct drm_plane *plane,
++					unsigned int zpos)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	const struct drm_format_info *format = state->fb->format;
+@@ -191,8 +191,6 @@ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 	regmap_write(bld_regs,
+ 		     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
+ 		     outsize);
+-
+-	return 0;
+ }
+ 
+ static u32 sun8i_vi_layer_get_csc_mode(const struct drm_format_info *format)
+@@ -211,8 +209,8 @@ static u32 sun8i_vi_layer_get_csc_mode(const struct drm_format_info *format)
+ 	}
+ }
+ 
+-static int sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+-					 int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel,
++					  int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	u32 val, ch_base, csc_mode, hw_fmt;
+@@ -246,12 +244,10 @@ static int sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+ 	regmap_update_bits(mixer->engine.regs,
+ 			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay),
+ 			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE, val);
+-
+-	return 0;
+ }
+ 
+-static int sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
++					 int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	struct drm_framebuffer *fb = state->fb;
+@@ -305,8 +301,6 @@ static int sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 								 overlay, i),
+ 			     lower_32_bits(dma_addr));
+ 	}
+-
+-	return 0;
+ }
+ 
+ static int sun8i_vi_layer_atomic_check(struct drm_plane *plane,
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 7/30] drm/sun4i: Move blender config from layers to mixer
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:07 +0200
+Message-Id: <20251012192330.6903-8-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+With upcoming DE33 support, layer management must be decoupled from
+other operations like blender configuration. There are two reasons:
+- DE33 will have separate driver for planes and thus it will be harder
+  to manage different register spaces
+- Architecturaly it's better to split access by modules. Blender is now
+  exclusively managed by mixer.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 17 ++++++++++++++---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 22 +++-------------------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 22 +++-------------------
+ 3 files changed, 20 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index f7f210a925f8..a3194b71dc6d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -283,8 +283,8 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 
+ 	drm_for_each_plane(plane, state->dev) {
+ 		struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
++		int w, h, x, y, zpos;
+ 		bool enable;
+-		int zpos;
+ 
+ 		if (!(plane->possible_crtcs & drm_crtc_mask(crtc)) || layer->mixer != mixer)
+ 			continue;
+@@ -295,10 +295,14 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 
+ 		enable = plane_state->crtc && plane_state->visible;
+ 		zpos = plane_state->normalized_zpos;
++		x = plane_state->dst.x1;
++		y = plane_state->dst.y1;
++		w = drm_rect_width(&plane_state->dst);
++		h = drm_rect_height(&plane_state->dst);
+ 
+-		DRM_DEBUG_DRIVER("  plane %d: chan=%d ovl=%d en=%d zpos=%d\n",
++		DRM_DEBUG_DRIVER("  plane %d: chan=%d ovl=%d en=%d zpos=%d x=%d y=%d w=%d h=%d\n",
+ 				 plane->base.id, layer->channel, layer->overlay,
+-				 enable, zpos);
++				 enable, zpos, x, y, w, h);
+ 
+ 		/*
+ 		 * We always update the layer enable bit, because it can clear
+@@ -312,6 +316,13 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 		/* Route layer to pipe based on zpos */
+ 		route |= layer->channel << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
+ 		pipe_en |= SUN8I_MIXER_BLEND_PIPE_CTL_EN(zpos);
++
++		regmap_write(bld_regs,
++			     SUN8I_MIXER_BLEND_ATTR_COORD(bld_base, zpos),
++			     SUN8I_MIXER_COORD(x, y));
++		regmap_write(bld_regs,
++			     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
++			     SUN8I_MIXER_SIZE(w, h));
+ 	}
+ 
+ 	regmap_write(bld_regs, SUN8I_MIXER_BLEND_ROUTE(bld_base), route);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 8baa1d0b53bd..12c83c54f9bc 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -47,21 +47,17 @@ static void sun8i_ui_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+ }
+ 
+ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane,
+-					unsigned int zpos)
++					int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	u32 src_w, src_h, dst_w, dst_h;
+-	struct regmap *bld_regs;
+-	u32 bld_base, ch_base;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
++	u32 ch_base;
+ 
+ 	DRM_DEBUG_DRIVER("Updating UI channel %d overlay %d\n",
+ 			 channel, overlay);
+ 
+-	bld_base = sun8i_blender_base(mixer);
+-	bld_regs = sun8i_blender_regmap(mixer);
+ 	ch_base = sun8i_channel_base(mixer, channel);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+@@ -113,17 +109,6 @@ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		else
+ 			sun8i_ui_scaler_enable(mixer, channel, false);
+ 	}
+-
+-	/* Set base coordinates */
+-	DRM_DEBUG_DRIVER("Layer destination coordinates X: %d Y: %d\n",
+-			 state->dst.x1, state->dst.y1);
+-	DRM_DEBUG_DRIVER("Layer destination size W: %d H: %d\n", dst_w, dst_h);
+-	regmap_write(bld_regs,
+-		     SUN8I_MIXER_BLEND_ATTR_COORD(bld_base, zpos),
+-		     SUN8I_MIXER_COORD(state->dst.x1, state->dst.y1));
+-	regmap_write(bld_regs,
+-		     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
+-		     outsize);
+ }
+ 
+ static void sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+@@ -230,14 +215,13 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state,
+ 									   plane);
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+-	unsigned int zpos = new_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!new_state->crtc || !new_state->visible)
+ 		return;
+ 
+ 	sun8i_ui_layer_update_coord(mixer, layer->channel,
+-				    layer->overlay, plane, zpos);
++				    layer->overlay, plane);
+ 	sun8i_ui_layer_update_alpha(mixer, layer->channel,
+ 				    layer->overlay, plane);
+ 	sun8i_ui_layer_update_formats(mixer, layer->channel,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index dae6f83cea6e..1f4fa63ef153 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -49,25 +49,21 @@ static void sun8i_vi_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+ }
+ 
+ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane,
+-					unsigned int zpos)
++					int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	const struct drm_format_info *format = state->fb->format;
+ 	u32 src_w, src_h, dst_w, dst_h;
+-	struct regmap *bld_regs;
+-	u32 bld_base, ch_base;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
+ 	u32 hn = 0, hm = 0;
+ 	u32 vn = 0, vm = 0;
+ 	bool subsampled;
++	u32 ch_base;
+ 
+ 	DRM_DEBUG_DRIVER("Updating VI channel %d overlay %d\n",
+ 			 channel, overlay);
+ 
+-	bld_base = sun8i_blender_base(mixer);
+-	bld_regs = sun8i_blender_regmap(mixer);
+ 	ch_base = sun8i_channel_base(mixer, channel);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+@@ -180,17 +176,6 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		     SUN8I_MIXER_CHAN_VI_VDS_UV(ch_base),
+ 		     SUN8I_MIXER_CHAN_VI_DS_N(vn) |
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
+-
+-	/* Set base coordinates */
+-	DRM_DEBUG_DRIVER("Layer destination coordinates X: %d Y: %d\n",
+-			 state->dst.x1, state->dst.y1);
+-	DRM_DEBUG_DRIVER("Layer destination size W: %d H: %d\n", dst_w, dst_h);
+-	regmap_write(bld_regs,
+-		     SUN8I_MIXER_BLEND_ATTR_COORD(bld_base, zpos),
+-		     SUN8I_MIXER_COORD(state->dst.x1, state->dst.y1));
+-	regmap_write(bld_regs,
+-		     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
+-		     outsize);
+ }
+ 
+ static u32 sun8i_vi_layer_get_csc_mode(const struct drm_format_info *format)
+@@ -350,14 +335,13 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state,
+ 									   plane);
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+-	unsigned int zpos = new_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!new_state->crtc || !new_state->visible)
+ 		return;
+ 
+ 	sun8i_vi_layer_update_coord(mixer, layer->channel,
+-				    layer->overlay, plane, zpos);
++				    layer->overlay, plane);
+ 	sun8i_vi_layer_update_alpha(mixer, layer->channel,
+ 				    layer->overlay, plane);
+ 	sun8i_vi_layer_update_formats(mixer, layer->channel,
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 8/30] drm/sun4i: ui layer: Write attributes in one go
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:08 +0200
+Message-Id: <20251012192330.6903-9-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+It turns out that none of the UI channel registers were meant to be
+read. Mostly it works fine but sometimes it returns incorrect values.
+
+Rework UI layer code to write all registers in one go to avoid reads.
+
+This rework will also allow proper code separation.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 50 +++++++++-----------------
+ 1 file changed, 16 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 12c83c54f9bc..8634d2ee613a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -25,25 +25,27 @@
+ #include "sun8i_ui_scaler.h"
+ #include "sun8i_vi_scaler.h"
+ 
+-static void sun8i_ui_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_ui_layer_update_attributes(struct sun8i_mixer *mixer,
++					     int channel, int overlay,
++					     struct drm_plane *plane)
+ {
+-	u32 mask, val, ch_base;
++	struct drm_plane_state *state = plane->state;
++	const struct drm_format_info *fmt;
++	u32 val, ch_base, hw_fmt;
+ 
+ 	ch_base = sun8i_channel_base(mixer, channel);
++	fmt = state->fb->format;
++	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+-	mask = SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA_MODE_MASK |
+-		SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA_MASK;
+-
+-	val = SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA(plane->state->alpha >> 8);
+-
+-	val |= (plane->state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
++	val = SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA(state->alpha >> 8);
++	val |= (state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
+ 		SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA_MODE_PIXEL :
+ 		SUN8I_MIXER_CHAN_UI_LAYER_ATTR_ALPHA_MODE_COMBINED;
++	val |= hw_fmt << SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_OFFSET;
++	val |= SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN;
+ 
+-	regmap_update_bits(mixer->engine.regs,
+-			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay),
+-			   mask, val);
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay), val);
+ }
+ 
+ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+@@ -111,24 +113,6 @@ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 	}
+ }
+ 
+-static void sun8i_ui_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+-					  int overlay, struct drm_plane *plane)
+-{
+-	struct drm_plane_state *state = plane->state;
+-	const struct drm_format_info *fmt;
+-	u32 val, ch_base, hw_fmt;
+-
+-	ch_base = sun8i_channel_base(mixer, channel);
+-
+-	fmt = state->fb->format;
+-	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+-
+-	val = hw_fmt << SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_OFFSET;
+-	regmap_update_bits(mixer->engine.regs,
+-			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay),
+-			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_MASK, val);
+-}
+-
+ static void sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 					 int overlay, struct drm_plane *plane)
+ {
+@@ -220,12 +204,10 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ 	if (!new_state->crtc || !new_state->visible)
+ 		return;
+ 
++	sun8i_ui_layer_update_attributes(mixer, layer->channel,
++					 layer->overlay, plane);
+ 	sun8i_ui_layer_update_coord(mixer, layer->channel,
+ 				    layer->overlay, plane);
+-	sun8i_ui_layer_update_alpha(mixer, layer->channel,
+-				    layer->overlay, plane);
+-	sun8i_ui_layer_update_formats(mixer, layer->channel,
+-				      layer->overlay, plane);
+ 	sun8i_ui_layer_update_buffer(mixer, layer->channel,
+ 				     layer->overlay, plane);
+ }
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 9/30] drm/sun4i: vi layer: Write attributes in one go
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:09 +0200
+Message-Id: <20251012192330.6903-10-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+It turns out that none of the VI channel registers were meant to be
+read. Mostly it works fine but sometimes it returns incorrect values.
+
+Rework VI layer code to write all registers in one go to avoid reads.
+
+This rework will also allow proper code separation.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 71 ++++++++++----------------
+ 1 file changed, 27 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 1f4fa63ef153..dcc4429368d6 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -18,34 +18,35 @@
+ #include "sun8i_vi_layer.h"
+ #include "sun8i_vi_scaler.h"
+ 
+-static void sun8i_vi_layer_update_alpha(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_attributes(struct sun8i_mixer *mixer,
++					     int channel, int overlay,
++					     struct drm_plane *plane)
+ {
+-	u32 mask, val, ch_base;
++	struct drm_plane_state *state = plane->state;
++	const struct drm_format_info *fmt;
++	u32 val, ch_base, hw_fmt;
+ 
+ 	ch_base = sun8i_channel_base(mixer, channel);
++	fmt = state->fb->format;
++	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
++	val = hw_fmt << SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_OFFSET;
++	if (!fmt->is_yuv)
++		val |= SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE;
++	val |= SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN;
+ 	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+-		mask = SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MASK |
+-		       SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_MASK;
+-		val = SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA
+-			(plane->state->alpha >> 8);
+-
+-		val |= (plane->state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
++		val |= SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA(state->alpha >> 8);
++		val |= (state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_PIXEL :
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_COMBINED;
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base,
+-								  overlay),
+-				   mask, val);
+ 	} else if (mixer->cfg->vi_num == 1) {
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
+-				   SUN8I_MIXER_FCC_GLOBAL_ALPHA_MASK,
+-				   SUN8I_MIXER_FCC_GLOBAL_ALPHA
+-					(plane->state->alpha >> 8));
++		regmap_write(mixer->engine.regs,
++			     SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
++			     SUN8I_MIXER_FCC_GLOBAL_ALPHA(state->alpha >> 8));
+ 	}
++
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay), val);
+ }
+ 
+ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+@@ -194,23 +195,14 @@ static u32 sun8i_vi_layer_get_csc_mode(const struct drm_format_info *format)
+ 	}
+ }
+ 
+-static void sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel,
+-					  int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_colors(struct sun8i_mixer *mixer, int channel,
++					 int overlay, struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	u32 val, ch_base, csc_mode, hw_fmt;
+ 	const struct drm_format_info *fmt;
+-
+-	ch_base = sun8i_channel_base(mixer, channel);
++	u32 csc_mode;
+ 
+ 	fmt = state->fb->format;
+-	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+-
+-	val = hw_fmt << SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_OFFSET;
+-	regmap_update_bits(mixer->engine.regs,
+-			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay),
+-			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_MASK, val);
+-
+ 	csc_mode = sun8i_vi_layer_get_csc_mode(fmt);
+ 	if (csc_mode != SUN8I_CSC_MODE_OFF) {
+ 		sun8i_csc_set_ccsc_coefficients(mixer, channel, csc_mode,
+@@ -220,15 +212,6 @@ static void sun8i_vi_layer_update_formats(struct sun8i_mixer *mixer, int channel
+ 	} else {
+ 		sun8i_csc_enable_ccsc(mixer, channel, false);
+ 	}
+-
+-	if (!fmt->is_yuv)
+-		val = SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE;
+-	else
+-		val = 0;
+-
+-	regmap_update_bits(mixer->engine.regs,
+-			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay),
+-			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE, val);
+ }
+ 
+ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+@@ -340,12 +323,12 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 	if (!new_state->crtc || !new_state->visible)
+ 		return;
+ 
++	sun8i_vi_layer_update_attributes(mixer, layer->channel,
++					 layer->overlay, plane);
+ 	sun8i_vi_layer_update_coord(mixer, layer->channel,
+ 				    layer->overlay, plane);
+-	sun8i_vi_layer_update_alpha(mixer, layer->channel,
+-				    layer->overlay, plane);
+-	sun8i_vi_layer_update_formats(mixer, layer->channel,
+-				      layer->overlay, plane);
++	sun8i_vi_layer_update_colors(mixer, layer->channel,
++				     layer->overlay, plane);
+ 	sun8i_vi_layer_update_buffer(mixer, layer->channel,
+ 				     layer->overlay, plane);
+ }
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 10/30] drm/sun4i: mixer: Remove setting layer enable bit
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:10 +0200
+Message-Id: <20251012192330.6903-11-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This task is now done by plane atomic update callback. There is no fear
+that bit would be set incorrectly, as all register reads are eliminated.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 24 ------------------------
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 13 ++++++++++++-
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 13 ++++++++++++-
+ 3 files changed, 24 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index a3194b71dc6d..1fca05a760b8 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -250,24 +250,6 @@ int sun8i_mixer_drm_format_to_hw(u32 format, u32 *hw_format)
+ 	return -EINVAL;
+ }
+ 
+-static void sun8i_layer_enable(struct sun8i_layer *layer, bool enable)
+-{
+-	u32 ch_base = sun8i_channel_base(layer->mixer, layer->channel);
+-	u32 val, reg, mask;
+-
+-	if (layer->type == SUN8I_LAYER_TYPE_UI) {
+-		val = enable ? SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN : 0;
+-		mask = SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN;
+-		reg = SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, layer->overlay);
+-	} else {
+-		val = enable ? SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN : 0;
+-		mask = SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN;
+-		reg = SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay);
+-	}
+-
+-	regmap_update_bits(layer->mixer->engine.regs, reg, mask, val);
+-}
+-
+ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 			       struct drm_crtc *crtc,
+ 			       struct drm_atomic_state *state)
+@@ -304,12 +286,6 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 				 plane->base.id, layer->channel, layer->overlay,
+ 				 enable, zpos, x, y, w, h);
+ 
+-		/*
+-		 * We always update the layer enable bit, because it can clear
+-		 * spontaneously for unknown reasons.
+-		 */
+-		sun8i_layer_enable(layer, enable);
+-
+ 		if (!enable)
+ 			continue;
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 8634d2ee613a..9d5d5e0b7e63 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -25,6 +25,15 @@
+ #include "sun8i_ui_scaler.h"
+ #include "sun8i_vi_scaler.h"
+ 
++static void sun8i_ui_layer_disable(struct sun8i_mixer *mixer,
++				   int channel, int overlay)
++{
++	u32 ch_base = sun8i_channel_base(mixer, channel);
++
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay), 0);
++}
++
+ static void sun8i_ui_layer_update_attributes(struct sun8i_mixer *mixer,
+ 					     int channel, int overlay,
+ 					     struct drm_plane *plane)
+@@ -201,8 +210,10 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+-	if (!new_state->crtc || !new_state->visible)
++	if (!new_state->crtc || !new_state->visible) {
++		sun8i_ui_layer_disable(mixer, layer->channel, layer->overlay);
+ 		return;
++	}
+ 
+ 	sun8i_ui_layer_update_attributes(mixer, layer->channel,
+ 					 layer->overlay, plane);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index dcc4429368d6..727117658c6c 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -18,6 +18,15 @@
+ #include "sun8i_vi_layer.h"
+ #include "sun8i_vi_scaler.h"
+ 
++static void sun8i_vi_layer_disable(struct sun8i_mixer *mixer,
++				   int channel, int overlay)
++{
++	u32 ch_base = sun8i_channel_base(mixer, channel);
++
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay), 0);
++}
++
+ static void sun8i_vi_layer_update_attributes(struct sun8i_mixer *mixer,
+ 					     int channel, int overlay,
+ 					     struct drm_plane *plane)
+@@ -320,8 +329,10 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+-	if (!new_state->crtc || !new_state->visible)
++	if (!new_state->crtc || !new_state->visible) {
++		sun8i_vi_layer_disable(mixer, layer->channel, layer->overlay);
+ 		return;
++	}
+ 
+ 	sun8i_vi_layer_update_attributes(mixer, layer->channel,
+ 					 layer->overlay, plane);
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 11/30] drm/sun4i: de2/de3: Simplify CSC config interface
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:11 +0200
+Message-Id: <20251012192330.6903-12-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Merging both function into one lets this one decide on it's own if CSC
+should be enabled or not. Currently heuristics for that is pretty simple
+- enable it for YUV formats and disable for RGB. DE3 and newer allows
+YUV pipeline, which will be easier to implement these way.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_csc.c      | 89 ++++++++++----------------
+ drivers/gpu/drm/sun4i/sun8i_csc.h      |  9 ++-
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 11 +---
+ 3 files changed, 40 insertions(+), 69 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.c b/drivers/gpu/drm/sun4i/sun8i_csc.c
+index c100d29b1a89..cf0c5121661b 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.c
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.c
+@@ -107,23 +107,28 @@ static const u32 yuv2rgb_de3[2][3][12] = {
+ 	},
+ };
+ 
+-static void sun8i_csc_set_coefficients(struct regmap *map, u32 base,
+-				       enum sun8i_csc_mode mode,
+-				       enum drm_color_encoding encoding,
+-				       enum drm_color_range range)
++static void sun8i_csc_setup(struct regmap *map, u32 base,
++			    enum sun8i_csc_mode mode,
++			    enum drm_color_encoding encoding,
++			    enum drm_color_range range)
+ {
++	u32 base_reg, val;
+ 	const u32 *table;
+-	u32 base_reg;
+ 	int i;
+ 
+ 	table = yuv2rgb[range][encoding];
+ 
+ 	switch (mode) {
++	case SUN8I_CSC_MODE_OFF:
++		val = 0;
++		break;
+ 	case SUN8I_CSC_MODE_YUV2RGB:
++		val = SUN8I_CSC_CTRL_EN;
+ 		base_reg = SUN8I_CSC_COEFF(base, 0);
+ 		regmap_bulk_write(map, base_reg, table, 12);
+ 		break;
+ 	case SUN8I_CSC_MODE_YVU2RGB:
++		val = SUN8I_CSC_CTRL_EN;
+ 		for (i = 0; i < 12; i++) {
+ 			if ((i & 3) == 1)
+ 				base_reg = SUN8I_CSC_COEFF(base, i + 1);
+@@ -135,28 +140,37 @@ static void sun8i_csc_set_coefficients(struct regmap *map, u32 base,
+ 		}
+ 		break;
+ 	default:
++		val = 0;
+ 		DRM_WARN("Wrong CSC mode specified.\n");
+ 		return;
+ 	}
++
++	regmap_write(map, SUN8I_CSC_CTRL(base), val);
+ }
+ 
+-static void sun8i_de3_ccsc_set_coefficients(struct regmap *map, int layer,
+-					    enum sun8i_csc_mode mode,
+-					    enum drm_color_encoding encoding,
+-					    enum drm_color_range range)
++static void sun8i_de3_ccsc_setup(struct regmap *map, int layer,
++				 enum sun8i_csc_mode mode,
++				 enum drm_color_encoding encoding,
++				 enum drm_color_range range)
+ {
++	u32 addr, val, mask;
+ 	const u32 *table;
+-	u32 addr;
+ 	int i;
+ 
++	mask = SUN50I_MIXER_BLEND_CSC_CTL_EN(layer);
+ 	table = yuv2rgb_de3[range][encoding];
+ 
+ 	switch (mode) {
++	case SUN8I_CSC_MODE_OFF:
++		val = 0;
++		break;
+ 	case SUN8I_CSC_MODE_YUV2RGB:
++		val = mask;
+ 		addr = SUN50I_MIXER_BLEND_CSC_COEFF(DE3_BLD_BASE, layer, 0);
+ 		regmap_bulk_write(map, addr, table, 12);
+ 		break;
+ 	case SUN8I_CSC_MODE_YVU2RGB:
++		val = mask;
+ 		for (i = 0; i < 12; i++) {
+ 			if ((i & 3) == 1)
+ 				addr = SUN50I_MIXER_BLEND_CSC_COEFF(DE3_BLD_BASE,
+@@ -173,67 +187,30 @@ static void sun8i_de3_ccsc_set_coefficients(struct regmap *map, int layer,
+ 		}
+ 		break;
+ 	default:
++		val = 0;
+ 		DRM_WARN("Wrong CSC mode specified.\n");
+ 		return;
+ 	}
+-}
+-
+-static void sun8i_csc_enable(struct regmap *map, u32 base, bool enable)
+-{
+-	u32 val;
+-
+-	if (enable)
+-		val = SUN8I_CSC_CTRL_EN;
+-	else
+-		val = 0;
+-
+-	regmap_update_bits(map, SUN8I_CSC_CTRL(base), SUN8I_CSC_CTRL_EN, val);
+-}
+-
+-static void sun8i_de3_ccsc_enable(struct regmap *map, int layer, bool enable)
+-{
+-	u32 val, mask;
+-
+-	mask = SUN50I_MIXER_BLEND_CSC_CTL_EN(layer);
+-
+-	if (enable)
+-		val = mask;
+-	else
+-		val = 0;
+ 
+ 	regmap_update_bits(map, SUN50I_MIXER_BLEND_CSC_CTL(DE3_BLD_BASE),
+ 			   mask, val);
+ }
+ 
+-void sun8i_csc_set_ccsc_coefficients(struct sun8i_mixer *mixer, int layer,
+-				     enum sun8i_csc_mode mode,
+-				     enum drm_color_encoding encoding,
+-				     enum drm_color_range range)
++void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
++		      enum sun8i_csc_mode mode,
++		      enum drm_color_encoding encoding,
++		      enum drm_color_range range)
+ {
+ 	u32 base;
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE3) {
+-		sun8i_de3_ccsc_set_coefficients(mixer->engine.regs, layer,
+-						mode, encoding, range);
++		sun8i_de3_ccsc_setup(mixer->engine.regs, layer,
++				     mode, encoding, range);
+ 		return;
+ 	}
+ 
+ 	base = ccsc_base[mixer->cfg->ccsc][layer];
+ 
+-	sun8i_csc_set_coefficients(mixer->engine.regs, base,
+-				   mode, encoding, range);
+-}
+-
+-void sun8i_csc_enable_ccsc(struct sun8i_mixer *mixer, int layer, bool enable)
+-{
+-	u32 base;
+-
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE3) {
+-		sun8i_de3_ccsc_enable(mixer->engine.regs, layer, enable);
+-		return;
+-	}
+-
+-	base = ccsc_base[mixer->cfg->ccsc][layer];
+-
+-	sun8i_csc_enable(mixer->engine.regs, base, enable);
++	sun8i_csc_setup(mixer->engine.regs, base,
++			mode, encoding, range);
+ }
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.h b/drivers/gpu/drm/sun4i/sun8i_csc.h
+index 828b86fd0cab..27b6807fc786 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.h
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.h
+@@ -28,10 +28,9 @@ enum sun8i_csc_mode {
+ 	SUN8I_CSC_MODE_YVU2RGB,
+ };
+ 
+-void sun8i_csc_set_ccsc_coefficients(struct sun8i_mixer *mixer, int layer,
+-				     enum sun8i_csc_mode mode,
+-				     enum drm_color_encoding encoding,
+-				     enum drm_color_range range);
+-void sun8i_csc_enable_ccsc(struct sun8i_mixer *mixer, int layer, bool enable);
++void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
++		      enum sun8i_csc_mode mode,
++		      enum drm_color_encoding encoding,
++		      enum drm_color_range range);
+ 
+ #endif
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 727117658c6c..adcd05acba1b 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -213,14 +213,9 @@ static void sun8i_vi_layer_update_colors(struct sun8i_mixer *mixer, int channel,
+ 
+ 	fmt = state->fb->format;
+ 	csc_mode = sun8i_vi_layer_get_csc_mode(fmt);
+-	if (csc_mode != SUN8I_CSC_MODE_OFF) {
+-		sun8i_csc_set_ccsc_coefficients(mixer, channel, csc_mode,
+-						state->color_encoding,
+-						state->color_range);
+-		sun8i_csc_enable_ccsc(mixer, channel, true);
+-	} else {
+-		sun8i_csc_enable_ccsc(mixer, channel, false);
+-	}
++	sun8i_csc_config(mixer, channel, csc_mode,
++			 state->color_encoding,
++			 state->color_range);
+ }
+ 
+ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 12/30] drm/sun4i: csc: Simplify arguments with taking plane
+ state
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:12 +0200
+Message-Id: <20251012192330.6903-13-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Taking plane state directly reduces number of arguments, avoids copying
+values and allows making additional decisions. For example, when plane
+is disabled, CSC should be turned off.
+
+This is also cleanup for later patches which will move call to another
+place.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_csc.c      | 42 +++++++++++++++++++++++---
+ drivers/gpu/drm/sun4i/sun8i_csc.h      | 11 ++-----
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 33 +-------------------
+ 3 files changed, 40 insertions(+), 46 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.c b/drivers/gpu/drm/sun4i/sun8i_csc.c
+index cf0c5121661b..ac7b62adc7df 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.c
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.c
+@@ -3,11 +3,20 @@
+  * Copyright (C) Jernej Skrabec <jernej.skrabec@siol.net>
+  */
+ 
++#include <drm/drm_fourcc.h>
++#include <drm/drm_framebuffer.h>
++#include <drm/drm_plane.h>
+ #include <drm/drm_print.h>
+ 
+ #include "sun8i_csc.h"
+ #include "sun8i_mixer.h"
+ 
++enum sun8i_csc_mode {
++	SUN8I_CSC_MODE_OFF,
++	SUN8I_CSC_MODE_YUV2RGB,
++	SUN8I_CSC_MODE_YVU2RGB,
++};
++
+ static const u32 ccsc_base[][2] = {
+ 	[CCSC_MIXER0_LAYOUT]	= {CCSC00_OFFSET, CCSC01_OFFSET},
+ 	[CCSC_MIXER1_LAYOUT]	= {CCSC10_OFFSET, CCSC11_OFFSET},
+@@ -196,21 +205,44 @@ static void sun8i_de3_ccsc_setup(struct regmap *map, int layer,
+ 			   mask, val);
+ }
+ 
++static u32 sun8i_csc_get_mode(struct drm_plane_state *state)
++{
++	const struct drm_format_info *format;
++
++	if (!state->crtc || !state->visible)
++		return SUN8I_CSC_MODE_OFF;
++
++	format = state->fb->format;
++	if (!format->is_yuv)
++		return SUN8I_CSC_MODE_OFF;
++
++	switch (format->format) {
++	case DRM_FORMAT_YVU411:
++	case DRM_FORMAT_YVU420:
++	case DRM_FORMAT_YVU422:
++	case DRM_FORMAT_YVU444:
++		return SUN8I_CSC_MODE_YVU2RGB;
++	default:
++		return SUN8I_CSC_MODE_YUV2RGB;
++	}
++}
++
+ void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
+-		      enum sun8i_csc_mode mode,
+-		      enum drm_color_encoding encoding,
+-		      enum drm_color_range range)
++		      struct drm_plane_state *state)
+ {
++	u32 mode = sun8i_csc_get_mode(state);
+ 	u32 base;
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE3) {
+ 		sun8i_de3_ccsc_setup(mixer->engine.regs, layer,
+-				     mode, encoding, range);
++				     mode, state->color_encoding,
++				     state->color_range);
+ 		return;
+ 	}
+ 
+ 	base = ccsc_base[mixer->cfg->ccsc][layer];
+ 
+ 	sun8i_csc_setup(mixer->engine.regs, base,
+-			mode, encoding, range);
++			mode, state->color_encoding,
++			state->color_range);
+ }
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.h b/drivers/gpu/drm/sun4i/sun8i_csc.h
+index 27b6807fc786..ce921521aaca 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.h
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.h
+@@ -8,6 +8,7 @@
+ 
+ #include <drm/drm_color_mgmt.h>
+ 
++struct drm_plane_state;
+ struct sun8i_mixer;
+ 
+ /* VI channel CSC units offsets */
+@@ -22,15 +23,7 @@ struct sun8i_mixer;
+ 
+ #define SUN8I_CSC_CTRL_EN		BIT(0)
+ 
+-enum sun8i_csc_mode {
+-	SUN8I_CSC_MODE_OFF,
+-	SUN8I_CSC_MODE_YUV2RGB,
+-	SUN8I_CSC_MODE_YVU2RGB,
+-};
+-
+ void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
+-		      enum sun8i_csc_mode mode,
+-		      enum drm_color_encoding encoding,
+-		      enum drm_color_range range);
++		      struct drm_plane_state *state);
+ 
+ #endif
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index adcd05acba1b..cf83f7ce6c78 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -188,36 +188,6 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
+ }
+ 
+-static u32 sun8i_vi_layer_get_csc_mode(const struct drm_format_info *format)
+-{
+-	if (!format->is_yuv)
+-		return SUN8I_CSC_MODE_OFF;
+-
+-	switch (format->format) {
+-	case DRM_FORMAT_YVU411:
+-	case DRM_FORMAT_YVU420:
+-	case DRM_FORMAT_YVU422:
+-	case DRM_FORMAT_YVU444:
+-		return SUN8I_CSC_MODE_YVU2RGB;
+-	default:
+-		return SUN8I_CSC_MODE_YUV2RGB;
+-	}
+-}
+-
+-static void sun8i_vi_layer_update_colors(struct sun8i_mixer *mixer, int channel,
+-					 int overlay, struct drm_plane *plane)
+-{
+-	struct drm_plane_state *state = plane->state;
+-	const struct drm_format_info *fmt;
+-	u32 csc_mode;
+-
+-	fmt = state->fb->format;
+-	csc_mode = sun8i_vi_layer_get_csc_mode(fmt);
+-	sun8i_csc_config(mixer, channel, csc_mode,
+-			 state->color_encoding,
+-			 state->color_range);
+-}
+-
+ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 					 int overlay, struct drm_plane *plane)
+ {
+@@ -333,8 +303,7 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 					 layer->overlay, plane);
+ 	sun8i_vi_layer_update_coord(mixer, layer->channel,
+ 				    layer->overlay, plane);
+-	sun8i_vi_layer_update_colors(mixer, layer->channel,
+-				     layer->overlay, plane);
++	sun8i_csc_config(mixer, layer->channel, new_state);
+ 	sun8i_vi_layer_update_buffer(mixer, layer->channel,
+ 				     layer->overlay, plane);
+ }
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 13/30] drm/sun4i: de2/de3: Move plane type determination to
+ mixer
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:13 +0200
+Message-Id: <20251012192330.6903-14-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Plane type determination logic inside layer init functions doesn't allow
+index register to be repurposed to plane sequence, which it almost is.
+
+So move out the logic to mixer, which allows furter rework for DE33
+support.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 15 +++++++++++++--
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c |  5 +----
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h |  1 +
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  5 +----
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h |  1 +
+ 5 files changed, 17 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 1fca05a760b8..e7a66d9b622a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -315,6 +315,7 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ {
+ 	struct drm_plane **planes;
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++	enum drm_plane_type type;
+ 	int i;
+ 
+ 	planes = devm_kcalloc(drm->dev,
+@@ -326,7 +327,12 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	for (i = 0; i < mixer->cfg->vi_num; i++) {
+ 		struct sun8i_layer *layer;
+ 
+-		layer = sun8i_vi_layer_init_one(drm, mixer, i);
++		if (i == 0 && !mixer->cfg->ui_num)
++			type = DRM_PLANE_TYPE_PRIMARY;
++		else
++			type = DRM_PLANE_TYPE_OVERLAY;
++
++		layer = sun8i_vi_layer_init_one(drm, mixer, type, i);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+ 				"Couldn't initialize overlay plane\n");
+@@ -339,7 +345,12 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	for (i = 0; i < mixer->cfg->ui_num; i++) {
+ 		struct sun8i_layer *layer;
+ 
+-		layer = sun8i_ui_layer_init_one(drm, mixer, i);
++		if (i == 0)
++			type = DRM_PLANE_TYPE_PRIMARY;
++		else
++			type = DRM_PLANE_TYPE_OVERLAY;
++
++		layer = sun8i_ui_layer_init_one(drm, mixer, type, i);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+ 				i ? "overlay" : "primary");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 9d5d5e0b7e63..8d74eddaa294 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -267,9 +267,9 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ 
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
++					    enum drm_plane_type type,
+ 					    int index)
+ {
+-	enum drm_plane_type type = DRM_PLANE_TYPE_OVERLAY;
+ 	int channel = mixer->cfg->vi_num + index;
+ 	struct sun8i_layer *layer;
+ 	unsigned int plane_cnt;
+@@ -284,9 +284,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	layer->channel = channel;
+ 	layer->overlay = 0;
+ 
+-	if (index == 0)
+-		type = DRM_PLANE_TYPE_PRIMARY;
+-
+ 	/* possible crtcs are set later */
+ 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
+ 				       &sun8i_ui_layer_funcs,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index 83892f6ff211..7745aec32d76 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -51,5 +51,6 @@ struct sun8i_layer;
+ 
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
++					    enum drm_plane_type type,
+ 					    int index);
+ #endif /* _SUN8I_UI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index cf83f7ce6c78..1192b17726d1 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -412,9 +412,9 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ 
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
++					    enum drm_plane_type type,
+ 					    int index)
+ {
+-	enum drm_plane_type type = DRM_PLANE_TYPE_OVERLAY;
+ 	u32 supported_encodings, supported_ranges;
+ 	unsigned int plane_cnt, format_count;
+ 	struct sun8i_layer *layer;
+@@ -438,9 +438,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 		format_count = ARRAY_SIZE(sun8i_vi_layer_formats);
+ 	}
+ 
+-	if (!mixer->cfg->ui_num && index == 0)
+-		type = DRM_PLANE_TYPE_PRIMARY;
+-
+ 	/* possible crtcs are set later */
+ 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
+ 				       &sun8i_vi_layer_funcs,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index 655440cdc78f..fc22b9a6bd8d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -56,5 +56,6 @@ struct sun8i_layer;
+ 
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
++					    enum drm_plane_type type,
+ 					    int index);
+ #endif /* _SUN8I_VI_LAYER_H_ */
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 14/30] drm/sun4i: ui_layer: Change index meaning
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:14 +0200
+Message-Id: <20251012192330.6903-15-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+In the pursuit of making UI/VI layer code independent of DE version,
+change meaning of UI index to index of the plane within mixer. DE33 can
+split amount of VI and UI planes between multiple mixer in whatever way
+it deems acceptable, so simple calculation VI num + UI index won't be
+meaningful anymore.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 5 +++--
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 5 ++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index e7a66d9b622a..17c0ab5860b5 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -343,6 +343,7 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	}
+ 
+ 	for (i = 0; i < mixer->cfg->ui_num; i++) {
++		unsigned int index = mixer->cfg->vi_num + i;
+ 		struct sun8i_layer *layer;
+ 
+ 		if (i == 0)
+@@ -350,14 +351,14 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		layer = sun8i_ui_layer_init_one(drm, mixer, type, i);
++		layer = sun8i_ui_layer_init_one(drm, mixer, type, index);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+ 				i ? "overlay" : "primary");
+ 			return ERR_CAST(layer);
+ 		}
+ 
+-		planes[mixer->cfg->vi_num + i] = &layer->plane;
++		planes[index] = &layer->plane;
+ 	}
+ 
+ 	return planes;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 8d74eddaa294..4f6c8b0acba6 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -270,7 +270,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    enum drm_plane_type type,
+ 					    int index)
+ {
+-	int channel = mixer->cfg->vi_num + index;
+ 	struct sun8i_layer *layer;
+ 	unsigned int plane_cnt;
+ 	int ret;
+@@ -281,7 +280,7 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 
+ 	layer->mixer = mixer;
+ 	layer->type = SUN8I_LAYER_TYPE_UI;
+-	layer->channel = channel;
++	layer->channel = index;
+ 	layer->overlay = 0;
+ 
+ 	/* possible crtcs are set later */
+@@ -303,7 +302,7 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	ret = drm_plane_create_zpos_property(&layer->plane, channel,
++	ret = drm_plane_create_zpos_property(&layer->plane, index,
+ 					     0, plane_cnt - 1);
+ 	if (ret) {
+ 		dev_err(drm->dev, "Couldn't add zpos property\n");
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 15/30] drm/sun4i: layer: move num of planes calc out of
+ layer code
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:15 +0200
+Message-Id: <20251012192330.6903-16-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+With DE33, number of planes no longer depends on mixer because layers
+are shared between all mixers.
+
+Get this value via parameter, so DE specific code can fill in proper
+value.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 10 +++++-----
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c |  6 ++----
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h |  3 ++-
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  7 +++----
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h |  3 ++-
+ 5 files changed, 14 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 17c0ab5860b5..18dd998364ae 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -315,12 +315,11 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ {
+ 	struct drm_plane **planes;
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++	int plane_cnt = mixer->cfg->ui_num + mixer->cfg->vi_num;
+ 	enum drm_plane_type type;
+ 	int i;
+ 
+-	planes = devm_kcalloc(drm->dev,
+-			      mixer->cfg->vi_num + mixer->cfg->ui_num + 1,
+-			      sizeof(*planes), GFP_KERNEL);
++	planes = devm_kcalloc(drm->dev, plane_cnt, sizeof(*planes), GFP_KERNEL);
+ 	if (!planes)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -332,7 +331,7 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		layer = sun8i_vi_layer_init_one(drm, mixer, type, i);
++		layer = sun8i_vi_layer_init_one(drm, mixer, type, i, plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+ 				"Couldn't initialize overlay plane\n");
+@@ -351,7 +350,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		layer = sun8i_ui_layer_init_one(drm, mixer, type, index);
++		layer = sun8i_ui_layer_init_one(drm, mixer, type, index,
++						plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+ 				i ? "overlay" : "primary");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 4f6c8b0acba6..8f6fcdfcf52a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -268,10 +268,10 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+-					    int index)
++					    int index,
++					    int plane_cnt)
+ {
+ 	struct sun8i_layer *layer;
+-	unsigned int plane_cnt;
+ 	int ret;
+ 
+ 	layer = devm_kzalloc(drm->dev, sizeof(*layer), GFP_KERNEL);
+@@ -294,8 +294,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	plane_cnt = mixer->cfg->ui_num + mixer->cfg->vi_num;
+-
+ 	ret = drm_plane_create_alpha_property(&layer->plane);
+ 	if (ret) {
+ 		dev_err(drm->dev, "Couldn't add alpha property\n");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index 7745aec32d76..0613b34d36e0 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -52,5 +52,6 @@ struct sun8i_layer;
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+-					    int index);
++					    int index,
++					    int plane_cnt);
+ #endif /* _SUN8I_UI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 1192b17726d1..805db4ea714b 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -413,10 +413,11 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+-					    int index)
++					    int index,
++					    int plane_cnt)
+ {
+ 	u32 supported_encodings, supported_ranges;
+-	unsigned int plane_cnt, format_count;
++	unsigned int format_count;
+ 	struct sun8i_layer *layer;
+ 	const u32 *formats;
+ 	int ret;
+@@ -449,8 +450,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	plane_cnt = mixer->cfg->ui_num + mixer->cfg->vi_num;
+-
+ 	if (mixer->cfg->vi_num == 1 || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		ret = drm_plane_create_alpha_property(&layer->plane);
+ 		if (ret) {
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index fc22b9a6bd8d..a568e1db1e19 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -57,5 +57,6 @@ struct sun8i_layer;
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+-					    int index);
++					    int index,
++					    int plane_cnt);
+ #endif /* _SUN8I_VI_LAYER_H_ */
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 16/30] drm/sun4i: ui_layer: use layer struct instead of
+ multiple args
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:16 +0200
+Message-Id: <20251012192330.6903-17-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This change is equally a cleanup (less arguments) and preparation for
+DE33 separate plane driver. It will introduce additional register space.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 62 +++++++++++++-------------
+ 1 file changed, 30 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 8f6fcdfcf52a..d5b7241acdea 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -25,24 +25,24 @@
+ #include "sun8i_ui_scaler.h"
+ #include "sun8i_vi_scaler.h"
+ 
+-static void sun8i_ui_layer_disable(struct sun8i_mixer *mixer,
+-				   int channel, int overlay)
++static void sun8i_ui_layer_disable(struct sun8i_layer *layer)
+ {
+-	u32 ch_base = sun8i_channel_base(mixer, channel);
++	struct sun8i_mixer *mixer = layer->mixer;
++	u32 ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay), 0);
++		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, layer->overlay), 0);
+ }
+ 
+-static void sun8i_ui_layer_update_attributes(struct sun8i_mixer *mixer,
+-					     int channel, int overlay,
++static void sun8i_ui_layer_update_attributes(struct sun8i_layer *layer,
+ 					     struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	const struct drm_format_info *fmt;
+ 	u32 val, ch_base, hw_fmt;
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 	fmt = state->fb->format;
+ 	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+@@ -54,22 +54,23 @@ static void sun8i_ui_layer_update_attributes(struct sun8i_mixer *mixer,
+ 	val |= SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN;
+ 
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay), val);
++		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, layer->overlay), val);
+ }
+ 
+-static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
++					struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 src_w, src_h, dst_w, dst_h;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
+ 	u32 ch_base;
+ 
+ 	DRM_DEBUG_DRIVER("Updating UI channel %d overlay %d\n",
+-			 channel, overlay);
++			 layer->channel, layer->overlay);
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+ 	src_h = drm_rect_height(&state->src) >> 16;
+@@ -87,7 +88,7 @@ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 			 state->src.x1 >> 16, state->src.y1 >> 16);
+ 	DRM_DEBUG_DRIVER("Layer source size W: %d H: %d\n", src_w, src_h);
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_UI_LAYER_SIZE(ch_base, overlay),
++		     SUN8I_MIXER_CHAN_UI_LAYER_SIZE(ch_base, layer->overlay),
+ 		     insize);
+ 	regmap_write(mixer->engine.regs,
+ 		     SUN8I_MIXER_CHAN_UI_OVL_SIZE(ch_base),
+@@ -102,37 +103,38 @@ static void sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		vscale = state->src_h / state->crtc_h;
+ 
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
+-			sun8i_vi_scaler_setup(mixer, channel, src_w, src_h,
++			sun8i_vi_scaler_setup(mixer, layer->channel, src_w, src_h,
+ 					      dst_w, dst_h, hscale, vscale,
+ 					      hphase, vphase,
+ 					      state->fb->format);
+-			sun8i_vi_scaler_enable(mixer, channel, true);
++			sun8i_vi_scaler_enable(mixer, layer->channel, true);
+ 		} else {
+-			sun8i_ui_scaler_setup(mixer, channel, src_w, src_h,
++			sun8i_ui_scaler_setup(mixer, layer->channel, src_w, src_h,
+ 					      dst_w, dst_h, hscale, vscale,
+ 					      hphase, vphase);
+-			sun8i_ui_scaler_enable(mixer, channel, true);
++			sun8i_ui_scaler_enable(mixer, layer->channel, true);
+ 		}
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-			sun8i_vi_scaler_enable(mixer, channel, false);
++			sun8i_vi_scaler_enable(mixer, layer->channel, false);
+ 		else
+-			sun8i_ui_scaler_enable(mixer, channel, false);
++			sun8i_ui_scaler_enable(mixer, layer->channel, false);
+ 	}
+ }
+ 
+-static void sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+-					 int overlay, struct drm_plane *plane)
++static void sun8i_ui_layer_update_buffer(struct sun8i_layer *layer,
++					 struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	struct drm_framebuffer *fb = state->fb;
+ 	struct drm_gem_dma_object *gem;
+ 	dma_addr_t dma_addr;
+ 	u32 ch_base;
+ 	int bpp;
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	/* Get the physical address of the buffer in memory */
+ 	gem = drm_fb_dma_get_gem_obj(fb, 0);
+@@ -150,13 +152,13 @@ static void sun8i_ui_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 	/* Set the line width */
+ 	DRM_DEBUG_DRIVER("Layer line width: %d bytes\n", fb->pitches[0]);
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_UI_LAYER_PITCH(ch_base, overlay),
++		     SUN8I_MIXER_CHAN_UI_LAYER_PITCH(ch_base, layer->overlay),
+ 		     fb->pitches[0]);
+ 
+ 	DRM_DEBUG_DRIVER("Setting buffer address to %pad\n", &dma_addr);
+ 
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_UI_LAYER_TOP_LADDR(ch_base, overlay),
++		     SUN8I_MIXER_CHAN_UI_LAYER_TOP_LADDR(ch_base, layer->overlay),
+ 		     lower_32_bits(dma_addr));
+ }
+ 
+@@ -208,19 +210,15 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state,
+ 									   plane);
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!new_state->crtc || !new_state->visible) {
+-		sun8i_ui_layer_disable(mixer, layer->channel, layer->overlay);
++		sun8i_ui_layer_disable(layer);
+ 		return;
+ 	}
+ 
+-	sun8i_ui_layer_update_attributes(mixer, layer->channel,
+-					 layer->overlay, plane);
+-	sun8i_ui_layer_update_coord(mixer, layer->channel,
+-				    layer->overlay, plane);
+-	sun8i_ui_layer_update_buffer(mixer, layer->channel,
+-				     layer->overlay, plane);
++	sun8i_ui_layer_update_attributes(layer, plane);
++	sun8i_ui_layer_update_coord(layer, plane);
++	sun8i_ui_layer_update_buffer(layer, plane);
+ }
+ 
+ static const struct drm_plane_helper_funcs sun8i_ui_layer_helper_funcs = {
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 17/30] drm/sun4i: vi_layer: use layer struct instead of
+ multiple args
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:17 +0200
+Message-Id: <20251012192330.6903-18-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This change is equally a cleanup (less arguments) and preparation for
+DE33 separate plane driver. It will introduce additional register space.
+
+No functional changes.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 58 +++++++++++++-------------
+ 1 file changed, 28 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 805db4ea714b..ba9c03f04f03 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -18,24 +18,24 @@
+ #include "sun8i_vi_layer.h"
+ #include "sun8i_vi_scaler.h"
+ 
+-static void sun8i_vi_layer_disable(struct sun8i_mixer *mixer,
+-				   int channel, int overlay)
++static void sun8i_vi_layer_disable(struct sun8i_layer *layer)
+ {
+-	u32 ch_base = sun8i_channel_base(mixer, channel);
++	struct sun8i_mixer *mixer = layer->mixer;
++	u32 ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay), 0);
++		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), 0);
+ }
+ 
+-static void sun8i_vi_layer_update_attributes(struct sun8i_mixer *mixer,
+-					     int channel, int overlay,
++static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 					     struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	const struct drm_format_info *fmt;
+ 	u32 val, ch_base, hw_fmt;
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 	fmt = state->fb->format;
+ 	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+@@ -55,14 +55,15 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_mixer *mixer,
+ 	}
+ 
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay), val);
++		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
+ }
+ 
+-static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+-					int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
++					struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	const struct drm_format_info *format = state->fb->format;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 src_w, src_h, dst_w, dst_h;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
+@@ -72,9 +73,9 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 	u32 ch_base;
+ 
+ 	DRM_DEBUG_DRIVER("Updating VI channel %d overlay %d\n",
+-			 channel, overlay);
++			 layer->channel, layer->overlay);
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+ 	src_h = drm_rect_height(&state->src) >> 16;
+@@ -112,7 +113,7 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 			 (state->src.y1 >> 16) & ~(format->vsub - 1));
+ 	DRM_DEBUG_DRIVER("Layer source size W: %d H: %d\n", src_w, src_h);
+ 	regmap_write(mixer->engine.regs,
+-		     SUN8I_MIXER_CHAN_VI_LAYER_SIZE(ch_base, overlay),
++		     SUN8I_MIXER_CHAN_VI_LAYER_SIZE(ch_base, layer->overlay),
+ 		     insize);
+ 	regmap_write(mixer->engine.regs,
+ 		     SUN8I_MIXER_CHAN_VI_OVL_SIZE(ch_base),
+@@ -161,13 +162,13 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		hscale = (src_w << 16) / dst_w;
+ 		vscale = (src_h << 16) / dst_h;
+ 
+-		sun8i_vi_scaler_setup(mixer, channel, src_w, src_h, dst_w,
++		sun8i_vi_scaler_setup(mixer, layer->channel, src_w, src_h, dst_w,
+ 				      dst_h, hscale, vscale, hphase, vphase,
+ 				      format);
+-		sun8i_vi_scaler_enable(mixer, channel, true);
++		sun8i_vi_scaler_enable(mixer, layer->channel, true);
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+-		sun8i_vi_scaler_enable(mixer, channel, false);
++		sun8i_vi_scaler_enable(mixer, layer->channel, false);
+ 	}
+ 
+ 	regmap_write(mixer->engine.regs,
+@@ -188,10 +189,11 @@ static void sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
+ }
+ 
+-static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+-					 int overlay, struct drm_plane *plane)
++static void sun8i_vi_layer_update_buffer(struct sun8i_layer *layer,
++					 struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	struct drm_framebuffer *fb = state->fb;
+ 	const struct drm_format_info *format = fb->format;
+ 	struct drm_gem_dma_object *gem;
+@@ -200,7 +202,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 	u32 ch_base;
+ 	int i;
+ 
+-	ch_base = sun8i_channel_base(mixer, channel);
++	ch_base = sun8i_channel_base(mixer, layer->channel);
+ 
+ 	/* Adjust x and y to be dividable by subsampling factor */
+ 	src_x = (state->src.x1 >> 16) & ~(format->hsub - 1);
+@@ -232,7 +234,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 				 i + 1, fb->pitches[i]);
+ 		regmap_write(mixer->engine.regs,
+ 			     SUN8I_MIXER_CHAN_VI_LAYER_PITCH(ch_base,
+-							     overlay, i),
++							     layer->overlay, i),
+ 			     fb->pitches[i]);
+ 
+ 		DRM_DEBUG_DRIVER("Setting %d. buffer address to %pad\n",
+@@ -240,7 +242,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_mixer *mixer, int channel,
+ 
+ 		regmap_write(mixer->engine.regs,
+ 			     SUN8I_MIXER_CHAN_VI_LAYER_TOP_LADDR(ch_base,
+-								 overlay, i),
++								 layer->overlay, i),
+ 			     lower_32_bits(dma_addr));
+ 	}
+ }
+@@ -292,20 +294,16 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state,
+ 									   plane);
+ 	struct sun8i_layer *layer = plane_to_sun8i_layer(plane);
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!new_state->crtc || !new_state->visible) {
+-		sun8i_vi_layer_disable(mixer, layer->channel, layer->overlay);
++		sun8i_vi_layer_disable(layer);
+ 		return;
+ 	}
+ 
+-	sun8i_vi_layer_update_attributes(mixer, layer->channel,
+-					 layer->overlay, plane);
+-	sun8i_vi_layer_update_coord(mixer, layer->channel,
+-				    layer->overlay, plane);
+-	sun8i_csc_config(mixer, layer->channel, new_state);
+-	sun8i_vi_layer_update_buffer(mixer, layer->channel,
+-				     layer->overlay, plane);
++	sun8i_vi_layer_update_attributes(layer, plane);
++	sun8i_vi_layer_update_coord(layer, plane);
++	sun8i_csc_config(layer->mixer, layer->channel, new_state);
++	sun8i_vi_layer_update_buffer(layer, plane);
+ }
+ 
+ static const struct drm_plane_helper_funcs sun8i_vi_layer_helper_funcs = {
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 18/30] drm/sun4i: ui_scaler: use layer instead of mixer for
+ args
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:18 +0200
+Message-Id: <20251012192330.6903-19-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Layer related peripherals should take layer struct as a input. This
+looks cleaner and also necessary for proper DE33 support later.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c  |  9 ++++-----
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c | 14 ++++++++------
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.h |  4 ++--
+ 3 files changed, 14 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index d5b7241acdea..9b938e3dae9c 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -109,17 +109,16 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 					      state->fb->format);
+ 			sun8i_vi_scaler_enable(mixer, layer->channel, true);
+ 		} else {
+-			sun8i_ui_scaler_setup(mixer, layer->channel, src_w, src_h,
+-					      dst_w, dst_h, hscale, vscale,
+-					      hphase, vphase);
+-			sun8i_ui_scaler_enable(mixer, layer->channel, true);
++			sun8i_ui_scaler_setup(layer, src_w, src_h, dst_w, dst_h,
++					      hscale, vscale, hphase, vphase);
++			sun8i_ui_scaler_enable(layer, true);
+ 		}
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+ 			sun8i_vi_scaler_enable(mixer, layer->channel, false);
+ 		else
+-			sun8i_ui_scaler_enable(mixer, layer->channel, false);
++			sun8i_ui_scaler_enable(layer, false);
+ 	}
+ }
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index 8b7a58e27517..fcd72c4fd49a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -127,14 +127,15 @@ static int sun8i_ui_scaler_coef_index(unsigned int step)
+ 	}
+ }
+ 
+-void sun8i_ui_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable)
++void sun8i_ui_scaler_enable(struct sun8i_layer *layer, bool enable)
+ {
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 val, base;
+ 
+-	if (WARN_ON(layer < mixer->cfg->vi_num))
++	if (WARN_ON(layer->channel < mixer->cfg->vi_num))
+ 		return;
+ 
+-	base = sun8i_ui_scaler_base(mixer, layer);
++	base = sun8i_ui_scaler_base(mixer, layer->channel);
+ 
+ 	if (enable)
+ 		val = SUN8I_SCALER_GSU_CTRL_EN |
+@@ -145,18 +146,19 @@ void sun8i_ui_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable)
+ 	regmap_write(mixer->engine.regs, SUN8I_SCALER_GSU_CTRL(base), val);
+ }
+ 
+-void sun8i_ui_scaler_setup(struct sun8i_mixer *mixer, int layer,
++void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase)
+ {
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 insize, outsize;
+ 	int i, offset;
+ 	u32 base;
+ 
+-	if (WARN_ON(layer < mixer->cfg->vi_num))
++	if (WARN_ON(layer->channel < mixer->cfg->vi_num))
+ 		return;
+ 
+-	base = sun8i_ui_scaler_base(mixer, layer);
++	base = sun8i_ui_scaler_base(mixer, layer->channel);
+ 
+ 	hphase <<= SUN8I_UI_SCALER_PHASE_FRAC - 16;
+ 	vphase <<= SUN8I_UI_SCALER_PHASE_FRAC - 16;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
+index 1ef4bd6f2718..872d88a58e7e 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.h
+@@ -35,8 +35,8 @@
+ #define SUN8I_SCALER_GSU_CTRL_EN		BIT(0)
+ #define SUN8I_SCALER_GSU_CTRL_COEFF_RDY		BIT(4)
+ 
+-void sun8i_ui_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable);
+-void sun8i_ui_scaler_setup(struct sun8i_mixer *mixer, int layer,
++void sun8i_ui_scaler_enable(struct sun8i_layer *layer, bool enable);
++void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase);
+ 
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 19/30] drm/sun4i: vi_scaler: use layer instead of mixer for
+ args
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:19 +0200
+Message-Id: <20251012192330.6903-20-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Layer related peripherals should take layer struct as a input. This
+looks cleaner and also necessary for proper DE33 support later.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wens@kernel.org>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c  |  9 ++++-----
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c  |  9 ++++-----
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.c | 10 ++++++----
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.h |  4 ++--
+ 4 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 9b938e3dae9c..5167c9d7b9c0 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -103,11 +103,10 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 		vscale = state->src_h / state->crtc_h;
+ 
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
+-			sun8i_vi_scaler_setup(mixer, layer->channel, src_w, src_h,
+-					      dst_w, dst_h, hscale, vscale,
+-					      hphase, vphase,
++			sun8i_vi_scaler_setup(layer, src_w, src_h, dst_w, dst_h,
++					      hscale, vscale, hphase, vphase,
+ 					      state->fb->format);
+-			sun8i_vi_scaler_enable(mixer, layer->channel, true);
++			sun8i_vi_scaler_enable(layer, true);
+ 		} else {
+ 			sun8i_ui_scaler_setup(layer, src_w, src_h, dst_w, dst_h,
+ 					      hscale, vscale, hphase, vphase);
+@@ -116,7 +115,7 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-			sun8i_vi_scaler_enable(mixer, layer->channel, false);
++			sun8i_vi_scaler_enable(layer, false);
+ 		else
+ 			sun8i_ui_scaler_enable(layer, false);
+ 	}
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index ba9c03f04f03..ce71625fa06f 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -162,13 +162,12 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 		hscale = (src_w << 16) / dst_w;
+ 		vscale = (src_h << 16) / dst_h;
+ 
+-		sun8i_vi_scaler_setup(mixer, layer->channel, src_w, src_h, dst_w,
+-				      dst_h, hscale, vscale, hphase, vphase,
+-				      format);
+-		sun8i_vi_scaler_enable(mixer, layer->channel, true);
++		sun8i_vi_scaler_setup(layer, src_w, src_h, dst_w, dst_h,
++				      hscale, vscale, hphase, vphase, format);
++		sun8i_vi_scaler_enable(layer, true);
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+-		sun8i_vi_scaler_enable(mixer, layer->channel, false);
++		sun8i_vi_scaler_enable(layer, false);
+ 	}
+ 
+ 	regmap_write(mixer->engine.regs,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+index 82df6244af88..a76677a1649f 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+@@ -909,11 +909,12 @@ static void sun8i_vi_scaler_set_coeff(struct regmap *map, u32 base,
+ 	}
+ }
+ 
+-void sun8i_vi_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable)
++void sun8i_vi_scaler_enable(struct sun8i_layer *layer, bool enable)
+ {
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 val, base;
+ 
+-	base = sun8i_vi_scaler_base(mixer, layer);
++	base = sun8i_vi_scaler_base(mixer, layer->channel);
+ 
+ 	if (enable)
+ 		val = SUN8I_SCALER_VSU_CTRL_EN |
+@@ -925,16 +926,17 @@ void sun8i_vi_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable)
+ 		     SUN8I_SCALER_VSU_CTRL(base), val);
+ }
+ 
+-void sun8i_vi_scaler_setup(struct sun8i_mixer *mixer, int layer,
++void sun8i_vi_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase,
+ 			   const struct drm_format_info *format)
+ {
++	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 chphase, cvphase;
+ 	u32 insize, outsize;
+ 	u32 base;
+ 
+-	base = sun8i_vi_scaler_base(mixer, layer);
++	base = sun8i_vi_scaler_base(mixer, layer->channel);
+ 
+ 	hphase <<= SUN8I_VI_SCALER_PHASE_FRAC - 16;
+ 	vphase <<= SUN8I_VI_SCALER_PHASE_FRAC - 16;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
+index 68f6593b369a..73eecc4d1b1d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
+@@ -69,8 +69,8 @@
+ #define SUN50I_SCALER_VSU_ANGLE_SHIFT(x)		(((x) << 16) & 0xF)
+ #define SUN50I_SCALER_VSU_ANGLE_OFFSET(x)		((x) & 0xFF)
+ 
+-void sun8i_vi_scaler_enable(struct sun8i_mixer *mixer, int layer, bool enable);
+-void sun8i_vi_scaler_setup(struct sun8i_mixer *mixer, int layer,
++void sun8i_vi_scaler_enable(struct sun8i_layer *layer, bool enable);
++void sun8i_vi_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase,
+ 			   const struct drm_format_info *format);
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 20/30] drm/sun4i: layers: Make regmap for layers
+ configurable
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:20 +0200
+Message-Id: <20251012192330.6903-21-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Till DE33, there were no reason to decouple registers from mixer.
+However, with future new plane driver, this will be necessary.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c     |  7 ++++--
+ drivers/gpu/drm/sun4i/sun8i_mixer.h     |  1 +
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c  | 12 ++++++----
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h  |  1 +
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c | 16 ++++++-------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c  | 22 ++++++++++--------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h  |  1 +
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.c | 31 ++++++++++++-------------
+ 8 files changed, 50 insertions(+), 41 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 18dd998364ae..d2b7fc552a76 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -331,7 +331,9 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		layer = sun8i_vi_layer_init_one(drm, mixer, type, i, plane_cnt);
++		layer = sun8i_vi_layer_init_one(drm, mixer, type,
++						mixer->engine.regs, i,
++						plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+ 				"Couldn't initialize overlay plane\n");
+@@ -350,7 +352,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		layer = sun8i_ui_layer_init_one(drm, mixer, type, index,
++		layer = sun8i_ui_layer_init_one(drm, mixer, type,
++						mixer->engine.regs, index,
+ 						plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index b5badfa2c997..2e3689008b50 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -214,6 +214,7 @@ struct sun8i_layer {
+ 	int			type;
+ 	int			channel;
+ 	int			overlay;
++	struct regmap		*regs;
+ };
+ 
+ static inline struct sun8i_layer *
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 5167c9d7b9c0..dd6cb09c2c01 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -53,7 +53,7 @@ static void sun8i_ui_layer_update_attributes(struct sun8i_layer *layer,
+ 	val |= hw_fmt << SUN8I_MIXER_CHAN_UI_LAYER_ATTR_FBFMT_OFFSET;
+ 	val |= SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN;
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, layer->overlay), val);
+ }
+ 
+@@ -87,10 +87,10 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 	DRM_DEBUG_DRIVER("Layer source offset X: %d Y: %d\n",
+ 			 state->src.x1 >> 16, state->src.y1 >> 16);
+ 	DRM_DEBUG_DRIVER("Layer source size W: %d H: %d\n", src_w, src_h);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_SIZE(ch_base, layer->overlay),
+ 		     insize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_OVL_SIZE(ch_base),
+ 		     insize);
+ 
+@@ -149,13 +149,13 @@ static void sun8i_ui_layer_update_buffer(struct sun8i_layer *layer,
+ 
+ 	/* Set the line width */
+ 	DRM_DEBUG_DRIVER("Layer line width: %d bytes\n", fb->pitches[0]);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_PITCH(ch_base, layer->overlay),
+ 		     fb->pitches[0]);
+ 
+ 	DRM_DEBUG_DRIVER("Setting buffer address to %pad\n", &dma_addr);
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_TOP_LADDR(ch_base, layer->overlay),
+ 		     lower_32_bits(dma_addr));
+ }
+@@ -264,6 +264,7 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
++					    struct regmap *regs,
+ 					    int index,
+ 					    int plane_cnt)
+ {
+@@ -278,6 +279,7 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	layer->type = SUN8I_LAYER_TYPE_UI;
+ 	layer->channel = index;
+ 	layer->overlay = 0;
++	layer->regs = regs;
+ 
+ 	/* possible crtcs are set later */
+ 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index 0613b34d36e0..e0b2cfa02749 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -52,6 +52,7 @@ struct sun8i_layer;
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
++					    struct regmap *regs,
+ 					    int index,
+ 					    int plane_cnt);
+ #endif /* _SUN8I_UI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index fcd72c4fd49a..2fc54dc20307 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -143,7 +143,7 @@ void sun8i_ui_scaler_enable(struct sun8i_layer *layer, bool enable)
+ 	else
+ 		val = 0;
+ 
+-	regmap_write(mixer->engine.regs, SUN8I_SCALER_GSU_CTRL(base), val);
++	regmap_write(layer->regs, SUN8I_SCALER_GSU_CTRL(base), val);
+ }
+ 
+ void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+@@ -168,22 +168,22 @@ void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+ 	insize = SUN8I_UI_SCALER_SIZE(src_w, src_h);
+ 	outsize = SUN8I_UI_SCALER_SIZE(dst_w, dst_h);
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_OUTSIZE(base), outsize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_INSIZE(base), insize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_HSTEP(base), hscale);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_VSTEP(base), vscale);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_HPHASE(base), hphase);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_GSU_VPHASE(base), vphase);
+ 	offset = sun8i_ui_scaler_coef_index(hscale) *
+ 			SUN8I_UI_SCALER_COEFF_COUNT;
+ 	for (i = 0; i < SUN8I_UI_SCALER_COEFF_COUNT; i++)
+-		regmap_write(mixer->engine.regs,
++		regmap_write(layer->regs,
+ 			     SUN8I_SCALER_GSU_HCOEFF(base, i),
+ 			     lan2coefftab16[offset + i]);
+ }
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index ce71625fa06f..2290c983e177 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -49,12 +49,12 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_PIXEL :
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_COMBINED;
+ 	} else if (mixer->cfg->vi_num == 1) {
+-		regmap_write(mixer->engine.regs,
++		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA(state->alpha >> 8));
+ 	}
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
+ }
+ 
+@@ -112,10 +112,10 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 			 (state->src.x1 >> 16) & ~(format->hsub - 1),
+ 			 (state->src.y1 >> 16) & ~(format->vsub - 1));
+ 	DRM_DEBUG_DRIVER("Layer source size W: %d H: %d\n", src_w, src_h);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_LAYER_SIZE(ch_base, layer->overlay),
+ 		     insize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_OVL_SIZE(ch_base),
+ 		     insize);
+ 
+@@ -170,19 +170,19 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 		sun8i_vi_scaler_enable(layer, false);
+ 	}
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_HDS_Y(ch_base),
+ 		     SUN8I_MIXER_CHAN_VI_DS_N(hn) |
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(hm));
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_HDS_UV(ch_base),
+ 		     SUN8I_MIXER_CHAN_VI_DS_N(hn) |
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(hm));
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_VDS_Y(ch_base),
+ 		     SUN8I_MIXER_CHAN_VI_DS_N(vn) |
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_VDS_UV(ch_base),
+ 		     SUN8I_MIXER_CHAN_VI_DS_N(vn) |
+ 		     SUN8I_MIXER_CHAN_VI_DS_M(vm));
+@@ -231,7 +231,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_layer *layer,
+ 		/* Set the line width */
+ 		DRM_DEBUG_DRIVER("Layer %d. line width: %d bytes\n",
+ 				 i + 1, fb->pitches[i]);
+-		regmap_write(mixer->engine.regs,
++		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_CHAN_VI_LAYER_PITCH(ch_base,
+ 							     layer->overlay, i),
+ 			     fb->pitches[i]);
+@@ -239,7 +239,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_layer *layer,
+ 		DRM_DEBUG_DRIVER("Setting %d. buffer address to %pad\n",
+ 				 i + 1, &dma_addr);
+ 
+-		regmap_write(mixer->engine.regs,
++		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_CHAN_VI_LAYER_TOP_LADDR(ch_base,
+ 								 layer->overlay, i),
+ 			     lower_32_bits(dma_addr));
+@@ -410,6 +410,7 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
++					    struct regmap *regs,
+ 					    int index,
+ 					    int plane_cnt)
+ {
+@@ -427,6 +428,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	layer->type = SUN8I_LAYER_TYPE_VI;
+ 	layer->channel = index;
+ 	layer->overlay = 0;
++	layer->regs = regs;
+ 
+ 	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		formats = sun8i_vi_layer_de3_formats;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index a568e1db1e19..70766d752fa6 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -57,6 +57,7 @@ struct sun8i_layer;
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
++					    struct regmap *regs,
+ 					    int index,
+ 					    int plane_cnt);
+ #endif /* _SUN8I_VI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+index a76677a1649f..0e308feb492a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+@@ -911,10 +911,9 @@ static void sun8i_vi_scaler_set_coeff(struct regmap *map, u32 base,
+ 
+ void sun8i_vi_scaler_enable(struct sun8i_layer *layer, bool enable)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 val, base;
+ 
+-	base = sun8i_vi_scaler_base(mixer, layer->channel);
++	base = sun8i_vi_scaler_base(layer->mixer, layer->channel);
+ 
+ 	if (enable)
+ 		val = SUN8I_SCALER_VSU_CTRL_EN |
+@@ -922,7 +921,7 @@ void sun8i_vi_scaler_enable(struct sun8i_layer *layer, bool enable)
+ 	else
+ 		val = 0;
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CTRL(base), val);
+ }
+ 
+@@ -968,36 +967,36 @@ void sun8i_vi_scaler_setup(struct sun8i_layer *layer,
+ 		else
+ 			val = SUN50I_SCALER_VSU_SCALE_MODE_NORMAL;
+ 
+-		regmap_write(mixer->engine.regs,
++		regmap_write(layer->regs,
+ 			     SUN50I_SCALER_VSU_SCALE_MODE(base), val);
+ 	}
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_OUTSIZE(base), outsize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_YINSIZE(base), insize);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_YHSTEP(base), hscale);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_YVSTEP(base), vscale);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_YHPHASE(base), hphase);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_YVPHASE(base), vphase);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CINSIZE(base),
+ 		     SUN8I_VI_SCALER_SIZE(src_w / format->hsub,
+ 					  src_h / format->vsub));
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CHSTEP(base),
+ 		     hscale / format->hsub);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CVSTEP(base),
+ 		     vscale / format->vsub);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CHPHASE(base), chphase);
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_SCALER_VSU_CVPHASE(base), cvphase);
+-	sun8i_vi_scaler_set_coeff(mixer->engine.regs, base,
++	sun8i_vi_scaler_set_coeff(layer->regs, base,
+ 				  hscale, vscale, format);
+ }
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 21/30] drm/sun4i: csc: use layer arg instead of mixer
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:21 +0200
+Message-Id: <20251012192330.6903-22-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Layer will be more universal, due to DE33 support.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_csc.c      | 10 +++++-----
+ drivers/gpu/drm/sun4i/sun8i_csc.h      |  4 ++--
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  2 +-
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.c b/drivers/gpu/drm/sun4i/sun8i_csc.c
+index ac7b62adc7df..c371e94b95bd 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.c
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.c
+@@ -227,22 +227,22 @@ static u32 sun8i_csc_get_mode(struct drm_plane_state *state)
+ 	}
+ }
+ 
+-void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
++void sun8i_csc_config(struct sun8i_layer *layer,
+ 		      struct drm_plane_state *state)
+ {
+ 	u32 mode = sun8i_csc_get_mode(state);
+ 	u32 base;
+ 
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE3) {
+-		sun8i_de3_ccsc_setup(mixer->engine.regs, layer,
++	if (layer->mixer->cfg->de_type == SUN8I_MIXER_DE3) {
++		sun8i_de3_ccsc_setup(layer->regs, layer->channel,
+ 				     mode, state->color_encoding,
+ 				     state->color_range);
+ 		return;
+ 	}
+ 
+-	base = ccsc_base[mixer->cfg->ccsc][layer];
++	base = ccsc_base[layer->mixer->cfg->ccsc][layer->channel];
+ 
+-	sun8i_csc_setup(mixer->engine.regs, base,
++	sun8i_csc_setup(layer->regs, base,
+ 			mode, state->color_encoding,
+ 			state->color_range);
+ }
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.h b/drivers/gpu/drm/sun4i/sun8i_csc.h
+index ce921521aaca..2a4b79599610 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.h
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.h
+@@ -9,7 +9,7 @@
+ #include <drm/drm_color_mgmt.h>
+ 
+ struct drm_plane_state;
+-struct sun8i_mixer;
++struct sun8i_layer;
+ 
+ /* VI channel CSC units offsets */
+ #define CCSC00_OFFSET 0xAA050
+@@ -23,7 +23,7 @@ struct sun8i_mixer;
+ 
+ #define SUN8I_CSC_CTRL_EN		BIT(0)
+ 
+-void sun8i_csc_config(struct sun8i_mixer *mixer, int layer,
++void sun8i_csc_config(struct sun8i_layer *layer,
+ 		      struct drm_plane_state *state);
+ 
+ #endif
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 2290c983e177..4f0c929faf36 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -301,7 +301,7 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 
+ 	sun8i_vi_layer_update_attributes(layer, plane);
+ 	sun8i_vi_layer_update_coord(layer, plane);
+-	sun8i_csc_config(layer->mixer, layer->channel, new_state);
++	sun8i_csc_config(layer, new_state);
+ 	sun8i_vi_layer_update_buffer(layer, plane);
+ }
+ 
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 22/30] drm/sun4i: layers: add physical index arg
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:22 +0200
+Message-Id: <20251012192330.6903-23-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This avoids plane mapping in layers code, which allows future
+refactoring, when layer code will move away from accessing mixer
+structure.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 17 +++++++++++++----
+ drivers/gpu/drm/sun4i/sun8i_mixer.h    |  3 ++-
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c |  5 +++--
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h |  2 +-
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  5 +++--
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h |  2 +-
+ 6 files changed, 23 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index d2b7fc552a76..267a6f75feb2 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -283,14 +283,14 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 		h = drm_rect_height(&plane_state->dst);
+ 
+ 		DRM_DEBUG_DRIVER("  plane %d: chan=%d ovl=%d en=%d zpos=%d x=%d y=%d w=%d h=%d\n",
+-				 plane->base.id, layer->channel, layer->overlay,
++				 plane->base.id, layer->index, layer->overlay,
+ 				 enable, zpos, x, y, w, h);
+ 
+ 		if (!enable)
+ 			continue;
+ 
+ 		/* Route layer to pipe based on zpos */
+-		route |= layer->channel << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
++		route |= layer->index << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
+ 		pipe_en |= SUN8I_MIXER_BLEND_PIPE_CTL_EN(zpos);
+ 
+ 		regmap_write(bld_regs,
+@@ -317,6 +317,7 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
+ 	int plane_cnt = mixer->cfg->ui_num + mixer->cfg->vi_num;
+ 	enum drm_plane_type type;
++	unsigned int phy_index;
+ 	int i;
+ 
+ 	planes = devm_kcalloc(drm->dev, plane_cnt, sizeof(*planes), GFP_KERNEL);
+@@ -331,9 +332,13 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
++		phy_index = i;
++		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++			phy_index = mixer->cfg->map[i];
++
+ 		layer = sun8i_vi_layer_init_one(drm, mixer, type,
+ 						mixer->engine.regs, i,
+-						plane_cnt);
++						phy_index, plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+ 				"Couldn't initialize overlay plane\n");
+@@ -352,9 +357,13 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
++		phy_index = index;
++		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++			phy_index = mixer->cfg->map[index];
++
+ 		layer = sun8i_ui_layer_init_one(drm, mixer, type,
+ 						mixer->engine.regs, index,
+-						plane_cnt);
++						phy_index, plane_cnt);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+ 				i ? "overlay" : "primary");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 2e3689008b50..d14188cdfab3 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -212,6 +212,7 @@ struct sun8i_layer {
+ 	struct drm_plane	plane;
+ 	struct sun8i_mixer	*mixer;
+ 	int			type;
++	int			index;
+ 	int			channel;
+ 	int			overlay;
+ 	struct regmap		*regs;
+@@ -246,7 +247,7 @@ static inline u32
+ sun8i_channel_base(struct sun8i_mixer *mixer, int channel)
+ {
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-		return DE33_CH_BASE + mixer->cfg->map[channel] * DE33_CH_SIZE;
++		return DE33_CH_BASE + channel * DE33_CH_SIZE;
+ 	else if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_CH_BASE + channel * DE3_CH_SIZE;
+ 	else
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index dd6cb09c2c01..e65dc313c87d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -265,7 +265,7 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+-					    int index,
++					    int index, int phy_index,
+ 					    int plane_cnt)
+ {
+ 	struct sun8i_layer *layer;
+@@ -277,7 +277,8 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 
+ 	layer->mixer = mixer;
+ 	layer->type = SUN8I_LAYER_TYPE_UI;
+-	layer->channel = index;
++	layer->index = index;
++	layer->channel = phy_index;
+ 	layer->overlay = 0;
+ 	layer->regs = regs;
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index e0b2cfa02749..9383c3364df3 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -53,6 +53,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+-					    int index,
++					    int index, int phy_index,
+ 					    int plane_cnt);
+ #endif /* _SUN8I_UI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 4f0c929faf36..44e699910b70 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -411,7 +411,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+-					    int index,
++					    int index, int phy_index,
+ 					    int plane_cnt)
+ {
+ 	u32 supported_encodings, supported_ranges;
+@@ -426,7 +426,8 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 
+ 	layer->mixer = mixer;
+ 	layer->type = SUN8I_LAYER_TYPE_VI;
+-	layer->channel = index;
++	layer->index = index;
++	layer->channel = phy_index;
+ 	layer->overlay = 0;
+ 	layer->regs = regs;
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index 70766d752fa6..89d0c32e63cf 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -58,6 +58,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+-					    int index,
++					    int index, int phy_index,
+ 					    int plane_cnt);
+ #endif /* _SUN8I_VI_LAYER_H_ */
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 23/30] drm/sun4i: vi_scaler: Update DE33 base calculation
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:23 +0200
+Message-Id: <20251012192330.6903-24-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Now that channel base calculation is straightforward, let's update VI
+scaler base calculation to be simpler. At the same time, also introduce
+macro to avoid magic numbers.
+
+Note, reason why current magic value and new macro value isn't the same
+is because sun8i_channel_base() already introduces offset to channel
+registers. Previous value is just the difference to VI scaler registers.
+However, new code calculates scaler base from channel base. This is also
+easier to understand when looking into BSP driver. Macro value can be
+easily found whereas old diff value was not.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.c | 3 ++-
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.h | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+index 0e308feb492a..fe0bb1de6f08 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+@@ -836,7 +836,8 @@ static const u32 bicubic4coefftab32[480] = {
+ static u32 sun8i_vi_scaler_base(struct sun8i_mixer *mixer, int channel)
+ {
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-		return sun8i_channel_base(mixer, channel) + 0x3000;
++		return DE33_VI_SCALER_UNIT_BASE +
++		       DE33_CH_SIZE * channel;
+ 	else if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_VI_SCALER_UNIT_BASE +
+ 		       DE3_VI_SCALER_UNIT_SIZE * channel;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
+index 73eecc4d1b1d..245fe2f431c3 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.h
+@@ -18,6 +18,8 @@
+ #define DE3_VI_SCALER_UNIT_BASE 0x20000
+ #define DE3_VI_SCALER_UNIT_SIZE 0x08000
+ 
++#define DE33_VI_SCALER_UNIT_BASE 0x4000
++
+ /* this two macros assumes 16 fractional bits which is standard in DRM */
+ #define SUN8I_VI_SCALER_SCALE_MIN		1
+ #define SUN8I_VI_SCALER_SCALE_MAX		((1UL << 20) - 1)
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 24/30] drm/sun4i: mixer: Convert heuristics to quirk
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:24 +0200
+Message-Id: <20251012192330.6903-25-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Determination if FCC unit can be used for VI layer alpha depends on
+number of VI channels. This info won't be available anymore in future
+to VI layer driver because of DE33 way of allocating planes from same
+pool to different mixers.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    |  9 +++++++++
+ drivers/gpu/drm/sun4i/sun8i_mixer.h    |  3 +++
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 12 +++++++-----
+ 3 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 267a6f75feb2..78bbfbe62833 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -707,6 +707,7 @@ static const struct sun8i_mixer_cfg sun8i_a83t_mixer0_cfg = {
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -716,6 +717,7 @@ static const struct sun8i_mixer_cfg sun8i_a83t_mixer1_cfg = {
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -726,6 +728,7 @@ static const struct sun8i_mixer_cfg sun8i_h3_mixer0_cfg = {
+ 	.mod_rate	= 432000000,
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -736,6 +739,7 @@ static const struct sun8i_mixer_cfg sun8i_r40_mixer0_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -746,6 +750,7 @@ static const struct sun8i_mixer_cfg sun8i_r40_mixer1_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -766,6 +771,7 @@ static const struct sun8i_mixer_cfg sun20i_d1_mixer0_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -776,6 +782,7 @@ static const struct sun8i_mixer_cfg sun20i_d1_mixer1_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0x1,
+ 	.scanline_yuv	= 1024,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 0,
+ 	.vi_num		= 1,
+ };
+@@ -786,6 +793,7 @@ static const struct sun8i_mixer_cfg sun50i_a64_mixer0_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 4096,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -796,6 +804,7 @@ static const struct sun8i_mixer_cfg sun50i_a64_mixer1_cfg = {
+ 	.mod_rate	= 297000000,
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
++	.de2_fcc_alpha	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index d14188cdfab3..def07afd37e1 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -176,6 +176,8 @@ enum sun8i_mixer_type {
+  *	a functional block.
+  * @de_type: sun8i_mixer_type enum representing the display engine generation.
+  * @scaline_yuv: size of a scanline for VI scaler for YUV formats.
++ * @de2_fcc_alpha: use FCC for missing DE2 VI alpha capability
++ *	Most DE2 cores has FCC. If number of VI planes is one, enable this.
+  * @map: channel map for DE variants processing YUV separately (DE33)
+  */
+ struct sun8i_mixer_cfg {
+@@ -186,6 +188,7 @@ struct sun8i_mixer_cfg {
+ 	unsigned long	mod_rate;
+ 	unsigned int	de_type;
+ 	unsigned int	scanline_yuv;
++	unsigned int	de2_fcc_alpha : 1;
+ 	unsigned int	map[6];
+ };
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 44e699910b70..8eb3f167e664 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -48,14 +48,16 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 		val |= (state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_PIXEL :
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_COMBINED;
+-	} else if (mixer->cfg->vi_num == 1) {
++	}
++
++	regmap_write(layer->regs,
++		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
++
++	if (mixer->cfg->de2_fcc_alpha) {
+ 		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA(state->alpha >> 8));
+ 	}
+-
+-	regmap_write(layer->regs,
+-		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
+ }
+ 
+ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+@@ -450,7 +452,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	if (mixer->cfg->vi_num == 1 || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (mixer->cfg->de2_fcc_alpha || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		ret = drm_plane_create_alpha_property(&layer->plane);
+ 		if (ret) {
+ 			dev_err(drm->dev, "Couldn't add alpha property\n");
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 25/30] drm/sun4i: ui_scaler: drop sanity checks
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:25 +0200
+Message-Id: <20251012192330.6903-26-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+They can't be triggered if mixer configuration is properly specified in
+quirks. Additionally, number of VI channels won't be available in future
+due to rework for DE33 support.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index 2fc54dc20307..c0947ccf675b 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -132,9 +132,6 @@ void sun8i_ui_scaler_enable(struct sun8i_layer *layer, bool enable)
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 val, base;
+ 
+-	if (WARN_ON(layer->channel < mixer->cfg->vi_num))
+-		return;
+-
+ 	base = sun8i_ui_scaler_base(mixer, layer->channel);
+ 
+ 	if (enable)
+@@ -155,9 +152,6 @@ void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+ 	int i, offset;
+ 	u32 base;
+ 
+-	if (WARN_ON(layer->channel < mixer->cfg->vi_num))
+-		return;
+-
+ 	base = sun8i_ui_scaler_base(mixer, layer->channel);
+ 
+ 	hphase <<= SUN8I_UI_SCALER_PHASE_FRAC - 16;
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 26/30] drm/sun4i: mixer: Add quirk for number of VI scalers
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:26 +0200
+Message-Id: <20251012192330.6903-27-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+On DE2 and DE3, UI scalers are located right after VI scalers. So in
+order to calculate proper UI scaler base address, number of VI scalers
+must be known. In practice, it is same as number of VI channels, but it
+doesn't need to be.
+
+Let's make a quirk for this number. Code for configuring channels and
+associated functions won't have access to vi_num quirk anymore after
+rework for independent planes.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c     | 11 +++++++++++
+ drivers/gpu/drm/sun4i/sun8i_mixer.h     |  2 ++
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c | 10 +++++-----
+ 3 files changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 78bbfbe62833..f9131396f22f 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -708,6 +708,7 @@ static const struct sun8i_mixer_cfg sun8i_a83t_mixer0_cfg = {
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -718,6 +719,7 @@ static const struct sun8i_mixer_cfg sun8i_a83t_mixer1_cfg = {
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -729,6 +731,7 @@ static const struct sun8i_mixer_cfg sun8i_h3_mixer0_cfg = {
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -740,6 +743,7 @@ static const struct sun8i_mixer_cfg sun8i_r40_mixer0_cfg = {
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -751,6 +755,7 @@ static const struct sun8i_mixer_cfg sun8i_r40_mixer1_cfg = {
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -761,6 +766,7 @@ static const struct sun8i_mixer_cfg sun8i_v3s_mixer_cfg = {
+ 	.ui_num = 1,
+ 	.scaler_mask = 0x3,
+ 	.scanline_yuv = 2048,
++	.vi_scaler_num	= 2,
+ 	.ccsc = CCSC_MIXER0_LAYOUT,
+ 	.mod_rate = 150000000,
+ };
+@@ -772,6 +778,7 @@ static const struct sun8i_mixer_cfg sun20i_d1_mixer0_cfg = {
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -783,6 +790,7 @@ static const struct sun8i_mixer_cfg sun20i_d1_mixer1_cfg = {
+ 	.scaler_mask	= 0x1,
+ 	.scanline_yuv	= 1024,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 0,
+ 	.vi_num		= 1,
+ };
+@@ -794,6 +802,7 @@ static const struct sun8i_mixer_cfg sun50i_a64_mixer0_cfg = {
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 4096,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+@@ -805,6 +814,7 @@ static const struct sun8i_mixer_cfg sun50i_a64_mixer1_cfg = {
+ 	.scaler_mask	= 0x3,
+ 	.scanline_yuv	= 2048,
+ 	.de2_fcc_alpha	= 1,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+@@ -814,6 +824,7 @@ static const struct sun8i_mixer_cfg sun50i_h6_mixer0_cfg = {
+ 	.mod_rate	= 600000000,
+ 	.scaler_mask	= 0xf,
+ 	.scanline_yuv	= 4096,
++	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index def07afd37e1..40b800022237 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -178,6 +178,7 @@ enum sun8i_mixer_type {
+  * @scaline_yuv: size of a scanline for VI scaler for YUV formats.
+  * @de2_fcc_alpha: use FCC for missing DE2 VI alpha capability
+  *	Most DE2 cores has FCC. If number of VI planes is one, enable this.
++ * @vi_scaler_num: Number of VI scalers. Used on DE2 and DE3.
+  * @map: channel map for DE variants processing YUV separately (DE33)
+  */
+ struct sun8i_mixer_cfg {
+@@ -189,6 +190,7 @@ struct sun8i_mixer_cfg {
+ 	unsigned int	de_type;
+ 	unsigned int	scanline_yuv;
+ 	unsigned int	de2_fcc_alpha : 1;
++	unsigned int	vi_scaler_num;
+ 	unsigned int	map[6];
+ };
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index c0947ccf675b..0ba1482688d7 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -91,16 +91,16 @@ static const u32 lan2coefftab16[240] = {
+ 
+ static u32 sun8i_ui_scaler_base(struct sun8i_mixer *mixer, int channel)
+ {
+-	int vi_num = mixer->cfg->vi_num;
++	int offset = mixer->cfg->vi_scaler_num;
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_VI_SCALER_UNIT_BASE +
+-		       DE3_VI_SCALER_UNIT_SIZE * vi_num +
+-		       DE3_UI_SCALER_UNIT_SIZE * (channel - vi_num);
++		       DE3_VI_SCALER_UNIT_SIZE * offset +
++		       DE3_UI_SCALER_UNIT_SIZE * (channel - offset);
+ 	else
+ 		return DE2_VI_SCALER_UNIT_BASE +
+-		       DE2_VI_SCALER_UNIT_SIZE * vi_num +
+-		       DE2_UI_SCALER_UNIT_SIZE * (channel - vi_num);
++		       DE2_VI_SCALER_UNIT_SIZE * offset +
++		       DE2_UI_SCALER_UNIT_SIZE * (channel - offset);
+ }
+ 
+ static int sun8i_ui_scaler_coef_index(unsigned int step)
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 27/30] drm/sun4i: mixer: split out layer config
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:27 +0200
+Message-Id: <20251012192330.6903-28-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Later special plane only driver for DE33 will provide separate
+configuration. This change will also help layer driver migrate away from
+mixer structure.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_csc.c       |   2 +-
+ drivers/gpu/drm/sun4i/sun8i_mixer.c     | 152 +++++++++++++++---------
+ drivers/gpu/drm/sun4i/sun8i_mixer.h     |  32 +++--
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c  |   2 +-
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c |   2 +-
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c  |   8 +-
+ 6 files changed, 122 insertions(+), 76 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.c b/drivers/gpu/drm/sun4i/sun8i_csc.c
+index c371e94b95bd..30779db2f9b2 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.c
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.c
+@@ -240,7 +240,7 @@ void sun8i_csc_config(struct sun8i_layer *layer,
+ 		return;
+ 	}
+ 
+-	base = ccsc_base[layer->mixer->cfg->ccsc][layer->channel];
++	base = ccsc_base[layer->mixer->cfg->lay_cfg.ccsc][layer->channel];
+ 
+ 	sun8i_csc_setup(layer->regs, base,
+ 			mode, state->color_encoding,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index f9131396f22f..a01eccfca3a9 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -703,137 +703,173 @@ static void sun8i_mixer_remove(struct platform_device *pdev)
+ }
+ 
+ static const struct sun8i_mixer_cfg sun8i_a83t_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun8i_a83t_mixer1_cfg = {
+-	.ccsc		= CCSC_MIXER1_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER1_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x3,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+-	.scaler_mask	= 0x3,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun8i_h3_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 432000000,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun8i_r40_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun8i_r40_mixer1_cfg = {
+-	.ccsc		= CCSC_MIXER1_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER1_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x3,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0x3,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun8i_v3s_mixer_cfg = {
+-	.de_type = SUN8I_MIXER_DE2,
+-	.vi_num = 2,
+-	.ui_num = 1,
+-	.scaler_mask = 0x3,
+-	.scanline_yuv = 2048,
+-	.vi_scaler_num	= 2,
+-	.ccsc = CCSC_MIXER0_LAYOUT,
+-	.mod_rate = 150000000,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x3,
++		.scanline_yuv	= 2048,
++		.vi_scaler_num	= 2,
++	},
++	.de_type	= SUN8I_MIXER_DE2,
++	.mod_rate	= 150000000,
++	.vi_num		= 2,
++	.ui_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun20i_d1_mixer0_cfg = {
+-	.ccsc		= CCSC_D1_MIXER0_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_D1_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x3,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0x3,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun20i_d1_mixer1_cfg = {
+-	.ccsc		= CCSC_MIXER1_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER1_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x1,
++		.scanline_yuv	= 1024,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0x1,
+-	.scanline_yuv	= 1024,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 0,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_a64_mixer0_cfg = {
+-	.ccsc		= CCSC_MIXER0_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER0_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 4096,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 4096,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_a64_mixer1_cfg = {
+-	.ccsc		= CCSC_MIXER1_LAYOUT,
++	.lay_cfg = {
++		.ccsc		= CCSC_MIXER1_LAYOUT,
++		.de_type	= SUN8I_MIXER_DE2,
++		.scaler_mask	= 0x3,
++		.scanline_yuv	= 2048,
++		.de2_fcc_alpha	= 1,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE2,
+ 	.mod_rate	= 297000000,
+-	.scaler_mask	= 0x3,
+-	.scanline_yuv	= 2048,
+-	.de2_fcc_alpha	= 1,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 1,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_h6_mixer0_cfg = {
++	.lay_cfg = {
++		.de_type	= SUN8I_MIXER_DE3,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 4096,
++		.vi_scaler_num	= 1,
++	},
+ 	.de_type	= SUN8I_MIXER_DE3,
+ 	.mod_rate	= 600000000,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 4096,
+-	.vi_scaler_num	= 1,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_h616_mixer0_cfg = {
++	.lay_cfg = {
++		.de_type	= SUN8I_MIXER_DE33,
++		.scaler_mask	= 0xf,
++		.scanline_yuv	= 4096,
++	},
+ 	.de_type	= SUN8I_MIXER_DE33,
+ 	.mod_rate	= 600000000,
+-	.scaler_mask	= 0xf,
+-	.scanline_yuv	= 4096,
+ 	.ui_num		= 3,
+ 	.vi_num		= 1,
+ 	.map		= {0, 6, 7, 8},
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 40b800022237..8629e21f9cf6 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -164,34 +164,44 @@ enum sun8i_mixer_type {
+ };
+ 
+ /**
+- * struct sun8i_mixer_cfg - mixer HW configuration
+- * @vi_num: number of VI channels
+- * @ui_num: number of UI channels
++ * struct sun8i_layer_cfg - layer configuration
+  * @scaler_mask: bitmask which tells which channel supports scaling
+  *	First, scaler supports for VI channels is defined and after that, scaler
+  *	support for UI channels. For example, if mixer has 2 VI channels without
+  *	scaler and 2 UI channels with scaler, bitmask would be 0xC.
+  * @ccsc: select set of CCSC base addresses from the enumeration above.
+- * @mod_rate: module clock rate that needs to be set in order to have
+- *	a functional block.
+  * @de_type: sun8i_mixer_type enum representing the display engine generation.
+  * @scaline_yuv: size of a scanline for VI scaler for YUV formats.
+  * @de2_fcc_alpha: use FCC for missing DE2 VI alpha capability
+  *	Most DE2 cores has FCC. If number of VI planes is one, enable this.
+  * @vi_scaler_num: Number of VI scalers. Used on DE2 and DE3.
+- * @map: channel map for DE variants processing YUV separately (DE33)
+  */
+-struct sun8i_mixer_cfg {
+-	int		vi_num;
+-	int		ui_num;
++struct sun8i_layer_cfg {
+ 	int		scaler_mask;
+ 	int		ccsc;
+-	unsigned long	mod_rate;
+ 	unsigned int	de_type;
+ 	unsigned int	scanline_yuv;
+ 	unsigned int	de2_fcc_alpha : 1;
+ 	unsigned int	vi_scaler_num;
+-	unsigned int	map[6];
++};
++
++/**
++ * struct sun8i_mixer_cfg - mixer HW configuration
++ * @lay_cfg: layer configuration
++ * @vi_num: number of VI channels
++ * @ui_num: number of UI channels
++ * @mod_rate: module clock rate that needs to be set in order to have
++ *	a functional block.
++ * @map: channel map for DE variants processing YUV separately (DE33)
++ */
++
++struct sun8i_mixer_cfg {
++	struct sun8i_layer_cfg	lay_cfg;
++	int			vi_num;
++	int			ui_num;
++	unsigned int		de_type;
++	unsigned long		mod_rate;
++	unsigned int		map[6];
+ };
+ 
+ struct sun8i_mixer {
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index e65dc313c87d..f71f5a8d0427 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -190,7 +190,7 @@ static int sun8i_ui_layer_atomic_check(struct drm_plane *plane,
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-	if (layer->mixer->cfg->scaler_mask & BIT(layer->channel)) {
++	if (layer->mixer->cfg->lay_cfg.scaler_mask & BIT(layer->channel)) {
+ 		min_scale = SUN8I_UI_SCALER_SCALE_MIN;
+ 		max_scale = SUN8I_UI_SCALER_SCALE_MAX;
+ 	}
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index 0ba1482688d7..4d06c366de7f 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -91,7 +91,7 @@ static const u32 lan2coefftab16[240] = {
+ 
+ static u32 sun8i_ui_scaler_base(struct sun8i_mixer *mixer, int channel)
+ {
+-	int offset = mixer->cfg->vi_scaler_num;
++	int offset = mixer->cfg->lay_cfg.vi_scaler_num;
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_VI_SCALER_UNIT_BASE +
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 8eb3f167e664..0286e7322612 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -53,7 +53,7 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
+ 
+-	if (mixer->cfg->de2_fcc_alpha) {
++	if (mixer->cfg->lay_cfg.de2_fcc_alpha) {
+ 		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA(state->alpha >> 8));
+@@ -152,7 +152,7 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 		}
+ 
+ 		/* it seems that every RGB scaler has buffer for 2048 pixels */
+-		scanline = subsampled ? mixer->cfg->scanline_yuv : 2048;
++		scanline = subsampled ? mixer->cfg->lay_cfg.scanline_yuv : 2048;
+ 
+ 		if (src_w > scanline) {
+ 			DRM_DEBUG_DRIVER("Using horizontal coarse scaling\n");
+@@ -278,7 +278,7 @@ static int sun8i_vi_layer_atomic_check(struct drm_plane *plane,
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-	if (layer->mixer->cfg->scaler_mask & BIT(layer->channel)) {
++	if (layer->mixer->cfg->lay_cfg.scaler_mask & BIT(layer->channel)) {
+ 		min_scale = SUN8I_VI_SCALER_SCALE_MIN;
+ 		max_scale = SUN8I_VI_SCALER_SCALE_MAX;
+ 	}
+@@ -452,7 +452,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	if (mixer->cfg->de2_fcc_alpha || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (mixer->cfg->lay_cfg.de2_fcc_alpha || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		ret = drm_plane_create_alpha_property(&layer->plane);
+ 		if (ret) {
+ 			dev_err(drm->dev, "Couldn't add alpha property\n");
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 28/30] drm/sun4i: layer: replace mixer with layer struct
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:28 +0200
+Message-Id: <20251012192330.6903-29-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This allows to almost completely decouple layer code from mixer. This is
+important for DE33.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_csc.c       |  4 ++--
+ drivers/gpu/drm/sun4i/sun8i_mixer.c     |  6 +++--
+ drivers/gpu/drm/sun4i/sun8i_mixer.h     | 27 ++++++++++-----------
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c  | 24 +++++++++----------
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h  |  3 ++-
+ drivers/gpu/drm/sun4i/sun8i_ui_scaler.c | 16 ++++++-------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c  | 31 ++++++++++++-------------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h  |  3 ++-
+ drivers/gpu/drm/sun4i/sun8i_vi_scaler.c | 19 +++++++--------
+ 9 files changed, 66 insertions(+), 67 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_csc.c b/drivers/gpu/drm/sun4i/sun8i_csc.c
+index 30779db2f9b2..ce81c12f511d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_csc.c
++++ b/drivers/gpu/drm/sun4i/sun8i_csc.c
+@@ -233,14 +233,14 @@ void sun8i_csc_config(struct sun8i_layer *layer,
+ 	u32 mode = sun8i_csc_get_mode(state);
+ 	u32 base;
+ 
+-	if (layer->mixer->cfg->de_type == SUN8I_MIXER_DE3) {
++	if (layer->cfg->de_type == SUN8I_MIXER_DE3) {
+ 		sun8i_de3_ccsc_setup(layer->regs, layer->channel,
+ 				     mode, state->color_encoding,
+ 				     state->color_range);
+ 		return;
+ 	}
+ 
+-	base = ccsc_base[layer->mixer->cfg->lay_cfg.ccsc][layer->channel];
++	base = ccsc_base[layer->cfg->ccsc][layer->channel];
+ 
+ 	sun8i_csc_setup(layer->regs, base,
+ 			mode, state->color_encoding,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index a01eccfca3a9..10e40ec9a67a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -338,7 +338,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 
+ 		layer = sun8i_vi_layer_init_one(drm, mixer, type,
+ 						mixer->engine.regs, i,
+-						phy_index, plane_cnt);
++						phy_index, plane_cnt,
++						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+ 				"Couldn't initialize overlay plane\n");
+@@ -363,7 +364,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 
+ 		layer = sun8i_ui_layer_init_one(drm, mixer, type,
+ 						mixer->engine.regs, index,
+-						phy_index, plane_cnt);
++						phy_index, plane_cnt,
++						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+ 				i ? "overlay" : "primary");
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 8629e21f9cf6..52d1b40ab71e 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -224,13 +224,14 @@ enum {
+ };
+ 
+ struct sun8i_layer {
+-	struct drm_plane	plane;
+-	struct sun8i_mixer	*mixer;
+-	int			type;
+-	int			index;
+-	int			channel;
+-	int			overlay;
+-	struct regmap		*regs;
++	struct drm_plane		plane;
++	struct sun8i_mixer		*mixer;
++	int				type;
++	int				index;
++	int				channel;
++	int				overlay;
++	struct regmap			*regs;
++	const struct sun8i_layer_cfg	*cfg;
+ };
+ 
+ static inline struct sun8i_layer *
+@@ -259,14 +260,14 @@ sun8i_blender_regmap(struct sun8i_mixer *mixer)
+ }
+ 
+ static inline u32
+-sun8i_channel_base(struct sun8i_mixer *mixer, int channel)
++sun8i_channel_base(struct sun8i_layer *layer)
+ {
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-		return DE33_CH_BASE + channel * DE33_CH_SIZE;
+-	else if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
+-		return DE3_CH_BASE + channel * DE3_CH_SIZE;
++	if (layer->cfg->de_type == SUN8I_MIXER_DE33)
++		return DE33_CH_BASE + layer->channel * DE33_CH_SIZE;
++	else if (layer->cfg->de_type == SUN8I_MIXER_DE3)
++		return DE3_CH_BASE + layer->channel * DE3_CH_SIZE;
+ 	else
+-		return DE2_CH_BASE + channel * DE2_CH_SIZE;
++		return DE2_CH_BASE + layer->channel * DE2_CH_SIZE;
+ }
+ 
+ int sun8i_mixer_drm_format_to_hw(u32 format, u32 *hw_format);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index f71f5a8d0427..dc4298590024 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -27,10 +27,9 @@
+ 
+ static void sun8i_ui_layer_disable(struct sun8i_layer *layer)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+-	u32 ch_base = sun8i_channel_base(mixer, layer->channel);
++	u32 ch_base = sun8i_channel_base(layer);
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, layer->overlay), 0);
+ }
+ 
+@@ -38,11 +37,10 @@ static void sun8i_ui_layer_update_attributes(struct sun8i_layer *layer,
+ 					     struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	const struct drm_format_info *fmt;
+ 	u32 val, ch_base, hw_fmt;
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 	fmt = state->fb->format;
+ 	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+@@ -61,7 +59,6 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 					struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 src_w, src_h, dst_w, dst_h;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
+@@ -70,7 +67,7 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 	DRM_DEBUG_DRIVER("Updating UI channel %d overlay %d\n",
+ 			 layer->channel, layer->overlay);
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+ 	src_h = drm_rect_height(&state->src) >> 16;
+@@ -102,7 +99,7 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 		hscale = state->src_w / state->crtc_w;
+ 		vscale = state->src_h / state->crtc_h;
+ 
+-		if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
++		if (layer->cfg->de_type == SUN8I_MIXER_DE33) {
+ 			sun8i_vi_scaler_setup(layer, src_w, src_h, dst_w, dst_h,
+ 					      hscale, vscale, hphase, vphase,
+ 					      state->fb->format);
+@@ -114,7 +111,7 @@ static void sun8i_ui_layer_update_coord(struct sun8i_layer *layer,
+ 		}
+ 	} else {
+ 		DRM_DEBUG_DRIVER("HW scaling is not needed\n");
+-		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++		if (layer->cfg->de_type == SUN8I_MIXER_DE33)
+ 			sun8i_vi_scaler_enable(layer, false);
+ 		else
+ 			sun8i_ui_scaler_enable(layer, false);
+@@ -125,14 +122,13 @@ static void sun8i_ui_layer_update_buffer(struct sun8i_layer *layer,
+ 					 struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	struct drm_framebuffer *fb = state->fb;
+ 	struct drm_gem_dma_object *gem;
+ 	dma_addr_t dma_addr;
+ 	u32 ch_base;
+ 	int bpp;
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 
+ 	/* Get the physical address of the buffer in memory */
+ 	gem = drm_fb_dma_get_gem_obj(fb, 0);
+@@ -190,7 +186,7 @@ static int sun8i_ui_layer_atomic_check(struct drm_plane *plane,
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-	if (layer->mixer->cfg->lay_cfg.scaler_mask & BIT(layer->channel)) {
++	if (layer->cfg->scaler_mask & BIT(layer->channel)) {
+ 		min_scale = SUN8I_UI_SCALER_SCALE_MIN;
+ 		max_scale = SUN8I_UI_SCALER_SCALE_MAX;
+ 	}
+@@ -266,7 +262,8 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+-					    int plane_cnt)
++					    int plane_cnt,
++					    const struct sun8i_layer_cfg *cfg)
+ {
+ 	struct sun8i_layer *layer;
+ 	int ret;
+@@ -281,6 +278,7 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	layer->channel = phy_index;
+ 	layer->overlay = 0;
+ 	layer->regs = regs;
++	layer->cfg = cfg;
+ 
+ 	/* possible crtcs are set later */
+ 	ret = drm_universal_plane_init(drm, &layer->plane, 0,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index 9383c3364df3..c357b39999ff 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -54,5 +54,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+-					    int plane_cnt);
++					    int plane_cnt,
++					    const struct sun8i_layer_cfg *cfg);
+ #endif /* _SUN8I_UI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+index 4d06c366de7f..a178da8f532a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_scaler.c
+@@ -89,18 +89,18 @@ static const u32 lan2coefftab16[240] = {
+ 	0x0b1c1603, 0x0d1c1502, 0x0e1d1401, 0x0f1d1301,
+ };
+ 
+-static u32 sun8i_ui_scaler_base(struct sun8i_mixer *mixer, int channel)
++static u32 sun8i_ui_scaler_base(struct sun8i_layer *layer)
+ {
+-	int offset = mixer->cfg->lay_cfg.vi_scaler_num;
++	int offset = layer->cfg->vi_scaler_num;
+ 
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
++	if (layer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_VI_SCALER_UNIT_BASE +
+ 		       DE3_VI_SCALER_UNIT_SIZE * offset +
+-		       DE3_UI_SCALER_UNIT_SIZE * (channel - offset);
++		       DE3_UI_SCALER_UNIT_SIZE * (layer->channel - offset);
+ 	else
+ 		return DE2_VI_SCALER_UNIT_BASE +
+ 		       DE2_VI_SCALER_UNIT_SIZE * offset +
+-		       DE2_UI_SCALER_UNIT_SIZE * (channel - offset);
++		       DE2_UI_SCALER_UNIT_SIZE * (layer->channel - offset);
+ }
+ 
+ static int sun8i_ui_scaler_coef_index(unsigned int step)
+@@ -129,10 +129,9 @@ static int sun8i_ui_scaler_coef_index(unsigned int step)
+ 
+ void sun8i_ui_scaler_enable(struct sun8i_layer *layer, bool enable)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 val, base;
+ 
+-	base = sun8i_ui_scaler_base(mixer, layer->channel);
++	base = sun8i_ui_scaler_base(layer);
+ 
+ 	if (enable)
+ 		val = SUN8I_SCALER_GSU_CTRL_EN |
+@@ -147,12 +146,11 @@ void sun8i_ui_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 src_w, u32 src_h, u32 dst_w, u32 dst_h,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 insize, outsize;
+ 	int i, offset;
+ 	u32 base;
+ 
+-	base = sun8i_ui_scaler_base(mixer, layer->channel);
++	base = sun8i_ui_scaler_base(layer);
+ 
+ 	hphase <<= SUN8I_UI_SCALER_PHASE_FRAC - 16;
+ 	vphase <<= SUN8I_UI_SCALER_PHASE_FRAC - 16;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 0286e7322612..afe38ea03beb 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -20,10 +20,9 @@
+ 
+ static void sun8i_vi_layer_disable(struct sun8i_layer *layer)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+-	u32 ch_base = sun8i_channel_base(mixer, layer->channel);
++	u32 ch_base = sun8i_channel_base(layer);
+ 
+-	regmap_write(mixer->engine.regs,
++	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), 0);
+ }
+ 
+@@ -31,11 +30,10 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 					     struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	const struct drm_format_info *fmt;
+ 	u32 val, ch_base, hw_fmt;
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 	fmt = state->fb->format;
+ 	sun8i_mixer_drm_format_to_hw(fmt->format, &hw_fmt);
+ 
+@@ -43,7 +41,7 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 	if (!fmt->is_yuv)
+ 		val |= SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE;
+ 	val |= SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN;
+-	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (layer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		val |= SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA(state->alpha >> 8);
+ 		val |= (state->alpha == DRM_BLEND_ALPHA_OPAQUE) ?
+ 			SUN50I_MIXER_CHAN_VI_LAYER_ATTR_ALPHA_MODE_PIXEL :
+@@ -53,7 +51,7 @@ static void sun8i_vi_layer_update_attributes(struct sun8i_layer *layer,
+ 	regmap_write(layer->regs,
+ 		     SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, layer->overlay), val);
+ 
+-	if (mixer->cfg->lay_cfg.de2_fcc_alpha) {
++	if (layer->cfg->de2_fcc_alpha) {
+ 		regmap_write(layer->regs,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA_REG,
+ 			     SUN8I_MIXER_FCC_GLOBAL_ALPHA(state->alpha >> 8));
+@@ -77,7 +75,7 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 	DRM_DEBUG_DRIVER("Updating VI channel %d overlay %d\n",
+ 			 layer->channel, layer->overlay);
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 
+ 	src_w = drm_rect_width(&state->src) >> 16;
+ 	src_h = drm_rect_height(&state->src) >> 16;
+@@ -152,7 +150,7 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 		}
+ 
+ 		/* it seems that every RGB scaler has buffer for 2048 pixels */
+-		scanline = subsampled ? mixer->cfg->lay_cfg.scanline_yuv : 2048;
++		scanline = subsampled ? layer->cfg->scanline_yuv : 2048;
+ 
+ 		if (src_w > scanline) {
+ 			DRM_DEBUG_DRIVER("Using horizontal coarse scaling\n");
+@@ -194,7 +192,6 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_layer *layer,
+ 					 struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	struct drm_framebuffer *fb = state->fb;
+ 	const struct drm_format_info *format = fb->format;
+ 	struct drm_gem_dma_object *gem;
+@@ -203,7 +200,7 @@ static void sun8i_vi_layer_update_buffer(struct sun8i_layer *layer,
+ 	u32 ch_base;
+ 	int i;
+ 
+-	ch_base = sun8i_channel_base(mixer, layer->channel);
++	ch_base = sun8i_channel_base(layer);
+ 
+ 	/* Adjust x and y to be dividable by subsampling factor */
+ 	src_x = (state->src.x1 >> 16) & ~(format->hsub - 1);
+@@ -278,7 +275,7 @@ static int sun8i_vi_layer_atomic_check(struct drm_plane *plane,
+ 	min_scale = DRM_PLANE_NO_SCALING;
+ 	max_scale = DRM_PLANE_NO_SCALING;
+ 
+-	if (layer->mixer->cfg->lay_cfg.scaler_mask & BIT(layer->channel)) {
++	if (layer->cfg->scaler_mask & BIT(layer->channel)) {
+ 		min_scale = SUN8I_VI_SCALER_SCALE_MIN;
+ 		max_scale = SUN8I_VI_SCALER_SCALE_MAX;
+ 	}
+@@ -414,7 +411,8 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+-					    int plane_cnt)
++					    int plane_cnt,
++					    const struct sun8i_layer_cfg *cfg)
+ {
+ 	u32 supported_encodings, supported_ranges;
+ 	unsigned int format_count;
+@@ -432,8 +430,9 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	layer->channel = phy_index;
+ 	layer->overlay = 0;
+ 	layer->regs = regs;
++	layer->cfg = cfg;
+ 
+-	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (layer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		formats = sun8i_vi_layer_de3_formats;
+ 		format_count = ARRAY_SIZE(sun8i_vi_layer_de3_formats);
+ 	} else {
+@@ -452,7 +451,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 		return ERR_PTR(ret);
+ 	}
+ 
+-	if (mixer->cfg->lay_cfg.de2_fcc_alpha || mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (layer->cfg->de2_fcc_alpha || layer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		ret = drm_plane_create_alpha_property(&layer->plane);
+ 		if (ret) {
+ 			dev_err(drm->dev, "Couldn't add alpha property\n");
+@@ -469,7 +468,7 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 
+ 	supported_encodings = BIT(DRM_COLOR_YCBCR_BT601) |
+ 			      BIT(DRM_COLOR_YCBCR_BT709);
+-	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3)
++	if (layer->cfg->de_type >= SUN8I_MIXER_DE3)
+ 		supported_encodings |= BIT(DRM_COLOR_YCBCR_BT2020);
+ 
+ 	supported_ranges = BIT(DRM_COLOR_YCBCR_LIMITED_RANGE) |
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index 89d0c32e63cf..6ec68baa2409 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -59,5 +59,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+-					    int plane_cnt);
++					    int plane_cnt,
++					    const struct sun8i_layer_cfg *cfg);
+ #endif /* _SUN8I_VI_LAYER_H_ */
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+index fe0bb1de6f08..3dec4eeb1ba2 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_scaler.c
+@@ -833,17 +833,17 @@ static const u32 bicubic4coefftab32[480] = {
+ 	0x1012110d, 0x1012110d, 0x1013110c, 0x1013110c,
+ };
+ 
+-static u32 sun8i_vi_scaler_base(struct sun8i_mixer *mixer, int channel)
++static u32 sun8i_vi_scaler_base(struct sun8i_layer *layer)
+ {
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++	if (layer->cfg->de_type == SUN8I_MIXER_DE33)
+ 		return DE33_VI_SCALER_UNIT_BASE +
+-		       DE33_CH_SIZE * channel;
+-	else if (mixer->cfg->de_type == SUN8I_MIXER_DE3)
++		       DE33_CH_SIZE * layer->channel;
++	else if (layer->cfg->de_type == SUN8I_MIXER_DE3)
+ 		return DE3_VI_SCALER_UNIT_BASE +
+-		       DE3_VI_SCALER_UNIT_SIZE * channel;
++		       DE3_VI_SCALER_UNIT_SIZE * layer->channel;
+ 	else
+ 		return DE2_VI_SCALER_UNIT_BASE +
+-		       DE2_VI_SCALER_UNIT_SIZE * channel;
++		       DE2_VI_SCALER_UNIT_SIZE * layer->channel;
+ }
+ 
+ static int sun8i_vi_scaler_coef_index(unsigned int step)
+@@ -914,7 +914,7 @@ void sun8i_vi_scaler_enable(struct sun8i_layer *layer, bool enable)
+ {
+ 	u32 val, base;
+ 
+-	base = sun8i_vi_scaler_base(layer->mixer, layer->channel);
++	base = sun8i_vi_scaler_base(layer);
+ 
+ 	if (enable)
+ 		val = SUN8I_SCALER_VSU_CTRL_EN |
+@@ -931,12 +931,11 @@ void sun8i_vi_scaler_setup(struct sun8i_layer *layer,
+ 			   u32 hscale, u32 vscale, u32 hphase, u32 vphase,
+ 			   const struct drm_format_info *format)
+ {
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 chphase, cvphase;
+ 	u32 insize, outsize;
+ 	u32 base;
+ 
+-	base = sun8i_vi_scaler_base(mixer, layer->channel);
++	base = sun8i_vi_scaler_base(layer);
+ 
+ 	hphase <<= SUN8I_VI_SCALER_PHASE_FRAC - 16;
+ 	vphase <<= SUN8I_VI_SCALER_PHASE_FRAC - 16;
+@@ -960,7 +959,7 @@ void sun8i_vi_scaler_setup(struct sun8i_layer *layer,
+ 		cvphase = vphase;
+ 	}
+ 
+-	if (mixer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (layer->cfg->de_type >= SUN8I_MIXER_DE3) {
+ 		u32 val;
+ 
+ 		if (format->hsub == 1 && format->vsub == 1)
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 29/30] drm/sun4i: vi_scaler: Find mixer from crtc
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:29 +0200
+Message-Id: <20251012192330.6903-30-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+With "floating" planes in DE33, mixer can't be stored in layer structure
+anymore. Find mixer using currently bound crtc.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index afe38ea03beb..4534998af825 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -13,6 +13,7 @@
+ #include <drm/drm_gem_dma_helper.h>
+ #include <drm/drm_probe_helper.h>
+ 
++#include "sun4i_crtc.h"
+ #include "sun8i_csc.h"
+ #include "sun8i_mixer.h"
+ #include "sun8i_vi_layer.h"
+@@ -62,8 +63,9 @@ static void sun8i_vi_layer_update_coord(struct sun8i_layer *layer,
+ 					struct drm_plane *plane)
+ {
+ 	struct drm_plane_state *state = plane->state;
++	struct sun4i_crtc *scrtc = drm_crtc_to_sun4i_crtc(state->crtc);
++	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(scrtc->engine);
+ 	const struct drm_format_info *format = state->fb->format;
+-	struct sun8i_mixer *mixer = layer->mixer;
+ 	u32 src_w, src_h, dst_w, dst_h;
+ 	u32 outsize, insize;
+ 	u32 hphase, vphase;
+-- 
+2.51.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 30/30] drm/sun4i: Nuke mixer pointer from layer code
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 12 Oct 2025 21:23:30 +0200
+Message-Id: <20251012192330.6903-31-jernej.skrabec@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+It's not used anymore, so remove it. This allows trully independent
+layer state from mixer.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 12 +++++-------
+ drivers/gpu/drm/sun4i/sun8i_mixer.h    |  1 -
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c |  2 --
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.h |  1 -
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  2 --
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.h |  1 -
+ 6 files changed, 5 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 10e40ec9a67a..5de68cbb6060 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -268,7 +268,7 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 		int w, h, x, y, zpos;
+ 		bool enable;
+ 
+-		if (!(plane->possible_crtcs & drm_crtc_mask(crtc)) || layer->mixer != mixer)
++		if (!(plane->possible_crtcs & drm_crtc_mask(crtc)))
+ 			continue;
+ 
+ 		plane_state = drm_atomic_get_new_plane_state(state, plane);
+@@ -336,9 +336,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+ 			phy_index = mixer->cfg->map[i];
+ 
+-		layer = sun8i_vi_layer_init_one(drm, mixer, type,
+-						mixer->engine.regs, i,
+-						phy_index, plane_cnt,
++		layer = sun8i_vi_layer_init_one(drm, type, mixer->engine.regs,
++						i, phy_index, plane_cnt,
+ 						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+@@ -362,9 +361,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+ 			phy_index = mixer->cfg->map[index];
+ 
+-		layer = sun8i_ui_layer_init_one(drm, mixer, type,
+-						mixer->engine.regs, index,
+-						phy_index, plane_cnt,
++		layer = sun8i_ui_layer_init_one(drm, type, mixer->engine.regs,
++						index, phy_index, plane_cnt,
+ 						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 52d1b40ab71e..6b59c52ba4d5 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -225,7 +225,6 @@ enum {
+ 
+ struct sun8i_layer {
+ 	struct drm_plane		plane;
+-	struct sun8i_mixer		*mixer;
+ 	int				type;
+ 	int				index;
+ 	int				channel;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index dc4298590024..185e4ae8a11a 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -258,7 +258,6 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ };
+ 
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+-					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+@@ -272,7 +271,6 @@ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+ 	if (!layer)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	layer->mixer = mixer;
+ 	layer->type = SUN8I_LAYER_TYPE_UI;
+ 	layer->index = index;
+ 	layer->channel = phy_index;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+index c357b39999ff..1581ffc6d4e5 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.h
+@@ -50,7 +50,6 @@ struct sun8i_mixer;
+ struct sun8i_layer;
+ 
+ struct sun8i_layer *sun8i_ui_layer_init_one(struct drm_device *drm,
+-					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 4534998af825..40008c38003d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -409,7 +409,6 @@ static const uint64_t sun8i_layer_modifiers[] = {
+ };
+ 
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+-					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+@@ -426,7 +425,6 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	if (!layer)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	layer->mixer = mixer;
+ 	layer->type = SUN8I_LAYER_TYPE_VI;
+ 	layer->index = index;
+ 	layer->channel = phy_index;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+index 6ec68baa2409..29cc5573691f 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.h
+@@ -55,7 +55,6 @@ struct sun8i_mixer;
+ struct sun8i_layer;
+ 
+ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+-					    struct sun8i_mixer *mixer,
+ 					    enum drm_plane_type type,
+ 					    struct regmap *regs,
+ 					    int index, int phy_index,
+-- 
+2.51.0
+

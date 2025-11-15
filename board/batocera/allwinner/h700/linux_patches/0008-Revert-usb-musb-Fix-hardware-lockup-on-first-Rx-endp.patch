@@ -1,0 +1,41 @@
+From 8e7f804d1f1aedf946b229b3f59501ddee840149 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sat, 19 Apr 2025 18:36:09 +0200
+Subject: [PATCH] Revert "usb: musb: Fix hardware lockup on first Rx endpoint
+ request"
+
+This reverts commit 3fc137386c4620305bbc2a216868c53f9245670a.
+---
+ drivers/usb/musb/musb_gadget.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/usb/musb/musb_gadget.c b/drivers/usb/musb/musb_gadget.c
+index 6869c58367f2..661c6a16f4f7 100644
+--- a/drivers/usb/musb/musb_gadget.c
++++ b/drivers/usb/musb/musb_gadget.c
+@@ -1162,19 +1162,12 @@ void musb_free_request(struct usb_ep *ep, struct usb_request *req)
+  */
+ void musb_ep_restart(struct musb *musb, struct musb_request *req)
+ {
+-	u16 csr;
+-	void __iomem *epio = req->ep->hw_ep->regs;
+-
+ 	trace_musb_req_start(req);
+ 	musb_ep_select(musb->mregs, req->epnum);
+-	if (req->tx) {
++	if (req->tx)
+ 		txstate(musb, req);
+-	} else {
+-		csr = musb_readw(epio, MUSB_RXCSR);
+-		csr |= MUSB_RXCSR_FLUSHFIFO | MUSB_RXCSR_P_WZC_BITS;
+-		musb_writew(epio, MUSB_RXCSR, csr);
+-		musb_writew(epio, MUSB_RXCSR, csr);
+-	}
++	else
++		rxstate(musb, req);
+ }
+ 
+ static int musb_ep_restart_resume_work(struct musb *musb, void *data)
+-- 
+2.49.0
+
