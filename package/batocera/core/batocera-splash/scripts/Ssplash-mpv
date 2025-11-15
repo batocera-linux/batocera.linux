@@ -148,13 +148,16 @@ do_videostart ()
 	fi
     fi
 
+    DISPLAY_COMPOSITOR=$(/usr/bin/batocera-resolution getDisplayComp)
+
     # determine the output display to use for MPV
     # fixes splash video output where the user wants it
     if preferred_display=$(batocera-settings-get-master global.videooutput); then
-        if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
-            echo "Splash: Preferred display is $preferred_display" >> $log
+        
+        if [ "$DISPLAY_COMPOSITOR" = "labwc" ]; then
+            echo "Splash: Preferred display is $preferred_display" >> "$log"
         else
-            echo "Splash: Preferred display is $preferred_display" > $log
+            echo "Splash: Preferred display is $preferred_display" > "$log"
         fi
 
         for card_folder_path in /sys/class/drm/card*; do
@@ -174,25 +177,34 @@ do_videostart ()
         done
 
         if [ -z "$drm_connector" ]; then
-            echo "Splash: Exact preferred display not found or not connected. Falling back to original method." >> $log
+            echo "Splash: Exact preferred display not found or not connected. Falling back to original method." >> "$log"
             display_type=$(echo "$preferred_display" | cut -d'-' -f1)
             if [[ "$display_type" == "DisplayPort" ]]; then
                 # workaround some cards using DisplayPort as the xorg output name
                 display_type="DP"
             fi
-            echo "Splash: Display Type = $display_type" >> $log
+            echo "Splash: Display Type = $display_type" >> "$log"
             read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
         fi
     else
         # we choose the first connected display
         mpv_connector=$(mpv --drm-connector=help | grep "(connected)" | sed 's/ (connected)//' | sed 's/^[[:space:]]*//' | head -n1)
         if [ -n "$mpv_connector" ]; then
-            echo "Splash: No preferred display chosen, using the first MPV detected (connected) display: $mpv_connector" > $log
+            if [ "$DISPLAY_COMPOSITOR" = "labwc" ]; then
+                echo "Splash: No preferred display chosen, using the first MPV detected (connected) display: $mpv_connector" >> "$log"
+            else
+                echo "Splash: No preferred display chosen, using the first MPV detected (connected) display: $mpv_connector" > "$log"
+            fi
+            
             display_type=$(echo "$mpv_connector" | cut -d'-' -f1)
-            echo "Splash: MPV detected display Type = $display_type" >> $log
+            echo "Splash: MPV detected display Type = $display_type" >> "$log"
             read -r drm_connector card_path <<< "$(get_connected_display "$display_type")"
         else
-            echo "Splash: No preferred display chosen, no connected display found" > $log
+            if [ "$DISPLAY_COMPOSITOR" = "labwc" ]; then
+                echo "Splash: No preferred display chosen, no connected display found" >> "$log"
+            else
+                echo "Splash: No preferred display chosen, no connected display found" > "$log"
+            fi
         fi
     fi
 

@@ -285,6 +285,16 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+ACTION_PRECHECK=$1
+case "${ACTION_PRECHECK}" in
+    "getDisplayComp")
+        echo "labwc"
+        ;;
+    "getDisplayMode")
+        echo "wayland"
+        ;;
+esac
+
 # If wlr-randr returns no output, it means the Wayland compositor isn't running yet.
 if ! "${WLR_RANDR}" 2>/dev/null | grep -q . ; then
     _log "Wayland compositor not ready. Exiting gracefully."
@@ -662,6 +672,7 @@ case "${ACTION}" in
                 _log "repositionOutputs: Failed to apply final positions."
             else
                 _log "repositionOutputs: Successfully positioned outputs."
+                _reconfigure_labwc
             fi
         fi
         ;;
@@ -674,14 +685,13 @@ case "${ACTION}" in
 
         ROTATE_VAL=$1
         case "${ROTATE_VAL}" in
-            "0") WLR_TRANSFORM="normal"; MATRIX="1 0 0 0 1 0" ;;   # 0°
-            "1") WLR_TRANSFORM="90";     MATRIX="0 -1 1 1 0 0" ;;  # 90°
-            "2") WLR_TRANSFORM="180";    MATRIX="-1 0 1 0 -1 1" ;; # 180°
-            "3") WLR_TRANSFORM="270";    MATRIX="0 1 0 -1 0 1" ;;  # 270°
+            "0") WLR_TRANSFORM="normal" ;;
+            "1") WLR_TRANSFORM="90" ;;
+            "2") WLR_TRANSFORM="180" ;;
+            "3") WLR_TRANSFORM="270" ;;
             *)
                 _log "setRotation: Invalid rotation value '${ROTATE_VAL}'. Using normal."
                 WLR_TRANSFORM="normal"
-                MATRIX="1 0 0 0 1 0"
                 ;;
         esac
 
@@ -697,25 +707,34 @@ case "${ACTION}" in
                 exit 1
             fi
 
-            _log "Ensuring touch device is mapped correctly in rc.xml."
-            sed -i \
-                -e "/<touch / s/deviceName=\"[^\"]*\"/deviceName=\"${TOUCHSCREEN}\"/" \
-                -e "/<touch / s/mapToOutput=\"[^\"]*\"/mapToOutput=\"${PSCREEN}\"/" \
-                "${CONFIG_FILE}"
-            
-            # Replace calibrationMatrix only inside touch device block if it's different
-            CURRENT_MATRIX=$(sed -n '/<device category="touch">/,/<\/device>/s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p' "$CONFIG_FILE")
+            _log "Ensuring touch device configuration is correct..."
 
-            if [ "$CURRENT_MATRIX" != "$MATRIX" ]; then
-                sed -i '/<device category="touch">/,/<\/device>/ s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix>'"$MATRIX"'</calibrationMatrix>|' "$CONFIG_FILE"
-                _log "Touchscreen '${TOUCHSCREEN}' detected. Updated calibrationMatrix from '$CURRENT_MATRIX' to: $MATRIX"
-                _reconfigure_labwc
+            # Update the main <touch> tag with the correct deviceName and mapToOutput.
+            sed -i \
+                "/<touch / s/deviceName=\"[^\"]*\"/deviceName=\"${TOUCHSCREEN}\"/; s/mapToOutput=\"[^\"]*\"/mapToOutput=\"${PSCREEN}\"/" \
+                "${CONFIG_FILE}"
+
+            # Update the <device> tag within the <libinput> block with the correct name.
+            sed -i \
+                "/<libinput>/,/<\/libinput>/ { /<device / s/name=\"[^\"]*\"/name=\"${TOUCHSCREEN}\"/; }" \
+                "${CONFIG_FILE}"
+
+            # Ensure the calibrationMatrix tag is present but empty.
+            SEARCH_BLOCK="/<device name=\"${TOUCHSCREEN}\"/, /<\/device>/"
+            # Read the current content of the tag.
+            CURRENT_MATRIX=$(sed -n "${SEARCH_BLOCK} s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p" "$CONFIG_FILE")
+            
+            # If the matrix is NOT empty, then make it empty.
+            if [ -n "$CURRENT_MATRIX" ]; then
+                _log "Setting calibration matrix to empty to allow compositor to manage touch rotation."
+                sed -i "${SEARCH_BLOCK} s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix></calibrationMatrix>|" "$CONFIG_FILE"
             else
-                _log "Touchscreen '${TOUCHSCREEN}' detected. calibrationMatrix already set to: $MATRIX — no update needed."
+                _log "Touchscreen '${TOUCHSCREEN}' config is correct (matrix is empty)."
             fi
         else
-            _log "No touchscreen found; skipped calibrationMatrix update"
+            _log "No touchscreen found; skipped touchscreen configuration."
         fi
+        _reconfigure_labwc
         ;;
 
     "getRotation")
@@ -733,15 +752,6 @@ case "${ACTION}" in
     "supportSystemReflection")
         exit 0
         ;;
-
-    "getDisplayMode")
-        echo "wayland"
-        ;;
-    
-    "getDisplayComp")
-        echo "labwc"
-        ;;
-
     *)
         f_usage
         exit 1

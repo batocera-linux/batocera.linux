@@ -269,10 +269,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
         # Now that all screens are enabled and have their final resolution/rotation,
         # we can correctly position them next to each other
         echo "Standalone: --- Repositioning Outputs ---" >> "$log"
-	display_position=$(/usr/bin/batocera-settings-get-master "display.position")
-	if [ -n "${display_position}" ]; then
+        display_position=$(/usr/bin/batocera-settings-get-master "display.position")
+        if [ -n "${display_position}" ]; then
             batocera-resolution repositionOutputs "${display_position}" "${settings_output}" "${settings_output2}" "${settings_output3}"
-	fi
+        fi
     fi
     ###################
 
