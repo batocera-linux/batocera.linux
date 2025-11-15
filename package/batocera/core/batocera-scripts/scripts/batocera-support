@@ -71,6 +71,8 @@ iw phy phy0 info        > "${DSYSTEM}/iw-phy0-info.txt"
 batocera-systems        > "${DSYSTEM}/bios.txt"
 batocera-version        > "${DSYSTEM}/batocera.version"
 batocera-info           > "${DSYSTEM}/batocera.info"
+batocera-services list  > "${DSYSTEM}/services.txt"
+find /boot -type f      > "${DSYSTEM}/boot_files.txt"
 ldconfig -p             > "${DSYSTEM}/ldcache.txt"
 # get xrandr provider if x86 system only
 if [ "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64" ]; then
