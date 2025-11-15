@@ -218,6 +218,7 @@ class KeyboardController:
                     if device_number == ndevices:
                         if device_name is not None:
                             config["target_devices"][k]["name"] = device_name
+                        if values is not None:
                             confs = values.split(",")
                             new_mapping = {}
                             for conf in confs:
