@@ -1,0 +1,17 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 9cf7d53..adb82a4 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -3086,9 +3086,9 @@ SDL_bool SDL_ShouldIgnoreJoystick(const char *name, SDL_JoystickGUID guid)
+     SDL_GetJoystickGUIDInfo(guid, &vendor, &product, NULL, NULL);
+ 
+     /* Check the joystick blacklist */
+-    if (SDL_VIDPIDInList(vendor, product, &blacklist_devices)) {
+-        return SDL_TRUE;
+-    }
++    //if (SDL_VIDPIDInList(vendor, product, &blacklist_devices)) {
++    //    return SDL_TRUE;
++    //}
+     if (!SDL_GetHintBoolean(SDL_HINT_JOYSTICK_ROG_CHAKRAM, SDL_FALSE)) {
+         if (SDL_VIDPIDInList(vendor, product, &rog_gamepad_mice)) {
+             return SDL_TRUE;
