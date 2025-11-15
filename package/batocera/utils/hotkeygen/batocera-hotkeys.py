@@ -22,11 +22,11 @@ ECODES_NAMES = {
     key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_") or key_name.startswith("BTN_")
 }
 
-def add_devices(poll, udev_context):
+def add_devices(poll, udev_context, device_path):
         input_devices_by_fd = {}
         # filter devices to add
         for device in udev_context.list_devices(subsystem='input'):
-                if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
+                if device.device_node is not None and device.device_node.startswith("/dev/input/event") and (device_path is None or device_path == device.device_node):
                         input_device = evdev.InputDevice(device.device_node)
                         if input_device.name not in DEVICES_EXCLUSION:
                                 capabilities = input_device.capabilities()
@@ -47,7 +47,7 @@ def remove_devices(poll, input_devices_by_fd):
                 except:
                         pass
 
-def handle_event(device: evdev.InputDevice, event: evdev.InputEvent, pressures: dict) -> None:
+def handle_event(device: evdev.InputDevice, event: evdev.InputEvent, pressures: dict, nowait: bool) -> bool:
         if event.type == ecodes.EV_KEY:
                 config_name = get_device_config_filename(device)
                 if event.code in ECODES_NAMES:
@@ -59,36 +59,44 @@ def handle_event(device: evdev.InputDevice, event: evdev.InputEvent, pressures: 
                         if code_name not in pressures[device.path]["keys"]:
                                 pressures[device.path]["keys"][code_name] = { "count": 0 }
                         pressures[device.path]["keys"][code_name]["count"] += 1
-                        os.system("batocera-flash-screen 0.1 '#ff00ff'")
+                        if nowait == False:
+                                os.system("batocera-flash-screen 0.1 '#ff00ff'")
+                        return True
+        return False
 
 def get_device_config_filename(device: evdev.InputDevice) -> str:
     name = re.sub('[^a-zA-Z0-9_]', '', device.name.replace(' ', '_'))
     return f"{name}-{device.info.vendor:02x}-{device.info.product:02x}.mapping"
 
-def do_output(pressures, ncount):
+def do_output(pressures, ncount, evformat):
         if not sys.stdout.isatty():
                 print("<keys>")
         for evt in pressures:
                 for key in pressures[evt]["keys"]:
                         if pressures[evt]["keys"][key]["count"] == ncount:
+                                key_str = key
+                                if evformat:
+                                        key_str = udevtoevcode(key)
                                 if sys.stdout.isatty():
-                                        print(f"{evt:<20} {key:<16} {pressures[evt]['name']:<40} {pressures[evt]['config']}")
+                                        print(f"{evt:<20} {key_str:<16} {pressures[evt]['name']:<40} {pressures[evt]['config']}")
                                 else:
-                                        print(f"<key event=\"{evt}\" key=\"{key}\" config=\"{pressures[evt]['config']}\" count=\"{pressures[evt]['keys'][key]['count']}\" />")
+                                        print(f"<key event=\"{evt}\" key=\"{key_str}\" config=\"{pressures[evt]['config']}\" count=\"{pressures[evt]['keys'][key]['count']}\" />")
         if not sys.stdout.isatty():
                 print("</keys>")
 
-def do_detect(ncount, duration):
+def do_detect(ncount, duration, device_path, nowait, evformat):
         udev_context = pyudev.Context()
         poll = select.poll()
-        input_devices_by_fd = add_devices(poll, udev_context)
+        input_devices_by_fd = add_devices(poll, udev_context, device_path)
         start_time = datetime.datetime.now()
         pressures = {}
 
         # read all devices
         if sys.stdout.isatty():
                 print(f"Press {ncount} times buttons to filter", file=sys.stderr)
-        while datetime.datetime.now() - start_time < datetime.timedelta(seconds=duration):
+
+        foundOne = False
+        while datetime.datetime.now() - start_time < datetime.timedelta(seconds=duration) and ((nowait and foundOne == 0) or (not nowait)):
                 try:
                 	for fd, _ in poll.poll(100):
                 	    try:
@@ -98,7 +106,8 @@ def do_detect(ncount, duration):
                 	                event.type == ecodes.EV_KEY
                 	            ):
                 	                if event.value == 1:
-                	                    handle_event(input_devices_by_fd[fd], event, pressures)
+                                                if handle_event(input_devices_by_fd[fd], event, pressures, nowait):
+                                                        foundOne = True
                 	    except (Exception) as e:
                 	            # error on a single device
                 	            if fd in input_devices_by_fd:
@@ -116,7 +125,7 @@ def do_detect(ncount, duration):
                         remove_devices(poll, input_devices_by_fd)
                         return
         remove_devices(poll, input_devices_by_fd)
-        do_output(pressures, ncount)
+        do_output(pressures, ncount, evformat)
 
 def getConfigFancyName(file):
         # remove the vip/pid, extension and replace _ by spaces
@@ -215,9 +224,22 @@ def do_set(config, key, action):
         with open(userpath, "w") as fd:
                 json.dump(values, fd, indent=4)
 
+def udevtoevcode(code):
+        if code[0:4] == "KEY_":
+                return "key:"+code[4:].lower()
+        if code[0:4] == "BTN_":
+                return "btn:"+code[4:].lower()
+        if code[0:4] == "ABS_":
+                return "abs:"+code[4:].lower()
+        return code
+
 def list_values(hotkeys_mapping):
-    for key in sorted(hotkeys_mapping["by_names"]):
-        print(key)
+        print("<mapping>")
+        for key in sorted(hotkeys_mapping["by_names"]):
+                value = hotkeys_mapping["by_names"][key]
+                evvalue = udevtoevcode(value)
+                print(f"<key code=\"{value}\" evcode=\"{evvalue}\" name=\"{key}\" />")
+        print("</mapping>")
 
 def read_hotkey_mapping(hotkey_mapping_file: Path):
     mapping = json.loads(hotkey_mapping_file.read_text())
@@ -230,6 +252,8 @@ def read_hotkey_mapping(hotkey_mapping_file: Path):
 gdebug = False
 ncount = 2
 duration = 4 # x seconds
+nowait = False
+evformat = False
 parser = argparse.ArgumentParser(prog="batocera-hotkeys")
 parser.add_argument("--debug", action="store_true")
 parser.add_argument("--count", type=int, help="detection count")
@@ -241,6 +265,9 @@ parser.add_argument("--remove", action="store_true")
 parser.add_argument("--config", type=str, help="config to set")
 parser.add_argument("--key", type=str, help="key to set")
 parser.add_argument("--action", type=str, help="action to set")
+parser.add_argument("--device", type=str, help="device to filter on detection")
+parser.add_argument("--nowait", action="store_true", help="no wait on detection")
+parser.add_argument("--evformat", action="store_true", help="ev format")
 args = parser.parse_args()
 if args.debug:
         gdebug = True
@@ -248,9 +275,13 @@ if args.count:
         ncount = args.count
 if args.duration:
         duration = args.duration
+if args.nowait:
+        nowait = True
+if args.evformat:
+        evformat = True
 
 if args.detect:
-        do_detect(ncount, duration)
+        do_detect(ncount, duration, args.device, nowait, evformat)
 elif args.values:
         hotkeys_mapping = read_hotkey_mapping(HOTKEYGEN_MAPPING)
         list_values(hotkeys_mapping)
