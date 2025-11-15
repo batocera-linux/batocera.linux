@@ -267,7 +267,7 @@ if __name__ == "__main__":
         elif args.rules:
             rules = KeyboardController().generateRules(args.config)
             print(rules)
-        if args.get_config and args.config:
+        elif args.get_config and args.config:
             KeyboardController().get_config(args.config)
         elif args.set:
             KeyboardController().do_set(args.config, args.device_number, args.device_name, args.device_type, args.device_keep, args.set_values)
