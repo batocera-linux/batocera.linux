@@ -8,6 +8,9 @@
 - TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
 - Azahar Plus has been replaced with the source project Azahar.
   3DS roms will need to be decrypted.
+- WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones.
+  `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
+  We recommend following the procedure described in our wiki to back up Windows savegames.
 ### Hardware
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
