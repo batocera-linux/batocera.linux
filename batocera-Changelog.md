@@ -12,10 +12,11 @@
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
 - Legion Go S Controller & LED updates
-- Odin 2 Mini initial support
-- Powkiddy X55 initial support
 - New steering wheel support:
  - Logitech Formula Vibration Feedback
+- Odin 2 Mini initial support
+- Powkiddy X55 initial support
+- RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
  - New UI for configuring in-game controller hotkeys (plus batocera-joysticks-hotkeys command)
