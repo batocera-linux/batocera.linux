@@ -86,5 +86,15 @@
       </action>
       <action name="ToggleFullscreen" />
     </windowRule>
+    <windowRule identifier="net.kuribo64.melonDS" title="*w1*" serverDecoration="no">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="net.kuribo64.melonDS" title="*w2*" serverDecoration="no">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
   </windowRules>
 </labwc_config>

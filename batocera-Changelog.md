@@ -51,6 +51,7 @@
 - Jazz2 to 3.4.0
 - Libretro MAME to 0.281
 - Libretro Play! to 0.71
+- MelonDS to 7th of November 2025 build
 - OpenJK to 10th of October 2025 build
 - OpenMOHAA to v0.82.1
 - Play! to 0.71

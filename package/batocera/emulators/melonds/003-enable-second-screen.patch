@@ -1,0 +1,39 @@
+diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
+index 09a9ca1af8..5d035223de 100644
+--- a/src/frontend/qt_sdl/Config.cpp
++++ b/src/frontend/qt_sdl/Config.cpp
+@@ -205,6 +205,17 @@ LegacyEntry LegacyFile[] =
+     {"ScreenAspectTop",0, "Window0.ScreenAspectTop", true},
+     {"ScreenAspectBot",0, "Window0.ScreenAspectBot", true},
+ 
++    // Add second screen options for Batocera
++    {"Screen2Enabled",        1, "Window1.Enabled", true},
++    {"Screen2Rotation",       0, "Window1.ScreenRotation", true},
++    {"Screen2Gap",            0, "Window1.ScreenGap", true},
++    {"Screen2Layout",         0, "Window1.ScreenLayout", true},
++    {"Screen2Swap",           1, "Window1.ScreenSwap", true},
++    {"Screen2Sizing",         0, "Window1.ScreenSizing", true},
++    {"Screen2IntegerScaling", 1, "Window1.IntegerScaling", true},
++    {"Screen2AspectTop",      0, "Window1.ScreenAspectTop", true},
++    {"Screen2AspectBot",      0, "Window1.ScreenAspectBot", true},
++
+     {"ScreenFilter",        1, "Screen.Filter", false},
+     {"ScreenUseGL",         1, "Screen.UseGL", false},
+     {"ScreenVSync",         1, "Screen.VSync", false},
+diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
+index 0e077b7630..03e6dc0924 100644
+--- a/src/frontend/qt_sdl/main.cpp
++++ b/src/frontend/qt_sdl/main.cpp
+@@ -383,7 +383,11 @@ int main(int argc, char** argv)
+         win->preloadROMs(dsfile, gbafile, options->boot);
+ 
+         if (options->fullscreen)
+-            win->toggleFullscreen();
++        {
++            emuInstances[0]->doOnAllWindows([](MainWindow* win){
++                win->toggleFullscreen();
++            });
++        }
+     }
+ 
+     int ret = melon.exec();

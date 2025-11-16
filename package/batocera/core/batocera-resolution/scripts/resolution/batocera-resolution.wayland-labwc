@@ -249,7 +249,7 @@ f_minTomaxResolution() {
 # Detect primary screen
 _detect_primary_screen_from_configuration() {
     # from config
-    FROM_CONFIG=$(xmllint  --xpath "/labwc_config/windowRules/windowRule[@identifier='emulationstation']/action[@name='FocusOutput']/output/text()" "${HOME}/.config/labwc/rc.xml")
+    FROM_CONFIG=$(xmllint  --xpath "/labwc_config/windowRules/windowRule[@identifier='emulationstation']/action[@name='FocusOutput']/output/text()" "${HOME}/.config/labwc/rc.xml" 2>/dev/null)
     if test -n "${FROM_CONFIG}"
     then
 	echo "${FROM_CONFIG}"
@@ -503,6 +503,29 @@ case "${ACTION}" in
             sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                 n
                 s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
+            } }' "${RC_XML}"
+
+            # Set the primary melonDS window [w1] to the primary output
+            if [ -n "${PRIMARY_OUT}" ]; then
+                _log "Setting melonDS [w1] window to output: ${PRIMARY_OUT}"
+                sed -i -e '/<windowRule.*identifier="net.kuribo64.melonDS".*title="\*w1\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                    n
+                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+                } }' "${RC_XML}"
+            fi
+
+            # Set the secondary melonDS window [w2] to the secondary output
+            MELONDS_SECONDARY_OUT=""
+            if [ -n "${SECONDARY_OUT}" ]; then
+                _log "Setting melonDS [w2] window to output: ${SECONDARY_OUT}"
+                MELONDS_SECONDARY_OUT="${SECONDARY_OUT}"
+            else
+                _log "No secondary output. Clearing melonDS [w2] window output rule."
+            fi
+
+            sed -i -e '/<windowRule.*identifier="net.kuribo64.melonDS".*title="\*w2\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                n
+                s#\s*<output>.*</output>#        <output>'"${MELONDS_SECONDARY_OUT}"'</output>#
             } }' "${RC_XML}"
 
             # Trigger labwc to reload the configuration
