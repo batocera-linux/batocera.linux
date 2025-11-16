@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EVSIEVE_VERSION = bd9d6e43fc0572c68f4645e07b0aff45dbe05b58
+EVSIEVE_VERSION = 2b1bcd046829db69617f2a47d8d554f20cd0ec08
 EVSIEVE_SOURCE = foo-$(EVSIEVE_VERSION).tar.gz
 EVSIEVE_SITE = $(call github,KarsMulder,evsieve,$(EVSIEVE_VERSION))
 EVSIEVE_LICENSE = GPLv2
