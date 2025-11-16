@@ -81,8 +81,11 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
 BATOCERA_INITRAMFS_DEPENDENCIES += alllinuxfirmwares
 define BATOCERA_INITRAMFS_H700_EARLY_FIRMWARE
     mkdir -p $(INITRAMFS_DIR)/lib/firmware/rtw88
+	mkdir -p $(INITRAMFS_DIR)/lib/firmware/panels
     cp $(ALLLINUXFIRMWARES_DIR)/rtw88/rtw8821c_fw.bin \
         $(INITRAMFS_DIR)/lib/firmware/rtw88/
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/h700/fsoverlay/lib/firmware/panels/* \
+        $(INITRAMFS_DIR)/lib/firmware/panels
 endef
 BATOCERA_INITRAMFS_PRE_INSTALL_TARGET_HOOKS += BATOCERA_INITRAMFS_H700_EARLY_FIRMWARE
 endif

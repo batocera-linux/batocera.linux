@@ -3,7 +3,7 @@
 # anbernic-gpio-pad
 #
 ################################################################################
-ANBERNIC_GPIO_PAD_VERSION = 1.2
+ANBERNIC_GPIO_PAD_VERSION = 1.3
 ANBERNIC_GPIO_PAD_LICENSE = GPL
 ANBERNIC_GPIO_PAD_SOURCE=
 

@@ -1,13 +1,24 @@
 #!/bin/bash
 
+# This script is triggered by a udev rule when a raw input device is added.
+# It collects device components for a short period, then creates a virtual
+# gamepad based on the most complete component signature found.
+
 test "${ACTION}" = "add" || exit 0
-echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
+
+DEVNAME="$1"
+DEVATTR_NAME="$2"
+
+echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" >/dev/null || exit 0
+test -n "${DEVATTR_NAME}" || exit 0
 
 BASEFILE="/var/run/anbernic-pad-devices"
 PIDFILE="${BASEFILE}.pid"
 LOCKFILE="${BASEFILE}.lock"
 LOGFILE="${BASEFILE}.log"
 DEVSFILE="${BASEFILE}.devs"
+NAMESFILE="${BASEFILE}.names"
+TIMER_PIDFILE="${BASEFILE}.timer.pid"
 
 unlockAndExit() {
     rmdir "${LOCKFILE}"
@@ -25,58 +36,97 @@ checkRunningPIDAndExit1() {
 }
 
 trylock() {
-    # lock
-    N=0
-    while ! mkdir "${LOCKFILE}"
-    do
-	sleep 1
-	let N++
-	test "${N}" -gt 30 && exit 1 # give up
+    local N=0
+    while ! mkdir "${LOCKFILE}" 2>/dev/null; do
+        sleep 1
+        let N++
+        test "${N}" -gt 30 && exit 1
     done
 }
 
-EXPECTED_DEVS=3
-VIRTUAL_PAD_NAME="Anbernic pad"
-EVS_DEVICE_ID_ARG=()
+components_match() {
+    local expected_count=$1
+    shift
+    local required_components=("$@")
+    local temp_namesfile=$(mktemp)
+    cp "${NAMESFILE}" "${temp_namesfile}"
+    local current_dev_count=$(wc -l < "${temp_namesfile}")
 
-# Get the device model
-MODEL=$(batocera-model)
+    if [ "${current_dev_count}" -ne "${expected_count}" ]; then
+        rm -f "${temp_namesfile}"
+        return 1
+    fi
 
-# Check the model and set device-specific variables
-case "${MODEL}" in
-    Powkiddy_x55)
-        # This model expects 2 devices.
-        EXPECTED_DEVS=2
+    for component in "${required_components[@]}"; do
+        grep -qxF -- "${component}" "${temp_namesfile}" || { rm -f "${temp_namesfile}"; return 1; }
+    done
+
+    rm -f "${temp_namesfile}"
+    return 0
+}
+
+evaluate_and_create_pad() {
+    # Give other udev events 2 seconds to trigger and add their components.
+    sleep 2
+
+    trylock
+
+    # If evsieve has already been launched, abort.
+    if [ -e "${PIDFILE}" ]; then
+        rm -f "${TIMER_PIDFILE}"
+        unlockAndExit 0
+    fi
+    
+    # If there are no component files, abort.
+    if [ ! -e "${NAMESFILE}" ]; then
+        rm -f "${TIMER_PIDFILE}"
+        unlockAndExit 0
+    fi
+
+    local VIRTUAL_PAD_NAME=""
+
+    # IMPORTANT: Check for definitions with the most components first.
+    if components_match 3 "gpio-keys-control" "adc-keys" "adc-joystick"; then
+        VIRTUAL_PAD_NAME="Anbernic pad"
+    elif components_match 2 "gpio-keys-gamepad" "adc-joystick"; then
+        VIRTUAL_PAD_NAME="Anbernic RG35XX analog pad"
+    elif components_match 2 "gpio-keys-control" "adc-joystick"; then
         VIRTUAL_PAD_NAME="Powkiddy pad"
-        EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
-        ;;
-    Anbernic_RG35XX*|Anbernic_RG28XX*|Anbernic_RG34XX*|Anbernic_RG40XX*|Anbernic_RGCUBEXX*)
-        # These models expect 2 devices for the "RG35xx" virtual pad.
-        EXPECTED_DEVS=2
-        VIRTUAL_PAD_NAME="Anbernic RG35XX pad"
-        EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
-        ;;
-esac
+    elif components_match 1 "gpio-keys-gamepad"; then
+        VIRTUAL_PAD_NAME="Anbernic RG35XX button pad"
+    fi
+
+    if [ -n "${VIRTUAL_PAD_NAME}" ]; then
+        local EVS_ARGS=$(xargs -I {} echo --input "{}" < "${DEVSFILE}")
+        local EVS_DEVICE_ID_ARG=( "device-id=ba10:c37a" )
+
+        nohup evsieve ${EVS_ARGS} persist=exit --output name="${VIRTUAL_PAD_NAME}" "${EVS_DEVICE_ID_ARG[@]}" >/dev/null 2>"${LOGFILE}" &
+        echo $! > "${PIDFILE}"
+    fi
+
+    # Clean up all tracking files for the next boot.
+    rm -f "${DEVSFILE}" "${NAMESFILE}" "${TIMER_PIDFILE}"
+    
+    unlockAndExit 0
+}
 
 trylock
 checkRunningPIDAndExit1
 
+# Add the new device path and name to our tracking files, avoiding duplicates.
 grep -qF "${DEVNAME}" "${DEVSFILE}" || echo "${DEVNAME}" >> "${DEVSFILE}"
+grep -qF "${DEVATTR_NAME}" "${NAMESFILE}" || echo "${DEVATTR_NAME}" >> "${NAMESFILE}"
 
-NDEVS=$(cat "${DEVSFILE}" | wc -l)
-
-if [ "${NDEVS}" -eq "${EXPECTED_DEVS}" ]; then
-    EVS_ARGS=$(cat "${DEVSFILE}" | xargs -I {} echo --input "{}")
-    nohup evsieve ${EVS_ARGS} persist=exit --output name="${VIRTUAL_PAD_NAME}" "${EVS_DEVICE_ID_ARG[@]}" >/dev/null 2>"${LOGFILE}" &
-
-    echo $! > "${PIDFILE}"
+# Check if an evaluator process is already scheduled to run.
+if [ -e "${TIMER_PIDFILE}" ]; then
     unlockAndExit 0
 else
-    # This is a safety measure. Clean up and exit with an error.
-    if [ "${NDEVS}" -gt "${EXPECTED_DEVS}" ]; then
-        rm -f "${DEVSFILE}"
-        unlockAndExit 1
-    fi
-
+    (
+        evaluate_and_create_pad
+    ) &
+    
+    # Save the PID of our background evaluator so we don't launch another one.
+    echo $! > "${TIMER_PIDFILE}"
+    
     unlockAndExit 0
 fi
