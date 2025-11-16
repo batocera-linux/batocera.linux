@@ -1,0 +1,153 @@
+#!/bin/bash
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# WINE Toolbox is a script integration for pcmanFM
+# 11.11.2025 cyperghost aka crcerror
+#
+
+#Sheet of pcmanFM file handlers, needed for .desktop scriptlets 
+# %b  (first) basename
+# %B  space-separated list of basenames
+# %c  count of selected items
+# %d  (first) base directory
+# %D  space-separated list of base directory of each selected items
+# %f  (first) file name
+# %F  space-separated list of selected files
+# %h  hostname of the (first) URI
+# %m  mimetype of the (first) selected item
+# %M  space-separated list of the mimetypes of the selected items
+# %n  username of the (first) URI
+# %s  scheme of the (first) URI
+# %u  (first) URI
+# %U  space-separated list of selected URIs
+# %w  (first) basename without the extension
+# %W  space-separated list of basenames without their extension
+# %x  (first) extension
+# %X  space-separated list of extensions
+# %%  the "%" character itself
+
+# Works only if pcmanFM process is detected or if no arguments are setted
+pgrep -x pcmanfm >/dev/null && [[ -n "$1" ]] || { echo "error: No instance of pcmanFM found... exit now!"; exit 1; }
+
+Delete_Unused_Prefixes() {
+  local i
+  local WR WR_ARRAY WR_SYS
+  # wine-runner from batocera.conf, fallback to wine-tkg
+  while read i; do
+    WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$i")" || echo wine-tkg)
+    WR_ARRAY+=("./$WR/${i}.wine")
+  done < <(find "$1" -maxdepth 1 -printf '%P\n')
+
+  # List of WinePrefixes with ./<runner>/<wineprefix>.wine from roms and from system will be compared
+  # max- and mindepth 2 and print path, avoid  list our dir default-prefix, use: ! -path \*wsquashfs\* to avoid wsquashfs
+  cd /userdata/system/wine-bottles/windows || exit 1
+  readarray -t WR_SYS < <(find . -mindepth 2 -maxdepth 2 ! -name default-settings ! -name default-prefix -printf '%p\n')
+
+  # get sorted compare output from inputs, to see unused WinePrefixes, compare again to see difference as tabbed-columns
+  # from https://unix.stackexchange.com/questions/582344/awk-prevent-field-splitting-of-arguments-passed-to-external-utilities
+  # and  https://unix.stackexchange.com/questions/188309/how-to-cut-from-the-1st-character-to-7-character-in-awk
+  readarray -t WR_ARRAY < <(comm -23 <(printf '%s\n' "${WR_SYS[@]}" | sort ) <(printf '%s\n' "${WR_ARRAY[@]}" | sort ))
+  readarray -t WR_ARRAY < <(comm <(printf '%s\n' "${WR_SYS[@]}" | sort ) <(printf '%s\n' "${WR_ARRAY[@]}" | sort ) | awk -F'\t' '{ if ($1 ~ /^\t*$/) { print "TRUE" } else { print "FALSE" }; print $NF; $NF=substr($NF,3);system("dirname " "\042"$NF"\042"); system("basename " "\042"$NF"\042" );}')
+  [[ -z "${WR_ARRAY[1]}" ]] && { yad --text "There are no unused wineprefixes"; exit; }
+
+  readarray -t WR_ARRAY < <(yad --list --checklist --hide-column=2 --print-column=2 --column=Del:chk --column=WP:text --column=WINE-Runner:text --column=WindowsGame:text "${WR_ARRAY[@]}" --separator=)
+  [[ -z "${WR_ARRAY[0]}" ]] && exit || rm -r -f -- "${WR_ARRAY[@]}"
+}
+
+Autorun_From_Dir() {
+  local EXE_FILES FILE
+  readarray -t EXE_FILES < <(batocera-wine windows autorun-list)
+  FILE=$(yad --list --column="Executable File in $PWD" "${EXE_FILES[@]}" --separator=)
+  [[ -z "$FILE" ]] && exit || { printf 'CMD=\"%s\"\nDIR=%s' "$(basename "$FILE")" "$(dirname "$FILE")" > autorun.cmd; }
+}
+
+Autorun_From_File() {
+  local p1 p2
+  # extract pathes /userdata/roms/windows/game.pc/bin -> game.pc/bin/$2=gameexe
+  p1="${1%windows/*}windows/" #Basedir /userdata/roms/windows
+  p2="${1/$p1/}"
+  p2="${p2%%\/*}"             #Gamedir game.pc, so p1+p2 - $1 -> ./bin
+  printf 'CMD=\"%s\"\nDIR=%s' "$2" "${1/$p1$p2/.}" > "$p1$p2/autorun.cmd"
+}
+
+Symlink_Prefix() {
+  local WR WP_DEF WP_GAME
+  # wine-runner from batocera.conf, fallback to wine-tkg
+  WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$1")" || echo wine-tkg)
+  WP_DEF="/userdata/system/wine-bottles/windows/${WR}/default-prefix"
+  WP_GAME="/userdata/system/wine-bottles/windows/${WR}/${1}.wine"
+  [[ ! -d "$WP_DEF" && ! -d "$WP_GAME" ]] && { yad --text "Error: $WP_DEF and $WP_GAME not found"; exit; }
+  [[ -d "$WP_DEF" && -d "$WP_GAME" ]] && { yad --text "This will remove Prefix: $WP_GAME" && rm -r "$WP_GAME" || exit; }
+  [[ ! -d "$WP_DEF" && -d "$WP_GAME" ]] && mv "$WP_GAME" "$WP_DEF"
+  [[ -d "$WP_DEF" && ! -d "$WP_GAME" ]] && ln -s -f "$WP_DEF" "$WP_GAME" && yad --text "Game: $1\nPrefix: $WP_GAME\nLinked to: $WP_DEF" --timeout=10 --timeout-indicator=bottom
+}
+
+Extract_Game() {
+  local ext gname
+  ext="${2##*.}"; gname="${2%.*}.pc"                              # extension and pure gamename
+  cd "$1"                                                         # change dir
+  [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"  # some unique name
+  case "${ext,,}" in
+    wsquashfs) unsquashfs -li -d "$gname" "$2" | yad --text-info --tail ;;
+    wtgz)      tar -xzf "$2" -C "$gname" | yad --text-info --tail ;;
+  esac
+}
+
+Squash_Game() {
+  local gname
+  gname="${2%.*}.wsquashfs"
+  cd "$1"
+  [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"
+  mksquashfs "${2}" "${gname}" -comp zstd -percentage | yad --progress --text="Creating $gname" --auto-close
+}
+
+#### MAIN ####
+
+#@DEVs please always check provided arguments for ex. count them
+
+case ${1} in
+  --del-unused-prefix)
+    #use %d for basedir und %b for basename
+    [[ ${#@} -eq 3 ]] && bd="${2/$3}" && [[ -d "$bd" ]] || exit 1
+    Delete_Unused_Prefixes "$bd"
+  ;;
+  --autorun-from-file)
+    #use %d for basedir und %b for basename (gamename); assume games have to be in roms/windows dir
+    [[ ${#@} -eq 3 ]] && grep -q /windows/ <<< "$2" || { yad --text "path '$2' is an invalid roms/windows path"; exit 1; }
+    Autorun_From_File "$2" "$3"
+  ;;
+  --autorun-from-dir)
+    #use %f (as single dir)
+    [[ ${#@} -eq 2 ]] && cd "$2" || exit 1
+    Autorun_From_Dir "$2"
+  ;;
+  --symlink-prefix)
+    #use %b for basename
+    [[ ${#@} -eq 2 ]] || exit 1
+    Symlink_Prefix "$2"
+  ;;
+  --extract-game)
+    #use %d for basedir und %b for basename (gamename)
+    [[ ${#@} -eq 3 ]] || exit 1
+    Extract_Game "$2" "$3"
+  ;;
+  --squash-game)
+    #use %d for basedir und %b for basename (gamename)
+    [[ ${#@} -eq 3 ]] || exit 1
+    Squash_Game "$2" "$3"
+  ;;
+esac
+

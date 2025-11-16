@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=WINE: Create autorun.cmd from Folder
+Folders=*/windows*;
+Basenames=*.pc;*.wine;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=inode/directory
+Exec=/usr/share/file-manager/actions/toolbox/wine.toolbox --autorun-from-dir %f
