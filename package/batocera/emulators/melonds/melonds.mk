@@ -3,8 +3,8 @@
 # melonds
 #
 ################################################################################
-# Version: Commits on Jan 17, 2025
-MELONDS_VERSION = 15c3faa26e879bdcff615558ded6dd886681ccae
+# Version: Commits on Nov 7, 2025
+MELONDS_VERSION = 220b238ec06692ee144bb1f50867a2edb8795de1
 MELONDS_SITE = https://github.com/Arisotura/melonDS.git
 MELONDS_SITE_METHOD=git
 MELONDS_GIT_SUBMODULES=YES
@@ -19,11 +19,12 @@ MELONDS_CONF_OPTS += -DCMAKE_INSTALL_PREFIX="/usr"
 MELONDS_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 MELONDS_CONF_OPTS += -DUSE_QT6=ON
 
-ifeq ($(BR2_PACKAGE_WAYLAND),y)
-MELONDS_CONF_OPTS += -DENABLE_WAYLAND=ON
-else
+# wayland is currently broken, don't set this...
+#ifeq ($(BR2_PACKAGE_WAYLAND),y)
+#MELONDS_CONF_OPTS += -DENABLE_WAYLAND=ON
+#else
 MELONDS_CONF_OPTS += -DENABLE_WAYLAND=OFF
-endif
+#endif
 
 define MELONDS_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/buildroot-build/melonDS \

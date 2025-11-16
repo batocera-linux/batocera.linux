@@ -86,6 +86,14 @@ class MelonDSGenerator(Generator):
                     "ScreenSizing": 0,
                     "IntegerScaling": 0,
                     "ShowOSD": False
+                },
+                "Window1": {
+                    "Enabled": False,
+                    "ScreenRotation": 0,
+                    "ScreenSwap": False,
+                    "ScreenLayout": 0,
+                    "ScreenSizing": 5,
+                    "IntegerScaling": 0
                 }
             },
             "3D": {
@@ -125,26 +133,42 @@ class MelonDSGenerator(Generator):
         if polygons := system.config.get("melonds_polygons"):
             base_config["3D"]["GL"]["BetterPolygons"] = polygons
 
-        # Rotation
-        base_config["Instance0"]["Window0"]["ScreenRotation"] = system.config.get_int("melonds_rotation", 0)
-
-        # Screen Swap
-        base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config.get("melonds_screenswap", False)
-
-        # Screen Layout
-        base_config["Instance0"]["Window0"]["ScreenLayout"] = system.config.get_int("melonds_layout", 0)
-
-        # Screen Sizing
-        base_config["Instance0"]["Window0"]["ScreenSizing"] = system.config.get_int("melonds_screensizing", 0)
-
-        # Integer Scaling
-        base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config.get("melonds_scaling", 0)
-
         # OSD
         base_config["Instance0"]["Window0"]["ShowOSD"] = system.config.get("melonds_osd", False)
 
         # Console
         base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
+        
+        # Check if dual screen mode is enabled
+        is_dual_screen_enabled = system.config.get("melonds_dual_screen", False)
+
+        if is_dual_screen_enabled:
+            # Force specific settings for dual screen mode for optimal layout
+            # Window0 (Top Screen)
+            base_config["Instance0"]["Window0"]["ScreenRotation"] = 0
+            base_config["Instance0"]["Window0"]["ScreenSwap"] = False
+            base_config["Instance0"]["Window0"]["ScreenLayout"] = 0
+            base_config["Instance0"]["Window0"]["ScreenSizing"] = 4
+            
+            # Window1 (Bottom Screen)
+            base_config["Instance0"]["Window1"]["Enabled"] = True
+            base_config["Instance0"]["Window1"]["ScreenRotation"] = 0
+            base_config["Instance0"]["Window1"]["ScreenSwap"] = False
+            base_config["Instance0"]["Window1"]["ScreenLayout"] = 0
+            base_config["Instance0"]["Window1"]["ScreenSizing"] = 5
+            
+            # Sync IntegerScaling from Window0 to Window1
+            window0_scaling = system.config.get("melonds_scaling", 0)
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = window0_scaling
+            base_config["Instance0"]["Window1"]["IntegerScaling"] = window0_scaling
+        else:
+            # Apply standard user settings if dual screen is off
+            base_config["Instance0"]["Window1"]["Enabled"] = False
+            base_config["Instance0"]["Window0"]["ScreenRotation"] = system.config.get_int("melonds_rotation", 0)
+            base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config.get("melonds_screenswap", False)
+            base_config["Instance0"]["Window0"]["ScreenLayout"] = system.config.get_int("melonds_layout", 0)
+            base_config["Instance0"]["Window0"]["ScreenSizing"] = system.config.get_int("melonds_screensizing", 0)
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config.get("melonds_scaling", 0)
 
         # Map controllers
         melonDSMapping = {
