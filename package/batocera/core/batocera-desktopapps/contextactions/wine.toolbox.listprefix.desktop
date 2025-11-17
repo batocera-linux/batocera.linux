@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=WINE: List and Delete Prefixes
+Folders=*/windows*;
+Basenames=*.pc;*.wsquashfs;*.wtgz;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=all/all
+Exec=/usr/share/file-manager/actions/toolbox/wine.toolbox --del-unused-prefix %d %b

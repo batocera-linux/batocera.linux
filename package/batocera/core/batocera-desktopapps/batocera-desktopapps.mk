@@ -172,6 +172,17 @@ endif
 ## Context Menu Actions
 BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
 
+# wine
+ifeq ($(BR2_PACKAGE_WINE_TKG),y)
+  BATOCERA_DESKTOPAPPS_TOOLBOX  = wine.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.wsquashfs.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.symlinkprefix.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.listprefix.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.folder2autorun.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.file2autorun.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
@@ -187,14 +198,14 @@ define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/icons/batocera
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_ICONS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/icons/$(f) $(TARGET_DIR)/usr/share/icons/batocera/$(f)$(sep))
 
-	# context menu actions
-	mkdir -p $(TARGET_DIR)/usr/share/file-manager/actions
+	# context menu actions/toolboxes
+	mkdir -p $(TARGET_DIR)/usr/share/file-manager/actions/toolbox
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_ACTIONS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/contextactions/$(f) $(TARGET_DIR)/usr/share/file-manager/actions/$(f)$(sep))
+	$(foreach f,$(BATOCERA_DESKTOPAPPS_TOOLBOX), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/toolbox/$(f) $(TARGET_DIR)/usr/share/file-manager/actions/toolbox/$(f)$(sep))
 
 	# menu
 	mkdir -p $(TARGET_DIR)/etc/xdg/menus
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/menu/batocera-applications.menu $(TARGET_DIR)/etc/xdg/menus/batocera-applications.menu
-
 endef
 
 $(eval $(generic-package))
