@@ -1,0 +1,46 @@
+From e15993fe270f7ed93c1af2b324d90e8cecba6784 Mon Sep 17 00:00:00 2001
+From: Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>
+Date: Tue, 14 Oct 2025 18:12:40 +0100
+Subject: [PATCH] ucm2: Qualcomm: Radxa: fix Displayport SectionDevice
+
+for some reason this ucm endedup using DisplayPort for SectionDevice
+instead of HDMI. This was resulting in below failures of any PR against
+Qualcomm devices.
+
+Run cd alsa-tests/python/ucm-validator2
+./ucm.py configs --level=0 --ucmdir=../../../alsa-ucm-conf/ucm2
+./Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf: Device name DisplayPort
+ /'SectionDevice'.'DisplayPort'/ is not valid
+(see https://github.com/alsa-project/alsa-lib/blob/master/include/use-case.h)
+total errors: 1
+make: *** [Makefile:10: configs] Error 1
+Error: Process completed with exit code 2.
+
+Fix this by using known devices from use-case.h
+
+Closes: https://github.com/alsa-project/alsa-ucm-conf/pull/624
+Fixes: 67628fb4871e ("ucm2: Qualcomm: add Radxa Dragon Q6A")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
+index 4ed6b27..d36d0a7 100644
+--- a/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
++++ b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
+@@ -36,8 +36,8 @@ SectionDevice."Headphones" {
+ 	}
+ }
+ 
+-SectionDevice."DisplayPort" {
+-	Comment "DisplayPort playback"
++SectionDevice."HDMI" {
++	Comment "HDMI/DisplayPort0 playback"
+ 
+ 	EnableSequence [
+ 		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 0"
+-- 
+2.30.2
+
