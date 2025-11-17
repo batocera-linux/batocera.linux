@@ -8,6 +8,13 @@ OVERLAYMOUNT="/overlay/saved"
 OVERLAYRAM="/overlay/overlay"
 OVERLAYSIZE=100 # M
 
+DEBUGFLAG="/var/run/bootmode.debug"
+
+if [ -f "$DEBUGFLAG" ]; then
+    echo "[DEBUG BOOT] Overlay save disabled while in debug boot mode."
+    exit 0
+fi
+
 # fix for winscp running bash and then not sourcing /etc/profile
 PATH=$PATH:/sbin
 

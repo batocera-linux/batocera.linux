@@ -60,8 +60,22 @@ test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
 test -n "${FIND_USERSERVICES}"     && EXTRA=${EXTRA}u${FIND_USERSERVICES}
 test -n "${FIND_USERSCRIPTS}"      && EXTRA=${EXTRA}v
 
-if test "${1}" = "--extra"; then
-  test -n "${EXTRA}" && echo "${EXTRA}" || echo "none"
+# Override EXTRA if debug boot mode
+DEBUGFLAG="/var/run/bootmode.debug"
+
+if [ -f "${DEBUGFLAG}" ]; then
+    EXTRA="debug"
+fi
+
+if test "${1}" = "--extra"
+then
+    if test -z "${EXTRA}"
+    then
+	echo "none"
+    else
+	echo "${EXTRA}"
+    fi
+
 else
   # use as many dots and digits for version number
   cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9.]*\)"+"\1${EXTRA}"+

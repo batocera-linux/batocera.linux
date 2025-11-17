@@ -69,7 +69,7 @@ then
             do
 		RELATIVE_PATH="${FILE#$IN/}"
 		DEST_FILE="$OUT/$RELATIVE_PATH"
-            
+
 		# Check if the source file is newer than the destination file
 		if [ "$FILE" -nt "$DEST_FILE" ]; then
                     echo "Updating $DEST_FILE"
@@ -151,6 +151,23 @@ ln -sf /userdata/system/machine-id /etc/machine-id
 
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version
+
+# Debug boot mode:
+# Bind mount userdata.real/bios and userdata.real/roms to tmpfs userdata
+DEBUG_FLAG="/var/run/bootmode.debug"
+if [ -f "$DEBUG_FLAG" ]; then
+    if [ -d /userdata.real/roms ]; then
+        mkdir -p "${OUT}/roms"
+        mount --bind /userdata.real/roms "${OUT}/roms"
+        echo "[DEBUG BOOT] Binding /userdata.real/roms -> ${OUT}/roms"
+    fi
+
+    if [ -d /userdata.real/bios ]; then
+        mkdir -p "${OUT}/bios"
+        mount --bind /userdata.real/bios "${OUT}/bios"
+        echo "[DEBUG BOOT] Binding /userdata.real/bios -> ${OUT}/bios"
+    fi
+fi
 
 # call user script with start condition
 test -e /boot/postshare.sh && bash /boot/postshare.sh start
