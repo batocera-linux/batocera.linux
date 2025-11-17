@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Debug flag file needed for initramfs, runtime flag is meant to be persistant during the debug session
+
+DEBUG_FLAG="/boot/boot/bootmode.debug"
+RUNTIME_FLAG="/var/run/bootmode.debug"
+
+case "$1" in
+    start)
+        if [ -f "$DEBUG_FLAG" ]; then
+            echo "[DEBUG BOOT] starting debug boot mode"
+            touch "$RUNTIME_FLAG"
+        fi
+        ;;
+    stop)
+        ;;
+    enable)
+        mount -o remount,rw /boot 2>/dev/null
+        touch "$DEBUG_FLAG"
+        echo "[DEBUG BOOT] enabled"
+        mount -o remount,ro /boot 2>/dev/null
+        exit 0
+        ;;
+    disable)
+        mount -o remount,rw /boot 2>/dev/null
+        rm -f "$DEBUG_FLAG"
+        echo "[DEBUG BOOT] disabled"
+        mount -o remount,ro /boot 2>/dev/null
+        exit 0
+        ;;
+esac
+
+exit 0

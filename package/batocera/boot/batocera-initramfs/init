@@ -81,12 +81,18 @@ do_root() {
     # fill the overlay with the stored one
     if test -f /boot_root/boot/overlay
     then
-	# the mount can fail if the fs was open in write and not correctly closed
-	if mount -o ro /boot_root/boot/overlay /overlay_root/saved
-	then
-	    cp -pr /overlay_root/saved/* /overlay_root/overlay || return 1
-	    umount /overlay_root/saved                         || return 1
-	fi
+        # check if debug boot is enabled, if so do not use saved overlay
+        if test -f /boot_root/boot/bootmode.debug
+        then
+            echo "[DEBUG BOOT] Skipping saved overlay restore" > /dev/kmsg
+        else
+            # the mount can fail if the fs was open in write and not correctly closed
+            if mount -o ro /boot_root/boot/overlay /overlay_root/saved
+            then
+                cp -pr /overlay_root/saved/* /overlay_root/overlay || return 1
+                umount /overlay_root/saved                         || return 1
+            fi
+        fi
     fi
 
     # mount the squashfs
