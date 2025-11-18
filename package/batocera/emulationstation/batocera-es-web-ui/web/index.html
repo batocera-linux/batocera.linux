@@ -146,13 +146,35 @@ body {
 }
 
 .sys-btn {
-    color: #ffffff;
-    font-size: 48px;
-    padding-bottom: 1px;
-    padding-top: 1px;
-    padding-left: 1px;
-    padding-right:1px;
+    font-size: 52px;
+    padding: 2px;
+    display: flex;
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+}
+
+.sys-btn .btn-dark {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.sys-btn .btn-dark.w-95 {
+  width: 95%;
+  height: 100%;
+}
+
+.sys-btn .btn-dark img {
+  max-height: 70px;
+  width: auto;
+  height: auto;
 }
 
 .sys-btn:nth-child(5n+1) { background: #FF3CAC; }
@@ -511,9 +533,9 @@ function showSystems(arr) {
             out += '<div class="row">';
         }
         if (arr[i].logo) {
-            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block"><img height="32" style="max-width:48pt" src="' + arr[i].logo + '"></button></a></div>';
+            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark w-95"><img style="width:60pt;" src="' + arr[i].logo + '"></button></a></div>';
         } else {
-            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block">' + arr[i].fullname + '</button></a></div>';
+            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark w-95">' + arr[i].fullname + '</button></a></div>';
         }
         if ( i % nb_sys == (nb_sys - 1) || i == arr.length - 1)
             out += '</div></div>' ; //  row carousel-item
