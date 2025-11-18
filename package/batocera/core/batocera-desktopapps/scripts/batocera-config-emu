@@ -1,0 +1,11 @@
+#!/bin/bash
+p=/usr/share/applications/scripts
+if [ -z "${1}" ];
+then
+  echo "usage: $(basename $0) <emulator>"
+  find $p -name "batocera-config-*" -printf '%P\n' | cut -c 17- | sort
+else
+  p="${p}/batocera-config-${1}"
+  shift
+  ! [ -f "$p" ] && echo "File: '$p' not found" || "$p" "$@"
+fi

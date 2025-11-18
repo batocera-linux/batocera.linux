@@ -174,8 +174,12 @@ BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
-	mkdir -p $(TARGET_DIR)/usr/bin
-	$(foreach f,$(BATOCERA_DESKTOPAPPS_SCRIPTS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/$(f) $(TARGET_DIR)/usr/bin/$(f)$(sep))
+	mkdir -p $(TARGET_DIR)/usr/share/applications/scripts
+	$(foreach f,$(BATOCERA_DESKTOPAPPS_SCRIPTS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/$(f) $(TARGET_DIR)/usr/share/applications/scripts/$(f)$(sep))
+	# copy cli config tool
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/batocera-config-emu $(TARGET_DIR)/usr/bin/batocera-config-emu
+	# symblink for filemanagerlauncher needed for ES
+	ln -sf /usr/share/applications/scripts/filemanagerlauncher $(TARGET_DIR)/usr/bin/filemanagerlauncher
 
 	# apps
 	mkdir -p $(TARGET_DIR)/usr/share/applications
