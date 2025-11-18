@@ -134,6 +134,8 @@ body {
 .btn {
     margin-left: 2px;
     margin-right: 2px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .currentborder {
@@ -146,19 +148,18 @@ body {
 .sys-btn {
     color: #ffffff;
     font-size: 48px;
-    padding-bottom: 2px;
-    padding-top: 2px;
-    padding-left: 2px;
-    padding-right:2px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+    padding-left: 1px;
+    padding-right:1px;
     text-align: center;
 }
 
-.sys-btn:nth-child(6n+1) { background: #FF3CAC; }
-.sys-btn:nth-child(6n+2) { background: #DF6CAC; }
-.sys-btn:nth-child(6n+3) { background: #BF9CAC; }
-.sys-btn:nth-child(6n+4) { background: #8BD6C5; }
-.sys-btn:nth-child(6n+5) { background: #5BA6C5; }
-.sys-btn:nth-child(6n+6) { background: #2B86C5; }
+.sys-btn:nth-child(5n+1) { background: #FF3CAC; }
+.sys-btn:nth-child(5n+2) { background: #BF9CAC; }
+.sys-btn:nth-child(5n+3) { background: #8BD6C5; }
+.sys-btn:nth-child(5n+5) { background: #5BA6C5; }
+.sys-btn:nth-child(5n+4) { background: #2B86C5; }
 
 .carousel-item-prev,
 .carousel-item-next,
@@ -391,6 +392,13 @@ function createGameCardElement(game) {
             '" data-name="' + escapeHtml(game.name) +'" data-thumb="' + game.thumbnail +
             '" data-image="' + game.image + '" value="More" onClick="detailFill()">';
     }
+    cardHtml += '<br>';
+    if (game.manual) {
+        cardHtml += '<input type="button" class="btn btn-secondary" value="Manual" onClick="window.open(\'' + game.manual +'\')", "_blank", "noopener,noreferrer"); >';
+    }
+    if (game.map) {
+        cardHtml += '<input type="button" class="btn btn-secondary" value="Map" onClick="window.open(\'' + game.map +'\')", "_blank", "noopener,noreferrer"); >';
+    }
     cardHtml += '</div>'; // card-footer
 
     cardDiv.innerHTML = cardHtml;
@@ -480,7 +488,12 @@ function removeItem(arr, value) {
 }
 
 function showSystems(arr) {
-    const nb_sys = 6;
+    const w = window.innerWidth || document.documentElement.clientWidth;
+    var nb_sys = 12;
+    var sz_sys = "col-2";
+    if (w < 1200) { nb_sys = 8; sz_sys = "col-3" };
+    if (w < 900)  { nb_sys = 6; sz_sys = "col-4" };
+
     var out = '<div class="carousel slide" id="sysCarousel" data-touch="true" data-interval="false" data-ride="carousel">' +
         '<div class="carousel-inner">';
     var i;
@@ -498,9 +511,9 @@ function showSystems(arr) {
             out += '<div class="row">';
         }
         if (arr[i].logo) {
-            out += '<div class="col-4 sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block"><img height="32" style="max-width:48pt" src="' + arr[i].logo + '"></button></a></div>';
+            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block"><img height="32" style="max-width:48pt" src="' + arr[i].logo + '"></button></a></div>';
         } else {
-            out += '<div class="col-4 sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block">' + arr[i].fullname + '</button></a></div>';
+            out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block">' + arr[i].fullname + '</button></a></div>';
         }
         if ( i % nb_sys == (nb_sys - 1) || i == arr.length - 1)
             out += '</div></div>' ; //  row carousel-item
