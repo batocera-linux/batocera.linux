@@ -516,7 +516,7 @@ function showSystems(arr) {
             out += '<div class="'+ sz_sys +' sys-btn"><a onclick="javascript:loadGames(\''+ arr[i].name +'\')" href="#"><button type="button" class="btn btn-dark btn-block">' + arr[i].fullname + '</button></a></div>';
         }
         if ( i % nb_sys == (nb_sys - 1) || i == arr.length - 1)
-            out += '</div>t</div>' ; //  row carousel-item
+            out += '</div></div>' ; //  row carousel-item
     }
 
     out += '</div>'; // carousel-inner
