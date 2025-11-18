@@ -12,6 +12,7 @@
   `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
   We recommend following the procedure described in our wiki to back up Windows savegames.
 ### Hardware
+- AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
 - Legion Go S Controller & LED updates
@@ -19,6 +20,7 @@
   - Logitech Formula Vibration Feedback
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
+- Raxda Dragon Q6A initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
