@@ -1,0 +1,63 @@
+From 656d871541b30fff1342f20a9cf61904579b94d2 Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Wed, 1 Jan 2025 13:36:33 +0000
+Subject: [PATCH] Bluetooth: btrtl: Add the support for RTL8733BU
+
+---
+ drivers/bluetooth/btrtl.c | 11 +++++++++++
+ drivers/bluetooth/btusb.c |  3 +++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index 0bcb44cf7b31..5e68d19454e5 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -179,6 +179,14 @@ static const struct id_table ic_id_table[] = {
+ 	  .cfg_name = "rtl_bt/rtl8723ds_config",
+ 	  .hw_info  = "rtl8723ds" },
+ 
++	/* 8733BU */
++	{ IC_INFO(RTL_ROM_LMP_8723B, 0xf, 0x8, HCI_USB),
++	  .config_needed = true,
++	  .has_rom_version = true,
++	  .fw_name  = "rtl_bt/rtl8723fu_fw",
++	  .cfg_name = "rtl_bt/rtl8723fu_config",
++	  .hw_info  = "rtl8733bu" },
++
+ 	/* 8821A */
+ 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xa, 0x6, HCI_USB),
+ 	  .config_needed = false,
+@@ -663,6 +671,7 @@ static int rtlbt_parse_firmware(struct hci_dev *hdev,
+ 		{ RTL_ROM_LMP_8822B, 13 },	/* 8822C */
+ 		{ RTL_ROM_LMP_8761A, 14 },	/* 8761B */
+ 		{ RTL_ROM_LMP_8852A, 18 },	/* 8852A */
++		{ RTL_ROM_LMP_8723B, 19 },	/* 8733B */
+ 		{ RTL_ROM_LMP_8852A, 20 },	/* 8852B */
+ 		{ RTL_ROM_LMP_8852A, 25 },	/* 8852C */
+ 		{ RTL_ROM_LMP_8851B, 36 },	/* 8851B */
+@@ -1510,6 +1519,8 @@ MODULE_FIRMWARE("rtl_bt/rtl8723d_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723d_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723ds_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723ds_config.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723fu_fw.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723fu_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761a_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761a_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761b_fw.bin");
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index e9534fbc92e3..e750e3011639 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -665,6 +665,9 @@ static const struct usb_device_id quirks_table[] = {
+ 	{ USB_DEVICE(0x0bda, 0xb009), .driver_info = BTUSB_REALTEK },
+ 	{ USB_DEVICE(0x2ff8, 0xb011), .driver_info = BTUSB_REALTEK },
+ 
++	/* Realtek 8733BU Bluetooth device */
++	{ USB_DEVICE(0x0bda, 0xb733), .driver_info = BTUSB_REALTEK },
++
+ 	/* Additional Realtek 8761BUV Bluetooth devices */
+ 	{ USB_DEVICE(0x2357, 0x0604), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
+-- 
+2.34.1
+

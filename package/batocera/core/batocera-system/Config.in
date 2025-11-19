@@ -493,6 +493,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 									  BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_8
 	
 	select BR2_PACKAGE_LIBGPIOD_TOOLS    if BR2_PACKAGE_LIBGPIOD
+
+	select BR2_PACKAGE_LIBGPIOD2          if BR2_PACKAGE_BATOCERA_TARGET_RK3326 && BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_10
+	select BR2_PACKAGE_LIBGPIOD2_TOOLS    if BR2_PACKAGE_LIBGPIOD2
 	
 	# OrangePi GPIO python library
 	select BR2_PACKAGE_WIRINGOP_PYTHON    if BR2_PACKAGE_BATOCERA_TARGET_RK3588      || \
@@ -562,14 +565,14 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	string "target images"
 	default "amlogic/s905gen2/radxa-zero amlogic/s905gen2/khadas-vim2"				if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/khadas-vim3l amlogic/s905gen3/tvbox-gen3"	if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
-	default "amlogic/s9gen4/khadas-vim1s"								if BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
-	default "amlogic/a3gen2/khadas-vim4"								if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
-	default "broadcom/bcm2835"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
-	default "broadcom/bcm2836"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
-	default "broadcom/bcm2837"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
-	default "broadcom/bcm2711"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
-	default "broadcom/bcm2712"									if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
-	default "rockchip/rk3326/rk3326 rockchip/rk3326/gameforce"					if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	default "amlogic/s9gen4/khadas-vim1s"   if BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
+	default "amlogic/a3gen2/khadas-vim4"    if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
+	default "broadcom/bcm2835"    if BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+	default "broadcom/bcm2836"    if BR2_PACKAGE_BATOCERA_TARGET_BCM2836
+	default "broadcom/bcm2837"	  if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
+	default "broadcom/bcm2711"	  if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
+	default "broadcom/bcm2712"    if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
+	default "rockchip/rk3326/batlexp-g350 rockchip/rk3326/r36s rockchip/rk3326/rg351v-v2 rockchip/rk3326/rk3326"    if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"						if BR2_PACKAGE_BATOCERA_TARGET_RK3328
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"					if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"		if BR2_PACKAGE_BATOCERA_TARGET_RK3128

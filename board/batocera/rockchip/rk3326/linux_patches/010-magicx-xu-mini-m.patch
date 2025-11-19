@@ -1,0 +1,115 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-magicx-xu-mini-m.dts b/arch/arm64/boot/dts/rockchip/rk3326-magicx-xu-mini-m.dts
+new file mode 100644
+index 000000000000..e57803b572b8
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3326-magicx-xu-mini-m.dts
+@@ -0,0 +1,109 @@
++/// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2024-present ROCKNIX (https://github.com/ROCKNIX)
++ * Copyright (c) 2024 Olivier Schonken <olivier.schonken@gmail.com>
++ */
++
++#include "rk3326-magicx-xu10.dts"
++
++/ {
++	model = "MagicX XU Mini M";
++	compatible = "magicx,xu-mini-m", "rockchip,rk3326";
++};
++
++&battery {
++	charge-full-design-microamp-hours = <2600000>;
++};
++
++&dsi {
++	internal_display: panel@0 {
++		compatible = "rocknix,generic-dsi";
++		panel_description =
++			"G size=69,139 delays=5,20,20,120,20 format=rgb888 lanes=2 flags=0xe03",
++
++			"M clock=25000 horizontal=480,60,10,54 vertical=640,20,10,20 default=1",
++			"M clock=25200 horizontal=480,60,22,54 vertical=640,20,139,20",
++			"M clock=25000 horizontal=480,60,31,54 vertical=640,20,120,20",
++			"M clock=25660 horizontal=480,60,22,54 vertical=640,20,153,20",
++			"M clock=25300 horizontal=480,60,31,54 vertical=640,20,24,20",
++			"M clock=28590 horizontal=480,60,15,54 vertical=640,20,106,20",
++			"M clock=25380 horizontal=480,60,17,54 vertical=640,20,13,20",
++			"M clock=25410 horizontal=480,60,11,54 vertical=640,20,20,20",
++			"M clock=29490 horizontal=480,60,24,54 vertical=640,20,114,20",
++			"M clock=33520 horizontal=480,60,36,54 vertical=640,20,25,20",
++			"M clock=38430 horizontal=480,60,16,54 vertical=640,20,20,20",
++			"M clock=50820 horizontal=480,60,11,54 vertical=640,20,20,20",
++
++			"I seq=ff7701000013",
++			"I seq=ef08",
++			"I seq=ff7701000010",
++			"I seq=c04f00", "I seq=c11002", "I seq=c22002", "I seq=cc10",
++			"I seq=b006161e0e12060a0809230412102b311f",
++			"I seq=b1060f160d100704090720051210262f1f",
++			"I seq=ff7701000011",
++			"I seq=b065", "I seq=b185", "I seq=b282", "I seq=b380", "I seq=b542", "I seq=b785",
++			"I seq=b820",
++			"I seq=c178", "I seq=c278",
++			"I seq=d088",
++			"I seq=e0000002",
++			"I seq=e104a006a005a007a0004444",
++			"I seq=e2000000000000000000000000",
++			"I seq=e300002222",
++			"I seq=e44444",
++			"I seq=e50c90a0a00e92a0a0088ca0a00a8ea0a0",
++			"I seq=e600002222",
++			"I seq=e74444",
++			"I seq=e80d91a0a00f93a0a0098da0a00b8fa0a0",
++			"I seq=eb0000e4e4440040",
++			"I seq=edfff5476f0ba1abffffba1ab0f6745fff",
++			"I seq=ef080808403f64",
++			"I seq=ff7701000013",
++			"I seq=e6167c", "I seq=e8000e",
++			"I seq=e8000c wait=50",
++			"I seq=e80000",
++			"I seq=ff7701000000",
++			"I seq=11 wait=150",
++			"I seq=29 wait=120";
++		rotation = <90>;
++	};
++};
++
++&joypad {
++	joypad-name = "XU Mini M Gamepad";
++
++	invert-absrx;
++	/delete-property/ invert-absx;
++
++	sw5 {
++		gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN-B";
++	};
++	sw6 {
++		gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN-A";
++	};
++	sw7 {
++		gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN-X";
++	};
++	sw8 {
++		gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN-Y";
++	};
++	sw16 {
++		gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
++	};
++	sw17 {
++		gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&pinctrl {
++	headphone {
++		hp_det: hp-det {
++			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
++};
++
++

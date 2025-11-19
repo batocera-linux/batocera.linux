@@ -1,0 +1,79 @@
+diff --git a/drivers/gpu/drm/panel/panel-elida-kd35t133.c b/drivers/gpu/drm/panel/panel-elida-kd35t133.c
+index b904d5437444..abbeb18eb6b4 100644
+--- a/drivers/gpu/drm/panel/panel-elida-kd35t133.c
++++ b/drivers/gpu/drm/panel/panel-elida-kd35t133.c
+@@ -148,7 +148,8 @@ static int kd35t133_prepare(struct drm_panel *panel)
+ 	return dsi_ctx.accum_err;
+ }
+ 
+-static const struct drm_display_mode default_mode = {
++/* drm_display_mode template without clock as it is variable */
++static const struct drm_display_mode mode_template = {
+ 	.hdisplay	= 320,
+ 	.hsync_start	= 320 + 130,
+ 	.hsync_end	= 320 + 130 + 4,
+@@ -157,33 +158,49 @@ static const struct drm_display_mode default_mode = {
+ 	.vsync_start	= 480 + 2,
+ 	.vsync_end	= 480 + 2 + 1,
+ 	.vtotal		= 480 + 2 + 1 + 2,
+-	.clock		= 17000,
+ 	.width_mm	= 42,
+ 	.height_mm	= 82,
+ };
+ 
++static const int pixel_clocks[] = {
++	14118, /* 49.84 Hz PAL everything */
++	15545, /* 54.88 Hz Arcade: Midway, Toaplan, R-Type */
++	16300, /* 57.50 Hz Arcade: Toaplan, more? */
++	16900, /* 59.7 Hz GB/GBC/GBA */
++	17000, /* 60 Hz everything */
++	21375, /* 75.47 Hz Wonderswan(Color) */
++};
++
+ static int kd35t133_get_modes(struct drm_panel *panel,
+ 				struct drm_connector *connector)
+ {
+ 	struct kd35t133 *ctx = panel_to_kd35t133(panel);
++	struct drm_display_mode mode_tmp;
+ 	struct drm_display_mode *mode;
+ 
+-	mode = drm_mode_duplicate(connector->dev, &default_mode);
+-	if (!mode) {
+-		dev_err(ctx->dev, "Failed to add mode %ux%u@%u\n",
+-			default_mode.hdisplay, default_mode.vdisplay,
+-			drm_mode_vrefresh(&default_mode));
+-		return -ENOMEM;
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(pixel_clocks); i++) {
++		mode_tmp = mode_template;
++		mode_tmp.clock = pixel_clocks[i];
++		mode = drm_mode_duplicate(connector->dev, &mode_tmp);
++		if (!mode) {
++			dev_err(ctx->dev, "Failed to add mode %u\n",
++				drm_mode_vrefresh(mode));
++			return -ENOMEM;
++		}
++		drm_mode_set_name(mode);
++
++		mode->type = DRM_MODE_TYPE_DRIVER;
++		if (i == 4)
++			mode->type |= DRM_MODE_TYPE_PREFERRED;
++
++		drm_mode_probed_add(connector, mode);
++		connector->display_info.width_mm = mode->width_mm;
++		connector->display_info.height_mm = mode->height_mm;
+ 	}
+ 
+-	drm_mode_set_name(mode);
+-
+-	mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
+-	connector->display_info.width_mm = mode->width_mm;
+-	connector->display_info.height_mm = mode->height_mm;
+-	drm_mode_probed_add(connector, mode);
+-
+-	return 1;
++	return ARRAY_SIZE(pixel_clocks);
+ }
+ 
+ static enum drm_panel_orientation kd35t133_get_orientation(struct drm_panel *panel)
