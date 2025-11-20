@@ -29,7 +29,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
         # use v4l2m2m-copy for the Iris decoder
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=v4l2m2m-copy
-    else ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+    else ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_BATOCERA_TARGET_QCS6490)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=auto
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=gpu --hwdec=auto
