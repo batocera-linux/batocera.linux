@@ -75,7 +75,7 @@
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.3.0
-- Nvidia production drivers to 580.95.05
+- Nvidia production drivers to 580.105.08
 - Sway to 1.11
 - Vulkan stack to 1.4.328.1
 - Wayland to 1.24.0
