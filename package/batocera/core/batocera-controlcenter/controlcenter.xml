@@ -1,0 +1,97 @@
+<features>
+	<vgroup name="Top bar" role="header">
+		<feature>
+			<text display="${batocera-info --short}" refresh="2" />
+		</feature>
+		<feature display="Batocera">
+			<text display="${batocera-version | cut -d' ' -f1}" />
+		</feature>
+		<feature display="Resolution">
+			<text display="${batocera-resolution currentResolution}" />
+		</feature>
+	</vgroup>
+
+	<feature name="shortcuts_tabs" display="Quick Access">
+		<tab display="System" target="System" align="right" />
+		<tab display="Game" target="Game" align="right" />
+	</feature>
+
+	<hgroup name="System" display="Sound &amp; Power">
+		<hgroup>
+			<feature>
+					<button display="Vol -" action="batocera-audio setSystemVolume -5" />
+					<text display="${batocera-audio getSystemVolume}%" refresh="1" />
+					<button display="Vol +" action="batocera-audio setSystemVolume +5" />
+			</feature>
+			<feature display="Mute Sound" group="Audio/Video">
+				<toggle value="${batocera-audio getSystemMute}" refresh="0.5"
+					action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
+			</feature>
+			<feature display="Network IP address: ">
+				<text display="${ip -4 addr show | grep -oP '(?&lt;=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n1}" refresh="5" align="left"/>
+			</feature>
+			<feature display="Network interfaces: ">
+				<text display='${for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
+			</feature>
+			<feature display="Free data storage: ">
+				<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
+			</feature>
+			<feature display="Plane Mode" group="Audio/Video">
+				<toggle value="${batocera-planemode status}"
+					action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="1" align="left"/>
+			</feature>
+		</hgroup>
+		<vgroup>
+			<feature name="PowerMode" display="Power Mode">
+				<text display="${cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" refresh="1" />
+				<choice display="Default"      action="batocera-power-mode default" />
+				<choice display="AC"           action="batocera-power-mode ac" />
+				<choice display="Battery"      action="batocera-power-mode battery" />
+				<choice display="High Perf"    action="batocera-power-mode highperformance" />
+				<choice display="Balanced"     action="batocera-power-mode balanced" />
+				<choice display="Saver"        action="batocera-power-mode Powersaver" />
+			</feature>
+		</vgroup>
+	</hgroup>
+	<hgroup name="Game" display="Game">
+		<hgroup>
+			<feature>
+				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" id="gameon" />
+				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/\(.*\)/[\1]/'}" align="left" if="id(gameon)" refresh="3" />
+			</feature>
+			<feature>
+				<text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P."}' align="left" refresh="1" id="playtime" />
+				<text display="Emulator stuck?" refresh="3" if="!id(playtime)" align="left" />
+			</feature>
+		</hgroup>
+		<vgroup>
+			<feature>
+				<pdf name="Map" display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" />
+				<pdf name="Manual" display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" />
+				<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" />
+			</feature>
+		</vgroup>
+		<vgroup>
+			<img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".image"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="180" refresh="3" />
+			<hgroup>
+				<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' height="160" refresh="3" id="cheevos" bg="#141821" />
+				<text display="RetroAchievements" if="id(cheevos)" />
+			</hgroup>
+			<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" refresh="5" align="center" />
+		</vgroup>
+		<hgroup>
+		</hgroup>
+	</hgroup>
+	<vgroup name="Bottom bar" role="footer">
+		<feature display="CPU">
+			<text display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}%" refresh="1" />
+		</feature>
+		<feature display="Bandwidth">
+			<text display='${ (R1=$(cat /sys/class/net/*/statistics/rx_bytes | paste -sd+|bc); T1=$(cat /sys/class/net/*/statistics/tx_bytes | paste -sd+|bc); sleep 1; R2=$(cat /sys/class/net/*/statistics/rx_bytes | paste -sd+|bc); T2=$(cat /sys/class/net/*/statistics/tx_bytes | paste -sd+|bc); echo "RX: $(echo "scale=0; (($R2 - $R1) * 8) / 1024" | bc )kbps - TX: $(echo "scale=0; (($T2 - $T1) * 8) / 1024" | bc )kbps") }' refresh="2" />
+		</feature>
+		<feature display="Temp">
+			<text display='${ TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++); [ -n "$TEMPE" ] &amp;&amp; echo "$TEMPE"C || echo "N/A" }' refresh="2" />
+		</feature>
+	</vgroup>
+</features>
+
