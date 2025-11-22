@@ -8,12 +8,16 @@ LABWC_VERSION = 0.9.2
 LABWC_SITE = $(call github,labwc,labwc,$(LABWC_VERSION))
 LABWC_LICENSE = GPLv2
 LABWC_LICENSE_FILES = LICENSE
-LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo libxcb
+LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo 
 LABWC_DEPENDENCIES += libxkbcommon libxml2 pango wayland wayland-protocols wlroots
 LABWC_CONF_OPTS = \
 	-Dman-pages=disabled \
 	-Dstatic_analyzer=disabled \
 	-Dtest=disabled
+
+ifeq ($(BR2_PACKAGE_XORG7),y)
+LABWC_DEPENDENCIES += libxcb
+endif
 
 ifeq ($(BR2_PACKAGE_XWAYLAND),y)
 LABWC_CONF_OPTS += -Dxwayland=enabled
