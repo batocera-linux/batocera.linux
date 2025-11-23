@@ -1,0 +1,21 @@
+diff -rupN linux.orig/drivers/power/supply/axp20x_battery.c linux/drivers/power/supply/axp20x_battery.c
+--- linux.orig/drivers/power/supply/axp20x_battery.c	2024-08-20 17:25:33.216043505 +0000
++++ linux/drivers/power/supply/axp20x_battery.c	2024-08-22 02:55:33.532868038 +0000
+@@ -891,7 +891,7 @@ static int axp717_battery_prop_writeable
+ }
+ 
+ static const struct power_supply_desc axp209_batt_ps_desc = {
+-	.name = "axp20x-battery",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = axp20x_battery_props,
+ 	.num_properties = ARRAY_SIZE(axp20x_battery_props),
+@@ -901,7 +901,7 @@ static const struct power_supply_desc ax
+ };
+ 
+ static const struct power_supply_desc axp717_batt_ps_desc = {
+-	.name = "axp20x-battery",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = axp717_battery_props,
+ 	.num_properties = ARRAY_SIZE(axp717_battery_props),
