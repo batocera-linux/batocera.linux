@@ -11,7 +11,7 @@ BATOCERA_DESKTOPAPPS_PKGDIR = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps
 
 # Base files
-BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
+BATOCERA_DESKTOPAPPS_SCRIPTS =
 BATOCERA_DESKTOPAPPS_APPS    = xterm.desktop
 BATOCERA_DESKTOPAPPS_ICONS   =
 BATOCERA_DESKTOPAPPS_TOOLBOX =
@@ -194,8 +194,15 @@ define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts (Install as executable 0755)
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_SCRIPTS),\
 		$(INSTALL) -D -m 0755 $(BATOCERA_DESKTOPAPPS_PKGDIR)/scripts/$(f) \
-			$(TARGET_DIR)/usr/bin/$(f)$(sep))
+			$(TARGET_DIR)/usr/share/applications/scripts/$(f)$(sep))
 
+	# usrbin-scripts (Install as executable 0755)
+	$(INSTALL) -D -m 0755 $(BATOCERA_DESKTOPAPPS_PKGDIR)/usrbin-scripts/filemanagerlauncher \
+		$(TARGET_DIR)/usr/bin/filemanagerlauncher
+	$(INSTALL) -D -m 0755 $(BATOCERA_DESKTOPAPPS_PKGDIR)/usrbin-scripts/batocera-config-emu \
+		$(TARGET_DIR)/usr/bin/batocera-config-emu
+
+	# apps
 	# apps (Install as data 0644)
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_APPS),\
 		$(INSTALL) -D -m 0644 $(BATOCERA_DESKTOPAPPS_PKGDIR)/apps/$(f) \
