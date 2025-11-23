@@ -6,13 +6,13 @@
 BATOCERA_DESKTOPAPPS_VERSION = 1.0
 BATOCERA_DESKTOPAPPS_SOURCE=
 
-BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
-BATOCERA_DESKTOPAPPS_APPS    = xterm.desktop
-BATOCERA_DESKTOPAPPS_ICONS   =
-BATOCERA_DESKTOPAPPS_TOOLBOX =
-BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
+BATOCERA_DESKTOPAPPS_SCRIPTS  =
+BATOCERA_DESKTOPAPPS_APPS     = xterm.desktop
+BATOCERA_DESKTOPAPPS_ICONS    =
+BATOCERA_DESKTOPAPPS_TOOLBOX  =
+BATOCERA_DESKTOPAPPS_ACTIONS  = system.md5sum.desktop
 
-#file-roller integration for pcmanfm - open/list archives
+# file-roller integration for pcmanfm - open/list archives
 BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
 
 ## System depended applets
@@ -186,12 +186,14 @@ ifeq ($(BR2_PACKAGE_WINE_TKG),y)
 endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
+	# scripts, apps and default-mime
 	# scripts
-	mkdir -p $(TARGET_DIR)/usr/bin
-	$(foreach f,$(BATOCERA_DESKTOPAPPS_SCRIPTS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/$(f) $(TARGET_DIR)/usr/bin/$(f)$(sep))
-
+	mkdir -p $(TARGET_DIR)/usr/share/applications/scripts
+	$(foreach f,$(BATOCERA_DESKTOPAPPS_SCRIPTS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/$(f) $(TARGET_DIR)/usr/share/applications/scripts/$(f)$(sep))
+	# copy emulator cli config tool and filemanagerlauncher
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/batocera-config-emu $(TARGET_DIR)/usr/bin/batocera-config-emu
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/scripts/filemanagerlauncher $(TARGET_DIR)/usr/bin/filemanagerlauncher
 	# apps
-	mkdir -p $(TARGET_DIR)/usr/share/applications
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_APPS), cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/apps/$(f) $(TARGET_DIR)/usr/share/applications/$(f)$(sep))
 	# default-mime types
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps/mime/defaults.list $(TARGET_DIR)/usr/share/applications/defaults.list
