@@ -13,7 +13,7 @@ new file mode 100644
 index 000000000..f2eca80b3
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg34xx-sp.dts
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,112 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +/*
 + * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
@@ -26,10 +26,105 @@ index 000000000..f2eca80b3
 +	model = "Anbernic RG34XX-SP";
 +	compatible = "anbernic,rg34xx-sp", "allwinner,sun50i-h700";
 +	rocknix-dt-id = "sun50i-h700-anbernic-rg34xx-sp";
++
++	adc-joystick {
++		compatible = "adc-joystick";
++		io-channels = <&adc_mux 0>,
++			      <&adc_mux 1>,
++			      <&adc_mux 2>,
++			      <&adc_mux 3>;
++		pinctrl-0 = <&joy_mux_pin>;
++		pinctrl-names = "default";
++		poll-interval = <60>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		axis@0 {
++			reg = <0>;
++			abs-flat = <32>;
++			abs-fuzz = <32>;
++			abs-range = <4096 0>;
++			linux,code = <ABS_X>;
++		};
++
++		axis@1 {
++			reg = <1>;
++			abs-flat = <32>;
++			abs-fuzz = <32>;
++			abs-range = <0 4096>;
++			linux,code = <ABS_Y>;
++		};
++
++		axis@2 {
++			reg = <2>;
++			abs-flat = <32>;
++			abs-fuzz = <32>;
++			abs-range = <0 4096>;
++			linux,code = <ABS_RX>;
++		};
++
++		axis@3 {
++			reg = <3>;
++			abs-flat = <32>;
++			abs-fuzz = <32>;
++			abs-range = <4096 0>;
++			linux,code = <ABS_RY>;
++		};
++	};
++
++	adc_mux: adc-mux {
++		compatible = "io-channel-mux";
++		channels = "left_x", "left_y", "right_x", "right_y";
++		#io-channel-cells = <1>;
++		io-channels = <&gpadc 0>;
++		io-channel-names = "parent";
++		mux-controls = <&gpio_mux>;
++		settle-time-us = <100>;
++	};
++
++	gpio_mux: mux-controller {
++		compatible = "gpio-mux";
++		mux-gpios = <&pio 8 1 GPIO_ACTIVE_LOW>, /* PI1 */
++			        <&pio 8 2 GPIO_ACTIVE_LOW>; /* PI2 */
++		#mux-control-cells = <0>;
++	};
 +};
 +
 +&panel {
 +	compatible = "anbernic,rg34xx-sp-panel", "panel-mipi-dpi-spi";
++};
++
++&gpadc {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	channel@0 {
++		reg = <0>;
++	};
++};
++
++&pio {
++	joy_mux_pin: joy-mux-pin {
++		pins = "PI0";
++		function = "gpio_out";
++	};
++};
++
++&gpio_keys_gamepad {
++	button-thumbl {
++		label = "GPIO Thumb Left";
++		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
++		linux,input-type = <EV_KEY>;
++		linux,code = <BTN_THUMBL>;
++	};
++
++	button-thumbr {
++		label = "GPIO Thumb Right";
++		gpios = <&pio 4 9 GPIO_ACTIVE_LOW>; /* PE9 */
++		linux,input-type = <EV_KEY>;
++		linux,code = <BTN_THUMBR>;
++	};
 +};
 -- 
 2.47.1
