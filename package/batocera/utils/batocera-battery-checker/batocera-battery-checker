@@ -57,7 +57,7 @@ while true; do
                         if test "${NEW_BATTERY}" -le 5; then
                             DELAY=10
                         fi
-                        /usr/bin/batocera-info --short | LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=$(getLocalXDisplay) osd_cat -f "-*-*-bold-*-*-*-38-120-*-*-*-*-*-*" -cred -s 3 -d ${DELAY}
+			LANG=en_US HOME=/userdata/system XAUTHORITY=/var/lib/.Xauthority DISPLAY=$(getLocalXDisplay) /usr/bin/batocera-flash-screen ${DELAY} red "$(/usr/bin/batocera-info --short)"
                     fi
                 fi
             fi
