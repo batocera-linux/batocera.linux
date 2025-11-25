@@ -172,8 +172,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY	# multimedia/power buttons
 	select BR2_PACKAGE_BATOCERA_UDEV_RULES		# extra udev rules for specifics joysticks/devices
 	select BR2_PACKAGE_BATOCERA_USERDATAINIT	# userdata init files
-	select BR2_PACKAGE_XOSD				if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
-	select BR2_PACKAGE_BATOCERA_BATTERY_CHECKER	if BR2_PACKAGE_XOSD
+	select BR2_PACKAGE_BATOCERA_BATTERY_CHECKER
 	select BR2_PACKAGE_HOTKEYGEN
 	select BR2_PACKAGE_BATOCERA_CONTROLCENTER
 	select BR2_PACKAGE_CIFS_UTILS			# required for boot mounts
