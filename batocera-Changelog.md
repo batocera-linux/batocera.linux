@@ -60,6 +60,7 @@
 - Play! to 0.71
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
+- Sonic 2013 to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
 - Taradino to 20250816
