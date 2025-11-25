@@ -66,7 +66,7 @@
 - TheForceEngine to v1.22.420
 - VkQuake to 19th of November 2025 build 
 - Xash3D FWGS engine to Oct 17 build
-- Xemu to v0.8.108
+- Xemu to v0.8.115
 - Ymir to 0.2.0
 ### System
 - Bluez to 5.84
