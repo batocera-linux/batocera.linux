@@ -45,7 +45,7 @@ def devicepathWithoutConf(path):
     previouslastNode = basename(dirname(path))
 
     # if last node is like previous node + :number.number => usb
-    if lastNode[0:len(previouslastNode)+1] == previouslastNode+":" and re.search("^[0-9]+\.[0-9]+$", lastNode[len(previouslastNode)+1:]) is not None:
+    if lastNode[0:len(previouslastNode)+1] == previouslastNode+":" and re.search(r"^[0-9]+\.[0-9]+$", lastNode[len(previouslastNode)+1:]) is not None:
         return dirname(path)
     else:
         return path
