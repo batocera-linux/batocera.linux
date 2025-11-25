@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SONIC_MANIA_VERSION = v1.1.0
+SONIC_MANIA_VERSION = v1.1.1
 SONIC_MANIA_SITE = https://github.com/RSDKModding/Sonic-Mania-Decompilation
 SONIC_MANIA_SITE_METHOD = git
 SONIC_MANIA_GIT_SUBMODULES = YES
