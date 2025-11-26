@@ -1,0 +1,16 @@
+config BR2_PACKAGE_MOONLIGHT_QT
+	bool "moonlight-qt"
+	depends on BR2_PACKAGE_QT6
+	select BR2_PACKAGE_OPUS
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_TTF
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_FFMPEG
+	select BR2_PACKAGE_FFMPEG_SWSCALE
+	select BR2_PACKAGE_QT6BASE
+	select BR2_PACKAGE_QT6SVG
+	select BR2_PACKAGE_QT6DECLARATIVE
+	help
+	  GameStream client for PCs
+
+	  https://github.com/moonlight-stream/moonlight-qt
