@@ -1,8 +1,0 @@
-#!/bin/sh
-
-BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | head -n1 | cut -d " " -f1)
-
-if [ "$BOARD_MODEL" = "Hardkernel" -o "$BOARD_MODEL" = "Anbernic" ];
-then
-    touch /var/run/rk-rotation
-fi

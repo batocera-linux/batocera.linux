@@ -1,0 +1,22 @@
+diff --git a/ucm2/Rockchip/rk817-sound/HiFi.conf b/ucm2/Rockchip/rk817-sound/HiFi.conf
+index 8d90567..a714759 100644
+--- a/ucm2/Rockchip/rk817-sound/HiFi.conf
++++ b/ucm2/Rockchip/rk817-sound/HiFi.conf
+@@ -26,7 +26,7 @@ SectionDevice."Speaker" {
+ 	]
+ 
+ 	Value {
+-		PlaybackMixerElem "Master Playback Volume"
++		PlaybackVolume "Master Playback Volume"
+ 		PlaybackPriority 100
+ 		PlaybackPCM "hw:${CardId}"
+ 	}
+@@ -55,7 +55,7 @@ SectionDevice."Headphones" {
+ 	]
+ 
+ 	Value {
+-		PlaybackMixerElem "Master Playback Volume"
++		PlaybackVolume "Master Playback Volume"
+ 		PlaybackPriority 200
+ 		PlaybackPCM "hw:${CardId}"
+ 		JackControl "Headphones Jack"

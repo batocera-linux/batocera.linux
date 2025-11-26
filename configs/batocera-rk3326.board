@@ -5,19 +5,16 @@ BR2_aarch64=y
 BR2_cortex_a35=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_RK3326=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a35+crypto -mtune=cortex-a35"
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/fsoverlay"
 
-# Linux headers same as kernel, a 4.4 series
-BR2_KERNEL_HEADERS_AS_KERNEL=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4=y
-
-# Kernel - Version: 4.4.189
+# Kernel
 BR2_LINUX_KERNEL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,shantigilbert,hardkernel-linux,d167de7358c9c53d5e6592978f7cdde7674c420b)/d167de7358c9c53d5e6592978f7cdde7674c420b.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_VERSION=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.17.7"
+BR2_KERNEL_HEADERS_6_17=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig.config"
@@ -26,21 +23,47 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-gameforce-linux rockchip/rk3326-odroidgo2-linux rockchip/rk3326-odroidgo2-linux-v11 rockchip/rk3326-odroidgo3-linux"
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/dts/rk3326-rg351p-linux.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/dts/rk3326-rg351v-linux.dts"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-anbernic-rg351m rockchip/rk3326-anbernic-rg351v rockchip/rk3326-gameconsole-r33s rockchip/rk3326-gameconsole-r36s rockchip/rk3326-gameconsole-eeclone rockchip/rk3326-magicx-xu10 rockchip/rk3326-magicx-xu-mini-m rockchip/rk3326-odroid-go2 rockchip/rk3326-odroid-go2-v11 rockchip/rk3326-odroid-go3 rockchip/rk3326-powkiddy-rgb10 rockchip/rk3326-powkiddy-rgb10x rockchip/rk3326-powkiddy-rgb20s rockchip/rk3326-gameforce-chi"
 
-# gpu
-BR2_PACKAGE_MALI_G31_GBM=y
+# GPU
+BR2_PACKAGE_BATOCERA_PANFROST_MESA3D=y
+BR2_PACKAGE_BATOCERA_WAYLAND_LABWC=y
 
-# batocera splash screen
+# Batocera splash screen
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
+
+# Batocera system
+BR2_PACKAGE_BATOCERA_KODI21=y
 
 # Controller
 BR2_PACKAGE_UINPUT_JOYSTICK=y
 
 # Bootloader
-BR2_PACKAGE_UBOOT_ODROID_GOA=y
-BR2_PACKAGE_UBOOT_GAMEFORCE=y
+BR2_PACKAGE_UBOOT_RK3326=y
+
+# U-Boot dependency
+BR2_TARGET_UBOOT_NEEDS_GNUTLS=y
+
+# RK3326 Mainline U-Boot (Future)
+#BR2_TARGET_UBOOT=y
+#BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
+#BR2_TARGET_UBOOT_CUSTOM_VERSION=y
+#BR2_TARGET_UBOOT_CUSTOM_GIT=y
+#BR2_TARGET_UBOOT_CUSTOM_VERSION=y
+#BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2025.10"
+#BR2_TARGET_UBOOT_BOARD_DEFCONFIG="rk3326-handheld"
+#BR2_TARGET_UBOOT_NEEDS_PYLIBFDT=y
+#BR2_TARGET_UBOOT_NEEDS_OPENSSL=y
+#BR2_TARGET_UBOOT_NEEDS_PYELFTOOLS=y
+#BR2_TARGET_UBOOT_NEEDS_ROCKCHIP_RKBIN=y
+#BR2_PACKAGE_HOST_DOSFSTOOLS=y
+#BR2_PACKAGE_HOST_DTC=y
+#BR2_PACKAGE_HOST_GENIMAGE=y
+#BR2_PACKAGE_HOST_MTOOLS=y
+#BR2_PACKAGE_HOST_UBOOT_TOOLS=y
+#BR2_PACKAGE_ROCKCHIP_RKBIN=y
+#BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk33/rk3326_ddr_333MHz_v2.11.bin"
+#BR2_PACKAGE_ROCKCHIP_RKBIN_BL31_FILENAME="bin/rk33/rk3326_bl31_v1.34.elf"
 
 # Firmware
 BR2_PACKAGE_FIRMWARE_ESP8089=y

@@ -1,0 +1,289 @@
+diff -rupN linux.orig/drivers/devfreq/Kconfig linux/drivers/devfreq/Kconfig
+--- linux.orig/drivers/devfreq/Kconfig	2024-01-10 19:42:04.697152003 +0000
++++ linux/drivers/devfreq/Kconfig	2024-01-10 20:09:49.575772091 +0000
+@@ -141,6 +141,12 @@ config ARM_RK3399_DMC_DEVFREQ
+ 	  It sets the frequency for the memory controller and reads the usage counts
+ 	  from hardware.
+ 
++config ARM_ROCKCHIP_BUS_DEVFREQ
++	tristate "rockchip bus"
++	depends on ARCH_ROCKCHIP
++	help
++	  rk bus driver
++
+ config ARM_SUN8I_A33_MBUS_DEVFREQ
+ 	tristate "sun8i/sun50i MBUS DEVFREQ Driver"
+ 	depends on ARCH_SUNXI || COMPILE_TEST
+diff -rupN linux.orig/drivers/devfreq/Makefile linux/drivers/devfreq/Makefile
+--- linux.orig/drivers/devfreq/Makefile	2024-01-10 19:42:04.697152003 +0000
++++ linux/drivers/devfreq/Makefile	2024-01-10 20:09:49.575772091 +0000
+@@ -13,6 +13,7 @@ obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx
+ obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
+ obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
+ obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
++obj-$(CONFIG_ARM_ROCKCHIP_BUS_DEVFREQ)	+= rockchip_bus.o
+ obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
+ obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
+ 
+diff -rupN linux.orig/drivers/devfreq/rockchip_bus.c linux/drivers/devfreq/rockchip_bus.c
+--- linux.orig/drivers/devfreq/rockchip_bus.c	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/devfreq/rockchip_bus.c	2024-01-10 20:09:49.575772091 +0000
+@@ -0,0 +1,258 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2018, Fuzhou Rockchip Electronics Co., Ltd.
++ * Author: Tony Xie <tony.xie@rock-chips.com>
++ */
++
++#include <linux/arm-smccc.h>
++#include <linux/clk.h>
++#include <linux/cpufreq.h>
++#include <linux/delay.h>
++#include <linux/devfreq.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/pm_opp.h>
++#include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <linux/string.h>
++
++#define CLUSTER0	0
++#define CLUSTER1	1
++#define MAX_CLUSTERS	2
++
++#define to_rockchip_bus_clk_nb(nb) \
++	container_of(nb, struct rockchip_bus, clk_nb)
++#define to_rockchip_bus_cpufreq_nb(nb) \
++	container_of(nb, struct rockchip_bus, cpufreq_nb)
++
++struct busfreq_table {
++	unsigned long freq;
++	unsigned long volt;
++};
++
++struct rockchip_bus {
++	struct device *dev;
++	struct regulator *regulator;
++	struct clk *clk;
++	struct notifier_block clk_nb;
++	struct notifier_block cpufreq_nb;
++	struct busfreq_table *freq_table;
++
++	unsigned int max_state;
++
++	unsigned long cur_volt;
++	unsigned long cur_rate;
++
++	/*
++	 * Busfreq-policy-cpufreq:
++	 * If the cpu frequency of two clusters are both less than or equal to
++	 * cpu_high_freq, change bus rate to low_rate, otherwise change it to
++	 * high_rate.
++	 */
++	unsigned long high_rate;
++	unsigned long low_rate;
++	unsigned int cpu_high_freq;
++	unsigned int cpu_freq[MAX_CLUSTERS];
++};
++
++static int rockchip_bus_set_freq_table(struct rockchip_bus *bus)
++{
++	struct device *dev = bus->dev;
++	struct dev_pm_opp *opp;
++	unsigned long freq;
++	int i, count;
++
++	count = dev_pm_opp_get_opp_count(dev);
++	if (count <= 0)
++		return -EINVAL;
++
++	bus->max_state = count;
++	bus->freq_table = devm_kcalloc(dev,
++				       bus->max_state,
++				       sizeof(*bus->freq_table),
++				       GFP_KERNEL);
++	if (!bus->freq_table) {
++		bus->max_state = 0;
++		return -ENOMEM;
++	}
++
++	for (i = 0, freq = 0; i < bus->max_state; i++, freq++) {
++		opp = dev_pm_opp_find_freq_ceil(dev, &freq);
++		if (IS_ERR(opp)) {
++			devm_kfree(dev, bus->freq_table);
++			bus->max_state = 0;
++			return PTR_ERR(opp);
++		}
++		bus->freq_table[i].volt = dev_pm_opp_get_voltage(opp);
++		bus->freq_table[i].freq = freq;
++		dev_pm_opp_put(opp);
++	}
++
++	return 0;
++}
++
++static int rockchip_bus_power_control_init(struct rockchip_bus *bus)
++{
++	struct device *dev = bus->dev;
++	int ret = 0;
++
++	bus->clk = devm_clk_get(dev, "bus");
++	if (IS_ERR(bus->clk)) {
++		dev_err(dev, "failed to get bus clock\n");
++		return PTR_ERR(bus->clk);
++	}
++
++	bus->regulator = devm_regulator_get(dev, "bus");
++	if (IS_ERR(bus->regulator)) {
++		dev_err(dev, "failed to get bus regulator\n");
++		return PTR_ERR(bus->regulator);
++	}
++
++	ret = dev_pm_opp_of_add_table(dev);
++	if (ret < 0) {
++		dev_err(dev, "failed to get OPP table\n");
++		return ret;
++	}
++
++	ret = rockchip_bus_set_freq_table(bus);
++	if (ret < 0) {
++		dev_err(dev, "failed to set bus freq table\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int rockchip_bus_clkfreq_target(struct device *dev, unsigned long freq)
++{
++	struct rockchip_bus *bus = dev_get_drvdata(dev);
++	unsigned long target_volt = bus->freq_table[bus->max_state - 1].volt;
++	int i;
++
++	for (i = 0; i < bus->max_state; i++) {
++		if (freq <= bus->freq_table[i].freq) {
++			target_volt = bus->freq_table[i].volt;
++			break;
++		}
++	}
++
++	printk("AAA target_volt: %lu\n", target_volt);
++
++	if (bus->cur_volt != target_volt) {
++		if (regulator_set_voltage(bus->regulator, target_volt,
++					  INT_MAX)) {
++			dev_err(dev, "failed to set voltage %lu uV\n",
++				target_volt);
++			return -EINVAL;
++		}
++		bus->cur_volt = target_volt;
++	}
++
++	return 0;
++}
++
++static int rockchip_bus_clk_notifier(struct notifier_block *nb,
++				     unsigned long event, void *data)
++{
++	struct clk_notifier_data *ndata = data;
++	struct rockchip_bus *bus = to_rockchip_bus_clk_nb(nb);
++	int ret = 0;
++
++	printk("AAA event %lu, old_rate %lu, new_rate: %lu\n",
++		event, ndata->old_rate, ndata->new_rate);
++
++	switch (event) {
++	case PRE_RATE_CHANGE:
++		if (ndata->new_rate > ndata->old_rate)
++			ret = rockchip_bus_clkfreq_target(bus->dev,
++							  ndata->new_rate);
++		break;
++	case POST_RATE_CHANGE:
++		if (ndata->new_rate < ndata->old_rate)
++			ret = rockchip_bus_clkfreq_target(bus->dev,
++							  ndata->new_rate);
++		break;
++	case ABORT_RATE_CHANGE:
++		if (ndata->new_rate > ndata->old_rate)
++			ret = rockchip_bus_clkfreq_target(bus->dev,
++							  ndata->old_rate);
++		break;
++	default:
++		break;
++	}
++
++	return notifier_from_errno(ret);
++}
++
++static int rockchip_bus_clkfreq(struct rockchip_bus *bus)
++{
++	struct device *dev = bus->dev;
++	unsigned long init_rate;
++	int ret = 0;
++
++	ret = rockchip_bus_power_control_init(bus);
++	if (ret) {
++		dev_err(dev, "failed to init power control\n");
++		return ret;
++	}
++
++	init_rate = clk_get_rate(bus->clk);
++	printk("init rate %d", init_rate);
++	ret = rockchip_bus_clkfreq_target(dev, init_rate);
++	if (ret)
++		return ret;
++
++	bus->clk_nb.notifier_call = rockchip_bus_clk_notifier;
++	ret = clk_notifier_register(bus->clk, &bus->clk_nb);
++	if (ret) {
++		dev_err(dev, "failed to register clock notifier\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id rockchip_busfreq_of_match[] = {
++	{ .compatible = "rockchip,px30-bus", },
++	{ .compatible = "rockchip,rk1808-bus", },
++	{ .compatible = "rockchip,rk3288-bus", },
++	{ .compatible = "rockchip,rk3368-bus", },
++	{ .compatible = "rockchip,rk3399-bus", },
++	{ .compatible = "rockchip,rv1126-bus", },
++	{ },
++};
++
++MODULE_DEVICE_TABLE(of, rockchip_busfreq_of_match);
++
++static int rockchip_busfreq_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct rockchip_bus *bus;
++	const char *policy_name;
++	int ret = 0;
++
++	bus = devm_kzalloc(dev, sizeof(*bus), GFP_KERNEL);
++	if (!bus)
++		return -ENOMEM;
++	bus->dev = dev;
++	platform_set_drvdata(pdev, bus);
++
++	printk("asdfsadfsadffasdafsdhjfsdakasdfjfjasdklsfadkljsdfajklfsadjklfasdjklhasfdhjklafsdhkjsfdajkhfasdk");
++	return rockchip_bus_clkfreq(bus);
++}
++
++static struct platform_driver rockchip_busfreq_driver = {
++	.probe	= rockchip_busfreq_probe,
++	.driver = {
++		.name	= "rockchip-busfreq",
++		.of_match_table = rockchip_busfreq_of_match,
++	},
++};
++
++module_platform_driver(rockchip_busfreq_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Tony Xie <tony.xie@rock-chips.com>");
++MODULE_DESCRIPTION("rockchip busfreq driver with devfreq framework");

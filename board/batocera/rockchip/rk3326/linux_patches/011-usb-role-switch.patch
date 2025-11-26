@@ -1,0 +1,11 @@
+--- linux-6.11.9/arch/arm64/boot/dts/rockchip/px30.dtsi.orig	2024-11-29 21:08:01.000962112 +0000
++++ linux-6.11.9/arch/arm64/boot/dts/rockchip/px30.dtsi	2024-11-29 20:20:01.012069647 +0000
+@@ -950,6 +950,8 @@
+ 		clocks = <&cru HCLK_OTG>;
+ 		clock-names = "otg";
+ 		dr_mode = "otg";
++		usb-role-switch;
++		role-switch-default-mode = "host";
+ 		g-np-tx-fifo-size = <16>;
+ 		g-rx-fifo-size = <280>;
+ 		g-tx-fifo-size = <256 128 128 64 32 16>;

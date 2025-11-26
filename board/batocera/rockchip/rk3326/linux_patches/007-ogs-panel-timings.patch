@@ -1,0 +1,32 @@
+diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-sitronix-st7701.c linux/drivers/gpu/drm/panel/panel-sitronix-st7701.c
+--- linux.orig/drivers/gpu/drm/panel/panel-sitronix-st7701.c	2025-01-09 12:33:55.000000000 +0000
++++ linux/drivers/gpu/drm/panel/panel-sitronix-st7701.c	2025-01-15 14:14:08.794990319 +0000
+@@ -838,20 +838,20 @@ static const struct st7701_panel_desc dm
+ };
+ 
+ static const struct drm_display_mode kd50t048a_mode = {
+-	.clock          = 27500,
++	.clock          = 29170,
+ 
+ 	.hdisplay       = 480,
+-	.hsync_start    = 480 + 2,
+-	.hsync_end      = 480 + 2 + 10,
+-	.htotal         = 480 + 2 + 10 + 2,
++	.hsync_start    = 480 + 12,
++	.hsync_end      = 480 + 12 + 12,
++	.htotal         = 480 + 12 + 12 + 38,
+ 
+ 	.vdisplay       = 854,
+ 	.vsync_start    = 854 + 2,
+-	.vsync_end      = 854 + 2 + 2,
+-	.vtotal         = 854 + 2 + 2 + 17,
++	.vsync_end      = 854 + 2 + 19,
++	.vtotal         = 854 + 2 + 19 + 22,
+ 
+-	.width_mm       = 69,
+-	.height_mm      = 139,
++	.width_mm       = 70,
++	.height_mm      = 140,
+ 
+ 	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
+ };

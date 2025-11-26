@@ -1,0 +1,14 @@
+diff -rupN linux.orig/drivers/input/keyboard/gpio_keys.c linux/drivers/input/keyboard/gpio_keys.c
+--- linux.orig/drivers/input/keyboard/gpio_keys.c	2024-01-25 20:47:47.094097973 +0000
++++ linux/drivers/input/keyboard/gpio_keys.c	2024-01-26 04:17:54.663672057 +0000
+@@ -847,8 +847,8 @@ static int gpio_keys_probe(struct platfo
+ 
+ 	input->id.bustype = BUS_HOST;
+ 	input->id.vendor = 0x0001;
+-	input->id.product = 0x0001;
+-	input->id.version = 0x0100;
++	input->id.product = 0x7891;
++	input->id.version = 0x0500;
+ 
+ 	input->keycode = ddata->keymap;
+ 	input->keycodesize = sizeof(ddata->keymap[0]);
