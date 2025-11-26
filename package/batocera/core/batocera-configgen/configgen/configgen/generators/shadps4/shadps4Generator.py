@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -22,7 +23,7 @@ from typing import TYPE_CHECKING
 import toml
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, configure_emulator, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, BIOS, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan
 from ..Generator import Generator
@@ -49,9 +50,18 @@ class shadPS4Generator(Generator):
         savesPath = Path("/userdata/saves/shadps4")
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
+        sysmodulesPath = userConfigPath / "sys_modules"
+        sysmodulesBiosPath = BIOS/ "ps4/sys_modules"
 
         mkdir_if_not_exists(userConfigPath)
         mkdir_if_not_exists(savesPath)
+
+        #symlink bios sys_module
+        if sysmodulesBiosPath.is_dir() and not sysmodulesPath.is_symlink():
+            if sysmodulesPath.is_dir():
+                shutil.rmtree(sysmodulesPath)
+
+            sysmodulesPath.symlink_to(sysmodulesBiosPath, target_is_directory=True)
 
         # Check Vulkan first before doing anything
         discrete_index = -1
