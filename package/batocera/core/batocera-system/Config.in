@@ -326,6 +326,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
 	select BR2_PACKAGE_KEYBOARDTOPADS
 	select BR2_PACKAGE_NSO_N64
+	
+	select BR2_PACKAGE_ROCKNIX_JOYPAD    if BR2_PACKAGE_BATOCERA_TARGET_RK3326	
 
 	select BR2_PACKAGE_UPOWER # required by some cemuhook servers
 
@@ -571,7 +573,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "broadcom/bcm2837"	  if BR2_PACKAGE_BATOCERA_TARGET_BCM2837
 	default "broadcom/bcm2711"	  if BR2_PACKAGE_BATOCERA_TARGET_BCM2711
 	default "broadcom/bcm2712"    if BR2_PACKAGE_BATOCERA_TARGET_BCM2712
-	default "rockchip/rk3326/batlexp-g350 rockchip/rk3326/r36s rockchip/rk3326/rg351v-v2 rockchip/rk3326/rk3326"    if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	default "rockchip/rk3326/r36s rockchip/rk3326/rg351v-v2 rockchip/rk3326/rk3326"    if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3328/rock64 rockchip/rk3328/roc-cc"						if BR2_PACKAGE_BATOCERA_TARGET_RK3328
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"					if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3128/ps5000 rockchip/rk3128/ps7000 rockchip/rk3128/powkiddy_a13"		if BR2_PACKAGE_BATOCERA_TARGET_RK3128
