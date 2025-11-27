@@ -18,8 +18,8 @@ getCCPID() {
 PIDVALUE=$(getCCPID)
 if test "$?" -eq 0
 then
-    # switch off
-    kill -15 "${PIDVALUE}"
+    # toogle
+    kill -10 "${PIDVALUE}"
 else
     # switch on
     export DISPLAY=$(getLocalXDisplay)
