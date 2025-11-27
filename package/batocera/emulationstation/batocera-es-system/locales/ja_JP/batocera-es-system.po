@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: batocera-es v42(2025/10/21)\n"
+"Project-Id-Version: batocera-es v43b(2025/11/16)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-10-21 05:33+0900\n"
+"PO-Revision-Date: 2025-11-16 20:43+0900\n"
 "Last-Translator: mikakunin\n"
 "Language-Team: mikakunin\n"
 "Language: ja\n"
@@ -2983,7 +2983,7 @@ msgstr "異なる解像度をサポートするゲームを特定の解像度で
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "Allow wine to access raw io ports (usb, parallel, ...)"
-msgstr ""
+msgstr "Wine がraw IO ポート (USB、パラレルなど) にアクセスできるようにします"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -3850,7 +3850,7 @@ msgstr ""
 #. TRANSLATION: hotkeys.keys
 msgctxt "keys_files"
 msgid "Batocera Control Center"
-msgstr ""
+msgstr "Batocera コントロールセンター"
 
 #. TRANSLATION: cemu
 msgctxt "game_options"
@@ -6183,7 +6183,7 @@ msgstr "デュアルコアモード"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "DUAL SCREEN"
-msgstr ""
+msgstr "デュアルスクリーン"
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -6877,7 +6877,7 @@ msgstr "ワイドスクリーン パッチを有効"
 #. TRANSLATION: wine
 msgctxt "game_options"
 msgid "ENABLE WINE DEVICES SERVICES"
-msgstr ""
+msgstr "ワインデバイスサービスを有効"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -7102,6 +7102,7 @@ msgid ""
 "Enable MelonDS to display over two screens. Some related screen options will "
 "be ignored."
 msgstr ""
+"MelonDS を2画面表示できるようにします。一部の関連画面オプションは無視されます"
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -13368,8 +13369,8 @@ msgstr "ESからの事前読込みは不可能です"
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid ""
-"Presets which can improve performance without manually editing the VPinballX."
-"ini file to fine tune performance."
+"Presets which can improve performance without manually editing the "
+"VPinballX.ini file to fine tune performance."
 msgstr ""
 "VPinballX.ini ファイルを手動で編集して微調整することなく、動作を向上できるプ"
 "リセットを使用します"
@@ -18769,6 +18770,35 @@ msgctxt "game_options"
 msgid "yellow/blue"
 msgstr "黄/青"
 
+#~ msgctxt "keys_files"
+#~ msgid "Reset"
+#~ msgstr "リセット"
+
+#, c-format
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "For playing driving games with a game pad, it is sometimes a good idea to "
+#~ "use a value larger than 100%% so that the steering feels less sensitive "
+#~ "on a thumbstick."
+#~ msgstr ""
+#~ "ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、"
+#~ "スティックの感度を鈍くすることをお勧めします"
+
+#~ msgctxt "game_options"
+#~ msgid "MODERN PEDAL CONTROLS"
+#~ msgstr "ペダル制御設定"
+
+#~ msgctxt "game_options"
+#~ msgid "STEERING SENSITIVITY"
+#~ msgstr "ステアリング 感度"
+
+#~ msgctxt "game_options"
+#~ msgid ""
+#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
+#~ msgstr ""
+#~ "ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用しま"
+#~ "す"
+
 #~ msgctxt "game_options"
 #~ msgid ""
 #~ "Allows reducing the visual quality of these curves for higher "
@@ -18794,16 +18824,6 @@ msgstr "黄/青"
 #~ msgstr ""
 #~ "強化：テクスチャのアップスケーリングテクスチャとそのサイズを有効にします"
 
-#, c-format
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "For playing driving games with a game pad, it is sometimes a good idea to "
-#~ "use a value larger than 100%% so that the steering feels less sensitive "
-#~ "on a thumbstick."
-#~ msgstr ""
-#~ "ゲームパッドでドライビング ゲームをプレイする場合は、100％より大きい値で、"
-#~ "スティックの感度を鈍くすることをお勧めします"
-
 #~ msgctxt "game_options"
 #~ msgid "HIDE LIGHT GUN CROSSHAIRS"
 #~ msgstr "ガンコンクロスヘア(照準)を非表示"
@@ -18811,18 +18831,6 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "INTEGER SCALE"
 #~ msgstr "整数スケーリング"
-
-#~ msgctxt "game_options"
-#~ msgid "MODERN PEDAL CONTROLS"
-#~ msgstr "ペダル制御設定"
-
-#~ msgctxt "keys_files"
-#~ msgid "Reset"
-#~ msgstr "リセット"
-
-#~ msgctxt "game_options"
-#~ msgid "STEERING SENSITIVITY"
-#~ msgstr "ステアリング 感度"
 
 #~ msgctxt "game_options"
 #~ msgid ""
@@ -18839,13 +18847,6 @@ msgstr "黄/青"
 #~ msgctxt "game_options"
 #~ msgid "USE GZDOOM JOYSTICK CONFIGURATION"
 #~ msgstr "GZDOOM ジョイスティック構成を使用"
-
-#~ msgctxt "game_options"
-#~ msgid ""
-#~ "Use L2/R2 for Brake/Accel and L1/R1 or R-stick Up/Down for Shift Up/Down."
-#~ msgstr ""
-#~ "ブレーキ/アクセルはL2/R2、シフト上/下はL1/R1又はRスティック上/下を使用しま"
-#~ "す"
 
 #~ msgctxt "game_options"
 #~ msgid "VSYNC INTERVAL"
