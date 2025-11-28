@@ -1,0 +1,23 @@
+config BR2_PACKAGE_GAMESCOPE
+    bool "gamescope"
+    select BR2_PACKAGE_HWDATA
+    select BR2_PACKAGE_LIBDECOR
+    select BR2_PACKAGE_LIBDISPLAY_INFO
+    select BR2_PACKAGE_LIBX11
+    select BR2_PACKAGE_LIBXCB
+    select BR2_PACKAGE_LIBXRES
+    select BR2_PACKAGE_LUAJIT    if !BR2_PACKAGE_LUA
+    select BR2_PACKAGE_SEATD
+    select BR2_PACKAGE_SEATD_DAEMON
+    select BR2_PACKAGE_VULKAN_HEADERS
+    select BR2_PACKAGE_VULKAN_LOADER
+    select BR2_PACKAGE_WAYLAND
+    select BR2_PACKAGE_WAYLAND_PROTOCOLS
+    select BR2_PACKAGE_WLROOTS
+    select BR2_PACKAGE_WLROOTS_X11
+    select BR2_PACKAGE_XLIB_LIBXMU
+    select BR2_PACKAGE_XWAYLAND
+    help
+      SteamOS session compositing window manager
+
+      https://github.com/Plagman/gamescope

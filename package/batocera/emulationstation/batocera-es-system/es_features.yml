@@ -143,6 +143,188 @@ shared:
       description: Shrink/expand tattoo to fit within the bezel's border.
       submenu: DECORATIONS
       preset: switchauto
+    gamescope:
+      archs_include: [x86-64-v3]
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE ENABLE
+      description: Enable GameScope compositor for enhanced game display. Default Off.
+      choices:
+        "Off": 0
+        "On": 1
+    gamescope_output_resolution:
+      submenu: GAMESCOPE
+      prompt: OUTPUT RESOLUTION
+      description: Select the output resolution for GameScope. Default is current monitor resolution.
+      choices:
+        "640x480": "640x480"
+        "576x768": "576x768"
+        "800x600": "800x600"
+        "960x720": "960x720"
+        "1024x768": "1024x768"
+        "1280x720": "1280x720"
+        "1440x1080": "1440x1080"
+        "1920x1080": "1920x1080"
+        "2048x1080": "2048x1080"
+        "2560x1444": "2560x1444"
+        "3840x2160": "3840x2160"
+        "4096x2160": "4096x2160"
+    gamescope_nested_resolution:
+      submenu: GAMESCOPE
+      prompt: GAME NESTED RESOLUTION
+      description: Select the game (nested) resolution for GameScope. Default is output resolution.
+      choices:
+        "640x480": "640x480"
+        "576x768": "576x768"
+        "800x600": "800x600"
+        "960x720": "960x720"
+        "1024x768": "1024x768"
+        "1280x720": "1280x720"
+        "1440x1080": "1440x1080"
+        "1920x1080": "1920x1080"
+        "2048x1080": "2048x1080"
+        "2560x1444": "2560x1444"
+        "3840x2160": "3840x2160"
+        "4096x2160": "4096x2160"
+    gamescope_nested_refresh:
+      submenu: GAMESCOPE
+      prompt: GAME REFRESH RATE
+      description: Set the refresh rate (fps) for the game when using GameScope. Default 60Hz.
+      choices:
+        "60Hz": 60
+        "75Hz": 75
+        "120Hz": 120
+        "138Hz": 138
+        "144Hz": 144
+        "150Hz": 150
+        "165Hz": 165
+        "170Hz": 170
+        "175Hz": 175
+        "180Hz": 180
+        "200Hz": 200
+        "240Hz": 240
+        "270Hz": 270
+        "275Hz": 275
+        "280Hz": 280
+        "360Hz": 360
+        "390Hz": 390
+        "480Hz": 480
+        "540Hz": 540
+    gamescope_framerate_limit:
+      submenu: GAMESCOPE
+      prompt: FRAMERATE LIMIT
+      description: Set a simple framerate limit. Used as a divisor of the refresh rate, rounds down (e.g., 60 / 59 -> 60fps, 60 / 25 -> 30fps).
+      choices:
+        "1": 1
+        "2": 2
+        "3": 3
+        "4": 4
+        "6": 6
+        "10": 10
+        "15": 15
+        "30": 30
+        "60": 60
+    gamescope_scaler:
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE SCALER
+      description: Choose the upscaler type for GameScope. Default stretch.
+      choices:
+        "integer": integer
+        "fit": fit
+        "fill": fill
+        "stretch": stretch
+    gamescope_filter:
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE FILTER
+      description: Choose the upscaler filter for GameScope. Default linear.
+      choices:
+        "linear": linear
+        "nearest": nearest
+        "fsr": fsr
+        "nis": nis
+        "pixel": pixel
+    gamescope_sharpness:
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE SHARPNESS
+      description: Set the upscaler sharpness (0 for maximum sharpness, 20 for minimum).
+      choices:
+        "0": 0
+        "5": 5
+        "10": 10
+        "15": 15
+        "20": 20
+    gamescope_reshade_effect:
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE RESHADE EFFECT
+      description: Specify a ReShade shader effect to use with GameScope.
+    gamescope_hdr:
+      submenu: GAMESCOPE
+      prompt: GAMESCOPE HDR
+      description: Enable HDR mode in GameScope if supported.
+      choices:
+        "Off": 0
+        "On": 1
+    gamescope_sdr_gamut_wideness:
+      submenu: GAMESCOPE
+      prompt: SDR GAMUT WIDENESS
+      description: Set the 'wideness' of the gamut for SDR content.
+      choices:
+        "0": 0
+        "0.25": 0.25
+        "0.5": 0.5
+        "0.75": 0.75
+        "1": 1
+    gamescope_hdr_sdr_content_nits:
+      submenu: GAMESCOPE
+      prompt: HDR SDR CONTENT NITS
+      description: Set the luminance of SDR content in nits. Default: 400 nits.
+      choices:
+        "100": 100
+        "200": 200
+        "300": 300
+        "400": 400
+        "500": 500
+        "600": 600
+        "700": 700
+        "800": 800
+        "900": 900
+        "1000": 1000
+    gamescope_hdr_itm_enabled:
+      submenu: GAMESCOPE
+      prompt: HDR ITM ENABLED
+      description: Enable SDR→HDR inverse tone mapping.
+      choices:
+        "Off": 0
+        "On": 1
+    gamescope_hdr_itm_sdr_nits:
+      submenu: GAMESCOPE
+      prompt: HDR ITM SDR NITS
+      description: Set the luminance (in nits) of SDR content used as input for inverse tone mapping. Default: 100 nits, Max: 1000 nits.
+      choices:
+        "100": 100
+        "200": 200
+        "300": 300
+        "400": 400
+        "500": 500
+        "600": 600
+        "700": 700
+        "800": 800
+        "900": 900
+        "1000": 1000
+    gamescope_hdr_itm_target_nits:
+      submenu: GAMESCOPE
+      prompt: HDR ITM TARGET NITS
+      description: Set the target luminance (in nits) of the inverse tone mapping process. Default: 1000 nits, Max: 10000 nits.
+      choices:
+        "1000": 1000
+        "2000": 2000
+        "3000": 3000
+        "4000": 4000
+        "5000": 5000
+        "6000": 6000
+        "7000": 7000
+        "8000": 8000
+        "9000": 9000
+        "10000": 10000
     ai_service_enabled:
       prompt: ENABLE AI TRANSLATION SERVICE
       description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
@@ -334,10 +516,10 @@ shared:
         "hidden": "hidden"
 
 global:
-  shared: [powermode, batterymode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
+  shared: [powermode, batterymode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, rewind, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain]
 
 libretro:
-  shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
+  shared: [powermode, tdp, videomode, ratio, shaderset, smooth, integerscale, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, ai_service_enabled, ai_target_lang, ai_service_url, ai_service_pause, runahead, preemptiveframes, secondinstance, video_frame_delay_auto, vrr_runloop_enable, video_threaded, rumble_gain, audio_volume, bordersmode]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, x86-64-v3, bcm2711, bcm2712, a3gen2, qcs6490, sm8250, sm8550, rk3588, rk3588-sdio]
@@ -7198,7 +7380,7 @@ libretro:
 
 amiberry:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         amiberry_linemode:
             group: ADVANCED OPTIONS
@@ -7282,7 +7464,7 @@ cannonball:
                 "On":  1
 
 cemu:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         cemu_gfxbackend:
             prompt:      GRAPHICS API
@@ -7499,7 +7681,7 @@ hypseus-singe:
 
 devilutionx:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         devilutionx_stretch:
             prompt: STRETCH TO FILL
@@ -7511,7 +7693,7 @@ devilutionx:
 dolphin:
   cores:
     'dolphin':
-        shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+        shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
         features: [cheevos]
         cfeatures:
                 dolphin_aspect_ratio:
@@ -7904,7 +8086,7 @@ dolphin:
                         preset: switchauto
 
 dolphin_triforce:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         triforce_api:
             prompt: GRAPHICS API
@@ -8044,7 +8226,7 @@ dolphin_triforce:
 
 dosbox:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         dosbox_cpu_core:
             submenu: EMULATION
@@ -8076,14 +8258,14 @@ dosbox:
 
 dosbox_staging:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 dosbox-x:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 duckstation:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   features: [cheevos]
   cfeatures:
         duckstation_clocking:
@@ -8397,7 +8579,7 @@ duckstation:
                 "Enabled":            "1"
 
 flycast:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   features: [cheevos]
   cfeatures:
     flycast_ratio:
@@ -8564,11 +8746,11 @@ flycast:
 
 fsuae:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 hatari:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         model:
             prompt:      MODEL
@@ -8622,7 +8804,7 @@ hatari:
                 "ACSI":          ACSI
 
 melonds:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         melonds_renderer:
             prompt: GRAPHICS API
@@ -8807,7 +8989,7 @@ moonlight:
                 "7.1": "7.1"
 
 mupen64plus:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         mupen64plus_ratio:
             prompt:      GAME ASPECT RATIO
@@ -9097,7 +9279,7 @@ openbor:
 pcsx2:
   cores:
     'pcsx2':
-      shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+      shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       features: [cheevos]
       cfeatures:
         pcsx2_shaderset:
@@ -9372,7 +9554,7 @@ pcsx2:
                 "On":      1
 
 ppsspp:
-  shared: [powermode, tdp, videomode, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, rewind]
+  shared: [powermode, tdp, videomode, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, rewind]
   cfeatures:
         gfxbackend:
             submenu: RENDERING
@@ -9554,13 +9736,13 @@ ppsspp:
 
 pygame:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns]
 
 reicast:
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 rpcs3:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         rpcs3_ppudecoder:
             submenu: CPU
@@ -9979,7 +10161,7 @@ rpcs3:
 
 scummvm:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
       scumm_scale:
           prompt: SCALE FACTOR
@@ -10043,7 +10225,7 @@ scummvm:
               "Czech":              "cz"
 
 easyrpg:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         testplay:
             prompt:      TEST PLAY
@@ -10068,7 +10250,7 @@ easyrpg:
                 "Baltic":                        1257
 
 redream:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
       redreamResolution:
           prompt: RENDERING RESOLUTION
@@ -10145,11 +10327,11 @@ sdlpop:
 
 superbroswar:
   features: []
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 supermodel:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         engine3D:
             group: ADVANCED OPTIONS
@@ -10228,7 +10410,7 @@ supermodel:
 
 cgenius:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         cgenius_aspect:
             prompt: ASPECT RATIO
@@ -10271,7 +10453,7 @@ cgenius:
 
 vice:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, ratio, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         noborder:
             group: ADVANCED OPTIONS
@@ -10283,7 +10465,7 @@ vice:
 
 tsugaru:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         cdrom_speed:
             group: ADVANCED OPTIONS
@@ -10304,7 +10486,7 @@ tsugaru:
 
 mame:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
         video:
             prompt:      VIDEO MODE
@@ -11670,7 +11852,7 @@ wine:
                 "On":  1
 
 solarus:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         joystick:
             prompt:      CONTROL CHOICE
@@ -11708,7 +11890,7 @@ mugen:
 
 ikemen:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 ruffle:
   features: [padtokeyboard]
@@ -11716,10 +11898,10 @@ ruffle:
 
 lightspark:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 drastic:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         drastic_hires:
             prompt:      ENHANCED RENDERING RESOLUTION
@@ -11777,7 +11959,7 @@ drastic:
                 "Single": 3
 
 xemu:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         xemu_api:
             prompt: GRAPHICS API
@@ -11859,15 +12041,15 @@ xemu:
 
 lexaloffle:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 ecwolf:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 sonic2013:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -11922,7 +12104,7 @@ sonic2013:
 
 soniccd:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         language:
             prompt:      LANGUAGE
@@ -12087,7 +12269,7 @@ model2emu:
                 "On":  1
 gsplus:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
       gsplus_bios_filename:
           prompt: GSPLUS BIOS FILENAME
@@ -12101,7 +12283,7 @@ gsplus:
 
 play:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
       play_api:
           prompt: GRAPHICS API
@@ -12169,7 +12351,7 @@ steam:
 
 citron:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         citron_scale:
           submenu: VIDEO
@@ -12355,7 +12537,7 @@ citron:
 
 ryujinx:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         ryujinx_api:
           prompt: GRAPHICS API
@@ -12454,7 +12636,7 @@ ryujinx:
 
 samcoupe:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 hcl:
   features: [padtokeyboard]
@@ -12470,7 +12652,7 @@ tyrian:
 
 openjazz:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     jazz_resolution:
       prompt: RENDERING RESOLUTION
@@ -12495,15 +12677,15 @@ openjazz:
 
 abuse:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 cdogs:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 openmsx:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         openmsx_loading:
             prompt: LOADING SPEED
@@ -12520,7 +12702,7 @@ openmsx:
 
 sh:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 xenia:
   features: []
@@ -13054,14 +13236,14 @@ xenia-canary:
 
 eka2l1:
   features: []
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 odcommander:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode, ratio, hud]
 
 gzdoom:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     gz_api:
@@ -13105,7 +13287,7 @@ stella:
   features: [padtokeyboard]
 
 eduke32:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: []
   cfeatures:
     nologo:
@@ -13115,7 +13297,7 @@ eduke32:
         "Show (Default)": 0
 
 fury:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: []
   cfeatures:
     nologo:
@@ -13125,7 +13307,7 @@ fury:
         "Show (Default)": 0
 
 raze:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     raze_api:
@@ -13195,7 +13377,7 @@ vita3k:
       preset: switchauto
 
 bigpemu:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     bigpemu_vsync:
@@ -13279,10 +13461,10 @@ bigpemu:
 
 pyxel:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 ioquake3:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     ioquake3_mem:
@@ -13315,7 +13497,7 @@ thextech:
 
 vpinball:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     vpinball_folders:
       group: EXPERT SETTINGS
@@ -13547,7 +13729,7 @@ vpinball:
 
 theforceengine:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     force_render_res:
       submenu: GRAPHICS
@@ -13697,7 +13879,7 @@ theforceengine:
         "Skip All":     "skip"
 
 iortcw:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     iortcw_api:
@@ -13760,7 +13942,7 @@ iortcw:
         "Spanish":           4
 
 fallout1-ce:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     fout1_game_difficulty:
@@ -13801,7 +13983,7 @@ fallout1-ce:
         "Spanish":           "spanish"
 
 fallout2-ce:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     fout2_game_difficulty:
@@ -13842,7 +14024,7 @@ fallout2-ce:
         "Spanish":           "spanish"
 
 dxx-rebirth:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     rebirth_vsync:
@@ -13871,7 +14053,7 @@ dxx-rebirth:
         "Enabled":            1
 
 etlegacy:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     etlegacy_language:
@@ -13911,11 +14093,11 @@ etlegacy:
         "Ukrainian":  "uk"
 
 sonic3-air:
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
 
 sonic-mania:
-  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     smania_vsync:
@@ -13949,11 +14131,11 @@ fba2x:
 
 taradino:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 x16emu:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     x16emu_scale:
       prompt: RENDERING RESOLUTION
@@ -13979,7 +14161,7 @@ x16emu:
 
 shadps4:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     shadps4_hdr:
       prompt: HDR
@@ -14025,7 +14207,7 @@ shadps4:
 
 dhewm3:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     dhewm3_brightness:
       prompt: BRIGHTNESS
@@ -14054,15 +14236,15 @@ dhewm3:
 
 jazz2-native:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 catacombgl:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 lindbergh-loader:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo,gamescope,gamescope_nested_resolution,gamescope_output_resolution,gamescope_nested_refresh,gamescope_framerate_limit,gamescope_scaler,gamescope_filter,gamescope_sharpness,gamescope_reshade_effect,gamescope_hdr,gamescope_sdr_gamut_wideness,gamescope_hdr_sdr_content_nits,gamescope_hdr_itm_enabled,gamescope_hdr_itm_sdr_nits,gamescope_hdr_itm_target_nits, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
   cfeatures:
     lindbergh_freeplay:
       prompt: FREE PLAY
@@ -14179,14 +14361,14 @@ lindbergh-loader:
 
 vkquake:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 vkquake2:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 vkquake3:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     vkquake3_api:
@@ -14206,7 +14388,7 @@ vkquake3:
         "512MB":           "512"
 
 tr1x:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   features: [padtokeyboard]
   cfeatures:
     tr1x-expansion:
@@ -14218,11 +14400,11 @@ tr1x:
 
 tr2x:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
 
 bstone:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     bstone_widescreen:
       prompt: ENABLE WIDESCREEN
@@ -14245,7 +14427,7 @@ bstone:
 
 openjkdf2:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     jkdf2_difficulty:
       prompt: DIFFICULTY
@@ -14474,7 +14656,7 @@ openjkdf2:
 
 openjk:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     openjk_colour:
       submenu: VIDEO
@@ -14634,7 +14816,7 @@ openjk:
         "All voiceovers": 1
 
 azahar:
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
         azahar_screen_layout:
             prompt: SCREEN LAYOUT
@@ -14725,7 +14907,7 @@ azahar:
                 "On":  1
 openmohaa:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     mohaa_colour:
       submenu: VIDEO
@@ -14878,7 +15060,7 @@ openmohaa:
         "On":  1
 ymir:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
   cfeatures:
     ymir_aspect:
       prompt: ASPECT RATIO
@@ -14911,4 +15093,4 @@ ymir:
 
 clk:
   features: [padtokeyboard]
-  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo, gamescope, gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits, gamescope,gamescope_nested_resolution, gamescope_output_resolution, gamescope_nested_refresh, gamescope_framerate_limit, gamescope_scaler, gamescope_filter, gamescope_sharpness, gamescope_reshade_effect, gamescope_hdr, gamescope_sdr_gamut_wideness, gamescope_hdr_sdr_content_nits, gamescope_hdr_itm_enabled, gamescope_hdr_itm_sdr_nits, gamescope_hdr_itm_target_nits]
