@@ -4,7 +4,7 @@ do_help() {
     PROG=$1
     echo "${PROG} listDisks" >&2
     echo "${PROG} listFstypes" >&2
-    echo "${PROG} format <disk> <fstype>" >&2
+    echo "${PROG} format <disk> <fstype> [label]" >&2
     echo "${PROG} format INTERNAL <fstype>" >&2
 }
 
@@ -72,6 +72,7 @@ do_unmount_disk() {
 do_format() {
     FORMATDISK=$1
     FORMATTYPE=$2
+    FORMATLABEL=${3:-SHARE} 
 
     if ! test -e "/dev/${FORMATDISK}"
     then
@@ -131,16 +132,17 @@ do_format() {
 	return 1
     fi
 
-    echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
+    echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE} with label ${FORMATLABEL}"
+    
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -f -L "${FORMATLABEL}" "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 -L SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -F -L "${FORMATLABEL}" "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat -n SHARE "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n "${FORMATLABEL}" "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
@@ -188,7 +190,7 @@ case "${ACTION}" in
 	do_listFstypes
 	;;
     format)
-	if test $# -ne 2
+	if test $# -lt 2
 	then
 	    do_help
 	    exit 1
@@ -198,7 +200,7 @@ case "${ACTION}" in
 	    do_format_internal "${2}"
 	    exit $?
 	else
-	    do_format "${1}" "${2}"
+	    do_format "${1}" "${2}" "${3}"
 	    exit $?
 	fi
 	;;
