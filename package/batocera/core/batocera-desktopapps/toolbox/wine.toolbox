@@ -16,7 +16,7 @@
 
 # WINE Toolbox is a script integration for pcmanFM
 # 11.11.2025 cyperghost aka crcerror
-#
+# 27.11.2025 added font style for all dialogs
 
 #Sheet of pcmanFM file handlers, needed for .desktop scriptlets 
 # %b  (first) basename
@@ -39,8 +39,16 @@
 # %X  space-separated list of extensions
 # %%  the "%" character itself
 
-# Works only if pcmanFM process is detected or if no arguments are setted
+# Works only if pcmanFM process is detected and if an argument is setted
 pgrep -x pcmanfm >/dev/null && [[ -n "$1" ]] || { echo "error: No instance of pcmanFM found... exit now!"; exit 1; }
+
+Setup_Fonts() {
+  local textarray i
+  textarray=("Text example for extracting/creating archives" "Text example for listing prefixes" "Text example for any info messages")
+  for i in "${!textarray[@]}"; do
+    echo $(yad --font --button="Next Item":0 --fontname="${f[$i]}" --preview="${textarray[$i]}") >> $CONFFILE
+  done
+}
 
 Delete_Unused_Prefixes() {
   local i
@@ -60,17 +68,19 @@ Delete_Unused_Prefixes() {
   # from https://unix.stackexchange.com/questions/582344/awk-prevent-field-splitting-of-arguments-passed-to-external-utilities
   # and  https://unix.stackexchange.com/questions/188309/how-to-cut-from-the-1st-character-to-7-character-in-awk
   readarray -t WR_ARRAY < <(comm -23 <(printf '%s\n' "${WR_SYS[@]}" | sort ) <(printf '%s\n' "${WR_ARRAY[@]}" | sort ))
-  readarray -t WR_ARRAY < <(comm <(printf '%s\n' "${WR_SYS[@]}" | sort ) <(printf '%s\n' "${WR_ARRAY[@]}" | sort ) | awk -F'\t' '{ if ($1 ~ /^\t*$/) { print "TRUE" } else { print "FALSE" }; print $NF; $NF=substr($NF,3);system("dirname " "\042"$NF"\042"); system("basename " "\042"$NF"\042" );}')
-  [[ -z "${WR_ARRAY[1]}" ]] && { yad --text "There are no unused wineprefixes"; exit; }
+  readarray -t WR_ARRAY < <(comm <(printf '%s\n' "${WR_SYS[@]}" | sort ) <(printf '%s\n' "${WR_ARRAY[@]}" | sort ) | awk -v font="${f[1]}" -F'\t' '{ if ($1 ~ /^\t*$/) { print "TRUE" } else { print "FALSE" }; print $NF; $NF=substr($NF,3);system("dirname " "\042"$NF"\042"); system("basename " "\042"$NF"\042" ); print font; }')
+  [[ -z "${WR_ARRAY[1]}" ]] && { echo "There are no unused wineprefixes" | yad --text-info  --fontname="${f[2]}"; exit; }
 
-  readarray -t WR_ARRAY < <(yad --list --checklist --hide-column=2 --print-column=2 --column=Del:chk --column=WP:text --column=WINE-Runner:text --column=WindowsGame:text "${WR_ARRAY[@]}" --separator=)
-  [[ -z "${WR_ARRAY[0]}" ]] && exit || rm -r -f -- "${WR_ARRAY[@]}"
+  readarray -t WR_ARRAY < <(yad --list --checklist --hide-column=2 --print-column=2 --column=Del:chk --column=WP:text --column=WINE-Runner:text --column=WindowsGame:text --column=@font@ "${WR_ARRAY[@]}" --separator=)
+  [[ -z "${WR_ARRAY[0]}" ]] && exit
+  { printf 'Do you want to delete %s Prefixes?\n\nSelected:\n\n' "${#WR_ARRAY[@]}"; printf ' > %s\n' "${WR_ARRAY[@]}"; } | yad --text-info  --fontname="${f[2]}" && rm -r -f -- "${WR_ARRAY[@]}"
 }
 
 Autorun_From_Dir() {
   local EXE_FILES FILE
-  readarray -t EXE_FILES < <(batocera-wine windows autorun-list)
-  FILE=$(yad --list --column="Executable File in $PWD" "${EXE_FILES[@]}" --separator=)
+  # multiple echos inspired by: https://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times
+  readarray -t EXE_FILES < <(paste -d'\n' <(batocera-wine windows autorun-list) <(batocera-wine windows autorun-list | seq $(wc -l) | awk -v font="${f[1]}" '{print font}'))
+  FILE=$(yad --list --column="Executable File in $PWD" "${EXE_FILES[@]}" --column=@font@ --separator=)
   [[ -z "$FILE" ]] && exit || { printf 'CMD=\"%s\"\nDIR=%s' "$(basename "$FILE")" "$(dirname "$FILE")" > autorun.cmd; }
 }
 
@@ -89,34 +99,48 @@ Symlink_Prefix() {
   WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$1")" || echo wine-tkg)
   WP_DEF="/userdata/system/wine-bottles/windows/${WR}/default-prefix"
   WP_GAME="/userdata/system/wine-bottles/windows/${WR}/${1}.wine"
-  [[ ! -d "$WP_DEF" && ! -d "$WP_GAME" ]] && { yad --text "Error: $WP_DEF and $WP_GAME not found"; exit; }
-  [[ -d "$WP_DEF" && -d "$WP_GAME" ]] && { yad --text "This will remove Prefix: $WP_GAME" && rm -r "$WP_GAME" || exit; }
+  [[ ! -d "$WP_DEF" && ! -d "$WP_GAME" ]] && { echo "Error: $WP_DEF and $WP_GAME not found" | yad --text-info --wrap --fontname="${f[2]}"; exit; }
+  [[ -d "$WP_DEF" && -d "$WP_GAME" ]] && { echo "This will remove Prefix: $WP_GAME" | yad --text-info --wrap --fontname="${f[2]}"  && rm -r "$WP_GAME" || exit; }
   [[ ! -d "$WP_DEF" && -d "$WP_GAME" ]] && mv "$WP_GAME" "$WP_DEF"
-  [[ -d "$WP_DEF" && ! -d "$WP_GAME" ]] && ln -s -f "$WP_DEF" "$WP_GAME" && yad --text "Game: $1\nPrefix: $WP_GAME\nLinked to: $WP_DEF" --timeout=10 --timeout-indicator=bottom
+  [[ -d "$WP_DEF" && ! -d "$WP_GAME" ]] && ln -s -f "$WP_DEF" "$WP_GAME" && printf 'Game: %s\nPrefix: %s\nLinked to: %s' "$1" "$WP_GAME" "$WP_DEF" | yad --text-info --wrap --fontname="${f[2]}" --timeout=10 --timeout-indicator=bottom
 }
 
 Extract_Game() {
-  local ext gname
-  ext="${2##*.}"; gname="${2%.*}.pc"                              # extension and pure gamename
-  cd "$1"                                                         # change dir
+  local gname="${2%.*}.pc" ext="${2##*.}"
+  cd "$1"
   [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"  # some unique name
   case "${ext,,}" in
-    wsquashfs) unsquashfs -li -d "$gname" "$2" | yad --text-info --tail ;;
-    wtgz)      tar -xzf "$2" -C "$gname" | yad --text-info --tail ;;
+    wsquashfs) unsquashfs -li -d "$gname" "$2" | yad --text-info --tail --fontname="${f[0]}";;
+    wtgz)      tar -xzf "$2" -C "$gname" | yad --text-info --tail --fontname="${f[0]}";;
   esac
 }
 
 Squash_Game() {
-  local gname
-  gname="${2%.*}.wsquashfs"
+  local gname="${2%.*}.wsquashfs"
   cd "$1"
   [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"
-  mksquashfs "${2}" "${gname}" -comp zstd -percentage | yad --progress --text="Creating $gname" --auto-close
+  mksquashfs "${2}" "${gname}" -comp zstd -percentage | yad --progress --text="<span font='${f[0]}'>Creating $gname${fx}" --auto-close
 }
 
 #### MAIN ####
 
 #@DEVs please always check provided arguments for ex. count them
+# avoid further usage of %w or %x
+
+# set fonts and type, by yad --font dialog
+# yad --text-info --fontname="FAMILY STYLE SIZE" is better as using --text <span>-tag
+CONFFILE=/userdata/system/.config/pcmanfm/wine.toolbox.conf
+[[ ${1} == --setup-wine-toolboxfonts ]] && [[ -e $CONFFILE ]] && { echo "$CONFFILE already found! Delete and setup again?" | yad --text-info && rm $CONFFILE || exit; }
+
+# init font: read from conf, or check if dejavu-font is available or fallback to default
+ft="DejaVu Sans Mono"
+if [[ -e $CONFFILE ]]; then
+  readarray -t f < $CONFFILE
+  fx="</span>"
+elif fc-list -q "${ft}"; then
+  f=("${ft} Bold 12" "${ft} Book 16" "${ft} Book 20")
+  fx="</span>"
+fi
 
 case ${1} in
   --del-unused-prefix)
@@ -140,14 +164,18 @@ case ${1} in
     Symlink_Prefix "$2"
   ;;
   --extract-game)
-    #use %d for basedir und %b for basename (gamename)
+    #use %d for basedir, %b for basename
     [[ ${#@} -eq 3 ]] || exit 1
     Extract_Game "$2" "$3"
   ;;
   --squash-game)
-    #use %d for basedir und %b for basename (gamename)
+    #use %d for basedir and %b for basename (gamename)
     [[ ${#@} -eq 3 ]] || exit 1
     Squash_Game "$2" "$3"
+  ;;
+  --setup-wine-toolboxfonts)
+    #setup the toolbox fonts
+    Setup_Fonts
   ;;
 esac
 
