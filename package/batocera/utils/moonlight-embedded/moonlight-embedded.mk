@@ -21,7 +21,9 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_LIBVA),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
     MOONLIGHT_EMBEDDED_DEPENDENCIES += libva-intel-driver intel-mediadriver
+    endif
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
