@@ -33,6 +33,7 @@ from .exceptions import BadCommandLineArguments, BaseBatoceraException, Batocera
 from .generators import get_generator
 from .gun import Gun
 from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
+from .utils.gamescope import set_gamescope_cmd
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
@@ -181,6 +182,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
                         if not generator.hasInternalMangoHUDCall():
                             cmd.array.insert(0, "mangohud")
+
+                set_gamescope_cmd(system, gameResolution, cmd)
 
                 with profiler.pause():
                     monitor_thread.start()
