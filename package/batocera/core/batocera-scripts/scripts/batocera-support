@@ -109,6 +109,9 @@ fi
 if [ -f /var/log/splash.log ]; then
     f_cp /var/log/splash.log                                   "${DSYSTEM}"
 fi
+if [ -f /var/log/batocera-storage.log ]; then
+    f_cp /var/log/batocera-storage.log                         "${DSYSTEM}"
+fi
 
 # clear passwords
 # filter some dangerous options (may include some path with /userdata)

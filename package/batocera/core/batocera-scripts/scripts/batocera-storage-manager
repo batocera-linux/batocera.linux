@@ -1,0 +1,313 @@
+#!/bin/bash
+# Batocera Master Storage Manager
+
+COMMAND=$1; ARG2=$2; ARG3=$3
+
+LOG_FILE="/var/log/batocera-storage.log"
+POOL_PATH="/userdata/roms"
+CONFIG_KEY="mergerfs.roms"
+BOOT_CONF_FILE="/boot/batocera-boot.conf"
+MERGERFS_OPTS="-o cache.files=off,dropcacheonclose=false,category.create=mfs,allow_other,use_ino,moveonenospc=true,minfreespace=4G"
+
+# --- HELPERS ---
+log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
+
+# HTTP API Helper
+send_to_es_api() {
+    local ENDPOINT=$1
+    local METHOD=$2
+    local DATA=$3
+    
+    (
+        MAX_RETRIES=300 
+        COUNT=0
+        
+        while [ $COUNT -lt $MAX_RETRIES ]; do
+            IS_IDLE=$(curl -s --connect-timeout 1 "http://127.0.0.1:1234/isIdle")
+            RET=$?
+            
+            if [ $RET -eq 0 ] && echo "$IS_IDLE" | grep -q "true"; then
+                if [ "$METHOD" == "POST" ]; then
+                    curl -X POST -H "Content-Type: text/plain" -d "$DATA" "http://127.0.0.1:1234$ENDPOINT"
+                    log_msg "API: Sent $DATA to $ENDPOINT"
+                else
+                    curl -X GET "http://127.0.0.1:1234$ENDPOINT"
+                    log_msg "API: $ENDPOINT"
+                fi
+                exit 0
+            fi
+            
+            sleep 1
+            ((COUNT++))
+        done
+        
+        log_msg "TIMEOUT: Gave up waiting for ES to accept: $DATA"
+    )
+}
+
+send_notification() {
+    local MSG=$1
+    
+    if [[ "$MSG" == "RELOAD_GAMELISTS:true" ]]; then
+        send_to_es_api "/reloadgames" "GET" ""
+    elif [[ "$MSG" == NOTIFY:* ]]; then
+        CLEAN_MSG=${MSG#NOTIFY:}
+        send_to_es_api "/notify" "POST" "$CLEAN_MSG"
+    else
+        send_to_es_api "/storage/event" "POST" "$MSG"
+    fi
+}
+
+is_system_drive() {
+    [ -e "$1" ] && { [ "$1" -ef "/userdata" ] || [ "$1" -ef "/boot" ]; } && return 0
+    NAME=$(basename "$1"); case "$NAME" in SHARE*|BATOCERA*) return 0 ;; esac
+    return 1
+}
+
+# --- COMMANDS ---
+case "$COMMAND" in
+"detect")
+    DEVNAME=$ARG2; DEVTYPE=$ARG3; DEVICE="/dev/$DEVNAME"
+    USERDATA_PART=$(findmnt -n -o SOURCE /userdata); USERDATA_DISK=$(lsblk -no pkname "$USERDATA_PART")
+    if [[ "$DEVNAME" == "$USERDATA_DISK" ]]; then exit 0; fi
+
+    if [ "$DEVTYPE" == "disk" ]; then
+        HAS_PARTS=$(ls -d /sys/class/block/$DEVNAME/$DEVNAME* 2>/dev/null); FSTYPE=$(blkid -o value -s TYPE "$DEVICE")
+        if [ -z "$HAS_PARTS" ] && [ -z "$FSTYPE" ]; then
+            log_msg "DETECT: Blank drive $DEVNAME. Requesting format."
+            send_notification "REQUEST_FORMAT:$DEVNAME"
+            exit 0
+        fi
+        for part in $(ls -d /sys/class/block/$DEVNAME/$DEVNAME* 2>/dev/null | grep -v "$DEVNAME$"); do
+            part_dev="/dev/$(basename "$part")"; part_fstype=$(blkid -s TYPE -o value "$part_dev")
+            case "$part_fstype" in ext4|btrfs|xfs|vfat|exfat|ntfs)
+                TEMP_MOUNT=$(mktemp -d); mount "$part_dev" "$TEMP_MOUNT"
+                if [ -d "$TEMP_MOUNT/roms" ]; then umount "$TEMP_MOUNT"; rmdir "$TEMP_MOUNT"; exit 0; fi
+                umount "$TEMP_MOUNT"; rmdir "$TEMP_MOUNT" ;;
+            esac
+        done
+        log_msg "DETECT: Non-compliant partitioned disk $DEVNAME. Requesting format."
+        send_notification "REQUEST_FORMAT:$DEVNAME"
+    fi
+    
+    if [ "$DEVTYPE" == "partition" ]; then
+        if findmnt -n "$DEVICE" > /dev/null; then exit 0; fi
+        LABEL=$(blkid -s LABEL -o value "$DEVICE"); if [[ "$LABEL" == "SHARE" || "$LABEL" == "BATOCERA" ]]; then exit 0; fi
+        MOUNT_POINT="/media/${LABEL:-usb_$(echo $DEVNAME | tail -c 4)}"
+        
+        mkdir -p "$MOUNT_POINT" && mount "$DEVICE" "$MOUNT_POINT"
+        if [ $? -ne 0 ]; then rmdir "$MOUNT_POINT"; exit 1; fi
+        
+        if [ -d "$MOUNT_POINT/roms" ]; then
+            BRANCH_PATH="$MOUNT_POINT/roms"
+            CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+            
+            if [[ "$CURRENT_CONFIG" == *"$BRANCH_PATH"* ]]; then
+                log_msg "DETECT: Drive at $MOUNT_POINT is already configured. Skipping prompt."
+                exit 0
+            fi
+
+            log_msg "DETECT: Compliant Game Drive at $MOUNT_POINT. Requesting merge."
+            send_notification "REQUEST_MERGE:$MOUNT_POINT"
+        fi
+    fi
+    ;;
+
+"format")
+    DEVNAME=$ARG2
+    FSTYPE_REQ=${3:-ext4}
+    DEVICE="/dev/$DEVNAME"
+    
+    USERDATA_PART=$(findmnt -n -o SOURCE /userdata); USERDATA_DISK=$(lsblk -no pkname "$USERDATA_PART")
+    if [[ "$DEVNAME" == "$USERDATA_DISK" ]]; then 
+        log_msg "CRITICAL: Request to format system disk ($DEVNAME) denied."
+        exit 1
+    fi
+    
+    log_msg "FORMAT: Preparing to format $DEVICE as $FSTYPE_REQ..."
+    
+    umount ${DEVICE}* 2>/dev/null
+    send_notification "NOTIFY:Formatting"
+    
+    log_msg "FORMAT: Executing batocera-format..."
+    # Delegate to batocera-format with "ROMS" label
+    /usr/bin/batocera-format format "$DEVNAME" "$FSTYPE_REQ" "ROMS" >> "$LOG_FILE" 2>&1
+    RET=$?
+    
+    if [ $RET -ne 0 ]; then
+        log_msg "FORMAT: batocera-format failed with error code $RET."
+        exit 1
+    fi
+    
+    log_msg "FORMAT: Low-level format successful."
+
+    # Find the new partition
+    NEW_PART=""
+    for i in {1..10}; do 
+        sleep 1
+        PART_CANDIDATE=$(lsblk -ln -o PATH,PKNAME | grep "$DEVNAME$" | awk '{print $1}' | head -n 1)
+        if [ -b "$PART_CANDIDATE" ]; then 
+            NEW_PART="$PART_CANDIDATE"
+            break
+        fi
+    done
+
+    if [ -z "$NEW_PART" ]; then 
+        log_msg "FORMAT: Could not find new partition after format."
+        exit 1
+    fi
+
+    log_msg "FORMAT: New partition detected at $NEW_PART."
+
+    # Ensure kernel is up to date before mounting
+    udevadm settle
+    sleep 2
+
+    send_notification "NOTIFY:Mounting"
+    TARGET="/media/ROMS"
+    
+    log_msg "FORMAT: Mounting $NEW_PART to $TARGET..."
+    
+    umount "$TARGET" 2>/dev/null
+    mkdir -p "$TARGET" 
+    
+    # Try mounting
+    mount -t "$FSTYPE_REQ" "$NEW_PART" "$TARGET" >> "$LOG_FILE" 2>&1
+    RET=$?
+    
+    if [ $RET -ne 0 ]; then
+        log_msg "FORMAT: Explicit type mount failed. Retrying with auto-detect..."
+        sleep 1
+        mount "$NEW_PART" "$TARGET" >> "$LOG_FILE" 2>&1
+        RET=$?
+    fi
+    
+    if [ $RET -eq 0 ]; then
+        log_msg "FORMAT: Mount successful. Creating structure."
+        mkdir -p "$TARGET/roms"
+        $0 merge "$TARGET"
+    else
+        log_msg "FORMAT: Failed to mount new partition. Check logs above for 'mount' error details."
+        exit 1
+    fi
+    ;;
+
+"merge")
+    MOUNT_POINT=$ARG2
+    if is_system_drive "$MOUNT_POINT"; then exit 0; fi
+    BRANCH_PATH="$MOUNT_POINT/roms"
+    
+    mount -o remount,rw /boot
+    
+    CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+    if ! echo "$CURRENT_CONFIG" | grep -q "$BRANCH_PATH"; then
+        if [ -z "$CURRENT_CONFIG" ]; then NEW_CONFIG="$POOL_PATH@$BRANCH_PATH"; else NEW_CONFIG="$CURRENT_CONFIG:$BRANCH_PATH"; fi
+        batocera-settings-set -f "$BOOT_CONF_FILE" "$CONFIG_KEY" "$NEW_CONFIG"
+        log_msg "MERGE: Added $BRANCH_PATH to boot config."
+    fi
+
+    mount -o remount,ro /boot
+
+    if mount | grep -q "fuse.mergerfs on $POOL_PATH"; then exit 0; fi
+    BASE_DIR="/userdata/.roms_base"
+    if [ ! -d "$BASE_DIR" ]; then
+        mkdir -p "$BASE_DIR"
+        mv "$POOL_PATH"/* "$BASE_DIR/" 2>/dev/null || true
+        mv "$POOL_PATH"/.[!.]* "$BASE_DIR/" 2>/dev/null || true
+    fi
+    log_msg "MERGE: Syncing directory tree..."
+    if [ -d "$BASE_DIR" ]; then
+        cd "$BASE_DIR" && find . -type d ! -name '.*' -print0 | xargs -0 -I {} mkdir -p "$MOUNT_POINT/roms/{}"
+    fi
+    FULL_BRANCHES=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY" | cut -d'@' -f2)
+    BRANCHES_CMD="$BASE_DIR:$FULL_BRANCHES"
+    
+    log_msg "MERGE: Executing mergerfs..."
+    /usr/bin/mergerfs $MERGERFS_OPTS "$BRANCHES_CMD" "$POOL_PATH"
+    
+    if [ $? -eq 0 ]; then
+        log_msg "MERGERFS: Live pool active."
+    else
+        log_msg "MERGERFS: Live mount failed."
+        exit 1
+    fi
+    ;;
+
+"remove")
+    DEVNAME=$ARG2
+    MOUNT_POINT=$(findmnt -n -o TARGET "/dev/$DEVNAME" | head -n 1)
+    if [ -z "$MOUNT_POINT" ]; then exit 0; fi
+    log_msg "REMOVE: Abrupt removal of $DEVNAME detected."
+    send_notification "NOTIFY:DriveUnplugged"
+    
+    $0 eject "$MOUNT_POINT"
+    
+    # Trigger Reload (Only for physical removal)
+    log_msg "REMOVE: Triggering game list reload."
+    send_notification "RELOAD_GAMELISTS:true"
+    ;;
+
+"unmount_live_pool")
+    MOUNT_POINT=$1
+    if mount | grep "fuse.mergerfs on $POOL_PATH" | grep -q "$MOUNT_POINT"; then
+        log_msg "POOL: Unmounting MergerFS pool..."
+        umount -l "$POOL_PATH"
+        BASE_DIR="/userdata/.roms_base"
+        if [ -d "$BASE_DIR" ]; then
+            mv "$BASE_DIR"/* "$POOL_PATH/" 2>/dev/null || true
+            mv "$BASE_DIR"/.[!.]* "$POOL_PATH/" 2>/dev/null || true
+            rmdir "$BASE_DIR"
+        fi
+    fi
+    ;;
+
+"eject")
+    MOUNT_POINT=$ARG2
+    BRANCH_PATH="$MOUNT_POINT/roms"
+    
+    mount -o remount,rw /boot
+    
+    CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+    NEW_CONFIG=$(echo "$CURRENT_CONFIG" | sed -e "s|:$BRANCH_PATH||g" -e "s|$BRANCH_PATH:||g" -e "s|@$BRANCH_PATH||g")
+    if [[ "$NEW_CONFIG" == "$POOL_PATH@" ]] || [[ "$NEW_CONFIG" == "$POOL_PATH" ]]; then
+        batocera-settings-set -f "$BOOT_CONF_FILE" "$CONFIG_KEY" ""
+    else
+        batocera-settings-set -f "$BOOT_CONF_FILE" "$CONFIG_KEY" "$NEW_CONFIG"
+    fi
+    
+    mount -o remount,ro /boot
+    
+    log_msg "PERSISTENCE: Removed $BRANCH_PATH from config."
+    $0 unmount_live_pool "$MOUNT_POINT"
+    
+    log_msg "EJECT: Unmounting $MOUNT_POINT..."
+    umount "$MOUNT_POINT"
+    if [ $? -eq 0 ]; then
+        log_msg "EJECT: Standard unmount successful."
+    else
+        log_msg "EJECT: Standard unmount failed. Forcing lazy unmount."
+        umount -l "$MOUNT_POINT"
+    fi
+
+    log_msg "EJECT: Drive ejected."
+    exit 0
+    ;;
+
+"list_ejectable")
+    CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+    if [ -z "$CURRENT_CONFIG" ]; then exit 0; fi    
+    echo "$CURRENT_CONFIG" | cut -d'@' -f2 | tr ':' '\n' | while read -r branch; do
+        MOUNT_POINT=$(dirname "$branch")
+        NAME=$(basename "$MOUNT_POINT")
+        echo "$NAME:$MOUNT_POINT"
+    done
+    ;;
+
+"list_disks")
+    /usr/bin/batocera-format listDisks
+    ;;
+
+"list_fstypes")
+    /usr/bin/batocera-format listFstypes
+    ;;
+esac
