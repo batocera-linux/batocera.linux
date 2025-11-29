@@ -77,9 +77,11 @@ Delete_Unused_Prefixes() {
 }
 
 Autorun_From_Dir() {
-  local EXE_FILES FILE
+  local EXE_FILES FILE i
   # multiple echos inspired by: https://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times
-  readarray -t EXE_FILES < <(paste -d'\n' <(batocera-wine windows autorun-list) <(batocera-wine windows autorun-list | seq $(wc -l) | awk -v font="${f[1]}" '{print font}'))
+  i=$(batocera-wine windows autorun-count)
+  [[ $i -eq 0 ]] && { echo "error: No windows executables found in '$PWD'" | yad --text-info --wrap --fontname="${f[2]}"; exit; }
+  readarray -t EXE_FILES < <(paste -d'\n' <(batocera-wine windows autorun-list) <(printf "${f[1]}"'%.s\n' $(eval echo {1..$i})))
   FILE=$(yad --list --column="Executable File in $PWD" "${EXE_FILES[@]}" --column=@font@ --separator=)
   [[ -z "$FILE" ]] && exit || { printf 'CMD=\"%s\"\nDIR=%s' "$(basename "$FILE")" "$(dirname "$FILE")" > autorun.cmd; }
 }

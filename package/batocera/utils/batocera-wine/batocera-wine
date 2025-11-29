@@ -837,7 +837,6 @@ createAutorunCmd() {
     #We search in WINEPOINT dir for exes and I assume it's somewhere installed in Program Files, or Program Files(x86)
     pushd "$WINEPOINT" > /dev/null
     readarray -t AUTORUN_FOUNDEXE < <(find ${AUTORUN_FILEMASK} -type f -iname "*.exe" -printf "%p\n" | sort -n)
-    [[ ${#AUTORUN_FOUNDEXE[@]} -eq 0 ]] && return 1
 
     for i in "${AUTORUN_FILTER[@]}"; do
         for ii in "${!AUTORUN_FOUNDEXE[@]}"; do
@@ -1127,12 +1126,13 @@ case "${ACTION}" in
         # It's held small: "batocera-wine windows autorun . bin" will search current directory in dir bin
         [[ -z "${GAMENAME}" ]] && GAMENAME="$PWD"
         [[ -z "${AUTORUN_FILEMASK}" ]] && AUTORUN_FILEMASK="."
-        pushd "${GAMENAME}" > /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'" >&2; exit 1; }
+        pushd "${GAMENAME}" &> /dev/null || { echo "Error: Can't enter dir '${GAMENAME}'" >&2; exit 1; }
         GAMENAME="$PWD"
         createAutorunCmd "${GAMENAME}" "${AUTORUN_FILEMASK}" || exit 1
-        #show only list of exes if autorun-list is set otherwise...
-        [[ "${ACTION}" == "autorun-list" &&  ${#AUTORUN_FOUNDEXE[@]} -gt 0 ]] && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}"; exit 0; }
-        [[ "${ACTION}" == "autorun-count" && ${#AUTORUN_FOUNDEXE[@]} -gt 0 ]] && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}" | wc -l; exit 0; }
+        [[ ${#AUTORUN_FOUNDEXE[@]} -eq 0 ]] && { ! [[ "${ACTION}" == "autorun-count" ]] && echo "Error: No windows executable found in '${GAMENAME}/${AUTORUN_FILEMASK}'" >&2 || echo 0; exit 2; }
+        #show only list of exes if autorun-list/count is set otherwise...
+        [[ "${ACTION}" == "autorun-list" ]]  && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}"; exit 0; }
+        [[ "${ACTION}" == "autorun-count" ]] && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}" | wc -l; exit 0; }
         #...show list with entries numbers to select
         if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
             echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
@@ -1173,7 +1173,7 @@ case "${ACTION}" in
         echo "${0} windows wine2winetgz  <game.wine>"            >&2
         echo "${0} windows autorun       <game>.*    drive_c/P*" >&2
         echo "${0} windows autorun-list  <game>"                 >&2
-        echo "${0} windows autorun-count <game>"                 >$2
+        echo "${0} windows autorun-count <game>"                 >&2
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
