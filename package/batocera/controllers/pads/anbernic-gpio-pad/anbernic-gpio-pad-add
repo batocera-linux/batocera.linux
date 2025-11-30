@@ -92,6 +92,8 @@ evaluate_and_create_pad() {
         VIRTUAL_PAD_NAME="Anbernic RG35XX analog pad"
     elif components_match 2 "gpio-keys-control" "adc-joystick"; then
         VIRTUAL_PAD_NAME="Powkiddy pad"
+    elif components_match 2 "gpio-keys-gamepad" "adc-keys"; then
+        VIRTUAL_PAD_NAME="Anbernic RG ARC pad"
     elif components_match 1 "gpio-keys-gamepad"; then
         VIRTUAL_PAD_NAME="Anbernic RG35XX button pad"
     fi
