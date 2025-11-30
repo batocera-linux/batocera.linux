@@ -78,6 +78,21 @@ get_setting() {
     /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
 }
 
+getCurrentPrefixArch() {
+    # Parameter 1 = current Winepoint
+    local val
+    if [[ -e "${1}/userdef.reg" ]]; then
+        if val=$(grep "#arch=" "${1}/userdef.reg"); then
+            echo "${FUNCNAME[0]}: Detected arch '${val#*=}' in Prefix"
+        else
+            echo "${FUNCNAME[0]}: No arch detected for '$1'"
+        fi
+    else
+        echo "${FUNCNAME[0]}: Can't open ${1}/userdef.reg"
+    fi
+
+}
+ 
 find_wine_dir() {
     local WINE_VERSION="$1"
     # check if we're using a custom wine runner
@@ -614,6 +629,7 @@ play_wine() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
+    getCurrentPrefixArch "${WINEPOINT}"
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -645,6 +661,7 @@ play_pc() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
+    getCurrentPrefixArch "${WINEPOINT}"
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
@@ -668,6 +685,7 @@ trick_wine() {
     WINEPOINT="$2"
     TRICK="$3"
 
+    getCurrentPrefixArch "${WINEPOINT}"
     if [[ -e "${WINETRICKS}" ]]; then
         echo "Winetricks is installed"
     else
@@ -697,6 +715,7 @@ play_exe() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
+    getCurrentPrefixArch "${WINEPOINT}"
 
     (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${ROMGAMENAME}")
     waitWineServer 0
@@ -720,6 +739,7 @@ play_winetgz() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
+    getCurrentPrefixArch "${WINEPOINT}"
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -802,6 +822,7 @@ play_squashfs() {
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
+    getCurrentPrefixArch "${WINEPOINT}"
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -870,6 +891,7 @@ install_exe_msi() {
     GAMENAME="$2"
     WINEPOINT="$3"
     createWineDirectory "${WINEPOINT}"
+    getCurrentPrefixArch "${WINEPOINT}"
     [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${MSIEXEC}" -i "${GAMENAME}"
     waitWineServer 0
@@ -890,6 +912,7 @@ install_iso() {
     fi
 
     createWineDirectory "${WINEPOINT}"
+    getCurrentPrefixArch "${WINEPOINT}"
 
     if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"; then
 	    WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" explorer "d:"
