@@ -569,6 +569,12 @@ createWineDirectory() {
 
     mkdir -p "${WINEPREFIX}" || return 1
 
+    # Get possibility to switch between 32/64bit, 64bit is default so leave empty
+    # For 32bit prefix, use a 'win32' as keyword, set INIT=win32 in your autorun.cmd and recreate the prefix
+    if [[ ${WINE_INIT,,} == win32 ]]; then
+        export WINEARCH=win32
+    fi
+
     # Workaround wine bottle creation issue with debug enabled
     export WINEDLLOVERRIDES="winegstreamer="
 
@@ -636,6 +642,7 @@ play_pc() {
     GAMENAME="$1"
     WINEPOINT="$2"
 
+    WINE_INIT=$(getWine_var "${GAMENAME}" "INIT" "")
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
