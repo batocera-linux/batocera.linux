@@ -11,6 +11,7 @@
 - WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones.
   `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
   We recommend following the procedure described in our wiki to back up Windows savegames.
+- We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & bluetooth.
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
