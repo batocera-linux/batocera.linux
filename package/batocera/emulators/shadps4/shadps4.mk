@@ -17,10 +17,13 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = SHAD_PS4_PLUS_0_11_0
+SHADPS4_VERSION = SHAD_PS4_PLUS_0_12_0_A
 SHADPS4_SITE = https://github.com/AzaharPlus/shadPS4Plus
 SHADPS4_SITE_METHOD = git
-SHADPS4_GIT_SUBMODULES = YES
+#SHADPS4_GIT_SUBMODULES = YES
+
+SHADPS4_SOURCE = shadps4-$(SHADPS4_VERSION).tar.gz
+
 SHADPS4_LICENSE = GPLv2
 SHADPS4_LICENSE_FILE = LICENSE
 
@@ -44,6 +47,18 @@ SHADPS4_CONF_OPTS += -DENABLE_QT_GUI=ON
 SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
 SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
+
+# Fix MoltenVK submodule bug
+define SHADPS4_FIX_AND_FETCH_SUBMODULES
+    echo "Fixing MoltenVK submodule issue for ShadPS4+..."   
+    cd $(SHADPS4_DL_DIR)/git && git rm --cached -rf externals/MoltenVK
+    cd $(SHADPS4_DL_DIR)/git && (git config --file .gitmodules --remove-section submodule.externals/MoltenVK || true)
+    rm -rf $(SHADPS4_DL_DIR)/git/externals/MoltenVK
+    cd $(SHADPS4_DL_DIR)/git && git submodule update --init --recursive
+	tar --exclude=.git -czf $(SHADPS4_DL_DIR)/$(SHADPS4_SOURCE) -C $(SHADPS4_DL_DIR)/git .
+endef
+
+HOST_SHADPS4_POST_DOWNLOAD_HOOKS = SHADPS4_FIX_AND_FETCH_SUBMODULES
 
 define SHADPS4_INSTALL_TARGET_CMDS
 	 mkdir -p $(TARGET_DIR)/usr/bin/shadps4
