@@ -96,6 +96,9 @@ endef
 define MOONLIGHT_QT_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/app/moonlight \
 		$(TARGET_DIR)/usr/bin/moonlight-qt
+	$(INSTALL) -m 0755 \
+		$(MOONLIGHT_QT_PKGDIR)/batocera-moonlight \
+		$(TARGET_DIR)/usr/bin/
 endef
 
 $(eval $(generic-package))

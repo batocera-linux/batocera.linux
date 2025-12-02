@@ -64,7 +64,6 @@ class MoonlightGenerator(Generator):
         )
 
     def generate_qt(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        gameName, confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = ['/usr/bin/moonlight-qt', 'stream']
 
         # resolution
@@ -114,7 +113,8 @@ class MoonlightGenerator(Generator):
         commandArray.append(host)
 
         # app
-        commandArray.append(gameName)
+        app = rom.read_text().rstrip()
+        commandArray.append(app)
 
         return commandArray
 
