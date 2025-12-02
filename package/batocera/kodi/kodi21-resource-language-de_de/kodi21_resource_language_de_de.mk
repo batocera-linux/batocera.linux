@@ -1,10 +1,10 @@
 ################################################################################
 #
-# kodi21 de_de language resource
+# kodi21-resource-language-de_de
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION = 11.0.94
+KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION = 11.0.99
 KODI21_RESOURCE_LANGUAGE_DE_DE_SOURCE = \
     resource.language.de_de-$(KODI21_RESOURCE_LANGUAGE_DE_DE_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_DE_DE_SITE = \
