@@ -21,6 +21,7 @@ Options:
 moonlight="/usr/bin/moonlight-qt"
 romsdir="/userdata/roms/moonlight"
 romsext=".moonlight"
+gamelist="$romsdir/gamelist.xml"
 
 join_by() {
     local d=${1-} f=${2-}
@@ -58,7 +59,7 @@ romfname() {
     local app="$1"
     echo "$app" \
         | tr '[:upper:]' '[:lower:]' \
-        | sed -r -e 's/\s+/ /g' -e 's/[^A-Za-z0-9.-]/-/g'
+        | sed -r 's/[^A-Za-z0-9.-]+/-/g'
 }
 
 sync() {
@@ -73,12 +74,30 @@ sync() {
     readarray -t apps < <($moonlight list "$host")
 
     log "populating moonlight roms"
+    local glist
+    if [ ! -f "$gamelist" ]; then
+        glist="$(echo -e "<?xml version=\"1.0\"?>\n<gameList>\n</gameList>")"
+    else
+        glist="$(cat "$gamelist")"
+    fi
+
     for app in "${apps[@]}"; do
         local fname="$(romfname "$app")"
         local rom="${fname}${romsext}"
+
         log "creating moonlight rom entry '$rom' for app '$app'"
         echo "$app" > "$romsdir/$rom"
+
+        if ! echo -e "$glist" | grep "<path>./$rom</path>" &>/dev/null; then
+            log "creating gamelist entry for app '$app'"
+            glist="$(echo -e "$glist" \
+                | sed "/<\/gameList>/i <game>\n<path>.\/$rom<\/path>\n<name>$app<\/name>\n<\/game>" \
+                | XMLLINT_INDENT="    " xmllint --format -)"
+        else
+            log "gamelist entry for app '$app' already exists, skipping"
+        fi
     done
+    echo -e "$glist" > "$gamelist"
 }
 
 list() {
@@ -91,6 +110,7 @@ list() {
 clean() {
     log "purging romsdir in $romsdir"
     rm -rfv $romsdir/*$romsext
+    rm -fv $gamelist
 }
 
 stream() {
