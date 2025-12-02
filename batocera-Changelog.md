@@ -83,11 +83,13 @@
 - Mesa3D to 25.3.0
 - Nvidia production drivers to 580.105.08
 - Sway to 1.11
+- VKD3D Proton to 3.0a
 - Vulkan stack to 1.4.328.1
 - Wayland to 1.24.0
 - Wayland Protocols to 1.45
-- Wine-TKG to 10.16
-- Wine Proton to 10.0-2
+- Wine Mono to 10.4.0
+- Wine-TKG to 10.20
+- Wine Proton to 10.0-3
 - WLRoots to 0.19.2
 - XWayland to 24.1.9
 

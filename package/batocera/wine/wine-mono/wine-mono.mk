@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_MONO_VERSION = 10.3.0
+WINE_MONO_VERSION = 10.4.0
 WINE_MONO_SOURCE = wine-mono-$(WINE_MONO_VERSION)-x86.tar.xz
 WINE_MONO_SITE = \
     https://github.com/wine-mono/wine-mono/releases/download/wine-mono-$(WINE_MONO_VERSION)
