@@ -50,15 +50,23 @@ SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
 
 # Fix MoltenVK submodule bug
 define SHADPS4_FIX_AND_FETCH_SUBMODULES
-    echo "Fixing MoltenVK submodule issue for ShadPS4+..."   
-    cd $(SHADPS4_DL_DIR)/git && git rm --cached -rf externals/MoltenVK
-    cd $(SHADPS4_DL_DIR)/git && (git config --file .gitmodules --remove-section submodule.externals/MoltenVK || true)
-    rm -rf $(SHADPS4_DL_DIR)/git/externals/MoltenVK
-    cd $(SHADPS4_DL_DIR)/git && git submodule update --init --recursive
-	tar --exclude=.git -czf $(SHADPS4_DL_DIR)/$(SHADPS4_SOURCE) -C $(SHADPS4_DL_DIR)/git .
+    flock $(SHADPS4_DL_DIR)/.shadps4.lock -c ' \
+    if [ -f $(SHADPS4_DL_DIR)/.shadps4_submodules_fixed ]; then \
+        echo "MoltenVK submodule fix already applied. Skipping..."; \
+    else \
+        echo "Acquired lock. Fixing MoltenVK submodule issue for ShadPS4+..."; \
+        cd $(SHADPS4_DL_DIR)/git && (git rm --cached -rf externals/MoltenVK || true); \
+        cd $(SHADPS4_DL_DIR)/git && (git config --file .gitmodules --remove-section submodule.externals/MoltenVK || true); \
+        rm -rf $(SHADPS4_DL_DIR)/git/externals/MoltenVK; \
+        cd $(SHADPS4_DL_DIR)/git && git submodule update --init --recursive; \
+        echo "Creating source tarball..."; \
+        tar --exclude=.git -czf $(SHADPS4_DL_DIR)/$(SHADPS4_SOURCE) -C $(SHADPS4_DL_DIR)/git .; \
+        touch $(SHADPS4_DL_DIR)/.shadps4_submodules_fixed; \
+    fi'
 endef
 
 HOST_SHADPS4_POST_DOWNLOAD_HOOKS = SHADPS4_FIX_AND_FETCH_SUBMODULES
+SHADPS4_POST_DOWNLOAD_HOOKS = SHADPS4_FIX_AND_FETCH_SUBMODULES
 
 define SHADPS4_INSTALL_TARGET_CMDS
 	 mkdir -p $(TARGET_DIR)/usr/bin/shadps4
