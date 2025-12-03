@@ -114,6 +114,28 @@ update_wine_version() {
     fi
 }
 
+setPrefixArch(){
+    # Parameter 1 = current Winepoint
+    # Parameter 2 = current WineRunner
+
+    # Set WineArch to 32bit if term win32 is found in Used runner and Prefix is not already build
+    # Check used Arch in userdef.reg, and delete syswow64 symlink from prefix - winetricks checks sys dir!
+
+    local val
+    if [[ -e "${1}/userdef.reg" ]]; then
+        if val=$(grep -Po '^#arch=\K.*' "${1}/userdef.reg"); then
+            echo "${FUNCNAME[0]}: Found arch '${val}' in Prefix"
+            if [[ $val == win32 ]]; then 
+                test -d "${1}/drive_c/windows/syswow64" && { rm -r -- "$_"; echo "${FUNCNAME[0]}: removed $_"; }
+            fi
+        fi
+    else
+        # Missing key, perform further checks and hope for a fresh install
+        [[ "${2,,}" =~ "win32" && ! -d "${1}" ]] && export WINEARCH=win32 && val=win32 || val="default to win64"
+        echo "${FUNCNAME[0]}: Environment Prefix setted -> $val"
+    fi
+}
+
 waitWineServer() {
     local ret=0 pid=$(pgrep -o -f "${WINESERVER}")
     [[ -z "$pid" ]] && { echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} no process '${WINESERVER}' found - finished with hotkey?" >&2; return 0; }
@@ -559,7 +581,6 @@ saveFilesToUserdata() {
 
 createWineDirectory() {
     WINEPREFIX=$1
-
     # already created
     [[ -e "${WINEPREFIX}" ]] && return 0
 
@@ -606,6 +627,13 @@ play_wine() {
     GAMENAME="$1"
     WINEPOINT="$2"
 
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+
     wine_options "${WINEPOINT}"
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
@@ -614,13 +642,6 @@ play_wine() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
-
-    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
-    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
-    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
-    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
-    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
@@ -636,6 +657,13 @@ play_pc() {
     GAMENAME="$1"
     WINEPOINT="$2"
 
+    WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
+    WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
+    WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${GAMENAME}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${GAMENAME}" "SAVEFILES" "")
+
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
@@ -645,13 +673,6 @@ play_pc() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
-
-    WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
-    WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
-    WINE_LANG=$(getWine_var "${GAMENAME}" "LANG" "")
-    WINE_ENV=$(getWine_var "${GAMENAME}" "ENV" "")
-    WINE_SAVEDIR=$(getWine_var "${GAMENAME}" "SAVEDIR" "")
-    WINE_SAVEFILES=$(getWine_var "${GAMENAME}" "SAVEFILES" "")
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     env
@@ -667,6 +688,8 @@ trick_wine() {
     GAMENAME="$1"
     WINEPOINT="$2"
     TRICK="$3"
+
+    createWineDirectory "${WINEPOINT}" || return 1
 
     if [[ -e "${WINETRICKS}" ]]; then
         echo "Winetricks is installed"
@@ -707,10 +730,17 @@ play_winetgz() {
     GAMENAME="$1"
     WINEPOINT="$2"
 
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+
     wine_options "${WINEPOINT}"
     if [[ ! -e "${WINEPOINT}" ]]; then
-	    mkdir -p "${WINEPOINT}" || return 1
-	    (cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
+        createWineDirectory "${WINEPOINT}" || return 1
+        (cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
     redist_install "${WINEPOINT}" || return 1
@@ -720,13 +750,6 @@ play_winetgz() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     winedevices_setup "${WINEPOINT}" || return 1
-
-    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
-    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
-    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
-    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
-    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
@@ -798,17 +821,17 @@ play_squashfs() {
         return 1
     fi
 
-    reg_install "${WINEPOINT}" || return 1
-    fonts_install "${WINEPOINT}" || return 1
-    dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
-
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
     WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
+
+    reg_install "${WINEPOINT}" || return 1
+    fonts_install "${WINEPOINT}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
+    winedevices_setup "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
@@ -816,7 +839,6 @@ play_squashfs() {
     else
         (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
     fi
-
     waitWineServer 0
 }
 
@@ -869,7 +891,9 @@ install_exe_msi() {
     GAMEEXT="$1"
     GAMENAME="$2"
     WINEPOINT="$3"
+
     createWineDirectory "${WINEPOINT}"
+
     [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${MSIEXEC}" -i "${GAMENAME}"
     waitWineServer 0
@@ -1058,14 +1082,17 @@ case "${ACTION}" in
 	case "${GAMEEXT,,}" in
 	    "wine")
 		requestFileSystem "${GAMENAME}"
+		setPrefixArch "${GAMENAME}" "${WINE_VERSION}"
 		play_wine "${GAMENAME}" "${GAMENAME}"
 		;;
 	    "pc")
 		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+		setPrefixArch "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_VERSION}"
 		play_pc "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		;;
 	    "exe")
 		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+		setPrefixArch "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_VERSION}"
 		play_exe "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		;;
 #	    "iso")
@@ -1074,10 +1101,12 @@ case "${ACTION}" in
 	    "wsquashfs")
 		#Arguments, ROMNAME, WINEPREFIX as squashfs, SAVEDIR, WORKDIR
 		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+		setPrefixArch "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_VERSION}"
 		play_squashfs "${GAMENAME}" "/var/run/wine/${ROMGAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_BOTTLE_DIR}/${ROMGAMENAME}.work"
 		;;
 	    "wtgz")
 		requestFileSystem "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+		setPrefixArch "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_VERSION}"
 		play_winetgz "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
 		;;
 	    *)
@@ -1105,8 +1134,13 @@ case "${ACTION}" in
     init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
 	    "wine")
-		trick_wine "${GAMENAME}" "${GAMENAME}" "${TRICK}"
-		;;
+            setPrefixArch "${GAMENAME}" "${WINE_VERSION}"
+            trick_wine "${GAMENAME}" "${GAMENAME}" "${TRICK}"
+            ;;
+        "wtqz"|"pc"|"exe"|"wsquashfs")
+            setPrefixArch "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${WINE_VERSION}"
+            trick_wine "${GAMENAME}" "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" "${TRICK}"
+            ;;
 	esac
 	;;
 
@@ -1121,6 +1155,21 @@ case "${ACTION}" in
 	exit $?
 	;;
 
+    "createprefix")
+    init_wine
+    [[ ${4} == win32 ]] && export WINEARCH=win32 
+        case "${GAMEEXT,,}" in
+            "wine")
+                echo "error: '${GAMENAME}' is already a prefix"; exit 1
+                ;;
+            "wtqz"|"pc"|"exe"|"wsquashfs")
+                test -d "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine" && { echo "error: '$_' dir already present!"; exit 1; } 
+                createWineDirectory "${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
+                ;;
+        esac
+        unset WINEARCH
+        ;;
+
     "autorun"|"autorun-list"|"autorun-count")
         # Create autorunfile, works only in SSH mode, recommended is arg1=gamepath, arg2=searchmask
         # It's held small: "batocera-wine windows autorun . bin" will search current directory in dir bin
@@ -1132,7 +1181,7 @@ case "${ACTION}" in
         [[ ${#AUTORUN_FOUNDEXE[@]} -eq 0 ]] && { ! [[ "${ACTION}" == "autorun-count" ]] && echo "Error: No windows executable found in '${GAMENAME}/${AUTORUN_FILEMASK}'" >&2 || echo 0; exit 2; }
         #show only list of exes if autorun-list/count is set otherwise...
         [[ "${ACTION}" == "autorun-list" ]]  && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}"; exit 0; }
-        [[ "${ACTION}" == "autorun-count" ]] && { printf '%s\n' "${AUTORUN_FOUNDEXE[@]}" | wc -l; exit 0; }
+        [[ "${ACTION}" == "autorun-count" ]] && { echo ${#AUTORUN_FOUNDEXE[@]}; exit 0; }
         #...show list with entries numbers to select
         if [[ ${#AUTORUN_FOUNDEXE[@]} -gt 1 ]]; then
             echo "Found ${#AUTORUN_FOUNDEXE[@]} files in ${GAMENAME}"
@@ -1169,6 +1218,8 @@ case "${ACTION}" in
         echo "${0} windows install       <game>.iso"             >&2
         echo "${0} windows install       <game>.msi"             >&2
         echo "${0} windows tricks        <game>.wine directplay" >&2
+        echo "${0} windows createprefix  <game> win32"           >&2
+        echo "${0} windows createprefix  <game>"                 >&2
         echo "${0} windows wine2squashfs <game.wine>"            >&2
         echo "${0} windows wine2winetgz  <game.wine>"            >&2
         echo "${0} windows autorun       <game>.*    drive_c/P*" >&2
