@@ -23,7 +23,31 @@ do_start () {
         exit 1
     fi
 
+    # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
+
+    if [ -r /sys/class/graphics/fb0/modes ]; then
+        MODE_STR=$(head -n 1 /sys/class/graphics/fb0/modes)
+        RES_DIM=$(echo "$MODE_STR" | sed -n 's/.*:\([0-9][0-9]*\)x\([0-9][0-9]*\).*/\1 \2/p')
+        
+        if [ -n "$RES_DIM" ]; then
+            set -- $RES_DIM
+            WIDTH=$1
+            HEIGHT=$2
+
+            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}" >> $LOG_FILE
+
+            if [ $((WIDTH * 3)) -eq $((HEIGHT * 4)) ]; then
+                alt_image="/usr/share/batocera/splash/boot-logo-4x3.png"
+                
+                if [ -f "$alt_image" ]; then
+                    echo "4:3 Aspect Ratio detected. Switching to: $alt_image" >> $LOG_FILE
+                    image="$alt_image"
+                fi
+            fi
+        fi
+    fi
+
     if ! [ -f "$image" ]; then
         echo "Error: Splash image not found at ${image}" >> $LOG_FILE
         exit 1
