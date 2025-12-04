@@ -67,7 +67,7 @@
 - Sonic CD to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
-- Taradino to 20250816
+- Taradino to 20251031
 - TheXTech to v1.3.7.1-2
 - TheForceEngine to v1.22.420
 - VkQuake to 19th of November 2025 build 
