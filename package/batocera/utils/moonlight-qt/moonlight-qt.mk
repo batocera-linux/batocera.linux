@@ -59,9 +59,12 @@ MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-wayland
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
-ifneq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
-MOONLIGHT_QT_DEPENDENCIES += libplacebo vulkan-headers vulkan-loader
-endif
+    ifneq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
+        MOONLIGHT_QT_DEPENDENCIES += libplacebo vulkan-headers vulkan-loader
+    endif
+else
+    # Explicitly disable libplacebo if Vulkan is not enabled
+    MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-libplacebo
 endif
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
