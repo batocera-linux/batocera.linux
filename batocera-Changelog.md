@@ -47,6 +47,7 @@
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
+- CLK to 2025-11-26
 - Dolphin-Emu to 2509-188
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
