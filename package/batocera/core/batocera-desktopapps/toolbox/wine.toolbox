@@ -88,11 +88,9 @@ Autorun_From_Dir() {
 
 Autorun_From_File() {
   local p1 p2
-  # extract pathes /userdata/roms/windows/game.pc/bin -> game.pc/bin/$2=gameexe
-  p1="${1%windows/*}windows/" #Basedir /userdata/roms/windows
-  p2="${1/$p1/}"
-  p2="${p2%%\/*}"             #Gamedir game.pc, so p1+p2 - $1 -> ./bin
-  printf 'CMD=\"%s\"\nDIR=%s' "$2" "${1/$p1$p2/.}" > "$p1$p2/autorun.cmd"
+  p1=$(grep -Po '/windows/.*\.(pc|wine|PC|WINE)\K.*' <<< "$1") || { echo  "error: Path '$1' is an invalid roms/windows path" | yad --text-info --wrap --fontname="${f[2]}"; exit 1; }
+  p2="${1/$p1}" # p1: get dir from first dir inside .pc/.wine dir; p2: Substract from path --> path for autorun.cmd
+  printf 'CMD=\"%s\"\nDIR=%s' "$2" ".$p1" > "$p2/autorun.cmd"
 }
 
 Symlink_Prefix() {
@@ -152,7 +150,7 @@ case ${1} in
   ;;
   --autorun-from-file)
     #use %d for basedir und %b for basename (gamename); assume games have to be in roms/windows dir
-    [[ ${#@} -eq 3 ]] && grep -q /windows/ <<< "$2" || { yad --text "path '$2' is an invalid roms/windows path"; exit 1; }
+    [[ ${#@} -eq 3 ]] || exit 1
     Autorun_From_File "$2" "$3"
   ;;
   --autorun-from-dir)
