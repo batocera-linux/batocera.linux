@@ -12,6 +12,11 @@ MERGERFS_OPTS="-o cache.files=off,dropcacheonclose=false,category.create=mfs,all
 # --- HELPERS ---
 log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
 
+# Trap to log ALL exits (Success or Failure) with timestamp
+trap 'RET=$?; if [ $RET -eq 0 ]; then log_msg "EXIT: Success."; else log_msg "EXIT: Failed (Code $RET)."; fi' EXIT
+
+is_mounted() { grep -q " $1 " /proc/mounts; return $?; }
+
 # HTTP API Helper
 send_to_es_api() {
     local ENDPOINT=$1
@@ -40,76 +45,338 @@ send_to_es_api() {
             sleep 1
             ((COUNT++))
         done
-        
         log_msg "TIMEOUT: Gave up waiting for ES to accept: $DATA"
-    )
+    ) &
 }
 
+# Send notifications to ES
 send_notification() {
     local MSG=$1
-    
     if [[ "$MSG" == "RELOAD_GAMELISTS:true" ]]; then
         send_to_es_api "/reloadgames" "GET" ""
     elif [[ "$MSG" == NOTIFY:* ]]; then
-        CLEAN_MSG=${MSG#NOTIFY:}
-        send_to_es_api "/notify" "POST" "$CLEAN_MSG"
+        send_to_es_api "/notify" "POST" "${1#NOTIFY:}"
     else
         send_to_es_api "/storage/event" "POST" "$MSG"
     fi
 }
 
-is_system_drive() {
-    [ -e "$1" ] && { [ "$1" -ef "/userdata" ] || [ "$1" -ef "/boot" ]; } && return 0
-    NAME=$(basename "$1"); case "$NAME" in SHARE*|BATOCERA*) return 0 ;; esac
-    return 1
+# Get a drives UUID for exclusion to format requests
+get_unique_id() {
+    local dev_path="/dev/$1"; local id=""
+    for i in {1..5}; do
+        id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_SERIAL=' | cut -d= -f2)
+        [ -n "$id" ] && { echo "$id"; return; }
+        sleep 1
+    done
+    id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_SERIAL_SHORT=' | cut -d= -f2)
+    [ -n "$id" ] && { echo "$id"; return; }
+    id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_WWN=' | cut -d= -f2)
+    [ -n "$id" ] && { echo "$id"; return; }
+    local all_uuids=$(lsblk -no UUID,PARTUUID "/dev/${1}"* | tr -d '[:space:]' | sort -u | tr -d '\n')
+    if [ -n "$all_uuids" ]; then echo "$all_uuids" | md5sum | cut -d' ' -f1; return; fi
+    local info=$(lsblk -d -n -o VENDOR,MODEL,SIZE "$dev_path" | sed 's/  */_/g')
+    [ -n "$info" ] && { echo "$info"; return; }
+}
+
+mount_partition() {
+    local PART_DEV=$1
+    local IGNORE_AUTOMATION=$2
+    local PENDING_FLAG_PATH=$3
+    
+    FSTYPE=$(blkid -s TYPE -o value "$PART_DEV")
+    if [ -z "$FSTYPE" ] || [[ "$FSTYPE" == "swap" ]]; then return 1; fi
+
+    # Check if DEVICE is already mounted anywhere
+    EXISTING_MOUNT=$(grep "^$PART_DEV " /proc/mounts | awk '{print $2}')
+    
+    if [ -n "$EXISTING_MOUNT" ]; then
+        log_msg "INFO: [$PART_DEV] Already mounted at $EXISTING_MOUNT."
+        MOUNT_POINT="$EXISTING_MOUNT"
+    else
+        # Determine Label / Name
+        LABEL=$(blkid -s LABEL -o value "$PART_DEV")
+        if [ -n "$LABEL" ]; then
+            MOUNT_NAME=$(echo "$LABEL" | tr -cd '[:alnum:]_-')
+        else
+            MOUNT_NAME="usb_$(basename "$PART_DEV")"
+        fi
+
+        MOUNT_POINT="/media/$MOUNT_NAME"
+        
+        if [ -e "$MOUNT_POINT" ]; then
+            N=1
+            while [ -e "${MOUNT_POINT}_${N}" ]; do ((N++)); done
+            MOUNT_POINT="${MOUNT_POINT}_${N}"
+        fi
+        
+        # Now mount...
+        mkdir -p "$MOUNT_POINT"
+        if ! mount -o noatime "$PART_DEV" "$MOUNT_POINT"; then
+            rmdir "$MOUNT_POINT" 2>/dev/null
+            return 1
+        else
+            log_msg "MOUNT: [$PART_DEV] Mounted to $MOUNT_POINT"
+        fi
+    fi
+
+    # Check Content & Merge
+    if [ -d "$MOUNT_POINT/roms" ]; then
+        log_msg "VALID: [$PART_DEV] /roms found at $MOUNT_POINT"
+        
+        if [ "$IGNORE_AUTOMATION" = true ]; then
+            log_msg "INFO: [$PART_DEV] Drive ignored in config. Skipping merge."
+            return 0
+        fi
+
+        BRANCH_PATH="$MOUNT_POINT/roms"
+        CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+        if [[ "$CURRENT_CONFIG" == *"$BRANCH_PATH"* ]]; then
+            log_msg "SKIP: [$PART_DEV] Already in mergerfs config."
+        else
+            # Set Pending Flag BEFORE requesting merge to block duplicate prompts
+            if [ -n "$PENDING_FLAG_PATH" ]; then touch "$PENDING_FLAG_PATH"; fi
+            send_notification "REQUEST_MERGE:$MOUNT_POINT"
+        fi
+        return 2 # Code 2: Found ROMS
+    fi
+
+    log_msg "INFO: [$PART_DEV] Standard drive mounted (no /roms)."
+    return 0
+}
+
+# --- DETECT HELPERS ---
+
+get_parent_disk() {
+    local dev=$1
+    if [[ "$dev" =~ ^sd[a-z][0-9]*$ ]]; then
+        echo "${dev%%[0-9]*}"
+    elif [[ "$dev" =~ ^nvme ]]; then
+        echo "$dev" | sed -E 's/p[0-9]+$//'
+    elif [[ "$dev" =~ ^mmcblk ]]; then
+        echo "$dev" | sed -E 's/p[0-9]+$//'
+    else
+        local pk=$(lsblk -no pkname "/dev/$dev" 2>/dev/null)
+        [ -z "$pk" ] && echo "$dev" || echo "$pk"
+    fi
+}
+
+is_system_disk() {
+    local parent=$1
+    local boot_src=$(findmnt -n -o SOURCE /boot)
+    local data_src=$(findmnt -n -o SOURCE /userdata)
+    
+    local boot_disk=$(lsblk -no pkname "$boot_src" 2>/dev/null)
+    [ -z "$boot_disk" ] && boot_disk="${boot_src#/dev/}"
+    
+    local data_disk=$(lsblk -no pkname "$data_src" 2>/dev/null)
+    [ -z "$data_disk" ] && data_disk="${data_src#/dev/}"
+    
+    if [[ "$parent" == "$boot_disk" ]] || [[ "$parent" == "$data_disk" ]]; then
+        return 0 # True, is system
+    fi
+    return 1 # False
+}
+
+is_manual_drive() {
+    local parent=$1
+    [ ! -f "$BOOT_CONF_FILE" ] && return 1
+
+    local manual_uuids=$(grep -oP '^sharedevice[^=]*=[^@]+@\K[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}' "$BOOT_CONF_FILE" || true)
+    
+    if [ -n "$manual_uuids" ]; then
+        for uuid in $manual_uuids; do
+            local part=$(findfs "UUID=$uuid" 2>/dev/null)
+            if [ -n "$part" ]; then
+                local disk=$(lsblk -no pkname "$part" 2>/dev/null)
+                if [ -n "$disk" ] && [[ "$parent" == "$disk" ]]; then
+                    return 0 # True, is manual
+                fi
+            fi
+        done
+    fi
+    return 1 # False
+}
+
+handle_partition_event() {
+    local devname=$1
+    local parent=$2
+    local ignore_auto=$3
+    local pending_flag=$4
+    
+    local parent_lock="/tmp/storage.runtime.disk.$parent"
+    if [ -d "$parent_lock" ]; then
+        log_msg "SKIP: [$devname] Parent disk '$parent' is processing. Exiting."
+        exit 0
+    fi
+
+    local my_lock="/tmp/storage.runtime.part.$devname"
+    if ! mkdir "$my_lock" 2>/dev/null; then
+        log_msg "SKIP: [$devname] Runtime lock active. Duplicate."
+        exit 0
+    fi
+    trap "rmdir '$my_lock' 2>/dev/null" EXIT
+
+    local part_dev="/dev/$devname"
+    local label=$(blkid -s LABEL -o value "$part_dev")
+    if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then exit 0; fi
+
+    mount_partition "$part_dev" "$ignore_auto" "$pending_flag"
+}
+
+handle_disk_event() {
+    local devname=$1
+    local parent=$2
+    local ignore_auto=$3
+    local pending_flag=$4
+    local unique_id=$5
+    
+    local parent_lock="/tmp/storage.runtime.disk.$parent"
+    if ! mkdir "$parent_lock" 2>/dev/null; then
+        log_msg "SKIP: [$devname] Runtime lock active. Duplicate."
+        exit 0
+    fi
+    # Use generic trap from top of script for exit logging, but we need to ensure lock removal
+    
+    # Check for Partition Table
+    local has_pt=false
+    local pttype=""
+    for i in {1..5}; do
+        pttype=$(blkid -s PTTYPE -o value "/dev/$devname")
+        if [ -n "$pttype" ]; then has_pt=true; break; fi
+        sleep 1
+    done
+    
+    if [ "$has_pt" = true ]; then
+        log_msg "INFO: [$devname] Partition table found ($pttype). Processing partitions..."
+        
+        local found_roms=false
+        
+        for part in $(ls -d /sys/class/block/$parent/${parent}* 2>/dev/null | grep -v "^/sys/class/block/$parent/$parent$"); do
+            local part_dev="/dev/$(basename "$part")"
+            local label=$(blkid -s LABEL -o value "$part_dev")
+            if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then continue; fi
+            
+            mount_partition "$part_dev" "$ignore_auto" "$pending_flag"
+            local ret=$?
+            if [ $ret -eq 2 ]; then found_roms=true; fi
+        done
+        
+        if [ "$found_roms" = false ] && [ "$ignore_auto" = false ]; then
+            # Prompt Logic for Partitioned but empty
+            local raw_sectors=$(lsblk -d -n -o SIZE "/dev/$parent" 2>/dev/null | tr -d '[:space:]')
+            if [ -z "$raw_sectors" ]; then 
+                 local bsize=$(blockdev --getsz "/dev/$parent" 2>/dev/null)
+                 if [ -n "$bsize" ]; then raw_sectors=$(awk "BEGIN {printf \"%.1fG\", $bsize * 512 / 1073741824}"); else raw_sectors="Unknown"; fi
+            fi
+            
+            touch "$pending_flag"
+            local model=$(lsblk -d -n -o MODEL "/dev/$parent")
+            local model_clean=$(echo "$model" | tr ':' '_')
+            local size_clean=$(echo "$raw_sectors" | tr ':' '_')
+            
+            log_msg "PROMPT: [$devname] Partitions found but no ROMS. Requesting format."
+            send_notification "REQUEST_FORMAT:$parent:$model_clean:$size_clean:$unique_id"
+        fi
+        
+        sleep 10
+        rmdir "$parent_lock" 2>/dev/null
+        exit 0
+    fi
+
+    # Check for raw filesystem
+    local fstype=$(blkid -s TYPE -o value "/dev/$devname")
+    if [ -n "$fstype" ]; then
+        log_msg "INFO: [$devname] Raw filesystem detected. Mounting as partition."
+        mount_partition "/dev/$devname" "$ignore_auto" "$pending_flag"
+        sleep 10
+        rmdir "$parent_lock" 2>/dev/null
+        exit 0
+    fi
+
+    # Check Ignore before calculating size for empty drives
+    if [ "$ignore_auto" = true ]; then
+        log_msg "SKIP: [$devname] Drive empty/unknown, but ignored. No action."
+        rmdir "$parent_lock" 2>/dev/null
+        exit 0
+    fi
+
+    # Check Size & Prompt
+    local raw_sectors=0
+    for i in {1..5}; do
+        if [ -b "/dev/$parent" ]; then
+            local dev_size=$(blockdev --getsz "/dev/$parent" 2>/dev/null)
+            if [[ -n "$dev_size" && "$dev_size" -gt 0 ]]; then
+                raw_sectors=$dev_size
+                break
+            fi
+        fi
+        sleep 1
+    done
+
+    if [ "$raw_sectors" -eq 0 ]; then
+        log_msg "SKIP: [$devname] Failed to report valid size."
+        rmdir "$parent_lock" 2>/dev/null
+        exit 0
+    fi
+
+    touch "$pending_flag"
+    local model=$(lsblk -d -n -o MODEL "/dev/$parent")
+    local gb_size=$(awk "BEGIN {printf \"%.1fG\", $raw_sectors * 512 / 1073741824}")
+    local model_clean=$(echo "$model" | tr ':' '_')
+    local size_clean=$(echo "$gb_size" | tr ':' '_')
+    
+    log_msg "PROMPT: [$devname] Requesting format ($gb_size). ID: $unique_id"
+    send_notification "REQUEST_FORMAT:$parent:$model_clean:$size_clean:$unique_id"
+    
+    rmdir "$parent_lock" 2>/dev/null
 }
 
 # --- COMMANDS ---
 case "$COMMAND" in
 "detect")
-    DEVNAME=$ARG2; DEVTYPE=$ARG3; DEVICE="/dev/$DEVNAME"
-    USERDATA_PART=$(findmnt -n -o SOURCE /userdata); USERDATA_DISK=$(lsblk -no pkname "$USERDATA_PART")
-    if [[ "$DEVNAME" == "$USERDATA_DISK" ]]; then exit 0; fi
+    DEVNAME=$ARG2
+    log_msg "ENTRY: [$DEVNAME] Detect event triggered."
 
-    if [ "$DEVTYPE" == "disk" ]; then
-        HAS_PARTS=$(ls -d /sys/class/block/$DEVNAME/$DEVNAME* 2>/dev/null); FSTYPE=$(blkid -o value -s TYPE "$DEVICE")
-        if [ -z "$HAS_PARTS" ] && [ -z "$FSTYPE" ]; then
-            log_msg "DETECT: Blank drive $DEVNAME. Requesting format."
-            send_notification "REQUEST_FORMAT:$DEVNAME"
-            exit 0
-        fi
-        for part in $(ls -d /sys/class/block/$DEVNAME/$DEVNAME* 2>/dev/null | grep -v "$DEVNAME$"); do
-            part_dev="/dev/$(basename "$part")"; part_fstype=$(blkid -s TYPE -o value "$part_dev")
-            case "$part_fstype" in ext4|btrfs|xfs|vfat|exfat|ntfs)
-                TEMP_MOUNT=$(mktemp -d); mount "$part_dev" "$TEMP_MOUNT"
-                if [ -d "$TEMP_MOUNT/roms" ]; then umount "$TEMP_MOUNT"; rmdir "$TEMP_MOUNT"; exit 0; fi
-                umount "$TEMP_MOUNT"; rmdir "$TEMP_MOUNT" ;;
-            esac
-        done
-        log_msg "DETECT: Non-compliant partitioned disk $DEVNAME. Requesting format."
-        send_notification "REQUEST_FORMAT:$DEVNAME"
+    PARENT_DISK=$(get_parent_disk "$DEVNAME")
+
+    # 1. Check System Disk
+    if is_system_disk "$PARENT_DISK"; then
+        log_msg "SKIP: [$DEVNAME] Parent '$PARENT_DISK' is the system drive."
+        exit 0
     fi
-    
-    if [ "$DEVTYPE" == "partition" ]; then
-        if findmnt -n "$DEVICE" > /dev/null; then exit 0; fi
-        LABEL=$(blkid -s LABEL -o value "$DEVICE"); if [[ "$LABEL" == "SHARE" || "$LABEL" == "BATOCERA" ]]; then exit 0; fi
-        MOUNT_POINT="/media/${LABEL:-usb_$(echo $DEVNAME | tail -c 4)}"
-        
-        mkdir -p "$MOUNT_POINT" && mount "$DEVICE" "$MOUNT_POINT"
-        if [ $? -ne 0 ]; then rmdir "$MOUNT_POINT"; exit 1; fi
-        
-        if [ -d "$MOUNT_POINT/roms" ]; then
-            BRANCH_PATH="$MOUNT_POINT/roms"
-            CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
-            
-            if [[ "$CURRENT_CONFIG" == *"$BRANCH_PATH"* ]]; then
-                log_msg "DETECT: Drive at $MOUNT_POINT is already configured. Skipping prompt."
-                exit 0
-            fi
 
-            log_msg "DETECT: Compliant Game Drive at $MOUNT_POINT. Requesting merge."
-            send_notification "REQUEST_MERGE:$MOUNT_POINT"
+    # 2. Check Manual Config (sharedevice)
+    if is_manual_drive "$PARENT_DISK"; then
+        log_msg "SKIP: [$DEVNAME] Parent '$PARENT_DISK' is manually configured (sharedevice)."
+        exit 0
+    fi
+
+    # 3. Check Pending Flag
+    PENDING_FLAG="/tmp/storage.pending.$PARENT_DISK"
+    if [ -f "$PENDING_FLAG" ]; then
+        log_msg "SKIP: [$DEVNAME] Pending flag exists for '$PARENT_DISK'."
+        exit 0
+    fi
+
+    # 4. Check Ignore List (Disables Automation only)
+    IGNORE_AUTOMATION=false
+    UNIQUE_ID=$(get_unique_id "$PARENT_DISK")
+    CLEAN_ID=${UNIQUE_ID%:*} 
+    
+    if [ -n "$UNIQUE_ID" ] && [ -f "$BOOT_CONF_FILE" ]; then
+        IGNORED_LIST=$(batocera-settings-get -f "$BOOT_CONF_FILE" "ignore.drives")
+        if [[ " $IGNORED_LIST " == *" $UNIQUE_ID "* ]] || [[ " $IGNORED_LIST " == *" $CLEAN_ID "* ]]; then
+            log_msg "INFO: [$DEVNAME] Disk '$PARENT_DISK' (ID: $UNIQUE_ID) is in boot config ignore list. Automation disabled."
+            IGNORE_AUTOMATION=true
         fi
+    fi
+
+    # 5. Route appropriate ES event
+    if [ "$DEVNAME" != "$PARENT_DISK" ]; then
+        handle_partition_event "$DEVNAME" "$PARENT_DISK" "$IGNORE_AUTOMATION" "$PENDING_FLAG"
+    else
+        handle_disk_event "$DEVNAME" "$PARENT_DISK" "$IGNORE_AUTOMATION" "$PENDING_FLAG" "$UNIQUE_ID"
     fi
     ;;
 
@@ -118,28 +385,31 @@ case "$COMMAND" in
     FSTYPE_REQ=${3:-ext4}
     DEVICE="/dev/$DEVNAME"
     
-    USERDATA_PART=$(findmnt -n -o SOURCE /userdata); USERDATA_DISK=$(lsblk -no pkname "$USERDATA_PART")
-    if [[ "$DEVNAME" == "$USERDATA_DISK" ]]; then 
-        log_msg "CRITICAL: Request to format system disk ($DEVNAME) denied."
-        exit 1
+    if [[ "$DEVNAME" =~ ^sd[a-z][0-9]*$ ]]; then PARENT_DISK="${DEVNAME%%[0-9]*}"; else PARENT_DISK=$(lsblk -no pkname "$DEVICE" 2>/dev/null); [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEVNAME"; fi
+    
+    rm -f "/tmp/storage.pending.$PARENT_DISK"
+    PARENT_LOCK="/tmp/storage.runtime.disk.$PARENT_DISK"
+    mkdir "$PARENT_LOCK" 2>/dev/null || true
+    trap "rmdir '$PARENT_LOCK' 2>/dev/null" EXIT
+
+    if is_system_disk "$PARENT_DISK"; then
+         log_msg "CRITICAL: Request to format system disk ($PARENT_DISK) denied."
+         exit 1
     fi
     
-    log_msg "FORMAT: Preparing to format $DEVICE as $FSTYPE_REQ..."
-    
+    log_msg "FORMAT: Formatting $DEVICE as $FSTYPE_REQ..."
     umount ${DEVICE}* 2>/dev/null
     send_notification "NOTIFY:Formatting"
     
     log_msg "FORMAT: Executing batocera-format..."
     # Delegate to batocera-format with "ROMS" label
     /usr/bin/batocera-format format "$DEVNAME" "$FSTYPE_REQ" "ROMS" >> "$LOG_FILE" 2>&1
-    RET=$?
-    
-    if [ $RET -ne 0 ]; then
-        log_msg "FORMAT: batocera-format failed with error code $RET."
+    if [ $? -ne 0 ]; then
+        log_msg "FORMAT: batocera-format failed."
         exit 1
     fi
     
-    log_msg "FORMAT: Low-level format successful."
+    log_msg "FORMAT: Format successful. Waiting for partition..."
 
     # Find the new partition
     NEW_PART=""
@@ -153,7 +423,7 @@ case "$COMMAND" in
     done
 
     if [ -z "$NEW_PART" ]; then 
-        log_msg "FORMAT: Could not find new partition after format."
+        log_msg "FORMAT: Could not find new partition."
         exit 1
     fi
 
@@ -163,40 +433,45 @@ case "$COMMAND" in
     udevadm settle
     sleep 2
 
-    send_notification "NOTIFY:Mounting"
-    TARGET="/media/ROMS"
-    
-    log_msg "FORMAT: Mounting $NEW_PART to $TARGET..."
-    
-    umount "$TARGET" 2>/dev/null
-    mkdir -p "$TARGET" 
-    
-    # Try mounting
-    mount -t "$FSTYPE_REQ" "$NEW_PART" "$TARGET" >> "$LOG_FILE" 2>&1
+    # Manually Mount
+    mount_partition "$NEW_PART" "false" "/tmp/storage.pending.$PARENT_DISK"
     RET=$?
-    
-    if [ $RET -ne 0 ]; then
-        log_msg "FORMAT: Explicit type mount failed. Retrying with auto-detect..."
-        sleep 1
-        mount "$NEW_PART" "$TARGET" >> "$LOG_FILE" 2>&1
-        RET=$?
-    fi
-    
-    if [ $RET -eq 0 ]; then
-        log_msg "FORMAT: Mount successful. Creating structure."
-        mkdir -p "$TARGET/roms"
-        $0 merge "$TARGET"
-    else
-        log_msg "FORMAT: Failed to mount new partition. Check logs above for 'mount' error details."
+
+    if [ $RET -ne 0 ] && [ $RET -ne 2 ]; then
+        log_msg "FORMAT: Failed to mount new partition."
         exit 1
     fi
+
+    # Determine where it was mounted
+    MOUNT_POINT=$(findmnt -n -o TARGET "$NEW_PART")
+    log_msg "FORMAT: Setting up structure at $MOUNT_POINT..."
+    mkdir -p "$MOUNT_POINT/roms"
+    $0 merge "$MOUNT_POINT"
     ;;
 
 "merge")
     MOUNT_POINT=$ARG2
-    if is_system_drive "$MOUNT_POINT"; then exit 0; fi
-    BRANCH_PATH="$MOUNT_POINT/roms"
     
+    DEV_SOURCE=$(findmnt -n -o SOURCE "$MOUNT_POINT")
+    DEV_NAME=$(basename "$DEV_SOURCE")
+    if [[ "$DEV_NAME" =~ ^sd[a-z][0-9]*$ ]]; then
+        PARENT_DISK="${DEV_NAME%%[0-9]*}"
+    else
+        PARENT_DISK=$(lsblk -no pkname "$DEV_SOURCE" 2>/dev/null)
+        [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEV_NAME"
+    fi
+    
+    rm -f "/tmp/storage.pending.$PARENT_DISK"
+
+    if ! is_mounted "$MOUNT_POINT"; then
+        REAL_PATH=$(readlink -f "$MOUNT_POINT")
+        if ! is_mounted "$REAL_PATH"; then
+            log_msg "ERROR: Merge requested but $MOUNT_POINT is not mounted."
+            exit 1
+        fi
+    fi
+
+    BRANCH_PATH="$MOUNT_POINT/roms"
     mount -o remount,rw /boot
     
     CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
@@ -208,17 +483,14 @@ case "$COMMAND" in
 
     mount -o remount,ro /boot
 
-    if mount | grep -q "fuse.mergerfs on $POOL_PATH"; then exit 0; fi
+    if mount | grep -q "fuse.mergerfs on $POOL_PATH"; then
+        log_msg "POOL: Reloading MergerFS to include new drive..."
+        umount -l "$POOL_PATH"
+    fi
+
     BASE_DIR="/userdata/.roms_base"
-    if [ ! -d "$BASE_DIR" ]; then
-        mkdir -p "$BASE_DIR"
-        mv "$POOL_PATH"/* "$BASE_DIR/" 2>/dev/null || true
-        mv "$POOL_PATH"/.[!.]* "$BASE_DIR/" 2>/dev/null || true
-    fi
-    log_msg "MERGE: Syncing directory tree..."
-    if [ -d "$BASE_DIR" ]; then
-        cd "$BASE_DIR" && find . -type d ! -name '.*' -print0 | xargs -0 -I {} mkdir -p "$MOUNT_POINT/roms/{}"
-    fi
+    mkdir -p "$BASE_DIR"
+    
     FULL_BRANCHES=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY" | cut -d'@' -f2)
     BRANCHES_CMD="$BASE_DIR:$FULL_BRANCHES"
     
@@ -227,6 +499,7 @@ case "$COMMAND" in
     
     if [ $? -eq 0 ]; then
         log_msg "MERGERFS: Live pool active."
+        exit 0
     else
         log_msg "MERGERFS: Live mount failed."
         exit 1
@@ -235,9 +508,36 @@ case "$COMMAND" in
 
 "remove")
     DEVNAME=$ARG2
-    MOUNT_POINT=$(findmnt -n -o TARGET "/dev/$DEVNAME" | head -n 1)
-    if [ -z "$MOUNT_POINT" ]; then exit 0; fi
-    log_msg "REMOVE: Abrupt removal of $DEVNAME detected."
+    
+    if [[ "$DEVNAME" =~ ^sd[a-z][0-9]*$ ]]; then PARENT_DISK="${DEVNAME%%[0-9]*}"; else PARENT_DISK=$(lsblk -no pkname "/dev/$DEVNAME" 2>/dev/null); [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEVNAME"; fi
+    
+    RUNTIME_LOCK="/tmp/storage.runtime.part.$DEVNAME"
+    if ! mkdir "$RUNTIME_LOCK" 2>/dev/null; then exit 0; fi
+    trap 'rmdir "$RUNTIME_LOCK" 2>/dev/null' EXIT
+
+    if [ -f "/tmp/storage.pending.$PARENT_DISK" ]; then
+        rm -f "/tmp/storage.pending.$PARENT_DISK"
+        log_msg "REMOVE: Cleared pending flag for '$PARENT_DISK'."
+    fi
+
+    MOUNT_POINT=$(grep "^/dev/$DEVNAME " /proc/mounts | awk '{print $2}')
+    
+    if [ -z "$MOUNT_POINT" ]; then
+        CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+        if [ -n "$CURRENT_CONFIG" ]; then
+            echo "$CURRENT_CONFIG" | cut -d'@' -f2 | tr ':' '\n' | while read -r branch; do
+                if [ -z "$branch" ]; then continue; fi
+                M_POINT=$(dirname "$branch")
+                if ! is_mounted "$M_POINT"; then
+                    log_msg "CLEANUP: Dead mount in config: $M_POINT"
+                    $0 eject "$M_POINT"
+                fi
+            done
+        fi
+        exit 0
+    fi
+
+    log_msg "REMOVE: Abrupt removal of /dev/$DEVNAME detected at $MOUNT_POINT."
     send_notification "NOTIFY:DriveUnplugged"
     
     $0 eject "$MOUNT_POINT"
@@ -281,16 +581,39 @@ case "$COMMAND" in
     $0 unmount_live_pool "$MOUNT_POINT"
     
     log_msg "EJECT: Unmounting $MOUNT_POINT..."
-    umount "$MOUNT_POINT"
-    if [ $? -eq 0 ]; then
-        log_msg "EJECT: Standard unmount successful."
-    else
-        log_msg "EJECT: Standard unmount failed. Forcing lazy unmount."
-        umount -l "$MOUNT_POINT"
+    umount "$MOUNT_POINT" || umount -l "$MOUNT_POINT"
+    
+    if ! is_mounted "$MOUNT_POINT"; then
+        rmdir "$MOUNT_POINT" 2>/dev/null
+        log_msg "EJECT: Removed mount point directory $MOUNT_POINT."
     fi
 
     log_msg "EJECT: Drive ejected."
     exit 0
+    ;;
+
+"ignore")
+    UNIQUE_ID=$ARG2
+    if [ -z "$UNIQUE_ID" ]; then exit 1; fi
+
+    mount -o remount,rw /boot
+
+    CURRENT_IGNORES=$(batocera-settings-get -f "$BOOT_CONF_FILE" "ignore.drives")
+
+    # Space padded check to avoid partial matches
+    if [[ " $CURRENT_IGNORES " == *" $UNIQUE_ID "* ]]; then
+        log_msg "IGNORE: ID $UNIQUE_ID already ignored."
+    else
+        if [ -z "$CURRENT_IGNORES" ]; then
+            NEW_IGNORES="$UNIQUE_ID"
+        else
+            NEW_IGNORES="$CURRENT_IGNORES $UNIQUE_ID"
+        fi
+        batocera-settings-set -f "$BOOT_CONF_FILE" "ignore.drives" "$NEW_IGNORES"
+        log_msg "IGNORE: Added $UNIQUE_ID to ignore.drives in boot config."
+    fi
+
+    mount -o remount,ro /boot
     ;;
 
 "list_ejectable")

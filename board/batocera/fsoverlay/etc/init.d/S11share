@@ -413,16 +413,4 @@ find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" |
 	(cd / && gunzip -c "${FILE}" | tar xf -)
     done
 
-# now, let mount delayed usbmount devices
-ls /var/run/usbmount.delay |
-    while read -r RULE
-    do
-        RTYPE=$(echo "${RULE}" | sed -e s+'^[0-9]*\.'++)
-        # source the udev context and apply the usbmount
-        (. "/var/run/usbmount.delay/${RULE}"
-        /usr/share/usbmount/usbmount "${RTYPE}"
-        rm "/var/run/usbmount.delay/${RULE}")
-    done
-touch /var/run/batocera.share.mounted # reenable standard usbmount
-
 echo "done."
