@@ -249,7 +249,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON3_READLINE
 
 	select BR2_PACKAGE_PARTED				# partition management (for the first boot)
-	select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter
+	# select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter <- use batocera-stoage-manager now
 	select BR2_PACKAGE_USBUTILS				# usb key/sd card tools
 	select BR2_PACKAGE_BATOCERA_SPLASH			# boot splash
 	select BR2_PACKAGE_BATOCERA_SCRIPTS			# batocera scripts
