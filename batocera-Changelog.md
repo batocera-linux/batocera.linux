@@ -80,6 +80,7 @@
 ### System
 - Bluez to 5.84
 - DXVK to 2.7.1
+- Flac to 1.5.0
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251125
 - Linux Kernel to 6.17.7
