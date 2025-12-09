@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RETROARCH_VERSION = v1.21.0
+RETROARCH_VERSION = v1.22.2
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-fonts
@@ -12,8 +12,8 @@ RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-font
 RETROARCH_INSTALL_STAGING = YES
 
 RETROARCH_CONF_OPTS = --disable-oss --disable-qt --enable-threads --enable-ozone \
-    --enable-xmb --disable-discord --disable-builtinflac --enable-flac --enable-lua --enable-networking \
-	--enable-translate --enable-rgui --disable-cdrom
+    --enable-xmb --disable-discord --enable-flac --enable-lua --enable-networking \
+    --enable-translate --enable-rgui --disable-cdrom
 
 ifeq ($(BR2_ENABLE_DEBUG),y)
     RETROARCH_CONF_OPTS += --enable-debug
@@ -178,9 +178,12 @@ define RETROARCH_CONFIGURE_CMDS
 endef
 
 define RETROARCH_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/gfx/video_filters
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/libretro-common/audio/dsp_filters
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+        LD="$(TARGET_LD)" -C $(@D)/
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+        LD="$(TARGET_LD)" -C $(@D)/gfx/video_filters
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+        LD="$(TARGET_LD)" -C $(@D)/libretro-common/audio/dsp_filters
 endef
 
 define RETROARCH_INSTALL_TARGET_CMDS
@@ -191,8 +194,10 @@ define RETROARCH_INSTALL_TARGET_CMDS
 	cp $(@D)/gfx/video_filters/*.filt $(TARGET_DIR)/usr/share/video_filters
 
 	mkdir -p $(TARGET_DIR)/usr/share/audio_filters
-	cp $(@D)/libretro-common/audio/dsp_filters/*.so $(TARGET_DIR)/usr/share/audio_filters
-	cp $(@D)/libretro-common/audio/dsp_filters/*.dsp $(TARGET_DIR)/usr/share/audio_filters
+	cp $(@D)/libretro-common/audio/dsp_filters/*.so \
+        $(TARGET_DIR)/usr/share/audio_filters
+	cp $(@D)/libretro-common/audio/dsp_filters/*.dsp \
+        $(TARGET_DIR)/usr/share/audio_filters
 endef
 
 define RETROARCH_INSTALL_STAGING_CMDS

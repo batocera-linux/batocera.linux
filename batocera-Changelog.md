@@ -62,6 +62,7 @@
 - OpenJK to 10th of October 2025 build
 - OpenMOHAA to v0.82.1
 - Play! to 0.71
+- RetroArch to 1.22.2
 - RPCS3 to v0.0.38
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
 - Sonic 2013 to 1.3.3
