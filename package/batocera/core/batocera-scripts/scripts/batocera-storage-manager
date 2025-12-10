@@ -394,21 +394,24 @@ case "$COMMAND" in
 
     if is_system_disk "$PARENT_DISK"; then
          log_msg "CRITICAL: Request to format system disk ($PARENT_DISK) denied."
+         send_notification "NOTIFY:Error: Cannot format system disk"
          exit 1
     fi
     
     log_msg "FORMAT: Formatting $DEVICE as $FSTYPE_REQ..."
     umount ${DEVICE}* 2>/dev/null
-    send_notification "NOTIFY:Formatting"
+    send_notification "NOTIFY:Formatting $DEVNAME..."
     
     log_msg "FORMAT: Executing batocera-format..."
     # Delegate to batocera-format with "ROMS" label
     /usr/bin/batocera-format format "$DEVNAME" "$FSTYPE_REQ" "ROMS" >> "$LOG_FILE" 2>&1
     if [ $? -ne 0 ]; then
         log_msg "FORMAT: batocera-format failed."
+        send_notification "NOTIFY:Error: Format Failed"
         exit 1
     fi
     
+    send_notification "NOTIFY:Format Complete. Mounting..."
     log_msg "FORMAT: Format successful. Waiting for partition..."
 
     # Find the new partition
@@ -424,6 +427,7 @@ case "$COMMAND" in
 
     if [ -z "$NEW_PART" ]; then 
         log_msg "FORMAT: Could not find new partition."
+        send_notification "NOTIFY:Error: Partition Not Found"
         exit 1
     fi
 
@@ -439,6 +443,7 @@ case "$COMMAND" in
 
     if [ $RET -ne 0 ] && [ $RET -ne 2 ]; then
         log_msg "FORMAT: Failed to mount new partition."
+        send_notification "NOTIFY:Error: Mount Failed"
         exit 1
     fi
 
@@ -446,6 +451,8 @@ case "$COMMAND" in
     MOUNT_POINT=$(findmnt -n -o TARGET "$NEW_PART")
     log_msg "FORMAT: Setting up structure at $MOUNT_POINT..."
     mkdir -p "$MOUNT_POINT/roms"
+    
+    send_notification "NOTIFY:Configuring Storage..."
     $0 merge "$MOUNT_POINT"
     ;;
 
@@ -470,6 +477,8 @@ case "$COMMAND" in
             exit 1
         fi
     fi
+
+    send_notification "NOTIFY:Merging Drive..."
 
     BRANCH_PATH="$MOUNT_POINT/roms"
     mount -o remount,rw /boot
@@ -499,9 +508,13 @@ case "$COMMAND" in
     
     if [ $? -eq 0 ]; then
         log_msg "MERGERFS: Live pool active."
+        send_notification "NOTIFY:Storage Expanded Successfully"
+        sleep 1
+        send_notification "RELOAD_GAMELISTS:true"
         exit 0
     else
         log_msg "MERGERFS: Live mount failed."
+        send_notification "NOTIFY:Error: Merge Failed"
         exit 1
     fi
     ;;
@@ -538,7 +551,7 @@ case "$COMMAND" in
     fi
 
     log_msg "REMOVE: Abrupt removal of /dev/$DEVNAME detected at $MOUNT_POINT."
-    send_notification "NOTIFY:DriveUnplugged"
+    send_notification "NOTIFY:Drive Unplugged"
     
     $0 eject "$MOUNT_POINT"
     
@@ -589,6 +602,8 @@ case "$COMMAND" in
     fi
 
     log_msg "EJECT: Drive ejected."
+    send_notification "NOTIFY:Drive Ejected"
+    send_notification "RELOAD_GAMELISTS:true"
     exit 0
     ;;
 
@@ -611,6 +626,7 @@ case "$COMMAND" in
         fi
         batocera-settings-set -f "$BOOT_CONF_FILE" "ignore.drives" "$NEW_IGNORES"
         log_msg "IGNORE: Added $UNIQUE_ID to ignore.drives in boot config."
+        send_notification "NOTIFY:Drive Ignored"
     fi
 
     mount -o remount,ro /boot
