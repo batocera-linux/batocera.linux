@@ -11598,6 +11598,13 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        enable_win32:
+            group: ADVANCED OPTIONS
+            prompt: ENABLE WIN32
+            description: Sets Runner to 32bit, works only if there is no prefix for current app is installed.
+            choices:
+                "Off": 0
+                "On":  1
         allow_xim:
             group: ADVANCED OPTIONS
             prompt: ENABLE XIM
