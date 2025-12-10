@@ -451,7 +451,14 @@ case "$COMMAND" in
     MOUNT_POINT=$(findmnt -n -o TARGET "$NEW_PART")
     log_msg "FORMAT: Setting up structure at $MOUNT_POINT..."
     mkdir -p "$MOUNT_POINT/roms"
-    
+
+    log_msg "FORMAT: Replicating empty folder structure from internal storage..."
+    # rsync directories only. This ensures the external drive has snes, gba, etc.
+    # We sync FROM /userdata/roms/ (Internal) TO $MOUNT_POINT/roms/
+    if [ -d "/userdata/roms" ]; then
+        rsync -a -f"+ */" -f"- *" "/userdata/roms/" "$MOUNT_POINT/roms/" 2>/dev/null
+    fi
+
     send_notification "NOTIFY:Configuring Storage..."
     $0 merge "$MOUNT_POINT"
     ;;
@@ -499,8 +506,19 @@ case "$COMMAND" in
 
     BASE_DIR="/userdata/.roms_base"
     mkdir -p "$BASE_DIR"
-    
+
+    # Check if /userdata/roms (Internal) has files. If so, move them to .roms_base
+    # so they can be part of the pool instead of being masked by the mount.
+    if [ -n "$(ls -A "$POOL_PATH" 2>/dev/null)" ]; then
+        log_msg "MERGE: Moving internal ROMs to base directory ($BASE_DIR) to prevent masking..."
+        # Move visible contents
+        mv "$POOL_PATH"/* "$BASE_DIR"/ 2>/dev/null
+        # Move hidden files (like .scrapers)
+        mv "$POOL_PATH"/.[!.]* "$BASE_DIR"/ 2>/dev/null
+    fi
+
     FULL_BRANCHES=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY" | cut -d'@' -f2)
+    # Ensure BASE_DIR is first in the list
     BRANCHES_CMD="$BASE_DIR:$FULL_BRANCHES"
     
     log_msg "MERGE: Executing mergerfs..."
@@ -562,11 +580,14 @@ case "$COMMAND" in
 
 "unmount_live_pool")
     MOUNT_POINT=$1
+    # Check if the mount point being removed is currently part of the active pool
     if mount | grep "fuse.mergerfs on $POOL_PATH" | grep -q "$MOUNT_POINT"; then
         log_msg "POOL: Unmounting MergerFS pool..."
         umount -l "$POOL_PATH"
+        
         BASE_DIR="/userdata/.roms_base"
         if [ -d "$BASE_DIR" ]; then
+            log_msg "POOL: Restoring internal ROMs to main folder..."
             mv "$BASE_DIR"/* "$POOL_PATH/" 2>/dev/null || true
             mv "$BASE_DIR"/.[!.]* "$POOL_PATH/" 2>/dev/null || true
             rmdir "$BASE_DIR"
@@ -591,6 +612,8 @@ case "$COMMAND" in
     mount -o remount,ro /boot
     
     log_msg "PERSISTENCE: Removed $BRANCH_PATH from config."
+    
+    # This calls the restoration logic
     $0 unmount_live_pool "$MOUNT_POINT"
     
     log_msg "EJECT: Unmounting $MOUNT_POINT..."
@@ -603,6 +626,7 @@ case "$COMMAND" in
 
     log_msg "EJECT: Drive ejected."
     send_notification "NOTIFY:Drive Ejected"
+    sleep 1
     send_notification "RELOAD_GAMELISTS:true"
     exit 0
     ;;
