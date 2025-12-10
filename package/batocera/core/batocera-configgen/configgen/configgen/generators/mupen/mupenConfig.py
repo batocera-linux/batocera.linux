@@ -83,7 +83,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
     iniConfig.set("Video-General", "Version", "1")
     iniConfig.set("Video-General", "ScreenWidth", str(width))
     iniConfig.set("Video-General", "ScreenHeight", str(height))
-    iniConfig.set("Video-General", "Fullscreen", "True") # required at least for drm boards
+    iniConfig.set("Video-General", "Fullscreen", "False") # required at least for drm boards (still true ?) ; hum, False required (at least for xorg + bcc)
     iniConfig.set("Video-General", "VerticalSync", "True")
 
     # Graphic Plugins
