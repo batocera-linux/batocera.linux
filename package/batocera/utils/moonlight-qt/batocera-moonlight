@@ -62,6 +62,13 @@ romfname() {
         | sed -r 's/[^A-Za-z0-9.-]+/-/g'
 }
 
+xmlescape() {
+    local str="$1"
+    python3 -c \
+        "import sys, xml.sax.saxutils; print(xml.sax.saxutils.escape(sys.argv[1], {'\"': '&quot;'}), end='')" \
+        "$str"
+}
+
 sync() {
     local host="$1"
     if [ -z "$host" ]; then
@@ -76,7 +83,7 @@ sync() {
     log "populating moonlight roms"
     local glist
     if [ ! -f "$gamelist" ]; then
-        glist="$(echo -e "<?xml version=\"1.0\"?>\n<gameList>\n</gameList>")"
+        glist="$(echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gameList>\n</gameList>")"
     else
         glist="$(cat "$gamelist")"
     fi
@@ -88,11 +95,11 @@ sync() {
         log "creating moonlight rom entry '$rom' for app '$app'"
         echo "$app" > "$romsdir/$rom"
 
-        if ! echo -e "$glist" | grep "<path>./$rom</path>" &>/dev/null; then
+        if ! echo -e "$glist" | grep "<path>./$(xmlescape "$rom")</path>" &>/dev/null; then
             log "creating gamelist entry for app '$app'"
             glist="$(echo -e "$glist" \
-                | sed "/<\/gameList>/i <game>\n<path>.\/$rom<\/path>\n<name>$app<\/name>\n<\/game>" \
-                | XMLLINT_INDENT="    " xmllint --format -)"
+                | sed "/<\/gameList>/i <game>\n<path>.\/$(xmlescape "$rom")<\/path>\n<name>$(xmlescape "$app")<\/name>\n<\/game>" \
+                | XMLLINT_INDENT="    " xmllint --format --encode UTF-8 -)"
         else
             log "gamelist entry for app '$app' already exists, skipping"
         fi
