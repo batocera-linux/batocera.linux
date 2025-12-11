@@ -62,6 +62,15 @@ romfname() {
         | sed -r 's/[^A-Za-z0-9.-]+/-/g'
 }
 
+xmlescape() {
+    local str="$1"
+    echo -n "$str" \
+        | sed -e 's/&/&amp;/g' \
+              -e 's/</&lt;/g' \
+              -e 's/>/&gt;/g' \
+              -e 's/"/&quot;/g'
+}
+
 sync() {
     local host="$1"
     if [ -z "$host" ]; then
@@ -88,10 +97,10 @@ sync() {
         log "creating moonlight rom entry '$rom' for app '$app'"
         echo "$app" > "$romsdir/$rom"
 
-        if ! echo -e "$glist" | grep "<path>./$rom</path>" &>/dev/null; then
+        if ! echo -e "$glist" | grep "<path>./$(xmlescape "$rom")</path>" &>/dev/null; then
             log "creating gamelist entry for app '$app'"
             glist="$(echo -e "$glist" \
-                | sed "/<\/gameList>/i <game>\n<path>.\/$rom<\/path>\n<name>$app<\/name>\n<\/game>" \
+                | sed "/<\/gameList>/i <game>\n<path>.\/$(xmlescape "$rom")<\/path>\n<name>$(xmlescape "$app")<\/name>\n<\/game>" \
                 | XMLLINT_INDENT="    " xmllint --format -)"
         else
             log "gamelist entry for app '$app' already exists, skipping"
