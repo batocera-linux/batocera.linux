@@ -4,741 +4,851 @@
 # - Generate the _info.txt file with the emulator information
 # - Information from the emulators are being extracted from the file es_system.yml
 #
-import yaml
-import re
+
+from __future__ import annotations
+
 import argparse
-import os
+import json
+import re
 import shutil
 from collections import OrderedDict
-from operator import itemgetter
-import glob
-import json
-from os.path import basename
+from pathlib import Path
+from typing import Final, NotRequired, Required, cast
+from typing_extensions import TypedDict, TypeForm
 
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+import yaml
+
+from batocera_es_system_shared import (
+    MISSING,
+    CoreDict,
+    DefaultDict,
+    SystemDict,
+    get_deep_value,
+    is_arch_valid,
+    is_valid_requirements,
+    safe_load_yaml,
+)
+
+# es_features.yml definitions
+
+
+class _CFeatureBaseDict(TypedDict, total=False):
+    prompt: Required[str]
+    description: str
+    group: str
+    submenu: str
+    order: int
+    archs_include: list[str]
+    archs_exclude: list[str]
+
+
+class _CFeaturePresetDict(_CFeatureBaseDict):
+    preset: Required[str]
+    preset_parameters: str
+
+
+class _CFeatureChoicesDict(_CFeatureBaseDict):
+    choices: Required[dict[str, str | int | bool | None]]
+
+
+type _CFeatureDict = _CFeaturePresetDict | _CFeatureChoicesDict
+
+
+class _FeatureDict(TypedDict, total=False):
+    features: list[str]  # List of feature names
+    shared: list[str]  # Shared features to include
+    cfeatures: dict[str, _CFeatureDict]  # Explicit feature whitelist
+    cores: dict[str, _FeatureDict]
+    systems: dict[str, _FeatureDict]
+
+
+class _SystemFeaturesDict(TypedDict):
+    cfeatures: dict[str, _CFeatureDict]
+
+
+_Features = TypedDict('_Features', {'shared': _SystemFeaturesDict, 'global': _FeatureDict}, extra_items=_FeatureDict)
+
+
+class _CommentDict(TypedDict):
+    emulator: str
+    core: NotRequired[str]
+
+
+_DEFAULT_PARENTPATH: Final = '/userdata/roms'
+_DEFAULT_COMMAND: Final = 'emulatorlauncher %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%'
+
+
+def _ordered_load[T](
+    file: Path,
+    type: TypeForm[T],
+    Loader: type[yaml.Loader] = yaml.Loader,
+    object_pairs_hook: type[OrderedDict[str, object]] = OrderedDict,
+) -> T:
     class OrderedLoader(Loader):
         pass
-    def construct_mapping(loader, node):
+
+    def construct_mapping(loader: yaml.Loader, node: yaml.MappingNode) -> OrderedDict[str, object]:
         loader.flatten_mapping(node)
-        return object_pairs_hook(loader.construct_pairs(node))
-    OrderedLoader.add_constructor(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-        construct_mapping)
-    return yaml.load(stream, OrderedLoader)
+        return object_pairs_hook(loader.construct_pairs(node))  # pyright: ignore
 
-class EsSystemConf:
+    OrderedLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping)
+    return yaml.load(file.read_text(), OrderedLoader)
 
-    default_parentpath = "/userdata/roms"
-    default_command    = "emulatorlauncher %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%"
 
-    # Generate the es_systems.cfg file by searching the information in the es_system.yml file
-    @staticmethod
-    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, esKeysTranslationFile, esKeysParentFolder, esBlacklistedWordsFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
-        rules = yaml.safe_load(open(rulesYaml, "r"))
-        config = EsSystemConf.loadConfig(configFile)
-        es_system = ""
+# Generate the es_systems.cfg file by searching the information in the es_system.yml file
+def _generate_all(
+    rulesYaml: Path,
+    featuresYaml: Path,
+    configFile: Path,
+    esSystemFile: Path,
+    esFeaturesFile: Path,
+    esTranslationFile: Path,
+    esKeysTranslationFile: Path,
+    esKeysParentFolder: Path,
+    esBlacklistedWordsFile: Path,
+    systemsConfigFile: Path,
+    archSystemsConfigFile: Path,
+    romsdirsource: Path,
+    romsdirtarget: Path,
+    arch: str,
+    /,
+) -> None:
+    rules = safe_load_yaml(rulesYaml, dict[str, SystemDict])
+    config = _load_config(configFile)
+    es_system: list[str] = [
+        '<?xml version="1.0"?>',
+        '<systemList>',
+    ]
 
-        archSystemsConfig = yaml.safe_load(open(archSystemsConfigFile, "r"))
-        if archSystemsConfig is None:
-            archSystemsConfig = {}
-        systemsConfig     = yaml.safe_load(open(systemsConfigFile, "r"))
+    archSystemsConfig = safe_load_yaml(archSystemsConfigFile, dict[str, DefaultDict] | None)
+    if archSystemsConfig is None:
+        archSystemsConfig = {}
+    systemsConfig = safe_load_yaml(systemsConfigFile, dict[str, DefaultDict])
 
-        es_system += "<?xml version=\"1.0\"?>\n"
-        es_system += "<systemList>\n"
-        # sort to be determinist
-        sortedRules = sorted(rules)
+    # sort to be determinist
+    sortedRules = sorted(rules.items(), key=lambda x: x[0])
 
-        print("generating the " + esSystemFile + " file...")
-        for system in sortedRules:
-            # compute default emulator/cores
-            defaultCore = None
-            defaultEmulator = None
+    print(f'generating the {esSystemFile} file...')
+    for system, system_def in sortedRules:
+        # compute default emulator/cores
+        defaultCore: str | None = None
+        defaultEmulator: str | None = None
 
-            if EsSystemConf.keys_exists(archSystemsConfig, system, "emulator"):
-                defaultEmulator = archSystemsConfig[system]["emulator"]
-            elif EsSystemConf.keys_exists(systemsConfig, system, "emulator"):
-                defaultEmulator = systemsConfig[system]["emulator"]
-            if EsSystemConf.keys_exists(archSystemsConfig, system, "core"):
-                defaultCore = archSystemsConfig[system]["core"]
-            elif EsSystemConf.keys_exists(systemsConfig, system, "core"):
-                defaultCore = systemsConfig[system]["core"]
+        if (archEmulator := get_deep_value(archSystemsConfig, system, 'emulator')) is not MISSING:
+            defaultEmulator = archEmulator
+        elif (systemsEmulator := get_deep_value(systemsConfig, system, 'emulator')) is not MISSING:
+            defaultEmulator = systemsEmulator
 
-            data = {}
-            if rules[system]:
-                data = rules[system]
-            es_system += EsSystemConf.generateSystem(system, data, config, defaultEmulator, defaultCore, arch)
-        es_system += "</systemList>\n"
-        EsSystemConf.createEsSystem(es_system, esSystemFile)
+        if (archCore := get_deep_value(archSystemsConfig, system, 'core')) is not MISSING:
+            defaultCore = archCore
+        elif (systemsCore := get_deep_value(systemsConfig, system, 'core')) is not MISSING:
+            defaultCore = systemsCore
 
-        toTranslateOnArch = {}
-        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch, toTranslateOnArch)
-        toTranslate = EsSystemConf.findTranslations(featuresYaml)
+        es_system.extend(_generate_system(system, system_def, config, defaultEmulator, defaultCore, arch))
 
-        # remove blacklisted words
-        backlistWords = {}
-        with open(esBlacklistedWordsFile) as fp:
-            line = fp.readline().rstrip('\n')
-            while line:
-                if line in toTranslate:
-                    del toTranslate[line]
-                line = fp.readline().rstrip('\n')
-        ###
+    es_system.extend(['</systemList>', ''])
 
-        EsSystemConf.createEsTranslations(esTranslationFile, toTranslate)
-        EsSystemConf.createEsKeysTranslations(esKeysTranslationFile, esKeysParentFolder)
+    esSystemFile.write_text('\n'.join(es_system))
 
-        print("removing the " + romsdirtarget + " folder...")
-        if os.path.isdir(romsdirtarget):
-            shutil.rmtree(romsdirtarget)
-        print("generating the " + romsdirtarget + " folder...")
-        for system in sortedRules:
-            if rules[system]:
-                if EsSystemConf.needFolder(system, rules[system], config, arch):
-                    EsSystemConf.createFolders(system, rules[system], romsdirsource, romsdirtarget)
-                    EsSystemConf.infoSystem(system, rules[system], romsdirtarget)
-                else:
-                    print("skipping directory for system " + system)
+    toTranslateOnArch: dict[str | None, list[_CommentDict]] = {}
+    _create_es_features(featuresYaml, rules, esFeaturesFile, arch, toTranslateOnArch)
+    toTranslate = _find_translations(featuresYaml)
 
-    # check if the folder is required
-    @staticmethod
-    def needFolder(system, data, config, arch):
-        # no emulator
-        if "emulators" not in data:
-            return False
+    # remove blacklisted words
+    with esBlacklistedWordsFile.open() as fp:
+        for line in fp:
+            line = line.rstrip('\n')
+            if line in toTranslate:
+                del toTranslate[line]
+    ###
 
-        for emulator in sorted(data["emulators"]):
-            emulatorData = data["emulators"][emulator]
+    _create_es_translations(esTranslationFile, toTranslate)
+    _create_es_keys_translations(esKeysTranslationFile, esKeysParentFolder)
 
-            if not EsSystemConf.archValid(arch, emulatorData):
-                continue
+    print(f'removing the {romsdirtarget} folder...')
+    if romsdirtarget.is_dir():
+        shutil.rmtree(romsdirtarget)
+    print(f'generating the {romsdirtarget} folder...')
+    for system, system_def in sortedRules:
+        if system_def:
+            if _need_folder(system, system_def, config, arch):
+                _create_folders(system, system_def, romsdirsource, romsdirtarget)
+                _info_system(system, system_def, romsdirtarget)
+            else:
+                print(f'skipping directory for system {system}')
 
-            core_keys = [key for key in emulatorData if key not in ["archs_include", "archs_exclude"]]
 
-            for core in sorted(core_keys):
-                coreData = emulatorData[core]
-
-                if "requireAnyOf" in coreData and \
-                   EsSystemConf.archValid(arch, coreData) and \
-                   EsSystemConf.isValidRequirements(config, coreData["requireAnyOf"]):
-                    return True
-        
+# check if the folder is required
+def _need_folder(system: str, data: SystemDict, config: dict[str, int], arch: str, /) -> bool:
+    # no emulator
+    if 'emulators' not in data:
         return False
 
-    # Loads the .config file
-    @staticmethod
-    def loadConfig(configFile):
-        config = {}
-        with open(configFile) as fp:
-            line = fp.readline()
-            while line:
-                m = re.search("^([^ ]+)=y$", line)
-                if m:
-                    config[m.group(1)] = 1
-                line = fp.readline()
-        return config
+    for emulator in sorted(data['emulators']):
+        emulatorData = data['emulators'][emulator]
 
-    # Generate emulator system
-    @staticmethod
-    def generateSystem(system, data, config, defaultEmulator, defaultCore, arch):
-        listEmulatorsTxt = EsSystemConf.listEmulators(data, config, defaultEmulator, defaultCore, arch)
-        if listEmulatorsTxt == "" and not("force" in data and data["force"] == True) :
-          return ""
+        if not is_arch_valid(arch, emulatorData):
+            continue
 
-        pathValue      = EsSystemConf.systemPath(system, data)
-        platformValue  = EsSystemConf.systemPlatform(system, data)
-        listExtensions = EsSystemConf.listExtension(data, False)
-        groupValue     = EsSystemConf.systemGroup(system, data)
-        command        = EsSystemConf.commandName(data)
+        core_keys = [key for key in emulatorData if key not in ['archs_include', 'archs_exclude']]
 
-        systemTxt =  "  <system>\n"
-        systemTxt += "        <fullname>%s</fullname>\n" % (EsSystemConf.protectXml(data["name"]))
-        systemTxt += "        <name>%s</name>\n"           % (system)
-        systemTxt += "        <manufacturer>%s</manufacturer>\n" % (EsSystemConf.protectXml(data["manufacturer"]))
-        systemTxt += "        <release>%s</release>\n" % (EsSystemConf.protectXml(data["release"]))
-        systemTxt += "        <hardware>%s</hardware>\n" % (EsSystemConf.protectXml(data["hardware"]))
-        if listExtensions != "":
-            if pathValue != "":
-                systemTxt += "        <path>%s</path>\n"           % (pathValue)
-            systemTxt += "        <extension>%s</extension>\n" % (listExtensions)
-            systemTxt += "        <command>%s</command>\n"     % (command)
-        if platformValue != "":
-            systemTxt += "        <platform>%s</platform>\n"   % (EsSystemConf.protectXml(platformValue))
-        systemTxt += "        <theme>%s</theme>\n"         % (EsSystemConf.themeName(system, data))
-        if groupValue != "":
-            systemTxt += "        <group>%s</group>\n" % (EsSystemConf.protectXml(groupValue))
-        systemTxt += listEmulatorsTxt
-        systemTxt += "  </system>\n"
-        return systemTxt
+        for core in sorted(core_keys):
+            coreData = cast('CoreDict', emulatorData[core])
 
-    # Returns the path to the rom folder for the emulator
-    @staticmethod
-    def systemPath(system, data):
-        if "path" in data:
-            if data["path"] is None:
-                return ""
+            if (
+                'requireAnyOf' in coreData
+                and is_arch_valid(arch, coreData)
+                and is_valid_requirements(config, coreData['requireAnyOf'])
+            ):
+                return True
+
+    return False
+
+
+# Loads the .config file
+def _load_config(configFile: Path, /) -> dict[str, int]:
+    config: dict[str, int] = {}
+    with configFile.open() as fp:
+        for line in fp:
+            m = re.search('^([^ ]+)=y$', line)
+            if m:
+                config[m.group(1)] = 1
+    return config
+
+
+# Generate emulator system
+def _generate_system(
+    system: str,
+    data: SystemDict,
+    config: dict[str, int],
+    defaultEmulator: str | None,
+    defaultCore: str | None,
+    arch: str,
+    /,
+) -> list[str]:
+    emulators_txt = _list_emulators(data, config, defaultEmulator, defaultCore, arch)
+    if not emulators_txt and not data.get('force'):
+        return []
+
+    pathValue = _system_path(system, data)
+    platformValue = _system_platform(system, data)
+    listExtensions = _list_extension(data, False)
+    groupValue = _system_group(system, data)
+    command = _command_name(data)
+
+    system_txt: list[str] = [
+        '  <system>',
+        f'        <fullname>{_protect_xml(data["name"])}</fullname>',
+        f'        <name>{system}</name>',
+        f'        <manufacturer>{_protect_xml(data["manufacturer"])}</manufacturer>',
+        f'        <release>{_protect_xml(data["release"])}</release>',
+        f'        <hardware>{_protect_xml(data["hardware"])}</hardware>',
+    ]
+    if listExtensions:
+        if pathValue:
+            system_txt.append(f'        <path>{pathValue}</path>')
+        system_txt.extend(
+            [
+                f'        <extension>{listExtensions}</extension>',
+                f'        <command>{command}</command>',
+            ]
+        )
+    if platformValue:
+        system_txt.append(f'        <platform>{_protect_xml(platformValue)}</platform>')
+    system_txt.append(f'        <theme>{_theme_name(system, data)}</theme>')
+    if groupValue:
+        system_txt.append(f'        <group>{_protect_xml(groupValue)}</group>')
+
+    system_txt.extend([*emulators_txt, '  </system>'])
+
+    return system_txt
+
+
+# Returns the path to the rom folder for the emulator
+def _system_path(system: str, data: SystemDict, /) -> str:
+    if 'path' in data:
+        if data['path'] is None:
+            return ''
+        if data['path'][0] == '/':  # absolute path
+            return data['path']
+        return _DEFAULT_PARENTPATH + '/' + data['path']
+    return _DEFAULT_PARENTPATH + '/' + system
+
+
+def _system_sub_roms_dir(system: str, data: SystemDict, /) -> str | None:
+    if 'path' in data:
+        if data['path'] is None:
+            return None  # no path to create
+        if data['path'][0] == '/':  # absolute path
+            return None  # don't create absolute paths
+        return data['path']
+    return system
+
+
+# Returns the path to the rom folder for the emulator
+def _system_platform(system: str, data: SystemDict, /) -> str:
+    if 'platform' in data:
+        if data['platform'] is None:
+            return ''
+        return data['platform']
+    return system
+
+
+# Some emulators have different names between roms and themes
+def _theme_name(system: str, data: SystemDict, /) -> str:
+    if 'theme' in data:
+        return data['theme']
+    return system
+
+
+# In case you need to specify a different command line
+def _command_name(data: SystemDict, /) -> str | None:
+    return data.get('command', _DEFAULT_COMMAND)
+
+
+# Create the folders of the consoles in the roms folder
+def _create_folders(system: str, data: SystemDict, romsdirsource: Path, romsdirtarget: Path, /) -> None:
+    subdir = _system_sub_roms_dir(system, data)
+
+    # nothing to create
+    if subdir is None:
+        return
+
+    roms_target_subdir = romsdirtarget / subdir
+    if not roms_target_subdir.is_dir():
+        roms_target_subdir.mkdir(parents=True)
+
+        roms_source_subdir = romsdirsource / subdir
+        # copy from the template one, or just keep it empty
+        if roms_source_subdir.is_dir():
+            roms_target_subdir.rmdir()  # remove the last level
+            shutil.copytree(roms_source_subdir, roms_target_subdir)
+
+
+# Creates an _info.txt file inside the emulators folders in roms with the information of the supported extensions.
+def _info_system(system: str, data: SystemDict, romsdir: Path, /) -> None:
+    subdir = _system_sub_roms_dir(system, data)
+
+    # nothing to create
+    if subdir is None:
+        return
+
+    infoTxt = f'## SYSTEM {data["name"].upper()} ##\n'
+    infoTxt += '-------------------------------------------------------------------------------\n'
+    infoTxt += f'ROM files extensions accepted: "{_list_extension(data, False)}"\n'
+    if 'comment_en' in data:
+        infoTxt += '\n' + data['comment_en']
+    infoTxt += '-------------------------------------------------------------------------------\n'
+    infoTxt += f'Extensions des fichiers ROMs permises: "{_list_extension(data, False)}"\n'
+    if 'comment_fr' in data:
+        infoTxt += '\n' + data['comment_fr']
+
+    arqtxt = romsdir / subdir / '_info.txt'
+
+    arqtxt.write_text(infoTxt)
+
+
+# generate the fake translations from *.keys files
+def _create_es_keys_translations(esKeysTranslationFile: Path, esKeysParentFolder: Path, /) -> None:
+    print(f'generating {esKeysTranslationFile}...')
+    files = esKeysParentFolder.glob('**/*.keys')
+    vals: dict[str, set[str]] = {}
+    for file in files:
+        print(f'... {file}')
+        content = json.loads(file.read_text())
+        for device in content:
+            for action in content[device]:
+                if 'description' in action:
+                    if action['description'] not in vals:
+                        vals[action['description']] = {file.name}
+                    else:
+                        vals[action['description']].add(file.name)
+
+    fd = esKeysTranslationFile.open('w')
+    fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
+    n = 0
+    for tr in vals:
+        vcomment = ''
+        vn = 0
+        for v in sorted(vals[tr]):
+            if vn < 5:
+                if vcomment != '':
+                    vcomment = vcomment + ', '
+                vcomment = vcomment + v
             else:
-                if data["path"][0] == "/": # absolute path
-                    return data["path"]
-                else:
-                    return EsSystemConf.default_parentpath + "/" + data["path"]
-        return EsSystemConf.default_parentpath + "/" + system
+                if vn == 5:
+                    vcomment = vcomment + ', ...'
+            vn = vn + 1
+        fd.write('/* TRANSLATION: ' + vcomment + ' */\n')
+        fd.write(
+            '#define fake_gettext_external_' + str(n) + ' pgettext("keys_files", "' + tr.replace('"', '\\"') + '")\n'
+        )
+        n = n + 1
+    fd.close()
 
-    @staticmethod
-    def systemSubRomsDir(system, data):
-        if "path" in data:
-            if data["path"] is None:
-                return None # no path to create
-            else:
-                if data["path"][0] == "/": # absolute path
-                    return None # don't create absolute paths
-                else:
-                    return data["path"]
-        return system
-        
-    # Returns the path to the rom folder for the emulator
-    @staticmethod
-    def systemPlatform(system, data):
-        if "platform" in data:
-            if data["platform"] is None:
-                return ""
-            return data["platform"]
-        return system
 
-    # Some emulators have different names between roms and themes
-    @staticmethod
-    def themeName(system, data):
-        if "theme" in data:
-          return data["theme"]
-        return system
-
-    # In case you need to specify a different command line 
-    @staticmethod
-    def commandName(data):
-        if "command" in data:
-          return data["command"]
-        return EsSystemConf.default_command
-
-    # Create the folders of the consoles in the roms folder
-    @staticmethod
-    def createFolders(system, data, romsdirsource, romsdirtarget):
-        subdir = EsSystemConf.systemSubRomsDir(system, data)
-
-        # nothing to create
-        if subdir is None:
-            return
-
-        if not os.path.isdir(romsdirtarget + "/" + subdir):
-            os.makedirs(romsdirtarget + "/" + subdir)
-            # copy from the template one, or just keep it empty
-            if os.path.isdir(romsdirsource + "/" + subdir):
-                os.rmdir(romsdirtarget + "/" + subdir) # remove the last level
-                shutil.copytree(romsdirsource + "/" + subdir, romsdirtarget + "/" + subdir)
-
-    # Creates an _info.txt file inside the emulators folders in roms with the information of the supported extensions.
-    @staticmethod
-    def infoSystem(system, data, romsdir):
-        subdir = EsSystemConf.systemSubRomsDir(system, data)
-
-        # nothing to create
-        if subdir is None:
-            return
-
-        infoTxt = "## SYSTEM %s ##\n" % (data["name"].upper())
-        infoTxt += "-------------------------------------------------------------------------------\n"
-        infoTxt += "ROM files extensions accepted: \"%s\"\n" % (EsSystemConf.listExtension(data, False))
-        if "comment_en" in data:
-            infoTxt += "\n" + data["comment_en"]
-        infoTxt += "-------------------------------------------------------------------------------\n"
-        infoTxt += "Extensions des fichiers ROMs permises: \"%s\"\n" % (EsSystemConf.listExtension(data, False))
-        if "comment_fr" in data:
-            infoTxt += "\n" + data["comment_fr"]
-
-        arqtxt = romsdir + "/" + subdir + "/" + "_info.txt"
-
-        systemsInfo = open(arqtxt, 'w')
-        systemsInfo.write(infoTxt)
-        systemsInfo.close()
-
-    # Writes the information in the es_systems.cfg file
-    @staticmethod
-    def createEsSystem(essystem, esSystemFile):
-        es_systems = open(esSystemFile, "w")
-        es_systems.write(essystem)
-        es_systems.close()
-
-    # generate the fake translations from *.keys files
-    @staticmethod
-    def createEsKeysTranslations(esKeysTranslationFile, esKeysParentFolder):
-        print("generating {}...".format(esKeysTranslationFile))
-        files = glob.glob(esKeysParentFolder+'/**/*.keys', recursive=True)
-        vals = {}
-        for file in files:
-            print("... {}".format(file))
-            content = json.load(open(file))
-            for device in content:
-                for action in content[device]:
-                    if "description" in action:
-                        if action["description"] not in vals:
-                            vals[action["description"]] = { basename(file): {} }
-                        else:
-                            vals[action["description"]][basename(file)] = {}
-        
-        fd = open(esKeysTranslationFile, 'w')
-        fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
-        n = 0
-        for tr in vals:
-            vcomment = ""
-            vn = 0
-            for v in sorted(vals[tr]):
-                if vn < 5:
-                    if vcomment != "":
-                        vcomment = vcomment + ", "
-                    vcomment = vcomment + v
-                else:
-                    if vn == 5:
-                        vcomment = vcomment + ", ..."
-                vn = vn+1
-            fd.write("/* TRANSLATION: " + vcomment + " */\n");
-            fd.write("#define fake_gettext_external_" + str(n) + " pgettext(\"keys_files\", \"" + tr.replace("\"", "\\\"") + "\")\n")
-            n = n+1
-        fd.close()
-
-    # generate the fake translations from external options
-    @staticmethod
-    def createEsTranslations(esTranslationFile, toTranslate):
-        if toTranslate is None or not toTranslate:
-            return
-        fd = open(esTranslationFile, 'w')
+# generate the fake translations from external options
+def _create_es_translations(esTranslationFile: Path, toTranslate: dict[str | None, list[_CommentDict]], /) -> None:
+    if not toTranslate:
+        return
+    with esTranslationFile.open('w') as fd:
         n = 1
         fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
         for tr in toTranslate:
-              # skip if tr is None
+            # skip if tr is None
             if tr is None:
                 continue
             # skip empty string
-            if tr == "":
+            if tr == '':
                 continue
             # skip numbers (8, 10, 500+)
-            m = re.search("^[0-9]+[+]?$", tr)
+            m = re.search('^[0-9]+[+]?$', tr)
             if m:
-               continue
+                continue
             # skip floats (2.5)
-            m = re.search("^[0-9]+\\.[0-9]+[+]?$", tr)
+            m = re.search('^[0-9]+\\.[0-9]+[+]?$', tr)
             if m:
-               continue
+                continue
             # skip ratio (4:3)
-            m = re.search("^[0-9]+:[0-9]+$", tr)
+            m = re.search('^[0-9]+:[0-9]+$', tr)
             if m:
-               continue
+                continue
             # skip ratio (4/3)
-            m = re.search("^[0-9]+/[0-9]+$", tr)
+            m = re.search('^[0-9]+/[0-9]+$', tr)
             if m:
-               continue
+                continue
             # skip numbers (100%, 3x, +50%)
-            m = re.search("^[+-]?[0-9]+[%x]?$", tr)
+            m = re.search('^[+-]?[0-9]+[%x]?$', tr)
             if m:
                 continue
             # skip resolutions (640x480)
-            m = re.search("^[0-9]+x[0-9]+$", tr)
+            m = re.search('^[0-9]+x[0-9]+$', tr)
             if m:
                 continue
             # skip resolutions (2x 640x480, 4x (640x480), x4 640x480, 3x 1080p (1920x1584), 2x 720p, 7x 2880p 5K
-            m = re.search("^[xX]?[0-9]*[xX]?[ ]*\\(?[0-9]+[x]?[0-9]+[pK]?\\)?[ ]*\\(?[0-9]+[x]?[0-9]+[pK]?\\)?$", tr)
+            m = re.search('^[xX]?[0-9]*[xX]?[ ]*\\(?[0-9]+[x]?[0-9]+[pK]?\\)?[ ]*\\(?[0-9]+[x]?[0-9]+[pK]?\\)?$', tr)
             if m:
                 continue
 
-            vcomment = ""
+            vcomment = ''
             vn = 0
             vincomment = {}
-            for v in sorted(toTranslate[tr], key=lambda x: x["emulator"] + ("/" + x["core"] if "core" in x else "")):
+            for v in sorted(toTranslate[tr], key=lambda x: x['emulator'] + ('/' + x['core'] if 'core' in x else '')):
                 vword = None
-                if "core" not in v or v["emulator"] == v["core"]:
-                    vword = v["emulator"]
+                if 'core' not in v or v['emulator'] == v['core']:
+                    vword = v['emulator']
                 else:
-                    vword = v["emulator"] + "/" + v["core"]
+                    vword = v['emulator'] + '/' + v['core']
 
                 if vn < 5:
-                    if vword not in vincomment: # not already set in comment
-                        if vcomment != "":
-                            vcomment = vcomment + ", "
+                    if vword not in vincomment:  # not already set in comment
+                        if vcomment != '':
+                            vcomment = vcomment + ', '
                         vincomment[vword] = True
                         vcomment = vcomment + vword
-                        vn = vn+1
+                        vn = vn + 1
                 else:
                     # add ... if there are some other values
-                    if vn == 5:
-                        if vword not in vincomment: # not already set in comment
-                            vcomment = vcomment + ", ..."
-                            vn = vn+1
-            fd.write("/* TRANSLATION: " + vcomment + " */\n");
-            fd.write("#define fake_gettext_external_" + str(n) + " pgettext(\"game_options\", \"" + tr.replace("\"", "\\\"") + "\")\n")
-            n = n+1
-        fd.close()
+                    if vn == 5 and vword not in vincomment:  # not already set in comment
+                        vcomment = vcomment + ', ...'
+                        vn = vn + 1
+            fd.write('/* TRANSLATION: ' + vcomment + ' */\n')
+            fd.write(
+                '#define fake_gettext_external_'
+                + str(n)
+                + ' pgettext("game_options", "'
+                + tr.replace('"', '\\"')
+                + '")\n'
+            )
+            n = n + 1
 
-    @staticmethod
-    def protectXml(strval):
-        strval = str(strval)
-        strval = strval.replace("&", "&amp;")
-        strval = strval.replace("<", "&lt;")
-        strval = strval.replace(">", "&gt;")
-        strval = strval.replace("\"", "&quot;")
-        strval = strval.replace("\n", "&#x0a;")
-        return strval
 
-    @staticmethod
-    def addCommentToDictKey(dictvar, dictval, comment):
-        if dictval not in dictvar:
-            dictvar[dictval] = []
-        dictvar[dictval].append(comment)
+def _protect_xml(strval: object, /) -> str:
+    strval = str(strval)
+    strval = strval.replace('&', '&amp;')
+    strval = strval.replace('<', '&lt;')
+    strval = strval.replace('>', '&gt;')
+    strval = strval.replace('"', '&quot;')
+    return strval.replace('\n', '&#x0a;')
 
-    @staticmethod
-    def getXmlFeature(nfspaces, key, infos, toTranslate, emulator, core):
-        fspaces = " " * nfspaces
-        featuresTxt = ""
-        description = ""
-        if "description" in infos:
-            description = infos["description"]
-        submenustr = ""
-        if "submenu" in infos:
-            submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(infos["submenu"]))
-        groupstr = ""
-        if "group" in infos:
-            groupstr = " group=\"{}\"".format(EsSystemConf.protectXml(infos["group"]))
-        orderstr = ""
-        if "order" in infos:
-            orderstr = " order=\"{}\"".format(EsSystemConf.protectXml(infos["order"]))
-        presetstr = ""
-        if "preset" in infos:
-            presetstr = " preset=\"{}\"".format(EsSystemConf.protectXml(infos["preset"]))
-        if "preset_parameters" in infos:
-            presetstr +=  " preset-parameters=\"{}\"".format(EsSystemConf.protectXml(infos["preset_parameters"]))
-        featuresTxt += fspaces + "<feature name=\"{}\"{}{}{} value=\"{}\" description=\"{}\"{}>\n".format(EsSystemConf.protectXml(infos["prompt"]), submenustr, groupstr, orderstr, EsSystemConf.protectXml(key), EsSystemConf.protectXml(description), presetstr)
-        EsSystemConf.addCommentToDictKey(toTranslate, infos["prompt"], { "emulator": emulator, "core": core })
-        EsSystemConf.addCommentToDictKey(toTranslate, description, { "emulator": emulator, "core": core })
-        if "preset" not in infos:
-            for choice in infos["choices"]:
-                featuresTxt += fspaces + "  <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(infos["choices"][choice]))
-                EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
-        featuresTxt += fspaces + "</feature>\n"
-        return featuresTxt
 
-    @staticmethod
-    def array2vallist(arr, res = ""):
-        for x in arr:
-            if res != "":
-                res += ", "
-            res += x
-        return res
+def _add_comment_to_dict_key(
+    dictvar: dict[str | None, list[_CommentDict]], dictval: str | None, comment: _CommentDict, /
+) -> None:
+    if dictval not in dictvar:
+        dictvar[dictval] = []
+    dictvar[dictval].append(comment)
 
-    @staticmethod
-    def archValid(arch, obj):
-        if "archs_exclude" in obj and arch in obj["archs_exclude"]:
-            return False
-        return "archs_include" not in obj or arch in obj["archs_include"]
 
-    # Write the information in the es_features.cfg file
-    @staticmethod
-    def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch, toTranslate):
-        features = ordered_load(open(featuresYaml, "r"))
-        es_features = open(esFeaturesFile, "w")
-        featuresTxt = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
-        featuresTxt += "<features>\n"
-        for emulator in features:
-            emulator_featuresTxt = ""
-            if "features" in features[emulator]:
-                emulator_featuresTxt = EsSystemConf.array2vallist(features[emulator]["features"], emulator_featuresTxt)
-            if emulator == "global":
-                featuresTxt += "  <globalFeatures"
-            elif emulator == "shared":
-                featuresTxt += "  <sharedFeatures"
-            else:
-                featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(EsSystemConf.protectXml(emulator), EsSystemConf.protectXml(emulator_featuresTxt))
+def _get_xml_feature(
+    nfspaces: int,
+    key: str,
+    infos: _CFeatureDict,
+    toTranslate: dict[str | None, list[_CommentDict]],
+    emulator: str,
+    core: str | None,
+    /,
+) -> list[str]:
+    fspaces = ' ' * nfspaces
+    lines: list[str] = []
+    description = infos.get('description', '')
+    submenustr = f' submenu="{_protect_xml(infos["submenu"])}"' if 'submenu' in infos else ''
+    groupstr = f' group="{_protect_xml(infos["group"])}"' if 'group' in infos else ''
+    orderstr = f' order="{_protect_xml(infos["order"])}"' if 'order' in infos else ''
+    presetstr = ''
+    if 'preset' in infos:
+        presetstr = f' preset="{_protect_xml(infos["preset"])}"'
+    if 'preset_parameters' in infos:
+        presetstr += f' preset-parameters="{_protect_xml(infos["preset_parameters"])}"'
 
-            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
-                featuresTxt += ">\n"
-                if "cores" in features[emulator]:
-                    featuresTxt += "    <cores>\n"
-                    for core in features[emulator]["cores"]:
-                        core_featuresTxt = ""
-                        if "features" in features[emulator]["cores"][core]:
-                            core_featuresTxt = EsSystemConf.array2vallist(features[emulator]["cores"][core]["features"], core_featuresTxt)
-                        if "cfeatures" in features[emulator]["cores"][core] or "shared" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
-                            featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(EsSystemConf.protectXml(core), EsSystemConf.protectXml(core_featuresTxt))
-                            if "shared" in features[emulator]["cores"][core]:
-                                for shared in features[emulator]["cores"][core]["shared"]:
-                                    if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
-                                        featuresTxt += "        <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
-                            # core features
-                            if "cfeatures" in features[emulator]["cores"][core]:
-                               for cfeature in features[emulator]["cores"][core]["cfeatures"]:
-                                   if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["cfeatures"][cfeature]):
-                                       featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["cores"][core]["cfeatures"][cfeature], toTranslate, emulator, core)
-                                   else:
-                                       print("skipping core " + emulator + "/" + core + " cfeature " + cfeature)
-                            # #############
+    lines.append(
+        f'{fspaces}<feature name="{_protect_xml(infos["prompt"])}"{submenustr}{groupstr}{orderstr} value="{
+            _protect_xml(key)
+        }" description="{_protect_xml(description)}"{presetstr}>'
+    )
 
-                            # systems in cores/core
-                            if "systems" in features[emulator]["cores"][core]:
-                               featuresTxt += "        <systems>\n"
-                               for system in features[emulator]["cores"][core]["systems"]:
-                                   system_featuresTxt = ""
-                                   if "features" in features[emulator]["cores"][core]["systems"][system]:
-                                       system_featuresTxt = EsSystemConf.array2vallist(features[emulator]["cores"][core]["systems"][system]["features"], system_featuresTxt)
-                                   featuresTxt += "          <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
-                                   if "shared" in features[emulator]["cores"][core]["systems"][system]:
-                                       for shared in features[emulator]["cores"][core]["systems"][system]["shared"]:
-                                           if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
-                                               featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
-                                           else:
-                                               print("skipping system " + emulator + "/" + system + " shared " + shared)
-                                   if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
-                                       for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
-                                           if EsSystemConf.archValid(arch, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]):
-                                               featuresTxt += EsSystemConf.getXmlFeature(12, cfeature, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
-                                           else:
-                                               print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
-                                   featuresTxt += "          </system>\n"
-                               featuresTxt += "        </systems>\n"
-                               ###
-                            featuresTxt += "      </core>\n"
-                        else:
-                            featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(EsSystemConf.protectXml(core), EsSystemConf.protectXml(core_featuresTxt))
-                    featuresTxt += "    </cores>\n"
-                if "systems" in features[emulator]:
-                    featuresTxt += "    <systems>\n"
-                    for system in features[emulator]["systems"]:
-                        system_featuresTxt = ""
-                        if "features" in features[emulator]["systems"][system]:
-                            system_featuresTxt = EsSystemConf.array2vallist(features[emulator]["systems"][system]["features"], system_featuresTxt)
-                        featuresTxt += "      <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
-                        if "shared" in features[emulator]["systems"][system]:
-                            for shared in features[emulator]["systems"][system]["shared"]:
-                                if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
-                                    featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
-                                else:
-                                    print("skipping system " + emulator + "/" + system + " shared " + shared)
-                        if "cfeatures" in features[emulator]["systems"][system]:
-                            for cfeature in features[emulator]["systems"][system]["cfeatures"]:
-                                if EsSystemConf.archValid(arch, features[emulator]["systems"][system]["cfeatures"][cfeature]):
-                                    featuresTxt += EsSystemConf.getXmlFeature(8, cfeature, features[emulator]["systems"][system]["cfeatures"][cfeature], toTranslate, emulator, core)
-                                else:
-                                    print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
-                        featuresTxt += "      </system>\n"
-                    featuresTxt += "    </systems>\n"
-                if "shared" in features[emulator]:
-                    for shared in features[emulator]["shared"]:
-                        if EsSystemConf.archValid(arch, features["shared"]["cfeatures"][shared]):
-                            featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
-                        else:
-                            print("skipping emulator " + emulator + " shared " + shared)
+    comment: _CommentDict = {'emulator': emulator}
+    if core is not None:
+        comment['core'] = core
 
-                if "cfeatures" in features[emulator]:
-                    for cfeature in features[emulator]["cfeatures"]:
-                        if EsSystemConf.archValid(arch, features[emulator]["cfeatures"][cfeature]):
-                            featuresTxt += EsSystemConf.getXmlFeature(4, cfeature, features[emulator]["cfeatures"][cfeature], toTranslate, emulator, None)
-                        else:
-                            print("skipping emulator " + emulator + " cfeature " + cfeature)
+    _add_comment_to_dict_key(toTranslate, infos['prompt'], comment)
+    _add_comment_to_dict_key(toTranslate, description, comment.copy())
+    if 'preset' not in infos:
+        for choice in infos['choices']:
+            lines.append(
+                f'{fspaces}  <choice name="{_protect_xml(choice)}" value="{_protect_xml(infos["choices"][choice])}" />'
+            )
+            _add_comment_to_dict_key(toTranslate, choice, comment.copy())
+    lines.append(f'{fspaces}</feature>')
+    return lines
 
-                if emulator == "global":
-                    featuresTxt += "  </globalFeatures>\n"
-                elif emulator == "shared":
-                    featuresTxt += "  </sharedFeatures>\n"
-                else:
-                    featuresTxt += "  </emulator>\n"
-            else:
-                featuresTxt += " />\n"
-        featuresTxt += "</features>\n"
-        es_features.write(featuresTxt)
-        es_features.close()
 
-    # find all translation independantly of the arch
-    @staticmethod
-    def findTranslations(featuresYaml):
-        toTranslate = {}
-        features = ordered_load(open(featuresYaml, "r"))
-        for emulator in features:
-            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
-                if "cores" in features[emulator]:
-                    for core in features[emulator]["cores"]:
-                        if "cfeatures" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
-                            # core features
-                            if "cfeatures" in features[emulator]["cores"][core]:
-                               for cfeature in features[emulator]["cores"][core]["cfeatures"]:
-                                   for tag in ["description", "submenu", "group", "prompt"]:
-                                       if tag in features[emulator]["cores"][core]["cfeatures"][cfeature]:
-                                           tagval = features[emulator]["cores"][core]["cfeatures"][cfeature][tag]
-                                           EsSystemConf.addCommentToDictKey(toTranslate, tagval, { "emulator": emulator, "core": core })
-                                   if "choices" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
-                                       for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
-                                           EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
-                            # #############
+def _array_to_comma_string(arr: list[str] | None, /) -> str:
+    return '' if arr is None else ', '.join([item for item in arr if item])
 
-                            # systems in cores/core
-                            if "systems" in features[emulator]["cores"][core]:
-                               for system in features[emulator]["cores"][core]["systems"]:
-                                   if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
-                                       for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
-                                           for tag in ["description", "submenu", "group", "prompt"]:
-                                               if tag in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
-                                                   tagval = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature][tag]
-                                                   EsSystemConf.addCommentToDictKey(toTranslate, tagval, { "emulator": emulator, "core": core })
-                                           if "choices" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
-                                               for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
-                                                   EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
-                if "systems" in features[emulator]:
-                    for system in features[emulator]["systems"]:
-                        if "cfeatures" in features[emulator]["systems"][system]:
-                            for cfeature in features[emulator]["systems"][system]["cfeatures"]:
-                                for tag in ["description", "submenu", "group", "prompt"]:
-                                    if tag in features[emulator]["systems"][system]["cfeatures"][cfeature]:
-                                        tagval = features[emulator]["systems"][system]["cfeatures"][cfeature][tag]
-                                        EsSystemConf.addCommentToDictKey(toTranslate, tagval, { "emulator": emulator, "core": core })
-                                if "choices" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
-                                    for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
-                                        EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator, "core": core })
-                if "cfeatures" in features[emulator]:
-                    for cfeature in features[emulator]["cfeatures"]:
-                        for tag in ["description", "submenu", "group", "prompt"]:
-                            if tag in features[emulator]["cfeatures"][cfeature]:
-                                tagval = features[emulator]["cfeatures"][cfeature][tag]
-                                EsSystemConf.addCommentToDictKey(toTranslate, tagval, { "emulator": emulator })
-                        if "choices" in features[emulator]["cfeatures"][cfeature]:
-                            for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
-                                EsSystemConf.addCommentToDictKey(toTranslate, choice, { "emulator": emulator })
-        return toTranslate
 
-    # Returns the extensions supported by the emulator
-    @staticmethod
-    def listExtension(data, uppercase):
-        extension = ""
-        if "extensions" in data:
-            extensions = data["extensions"]
-            firstExt = True
-            for item in extensions:
-                if not firstExt:
-                    extension += " "
-                firstExt = False
-                extension += "." + str(item).lower()
-                if uppercase == True:
-                    extension += " ." + str(item).upper()
-        return extension
-
-    # Returns group to emulator rom folder
-    @staticmethod
-    def systemGroup(system, data):
-        if "group" in data:
-            if data["group"] is None:
-                return ""
-            return data["group"]
-        return ""
-
-    # Returns the validity of prerequisites
-    @staticmethod
-    def isValidRequirements(config, requirements):
-        if len(requirements) == 0:
-            return True
-
-        for requirement in requirements:
-            if isinstance(requirement, list):
-                subreqValid = True
-                for reqitem in requirement:
-                    if reqitem not in config:
-                        subreq = False
-                if subreq:
-                    return True
-            else:
-                if requirement in config:
-                    return True
-        return False
-
-    # Returns the enabled cores in the .config file for the emulator
-    @staticmethod
-    def listEmulators(data, config, defaultEmulator, defaultCore, arch):
-        listEmulatorsTxt = ""
-        emulators = {}
-        if "emulators" in data:
-            emulators = data["emulators"]
-
-        emulatorsTxt = ""
-        for emulator in sorted(emulators):
-            emulatorData = data["emulators"][emulator]
-
-            if not EsSystemConf.archValid(arch, emulatorData):
-                continue
-
-            emulatorTxt = "            <emulator name=\"%s\">\n" % (emulator)
-            emulatorTxt += "                <cores>\n"
-
-            # CORES
-            coresTxt = ""
-            # Get a list of actual cores, filtering out our architecture keys
-            core_keys = [key for key in emulatorData if key not in ["archs_include", "archs_exclude"]]
-            for core in sorted(core_keys):
-                coreData = emulatorData[core]
-                if EsSystemConf.isValidRequirements(config, coreData["requireAnyOf"]) and EsSystemConf.archValid(arch, coreData):
-                    incompatible_extensionsTxt = ""
-                    if "incompatible_extensions" in coreData:
-                        for ext in coreData["incompatible_extensions"]:
-                            if incompatible_extensionsTxt != "":
-                                incompatible_extensionsTxt += " "
-                            incompatible_extensionsTxt += "." + str(ext).lower()
-                        incompatible_extensionsTxt = " incompatible_extensions=\"" + incompatible_extensionsTxt + "\""
-
-                    if emulator == defaultEmulator and core == defaultCore:
-                        coresTxt += "                    <core default=\"true\"%s>%s</core>\n" % (incompatible_extensionsTxt, core)
-                    else:
-                        coresTxt += "                    <core%s>%s</core>\n" % (incompatible_extensionsTxt, core)
-
-            if coresTxt == "":
-                emulatorTxt = ""
-            else:
-                emulatorTxt  += coresTxt
-                emulatorTxt  += "                </cores>\n"
-                emulatorTxt  += "            </emulator>\n"
-                emulatorsTxt += emulatorTxt
-
-        if emulatorsTxt == "":
-            listEmulatorsTxt = ""
+# Write the information in the es_features.cfg file
+def _create_es_features(
+    featuresYaml: Path,
+    systems: dict[str, SystemDict],
+    esFeaturesFile: Path,
+    arch: str,
+    toTranslate: dict[str | None, list[_CommentDict]],
+    /,
+) -> None:
+    features = _ordered_load(featuresYaml, _Features)
+    features_lines: list[str] = ['<?xml version="1.0" encoding="UTF-8" ?>', '<features>']
+    for emulator, emulator_def in features.items():
+        emulator_featuresTxt = _array_to_comma_string(emulator_def.get('features'))
+        if emulator == 'global':
+            features_lines.append('  <globalFeatures')
+        elif emulator == 'shared':
+            features_lines.append('  <sharedFeatures')
         else:
-            listEmulatorsTxt += "        <emulators>\n"
-            listEmulatorsTxt += emulatorsTxt
-            listEmulatorsTxt += "        </emulators>\n"
+            features_lines.append(
+                f'  <emulator name="{_protect_xml(emulator)}" features="{_protect_xml(emulator_featuresTxt)}"'
+            )
 
-        return listEmulatorsTxt
+        if (
+            'cores' in emulator_def
+            or 'systems' in emulator_def
+            or 'cfeatures' in emulator_def
+            or 'shared' in emulator_def
+        ):
+            features_lines[-1] += '>'
+            if 'cores' in emulator_def:
+                emulator_cores = emulator_def['cores']
+                features_lines.append('    <cores>')
+                for core, core_def in emulator_cores.items():
+                    core_featuresTxt = _array_to_comma_string(core_def.get('features'))
+                    if 'cfeatures' in core_def or 'shared' in core_def or 'systems' in core_def:
+                        features_lines.append(
+                            f'      <core name="{_protect_xml(core)}" features="{_protect_xml(core_featuresTxt)}">'
+                        )
+                        if 'shared' in core_def:
+                            features_lines.extend(
+                                f'        <sharedFeature value="{_protect_xml(shared)}" />'
+                                for shared in core_def['shared']
+                                if is_arch_valid(arch, features['shared']['cfeatures'][shared])
+                            )
+                        # core features
+                        if 'cfeatures' in core_def:
+                            for cfeature, cfeature_def in core_def['cfeatures'].items():
+                                if is_arch_valid(arch, cfeature_def):
+                                    features_lines.extend(
+                                        _get_xml_feature(8, cfeature, cfeature_def, toTranslate, emulator, core)
+                                    )
+                                else:
+                                    print('skipping core ' + emulator + '/' + core + ' cfeature ' + cfeature)
+                        # #############
 
-    @staticmethod
-    def keys_exists(element, *keys):
-        '''
-        Check if *keys (nested) exists in `element` (dict).
-        '''
-        if not isinstance(element, dict):
-            raise AttributeError('keys_exists() expects dict as first argument.')
-        if len(keys) == 0:
-            raise AttributeError('keys_exists() expects at least two arguments, one given.')
+                        # systems in cores/core
+                        if 'systems' in core_def:
+                            features_lines.append('        <systems>')
+                            for system, system_def in core_def['systems'].items():
+                                system_featuresTxt = _array_to_comma_string(system_def.get('features'))
+                                features_lines.append(
+                                    f'          <system name="{_protect_xml(system)}" features="{_protect_xml(system_featuresTxt)}" >'
+                                )
+                                if 'shared' in system_def:
+                                    for shared in system_def['shared']:
+                                        if is_arch_valid(arch, features['shared']['cfeatures'][shared]):
+                                            features_lines.append(
+                                                f'    <sharedFeature value="{_protect_xml(shared)}" />'
+                                            )
+                                        else:
+                                            print('skipping system ' + emulator + '/' + system + ' shared ' + shared)
+                                if 'cfeatures' in system_def:
+                                    for cfeature, cfeature_def in system_def['cfeatures'].items():
+                                        if is_arch_valid(arch, cfeature_def):
+                                            features_lines.extend(
+                                                _get_xml_feature(
+                                                    12, cfeature, cfeature_def, toTranslate, emulator, core
+                                                )
+                                            )
+                                        else:
+                                            print(
+                                                'skipping system ' + emulator + '/' + system + ' cfeature ' + cfeature
+                                            )
+                                features_lines.append('          </system>')
+                            features_lines.append('        </systems>')
+                            ###
+                        features_lines.append('      </core>')
+                    else:
+                        features_lines.append(
+                            f'      <core name="{_protect_xml(core)}" features="{_protect_xml(core_featuresTxt)}" />'
+                        )
+                features_lines.append('    </cores>')
 
-        _element = element
-        for key in keys:
-            try:
-                _element = _element[key]
-            except KeyError:
-                return False
-        return True
+            if 'systems' in emulator_def:
+                features_lines.append('    <systems>')
+                for system, system_def in emulator_def['systems'].items():
+                    system_featuresTxt = _array_to_comma_string(system_def.get('features'))
+                    features_lines.append(
+                        f'      <system name="{_protect_xml(system)}" features="{_protect_xml(system_featuresTxt)}" >'
+                    )
+                    if 'shared' in system_def:
+                        for shared in system_def['shared']:
+                            if is_arch_valid(arch, features['shared']['cfeatures'][shared]):
+                                features_lines.append(f'    <sharedFeature value="{_protect_xml(shared)}" />')
+                            else:
+                                print('skipping system ' + emulator + '/' + system + ' shared ' + shared)
+                    if 'cfeatures' in system_def:
+                        for cfeature, cfeature_def in system_def['cfeatures'].items():
+                            if is_arch_valid(arch, cfeature_def):
+                                features_lines.extend(
+                                    _get_xml_feature(8, cfeature, cfeature_def, toTranslate, emulator, None)
+                                )
+                            else:
+                                print('skipping system ' + emulator + '/' + system + ' cfeature ' + cfeature)
+                    features_lines.append('      </system>')
+                features_lines.append('    </systems>')
+            if 'shared' in emulator_def:
+                for shared in emulator_def['shared']:
+                    if is_arch_valid(arch, features['shared']['cfeatures'][shared]):
+                        features_lines.append(f'    <sharedFeature value="{_protect_xml(shared)}" />')
+                    else:
+                        print('skipping emulator ' + emulator + ' shared ' + shared)
 
-if __name__ == "__main__":
+            if 'cfeatures' in emulator_def:
+                for cfeature, cfeature_def in emulator_def['cfeatures'].items():
+                    if is_arch_valid(arch, cfeature_def):
+                        features_lines.extend(_get_xml_feature(4, cfeature, cfeature_def, toTranslate, emulator, None))
+                    else:
+                        print('skipping emulator ' + emulator + ' cfeature ' + cfeature)
+
+            if emulator == 'global':
+                features_lines.append('  </globalFeatures>')
+            elif emulator == 'shared':
+                features_lines.append('  </sharedFeatures>')
+            else:
+                features_lines.append('  </emulator>')
+        else:
+            features_lines[-1] += ' />'
+    features_lines.extend(['</features>', ''])
+    esFeaturesFile.write_text('\n'.join(features_lines))
+
+
+# find all translation independantly of the arch
+def _find_translations(featuresYaml: Path, /) -> dict[str | None, list[_CommentDict]]:
+    toTranslate: dict[str | None, list[_CommentDict]] = {}
+    features = _ordered_load(featuresYaml, _Features)
+    for emulator, emulator_def in features.items():
+        if (
+            'cores' in emulator_def
+            or 'systems' in emulator_def
+            or 'cfeatures' in emulator_def
+            or 'shared' in emulator_def
+        ):
+            if 'cores' in emulator_def:
+                for core, core_def in emulator_def['cores'].items():
+                    if 'cfeatures' in core_def or 'systems' in core_def:
+                        # core features
+                        if 'cfeatures' in core_def:
+                            for cfeature_def in core_def['cfeatures'].values():
+                                for tag in ['description', 'submenu', 'group', 'prompt']:
+                                    if tag in cfeature_def:
+                                        tagval = cast('str', cfeature_def[tag])
+                                        _add_comment_to_dict_key(
+                                            toTranslate, tagval, {'emulator': emulator, 'core': core}
+                                        )
+                                if 'choices' in cfeature_def:
+                                    for choice in cfeature_def['choices']:
+                                        _add_comment_to_dict_key(
+                                            toTranslate, choice, {'emulator': emulator, 'core': core}
+                                        )
+                        # #############
+
+                        # systems in cores/core
+                        if 'systems' in core_def:
+                            for system_def in core_def['systems'].values():
+                                if 'cfeatures' in system_def:
+                                    for cfeature_def in system_def['cfeatures'].values():
+                                        for tag in ['description', 'submenu', 'group', 'prompt']:
+                                            if tag in cfeature_def:
+                                                tagval = cast('str', cfeature_def[tag])
+                                                _add_comment_to_dict_key(
+                                                    toTranslate, tagval, {'emulator': emulator, 'core': core}
+                                                )
+                                        if 'choices' in cfeature_def:
+                                            for choice in cfeature_def['choices']:
+                                                _add_comment_to_dict_key(
+                                                    toTranslate, choice, {'emulator': emulator, 'core': core}
+                                                )
+            if 'systems' in emulator_def:
+                for system_def in emulator_def['systems'].values():
+                    if 'cfeatures' in system_def:
+                        for cfeature_def in system_def['cfeatures'].values():
+                            for tag in ['description', 'submenu', 'group', 'prompt']:
+                                if tag in cfeature_def:
+                                    tagval = cast('str', cfeature_def[tag])
+                                    _add_comment_to_dict_key(toTranslate, tagval, {'emulator': emulator})
+                            if 'choices' in cfeature_def:
+                                for choice in cfeature_def['choices']:
+                                    _add_comment_to_dict_key(toTranslate, choice, {'emulator': emulator})
+            if 'cfeatures' in emulator_def:
+                for cfeature_def in emulator_def['cfeatures'].values():
+                    for tag in ['description', 'submenu', 'group', 'prompt']:
+                        if tag in cfeature_def:
+                            tagval = cast('str', cfeature_def[tag])
+                            _add_comment_to_dict_key(toTranslate, tagval, {'emulator': emulator})
+                    if 'choices' in cfeature_def:
+                        for choice in cfeature_def['choices']:
+                            _add_comment_to_dict_key(toTranslate, choice, {'emulator': emulator})
+    return toTranslate
+
+
+# Returns the extensions supported by the emulator
+def _list_extension(data: SystemDict, uppercase: bool, /) -> str:
+    extension_txt: list[str] = []
+
+    if 'extensions' in data:
+        extensions = data['extensions']
+        for item in extensions:
+            extension_txt.append('.' + str(item).lower())
+            if uppercase:
+                extension_txt.append('.' + str(item).upper())
+
+    return ' '.join(extension_txt)
+
+
+# Returns group to emulator rom folder
+def _system_group(system: str, data: SystemDict, /) -> str:
+    if 'group' in data:
+        if data['group'] is None:
+            return ''
+        return data['group']
+    return ''
+
+
+# Returns the enabled cores in the .config file for the emulator
+def _list_emulators(
+    data: SystemDict,
+    config: dict[str, int],
+    defaultEmulator: str | None,
+    defaultCore: str | None,
+    arch: str,
+    /,
+) -> list[str]:
+    if 'emulators' not in data:
+        return []
+
+    emulators_txt: list[str] = []
+    for emulator, emulatorData in sorted(data['emulators'].items(), key=lambda x: x[0]):
+        if not is_arch_valid(arch, emulatorData):
+            continue
+
+        # CORES
+        cores_txt: list[str] = []
+
+        # Get a list of actual cores, filtering out our architecture keys
+        core_keys = [key for key in emulatorData if key not in ['archs_include', 'archs_exclude']]
+        for core in sorted(core_keys):
+            coreData = cast('dict[str, CoreDict]', emulatorData)[core]
+            if is_valid_requirements(config, coreData['requireAnyOf']) and is_arch_valid(arch, coreData):
+                incompatible_extensionsTxt = ''
+                if 'incompatible_extensions' in coreData:
+                    for ext in coreData['incompatible_extensions']:
+                        if incompatible_extensionsTxt != '':
+                            incompatible_extensionsTxt += ' '
+                        incompatible_extensionsTxt += '.' + str(ext).lower()
+                    incompatible_extensionsTxt = ' incompatible_extensions="' + incompatible_extensionsTxt + '"'
+
+                cores_txt.append(
+                    f'                    <core default="true"{incompatible_extensionsTxt}>{core}</core>'
+                    if emulator == defaultEmulator and core == defaultCore
+                    else f'                    <core{incompatible_extensionsTxt}>{core}</core>'
+                )
+
+        if cores_txt:
+            emulators_txt.extend(
+                [
+                    f'            <emulator name="{emulator}">',
+                    '                <cores>',
+                    *cores_txt,
+                    '                </cores>',
+                    '            </emulator>',
+                ]
+            )
+
+    if emulators_txt:
+        return ['        <emulators>', *emulators_txt, '        </emulators>']
+
+    return emulators_txt
+
+
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("yml",           help="es_systems.yml definition file")
-    parser.add_argument("features",      help="es_features.yml file")
-    parser.add_argument("es_translations",  help="es_translations.h file")
-    parser.add_argument("es_keys_translations", help="es_keys_translations.h file")
-    parser.add_argument("es_keys_parent_folder", help="es_keys files parent folder (where to search for .keys files)")
-    parser.add_argument("blacklisted_words",  help="blacklisted_words.txt file")
-    parser.add_argument("config",        help=".config buildroot file")
-    parser.add_argument("es_systems",    help="es_systems.cfg emulationstation file")
-    parser.add_argument("es_features",   help="es_features.cfg emulationstation file")
-    parser.add_argument("gen_defaults_global", help="global configgen defaults")
-    parser.add_argument("gen_defaults_arch",   help="defaults configgen defaults")
-    parser.add_argument("romsdirsource", help="emulationstation roms directory")
-    parser.add_argument("romsdirtarget", help="emulationstation roms directory")
-    parser.add_argument("arch", help="arch")
+    parser.add_argument('yml', help='es_systems.yml definition file', type=Path)
+    parser.add_argument('features', help='es_features.yml file', type=Path)
+    parser.add_argument('es_translations', help='es_translations.h file', type=Path)
+    parser.add_argument('es_keys_translations', help='es_keys_translations.h file', type=Path)
+    parser.add_argument(
+        'es_keys_parent_folder', help='es_keys files parent folder (where to search for .keys files)', type=Path
+    )
+    parser.add_argument('blacklisted_words', help='blacklisted_words.txt file', type=Path)
+    parser.add_argument('config', help='.config buildroot file', type=Path)
+    parser.add_argument('es_systems', help='es_systems.cfg emulationstation file', type=Path)
+    parser.add_argument('es_features', help='es_features.cfg emulationstation file', type=Path)
+    parser.add_argument('gen_defaults_global', help='global configgen defaults', type=Path)
+    parser.add_argument('gen_defaults_arch', help='defaults configgen defaults', type=Path)
+    parser.add_argument('romsdirsource', help='emulationstation roms directory', type=Path)
+    parser.add_argument('romsdirtarget', help='emulationstation roms directory', type=Path)
+    parser.add_argument('arch', help='arch')
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.es_keys_translations, args.es_keys_parent_folder, args.blacklisted_words, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
+    _generate_all(
+        args.yml,
+        args.features,
+        args.config,
+        args.es_systems,
+        args.es_features,
+        args.es_translations,
+        args.es_keys_translations,
+        args.es_keys_parent_folder,
+        args.blacklisted_words,
+        args.gen_defaults_global,
+        args.gen_defaults_arch,
+        args.romsdirsource,
+        args.romsdirtarget,
+        args.arch,
+    )
