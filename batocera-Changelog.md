@@ -46,6 +46,7 @@
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 - Moonlight has transitioned from Moonlight Embedded to Moonlight QT for the majority of boards to allow for more hardware acceleration.
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
+- You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
 - CLK to 2025-11-26
