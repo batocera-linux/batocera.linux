@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-OPENJKDF2_VERSION = v0.9.6
+OPENJKDF2_VERSION = v0.9.8
 OPENJKDF2_SITE = https://github.com/shinyquagsire23/OpenJKDF2
 OPENJKDF2_SITE_METHOD = git
 OPENJKDF2_GIT_SUBMODULES = YES
