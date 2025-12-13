@@ -132,7 +132,21 @@ mount_partition() {
         BRANCH_PATH="$MOUNT_POINT/roms"
         CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
         if [[ "$CURRENT_CONFIG" == *"$BRANCH_PATH"* ]]; then
-            log_msg "SKIP: [$PART_DEV] Already in mergerfs config."
+            CLEAN_BRANCH="${BRANCH_PATH#/}"
+            if mount | grep " $POOL_PATH " | grep -q "$CLEAN_BRANCH"; then
+                log_msg "INFO: [$PART_DEV] Branch already active in pool. Ignoring redundant event."
+                return 0
+            fi
+            if grep -q " /userdata " /proc/mounts; then
+                # Hotplug (System running, Userdata ready)
+                log_msg "INFO: [$PART_DEV] Hotplug detected. Refreshing pool."
+                $0 refresh_pool &
+            else
+                # Boot (System starting, Userdata missing)
+                # Mark for S11share to handle later
+                log_msg "INFO: [$PART_DEV] Boot detected. Queuing refresh."
+                touch "/tmp/mergerfs.pending"
+            fi
         else
             # Set Pending Flag BEFORE requesting merge to block duplicate prompts
             if [ -n "$PENDING_FLAG_PATH" ]; then touch "$PENDING_FLAG_PATH"; fi
@@ -222,6 +236,13 @@ handle_partition_event() {
     if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then exit 0; fi
 
     mount_partition "$part_dev" "$ignore_auto" "$pending_flag"
+    
+    RET=$?
+    if [ $RET -eq 2 ]; then
+        exit 0
+    else
+        exit $RET
+    fi
 }
 
 handle_disk_event() {
@@ -380,6 +401,95 @@ case "$COMMAND" in
     fi
     ;;
 
+"refresh_pool")
+    LOCK_FILE="/tmp/mergerfs_refresh.lock"
+    
+    # Simple lock to prevent collisions if user hotplugs 2 drives at once
+    MAX_WAIT=60
+    WAIT_COUNT=0
+    
+    while ! mkdir "$LOCK_FILE" 2>/dev/null; do
+        if [ $WAIT_COUNT -ge $MAX_WAIT ]; then
+            log_msg "REFRESH: Lock timeout. Forcing."
+            break
+        fi
+        sleep 0.5
+        ((WAIT_COUNT++))
+    done
+    
+    trap 'rmdir "$LOCK_FILE" 2>/dev/null' EXIT
+
+    log_msg "REFRESH: Processing pool update..."
+
+    CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+    if [ -z "$CURRENT_CONFIG" ]; then
+        log_msg "REFRESH: No mergerfs config found. Nothing to do."
+        exit 0
+    fi
+
+    # Ensure destination exists
+    if [ ! -d "$POOL_PATH" ]; then
+        mkdir -p "$POOL_PATH"
+    fi
+
+    # Unmount Loop to prevent stacking
+    UNMOUNT_RETRIES=10
+    U_RETRY=0
+    while mount | grep " $POOL_PATH " | grep -q "mergerfs"; do
+        if [ $U_RETRY -eq 0 ]; then log_msg "REFRESH: Unmounting existing pool(s)..."; fi
+        umount -l "$POOL_PATH"
+        sleep 0.5
+        ((U_RETRY++))
+        if [ $U_RETRY -ge $UNMOUNT_RETRIES ]; then
+             log_msg "CRITICAL: Cannot unmount existing pool. Aborting."
+             exit 1
+        fi
+    done
+
+    BASE_DIR="/userdata/.roms_base"
+    mkdir -p "$BASE_DIR"
+    
+    # Move internal files if they are currently exposed
+    if ! mount | grep -q " $POOL_PATH "; then
+        if [ -n "$(ls -A "$POOL_PATH" 2>/dev/null)" ]; then
+            mv "$POOL_PATH"/* "$BASE_DIR"/ 2>/dev/null
+            mv "$POOL_PATH"/.[!.]* "$BASE_DIR"/ 2>/dev/null
+        fi
+    fi
+
+    # Build Branch List
+    RAW_BRANCHES=$(echo "$CURRENT_CONFIG" | cut -d'@' -f2 | tr ':' '\n')
+    VALID_BRANCHES="$BASE_DIR" 
+    
+    while read -r branch; do
+        if [ -n "$branch" ]; then
+            if [ -d "$branch" ]; then
+                VALID_BRANCHES="${VALID_BRANCHES}:${branch}"
+            else
+                log_msg "REFRESH: Skipping missing branch: $branch"
+            fi
+        fi
+    done <<< "$RAW_BRANCHES"
+
+    FINAL_OPTS="${MERGERFS_OPTS},nonempty"
+
+    log_msg "REFRESH: Executing mergerfs with: $VALID_BRANCHES"
+    
+    /usr/bin/mergerfs $FINAL_OPTS "$VALID_BRANCHES" "$POOL_PATH" 2>> "$LOG_FILE"
+    
+    if [ $? -eq 0 ]; then
+        log_msg "REFRESH: Pool active."
+        # Notify ES only if uptime > 60s (Hotplug)
+        # At boot, ES hasn't started yet, so no need to reload
+        SYS_UP=$(cat /proc/uptime | awk '{print int($1)}')
+        if [ "$SYS_UP" -gt 60 ]; then
+            send_notification "RELOAD_GAMELISTS:true"
+        fi
+    else
+        log_msg "REFRESH: Failed to start pool. Check error details above."
+    fi
+    ;;
+
 "format")
     DEVNAME=$ARG2
     FSTYPE_REQ=${3:-ext4}
@@ -528,7 +638,7 @@ case "$COMMAND" in
         log_msg "MERGERFS: Live pool active."
         send_notification "NOTIFY:Storage Expanded Successfully"
         sleep 1
-        send_notification "RELOAD_GAMELISTS:true"
+        #send_notification "RELOAD_GAMELISTS:true"
         exit 0
     else
         log_msg "MERGERFS: Live mount failed."
@@ -580,17 +690,61 @@ case "$COMMAND" in
 
 "unmount_live_pool")
     MOUNT_POINT=$1
-    # Check if the mount point being removed is currently part of the active pool
-    if mount | grep "fuse.mergerfs on $POOL_PATH" | grep -q "$MOUNT_POINT"; then
-        log_msg "POOL: Unmounting MergerFS pool..."
-        umount -l "$POOL_PATH"
+    
+    # Force Unmount the existing pool (Loop to handle stacked mounts)
+    if mount | grep " $POOL_PATH " | grep -q "mergerfs"; then
+        log_msg "POOL: Active MergerFS found. Stopping to reconfigure..."
+        send_notification "NOTIFY:Updating Storage Pool..."
         
-        BASE_DIR="/userdata/.roms_base"
+        MAX_RETRIES=5
+        COUNT=0
+        while mount | grep " $POOL_PATH " | grep -q "mergerfs"; do
+            umount -l "$POOL_PATH"
+            sleep 1
+            ((COUNT++))
+            if [ $COUNT -ge $MAX_RETRIES ]; then
+               log_msg "CRITICAL: Failed to unmount pool. Reboot recommended."
+               send_notification "NOTIFY:Error: Storage Stuck"
+               exit 1
+            fi
+        done
+    fi
+
+    # Check the configuration to see what is left
+    CURRENT_CONFIG=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY")
+    CLEAN_CONFIG=$(echo "$CURRENT_CONFIG" | cut -d'@' -f2) # Remove the key part if present
+
+    BASE_DIR="/userdata/.roms_base"
+
+    # Restore vs Reload
+    if [ -z "$CLEAN_CONFIG" ]; then
+        # Restore internal ROMs to the standard folder
         if [ -d "$BASE_DIR" ]; then
-            log_msg "POOL: Restoring internal ROMs to main folder..."
-            mv "$BASE_DIR"/* "$POOL_PATH/" 2>/dev/null || true
-            mv "$BASE_DIR"/.[!.]* "$POOL_PATH/" 2>/dev/null || true
-            rmdir "$BASE_DIR"
+            log_msg "POOL: No external drives remaining. Restoring internal ROMs..."
+            send_notification "NOTIFY:Restoring Internal Games..."
+            
+            cp -alf "$BASE_DIR"/. "$POOL_PATH"/ >> "$LOG_FILE" 2>&1
+            # Now remove the empty directory structure left behind
+            rm -rf "$BASE_DIR"
+
+            log_msg "POOL: Restoration complete."
+            send_notification "NOTIFY:Restoration complete"
+        fi
+    else
+        # Re-build the pool with the remaining drives + internal
+        log_msg "POOL: Remaining drives detected: $CLEAN_CONFIG"
+        log_msg "POOL: Rebuilding MergerFS pool..."
+        send_notification "NOTIFY:Rebuilding Pool..."
+
+        mkdir -p "$BASE_DIR"
+        BRANCHES_CMD="$BASE_DIR:$CLEAN_CONFIG"       
+        /usr/bin/mergerfs $MERGERFS_OPTS "$BRANCHES_CMD" "$POOL_PATH"
+        
+        if [ $? -eq 0 ]; then
+            log_msg "POOL: Pool rebuilt successfully."
+        else
+            log_msg "ERROR: Failed to rebuild pool."
+            send_notification "NOTIFY:Error: Pool Rebuild Failed"
         fi
     fi
     ;;
