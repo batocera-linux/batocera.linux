@@ -62,6 +62,7 @@
 - Libretro Opera to 17th of October 2024 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
+- OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
 - Play! to 0.71
 - RetroArch to 1.22.2

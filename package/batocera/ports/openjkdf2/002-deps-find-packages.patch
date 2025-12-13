@@ -108,7 +108,7 @@ index b3e60d94a3..2985434a3e 100644
      file(GLOB TARGET_SDL2_SRCS ${PROJECT_SOURCE_DIR}/src/Platform/SDL2/*.c)
      list(APPEND ENGINE_SOURCE_FILES ${TARGET_SDL2_SRCS})
      add_compile_definitions(SDL2_RENDER)
-@@ -246,67 +290,3 @@ if(TARGET_WIN32)
+@@ -306,71 +306,6 @@ if(TARGET_WIN32)
      endif()
  endif()
  
@@ -176,3 +176,7 @@ index b3e60d94a3..2985434a3e 100644
 -    add_dependencies(GameNetworkingSockets::GameNetworkingSockets_s GNS_HACK_ZLIB)
 -    add_dependencies(GNS_HACK_ZLIB PROTOBUF)
 -endif()
+-
+ file(GLOB EMBEDDED_RESOURCES ${PROJECT_SOURCE_DIR}/resource/ui/*)
+ if (TARGET_USE_SDL2)
+     file(GLOB SDL2_EMBEDDED_RES ${PROJECT_SOURCE_DIR}/resource/shaders/*)
