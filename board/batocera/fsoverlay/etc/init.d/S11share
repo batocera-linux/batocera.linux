@@ -413,4 +413,9 @@ find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" |
 	(cd / && gunzip -c "${FILE}" | tar xf -)
     done
 
+if [ -f "/tmp/mergerfs.pending" ]; then
+    /usr/bin/batocera-storage-manager refresh_pool
+    rm -f "/tmp/mergerfs.pending"
+fi
+
 echo "done."
