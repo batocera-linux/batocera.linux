@@ -1160,7 +1160,7 @@ def writeBezelConfig(
         retroarchConfig["video_viewport_bias_y"] = "0.500000"
     else:
         retroarchConfig["video_viewport_bias_x"] = "0.000000"
-        retroarchConfig["video_viewport_bias_y"] = "1.000000"
+        retroarchConfig["video_viewport_bias_y"] = "0.000000"
 
     # stretch option
     bezel_stretch = system.config.get_bool('bezel_stretch')
