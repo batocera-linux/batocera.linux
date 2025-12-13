@@ -1,0 +1,7 @@
+#!/bin/sh
+# Force pipewire to resync. Fixes audio desyncing quirk for sm8250
+
+pw-metadata -n settings 0 clock.force-quantum 1023
+pw-metadata -n settings 0 clock.force-quantum 1024
+
+exit 0
