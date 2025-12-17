@@ -27,13 +27,13 @@
 				<toggle value="${batocera-audio getSystemMute}" refresh="0.5"
 					action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 			</feature>
-			<feature display="Network IP address: ">
+			<feature display="Network IP address:">
 				<text display="${ip -4 addr show | grep -oP '(?&lt;=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n1}" refresh="5" align="left"/>
 			</feature>
-			<feature display="Network interfaces: ">
+			<feature display="Network interfaces:">
 				<text display='${for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
 			</feature>
-			<feature display="Free data storage: ">
+			<feature display="Free data storage:">
 				<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
 			</feature>
 			<feature display="Plane Mode" group="Audio/Video">
@@ -66,8 +66,8 @@
 		</hgroup>
 		<vgroup>
 			<feature>
-				<pdf name="Map" display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" />
-				<pdf name="Manual" display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" />
+				<pdf display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" />
+				<pdf display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" />
 				<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" />
 			</feature>
 		</vgroup>
