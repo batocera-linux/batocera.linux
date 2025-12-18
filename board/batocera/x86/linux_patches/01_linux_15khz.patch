@@ -1,7 +1,7 @@
-Index: linux-6.17/drivers/gpu/drm/drm_modes.c
+Index: linux-6.18/drivers/gpu/drm/drm_modes.c
 ===================================================================
---- linux-6.17.orig/drivers/gpu/drm/drm_modes.c
-+++ linux-6.17/drivers/gpu/drm/drm_modes.c
+--- linux-6.18.orig/drivers/gpu/drm/drm_modes.c
++++ linux-6.18/drivers/gpu/drm/drm_modes.c
 @@ -48,6 +48,7 @@
  #include <drm/drm_print.h>
  
@@ -53,10 +53,10 @@ Index: linux-6.17/drivers/gpu/drm/drm_modes.c
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-Index: linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.c
+Index: linux-6.18/drivers/gpu/drm/drm_modes_low_dotclock.c
 ===================================================================
 --- /dev/null
-+++ linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.c
++++ linux-6.18/drivers/gpu/drm/drm_modes_low_dotclock.c
 @@ -0,0 +1,156 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -214,10 +214,10 @@ Index: linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.c
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-Index: linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.h
+Index: linux-6.18/drivers/gpu/drm/drm_modes_low_dotclock.h
 ===================================================================
 --- /dev/null
-+++ linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.h
++++ linux-6.18/drivers/gpu/drm/drm_modes_low_dotclock.h
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -242,11 +242,11 @@ Index: linux-6.17/drivers/gpu/drm/drm_modes_low_dotclock.h
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-Index: linux-6.17/drivers/gpu/drm/drm_probe_helper.c
+Index: linux-6.18/drivers/gpu/drm/drm_probe_helper.c
 ===================================================================
---- linux-6.17.orig/drivers/gpu/drm/drm_probe_helper.c
-+++ linux-6.17/drivers/gpu/drm/drm_probe_helper.c
-@@ -460,25 +460,31 @@ static int __drm_helper_update_and_valid
+--- linux-6.18.orig/drivers/gpu/drm/drm_probe_helper.c
++++ linux-6.18/drivers/gpu/drm/drm_probe_helper.c
+@@ -461,25 +461,31 @@ static int __drm_helper_update_and_valid
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -278,7 +278,7 @@ Index: linux-6.17/drivers/gpu/drm/drm_probe_helper.c
  		ret = drm_mode_validate_pipeline(mode, connector, ctx,
  						 &mode->status);
  		if (ret) {
-@@ -491,6 +497,7 @@ static int __drm_helper_update_and_valid
+@@ -492,6 +498,7 @@ static int __drm_helper_update_and_valid
  			else
  				return -EDEADLK;
  		}
@@ -286,7 +286,7 @@ Index: linux-6.17/drivers/gpu/drm/drm_probe_helper.c
  	}
  
  	return 0;
-@@ -560,6 +567,7 @@ int drm_helper_probe_single_connector_mo
+@@ -561,6 +568,7 @@ int drm_helper_probe_single_connector_mo
  {
  	struct drm_device *dev = connector->dev;
  	struct drm_display_mode *mode;
@@ -294,7 +294,7 @@ Index: linux-6.17/drivers/gpu/drm/drm_probe_helper.c
  	int count = 0, ret;
  	enum drm_connector_status old_status;
  	struct drm_modeset_acquire_ctx ctx;
-@@ -645,10 +653,13 @@ retry:
+@@ -646,10 +654,13 @@ retry:
  		goto exit;
  	}
  
@@ -309,10 +309,10 @@ Index: linux-6.17/drivers/gpu/drm/drm_probe_helper.c
  		count = drm_add_modes_noedid(connector, 1024, 768);
  
  		/*
-Index: linux-6.17/include/drm/drm_connector.h
+Index: linux-6.18/include/drm/drm_connector.h
 ===================================================================
---- linux-6.17.orig/include/drm/drm_connector.h
-+++ linux-6.17/include/drm/drm_connector.h
+--- linux-6.18.orig/include/drm/drm_connector.h
++++ linux-6.18/include/drm/drm_connector.h
 @@ -1696,6 +1696,13 @@ struct drm_cmdline_mode {
  	bool interlace;
  
@@ -327,10 +327,10 @@ Index: linux-6.17/include/drm/drm_connector.h
  	 * @cvt:
  	 *
  	 * The timings will be calculated using the VESA Coordinated
-Index: linux-6.17/drivers/gpu/drm/Makefile
+Index: linux-6.18/drivers/gpu/drm/Makefile
 ===================================================================
---- linux-6.17.orig/drivers/gpu/drm/Makefile
-+++ linux-6.17/drivers/gpu/drm/Makefile
+--- linux-6.18.orig/drivers/gpu/drm/Makefile
++++ linux-6.18/drivers/gpu/drm/Makefile
 @@ -56,6 +56,7 @@ drm-y := \
  	drm_ioctl.o \
  	drm_lease.o \
