@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_HOLANI_VERSION = 0.9.6-1
+LIBRETRO_HOLANI_VERSION = 0.9.8
 LIBRETRO_HOLANI_SITE = $(call github,lleny,holani-retro,$(LIBRETRO_HOLANI_VERSION))
 LIBRETRO_HOLANI_LICENSE = GPLv3
 LIBRETRO_HOLANI_DEPENDENCIES = host-rustc host-rust-bin host-clang retroarch
