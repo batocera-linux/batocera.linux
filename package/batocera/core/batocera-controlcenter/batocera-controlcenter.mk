@@ -3,8 +3,8 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Last commit on Dec 16, 2025
-BATOCERA_CONTROLCENTER_VERSION = 6644757a229686697a0ffa21213d2c53260d0afa
+# Last commit on Dec 19, 2025
+BATOCERA_CONTROLCENTER_VERSION = ce403f95bb8f5f25fb174e032ba8b8fa60080df1
 BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
 BATOCERA_CONTROLCENTER_STE_METHOD = git
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
