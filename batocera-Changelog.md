@@ -86,7 +86,7 @@
 - Flac to 1.5.0
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251125
-- Linux Kernel to 6.17.7
+- Linux Kernel to 6.18.1
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.3.1
