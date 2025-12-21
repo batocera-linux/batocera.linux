@@ -9,8 +9,7 @@ config BR2_PACKAGE_NVIDIA_OPEN_DRIVER
 	depends on BR2_x86_64
 	depends on BR2_TOOLCHAIN_USES_GLIBC
 	select BR2_PACKAGE_NVIDIA470_LEGACY_DRIVER
-	select BR2_PACKAGE_NVIDIA340_LEGACY_DRIVER
-	select BR2_PACKAGE_NVIDIA_PROPRIETARY_DRIVER
+	select BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER
 	help
 	  The binary-only driver blob for NVidia cards.
 	  This is the userland part only.

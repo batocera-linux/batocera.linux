@@ -12,6 +12,9 @@
   `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
   We recommend following the procedure described in our wiki to back up Windows savegames.
 - We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & bluetooth.
+- Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
+  These version continue to have problems with later kernel versions and are not longer sustainable.
+  Only the legacy 470.xx, 580.xx and current 590.xx drivers will be supported in v43.
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
@@ -90,7 +93,8 @@
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.3.1
-- Nvidia production drivers to 580.105.08
+- Nvidia 580.xx legacy drivers to 580.119.02
+- Nvidia production drivers to 590.48.01
 - QT to 6.9.2
 - Sound Open Firmware to 2025.05.1
 - Sway to 1.11

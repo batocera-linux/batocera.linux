@@ -13,8 +13,7 @@ MODE=$1
 
 if [ "${MODE}" = "auto" ]; then
     echo "Detecting if we have an NVIDIA GPU" >> $log
-    NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')
-    
+    NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')   
     if [ "$NVIDIA_DEV" ]; then
         echo "Detected an NVIDIA GPU at $NVIDIA_DEV" >> "$log"
         for d in $NVIDIA_DEV; do
@@ -40,17 +39,13 @@ if [ "${MODE}" = "auto" ]; then
             else
                 if [ "$LEGACYDRIVER" != "null" ]; then
                     case $LEGACYDRIVER in
-                        340.*) MODE="legacy340" ;;
-                        390.*) MODE="legacy390" ;;
                         470.*) MODE="legacy470" ;;
+                        580.*) MODE="legacy580" ;;
                         *) MODE="nouveau" ;;
                     esac
                 elif [ "$KERNELOPEN" = "true" ]; then
                     MODE="open"
-                else
-                    MODE="proprietary"
                 fi
-
                 echo "Found Nvidia GPU: $CARDNAME with ID: $PCIDEVID" >> $log
                 echo "Setting driver to: $MODE" >> $log
             fi
@@ -69,23 +64,20 @@ LINUX_VER=$(uname -r)
 # production driver version
 NVIDIA_DRIVER_VERSION=$(cat /usr/share/nvidia/production.version)
 # legacy driver versions
+NVIDIA580_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy580.version)
 NVIDIA470_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy470.version)
-NVIDIA390_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy390.version)
-NVIDIA340_LEGACY_DRIVER_VERSION=$(cat /usr/share/nvidia/legacy340.version)
 
 mkdir -p /var/run/nvidia/modprobe || exit 1
 
-if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
-    echo "Using NVIDIA Production driver - ${NVIDIA_DRIVER_VERSION}" >> $log
+if [ "$MODE" = "open" ]; then
+    echo "Using NVIDIA latest driver - ${NVIDIA_DRIVER_VERSION}" >> $log
     echo "" >> $log
     echo "Removing any legacy driver symlinks" >> $log
     # Clean up any legacy driver symlink files
+    find -L /lib32 -name "*${NVIDIA580_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA580_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     find -L /lib32 -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     find -L /usr/lib -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
-    find -L /lib32 -name "*${NVIDIA390_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
-    find -L /usr/lib -name "*${NVIDIA390_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
-    find -L /lib32 -name "*${NVIDIA340_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
-    find -L /usr/lib -name "*${NVIDIA340_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     echo "" >> $log
     # Blacklist the Nouveau driver
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
@@ -245,29 +237,17 @@ if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
     ln -sf /usr/share/vulkan/nvidia/nvidia_production_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
 	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
     
-    # finally link appropriate production kernel modules
+    # finally link appropriate open kernel modules
     mkdir -p /var/run/nvidia/modules
-    if [ "$MODE" = "open" ]; then
-        echo "Linking NVIDIA open modules" >> $log
-        ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-drm-production.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
-    elif [ "$MODE" = "proprietary" ]; then
-        echo "Linking NVIDIA proprietary modules" >> $log
-        ln -sf /usr/share/nvidia/modules/nvidia-proprietary.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-modeset-proprietary.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-drm-proprietary.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
-        ln -sf /usr/share/nvidia/modules/nvidia-uvm-proprietary.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko    
-    fi
+    echo "Linking NVIDIA open modules" >> $log
+    ln -sf /usr/share/nvidia/modules/nvidia-production.ko /var/run/nvidia/modules/nvidia.ko
+    ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
+    ln -sf /usr/share/nvidia/modules/nvidia-modeset-production.ko /var/run/nvidia/modules/nvidia-modeset.ko
+    ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
+    ln -sf /usr/share/nvidia/modules/nvidia-drm-production.ko /var/run/nvidia/modules/nvidia-drm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
+    ln -sf /usr/share/nvidia/modules/nvidia-uvm-production.ko /var/run/nvidia/modules/nvidia-uvm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko    
     # enable kernel modules
     for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
         if modprobe $m >> "$log" 2>&1; then
@@ -277,329 +257,357 @@ if [ "$MODE" = "proprietary" ] || [ "$MODE" = "open" ]; then
         fi
     done
 
-elif echo "$MODE" | grep -q -E '^(legacy470|legacy340|legacy390)$'; then
-    echo "Using a NVIDIA Legacy driver" >> $log
+elif [ "$MODE" = "legacy580" ]; then
+    echo "Using NVIDIA driver - ${NVIDIA580_LEGACY_DRIVER_VERSION}" >> $log
+    echo "" >> $log
+    echo "Removing any legacy driver symlinks" >> $log
+    # Clean up any production driver symlink files
+    find -L /lib32 -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    # Clean up any other legacy driver symlink files
+    find -L /lib32 -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA470_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    echo "" >> $log
+    # Blacklist the Nouveau driver
+    echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
+    echo "options nvidia-drm modeset=1" > /var/run/nvidia/modprobe/nvidia-drm.conf
+    # [symbolic link 64-bit library files]
+    mkdir -p /var/run/nvidia/lib
+    # libGLX_nvidia.so
+    ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so
+	ln -sf /var/run/nvidia/lib/libGLX_nvidia.so /usr/lib/libGLX_nvidia.so
+    ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so.0
+	ln -sf /var/run/nvidia/lib/libGLX_nvidia.so.0 /usr/lib/libGLX_nvidia.so.0
+    # libEGL_nvidia.so
+    ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so
+    ln -sf /var/run/nvidia/lib/libEGL_nvidia.so /usr/lib/libEGL_nvidia.so
+    ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so.0
+    ln -sf /var/run/nvidia/lib/libEGL_nvidia.so.0 /usr/lib/libEGL_nvidia.so.0
+    # libGLESv1_CM_nvidia.so
+    ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so
+    ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so /usr/lib/libGLESv1_CM_nvidia.so
+    ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1 /usr/lib/libGLESv1_CM_nvidia.so.1
+    # libGLESv2_nvidia.so
+    ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so
+    ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so /usr/lib/libGLESv2_nvidia.so
+    ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so.2
+	ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so.2 /usr/lib/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib/libnvidia-allocator.so /usr/lib/libnvidia-allocator.so
+    ln -sf /usr/lib/libnvidia-allocator.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-allocator.so.1 /usr/lib/libnvidia-allocator.so.1
+    # libnvidia-api.so
+    ln -sf /usr/lib/libnvidia-api.so.1 /var/run/nvidia/lib/libnvidia-api.so
+	ln -sf /var/run/nvidia/lib/libnvidia-api.so /usr/lib/libnvidia-api.so
+    # libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so
+	ln -sf /var/run/nvidia/lib/libnvidia-cfg.so /usr/lib/libnvidia-cfg.so
+    ln -sf /usr/lib/libnvidia-cfg.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-cfg.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-cfg.so.1 /usr/lib/libnvidia-cfg.so.1    
+    # libnvidia-eglcore.so
+    ln -sf /usr/lib/libnvidia-eglcore.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
+	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so   
+    # libnvidia-glcore.so
+    ln -sf /usr/lib/libnvidia-glcore.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
+	ln -sf /var/run/nvidia/lib/libnvidia-glcore.so /usr/lib/libnvidia-glcore.so
+    # libnvidia-glsi.so
+    ln -sf /usr/lib/libnvidia-glsi.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glsi.so
+	ln -sf /var/run/nvidia/lib/libnvidia-glsi.so /usr/lib/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /usr/lib/libnvidia-gpucomp.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib/libnvidia-gpucomp.so /usr/lib/libnvidia-gpucomp.so  
+    # libnvidia-rtcore.so
+    ln -sf /usr/lib/libnvidia-rtcore.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-rtcore.so
+	ln -sf /var/run/nvidia/lib/libnvidia-rtcore.so /usr/lib/libnvidia-rtcore.so    
+    # libnvidia-tls.so
+    ln -sf /usr/lib/libnvidia-tls.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
+    ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
+    # libvdpau_nvidia.so
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/vdpau/libvdpau_nvidia.so
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/vdpau/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1.0 /usr/lib/vdpau/libvdpau_nvidia.so.1.0
+    # libnvidia-ml.so
+    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so
+    ln -sf /var/run/nvidia/lib/libnvidia-ml.so /usr/lib/libnvidia-ml.so
+    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-ml.so.1 /usr/lib/libnvidia-ml.so.1
+    # libnvidia-glvkspirv.so
+    ln -sf /usr/lib/libnvidia-glvkspirv.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
+    ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
+    # libnvidia-wayland-client.so
+    ln -sf /usr/lib/libnvidia-wayland-client.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-wayland-client.so
+    ln -sf /var/run/nvidia/lib/libnvidia-wayland-client.so /usr/lib/libnvidia-wayland-client.so
+    
+    # [symbolic link 32-bit library files]
+    mkdir -p /var/run/nvidia/lib32
+    # libGLX_nvidia.so
+    ln -sf /lib32/libGLX_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so /lib32/libGLX_nvidia.so
+    ln -sf /lib32/libGLX_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so.0
+    ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so.0 /lib32/libGLX_nvidia.so.0
+    # libEGL_nvidia.so
+    ln -sf /lib32/libEGL_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so /lib32/libEGL_nvidia.so
+    ln -sf /lib32/libEGL_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so.0
+    ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so.0 /lib32/libEGL_nvidia.so.0
+    # libGLESv1_CM_nvidia.so
+    ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so /lib32/libGLESv1_CM_nvidia.so
+    ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1
+    ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1 /lib32/libGLESv1_CM_nvidia.so.1
+    # libGLESv2_nvidia.so
+    ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so /lib32/libGLESv2_nvidia.so
+    ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so.2
+    ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so.2 /lib32/libGLESv2_nvidia.so.2
+    # libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so /lib32/libnvidia-allocator.so
+    ln -sf /lib32/libnvidia-allocator.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-allocator.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-allocator.so.1 /lib32/libnvidia-allocator.so.1
+    # libnvidia-eglcore.so
+    ln -sf /lib32/libnvidia-eglcore.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-eglcore.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-eglcore.so /lib32/libnvidia-eglcore.so
+    # libnvidia-glcore.so
+    ln -sf /lib32/libnvidia-glcore.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glcore.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-glcore.so /lib32/libnvidia-glcore.so
+    # libnvidia-glsi.so
+    ln -sf /lib32/libnvidia-glsi.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glsi.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-glsi.so /lib32/libnvidia-glsi.so
+    # libnvidia-gpucomp.so
+    ln -sf /lib32/libnvidia-gpucomp.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-gpucomp.so
+	ln -sf /var/run/nvidia/lib32/libnvidia-gpucomp.so /lib32/libnvidia-gpucomp.so
+    # libnvidia-tls.so
+    ln -sf /lib32/libnvidia-tls.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
+    # libvdpau_nvidia.so
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/vdpau/libvdpau_nvidia.so
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/vdpau/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
+    ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0 /lib32/vdpau/libvdpau_nvidia.so.1.0
+    # libnvidia-ml.so
+    ln -sf /lib32/libnvidia-ml.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-ml.so /lib32/libnvidia-ml.so
+    ln -sf /lib32/libnvidia-ml.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-ml.so.1 /lib32/libnvidia-ml.so.1
+    # libnvidia-glvkspirv.so
+    ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
+    
+    # sym link Xorg libraries too
+    ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so
+    ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
+    ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
+    
+    # link Xorg driver
+    ln -sf /usr/lib/xorg/modules/drivers/nvidia580_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
+    ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
+    
+    # link GL config files
+    mkdir -p /var/run/nvidia/configs
+    ln -sf /usr/share/vulkan/implicit_layer.d/nvidia580_legacy_layers.json /var/run/nvidia/configs/nvidia_layers.json
+    ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+    ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia580_legacy.json /var/run/nvidia/configs/10_nvidia.json
+    ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+    ln -sf /usr/share/nvidia/X11/10-nvidia-production-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
+    ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+    
+    # link Vulkan icd files
+    ln -sf /usr/share/vulkan/nvidia/nvidia580_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
+    ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+    ln -sf /usr/share/vulkan/nvidia/nvidia580_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
+	ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
+    
+    # finally link appropriate open kernel modules
+    mkdir -p /var/run/nvidia/modules
+    echo "Linking NVIDIA open modules" >> $log
+
+    ln -sf /usr/share/nvidia/modules/nvidia580-legacy.ko /var/run/nvidia/modules/nvidia.ko
+    ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
+    ln -sf /usr/share/nvidia/modules/nvidia580-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
+    ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
+    ln -sf /usr/share/nvidia/modules/nvidia580-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
+    ln -sf /usr/share/nvidia/modules/nvidia580-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko    
+    # enable kernel modules
+    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
+        if modprobe $m >> "$log" 2>&1; then
+            echo "Module $m loaded successfully" >> "$log"
+        else
+            echo "Failed to load module $m" >> "$log"
+        fi
+    done
+
+elif [ "$MODE" = "legacy470" ]; then
+    echo "Using NVIDIA driver - ${NVIDIA470_LEGACY_DRIVER_VERSION}" >> $log
     echo "There may be driver issues due to lack of maintenance from Nvidia for modern kernels" >> $log
     echo "" >> $log
     echo "Removing any production driver symlinks" >> $log
     # Clean up any production driver symlink files
     find -L /lib32 -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     find -L /usr/lib -name "*${NVIDIA_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
-    echo "" >> $log
-    if [ "$MODE" = "legacy470" ]
-    then
-	    NVIDIA_LEGACY_DRIVER_VERSION=$NVIDIA470_LEGACY_DRIVER_VERSION
-    fi
-    if [ "$MODE" = "legacy390" ]
-    then
-	    NVIDIA_LEGACY_DRIVER_VERSION=$NVIDIA390_LEGACY_DRIVER_VERSION
-    fi
-    if [ "$MODE" = "legacy340" ]
-    then
-	    NVIDIA_LEGACY_DRIVER_VERSION=$NVIDIA340_LEGACY_DRIVER_VERSION
-    fi
-    echo "Using NVIDIA Legacy driver version - ${NVIDIA_LEGACY_DRIVER_VERSION}" >> $log
+    # Clean up an legacy driver symlink files
+    find -L /lib32 -name "*${NVIDIA580_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
+    find -L /usr/lib -name "*${NVIDIA580_LEGACY_DRIVER_VERSION}*" -print0 | tee -a "$log" | xargs -0 -r rm -f
     echo "" >> $log
     # Blacklist the Nouveau driver
     echo "blacklist nouveau" > /var/run/nvidia/modprobe/blacklist-nouveau.conf
     echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
     # [symbolic link 64-bit library files]
     mkdir -p /var/run/nvidia/lib
-    if [ "$MODE" = "legacy340" ]; then
-        # libglx.so
-        ln -sf /usr/lib/nvidia/xorg/libglx.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so
-        ln -sf /usr/lib/nvidia/xorg/libglx.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglx.so.1
-        ln -sf /var/run/nvidia/lib/libglx.so /usr/lib/nvidia/xorg/libglx.so
-        ln -sf /var/run/nvidia/lib/libglx.so.1 /usr/lib/nvidia/xorg/libglx.so.1
-        # libGL.so
-        ln -sf /usr/share/nvidia/libraries/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /usr/lib/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGL.so
-        ln -sf /var/run/nvidia/lib/libGL.so /usr/lib/libGL.so
-        ln -sf /usr/share/nvidia/libraries/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGL.so.1
-        ln -sf /var/run/nvidia/lib/libGL.so.1 /usr/lib/libGL.so.1
-        # libEGL.so
-        ln -sf /usr/share/nvidia/libraries/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /usr/lib/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libEGL.so
-        ln -sf /var/run/nvidia/lib/libEGL.so /usr/lib/libEGL.so
-        ln -sf /usr/share/nvidia/libraries/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libEGL.so.0
-        ln -sf /var/run/nvidia/lib/libEGL.so.0 /usr/lib/libEGL.so.0
-        # libGLESv1_CM.so
-        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /usr/lib/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGLESv1_CM.so
-        ln -sf /var/run/nvidia/lib/libGLESv1_CM.so /usr/lib/libGLESv1_CM.so
-        ln -sf /usr/share/nvidia/libraries/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGLESv1_CM.so.1
-        ln -sf /var/run/nvidia/lib/libGLESv1_CM.so.1 /usr/lib/libGLESv1_CM.so.1
-        # libGLESv2.so
-        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /usr/lib/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGLESv2.so
-        ln -sf /var/run/nvidia/lib/libGLESv2.so /usr/lib/libGLESv2.so
-        ln -sf /usr/share/nvidia/libraries/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libGLESv2.so.2
-        ln -sf /var/run/nvidia/lib/libGLESv2.so.2 /usr/lib/libGLESv2.so.2
-        # X11 conf
-        mkdir -p /var/run/nvidia/configs/
-        ln -sf /usr/share/nvidia/X11/20-nvidia.conf /var/run/nvidia/configs/20-nvidia.conf
-        ln -sf /var/run/nvidia/configs/20-nvidia.conf /etc/X11/xorg.conf.d/20-nvidia.conf
-        # libvdpau_trace.so
-        ln -sf /usr/lib/vdpau/libvdpau_trace.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_trace.so.1.0.0
-        ln -sf /var/run/nvidia/lib/libvdpau_trace.so.1.0.0 /usr/lib/vdpau/libvdpau_trace.so.1.0.0
-        # libcuda.so
-        ln -sf /usr/lib/libcuda.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so.1
-        ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so.1
-        ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so
-    else
-        # libGLX_nvidia.so
-        ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so
-        ln -sf /var/run/nvidia/lib/libGLX_nvidia.so /usr/lib/libGLX_nvidia.so
-        ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so.0
-        ln -sf /var/run/nvidia/lib/libGLX_nvidia.so.0 /usr/lib/libGLX_nvidia.so.0
-        # libEGL_nvidia.so
-        ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so
-        ln -sf /var/run/nvidia/lib/libEGL_nvidia.so /usr/lib/libEGL_nvidia.so
-        ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so.0
-        ln -sf /var/run/nvidia/lib/libEGL_nvidia.so.0 /usr/lib/libEGL_nvidia.so.0
-        # libGLESv1_CM_nvidia.so
-        ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so
-        ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so /usr/lib/libGLESv1_CM_nvidia.so
-        ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1
-        ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1 /usr/lib/libGLESv1_CM_nvidia.so.1
-        # libGLESv2_nvidia.so
-        ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so
-        ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so /usr/lib/libGLESv2_nvidia.so
-        ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so.2
-        ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so.2 /usr/lib/libGLESv2_nvidia.so.2
-    fi
-    
+    # libGLX_nvidia.so
+    ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so
+    ln -sf /var/run/nvidia/lib/libGLX_nvidia.so /usr/lib/libGLX_nvidia.so
+    ln -sf /usr/lib/libGLX_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLX_nvidia.so.0
+    ln -sf /var/run/nvidia/lib/libGLX_nvidia.so.0 /usr/lib/libGLX_nvidia.so.0
+    # libEGL_nvidia.so
+    ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so
+    ln -sf /var/run/nvidia/lib/libEGL_nvidia.so /usr/lib/libEGL_nvidia.so
+    ln -sf /usr/lib/libEGL_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libEGL_nvidia.so.0
+    ln -sf /var/run/nvidia/lib/libEGL_nvidia.so.0 /usr/lib/libEGL_nvidia.so.0
+    # libGLESv1_CM_nvidia.so
+    ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so
+    ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so /usr/lib/libGLESv1_CM_nvidia.so
+    ln -sf /usr/lib/libGLESv1_CM_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libGLESv1_CM_nvidia.so.1 /usr/lib/libGLESv1_CM_nvidia.so.1
+    # libGLESv2_nvidia.so
+    ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so
+    ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so /usr/lib/libGLESv2_nvidia.so
+    ln -sf /usr/lib/libGLESv2_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libGLESv2_nvidia.so.2
+    ln -sf /var/run/nvidia/lib/libGLESv2_nvidia.so.2 /usr/lib/libGLESv2_nvidia.so.2
     # libnvidia-eglcore.so
-    ln -sf /usr/lib/libnvidia-eglcore.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
+    ln -sf /usr/lib/libnvidia-eglcore.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-eglcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-eglcore.so /usr/lib/libnvidia-eglcore.so
     # libnvidia-glcore.so
-    ln -sf /usr/lib/libnvidia-glcore.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
+    ln -sf /usr/lib/libnvidia-glcore.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glcore.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glcore.so /usr/lib/libnvidia-glcore.so
     # libnvidia-glsi.so
-    ln -sf /usr/lib/libnvidia-glsi.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glsi.so
+    ln -sf /usr/lib/libnvidia-glsi.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glsi.so
 	ln -sf /var/run/nvidia/lib/libnvidia-glsi.so /usr/lib/libnvidia-glsi.so
     # libnvidia-tls.so
-    ln -sf /usr/lib/libnvidia-tls.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
+    ln -sf /usr/lib/libnvidia-tls.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib/libnvidia-tls.so /usr/lib/libnvidia-tls.so
     # libnvidia-ml.so
-    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so
+    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib/libnvidia-ml.so /usr/lib/libnvidia-ml.so
-    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so.1
+    ln -sf /usr/lib/libnvidia-ml.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-ml.so.1
     ln -sf /var/run/nvidia/lib/libnvidia-ml.so.1 /usr/lib/libnvidia-ml.so.1
     # libvdpau_nvidia.so
-    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so
     ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so /usr/lib/vdpau/libvdpau_nvidia.so
-    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1
     ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1 /usr/lib/vdpau/libvdpau_nvidia.so.1
-    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
+    ln -sf /usr/lib/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libvdpau_nvidia.so.1.0
     ln -sf /var/run/nvidia/lib/libvdpau_nvidia.so.1.0 /usr/lib/vdpau/libvdpau_nvidia.so.1.0
-
-    if [ "$MODE" = "legacy470" ]; then
-        # libnvidia-glvkspirv.so
-        ln -sf /usr/lib/libnvidia-glvkspirv.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
-        ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
-    fi
+    # libnvidia-glvkspirv.so
+    ln -sf /usr/lib/libnvidia-glvkspirv.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-glvkspirv.so
+    ln -sf /var/run/nvidia/lib/libnvidia-glvkspirv.so /usr/lib/libnvidia-glvkspirv.so
     
     # [symbolic link 32-bit library files]
     mkdir -p /var/run/nvidia/lib32
-
-    if [ "$MODE" = "legacy340" ]; then
-        # libGL.so
-        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /lib32/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGL.so
-        ln -sf /var/run/nvidia/lib32/libGL.so /lib32/libGL.so
-        ln -sf /usr/share/nvidia/libraries/32/libGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGL.so.1
-        ln -sf /var/run/nvidia/lib32/libGL.so.1 /lib32/libGL.so.1
-        # libEGL.so
-        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /lib32/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libEGL.so
-        ln -sf /var/run/nvidia/lib32/libEGL.so /lib32/libEGL.so
-        ln -sf /usr/share/nvidia/libraries/32/libEGL.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libEGL.so.0
-        ln -sf /var/run/nvidia/lib32/libEGL.so.0 /lib32/libEGL.so.0
-        # libGLESv1_CM.so
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv1_CM.so
-        ln -sf /var/run/nvidia/lib32/libGLESv1_CM.so /lib32/libGLESv1_CM.so
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv1_CM.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv1_CM.so.1
-        ln -sf /var/run/nvidia/lib32/libGLESv1_CM.so.1 /lib32/libGLESv1_CM.so.1
-        # libGLESv2.so
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv2.so
-        ln -sf /var/run/nvidia/lib32/libGLESv2.so /lib32/libGLESv2.so
-        ln -sf /usr/share/nvidia/libraries/32/libGLESv2.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib32/libGLESv2.so.2
-        ln -sf /var/run/nvidia/lib32/libGLESv2.so.2 /lib32/libGLESv2.so.2
-    else
-        # libGLX_nvidia.so
-        ln -sf /lib32/libGLX_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so
-        ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so /lib32/libGLX_nvidia.so
-        ln -sf /lib32/libGLX_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so.0
-        ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so.0 /lib32/libGLX_nvidia.so.0
-        # libEGL_nvidia.so
-        ln -sf /lib32/libEGL_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so
-        ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so /lib32/libEGL_nvidia.so
-        ln -sf /lib32/libEGL_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so.0
-        ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so.0 /lib32/libEGL_nvidia.so.0
-        # libGLESv1_CM_nvidia.so
-        ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so
-        ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so /lib32/libGLESv1_CM_nvidia.so
-        ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1
-        ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1 /lib32/libGLESv1_CM_nvidia.so.1
-        # libGLESv2_nvidia.so
-        ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so
-        ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so /lib32/libGLESv2_nvidia.so
-        ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so.2
-        ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so.2 /lib32/libGLESv2_nvidia.so.2
-    fi
-    
+    # libGLX_nvidia.so
+    ln -sf /lib32/libGLX_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so /lib32/libGLX_nvidia.so
+    ln -sf /lib32/libGLX_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLX_nvidia.so.0
+    ln -sf /var/run/nvidia/lib32/libGLX_nvidia.so.0 /lib32/libGLX_nvidia.so.0
+    # libEGL_nvidia.so
+    ln -sf /lib32/libEGL_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so /lib32/libEGL_nvidia.so
+    ln -sf /lib32/libEGL_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libEGL_nvidia.so.0
+    ln -sf /var/run/nvidia/lib32/libEGL_nvidia.so.0 /lib32/libEGL_nvidia.so.0
+    # libGLESv1_CM_nvidia.so
+    ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so /lib32/libGLESv1_CM_nvidia.so
+    ln -sf /lib32/libGLESv1_CM_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1
+    ln -sf /var/run/nvidia/lib32/libGLESv1_CM_nvidia.so.1 /lib32/libGLESv1_CM_nvidia.so.1
+    # libGLESv2_nvidia.so
+    ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so
+    ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so /lib32/libGLESv2_nvidia.so
+    ln -sf /lib32/libGLESv2_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libGLESv2_nvidia.so.2
+    ln -sf /var/run/nvidia/lib32/libGLESv2_nvidia.so.2 /lib32/libGLESv2_nvidia.so.2
     # libnvidia-eglcore.so
-    ln -sf /lib32/libnvidia-eglcore.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-eglcore.so
+    ln -sf /lib32/libnvidia-eglcore.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-eglcore.so
     ln -sf /var/run/nvidia/lib32/libnvidia-eglcore.so /lib32/libnvidia-eglcore.so
     # libnvidia-glcore.so
-    ln -sf /lib32/libnvidia-glcore.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glcore.so
+    ln -sf /lib32/libnvidia-glcore.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glcore.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glcore.so /lib32/libnvidia-glcore.so
     # libnvidia-glsi.so
-    ln -sf /lib32/libnvidia-glsi.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glsi.so
+    ln -sf /lib32/libnvidia-glsi.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glsi.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glsi.so /lib32/libnvidia-glsi.so
     # libnvidia-tls.so
-    ln -sf /lib32/libnvidia-tls.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
+    ln -sf /lib32/libnvidia-tls.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-tls.so
     ln -sf /var/run/nvidia/lib32/libnvidia-tls.so /lib32/libnvidia-tls.so
     # libnvidia-ml.so
-    ln -sf /lib32/libnvidia-ml.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so
+    ln -sf /lib32/libnvidia-ml.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so
     ln -sf /var/run/nvidia/lib32/libnvidia-ml.so /lib32/libnvidia-ml.so
-    ln -sf /lib32/libnvidia-ml.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so.1
+    ln -sf /lib32/libnvidia-ml.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-ml.so.1
     ln -sf /var/run/nvidia/lib32/libnvidia-ml.so.1 /lib32/libnvidia-ml.so.1
     # libvdpau_nvidia.so
-    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so
     ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so /lib32/vdpau/libvdpau_nvidia.so
-    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1
     ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1 /lib32/vdpau/libvdpau_nvidia.so.1
-    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
+    ln -sf /lib32/vdpau/libvdpau_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0
     ln -sf /var/run/nvidia/lib32/libvdpau_nvidia.so.1.0 /lib32/vdpau/libvdpau_nvidia.so.1.0
-    
-    if [ "$MODE" = "legacy470" ]; then
-        # libnvidia-glvkspirv.so
-        ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
-        ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
+    # libnvidia-glvkspirv.so
+    ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA470_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
 
-        # sym link Xorg libraries too
-        ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libglxserver_nvidia.so
-        ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
-        ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/lib/libglxserver_nvidia.so.1
-        ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
-    fi
+    # sym link Xorg libraries too
+    ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION \
+        /var/run/nvidia/lib/libglxserver_nvidia.so
+    ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
+    ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA470_LEGACY_DRIVER_VERSION \
+        /var/run/nvidia/lib/libglxserver_nvidia.so.1
+    ln -sf /var/run/nvidia/lib/libglxserver_nvidia.so.1 /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
     
-    # [ Kernel modules ]
-    
-    # 340 version
-    if [ "$MODE" = "legacy340" ]; then
-	    # link Xorg driver
-        mkdir -p /var/run/nvidia/lib
-	    ln -sf /usr/lib/xorg/modules/drivers/nvidia340_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
-        ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-        # finally copy kernel modules & run them
-        mkdir -p /var/run/nvidia/modules
-	    ln -sf /usr/share/nvidia/modules/nvidia340-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-	    ln -sf /usr/share/nvidia/modules/nvidia340-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
-	    
-        for m in ipmi_devintf nvidia nvidia_uvm ; do modprobe $m ; done
-    
-    # 390 version
-    elif [ "$MODE" = "legacy390" ]; then
-        # link Xorg driver
-        mkdir -p /var/run/nvidia/lib
-	    mkdir -p /var/run/nvidia/xorg
-	    ln -sf /usr/lib/xorg/modules/drivers/nvidia390_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
-        ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
-	    # libglx.so
-        ln -sf /usr/share/nvidia/xorg/libglx.so.$NVIDIA390_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/xorg/libglx.so.$NVIDIA390_LEGACY_DRIVER_VERSION
-        ln -sf /var/run/nvidia/xorg/libglx.so.$NVIDIA390_LEGACY_DRIVER_VERSION \
-            /usr/lib/xorg/modules/extensions/libglx.so.$NVIDIA390_LEGACY_DRIVER_VERSION
-        ln -sf /usr/share/nvidia/xorg/libglx.so.$NVIDIA390_LEGACY_DRIVER_VERSION \
-            /var/run/nvidia/xorg/libglx.so
-        ln -sf /var/run/nvidia/xorg/libglx.so /usr/lib/xorg/modules/extensions/libglx.so
-	    
-        # link GL config files
-	    mkdir -p /var/run/nvidia/configs
-	    ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia390_legacy.json /var/run/nvidia/configs/10_nvidia.json
-        ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-	    ln -sf /usr/share/nvidia/X11/10-nvidia390-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
-        ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
-
-        # finally copy kernel modules & run them
-	    mkdir -p /var/run/nvidia/modules
-	    ln -sf /usr/share/nvidia/modules/nvidia390-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-	    ln -sf /usr/share/nvidia/modules/nvidia390-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
-	    ln -sf /usr/share/nvidia/modules/nvidia390-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
-	    ln -sf /usr/share/nvidia/modules/nvidia390-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
-	    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
-    
-    else
-        # 470 version
-        # link Xorg driver
-        ln -sf /usr/lib/xorg/modules/drivers/nvidia_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
-        ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
+    # [ Kernel modules ]  
+    # link Xorg driver
+    ln -sf /usr/lib/xorg/modules/drivers/nvidia470_legacy_drv.so /var/run/nvidia/lib/nvidia_drv.so
+    ln -sf /var/run/nvidia/lib/nvidia_drv.so /usr/lib/xorg/modules/drivers/nvidia_drv.so
         
-        # link GL config files
-        mkdir -p /var/run/nvidia/configs
-        ln -sf /usr/share/vulkan/implicit_layer.d/nvidia_legacy_layers.json /var/run/nvidia/configs/nvidia_layers.json
-        ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
-        ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia_legacy.json /var/run/nvidia/configs/10_nvidia.json
-        ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
-        ln -sf /usr/share/nvidia/X11/10-nvidia-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
-        ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+    # link GL config files
+    mkdir -p /var/run/nvidia/configs
+    ln -sf /usr/share/vulkan/implicit_layer.d/nvidia470_legacy_layers.json /var/run/nvidia/configs/nvidia_layers.json
+    ln -sf /var/run/nvidia/configs/nvidia_layers.json /usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+    ln -sf /usr/share/glvnd/egl_vendor.d/10_nvidia470_legacy.json /var/run/nvidia/configs/10_nvidia.json
+    ln -sf /var/run/nvidia/configs/10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+    ln -sf /usr/share/nvidia/X11/10-nvidia470-legacy-drm-outputclass.conf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf
+    ln -sf /var/run/nvidia/configs/10-nvidia-drm-outputclass.conf /usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
         
-        # link Vulkan icd files
-        ln -sf /usr/share/vulkan/nvidia/nvidia_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
-        ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
-        ln -sf /usr/share/vulkan/nvidia/nvidia_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
-        ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
+    # link Vulkan icd files
+    ln -sf /usr/share/vulkan/nvidia/nvidia470_legacy_icd.x86_64.json /var/run/nvidia/configs/nvidia_icd.x86_64.json
+    ln -sf /var/run/nvidia/configs/nvidia_icd.x86_64.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+    ln -sf /usr/share/vulkan/nvidia/nvidia470_legacy_icd.i686.json /var/run/nvidia/configs/nvidia_icd.i686.json
+    ln -sf /var/run/nvidia/configs/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.i686.json
         
-        # finally link the kernel modules & run them
-        mkdir -p /var/run/nvidia/modules
-        ln -sf /usr/share/nvidia/modules/nvidia470-legacy.ko /var/run/nvidia/modules/nvidia.ko
-        ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
-        ln -sf /usr/share/nvidia/modules/nvidia470-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
-        ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
-        ln -sf /usr/share/nvidia/modules/nvidia470-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
-        ln -sf /usr/share/nvidia/modules/nvidia470-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-        ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
-        for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
-    
-    fi
+    # finally link the kernel modules & run them
+    mkdir -p /var/run/nvidia/modules
+    ln -sf /usr/share/nvidia/modules/nvidia470-legacy.ko /var/run/nvidia/modules/nvidia.ko
+    ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
+    ln -sf /usr/share/nvidia/modules/nvidia470-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
+    ln -sf /var/run/nvidia/modules/nvidia-modeset.ko /lib/modules/$LINUX_VER/updates/nvidia-modeset.ko
+    ln -sf /usr/share/nvidia/modules/nvidia470-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
+    ln -sf /usr/share/nvidia/modules/nvidia470-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
+    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
+    # enable kernel modules
+    for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
+        if modprobe $m >> "$log" 2>&1; then
+            echo "Module $m loaded successfully" >> "$log"
+        else
+            echo "Failed to load module $m" >> "$log"
+        fi
+    done
 
 elif test "${MODE}" = "nouveau"; then
     echo "Using OpenSource Mesa Nouveau driver" >> $log

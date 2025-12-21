@@ -1,30 +1,30 @@
-comment "nvidia390-legacy-driver needs a glibc toolchain"
+comment "nvidia580-legacy-driver needs a glibc toolchain"
 #batocera nvidia dropped x86 support
 	depends on BR2_x86_64
 	depends on !BR2_TOOLCHAIN_USES_GLIBC
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER
-	bool "nvidia390-legacy-driver"
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER
+	bool "nvidia580-legacy-driver"
 #batocera nvidia dropped x86 support
 	depends on BR2_x86_64
 	depends on BR2_TOOLCHAIN_USES_GLIBC
-	select BR2_PACKAGE_KMOD_TOOLS
+	select BR2_PACKAGE_NVIDIA470_LEGACY_DRIVER
 	help
 	  The binary-only driver blob for NVidia cards.
 	  This is the userland part only.
 
 	  http://www.nvidia.com/
 
-if BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER
+if BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER
 
-comment "nvidia390-legacy-driver X.org drivers needs a modular Xorg server"
+comment "nvidia580-legacy-driver X.org drivers needs a modular Xorg server"
 	depends on !BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_XORG
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_XORG
 	bool "X.org drivers"
 	default y
 	depends on BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR
-#batocera mesa3d and nvidia390-legacy-driver must coexist
+#batocera mesa3d and nvidia580-legacy-driver must coexist
 	select BR2_PACKAGE_MESA3D
 	select BR2_PACKAGE_XLIB_LIBX11
 	select BR2_PACKAGE_XLIB_LIBXEXT
@@ -34,19 +34,19 @@ config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_XORG
 #	select BR2_PACKAGE_HAS_LIBGLES
 	select BR2_PACKAGE_LIBGLVND
 
-if BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_XORG
+if BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_XORG
 
 #batocera let MESA3D set itself as default provider for gl, egl, and gles
 #config BR2_PACKAGE_PROVIDES_LIBGL
-#	default "nvidia390-legacy-driver"
+#	default "nvidia580-legacy-driver"
 
 #config BR2_PACKAGE_PROVIDES_LIBEGL
-#	default "nvidia390-legacy-driver"
+#	default "nvidia580-legacy-driver"
 
 #config BR2_PACKAGE_PROVIDES_LIBGLES
-#	default "nvidia390-legacy-driver"
+#	default "nvidia580-legacy-driver"
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_PRIVATE_LIBS
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_PRIVATE_LIBS
 	bool "Install private libraries"
 	help
 	  Two libraries require special agreement with NVidia to
@@ -57,35 +57,35 @@ config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_PRIVATE_LIBS
 	  Say 'y' here if you plan on running a program that uses
 	  those private libraries.
 
-endif # BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_XORG
+endif # BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_XORG
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_CUDA
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA
 	bool "CUDA support"
 
-if BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_CUDA
+if BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_OPENCL
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_OPENCL
 	bool "OpenCL support"
 	select BR2_PACKAGE_MESA3D_HEADERS
 	select BR2_PACKAGE_HAS_LIBOPENCL
 
 config BR2_PACKAGE_PROVIDES_LIBOPENCL
-	default "nvidia390-legacy-driver" if BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_OPENCL
+	default "nvidia580-legacy-driver" if BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_OPENCL
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_CUDA_PROGS
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA_PROGS
 	bool "CUDA MPS server and control"
 	help
 	  Say 'y' here if you need to run more than one program
 	  doing CUDA at the same time. The MPS server will be
 	  launched automatically when needed.
 
-endif # BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_CUDA
+endif # BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA
 
 comment "nvidia kernel module needs a kernel to be built"
 	depends on !BR2_LINUX_KERNEL
 
-config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_MODULE
-	bool "nvidia legacy kernel module"
+config BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_MODULE
+	bool "nvidia kernel module"
 	depends on BR2_LINUX_KERNEL
 	select BR2_LINUX_NEEDS_MODULES # not using kernel-module infra
 	help
@@ -96,4 +96,4 @@ config BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER_MODULE
 	  provides Unified Memory access to the GPU and CPU memories for
 	  CUDA programs.
 
-endif # BR2_PACKAGE_NVIDIA390_LEGACY_DRIVER
+endif # BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER
