@@ -19,6 +19,7 @@
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
+- FriendlyElec CM3588 NAS support
 - Legion Go S Controller & LED updates
 - New steering wheel support:
   - Logitech Formula Vibration Feedback

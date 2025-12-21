@@ -20,7 +20,7 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/armbian/linux-rockchip.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="d94588328f77f38fdcd7db7633bea478eb8166da"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="41da3e69e16b9de57eca897215e8b0adc6efdc8b"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
@@ -29,7 +29,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-nanopi-m6 rockchip/rk3588-bananapi-m7 rockchip/rk3588s-rock-5c rockchip/rk3588-rock-5b rockchip/rk3588-radxa-rock-5b+ rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-orangepi-5-pro rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-khadas-edge2 rockchip/rk3588s-roc-pc"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588-friendlyelec-cm3588-nas rockchip/rk3588s-nanopi-m6 rockchip/rk3588-bananapi-m7 rockchip/rk3588s-rock-5c rockchip/rk3588-rock-5b rockchip/rk3588-rock-5b-plus rockchip/rk3588s-rock-5a rockchip/rk3588-evb1-lp4-v10-linux rockchip/rk3588s-orangepi-5 rockchip/rk3588s-orangepi-5b rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-orangepi-5-pro rockchip/rk3588s-9tripod-linux rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-khadas-edge2 rockchip/rk3588s-roc-pc"
 BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-coolpi-4b.dts"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
@@ -52,35 +52,10 @@ BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ZINK=y
 
 # Pre-Built Bootloader Packages
 BR2_PACKAGE_UBOOT_RK3588=y
-BR2_PACKAGE_UBOOT_ORANGEPI_5_PLUS=y
-BR2_PACKAGE_UBOOT_KHADAS_EDGE_2=y
-BR2_PACKAGE_UBOOT_ROCK_5C=y
 BR2_PACKAGE_UBOOT_BANANAPI_M7=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5_PRO=y
 BR2_PACKAGE_UBOOT_NANOPI_M6=y
-BR2_PACKAGE_UBOOT_ORANGEPI_5=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5B=y
 
 # U-Boot dependency
 BR2_TARGET_UBOOT_NEEDS_GNUTLS=y
-
-# Rock5B U-Boot
-BR2_TARGET_UBOOT=y
-BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
-BR2_TARGET_UBOOT_CUSTOM_VERSION=y
-BR2_TARGET_UBOOT_CUSTOM_GIT=y
-BR2_TARGET_UBOOT_CUSTOM_REPO_URL="https://github.com/Kwiboo/u-boot-rockchip"
-BR2_TARGET_UBOOT_CUSTOM_REPO_VERSION="rk3xxx-2024.04"
-BR2_TARGET_UBOOT_BOARD_DEFCONFIG="rock5b-rk3588"
-BR2_TARGET_UBOOT_NEEDS_PYLIBFDT=y
-BR2_TARGET_UBOOT_NEEDS_OPENSSL=y
-BR2_TARGET_UBOOT_NEEDS_PYELFTOOLS=y
-BR2_TARGET_UBOOT_NEEDS_ROCKCHIP_RKBIN=y
-BR2_PACKAGE_HOST_DOSFSTOOLS=y
-BR2_PACKAGE_HOST_DTC=y
-BR2_PACKAGE_HOST_GENIMAGE=y
-BR2_PACKAGE_HOST_MTOOLS=y
-BR2_PACKAGE_HOST_UBOOT_TOOLS=y
-BR2_PACKAGE_ROCKCHIP_RKBIN=y
-BR2_PACKAGE_ROCKCHIP_RKBIN_TPL_FILENAME="bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.19.bin"
-BR2_PACKAGE_ROCKCHIP_RKBIN_BL31_FILENAME="bin/rk35/rk3588_bl31_v1.51.elf"
