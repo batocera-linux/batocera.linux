@@ -534,6 +534,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BRCM_PATCHRAM_PLUS    if BR2_PACKAGE_BATOCERA_TARGET_T527   || \
 	                                            BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 												BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
+	# gamescope
+	select BR2_PACKAGE_GAMESCOPE if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 
 	help
 	  Install the batocera.linux system files
