@@ -111,6 +111,14 @@ class YQuake2Generator(Generator):
         if pad := Controller.find_player_number(playersControllers, 1):
             commandArray.extend([ "+set", "in_initjoy", str(pad.index + 1) ])
 
+        # Mission Packs
+        if "reckoning" in romName.lower():
+            commandArray.extend(["+set", "game", "xatrix"])
+        elif "zero" in romName.lower():
+            commandArray.extend(["+set", "game", "rogue"])
+        elif "zaero" in romName.lower():
+            commandArray.extend(["+set", "game", "zaero"])
+
         return Command.Command(
             array=commandArray,
             env={

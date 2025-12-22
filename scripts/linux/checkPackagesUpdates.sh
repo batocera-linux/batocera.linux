@@ -259,7 +259,10 @@ PACKAGES_PORTS="abuse
                 vkquake
                 vkquake2
                 vkquake3
-                yquake2"
+                yquake2
+                yquake2-xatrix
+                yquake2-rogue
+                yquake2-zaero"
 
 PACKAGES_WINE="dxvk
                dxvk-nvapi

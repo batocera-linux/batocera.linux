@@ -3743,13 +3743,15 @@ quake2:
     Mission Packs
     -------------
 
-    Copy necessary data file to `rogue` ("Ground Zero"), `xatrix` ("The Reckoning"), `zaero` ("Quake II: Zaero") and `smd` ("Slight Mechanical Destruction") directories respectively.
+    Copy the necessary data files to the corresponding directories:
+    `xatrix` for "The Reckoning" (MP1), `rogue` for "Ground Zero" (MP2),
+    `zaero` for "Quake II: Zaero", and `smd` for "Slight Mechanical Destruction".
 
-    The libretro vitaquake2 supported mission pack ROMs are: xatrix, rogue, and zaero.
-    If you have vkQuake2 the additional `smd` ("Slight Mechanical Destruction") pack is supported.
-    vkQuake2 also supports the Capture the Flag mod using the `ctf` directory.
+    All ports can run `xatrix`, `rogue` and `zaero`.
+    vkQuake2 additionally supports `smd`, and also supports the
+    Capture the Flag mod using the `ctf` directory.
 
-    Note: vkQuake2 does not support the zip or 7zip extensions.
+    Note: neither yquake2 nor vkQuake2 support the zip or 7zip extensions.
 
     For more info: https://wiki.batocera.org/systems:quake2
   comment_fr: |
