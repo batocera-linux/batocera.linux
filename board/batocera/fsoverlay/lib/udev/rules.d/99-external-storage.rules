@@ -1,15 +1,15 @@
 # This single rule detects all relevant storage hardware and passes it to the
-# single batocera-storage-manager script for intelligent handling.
+# single batocera-storage-udev script for intelligent handling using batocera-storage-manager
 
 # ADD Events
-KERNEL=="sd*",     DRIVERS=="sbp2",    ACTION=="add",    RUN+="/usr/bin/batocera-storage-manager detect %k %E{DEVTYPE}"
-KERNEL=="sd*",     SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-manager detect %k %E{DEVTYPE}"
-KERNEL=="ub*",     SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-manager detect %k %E{DEVTYPE}"
-KERNEL=="mmcblk*", SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-manager detect %k %E{DEVTYPE}"
-KERNEL=="nvme*",   SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-manager detect %k %E{DEVTYPE}"
+KERNEL=="sd*",     DRIVERS=="sbp2",    ACTION=="add",    RUN+="/usr/bin/batocera-storage-udev add %k %E{DEVTYPE}"
+KERNEL=="sd*",     SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-udev add %k %E{DEVTYPE}"
+KERNEL=="ub*",     SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-udev add %k %E{DEVTYPE}"
+KERNEL=="mmcblk*", SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-udev add %k %E{DEVTYPE}"
+KERNEL=="nvme*",   SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/batocera-storage-udev add %k %E{DEVTYPE}"
 
 # REMOVE Events
-KERNEL=="sd*",                         ACTION=="remove", RUN+="/usr/bin/batocera-storage-manager remove %k %E{DEVTYPE}"
-KERNEL=="ub*",                         ACTION=="remove", RUN+="/usr/bin/batocera-storage-manager remove %k %E{DEVTYPE}"
-KERNEL=="mmcblk*",                     ACTION=="remove", RUN+="/usr/bin/batocera-storage-manager remove %k %E{DEVTYPE}"
-KERNEL=="nvme*",                       ACTION=="remove", RUN+="/usr/bin/batocera-storage-manager remove %k %E{DEVTYPE}"
+KERNEL=="sd*",                         ACTION=="remove", RUN+="/usr/bin/batocera-storage-udev remove %k %E{DEVTYPE}"
+KERNEL=="ub*",                         ACTION=="remove", RUN+="/usr/bin/batocera-storage-udev remove %k %E{DEVTYPE}"
+KERNEL=="mmcblk*",                     ACTION=="remove", RUN+="/usr/bin/batocera-storage-udev remove %k %E{DEVTYPE}"
+KERNEL=="nvme*",                       ACTION=="remove", RUN+="/usr/bin/batocera-storage-udev remove %k %E{DEVTYPE}"
