@@ -531,10 +531,10 @@ quake:
   emulator: libretro
   core:     tyrquake
 quake2:
-  emulator: libretro
-  core:     vitaquake2
+  emulator: yquake2
+  core:     yquake2
   options:
-    gfxbackend: glcore
+    hud_support: false
 quake3:
   emulator: ioquake3
   core:     ioquake3

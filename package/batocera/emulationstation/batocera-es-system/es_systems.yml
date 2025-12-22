@@ -3730,6 +3730,8 @@ quake2:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
     vkquake2:
       vkquake2: { requireAnyOf: [BR2_PACKAGE_VKQUAKE2], incompatible_extensions: [zip, 7zip] }
+    yquake2:
+      yquake2: { requireAnyOf: [BR2_PACKAGE_YQUAKE2], incompatible_extensions: [zip, 7zip] }
   comment_en: |
     For the standard Quake II copy your 'baseq2' directory and contents here.
     Make sure all data files are lowercase, e.g. "baseq2", not "BASEQ2" and "pak0.pak", not "PAK0.PAK".

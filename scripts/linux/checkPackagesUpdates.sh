@@ -258,7 +258,8 @@ PACKAGES_PORTS="abuse
                 xash3d-fwgs
                 vkquake
                 vkquake2
-                vkquake3"
+                vkquake3
+                yquake2"
 
 PACKAGES_WINE="dxvk
                dxvk-nvapi
