@@ -1,12 +1,13 @@
-diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/Makefile linux/arch/arm64/boot/dts/qcom/Makefile
---- linux.orig/arch/arm64/boot/dts/qcom/Makefile	2024-11-29 14:02:15.551060675 +0000
-+++ linux/arch/arm64/boot/dts/qcom/Makefile	2024-11-29 14:31:10.097932265 +0000
-@@ -242,6 +242,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-x
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 296688f7c..7ea22bf87 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -281,6 +281,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-bahamut.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8150-sony-xperia-kumano-griffin.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-hdk.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-mtp.dtb
 +dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rp5.dtb
 +dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-retroidpocket-rpmini.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-samsung-r8q.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-samsung-x1q.dtb
  dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx203.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-sony-xperia-edo-pdx206.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-xiaomi-elish-boe.dtb
