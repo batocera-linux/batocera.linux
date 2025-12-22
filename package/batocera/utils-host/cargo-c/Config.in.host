@@ -1,0 +1,8 @@
+config BR2_PACKAGE_HOST_CARGO_C
+	bool "host-cargo-c"
+	depends on BR2_PACKAGE_HOST_RUSTC_ARCH_SUPPORTS
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  build and install C-compatible libraries.
+
+	  https://github.com/lu-zero/
