@@ -413,9 +413,25 @@ find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" |
 	(cd / && gunzip -c "${FILE}" | tar xf -)
     done
 
+# Process delayed drives from the storage manager
+DELAY_DIR="/var/run/storage-manager.delay"
+if [ -d "$DELAY_DIR" ]; then
+    ls "$DELAY_DIR" | sort -n | while read -r EVENT_FILE; do
+        ARGS=$(cat "$DELAY_DIR/$EVENT_FILE")
+        DEV=$(echo "$ARGS" | cut -d: -f1)
+        TYPE=$(echo "$ARGS" | cut -d: -f2)
+        # Trigger the manager detect command manually
+        /usr/bin/batocera-storage-manager detect "$DEV" "$TYPE"
+        rm "$DELAY_DIR/$EVENT_FILE"
+    done
+fi
+
 if [ -f "/tmp/mergerfs.pending" ]; then
     /usr/bin/batocera-storage-manager refresh_pool
     rm -f "/tmp/mergerfs.pending"
 fi
+
+# Signal that the system is now ready for hotplugging
+touch /var/run/batocera.share.mounted
 
 echo "done."
