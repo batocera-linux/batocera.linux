@@ -157,8 +157,8 @@ NVIDIA580_LEGACY_DRIVER_MODULE_MAKE_OPTS = \
 	NV_KERNEL_MODULES="$(NVIDIA580_LEGACY_DRIVER_MODULES)" \
 	IGNORE_CC_MISMATCH="1"
 
-# move to the kernel-open modules since 560.35.03
-NVIDIA580_LEGACY_DRIVER_MODULE_SUBDIRS = kernel-open
+# use kernel proprietary drivers for GTX 10-series (Pascal), GTX 900 (Maxwell) etc
+NVIDIA580_LEGACY_DRIVER_MODULE_SUBDIRS = kernel
 
 $(eval $(kernel-module))
 
@@ -320,18 +320,17 @@ endif
 
 KVER = $(shell expr $(BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE))
 
-# keep a copy of the production driver for legacy -> production migrations
 define NVIDIA580_LEGACY_DRIVER_RENAME_KERNEL_MODULES
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/modules
     # rename the kernel modules to avoid conflict
-	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia580-legacy.ko
-	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-modeset.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia580-modeset-legacy.ko
-	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-drm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia580-drm-legacy.ko
-	cp $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
+	mv -f $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/updates/nvidia-uvm.ko \
 	    $(TARGET_DIR)/usr/share/nvidia/modules/nvidia580-uvm-legacy.ko
 	# set the driver version file
 	echo $(NVIDIA580_LEGACY_DRIVER_VERSION) > $(TARGET_DIR)/usr/share/nvidia/legacy580.version
