@@ -470,6 +470,10 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/openjkdf2/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/openjk/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/openmohaa/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/yquake2/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/yquake2/yquake2-xatrix/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/yquake2/yquake2-rogue/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/ports/yquake2/yquake2-zaero/Config.in"
   endmenu
 
   menu "dhewm3"

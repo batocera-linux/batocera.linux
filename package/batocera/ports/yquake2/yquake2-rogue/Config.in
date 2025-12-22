@@ -1,0 +1,7 @@
+config BR2_PACKAGE_YQUAKE2_ROGUE
+    bool "yquake2-rogue"
+    depends on BR2_PACKAGE_YQUAKE2
+    help
+      Mission Pack 2 - Ground Zero, for Yamagi Quake 2 port.
+
+      https://www.yamagi.org/quake2/
