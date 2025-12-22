@@ -94,6 +94,7 @@
 - LabWC to 0.9.2
 - LLVM Project to 20.1.8
 - Mesa3D to 25.3.2
+- MPV to v0.41.0
 - Nvidia 580.xx legacy drivers to 580.119.02
 - Nvidia production drivers to 590.48.01
 - QT to 6.9.2
