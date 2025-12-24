@@ -498,34 +498,6 @@ dxvk_install() {
     return 0
 }
 
-winedevices_setup() {
-    WINEPREFIX=$1
-
-    WINEDEVICES=$(get_setting winedevices "${SYSTEM}" "${ROMGAMENAME}")
-
-    for XSYSPATH in system32 syswow64
-    do
-	if [[ "${WINEDEVICES}" = 1 ]]; then
-	    if test ! -e "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe"
-	    then
-		if test -e "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe.wine"
-		then
-		    cp "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe.wine" "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe" || return 1
-		fi
-	    fi
-	else
-	    # disable by default (causing issues on dmd, guns, (usb tty devices)) when windevice exits
-	    # ps -> root     16126     1  0 11:58 ttyUSB0  00:00:00 C:\windows\system32\winedevice.exe
-	    if test -e "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe"
-	    then
-		mv "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe" "${WINEPREFIX}/drive_c/windows/${XSYSPATH}/winedevice.exe.wine" || return 1
-	    fi
-	fi
-    done
-
-    return 0
-}
-
 sandboxing_prefix() {
     if [[ -d "${WINEPREFIX}/drive_c/users/steamuser" ]]; then
         USERNAME=steamuser
@@ -658,7 +630,6 @@ play_wine() {
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
@@ -690,7 +661,6 @@ play_pc() {
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     env
@@ -739,7 +709,6 @@ play_exe() {
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
 
     (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${ROMGAMENAME}")
     waitWineServer 0
@@ -770,7 +739,6 @@ play_winetgz() {
     fonts_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
@@ -853,7 +821,6 @@ play_squashfs() {
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
-    winedevices_setup "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
     if [[ -n "${WINE_LANG}" ]]; then
