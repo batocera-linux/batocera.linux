@@ -3,19 +3,24 @@
 # libretro-dolphin
 #
 ################################################################################
-# Version: Commits on Dec 17, 2022
-LIBRETRO_DOLPHIN_VERSION = 2f4b0f7902257d40a054f60b2c670d6e314f2a04
+# Version: Commits on Dec 24, 2025
+LIBRETRO_DOLPHIN_VERSION = ee45d31871212384cc1db3e9126ebcdfbf526613
 LIBRETRO_DOLPHIN_SITE = $(call github,libretro,dolphin,$(LIBRETRO_DOLPHIN_VERSION))
+LIBRETRO_DOLPHIN_SITE_METHOD = git
+LIBRETRO_DOLPHIN_GIT_SUBMODULES = YES
 LIBRETRO_DOLPHIN_LICENSE = GPLv2
-LIBRETRO_DOLPHIN_DEPENDENCIES = libevdev fmt bluez5_utils retroarch
+LIBRETRO_DOLPHIN_DEPENDENCIES = libevdev fmt bluez5_utils retroarch pugixml libenet libcurl hidapi
 
 LIBRETRO_DOLPHIN_PLATFORM = $(LIBRETRO_PLATFORM)
 
 LIBRETRO_DOLPHIN_CONF_OPTS = -DLIBRETRO=ON \
+                             -DLINUX=ON \
                              -DENABLE_NOGUI=OFF \
                              -DENABLE_QT=OFF \
                              -DENABLE_TESTS=OFF \
                              -DUSE_DISCORD_PRESENCE=OFF \
+                             -DUSE_SYSTEM_XXHASH=OFF \
+                             -DUSE_SYSTEM_SPNG=OFF \
                              -DBUILD_SHARED_LIBS=OFF \
                              -DCMAKE_BUILD_TYPE=Release \
                              -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -fpermissive"
