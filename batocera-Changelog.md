@@ -62,6 +62,7 @@
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
 - Jazz2 to 3.4.0
+- Libretro Dolphin to 24th of December 2025 build
 - Libretro MAME to 0.283
 - Libretro Play! to 0.71
 - Libretro Opera to 17th of October 2024 build
