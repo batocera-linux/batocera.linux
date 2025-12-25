@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBENET_VERSION = 1.3.17
+LIBENET_VERSION = 1.3.18
 LIBENET_SOURCE = enet-${LIBENET_VERSION}.tar.gz
 LIBENET_SITE = http://enet.bespin.org/download
 LIBENET_INSTALL_STAGING = YES
