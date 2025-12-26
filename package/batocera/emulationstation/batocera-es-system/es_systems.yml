@@ -3638,6 +3638,8 @@ coco:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR], incompatible_extensions: [wav, dsk, rom, zip, 7z] }          
   comment_en: |
           Requires MAME BIOS file coco.zip and coco3.zip
 
