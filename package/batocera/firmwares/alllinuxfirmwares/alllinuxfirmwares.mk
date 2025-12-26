@@ -16,9 +16,11 @@ ifeq ($(BR2_PACKAGE_FIRMWARE_ORANGEPI),y)
 ALLLINUXFIRMWARES_DEPENDENCIES += firmware-orangepi
 endif
 
-# exclude some dirs not required on batocera
+# These folders contain massive blobs for 40Gb/100Gb SmartNICs and Mainframes.
+# Removed to save significant space on all targets.
 ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
-    $(@D)/dpaa2 $(@D)/bnx2x $(@D)/cxgb4 $(@D)/mrvl/prestera
+    $(@D)/dpaa2 $(@D)/bnx2x $(@D)/cxgb4 $(@D)/mrvl/prestera $(@D)/qed \
+    $(@D)/qlogic $(@D)/nfp $(@D)/pensando $(@D)/cavium
 
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
     # rk3588 boards can allow for more varied pcie combo adapters
@@ -32,6 +34,26 @@ ifeq ($(BR2_arm)$(BR2_aarch64),y)
     endif
 endif
 
+# This removes strictly ARM/RISC-V SoC components while preserving all Wi-Fi/BT.
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += \
+        $(@D)/apple \
+        $(@D)/rockchip \
+        $(@D)/starfive \
+        $(@D)/sunxi \
+        $(@D)/imx \
+        $(@D)/ti \
+        $(@D)/s5p-* \
+        $(@D)/meson \
+        $(@D)/v3d \
+        $(@D)/vc4 \
+        $(@D)/nvidia/tegra \
+        $(@D)/arm \
+        $(@D)/sxg \
+        $(@D)/microchip
+endif
+
+# Remove Broadcom if RPi/External firmware is already handling it
 ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_EXTRALINUXFIRMWARES),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/brcm
 endif
@@ -57,6 +79,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # exclude some dirs not required on batocera
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
 
+    # RK3588 specific: Keep only Bluetooth 'ibt-*' from the Intel folder
     if [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588" = "y" ] || [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO" = "y" ]; then \
         find $(@D)/intel -type f ! -name 'ibt-*' -delete; \
     fi
@@ -82,8 +105,8 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
         done
 endef
 
+# Link Qualcomm Wi-Fi/BT for Steam Deck OLED and other x86 handhelds
 define ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
-    # wifi
     mkdir -p $(TARGET_DIR)/lib/firmware/ath11k/WCN6855/hw2.1
     mkdir -p $(TARGET_DIR)/lib/firmware/ath11k/QCA2066
     cp -rf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/hw2.1/* \
@@ -108,23 +131,21 @@ define ALLLINUXFIRMWARES_FIX_SER9
         $(TARGET_DIR)/etc/init.d/
 endef
 
-# Copy Qualcomm firmware for Steam Deck OLED etc
+# Realtek BT symlinks for RK3588 kernel compatibility
+define ALLLINUXFIRMWARES_LINK_RTL_BT
+    ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin $(TARGET_DIR)/lib/firmware/rtl8852bu_fw
+    ln -sf /lib/firmware/rtl_bt/rtl8852bu_config.bin $(TARGET_DIR)/lib/firmware/rtl8852bu_config
+endef
+
+# Apply hooks based on architecture
 ifeq ($(BR2_x86_64),y)
-    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_AMD_890M
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_SER9
 endif
 
-# symlink BT firmware for RK3588 kernel
-define ALLLINUXFIRMWARES_LINK_RTL_BT
-    ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin \
-        $(TARGET_DIR)/lib/firmware/rtl8852bu_fw
-    ln -sf /lib/firmware/rtl_bt/rtl8852bu_config.bin \
-        $(TARGET_DIR)/lib/firmware/rtl8852bu_config
-endef
-
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
-    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS = ALLLINUXFIRMWARES_LINK_RTL_BT
+    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_LINK_RTL_BT
 endif
 
 $(eval $(generic-package))
