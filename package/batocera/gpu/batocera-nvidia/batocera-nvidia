@@ -428,6 +428,11 @@ elif [ "$MODE" = "legacy580" ]; then
     
     # finally link appropriate 580.xx kernel modules
     mkdir -p /var/run/nvidia/modules
+    # Unload default/existing modules before symlinking
+    echo "Unloading existing NVIDIA modules to release hardware..." >> "$log"
+    for m in nvidia_drm nvidia_uvm nvidia_modeset nvidia ipmi_devintf; do
+        modprobe -r $m >> "$log" 2>&1
+    done
     echo "Linking NVIDIA 580.xx kernel modules" >> $log
     ln -sf /usr/share/nvidia/modules/nvidia580-legacy.ko /var/run/nvidia/modules/nvidia.ko
     ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
@@ -436,13 +441,15 @@ elif [ "$MODE" = "legacy580" ]; then
     ln -sf /usr/share/nvidia/modules/nvidia580-drm-legacy.ko /var/run/nvidia/modules/nvidia-drm.ko
     ln -sf /var/run/nvidia/modules/nvidia-drm.ko /lib/modules/$LINUX_VER/updates/nvidia-drm.ko
     ln -sf /usr/share/nvidia/modules/nvidia580-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
-    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko    
+    ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
     # enable kernel modules
+    echo "Loading NVIDIA 580.xx kernel modules..." >> "$log"
     for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
         if modprobe $m >> "$log" 2>&1; then
             echo "Module $m loaded successfully" >> "$log"
         else
             echo "Failed to load module $m" >> "$log"
+            [ "$m" = "nvidia" ] && dmesg | tail -n 15 >> "$log"
         fi
     done
 
@@ -591,6 +598,11 @@ elif [ "$MODE" = "legacy470" ]; then
         
     # finally link the kernel modules & run them
     mkdir -p /var/run/nvidia/modules
+    # Unload default/existing modules before symlinking
+    echo "Unloading existing NVIDIA modules to release hardware..." >> "$log"
+    for m in nvidia_drm nvidia_uvm nvidia_modeset nvidia ipmi_devintf; do
+        modprobe -r $m >> "$log" 2>&1
+    done
     echo "Linking NVIDIA 470.xx kernel modules" >> $log
     ln -sf /usr/share/nvidia/modules/nvidia470-legacy.ko /var/run/nvidia/modules/nvidia.ko
     ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
@@ -601,11 +613,13 @@ elif [ "$MODE" = "legacy470" ]; then
     ln -sf /usr/share/nvidia/modules/nvidia470-uvm-legacy.ko /var/run/nvidia/modules/nvidia-uvm.ko
     ln -sf /var/run/nvidia/modules/nvidia-uvm.ko /lib/modules/$LINUX_VER/updates/nvidia-uvm.ko
     # enable kernel modules
+    echo "Loading NVIDIA 470.xx kernel modules..." >> "$log"
     for m in ipmi_devintf nvidia nvidia_modeset nvidia_uvm nvidia_drm; do
         if modprobe $m >> "$log" 2>&1; then
             echo "Module $m loaded successfully" >> "$log"
         else
             echo "Failed to load module $m" >> "$log"
+            [ "$m" = "nvidia" ] && dmesg | tail -n 15 >> "$log"
         fi
     done
 
