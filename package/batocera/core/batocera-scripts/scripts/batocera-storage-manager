@@ -266,6 +266,18 @@ handle_disk_event() {
     fi
     trap "rmdir '$parent_lock' 2>/dev/null" EXIT
 
+    # Force the kernel to look for partitions before we decide the disk is "empty"
+    log_msg "SAFETY: Probing $devname for hidden partitions..."
+    partprobe "/dev/$devname" >/dev/null 2>&1
+    udevadm settle --timeout=3
+
+    # Check if this disk contains any Android/Qualcomm/Critical labels
+    # This prevents prompting for format if we see things like 'abl', 'xbl', 'boot', etc.
+    if lsblk -no PARTLABEL "/dev/$devname" | grep -qiE "abl|xbl|boot|modem|vendor|system|persist|tz|hyp"; then
+        log_msg "SAFETY: [$devname] Critical bootloader/system partitions detected. Aborting format prompt."
+        exit 0
+    fi
+
     local pttype=$(blkid -s PTTYPE -o value "/dev/$devname")
     if [ -n "$pttype" ]; then
         # Check if any actual partition nodes exist in /dev (e.g. /dev/sda1)
