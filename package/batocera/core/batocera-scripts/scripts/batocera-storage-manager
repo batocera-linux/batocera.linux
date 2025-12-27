@@ -267,9 +267,12 @@ handle_disk_event() {
     trap "rmdir '$parent_lock' 2>/dev/null" EXIT
 
     # Force the kernel to look for partitions before we decide the disk is "empty"
-    log_msg "SAFETY: Probing $devname for hidden partitions..."
-    partprobe "/dev/$devname" >/dev/null 2>&1
-    udevadm settle --timeout=3
+    if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
+        log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
+        partprobe "/dev/$devname" >/dev/null 2>&1
+        # Use a short sleep to let the kernel update /dev
+        sleep 1 
+    fi
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
     # This prevents prompting for format if we see things like 'abl', 'xbl', 'boot', etc.
@@ -348,6 +351,7 @@ handle_disk_event() {
 case "$COMMAND" in
 "detect")
     DEVNAME=$ARG2
+    [ -z "$DEVNAME" ] && exit 0
     log_msg "ENTRY: [$DEVNAME] Detect event triggered."
 
     PARENT_DISK=$(get_parent_disk "$DEVNAME")
