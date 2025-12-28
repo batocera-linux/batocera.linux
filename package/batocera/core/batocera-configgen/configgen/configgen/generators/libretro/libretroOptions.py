@@ -580,6 +580,11 @@ def _dolphin_options(
     # OSD
     _set_from_system(coreSettings, 'dolphin_osd_enabled', system, 'wii_osd', default="enabled")
 
+    # Light gun
+    if system.config.use_guns and guns:
+        _set(coreSettings, 'dolphin_ir_mode', '3')
+    else:
+        _set(coreSettings, 'dolphin_ir_mode', '1')
 
 # Magnavox - Odyssey2 / Phillips Videopac+
 def _o2em_options(
