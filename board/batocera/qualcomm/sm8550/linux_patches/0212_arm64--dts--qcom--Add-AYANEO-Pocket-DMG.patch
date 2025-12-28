@@ -3,7 +3,7 @@ new file mode 100644
 index 000000000000..845a7cf600e2
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketdmg.dts
-@@ -0,0 +1,149 @@
+@@ -0,0 +1,111 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2025, ROCKNIX (https://github.com/ROCKNIX)
@@ -18,45 +18,7 @@ index 000000000000..845a7cf600e2
 +	qcom,board-id = <0x1000b 0x01>;
 +	qcom,msm-id = <0x258 0x20000>, <0x259 0x20000>;
 +	compatible = "ayaneo,pocketdmg", "qcom,qcs8550", "qcom,sm8550";
-+
-+	rocknix_unified_joypad {
-+		compatible = "rocknix,unified-joypad";
-+
-+		target-device-names = "AYANEO DEVICE",
-+				      "AYANEO DEVICE",
-+				      "AYANEO Controller";
-+
-+		virtual-device-name = "ROCKNIX Unified Joypad";
-+		virtual-vendor-id = <0x0fff>;
-+		virtual-product-id = <0x0fff>;
-+		virtual-version-id = <0x9001>;
-+
-+		ignore-events = <EV_ABS ABS_BRAKE  // Ignore L2 axis
-+				 EV_ABS ABS_GAS>;  // Ignore R2 axis
-+
-+		remaps {
-+			remap_1 {
-+				target-device-name = "AYANEO Controller";
-+				target-device-phys = "usb-0001:01:00.0-2/input0";
-+
-+				key-remaps = <
-+					304 0x131  // BTN_SOUTH -> BTN_EAST
-+					305 0x130  // KEY_EAST  -> BTN_SOUTH
-+				>;
-+			};
-+
-+			remap_2 {
-+				target-device-name = "AYANEO DEVICE";
-+				target-device-phys = "usb-0001:01:00.0-1/input1";
-+
-+				key-remaps = <
-+					183 115    // KEY_F13 -> KEY_VOLUMEUP
-+					184 114    // KEY_F14 -> KEY_VOLUMEDOWN
-+					194 0x13c  // KEY_F24 -> BTN_MODE
-+				>;
-+			};
-+		};
-+	};
++	rocknix-u-boot-dt-id = "u-boot-pocket-dmg";
 +};
 +
 +&tlmm {

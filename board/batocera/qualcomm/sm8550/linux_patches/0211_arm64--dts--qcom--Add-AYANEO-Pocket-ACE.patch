@@ -1,7 +1,7 @@
 diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts linux/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts
 --- linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts	1970-01-01 00:00:00.000000000 +0000
 +++ linux/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts	2025-02-26 13:52:56.398992835 +0000
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,134 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -17,15 +17,36 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts lin
 +	qcom,board-id = <0x1000b 0x01>;
 +	qcom,msm-id = <0x258 0x20000>, <0x259 0x20000>;
 +	compatible = "ayaneo,pocketace", "qcom,qcs8550", "qcom,sm8550";
++	rocknix-u-boot-dt-id = "u-boot-pocket-ace";
 +};
 +
 +&tlmm {
 +	panel_pwr_active: panel-pwr-active-state {
-+		pins = "gpio152", "gpio153";
++		pins = "gpio72", "gpio42", "gpio152", "gpio153";
 +		function = "gpio";
 +		drive-strength = <8>;
 +		bias-disable;
 +		output-high;
++	};
++
++	panel_pwr_sleep: panel-pwr-sleep-state {
++		pins = "gpio72", "gpio42", "gpio152", "gpio153";
++		function = "gpio";
++		output-low;
++	};
++
++	backlight_pwr_active: backlight-pwr-active-state {
++		pins = "gpio41";
++		function = "gpio";
++		drive-strength = <8>;
++		bias-disable;
++		output-high;
++	};
++
++	backlight_pwr_sleep: backlight-pwr-sleep-state {
++		pins = "gpio41";
++		function = "gpio";
++		output-low;
 +	};
 +
 +	ts_int_active: ts-int-default-state {
@@ -44,8 +65,9 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts lin
 +	sgm3804: regulator@3e {
 +		compatible = "sgmicro,sgm3804";
 +		reg = <0x3e>;
-+		pinctrl-names = "default";
 +		pinctrl-0 = <&panel_pwr_active>;
++		pinctrl-1 = <&panel_pwr_sleep>;
++		pinctrl-names = "default", "sleep";
 +		regulator-name = "panel-avdd";
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
@@ -53,9 +75,12 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketace.dts lin
 +	};
 +
 +	/* Backlight */
-+	backlight: backlight@2e {
++	backlight: sy7758@2e {
 +		compatible = "silergy,sy7758";
 +		reg = <0x2e>;
++		pinctrl-0 = <&backlight_pwr_active>;
++		pinctrl-1 = <&backlight_pwr_sleep>;
++		pinctrl-names = "default", "sleep";
 +		status = "okay";
 +	};
 +};
