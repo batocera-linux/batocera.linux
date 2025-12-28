@@ -14,13 +14,14 @@ BINARIES_DIR=$4
 TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
-mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot" || exit 1
 
 cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/Image"           || exit 1
 cp "${BINARIES_DIR}/initrd.lz4"      "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"      || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
-cp "${BINARIES_DIR}/qcs8550-ayn-odin2mini.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"           || exit 1
-cp -f "${BOARD_DIR}/LinuxLoader.cfg"           "${BATOCERA_BINARIES_DIR}/boot/LinuxLoader.cfg" || exit 1
+cp "${BINARIES_DIR}/qcs8550-ayn-odin2mini.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"        || exit 1
+cp -f "${BOARD_DIR}/grub.cfg"                  "${BINARIES_DIR}/efi-part/EFI/BOOT/grub.cfg" || exit 1
+cp -r "${BINARIES_DIR}/efi-part/EFI/"          "${BATOCERA_BINARIES_DIR}/boot/"             || exit 1
 
 exit 0
