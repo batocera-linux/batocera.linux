@@ -76,8 +76,8 @@ index 03844f1f5bb5fa..5088373661bf0e 100644
 +	help
 +		Support Hynitron 66xx/3240/92xx/3xx/1xx/7xx/8xxt
 +
- config TOUCHSCREEN_ILI210X
- 	tristate "Ilitek ILI210X based touchscreen"
+ config TOUCHSCREEN_HYNITRON_CST816X
+ 	tristate "Hynitron CST816x touchscreen"
  	depends on I2C
 diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
 index 35b25e6119a3f6..27d5fe18f958b7 100644
@@ -88,9 +88,9 @@ index 35b25e6119a3f6..27d5fe18f958b7 100644
  obj-$(CONFIG_TOUCHSCREEN_HIDEEP)	+= hideep.o
  obj-$(CONFIG_TOUCHSCREEN_HYNITRON_CSTXXX)	+= hynitron_cstxxx.o
 +obj-$(CONFIG_TOUCHSCREEN_HYNITRON_ALL)	+= hynitron/
+ obj-$(CONFIG_TOUCHSCREEN_HYNITRON_CST816X)	+= hynitron-cst816x.o
  obj-$(CONFIG_TOUCHSCREEN_ILI210X)	+= ili210x.o
  obj-$(CONFIG_TOUCHSCREEN_ILITEK)	+= ilitek_ts_i2c.o
- obj-$(CONFIG_TOUCHSCREEN_IMAGIS)	+= imagis.o
 diff --git a/drivers/input/touchscreen/hynitron/Makefile b/drivers/input/touchscreen/hynitron/Makefile
 new file mode 100644
 index 00000000000000..93e1af124e58ae

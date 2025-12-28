@@ -1,0 +1,81 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH] drm/msm: adreno: fix deferencing ifpc_reglist when not
+ declared
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Mon, 17 Nov 2025 15:51:35 +0100
+Message-Id: <20251117-topic-sm8x50-fix-a6xx-non-ifpc-v1-1-e4473cbf5903@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+On plaforms with an a7xx GPU not supporting IFPC, the ifpc_reglist
+if still deferenced in a7xx_patch_pwrup_reglist() which causes
+a kernel crash:
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+...
+pc : a6xx_hw_init+0x155c/0x1e4c [msm]
+lr : a6xx_hw_init+0x9a8/0x1e4c [msm]
+...
+Call trace:
+  a6xx_hw_init+0x155c/0x1e4c [msm] (P)
+  msm_gpu_hw_init+0x58/0x88 [msm]
+  adreno_load_gpu+0x94/0x1fc [msm]
+  msm_open+0xe4/0xf4 [msm]
+  drm_file_alloc+0x1a0/0x2e4 [drm]
+  drm_client_init+0x7c/0x104 [drm]
+  drm_fbdev_client_setup+0x94/0xcf0 [drm_client_lib]
+  drm_client_setup+0xb4/0xd8 [drm_client_lib]
+  msm_drm_kms_post_init+0x2c/0x3c [msm]
+  msm_drm_init+0x1a4/0x228 [msm]
+  msm_drm_bind+0x30/0x3c [msm]
+...
+
+Check the validity of ifpc_reglist before deferencing the table
+to setup the register values.
+
+Fixes: a6a0157cc68e ("drm/msm/a6xx: Enable IFPC on Adreno X1-85")
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+---
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index b8f8ae940b55..7ee15f339438 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -831,15 +831,17 @@ static void a7xx_patch_pwrup_reglist(struct msm_gpu *gpu)
+ 	lock->gpu_req = lock->cpu_req = lock->turn = 0;
+ 
+ 	reglist = adreno_gpu->info->a6xx->ifpc_reglist;
+-	lock->ifpc_list_len = reglist->count;
++	if (reglist) {
++		lock->ifpc_list_len = reglist->count;
+ 
+-	/*
+-	 * For each entry in each of the lists, write the offset and the current
+-	 * register value into the GPU buffer
+-	 */
+-	for (i = 0; i < reglist->count; i++) {
+-		*dest++ = reglist->regs[i];
+-		*dest++ = gpu_read(gpu, reglist->regs[i]);
++		/*
++		 * For each entry in each of the lists, write the offset and the current
++		 * register value into the GPU buffer
++		 */
++		for (i = 0; i < reglist->count; i++) {
++			*dest++ = reglist->regs[i];
++			*dest++ = gpu_read(gpu, reglist->regs[i]);
++		}
+ 	}
+ 
+ 	reglist = adreno_gpu->info->a6xx->pwrup_reglist;
+
+---
+base-commit: d6556aa99b8839819267e8167f04b715cfb5d4cf
+change-id: 20251117-topic-sm8x50-fix-a6xx-non-ifpc-e89753af3696
+
+Best regards,
+-- 
+Neil Armstrong <neil.armstrong@linaro.org>
+

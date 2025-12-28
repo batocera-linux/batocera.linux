@@ -27,7 +27,7 @@ new file mode 100644
 index 000000000000..f107519c0e5c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayn-thor.dts
-@@ -0,0 +1,430 @@
+@@ -0,0 +1,434 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -298,6 +298,8 @@ index 000000000000..f107519c0e5c
 +
 +		touchscreen-size-x = <1080>;
 +		touchscreen-size-y = <1920>;
++		touchscreen-swapped-x-y;
++		touchscreen-inverted-x;
 +	};
 +};
 +
@@ -397,6 +399,8 @@ index 000000000000..f107519c0e5c
 +
 +		touchscreen-size-x = <1080>;
 +		touchscreen-size-y = <1240>;
++		touchscreen-swapped-x-y;
++		touchscreen-inverted-x;
 +
 +		no-regmap-bulk-read;
 +	};

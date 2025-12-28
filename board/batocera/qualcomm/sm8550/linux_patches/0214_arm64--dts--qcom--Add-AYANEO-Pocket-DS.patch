@@ -1,7 +1,7 @@
 diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketds.dts linux/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketds.dts
 --- linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketds.dts	1970-01-01 00:00:00.000000000 +0000
 +++ linux/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketds.dts	2025-08-29 01:15:03.063872627 +0000
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,201 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -17,6 +17,7 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketds.dts linu
 +	qcom,board-id = <0x1000b 0x01>;
 +	qcom,msm-id = <0x258 0x20000>, <0x259 0x20000>;
 +	compatible = "ayaneo,pocketds", "qcom,qcs8550", "qcom,sm8550";
++	rocknix-u-boot-dt-id = "u-boot-pocket-ds";
 +
 +	tca6424_vcc: regulator-tca6424-vcc {
 +		compatible = "regulator-fixed";
