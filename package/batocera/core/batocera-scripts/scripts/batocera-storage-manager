@@ -240,10 +240,34 @@ handle_partition_event() {
 
     local part_dev="/dev/$devname"
     
-    # Fast check for system labels
+    # This list covers every label found in blkid for dual boot Android devices
+    local android_regex=""
+    android_regex+="dsp|vm-|modem|bluetooth|qmcs|"      # Connectivity & Virtualization
+    android_regex+="persist|metadata|fsc|fsg|cdt|ddr|"  # Hardware & Config
+    android_regex+="multiimg|xbl|apdp|secdata|loader|"  # Bootloaders
+    android_regex+="devcfg|uefi|dtbo|cpucp|tools|"      # Firmware
+    android_regex+="mdcompress|init_boot|aop|boot|tz|"  # Core Boot
+    android_regex+="limits|vendor|shrm|abl|qwes|rtic|"  # Security & Vendor
+    android_regex+="qupfw|dip|vbmeta|keymaster|splash|" # Secure Boot & UI
+    android_regex+="mdtp|hyp|connsec|recovery|feat|"    # Recovery & Hypervisor
+    android_regex+="imagefv|spunvm|storsec|logdump|"    # Storage Security
+    android_regex+="devinfo|nvdata|super|misc|ssd|"     # System Data
+    android_regex+="keystore|qpdata|userdata|reserve|"  # User Data & Keys
+    android_regex+="rawdump|frp|logfs"                  # Debug & Factory Reset
+
+    # Get both the Filesystem Label and the Partition Table Label
     local label=$(blkid -s LABEL -o value "$part_dev")
+    local part_label=$(blkid -s PARTLABEL -o value "$part_dev")
+
+    # Standard Batocera drive check
     if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then 
         log_msg "SKIP: [$devname] System partition detected."
+        exit 0
+    fi
+
+    # Comprehensive Android/Qualcomm check
+    if echo "$label $part_label" | grep -qiE "$android_regex"; then
+        log_msg "SKIP: [$devname] Android system partition detected (Label: $label, PartLabel: $part_label)."
         exit 0
     fi
 
@@ -332,6 +356,13 @@ handle_disk_event() {
 
     if [ "$raw_sectors" -eq 0 ]; then
         log_msg "SKIP: [$devname] Failed to report valid size."
+        exit 0
+    fi
+
+    # Ignore drives 4GB or smaller (8388608 sectors). 
+    # This safely ignores Qualcomm android partitions like sdg/sdh.
+    if [ "$raw_sectors" -le 8388608 ]; then
+        log_msg "SAFETY: [$devname] Drive is 4GB or smaller ($gb_size). Likely a system LUN. Skipping."
         exit 0
     fi
 
