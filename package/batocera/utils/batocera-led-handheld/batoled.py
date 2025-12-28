@@ -516,6 +516,9 @@ class rgbledaddr(object):
             r, g, b = hex_to_dec(rgb[0:2]), hex_to_dec(rgb[2:4]), hex_to_dec(rgb[4:6])
             self._write_scaled(r, g, b)
 
+    def turn_off(self):
+        self.set_color("OFF")
+
     def set_color_dec(self, rgb_str):
         try:
             r, g, b = [int(x) for x in rgb_str.split()]
