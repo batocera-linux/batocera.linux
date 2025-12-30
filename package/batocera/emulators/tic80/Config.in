@@ -1,0 +1,14 @@
+config BR2_PACKAGE_TIC80
+    bool "tic80"
+    select BR2_PACKAGE_PIPEWIRE
+    select BR2_PACKAGE_SDL2 
+    select BR2_PACKAGE_RUBY 
+    select BR2_PACKAGE_LIBCURL 
+    select BR2_PACKAGE_LIBGLVND 
+    select BR2_PACKAGE_LIBGLU
+    select BR2_PACKAGE_LIBFREEGLUT if BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_XORG7
+    help
+       TIC-80 is a fantasy computer for making, playing and sharing tiny games.
+	  
+       https://tic80.com/
+       https://github.com/nesbox/TIC-80
