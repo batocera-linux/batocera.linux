@@ -2,22 +2,22 @@ diff --git a/pcsx2/Config.h b/pcsx2/Config.h
 index 3b12a96..382b19b 100644
 --- a/pcsx2/Config.h
 +++ b/pcsx2/Config.h
-@@ -1283,6 +1283,7 @@ struct Pcsx2Config
+@@ -1319,6 +1319,7 @@ struct Pcsx2Config
+ 		InhibitScreensaver : 1,
  		BackupSavestate : 1,
  		McdFolderAutoManage : 1,
- 		ManuallySetRealTimeClock : 1,
 +		AutoIncrementSlot : 1,
- 
- 		HostFs : 1,
- 
+ 		ManuallySetRealTimeClock : 1, // passes user-set real-time clock information to cdvd at startup
+ 		UseSystemLocaleFormat : 1, // presents OS time format instead of yyyy-MM-dd HH:mm:ss for manual RTC
+		
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
 index 9a715c0..ef746da 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
-@@ -1899,6 +1899,7 @@ Pcsx2Config::Pcsx2Config()
- 	BackupSavestate = true;
- 	WarnAboutUnsafeSettings = true;
+@@ -1931,6 +1931,7 @@ Pcsx2Config::Pcsx2Config()
+ 	EnableDiscordPresence = false;
  	ManuallySetRealTimeClock = false;
+ 	UseSystemLocaleFormat = false;
 +	AutoIncrementSlot = false;
  
  	// To be moved to FileMemoryCard pluign (someday)

@@ -71,6 +71,7 @@
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
 - Play! to 0.71
+- PCSX2 to v2.5.405
 - RClone to v1.72.1
 - RetroArch to 1.22.2
 - RPCS3 to v0.0.38
