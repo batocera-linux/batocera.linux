@@ -80,7 +80,7 @@
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
 - Taradino to 20251031
-- TheXTech to v1.3.7.1-2
+- TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
 - VkQuake to 19th of November 2025 build 
 - Xash3D FWGS engine to Oct 17 build
