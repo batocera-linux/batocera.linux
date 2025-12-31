@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version: Commits on Dec 25, 2025
-ROCKNIX_ABL_VERSION = 43d8bad12026dc8cd7141a3d1cdcf5f011538a99
+# Version: Commits on Dec 31, 2025
+ROCKNIX_ABL_VERSION = 71eba23d3dbc86cc8ba0e1f5f98edfec7df3a055
 ROCKNIX_ABL_SITE = $(call github,ROCKNIX,abl,$(ROCKNIX_ABL_VERSION))
 
 # Handle sm8650 & sm6115 in future
