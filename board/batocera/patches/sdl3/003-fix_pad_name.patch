@@ -2,13 +2,13 @@ diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjo
 index ea73821c06..e38c37f6a8 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -313,10 +313,7 @@ static bool IsJoystick(const char *path, int *fd, char **name_return, Uint16 *ve
+@@ -329,10 +329,7 @@ static bool IsJoystick(const char *path, int *fd, char **name_return, Uint16 *ve
          }
      }
  
 -    name = SDL_CreateJoystickName(inpid.vendor, inpid.product, NULL, product_string);
 -    if (!name) {
--        return false;
+-        goto error;
 -    }
 +    name = SDL_strdup(product_string);
  
