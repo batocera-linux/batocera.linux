@@ -104,7 +104,7 @@
 - QT to 6.9.2
 - Raspberry Pi kernel and associated firmware / utils to 6.12.62
 - SDL3 to 3.3.6
-- Sound Open Firmware to 2025.05.1
+- Sound Open Firmware to 2025.12
 - Sway to 1.11
 - VKD3D Proton to 3.0a
 - Vulkan stack to 1.4.328.1
