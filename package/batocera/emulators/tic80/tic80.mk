@@ -8,4 +8,4 @@ TIC80_CONF_OPTS = -DBUILD_SDLGPU=On
 TIC80_CONF_OPTS += -DBUILD_WITH_ALL=On
 TIC80_CONF_OPTS += -DBUILD_STATIC=On
 
-$(eval $(generic-package))
+$(eval $(cmake-package))
