@@ -28,15 +28,5 @@ class NesboxGenerator(Generator):
         else:
             commandArray.extend([rom])
 
-        controllersconfig = generate_sdl_game_controller_config(playersControllers)
-        with ensure_parents_and_open(CONTROLLERS, "w") as file:
-               file.write(controllersconfig)
-
-        existing_library_path = os.environ.get("LD_LIBRARY_PATH")
-
-        return Command.Command(array=commandArray, env={
-            "LD_LIBRARY_PATH": f"{LD_LIB}:{existing_library_path}" if existing_library_path else LD_LIB
-        })
-
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
