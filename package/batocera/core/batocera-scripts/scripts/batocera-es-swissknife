@@ -27,7 +27,7 @@ function check_emurun() {
 
 # Emulationstation currently running?
 function check_esrun() {
-    echo $(pgrep -f -n emulationstation || echo 0)
+    echo $(pidof /usr/bin/emulationstation || echo 0)
 }
 
 # Kill emulators running in a proper way! (SAVE SRM STATE!), timeout is 5s per default
@@ -63,7 +63,7 @@ function version_update() {
 case ${1,,} in
     --restart)
         ES_PID=$(check_esrun)
-        [[ ${ES_PID} -ne 0 ]] && kill ${ES_PID} && ret=0 || ret=1
+        [[ ${ES_PID} -ne 0 ]] && kill -9 ${ES_PID} && ret=0 || ret=1
     ;;
 
     --espid)
