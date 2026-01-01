@@ -54,6 +54,7 @@
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
+- BigPEmu to v121
 - CLK to 2025-11-26
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
