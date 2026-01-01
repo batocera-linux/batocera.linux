@@ -240,10 +240,34 @@ handle_partition_event() {
 
     local part_dev="/dev/$devname"
     
-    # Fast check for system labels
+    # This list covers every label found in blkid for dual boot Android devices
+    local android_regex=""
+    android_regex+="dsp|vm-|modem|bluetooth|qmcs|"      # Connectivity & Virtualization
+    android_regex+="persist|metadata|fsc|fsg|cdt|ddr|"  # Hardware & Config
+    android_regex+="multiimg|xbl|apdp|secdata|loader|"  # Bootloaders
+    android_regex+="devcfg|uefi|dtbo|cpucp|tools|"      # Firmware
+    android_regex+="mdcompress|init_boot|aop|boot|tz|"  # Core Boot
+    android_regex+="limits|vendor|shrm|abl|qwes|rtic|"  # Security & Vendor
+    android_regex+="qupfw|dip|vbmeta|keymaster|splash|" # Secure Boot & UI
+    android_regex+="mdtp|hyp|connsec|recovery|feat|"    # Recovery & Hypervisor
+    android_regex+="imagefv|spunvm|storsec|logdump|"    # Storage Security
+    android_regex+="devinfo|nvdata|super|misc|ssd|"     # System Data
+    android_regex+="keystore|qpdata|userdata|reserve|"  # User Data & Keys
+    android_regex+="rawdump|frp|logfs"                  # Debug & Factory Reset
+
+    # Get both the Filesystem Label and the Partition Table Label
     local label=$(blkid -s LABEL -o value "$part_dev")
+    local part_label=$(blkid -s PARTLABEL -o value "$part_dev")
+
+    # Standard Batocera drive check
     if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then 
         log_msg "SKIP: [$devname] System partition detected."
+        exit 0
+    fi
+
+    # Comprehensive Android/Qualcomm check
+    if echo "$label $part_label" | grep -qiE "$android_regex"; then
+        log_msg "SKIP: [$devname] Android system partition detected (Label: $label, PartLabel: $part_label)."
         exit 0
     fi
 
@@ -265,6 +289,21 @@ handle_disk_event() {
         exit 0
     fi
     trap "rmdir '$parent_lock' 2>/dev/null" EXIT
+
+    # Force the kernel to look for partitions before we decide the disk is "empty"
+    if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
+        log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
+        partprobe "/dev/$devname" >/dev/null 2>&1
+        # Use a short sleep to let the kernel update /dev
+        sleep 1 
+    fi
+
+    # Check if this disk contains any Android/Qualcomm/Critical labels
+    # This prevents prompting for format if we see things like 'abl', 'xbl', 'boot', etc.
+    if lsblk -no PARTLABEL "/dev/$devname" | grep -qiE "abl|xbl|boot|modem|vendor|system|persist|tz|hyp"; then
+        log_msg "SAFETY: [$devname] Critical bootloader/system partitions detected. Aborting format prompt."
+        exit 0
+    fi
 
     local pttype=$(blkid -s PTTYPE -o value "/dev/$devname")
     if [ -n "$pttype" ]; then
@@ -320,6 +359,13 @@ handle_disk_event() {
         exit 0
     fi
 
+    # Ignore drives 4GB or smaller (8388608 sectors). 
+    # This safely ignores Qualcomm android partitions like sdg/sdh.
+    if [ "$raw_sectors" -le 8388608 ]; then
+        log_msg "SAFETY: [$devname] Drive is 4GB or smaller ($gb_size). Likely a system LUN. Skipping."
+        exit 0
+    fi
+
     # Trigger Format Prompt in ES
     touch "$pending_flag"
     local model=$(lsblk -d -n -o MODEL "/dev/$parent")
@@ -336,6 +382,7 @@ handle_disk_event() {
 case "$COMMAND" in
 "detect")
     DEVNAME=$ARG2
+    [ -z "$DEVNAME" ] && exit 0
     log_msg "ENTRY: [$DEVNAME] Detect event triggered."
 
     PARENT_DISK=$(get_parent_disk "$DEVNAME")

@@ -58,7 +58,8 @@
     </keybind>
   </keyboard>
   <windowRules>
-    <windowRule identifier="emulationstation" serverDecoration="no">
+    <windowRule identifier="*" serverDecoration="no" />
+    <windowRule identifier="emulationstation">
       <action name="FocusOutput">
         <output></output>
       </action>
@@ -66,35 +67,38 @@
         <output></output>
       </action>
     </windowRule>
-    <windowRule title="Batocera OSD" serverDecoration="no">
+    <windowRule title="Batocera OSD">
       <action name="MoveToEdge" direction="up" snapWindows="no" />
     </windowRule>
-    <windowRule title="backglass" serverDecoration="no">
+    <windowRule title="backglass">
       <action name="MoveToOutput">
         <output></output>
       </action>
     </windowRule>
-    <windowRule title="dolphin" fullscreen="yes" serverDecoration="no" />
-    <windowRule identifier="azahar" serverDecoration="no">
+    <windowRule identifier="azahar">
       <action name="MoveToOutput">
         <output></output>
       </action>
     </windowRule>
-    <windowRule identifier="azahar" title="*Secondary Window*" serverDecoration="no">
+    <windowRule identifier="azahar" title="*Secondary Window*">
       <action name="MoveToOutput">
         <output></output>
       </action>
       <action name="ToggleFullscreen" />
     </windowRule>
-    <windowRule identifier="net.kuribo64.melonDS" title="*w1*" serverDecoration="no">
+    <windowRule identifier="net.kuribo64.melonDS" title="*w1*">
       <action name="MoveToOutput">
         <output></output>
       </action>
     </windowRule>
-    <windowRule identifier="net.kuribo64.melonDS" title="*w2*" serverDecoration="no">
+    <windowRule identifier="net.kuribo64.melonDS" title="*w2*">
       <action name="MoveToOutput">
         <output></output>
       </action>
     </windowRule>
+    <windowRule identifier="pcmanfm">
+      <action name="ToggleFullscreen" />
+    </windowRule>
+    <windowRule identifier="xterm" serverDecoration="yes" />
   </windowRules>
 </labwc_config>

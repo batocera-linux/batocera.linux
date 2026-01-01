@@ -1,0 +1,129 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-present ROCKNIX (https://github.com/ROCKNIX)
+#
+# Updated detection for batocera and minor tweaks by @dmanlfc
+#
+# This script will update the ABL on the internal UFS.
+
+set -euo pipefail
+
+# ---- Get Device Architecture ----
+ARCH_FILE="/usr/share/batocera/batocera.arch"
+if [ -f "$ARCH_FILE" ]; then
+    HW_DEVICE=$(cat "$ARCH_FILE" | tr '[:lower:]' '[:upper:]')
+else
+    echo "Error: Architecture file $ARCH_FILE not found!"
+    exit 1
+fi
+
+# add SM6115 & SM8650 for future device support
+case "$HW_DEVICE" in
+  SM6115|SM8250|SM8550|SM8650)
+    ;;
+  *)
+    echo "This script is not compatible with device: $HW_DEVICE"
+    exit 1
+    ;;
+esac
+
+ELF="/usr/share/bootloader/rocknix_abl/abl_signed-${HW_DEVICE}.elf"
+SHA256SUM="/usr/share/bootloader/rocknix_abl/abl_signed-${HW_DEVICE}.elf.sha256"
+
+ABL_A="/dev/disk/by-partlabel/abl_a"
+ABL_B="/dev/disk/by-partlabel/abl_b"
+
+# ---- Sanity checks ----
+if [ ! -f "${ELF}" ]; then
+  echo "Error: ABL update binary not found at ${ELF}"
+  exit 1
+fi
+
+if [ ! -f "${SHA256SUM}" ]; then
+  echo "Error: SHA256 checksum file not found at ${SHA256SUM}"
+  exit 1
+fi
+
+if [ ! -b "${ABL_A}" ] || [ ! -b "${ABL_B}" ]; then
+  echo "Error: ABL partitions not found"
+  exit 1
+fi
+
+# ---- Power Check ----
+check_power() {
+    local power_connected=0
+    # Check all power supplies for a 'Mains' or 'USB' source that is 'online'
+    for supply in /sys/class/power_supply/*; do
+        if [ -f "$supply/online" ] && [ -f "$supply/type" ]; then
+            type=$(cat "$supply/type")
+            online=$(cat "$supply/online")
+            if [[ "$type" == "Mains" || "$type" == "USB" ]] && [ "$online" -eq 1 ]; then
+                power_connected=1
+                break
+            fi
+        fi
+    done
+
+    if [ "$power_connected" -eq 0 ]; then
+        echo "------------------------------------------------------------"
+        echo " ERROR: DEVICE IS NOT ON AC POWER "
+        echo " To prevent bricking during the ABL flash, please plug in "
+        echo " your charger/power cable before attempting to flash. "
+        echo "------------------------------------------------------------"
+        exit 1
+    fi
+}
+
+# Run the power check
+check_power
+
+# ---- Disclaimer & Prompt ----
+cat << EOF
+------------------------------------------------------------
+Disclaimer
+Flashing a custom ABL carries inherent risk and may result 
+in an unbootable device if used incorrectly.
+
+- You are responsible for any damage caused
+- Ensure you have recovery options before flashing
+- This project is provided as-is, with no warranty
+
+This ABL works with a fresh install of v43 only.
+
+Created by the ROCKNIX Team for the emulation community.
+------------------------------------------------------------
+EOF
+
+echo
+read -p "Do you wish to proceed? (Type Y to continue): " -n 1 -r
+echo # Move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Update aborted by user."
+    exit 1
+fi
+
+# ---- Check SHA256 ----
+echo "Verifying integrity of ABL binary..."
+if ! (cd "$(dirname "${ELF}")" && sha256sum -c "$(basename "${SHA256SUM}")"); then
+  echo "Error: SHA256 checksum verification failed! Writing aborted."
+  exit 1
+fi
+echo "Checksum verified successfully."
+
+# ---- Get sector size ----
+SS="$(blockdev --getss "${ABL_A}")"
+if [ -z "${SS}" ]; then
+  echo "Error: failed to get sector size"
+  exit 1
+fi
+
+# ---- Flash ----
+echo "Updating ABL partitions on $HW_DEVICE..."
+dd if="${ELF}" of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
+dd if="${ELF}" of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
+
+sync
+
+echo "ABL update completed successfully."
+echo
+echo "--- REBOOT device to take effect ---"
