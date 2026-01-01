@@ -20,7 +20,6 @@ class NesboxGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-
         commandArray: list[str | Path] = ["tic80"]
         rombase = rom.stem
 
@@ -40,4 +39,4 @@ class NesboxGenerator(Generator):
         })
 
     def getInGameRatio(self, config, gameResolution, rom):
-        return 4/3
+        return 16/9
