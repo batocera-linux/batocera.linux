@@ -1,11 +1,14 @@
 TIC80_VERSION = 1.1.2837
-TIC80_SOURCE = 	archive/refs/tags/v1.1.2837.tar.gz
-TIC80_SITE = https://github.com/nesbox/TIC-80
+TIC80_SITE = $(call github,nesbox,TIC-80,$(TIC80_VERSION))
 TIC80_LICENSE = MIT
-TIC80_DEPENDENCIES = libpipewire-0.3-dev libwayland-dev libsdl2-dev ruby-dev libcurl4-openssl-dev libglvnd-dev libglu1-mesa-dev freeglut3-dev
+TIC80_LICENSE_FILES = https://github.com/nesbox/TIC-80/blob/main/LICENSE
+TIC80_DEPENDENCIES = pipewire wayland sdl2 ruby libcurl4-openssl libglvnd libglu1-mesa freeglut3
 
 TIC80_CONF_OPTS = -DBUILD_SDLGPU=On
 TIC80_CONF_OPTS += -DBUILD_WITH_ALL=On
-TIC80_CONF_OPTS += -DBUILD_STATIC=On
+TIC80_CONF_OPTS += -DBUILD_PRO=TRUE
+TIC80_CONF_OPTS += -DBUILD_TOUCH_INPUT=ON
+TIC80_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+TIC80_CONF_OPTS += -DBUILD_SHARED_LIBS=ON
 
 $(eval $(cmake-package))
