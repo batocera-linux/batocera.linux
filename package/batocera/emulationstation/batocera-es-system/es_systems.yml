@@ -1304,7 +1304,7 @@ tic80:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
     nesbox:
-      tic80_official: { requireAnyOf: [BR2_PACKAGE_NESBOX_TIC80] }
+      tic80: { requireAnyOf: [BR2_PACKAGE_TIC80] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:tic-80
   comment_fr: |
