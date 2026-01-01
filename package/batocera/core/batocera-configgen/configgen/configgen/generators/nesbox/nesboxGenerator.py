@@ -11,10 +11,6 @@ if TYPE_CHECKING:
     from pathlib import Path
     from ...types import HotkeysContext
 
-TIC80_BIN_PATH: Final = BIOS / "tic80" / "tic80"
-TIC80_ROOT_PATH: Final = ROMS / "tic80"
-TIC80_CONTROLLERS: Final = HOME / ".nesbox" / "tic80" / "sdl_controllers.txt"
-
 class NesboxGenerator(Generator):
 
     def getHotkeysContext(self) -> HotkeysContext:
@@ -24,21 +20,8 @@ class NesboxGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        if (system.name == "tic80"):
-            LD_LIB=BIOS / "tic80"
-            BIN_PATH=TIC80_BIN_PATH
-            CONTROLLERS=TIC80_CONTROLLERS
-            ROOT_PATH=TIC80_ROOT_PATH
-        else:
-            raise BatoceraException(f"The Nesbox generator has been called for an unknown system: {system.name}.")
 
-        if not BIN_PATH.exists():
-            raise BatoceraException(f"Nesbox official binary not found at {BIN_PATH}")
-
-        if not os.access(BIN_PATH, os.X_OK):
-            raise BatoceraException(f"{BIN_PATH} is not set as executable")
-
-        commandArray: list[str | Path] = [BIN_PATH]
+        commandArray: list[str | Path] = ["tic80"]
         rombase = rom.stem
 
         if (rombase.lower() == "surf" or rombase.lower() == "console"):
