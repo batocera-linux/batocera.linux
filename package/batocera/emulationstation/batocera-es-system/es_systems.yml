@@ -3528,6 +3528,21 @@ camplynx:
           Requer os arquivo de BIOS MAME lynx128k.zip, lynx96k.zip, lynx48k.zip
           Também pacote de samples bbc.zip em bios/mame/samples
 
+casloopy:
+  name:       Casio Loopy
+  manufacturer: Casio
+  release: 1995
+  hardware: console
+  extensions: [bin, ic1, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file:
+          bios/mame/casloopy.zip
+  comment_br: |
+          Requer arquivo de BIOS do MAME:
+          bios/mame/casloopy.zip
 adam:
   name:       ADAM
   manufacturer: Coleco

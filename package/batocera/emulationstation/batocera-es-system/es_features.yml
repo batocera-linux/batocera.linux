@@ -3304,6 +3304,23 @@ libretro:
                       choices:
                           "On":  1
                           "Off": 0
+
+casloopy:
+            cfeatures:
+                softList:
+                    group: ADVANCED OPTIONS
+                    prompt:      SOFTWARE LIST
+                    description: Use MAME software lists to identify ROM
+                    choices:
+                        "Don't Use (Default)":     none
+                        "Casio Loopy cartridges":  casloopy
+                pergamecfg:
+                    group: ADVANCED OPTIONS
+                    prompt:      CUSTOM GAME CONFIG
+                    description: Enable per-game custom configuration via MAME menu.
+                    choices:
+                        "On":  1
+                        "Off": 0                          
          cdi:
               cfeatures:
                   softList:
