@@ -84,6 +84,7 @@
 - Taradino to 20251031
 - TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
+- Vice to 3.10
 - VkQuake to 19th of November 2025 build 
 - Xash3D FWGS engine to Oct 17 build
 - Xenia-Canary to build f85f4c3
