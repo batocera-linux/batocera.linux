@@ -65,7 +65,7 @@
 - Jazz2 to 3.4.0
 - Libretro Dolphin to 24th of December 2025 build
 - Libretro MAME to 0.283
-- Libretro Play! to 0.71
+- Libretro Play! to 0.72
 - Libretro Opera to 17th of October 2024 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
