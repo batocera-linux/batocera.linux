@@ -100,7 +100,7 @@
 - Linux Kernel to 6.18.2
 - LabWC to 0.9.3
 - LLVM Project to 20.1.8
-- Mesa3D to 25.3.2
+- Mesa3D to 25.3.3
 - MPV to v0.41.0
 - Nvidia 580.xx legacy drivers to 580.119.02
 - Nvidia production drivers to 590.48.01
