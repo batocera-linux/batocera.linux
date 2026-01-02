@@ -96,7 +96,7 @@
 - Go language compiler to 1.25.5
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251125
-- Linux Kernel to 6.18.1
+- Linux Kernel to 6.18.2
 - LabWC to 0.9.3
 - LLVM Project to 20.1.8
 - Mesa3D to 25.3.2
