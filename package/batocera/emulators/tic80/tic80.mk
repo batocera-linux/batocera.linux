@@ -2,7 +2,7 @@ TIC80_VERSION = 1.1.2837
 TIC80_SITE = $(call github,nesbox,TIC-80,$(TIC80_VERSION))
 TIC80_LICENSE = MIT
 TIC80_LICENSE_FILES = https://github.com/nesbox/TIC-80/blob/main/LICENSE
-TIC80_DEPENDENCIES = pipewire wayland sdl2 ruby libcurl libglvnd libglu freeglut
+TIC80_DEPENDENCIES = pipewire wayland sdl2 ruby libcurl libglvnd libglu libfreeglut
 
 TIC80_CONF_OPTS = -DBUILD_SDLGPU=On
 TIC80_CONF_OPTS += -DBUILD_WITH_ALL=On
