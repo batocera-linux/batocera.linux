@@ -103,6 +103,7 @@
 - MPV to v0.41.0
 - Nvidia 580.xx legacy drivers to 580.119.02
 - Nvidia production drivers to 590.48.01
+- Play! to 0.72
 - QT to 6.9.2
 - Raspberry Pi kernel and associated firmware / utils to 6.12.62
 - SDL3 to 3.3.6
