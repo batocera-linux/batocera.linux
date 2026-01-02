@@ -1,13 +1,13 @@
 config BR2_PACKAGE_TIC80
     bool "tic80"
-	select BR2_PACKAGE_PIPEWIRE
-	select BR2_PACKAGE_WAYLAND 
-	select BR2_PACKAGE_SDL2 
-	select BR2_PACKAGE_RUBY 
-	select BR2_PACKAGE_LIBCURL 
-	select BR2_PACKAGE_LIBGLVND 
-	select BR2_PACKAGE_LIBGLU
-	select BR2_PACKAGE_LIBFREEGLUT
+    select BR2_PACKAGE_PIPEWIRE
+    select BR2_PACKAGE_WAYLAND 
+    select BR2_PACKAGE_SDL2 
+    select BR2_PACKAGE_RUBY 
+    select BR2_PACKAGE_LIBCURL 
+    select BR2_PACKAGE_LIBGLVND 
+    select BR2_PACKAGE_LIBGLU
+    select BR2_PACKAGE_LIBFREEGLUT
     help
        TIC-80 is a fantasy computer for making, playing and sharing tiny games.
 	  
