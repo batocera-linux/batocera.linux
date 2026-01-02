@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TARADINO_VERSION = 20251031
+TARADINO_VERSION = 20251222
 TARADINO_SITE = https://github.com/fabiangreffrath/taradino.git
 TARADINO_SITE_METHOD=git
 TARADINO_GIT_SUBMODULES=YES
