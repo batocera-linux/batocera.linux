@@ -55,7 +55,7 @@
 ### Updated
 - Azahar Plus to AZAHAR_PLUS_2123_3_A
 - BigPEmu to v121
-- CLK to 2025-11-26
+- CLK to 2025-12-19
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
@@ -71,7 +71,7 @@
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
-- Play! to 0.71
+- Play! to 0.72
 - PCSX2 to v2.5.405
 - RClone to v1.72.1
 - RetroArch to 1.22.2
@@ -103,7 +103,6 @@
 - MPV to v0.41.0
 - Nvidia 580.xx legacy drivers to 580.119.02
 - Nvidia production drivers to 590.48.01
-- Play! to 0.72
 - QT to 6.9.2
 - Raspberry Pi kernel and associated firmware / utils to 6.12.62
 - SDL3 to 3.3.6
