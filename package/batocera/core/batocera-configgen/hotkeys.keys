@@ -4,94 +4,98 @@
             "trigger": ["hotkey", "start"],
             "type": "key",
             "target": [ "KEY_EXIT" ],
-	    "description": "Exit emulator"
+            "description": "Exit emulator"
         },
-	{
+        {
             "trigger": ["hotkey", "a"],
             "type": "key",
-            "target": [ "KEY_CONTEXT_MENU" ],
-	    "description": "Batocera Control Center"
+            "target": [ "KEY_F10" ],
+            "description": "Reset Rom"
         },
-	{
+        {
             "trigger": ["hotkey", "b"],
             "type": "key",
-            "target": [ "KEY_MENU" ],
-	    "description": "Menu"
-        },
-	{
-            "trigger": ["hotkey", "x"],
-            "type": "key",
-            "target": [ "KEY_SEND" ],
-	    "description": "Restore state"
-        },
-	{
+            "target": [ "KEY_F1" ],
+            "description": "Retroarch Menu"
+        },       
+		{
             "trigger": ["hotkey", "y"],
             "type": "key",
-            "target": [ "KEY_SAVE" ],
-	    "description": "Save state"
+            "target": [ "KEY_F3" ],
+            "description": "Save state"
         },
-	{
-            "trigger": ["hotkey", "up"],
+        {
+            "trigger": ["hotkey", "x"],
             "type": "key",
-            "target": [ "KEY_PREVIOUS" ],
-	    "description": "Previous slot"
+            "target": [ "KEY_F4" ],
+            "description": "Restore state"
         },
-	{
+        {
             "trigger": ["hotkey", "down"],
             "type": "key",
-            "target": [ "KEY_NEXT" ],
-	    "description": "Next slot"
+            "target": [ "KEY_F5" ],
+            "description": "Previous SaveSlot"
         },
-	{
+        {
+            "trigger": ["hotkey", "up"],
+            "type": "key",
+            "target": [ "KEY_F6" ],
+            "description": "Next SaveSlot"
+        },
+        {
             "trigger": ["hotkey", "left"],
             "type": "key",
-            "target": [ "KEY_REWIND" ],
-	    "description": "Rewind"
+            "target": [ "KEY_F11" ],
+            "description": "Rewind"
         },
-	{
+        {
             "trigger": ["hotkey", "right"],
             "type": "key",
-            "target": [ "KEY_FASTFORWARD" ],
-	    "description": "Fast forward"
+            "target": [ "KEY_F12" ],
+            "description": "Fast forward"
         },
-	{
-            "trigger": ["hotkey", "pageup"],
+			
+		        {
+ 			"trigger": ["hotkey", "pageup"],
+    		"type": "exec",
+    		"target": [ "batocera-screenshot" ],
+    		"description": "Screenshot by ES"
+		},
+		{
+            "trigger": ["hotkey", "pagedown"],
             "type": "key",
-            "target": [ "KEY_SYSRQ" ],
-	    "description": "Screenshot"
+            "target": [ "KEY_SUBTITLE" ],
+	    "description": "IA Translate"
         },
-	{
+		      {
+            "trigger": ["hotkey", "l2"],
+            "type": "key",
+            "target": [ "KEY_CAMERA_FOCUS" ],
+            "description": "Swap screen"
+        }
+    ],
+	 {
+            "trigger": ["hotkey", "r2"],
+            "type": "key",
+            "target": [ "KEY_PRESENTATION" ],
+            "description": "Toggle Screen Layout"
+        },
+	
+			{
             "trigger": ["hotkey", "l3"],
             "type": "key",
             "target": [ "KEY_VIDEO_NEXT" ],
 	    "description": "Next disk"
         },
-	{
-            "trigger": ["hotkey", "l2"],
-            "type": "key",
-            "target": [ "KEY_CAMERA_FOCUS" ],
-	    "description": "Swap screen"
-        },
-	{
-            "trigger": ["hotkey", "r2"],
-            "type": "key",
-            "target": [ "KEY_PRESENTATION" ],
-	    "description": "Toogle screen layout"
-        },
-	{
-            "trigger": ["hotkey", "pagedown"],
-            "type": "key",
-            "target": [ "KEY_SUBTITLE" ],
-	    "description": "Translate"
-        },
+
+		       
 	{
             "trigger": ["hotkey", "r3"],
             "type": "key",
             "target": [ "KEY_FRONT" ],
 	    "description": "Hide bezels"
         }
-    ],
-
+  
     "actions_gun1": [
         {
             "trigger": ["left", "right", "middle"],
