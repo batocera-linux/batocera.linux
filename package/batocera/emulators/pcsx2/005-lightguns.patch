@@ -1,3 +1,38 @@
+diff --git a/pcsx2/Input/InputManager.h b/pcsx2/Input/InputManager.h
+index 5e7bd4e..b00e125 100644
+--- a/pcsx2/Input/InputManager.h
++++ b/pcsx2/Input/InputManager.h
+@@ -163,7 +163,7 @@ namespace InputManager
+ 	static constexpr double VIBRATION_UPDATE_INTERVAL_SECONDS = 0.5; // 500ms
+ 
+ 	/// Maximum number of host mouse devices.
+-	static constexpr u32 MAX_POINTER_DEVICES = 1;
++	static constexpr u32 MAX_POINTER_DEVICES = 2;
+ 	static constexpr u32 MAX_POINTER_BUTTONS = 3;
+ 
+ 	/// Maximum number of software cursors. We allocate an extra two for USB devices with
+diff --git a/pcsx2/ImGui/ImGuiManager.cpp b/pcsx2/ImGui/ImGuiManager.cpp
+index 84d0641..353d038 100644
+--- a/pcsx2/ImGui/ImGuiManager.cpp
++++ b/pcsx2/ImGui/ImGuiManager.cpp
+@@ -1112,12 +1112,14 @@ void ImGuiManager::DrawSoftwareCursor(const SoftwareCursor& sc, const std::pair<
+ 
+ void ImGuiManager::DrawSoftwareCursors()
+ {
+-	// This one's okay to race, worst that happens is we render the wrong number of cursors for a frame.
++	// Use stored position for all cursors (lightguns update via SetSoftwareCursorPosition)
+ 	const u32 pointer_count = InputManager::MAX_POINTER_DEVICES;
+ 	for (u32 i = 0; i < pointer_count; i++)
+-		DrawSoftwareCursor(s_software_cursors[i], InputManager::GetPointerAbsolutePosition(i));
++		DrawSoftwareCursor(s_software_cursors[i], s_software_cursors[i].pos);
+ 
+-	for (u32 i = InputManager::MAX_POINTER_DEVICES; i < InputManager::MAX_SOFTWARE_CURSORS; i++)
++	// USB devices with relative positioning use indices after pointer devices
++	const u32 usb_start = pointer_count;
++	for (u32 i = usb_start; i < InputManager::MAX_SOFTWARE_CURSORS; i++)
+ 		DrawSoftwareCursor(s_software_cursors[i], s_software_cursors[i].pos);
+ }
+ 
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
 index a69dbb1..d6d0e04 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.cpp
@@ -151,7 +186,16 @@ index a69dbb1..d6d0e04 100644
  
  		switch (p->pid)
  		{
-@@ -350,8 +454,16 @@ namespace usb_lightgun
+@@ -280,6 +384,8 @@ namespace usb_lightgun
+ 				if (p->ep->nr == 1)
+ 				{
+ 					const auto [pos_x, pos_y] = us->CalculatePosition();
++					if (!us->cursor_path.empty() && udev_has(us))
++						ImGuiManager::SetSoftwareCursorPosition(us->port, us->udev_internalGunX, us->udev_internalGunY);
+ 
+ 					// Time Crisis games do a "calibration" by displaying a black frame for a single frame,
+ 					// waiting for the gun to report (0, 0), and then computing an offset on the first non-zero
+@@ -350,8 +456,16 @@ namespace usb_lightgun
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
@@ -168,7 +212,7 @@ index a69dbb1..d6d0e04 100644
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -384,6 +496,13 @@ namespace usb_lightgun
+@@ -384,6 +498,13 @@ namespace usb_lightgun
  			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
  		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
  
@@ -182,7 +226,17 @@ index a69dbb1..d6d0e04 100644
  		s16 pos_x, pos_y;
  		if (pointer_x < 0.0f || pointer_y < 0.0f)
  		{
-@@ -458,9 +577,151 @@ namespace usb_lightgun
+@@ -433,7 +554,8 @@ namespace usb_lightgun
+ 
+ 	u32 GunCon2State::GetSoftwarePointerIndex() const
+ 	{
+-		return has_relative_binds ? (InputManager::MAX_POINTER_DEVICES + port) : 0;
++		if (udev_fd != -1) return port;
++		return has_relative_binds ? (InputManager::MAX_POINTER_DEVICES + port) : port;
+ 	}
+ 
+ 	void GunCon2State::UpdateSoftwarePointerPosition()
+@@ -458,9 +580,151 @@ namespace usb_lightgun
  		return "guncon2";
  	}
  
