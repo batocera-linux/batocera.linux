@@ -17,8 +17,8 @@
             "type": "key",
             "target": [ "KEY_F1" ],
             "description": "Retroarch Menu"
-        },       
-		{
+        },
+        {
             "trigger": ["hotkey", "y"],
             "type": "key",
             "target": [ "KEY_F3" ],
@@ -54,48 +54,43 @@
             "target": [ "KEY_F12" ],
             "description": "Fast forward"
         },
-			
-		        {
- 			"trigger": ["hotkey", "pageup"],
-    		"type": "exec",
-    		"target": [ "batocera-screenshot" ],
-    		"description": "Screenshot by ES"
-		},
-		{
+        {
+            "trigger": ["hotkey", "pageup"],
+            "type": "exec",
+            "target": [ "batocera-screenshot" ],
+            "description": "Screenshot by ES"
+        },
+        {
             "trigger": ["hotkey", "pagedown"],
             "type": "key",
             "target": [ "KEY_SUBTITLE" ],
-	    "description": "IA Translate"
+            "description": "IA Translate"
         },
-		      {
+        {
             "trigger": ["hotkey", "l2"],
             "type": "key",
             "target": [ "KEY_CAMERA_FOCUS" ],
             "description": "Swap screen"
-        }
-    ],
-	 {
+        },
+        {
             "trigger": ["hotkey", "r2"],
             "type": "key",
             "target": [ "KEY_PRESENTATION" ],
             "description": "Toggle Screen Layout"
         },
-	
-			{
+        {
             "trigger": ["hotkey", "l3"],
             "type": "key",
             "target": [ "KEY_VIDEO_NEXT" ],
-	    "description": "Next disk"
+            "description": "Next disk"
         },
-
-		       
-	{
+        {
             "trigger": ["hotkey", "r3"],
             "type": "key",
             "target": [ "KEY_FRONT" ],
-	    "description": "Hide bezels"
+            "description": "Hide bezels"
         }
-  
+    ],
     "actions_gun1": [
         {
             "trigger": ["left", "right", "middle"],
