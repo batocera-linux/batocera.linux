@@ -48,6 +48,8 @@
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
 - Wifi country not being applied at boot
+- Light gun accuracy in MAME
+- Crosshairs for light guns in PCSX2
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
