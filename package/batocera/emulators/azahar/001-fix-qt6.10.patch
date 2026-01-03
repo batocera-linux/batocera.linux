@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 324ddf1..9d3cf98 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -314,7 +314,7 @@ if (ENABLE_QT)
+     find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia Concurrent)
+ 
+     if (UNIX AND NOT APPLE)
+-        find_package(Qt6 REQUIRED COMPONENTS DBus)
++        find_package(Qt6 REQUIRED COMPONENTS DBus GuiPrivate)
+     endif()
+ 
+     if (ENABLE_QT_TRANSLATION)
+diff --git a/src/citra_qt/CMakeLists.txt b/src/citra_qt/CMakeLists.txt
+index 4796fc9..d5a7fab 100644
+--- a/src/citra_qt/CMakeLists.txt
++++ b/src/citra_qt/CMakeLists.txt
+@@ -287,7 +287,7 @@ if (APPLE)
+ endif()
+ 
+ if (UNIX AND NOT APPLE)
+-    target_link_libraries(citra_qt PRIVATE Qt6::DBus gamemode)
++    target_link_libraries(citra_qt PRIVATE Qt6::DBus gamemode Qt6::GuiPrivate)
+ endif()
+ 
+ target_compile_definitions(citra_qt PRIVATE
