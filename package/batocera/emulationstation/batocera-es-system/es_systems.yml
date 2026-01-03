@@ -5994,3 +5994,15 @@ bennugd:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
+
+pc6001:
+  name: PC-6001
+  manufacturer: NEC
+  release: 1981
+  hardware: computer
+  extensions: [zip]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
