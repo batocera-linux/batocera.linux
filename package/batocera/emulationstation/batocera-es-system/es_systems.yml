@@ -2428,6 +2428,16 @@ thomson:
     libretro:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
+pc6001:
+  name:       PC-6001
+  manufacturer: NEC
+  release: 1981
+  hardware: computer
+  extensions: [zip]
+  emulators:
+    mame:
+      mame:  { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 pc88:
   name:       PC-8800
   manufacturer: NEC
