@@ -91,7 +91,7 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 
     # Logic for X86_64: Prune ARM blobs inside folders used by both
     if [ "$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)" = "y" ]; then \
-        find $(TARGET_DIR)/lib/firmware/mediatek -name "mt81*" -prune -exec rm -rf {} +; \
+        find $(TARGET_DIR)/lib/firmware/mediatek -name "mt81*" -delete; \
         rm -rf $(TARGET_DIR)/lib/firmware/mediatek/sof*; \
         rm -rf $(TARGET_DIR)/lib/firmware/mrvl/cpt*; \
         rm -f $(TARGET_DIR)/lib/firmware/a300_*.fw; \
