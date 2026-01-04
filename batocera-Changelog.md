@@ -42,6 +42,7 @@
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
 - Yamagi Quake II added which support more systems, especially lower-end hardware
+- Light gun support to the new Libretro Dolphin core
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
