@@ -50,6 +50,8 @@
 - Wifi country not being applied at boot
 - Light gun accuracy in MAME
 - Crosshairs for light guns in PCSX2
+- Samba network sharing compatibility with Samba 4.20.6 by updating SMB protocol from deprecated SMB1 (NT1) to SMB2/SMB3.
+  Note: Users with legacy SMB1-only systems can revert by uncommenting `min protocol = NT1` in `/etc/samba/smb.conf`
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
