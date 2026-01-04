@@ -497,15 +497,17 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             ###
             if gun1onport2:
                 pcsx2INIConfig.set("USB2", "guncon2_numdevice", "0")
-    # Gun crosshairs - one player only, PCSX2 can't distinguish both crosshair for some reason
+    # Gun crosshairs
     if pcsx2INIConfig.has_section("USB1"):
         if system.config.get("pcsx2_crosshairs") == "1":
-            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Blue.png"))
+            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "default.png"))
+            pcsx2INIConfig.set("USB1", "guncon2_cursor_color", "#0000ff") # blue
         else:
             pcsx2INIConfig.set("USB1", "guncon2_cursor_path", "")
     if pcsx2INIConfig.has_section("USB2"):
         if system.config.get("pcsx2_crosshairs") == "1":
-            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Red.png"))
+            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "default.png"))
+            pcsx2INIConfig.set("USB2", "guncon2_cursor_color", "#ff0000") # red
         else:
             pcsx2INIConfig.set("USB2", "guncon2_cursor_path", "")
     # hack for the fog bug for guns (time crisis - crisis zone)
