@@ -1,0 +1,10 @@
+config BR2_PACKAGE_STEAMDECK_DSP
+	bool "steamdeck-dsp"
+	depends on BR2_PACKAGE_PIPEWIRE
+	depends on BR2_PACKAGE_WIREPLUMBER
+	help
+	  Installs Steam Deck specific audio configurations.
+
+	  Source files derived from...
+
+	  https://steamdeck-packages.steamos.cloud/archlinux-mirror/sources/jupiter-main
