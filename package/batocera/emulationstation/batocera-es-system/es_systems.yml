@@ -6012,3 +6012,20 @@ casloopy:
   comment_br: |
           Requer arquivo de BIOS do MAME:
           bios/mame/casloopy.zip
+
+enterprise:
+  name: Enterprise 64/128
+  manufacturer: Enterprise Computers
+  release: 1985
+  hardware: computer
+  extensions: [img, dsk, tap, dtf, com, trn, 128, bas, cas, cdt, tzx, wav, tvcwav, zip]
+  emulators:
+    libretro:
+      ep64emu: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Requires MAME BIOS file:
+    bios/mame/ep64.zip
+    bios/mame/ep64_exdos.zip
