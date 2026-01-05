@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 
 # Static temp file for extraction as CLK doens't support zipped roms
 _TMP_DIR: Final = Path("/tmp/clk_extracted")
-_QUICKLOAD_SYSTEMS: Final = { "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
+_QUICKLOAD_SYSTEMS: Final = { "amstradcpc", "archimedes", "electron", "msx1", "msx2",
     "oricatmos", "zxspectrum" }
 _SVIDEO_SYSTEMS: Final = { "colecovision", "mastersystem" }
-_RGB_SYSTEMS: Final = { "amstradcpc", "atarist", "electron", "msx1", "msx2",
+_RGB_SYSTEMS: Final = { "amstradcpc", "atarist", "electron", "enterprise", "msx1", "msx2",
     "oricatmos", "zxspectrum" }
 
 
@@ -57,7 +57,7 @@ class ClkGenerator(Generator):
             commandArray.extend(["--output=RGB"])
 
         if system.name in _QUICKLOAD_SYSTEMS:
-            commandArray.extend(["--quickload"])
+            commandArray.extend(["--accelerate-media-loading"])
 
         return Command.Command(
             array=commandArray,

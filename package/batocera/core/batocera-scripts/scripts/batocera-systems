@@ -322,7 +322,7 @@ systems = {
     "laser310":  { "name": "VTech Laser 310", "biosFiles": [  { "md5": "", "file": "bios/laser310.zip" },
                                   { "md5": "42c8f9e6c2133ae0e953b89ccbbdb7e2", "zippedFile": "vtechv20.u12", "file": "bios/laser310.zip"},
                                   { "md5": "f7e5d9a3eb2b57bf5f4e2a4565318a8f", "zippedFile": "vtechv21.u12", "file": "bios/laser310.zip"} ] },
-    
+
     # ---------- Super Cassette Vision ---------- #
     "scv":   { "name": "Super Cassette Vision", "biosFiles":  [ { "md5": "635a978fd40db9a18ee44eff449fc126", "file": "bios/upd7801g.s01"  } ] },
 
@@ -777,7 +777,7 @@ systems = {
                                                           { "md5": "afa4b5f2944334f84971af814a24bd5a", "file": "bios/openmsx/ide250.zip" },
                                                           { "md5": "2ce20986da024e9a0e271961c6bc9f01", "file": "bios/openmsx/phc-70fd2_basickun.rom" },
                                                           { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
-    
+
     # ---------- Supr'A'can  ---------- #
     "supracan":   { "name": "Supr'A'can", "biosFiles":  [ { "md5": "", "file": "bios/supracan.zip"  },
                                     { "md5": "53c4343e062bb3b337370bbb58e64d16", "zippedFile": "internal_68k.bin", "file": "bios/supracan.zip" } ] },
@@ -786,7 +786,7 @@ systems = {
     "vis":  { "name": "Tandy Video Information System", "biosFiles": [  { "md5": "", "file": "bios/vis.zip" },
                                   { "md5": "ebf432d3b09f694db1c62018eb2ab471", "zippedFile": "p513bk0b.bin", "file": "bios/vis.zip"},
                                   { "md5": "758f8fec271fbf526bb22b36e88f154b", "zippedFile": "p513bk1b.bin", "file": "bios/vis.zip"} ] },
-    
+
     # ---------- GameCube ---------- #
     "n64dd":   { "name": "Nintendo 64DD", "biosFiles":  [ { "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", "file": "bios/64DD_IPL.bin" } ] },
 
@@ -794,7 +794,7 @@ systems = {
     "gamecube":   { "name": "Nintendo GameCube", "biosFiles":  [ { "md5": "db92574caab77a7ec99d4605fd6f2450", "file": "bios/GC/EUR/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/JAP/IPL.bin" },
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/USA/IPL.bin" } ] },
-    
+
     # ---------- Sega Chihiro ---------- #
     "chihiro": { "name": "Sega Chihiro", "biosFiles": [{ "md5": "d49c52a4102f6df7bcf8d0617ac475ed", "file": "bios/mcpx_1.0.bin" },
                                                        { "md5": "f23d7e00ae8fbf88908ed1f9165f35eb", "file": "bios/cerbios.bin" }] },
@@ -802,6 +802,9 @@ systems = {
     # ---------- Oric Atmos ---------- #
     "oricatmos": { "name": "Oric Atmos", "biosFiles": [{ "md5": "a330779c42ad7d0c4ac6ef9e92788ec6", "file": "bios/Oric/basic11.rom" },
                                                        { "md5": "c888b36bf0fc222c3585c3fabe556d21", "file": "bios/Oric/colour.rom" }] },
+    # ---------- Enterprise ---------- #
+    "enterprise": { "name": "Enterprise", "biosFiles": [{ "md5": "e972fe42b398c9ff1d93ff014786aec6", "file": "bios/Enterprise/basic21.bin" },
+                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" }] },
 }
 
 class BiosStatus:

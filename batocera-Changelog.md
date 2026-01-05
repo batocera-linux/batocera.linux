@@ -44,6 +44,7 @@
 - Yamagi Quake II added which support more systems, especially lower-end hardware
 - Light gun support to the new Libretro Dolphin core
 - Casio Loopy as a separate system
+- Enterprise 64/128 (via CLK emulator)
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
@@ -89,7 +90,7 @@
 - TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
 - Vice to 3.10
-- VkQuake to 19th of November 2025 build 
+- VkQuake to 19th of November 2025 build
 - Xash3D FWGS engine to Oct 17 build
 - Xenia-Canary to build f85f4c3
 - Xemu to v0.8.129
