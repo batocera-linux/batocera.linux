@@ -7194,6 +7194,28 @@ libretro:
 
     #pcsx2:
 
+    gearcoleco:
+      features: [netplay, cheevos]
+      shared: [rewind, autosave]
+      cfeatures:
+        gearcoleco_timing:
+          group: DISPLAY
+          prompt: REFRESH RATE
+          description: Select the refresh rate (requires restart).
+          choices:
+            "Auto (Default)": "Auto"
+            "NTSC (60 Hz)": "NTSC (60 Hz)"
+            "PAL (50 Hz)": "PAL (50 Hz)"
+        gearcoleco_aspect_ratio:
+          group: DISPLAY
+          prompt: ASPECT RATIO
+          description: Select the display aspect ratio.
+          choices:
+            "1:1 PAR (Default)": "1:1 PAR"
+            "4:3 DAR": "4:3 DAR"
+            "16:9 DAR": "16:9 DAR"
+            "16:10 DAR": "16:10 DAR"
+
 # Standalones
 
 amiberry:
