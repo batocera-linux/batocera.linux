@@ -804,12 +804,10 @@ systems = {
                                                        { "md5": "c888b36bf0fc222c3585c3fabe556d21", "file": "bios/Oric/colour.rom" }] },
 
     # ---------- Enterprise ---------- #
-    "enterprise": { "name": "Enterprise", "biosFiles": [{ "md5": "", "file": "bios/mame/ep64.zip" },
-                                                       { "md5": "", "file": "bios/mame/ep64_exdos.zip" }] },
-
-    # ---------- Enterprise ---------- #
     "enterprise": { "name": "Enterprise", "biosFiles": [{ "md5": "e972fe42b398c9ff1d93ff014786aec6", "file": "bios/Enterprise/basic21.bin" },
-                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" }] },
+                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" },
+                                                        { "md5": "", "file": "bios/mame/ep64.zip" },
+                                                        { "md5": "", "file": "bios/mame/ep64_exdos.zip" } ] },
 }
 
 class BiosStatus:

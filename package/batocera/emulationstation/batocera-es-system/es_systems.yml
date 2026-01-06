@@ -6017,33 +6017,26 @@ casloopy:
           bios/mame/casloopy.zip
 
 enterprise:
-  name: Enterprise 64/128
+  name:       Enterprise
   manufacturer: Enterprise Computers
   release: 1985
   hardware: computer
   extensions: [img, dsk, tap, dtf, com, trn, 128, bas, cas, cdt, tzx, wav, tvcwav, zip]
   emulators:
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
     libretro:
       ep64emu: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU] }
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-    Requires MAME BIOS file:
-    bios/mame/ep64.zip
-    bios/mame/ep64_exdos.zip
-  name:       Enterprise
-  manufacturer: Enterprise Computers
-  release: 1985
-  hardware: computer
-  extensions: [bas, com, zip]
-  emulators:
-    clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
-  comment_en: |
           Requires BIOS files:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+          Requires MAME BIOS file:
+          bios/mame/ep64.zip
+          bios/mame/ep64_exdos.zip
   comment_fr: |
           Nécessite ces fichiers de BIOS:
           bios/Enterprise/basic21.bin
