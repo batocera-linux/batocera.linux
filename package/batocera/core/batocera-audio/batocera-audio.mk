@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6.9
+BATOCERA_AUDIO_VERSION = 6.10
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
@@ -76,25 +76,9 @@ define BATOCERA_AUDIO_X86_INTEL_DSP
 	    $(TARGET_DIR)/etc/modprobe.d/intel-dsp.conf
 endef
 
-# Steam Deck OLED SOF files are not in the sound-open-firmware package yet
-# Steam Deck LCD still requires their own UCM2 conf files too
-define BATOCERA_AUDIO_STEAM_DECK
-	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-*.* \
-	    $(TARGET_DIR)/lib/firmware/amd/sof/
-	mkdir -p $(TARGET_DIR)/lib/firmware/amd/sof-tplg
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/sof-vangogh-nau8821-max.tplg \
-	    $(TARGET_DIR)/lib/firmware/amd/sof-tplg/sof-vangogh-nau8821-max.tplg
-	# extra ucm files
-	mkdir -p $(TARGET_DIR)/usr/share/alsa/ucm2
-	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/ucm2/* \
-	    $(TARGET_DIR)/usr/share/alsa/ucm2/
-endef
-
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-    BATOCERA_AUDIO_DEPENDENCIES += sound-open-firmware
+    BATOCERA_AUDIO_DEPENDENCIES += sound-open-firmware steamdeck-dsp
     BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_X86_INTEL_DSP
-    BATOCERA_AUDIO_POST_INSTALL_TARGET_HOOKS += BATOCERA_AUDIO_STEAM_DECK
 endif
 
 $(eval $(generic-package))

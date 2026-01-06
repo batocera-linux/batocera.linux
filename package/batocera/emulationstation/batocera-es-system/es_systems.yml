@@ -3527,7 +3527,7 @@ camplynx:
   comment_br: |
           Requer os arquivo de BIOS MAME lynx128k.zip, lynx96k.zip, lynx48k.zip
           Também pacote de samples bbc.zip em bios/mame/samples
-    
+
 adam:
   name:       ADAM
   manufacturer: Coleco
@@ -6009,6 +6009,9 @@ casloopy:
   comment_en: |
           Requires MAME BIOS file:
           bios/mame/casloopy.zip
+  comment_fr: |
+          Nécessite ce fichier de BIOS MAME:
+          bios/mame/casloopy.zip
   comment_br: |
           Requer arquivo de BIOS do MAME:
           bios/mame/casloopy.zip
@@ -6028,3 +6031,24 @@ pc60:
     Requires MAME BIOS file:
     bios/mame/pc6001.zip
     
+enterprise:
+  name:       Enterprise
+  manufacturer: Enterprise Computers
+  release: 1985
+  hardware: computer
+  extensions: [bas, com, zip]
+  emulators:
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+  comment_en: |
+          Requires BIOS files:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
