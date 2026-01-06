@@ -119,7 +119,6 @@ setPrefixArch(){
     # Parameter 2 = current WineRunner
     # Parameter 3 = action
 
-
     # Set WINEARCH to win32 if term win32 is found in used runner or if it setted as option in ES and if prefix is not already build!
     # Check usedaArch in userdef.reg, and delete syswow64 symlink from prefix if ACTION=tricks - winetricks checks sys dir and will deny to work!
 
@@ -143,7 +142,7 @@ setPrefixArch(){
         # Missing key, perform further checks and perform a fresh install with createWineDirectory()
         if [[ ${ENABLE_WIN32} == 1 && ! -d "${1}" ]]; then
             export WINEARCH=win32; val="ENEABLE WIN32 in ES setted 'win32'"
-        elif [[ "${2,,}" =~ ^win32[-_\.].*$ && ! -d "${1}" ]]; then 
+        elif [[ "${2,,}" =~ ^win32[-_.].*$ && ! -d "${1}" ]]; then 
             export WINEARCH=win32; val="RUNNER carries 'win32' value"
         else
             val=win64
@@ -677,9 +676,6 @@ trick_wine() {
     shift
     TRICK=("$@")
 
-#    setPrefixArch "${GAMENAME}" "${WINEPOINT}" "${WINE_VERSION}"
-#    createWineDirectory "${WINEPOINT}" || return 1
-
     if [[ -e "${WINETRICKS}" ]]; then
         echo "Winetricks is installed"
     else
@@ -719,19 +715,19 @@ play_winetgz() {
     GAMENAME="$1"
     WINEPOINT="$2"
 
-    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
-    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
-    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
-    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
-    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
-
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     wine_options "${WINEPOINT}"
     if [[ ! -e "${WINEPOINT}" ]]; then
         createWineDirectory "${WINEPOINT}" || return 1
         (cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
+
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    WINE_LANG=$(getWine_var "${WINEPOINT}" "LANG" "")
+    WINE_ENV=$(getWine_var "${WINEPOINT}" "ENV" "")
+    WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
+    WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
 
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
