@@ -187,6 +187,14 @@ def flash(duration_seconds: float = 0.1, color: str = "#ffffff", text: str | Non
     try: win.destroy()
     except Exception: pass
 
+def unescape_cli_text(s: str) -> str:
+    return (
+        s.replace("\\\\", "\\")     # escaped backslash
+         .replace("\\n", "\n")      # newline
+         .replace("\\t", "\t")      # tab
+         .replace("\\r", "\r")      # carriage return (rarely needed)
+    )
+
 def parse_args():
     duration = 0.1
     color = "#ffffff"
@@ -206,7 +214,8 @@ def parse_args():
     if len(sys.argv) >= 3:
         color = sys.argv[2]
     if len(sys.argv) >= 4:
-        text = sys.argv[3]
+        # Allow escaped sequences in CLI to produce actual newlines
+        text = unescape_cli_text(sys.argv[3])
     if len(sys.argv) >= 5:
         try: font_pt = int(sys.argv[4])
         except ValueError: pass

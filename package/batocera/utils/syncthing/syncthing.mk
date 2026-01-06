@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SYNCTHING_VERSION = v1.29.3
+SYNCTHING_VERSION = v2.0.12
 SYNCTHING_SITE = $(call github,syncthing,syncthing,$(SYNCTHING_VERSION))
 SYNCTHING_LICENSE = MPLv2
 SYNCTHING_LICENSE_FILES = LICENSE
@@ -23,7 +23,7 @@ ifeq ($(BR2_riscv),y)
 endif
 
 # GOFLAGS="-modcacherw" used to fix directory permissions to make sure cleanbuild works.
-# For details see: 
+# For details see:
 # https://github.com/golang/go/issues/27161 https://github.com/golang/go/issues/27455
 
 SYNCTHING_TARGET_ENV = \
