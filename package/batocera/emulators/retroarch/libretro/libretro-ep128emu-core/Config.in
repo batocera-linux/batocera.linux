@@ -1,0 +1,5 @@
+config BR2_PACKAGE_LIBRETRO_EP128EMU_CORE
+	bool "libretro-ep128emu-core"
+	depends on BR2_PACKAGE_RETROARCH
+	help
+	  Enterprise 128 emulator (ep128emu) libretro core.
