@@ -2129,6 +2129,12 @@ libretro:
                 choices:
                     "Off": disabled
                     "On":  enabled
+            reicast_force_left_analog_to_dpad:
+                prompt:      FORCE LEFT ANALOG TO DPAD
+                description: Not recommended for Dreamcast. Activate if you want to use your  left analog stick on Arcade systems (Atomiswave, Naomi 1 and 2).
+                choices:
+                    "Off (Default)": 0
+                    "On":  3                    
             controller1_dc:
                 prompt:      CONTROLLER 1 TYPE
                 choices:
