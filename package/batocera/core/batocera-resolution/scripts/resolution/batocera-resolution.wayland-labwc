@@ -22,6 +22,7 @@ f_usage() {
     echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
     echo "${0} getDisplayComp" >&2
+    echo "${0} refreshRate" >&2
 }
 
 _reconfigure_labwc() {
@@ -768,7 +769,29 @@ case "${ACTION}" in
         fi
         _get_current_transform "${PSCREEN}"
         ;;
+    
+    "refreshRate")
+        if [ -z "${PSCREEN}" ]; then
+            _log "refreshRate: PSCREEN is empty."
+            exit 1
+        fi
         
+        CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+        
+        if [ -n "${CURRENT_MODE_STR}" ]; then
+            REFRESH_RATE=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
+            if [ -n "${REFRESH_RATE}" ]; then
+                echo "${REFRESH_RATE}"
+            else
+                _log "refreshRate: Could not parse refresh rate from '${CURRENT_MODE_STR}'"
+                exit 1
+            fi
+        else
+            _log "refreshRate: Could not determine current mode."
+            exit 1
+        fi
+        ;;
+
     "supportSystemRotation")
         exit 0
         ;;
