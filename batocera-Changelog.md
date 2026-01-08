@@ -51,6 +51,7 @@
 - Wifi country not being applied at boot
 - Light gun accuracy in MAME
 - Crosshairs for light guns in PCSX2
+- Massive MAME log (switchres verbose disabled by default)
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
@@ -58,13 +59,13 @@
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 ### Updated
-- Azahar Plus to AZAHAR_PLUS_2123_3_A
+- Azahar to 2123.3
 - BigPEmu to v121
 - CLK to 2025-12-19
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
-- Groovy MAME to 0.283
+- Groovy MAME to 0.284
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
 - Jazz2 to 3.4.0
