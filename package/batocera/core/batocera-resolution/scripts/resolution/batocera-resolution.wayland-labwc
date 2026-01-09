@@ -486,7 +486,7 @@ case "${ACTION}" in
             # Set the main azahar window to the primary output
             if [ -n "${PRIMARY_OUT}" ]; then
                 _log "Setting main azahar window to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                     n
                     s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
                 } }' "${RC_XML}"
