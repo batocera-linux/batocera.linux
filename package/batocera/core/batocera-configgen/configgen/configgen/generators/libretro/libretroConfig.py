@@ -345,11 +345,16 @@ def createLibretroConfig(
                         retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 517 # DualShock Controller
 
     ## Sega Dreamcast controller
+    ## Left Analog To Dpad (Forced) is convenient for Arcade Systems (Atomiswave, Naomi 1 and 2)
     if system.config.core == 'flycast':
-        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_dc', '1')
-        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_dc', '1')
-        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_dc', '1')
-        retroarchConfig['input_libretro_device_p4'] = system.config.get('controller4_dc', '1')
+        for i in range(1, 5):
+            dc_val = system.config.get(f'controller{i}_dc', '1')
+            if dc_val == '5': # "Gamepad using left analog stick"
+                retroarchConfig[f'input_libretro_device_p{i}'] = '1'
+                retroarchConfig[f'input_player{i}_analog_dpad_mode'] = '3'
+            else:
+                retroarchConfig[f'input_libretro_device_p{i}'] = dc_val
+                retroarchConfig[f'input_player{i}_analog_dpad_mode'] = '0'
 
         # wheel
         if system.config.use_wheels and wheels:
