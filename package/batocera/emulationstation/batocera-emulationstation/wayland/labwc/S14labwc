@@ -50,7 +50,7 @@ start() {
         echo "Applying window rules for azahar..." >> "$display_log"
         if [ -n "${PRIMARY_OUT}" ]; then
             echo "Setting main azahar window -> ${PRIMARY_OUT}" >> "$display_log"
-            sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+            sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                 n
                 s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
             } }' "${RC_XML_PATH}"
