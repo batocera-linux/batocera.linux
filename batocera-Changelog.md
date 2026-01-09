@@ -26,6 +26,7 @@
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
+- Raxda Zero 3W initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
