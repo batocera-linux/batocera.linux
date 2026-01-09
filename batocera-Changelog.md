@@ -120,6 +120,7 @@
 - Vulkan stack to 1.4.328.1
 - Wayland to 1.24.0
 - Wayland Protocols to 1.45
+- WF-Recorder to v0.6.0
 - Wine Mono to 10.4.0
 - Wine-TKG to 10.20
 - Wine Proton to 10.0-3
