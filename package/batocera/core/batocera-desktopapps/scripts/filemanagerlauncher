@@ -22,6 +22,8 @@ if (not t or t == ''):
      c.write(wf)
 EOF
 
+batocera-backglass disable
 batocera-mouse show
 DISPLAY=${DISPLAY:-:0.0} pcmanfm /userdata
 batocera-mouse hide
+batocera-backglass enable
