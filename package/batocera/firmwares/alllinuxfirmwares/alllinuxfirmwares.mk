@@ -25,7 +25,7 @@ ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
 # Remove strictly ARM/Mobile SoC components
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += \
-        $(@D)/airoha $(@D)/amlogic $(@D)/amphion $(@D)/apple $(@D)/ar3k \
+        $(@D)/airoha $(@D)/amlogic $(@D)/amphion $(@D)/apple \
         $(@D)/arm $(@D)/cadence $(@D)/cis $(@D)/cnm $(@D)/dsp56k $(@D)/imx \
         $(@D)/inside-secure $(@D)/ixp4xx $(@D)/meson $(@D)/microchip \
         $(@D)/nxp $(@D)/powervr $(@D)/qcom $(@D)/rockchip $(@D)/s5p-* \
