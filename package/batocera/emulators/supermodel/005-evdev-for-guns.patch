@@ -134,7 +134,7 @@ index 0000000..ee695ba
 +  return event_strcmp_events(aa->devnode, bb->devnode);
 +}
 +
-+CEvdevInputSystem::CEvdevInputSystem(const Util::Config::Node& config) : CSDLInputSystem(config, true) {
++CEvdevInputSystem::CEvdevInputSystem(const Util::Config::Node& config) : CSDLInputSystem(config, false) {
 +  m_ndevices = 0;
 +  m_udev = NULL;
 +
@@ -318,7 +318,7 @@ index 0000000..ee695ba
 +  // nothing
 +}
 +
-+int CEvdevInputSystem::GetMouseAxisValue(int mseNum, int axisNum) {
++int CEvdevInputSystem::GetMouseAxisValue(int mseNum, int axisNum) const {
 +  // Return value for given mouse axis
 +  switch (axisNum)
 +    {
@@ -336,17 +336,17 @@ index 0000000..ee695ba
 +    }
 +}
 +
-+int CEvdevInputSystem::GetMouseWheelDir(int mseNum) {
++int CEvdevInputSystem::GetMouseWheelDir(int mseNum) const {
 +  return 0;
 +}
 +
-+bool CEvdevInputSystem::IsMouseButPressed(int mseNum, int butNum) {
++bool CEvdevInputSystem::IsMouseButPressed(int mseNum, int butNum) const {
 +  if(butNum < 0 && butNum >= EVDEV_MAXBUTTONS) return false;
 +  return m_devices_btn[mseNum][butNum] == 1;
 +  return false;
 +}
 +
-+int CEvdevInputSystem::GetNumMice() {
++int CEvdevInputSystem::GetNumMice() const {
 +  return m_ndevices;
 +}
 +
@@ -379,7 +379,7 @@ index 0000000..6f8a2b2
 +
 +        ~CEvdevInputSystem();
 +
-+  	int GetNumMice();
++  	int GetNumMice() const;
 +	const MouseDetails *GetMouseDetails(int mseNum);
 +
 +	bool Poll();
@@ -390,21 +390,21 @@ index 0000000..6f8a2b2
 +
 +  	bool InitializeSystem();
 +
-+  	int GetMouseAxisValue(int mseNum, int axisNum);
++  	int GetMouseAxisValue(int mseNum, int axisNum) const;
 +
-+	int GetMouseWheelDir(int mseNum);
++	int GetMouseWheelDir(int mseNum) const;
 +
-+	bool IsMouseButPressed(int mseNum, int butNum);
++	bool IsMouseButPressed(int mseNum, int butNum) const;
 +
 +  	CInputSource *CreateAnyMouseSource(EMousePart msePart);
 +
 +  private:
 +    struct udev *m_udev;
 +    int m_devices[EVDEV_MAXPLAYERS];
-+    int m_devices_btn[EVDEV_MAXPLAYERS][EVDEV_MAXBUTTONS];
-+    int m_devices_axes[EVDEV_MAXPLAYERS][2];
++    mutable int m_devices_btn[EVDEV_MAXPLAYERS][EVDEV_MAXBUTTONS];
++    mutable int m_devices_axes[EVDEV_MAXPLAYERS][2];
 +    int m_devices_axes_minmax[EVDEV_MAXPLAYERS][2][2];
-+    int m_ndevices;
++    unsigned int m_ndevices;
 +    std::vector<MouseDetails> m_mseDetails;
 +
 +    void handle_event(unsigned int idx, struct input_event& event);
