@@ -183,6 +183,11 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                             cmd.array.insert(0, "mangohud")
 
                 with profiler.pause():
+                    try:
+                        _logger.debug("Triggering mouse reset to primary display")
+                        subprocess.call(["/usr/bin/hotkeygen", "--reset-mouse"])
+                    except Exception as e:
+                        _logger.warning(f"Failed to reset mouse: {e}")
                     monitor_thread.start()
                     exitCode = runCommand(cmd)
 

@@ -55,6 +55,13 @@
       <action name="SnapToEdge" direction="down" />
     </keybind>
   </keyboard>
+  <mouse>
+    <context name="root">
+      <mousebind button="Left" action="None" />
+      <mousebind button="Right" action="None" />
+      <mousebind button="Middle" action="None" />
+    </context>
+  </mouse>
   <windowRules>
     <windowRule identifier="*" serverDecoration="no" />
     <windowRule identifier="emulationstation">

@@ -279,6 +279,35 @@ def do_send(key: str, delay: None | int) -> None:
                 time.sleep(0.1)
             send_keys(sender, code, False)
 
+def send_reset_signal(target_device: evdev.UInput) -> None:
+    target_device.write(ecodes.EV_REL, ecodes.REL_X, -10000)
+    target_device.write(ecodes.EV_REL, ecodes.REL_Y, -10000)
+    target_device.syn()
+    
+    time.sleep(0.10)
+    
+    target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 1)
+    target_device.syn()
+    target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 0)
+    target_device.syn()
+    
+    time.sleep(0.10)
+
+def do_reset_mouse() -> None:
+    # Create temporary device
+    sender = evdev.UInput(
+        name="batocera-mouse-reset", 
+        events={
+            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
+            ecodes.EV_KEY: [ecodes.BTN_LEFT]
+        }
+    )
+    time.sleep(0.2)
+
+    send_reset_signal(sender)
+    
+    sender.close()
+
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
         return fd.read().replace('\n', '')
@@ -355,9 +384,15 @@ class Daemon:
 
         self.poll = select.poll()
 
-        # target virtual keyboard
+        keys_list = [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_"]
+        keys_list.append(ecodes.BTN_LEFT)
+
+        # target virtual keyboard & mouse
         self.target = evdev.UInput(
-            name=DEVICE_NAME, events={ ecodes.EV_KEY: [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_" ] }
+            name=DEVICE_NAME, events={
+                ecodes.EV_KEY: keys_list,
+                ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y]
+            }
         )
 
     def __handle_actions(self, action: str, device: pyudev.Device) -> None:
@@ -395,6 +430,10 @@ class Daemon:
     def __handle_event(self, event: evdev.InputEvent, action: str, begin: bool) -> None:
         if self.context is not None and action in self.context["keys"]:
             keys = self.context["keys"][action]
+
+            if action == "exit" and ((isinstance(keys, str) and not begin) or (not isinstance(keys, str) and begin)):
+                send_reset_signal(self.target)
+
             if gdebug:
                 print(f"code:{event.code}, value:{event.value}, action:{action}")
             if begin:
@@ -507,12 +546,15 @@ if __name__ == "__main__":
     parser.add_argument("--disable-common", action="store_true")
     parser.add_argument("--reload", action="store_true")
     parser.add_argument("--permanent", action="store_true")
+    parser.add_argument("--reset-mouse", action="store_true")
     args = parser.parse_args()
     if args.debug:
         gdebug = True
 
     if args.list:
         do_list()
+    elif args.reset_mouse:
+        do_reset_mouse()
     elif args.send is not None:
         do_send(args.send, args.send_delay)
     elif args.new_context is not None:
