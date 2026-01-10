@@ -1,6 +1,7 @@
 config BR2_PACKAGE_DOLPHIN_EMU
 	bool "dolphin-emu"
 	depends on BR2_x86_64 || BR2_aarch64
+	select BR2_PACKAGE_CPP_IPC
 	select BR2_PACKAGE_LIBEVDEV
 	select BR2_PACKAGE_FFMPEG
 	select BR2_PACKAGE_ZLIB

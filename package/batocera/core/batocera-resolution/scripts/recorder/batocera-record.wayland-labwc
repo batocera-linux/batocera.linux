@@ -2,6 +2,14 @@
 
 ACTION=$1
 
+PRIMARY_DISPLAY=$(batocera-resolution currentOutput)
+ALL_OUTPUTS=$(wf-recorder -L | awk '/Name:/ {print $3}')
+
+PULSEAUDIO_MONITOR=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
+TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
+BASE_DIR="/userdata/recordings"
+mkdir -p $BASE_DIR || exit 1
+
 usage() {
     echo "Usage: $0 [--ultra-fast | --very-fast | --help]"
     echo "  --ultra-fast      Record 30fps with the fastest encoding settings (Recommended)"
@@ -10,44 +18,76 @@ usage() {
     echo "  -h, --help        Show this help message"
 }
 
-record_ultra_fast() {
-    wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=30 preset=ultrafast -C aac -r 30 -o $DISPLAY -f ${OUTPUT}
-    echo "Recording to: ${OUTPUT}"
+start_recording_logic() {
+    CRF=$1
+    PRESET=$2
+    FPS=$3
+    
+    echo "Detected Outputs: ${ALL_OUTPUTS}"
+    echo "Primary Display : ${PRIMARY_DISPLAY}"
+    echo
+    echo "  /!\\ HIGH CPU WARNING /!\\"
+    echo "  -----------------------------------------------------"
+    echo "  Recording multiple outputs simultaneously will place "
+    echo "  extreme load on the CPU. Framerates may drop."
+    echo
+    echo "  NOTE: Audio will ONLY be recorded on the Primary Display."
+    echo "        Secondary displays will be video-only."
+    echo "  -----------------------------------------------------"
+    echo
+    echo -n "Do you want to record ALL outputs simultaneously? (y/N): "
+    read -r ANSWER
+
+    if [ "$ANSWER" = "y" ] || [ "$ANSWER" = "Y" ]; then
+        echo "Starting multi-screen recording..."
+        PIDS=""
+        
+        for DISP in $ALL_OUTPUTS; do
+            FILE="${BASE_DIR}/capture-${TIMESTAMP}-${DISP}.mkv"
+            
+            if [ "$DISP" = "$PRIMARY_DISPLAY" ]; then
+                # Primary screen for audio
+                echo "  [PRIMARY] Starting A/V recording on $DISP -> $FILE"
+                wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o $DISP -f "$FILE" &
+            else
+                # Additional screens
+                echo "  [SECONDARY] Starting VIDEO-ONLY recording on $DISP -> $FILE"
+                wf-recorder -c libx264 -p crf=$CRF preset=$PRESET -r $FPS -o $DISP -f "$FILE" &
+            fi
+            
+            # Capture PID(s)
+            PIDS="$PIDS $!"
+        done
+
+        echo
+        echo "+-----------------------------------------+" >&2
+        echo "| Recording ALL screens. Ctrl+c to stop.  |" >&2
+        echo "+-----------------------------------------+" >&2
+
+        trap "kill $PIDS" INT TERM
+        wait
+    else
+        # Standard Single Recording (Primary only)
+        FILE="${BASE_DIR}/capture-${TIMESTAMP}.mkv"
+        echo "Recording primary output ($PRIMARY_DISPLAY) to: ${FILE}"
+        echo
+        echo "+-------------------------------+" >&2
+        echo "| Press Ctrl+c to end recording |" >&2
+        echo "+-------------------------------+" >&2
+        
+        wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o $PRIMARY_DISPLAY -f "$FILE"
+    fi
 }
-
-record_very_fast() {
-    wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=28 preset=veryfast -C aac -r 30 -o $DISPLAY -f ${OUTPUT}
-    echo "Recording to: ${OUTPUT}"
-}
-
-record_high_quality() {
-    wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=23 preset=fast -C aac -r 60 -o $DISPLAY -f ${OUTPUT}
-    echo "Recording to: ${OUTPUT}"
-}
-
-DISPLAY=$(batocera-resolution currentOutput)
-TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
-OUTPUT="/userdata/recordings/capture-${TIMESTAMP}.mkv"
-PULSEAUDIO_MONITOR=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
-
-mkdir -p /userdata/recordings || exit 1
-
-echo
-echo "Recording to file: ${OUTPUT}"
-echo
-echo "+-------------------------------+" >&2
-echo "| Press Ctrl+c to end recording |" >&2
-echo "+-------------------------------+" >&2
 
 case "$ACTION" in
     --ultra-fast)
-        record_ultra_fast
+        start_recording_logic 30 ultrafast 30
         ;;
     --very-fast)
-        record_very_fast
+        start_recording_logic 28 veryfast 30
         ;;
     --high-quality)
-        record_high_quality
+        start_recording_logic 23 fast 60
         ;;
     -h|--help)
         usage

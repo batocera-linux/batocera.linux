@@ -249,7 +249,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON3_READLINE
 
 	select BR2_PACKAGE_PARTED				# partition management (for the first boot)
-	select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter
+	# select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter <- use batocera-stoage-manager now
 	select BR2_PACKAGE_USBUTILS				# usb key/sd card tools
 	select BR2_PACKAGE_BATOCERA_SPLASH			# boot splash
 	select BR2_PACKAGE_BATOCERA_SCRIPTS			# batocera scripts
@@ -322,10 +322,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_NEW_LG4FF			if !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_XU4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_QCS6490 && !BR2_PACKAGE_BATOCERA_TARGET_SM8250 && !BR2_PACKAGE_BATOCERA_TARGET_SM8550 && !BR2_PACKAGE_BATOCERA_TARGET_T527 && !BR2_PACKAGE_BATOCERA_TARGET_ODIN && !BR2_PACKAGE_BATOCERA_TARGET_H700 # Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
 	select BR2_PACKAGE_HID_T150             if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
 	select BR2_PACKAGE_HID_TMFF2            if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # Thrustmaster T300RS, T248 and (experimental) TX, T128, T-GT II and TS-XW Wheel Linux drivers
-	select BR2_PACKAGE_HID_NX				if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
-	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX # nintendo switch joycon daemon (requires hid-nx)
+	select BR2_PACKAGE_HID_NX				if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_7 && !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
+	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX || BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_7 # nintendo switch joycon daemon (requires hid-nx or hid-nintendo in kernel 6.7 or later)
 	select BR2_PACKAGE_KEYBOARDTOPADS
-	select BR2_PACKAGE_NSO_N64
+	select BR2_PACKAGE_NSO_N64              if BR2_PACKAGE_HID_NX
 	
 	select BR2_PACKAGE_ROCKNIX_JOYPAD    if BR2_PACKAGE_BATOCERA_TARGET_RK3326	
 
@@ -422,13 +422,15 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	select BR2_PACKAGE_RTL8822CS    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
-	select BR2_PACKAGE_AIC8800_SDIO      if BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
+	select BR2_PACKAGE_AIC8800_SDIO      if BR2_PACKAGE_BATOCERA_TARGET_RK3568 || \
+	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
 	select BR2_PACKAGE_AIC8800_USB  if BR2_PACKAGE_BATOCERA_TARGET_QCS6490
 
-	select BR2_PACKAGE_RTL8852AU    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_RTL8852CU    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	#select BR2_PACKAGE_RTL8852AU    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # use rtw89 temp
+	select BR2_PACKAGE_RTW89_TEMP    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	#select BR2_PACKAGE_RTL8852CU     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # use rtw89 temp
 
 	# ethernet
 	#select BR2_PACKAGE_R8125		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -589,7 +591,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86-64-v3"										if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sd845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_ODIN
 	default "qualcomm/qcs6490/dragonq6a"    							if BR2_PACKAGE_BATOCERA_TARGET_QCS6490
-	default "qualcomm/sm8250/rpflip2 qualcomm/sm8250/rp5 qualcomm/sm8250/rpmini qualcomm/sm8250/rpminiv2"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
+	default "qualcomm/sm8250/rp5 qualcomm/sm8250/rpflip2 qualcomm/sm8250/rpmini qualcomm/sm8250/rpminiv2"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
 	default "qualcomm/sm8550/thor qualcomm/sm8550/odin2portal qualcomm/sm8550/odin2 qualcomm/sm8550/odin2mini"    if BR2_PACKAGE_BATOCERA_TARGET_SM8550
 	default "starfive/jh7110"   							if BR2_PACKAGE_BATOCERA_TARGET_JH7110
 	default "amlogic/s922x/ogu amlogic/s922x/gtkingpro amlogic/s922x/gtking amlogic/s922x/odroidn2l amlogic/s922x/vim3 amlogic/s922x/odroidn2 amlogic/s922x/odroidn2plus amlogic/s922x/zero2" \
@@ -598,10 +600,10 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_S905
 	default "rockchip/rk3399/orangepi-800 rockchip/rk3399/rg552 rockchip/rk3399/rockpro64 rockchip/rk3399/rock960 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4 rockchip/rk3399/nanopi-m4v2 rockchip/rk3399/hugsun-x99" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-	default "rockchip/rk3588/coolpi-4b rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5b-plus rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
+	default "rockchip/rk3588/friendlyelec-cm3588-nas rockchip/rk3588/coolpi-4b rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5b-plus rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
 	default "rockchip/rk3588-sdio/orangepi-5-ultra rockchip/rk3588-sdio/orangepi-5-max" if BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
-	default "rockchip/rk3568/powkiddy-x55 rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
+	default "rockchip/rk3568/radxa-zero-3w rockchip/rk3568/powkiddy-x55 rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -808,7 +810,8 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	bool "batocera.linux game streaming support"
 
 	# Game streaming
-	select BR2_PACKAGE_MOONLIGHT_EMBEDDED	if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+	#select BR2_PACKAGE_MOONLIGHT_EMBEDDED	if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
+	select BR2_PACKAGE_MOONLIGHT_QT		if !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
@@ -1119,6 +1122,10 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Quake 2
 	select BR2_PACKAGE_LIBRETRO_VITAQUAKE2    if BR2_PACKAGE_BATOCERA_GLES3
 	select BR2_PACKAGE_VKQUAKE2		          if BR2_PACKAGE_BATOCERA_VULKAN && BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_YQUAKE2		# ALL
+	select BR2_PACKAGE_YQUAKE2_XATRIX	if BR2_PACKAGE_YQUAKE2	# Mission Packs
+	select BR2_PACKAGE_YQUAKE2_ROGUE	if BR2_PACKAGE_YQUAKE2
+	select BR2_PACKAGE_YQUAKE2_ZAERO	if BR2_PACKAGE_YQUAKE2
 
 	# Super Mario War
 	select BR2_PACKAGE_LIBRETRO_SUPERBROSWAR	if  !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
@@ -2067,6 +2074,9 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	# broadcom bluetooth firware
 	select BR2_PACKAGE_BROADCOM_BT_FIRMWARE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
+config BR2_PACKAGE_BATOCERA_HAS_SDL
+	bool
+
 config BR2_PACKAGE_BATOCERA_SDL2
 	bool "BATOCERA SDL2"
 
@@ -2084,6 +2094,7 @@ config BR2_PACKAGE_BATOCERA_SDL2
 	select BR2_PACKAGE_FLAC			# flac
 	select BR2_PACKAGE_LIBMAD		# mp3
 	select BR2_PACKAGE_LIBVORBIS		# ogg
+	select BR2_PACKAGE_BATOCERA_HAS_SDL
 
 config BR2_PACKAGE_BATOCERA_SDL3
 	bool "BATOCERA SDL3"
@@ -2097,6 +2108,7 @@ config BR2_PACKAGE_BATOCERA_SDL3
 	select BR2_PACKAGE_SDL3_X11			if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_SDL3_KMSDRM		if BR2_PACKAGE_HAS_LIBGBM && !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_SDL3_WAYLAND		if BR2_PACKAGE_BATOCERA_WAYLAND
+	select BR2_PACKAGE_BATOCERA_HAS_SDL
 
 config BR2_PACKAGE_BATOCERA_WAYLAND
 	bool "batocera.linux wayland packages selection"

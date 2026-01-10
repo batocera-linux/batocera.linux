@@ -64,6 +64,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'openjk': ('openjk.openjkGenerator', 'OpenJKGenerator'),
     'openmohaa': ('openmohaa.openmohaaGenerator', 'OpenMOHAAGenerator'),
     'ymir': ('ymir.ymirGenerator', 'YmirGenerator'),
+    'yquake2': ('yquake2.yquake2Generator', 'YQuake2Generator'),
 }
 
 def get_generator(emulator: str) -> Generator:

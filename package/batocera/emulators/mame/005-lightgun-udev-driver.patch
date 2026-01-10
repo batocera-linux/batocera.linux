@@ -7,9 +7,10 @@ Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
 ---
  scripts/src/main.lua                  |   1 +
  scripts/src/osd/modules.lua           |   1 +
- src/osd/modules/input/input_udev.cpp  | 391 ++++++++++++++++++++++++++
+ src/mame/misc/policetr.cpp            |  24 +-
+ src/osd/modules/input/input_udev.cpp  | 401 ++++++++++++++++++++++++++
  src/osd/modules/lib/osdobj_common.cpp |   1 +
- 4 files changed, 394 insertions(+)
+ 5 files changed, 416 insertions(+), 12 deletions(-)
  create mode 100644 src/osd/modules/input/input_udev.cpp
 
 diff --git a/scripts/src/main.lua b/scripts/src/main.lua
@@ -36,12 +37,79 @@ index 4bbd42b..b7fa7ef 100644
  		MAME_DIR .. "src/osd/modules/input/input_win32.cpp",
  		MAME_DIR .. "src/osd/modules/input/input_wincommon.h",
  		MAME_DIR .. "src/osd/modules/input/input_windows.cpp",
+diff --git a/src/mame/misc/policetr.cpp b/src/mame/misc/policetr.cpp
+index 1111111..2222222 100644
+--- a/src/mame/misc/policetr.cpp
++++ b/src/mame/misc/policetr.cpp
+@@ -356,16 +356,16 @@ static INPUT_PORTS_START( policetr )
+ 	PORT_BIT( 0xff000000, IP_ACTIVE_LOW, IPT_UNKNOWN )
+ 
+ 	PORT_START("GUNX1")             /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.012, 0.008, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
+ 
+ 	PORT_START("GUNY1")             /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.05, 0.002, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
+ 
+ 	PORT_START("GUNX2")             /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.012, 0.008, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ 
+ 	PORT_START("GUNY2")             /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.05, 0.002, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ INPUT_PORTS_END
+ 
+ 
+@@ -373,16 +373,16 @@ static INPUT_PORTS_START( polict10 )
+ 	PORT_INCLUDE( policetr )
+ 
+ 	PORT_MODIFY("GUNX1")                /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.018, -0.037, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
+ 
+ 	PORT_MODIFY("GUNY1")                /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, -0.033, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
+ 
+ 	PORT_MODIFY("GUNX2")                /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.018, -0.037, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ 
+ 	PORT_MODIFY("GUNY2")                /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, -0.033, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ INPUT_PORTS_END
+ 
+ 
+@@ -401,16 +401,16 @@ static INPUT_PORTS_START( sshooter )
+ 	PORT_DIPUNUSED_DIPLOC( 0x00100000, 0x00100000, "SW1:5" )
+ 
+ 	PORT_MODIFY("GUNX1")                /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.012, 0.208, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10)
+ 
+ 	PORT_MODIFY("GUNY1")                /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.093, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10)
+ 
+ 	PORT_MODIFY("GUNX2")                /* fake analog X */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.012, 0.208, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_CROSSHAIR(X, 1.0, 0.0, 0) PORT_SENSITIVITY(50) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ 
+ 	PORT_MODIFY("GUNY2")                /* fake analog Y */
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.093, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(70) PORT_KEYDELTA(10) PORT_PLAYER(2)
+ INPUT_PORTS_END
+ 
+ 
 diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
 new file mode 100644
 index 0000000..ad7a63c
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,401 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
@@ -54,6 +122,7 @@ index 0000000..ad7a63c
 +#include "modules/osdmodule.h"
 +
 +#include "render.h"
++#include "screen.h"
 +
 +#include <libudev.h>
 +#include <fcntl.h>
@@ -296,7 +365,16 @@ index 0000000..ad7a63c
 +
 +  void computeBorders(int& borderX, int& borderY) {
 +    int w, h, neww;
-+    double game_ratio = 4.0/3.0; // assume 4/3 for the game itself (because i don't manage to find the information in mame structures)
++    // Get physical aspect ratio from screen device (accounts for pixel aspect correction)
++    double game_ratio = 4.0/3.0; // fallback to 4:3
++    screen_device_enumerator iter(m_machine->root_device());
++    screen_device *screen = iter.first();
++    if (screen) {
++      std::pair<u32, u32> aspect = screen->physical_aspect();
++      if (aspect.first > 0 && aspect.second > 0) {
++        game_ratio = (double)aspect.first / (double)aspect.second;
++      }
++    }
 +    render_target* target = m_machine->render().first_target();
 +
 +
@@ -447,4 +525,3 @@ index d2fb751..1e785d1 100644
  	REGISTER_MODULE(m_mod_man, LIGHTGUN_NONE);
 -- 
 2.34.1
-

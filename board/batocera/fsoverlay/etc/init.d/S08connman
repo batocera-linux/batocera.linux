@@ -84,11 +84,53 @@ wifi_configure_all() {
 }
 
 wifi_enable() {
+    # Wait for the wifi interface.
+    wait_count=0
+    while ! grep -q "wlan" /proc/net/dev; do
+        sleep 1
+        wait_count=$((wait_count+1))
+        # If no wifi card is found after 20s, give up to save resources
+        if [ "$wait_count" -ge 20 ]; then
+            echo "*** Wifi Hardware not detected after 20s. Aborting. ***" > /dev/kmsg
+            return
+        fi
+    done
+    echo "*** Wifi Hardware detected. ***" > /dev/kmsg
+
+    # If wifi interface is available then apply the country code if set by the user
     settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
-    [ -n "$settingsCountry" ] && /usr/sbin/iw reg set "$settingsCountry"
+    if [ -n "$settingsCountry" ]; then
+        /usr/sbin/iw reg set "$settingsCountry" 2>/dev/null
+    fi
 
     connmanctl enable wifi 2>/dev/null
-    connmanctl scan   wifi 2>/dev/null
+    sleep 2
+
+    # We attempt to connect for up to 40-60 seconds depending on resets.
+    for i in $(seq 1 40); do
+        # Check if we are already 'ready' (connected) or 'online' (internet access)
+        state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+        if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
+            echo "*** Wifi connected successfully. ***" > /dev/kmsg
+            break
+        fi
+
+        # driver or firmware may have stalled. try different resets if not connected
+        if [ "$i" -eq 2 ] || [ "$i" -eq 6 ]|| [ "$i" -eq 10 ]; then
+            echo "*** Wifi stuck. Toggling radio to clear driver stall. ***" > /dev/kmsg
+            connmanctl disable wifi 2>/dev/null
+            ip link set wlan0 down 2>/dev/null
+            sleep 0.1
+            ip link set wlan0 up 2>/dev/null
+            connmanctl enable wifi 2>/dev/null
+            sleep 2 # Allow extra time for firmware reload
+        fi
+
+        # Use timeout to prevent script hanging if driver is stalled
+        timeout 2s connmanctl scan wifi 2>/dev/null
+        # If not connected, wait a second before trying again to avoid driver spam.
+        sleep 1
+    done
 }
 
 wifi_disable() {

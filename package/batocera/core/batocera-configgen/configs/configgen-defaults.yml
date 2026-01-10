@@ -113,6 +113,9 @@ c20:
 camplynx:
   emulator: libretro
   core:     mame
+casloopy:
+  emulator: libretro
+  core:     mame
 catacomb:
   emulator: catacombgl
   core:     catacombgl
@@ -189,6 +192,9 @@ eduke32:
 electron:
   emulator: libretro
   core:     mame
+enterprise:
+  emulator: clk
+  core:     clk
 etlegacy:
   emulator: etlegacy
   core:     etlegacy
@@ -531,10 +537,10 @@ quake:
   emulator: libretro
   core:     tyrquake
 quake2:
-  emulator: libretro
-  core:     vitaquake2
+  emulator: yquake2
+  core:     yquake2
   options:
-    gfxbackend: glcore
+    hud_support: false
 quake3:
   emulator: ioquake3
   core:     ioquake3

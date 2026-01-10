@@ -2,16 +2,6 @@
 name = "batocera-configgen"
 requires-python = ">= 3.12"
 dynamic = ["version"]
-dependencies = [
-    "PyYAML==6.0.2",
-    "ruamel.yaml==0.18.6",
-    "toml==0.10.2",
-    "pillow==11.0.0",
-    "configobj==5.0.8",
-    "requests==2.32.3",
-    "qrcode==8.0",
-    "ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6",
-]
 
 [project.scripts]
 emulatorlauncher = "configgen.emulatorlauncher:launch"

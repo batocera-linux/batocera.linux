@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RCLONE_VERSION = v1.69.1
+RCLONE_VERSION = v1.72.1
 RCLONE_SITE = $(call github,rclone,rclone,$(RCLONE_VERSION))
 RCLONE_LICENSE = GPLv2
 RCLONE_DEPENDENCIES =

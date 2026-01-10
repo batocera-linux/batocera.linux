@@ -75,6 +75,18 @@ discrete_name() {
     echo "$device_name"
 }
 
+# Function to retrieve the name of the DEFAULT (first) GPU
+default_name() {
+    device_name=$(vulkaninfo | grep deviceName | sed -n '1p' | awk -F'= ' '{print $2}')
+    
+    if [ -z "$device_name" ]; then
+        echo "Failed to retrieve name for the default GPU."
+        exit 1
+    fi
+
+    echo "$device_name"
+}
+
 # Function to retrieve the index (GPU number) of the discrete GPU
 discrete_index() {
     device_type_output=$(vulkaninfo | grep deviceType)
@@ -134,6 +146,9 @@ case "$1" in
     "discreteIndex")
         discrete_index
         ;;
+    "defaultName")
+        default_name
+        ;;
     "hasVulkan")
         has_vulkan
         ;;
@@ -141,7 +156,7 @@ case "$1" in
         vulkan_version
         ;;
     *)
-        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|hasVulkan|vulkanVersion}"
+        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|defaultName|hasVulkan|vulkanVersion}"
         exit 1
         ;;
 esac

@@ -13,8 +13,8 @@ BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.17.7"
-BR2_KERNEL_HEADERS_6_17=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.3"
+BR2_KERNEL_HEADERS_6_18=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3568/linux-defconfig.config"
@@ -22,7 +22,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3566-orangepi-3b-v2.1 rockchip/rk3566-odroid-m1s rockchip/rk3568-rock-3a rockchip/rk3566-rock-3c rockchip/rk3568-roc-pc rockchip/rk3568-odroid-m1 rockchip/rk3566-roc-pc rockchip/rk3566-anbernic-rg353p rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg353v rockchip/rk3566-anbernic-rg353vs rockchip/rk3566-anbernic-rg503 rockchip/rk3566-anbernic-rg-arc-d rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg-arc-s rockchip/rk3566-powkiddy-rgb30 rockchip/rk3566-powkiddy-rk2023 rockchip/rk3566-powkiddy-rgb10max3 rockchip/rk3566-powkiddy-x55"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3566-orangepi-3b-v2.1 rockchip/rk3566-odroid-m1s rockchip/rk3568-rock-3a rockchip/rk3566-rock-3c rockchip/rk3568-roc-pc rockchip/rk3568-odroid-m1 rockchip/rk3566-roc-pc rockchip/rk3566-anbernic-rg353p rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg353v rockchip/rk3566-anbernic-rg353vs rockchip/rk3566-anbernic-rg503 rockchip/rk3566-anbernic-rg-arc-d rockchip/rk3566-anbernic-rg353ps rockchip/rk3566-anbernic-rg-arc-s rockchip/rk3566-powkiddy-rgb30 rockchip/rk3566-powkiddy-rk2023 rockchip/rk3566-powkiddy-rgb10max3 rockchip/rk3566-powkiddy-x55 rockchip/rk3566-radxa-zero-3w"
 
 # Bootloader
 BR2_PACKAGE_UBOOT_ROCK_3A=y
@@ -34,6 +34,7 @@ BR2_PACKAGE_UBOOT_ODROID_M1S=y
 BR2_PACKAGE_UBOOT_ORANGEPI_3B=y
 BR2_PACKAGE_UBOOT_POWKIDDY_X55=y
 BR2_PACKAGE_UBOOT_ANBERNIC_RGXX3=y
+BR2_PACKAGE_UBOOT_RADXA_ZERO_3=y
 
 # System
 BR2_PACKAGE_BATOCERA_KODI21=y

@@ -135,7 +135,7 @@ def generateHotkeys(playersControllers: Controllers) -> None:
 
         if pad := Controller.find_player_number(playersControllers, 1):
             f.write("[Hotkeys1]\n")
-            f.write(f"Device = SDL/0/{pad.real_name.strip()}\n")
+            f.write(f"Device = SDL/0/{pad.real_name.replace(",", ".").strip()}\n")
             # Search the hotkey button
             hotkey = None
             if "hotkey" not in pad.inputs:
@@ -163,11 +163,11 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
 
         for nplayer, pad in enumerate(playersControllers, start=1):
             # Handle x pads having the same name
-            nsamepad = double_pads.get(pad.real_name.strip(), 0)
+            nsamepad = double_pads.get(pad.real_name.replace(",", ".").strip(), 0)
 
-            double_pads[pad.real_name.strip()] = nsamepad+1
+            double_pads[pad.real_name.replace(",", ".").strip()] = nsamepad+1
             f.write(f"[{anyDefKey}{nplayer}]\n")
-            f.write(f"Device = SDL/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
+            f.write(f"Device = SDL/{str(nsamepad).strip()}/{pad.real_name.replace(",", ".").strip()}\n")
 
             if system.config.get_bool("triforce_pad_profiles"):
                 if not generateControllerConfig_any_from_profiles(f, pad):
@@ -220,7 +220,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
             profileDevice = profileConfig.get("Profile","Device")
             _logger.debug("Profile device : %s", profileDevice)
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
-            if deviceVals is not None and deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.real_name.strip():
+            if deviceVals is not None and deviceVals.group(1) == "SDL" and deviceVals.group(2).strip() == pad.real_name.replace(",", ".").strip():
                 _logger.debug("Eligible profile device found")
                 for key, val in profileConfig.items("Profile"):
                     if key != "Device":

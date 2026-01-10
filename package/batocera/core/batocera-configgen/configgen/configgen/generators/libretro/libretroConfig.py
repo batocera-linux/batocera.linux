@@ -3,15 +3,14 @@ from __future__ import annotations
 import json
 import logging
 import subprocess
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
 
 from ... import controllersConfig
-from ...batoceraPaths import DEFAULTS_DIR, ES_SETTINGS, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import DEFAULTS_DIR, SAVES, mkdir_if_not_exists
 from ...controller import Controller
 from ...settings.unixSettings import UnixSettings
-from ...utils import bezels as bezelsUtil, videoMode, vulkan
+from ...utils import bezels as bezelsUtil, videoMode, vulkan, esSettings
 from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
@@ -41,19 +40,6 @@ class _GunMappingItem(TypedDict):
     p4: NotRequired[int]
     gameDependant: NotRequired[list[dict[str, Any]]]
 
-
-# Return value for es invertedbuttons
-def getInvertButtonsValue() -> bool:
-    try:
-        tree = ET.parse(ES_SETTINGS)
-        root = tree.getroot()
-        # Find the InvertButtons element and return value
-        elem = root.find(".//bool[@name='InvertButtons']")
-        if elem is not None:
-            return elem.get('value') == 'true'
-        return False  # Return False if not found
-    except Exception:
-        return False # when file is not yet here or malformed
 
 # return true if the option is considered defined
 def defined(key: str, dict: Mapping[str, Any] | SystemConfig, /) -> bool:
@@ -171,7 +157,7 @@ def createLibretroConfig(
     renderConfig = system.renderconfig
     systemCore = system.config.core
     # Get value from ES settings
-    swapButtons = '"false"' if getInvertButtonsValue() else '"true"'
+    swapButtons = '"false"' if esSettings.getInvertButtonsValue() else '"true"'
 
     # Basic configuration
     retroarchConfig['quit_press_twice'] = 'false'                 # not aligned behavior on other emus
@@ -359,11 +345,16 @@ def createLibretroConfig(
                         retroarchConfig[f'input_libretro_device_p{pad.player_number}'] = 517 # DualShock Controller
 
     ## Sega Dreamcast controller
+    ## Left Analog To Dpad (Forced) is convenient for Arcade Systems (Atomiswave, Naomi 1 and 2)
     if system.config.core == 'flycast':
-        retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_dc', '1')
-        retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_dc', '1')
-        retroarchConfig['input_libretro_device_p3'] = system.config.get('controller3_dc', '1')
-        retroarchConfig['input_libretro_device_p4'] = system.config.get('controller4_dc', '1')
+        for i in range(1, 5):
+            dc_val = system.config.get(f'controller{i}_dc', '1')
+            if dc_val == '5': # "Gamepad using left analog stick"
+                retroarchConfig[f'input_libretro_device_p{i}'] = '1'
+                retroarchConfig[f'input_player{i}_analog_dpad_mode'] = '3'
+            else:
+                retroarchConfig[f'input_libretro_device_p{i}'] = dc_val
+                retroarchConfig[f'input_player{i}_analog_dpad_mode'] = '0'
 
         # wheel
         if system.config.use_wheels and wheels:
@@ -799,7 +790,8 @@ def createLibretroConfig(
         "beetle-saturn" : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "opera"         : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
         "stella"        : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
-        "vice_x64"      : { "default" : { "gameDependant": [ { "key": "type", "value": "stack_light_rifle", "mapcorekey": "vice_joyport_type", "mapcorevalue": "15" } ] } }
+        "vice_x64"      : { "default" : { "gameDependant": [ { "key": "type", "value": "stack_light_rifle", "mapcorekey": "vice_joyport_type", "mapcorevalue": "15" } ] } },
+        "dolphin"       : { "default" : { "device": 769, "p1": 0, "p2": 1, "p3": 2, "p4": 3 } }
     }
 
     # apply mapping
@@ -819,6 +811,12 @@ def createLibretroConfig(
                         ragunconf[gd["mapkey"]] = gd["mapvalue"]
                     if f'gun_{gd["key"]}' in metadata and metadata[f'gun_{gd["key"]}'] == gd["value"] and "mapcorekey" in gd and "mapcorevalue" in gd:
                         raguncoreconf[gd["mapcorekey"]] = gd["mapcorevalue"]
+
+            # Dolphin IR calibration from metadata
+            if system.config.core == "dolphin":
+                raguncoreconf["dolphin_ir_offset"] = metadata.get("gun_vertical_offset", "10")
+                raguncoreconf["dolphin_ir_yaw"]    = metadata.get("gun_yaw", "25")
+                raguncoreconf["dolphin_ir_pitch"]  = metadata.get("gun_pitch", "20")
 
             for nplayer in range(1, 4):
                 if f"p{nplayer}" in ragunconf and len(guns)-1 >= ragunconf[f"p{nplayer}"]:
@@ -978,6 +976,44 @@ def configureGunInputsForPlayer(
         retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = 2
         pedalconfig = f'input_player{n}_gun_aux_a'
         retroarchConfig[f'input_player{n}_gun_aux_b_mbtn'         ] = 3
+
+    if core == "dolphin":
+        # Dolphin uses Wiimote via RetroArch joypad, not RETRO_DEVICE_LIGHTGUN
+        # Clear all gun-specific mappings
+        retroarchConfig[f'input_player{n}_gun_trigger_mbtn'       ] = ''
+        retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = ''
+        retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = ''
+        retroarchConfig[f'input_player{n}_gun_aux_b_mbtn'         ] = ''
+        retroarchConfig[f'input_player{n}_gun_aux_c_mbtn'         ] = ''
+        retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = ''
+        retroarchConfig[f'input_player{n}_gun_select_mbtn'        ] = ''
+        retroarchConfig[f'input_player{n}_gun_dpad_up_mbtn'       ] = ''
+        retroarchConfig[f'input_player{n}_gun_dpad_down_mbtn'     ] = ''
+        retroarchConfig[f'input_player{n}_gun_dpad_left_mbtn'     ] = ''
+        retroarchConfig[f'input_player{n}_gun_dpad_right_mbtn'    ] = ''
+
+        # Wiimote/Nunchuk to RetroArch's Dolphin input
+        wiimote_to_ra = {"b": "b", "a": "a", "1": "start", "2": "select", "+": "r", "-": "l",
+                         "up": "up", "down": "down", "left": "left", "right": "right",
+                         "c": "x", "z": "y", "shake": "r2", "tiltforward": "l3"}
+
+        # Gun button names to Wiimote buttons (defaults)
+        action_to_wiimote = {"trigger": "b", "action": "a", "start": "+", "select": "-",
+                             "sub1": "1", "sub2": "2", "up": "up", "down": "down", "left": "left", "right": "right"}
+
+        # Override with game-specific metadata
+        for action in action_to_wiimote:
+            if f"gun_{action}" in metadata and metadata[f"gun_{action}"]:
+                action_to_wiimote[action] = metadata[f"gun_{action}"]
+
+        # Gun button names to virtual light gun mapping in RetroArch
+        action_to_gun = {"trigger": 1, "action": 2, "start": 3, "select": 4, "sub1": 5, "sub2": 6,
+                         "up": 8, "down": 9, "left": 10, "right": 11}
+
+        # Apply mapping to RetroArch config
+        for action, wiimote in action_to_wiimote.items():
+            if wiimote in wiimote_to_ra and action in action_to_gun:
+                retroarchConfig[f'input_player{n}_{wiimote_to_ra[wiimote]}_mbtn'] = action_to_gun[action]
 
     # pedal
     if pedalconfig is not None and pedalkey is not None:
@@ -1160,7 +1196,7 @@ def writeBezelConfig(
         retroarchConfig["video_viewport_bias_y"] = "0.500000"
     else:
         retroarchConfig["video_viewport_bias_x"] = "0.000000"
-        retroarchConfig["video_viewport_bias_y"] = "1.000000"
+        retroarchConfig["video_viewport_bias_y"] = "0.000000"
 
     # stretch option
     bezel_stretch = system.config.get_bool('bezel_stretch')

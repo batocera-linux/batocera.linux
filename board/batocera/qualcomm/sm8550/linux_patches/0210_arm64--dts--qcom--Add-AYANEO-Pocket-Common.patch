@@ -3,7 +3,7 @@ new file mode 100644
 index 000000000000..58d9ab342fe9
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocket-common.dtsi
-@@ -0,0 +1,1474 @@
+@@ -0,0 +1,1495 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -175,6 +175,12 @@ index 000000000000..58d9ab342fe9
 +
 +		hyp_ext_tags_mem: hyp-ext-tags-region@fce00000 {
 +			reg = <0 0xfce00000 0 0x2900000>;
++			no-map;
++		};
++
++		splash_region: splash_region@b8000000 { 
++			reg = <0x0 0xb8000000 0x0 0x2b00000>;
++			label = "cont_splash_region";
 +			no-map;
 +		};
 +	};
@@ -478,7 +484,7 @@ index 000000000000..58d9ab342fe9
 +		interrupts = <64 IRQ_TYPE_EDGE_FALLING>;
 +
 +		#cooling-cells = <2>;
-+		cooling-levels = <0 50 65 80 95 120 150 200>;
++		cooling-levels = <0 30 45 60 70 90 120 150>;
 +	};
 +
 +	wcn7850-pmu {
@@ -581,16 +587,6 @@ index 000000000000..58d9ab342fe9
 +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 +		};
 +
-+		vreg_l1b_1p8: ldo1 {
-+			regulator-name = "vreg_l1b_1p8";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-+						   RPMH_REGULATOR_MODE_HPM>;
-+		};
-+
 +		vreg_l2b_3p0: ldo2 {
 +			regulator-name = "vreg_l2b_3p0";
 +			regulator-min-microvolt = <3008000>;
@@ -626,9 +622,6 @@ index 000000000000..58d9ab342fe9
 +			regulator-min-microvolt = <1800000>;
 +			regulator-max-microvolt = <3008000>;
 +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-+						   RPMH_REGULATOR_MODE_HPM>;
 +		};
 +
 +		vreg_l8b_1p8: ldo8 {
@@ -679,8 +672,6 @@ index 000000000000..58d9ab342fe9
 +			regulator-allow-set-load;
 +			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 +						   RPMH_REGULATOR_MODE_HPM>;
-+			regulator-always-on;
-+			regulator-boot-on;
 +		};
 +
 +		vreg_l13b_3p0: ldo13 {
@@ -691,8 +682,6 @@ index 000000000000..58d9ab342fe9
 +			regulator-allow-set-load;
 +			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 +						   RPMH_REGULATOR_MODE_HPM>;
-+			regulator-always-on;
-+			regulator-boot-on;
 +		};
 +
 +		vreg_l14b_3p2: ldo14 {
@@ -1030,7 +1019,7 @@ index 000000000000..58d9ab342fe9
 +		clocks = <&gcc GCC_QUPV3_WRAP2_S3_CLK>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&qup_uart11_default>;
-+		interrupts = <GIC_SPI 585 IRQ_TYPE_LEVEL_HIGH>;
++		interrupts = <GIC_SPI 585 IRQ_TYPE_LEVEL_HIGH 0>;
 +		interconnects = <&clk_virt MASTER_QUP_CORE_2 QCOM_ICC_TAG_ALWAYS
 +						 &clk_virt SLAVE_QUP_CORE_2 QCOM_ICC_TAG_ALWAYS>,
 +						<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
@@ -1055,12 +1044,11 @@ index 000000000000..58d9ab342fe9
 +	pinctrl-1 = <&sdc2_sleep &sdc2_card_det_n>;
 +	vmmc-supply = <&vreg_l9b_2p9>;
 +	vqmmc-supply = <&vreg_l8b_1p8>;
-+	bus-width = <4>;
++	max-sd-hs-hz = <37500000>;
 +	no-sdio;
 +	no-mmc;
 +
 +	qcom,dll-config = <0x0007442c>;
-+//	/delete-property/ sdhci-caps-mask;
 +
 +	status = "okay";
 +};
@@ -1168,6 +1156,20 @@ index 000000000000..58d9ab342fe9
 +	sde_dsi_suspend: sde-dsi-suspend-state {
 +		pins = "gpio133";
 +		function = "gpio";
++		drive-strength = <2>;
++		bias-pull-down;
++	};
++
++	sde_te_active: sde-te-active-state {
++		pins = "gpio86";
++		function = "mdp_vsync";
++		drive-strength = <2>;
++		bias-pull-down;
++	};
++
++	sde_te_suspend: sde-te-suspend-state {
++		pins = "gpio86";
++		function = "mdp_vsync";
 +		drive-strength = <2>;
 +		bias-pull-down;
 +	};
@@ -1346,8 +1348,8 @@ index 000000000000..58d9ab342fe9
 +	display_panel: panel@0 {
 +		reg = <0>;
 +
-+		pinctrl-0 = <&sde_dsi_active>;
-+		pinctrl-1 = <&sde_dsi_suspend>;
++		pinctrl-0 = <&sde_dsi_active>, <&sde_te_active>;
++		pinctrl-1 = <&sde_dsi_suspend>, <&sde_te_suspend>;
 +		pinctrl-names = "default", "sleep";
 +
 +		port {
@@ -1427,6 +1429,25 @@ index 000000000000..58d9ab342fe9
 +	vdda-qref-supply = <&vreg_l1e_0p88>;
 +
 +	status = "okay";
++};
++
++&ufs_mem_hc {
++    reset-gpios = <&tlmm 210 GPIO_ACTIVE_LOW>;
++
++    vcc-supply = <&vreg_l17b_2p5>;
++    vcc-max-microamp = <1300000>;
++    vccq-supply = <&vreg_l1g_1p2>;
++    vccq-max-microamp = <1200000>;
++    vdd-hba-supply = <&vreg_l3g_1p2>;
++
++    status = "okay";
++};
++
++&ufs_mem_phy {
++    vdda-phy-supply = <&vreg_l1d_0p88>;
++    vdda-pll-supply = <&vreg_l3e_1p2>;
++
++    status = "okay";
 +};
 +
 +&usb_1 {

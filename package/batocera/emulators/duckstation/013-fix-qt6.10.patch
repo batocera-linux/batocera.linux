@@ -1,0 +1,72 @@
+diff --git a/src/duckstation-qt/displaywidget.cpp b/src/duckstation-qt/displaywidget.cpp.new
+index f9e5be2..593aea1 100644
+--- a/src/duckstation-qt/displaywidget.cpp
++++ b/src/duckstation-qt/displaywidget.cpp.new
+@@ -22,10 +22,6 @@
+ #include <QtGui/QWindowStateChangeEvent>
+ #include <cmath>
+ 
+-#if !defined(_WIN32) && !defined(APPLE)
+-#include <qpa/qplatformnativeinterface.h>
+-#endif
+-
+ #ifdef _WIN32
+ #include "common/windows_headers.h"
+ #endif
+diff --git a/src/duckstation-qt/qtutils.cpp b/src/duckstation-qt/qtutils.cpp.new
+index 74df8b8..b5f16c3 100644
+--- a/src/duckstation-qt/qtutils.cpp
++++ b/src/duckstation-qt/qtutils.cpp.new
+@@ -26,12 +26,13 @@
+ #include <QtWidgets/QStyle>
+ #include <QtWidgets/QTableView>
+ #include <QtWidgets/QTreeView>
++#include <QtGui/QWindow>
+ #include <algorithm>
+ #include <array>
+ #include <map>
+ 
+-#if !defined(_WIN32) && !defined(APPLE)
+-#include <qpa/qplatformnativeinterface.h>
++#ifdef ENABLE_WAYLAND
++#include <QtWaylandClient/QWaylandWindow>
+ #endif
+ 
+ #ifdef _WIN32
+@@ -321,20 +322,32 @@ std::optional<WindowInfo> GetWindowInfoForWidget(QWidget* widget)
+   wi.type = WindowInfo::Type::MacOS;
+   wi.window_handle = reinterpret_cast<void*>(widget->winId());
+ #else
+-  QPlatformNativeInterface* pni = QGuiApplication::platformNativeInterface();
+   const QString platform_name = QGuiApplication::platformName();
++
+   if (platform_name == QStringLiteral("xcb"))
+   {
+     wi.type = WindowInfo::Type::X11;
+-    wi.display_connection = pni->nativeResourceForWindow("display", widget->windowHandle());
+     wi.window_handle = reinterpret_cast<void*>(widget->winId());
++    
++    auto* x11Native = qApp->nativeInterface<QNativeInterface::QX11Application>();
++    wi.display_connection = x11Native ? x11Native->display() : nullptr;
+   }
++#ifdef ENABLE_WAYLAND
+   else if (platform_name == QStringLiteral("wayland"))
+   {
+     wi.type = WindowInfo::Type::Wayland;
+-    wi.display_connection = pni->nativeResourceForWindow("display", widget->windowHandle());
+-    wi.window_handle = pni->nativeResourceForWindow("surface", widget->windowHandle());
++
++    auto* waylandApp = qApp->nativeInterface<QNativeInterface::QWaylandApplication>();
++    wi.display_connection = waylandApp ? waylandApp->display() : nullptr;
++
++    if (QWindow* window = widget->windowHandle()) {
++        auto* waylandWindow = window->nativeInterface<QNativeInterface::QWaylandWindow>();
++        wi.window_handle = waylandWindow ? waylandWindow->surface() : nullptr;
++    } else {
++        wi.window_handle = nullptr;
++    }
+   }
++#endif
+   else
+   {
+     qCritical() << "Unknown PNI platform " << platform_name;

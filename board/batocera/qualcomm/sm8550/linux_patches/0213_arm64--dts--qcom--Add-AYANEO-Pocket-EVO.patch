@@ -3,7 +3,7 @@ new file mode 100644
 index 000000000..a1964367a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayaneo-pocketevo.dts
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,99 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -19,6 +19,7 @@ index 000000000..a1964367a
 +	qcom,board-id = <0x1000b 0x01>;
 +	qcom,msm-id = <0x258 0x20000>, <0x259 0x20000>;
 +	compatible = "ayaneo,pocketevo", "qcom,qcs8550", "qcom,sm8550";
++	rocknix-u-boot-dt-id = "u-boot-pocket-evo";
 +};
 +
 +&tlmm {

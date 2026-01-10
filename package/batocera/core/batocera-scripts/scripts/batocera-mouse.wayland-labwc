@@ -1,15 +1,16 @@
 #!/bin/sh
 
-# key combination is the same
 case "${1}" in
     "show")
-	wtype -M alt -M logo h -m alt -m logo
+        # Press Alt+Win+s to trigger 'ShowCursor'
+        wtype -M alt -M logo -k s -m logo -m alt
     ;;
     "hide")
-	wtype -M alt -M logo h -m alt -m logo
+        # Press Alt+Win+h to trigger 'HideCursor'
+        wtype -M alt -M logo -k h -m logo -m alt
     ;;
     *)
-	echo "${0} <show|hide>" >&2
-	exit 1
+        echo "Usage: ${0} <show|hide>" >&2
+        exit 1
 esac
 exit 0

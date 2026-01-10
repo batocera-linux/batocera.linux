@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RPCS3_VERSION = v0.0.38
+RPCS3_VERSION = v0.0.39
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
@@ -13,7 +13,8 @@ RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
 
 RPCS3_DEPENDENCIES += alsa-lib faudio ffmpeg flatbuffers host-clang libcurl libevdev
 RPCS3_DEPENDENCIES += libglew libglu libpng libusb libxml2 llvm mesa3d ncurses openal
-RPCS3_DEPENDENCIES += opencv4 qt6base qt6declarative qt6multimedia qt6svg rtmpdump wolfssl
+RPCS3_DEPENDENCIES += opencv4 qt6base qt6declarative qt6multimedia qt6svg rtmpdump
+RPCS3_DEPENDENCIES += sdl3 wolfssl
 
 RPCS3_CMAKE_BACKEND = ninja
 # Use clang for performance
@@ -32,22 +33,14 @@ RPCS3_CONF_OPTS += -DUSE_SYSTEM_CURL=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_LIBUSB=ON
 RPCS3_CONF_OPTS += -DUSE_LIBEVDEV=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_OPENCV=ON
+RPCS3_CONF_OPTS += -DUSE_SDL=ON
+RPCS3_CONF_OPTS += -DUSE_SYSTEM_SDL=ON
+RPCS3_CONF_OPTS += -DUSE_FAUDIO=ON
 RPCS3_CONF_OPTS += -DUSE_DISCORD_RPC=OFF
 RPCS3_CONF_OPTS += -DOpenGL_GL_PREFERENCE=LEGACY
 RPCS3_CONF_OPTS += -DLLVM_DIR=$(STAGING_DIR)/usr/lib/cmake/llvm/
 RPCS3_CONF_OPTS += -DSTATIC_LINK_LLVM=ON
 RPCS3_CONF_OPTS += -DUSE_LTO=OFF
-
-ifeq ($(BR2_PACKAGE_SDL3),y)
-    RPCS3_DEPENDENCIES += sdl3
-    RPCS3_CONF_OPTS += -DUSE_SDL=ON
-    RPCS3_CONF_OPTS += -DUSE_SYSTEM_SDL=ON
-    RPCS3_CONF_OPTS += -DUSE_FAUDIO=OFF
-else
-    RPCS3_CONF_OPTS += -DUSE_SDL=OFF
-    RPCS3_CONF_OPTS += -DBUILD_SDL3=OFF
-    RPCS3_CONF_OPTS += -DUSE_FAUDIO=ON
-endif
 
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
     RPCS3_DEPENDENCIES += vulkan-headers vulkan-loader

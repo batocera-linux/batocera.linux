@@ -8,6 +8,10 @@ else
 fi
 ###
 
+if test -z "${DISPLAY}"; then
+    export DISPLAY=$(getLocalXDisplay)
+fi
+
 getCpu() {
     test -e "${1}/cpufreq/scaling_max_freq" || return 0
 
@@ -157,10 +161,6 @@ fi
 OUTPUTS=$(batocera-resolution listOutputs)
 set -- ${OUTPUTS}
 NUM_OUTPUTS=$#
-
-if test -z "${DISPLAY}"; then
-    export DISPLAY=$(getLocalXDisplay)
-fi
 
 if [ "${NUM_OUTPUTS}" -le 1 ]; then
     echo "Display Output: ${OUTPUTS}"

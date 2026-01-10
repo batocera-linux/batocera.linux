@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SPLASH_VERSION = 5.7
+BATOCERA_SPLASH_VERSION = 5.8
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE)
@@ -79,6 +79,8 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" \
         "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480p.png" \
+        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-4x3.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO

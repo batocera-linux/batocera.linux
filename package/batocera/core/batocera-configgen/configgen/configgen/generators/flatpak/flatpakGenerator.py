@@ -24,7 +24,11 @@ class FlatpakGenerator(Generator):
 
         # the directory monitor must exist and all the dirs must be owned by batocera
         commandArray = ["/usr/bin/flatpak", "run", "-v", romId]
-        return Command.Command(array=commandArray)
+
+        # needed for SteamLink and other few flatpak apps with the same issue
+        env = {"SDL_JOYSTICK_HIDAPI_XBOX": "0"}
+
+        return Command.Command(array=commandArray, env=env)
 
     def getMouseMode(self, config, rom):
         return True

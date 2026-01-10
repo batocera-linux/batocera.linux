@@ -374,6 +374,12 @@ while [ -e "${REBOOT_FLAG}" ]; do
             batocera-backglass enable ${BGOFFSETX} ${BGOFFSETY} ${BGSIZE} "${THEME}"
         fi
     fi
+
+    ## batocera-control-center (hidden at boot)
+    if which batocera-controlcenter; then
+	batocera-controlcenter hidden &
+    fi
+
     ###################
 
     echo "Standalone: --- Launching EmulationStation ---" >> "$log"

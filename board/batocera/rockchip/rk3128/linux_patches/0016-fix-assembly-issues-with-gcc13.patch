@@ -7,7 +7,7 @@ index d7232706a0..d4d1c8887c 100644
  	.align
  
 -	.section ".proc.info.init", #alloc
-+	.section ".proc.info.init",
++	.section ".proc.info.init", "a"
  
  	/*
  	 * Standard v7 proc info content
@@ -20,7 +20,7 @@ index 161f9b2cb2..2bb0a88425 100644
  		.endm
  
 -		.section ".start", #alloc, #execinstr
-+		.section ".start",
++		.section ".start", "ax"
  /*
   * sort out different calling conventions
   */
@@ -30,7 +30,7 @@ index 3d9a575618..311996c7fa 100644
 +++ b/arch/arm/boot/compressed/piggy.lz4.S
 @@ -1,4 +1,4 @@
 -	.section .piggydata,#alloc
-+	.section .piggydata,
++	.section .piggydata, "a"
  	.globl	input_data
  input_data:
  	.incbin	"arch/arm/boot/compressed/piggy.lz4"

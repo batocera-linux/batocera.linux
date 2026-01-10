@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA_OPEN_DRIVER_VERSION = 580.105.08
+NVIDIA_OPEN_DRIVER_VERSION = 590.48.01
 NVIDIA_OPEN_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA_OPEN_DRIVER_SITE = \
     http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA_OPEN_DRIVER_SUFFIX)/$(NVIDIA_OPEN_DRIVER_VERSION)
@@ -25,8 +25,7 @@ ifeq ($(BR2_PACKAGE_NVIDIA_OPEN_DRIVER_XORG),y)
 # way to do so is to make nvidia-driver depend on them.
 #batocera enable nvidia-driver and mesa3d to coexist in the same fs
 NVIDIA_OPEN_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd \
-    nvidia340-legacy-driver nvidia390-legacy-driver nvidia470-legacy-driver \
-	nvidia-proprietary-driver # add proprietary driver
+    nvidia470-legacy-driver nvidia580-legacy-driver
 
 # NVIDIA_OPEN_DRIVER_PROVIDES = libgl libegl libgles
 
@@ -53,7 +52,7 @@ NVIDIA_OPEN_DRIVER_LIBS_MISC = \
 	libnvidia-api.so.1 \
 	libnvidia-cfg.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
-	libnvidia-egl-gbm.so.1.1.2 \
+	libnvidia-egl-gbm.so.1.1.3 \
 	libnvidia-egl-wayland.so.1.1.20 \
 	libnvidia-glcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_OPEN_DRIVER_VERSION) \

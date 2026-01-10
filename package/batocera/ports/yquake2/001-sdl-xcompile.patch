@@ -1,0 +1,35 @@
+diff --git a/Makefile b/Makefile
+index 1703dc01..0e0d92f7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -284,10 +284,9 @@ endif
+ 
+ # Extra CFLAGS for SDL.
+ ifeq ($(WITH_SDL3),yes)
+-SDLCFLAGS := $(shell pkgconf --cflags sdl3)
+-SDLCFLAGS += -DUSE_SDL3
++SDLCFLAGS := -DUSE_SDL3
+ else
+-SDLCFLAGS := $(shell sdl2-config --cflags)
++SDLCFLAGS := 
+ endif
+ 
+ ifdef NO_SDL_GYRO
+@@ -374,17 +373,9 @@ endif
+ 
+ # Extra LDFLAGS for SDL
+ ifeq ($(WITH_SDL3),yes)
+-ifeq ($(YQ2_OSTYPE), Darwin)
+ SDLLDFLAGS := -lSDL3
+ else
+-SDLLDFLAGS := $(shell pkgconf --libs sdl3)
+-endif
+-else
+-ifeq ($(YQ2_OSTYPE), Darwin)
+ SDLLDFLAGS := -lSDL2
+-else
+-SDLLDFLAGS := $(shell sdl2-config --libs)
+-endif
+ endif
+ 
+ # The renderer libs don't need libSDL2main, libmingw32 or -mwindows.

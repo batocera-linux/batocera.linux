@@ -1,0 +1,129 @@
+diff --git a/src/client/input/sdl2.c b/src/client/input/sdl2.c
+index 527e3f5c..831b418a 100644
+--- a/src/client/input/sdl2.c
++++ b/src/client/input/sdl2.c
+@@ -2519,7 +2519,7 @@ static void
+ IN_Controller_Init(qboolean notify_user)
+ {
+ 	cvar_t *cvar;
+-	int nummappings;
++	int nummappings, numjoysticks, joy_num, i;
+ 	char controllerdb[MAX_OSPATH] = {0};
+ 	SDL_Joystick *joystick = NULL;
+ 	SDL_bool is_controller = SDL_FALSE;
+@@ -2541,7 +2541,8 @@ IN_Controller_Init(qboolean notify_user)
+ 	}
+ 
+ 	cvar = Cvar_Get("in_initjoy", "1", CVAR_NOSET);
+-	if (!cvar->value)
++	joy_num = (int)cvar->value;
++	if (joy_num < 1)
+ 	{
+ 		return;
+ 	}
+@@ -2571,9 +2572,10 @@ IN_Controller_Init(qboolean notify_user)
+ 		}
+ 	}
+ 
+-	Com_Printf ("%i joysticks were found.\n", SDL_NumJoysticks());
++	numjoysticks = SDL_NumJoysticks();
++	Com_Printf ("%i joysticks were found.\n", numjoysticks);
+ 
+-	if (!SDL_NumJoysticks())
++	if (numjoysticks == 0)
+ 	{
+ 		joystick_haptic = SDL_HapticOpenFromMouse();
+ 
+@@ -2602,7 +2604,10 @@ IN_Controller_Init(qboolean notify_user)
+ 			Com_Printf ("%d mappings loaded from gamecontrollerdb.txt\n", nummappings);
+ 	}
+ 
+-	for (int i = 0; i < SDL_NumJoysticks(); i++)
++	if (joy_num > numjoysticks) joy_num = 1;
++	joy_num--;
++	i = joy_num;
++	do
+ 	{
+ 		const char* joystick_name;
+ 		size_t name_len;
+@@ -2769,7 +2774,14 @@ IN_Controller_Init(qboolean notify_user)
+ 			break;
+ #endif
+ 		}
++
++		i++;
++		if (i == numjoysticks)
++		{
++			i = 0;
++		}
+ 	}
++	while (i != joy_num);
+ 
+ 	IN_GamepadLabels_Changed();
+ 	IN_GamepadConfirm_Changed();
+diff --git a/src/client/input/sdl3.c b/src/client/input/sdl3.c
+index 5817e88e..5ccb0db2 100644
+--- a/src/client/input/sdl3.c
++++ b/src/client/input/sdl3.c
+@@ -2500,7 +2500,7 @@ static void
+ IN_Controller_Init(qboolean notify_user)
+ {
+ 	cvar_t *cvar;
+-	int nummappings;
++	int nummappings, numjoysticks, joy_num, i;
+ 	char controllerdb[MAX_OSPATH] = {0};
+ 	SDL_Joystick *joystick = NULL;
+ 	bool is_controller = false;
+@@ -2522,7 +2522,8 @@ IN_Controller_Init(qboolean notify_user)
+ 	}
+ 
+ 	cvar = Cvar_Get("in_initjoy", "1", CVAR_NOSET);
+-	if (!cvar->value)
++	joy_num = (int)cvar->value;
++	if (joy_num < 1)
+ 	{
+ 		return;
+ 	}
+@@ -2541,7 +2542,6 @@ IN_Controller_Init(qboolean notify_user)
+ 		}
+ 	}
+ 
+-	int numjoysticks;
+ 	const SDL_JoystickID *joysticks = SDL_GetJoysticks(&numjoysticks);
+ 
+ 	if (joysticks != NULL)
+@@ -2549,7 +2549,6 @@ IN_Controller_Init(qboolean notify_user)
+ 		Com_Printf ("%i joysticks were found.\n", numjoysticks);
+ 	}
+ 
+-
+ 	if (numjoysticks == 0)
+ 	{
+ 		joystick_haptic = SDL_OpenHapticFromMouse();
+@@ -2581,7 +2580,10 @@ IN_Controller_Init(qboolean notify_user)
+ 			Com_Printf ("%d mappings loaded from gamecontrollerdb.txt\n", nummappings);
+ 	}
+ 
+-	for (int i = 0; i < numjoysticks; i++)
++	if (joy_num > numjoysticks) joy_num = 1;
++	joy_num--;
++	i = joy_num;
++	do
+ 	{
+ 		joystick = SDL_OpenJoystick(joysticks[i]);
+ 		if (!joystick)
+@@ -2738,7 +2740,14 @@ IN_Controller_Init(qboolean notify_user)
+ 			break;
+ #endif
+ 		}
++
++		i++;
++		if (i == numjoysticks)
++		{
++			i = 0;
++		}
+ 	}
++	while (i != joy_num);
+ 
+ 	SDL_free((void *)joysticks);
+ 	IN_GamepadLabels_Changed();

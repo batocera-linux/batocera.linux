@@ -11,16 +11,22 @@
 - WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones.
   `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
   We recommend following the procedure described in our wiki to back up Windows savegames.
+- We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & bluetooth.
+- Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
+  These version continue to have problems with later kernel versions and are not longer sustainable.
+  Only the legacy 470.xx, 580.xx and current 590.xx drivers will be supported in v43.
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
 - AYN Thor initial support
+- FriendlyElec CM3588 NAS support
 - Legion Go S Controller & LED updates
 - New steering wheel support:
   - Logitech Formula Vibration Feedback
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
+- Raxda Zero 3W initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
@@ -32,61 +38,93 @@
   - New sorting option: hardware type, then release year
   - Control brightness on multiple screens (Ayn Thor)
   - Wifi country selector
+  - Ability to add a "sort name" that take precedence over the (scraped) game name in metadata
 - Batocera Control Center (on-screen interface for global configuration and control, [hotkey][east] by default)
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
+- Yamagi Quake II added which support more systems, especially lower-end hardware
+- Light gun support to the new Libretro Dolphin core
+- Casio Loopy as a separate system
+- Enterprise 64/128 (via CLK emulator)
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
 - Wifi country not being applied at boot
+- Light gun accuracy in MAME
+- Crosshairs for light guns in PCSX2
+- Massive MAME log (switchres verbose disabled by default)
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
+- Moonlight has transitioned from Moonlight Embedded to Moonlight QT for the majority of boards to allow for more hardware acceleration.
+  Hardware acceleration depends on supported codecs for devices in FFmpeg.
+- You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 ### Updated
-- Azahar Plus to AZAHAR_PLUS_2123_3_A
-- Dolphin-Emu to 2509-188
+- Azahar to 2123.3
+- BigPEmu to v121
+- CLK to 2025-12-19
+- Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
-- Groovy MAME to 0.281
+- Groovy MAME to 0.284
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
 - Jazz2 to 3.4.0
-- Libretro MAME to 0.281
-- Libretro Play! to 0.71
+- Libretro Dolphin to 24th of December 2025 build
+- Libretro MAME to 0.284
+- Libretro Play! to 0.72
 - Libretro Opera to 17th of October 2024 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
+- OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
-- Play! to 0.71
-- RPCS3 to v0.0.38
-- ShadPS4 Plus to SHAD_PS4_PLUS_0_11_0
+- Play! to 0.72
+- PCSX2 to v2.6.0
+- RClone to v1.72.1
+- RetroArch to 1.22.2
+- RPCS3 to v0.0.39
+- ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
 - Sonic 2013 to 1.3.3
 - Sonic CD to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
-- Taradino to 20250816
-- TheXTech to v1.3.7.1-2
+- Syncthing to 2.0.12
+- Taradino to 20251222
+- TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
-- VkQuake to 19th of November 2025 build 
+- Vice to 3.10
+- VkQuake to 19th of November 2025 build
 - Xash3D FWGS engine to Oct 17 build
-- Xemu to v0.8.115
+- Xenia-Canary to build f85f4c3
+- Xemu to v0.8.129
 - Ymir to 0.2.0
 ### System
 - Bluez to 5.84
 - DXVK to 2.7.1
+- Flac to 1.5.0
+- Go language compiler to 1.25.5
 - GStreamer codecs to 1.26.6
-- Linux Firmware to 20251021
-- Linux Kernel to 6.17.7
-- LabWC to 0.9.2
+- Linux Firmware to 20251125
+- Linux Kernel to 6.18.3
+- LabWC to 0.9.3
 - LLVM Project to 20.1.8
-- Mesa3D to 25.3.0
-- Nvidia production drivers to 580.105.08
+- Mesa3D to 25.3.3
+- MPV to v0.41.0
+- Nvidia 580.xx legacy drivers to 580.119.02
+- Nvidia production drivers to 590.48.01
+- QT to 6.9.2
+- Raspberry Pi kernel and associated firmware / utils to 6.12.62
+- SDL3 to 3.3.6
+- Sound Open Firmware to 2025.12
 - Sway to 1.11
+- VKD3D Proton to 3.0a
 - Vulkan stack to 1.4.328.1
 - Wayland to 1.24.0
 - Wayland Protocols to 1.45
-- Wine-TKG to 10.16
-- Wine Proton to 10.0-2
+- WF-Recorder to v0.6.0
+- Wine Mono to 10.4.0
+- Wine-TKG to 10.20
+- Wine Proton to 10.0-3
 - WLRoots to 0.19.2
 - XWayland to 24.1.9
 

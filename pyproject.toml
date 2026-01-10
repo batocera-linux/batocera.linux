@@ -1,3 +1,28 @@
+[dependency-groups]
+deps = [
+    'pip>=25.1',
+
+    # These versions need to be kept in sync with the versions
+    # built by buildroot
+    'typing-extensions==4.15.0',
+    'PyYAML==6.0.2',
+    'ruamel.yaml==0.18.6',
+    'toml==0.10.2',
+    'pillow==11.0.0',
+    'configobj==5.0.8',
+    'requests==2.32.3',
+    'qrcode==8.0',
+    'ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6',
+]
+lint = [
+    'ruff==0.14.9',
+    'pyright[nodejs]==1.1.407',
+]
+dev = [
+    { include-group = 'deps' },
+    { include-group = 'lint' },
+]
+
 [tool.pyright]
 exclude = [".venv*", "buildroot*", "output", "dl"]
 stubPath = "python-stubs"
@@ -11,21 +36,35 @@ strictSetInference = true
 reportMissingModuleSource = "none"
 reportDeprecated = "warning"
 
+reportUnnecessaryTypeIgnoreComment = "warning"
+typeCheckingMode = "strict"
+reportPrivateUsage = "none"
+reportUnusedImport = "none"
+reportUnusedVariable = "none"
+reportImportCycles = "none"
+enableExperimentalFeatures = true
+deprecateTypingAliases = true
+
+enableTypeIgnoreComments = false  # Force pyright: ignore comments
+
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]
 line-length = 120
 target-version = "py312"
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.ruff.lint]
 preview = true
 explicit-preview-rules = true
 select = [
-    "TCH", "PYI", "I", "UP", "F", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
+    "TC", "PYI", "I", "UP", "F", "FA", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
 ]
 ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["configgen"]
+known-first-party = ["configgen", "batocera_es_system_shared"]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]

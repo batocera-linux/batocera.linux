@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ACTION=$1; DEVNAME=$2; DEVTYPE=$3
+DELAY_DIR="/var/run/storage-manager.delay"
+READY_FLAG="/var/run/batocera.share.mounted"
+
+if [ "$ACTION" == "add" ]; then
+    CMD="detect"
+else
+    CMD="remove"
+fi
+
+# If system is already booted, run immediately
+if [ -f "$READY_FLAG" ]; then
+    /usr/bin/batocera-storage-manager "$CMD" "$DEVNAME" "$DEVTYPE" &
+    exit 0
+fi
+
+# If booting, queue detect events
+if [ "$CMD" == "detect" ]; then
+    mkdir -p "$DELAY_DIR"
+    TIMESTAMP=$(date +%s%N)
+    echo "$DEVNAME:$DEVTYPE" > "$DELAY_DIR/${TIMESTAMP}.${DEVNAME}.add"
+fi
+
+# Clean up queue if drive is removed before boot finishes
+if [ "$CMD" == "remove" ]; then
+    rm -f "$DELAY_DIR"/*."$DEVNAME".add
+    /usr/bin/batocera-storage-manager remove "$DEVNAME" "$DEVTYPE" &
+fi
+

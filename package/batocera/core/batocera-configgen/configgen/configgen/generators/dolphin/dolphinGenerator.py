@@ -95,7 +95,9 @@ class DolphinGenerator(Generator):
 
         # fixes exit and gui display
         dolphinSettings.remove_option("Display", "RenderToMain")
-        dolphinSettings.remove_option("Display", "Fullscreen")
+        
+        # start fullscreen
+        dolphinSettings.set("Display", "Fullscreen", "True")
 
         # Enable Cheats
         dolphinSettings.set("Core", "EnableCheats", str(system.config.get_bool("enable_cheats")))

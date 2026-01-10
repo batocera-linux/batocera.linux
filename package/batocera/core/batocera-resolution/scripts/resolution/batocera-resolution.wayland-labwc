@@ -22,6 +22,7 @@ f_usage() {
     echo "${0} getRotation" >&2
     echo "${0} getDisplayMode" >&2
     echo "${0} getDisplayComp" >&2
+    echo "${0} refreshRate" >&2
 }
 
 _reconfigure_labwc() {
@@ -485,7 +486,7 @@ case "${ACTION}" in
             # Set the main azahar window to the primary output
             if [ -n "${PRIMARY_OUT}" ]; then
                 _log "Setting main azahar window to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                     n
                     s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
                 } }' "${RC_XML}"
@@ -734,26 +735,8 @@ case "${ACTION}" in
 
             # Update the main <touch> tag with the correct deviceName and mapToOutput.
             sed -i \
-                "/<touch / s/deviceName=\"[^\"]*\"/deviceName=\"${TOUCHSCREEN}\"/; s/mapToOutput=\"[^\"]*\"/mapToOutput=\"${PSCREEN}\"/" \
+                "/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PSCREEN}\"|" \
                 "${CONFIG_FILE}"
-
-            # Update the <device> tag within the <libinput> block with the correct name.
-            sed -i \
-                "/<libinput>/,/<\/libinput>/ { /<device / s/name=\"[^\"]*\"/name=\"${TOUCHSCREEN}\"/; }" \
-                "${CONFIG_FILE}"
-
-            # Ensure the calibrationMatrix tag is present but empty.
-            SEARCH_BLOCK="/<device name=\"${TOUCHSCREEN}\"/, /<\/device>/"
-            # Read the current content of the tag.
-            CURRENT_MATRIX=$(sed -n "${SEARCH_BLOCK} s/.*<calibrationMatrix>\(.*\)<\/calibrationMatrix>.*/\1/p" "$CONFIG_FILE")
-            
-            # If the matrix is NOT empty, then make it empty.
-            if [ -n "$CURRENT_MATRIX" ]; then
-                _log "Setting calibration matrix to empty to allow compositor to manage touch rotation."
-                sed -i "${SEARCH_BLOCK} s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix></calibrationMatrix>|" "$CONFIG_FILE"
-            else
-                _log "Touchscreen '${TOUCHSCREEN}' config is correct (matrix is empty)."
-            fi
         else
             _log "No touchscreen found; skipped touchscreen configuration."
         fi
@@ -768,7 +751,29 @@ case "${ACTION}" in
         fi
         _get_current_transform "${PSCREEN}"
         ;;
+    
+    "refreshRate")
+        if [ -z "${PSCREEN}" ]; then
+            _log "refreshRate: PSCREEN is empty."
+            exit 1
+        fi
         
+        CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
+        
+        if [ -n "${CURRENT_MODE_STR}" ]; then
+            REFRESH_RATE=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
+            if [ -n "${REFRESH_RATE}" ]; then
+                echo "${REFRESH_RATE}"
+            else
+                _log "refreshRate: Could not parse refresh rate from '${CURRENT_MODE_STR}'"
+                exit 1
+            fi
+        else
+            _log "refreshRate: Could not determine current mode."
+            exit 1
+        fi
+        ;;
+
     "supportSystemRotation")
         exit 0
         ;;

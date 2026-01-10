@@ -1,0 +1,128 @@
+--- a/Source/Core/DolphinLibretro/Common/Options.cpp
++++ b/Source/Core/DolphinLibretro/Common/Options.cpp
+@@ -1017,6 +1017,7 @@ static struct retro_core_option_v2_definition option_defs[] = {
+       { "0", "Right Stick controls pointer (relative)" },
+       { "1", "Right Stick controls pointer (absolute)" },
+       { "2", "Mouse controls pointer" },
++      { "3", "Light Gun" },
+       { nullptr, nullptr }
+     },
+     "1"
+@@ -1043,6 +1044,7 @@ static struct retro_core_option_v2_definition option_defs[] = {
+       // Small positives
+       { "1", nullptr }, { "2", nullptr }, { "3", nullptr }, { "4", nullptr }, { "5", nullptr },
+       { "6", nullptr }, { "7", nullptr }, { "8", nullptr }, { "9", nullptr },
++      { "8.7", nullptr }, { "14.5", nullptr }, { "14.6", nullptr }, { "14.7", nullptr }, { "14.8", nullptr }, { "14.9", nullptr }, { "15.15", nullptr }, { "15.2", nullptr }, { "15.3", nullptr },
+       { nullptr, nullptr }
+     },
+     "0"
+@@ -1067,6 +1069,7 @@ static struct retro_core_option_v2_definition option_defs[] = {
+       { "0", nullptr }, { "1", nullptr }, { "2", nullptr }, { "3", nullptr }, { "4", nullptr },
+       { "5", nullptr }, { "6", nullptr }, { "7", nullptr }, { "8", nullptr }, { "9", nullptr },
+       { "10", nullptr }, { "11", nullptr }, { "12", nullptr }, { "13", nullptr }, { "14", nullptr },
++      { "12.35", nullptr }, { "12.5", nullptr }, { "15.3", nullptr }, { "16.9", nullptr }, { "18.3", nullptr }, { "18.5", nullptr }, { "18.6", nullptr }, { "18.7", nullptr }, { "18.75", nullptr }, { "18.8", nullptr }, { "18.9", nullptr }, { "19.1", nullptr }, { "20.6", nullptr }, { "24.7", nullptr }, { "30.7", nullptr }, { "41.3", nullptr },
+       { nullptr, nullptr }
+     },
+     "15"
+@@ -1092,6 +1095,7 @@ static struct retro_core_option_v2_definition option_defs[] = {
+       { "0", nullptr }, { "1", nullptr }, { "2", nullptr }, { "3", nullptr }, { "4", nullptr },
+       { "5", nullptr }, { "6", nullptr }, { "7", nullptr }, { "8", nullptr }, { "9", nullptr },
+       { "10", nullptr }, { "11", nullptr }, { "12", nullptr }, { "13", nullptr }, { "14", nullptr },
++      { "11.7", nullptr }, { "12.3", nullptr }, { "12.6", nullptr }, { "15.75", nullptr }, { "18.4", nullptr }, { "18.69", nullptr }, { "18.75", nullptr }, { "18.8", nullptr }, { "18.9", nullptr }, { "19.15", nullptr }, { "19.3", nullptr }, { "19.4", nullptr }, { "31.6", nullptr },
+       { nullptr, nullptr }
+     },
+     "15"
+--- a/Source/Core/DolphinLibretro/Input.cpp
++++ b/Source/Core/DolphinLibretro/Input.cpp
+@@ -758,9 +758,9 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+ #endif
+ 
+     const int irMode = Libretro::Options::GetCached<int>(Libretro::Options::wiimote::IR_MODE);
+-    const int irCenter = Libretro::Options::GetCached<int>(Libretro::Options::wiimote::IR_OFFSET);
+-    const int irWidth = Libretro::Options::GetCached<int>(Libretro::Options::wiimote::IR_YAW);
+-    const int irHeight = Libretro::Options::GetCached<int>(Libretro::Options::wiimote::IR_PITCH);
++    const double irCenter = Libretro::Options::GetCached<double>(Libretro::Options::wiimote::IR_OFFSET);
++    const double irWidth = Libretro::Options::GetCached<double>(Libretro::Options::wiimote::IR_YAW);
++    const double irHeight = Libretro::Options::GetCached<double>(Libretro::Options::wiimote::IR_PITCH);
+ 
+     static_cast<ControllerEmu::NumericSetting<double>*>(wmIR->numeric_settings[1].get())
+       ->SetValue(irCenter); // IR Vertical Offset
+@@ -773,8 +773,16 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+       ncShake->SetControlExpression(1, "L2 | `" + devMouse + ":Middle`");  // Nunchuk shake Y
+       ncShake->SetControlExpression(2, "L2 | `" + devMouse + ":Middle`");  // Nunchuk shake Z
+ 
+-      wmButtons->SetControlExpression(0, "A | `" + devMouse + ":Left`");   // A
+-      wmButtons->SetControlExpression(1, "B | `" + devMouse + ":Right`");  // B
++      if (irMode == 3)
++      {
++        wmButtons->SetControlExpression(0, "A");
++        wmButtons->SetControlExpression(1, "B");
++      }
++      else
++      {
++        wmButtons->SetControlExpression(0, "A | `" + devMouse + ":Left`");   // A
++        wmButtons->SetControlExpression(1, "B | `" + devMouse + ":Right`");  // B
++      }
+       wmButtons->SetControlExpression(2, "Start");                         // 1
+       wmButtons->SetControlExpression(3, "Select");                        // 2
+       wmButtons->SetControlExpression(4, "L");                             // -
+@@ -782,7 +790,14 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+ 
+       if (irMode != 0 && irMode != 1)
+       {
+-        wmTilt->SetControlExpression(0, "`" + devAnalog + ":Y1-`");  // Forward
++        if (irMode == 3)
++        {
++          wmTilt->SetControlExpression(0, "L3");
++        }
++        else
++        {
++          wmTilt->SetControlExpression(0, "`" + devAnalog + ":Y1-`");  // Forward
++        }
+         wmTilt->SetControlExpression(1, "`" + devAnalog + ":Y1+`");  // Backward
+         wmTilt->SetControlExpression(2, "`" + devAnalog + ":X1-`");  // Left
+         wmTilt->SetControlExpression(3, "`" + devAnalog + ":X1+`");  // Right
+@@ -792,8 +807,16 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+     {
+       if (device == RETRO_DEVICE_WIIMOTE)
+       {
+-        wmButtons->SetControlExpression(0, "A | `" + devMouse + ":Left`");   // A
+-        wmButtons->SetControlExpression(1, "B | `" + devMouse + ":Right`");  // B
++        if (irMode == 3)
++        {
++          wmButtons->SetControlExpression(0, "A");
++          wmButtons->SetControlExpression(1, "B");
++        }
++        else
++        {
++          wmButtons->SetControlExpression(0, "A | `" + devMouse + ":Left`");   // A
++          wmButtons->SetControlExpression(1, "B | `" + devMouse + ":Right`");  // B
++        }
+         wmButtons->SetControlExpression(2, "X");                             // 1
+         wmButtons->SetControlExpression(3, "Y");                             // 2
+       }
+@@ -803,7 +826,14 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+         wmButtons->SetControlExpression(2, "B");  // 1
+         wmButtons->SetControlExpression(3, "A");  // 2
+       }
+-      wmTilt->SetControlExpression(0, "`" + devAnalog + ":Y0-`");  // Forward
++      if (irMode == 3)
++      {
++        wmTilt->SetControlExpression(0, "L3");
++      }
++      else
++      {
++        wmTilt->SetControlExpression(0, "`" + devAnalog + ":Y0-`");  // Forward
++      }
+       wmTilt->SetControlExpression(1, "`" + devAnalog + ":Y0+`");  // Backward
+       wmTilt->SetControlExpression(2, "`" + devAnalog + ":X0-`");  // Left
+       wmTilt->SetControlExpression(3, "`" + devAnalog + ":X0+`");  // Right
+@@ -820,7 +850,7 @@ void retro_set_controller_port_device_wii(unsigned port, unsigned device)
+       static_cast<ControllerEmu::NumericSetting<bool>*>(wmIR->numeric_settings[5].get())
+         ->SetValue(true);                                           // Auto hide
+     }
+-    else
++    else  // irMode == 2 || irMode == 3
+     {
+       // Mouse controls IR
+       wmIR->SetControlExpression(0, "`" + devPointer + ":Y0-`");    // Up

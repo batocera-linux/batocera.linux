@@ -125,6 +125,25 @@ if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
         ${TARGET_DIR}/etc/inittab
 fi
 
+# split target dir in 2 cause of the 4GB image size limit
+# in initrd, the 2 targets will be mounted as one
+TARGET2_DIR=${TARGET_DIR}2
+echo "Generating target2 (${TARGET2_DIR})..."
+mkdir -p "${TARGET2_DIR}" || exit 1
+for XDIR in lib/firmware usr/lib/libretro
+do
+    if test -e "${XDIR}"
+    then
+	mkdir -p "${TARGET2_DIR}/${XDIR}" || exit 1
+	rsync -a "${TARGET_DIR}/${XDIR}/" "${TARGET2_DIR}/${XDIR}/" || exit 1
+	rm -rf "${TARGET_DIR}/${XDIR}/" || exit 1
+    fi
+done
+
+# generate the image 2
+echo "Generating ${BINARIES_DIR}/rufomaculata..."
+"${HOST_DIR}/bin/mksquashfs" "${TARGET2_DIR}" "${BINARIES_DIR}/rufomaculata" -noappend -b 128K -comp zstd || exit 1
+
 # With PARALLEL_BUILD it is difficult to control which of two
 # conflicting files from different packages will be the one ending up
 # in the final image.  We take any files written to a special

@@ -1,0 +1,40 @@
+diff --git a/drivers/power/supply/qcom_battmgr.c b/drivers/power/supply/qcom_battmgr.c
+index 3c2837e..532619a 100644
+--- a/drivers/power/supply/qcom_battmgr.c
++++ b/drivers/power/supply/qcom_battmgr.c
+@@ -828,7 +828,7 @@ static const enum power_supply_property sc8280xp_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sc8280xp_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sc8280xp_bat_props,
+ 	.num_properties = ARRAY_SIZE(sc8280xp_bat_props),
+@@ -863,7 +863,7 @@ static const enum power_supply_property x1e80100_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc x1e80100_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = x1e80100_bat_props,
+ 	.num_properties = ARRAY_SIZE(x1e80100_bat_props),
+@@ -897,7 +897,7 @@ static const enum power_supply_property sm8350_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sm8350_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sm8350_bat_props,
+ 	.num_properties = ARRAY_SIZE(sm8350_bat_props),
+@@ -931,7 +931,7 @@ static const enum power_supply_property sm8550_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sm8550_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sm8550_bat_props,
+ 	.num_properties = ARRAY_SIZE(sm8550_bat_props),

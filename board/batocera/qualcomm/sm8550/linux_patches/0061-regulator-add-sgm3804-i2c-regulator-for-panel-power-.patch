@@ -45,7 +45,7 @@ new file mode 100644
 index 000000000000..0002c24e9f2c
 --- /dev/null
 +++ b/drivers/regulator/sgm3804-regulator.c
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,159 @@
 +#include <linux/err.h>
 +#include <linux/i2c.h>
 +#include <linux/module.h>
@@ -70,9 +70,7 @@ index 000000000000..0002c24e9f2c
 +{
 +    struct sgm3804_data *data = rdev_get_drvdata(rdev);
 +    struct regmap *regmap = data->regmap;
-+    int ret;
-+
-+    pr_info("sgm3804_enable: called\n");
++    int ret = 0;
 +
 +    /* Set reset GPIO high to enable the device if available */
 +    if (data->reset_gpio[0]) {
@@ -82,25 +80,14 @@ index 000000000000..0002c24e9f2c
 +        gpiod_set_value_cansleep(data->reset_gpio[1], 1);
 +    }
 +
-+    ret = regmap_write(regmap, 0x00, 0x0c);
++    ret |= regmap_write(regmap, 0x00, 0x0c);
++    ret |= regmap_write(regmap, 0x01, 0x0c);
++    ret |= regmap_write(regmap, 0x03, 0x03);
 +    if (ret) {
-+        pr_err("sgm3804_enable: regmap_write 0x00 failed: %d\n", ret);
++        dev_err(rdev->dev.parent, "Failed to enable SGM3804 regulator\n");
 +        return ret;
 +    }
 +
-+    ret = regmap_write(regmap, 0x01, 0x0c);
-+    if (ret) {
-+        pr_err("sgm3804_enable: regmap_write 0x01 failed: %d\n", ret);
-+        return ret;
-+    }
-+
-+    ret = regmap_write(regmap, 0x03, 0x03);
-+    if (ret) {
-+        pr_err("sgm3804_enable: regmap_write 0x03 failed: %d\n", ret);
-+        return ret;
-+    }
-+
-+    pr_info("sgm3804_enable: success\n");
 +    data->enabled = true;
 +    return 0;
 +}
@@ -109,8 +96,6 @@ index 000000000000..0002c24e9f2c
 +{
 +    struct sgm3804_data *data = rdev_get_drvdata(rdev);
 +
-+    pr_info("sgm3804_disable: called\n");
-+
 +    if (data->reset_gpio[0]) {
 +        gpiod_set_value_cansleep(data->reset_gpio[0], 0);
 +    }
@@ -118,7 +103,6 @@ index 000000000000..0002c24e9f2c
 +        gpiod_set_value_cansleep(data->reset_gpio[1], 0);
 +    }
 +
-+    pr_info("sgm3804_disable: success\n");
 +    data->enabled = false;
 +    return 0;
 +}

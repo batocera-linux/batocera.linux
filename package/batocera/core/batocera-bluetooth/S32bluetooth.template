@@ -70,12 +70,19 @@ case "$1" in
                     sleep 2
                 ;;
                 bcm4345c0)
-                    bt_status=$(cat /proc/device-tree/wireless-bluetooth/status)
-                    wifi_chip=$(cat /proc/device-tree/wireless-wlan/wifi_chip_type)
-                    if [[ "${wifi_chip}" == "ap6256" && "${bt_status}" == "okay" ]]; then
-                        brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
-                            --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 &
+                    if [ ${BOARD} = "radxa-zero-3w" ]; then
+                        # it's actually an aic8800 chipset
+                        rfkill unblock all
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 &
                         sleep 2
+                    else
+                        bt_status=$(cat /proc/device-tree/wireless-bluetooth/status)
+                        wifi_chip=$(cat /proc/device-tree/wireless-wlan/wifi_chip_type)
+                        if [[ "${wifi_chip}" == "ap6256" && "${bt_status}" == "okay" ]]; then
+                            brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
+                                --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 &
+                            sleep 2
+                        fi
                     fi
                 ;;
                 syn43711a0)

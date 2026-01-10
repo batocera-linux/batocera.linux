@@ -3,8 +3,8 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Last commit on Nov 27, 2025
-BATOCERA_CONTROLCENTER_VERSION = 89e73ab7ba07de0cb95fa5aa37bd3e095d2c6700
+# Last commit on Jan 2, 2026
+BATOCERA_CONTROLCENTER_VERSION = bd7f63219b0f1e3d48b64d77f1b48e55b6b449a6
 BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
 BATOCERA_CONTROLCENTER_STE_METHOD = git
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
@@ -14,6 +14,12 @@ BATOCERA_CONTROLCENTER_DEPENDENCIES = python3 python-evdev
 
 BATOCERA_CONTROLCENTER_PATH = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-controlcenter
+
+define BATOCERA_CONTROLCENTER_BUILD_CMDS
+	# update translation files
+	$(HOST_DIR)/bin/python $(BATOCERA_CONTROLCENTER_PATH)/getpot.py $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml $(BATOCERA_CONTROLCENTER_PATH)/locales/controlcenter.pot
+	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh update $(BATOCERA_CONTROLCENTER_PATH)/locales
+endef
 
 define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
@@ -25,12 +31,16 @@ define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	install -m 0755 $(@D)/shell.py          $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/refresh.py        $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/gamepads.py       $(TARGET_DIR)/usr/share/batocera/controlcenter
+	install -m 0755 $(@D)/PdfViewer.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
 	cd $(TARGET_DIR)/usr/bin; ln -sf ../share/batocera/controlcenter/controlcenter.py \
 	    ./batocera-controlcenter-app
 	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/batocera-controlcenter-toogle.sh \
 	    $(TARGET_DIR)/usr/bin/batocera-controlcenter
 	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter
+
+	# install translations
+	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh build $(BATOCERA_CONTROLCENTER_PATH)/locales $(TARGET_DIR)/usr/share/locale
 endef
 
 $(eval $(generic-package))

@@ -146,6 +146,7 @@ PACKAGES_EMULATORS="amiberry
                     bigpemu
                     cemu
                     citron
+                    clk
                     hypseus-singe
                     dolphin-emu
                     dolphin-triforce
@@ -257,7 +258,11 @@ PACKAGES_PORTS="abuse
                 xash3d-fwgs
                 vkquake
                 vkquake2
-                vkquake3"
+                vkquake3
+                yquake2
+                yquake2-xatrix
+                yquake2-rogue
+                yquake2-zaero"
 
 PACKAGES_WINE="dxvk
                dxvk-nvapi
@@ -311,6 +316,7 @@ PACKAGES_CONTROLLERS="aelightgun
 PACKAGES_UTILS="btop
                 mangohud
                 moonlight-embedded
+                moonlight-qt
                 ryzenadj
                 switchres
                 syncthing

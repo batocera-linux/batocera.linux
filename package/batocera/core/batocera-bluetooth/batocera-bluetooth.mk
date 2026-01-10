@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_BLUETOOTH_VERSION = 2.4
+BATOCERA_BLUETOOTH_VERSION = 2.5
 BATOCERA_BLUETOOTH_LICENSE = GPL
 BATOCERA_BLUETOOTH_SOURCE=
 

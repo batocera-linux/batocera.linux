@@ -1957,14 +1957,14 @@ zxspectrum:
     Se você definir um controle junto com o teclado, o controle funcionará bem, exceto pelas ligações para RETURN (ENTER pula linha) e SPACE (Barra de Espaços), e o teclado não registrará as teclas atribuídas aocontrole de cursor ou aos botões L1 e R1 para todos os outros tipos de controle.
 
 moonlight:
-  name:       Moonlight Embedded
+  name:       Moonlight
   manufacturer: Misc. System
   release:
   hardware: system
   extensions: [moonlight]
   emulators:
     moonlight:
-      moonlight: { requireAnyOf: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
+      moonlight: { requireAnyOf: [BR2_PACKAGE_MOONLIGHT_EMBEDDED, BR2_PACKAGE_MOONLIGHT_QT] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:moonlight
   comment_fr: |
@@ -3730,6 +3730,8 @@ quake2:
       vitaquake2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VITAQUAKE2] }
     vkquake2:
       vkquake2: { requireAnyOf: [BR2_PACKAGE_VKQUAKE2], incompatible_extensions: [zip, 7zip] }
+    yquake2:
+      yquake2: { requireAnyOf: [BR2_PACKAGE_YQUAKE2], incompatible_extensions: [zip, 7zip] }
   comment_en: |
     For the standard Quake II copy your 'baseq2' directory and contents here.
     Make sure all data files are lowercase, e.g. "baseq2", not "BASEQ2" and "pak0.pak", not "PAK0.PAK".
@@ -3741,13 +3743,15 @@ quake2:
     Mission Packs
     -------------
 
-    Copy necessary data file to `rogue` ("Ground Zero"), `xatrix` ("The Reckoning"), `zaero` ("Quake II: Zaero") and `smd` ("Slight Mechanical Destruction") directories respectively.
+    Copy the necessary data files to the corresponding directories:
+    `xatrix` for "The Reckoning" (MP1), `rogue` for "Ground Zero" (MP2),
+    `zaero` for "Quake II: Zaero", and `smd` for "Slight Mechanical Destruction".
 
-    The libretro vitaquake2 supported mission pack ROMs are: xatrix, rogue, and zaero.
-    If you have vkQuake2 the additional `smd` ("Slight Mechanical Destruction") pack is supported.
-    vkQuake2 also supports the Capture the Flag mod using the `ctf` directory.
+    All ports can run `xatrix`, `rogue` and `zaero`.
+    vkQuake2 additionally supports `smd`, and also supports the
+    Capture the Flag mod using the `ctf` directory.
 
-    Note: vkQuake2 does not support the zip or 7zip extensions.
+    Note: neither yquake2 nor vkQuake2 support the zip or 7zip extensions.
 
     For more info: https://wiki.batocera.org/systems:quake2
   comment_fr: |
@@ -5990,3 +5994,46 @@ bennugd:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
+
+casloopy:
+  name:       Casio Loopy
+  manufacturer: Casio
+  release: 1995
+  hardware: console
+  extensions: [bin, ic1, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file:
+          bios/mame/casloopy.zip
+  comment_fr: |
+          Nécessite ce fichier de BIOS MAME:
+          bios/mame/casloopy.zip
+  comment_br: |
+          Requer arquivo de BIOS do MAME:
+          bios/mame/casloopy.zip
+
+enterprise:
+  name:       Enterprise
+  manufacturer: Enterprise Computers
+  release: 1985
+  hardware: computer
+  extensions: [bas, com, zip]
+  emulators:
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+  comment_en: |
+          Requires BIOS files:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin

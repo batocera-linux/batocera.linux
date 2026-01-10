@@ -50,7 +50,7 @@ start() {
         echo "Applying window rules for azahar..." >> "$display_log"
         if [ -n "${PRIMARY_OUT}" ]; then
             echo "Setting main azahar window -> ${PRIMARY_OUT}" >> "$display_log"
-            sed -i -e '/<windowRule identifier="azahar" serverDecoration="no"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+            sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                 n
                 s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
             } }' "${RC_XML_PATH}"
@@ -76,18 +76,8 @@ start() {
             
             # Update the main <touch> tag with the correct deviceName and mapToOutput.
             sed -i \
-                "/<touch / s/deviceName=\"[^\"]*\"/deviceName=\"${TOUCHSCREEN}\"/; s/mapToOutput=\"[^\"]*\"/mapToOutput=\"${PRIMARY_OUT}\"/" \
+                "/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PRIMARY_OUT}\"|" \
                 "${RC_XML_PATH}"
-
-            # Update the <device> tag within the <libinput> block with the correct name.
-            sed -i \
-                "/<libinput>/,/<\/libinput>/ { /<device / s/name=\"[^\"]*\"/name=\"${TOUCHSCREEN}\"/; }" \
-                "${RC_XML_PATH}"
-
-            echo "Setting calibration matrix to empty to allow compositor to manage touch rotation." >> "$display_log"
-            # Ensure the calibrationMatrix tag is present but empty. Let the compositor deal with it.
-            sed -i "/<device name=\"${TOUCHSCREEN}\"/, /<\/device>/ s|<calibrationMatrix>.*</calibrationMatrix>|<calibrationMatrix></calibrationMatrix>|" "${RC_XML_PATH}"
-
         else
             if [ -z "${PRIMARY_OUT}" ]; then
                 echo "No primary output set. Skipping touchscreen configuration." >> "$display_log"

@@ -1,10 +1,10 @@
 ################################################################################
 #
-# kodi21 fr_fr language resource
+# kodi21-resource-language-fr_fr
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION = 11.0.93
+KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION = 11.0.100
 KODI21_RESOURCE_LANGUAGE_FR_FR_SOURCE = resource.language.fr_fr-$(KODI21_RESOURCE_LANGUAGE_FR_FR_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_FR_FR_SITE = https://mirrors.kodi.tv/addons/omega/resource.language.fr_fr
 KODI21_RESOURCE_LANGUAGE_FR_FR_PLUGINNAME=resource.language.fr_fr

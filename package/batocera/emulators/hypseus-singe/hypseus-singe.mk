@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HYPSEUS_SINGE_VERSION = v2.11.5
+HYPSEUS_SINGE_VERSION = v2.11.6
 HYPSEUS_SINGE_SITE =  $(call github,DirtBagXon,hypseus-singe,$(HYPSEUS_SINGE_VERSION))
 HYPSEUS_SINGE_LICENSE = GPLv3
 

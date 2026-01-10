@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from ...batoceraPaths import ensure_parents_and_open
 from ...utils.configparser import CaseSensitiveConfigParser
+from ...utils import vulkan
 from .xemuPaths import XEMU_CONFIG
 
 if TYPE_CHECKING:
@@ -44,6 +45,8 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
         iniConfig.add_section("display")
     if not iniConfig.has_section("display.quality"):
         iniConfig.add_section("display.quality")
+    if not iniConfig.has_section("display.vulkan"):
+        iniConfig.add_section("display.vulkan")
     if not iniConfig.has_section("display.window"):
         iniConfig.add_section("display.window")
     if not iniConfig.has_section("display.ui"):
@@ -83,11 +86,34 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     iniConfig.set("audio", "use_dsp", system.config.get("xemu_use_dsp", "false"))
 
     # API
+    renderer = system.config.get("xemu_api", "VULKAN")
+
     if system.name == "chihiro":
-        iniConfig.set("display", "renderer", '"OPENGL"')
+        renderer = "OPENGL"
         _logger.debug("Chihiro system, defaulting to OpenGL due to a Xemu bug")
-    else:
-        iniConfig.set("display", "renderer", f'"{system.config.get("xemu_api", "VULKAN")}"')
+    
+    iniConfig.set("display", "renderer", f'"{renderer}"')
+
+    # Vulkan GPU selection
+    if renderer == "VULKAN" and vulkan.is_available():
+        gpu_name = None
+        if vulkan.has_discrete_gpu():
+            _logger.debug("A discrete GPU is available on the system. We will use that for performance")
+            gpu_name = vulkan.get_discrete_gpu_name()
+            if gpu_name:
+                _logger.debug(f"Using Discrete GPU Name: {gpu_name} for Xemu")
+            else:
+                _logger.debug("Discrete GPU detected but couldn't get name.")
+        
+        if not gpu_name:
+            _logger.debug("Using default GPU for Xemu")
+            gpu_name = vulkan.get_default_gpu_name()
+
+        if gpu_name:
+            iniConfig.set("display.vulkan", "preferred_physical_device", f'"{gpu_name}"')
+        else:
+            # Worst case fallback: empty string triggers Xemu auto-detection
+            iniConfig.set("display.vulkan", "preferred_physical_device", '""')
 
     # Rendering resolution
     iniConfig.set("display.quality", "surface_scale", system.config.get("xemu_render", "1")) # render scale by default

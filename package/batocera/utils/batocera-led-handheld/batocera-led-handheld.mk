@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_LED_HANDHELD_VERSION = 0.4
+BATOCERA_LED_HANDHELD_VERSION = 0.5
 BATOCERA_LED_HANDHELD_LICENSE = LGPL
 BATOCERA_LED_HANDHELD_SOURCE=
 
