@@ -231,6 +231,12 @@ handle_partition_event() {
     local ignore_auto=$3
     local pending_flag=$4
 
+    # Skip LUNs we know are likely system. i.e. Android
+    if [[ -f "/tmp/is_system_disk_$parent" ]]; then
+        log_msg "SKIP: [$devname] Parent $parent is a known system LUN."
+        exit 0
+    fi
+
     local my_lock="/tmp/storage.runtime.part.$devname"
     if ! mkdir "$my_lock" 2>/dev/null; then
         # If we can't get our own lock, another instance of sda1 is already running
@@ -256,8 +262,14 @@ handle_partition_event() {
     android_regex+="rawdump|frp|logfs"                  # Debug & Factory Reset
 
     # Get both the Filesystem Label and the Partition Table Label
-    local label=$(blkid -s LABEL -o value "$part_dev")
-    local part_label=$(blkid -s PARTLABEL -o value "$part_dev")
+    local label=""
+    local part_label=""
+    while IFS== read -r key value; do
+        case "$key" in
+            LABEL) label="$value" ;;
+            PARTLABEL) part_label="$value" ;;
+        esac
+    done < <(blkid -o export "$part_dev")
 
     # Standard Batocera drive check
     if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then 
@@ -266,10 +278,15 @@ handle_partition_event() {
     fi
 
     # Comprehensive Android/Qualcomm check
-    if echo "$label $part_label" | grep -qiE "$android_regex"; then
+    shopt -s nocasematch
+    local combined_test="$label $part_label"
+    
+    if [[ "$combined_test" =~ $android_regex ]]; then
+        shopt -u nocasematch
         log_msg "SKIP: [$devname] Android system partition detected (Label: $label, PartLabel: $part_label)."
         exit 0
     fi
+    shopt -u nocasematch
 
     # Attempt to mount
     mount_partition "$part_dev" "$ignore_auto" "$pending_flag"
@@ -295,13 +312,14 @@ handle_disk_event() {
         log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
         partprobe "/dev/$devname" >/dev/null 2>&1
         # Use a short sleep to let the kernel update /dev
-        sleep 1 
+        sleep 0.2 
     fi
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
     # This prevents prompting for format if we see things like 'abl', 'xbl', 'boot', etc.
     if lsblk -no PARTLABEL "/dev/$devname" | grep -qiE "abl|xbl|boot|modem|vendor|system|persist|tz|hyp"; then
         log_msg "SAFETY: [$devname] Critical bootloader/system partitions detected. Aborting format prompt."
+        touch "/tmp/is_system_disk_$devname"
         exit 0
     fi
 
@@ -351,7 +369,7 @@ handle_disk_event() {
                 break
             fi
         fi
-        sleep 1
+        sleep 0.5
     done
 
     if [ "$raw_sectors" -eq 0 ]; then
