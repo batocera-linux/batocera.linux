@@ -215,9 +215,9 @@ define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 		$(INSTALL) -D -m 0644 $(BATOCERA_DESKTOPAPPS_PKGDIR)/contextactions/$(f) \
 			$(TARGET_DIR)/usr/share/file-manager/actions/$(f)$(sep))
 
-	# context toolbox
+	# toolbox (Install as executable 0755)
 	$(foreach f,$(BATOCERA_DESKTOPAPPS_TOOLBOX),\
-		$(INSTALL) -D -m 0644 $(BATOCERA_DESKTOPAPPS_PKGDIR)/toolbox/$(f) \
+		$(INSTALL) -D -m 0755 $(BATOCERA_DESKTOPAPPS_PKGDIR)/toolbox/$(f) \
 			$(TARGET_DIR)/usr/share/file-manager/actions/toolbox/$(f)$(sep))
 
 	# menu
