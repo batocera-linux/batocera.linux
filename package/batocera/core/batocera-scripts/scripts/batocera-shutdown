@@ -467,13 +467,7 @@ start_other_services() {
 
 # --- Battery and Time Monitoring Functions for Fake Suspend ---
 get_battery_level() {
-    local battery_path
-    for bat in /sys/class/power_supply/BAT*; do
-        if [ -d "${bat}" ]; then
-            battery_path="${bat}"
-            break
-        fi
-    done
+    local battery_path=$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
 
     if [ -n "${battery_path}" ] && [ -f "${battery_path}/capacity" ]; then
         cat "${battery_path}/capacity"
@@ -487,10 +481,33 @@ start_background_monitor() {
     cat > "${monitor_script}" << EOF
 #!/bin/bash
 START_TIME=\$(date +%s)
+
+is_power_connected() {
+    local BATTERY_DIR=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+
+    if [ -z "\${BATTERY_DIR}" ]; then
+        # No battery found (likely a Desktop PC), assume power is connected
+        return 0
+    fi
+
+    local BATTERY_STATUS=\$(cat "\${BATTERY_DIR}/status" 2>/dev/null)
+
+    if [ "\${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 while true; do
     sleep 60 # Check every minute
 
-    # Check elapsed time
+    if is_power_connected; then
+        # Reset timer while plugged in so the 1-hour limit 
+        START_TIME=\$(date +%s)
+        continue
+    fi
+
     CURRENT_TIME=\$(date +%s)
     ELAPSED=\$((CURRENT_TIME - START_TIME))
     if [ \${ELAPSED} -ge 3600 ]; then
@@ -503,8 +520,8 @@ while true; do
 
     # Check battery level
     BATTERY_LEVEL=\$(get_battery_level)
-    if [ \${BATTERY_LEVEL} -le 10 ]; then
-        echo "Low battery detected during fake suspend. Shutting down."
+    if [ -n "\${BATTERY_LEVEL}" ] && [ "\${BATTERY_LEVEL}" -le 10 ]; then
+        echo "Low battery (\${BATTERY_LEVEL}%) detected. Shutting down."
         batocera-wifi enable
         sleep 2
         /sbin/shutdown -h now
