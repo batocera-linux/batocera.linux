@@ -5,7 +5,8 @@
 ################################################################################
 
 LIBRETRO_EP128EMU_VERSION = master
-LIBRETRO_EP128EMU_SITE = $(call github,libretro,ep128emu,$(LIBRETRO_EP128EMU_VERSION))
+LIBRETRO_EP128EMU_SITE = https://github.com/libretro/ep128emu-core.git
+LIBRETRO_EP128EMU_SITE_METHOD = git
 LIBRETRO_EP128EMU_LICENSE = GPLv2
 LIBRETRO_EP128EMU_PLATFORM = $(LIBRETRO_PLATFORM)
 
