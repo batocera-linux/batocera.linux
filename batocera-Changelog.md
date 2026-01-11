@@ -46,6 +46,7 @@
 - Light gun support to the new Libretro Dolphin core
 - Casio Loopy as a separate system
 - Enterprise 64/128 (via CLK emulator)
+- Xroar emulator as an option for the Color Computer (Tandy TRS-80)
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
