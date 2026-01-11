@@ -63,3 +63,6 @@ KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Generic X-Box pad", ATTR{idV
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA R9 Base", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA SRP pedals", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/evsieve-merge-devices --by-names 'MOZA R9 wheels' 'Gudsen MOZA R9 Base' 'Gudsen MOZA SRP pedals'"
 KERNEL=="event*", SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="MOZA R9 wheels", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1" , ENV{ID_INPUT_WHEEL}="1" , ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0"
+
+# MOZA R12 BASE STEERING WHEEL WITH KS WHEEL AND PEDALS SRP
+KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gudsen MOZA R12 Base", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_WHEEL}="1"

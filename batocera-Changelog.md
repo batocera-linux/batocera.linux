@@ -23,6 +23,7 @@
 - Legion Go S Controller & LED updates
 - New steering wheel support:
   - Logitech Formula Vibration Feedback
+  - MOZA R12 V2 (Direct Drive)
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
