@@ -1308,6 +1308,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 
 	# CLK - Oric Atmos and other old computers (requires OpenGL 3.2 or higher)
 	select BR2_PACKAGE_CLK    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_QCS6490 || BR2_PACKAGE_BATOCERA_TARGET_SM8550 || BR2_PACKAGE_BATOCERA_TARGET_SM8250
+	
+	# Color Computer (Tandy TRS-80)
+	select BR2_PACKAGE_XROAR		if BR2_PACKAGE_HAS_LIBGL # Xroar requires OpenGL
 
 	help
 	  Old computers
