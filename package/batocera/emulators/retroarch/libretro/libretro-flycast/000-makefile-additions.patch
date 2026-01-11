@@ -35,6 +35,7 @@ index f1cdda8..fd407b4 100644
 +		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
 +		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
 +	endif()
+ 	target_compile_options(${PROJECT_NAME} PRIVATE -Wno-misleading-indentation)
  	if(APPLE)
  		find_library(FOUNDATION Foundation)
  		target_link_libraries(${PROJECT_NAME} PRIVATE ${FOUNDATION})
