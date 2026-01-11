@@ -1,10 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_EP128EMU
-    bool "libretro-ep128emu"
-	depends on BR2_INSTALL_LIBSTDCPP
-    help
-      A libretro Enterprise 64/128 emulator core.
-
-	  http://www.libretro.com
-
-comment "LIBRETRO_EP128EMU needs a toolchain w/ C++"
-	depends on !BR2_INSTALL_LIBSTDCPP
+	bool "libretro-ep128emu"
+	depends on BR2_PACKAGE_RETROARCH
+	help
+	  Enterprise 128 emulator (ep128emu) libretro core.
