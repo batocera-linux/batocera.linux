@@ -9,13 +9,15 @@ LIBRETRO_EP128EMU_LICENSE = GPLv2
 LIBRETRO_EP128EMU_PLATFORM = $(LIBRETRO_PLATFORM)
 
 define LIBRETRO_EP128EMU_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C \
-	    $(@D)/src/os/libretro -f Makefile platform="$(LIBRETRO_EP128EMU_PLATFORM)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_EP128EMU_VERSION) | cut -c 1-7)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) \
+		CXX="$(TARGET_CXX)" \
+		CC="$(TARGET_CC)" \
+		-C $(@D)/libretro \
+		platform="$(LIBRETRO_EP128EMU_PLATFORM)"
 endef
 
 define LIBRETRO_EP128EMU_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/src/os/libretro/ep128emu_libretro.so \
+	$(INSTALL) -D $(@D)/libretro/ep128emu_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/ep128emu_libretro.so
 endef
 
