@@ -4605,16 +4605,24 @@ libretro:
                 prompt:      COLOR FILTER
                 description: Can be used to simulate colors of particular displays.
                 choices:
+                    "cxa2025as (US)":       cxa2025as
+                    "CXA2025AS (JP)":       cxa2025as_jp
+                    "royaltea":             royaltea
                     "consumer":             consumer
-                    "cxa2025as":            cxa2025as
                     "canonical":            canonical
                     "alternative":          alternative
                     "rgb":                  rgb
                     "pal":                  pal
+                    "Digital Prime FBX":    digital-prime-fbx
+                    "Magnum FBX":           magnum-fbx
+                    "Smooth V2 FBX":        smoothv2-fbx
                     "composite-direct-fbx": composite-direct-fbx
                     "pvm-style-d93-fbx":    pvm-style-d93-fbx
                     "ntsc-hardware-fbx":    ntsc-hardware-fbx
                     "nes-classic-fbx-fs":   nes-classic-fbx-fs
+                    "Restored Wii VC":      restored-wii-vc
+                    "Wii Virtual Console":  wii-vc
+                    "Raw":                  raw
                     "custom":               custom
             nestopia_blargg_ntsc_filter:
                 group: ADVANCED OPTIONS

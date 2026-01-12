@@ -75,6 +75,7 @@
 - Libretro Dolphin to 24th of December 2025 build
 - Libretro Flycast to 2.6
 - Libretro MAME to 0.284
+- Libretro Nestopia to 10th of January 2026 build
 - Libretro Play! to 0.72
 - Libretro Opera to 17th of October 2024 build
 - MelonDS to 1.1
