@@ -139,6 +139,9 @@ do
 	rsync -a "${TARGET_DIR}/${XDIR}/" "${TARGET2_DIR}/${XDIR}/" || exit 1
 	rm -rf "${TARGET_DIR}/${XDIR}/" || exit 1
 	echo "OK."
+    elif test -d "${TARGET2_DIR}/${XDIR}"
+    then
+    echo "Already in target2. Continuing..."
     else
 	echo "${TARGET_DIR}/${XDIR} not found."
 	exit 1
