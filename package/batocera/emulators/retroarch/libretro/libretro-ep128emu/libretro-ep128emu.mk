@@ -15,7 +15,7 @@ define LIBRETRO_EP128EMU_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) \
 		CC="$(TARGET_CC)" \
 		CXX="$(TARGET_CXX)" \
-		-C $(@D)/src/libretro \
+		-C $(@D)/libretro \
 		platform="$(LIBRETRO_EP128EMU_PLATFORM)"
 endef
 
