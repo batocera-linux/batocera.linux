@@ -1,5 +1,6 @@
 config BR2_PACKAGE_ROCKNIX_ABL
 	bool "rocknix-abl"
+	select BR2_PACKAGE_PV
 	help
 	  Custom Android Bootloader (ABL) for various Qualcomm boards.
 	  Installs signed ABL ELF and checksum for bootloader updates.
