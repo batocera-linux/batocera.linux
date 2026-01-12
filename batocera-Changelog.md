@@ -61,7 +61,7 @@
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 ### Updated
-- Azahar to 2123.3
+- Azahar to 2123.4
 - BigPEmu to v121
 - CLK to 2025-12-19
 - Dolphin-Emu to 2512-99
