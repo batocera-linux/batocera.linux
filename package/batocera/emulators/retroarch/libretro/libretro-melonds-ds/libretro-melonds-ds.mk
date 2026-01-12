@@ -8,6 +8,7 @@ LIBRETRO_MELONDS_DS_VERSION = v1.1.5
 LIBRETRO_MELONDS_DS_SITE = $(call github,JesseTG,melonds-ds,$(LIBRETRO_MELONDS_DS_VERSION))
 LIBRETRO_MELONDS_DS_LICENSE = GPLv2
 LIBRETRO_MELONDS_DS_DEPENDENCIES = libpcap retroarch
+LIBRETRO_MELONDS_DS_EMULATOR_INFO = melondsds.libretro.core.yml
 
 LIBRETRO_MELONDS_DS_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -23,3 +24,4 @@ define LIBRETRO_MELONDS_DS_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -22,6 +22,7 @@ TR1X_SITE = $(call github,LostArtefacts,TRX,$(TR1X_VERSION))
 TR1X_LICENSE = GPL-3.0 license
 TR1X_LICENSE_FILES = COPYING.md
 TR1X_SUPPORTS_IN_SOURCE_BUILD = NO
+TR1X_EMULATOR_INFO = tr1x.emulator.yml
 # meson.build in src/tr1 subfolder
 TR1X_SUBDIR = src/tr1
 
@@ -37,3 +38,4 @@ define TR1X_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(meson-package))
+$(eval $(emulator-info-package))

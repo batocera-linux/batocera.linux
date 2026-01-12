@@ -1,0 +1,73 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+custom_features:
+  moonlight_codec:
+    group: ADVANCED OPTIONS
+    prompt: VIDEO STREAM CODEC
+    description: h265 (HEVC) is CPU heavy and increases latency, but is more bandwidth efficient.
+    choices:
+      h264 (less latency): h264
+      h265 (HEVC) (higher quality at lower bitrates): h265
+  moonlight_resolution:
+    prompt: VIDEO STREAM RESOLUTION
+    choices:
+      720p (1280x720): 0
+      1080p (1920x1080): 1
+      4K (3840x2160): 2
+  moonlight_rotate:
+    prompt: ROTATE
+    description: Output rotation independent of xrandr or framebuffer settings.
+    choices:
+      0 degrees: "0"
+      90 degrees: "90"
+      180 degrees: "180"
+      270 degrees: "270"
+  moonlight_framerate:
+    prompt: VIDEO STREAM FRAME RATE
+    choices:
+      30FPS: 0
+      60FPS: 1
+      120FPS: 2
+  moonlight_bitrate:
+    prompt: VIDEO STREAM BITRATE
+    description: Higher number for higher picture quality, but requires more bandwidth.
+    choices:
+      5Mbps (good for 720p): 0
+      10Mbps (good for 1080p 60FPS): 1
+      20Mbps (not supported by some routers): 2
+      50Mbps (highest quality available): 3
+  moonlight_sops:
+    prompt: DYNAMICALLY CALCULATE OPTIMAL SETTINGS
+    description: Streaming Optimal Playable Settings, overrides other settings if enabled.
+    choices:
+      'Off': false
+      'On': true
+  moonlight_quitapp:
+    prompt: QUIT ON HOST
+    description: Close app on the remote host when quitting Moonlight.
+    choices:
+      'Off': false
+      'On': true
+  moonlight_viewonly:
+    prompt: VIEW ONLY
+    description: Disable all input processing (view-only mode).
+    choices:
+      'Off': false
+      'On': true
+  moonlight_remote:
+    prompt: LAN / WAN STREAMING
+    description: Enable QOS settings to optimize for internet or local network.
+    choices:
+      WAN: 'yes'
+      LAN (Default): 'no'
+  moonlight_surround:
+    prompt: SURROUND SOUND
+    description: Enables surround sound if your audio card supports it (Consumes more bandwidth).
+    choices:
+      "5.1": "5.1"
+      "7.1": "7.1"
+systems:
+  - moonlight

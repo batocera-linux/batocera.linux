@@ -1,0 +1,59 @@
+features:
+  - padtokeyboard
+systems:
+  - name: atari800
+    custom_features:
+      atari800_system:
+        group: ADVANCED OPTIONS
+        prompt: ATARI SYSTEM
+        choices:
+          400/600XL/800 (48K) (OS B): 400/800 (OS B)
+          800XL/1200XL/XEGS (64K): 800XL (64K)
+          130XE (128K): 130XE (128K)
+          Modern XL/XE (320K CS): Modern XL/XE(320K CS)
+          Modern XL/XE (576K): Modern XL/XE(576K)
+          Modern XL/XE (1088K): Modern XL/XE(1088K)
+      atari800_ntscpal:
+        prompt: VIDEO FORMAT STANDARD
+        choices:
+          NTSC 240x480px 60Hz: NTSC
+          PAL 288x576px 50Hz: PAL
+      atari800_sioaccel:
+        group: ADVANCED OPTIONS
+        prompt: SIO ACCELERATION
+        description: Speeds up file loading. Some games won't load with this.
+        choices:
+          'Off': disabled
+          'On': enabled
+      atari800_artifacting:
+        group: ADVANCED OPTIONS
+        prompt: HI-RES ARTIFACTING
+        description: Emulate NTSC quirks to show more colors in hi-res mode.
+        choices:
+          'Off': disabled
+          'On': enabled
+      atari800_resolution:
+        prompt: INTERNAL RESOLUTION
+        description: Use an alternate resolution. Some games need this.
+        choices:
+          336x240: 336x240
+          320x240: 320x240
+          384x240: 384x240
+          384x272: 384x272
+          384x288: 384x288
+          400x300: 400x300
+      atari800_internalbasic:
+        prompt: INTERNAL BASIC INTERPRETER
+        description: Enable the BASIC interpreter. Some games need this.
+        choices:
+          'Off': disabled
+          'On': enabled
+  - name: atari5200
+    custom_features:
+      atari800_opt2:
+        group: ADVANCED OPTIONS
+        prompt: JOYSTICK HACK (FOR ROBOTRON 2084)
+        description: Treats the right analog stick as the second joystick.
+        choices:
+          'Off': disabled
+          'On': enabled

@@ -13,6 +13,7 @@ DOLPHIN_TRIFORCE_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DOLPHIN_TRIFORCE_DEPENDENCIES += bluez5_utils ffmpeg hidapi host-xz libcurl
 DOLPHIN_TRIFORCE_DEPENDENCIES += libevdev libpng libusb lzo sdl2 speex xz zlib
+DOLPHIN_TRIFORCE_EMULATOR_INFO = dolphin_triforce.emulator.yml
 
 ifeq ($(BR2_PACKAGE_QT6),y)
 DOLPHIN_TRIFORCE_DEPENDENCIES += qt6base qt6svg
@@ -58,3 +59,4 @@ endef
 DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_INI
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -7,6 +7,7 @@
 DRASTIC_VERSION = 1.1
 DRASTIC_SOURCE = drastic.tar.gz
 DRASTIC_SITE = https://github.com/liberodark/drastic/releases/download/$(DRASTIC_VERSION)
+DRASTIC_EMULATOR_INFO = drastic.emulator.yml
 
 define DRASTIC_EXTRACT_CMDS
 	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DRASTIC_DL_SUBDIR)/$(DRASTIC_SOURCE)
@@ -35,3 +36,4 @@ define DRASTIC_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

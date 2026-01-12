@@ -11,6 +11,7 @@ AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
 
 AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libpcap libxml2 libmpeg2
 AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib libenet
+AMIBERRY_EMULATOR_INFO = amiberry.emulator.yml
 
 AMIBERRY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 AMIBERRY_CONF_OPTS += -DWITH_LTO=ON
@@ -64,3 +65,4 @@ endef
 AMIBERRY_POST_INSTALL_TARGET_HOOKS = AMIBERRY_EVMAP
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

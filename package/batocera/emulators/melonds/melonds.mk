@@ -9,8 +9,9 @@ MELONDS_SITE = https://github.com/Arisotura/melonDS.git
 MELONDS_SITE_METHOD=git
 MELONDS_GIT_SUBMODULES=YES
 MELONDS_LICENSE = GPLv2
+MELONDS_EMULATOR_INFO = melonds.emulator.yml
 MELONDS_DEPENDENCIES += ecm sdl2 slirp libepoxy libarchive libenet
-MELONDS_DEPENDENCIES += qt6base qt6svg qt6multimedia 
+MELONDS_DEPENDENCIES += qt6base qt6svg qt6multimedia
 
 MELONDS_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -32,3 +33,4 @@ define MELONDS_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

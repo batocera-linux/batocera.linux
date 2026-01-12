@@ -8,6 +8,7 @@ OPENMSX_VERSION = RELEASE_20_0
 OPENMSX_SITE = $(call github,openMSX,openMSX,$(OPENMSX_VERSION))
 OPENMSX_LICENSE = GPLv2
 OPENMSX_DEPENDENCIES = zlib sdl2 sdl2_ttf libpng tcl freetype
+OPENMSX_EMULATOR_INFO = openmsx.emulator.yml
 
 OPENMSX_CONF_ENV += $(TARGET_CONFIGURE_OPTS) \
                 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
@@ -78,3 +79,4 @@ OPENMSX_PRE_CONFIGURE_HOOKS += OPENMSX_TCL_CONFIG_FIXUP
 OPENMSX_POST_INSTALL_TARGET_HOOKS += OPENMSX_POST_INSTALL_CLEANUP
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

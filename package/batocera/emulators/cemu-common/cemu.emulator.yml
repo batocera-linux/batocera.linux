@@ -1,0 +1,138 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  cemu_gfxbackend:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: 0
+      Vulkan (Default): 1
+  cemu_async:
+    group: ADVANCED OPTIONS
+    prompt: ASYNC SHADER COMPILE (VULKAN ONLY)
+    description: Speed up shader compilation.
+    choices:
+      'Off': false
+      On (Default): true
+  cemu_rumble:
+    prompt: RUMBLE
+    description: Set the controller rumble strength if supported.
+    choices:
+      Off (Default): 0
+      25%: 0.25
+      50%: 0.5
+      75%: 0.75
+      100%: 1
+  cemu_controller_combination:
+    prompt: CONTROLLER COMBINATION
+    description: Pro Controller required for games that require shake motions.
+    choices:
+      GamePad + 4 Pro Controller: 0
+      GamePad + 4 Sideway Wiimote: 1
+      5 Pro Controller: 2
+      5 Sideway Wiimote: 3
+      Wii U Classic Controller: 4
+  cemu_console_language:
+    group: ADVANCED OPTIONS
+    prompt: CONSOLE LANGUAGE
+    description: Choose console language. Not all games may support the language choice.
+    choices:
+      Current language: ui
+      Japanese: ja_JP
+      English: en_US
+      French: fr_FR
+      German: de_DE
+      Italian: it_IT
+      Spanish: es_ES
+      Chinese: zh_CN
+      Korean: ko_KR
+      Dutch: nl_NL
+      Portuguese: pt_PT
+      Russian: ru_RU
+      Taiwanese: zh_TW
+  cemu_audio_channels:
+    prompt: AUDIO CHANNELS
+    description: Choose the audio output type.
+    choices:
+      Stereo (Default): 1
+      Surround: 2
+  cemu_audio_config:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO OUTPUT
+    description: Have Batocera set the first audio output device.
+    choices:
+      Set in Config - choose if no audio output: false
+      Batocera sets first audio device (Default): true
+  cemu_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Off (Default): 0
+      Double buffering: 1
+      Triple buffering: 2
+  cemu_upscale:
+    group: ADVANCED OPTIONS
+    prompt: UPSCALE FILTER
+    description: Choose upscaling method.
+    choices:
+      Bilinear: 0
+      Bicubic: 1
+      Hermite (Default): 2
+      Nearest Neighbour: 3
+  cemu_downscale:
+    group: ADVANCED OPTIONS
+    prompt: DOWNSCALE FILTER
+    description: Choose downscaling method.
+    choices:
+      Bilinear (Default): 0
+      Bicubic: 1
+      Hermite: 2
+      Nearest Neighbour: 3
+  cemu_aspect:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      Keep Aspect Ration (Default): 0
+      Stretch: 1
+  cemu_touchpad:
+    prompt: ENABLE MOUSE
+    description: Enable mouse input to simulate touchscreen.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  cemu_overlay:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE PERFORMANCE OVERLAY
+    description: Enable Cemu's performance overlay.
+    choices:
+      Disabled (Default): false
+      Enabled: true
+  cemu_notifications:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE NOTIFICATIONS
+    description: Enable notifications of cache, controller events etc.
+    choices:
+      Disabled (Default): false
+      Enabled: true
+  cemu_gamepad:
+    prompt: ENABLE GAMEPAD VIEW
+    description: Enable gamepad view for games that have interaction across two screens. Use Hotkey+R2 to switch screens.
+    choices:
+      Disabled (Default): false
+      Enabled: true
+systems:
+  - wiiu

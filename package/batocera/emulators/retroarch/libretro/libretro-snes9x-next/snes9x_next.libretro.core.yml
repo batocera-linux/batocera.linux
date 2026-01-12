@@ -1,0 +1,73 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  2010_reduce_sprite_flicker:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the thirty-two sprites per line limit. Crashes certain games.
+    choices:
+      'Off': disabled
+      'On': enabled
+  2010_reduce_slowdown:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Overclock the SNES CPU (Gradius 3, Super R-Type).
+    choices:
+      'Off': disabled
+      Light (load times): light
+      Compatible: compatible
+      Max (demanding games): max
+  2010_overclock_superfx:
+    group: ADVANCED OPTIONS
+    prompt: SUPER FX OVERCLOCK
+    description: Enhancement. Reduces slowdown in mode 7 games.
+    choices:
+      5 MHz (Underclock): 5 MHz (Underclock)
+      8 MHz (Underclock): 8 MHz (Underclock)
+      9 MHz (Underclock): 9 MHz (Underclock)
+      10 MHz (Default): 10 MHz (Default)
+      11 MHz: 11 MHz
+      12 MHz: 12 MHz
+      13 MHz: 13 MHz
+      14 MHz: 14 MHz
+      15 MHz: 15 MHz
+      20 MHz: 20 MHz
+      30 MHz: 30 MHz
+      40 MHz: 40 MHz
+  controller1_snes9x_next:
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      SNES Gamepad: 1
+      SNES Mouse: 2
+  controller2_snes9x_next:
+    prompt: CONTROLLER 2 TYPE
+    description: Light guns/multitap.
+    choices:
+      SNES Gamepad: 1
+      SNES Mouse: 2
+      SNES Multitap: 257
+      Super Scope: 260
+      Konami Justifier: 516
+      Dual Konami Justifiers: 772
+  superscope_crosshair:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': disabled
+      'On': enabled
+  snes9x_2010_blargg_filter:
+    prompt: BLARGG NTSC FILTER
+    description: Apply a video filter to mimic various NTSC TV signals.
+    choices:
+      'Off': disabled
+      Monochrome: monochrome
+      RF: rf
+      RGB: rgb
+      S-Video: s-video
+      Composite: composite
+systems:
+  - snes

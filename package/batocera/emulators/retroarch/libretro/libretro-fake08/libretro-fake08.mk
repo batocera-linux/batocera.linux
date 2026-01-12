@@ -10,6 +10,7 @@ LIBRETRO_FAKE08_SITE=https://github.com/jtothebell/fake-08
 LIBRETRO_FAKE08_LICENSE = MIT
 LIBRETRO_FAKE08_GIT_SUBMODULES=YES
 LIBRETRO_FAKE08_DEPENDENCIES += retroarch
+LIBRETRO_FAKE08_EMULATOR_INFO = fake08.libretro.core.yml
 
 define LIBRETRO_FAKE08_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
@@ -22,3 +23,4 @@ define LIBRETRO_FAKE08_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

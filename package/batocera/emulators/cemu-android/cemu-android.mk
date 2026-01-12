@@ -17,7 +17,7 @@ CEMU_ANDROID_LICENSE = GPLv2
 CEMU_ANDROID_SITE_METHOD = git
 CEMU_ANDROID_GIT_SUBMODULES = YES
 
-CEMU_ANDROID_DEPENDENCIES = bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
+CEMU_ANDROID_DEPENDENCIES = cemu-common bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
                     libcurl libgtk3 libopenssl libpng libusb libzip libzlib \
                     pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd \
                     host-clang host-ninja host-lld

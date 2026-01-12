@@ -8,6 +8,7 @@ LIBRETRO_FUSE_VERSION = 847dbbd6f787823ac9a5dfacdd68ab181063374e
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
 LIBRETRO_FUSE_LICENSE = GPLv3
 LIBRETRO_FUSE_DEPENDENCIES += retroarch
+LIBRETRO_FUSE_EMULATOR_INFO = fuse.libretro.core.yml
 
 LIBRETRO_FUSE_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -34,3 +35,4 @@ define LIBRETRO_FUSE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

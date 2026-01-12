@@ -9,6 +9,7 @@ VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
 VICE_SITE = https://sourceforge.net/projects/vice-emu/files/releases
 VICE_LICENSE = GPLv2
 VICE_DEPENDENCIES =  libpng giflib alsa-lib jpeg host-xa host-dos2unix libcurl
+VICE_EMULATOR_INFO = vice.emulator.yml
 
 VICE_CONF_OPTS += --disable-option-checking
 VICE_CONF_OPTS += --disable-pdf-docs
@@ -23,7 +24,7 @@ VICE_CONF_OPTS += --disable-debug-gtk3ui
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
 VICE_CONF_OPTS += --enable-sdl2ui
-VICE_CONF_OPTS += --with-sdlsound 
+VICE_CONF_OPTS += --with-sdlsound
 VICE_CONF_ENV += LDFLAGS=-lSDL2
 VICE_DEPENDENCIES += sdl2 sdl2_image
 endif
@@ -63,3 +64,4 @@ VICE_DEPENDENCIES += mpg123
 endif
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

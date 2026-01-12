@@ -1,0 +1,11 @@
+cores:
+  dolphin:
+    custom_features:
+      gfxbackend:
+        submenu: RENDERING
+        prompt: GRAPHICS API
+        description: Choose which graphics API library to use.
+        choices:
+          OpenGL: OGL
+          Vulkan: Vulkan
+        before: internal_resolution

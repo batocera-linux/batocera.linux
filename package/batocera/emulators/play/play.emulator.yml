@@ -1,0 +1,79 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  play_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL (Default): "0"
+      Vulkan: "1"
+  play_scale:
+    prompt: OPENGL RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (~480): "1"
+      2x (~960): "2"
+      4x (~1920p): "4"
+      8x (~4320p / 8k): "8"
+      16x (~7680p / 16k): "16"
+  play_mode:
+    prompt: PRESENTATION MODE
+    choices:
+      Fill Screen: "0"
+      Fit Screen: "1"
+      Original Size: "2"
+  play_widescreen:
+    prompt: ENABLE WIDESCREEN
+    description: Enable widescreen support.
+    choices:
+      Disabled: "false"
+      Enabled: "true"
+  play_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: "false"
+      Enabled: "true"
+  play_filter:
+    prompt: SMOOTH GAMES (BILINEAR FILTERING)
+    description: Only applicable when using OpenGL.
+    choices:
+      Disabled: "false"
+      Enabled: "true"
+  play_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      Japanese: "0"
+      English: "1"
+      French: "2"
+      Spanish: "3"
+      German: "4"
+      Italian: "5"
+      Dutch: "6"
+      Portuguese: "7"
+      Russian: "8"
+      Korean: "9"
+      Traditional Chinese: "10"
+      Simplified Chinese: "11"
+systems:
+  - namco2x6
+  - name: ps2
+    exclude_extensions:
+      - m3u

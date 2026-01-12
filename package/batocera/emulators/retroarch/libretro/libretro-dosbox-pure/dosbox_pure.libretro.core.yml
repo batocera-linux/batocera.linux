@@ -1,0 +1,177 @@
+features:
+  - padtokeyboard
+custom_features:
+  pure_cpu_type:
+    group: ADVANCED OPTIONS
+    prompt: CPU TYPE
+    description: Select which Intel CPU to emulate.
+    choices:
+      Autodetect (Compatible): automatic
+      "386": 386
+      386 (slow): 386_slow
+      386 (prefetch): 386_prefetch
+      486 (slow): 486_slow
+      Pentium (slow): pentium_slow
+  pure_cpu_core:
+    group: ADVANCED OPTIONS
+    prompt: CPU CORE METHOD
+    description: Affects efficiency/stability.
+    choices:
+      Optimized (auto): automatic
+      Dynamic (fast): dynamic
+      Normal (interpreter): normal
+      Simple (interpreter for old real-mode games): simple
+  pure_cycles:
+    prompt: EMULATED CPU PERFORMANCE
+    description: Manually set cycles per second. Use with caution.
+    choices:
+      Autodetect (Compatible): automatic
+      MAX (as many as possible): max
+      8086/8088, 4.77MHz (315 cps): 315
+      286, 6MHz (1320 cps): 1320
+      286, 12.5MHz (2750 cps): 2750
+      386, 20MHz (4720 cps): 4720
+      386DX, 33MHz (7800 cps): 7800
+      486DX, 33MHz (13400 cps): 13400
+      486DX2, 66MHz (26800 cps): 26800
+      Pentium, 100MHz (77000 cps): 77000
+      Pentium II, 300MHz (200000 cps): 200000
+      Pentium III, 600MHz (500000 cps): 500000
+      AMD Athlon, 1.2GHz (1000000 cps): 1000000
+  pure_memory_size:
+    prompt: EMULATED RAM SIZE
+    choices:
+      No EMS/XMS: none
+      4MB: 4
+      8MB: 8
+      16MB: 16
+      24MB: 24
+      32MB: 32
+      48MB: 48
+      64MB: 64
+      96MB: 96
+      128MB: 128
+      224MB: 224
+  pure_machine:
+    prompt: GRAPHICS CHIP TYPE
+    description: The emulated graphics card.
+    choices:
+      SVGA: svga
+      VGA: vga
+      EGA: ega
+      CGA: cga
+      Tandy: tandy
+      Hercules: hercules
+      PCjr: pcjr
+  pure_keyboard_layout:
+    prompt: PHYSICAL KEYBOARD LAYOUT
+    description: Does not affect the on-screen keyboard.
+    choices:
+      US: us
+      UK: uk
+      Brazil: br
+      Croatia: hr
+      Czech Republic: cz243
+      Denmark: dk
+      Finland: su
+      France: fr
+      Germany: gm
+      Greece: gr
+      Hungary: hu
+      Iceland: is161
+      Italy: it
+      Netherlands: nl
+      Norway: 'no'
+      Poland: pl
+      Portugal: po
+      Russia: ru
+      Slovakia: sk
+      Slovenia: si
+      Spain: sp
+      Sweden: sv
+      Switzerland (German): sg
+      Switzerland (French): sf
+      Turkey: tr
+  pure_savestate:
+    prompt: SAVESTATE/REWIND
+    description: Rewind can be CPU heavy.
+    choices:
+      'On': true
+      On with rewind support: rewind
+      'Off': disabled
+  pure_auto_mapping:
+    prompt: GAMEPAD AUTOMATIC MAPPING
+    description: Apply a joy2key profile for the current game.
+    choices:
+      'On': "true"
+      On with game detection message: notify
+      'Off': "false"
+  pure_joystick_analog_deadzone:
+    group: ADVANCED OPTIONS
+    prompt: ANALOG JOYSTICK DEADZONE
+    description: Set the deadzone of the joystick analog sticks.
+    choices:
+      0%: 0
+      5%: 5
+      10%: 10
+      15%: 15
+      20%: 20
+      25%: 25
+      30%: 30
+      35%: 35
+      40%: 40
+  pure_joystick_timed:
+    group: ADVANCED OPTIONS
+    prompt: TIMED AXIS INTERVALS
+    description: Can fix drifting joysticks in games.
+    choices:
+      'On': "true"
+      'Off': "false"
+  controller1_dosbox_pure:
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      Gravis GamePad (D-pad + 4 Btns): 1
+      Generic Keyboard Binds: 257
+      Keyboard + Mouse (Left An.): 513
+      Keyboard + Mouse (Right An.): 769
+      1st Joystick (2 Axes, 2 Btns): 1281
+      Flight Stick (3 Axes, 4 Btns, 1 Hat): 1793
+      Both Joysticks (4 Axes, 4 Btns): 2049
+      Custom Keyboard Binds (best for Pad2Key): 3
+  controller2_dosbox_pure:
+    prompt: CONTROLLER 2 TYPE
+    choices:
+      Gravis GamePad (D-pad + 4 Btns): 1
+      Generic Keyboard Binds: 257
+      Keyboard + Mouse (Left An.): 513
+      Keyboard + Mouse (Right An.): 769
+      2nd Joystick (2 Axes, 2 Btns): 1537
+      Flight Stick (3 Axes, 4 Btns, 1 Hat): 1793
+      Both Joysticks (4 Axes, 4 Btns): 2049
+      Custom Keyboard Binds (best for Pad2Key): 3
+  pure_sblaster_type:
+    prompt: SOUNDBLASTER TYPE
+    description: Type of emulated SoundBlaster card.
+    choices:
+      SounBlaster 16 (Default): sb16
+      SounBlaster Pro 2: sbpro2
+      SounBlaster Pro: sbpro1
+      SounBlaster 2.0: sb2
+      SounBlaster 1.0: sb1
+      GameBlaster: gb
+  pure_gravis:
+    prompt: ENABLE GRAVIS ULTRASOUND
+    description: Enable Gravis Utrasound emulation. Ensure the ULTRASND folder is in the root of your <game>.pc rom folder.
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  pure_midi:
+    prompt: MIDI OUTPUT
+    description: Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output.
+    choices:
+      General MIDI SoundFont (Default): zcsf.sf2
+      Roland MT-32/CM-32L: scummvm/extra/MT32_CONTROL.ROM
+      Frontend MIDI driver: frontend
+      'Off': disabled
+systems:
+  - dos

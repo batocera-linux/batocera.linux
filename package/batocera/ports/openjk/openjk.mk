@@ -23,6 +23,7 @@ OPENJK_SITE_METHOD = git
 OPENJK_SUPPORTS_IN_SOURCE_BUILD = NO
 OPENJK_LICENSE = GPL-2.0 license
 OPENJK_LICENSE_FILE = LICENSE.txt
+OPENJK_EMULATOR_INFO = openjk.emulator.yml
 
 OPENJK_DEPENDENCIES += host-openjk libjpeg-bato libpng sdl2 zlib
 
@@ -59,3 +60,4 @@ OPENJK_POST_INSTALL_TARGET_HOOKS += OPENJK_EVMAPY
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))
+$(eval $(emulator-info-package))

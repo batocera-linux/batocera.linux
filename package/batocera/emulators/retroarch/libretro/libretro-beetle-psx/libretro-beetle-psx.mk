@@ -8,6 +8,7 @@ LIBRETRO_BEETLE_PSX_VERSION = 51ffd50564d54abfb62eccf358166bd9ccc708ac
 LIBRETRO_BEETLE_PSX_SITE = $(call github,libretro,beetle-psx-libretro,$(LIBRETRO_BEETLE_PSX_VERSION))
 LIBRETRO_BEETLE_PSX_LICENSE = GPLv2
 LIBRETRO_BEETLE_PSX_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_PSX_EMULATOR_INFO = mednafen_psx.libretro.core.yml
 
 LIBRETRO_BEETLE_PSX_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_BEETLE_PSX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

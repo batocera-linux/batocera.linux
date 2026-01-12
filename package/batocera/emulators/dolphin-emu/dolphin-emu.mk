@@ -21,6 +21,9 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
 DOLPHIN_EMU_DEPENDENCIES += dolphin-triforce
 endif
 
+$(eval $(call register,dolphin.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,gfxbackend.dolphin.emulator.yml))
+
 DOLPHIN_EMU_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DOLPHIN_EMU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 DOLPHIN_EMU_CONF_OPTS += -DDISTRIBUTOR='batocera.linux'
@@ -69,3 +72,4 @@ endef
 DOLPHIN_EMU_PRE_CONFIGURE_HOOKS = DOLPHIN_EMU_PRE_CONFIGURE_HOOK
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

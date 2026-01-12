@@ -1,0 +1,31 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  2d_color_mode:
+    prompt: COLOR PALETTE (2D)
+    choices:
+      original: black & red
+      black/white: black & white
+      black/blue: black & blue
+      black/cyan: black & cyan
+      black/electric cyan: black & electric cyan
+      black/green: black & green
+      black/magenta: black & magenta
+      black/yellow: black & yellow
+  3d_color_mode:
+    group: ADVANCED OPTIONS
+    prompt: ANAGLYPH PRESET (3D)
+    description: Use your physical anaglypth 3D glasses!
+    choices:
+      'Off': disabled
+      red/blue: red & blue
+      red/cyan: red & cyan
+      red/electric cyan: red & electric cyan
+      green/magenta: green & magenta
+      yellow/blue: yellow & blue
+systems:
+  - virtualboy

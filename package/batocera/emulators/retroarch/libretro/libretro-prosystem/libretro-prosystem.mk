@@ -8,6 +8,7 @@ LIBRETRO_PROSYSTEM_VERSION = 4202ac5bdb2ce1a21f84efc0e26d75bb5aa7e248
 LIBRETRO_PROSYSTEM_SITE = $(call github,libretro,prosystem-libretro,$(LIBRETRO_PROSYSTEM_VERSION))
 LIBRETRO_PROSYSTEM_LICENSE = GPLv2
 LIBRETRO_PROSYSTEM_DEPENDENCIES += retroarch
+LIBRETRO_PROSYSTEM_EMULATOR_INFO = prosystem.libretro.core.yml
 
 LIBRETRO_PROSYSTEM_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_PROSYSTEM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

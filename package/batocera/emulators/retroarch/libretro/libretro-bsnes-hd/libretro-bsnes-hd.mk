@@ -8,6 +8,7 @@ LIBRETRO_BSNES_HD_VERSION = 0bb7b8645e22ea2476cabd58f32e987b14686601
 LIBRETRO_BSNES_HD_SITE = $(call github,DerKoun,bsnes-hd,$(LIBRETRO_BSNES_HD_VERSION))
 LIBRETRO_BSNES_HD_LICENSE = GPLv3
 LIBRETRO_BSNES_HD_DEPENDENCIES += retroarch
+LIBRETRO_BSNES_HD_EMULATOR_INFO = bsnes_hd.libretro.core.yml
 
 define LIBRETRO_BSNES_HD_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/bsnes -f GNUmakefile target="libretro" \
@@ -20,3 +21,4 @@ define LIBRETRO_BSNES_HD_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

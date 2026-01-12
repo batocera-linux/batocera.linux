@@ -10,7 +10,8 @@ WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+
 WINE_TKG_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_TKG_SELINUX_MODULES = wine
-WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg
+WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg wine-common
+WINE_TKG_EMULATOR_INFO = wine-tkg.wine.core.yml wine-tkg.mugen.core.yml
 HOST_WINE_TKG_DEPENDENCIES = host-bison host-flex
 
 WINE_TKG_GIT_SUBMODULES = YES
@@ -206,7 +207,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
 WINE_TKG_CONF_OPTS += --with-wayland
-WINE_TKG_DEPENDENCIES += wayland wayland-protocols libxkbcommon 
+WINE_TKG_DEPENDENCIES += wayland wayland-protocols libxkbcommon
 else
 WINE_TKG_CONF_OPTS += --without-wayland
 endif
@@ -376,3 +377,4 @@ endif
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
+$(eval $(emulator-info-package))

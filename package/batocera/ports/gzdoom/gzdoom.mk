@@ -12,6 +12,7 @@ GZDOOM_GIT_SUBMODULES = YES
 GZDOOM_LICENSE = GPLv3
 GZDOOM_DEPENDENCIES = host-gzdoom sdl2 bzip2 fluidsynth openal zmusic libvpx webp
 GZDOOM_SUPPORTS_IN_SOURCE_BUILD = NO
+GZDOOM_EMULATOR_INFO = gzdoom.emulator.yml
 
 # We need the tools from the host package to build the target package
 HOST_GZDOOM_DEPENDENCIES = zlib bzip2 host-webp
@@ -95,3 +96,4 @@ GZDOOM_POST_CONFIGURE_HOOKS += GZDOOM_PREPARE_VERSION_INFO
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))
+$(eval $(emulator-info-package))

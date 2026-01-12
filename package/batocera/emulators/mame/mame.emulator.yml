@@ -1,0 +1,1236 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  video:
+    prompt: VIDEO MODE
+    description: BGFX for post-processing, accel/opengl for raw image.
+    choices:
+      BGFX: bgfx
+      Accel: accel
+      OpenGL: opengl
+  vsync:
+    prompt: VSYNC
+    description: Fix screen tearing, but may drop frames.
+    choices:
+      Off (Default): 0
+      "On": 1
+  bgfxshaders:
+    group: ADVANCED OPTIONS
+    prompt: BGFX VIDEO FILTER
+    description: Apply a post-processing effect.
+    choices:
+      "Off": null
+      Bilinear: default
+      CRT Geom: crt-geom
+      CRT Geom Deluxe: crt-geom-deluxe
+      CRT Geom Deluxe (RGB): crt-geom-deluxe-rgb
+      CRT Geom Deluxe (Composite): crt-geom-deluxe-composite
+      Super Eagle: eagle
+      HLSL: hlsl
+      HQ2X: hq2x
+      HQ3X: hq3x
+      HQ4X: hq4x
+  switchres:
+    group: ADVANCED OPTIONS
+    prompt: CRT SWITCHRES
+    description: Allows the use of switchres profiles if present.
+    choices:
+      "Off": 0
+      "On": 1
+  multiscreens:
+    group: ADVANCED OPTIONS
+    prompt: MULTISCREENS
+    description: Play this game on several screens (if available)
+    choices:
+      "Off": 0
+      "On": 1
+  rotation:
+    prompt: VERTICAL ROTATION (TATE)
+    description: Rotates screen by 90 degrees. Intended for rotating displays.
+    choices:
+      "Off": null
+      Rotate 90: autoror
+      Rotate 270: autorol
+  artworkcrop:
+    group: ADVANCED OPTIONS
+    prompt: ARTWORK CROP
+    description: Crop artwork to only unused space, keeping the game as large as possible.
+    choices:
+      Off (Default): 0
+      "On": 1
+  customcfg:
+    group: ADVANCED OPTIONS
+    prompt: CUSTOM MAME CONFIG
+    description: Set system-wide controls via MAME menu
+    choices:
+      "On": 1
+      "Off": 0
+  dataplugin:
+    group: ADVANCED OPTIONS
+    prompt: DATA PLUGIN
+    description: Make game history, setup instructions, and special moves viewable in the menu
+    choices:
+      Enabled: 1
+      Disabled (Default): 0
+  offscreenreload:
+    group: LIGHT GUN
+    prompt: OFF-SCREEN RELOAD BUTTON
+    description: Set gun button 2 to reload.
+    choices:
+      "On": 1
+      Off (Default): 0
+  mame_crosshair:
+    group: LIGHT GUN
+    prompt: CROSSHAIR
+    description:
+    choices:
+      Disabled (Default): disabled
+      Enabled: enabled
+      When moving: onmove
+systems:
+  - name: adam
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Coleco Adam cartridges: adam_cart
+          Coleco Adam Digital Data Packs: adam_cass
+          Coleco ADAM diskettes: adam_flop
+          Coleco ColecoVision cartridges: coleco
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette 1: cass1
+          Cassette 2: cass2
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+          Cartridge (Slot 1): cart1
+          Cartridge (Slot 2): cart2
+          Cartridge (Slot 3): cart3
+          Cartridge (Slot 4): cart4
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: advision
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Entex AdventureVision cartridges: advision
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: apfm1000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          APF M-1000 cartridges: apfm1000
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: apple2
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Apple II cleanly cracked disks: apple2_flop_clcracked
+          Apple II miscellaneous disks: apple2_flop_misc
+          Apple II original disks: apple2_flop_orig
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+          Hard Drive: hard1
+      gameio:
+        group: ADVANCED OPTIONS
+        prompt: JOYSTICK TYPE
+        description: Type of joystick connected to the game port.
+        choices:
+          None: none
+          Apple (2x 2-button Analog): joy
+          Sirius/Atari (2x 1-button Digital, II+ Only): joyport
+          Gizmo (1-Button Digital): gizmo
+      altmodel:
+        group: ADVANCED OPTIONS
+        prompt: MODEL
+        description: Model of emulated Apple II.
+        choices:
+          Apple //e Enhanced (Default): apple2ee
+          Apple //e: apple2e
+          Apple ][ Plus: apple2p
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: apple2gs
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Apple IIgs cleanly cracked disks: apple2gs_flop_clcracked
+          Apple IIgs miscellaneous disks: apple2gs_flop_misc
+          Apple IIgs original disks: apple2gs_flop_orig
+          Apple II cleanly cracked disks: apple2_flop_clcracked
+          Apple II miscellaneous disks: apple2_flop_misc
+          Apple II original disks: apple2_flop_orig
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          5 1/4 Disk (Drive 1): flop1
+          5 1/4 Disk (Drive 2): flop2
+          3 1/2 Disk (Drive 3): flop3
+          3 1/2 Disk (Drive 4): flop4
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: arcadia
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Emerson Arcadia 2001 cartridges: arcadia
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: archimedes
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Acorn Archimedes floppy images: archimedes
+          Acorn Archimedes hard disks: archimedes_hdd
+          Acorn Archimedes ROM images: archimedes_rom
+      altmodel:
+        group: ADVANCED OPTIONS
+        prompt: ARCHIMEDES MODEL
+        description: Select model to emulate
+        choices:
+          Archimedes 310: aa310
+          BBC A3000: aa3000
+          Archimedes 440/1 (Default): aa4401
+          Archimedes 540: aa540
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: astrocde
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bally Professional Arcade cartridges: astrocde
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: atom
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Acorn Atom cassettes: atom_cass
+          Acorn Atom disk images: atom_flop
+          Acorn Atom Utility ROMs: atom_rom
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+          Cartridge: cart
+          Quickload: quik
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: bbc
+    features:
+      - padtokeyboard
+    custom_features:
+      sticktype:
+        group: ADVANCED OPTIONS
+        prompt: JOYSTICK TYPE
+        description: Select which joystick to emulate.
+        choices:
+          None (Default): none
+          Acorn Analogue Joysticks: acornjoy
+          Acorn Bitstik: bitstik1
+          Robo Bitstik 2: bitstik2
+          Voltmace Delta 3b Twin Joysticks: voltmace3b
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Acorn BBC Micro cassettes: bbc_cass
+          Acorn BBC Micro hard disks: bbc_hdd
+          Acorn BBC Micro ROMs: bbc_rom
+          Acorn BBC Micro Model B disks: bbcb_flop
+          Acorn BBC Micro Model B Original disks: bbcb_flop_orig
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          ROM (Slot 1): rom1
+          ROM (Slot 2): rom2
+          ROM (Slot 3): rom3
+          ROM (Slot 4): rom4
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: camplynx
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Camputers Lynx cassettes: camplynx_cass
+          Camputers Lynx floppies: camplynx_flop
+      altmodel:
+        group: ADVANCED OPTIONS
+        prompt: LYNX MODEL
+        choices:
+          Lynx 48k: lynx48k
+          Lynx 96k: lynx96k
+          Lynx 128k: lynx128k
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: cdi
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Philips CD-i CD-ROMs: cdi
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: coco
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Tandy Radio Shack Color Computer cassettes: coco_cass
+          Tandy Radio Shack Color Computer cartridges: coco_cart
+          Tandy Radio Shack Color Computer disk images: coco_flop
+      altmodel:
+        prompt: COLOR COMPUTER MODEL
+        description: Select the model of Color Computer to emulate
+        choices:
+          Color Computer: coco
+          Color Computer 2: coco2
+          Color Computer 2B: coco2b
+          Color Computer 3 (NTSC) (Default): coco3
+          Color Computer 3 (PAL): coco3p
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Cartridge: cart
+          Disk (Drive 1): flop1
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: crvision
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          V-Tech Creativision cartridges: crvision
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cartridge: cart
+          Cassette: cass
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: electron
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Acorn Electron Disks: electron_flop
+          Acorn Electron Cassettes: electron_cass
+          Acorn Electron Cartridges: electron_cart
+          Acron Electron ROMs: electron_rom
+      altmodel:
+        prompt: ELECTRON MODEL
+        description: Select model to emulate
+        choices:
+          Electron w/64k Master RAM Board (default): electron64
+          Electron: electron
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Floppy Disk: flop
+          Cassette: cass
+          Cartridge (Slot 1): cart1
+          Cartridge (Slot 2): cart2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: fm7
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Fujitsu FM-77AV disk images: fm77av
+          Fujitsu FM-7 cassettes: fm7_cass
+          Fujitsu FM-7 disk images: fm7_disk
+      altmodel:
+        prompt: FM-7 MODEL
+        choices:
+          FM-7: fm7
+          FM-77AV: fm77av
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+      addblankdisk:
+        group: ADVANCED OPTIONS
+        prompt: USER DISK
+        description: Mount a floppy for user data, creates if needed
+        choices:
+          Cassette: cass
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: fmtowns
+    exclude_extensions:
+      - xdf
+      - m3u
+    custom_features:
+      altmodel:
+        group: ADVANCED OPTIONS
+        prompt: FM TOWNS MODEL
+        description: Select model to emulate
+        choices:
+          FM Towns Marty (Default): fmtmarty
+          FM Towns (Model 1/2): fmtowns
+          FM Towns II UX: fmtownsux
+      ramsize:
+        group: ADVANCED OPTIONS
+        prompt: RAM SIZE
+        description: How much RAM the emulated FM Towns will have installed
+        choices:
+          2MB: 2
+          4MB: 4
+      addblankdisk:
+        group: ADVANCED OPTIONS
+        prompt: ADD USER DISK
+        description: Insert a disk into the floppy drive, a blank will be used if one doesn't exist
+        choices:
+          Off (Default): 0
+          "On": 1
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Fujitsu FM Towns CD-ROMs: fmtowns_cd
+          Fujitsu FM Towns cracked floppy disk images: fmtowns_flop_cracked
+          Fujitsu FM Towns miscellaneous floppy disk images: fmtowns_flop_misc
+          Fujitsu FM Towns original floppy disk images: fmtowns_flop_orig
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Floppy Disk (Drive 1): flop1
+          Floppy Disk (Drive 2 - Model 1/2 & II UX): flop2
+          CD-ROM: cdrm
+          Hard Drive (II UX): hard1
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: gamate
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bit Corp Gamate cartridges: gamate
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: gamecom
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Tiger Game.com cartridges: gamecom
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: gamepock
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Epoch Game Pocket Computer cartridges: gamepock
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: gmaster
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Hartung Game Master cartridges: gmaster
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: gp32
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          GamePark GP32 SmartMedia cards: gp32
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: laser310
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Dick Smith Electronics VZ-200/300 cassettes: vz_cass
+          Dick Smith Electronics VZ-200/300 snapshots: vz_snap
+      memslot:
+        group: ADVANCED OPTIONS
+        prompt: MEMORY SLOT
+        description: Choose hardware for the memory expansion slot
+        choices:
+          Laser 310/VZ-300 16k Memory: laser310_16k
+          Laser/VZ 64k Memory (Default): laser_64k
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Snapshot: snap
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: macintosh
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Macintosh 400K/800K Disk images: mac_flop
+          Macintosh High Density Disk images: mac_hdflop
+          Mac Harddisks: mac_hdd
+      altmodel:
+        prompt: MAC MODEL
+        description: Select model of Mac (Recommendations are Mac Plus for B&W, Mac LC 3 for Color)
+        choices:
+          Mac 128k (128kb RAM, 2 LD Floppies): mac128k
+          Mac 512k (512kb RAM, 2 LD Floppies): mac512k
+          Mac Plus (4Mb RAM, 2 LD Floppies/HDD): macplus
+          Mac SE (4Mb RAM, 2 LD Floppies/HDD): macse
+          Mac Classic (4Mb RAM, 2 HD Floppies/HDD): macclasc
+          Mac II (2Mb RAM, Color, 2 HD Floppies/CD/HDD): mac2fdhd
+          Mac IIx (2Mb RAM, Color, 2 HD Floppies/CD/HDD, Image Reader): maciix
+          Mac LC 3 (Default) (4Mb RAM, Color, 2 HD Floppies/CD/HDD): maclc3
+      imagereader:
+        group: ADVANCED OPTIONS
+        prompt: IMAGE READER
+        description: Install the image reader card to read idks image files (Mac IIx only)
+        choices:
+          Disabled: disabled
+          Slot A (Default): nba
+          Slot B: nbb
+          Slot C: nbc
+          Slot D: nbd
+          Slot E: nbe
+      ramsize:
+        group: ADVANCED OPTIONS
+        prompt: RAM SIZE
+        description: How much RAM the emulated Mac will have installed (Mac IIx & Mac LC 3 only)
+        choices:
+          2MB: 2
+          4MB: 4
+          8MB: 8
+          16MB: 16
+          32MB: 32
+          48MB: 48
+          64MB: 64
+          96MB: 96
+          128MB: 128
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load. Disk Image requires Mac IIx and Image Reader
+        choices:
+          Floppy Disk: flop1
+          CD: cdrm
+          Hard Drive: hard
+          Disk Image: disk
+      bootdisk:
+        group: ADVANCED OPTIONS
+        prompt: BOOT DISK
+        description: Select a boot disk or hard drive if needed
+        choices:
+          System 3.0 (LD Floppy): macos3
+          System 6.0.8 (LD Floppy): macos608
+          System 7.0.1 (HD Floppy): macos701
+          System 7.5 (HD Floppy): macos75
+          System 6.0.8 (Hard Drive): mac608
+          System 7.0.1 (Hard Drive): mac701
+          System 7.5.5 (Hard Drive): mac755
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: megaduck
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Creatronic Mega Duck cartridges: megaduck
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: pdp1
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          PDP-1 Paper Tape Reader Images: pdp1_ptp
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: pv1000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Casio PV-1000 cartridges: pv1000
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: socrates
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Video Technology Socrates cartridges: socrates
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: supracan
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Funtech Super A'Can cartridges: supracan
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: ti99
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          TI-99/4A Cartridges: ti99_cart
+      ti99_32kram:
+        group: ADVANCED OPTIONS
+        prompt: 32K RAM EXPANSION
+        description: 32k RAM expansion card installed
+        choices:
+          Enabled (Default): 1
+          Disabled: 0
+      ti99_speech:
+        group: ADVANCED OPTIONS
+        prompt: SPEECH MODULE
+        description: Speech module installed
+        choices:
+          Enabled (Default): 1
+          Disabled: 0
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette 1: cass1
+          Cassette 2: cass2
+          Cartridge: cart
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: tutor
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Tomy Tutor & Pyuuta cartridge: tutor
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Cartridge: cart
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: vc4000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Interton VC 4000 cartridges: vc4000
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cartridge: cart
+          Quickload: quik
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: vectrex
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          GCE Vectrex cartridges: vectrex
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: vgmplay
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Video Game Music Files: vgmplay
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: vsmile
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          VTech V.Smile cartridges: vsmile_cart
+          VTech V.Smile Motion cartridges: vsmilem_cart
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: xegs
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Atari XE Game System cartridges: xegs
+          Atari 400 / 800 floppy disks: a800_flop
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cartridge: cart
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+          Disk (Drive 3): flop3
+          Disk (Drive 4): flop4
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: mame
+    features:
+      - netplay
+      - padtokeyboard
+    custom_features:
+      altlayout:
+        prompt: SPECIAL CONTROL LAYOUTS
+        description: Controls for 5/6 button games and other unique controls
+        choices:
+          Default Only: default
+          SNES Style: snes
+          Genesis/Megadrive Style: megadrive
+          Modern Fightstick Style: fightstick
+          Neo Geo Mini Pad: neomini
+          Neo Geo CD Pad: neocd
+          Twin Stick with Triggers: twinstick
+          Rotated 4-Way Stick (Q*Bert): qbert
+      hiscoreplugin:
+        group: ADVANCED OPTIONS
+        prompt: HIGH SCORE PLUGIN
+        description: Enable or disable high score saving
+        choices:
+          Enabled (Default): 1
+          Disabled: 0
+      coindropplugin:
+        group: ADVANCED OPTIONS
+        prompt: COIN SOUND PLUGIN
+        description: Play a coin drop sound effect when an insert coin button is pressed
+        choices:
+          Enabled: 1
+          Disabled (Default): 0
+      use_mouse:
+        group: ADVANCED OPTIONS
+        prompt: ENABLE MOUSE
+        description: Enable mouse input for trackballs, spinners, lightguns (if no gun connected), and similar controls
+        choices:
+          Enabled: 1
+          Disabled (Default): 0
+  - name: neogeo
+    custom_features:
+      altlayout:
+        prompt: SPECIAL CONTROL LAYOUTS
+        description: Controls for 5/6 button games and other unique controls
+        choices:
+          Default Only: default
+          SNES Style: snes
+          Genesis/Megadrive Style: megadrive
+          Modern Fightstick Style: fightstick
+          Neo Geo Mini Pad: neomini
+          Neo Geo CD Pad: neocd
+          Twin Stick with Triggers: twinstick
+          Rotated 4-Way Stick (Q*Bert): qbert
+      hiscoreplugin:
+        group: ADVANCED OPTIONS
+        prompt: HIGH SCORE PLUGIN
+        description: Enable or disable high score saving
+        choices:
+          Enabled (Default): 1
+          Disabled: 0
+      coindropplugin:
+        group: ADVANCED OPTIONS
+        prompt: COIN SOUND PLUGIN
+        description: Play a coin drop sound effect when an insert coin button is pressed
+        choices:
+          Enabled: 1
+          Disabled (Default): 0
+  - casloopy
+  - name: gameandwatch
+    exclude_extensions:
+      - mgw
+  - name: lcdgames
+    exclude_extensions:
+      - mgw
+  - namco22
+  - oricatmos
+  - plugnplay
+  - samcoupe
+  - uzebox
+  - pc60

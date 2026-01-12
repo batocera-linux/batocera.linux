@@ -1,0 +1,181 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - rewind
+custom_features:
+  internal_resolution:
+    submenu: RENDERING
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (480x272): 1
+      2x (960x544): 2
+      3x 720p (1440x816): 3
+      4x 1080p (1920x1088): 4
+      5x (2400x1360): 5
+      6x (2880x1632): 6
+      7x (3360x1904): 7
+      8x 4K (3840x2176): 8
+      9x (4320x2448): 9
+      10x (4800x2720): 10
+  vsync:
+    submenu: RENDERING
+    prompt: VSYNC
+    description: Enable for more fluidity, disable if screen tearing.
+    choices:
+      Disable: 0
+      Enable: 1
+  frameskip:
+    submenu: FRAMESKIP CONTROL
+    prompt: FRAME SKIPPING
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+  autoframeskip:
+    submenu: FRAMESKIP CONTROL
+    prompt: AUTO FRAMESKIP
+    description: Automatically reduce frameskip if the system has spare overhead.
+    choices:
+      'Off': 0
+      'On': 1
+  skip_buffer_effects:
+    submenu: SPEED HACKS
+    prompt: SKIP BUFFER EFFECTS
+    description: Skip buffer effects faster but may not render some games. Disables resolution, MSAA, auto frameskip and duplicate frames to 60Hz.
+    choices:
+      Buffered rendering: false
+      Skip buffer effects: true
+  disable_culling:
+    submenu: SPEED HACKS
+    prompt: DISABLE CULLING
+    description: The PSP will cull triangles that are outside a 4096x4096 clipping box, and also triangles crossing the Z=1 plane if clipping is enabled.
+    choices:
+      'Off': 0
+      'On': 1
+  skip_gpu_readbacks:
+    submenu: SPEED HACKS
+    prompt: SKIP GPU READBACKS
+    description: In some games, this can fix severe slowdowns, but can also cause graphical issues.
+    choices:
+      No (Default): 0
+      Skip: 1
+      Copy to texture: 2
+  lazy_texture_caching:
+    submenu: SPEED HACKS
+    prompt: LAZY TEXTURE CACHING
+    description: Faster but can cause text problems in some games.
+    choices:
+      'Off': 0
+      'On': 1
+  curves_quality:
+    submenu: SPEED HACKS
+    prompt: SPLINE/BEZIER CURVES QUALITY
+    description: Allows reducing the visual quality of these curves for higher performance.
+    choices:
+      Low: 0
+      Medium: 1
+      High: 2
+  duplicate_frames:
+    submenu: PERFORMANCE
+    prompt: RENDER DUPLICATE FRAMES TO 60 HZ
+    description: If a game runs at 30hz, PPSSPP wtill push 60 frames to the monitor.
+    choices:
+      'Off': 0
+      'On': 1
+  buffer_graphics:
+    submenu: PERFORMANCE
+    prompt: BUFFER GRAPHICS COMMANDS
+    description: CPU-GPU latency limit. Lower values improve latency but may reduce performance.
+    choices:
+      No Buffer: 1
+      Up to 1: 2
+      Up to 2 (Default): 3
+  software_skinning:
+    submenu: PERFORMANCE
+    prompt: SOFTWARE SKINNING
+    description: Runs "skinning" on the CPU instead of the GPU, means that draw calls from the game can more easily be combined, which often improves things.
+    choices:
+      'Off': 0
+      'On': 1
+  hardware_tessellation:
+    submenu: PERFORMANCE
+    prompt: HARDWARE TESSELLATION
+    description: Uses hardware to make curves.
+    choices:
+      'Off': 0
+      'On': 1
+  texture_scaling_type:
+    submenu: TEXTURE SCALING
+    prompt: TEXTURE UPSCALING TYPE
+    description: xBRZ - a sharpening upscale algorithm, Bicubic - a smooth look, Hybrid - uses bicubic for smooth areas.
+    choices:
+      xBRZ (Default): 0
+      Hybrid: 1
+      Bicubic: 2
+      Hybrid + Bicubic: 3
+  texture_scaling_level:
+    submenu: TEXTURE SCALING
+    prompt: TEXTURE UPSCALING LEVEL
+    description: There is generally no point in going beyond 4x texture scaling unless you are running at very high resolutions.
+    choices:
+      Off (Default): 1
+      2x: 2
+      3x: 3
+      4x: 4
+      5x: 5
+  texture_deposterize:
+    submenu: TEXTURE SCALING
+    prompt: TEXTURE DEPOSTERIZE
+    description: Fix texture banding when upscaling.
+    choices:
+      'Off': false
+      'On': true
+  anisotropic_filtering:
+    submenu: TEXTURE FILTERING
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      'Off': 0
+      2x: 1
+      4x: 2
+      8x: 3
+      16x: 4
+  texture_filtering:
+    submenu: TEXTURE FILTERING
+    prompt: TEXTURE FILTERING
+    description: Smooth textures on 3D objects.
+    choices:
+      Nearest: 2
+      Linear: 3
+      Auto Max Quality: 4
+  smart_2d:
+    submenu: TEXTURE FILTERING
+    prompt: SMART 2D TEXTURE FILTERING
+    description: When enabled and upscaling, textures look better than linear filtering for a lot of 2D art.
+    choices:
+      'Off': false
+      'On': true
+  enable_cheats:
+    group: ADVANCED OPTIONS
+    prompt: GAME CHEATS
+    description: Enables Action Replay cheats.
+    choices:
+      'Off': false
+      'On': true
+systems:
+  - psp

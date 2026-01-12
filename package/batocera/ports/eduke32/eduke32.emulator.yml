@@ -1,0 +1,23 @@
+features: []
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  nologo:
+    prompt: SKIP INTRO VIDEOS
+    choices:
+      Skip: 1
+      Show (Default): 0
+systems:
+  - eduke32
+  - name: fury
+    as_core: fury

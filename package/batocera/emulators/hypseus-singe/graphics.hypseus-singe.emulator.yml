@@ -1,0 +1,8 @@
+custom_features:
+  hypseus_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use. Vulkan may not work on all hardware.
+    choices:
+      OpenGL: OpenGL
+      Vulkan: Vulkan
+    before: hypseus_ratio

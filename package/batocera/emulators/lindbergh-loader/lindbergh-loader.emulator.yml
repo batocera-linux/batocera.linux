@@ -1,0 +1,134 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  lindbergh_freeplay:
+    prompt: FREE PLAY
+    description: Enable free play for supported games.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_region:
+    prompt: REGION
+    description: Choose the arcade machine console region. May be required to start the game.
+    choices:
+      Japan (Default): JP
+      United States: US
+      Export: EX
+  lindbergh_aspect:
+    prompt: ASPECT RATIO
+    description: Set to keep the aspect ratio (4:3) in games like Sega Race TV and Primeval Hunt.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_limit:
+    prompt: FPS LIMITER
+    description: Set if you want to limit the FPS in games that are not limited like OutRun2.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_fps:
+    prompt: FPS TARGET
+    description: Set the target FPS (will only work if FPS LIMITER is enabled).
+    choices:
+      30 fps: "30"
+      50 fps: "50"
+      60 fps (Default): "60"
+      75 fps: "75"
+      100 fps: "100"
+      120 fps: "120"
+  lindbergh_controller:
+    prompt: CONTROLLER MODE
+    description: Choose the controller configuration. EVDEV for a wide range of controllers, lightguns & steering wheels. SDL2 for gamepads only.
+    choices:
+      SDL2: 1
+      EVDEV (Default): 2
+  lindbergh_hummer:
+    group: GAME OPTIONS
+    prompt: HUMMER FLICKER FIX
+    description: Set to on if you experience flickering in Hummer.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_lens:
+    group: GAME OPTIONS
+    prompt: OUTRUN LENS GLARE
+    description: Set to enable lens glare in Outrun 2.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_boost:
+    group: GAME OPTIONS
+    prompt: BOOST RENDER RES
+    description: Upscale rendering resolution to display size.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_hunt:
+    group: GAME OPTIONS
+    prompt: PRIMEVAL HUNT MODE
+    description: Set the Primeval Hunt mode (touch screen).
+    choices:
+      No touch screen (Default): 1
+      Side by side: 2
+      3DS mode (right side): 3
+      3DS mode (bottom side): 4
+  lindbergh_card:
+    group: GAME OPTIONS
+    prompt: CARD READER
+    description: Enable to emulate the card reader in Virtua Tenis 3.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_speed:
+    group: GAME OPTIONS
+    prompt: CPU SPEED
+    description: House of the Dead 4 speed fix. Select CPU base frequency of your processor.
+    preset: sliderauto
+    preset_parameters: 0.5 6.0 0.1 GHz
+  lindbergh_ip:
+    group: GAME OPTIONS
+    prompt: IP ADDRESS
+    description: Enable the IP address for OutRun 2 network play against another PC on the same network.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_test:
+    group: ADVANCED OPTIONS
+    prompt: RUN TEST MODE
+    description: Run the game in test mode to configure certain game options.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_zink:
+    group: ADVANCED OPTIONS
+    prompt: USE ZINK FOR RENDERING
+    description: Fixes some shadows and textures in Virtua Tennis 3 and Virtua Fighter 5 franchise for non Nvidia GPUs. May need the FPS limiter option enabled.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_debug:
+    group: ADVANCED OPTIONS
+    prompt: DEBUG MODE
+    description: Add debug logging to help troubleshoot issues.
+    choices:
+      Off (Default): 0
+      'On': 1
+systems:
+  - lindbergh

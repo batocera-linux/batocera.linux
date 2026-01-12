@@ -8,6 +8,7 @@ LIBRETRO_TYRQUAKE_VERSION = df0d3afb623b143beb76a5b1adf2d377953bfdf2
 LIBRETRO_TYRQUAKE_SITE = $(call github,libretro,tyrquake,$(LIBRETRO_TYRQUAKE_VERSION))
 LIBRETRO_TYRQUAKE_LICENSE = GPLv2
 LIBRETRO_TYRQUAKE_DEPENDENCIES += retroarch
+LIBRETRO_TYRQUAKE_EMULATOR_INFO = tyrquake.libretro.core.yml
 
 LIBRETRO_TYRQUAKE_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -44,3 +45,4 @@ define LIBRETRO_TYRQUAKE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

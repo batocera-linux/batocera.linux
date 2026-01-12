@@ -1,0 +1,38 @@
+[project]
+name = "batocera_es_system"
+requires-python = ">= 3.12"
+dynamic = ["version"]
+dependencies = [
+    # These versions need to be kept in sync with the versions
+    # built by buildroot
+    'typing-extensions==4.15.0',
+    'PyYAML==6.0.2',
+    'ruamel.yaml==0.18.6',
+]
+
+[project.scripts]
+batocera-build-es-data = "batocera_es_system.build_es_data:main"
+batocera-systems-report = "batocera_es_system.systems_report:main"
+batocera-generate-es-headers = "batocera_es_system.translations:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "code"
+path = "_version.py"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/batocera_es_system",
+]
+
+[tool.pyright]
+extends = "../../pyproject.toml"
+
+[tool.ruff]
+extend = "../../pyproject.toml"

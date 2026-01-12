@@ -10,6 +10,7 @@ JAZZ2_NATIVE_SITE_METHOD = git
 JAZZ2_NATIVE_GIT_SUBMODULES = YES
 JAZZ2_NATIVE_LICENSE = GPL-3.0
 JAZZ2_NATIVE_LICENSE_FILE = LICENSE
+JAZZ2_NATIVE_EMULATOR_INFO = jazz2-native.emulator.yml
 
 JAZZ2_NATIVE_DEPENDENCIES += libcurl sdl2 openal libopenmpt zlib
 
@@ -33,3 +34,4 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
 endif
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

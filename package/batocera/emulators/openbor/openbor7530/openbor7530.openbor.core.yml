@@ -1,0 +1,21 @@
+custom_features:
+  openbor_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  openbor_limit:
+    prompt: LIMIT FPS
+    description: Limit FPS to reduce high CPU usage.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  openbor_rumble:
+    prompt: RUMBLE
+    description: Only some games feature rumble. Not compatible with all controllers.
+    choices:
+      Disabled: 0
+      Enabled: 1
+systems:
+  - openbor

@@ -10,6 +10,7 @@ FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = boost sdl2 libpng libzip libcurl libao libminiupnpc elfutils
+FLYCAST_EMULATOR_INFO = flycast.emulator.yml
 
 FLYCAST_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -55,3 +56,4 @@ define FLYCAST_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

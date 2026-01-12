@@ -1,0 +1,81 @@
+features:
+  - netplay
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  mesen-s_ntsc_filter:
+    group: ADVANCED OPTIONS
+    prompt: BLARGG NTSC FILTER
+    description: Core-powered video filter.
+    choices:
+      Disabled: disabled
+      Composite (Blargg): Composite (Blargg)
+      S-Video (Blargg): S-Video (Blargg)
+      RGB (Blargg): RGB (Blargg)
+      Monochrome (Blargg): Monochrome (Blargg)
+  mesen-s_blend_high_res:
+    group: ADVANCED OPTIONS
+    prompt: HIGH-RES BLENDING
+    description: Blur high-res mode, allowing for better transparency effects.
+    choices:
+      'On': enabled
+      'Off': disabled
+  mesen-s_cubic_interpolation:
+    group: ADVANCED OPTIONS
+    prompt: CUBIC AUDIO INTERPOLATION
+    description: Enhancement. Swap from SNES' guassian interpolation to cubic. Improves sound quality.
+    choices:
+      'On': enabled
+      'Off': disabled
+  mesen-s_gbmodel:
+    group: ADVANCED OPTIONS
+    prompt: GAME BOY MODE
+    description: Change behaviour when emulating GB games. Auto uses SGB for GB and GBC for GBC.
+    choices:
+      Game Boy: Game Boy
+      Game Boy Color: Game Boy Color
+      Super Game Boy: Super Game Boy
+  mesen-s_sgb2:
+    group: ADVANCED OPTIONS
+    prompt: SUPER GAME BOY 2
+    description: Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed.
+    choices:
+      'On': enabled
+      'Off': disabled
+  mesen-s_overclock:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      None: None
+      Low: Low
+      Medium: Medium
+      High: High
+      Very High: Very High
+  mesen-s_overclock_type:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK TYPE
+    description: Prefer "Before NMI", change to After NMI only if needed by the game.
+    choices:
+      Before NMI: Before NMI
+      After NMI: After NMI
+  mesen-s_superfx_overclock:
+    group: ADVANCED OPTIONS
+    prompt: SUPER FX OVERCLOCK
+    description: Enhancement. Reduces slowdown in mode 7 games.
+    choices:
+      100%: 100%
+      200%: 200%
+      300%: 300%
+      400%: 400%
+      500%: 500%
+      1000%: 1000%
+systems:
+  - gb
+  - gbc
+  - satellaview
+  - sgb
+  - snes

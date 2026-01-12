@@ -1,3 +1,9 @@
+[project]
+name = "batocera-linux"
+version = "43.dev0"
+requires-python = "==3.12.8"
+dependencies = ["configgen", "batocera_es_system"]
+
 [dependency-groups]
 deps = [
     'pip>=25.1',
@@ -15,17 +21,37 @@ deps = [
     'ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6',
 ]
 lint = [
-    'ruff==0.14.9',
-    'pyright[nodejs]==1.1.407',
+    'ruff==0.14.14',
+    'pyright[nodejs]==1.1.408',
 ]
 dev = [
     { include-group = 'deps' },
     { include-group = 'lint' },
 ]
 
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+configgen = { workspace = true }
+batocera_es_system = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    'python-src/*',
+    './package/batocera/core/batocera-configgen/configgen',
+]
+exclude = ['python-src/stubs']
+
 [tool.pyright]
-exclude = [".venv*", "buildroot*", "output", "dl"]
-stubPath = "python-stubs"
+exclude = [
+    ".venv*",
+    "buildroot*",
+    "output",
+    "dl",
+    "python-src/stubs/configobj/validate.pyi",
+]
+stubPath = "python-src/stubs"
 
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
@@ -65,6 +91,6 @@ ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["configgen", "batocera_es_system_shared"]
+known-first-party = ["configgen", "batocera_es_system"]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]

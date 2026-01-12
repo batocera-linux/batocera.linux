@@ -10,6 +10,9 @@ LIBRETRO_MAME_LICENSE = MAME
 
 LIBRETRO_MAME_DEPENDENCIES = alsa-lib retroarch host-python3
 
+$(eval $(call register,mame.libretro.core.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,sega-arcade.mame.libretro.core.yml))
+
 # Limit number of jobs not to eat too much RAM....
 total_memory_kb := $(shell grep MemTotal /proc/meminfo | awk '{print $$2}')
 memory_based_jobs := $(shell echo $$(( $(total_memory_kb) / 1024 / 1024 / 2 + 1)))
@@ -84,3 +87,4 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

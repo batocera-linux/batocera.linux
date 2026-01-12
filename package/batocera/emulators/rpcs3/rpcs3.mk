@@ -9,6 +9,7 @@ RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
 RPCS3_LICENSE = GPLv2
+RPCS3_EMULATOR_INFO = rpcs3.emulator.yml
 RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
 
 RPCS3_DEPENDENCIES += alsa-lib faudio ffmpeg flatbuffers host-clang libcurl libevdev
@@ -50,3 +51,4 @@ else
 endif
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

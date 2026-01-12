@@ -1,0 +1,22 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  joystick:
+    prompt: CONTROL CHOICE
+    description: Choose which pad to control your hero.
+    choices:
+      Joypad: normal
+      Left stick: joystick1
+      Right stick: joystick2
+systems:
+  - solarus

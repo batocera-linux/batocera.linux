@@ -1,0 +1,241 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  jkdf2_difficulty:
+    prompt: DIFFICULTY
+    description: Choose difficulty for the game.
+    choices:
+      Easy: 0
+      Medium: 1
+      Hard: 2
+  jkdf2_scenes:
+    submenu: GENERAL
+    prompt: CUTSCENES
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_subs:
+    submenu: GENERAL
+    prompt: CUTSCENE SUBTITLES
+    description: Enable full subtitles on cutscenes.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_map_rotate:
+    submenu: GENERAL
+    prompt: MAP ROTATION
+    description: Enable rotation on overlay map.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_start:
+    submenu: GENERAL
+    prompt: MISSION START
+    description: Disable mission start confirmation.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_aiming:
+    submenu: GAMEPLAY
+    prompt: AUTO AIMING
+    description: Enable auto aiming.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_crosshair:
+    submenu: GAMEPLAY
+    prompt: AIMING CROSSHAIR
+    description: Enable aiming crosshair.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_saber_camera:
+    submenu: GAMEPLAY
+    prompt: LIGHTSABER CAMERA
+    description: Enable lightsaber auto-camera.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_saber_cross:
+    submenu: GAMEPLAY
+    prompt: LIGHTSABER CROSSHAIR
+    description: Show Crosshair with lightsaber.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_fist_cross:
+    submenu: GAMEPLAY
+    prompt: FIST CROSSHAIR
+    description: Show Crosshair with fist.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_waggle:
+    submenu: GAMEPLAY
+    prompt: WEAPON WAGGLE
+    description: Disable weapon waggle.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_cross_size:
+    submenu: GAMEPLAY
+    prompt: CROSSHAIR SIZE
+    description: Set the crosshair size.
+    preset: sliderauto
+    preset_parameters: 0.0 2.00 .20
+  jkdf2_cross_line:
+    submenu: GAMEPLAY
+    prompt: CROSSHAIR LINE THICKNESS
+    description: Set the crosshair line thickness.
+    preset: sliderauto
+    preset_parameters: 1.00 3.00 .20
+  jkdf2_pickup:
+    submenu: WEAPON PICKUP
+    prompt: PICKUP WEAPON
+    description: Automatic pickup weapon.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_dangerous:
+    submenu: WEAPON PICKUP
+    prompt: NO DANGEROUS WEAPONS
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_weaker:
+    submenu: WEAPON PICKUP
+    prompt: NO WEAKER WEAPONS
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_saber:
+    submenu: WEAPON PICKUP
+    prompt: KEEP LIGHTSABER
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_switch:
+    submenu: SWITCH WEAPON
+    prompt: AUTO SWITCH WEAPON
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_switch_dangerous:
+    submenu: SWITCH WEAPON
+    prompt: NO DANGEROUS WEAPONS
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_reload:
+    submenu: RELOAD WEAPON
+    prompt: AUTOMATICALLY RELOAD WEAPON
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_reload_saber:
+    submenu: RELOAD WEAPON
+    prompt: KEEP LIGHTSABER
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_fov:
+    submenu: DISPLAY
+    prompt: FIELD OF VIEW
+    description: Set the field of view.
+    preset: sliderauto
+    preset_parameters: 40 170 5
+  jkdf2_fov_vert:
+    submenu: DISPLAY
+    prompt: FOV VERTICAL
+    description: Field of view is vertical (Hor+).
+    choices:
+      Disabled: 0
+      Enabled: 1
+  jkdf2_aspect:
+    submenu: DISPLAY
+    prompt: ASPECT
+    description: Use 1:1 aspect.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_fps:
+    submenu: DISPLAY
+    prompt: FPS LIMIT
+    description: Set the fps limit.
+    preset: sliderauto
+    preset_parameters: 0 360 10
+  jkdf2_vsync:
+    submenu: DISPLAY
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_hidpi:
+    submenu: DISPLAY
+    prompt: HIDPI
+    description: Enable high dots per inch.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_texture:
+    submenu: DISPLAY
+    prompt: TEXTURE FILTERING
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_bloom:
+    submenu: DISPLAY
+    prompt: BLOOM
+    description: Choose to use Bloom post processing.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_ssao:
+    submenu: DISPLAY
+    prompt: SSAO
+    description: Choose Screen Space Ambient Occlusion for better lighting.
+    choices:
+      Disabled: false
+      Enabled: true
+  jkdf2_gamma:
+    submenu: DISPLAY
+    prompt: GAMMA
+    description: Choose the amount of Gamma which changes how light or dark mid-range tones appear.
+    preset: sliderauto
+    preset_parameters: 0.40 3.00 .20
+  jkdf2_hud_scale:
+    submenu: DISPLAY
+    prompt: HUD SCALE
+    description: Choose the size of the heads-up display.
+    preset: sliderauto
+    preset_parameters: 0.40 3.00 .20
+  jkdf2_ssaa_multiple:
+    submenu: DISPLAY
+    prompt: SSAA Multiplier
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      1x (Default): 1.0
+      2x: 2.0
+      4x: 4.0
+  jkdf2_corpses:
+    group: ADVANCED OPTIONS
+    prompt: KEEP CORPSES
+    description: Choose to keep corpses present.
+    choices:
+      Disabled: false
+      Enabled: true
+systems:
+  - jkdf2

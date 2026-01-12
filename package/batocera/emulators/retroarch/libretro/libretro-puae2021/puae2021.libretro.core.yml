@@ -1,0 +1,255 @@
+features:
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  puae_model:
+    prompt: AMIGA MODEL
+    description: Force a specific model and prevent tags detection.
+    choices:
+      Autodetect (by game name tag): automatic
+      A500 (512KB Chip + 512KB Slow): A500
+      A500+ (1MB Chip): A500PLUS
+      A600 (2MB Chip + 8MB Fast): A600
+      A1200 (2MB Chip + 8MB Fast): A1200
+      A4000/040 (2MB Chip + 8MB Fast): A4040
+      CDTV (1MB Chip): CDTV
+      CD32 Default (2MB Chip): CD32
+      CD32 (2MB Chip + 8MB Fast): CD32FR
+  cpu_compatibility:
+    prompt: CPU COMPATIBILITY
+    description: Help games which are too quick or that have bugs.
+    choices:
+      Normal: normal
+      More compatible: compatible
+      Cycle-exact: exact
+  cpu_multiplier:
+    prompt: CPU CLOCK
+    description: Works with 'Cycle-exact' mode and for a few games.
+    choices:
+      Default by model: 0
+      ' 3.54 MHz': 1
+      ' 7.09 MHz (A500 speed)': 2
+      14.18 MHz (A1200 speed): 4
+      28.37 MHz: 8
+      35.46 MHz: 10
+      42.56 MHz: 12
+      56.75 MHz: 16
+  cpu_throttle:
+    prompt: CPU SPEED
+    description: Ignored with 'Cycle-exact'.
+    choices:
+      -90%: -900.0
+      -80%: -800.0
+      -70%: -700.0
+      -60%: -600.0
+      -50%: -500.0
+      -40%: -400.0
+      -30%: -300.0
+      -20%: -200.0
+      -10%: -100.0
+      Default: 0.0
+      +100%: 1000.0
+      +200%: 2000.0
+      +300%: 3000.0
+      +400%: 4000.0
+      +500%: 5000.0
+      +600%: 6000.0
+      +700%: 7000.0
+      +800%: 8000.0
+      +900%: 9000.0
+      +1000%: 10000.0
+  video_standard:
+    prompt: VIDEO FORMAT STANDARD
+    choices:
+      PAL 288x576px 50Hz: PAL
+      NTSC 240x480px 60Hz: NTSC
+  video_resolution:
+    prompt: VIDEO RESOLUTION
+    description: Manually define which resolution to use.&#x0a;Auto defaults to High and switches to Super-High when needed.
+    choices:
+      Low 360p: lores
+      High 720p: hires
+      Super-high 1440p: superhires
+  zoom_mode:
+    group: ADVANCED OPTIONS
+    prompt: ZOOM/CROP (HIDE BORDERS)
+    description: Hides borders on many games. Some games use the borders.
+    choices:
+      'Off': none
+      Auto zoom: automatic
+      minimum: minimum
+      smaller: smaller
+      small: small
+      medium: medium
+      large: large
+      larger: larger
+      maximum: maximum
+  gfx_framerate:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': disabled
+      "1": 1
+      "2": 2
+  mouse_speed:
+    prompt: MOUSE SPEED
+    description: Affects mouse speed globally.
+    choices:
+      original: 100
+      50%: 50
+      70%: 70
+      120%: 120
+      150%: 150
+      170%: 170
+      200%: 200
+  pad_options:
+    prompt: JUMP ON B
+    description: Makes second fire button press up instead.
+    choices:
+      'Off': disabled
+      'On': jump
+systems:
+  - name: amiga500
+    custom_features:
+      puae_floppy_speed:
+        group: ADVANCED OPTIONS
+        prompt: FLOPPY TURBO SPEED
+        description: Removes loading but can add possible glitches/crashes.
+        choices:
+          'Off': 100
+          'On': 0
+      keyrah_mapping:
+        group: ADVANCED OPTIONS
+        prompt: 2P GAMEPAD MAPPING (KEYRAH)
+        description: Keypad to joyport mappings for 2 players.
+        choices:
+          'Off': disabled
+          'On': enabled
+      whdload:
+        group: ADVANCED OPTIONS
+        prompt: WHDLOAD LAUNCHER
+        description: Enable launching pre-installed WHDLoad installs.
+        choices:
+          'Off': disabled
+          'On': config
+      disable_joystick:
+        group: ADVANCED OPTIONS
+        prompt: DISABLE EMULATOR JOYSTICK
+        description: Passes all physical keyboard events for Pad2Key.
+        choices:
+          'Off': disabled
+          'On': enabled
+      controller1_puae:
+        prompt: CONTROLLER 1 TYPE
+        description: Select controller type for Amiga P1.
+        choices:
+          Retropad: 1
+          CD32 Pad: 517
+          Analog Joystick: 773
+          Joystick: 261
+          Keyboard: 259
+      controller2_puae:
+        prompt: CONTROLLER 2 TYPE
+        description: Select controller type for Amiga P2.
+        choices:
+          Retropad: 1
+          CD32 Pad: 517
+          Analog Joystick: 773
+          Joystick: 261
+          Keyboard: 259
+  - name: amiga1200
+    custom_features:
+      puae_floppy_speed:
+        group: ADVANCED OPTIONS
+        prompt: FLOPPY TURBO SPEED
+        description: Removes loading but can add possible glitches/crashes.
+        choices:
+          'Off': 100
+          'On': 0
+      keyrah_mapping:
+        group: ADVANCED OPTIONS
+        prompt: 2P GAMEPAD MAPPING (KEYRAH)
+        description: Keypad to joyport mappings for 2 players.
+        choices:
+          'Off': disabled
+          'On': enabled
+      whdload:
+        group: ADVANCED OPTIONS
+        prompt: WHDLOAD LAUNCHER
+        description: Enable launching pre-installed WHDLoad installs.
+        choices:
+          'Off': disabled
+          'On': config
+      pad_options:
+        group: ADVANCED OPTIONS
+        prompt: JUMP ON B
+        description: Makes second fire button press up instead.
+        choices:
+          'Off': disabled
+          'On': jump
+      disable_joystick:
+        group: ADVANCED OPTIONS
+        prompt: DISABLE EMULATOR JOYSTICK
+        description: Passes all physical keyboard events for Pad2Key.
+        choices:
+          'Off': disabled
+          'On': enabled
+      controller1_puae:
+        prompt: CONTROLLER 1 TYPE
+        description: Select controller type for Amiga P1.
+        choices:
+          Retropad: 1
+          CD32 Pad: 517
+          Analog Joystick: 773
+          Joystick: 261
+          Keyboard: 259
+      controller2_puae:
+        prompt: CONTROLLER 2 TYPE
+        description: Select controller type for Amiga P2.
+        choices:
+          Retropad: 1
+          CD32 Pad: 517
+          Analog Joystick: 773
+          Joystick: 261
+          Keyboard: 259
+  - name: amigacd32
+    custom_features:
+      puae_cd_startup_delayed_insert:
+        group: ADVANCED OPTIONS
+        prompt: BOOT ANIMATION FIRST
+        description: Inserts CD during boot animation to prevent loading fail.
+        choices:
+          'Off': disabled
+          'On': enabled
+      puae_cd_speed:
+        group: ADVANCED OPTIONS
+        prompt: CD TURBO SPEED
+        description: Removes loading but can add possible glitches/crashes.
+        choices:
+          'Off': 100
+          'On': 0
+      puae_cd32pad_options:
+        group: ADVANCED OPTIONS
+        prompt: JUMP ON A
+        description: Makes the blue button press up instead.
+        choices:
+          'Off': disabled
+          'On': jump
+  - name: amigacdtv
+    custom_features:
+      puae_cd_startup_delayed_insert:
+        group: ADVANCED OPTIONS
+        prompt: BOOT ANIMATION FIRST
+        description: Inserts CD during boot animation prevent loading fail.
+        choices:
+          'Off': disabled
+          'On': enabled
+      puae_cd_speed:
+        group: ADVANCED OPTIONS
+        prompt: CD TURBO SPEED
+        description: Removes loading but can add possible glitches/crashes.
+        choices:
+          'Off': 100
+          'On': 0

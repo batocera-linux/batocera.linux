@@ -1,0 +1,398 @@
+cores:
+  dolphin:
+    features:
+      - cheevos
+    shared_features:
+      - powermode
+      - tdp
+      - videomode
+      - bezel
+      - bezel_stretch
+      - hud
+      - hud_corner
+      - bezel.tattoo
+      - bezel.tattoo_corner
+      - bezel.tattoo_file
+      - bezel.resize_tattoo
+      - use_wheels
+      - wheel_rotation
+      - wheel_deadzone
+      - wheel_midzone
+    custom_features:
+      dolphin_aspect_ratio:
+        submenu: DISPLAY
+        prompt: GAME ASPECT RATIO
+        description: The final output image, unrelated to the Wii's emulated NAND setting.
+        choices:
+          Automatic ratio: 0
+          Force 16:9: 1
+          Force 4:3: 2
+          Stretch to window: 3
+      vsync:
+        submenu: DISPLAY
+        prompt: VSYNC
+        description: Fix screen tearing. CPU heavy.
+        preset: switchauto
+      internal_resolution:
+        submenu: RENDERING
+        prompt: RENDERING RESOLUTION
+        description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+        choices:
+          1x native (640x528): 1
+          2x 720p (1280x1056): 2
+          3x 1080p (1920x1584): 3
+          4x 1440p (2560x2112): 4
+          5x (3200x2640): 5
+          6x 4K (3840x3168): 6
+          7x (4480x3696): 7
+          8x 5K (5120x4224): 8
+      ubershaders:
+        submenu: RENDERING
+        prompt: UBERSHADERS
+        description: May not work well on all hardware. Hybrid is preferred, where supported.
+        choices:
+          No Ubershaders: 0
+          Exclusive Ubershaders: 1
+          Hybrid Ubershaders: 2
+          Skip Drawing: 3
+      wait_for_shaders:
+        submenu: RENDERING
+        prompt: PRE-CACHE SHADERS
+        description: Compile shaders on next launch of game (one time). Reduces micro-freezes. Vulkan only.
+        preset: switchauto
+      anisotropic_filtering:
+        submenu: RENDERING
+        prompt: ANISOTROPIC FILTERING
+        description: Improves clarity of distant textures.
+        choices:
+          'Off': 0
+          2x: 1
+          4x: 2
+          8x: 3
+          16x: 4
+      antialiasing:
+        submenu: RENDERING
+        prompt: ANTI-ALIASING
+        description: Enhancement. Smooth out jagged edges on 3D object polygons.
+        choices:
+          'Off': 0
+          2x: 2
+          4x: 4
+          8x: 8
+      use_ssaa:
+        submenu: RENDERING
+        prompt: ANTI-ALIASING MODE
+        description: Use SSAA instead of MSAA for anti-aliasing. SSAA may look better but has a higher performance cost.
+        preset: switchauto
+      hires_textures:
+        submenu: RENDERING
+        prompt: LOAD CUSTOM TEXTURES
+        preset: switchauto
+      manual_texture_sampling:
+        submenu: RENDERING
+        prompt: MANUAL TEXTURE SAMPLING
+        description: Enabling will allow for correct emulation of texture wrapping. This comes at a cost of potential worse performance.
+        preset: switchauto
+      dual_core:
+        submenu: EMULATION
+        prompt: DUAL CORE MODE
+        description: Usually not much faster than single core mode.
+        preset: switchauto
+      gpu_sync:
+        submenu: EMULATION
+        prompt: GPU SYNC
+        description: Speed hack for dual core mode to fix some glitches.
+        preset: switchauto
+      perf_hacks:
+        submenu: EMULATION
+        prompt: PERFORMANCE HACKS
+        description: Increase emulator performance, at the cost of accuracy/stability.
+        preset: switchauto
+      enable_cheats:
+        submenu: EMULATION
+        prompt: ENABLE CHEATS
+        description: To use game cheats or 16/9 Aspect Ratio Fix codes.
+        preset: switchauto
+      enable_mmu:
+        submenu: EMULATION
+        prompt: MEMORY MANAGEMENT UNIT
+        description: Required by some games.
+        preset: switchauto
+      enable_fastdisc:
+        submenu: EMULATION
+        prompt: FAST DISK TRANSFER RATE
+        description: Enhancement. Removes disc loading.
+        preset: switchauto
+      vbi_hack:
+        submenu: EMULATION
+        prompt: VBI SKIP
+        description: Skips Vertical Blank Interrupts when lag is detected, allowing for smooth audio playback when emulation speed is not 100%.
+        preset: switchauto
+      use_pad_profiles:
+        group: CONTROLS
+        prompt: USE PAD PROFILES
+        description: Search for custom configured joystick profiles.
+        preset: switchauto
+      rumble:
+        group: CONTROLS
+        prompt: RUMBLE
+        description: Enable controller rumble capabilities if supported by the controller.
+        preset: switchauto
+      dolphin_port_1_type:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 1
+        prompt: GAMECUBE PORT 1 TYPE
+        description: Change what's plugged into the virtual GameCube ports.
+        choices:
+          None: 0
+          Standard Controller: 6a
+          GameCube Controller: 6b
+          GameCube Adapter for Wii U: 12
+          Steering Wheel: 8
+          Dance Mat: 9
+          DK Bongos: 10
+          Keyboard: 7
+      dolphin_port_2_type:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 2
+        prompt: GAMECUBE PORT 2 TYPE
+        description: Change what's plugged into the virtual GameCube ports.
+        choices:
+          None: 0
+          Standard Controller: 6a
+          GameCube Controller: 6b
+          GameCube Adapter for Wii U: 12
+          Steering Wheel: 8
+          Dance Mat: 9
+          DK Bongos: 10
+          Keyboard: 7
+      dolphin_port_3_type:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 3
+        prompt: GAMECUBE PORT 3 TYPE
+        description: Change what's plugged into the virtual GameCube ports.
+        choices:
+          None: 0
+          Standard Controller: 6a
+          GameCube Controller: 6b
+          GameCube Adapter for Wii U: 12
+          Steering Wheel: 8
+          Dance Mat: 9
+          DK Bongos: 10
+          Keyboard: 7
+      dolphin_port_4_type:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 4
+        prompt: GAMECUBE PORT 4 TYPE
+        description: Change what's plugged into the virtual GameCube ports.
+        choices:
+          None: 0
+          Standard Controller: 6a
+          GameCube Controller: 6b
+          GameCube Adapter for Wii U: 12
+          Steering Wheel: 8
+          Dance Mat: 9
+          DK Bongos: 10
+          Keyboard: 7
+      alt_mappings_1:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 1
+        prompt: ROTATE FACE BUTTONS
+        description: Moves South to West, West to North, etc. Standard controller type only.
+        preset: switchauto
+      alt_mappings_2:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 2
+        prompt: ROTATE FACE BUTTONS
+        description: Moves South to West, West to North, etc. Standard controller type only.
+        preset: switchauto
+      alt_mappings_3:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 3
+        prompt: ROTATE FACE BUTTONS
+        description: Moves South to West, West to North, etc. Standard controller type only.
+        preset: switchauto
+      alt_mappings_4:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 4
+        prompt: ROTATE FACE BUTTONS
+        description: Moves South to West, West to North, etc. Standard controller type only.
+        preset: switchauto
+      deadzone_1:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 1
+        prompt: DEADZONE
+        description: Set joystick deadzone.
+        choices:
+          0%: 0.0
+          5% (Default): 5.0
+          10%: 10.0
+          15%: 15.0
+          20%: 20.0
+          25%: 25.0
+          30%: 30.0
+      deadzone_2:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 2
+        prompt: DEADZONE
+        description: Set joystick deadzone.
+        choices:
+          0%: 0.0
+          5% (Default): 5.0
+          10%: 10.0
+          15%: 15.0
+          20%: 20.0
+          25%: 25.0
+          30%: 30.0
+      deadzone_3:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 3
+        prompt: DEADZONE
+        description: Set joystick deadzone.
+        choices:
+          0%: 0.0
+          5% (Default): 5.0
+          10%: 10.0
+          15%: 15.0
+          20%: 20.0
+          25%: 25.0
+          30%: 30.0
+      deadzone_4:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 4
+        prompt: DEADZONE
+        description: Set joystick deadzone.
+        choices:
+          0%: 0.0
+          5% (Default): 5.0
+          10%: 10.0
+          15%: 15.0
+          20%: 20.0
+          25%: 25.0
+          30%: 30.0
+      jsgate_size_1:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 1
+        prompt: JOYSTICK GATE SIZE
+        description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+        choices:
+          Smaller: smaller
+          Normal (Default): normal
+          Larger: larger
+      jsgate_size_2:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 2
+        prompt: JOYSTICK GATE SIZE
+        description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+        choices:
+          Smaller: smaller
+          Normal (Default): normal
+          Larger: larger
+      jsgate_size_3:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 3
+        prompt: JOYSTICK GATE SIZE
+        description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+        choices:
+          Smaller: smaller
+          Normal (Default): normal
+          Larger: larger
+      jsgate_size_4:
+        group: CONTROLS
+        submenu: GAMECUBE CONTROLLER 4
+        prompt: JOYSTICK GATE SIZE
+        description: Set virtual joysticks gate size. Smaller increases sensitivity. Larger decreases it.
+        choices:
+          Smaller: smaller
+          Normal (Default): normal
+          Larger: larger
+      dplii:
+        group: AUDIO
+        prompt: DOLBY PRO LOGIC II
+        description: Enables Dolby Pro Logic II for surround sound. May impact performance.
+        preset: switchauto
+      ShowDpMsg:
+        submenu: DISPLAY
+        prompt: SHOW ON-SCREEN DISPLAY MESSAGES
+        description: Show on screen display messages (memory card saves..).
+        preset: switchauto
+    systems:
+      - name: gamecube
+        custom_features:
+          widescreen_hack:
+            submenu: DISPLAY
+            prompt: WIDESCREEN HACK (GLITCHY)
+            description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+            preset: switchauto
+          dolphin_SkipIPL:
+            submenu: EMULATION
+            prompt: ENABLE BOOT ANIMATION
+            description: Enable Gamecube boot animation and BIOS access (requires IPL.bin BIOS in appropriate user directory).
+            preset: switchauto
+          gamecube_language:
+            submenu: EMULATION
+            prompt: GAMECUBE LANGUAGE
+            description: Change the Gamecube system language.
+            choices:
+              English/Japanese: 0
+              German: 1
+              French: 2
+              Spanish: 3
+              Italian: 4
+              Dutch: 5
+      - name: wii
+        shared_features:
+          - use_guns
+        custom_features:
+          tv_mode:
+            submenu: DISPLAY
+            prompt: WII TV MODE
+            description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
+            choices:
+              4:3: 0
+              16:9: 1
+          emulatedwiimotes:
+            group: CONTROLS
+            submenu: WII CONTROLLERS
+            prompt: EMULATE WIIMOTE
+            description: Map your controller to an emulated Wiimote.
+            preset: switchauto
+          controller_mode:
+            group: CONTROLS
+            submenu: WII CONTROLLERS
+            prompt: CUSTOMIZE EMULATED WIIMOTE & GAMEPAD
+            description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+            choices:
+              'Off': disabled
+              Classic Controller: cc
+              Classic Controller Pro: pro
+              Wiimote Sideway: side
+              Wiimote Sideway + Swing: is
+              Wiimote Sideway + Tilt: it
+              Wiimote Sideway + Nunchuk: in
+          sensorbar_position:
+            group: CONTROLS
+            submenu: WII CONTROLLERS
+            prompt: SENSOR BAR POSITION
+            description: Position of wii sensor bar relative to the disaply for real wiimotes.
+            choices:
+              Bottom (Default): 0
+              Top: 1
+          dsmotion:
+            group: CONTROLS
+            submenu: WII CONTROLLERS
+            prompt: DUALSHOCK MOTION CONTROL
+            description: Emulate the Wiimote pointer with a DS4's gyroscope.
+            preset: switchauto
+          mouseir:
+            group: CONTROLS
+            submenu: WII CONTROLLERS
+            prompt: MOUSE AS WIIMOTE POINTER
+            description: Emulate the Wiimote pointer with a mouse.
+            preset: switchauto
+          dolphin_crosshair:
+            order: 99
+            group: CONTROLS
+            submenu: LIGHT GUNS
+            prompt: SHOW LIGHT GUN CROSSHAIRS
+            preset: switchauto

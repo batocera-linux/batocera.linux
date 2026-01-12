@@ -6,8 +6,9 @@
 # Version: Commits on Nov 13, 2025
 SUPERMODEL_VERSION = c995ce547756d6642bd44b5391e062a1140aef06
 SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
-SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net
+SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net supermodel-common
 SUPERMODEL_LICENSE = GPLv3
+SUPERMODEL_EMULATOR_INFO = supermodel.supermodel.core.yml
 
 ifeq ($(BR2_PACKAGE_LIBGLEW),y)
 SUPERMODEL_DEPENDENCIES += libglew
@@ -58,3 +59,4 @@ SUPERMODEL_PRE_PATCH_HOOKS += SUPERMODEL_LINE_ENDINGS_FIXUP
 SUPERMODEL_POST_INSTALL_TARGET_HOOKS += SUPERMODEL_POST_PROCESS
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

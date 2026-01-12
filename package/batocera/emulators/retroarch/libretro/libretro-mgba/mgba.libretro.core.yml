@@ -1,0 +1,79 @@
+features:
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  skip_bios_mgba:
+    prompt: SHOW BIOS BOOTLOGO
+    description: Requires BIOS file to be present.
+    choices:
+      Show: false
+      Skip: true
+systems:
+  - name: gb
+    custom_features:
+      sgb_borders:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GB BORDERS
+        description: Only for Super Game Boy enhanced games.
+        choices:
+          'Off': false
+          'On': true
+      color_correction:
+        group: ADVANCED OPTIONS
+        prompt: COLOR CORRECTION
+        description: Simulate LCD color inaccuracy.
+        choices:
+          'Off': false
+          'On': GBA
+  - name: gbc
+    custom_features:
+      sgb_borders:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GB BORDERS
+        description: Only for Super Game Boy enhanced games.
+        choices:
+          'Off': false
+          'On': true
+      color_correction:
+        group: ADVANCED OPTIONS
+        prompt: COLOR CORRECTION
+        description: Simulate LCD color inaccuracy.
+        choices:
+          'Off': false
+          'On': GBC
+  - name: gba
+    custom_features:
+      solar_sensor_level:
+        group: ADVANCED OPTIONS
+        prompt: SOLAR SENSOR LEVEL
+        description: Value to use for the emulated solar sensor (Boktai).
+        choices:
+          "0": 0
+          "1": 1
+          "2": 2
+          "3": 3
+          "4": 4
+          "5": 5
+          "6": 6
+          "7": 7
+          "8": 8
+          "9": 9
+          "10": 10
+      frameskip_mgba:
+        prompt: FRAMESKIP
+        description: Skip frames to improve performance, at the cost of choppy motion.
+        choices:
+          "0": 0
+          "1": 1
+          "2": 2
+          "3": 3
+          "4": 4
+          "5": 5
+          "6": 6
+          "7": 7
+          "8": 8
+          "9": 9
+          "10": 10
+  - sgb

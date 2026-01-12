@@ -1,0 +1,66 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - shaderset
+  - smooth
+  - integerscale
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - ai_service_enabled
+  - ai_target_lang
+  - ai_service_url
+  - ai_service_pause
+  - runahead
+  - preemptiveframes
+  - secondinstance
+  - video_frame_delay_auto
+  - vrr_runloop_enable
+  - video_threaded
+  - rumble_gain
+  - audio_volume
+  - bordersmode
+custom_features:
+  audio_driver:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO DRIVER
+    description: Changing driver can improve audio performance and reduce distortion. Alsathread is recommended for low-end systems.
+    choices:
+      ALSA: alsa
+      ALSAThread: alsathread
+      TinyALSA: tinyalsa
+      SDL2: sdl2
+      Pulse (Default): pulse
+  audio_latency:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO LATENCY
+    description: In milliseconds. Can reduce crackling/cutting out.
+    choices:
+      "256": 256
+      "192": 192
+      "128": 128
+      "64": 64
+      "32": 32
+      "16": 16
+      "8": 8
+  video_allow_rotate:
+    group: ADVANCED OPTIONS
+    prompt: ALLOW ROTATION
+    description: Allow cores to set rotation.
+    choices:
+      "On": "true"
+      "Off": "false"
+  lightgun_map:
+    group: ADVANCED OPTIONS
+    prompt: CONTROLLER TO LIGHT GUN
+    description: Map controller inputs to light gun inputs.
+    choices:
+      "On": "true"
+      "Off": "false"

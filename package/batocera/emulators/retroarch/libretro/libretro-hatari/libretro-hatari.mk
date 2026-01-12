@@ -7,6 +7,7 @@
 LIBRETRO_HATARI_VERSION = a4c9eb0bb79e47a2870c12b04566c1f8d25e4bf3
 LIBRETRO_HATARI_SITE = $(call github,libretro,hatari,$(LIBRETRO_HATARI_VERSION))
 LIBRETRO_HATARI_DEPENDENCIES = libcapsimage zlib retroarch
+LIBRETRO_HATARI_EMULATOR_INFO = hatari.libretro.core.yml
 LIBRETRO_HATARI_LICENSE = GPLv2
 
 LIBRETRO_HATARI_PLATFORM = $(LIBRETRO_PLATFORM)
@@ -39,3 +40,4 @@ define LIBRETRO_HATARI_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

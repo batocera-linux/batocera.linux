@@ -1,0 +1,52 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+features:
+  - padtokeyboard
+custom_features:
+  etlegacy_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      English: en
+      Afrikaans: af
+      Albanian: sq
+      Bulgarian: bg
+      Catalan: ca
+      Czech: cs
+      Danish: da
+      Dutch: nl
+      Finnish: fi
+      French: fr
+      German: de
+      Greek: el
+      Hebrew: he
+      Hungarian: hu
+      Irish: ga
+      Italian: it
+      Japanese: ja
+      Korean: ko
+      Norwegian: 'no'
+      Punjabi: pa
+      Polish: pl
+      Portuguese: pt
+      Romanian: ro
+      Russian: ru
+      Serbian: sr
+      Slovak: sk
+      Slovenian: sl
+      Spanish: es
+      Swedish: sv
+      Turkish: tr
+      Ukrainian: uk
+systems:
+  - etlegacy

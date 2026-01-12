@@ -9,6 +9,7 @@ HCL_SITE = $(call github,ptitSeb,hydracastlelabyrinth,$(HCL_VERSION))
 
 HCL_DEPENDENCIES = sdl2 sdl2_mixer
 HCL_LICENSE = GPL-2.0
+HCL_EMULATOR_INFO = hcl.emulator.yml
 
 HCL_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -20,3 +21,4 @@ define HCL_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

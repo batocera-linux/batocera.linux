@@ -9,6 +9,7 @@ DOSBOX_SITE = $(call github,duganchen,dosbox,$(DOSBOX_VERSION))
 DOSBOX_DEPENDENCIES = fluidsynth libglew libogg libpng libvorbis sdl2 sdl2_net zlib
 DOSBOX_LICENSE = GPLv2
 DOSBOX_AUTORECONF = YES
+DOSBOX_EMULATOR_INFO = dosbox.emulator.yml
 
 ifeq ($(BR2_PACKAGE_LIBGLU),y)
 DOSBOX_DEPENDENCIES += libglu
@@ -24,3 +25,4 @@ DOSBOX_CONF_OPTS = \
     --with-sdl-prefix="$(STAGING_DIR)/usr"
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))
