@@ -76,6 +76,7 @@
 - Libretro Fceumm to 12th of September 2025 build
 - Libretro Flycast to 2.6
 - Libretro MAME to 0.284
+- Libretro Nestopia to 10th of January 2026 build
 - Libretro Mesen to 24th of October 2024 build
 - Libretro Play! to 0.72
 - Libretro Opera to 17th of October 2024 build
