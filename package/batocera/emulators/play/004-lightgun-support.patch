@@ -1,0 +1,250 @@
+--- a/Source/ui_qt/unix/InputProviderEvDev.h
++++ b/Source/ui_qt/unix/InputProviderEvDev.h
+@@ -1,19 +1,38 @@
+ #pragma once
+ 
++#include <vector>
++#include <atomic>
++#include <thread>
+ #include "input/InputProvider.h"
+ #include "GamePadUtils.h"
+ #include "GamePadDeviceListener.h"
+ 
++class CPS2VM;
++
+ class CInputProviderEvDev : public CInputProvider
+ {
++	struct LightGunDevice
++	{
++		int fd = -1;
++		int minX = 0, maxX = 1, minY = 0, maxY = 1;
++		float lastX = 0.5f, lastY = 0.5f;
++	};
++
+ public:
+-	CInputProviderEvDev();
+-	virtual ~CInputProviderEvDev() = default;
++	CInputProviderEvDev(CPS2VM* = nullptr);
++	~CInputProviderEvDev();
+ 
+ 	uint32 GetId() const override;
+ 	std::string GetTargetDescription(const BINDINGTARGET&) const override;
++	bool HasLightGuns() const;
+ 
+ private:
+ 	void OnEvDevInputEvent(GamePadDeviceId, int, int, int, const input_absinfo*);
++	void ScanLightGuns();
++	void PollLightGuns();
+ 	CGamePadDeviceListener m_GPDL;
++	CPS2VM* m_vm = nullptr;
++	std::vector<LightGunDevice> m_guns;
++	std::atomic<bool> m_gunPolling{false};
++	std::thread m_gunThread;
+ };
+--- a/Source/ui_qt/unix/InputProviderEvDev.cpp
++++ b/Source/ui_qt/unix/InputProviderEvDev.cpp
+@@ -1,12 +1,33 @@
+ #include <cassert>
++#include <algorithm>
++#include <fcntl.h>
++#include <unistd.h>
++#include <linux/input.h>
++#include <libudev.h>
+ #include "InputProviderEvDev.h"
++#include "PS2VM.h"
++#include "gs/GSHandler.h"
+ #include "string_format.h"
+ 
+ #define PROVIDER_ID 'evdv'
+ 
+-CInputProviderEvDev::CInputProviderEvDev()
++CInputProviderEvDev::CInputProviderEvDev(CPS2VM* vm)
+     : m_GPDL([this](auto a, auto b, auto c, auto d, auto e) { this->OnEvDevInputEvent(a, b, c, d, e); })
++    , m_vm(vm)
+ {
++	ScanLightGuns();
++	if(!m_guns.empty())
++	{
++		m_gunPolling = true;
++		m_gunThread = std::thread([this]() { PollLightGuns(); });
++	}
++}
++
++CInputProviderEvDev::~CInputProviderEvDev()
++{
++	m_gunPolling = false;
++	if(m_gunThread.joinable()) m_gunThread.join();
++	for(auto& g : m_guns) if(g.fd >= 0) close(g.fd);
+ }
+ 
+ uint32 CInputProviderEvDev::GetId() const
+@@ -19,6 +40,11 @@
+ 	return string_format("EvDev: btn-%d", target.keyId);
+ }
+ 
++bool CInputProviderEvDev::HasLightGuns() const
++{
++	return !m_guns.empty();
++}
++
+ void CInputProviderEvDev::OnEvDevInputEvent(GamePadDeviceId deviceId, int code, int value, int type, const input_absinfo* abs)
+ {
+ 	BINDINGTARGET tgt;
+@@ -66,3 +92,87 @@
+ 		OnInput(tgt, fixedValue);
+ 	}
+ }
++
++void CInputProviderEvDev::ScanLightGuns()
++{
++	struct udev* udev = udev_new();
++	if(!udev) return;
++
++	struct udev_enumerate* enumerate = udev_enumerate_new(udev);
++	udev_enumerate_add_match_subsystem(enumerate, "input");
++	udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++	udev_enumerate_scan_devices(enumerate);
++
++	struct udev_list_entry* entry;
++	udev_list_entry_foreach(entry, udev_enumerate_get_list_entry(enumerate))
++	{
++		struct udev_device* dev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(entry));
++		const char* devnode = udev_device_get_devnode(dev);
++		if(devnode && strstr(devnode, "/dev/input/event"))
++		{
++			int fd = open(devnode, O_RDONLY | O_NONBLOCK);
++			if(fd >= 0)
++			{
++				struct input_absinfo absX, absY;
++				if(ioctl(fd, EVIOCGABS(ABS_X), &absX) >= 0 && ioctl(fd, EVIOCGABS(ABS_Y), &absY) >= 0)
++				{
++					LightGunDevice gun;
++					gun.fd = fd;
++					gun.minX = absX.minimum; gun.maxX = absX.maximum;
++					gun.minY = absY.minimum; gun.maxY = absY.maximum;
++					m_guns.push_back(gun);
++				}
++				else close(fd);
++			}
++		}
++		udev_device_unref(dev);
++	}
++	udev_enumerate_unref(enumerate);
++	udev_unref(udev);
++}
++
++void CInputProviderEvDev::PollLightGuns()
++{
++	while(m_gunPolling)
++	{
++		for(auto& gun : m_guns)
++		{
++			if(gun.fd < 0) continue;
++			struct input_event ev;
++			while(read(gun.fd, &ev, sizeof(ev)) == sizeof(ev))
++			{
++				if(ev.type == EV_ABS)
++				{
++					if(ev.code == ABS_X)
++						gun.lastX = (gun.maxX > gun.minX) ? std::clamp((float)(ev.value - gun.minX) / (gun.maxX - gun.minX), 0.f, 1.f) : 0.5f;
++					else if(ev.code == ABS_Y)
++						gun.lastY = (gun.maxY > gun.minY) ? std::clamp((float)(ev.value - gun.minY) / (gun.maxY - gun.minY), 0.f, 1.f) : 0.5f;
++					if(m_vm)
++					{
++						float x = gun.lastX, y = gun.lastY;
++						if(auto gs = m_vm->GetGSHandler())
++						{
++							auto vp = gs->GetPresentationViewport();
++							if(vp.width > 0 && vp.height > 0)
++							{
++								x = std::clamp((gun.lastX * (vp.offsetX * 2 + vp.width) - vp.offsetX) / vp.width, 0.f, 1.f);
++								y = std::clamp((gun.lastY * (vp.offsetY * 2 + vp.height) - vp.offsetY) / vp.height, 0.f, 1.f);
++							}
++						}
++						m_vm->ReportGunPosition(x, y);
++					}
++				}
++				else if(ev.type == EV_KEY)
++				{
++					BINDINGTARGET tgt;
++					tgt.providerId = PROVIDER_ID;
++					tgt.deviceId = {0, 0, 0, 0, 0, 0};
++					tgt.keyId = ev.code;
++					tgt.keyType = BINDINGTARGET::KEYTYPE::BUTTON;
++					OnInput(tgt, ev.value);
++				}
++			}
++		}
++		std::this_thread::sleep_for(std::chrono::milliseconds(8));
++	}
++}
+--- a/Source/ui_qt/mainwindow.h
++++ b/Source/ui_qt/mainwindow.h
+@@ -15,6 +15,10 @@
+ #include "InputProviderQtMouse.h"
+ #include "ScreenShotUtils.h"
+ 
++#ifdef HAS_LIBEVDEV
++class CInputProviderEvDev;
++#endif
++
+ namespace Ui
+ {
+ 	class MainWindow;
+@@ -104,6 +108,9 @@ private:
+ 	bool m_pauseFocusLost = true;
+ 	std::shared_ptr<CInputProviderQtKey> m_qtKeyInputProvider;
+ 	std::shared_ptr<CInputProviderQtMouse> m_qtMouseInputProvider;
++#ifdef HAS_LIBEVDEV
++	std::shared_ptr<CInputProviderEvDev> m_evdevProvider;
++#endif
+ 	LastOpenCommand m_lastOpenCommand;
+ 	fs::path m_lastPath;
+ 
+--- a/Source/ui_qt/mainwindow.cpp
++++ b/Source/ui_qt/mainwindow.cpp
+@@ -175,7 +175,8 @@ void MainWindow::InitVirtualMachine()
+ 		bindingManager.RegisterInputProvider(std::make_shared<CInputProviderMacOsHid>());
+ #endif
+ #ifdef HAS_LIBEVDEV
+-		bindingManager.RegisterInputProvider(std::make_shared<CInputProviderEvDev>());
++		m_evdevProvider = std::make_shared<CInputProviderEvDev>(m_virtualMachine);
++		bindingManager.RegisterInputProvider(m_evdevProvider);
+ #endif
+ #ifdef WIN32
+ 		bindingManager.RegisterInputProvider(std::make_shared<CInputProviderDirectInput>());
+@@ -843,6 +844,10 @@ void MainWindow::outputWindow_doubleClickEvent(QMouseEvent* ev)
+ 
+ void MainWindow::outputWindow_mouseMoveEvent(QMouseEvent* ev)
+ {
++#ifdef HAS_LIBEVDEV
++	if(m_evdevProvider && m_evdevProvider->HasLightGuns()) return;
++#endif
++
+ 	if(m_virtualMachine->HasGunListener())
+ 	{
+ 		auto gsHandler = m_virtualMachine->GetGSHandler();
+--- a/Source/ui_qt/CMakeLists.txt
++++ b/Source/ui_qt/CMakeLists.txt
+@@ -56,6 +56,11 @@ if(TARGET_PLATFORM_UNIX)
+ 	find_package(LIBEVDEV)
+ 	if(LIBEVDEV_FOUND)
+ 		list(APPEND UI_QT_PROJECT_LIBS ${LIBEVDEV_LIBRARY})
++		find_package(PkgConfig REQUIRED)
++		pkg_check_modules(UDEV libudev)
++		if(UDEV_FOUND)
++			list(APPEND UI_QT_PROJECT_LIBS ${UDEV_LIBRARIES})
++		endif()
+ 		list(APPEND UI_QT_DEFINITIONS_LIST HAS_LIBEVDEV=1)
+ 	endif()
+ 
+@@ -321,6 +326,9 @@ target_include_directories(Play PRIVATE
+ 
+ if(LIBEVDEV_FOUND)
+ 	target_include_directories(Play PRIVATE ${LIBEVDEV_INCLUDE_DIR})
++	if(UDEV_FOUND)
++		target_include_directories(Play PRIVATE ${UDEV_INCLUDE_DIRS})
++	endif()
+ endif()
+ 
+ if(TARGET_PLATFORM_WIN32)
