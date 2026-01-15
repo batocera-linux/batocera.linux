@@ -80,6 +80,7 @@
 - Libretro Mesen to 24th of October 2024 build
 - Libretro Play! to 0.72
 - Libretro Opera to 17th of October 2024 build
+- Libretro Stella to 28th of December 2025 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
