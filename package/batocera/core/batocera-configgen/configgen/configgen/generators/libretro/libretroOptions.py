@@ -87,6 +87,46 @@ def _atari800_options(
         # Joy Hack (for robotron)
         _set_from_system(coreSettings, 'atari800_opt2', system, default="disabled")
 
+# Atari 2600 (Stella)
+def _stella_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Video standard / console type
+    _set_from_system(coreSettings, 'stella_console', system, default='auto')
+
+    # Palette / colors
+    _set_from_system(coreSettings, 'stella_palette', system, default='standard')
+
+    # TV effects / filter
+    _set_from_system(coreSettings, 'stella_filter', system, default='disabled')
+
+    # Overscan cropping
+    _set_from_system(coreSettings, 'stella_crop_hoverscan', system, default='disabled')
+    _set_from_system(coreSettings, 'stella_crop_voverscan', system, default='0')
+
+    # Aspect ratio correction (percent). "par" = pixel aspect ratio
+    _set_from_system(coreSettings, 'stella_ntsc_aspect', system, default='par')
+    _set_from_system(coreSettings, 'stella_pal_aspect', system, default='par')
+
+    # Audio
+    _set_from_system(coreSettings, 'stella_stereo', system, default='auto')
+
+    # Phosphor (motion blur)
+    _set_from_system(coreSettings, 'stella_phosphor', system, default='auto')
+    _set_from_system(coreSettings, 'stella_phosphor_blend', system, default='60')
+
+    # Paddles
+    _set_from_system(coreSettings, 'stella_paddle_mouse_sensitivity', system, default='10')
+    _set_from_system(coreSettings, 'stella_paddle_joypad_sensitivity', system, default='3')
+    _set_from_system(coreSettings, 'stella_paddle_analog_sensitivity', system, default='20')
+    _set_from_system(coreSettings, 'stella_paddle_analog_deadzone', system, default='15')
+    _set_from_system(coreSettings, 'stella_paddle_analog_absolute', system, default='disabled')
+
+    # Lightgun crosshair
+    _set_from_system(coreSettings, 'stella_lightgun_crosshair', system, 'stella_lightgun_crosshair', default='enabled' if guns_need_crosses(guns) else 'disabled')
+
+    # Convenience
+    _set_from_system(coreSettings, 'stella_reload', system, default='off')
 
 # Atari Jaguar
 def _virtualjaguar_options(
