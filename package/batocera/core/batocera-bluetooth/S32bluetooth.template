@@ -73,7 +73,7 @@ case "$1" in
                     if [ ${BOARD} = "radxa-zero-3w" ]; then
                         # it's actually an aic8800 chipset
                         rfkill unblock all
-                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 &
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep &
                         sleep 2
                     else
                         bt_status=$(cat /proc/device-tree/wireless-bluetooth/status)
