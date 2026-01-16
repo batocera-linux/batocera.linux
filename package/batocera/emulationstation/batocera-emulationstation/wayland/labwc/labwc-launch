@@ -1,5 +1,12 @@
 #!/bin/sh
 
+. /etc/profile.d/25-language.sh
+
+# Add the keyboard details to the environment variable
+LABWC_ENV_FILE="/userdata/system/.config/labwc/environment"
+echo "XKB_DEFAULT_LAYOUT=$XKB_DEFAULT_LAYOUT" > "$LABWC_ENV_FILE"
+echo "XKB_DEFAULT_VARIANT=$XKB_DEFAULT_VARIANT" >> "$LABWC_ENV_FILE"
+
 # Allow startup from a user session where WAYLAND_DISPLAY is set,
 # e.g. to restart via /etc/init.d/S31emulationstation start
 unset WAYLAND_DISPLAY
@@ -14,6 +21,6 @@ mkdir -p /var/run
 mkdir -p /var/log
 
 # Start Labwc with specified environment variable, logging output
-echo "Starting Labwc..." >> "$LOG_FILE"
+echo "Starting Labwc with keyboard layout: $XKB_DEFAULT_LAYOUT" >> "$LOG_FILE"
 
 WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/labwc -d -C $LABWC_CONF_DIR > "$LABWC_LOG_FILE" 2>&1
