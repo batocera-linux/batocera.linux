@@ -85,6 +85,7 @@
 - Libretro Mesen to 24th of October 2024 build
 - Libretro Nestopia to 10th of January 2026 build
 - Libretro Opera to 17th of October 2024 build
+- Libretro Picodrive to 3rd of December 2025 build
 - Libretro Play! to 0.72
 - Libretro Snes9x to 8th of September 2025 build
 - Libretro Stella to 28th of December 2025 build
