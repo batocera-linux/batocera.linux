@@ -49,7 +49,8 @@ lsmod 	         	> "${DSYSTEM}/lsmod.txt"
 ps -ef 	         	> "${DSYSTEM}/ps.txt"
 df -h 	         	> "${DSYSTEM}/df.txt"
 netstat -tuan    	> "${DSYSTEM}/netstat.txt"
-lsusb -v         	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
+lsusb            	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
+lsusb -v         	> "${DSYSTEM}/lsusb_v.txt" 2>/dev/null
 command -v tvservice >/dev/null && tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
 command -v tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
