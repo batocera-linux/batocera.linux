@@ -52,6 +52,7 @@
 - Enterprise 64/128 (via CLK emulator)
 - Xroar emulator as an option for the Color Computer (Tandy TRS-80)
 - PC60 as a separate system
+- PD777 libretro core for the Epoch Cassette Vision
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions

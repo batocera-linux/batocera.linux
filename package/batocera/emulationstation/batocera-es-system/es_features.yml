@@ -1072,6 +1072,15 @@ libretro:
                 choices:
                     "Disabled": "disabled"
                     "Enabled":  "enabled"
+    pd777:
+      cfeatures:
+            cassettevision_announce_course_switch:
+                group: DISPLAY
+                prompt: ANNOUNCE COURSE SWITCH
+                description: Show the new setting of the Course Select Switch when changing it with up/down buttons.
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
     dice:
       cfeatures:
             ttl_use_mouse_pointer_for_paddle_1:
