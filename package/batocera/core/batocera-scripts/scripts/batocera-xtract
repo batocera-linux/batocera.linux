@@ -23,17 +23,17 @@
 # ec-11 archives not supported for extraction, ec-12 archives not supported for showing content
 # ec-21 to 29 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz exe (only InnoSetup)
 
-# Is pcmanfm is active then use yad as output. test -t will not work because pcmanfm creates a virtual terminal
+# Is pcmanfm is active then use yad as output. test -t will not work because pcmanfm already created a virtual terminal
 # SSH_CONNECTION and SSH_TTY are active if SSH connection is used
 pgrep pcmanfm >/dev/null && [[ -z "$SSH_CONNECTION" ]] && TERMINAL=0 || TERMINAL=1
 ret=0
-# get path to 7z binary... the so lib is borked, can't use alias 'which'
+# get path to 7z binary as .so lib is borked. alias 'which' can't be used
 bin7z=$(command -v 7z)
 
 list_archive () {
     # We obtain the file names, dirs, date+time and size with minimal filters, unzip -Z1, unrar lb, 7zr l -ba ... and some awk magic
-    # 7z and iso play again the rules and use empty strings for dirs or uncompressed files, so NF changes and we need to check if there are digits
-    # overwrite of old file os 7z -y, unrar -o+ and tar does it always
+    # 7z and iso play against the rules and use empty strings for dirs or uncompressed files, so NF changes and we need to check if there are digits
+    # overwrite of old file: 7z -y, unrar -o+ and tar per default
     case "$1" in
         *.zip) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
         *.iso) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=4; i<NF; ++i) if ($i ~ /^[0-9]+$/) continue; else printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2; }') ;;
@@ -43,7 +43,7 @@ list_archive () {
         *.tar.gz|*.tgz) readarray -t array < <(tar -tvzf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;;
         *.gz) readarray -t array < <($bin7z l -ba "$FILE"  | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($3 ~ /^D/) print "DIR"; else print $4; print $1,$2 }') ;;
         # Unlike gzip is xy only a compression format for a single file, so always open with tar extension and do not use the single compression types
-        *.tar.xz) readarray -t array < <(tar -tvJf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;; 
+        *.tar.xz|*.txz) readarray -t array < <(tar -tvJf "$FILE" | awk '{ print "FALSE"; for(i=6; i<NF; ++i) printf $i" "; print $NF; if ($1 ~ /^d/) print "DIR"; else print $3; print $4, $5; }') ;; 
         *) return 12
     esac
 
@@ -52,7 +52,7 @@ list_archive () {
 
     #Options needs to be added to PCmanFM "file-roller --open"
     readarray -t files <<< $(yad --title="Extract Files" --list --checklist --print-column=2 --separator= --column=Extract:chk --column=Filename:text --column=Size:text --column=Date:text "${array[@]}")
-    [[ -z "${files[0]}" ]] && return 1 || return 0 # No file ticked or Cancel pressed
+    [[ -z "${files[0]}" ]] && return 1 || return 0 # No file checked or cancel-button selected
 }
 
 extract_archive () {
@@ -62,7 +62,7 @@ extract_archive () {
         *.7z)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 23 ;;
         *.iso) $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 25 ;;
         *.tar) tar -xf "$FILE" "${files[@]}" -C "$DEST" || return 26 ;;
-        *.tar.xz) tar -xJf "$FILE" "${files[@]}" -C "$DEST" || return 27 ;;
+        *.tar.xz|*.txz) tar -xJf "$FILE" "${files[@]}" -C "$DEST" || return 27 ;;
         *.tar.gz|*.tgz) tar -xzf "$FILE" "${files[@]}" -C "$DEST" || return 28 ;;
         *.gz)  $bin7z x -y "$FILE" -o"$DEST" "${files[@]}" || return 24 ;;
         *.exe) innoextract -e -L -m "$FILE" -d "$DEST" || return 29 ;;
@@ -71,7 +71,7 @@ extract_archive () {
 }
 
 case "$1" in
-    x|X|clix) #for CLI as universal extraction tool
+    x|X|clix) #CLI as universal extraction tool in shell
         FILE="$2"; DEST="$3"
         [[ -f "$FILE" ]] || { echo "Error! Archive '$FILE' not found"; exit 1; }
         [[ "$1" == "clix" && -z "$DEST" ]] && DEST="$PWD"
@@ -86,8 +86,18 @@ case "$1" in
                 b|B|2) mkdir "$FILENAME"; DEST="${PWD}/${FILENAME}" ;;
                 *)   echo "...Aborted!"; exit 1
             esac
+        else
+            mkdir -p "$DEST"
         fi
-        [[ -d "$DEST" ]] && extract_archive "${FILE,,}" || ret=3
+        ! [[ -d "$DEST" ]] && ret=3 || { extract_archive "${FILE,,}"; ret=$?; } 
+    ;;
+    pyx) #CLI for python hook, extraction of single files possible
+        [[ -f "$2" ]] || { echo "Error! Archive '$2' not found"; exit 1; }
+        [[ -d "$3" ]] || { echo "Error! Destination directory '$3' missing"; exit 1; }
+        FILE="$2"; DEST="$3"
+        shift 3 #heap file arguments for extraction
+        files="$@"
+        extract_archive "${FILE,,}" || ret=$?
     ;;
     --extract)
         FILE="$2"
@@ -106,26 +116,27 @@ case "$1" in
         list_archive "$(basename "${FILE,,}")" "${1,,}" && extract_archive "$(basename "${FILE,,}")" || ret=$?
     ;;
     --add)
-        # We remove $0 and $1, create filename.zip if single dir/file, create subdirname.zip for several files/dirs, we need the work-dir to have the relative pathes
+        # We remove $0 and $1, create filename.zip if single dir/file, create subdirname.zip for several files/dirs, we need the current work-dir to obtain relative pathes for archives
         FILE=("${@:2}")
         DEST="${FILE%/*}"
         [[ -n "${DEST}" ]] && { cd "${DEST}" || { yad --title "Error" --text "Can't open directory '$DEST'"; exit 1; }; } || { DEST="/root"; cd /; }
         [[ ${#FILE[@]} -gt 1 ]] && { DEST="${DEST}/$(basename "${DEST}")"; }
         [[ ${#FILE[@]} -eq 1 ]] && { DEST="$(basename "${FILE%.*}")"; }
         [[ -f "${DEST}.zip" ]] && DEST="${DEST}_$(printf '%x' $(date +%s)).zip" || DEST="${DEST}.zip"
-        FILE=("${FILE[@]/*\/}")   #strip pathes to avoid to build archives with absolue pathes
+        FILE=("${FILE[@]/*\/}")   #strip pathes to avoid the build of archives with absolue pathes
         zip -q -r "$DEST" "${FILE[@]}" && { yad --title "Created zip" --text "Created '$(readlink -f $DEST)' and added ${#FILE[@]} files:\n$(printf '%s\n' "${FILE[@]}")"; exit 0; } || exit 1
     ;;
    *) ret=2
 esac
 
 case $ret in
-    0|1) true ;;
+    0|1|10) true ;;
     2) # Action not defined
         [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 2; }
         echo "Usage: $(basename "$0") <SWITCHES> [ARCHIVEFILE] {DESTINATION-DIR}"; echo
         echo "    x: extraction of current archivfile"
-        echo " clix: extraction of current archive for without prompt (CLI)"
+        echo " clix: extraction of current archive without prompt (CLI)"
+        echo "  pyx: extraction of archive usage: batocera-extract pyk <archive> <destionation> <file1> <file{n}>"
         echo "    l: list archive content"; echo
         echo "Supported archives for extraction: zip 7z rar tar gz iso tar.gz/tgz tar.xz exe"
         echo "Supported archives for list/open : zip 7z rar tar gz iso tar.gz/tgz tar.xz"; echo
@@ -145,5 +156,5 @@ case $ret in
         [[ $TERMINAL -eq 1 ]] && { echo "Error: Archive type: '${FILE##*.}' Extraction error - Failed to extract '$FILE'"; }
     ;;
 esac
-echo "Exit with code: $ret"
+echo "Exit with code: $ret" >&2
 exit $ret

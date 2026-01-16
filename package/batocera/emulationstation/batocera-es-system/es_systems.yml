@@ -3639,7 +3639,7 @@ coco:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
     xroar:
-      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR], incompatible_extensions: [zip, 7z] }
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
   comment_en: |
           MAME requires BIOS file coco.zip and coco3.zip
 
