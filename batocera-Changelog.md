@@ -113,7 +113,7 @@
 - VkQuake to 19th of November 2025 build
 - Xash3D FWGS engine to Oct 17 build
 - Xenia-Canary to build f85f4c3
-- Xemu to v0.8.129
+- Xemu to v0.8.132
 - Ymir to 0.2.1
 ### System
 - Bluez to 5.84
