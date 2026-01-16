@@ -283,15 +283,17 @@ def send_reset_signal(target_device: evdev.UInput) -> None:
     target_device.write(ecodes.EV_REL, ecodes.REL_X, -10000)
     target_device.write(ecodes.EV_REL, ecodes.REL_Y, -10000)
     target_device.syn()
-    
+
     time.sleep(0.10)
-    
-    target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 1)
-    target_device.syn()
-    target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 0)
-    target_device.syn()
-    
-    time.sleep(0.10)
+
+    # Only send mouse click on Wayland (unsafe on X11)
+    if os.environ.get("WAYLAND_DISPLAY"):
+        target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 1)
+        target_device.syn()
+        target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 0)
+        target_device.syn()
+
+        time.sleep(0.10)
 
 def do_reset_mouse() -> None:
     # Create temporary device
@@ -305,7 +307,7 @@ def do_reset_mouse() -> None:
     time.sleep(0.2)
 
     send_reset_signal(sender)
-    
+
     sender.close()
 
 def read_pid() -> str:
