@@ -72,7 +72,7 @@
 - Groovy MAME to 0.284
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
-- Jazz2 to 3.4.0
+- Jazz2 to 3.5.0
 - Libretro Atari800 to 4th of December 2025 build
 - Libretro BlueMSX to 4th of November 2025 build
 - Libretro Bsnes to 19th of December 2025 build
@@ -96,7 +96,7 @@
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
 - Play! to 0.72
-- PCSX2 to v2.6.0
+- PCSX2 to v2.6.2
 - RClone to v1.72.1
 - RetroArch to 1.22.2
 - RPCS3 to v0.0.39
