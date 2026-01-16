@@ -64,7 +64,7 @@
 ### Updated
 - Azahar to 2124
 - BigPEmu to v121
-- CLK to 2025-12-19
+- CLK to 2026-01-06
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
