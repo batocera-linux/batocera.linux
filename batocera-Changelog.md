@@ -57,6 +57,9 @@
 - PC60 as a separate system
 - Cemu for SM8550 devices
 - PD777 libretro core for the Epoch Cassette Vision
+- Sega Cave CV1000 support (currently x86 systems only)
+- Sega Gaelco support (currently x86 systems only)
+- Sega Hikaru support (currently x86 systems only)
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
