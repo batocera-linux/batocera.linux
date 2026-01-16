@@ -84,6 +84,7 @@
 - Libretro Play! to 0.72
 - Libretro Snes9x to 8th of September 2025 build
 - Libretro Stella to 28th of December 2025 build
+- Libretro Vecx to 12th of January 2026 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
