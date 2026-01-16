@@ -77,6 +77,8 @@
 - Libretro Dolphin to 24th of December 2025 build
 - Libretro Fceumm to 12th of September 2025 build
 - Libretro Flycast to 2.6
+- Libretro Genesis Plus GX to 21th of December 2025 build
+- Libretro Genesis Plus GX-Wide to 21th of October 2024 build
 - Libretro MAME to 0.284
 - Libretro Nestopia to 10th of January 2026 build
 - Libretro Mesen to 24th of October 2024 build
