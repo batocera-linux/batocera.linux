@@ -85,6 +85,7 @@
 - Libretro Genesis Plus GX-Wide to 21th of October 2024 build
 - Libretro MAME2003plus to 16th of January 2026 build
 - Libretro MAME to 0.284
+- Libretro MGBA to 17th of January 2026 build
 - Libretro Mesen to 24th of October 2024 build
 - Libretro Nestopia to 10th of January 2026 build
 - Libretro Opera to 17th of October 2024 build
