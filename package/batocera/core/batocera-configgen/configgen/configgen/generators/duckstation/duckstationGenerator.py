@@ -324,7 +324,6 @@ class DuckstationGenerator(Generator):
                 if nplayer > 4:
                     settings.set("ControllerPorts", "MultitapMode", "BothPorts")
             pad_num = f"Pad{nplayer}"
-            gun_num = f"Pointer-{pad.index}"
             sdl_num = f"SDL-{pad.index}"
             ctrl_num = f"Controller{nplayer}"
             # SDL2 configs are always the same for controllers
@@ -371,45 +370,34 @@ class DuckstationGenerator(Generator):
                 settings.set(pad_num, "R", f"{sdl_num}/RightShoulder")
                 settings.set(pad_num, "SteeringLeft", f"{sdl_num}/-LeftX")
                 settings.set(pad_num, "SteeringRight", f"{sdl_num}/+LeftX")
-            # Guns
-            if system.config.use_guns and guns:
-                # Justifier compatible ROM...
-                if metadata.get("gun_type") == "justifier":
-                    settings.set(pad_num, "Type", "Justifier")
-                    settings.set(pad_num, "Trigger", f"{gun_num}/LeftButton")
-                    settings.set(pad_num, "Start", f"{gun_num}/RightButton")
-                # Default or GunCon compatible ROM...
-                else:
-                    settings.set(pad_num, "Type", "GunCon")
-                    settings.set(pad_num, "Trigger", f"{gun_num}/LeftButton")
-
-                ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
-                pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
-                pedalkey = None
-                pedalcname = f"controllers.pedals{nplayer}"
-                if pedalcname in system.config:
-                    pedalkey = system.config[pedalcname]
-                else:
-                    if nplayer in pedalsKeys:
-                        pedalkey = pedalsKeys[nplayer]
-                if pedalkey is None:
-                    settings.set(pad_num, "A", f"{gun_num}/RightButton")
-                else:
-                    settings.set(pad_num, "A", f"{gun_num}/RightButton & Keyboard/{pedalkey.upper()}")
-                ###
-                settings.set(pad_num, "B", f"{gun_num}/MiddleButton")
-                if system.config.get(f"duckstation_{ctrl_num}") == "GunCon":
-                    settings.set(pad_num, "Trigger", f"{sdl_num}/+RightTrigger")
-                    settings.set(pad_num, "ShootOffscreen", f"{sdl_num}/+LeftTrigger")
-                    settings.set(pad_num, "A", f"{sdl_num}/A")
-                    settings.set(pad_num, "B", f"{sdl_num}/B")
-            # Guns crosshair
-            settings.set(pad_num, "CrosshairScale", system.config.get("duckstation_crosshair", "0"))
             # Mouse
             if system.config.get(f"duckstation_{ctrl_num}") == "PlayStationMouse":
                 settings.set(pad_num, "Right", f"{sdl_num}/B")
                 settings.set(pad_num, "Left", f"{sdl_num}/A")
                 settings.set(pad_num, "RelativeMouseMode", f"{sdl_num}true")
+
+        # Guns - configure based on detected guns, not controllers
+        if system.config.use_guns and guns:
+            for nplayer, gun in enumerate(guns[:8], start=1):
+                pad_num = f"Pad{nplayer}"
+                gun_num = f"Pointer-{nplayer - 1}"
+                # Gun mapping is hardcoded into patch.
+                # Justifier ROM mapping: BTN_LEFT = Trigger | BTN_RIGHT = Back | BTN_MIDDLE = Start
+                if metadata.get("gun_type") == "justifier":
+                    settings.set(pad_num, "Type", "Justifier")
+                else:
+                    # GunCon ROM mapping: BTN_LEFT = Trigger | BTN_RIGHT = A | BTN_MIDDLE = B
+                    settings.set(pad_num, "Type", "GunCon")
+                    # Pedal key for button A
+                    pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
+                    pedalkey = system.config.get(f"controllers.pedals{nplayer}", pedalsKeys.get(nplayer))
+                    if pedalkey:
+                        settings.set(pad_num, "A", f"{gun_num}/RightButton & Keyboard/{pedalkey.upper()}")
+                    else:
+                        settings.set(pad_num, "A", f"{gun_num}/RightButton")
+                # Crosshairs - BGR color code. Player 1 red; player 2 blue.
+                settings.set(pad_num, "CrosshairScale", system.config.get("duckstation_crosshair", "0"))
+                settings.set(pad_num, "CrosshairColor", "0000FF" if nplayer == 1 else "FF0000")
 
         ## [Hotkeys]
         if not settings.has_section("Hotkeys"):
