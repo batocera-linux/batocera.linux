@@ -111,6 +111,10 @@ class PlayGenerator(Generator):
             'r3': 'r3'
         }
 
+        # Light gun: buttons to skip on controller (will be mapped to gun instead)
+        use_guns = guns and len(guns) > 0
+        gun_buttons = {'circle', 'triangle', 'start', 'select'} if use_guns else set()
+
         # Functions to convert the GUID
         def get_device_id(dev: evdev.InputDevice) -> str:
             uniq = dev.uniq  # Unique string (e.g., MAC) for the device
@@ -192,6 +196,10 @@ class PlayGenerator(Generator):
                 if input.name not in playMapping:
                     continue
 
+                # Skip buttons that will be mapped to gun
+                if playMapping[input.name] in gun_buttons:
+                    continue
+
                 if input.type == 'axis':
                     key_type = 1
                     binding_type = 1
@@ -213,6 +221,31 @@ class PlayGenerator(Generator):
                     key_id = input.code
                     hat_value = -1
                     create_input_preferences(input_config, pad_guid, cast('str', key_id), key_type, provider_id, nplayer, input.name, binding_type, hat_value)
+
+        # Light gun button bindings
+        if use_guns:
+            # evdev button -> PS2 button mapping for Namco gun games
+            gun_mapping = [(272, 'circle'), (273, 'triangle'), (274, 'start'), (257, 'select')]
+            for nplayer in range(1, min(len(guns) + 1, 3)):
+                for key_id, ps2_btn in gun_mapping:
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.bindingtarget1.deviceId",
+                                  Type="string", Value="0:0:0:0:0:0")
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.bindingtarget1.keyId",
+                                  Type="integer", Value=str(key_id))
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.bindingtarget1.keyType",
+                                  Type="integer", Value="0")
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.bindingtarget1.providerId",
+                                  Type="integer", Value="1702257782")
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.bindingtype",
+                                  Type="integer", Value="1")
+                    ET.SubElement(input_config, "Preference",
+                                  Name=f"input.pad{nplayer}.{ps2_btn}.povhatbinding.refvalue",
+                                  Type="integer", Value="-1")
 
         # Save the controller settings to the specified input file
         input_tree = ET.ElementTree(input_config)
