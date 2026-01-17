@@ -1,0 +1,13 @@
+diff --git a/src/util/imgui_fullscreen.cpp b/src/util/imgui_fullscreen.cpp
+--- a/src/util/imgui_fullscreen.cpp
++++ b/src/util/imgui_fullscreen.cpp
+@@ -2920,7 +2920,8 @@ void ImGuiFullscreen::DrawNotifications(ImVec2& position, float spacing)
+       }
+     }
+ 
+-    const ImVec2 box_min(position.x, actual_y);
++    const float centered_x = (ImGui::GetIO().DisplaySize.x - box_width) / 2.0f;
++    const ImVec2 box_min(centered_x, actual_y);
+     const ImVec2 box_max(box_min.x + box_width, box_min.y + box_height);
+     const u32 background_color = (toast_background_color & ~IM_COL32_A_MASK) | (opacity << IM_COL32_A_SHIFT);
+     const u32 border_color = (toast_border_color & ~IM_COL32_A_MASK) | (opacity << IM_COL32_A_SHIFT);
