@@ -92,6 +92,7 @@
 - Libretro Play! to 0.72
 - Libretro Snes9x to 8th of September 2025 build
 - Libretro Stella to 28th of December 2025 build
+- Libretro Swanstation to 2nd of August 2025 build
 - Libretro Vecx to 12th of January 2026 build
 - Libretro YabaSanshiro to 20th of December 2025 build
 - MelonDS to 1.1
