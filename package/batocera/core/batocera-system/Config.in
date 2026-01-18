@@ -899,9 +899,10 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 												BR2_PACKAGE_BATOCERA_TARGET_H3	    || \
 												BR2_PACKAGE_BATOCERA_TARGET_H5	    || \
 												BR2_PACKAGE_BATOCERA_TARGET_H6
-
-
-	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_WAYLAND_LABWC
+	
+	# All XWayland boards should have enough pony for Redream
+	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+	                                   BR2_PACKAGE_BATOCERA_XWAYLAND
 
 	help
 	  Sega Dreamcast and Naomi/Atomiswave emulation support
