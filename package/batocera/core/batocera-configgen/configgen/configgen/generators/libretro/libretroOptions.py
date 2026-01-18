@@ -2329,6 +2329,16 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# ColecoVision (GearColeco)
+def _gearcoleco_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Refresh Rate (requires restart)
+    _set_from_system(coreSettings, 'gearcoleco_timing', system, default='Auto')
+    
+    # Aspect Ratio
+    _set_from_system(coreSettings, 'gearcoleco_aspect_ratio', system, default='1:1 PAR')
+
 
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
