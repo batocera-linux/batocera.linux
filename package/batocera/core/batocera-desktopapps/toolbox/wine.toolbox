@@ -53,9 +53,9 @@ Setup_Fonts() {
 Delete_Unused_Prefixes() {
   local i
   local WR WR_ARRAY WR_SYS
-  # wine-runner from batocera.conf, fallback to wine-tkg
+  # get game wine-runner from batocera.conf, fallback to a default runner
   while read i; do
-    WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$i")" || echo wine-tkg)
+    WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$i")" || echo "${WR_BATO_DEFAULT}")
     WR_ARRAY+=("./$WR/${i}.wine")
   done < <(find "$1" -maxdepth 1 -printf '%P\n')
 
@@ -95,8 +95,8 @@ Autorun_From_File() {
 
 Symlink_Prefix() {
   local WR WP_DEF WP_GAME
-  # wine-runner from batocera.conf, fallback to wine-tkg
-  WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$1")" || echo wine-tkg)
+  # wine-runner from batocera.conf, fallback to WR_DEFAULT
+  WR=$(batocera-settings-get "$(printf 'windows[\"%s\"].wine-runner' "$1")" || echo "${WR_BATO_DEFAULT}")
   WP_DEF="/userdata/system/wine-bottles/windows/${WR}/default-prefix"
   WP_GAME="/userdata/system/wine-bottles/windows/${WR}/${1}.wine"
   [[ ! -d "$WP_DEF" && ! -d "$WP_GAME" ]] && { echo "Error: $WP_DEF and $WP_GAME not found" | yad --text-info --wrap --fontname="${f[2]}"; exit; }
@@ -142,6 +142,9 @@ elif fc-list -q "${ft}"; then
   fx="</span>"
 fi
 
+# if there is a WINE-default-runner setted use it -> fallback to 'wine-tkg'
+WR_BATO_DEFAULT=$(batocera-settings-get windows.wine-runner || echo wine-tkg)
+
 case ${1} in
   --del-unused-prefix)
     #use %d for basedir und %b for basename
@@ -178,4 +181,3 @@ case ${1} in
     Setup_Fonts
   ;;
 esac
-
