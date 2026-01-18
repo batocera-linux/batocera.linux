@@ -3,10 +3,10 @@
 # libretro-yabasanshiro
 #
 ################################################################################
-# Version: Commits on Jun 3, 2023
+# Version: Commits on Dec 20, 2025
 # Need to use this branch : https://github.com/libretro/yabause/tree/yabasanshiro
 LIBRETRO_YABASANSHIRO_BRANCH = yabasanshiro
-LIBRETRO_YABASANSHIRO_VERSION = 39535a6abcad5abf9f71c8b2a7975f005ee12ed6
+LIBRETRO_YABASANSHIRO_VERSION = d2afc930613744ee7bea600bde8c9558f68dba60
 LIBRETRO_YABASANSHIRO_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABASANSHIRO_VERSION))
 LIBRETRO_YABASANSHIRO_LICENSE = GPLv2
 LIBRETRO_YABASANSHIRO_DEPENDENCIES += retroarch
