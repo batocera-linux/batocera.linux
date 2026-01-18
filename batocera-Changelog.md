@@ -40,6 +40,7 @@
   - Control brightness on multiple screens (Ayn Thor)
   - Wifi country selector
   - Ability to add a "sort name" that take precedence over the (scraped) game name in metadata
+  - New Keyboard Layout and Keyboard Variant options
 - Batocera Control Center (on-screen interface for global configuration and control, [hotkey][east] by default)
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)

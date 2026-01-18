@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SCRIPTS_VERSION = 4.1
+BATOCERA_SCRIPTS_VERSION = 4.2
 BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
@@ -87,6 +87,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/getLocalWaylandDisplay             $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-storage-manager           $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-storage-udev              $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-keyboard                  $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_MOUSE
