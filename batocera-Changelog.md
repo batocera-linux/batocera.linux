@@ -64,6 +64,8 @@
 - Moonlight has transitioned from Moonlight Embedded to Moonlight QT for the majority of boards to allow for more hardware acceleration.
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
+- DOSBox Staging's working directory is now set to the games' folder, allowing for local and relative (img)mount and conf file references.
+- DOSBox Staging will fallback to a C:\> prompt inside the games' folder if its missing dosbox.cfg/.conf/.bat files.
 ### Updated
 - Azahar to 2124
 - BigPEmu to v121

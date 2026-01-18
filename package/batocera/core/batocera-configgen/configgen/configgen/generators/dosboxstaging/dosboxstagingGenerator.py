@@ -13,36 +13,51 @@ if TYPE_CHECKING:
 class DosBoxStagingGenerator(Generator):
 
     # Main entry of the module
-    # Return command
+    # Returns a populated Command object
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # Find rom path
-        batFile = rom / "dosbox.bat"
-        gameConfFile_cfg = rom / "dosbox.cfg"
-        gameConfFile_conf = rom / "dosbox.conf"
 
+        # Common arguments
         commandArray: list[Path | str] = [
             '/usr/bin/dosbox-staging',
-            "-fullscreen",
-            "-userconf",
-            "-exit",
+            "--working-dir", f"""{rom!s}""",
+            "--fullscreen"
         ]
 
-        # Append the batch file to execute
-        if batFile.is_file():
-            commandArray.append(batFile)
+        dosbox_cfg = rom / "dosbox.cfg"
+        dosbox_conf = rom / "dosbox.conf"
+        dosbox_bat = rom / "dosbox.bat"
 
-        commandArray.extend(["-c", f"""set ROOT={rom!s}"""])
+        is_configured = False
 
-        # Determine which config file to use
-        configFileToUse = None
-        if gameConfFile_cfg.is_file():
-            configFileToUse = gameConfFile_cfg
-        elif gameConfFile_conf.is_file():
-            configFileToUse = gameConfFile_conf
+        if dosbox_cfg.is_file():
+            is_configured = True
+            commandArray.extend(["-conf", dosbox_cfg.name])
 
-        # Append the specific game config file if found
-        if configFileToUse is not None:
-            commandArray.extend(["-conf", str(configFileToUse)])
+        elif dosbox_conf.is_file():
+            is_configured = True
+            commandArray.extend(["-conf", dosbox_conf.name])
+
+        if dosbox_bat.is_file():
+            is_configured = True
+            commandArray.extend([dosbox_bat.name])
+
+        if is_configured:
+           # If the game's configured, then we can disable the startup logos and
+           # automatically exit when the game quits.
+           #
+           commandArray.extend([
+               "--set", "startup_verbosity=quiet",
+               "--exit"])
+        else:
+            # If the game's not configured, then place the user at a valid C:\>
+            # prompt inside the game's root directory.
+            #
+            commandArray.extend([
+                "-c", f"""set ROOT={rom!s}""",
+                "-c", "@echo off",
+                "-c", "mount c .",
+                "-c", "c:"
+            ])
 
         return Command.Command(array=commandArray)
 
