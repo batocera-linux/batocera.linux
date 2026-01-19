@@ -20,6 +20,35 @@ mkdir -p /userdata/system/logs
 mkdir -p /var/run
 mkdir -p /var/log
 
+# GPU Selection Logic
+PRIME_PCI_ID=""
+
+# Check which Prime GPU was detected by the startup script
+if [ -f "/var/tmp/nvidia.prime" ]; then
+    PRIME_PCI_ID=$(cat /var/tmp/nvidia.prime)
+elif [ -f "/var/tmp/amd.prime" ]; then
+    PRIME_PCI_ID=$(cat /var/tmp/amd.prime)
+elif [ -f "/var/tmp/intel.prime" ]; then
+    PRIME_PCI_ID=$(cat /var/tmp/intel.prime)
+fi
+
+# If a Prime GPU was identified, we must find its /dev/dri/cardX path
+if [ -n "$PRIME_PCI_ID" ]; then
+    # Convert "pci-0000_03_00_0" back to "0000:03:00.0" for sysfs matching
+    SYSFS_ID=$(echo "$PRIME_PCI_ID" | sed -e 's/^pci-//' -e 's/_/:/g' -e 's/:/./3')
+
+    # Find which card matches this PCI ID
+    for card in /sys/class/drm/card*; do
+        # Check if the device link points to our PCI ID
+        if readlink -f "$card/device" | grep -q "$SYSFS_ID"; then
+            CARD_NAME=$(basename "$card")
+            export WLR_DRM_DEVICES="/dev/dri/$CARD_NAME"
+            echo "Forcing Primary GPU: $WLR_DRM_DEVICES ($SYSFS_ID)" >> "$LOG_FILE"
+            break
+        fi
+    done
+fi
+
 # Start Labwc with specified environment variable, logging output
 echo "Starting Labwc with keyboard layout: $XKB_DEFAULT_LAYOUT" >> "$LOG_FILE"
 
