@@ -58,6 +58,7 @@
 - Light gun accuracy in MAME
 - Crosshairs for light guns in PCSX2
 - Massive MAME log (switchres verbose disabled by default)
+- PCSX2 light gun mapping (START can now be pressed on the light gun instead of controller)
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.

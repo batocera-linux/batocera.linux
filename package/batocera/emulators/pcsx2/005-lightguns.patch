@@ -119,7 +119,7 @@ index a69dbb1..d6d0e04 100644
 +		updateState(us, BID_C, event->value != 0);
 +		break;
 +	    case BTN_MIDDLE:
-+		updateState(us, BID_A, event->value != 0);
++		updateState(us, BID_START, event->value != 0);
 +		break;
 +	    case BTN_1:
 +		updateState(us, BID_B, event->value != 0);
@@ -128,7 +128,7 @@ index a69dbb1..d6d0e04 100644
 +		updateState(us, BID_RECALIBRATE, event->value != 0);
 +		break;
 +	    case BTN_3:
-+		updateState(us, BID_START, event->value != 0);
++		updateState(us, BID_A, event->value != 0);
 +		break;
 +	    case BTN_4:
 +		updateState(us, BID_SELECT, event->value != 0);
