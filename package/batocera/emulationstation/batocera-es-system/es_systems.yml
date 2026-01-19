@@ -3454,9 +3454,12 @@ bbc:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
-          Requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
+          MAME requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Also sample pack bbc.zip in bios/mame/samples
+          CLK requires Acorn/{basic.rom or basic2.rom} (usual crc32: 79434781); BBCMicro/os12.rom (usual crc32: 3c14fc70) and BBCMicro/dfs-2.26.rom (usual crc32: 5ae33e94)
   comment_br: |
           Requer os arquivo de BIOS MAME bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Também pacote de samples bbc.zip em bios/mame/samples
