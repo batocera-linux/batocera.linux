@@ -39,6 +39,7 @@ ES_SETTINGS: Final = USER_ES_DIR / 'es_settings.cfg'
 ES_GUNS_METADATA: Final = _ES_RESOURCES_DIR / 'gungames.xml'
 ES_WHEELS_METADATA: Final = _ES_RESOURCES_DIR / 'wheelgames.xml'
 ES_GAMES_METADATA: Final = _ES_RESOURCES_DIR / 'gamesdb.xml'
+ES_GUNS_ART_METADATA: Final = Path('/usr/share/batocera/configgen/gamesbuttonsdb.xml')
 
 DEFAULTS_DIR: Final = BATOCERA_SHARE_DIR / 'configgen'
 

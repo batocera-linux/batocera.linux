@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ... import controllersConfig
-from ...batoceraPaths import BIOS, ROMS, ensure_parents_and_open
+from ...batoceraPaths import BIOS, ROMS, ES_GAMES_METADATA, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
-from ...utils import videoMode
+from ...utils import videoMode, metadata
 from ...utils.configparser import CaseSensitiveConfigParser
+
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -970,7 +970,7 @@ def _mupen64plus_next_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = controllersConfig.getGamesMetaData(system.name, rom)
+                metadata = metadata.getGamesMetaData(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
@@ -1038,7 +1038,7 @@ def _parallel_n64_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = controllersConfig.getGamesMetaData(system.name, rom)
+                metadata = metadata.getGamesMetaData(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
