@@ -27,7 +27,7 @@
 # SSH_CONNECTION and SSH_TTY are active if SSH connection is used
 pgrep pcmanfm >/dev/null && [[ -z "$SSH_CONNECTION" ]] && TERMINAL=0 || TERMINAL=1
 ret=0
-# get path to 7z binary as .so lib is borked. alias 'which' can't be used
+# get path to 7z binary as 7z.so lib is borked. Alias 'which' can't be used
 bin7z=$(command -v 7z)
 
 list_archive () {
@@ -48,7 +48,9 @@ list_archive () {
     esac
 
     # Just output for CLI as list - usefull for further scripting
-    [[ "${2}" == "l" ]] && { printf '%s\t%s\t%s%s\n' "${array[@]}" | awk -F'\t' '{ print $2 }'; return 10; }
+    [[ "${2}" == "l" ]]  && { printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $2 }'; return 10; }
+    [[ "${2}" == "s" ]]  && { printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3 }'; return 10; }
+    [[ "${2}" == "f" ]] && { printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }'; return 10; }
 
     #Options needs to be added to PCmanFM "file-roller --open"
     readarray -t files <<< $(yad --title="Extract Files" --list --checklist --print-column=2 --separator= --column=Extract:chk --column=Filename:text --column=Size:text --column=Date:text "${array[@]}")
@@ -89,7 +91,7 @@ case "$1" in
         else
             mkdir -p "$DEST"
         fi
-        ! [[ -d "$DEST" ]] && ret=3 || { extract_archive "${FILE,,}"; ret=$?; } 
+        ! [[ -d "$DEST" ]] && ret=3 || { extract_archive "${FILE,,}"; ret=$?; }
     ;;
     pyx) #CLI for python hook, extraction of single files possible
         [[ -f "$2" ]] || { echo "Error! Archive '$2' not found"; exit 1; }
@@ -110,7 +112,7 @@ case "$1" in
         DEST="${2/file:\/\/}"; DEST=$(printf '%b' "${DEST//%/\\x}")
         extract_archive "${FILE,,}" || ret=$?
     ;;
-    --open|open|l|L)
+    --open|open|[lLsSfF])
         FILE="$2"
         DEST="$(readlink -f "$(dirname "${FILE}")")"
         list_archive "$(basename "${FILE,,}")" "${1,,}" && extract_archive "$(basename "${FILE,,}")" || ret=$?
@@ -123,7 +125,7 @@ case "$1" in
         [[ ${#FILE[@]} -gt 1 ]] && { DEST="${DEST}/$(basename "${DEST}")"; }
         [[ ${#FILE[@]} -eq 1 ]] && { DEST="$(basename "${FILE%.*}")"; }
         [[ -f "${DEST}.zip" ]] && DEST="${DEST}_$(printf '%x' $(date +%s)).zip" || DEST="${DEST}.zip"
-        FILE=("${FILE[@]/*\/}")   #strip pathes to avoid the build of archives with absolue pathes
+        FILE=("${FILE[@]/*\/}")   #strip pathes this builds archives with relative pathes
         zip -q -r "$DEST" "${FILE[@]}" && { yad --title "Created zip" --text "Created '$(readlink -f $DEST)' and added ${#FILE[@]} files:\n$(printf '%s\n' "${FILE[@]}")"; exit 0; } || exit 1
     ;;
    *) ret=2
@@ -134,14 +136,16 @@ case $ret in
     2) # Action not defined
         [[ $TERMINAL -eq 0 ]] && { yad --title "Error" --text "Action: '$1' is unknown"; exit 2; }
         echo "Usage: $(basename "$0") <SWITCHES> [ARCHIVEFILE] {DESTINATION-DIR}"; echo
-        echo "    x: extraction of current archivfile"
+        echo "    x: extraction of archiv with prompt if DESTINATION is missing"
         echo " clix: extraction of current archive without prompt (CLI)"
-        echo "  pyx: extraction of archive usage: batocera-extract pyk <archive> <destionation> <file1> <file{n}>"
-        echo "    l: list archive content"; echo
+        echo "  pyx: extraction of single files: $(basename "$0") pyx <ARCHIVEFILE> <DESTINATION-DIR> <file1> ... <file{n}>"
+        echo "    l: list files in archive content"
+        echo "    s: list sizes in archive content"
+        echo "    f: list size and files"; echo
         echo "Supported archives for extraction: zip 7z rar tar gz iso tar.gz/tgz tar.xz exe"
         echo "Supported archives for list/open : zip 7z rar tar gz iso tar.gz/tgz tar.xz"; echo
         echo "error-codes/return codes:"
-        echo "  ec-0 no error, ec-10 parameter 'l', okay -- ec-1 general error -- ec-2 unknown action"
+        echo "  ec-0 no error, ec-10 parameter 'l' 's' or 'f', okay -- ec-1 general error -- ec-2 unknown action"
         echo "  ec-11 to 12 -- archive type not supported for extraction, listing"
         echo "  ec-21 to 28 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz"
         echo "  ec-29       -- file extraction error for exe-files (InnoSetup)" ;echo
