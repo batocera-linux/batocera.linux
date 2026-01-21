@@ -1,0 +1,17 @@
+diff --git a/src/fs-uae/paths.c b/src/fs-uae/paths.c
+--- a/src/fs-uae/paths.c
++++ b/src/fs-uae/paths.c
+@@ -451,12 +451,7 @@ const char *fs_uae_themes_dir()
+ 
+ const char *fs_uae_plugins_dir(void)
+ {
+-    static const char *path;
+-    if (!path) {
+-        path = get_default_dir("Plugins", "plugins_dir", NULL,
+-                "plugins-dir");
+-    }
+-    return path;
++    return "/usr/share/fs-uae/Plugins";
+ }
+ 
+ const char *fs_uae_system_dir(void)
