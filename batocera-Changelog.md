@@ -76,6 +76,7 @@
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
 - Flycast to 2.6
+- FS-UAE to v3.2.35
 - Groovy MAME to 0.284
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
