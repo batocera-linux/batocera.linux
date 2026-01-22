@@ -276,7 +276,7 @@ def do_send(key: str, delay: None | int) -> None:
             if delay:
                 time.sleep(delay)
             else:
-                time.sleep(0.1)
+                time.sleep(0.3) # some emulators (ra, mame) needs some time otherwise they don't see the touch was pressed
             send_keys(sender, code, False)
 
 def send_reset_signal(target_device: evdev.UInput) -> None:
