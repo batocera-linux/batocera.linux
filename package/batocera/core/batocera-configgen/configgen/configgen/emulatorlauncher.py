@@ -35,7 +35,8 @@ from .utils import bezels as bezelsUtil, metadata, videoMode, wheelsUtils
 from .utils.evmapy import evmapy
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
-from .utils.squashfs import squashfs_rom
+from .utils.squashfs import mount_squashfs
+from .utils.overlayfs import mount_overlayfs
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -55,12 +56,23 @@ _active_player_controllers = []
 _evmapy_instance = None
 
 def main(args: argparse.Namespace, maxnbplayers: int) -> int:
+    original_rom = args.rom
+
     # squashfs roms if squashed
-    if args.rom.suffix == ".squashfs":
-        with squashfs_rom(args.rom) as rom:
-            return start_rom(args, maxnbplayers, rom, args.rom)
+    if original_rom.suffix == ".squashfs":
+        with mount_squashfs(original_rom) as squash_rom:
+
+            # Do we need a writable overlay for the read-only squash?
+            system = Emulator(args, original_rom)
+            generator = get_generator(system.config.emulator)
+            if generator.writesToRom():
+                rom_saves_dir = SAVES / original_rom.parent.name / original_rom.stem
+                with mount_overlayfs(squash_rom, rom_saves_dir) as overlay_rom:
+                    return start_rom(args, maxnbplayers, overlay_rom, original_rom)
+
+            return start_rom(args, maxnbplayers, squash_rom, original_rom)
     else:
-        return start_rom(args, maxnbplayers, args.rom, args.rom)
+        return start_rom(args, maxnbplayers, original_rom, original_rom)
 
 def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_rom: Path) -> int:
     global _active_player_controllers, _evmapy_instance
