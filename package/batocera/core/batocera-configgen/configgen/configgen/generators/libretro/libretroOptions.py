@@ -2407,6 +2407,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'mrboom': _mrboom_options,
     'hatarib': _hatarib_options,
     'mednafen_wswan': _mednafen_wswan_options,
+    'stella': _stella_options,
 }
 
 
