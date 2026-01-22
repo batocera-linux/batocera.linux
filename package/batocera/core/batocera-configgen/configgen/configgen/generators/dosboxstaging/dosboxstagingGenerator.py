@@ -61,6 +61,11 @@ class DosBoxStagingGenerator(Generator):
 
         return Command.Command(array=commandArray)
 
+
+    def getMouseMode(self, config, rom):
+        return True
+
+
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "dosboxstaging",
