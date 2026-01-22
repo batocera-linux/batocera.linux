@@ -156,6 +156,7 @@
 - Wine-TKG to 10.20
 - Wine Proton to 10.0-3
 - WLRoots to 0.19.2
+- Xpad-noone to Oct 30, 2025 build
 - XOne to v0.5.2
 - XWayland to 24.1.9
 
