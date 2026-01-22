@@ -59,6 +59,7 @@
 - Crosshairs for light guns in PCSX2
 - Massive MAME log (switchres verbose disabled by default)
 - PCSX2 light gun mapping (START can now be pressed on the light gun instead of controller)
+- PS4 and PSVita games not appearing in the "last played" auto collection
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
