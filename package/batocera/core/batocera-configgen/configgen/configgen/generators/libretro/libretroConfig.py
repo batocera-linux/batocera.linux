@@ -738,6 +738,8 @@ def createLibretroConfig(
         retroarchConfig['menu_enable_widgets'] = 'false'
         retroarchConfig['video_msg_bgcolor_enable'] = 'true'
         retroarchConfig['video_font_size'] = '11'
+    else:
+        retroarchConfig['menu_enable_widgets'] = 'true'
 
     # AI option (service for game translations)
     if system.config.get_bool('ai_service_enabled'):
