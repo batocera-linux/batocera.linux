@@ -22,15 +22,8 @@ XROAR_CONF_OPTS += --without-cocoa
 XROAR_CONF_OPTS += --without-oss
 XROAR_CONF_OPTS += --without-coreaudio
 XROAR_CONF_OPTS += --without-pulse
-
-ifeq ($(BR2_PACKAGE_HAS_LIBGL)$(BR2_PACKAGE_LIBGTK3),yy)
-    XROAR_DEPENDENCIES += libgl libgtk3
-    XROAR_CONF_OPTS += --with-gtk3
-    XROAR_CONF_OPTS += --with-gtkgl
-else
-    XROAR_CONF_OPTS += --without-gtk3
-    XROAR_CONF_OPTS += --without-gtkgl
-endif
+XROAR_CONF_OPTS += --without-gtk3
+XROAR_CONF_OPTS += --without-gtkgl
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
     XROAR_DEPENDENCIES += xlib_libX11 xlib_libXext
