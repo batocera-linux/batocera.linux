@@ -3,8 +3,8 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Last commit on Dec 19, 2025
-BATOCERA_CONTROLCENTER_VERSION = ce403f95bb8f5f25fb174e032ba8b8fa60080df1
+# Last commit on Jan 15, 2026
+BATOCERA_CONTROLCENTER_VERSION = c2ed4ded6ef30a557e579bf7567ef44cbca3b205
 BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
 BATOCERA_CONTROLCENTER_STE_METHOD = git
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
@@ -31,7 +31,7 @@ define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	install -m 0755 $(@D)/shell.py          $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/refresh.py        $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/gamepads.py       $(TARGET_DIR)/usr/share/batocera/controlcenter
-	install -m 0755 $(@D)/PdfViewer.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
+	install -m 0755 $(@D)/DocViewer.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
 	cd $(TARGET_DIR)/usr/bin; ln -sf ../share/batocera/controlcenter/controlcenter.py \
 	    ./batocera-controlcenter-app
 	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/batocera-controlcenter-toogle.sh \

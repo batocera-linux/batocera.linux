@@ -62,6 +62,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-powkiddy-x55/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rk3326/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rocknix-abl/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-radxa-zero-3/Config.in"
   endmenu
 
   menu "Toolchain"
@@ -410,6 +411,7 @@ menu "Emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/azahar/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/clk/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ymir/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/xroar/Config.in"
   endmenu
 
   menu "WINE"
@@ -701,6 +703,7 @@ menu "Audio"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/wm8960-audio-hat/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/ossp/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/munt/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/audio/steamdeck-dsp/Config.in"
 endmenu
 
 menu "Database"

@@ -30,7 +30,6 @@ class MoonlightGenerator(Generator):
     def get_moonlight_executable(self):
         client_executables = [
             '/usr/bin/moonlight-qt',
-            '/usr/bin/moonlight'
         ]
         for executable in client_executables:
             path = Path(executable)
@@ -39,11 +38,14 @@ class MoonlightGenerator(Generator):
         return None
 
     def get_moonlight_host(self):
-        config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"
-        config = ConfigParser()
-        config.read(config_path)
-        host = config["hosts"]["1\\manualaddress"]
-        return host
+        try:
+            config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"
+            config = ConfigParser()
+            config.read(config_path)
+            host = config["hosts"]["1\\manualaddress"]
+            return host
+        except:
+            return None
 
     # Main entry of the module
     # Configure fba and return a command
@@ -64,7 +66,13 @@ class MoonlightGenerator(Generator):
         )
 
     def generate_qt(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        commandArray = ['/usr/bin/moonlight-qt', 'stream']
+        commandArray = ['/usr/bin/moonlight-qt']
+
+        host = self.get_moonlight_host()
+
+        if not host:
+            return commandArray
+
 
         # resolution
         match system.config.get("moonlight_resolution"):
@@ -109,8 +117,9 @@ class MoonlightGenerator(Generator):
             commandArray.append('--no-quit-after')
 
         # host
-        host = self.get_moonlight_host()
-        commandArray.append(host)
+        if host:
+            commandArray.append('stream')
+            commandArray.append(host)
 
         # app
         app = rom.read_text().rstrip()

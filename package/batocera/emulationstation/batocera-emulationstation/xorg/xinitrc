@@ -10,6 +10,7 @@ fi
 display_log="/userdata/system/logs/display.log"
 nvidia_log="/userdata/system/logs/nvidia.log"
 amd_log="/var/log/amd.log"
+intel_log="/var/log/intel.log"
 
 # hide mouse cursor
 unclutter --noevents -b
@@ -67,6 +68,19 @@ if [ -f "/var/tmp/amd.prime" ]; then
     else
         export DRI_PRIME="$amd_prime_value"
         echo "AMD Prime environment variable set to $amd_prime_value" >> "$amd_log"
+    fi
+fi
+
+# intel
+if [ -f "/var/tmp/intel.prime" ]; then
+    echo "Setting Intel Prime environment variable" >> "$intel_log"
+    intel_prime_value=$(<"/var/tmp/intel.prime")
+    
+    if [ -z "$intel_prime_value" ]; then
+        export DRI_PRIME=1
+    else
+        export DRI_PRIME="$intel_prime_value"
+        echo "Intel Prime environment variable set to $intel_prime_value" >> "$intel_log"
     fi
 fi
 

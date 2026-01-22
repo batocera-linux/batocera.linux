@@ -132,11 +132,19 @@ echo "Generating target2 (${TARGET2_DIR})..."
 mkdir -p "${TARGET2_DIR}" || exit 1
 for XDIR in lib/firmware usr/lib/libretro
 do
-    if test -e "${XDIR}"
+    echo -n "${XDIR}..."
+    if test -e "${TARGET_DIR}/${XDIR}"
     then
 	mkdir -p "${TARGET2_DIR}/${XDIR}" || exit 1
 	rsync -a "${TARGET_DIR}/${XDIR}/" "${TARGET2_DIR}/${XDIR}/" || exit 1
 	rm -rf "${TARGET_DIR}/${XDIR}/" || exit 1
+	echo "OK."
+    elif test -d "${TARGET2_DIR}/${XDIR}"
+    then
+    echo "Already in target2. Continuing..."
+    else
+	echo "${TARGET_DIR}/${XDIR} not found."
+	exit 1
     fi
 done
 

@@ -422,7 +422,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	select BR2_PACKAGE_RTL8822CS    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
-	select BR2_PACKAGE_AIC8800_SDIO      if BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
+	select BR2_PACKAGE_AIC8800_SDIO      if BR2_PACKAGE_BATOCERA_TARGET_RK3568 || \
+	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
 	select BR2_PACKAGE_AIC8800_USB  if BR2_PACKAGE_BATOCERA_TARGET_QCS6490
@@ -602,7 +603,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3588/friendlyelec-cm3588-nas rockchip/rk3588/coolpi-4b rockchip/rk3588/gameforce-ace rockchip/rk3588/rock-5b-plus rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/rock-5c rockchip/rk3588/rock-5b rockchip/rk3588/rock-5a rockchip/rk3588/quartzpro64 rockchip/rk3588/orangepi-5 rockchip/rk3588/orangepi-5b rockchip/rk3588/orangepi-5-plus rockchip/rk3588/indiedroid-nova rockchip/rk3588/mekotronics-r58 rockchip/rk3588/khadas-edge-2 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
 	default "rockchip/rk3588-sdio/orangepi-5-ultra rockchip/rk3588-sdio/orangepi-5-max" if BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
-	default "rockchip/rk3568/powkiddy-x55 rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
+	default "rockchip/rk3568/radxa-zero-3w rockchip/rk3568/powkiddy-x55 rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
@@ -889,17 +890,19 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 						   !BR2_PACKAGE_BATOCERA_TARGET_H6		&& \
 						   !BR2_PACKAGE_BATOCERA_TARGET_X86
 
-	select BR2_PACKAGE_LIBRETRO_FLYCASTVL	if BR2_PACKAGE_BATOCERA_TARGET_BCM2836	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_BCM2837	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_RK3326	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H3	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H5	|| \
-						   BR2_PACKAGE_BATOCERA_TARGET_H6
-
-
-	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_WAYLAND_LABWC
+	select BR2_PACKAGE_LIBRETRO_FLYCASTVL 	 if BR2_PACKAGE_BATOCERA_TARGET_JH7110  || \
+												BR2_PACKAGE_BATOCERA_TARGET_BCM2836	|| \
+												BR2_PACKAGE_BATOCERA_TARGET_BCM2837	|| \
+												BR2_PACKAGE_BATOCERA_TARGET_BCM2711	|| \
+												BR2_PACKAGE_BATOCERA_TARGET_BCM2712	|| \
+												BR2_PACKAGE_BATOCERA_TARGET_RK3326	|| \
+												BR2_PACKAGE_BATOCERA_TARGET_H3	    || \
+												BR2_PACKAGE_BATOCERA_TARGET_H5	    || \
+												BR2_PACKAGE_BATOCERA_TARGET_H6
+	
+	# All XWayland boards should have enough pony for Redream
+	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+	                                   BR2_PACKAGE_BATOCERA_XWAYLAND
 
 	help
 	  Sega Dreamcast and Naomi/Atomiswave emulation support
@@ -1307,6 +1310,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 
 	# CLK - Oric Atmos and other old computers (requires OpenGL 3.2 or higher)
 	select BR2_PACKAGE_CLK    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_QCS6490 || BR2_PACKAGE_BATOCERA_TARGET_SM8550 || BR2_PACKAGE_BATOCERA_TARGET_SM8250
+	
+	# Color Computer (Tandy TRS-80)
+	select BR2_PACKAGE_XROAR		if BR2_PACKAGE_HAS_LIBGL # Xroar requires OpenGL
 
 	help
 	  Old computers

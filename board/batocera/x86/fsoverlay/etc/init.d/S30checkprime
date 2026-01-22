@@ -6,19 +6,23 @@ mkdir -p "/userdata/system/logs"
 display_log="/userdata/system/logs/display.log"
 nvidia_log="/var/log/nvidia.log"
 amd_log="/var/log/amd.log"
+intel_log="/var/log/intel.log"
 
 case "$1" in
   start)
-    # Check if there are two GPUs in the system
+    # Check if there are two (or more) GPUs in the system
     gpu_count=$(lspci -nn | grep -E "(VGA|3D|Display controller)" | wc -l)
+    
+    # Initialize state flags
     nvidia_conditions_met=false
+    amd_conditions_met=false
 
-    if [ "$gpu_count" -eq 2 ]; then
+    if [ "$gpu_count" -ge 2 ]; then
         splash_set=$(batocera-settings-get splash.screen.enabled)
         if [ "$splash_set" = "1" ]; then
-            echo "Two GPUs detected in the system" >> "$display_log"
+            echo "Multiple GPUs detected in the system ($gpu_count)" >> "$display_log"
         else
-            echo "Two GPUs detected in the system" > "$display_log"
+            echo "Multiple GPUs detected in the system ($gpu_count)" > "$display_log"
         fi
         echo "Setting best primary GPU..." >> "$display_log"
         
@@ -27,7 +31,7 @@ case "$1" in
         if [ "$nvidia_prime" = "false" ]; then
             echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
         else
-            gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller")
+            gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller" | head -n 1)
             if [ -n "$gpu_name" ] || [ "$nvidia_prime" = "true" ]; then
                 echo "" > "/var/tmp/nvidia.prime"
                 echo "Using $gpu_name as the primary GPU" >> "$nvidia_log"
@@ -35,45 +39,84 @@ case "$1" in
                 nvidia_conditions_met=true
             fi
         fi
-        # Check for AMD/ATI GPUs if Nvidia Prime has not already been set
+
+        # Check for AMD/ATI GPUs
         if [ "$nvidia_conditions_met" = "false" ]; then
             radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
             if [ "$radeon_prime" = "false" ]; then
                 echo "'radeon-prime' manually set to false, skipping checks" >> "$amd_log"
             else
                 mapfile -t all_amd_gpus < <(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
-                gpu_count=${#all_amd_gpus[@]}
+                amd_count=${#all_amd_gpus[@]}
                 gpu_name=""
-                if [ "$gpu_count" -eq 0 ]; then
+                
+                if [ "$amd_count" -eq 0 ]; then
                     echo "No AMD/ATI GPU found." >> "$amd_log"
-                elif [ "$gpu_count" -eq 1 ]; then
+                elif [ "$amd_count" -eq 1 ]; then
                     gpu_name="${all_amd_gpus[0]}"
                     echo "Found a single AMD/ATI GPU: $gpu_name" >> "$amd_log"
-                elif [ "$gpu_count" -ge 2 ]; then
-                    # Two or more found. Log all and select the second GPU.
-                    echo "Found $gpu_count AMD/ATI GPUs. Selecting the second entry for PRIME." >> "$amd_log"
+                elif [ "$amd_count" -ge 2 ]; then
+                    # Two or more found. Log all and select the second GPU (assumed discrete).
+                    echo "Found $amd_count AMD/ATI GPUs. Selecting the second entry for PRIME." >> "$amd_log"
                     printf "    - %s\n" "${all_amd_gpus[@]}" >> "$amd_log"
                     gpu_name="${all_amd_gpus[1]}"
                     echo "Setting AMD/ATI Prime to use GPU: $gpu_name" >> "$amd_log"
                 fi
+                
                 if [ -n "$gpu_name" ]; then
                     # Get the pci number for prime.
                     formatted_info=$(echo "$gpu_name" | awk -F ' ' '{print $1}' | sed -e 's/:/_/g' -e 's/\./_/' -e 's/^/pci-0000_/')
                     echo $formatted_info > "/var/tmp/amd.prime"
                     echo "Setting Prime ID: $formatted_info" >> "$amd_log"
                     echo "$gpu_name is the primary GPU" >> "$display_log"
+                    amd_conditions_met=true
                 elif [ "$radeon_prime" = "true" ]; then
                     # Handle edge case where the user forced prime=true
                     echo "Warning: 'radeon-prime=true' is set, but no suitable AMD/ATI GPU was found." >> "$amd_log"
                 fi
             fi
         fi
+
+        # Check for Intel Discrete GPUs (Arc/Xe)
+        if [ "$nvidia_conditions_met" = "false" ] && [ "$amd_conditions_met" = "false" ]; then
+            intel_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf intel-prime)
+            
+            if [ "$intel_prime" = "false" ]; then
+                echo "'intel-prime' manually set to false, skipping checks" >> "$intel_log"
+            else
+                mapfile -t all_intel_gpus < <(lspci -nn | grep -iE "Intel" | grep -iE "VGA|3D|Display controller")
+                intel_count=${#all_intel_gpus[@]}
+                gpu_name=""
+
+                if [ "$intel_count" -ge 2 ]; then
+                    # We assume the Integrated is #0 and Discrete (Arc) is #1
+                    echo "Found multiple Intel GPUs ($intel_count). Selecting the second entry for PRIME." >> "$intel_log"
+                    printf "    - %s\n" "${all_intel_gpus[@]}" >> "$intel_log"
+                    gpu_name="${all_intel_gpus[1]}"
+                elif [ "$intel_count" -eq 1 ]; then
+                    echo "Only one Intel GPU found (Integrated). No PRIME action taken unless forced." >> "$intel_log"
+                fi
+
+                if [ -n "$gpu_name" ]; then
+                    formatted_info=$(echo "$gpu_name" | awk -F ' ' '{print $1}' | sed -e 's/:/_/g' -e 's/\./_/' -e 's/^/pci-0000_/')
+                    
+                    echo $formatted_info > "/var/tmp/intel.prime"
+                    
+                    echo "Setting Intel Prime ID: $formatted_info" >> "$intel_log"
+                    echo "$gpu_name is the primary GPU" >> "$display_log"
+                fi
+            fi
+        fi
+
     else
         echo "Only one GPU detected in the system" >> "$display_log"
     fi
     ;;
   stop)
-    # No stop behavior necessary
+    # Cleanup tmp files on stop
+    rm -f /var/tmp/nvidia.prime
+    rm -f /var/tmp/amd.prime
+    rm -f /var/tmp/intel.prime
     ;;
   *)
     echo "Usage: $0 {start|stop}"

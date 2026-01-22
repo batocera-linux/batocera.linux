@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_PLAY_VERSION = 0.71
+LIBRETRO_PLAY_VERSION = 0.72
 LIBRETRO_PLAY_SITE = https://github.com/jpd002/Play-.git
 LIBRETRO_PLAY_SITE_METHOD = git
 LIBRETRO_PLAY_GIT_SUBMODULES = YES

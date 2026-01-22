@@ -24,9 +24,9 @@ SDHAT0=hat0
 SDHAT1=hat1
 test "${SDGUN_HAND}" = "right" && SDHAT0=hat1 && SDHAT1=hat0
 
-SDLEFT=btn:trigger_happy2
-SDRIGHT=btn:trigger_happy4
-test "${SDGUN_HAND}" = "right" && SDLEFT=btn:trigger_happy1 && SDRIGHT=btn:trigger_happy3
+SDLEFT=btn:%549
+SDRIGHT=btn:%551
+test "${SDGUN_HAND}" = "right" && SDLEFT=btn:%548 && SDRIGHT=btn:%550
 
 if test -e /var/run/steamdeckgun.pid
 then

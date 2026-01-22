@@ -49,6 +49,17 @@ if [ ! -b "${ABL_A}" ] || [ ! -b "${ABL_B}" ]; then
   exit 1
 fi
 
+# ---- Helper: Get Checksum of Partition ----
+# We only read the size of the ELF file from the partition to ignore trailing zeros/padding.
+FILE_SIZE=$(stat -c%s "${ELF}")
+EXPECTED_HASH=$(awk '{print $1}' "${SHA256SUM}")
+
+get_part_hash() {
+    local partition=$1
+    # Use head to read exactly $FILE_SIZE bytes from the block device
+    head -c "$FILE_SIZE" "$partition" | sha256sum | awk '{print $1}'
+}
+
 # ---- Power Check ----
 check_power() {
     local power_connected=0
@@ -76,6 +87,25 @@ check_power() {
 
 # Run the power check
 check_power
+
+# ---- Version Check (Pre-flash) ----
+echo "Checking current ABL versions..."
+HASH_A=$(get_part_hash "$ABL_A")
+HASH_B=$(get_part_hash "$ABL_B")
+
+UP_TO_DATE=true
+[[ "$HASH_A" != "$EXPECTED_HASH" ]] && UP_TO_DATE=false
+[[ "$HASH_B" != "$EXPECTED_HASH" ]] && UP_TO_DATE=false
+
+if [ "$UP_TO_DATE" = true ]; then
+    echo "Both ABL partitions are already up to date."
+    read -p "Do you still wish to re-flash? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "No changes needed. Exiting."
+        exit 0
+    fi
+fi
 
 # ---- Disclaimer & Prompt ----
 cat << EOF
@@ -117,13 +147,34 @@ if [ -z "${SS}" ]; then
   exit 1
 fi
 
-# ---- Flash ----
-echo "Updating ABL partitions on $HW_DEVICE..."
-dd if="${ELF}" of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
-dd if="${ELF}" of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
+# ---- Flash with Progress Bar ----
+echo "Flashing ABL_A..."
+pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
+
+echo "Flashing ABL_B..."
+pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
 
 sync
 
-echo "ABL update completed successfully."
-echo
-echo "--- REBOOT device to take effect ---"
+# ---- Verification (Post-flash) ----
+echo "Verifying partitions..."
+NEW_HASH_A=$(get_part_hash "$ABL_A")
+NEW_HASH_B=$(get_part_hash "$ABL_B")
+
+SUCCESS=true
+if [ "$NEW_HASH_A" != "$EXPECTED_HASH" ]; then
+    echo "CRITICAL ERROR: ABL_A verification failed!"
+    SUCCESS=false
+fi
+if [ "$NEW_HASH_B" != "$EXPECTED_HASH" ]; then
+    echo "CRITICAL ERROR: ABL_B verification failed!"
+    SUCCESS=false
+fi
+
+if [ "$SUCCESS" = true ]; then
+    echo "ABL update completed and verified successfully."
+    echo "--- REBOOT device to take effect ---"
+else
+    echo "Update failed verification. DO NOT REBOOT until you have investigated."
+    exit 1
+fi

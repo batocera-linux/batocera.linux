@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 
 # Static temp file for extraction as CLK doens't support zipped roms
 _TMP_DIR: Final = Path("/tmp/clk_extracted")
-_QUICKLOAD_SYSTEMS: Final = { "amstradcpc", "archimedes", "electron", "macintosh", "msx1", "msx2",
+_QUICKLOAD_SYSTEMS: Final = { "amstradcpc", "archimedes", "electron", "msx1", "msx2",
     "oricatmos", "zxspectrum" }
 _SVIDEO_SYSTEMS: Final = { "colecovision", "mastersystem" }
-_RGB_SYSTEMS: Final = { "amstradcpc", "atarist", "electron", "msx1", "msx2",
+_RGB_SYSTEMS: Final = { "amstradcpc", "atarist", "electron", "enterprise", "msx1", "msx2",
     "oricatmos", "zxspectrum" }
 
 
@@ -31,13 +31,23 @@ def _openzip_file(file_path: Path, /) -> Path | None:
 
     if str(file_path).lower().endswith('.zip'):
         with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            zip_ref.extractall(_TMP_DIR)
-            extracted_files = zip_ref.namelist()
+            # Choose the largest regular file in the archive
+            largest_info: zipfile.ZipInfo | None = None
+            for info in zip_ref.infolist():
+                # Skip directories (names ending with '/')
+                if info.is_dir() if hasattr(info, "is_dir") else info.filename.endswith("/"):
+                    continue
 
-            if extracted_files:
-                return _TMP_DIR / extracted_files[0]  # Assume single file in zip
+                if largest_info is None or info.file_size > largest_info.file_size:
+                    largest_info = info
 
-    return file_path  # Return original file if it's not a zip
+            if largest_info is not None:
+                zip_ref.extractall(_TMP_DIR)
+                return _TMP_DIR / largest_info.filename
+
+        return None # if no files, just directories
+
+    return file_path
 
 
 class ClkGenerator(Generator):
@@ -57,7 +67,7 @@ class ClkGenerator(Generator):
             commandArray.extend(["--output=RGB"])
 
         if system.name in _QUICKLOAD_SYSTEMS:
-            commandArray.extend(["--quickload"])
+            commandArray.extend(["--accelerate-media-loading"])
 
         return Command.Command(
             array=commandArray,

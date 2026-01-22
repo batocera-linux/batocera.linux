@@ -23,9 +23,11 @@
 - Legion Go S Controller & LED updates
 - New steering wheel support:
   - Logitech Formula Vibration Feedback
+  - MOZA R12 V2 (Direct Drive)
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
+- Raxda Zero 3W initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
@@ -38,56 +40,93 @@
   - Control brightness on multiple screens (Ayn Thor)
   - Wifi country selector
   - Ability to add a "sort name" that take precedence over the (scraped) game name in metadata
+  - New Keyboard Layout and Keyboard Variant options
 - Batocera Control Center (on-screen interface for global configuration and control, [hotkey][east] by default)
 - batocera-xtract for handling archives, systems with pcmanFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
 - Yamagi Quake II added which support more systems, especially lower-end hardware
+- Light gun support to the new Libretro Dolphin core
+- Light gun support to Duckstation (multi-light guns)
+- Casio Loopy as a separate system
+- Enterprise 64/128 (via CLK emulator)
+- Xroar emulator as an option for the Color Computer (Tandy TRS-80)
+- PC60 as a separate system
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
 - Wifi country not being applied at boot
+- Light gun accuracy in MAME
+- Crosshairs for light guns in PCSX2
+- Massive MAME log (switchres verbose disabled by default)
+- PCSX2 light gun mapping (START can now be pressed on the light gun instead of controller)
+- PS4 and PSVita games not appearing in the "last played" auto collection
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 - Moonlight has transitioned from Moonlight Embedded to Moonlight QT for the majority of boards to allow for more hardware acceleration.
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
+- DOSBox Staging's working directory is now set to the games' folder, allowing for local and relative (img)mount and conf file references.
+- DOSBox Staging will fallback to a C:\> prompt inside the games' folder if its missing dosbox.cfg/.conf/.bat files.
 ### Updated
-- Azahar Plus to AZAHAR_PLUS_2123_3_A
-- CLK to 2025-11-26
+- Azahar to 2124
+- BigPEmu to v121
+- CLK to 2026-01-06
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
 - EDuke32 to Oct 10, 2025
-- Groovy MAME to 0.283
+- Flycast to 2.6
+- Groovy MAME to 0.284
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
-- Jazz2 to 3.4.0
+- Jazz2 to 3.5.0
+- Libretro Atari800 to 4th of December 2025 build
+- Libretro BlueMSX to 4th of November 2025 build
+- Libretro Bsnes to 19th of December 2025 build
 - Libretro Dolphin to 24th of December 2025 build
-- Libretro MAME to 0.283
-- Libretro Play! to 0.71
+- Libretro FBNeo to 11th of January 2026 build
+- Libretro Fceumm to 12th of September 2025 build
+- Libretro Flycast to 2.6
+- Libretro Genesis Plus GX to 21th of December 2025 build
+- Libretro Genesis Plus GX-Wide to 21th of October 2024 build
+- Libretro MAME2003plus to 16th of January 2026 build
+- Libretro MAME to 0.284
+- Libretro MGBA to 17th of January 2026 build
+- Libretro Mesen to 24th of October 2024 build
+- Libretro Nestopia to 10th of January 2026 build
 - Libretro Opera to 17th of October 2024 build
+- Libretro Picodrive to 3rd of December 2025 build
+- Libretro Play! to 0.72
+- Libretro PUAE to 2nd of November 2025 build
+- Libretro Snes9x to 8th of September 2025 build
+- Libretro Stella to 28th of December 2025 build
+- Libretro Swanstation to 2nd of August 2025 build
+- Libretro Vecx to 12th of January 2026 build
+- Libretro YabaSanshiro to 20th of December 2025 build
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
-- Play! to 0.71
-- PCSX2 to v2.5.405
+- Play! to 0.72
+- PCSX2 to v2.6.2
 - RClone to v1.72.1
 - RetroArch to 1.22.2
-- RPCS3 to v0.0.38
+- RPCS3 to v0.0.39
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
 - Sonic 2013 to 1.3.3
 - Sonic CD to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
-- Taradino to 20251031
+- Syncthing to 2.0.12
+- Taradino to 20251222
 - TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
-- VkQuake to 19th of November 2025 build 
+- Vice to 3.10
+- VkQuake to 19th of November 2025 build
 - Xash3D FWGS engine to Oct 17 build
 - Xenia-Canary to build f85f4c3
-- Xemu to v0.8.129
-- Ymir to 0.2.0
+- Xemu to v0.8.132
+- Ymir to 0.2.1
 ### System
 - Bluez to 5.84
 - DXVK to 2.7.1
@@ -95,12 +134,12 @@
 - Go language compiler to 1.25.5
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251125
-- Linux Kernel to 6.18.1
+- Linux Kernel to 6.18.3
 - LabWC to 0.9.3
 - LLVM Project to 20.1.8
-- Mesa3D to 25.3.2
+- Mesa3D to 25.3.3
 - MPV to v0.41.0
-- Nvidia 580.xx legacy drivers to 580.119.02
+- Nvidia 580.xx legacy drivers to 580.126.09
 - Nvidia production drivers to 590.48.01
 - QT to 6.9.2
 - Raspberry Pi kernel and associated firmware / utils to 6.12.62
@@ -111,6 +150,7 @@
 - Vulkan stack to 1.4.328.1
 - Wayland to 1.24.0
 - Wayland Protocols to 1.45
+- WF-Recorder to v0.6.0
 - Wine Mono to 10.4.0
 - Wine-TKG to 10.20
 - Wine Proton to 10.0-3

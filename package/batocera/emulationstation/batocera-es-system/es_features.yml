@@ -1283,7 +1283,7 @@ libretro:
                     "14": 14
                     "15": 15
     dolphin:
-      shared: [autosave, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
+      shared: [autosave, use_guns, use_wheels, wheel_rotation, wheel_deadzone, wheel_midzone]
       cfeatures:
                     wii_resolution:
                         prompt: RENDERING RESOLUTION
@@ -2133,6 +2133,7 @@ libretro:
                 prompt:      CONTROLLER 1 TYPE
                 choices:
                     "Gamepad":   1
+                    "Gamepad Using Left Analog Stick":   5                    
                     "Keyboard":  3
                     "Mouse":     2
                     "Light Gun": 4
@@ -2140,6 +2141,7 @@ libretro:
                 prompt:      CONTROLLER 2 TYPE
                 choices:
                     "Gamepad":   1
+                    "Gamepad Using Left Analog Stick":   5                                        
                     "Keyboard":  3
                     "Mouse":     2
                     "Light Gun": 4
@@ -2147,6 +2149,7 @@ libretro:
                 prompt:      CONTROLLER 3 TYPE
                 choices:
                     "Gamepad":   1
+                    "Gamepad Using Left Analog Stick":   5                                        
                     "Keyboard":  3
                     "Mouse":     2
                     "Light Gun": 4
@@ -2154,6 +2157,7 @@ libretro:
                 prompt:      CONTROLLER 4 TYPE
                 choices:
                     "Gamepad":   1
+                    "Gamepad Using Left Analog Stick":   5                                        
                     "Keyboard":  3
                     "Mouse":     2
                     "Light Gun": 4
@@ -4601,16 +4605,24 @@ libretro:
                 prompt:      COLOR FILTER
                 description: Can be used to simulate colors of particular displays.
                 choices:
+                    "cxa2025as (US)":       cxa2025as
+                    "CXA2025AS (JP)":       cxa2025as_jp
+                    "royaltea":             royaltea
                     "consumer":             consumer
-                    "cxa2025as":            cxa2025as
                     "canonical":            canonical
                     "alternative":          alternative
                     "rgb":                  rgb
                     "pal":                  pal
+                    "Digital Prime FBX":    digital-prime-fbx
+                    "Magnum FBX":           magnum-fbx
+                    "Smooth V2 FBX":        smoothv2-fbx
                     "composite-direct-fbx": composite-direct-fbx
                     "pvm-style-d93-fbx":    pvm-style-d93-fbx
                     "ntsc-hardware-fbx":    ntsc-hardware-fbx
                     "nes-classic-fbx-fs":   nes-classic-fbx-fs
+                    "Restored Wii VC":      restored-wii-vc
+                    "Wii Virtual Console":  wii-vc
+                    "Raw":                  raw
                     "custom":               custom
             nestopia_blargg_ntsc_filter:
                 group: ADVANCED OPTIONS
@@ -6212,10 +6224,126 @@ libretro:
                     "RGB":        "rgb"
                     "S-Video":    "s-video"
                     "Composite":  "composite"
-
     stella:
       features: [netplay, cheevos]
       shared: [rewind, autosave, use_guns]
+      cfeatures:
+            stella_console:
+                group: DISPLAY
+                prompt: CONSOLE DISPLAY
+                description: Select the console video standard / display mode.
+                choices:
+                    "Auto (Default)": "auto"
+                    "NTSC":           "ntsc"
+                    "PAL":            "pal"
+                    "SECAM":          "secam"
+                    "NTSC50":         "ntsc50"
+                    "PAL60":          "pal60"
+                    "SECAM60":        "secam60"
+            stella_palette:
+                group: DISPLAY
+                prompt: PALETTE COLORS
+                description: Select the palette used to render colors.
+                choices:
+                    "Standard (Default)": "standard"
+                    "Z26":                "z26"
+                    "User":               "user"
+                    "Custom":             "custom"
+            stella_filter:
+                group: DISPLAY
+                prompt: TV EFFECTS
+                description: Enable TV-like filtering / effects.
+                choices:
+                    "Disabled (Default)": "disabled"
+                    "Composite":          "composite"
+                    "S-Video":            "s-video"
+                    "RGB":                "rgb"
+                    "Badly adjusted":     "badly adjusted"
+            stella_crop_hoverscan:
+                group: DISPLAY
+                prompt: CROP HORIZONTAL OVERSCAN
+                description: Crop horizontal overscan.
+                choices:
+                    "Disabled (Default)": "disabled"
+                    "Enabled":            "enabled"
+            stella_crop_voverscan:
+                group: DISPLAY
+                prompt: CROP VERTICAL OVERSCAN
+                description: Crop vertical overscan (lines). Core default (0).
+                preset: sliderauto
+                preset_parameters: 0 24 1
+            stella_ntsc_aspect:
+                group: DISPLAY
+                prompt: NTSC ASPECT
+                description: NTSC aspect ratio correction. Core default (PAR).
+                preset: sliderauto
+                preset_parameters: 75 125 1 %
+            stella_pal_aspect:
+                group: DISPLAY
+                prompt: PAL ASPECT
+                description: PAL aspect ratio correction. Core default (PAR).
+                preset: sliderauto
+                preset_parameters: 75 125 1 %
+            stella_phosphor:
+                group: DISPLAY
+                prompt: PHOSPHOR MODE
+                description: Enable phosphor mode (motion blur) for flickering effects.
+                choices:
+                    "Auto (Default)": "auto"
+                    "Off":            "off"
+                    "On":             "on"
+            stella_phosphor_blend:
+                group: DISPLAY
+                prompt: PHOSPHOR BLEND
+                description: Phosphor blend level. Core default (60%).
+                preset: sliderauto
+                preset_parameters: 0 100 5 %
+            stella_stereo:
+                group: AUDIO
+                prompt: STEREO SOUND
+                description: Stereo sound output.
+                choices:
+                    "Auto (Default)": "auto"
+                    "Off":            "off"
+                    "On":             "on"
+            stella_paddle_mouse_sensitivity:
+                group: CONTROLS
+                prompt: PADDLE MOUSE SENSITIVITY
+                description: Mouse sensitivity for paddles. Core default (10).
+                preset: sliderauto
+                preset_parameters: 1 30 1
+            stella_paddle_joypad_sensitivity:
+                group: CONTROLS
+                prompt: PADDLE JOYPAD SENSITIVITY
+                description: Joypad sensitivity for paddles. Core default  (3).
+                preset: sliderauto
+                preset_parameters: 1 20 1
+            stella_paddle_analog_sensitivity:
+                group: CONTROLS
+                prompt: PADDLE ANALOG SENSITIVITY
+                description: Analog sensitivity for paddles. Core default (20).
+                preset: sliderauto
+                preset_parameters: 0 30 1
+            stella_paddle_analog_deadzone:
+                group: CONTROLS
+                prompt: PADDLE ANALOG DEADZONE
+                description: Analog deadzone for paddles. Core default (15).
+                preset: sliderauto
+                preset_parameters: 0 30 1
+            stella_paddle_analog_absolute:
+                group: CONTROLS
+                prompt: PADDLE ANALOG ABSOLUTE
+                description: Use absolute analog input for paddles.
+                choices:
+                    "Disabled (Default)": "disabled"
+                    "Enabled":            "enabled"
+            stella_lightgun_crosshair:
+                group: LIGHT GUN
+                prompt: LIGHT GUN CROSSHAIRS
+                description: Show a crosshair for lightgun games.
+                choices:
+                    "Disabled (Default)": "disabled"
+                    "Enabled":            "enabled"
     tgbdual:
       features: [netplay]
       shared: [rewind, autosave]
@@ -14917,3 +15045,41 @@ clk:
 yquake2:
   features: [padtokeyboard]
   shared: [powermode, tdp, videomode]
+
+xroar:
+  features: [padtokeyboard]
+  shared: [powermode, tdp, videomode, bezel, bezel_stretch, hud, hud_corner, bezel.tattoo, bezel.tattoo_corner, bezel.tattoo_file, bezel.resize_tattoo]
+  cfeatures:
+    xroar_machine:
+      prompt: Machine Type
+      description: Select the emulated hardware architecture machine type and architecture.
+      choices:
+        "Dragon 32": "dragon32"
+        "Dragon 64": "dragon64"
+        "Tano Dragon (NTSC)": "tano"
+        "Dragon Professional (Alpha)": "dragonpro"
+        "Dragon 200-E": "dragon200e"
+        "Dragon 64 + SAMx8 (512K)": "dragonx8"
+        "Tandy CoCo (PAL)": "coco"
+        "Tandy CoCo (NTSC)": "cocous"
+        "Tandy CoCo 2B (PAL,T1)": "coco2b"
+        "Tandy CoCo 2B (NTSC,T1)": "coco2bus"
+        "Tandy Deluxe CoCo": "deluxecoco"
+        "Tandy CoCo 3": "coco3"
+        "Tandy CoCo 3 (6309)": "coco3h"
+        "Tandy CoCo 3 (PAL)": "coco3p"
+        "Tandy CoCo 3 (PAL, 6309)": "coco3ph"
+        "Dynacom MX-1600": "mx1600"
+        "Prologica CP-400": "cp400"
+        "Tandy MC-10": "mc10"
+        "Matra & Hachette Alice": "alice"
+    xroar_cartauto:
+      prompt: Cartridge Autostart
+      choices:
+        "Enabled":  True
+        "Disabled": False
+    xroar_vsync:
+      prompt: VSYNC
+      choices:
+        "Enabled":  True
+        "Disabled": False

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd /batocera/batocera.linux || exit 1
+export PARALLEL_BUILD=y
 
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
@@ -192,6 +193,27 @@ case "${1}" in
 	fi
 	arch="${2}"
 	tail -f "./output/${arch}/build/build-time.log"
+	;;
+    "logstats")
+	if test -z "${2}"
+	then
+	    echo_msg "-" "missing argument" >&2
+	    exit 1
+	fi
+	arch="${2}"
+	cat "./output/${arch}/build/build-time.log" | grep -E "^[^:]*:end" | cut -d : -f 3 | sort | uniq -c | sort -rn
+	;;
+    "logrunning")
+	if test -z "${2}"
+	then
+	    echo_msg "-" "missing argument" >&2
+	    exit 1
+	fi
+	arch="${2}"
+	cat "./output/${arch}/build/build-time.log" | cut -d : -f 2,3,4 | sed -e s+" "++g | grep -E '^start:' | cut -d : -f 2,3 | sort > /tmp/logrunningA
+	cat "./output/${arch}/build/build-time.log" | cut -d : -f 2,3,4 | sed -e s+" "++g | grep -E '^end:'   | cut -d : -f 2,3 | sort > /tmp/logrunningB
+	join -v 1 /tmp/logrunningA /tmp/logrunningB
+	rm -f /tmp/logrunningA /tmp/logrunningB
 	;;
     "push")
 	ftptarget=${2}

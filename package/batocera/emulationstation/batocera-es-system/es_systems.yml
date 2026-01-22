@@ -3628,7 +3628,7 @@ tutor:
           Para pular o menu de carregamento, pressione R1 para mover para baixo e A/Leste para selecionar.
 
 coco:
-  name:       Color Computer
+  name: Color Computer
   manufacturer: Tandy Radio Shack
   release: 1980
   hardware: computer
@@ -3638,8 +3638,10 @@ coco:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
   comment_en: |
-          Requires MAME BIOS file coco.zip and coco3.zip
+          MAME requires BIOS file coco.zip and coco3.zip
 
           Default Autoload Behaviors
           1. "usage" info field when using MAME software lists (if declared)
@@ -3651,6 +3653,13 @@ coco:
 
           user definable autoload overrides in: `system/configs/mame/autoload/coco_{cass,flop}_autoload.csv`
           syntax: <romBasename>;<autoload command> (see comments in .csv files for detailed help & examples)
+
+          --------------------------------------------------------------------------------------------------
+
+          Xroar requires BASIC and DOS ROMs to be in the /usertdata/bios/xroar folder.
+          The required rom files can be obtained from here: https://colorcomputerarchive.com/repo/ROMs/XRoar
+          Obtain the roms depending on the Machine Type you choose to use.
+          The default is Tandy CoCo 2B (NTSC,T1)
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
@@ -5994,3 +6003,61 @@ bennugd:
     Trouvez la documentation ici : https://wiki.batocera.org/systems:bennugd
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
+
+casloopy:
+  name:       Casio Loopy
+  manufacturer: Casio
+  release: 1995
+  hardware: console
+  extensions: [bin, ic1, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file:
+          bios/mame/casloopy.zip
+  comment_fr: |
+          Nécessite ce fichier de BIOS MAME:
+          bios/mame/casloopy.zip
+  comment_br: |
+          Requer arquivo de BIOS do MAME:
+          bios/mame/casloopy.zip
+
+pc60:
+  name: PC-6000
+  manufacturer: NEC
+  release: 1981
+  hardware: computer
+  extensions: [zip]
+  emulators:
+    mame:
+      mame:  { requireAnyOf: [BR2_PACKAGE_MAME] }
+    libretro:
+      mame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+  comment_en: |
+    Requires MAME BIOS file:
+    bios/mame/pc6001.zip
+    
+enterprise:
+  name:       Enterprise
+  manufacturer: Enterprise Computers
+  release: 1985
+  hardware: computer
+  extensions: [bas, com, zip]
+  emulators:
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+  comment_en: |
+          Requires BIOS files:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/Enterprise/basic21.bin
+          bios/Enterprise/exos21.bin

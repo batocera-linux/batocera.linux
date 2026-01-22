@@ -1,0 +1,95 @@
+#!/bin/bash
+
+RULES_FILE="/usr/share/X11/xkb/rules/base.lst"
+CONF_KEY_LAYOUT="system.kblayout"
+CONF_KEY_VARIANT="system.kbvariant"
+
+# Check to make sure the rules file exists
+if [ ! -f "$RULES_FILE" ]; then
+    echo "Error: $RULES_FILE not found" >&2
+    exit 1
+fi
+
+function get_current_layout() {
+    local val=$(batocera-settings-get "$CONF_KEY_LAYOUT")
+    if [ -z "$val" ]; then echo "us"; else echo "$val"; fi
+}
+
+function get_current_variant() {
+    local val=$(batocera-settings-get "$CONF_KEY_VARIANT")
+    if [ -z "$val" ] || [ "$val" == "none" ]; then echo ""; else echo "$val"; fi
+}
+
+function list_layouts() {
+    awk '
+    BEGIN { in_section=0 }
+    /^! layout/ { in_section=1; next }
+    /^!/ { in_section=0 }
+    in_section && NF > 0 { 
+        code=$1; 
+        $1=""; 
+        sub(/^ */, "", $0); 
+        print code " " $0 
+    }
+    ' "$RULES_FILE" | sort -k2
+}
+
+function list_variants() {
+    local layout="$1"
+    
+    # If no argument, get from config
+    if [ -z "$layout" ]; then
+        layout=$(get_current_layout)
+    fi
+
+    if [ -z "$layout" ]; then return; fi
+
+    awk -v layout="$layout" '
+    BEGIN { in_section=0 }
+    /^! variant/ { in_section=1; next }
+    /^!/ { in_section=0 }
+    in_section && NF > 0 {
+        if ($2 == layout":") {
+             code=$1;
+             $1=""; $2="";
+             sub(/^ */, "", $0); 
+             print code " " $0
+        }
+    }
+    ' "$RULES_FILE" | sort -k2
+}
+
+case "$1" in
+    list-layouts)
+        list_layouts
+        ;;
+    list-variants)
+        list_variants "$2"
+        ;;
+    get)
+        L=$(get_current_layout)
+        V=$(get_current_variant)
+        echo "$L $V"
+        ;;
+    set)
+        LAYOUT="$2"
+        VARIANT="$3"
+        
+        if [ -z "$LAYOUT" ]; then LAYOUT="us"; fi
+        if [ "$VARIANT" == "none" ] || [ -z "$VARIANT" ]; then VARIANT=""; fi
+
+        batocera-settings-set "$CONF_KEY_LAYOUT" "$LAYOUT"
+        batocera-settings-set "$CONF_KEY_VARIANT" "$VARIANT"
+        
+        # Try to apply immediately (Runtime)
+        # We check if setxkbmap exists. This works for X11.
+        if command -v setxkbmap > /dev/null; then
+             setxkbmap -layout "$LAYOUT" -variant "$VARIANT" 2>/dev/null || true
+        fi
+
+        ;;
+    *)
+        echo "Usage: $0 {list-layouts|list-variants [layout]|get|set <layout> <variant>}"
+        exit 1
+        ;;
+esac

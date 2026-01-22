@@ -9,12 +9,7 @@
     <reuseOutputMode>no</reuseOutputMode>
     <xwaylandPersistence>no</xwaylandPersistence>
   </core>
-  <touch deviceName="" mapToOutput=""/>
-  <libinput>
-    <device name="">
-      <calibrationMatrix></calibrationMatrix>
-    </device>
-  </libinput>
+  <touch deviceName="" mapToOutput="" mouseEmulation="no"/>
   <keyboard>
     <keybind key="A-Tab">
       <action name="NextWindow" />
@@ -25,6 +20,9 @@
     <keybind key="A-W-h">
       <action name="HideCursor" />
       <action name="WarpCursor" x="-1" y="-1" />
+    </keybind>
+    <keybind key="A-W-s">
+      <action name="ShowCursor" />
     </keybind>
     <keybind key="A-F4">
       <action name="Close" />
@@ -57,6 +55,13 @@
       <action name="SnapToEdge" direction="down" />
     </keybind>
   </keyboard>
+  <mouse>
+    <context name="root">
+      <mousebind button="Left" action="None" />
+      <mousebind button="Right" action="None" />
+      <mousebind button="Middle" action="None" />
+    </context>
+  </mouse>
   <windowRules>
     <windowRule identifier="*" serverDecoration="no" />
     <windowRule identifier="emulationstation">
