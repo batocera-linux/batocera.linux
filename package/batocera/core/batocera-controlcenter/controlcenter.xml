@@ -46,13 +46,17 @@
 				<text display="${batocera-audio getSystemVolume}%" refresh="1" />
 				<button display="Vol +" action="batocera-audio setSystemVolume +5" />
 		</feature>
+		<feature if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
+				<button display="Bright -" action="batocera-brightness - 20" />
+				<text display="${batocera-brightness}%" refresh="1" />
+				<button display="Bright +" action="batocera-brightness + 20" />
+		</feature>
 		<feature display="Mute Sound" group="Audio/Video">
 			<toggle value="${batocera-audio getSystemMute}" refresh="0.5"
 				action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
-		<feature display="Network IP address:">
-				<text display="${ip -4 addr show | grep -oP '(?&lt;=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n1}" refresh="5" align="left"/>
-				<text display='${for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
+                <feature display="Network IP address:">
+			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
 		</feature>
 		<feature display="Free data storage:">
 			<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
