@@ -26,13 +26,13 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from . import controllersConfig as controllers
-from .batoceraPaths import BATOCERA_SHARE_DIR, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
+from .batoceraPaths import BATOCERA_SHARE_DIR, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS, ES_GAMES_METADATA
 from .controller import Controller
 from .Emulator import Emulator
 from .exceptions import BadCommandLineArguments, BaseBatoceraException, BatoceraException, UnexpectedEmulatorExit
 from .generators import get_generator
 from .gun import Gun
-from .utils import bezels as bezelsUtil, videoMode, wheelsUtils
+from .utils import bezels as bezelsUtil, videoMode, wheelsUtils, metadata
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.squashfs import squashfs_rom
@@ -91,11 +91,11 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
             _logger.debug('emulator: %s', system.config.emulator)
 
     # metadata
-    metadata = controllers.getGamesMetaData(systemName, rom)
+    md = metadata.getGamesMetaData(ES_GAMES_METADATA, systemName, rom)
 
     guns = Gun.get_and_precalibrate_all(system, rom)
 
-    with wheelsUtils.configure_wheels(player_controllers, system, metadata) as (player_controllers, wheels):
+    with wheelsUtils.configure_wheels(player_controllers, system, md) as (player_controllers, wheels):
         # find the generator
         generator = get_generator(system.config.emulator)
 
@@ -168,7 +168,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                 if executionDirectory is not None:
                     os.chdir(executionDirectory)
 
-                cmd = generator.generate(system, rom, player_controllers, metadata, guns, wheels, gameResolution)
+                cmd = generator.generate(system, rom, player_controllers, md, guns, wheels, gameResolution)
 
                 if system.config.get_bool('hud_support'):
                     hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
@@ -181,6 +181,13 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
                         if not generator.hasInternalMangoHUDCall():
                             cmd.array.insert(0, "mangohud")
+
+                # generate the gun help
+                try:
+                    default_gun_help_dir = Path("/var/run/batocera-overlays")
+                    bezelsUtil.generate_gun_help(systemName, rom, system.config.use_guns, guns, default_gun_help_dir, "gun_help.png", gameResolution)
+                except:
+                    _logger.debug("Failed to generate the gun help image")
 
                 with profiler.pause():
                     try:

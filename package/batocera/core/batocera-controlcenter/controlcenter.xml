@@ -10,6 +10,7 @@
 
 	<feature name="shortcuts_tabs" display="Quick Access">
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
+		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
 	</feature>
 	<hgroup name="Game" display="Game">
@@ -40,6 +41,9 @@
 		<hgroup>
 		</hgroup>
 	</hgroup>
+        <hgroup name="Gun" display="Gun">
+          <img display='${echo /var/run/batocera-overlays/gun_help.png}' refresh="5" align="center" />
+        </hgroup>
 	<hgroup name="System" display="Sound &amp; Power">
 		<feature>
 				<button display="Vol -" action="batocera-audio setSystemVolume -5" />

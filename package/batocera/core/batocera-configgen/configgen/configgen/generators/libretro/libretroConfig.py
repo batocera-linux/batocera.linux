@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
 
 from ... import controllersConfig
-from ...batoceraPaths import DEFAULTS_DIR, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import DEFAULTS_DIR, SAVES, ES_GAMES_METADATA, mkdir_if_not_exists
 from ...controller import Controller
 from ...settings.unixSettings import UnixSettings
-from ...utils import bezels as bezelsUtil, videoMode, vulkan, esSettings
+from ...utils import bezels as bezelsUtil, videoMode, vulkan, esSettings, metadata
 from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
@@ -558,7 +558,7 @@ def createLibretroConfig(
             bezel = None
         # Check if game natively supports widescreen from metadata (not widescreen hack) (for easy scalability ensure all values for respective systems start with core name and end with "-autowidescreen")
         elif system.config.get_bool(f"{systemCore}-autowidescreen"):
-            metadata = controllersConfig.getGamesMetaData(system.name, rom)
+            metadata = metadata.getGamesMetaData(ES_GAMES_METADATA, system.name, rom)
             if metadata.get("video_widescreen") == "true":
                 index = str(ratioIndexes.index("16/9"))
                 # Easy way to disable bezels if setting to 16/9
