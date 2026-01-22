@@ -47,27 +47,27 @@
 	<hgroup name="System" display="Sound &amp; Power">
 		<feature>
 				<button display="Vol -" action="batocera-audio setSystemVolume -5" />
-				<text display="${batocera-audio getSystemVolume}%" refresh="1" />
+				<progressbar display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" />
 				<button display="Vol +" action="batocera-audio setSystemVolume +5" />
 		</feature>
 		<feature if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
-				<button display="Bright -" action="batocera-brightness - 20" />
-				<text display="${batocera-brightness}%" refresh="1" />
-				<button display="Bright +" action="batocera-brightness + 20" />
+				<button display="Bright -" action="batocera-brightness - 10" />
+				<progressbar display="${batocera-brightness}" min="0" max="100" refresh="1" />
+				<button display="Bright +" action="batocera-brightness + 10" />
 		</feature>
 		<feature display="Mute Sound" group="Audio/Video">
-			<toggle value="${batocera-audio getSystemMute}" refresh="0.5"
+			<switch value="${batocera-audio getSystemMute}" refresh="2"
 				action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
-                <feature display="Network IP address:">
+		<feature display="Network IP address:">
 			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
 		</feature>
 		<feature display="Free data storage:">
 			<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
 		</feature>
 		<feature display="Plane Mode" group="Audio/Video">
-			<toggle value="${batocera-planemode status}"
-			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="1" align="left"/>
+			<switch value="${batocera-planemode status}"
+			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left"/>
 		</feature>
 		<feature display="Stuck emulator?">
 			<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" />
@@ -84,7 +84,7 @@
 	</hgroup>
 	<vgroup name="Bottom bar" role="footer">
 		<feature display="CPU:">
-			<text display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}%" refresh="1" />
+			<progressbar display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}" min="0" max="100" refresh="1" />
 		</feature>
 		<feature display="Temp:">
 			<text display='${ TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++); [ -n "$TEMPE" ] &amp;&amp; echo "$TEMPE"C || echo "N/A" }' refresh="3" />
