@@ -32,6 +32,7 @@ BATOCERA_CONF: Final = HOME / 'batocera.conf'
 
 USER_ES_DIR: Final = CONFIGS / 'emulationstation'
 BATOCERA_ES_DIR: Final = Path('/usr/share/emulationstation')
+CONFIGGEN_DATA_DIR: Final = Path('/usr/share/batocera/configgen/data')
 
 _ES_RESOURCES_DIR: Final = BATOCERA_ES_DIR / 'resources'
 
@@ -39,7 +40,7 @@ ES_SETTINGS: Final = USER_ES_DIR / 'es_settings.cfg'
 ES_GUNS_METADATA: Final = _ES_RESOURCES_DIR / 'gungames.xml'
 ES_WHEELS_METADATA: Final = _ES_RESOURCES_DIR / 'wheelgames.xml'
 ES_GAMES_METADATA: Final = _ES_RESOURCES_DIR / 'gamesdb.xml'
-ES_GUNS_ART_METADATA: Final = Path('/usr/share/batocera/configgen/gamesbuttonsdb.xml')
+ES_GUNS_ART_METADATA: Final = CONFIGGEN_DATA_DIR / 'gamesbuttonsdb.xml'
 
 DEFAULTS_DIR: Final = BATOCERA_SHARE_DIR / 'configgen'
 
