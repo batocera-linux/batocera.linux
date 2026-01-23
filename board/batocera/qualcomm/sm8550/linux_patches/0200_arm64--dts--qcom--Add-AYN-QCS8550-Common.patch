@@ -14,7 +14,7 @@ new file mode 100644
 index 000000000000..0954c1854a05
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayn-common.dtsi
-@@ -0,0 +1,1636 @@
+@@ -0,0 +1,1638 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -32,11 +32,13 @@ index 000000000000..0954c1854a05
 +
 +/delete-node/ &aop_image_mem;
 +/delete-node/ &aop_config_mem;
++/delete-node/ &camera_mem;
 +/delete-node/ &ipa_fw_mem;
 +/delete-node/ &ipa_gsi_mem;
 +/delete-node/ &mpss_dsm_mem;
 +/delete-node/ &mpss_mem;
 +/delete-node/ &q6_mpss_dtb_mem;
++
 +/delete-node/ &remoteproc_mpss;
 +
 +/ {
