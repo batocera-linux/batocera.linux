@@ -86,6 +86,7 @@
 - Libretro BlueMSX to 4th of November 2025 build
 - Libretro Bsnes to 19th of December 2025 build
 - Libretro Dolphin to 24th of December 2025 build
+- Libretro Fake-08 to 22nd of January 2026 build
 - Libretro FBNeo to 11th of January 2026 build
 - Libretro Fceumm to 12th of September 2025 build
 - Libretro Flycast to 2.6
