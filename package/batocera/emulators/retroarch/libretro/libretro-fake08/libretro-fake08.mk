@@ -3,8 +3,8 @@
 # libretro-fake08
 #
 ################################################################################
-# Version: Commits on Sept 2, 2024
-LIBRETRO_FAKE08_VERSION = 0d26fd59103941e5f95e0ee665c6e0fb8c6b6f03
+# Version: Commits on Jan 19, 2026
+LIBRETRO_FAKE08_VERSION = f6bab5a7ba521ce440e45d1aeef6122674be6ee9
 LIBRETRO_FAKE08_SITE_METHOD=git
 LIBRETRO_FAKE08_SITE=https://github.com/jtothebell/fake-08
 LIBRETRO_FAKE08_LICENSE = MIT
