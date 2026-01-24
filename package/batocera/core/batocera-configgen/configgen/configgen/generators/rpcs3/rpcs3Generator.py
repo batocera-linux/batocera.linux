@@ -223,6 +223,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
+            self._generateGunConfig(metadata)
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
@@ -279,6 +280,63 @@ class Rpcs3Generator(Generator):
                 "XDG_CACHE_HOME": CACHE
             }
         )
+
+    def _generateGunConfig(self, metadata):
+        """Generate gem_gun.yml for configurable lightgun button mapping"""
+        
+        # Default mapping: virtual gun button -> PS Move button
+        # trigger=BTN_LEFT, action=BTN_RIGHT, start=BTN_MIDDLE, select=BTN_1,
+        # sub1=BTN_2, sub2=BTN_3, sub3=BTN_4, up=BTN_5
+        mapping = {
+            "trigger": "t",
+            "action": "move",
+            "start": "start",
+            "select": "select",
+            "sub1": "triangle",
+            "sub2": "circle",
+            "sub3": "cross",
+            "up": "square"
+        }
+        
+        # Gun button numbers for each virtual gun button
+        gun_buttons = {
+            "trigger": 1,
+            "action": 2,
+            "start": 3,
+            "select": 4,
+            "sub1": 5,
+            "sub2": 6,
+            "sub3": 7,
+            "up": 8
+        }
+        
+        # Override from metadata (e.g. gun_select=cross, gun_sub1=circle)
+        if metadata:
+            for virtualgun in mapping:
+                key = f"gun_{virtualgun}"
+                if key in metadata:
+                    new_psmove = metadata[key].lower()
+                    old_psmove = mapping[virtualgun]
+                    
+                    # Swap to avoid duplicates
+                    for other in mapping:
+                        if mapping[other] == new_psmove and other != virtualgun:
+                            mapping[other] = old_psmove
+                            break
+                    
+                    mapping[virtualgun] = new_psmove
+        
+        # Build output: PS Move button -> Gun Button
+        output = {}
+        for virtualgun, psmove in mapping.items():
+            output[psmove.title()] = f"Gun Button {gun_buttons[virtualgun]}"
+        
+        # Write gem_gun.yml
+        with (RPCS3_CONFIG_DIR / "gem_gun.yml").open("w") as f:
+            for player in range(1, 5):
+                f.write(f"Player {player}:\n")
+                for btn, val in output.items():
+                    f.write(f"  {btn}: {val}\n")
 
     @staticmethod
     def getClosestRatio(gameResolution: Resolution) -> str:
