@@ -178,6 +178,10 @@ endif
 
 ## Context Menu Actions
 
+# m3u playlists for psx, segacd, systems that support m3u
+BATOCERA_DESKTOPAPPS_TOOLBOX += multidisc.toolbox
+BATOCERA_DESKTOPAPPS_ACTIONS += multidisc.toolbox.m3ufromdir.desktop
+
 # wine
 ifeq ($(BR2_PACKAGE_WINE_TKG),y)
   BATOCERA_DESKTOPAPPS_TOOLBOX += wine.toolbox

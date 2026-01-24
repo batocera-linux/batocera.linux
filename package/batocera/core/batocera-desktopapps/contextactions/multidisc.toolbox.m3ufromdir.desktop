@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Action
+Name=Create m3u from Directory
+# Folders point so base dir, exclude dirs with !... for example:
+# /userdata/roms --> includes all systems
+# !*/windows     --> excludes windows
+# /userdata/roms/windows will crash pcmanfm
+Folders=/userdata/roms*;
+# Add more systems to Basenames to activate script for context menu
+Basenames=psx;segacd;saturn;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=inode/directory
+Exec=bash -c '/usr/share/file-manager/actions/toolbox/multidisc.toolbox %f | yad --text-info --wrap'
