@@ -107,7 +107,7 @@ index e506920..293b9cb 100644
  extern cfg_mouse_gems g_cfg_gem_mouse;
 +extern cfg_gun_gems g_cfg_gem_gun;
 --- a/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-01-24 16:01:17.000000000 +0000
-+++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-01-24 16:07:43.287049138 +0000
++++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-01-24 20:19:54.175419416 +0000
 @@ -189,6 +189,7 @@
  cfg_gems g_cfg_gem_real;
  cfg_fake_gems g_cfg_gem_fake;
@@ -156,7 +156,7 @@ index e506920..293b9cb 100644
  static bool gun_input_to_pad(u32 gem_no, be_t<u16>& digital_buttons, be_t<u16>& analog_t)
  {
  	digital_buttons = 0;
-@@ -2358,32 +2382,33 @@
+@@ -2358,29 +2382,30 @@
  
  	gun_thread& gun = g_fxo->get<gun_thread>();
  	std::scoped_lock lock(gun.handler.mutex);
@@ -198,8 +198,4 @@ index e506920..293b9cb 100644
 +	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg, gem_btn::square)) == 1)
  		digital_buttons |= CELL_GEM_CTRL_SQUARE;
  
--	analog_t = gun.handler.get_button(gem_no, gun_button::btn_left) ? 255 : 0;
-+	analog_t = gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg, gem_btn::t)) ? 255 : 0;
- 
- 	return true;
- }
+ 	analog_t = gun.handler.get_button(gem_no, gun_button::btn_left) ? 255 : 0;

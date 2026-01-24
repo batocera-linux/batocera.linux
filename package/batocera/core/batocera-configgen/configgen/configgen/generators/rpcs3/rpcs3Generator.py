@@ -284,59 +284,62 @@ class Rpcs3Generator(Generator):
     def _generateGunConfig(self, metadata):
         """Generate gem_gun.yml for configurable lightgun button mapping"""
         
-        # Default mapping: virtual gun button -> PS Move button
-        # trigger=BTN_LEFT, action=BTN_RIGHT, start=BTN_MIDDLE, select=BTN_1,
-        # sub1=BTN_2, sub2=BTN_3, sub3=BTN_4, up=BTN_5
-        mapping = {
-            "trigger": "t",
-            "action": "move",
-            "start": "start",
-            "select": "select",
-            "sub1": "triangle",
-            "sub2": "circle",
-            "sub3": "cross",
-            "up": "square"
+        # PS Move button names as they appear in gem_gun.yml
+        psmoveButtons = ["T", "Move", "Start", "Select", "Triangle", "Circle", "Cross", "Square"]
+        
+        # Default mapping: PS Move button -> virtual gun button
+        psmoveMapping = {
+            "T":        "trigger",
+            "Move":     "action",
+            "Start":    "start",
+            "Select":   "select",
+            "Triangle": "sub1",
+            "Circle":   "sub2",
+            "Cross":    "sub3",
+            "Square":   "up"
         }
         
-        # Gun button numbers for each virtual gun button
-        gun_buttons = {
+        # Virtual gun buttons -> Gun Button number
+        gunButtons = {
             "trigger": 1,
-            "action": 2,
-            "start": 3,
-            "select": 4,
-            "sub1": 5,
-            "sub2": 6,
-            "sub3": 7,
-            "up": 8
+            "action":  2,
+            "start":   3,
+            "select":  4,
+            "sub1":    5,
+            "sub2":    6,
+            "sub3":    7,
+            "up":      8
         }
         
-        # Override from metadata (e.g. gun_select=cross, gun_sub1=circle)
+        # Custom remapping from metadata (e.g. gun_select=cross)
+        # Unlike Dolphin, RPCS3 needs all 8 buttons mapped, so we swap instead of erase
         if metadata:
-            for virtualgun in mapping:
-                key = f"gun_{virtualgun}"
-                if key in metadata:
-                    new_psmove = metadata[key].lower()
-                    old_psmove = mapping[virtualgun]
+            for vgun in gunButtons:
+                if f"gun_{vgun}" in metadata:
+                    new_psmove = metadata[f"gun_{vgun}"].title()
+                    if new_psmove not in psmoveMapping:
+                        continue
                     
-                    # Swap to avoid duplicates
-                    for other in mapping:
-                        if mapping[other] == new_psmove and other != virtualgun:
-                            mapping[other] = old_psmove
+                    # Find current PS Move button for this virtual gun
+                    old_psmove = None
+                    for psmove in psmoveMapping:
+                        if psmoveMapping[psmove] == vgun:
+                            old_psmove = psmove
                             break
                     
-                    mapping[virtualgun] = new_psmove
-        
-        # Build output: PS Move button -> Gun Button
-        output = {}
-        for virtualgun, psmove in mapping.items():
-            output[psmove.title()] = f"Gun Button {gun_buttons[virtualgun]}"
+                    # Swap the mappings
+                    if old_psmove is not None:
+                        old_vgun = psmoveMapping[new_psmove]
+                        psmoveMapping[new_psmove] = vgun
+                        psmoveMapping[old_psmove] = old_vgun
         
         # Write gem_gun.yml
         with (RPCS3_CONFIG_DIR / "gem_gun.yml").open("w") as f:
             for player in range(1, 5):
                 f.write(f"Player {player}:\n")
-                for btn, val in output.items():
-                    f.write(f"  {btn}: {val}\n")
+                for psmove in psmoveButtons:
+                    vgun = psmoveMapping[psmove]
+                    f.write(f"  {psmove}: Gun Button {gunButtons[vgun]}\n")
 
     @staticmethod
     def getClosestRatio(gameResolution: Resolution) -> str:
