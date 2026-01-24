@@ -534,7 +534,7 @@ def generate_gun_help(system, rom, use_guns: bool, guns: dict, gun_help_dir, gun
     gun_name = guns[0].name
     GUN_HELP_DIR = Path("/usr/share/batocera/guns-overlays")
     GUN_HELP_PNG = GUN_HELP_DIR / Path(gun_name + ".png")
-    GUN_HELP_INFO = GUN_HELP_DIR / Path(gun_name + ".png.info")
+    GUN_HELP_INFO = GUN_HELP_DIR / Path(gun_name + ".infos")
 
     if not GUN_HELP_PNG.exists():
         _logger.info("gun help: image doesn't exist : %s", GUN_HELP_PNG)
