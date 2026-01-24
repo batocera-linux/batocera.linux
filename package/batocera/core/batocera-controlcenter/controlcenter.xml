@@ -33,10 +33,7 @@
 		</vgroup>
 		<vgroup>
                         <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".thumbnail"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="200" refresh="3" />
-			<hgroup>
-				<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' height="160" refresh="2" id="cheevos" bg="#141821" />
-				<text display="RetroAchievements" if='${curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId" | sed "s/null//"}' refresh="2"/>
-			</hgroup>
+			<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' width="130" height="160" refresh="2" id="cheevos" bg="#141821" style="card" logo="/usr/share/batocera/controlcenter/resources/ra-icon.png" font="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" />
 			<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" refresh="5" align="center" />
 		</vgroup>
 		<hgroup>
