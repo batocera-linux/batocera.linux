@@ -1,0 +1,141 @@
+#!/usr/bin/python
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+#
+# This toolbox gathers several CD image formats and creates m3u files
+# Created by zognic aka modhack 01-2026 for BATOCERA
+#
+
+import os
+import re
+import sys
+from pathlib import Path
+from collections import defaultdict
+
+def find_multi_cd_games(root_dir):
+    #Find all multi-CD game files and group them by base name.
+    # Pattern to detect CD1, CD2, Disc 1, Disc 2, etc. and capture everything before it
+    cd_pattern = re.compile(r'^(.+?)\s*\(?\s*(?:CD|Disc|disk)\s*(\d+)', re.IGNORECASE)
+    
+    games = defaultdict(list)
+    
+    # Walk through all files in folder and subfolders
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            # Check game file extensions
+            if file.lower().endswith(('.iso', '.chd', '.cue', '.img', '.bin')):
+                # Remove file extension for pattern matching
+                filename_no_ext = os.path.splitext(file)[0]
+                match = cd_pattern.search(filename_no_ext)
+                if match:
+                    game_name = match.group(1).strip()
+                    cd_number = int(match.group(2))
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, root_dir)
+                    
+                    games[game_name].append({
+                        'path': relative_path,
+                        'cd_number': cd_number,
+                        'full_path': full_path,
+                        'directory': root
+                    })
+    
+    return games
+
+# Create .m3u files for each multi-CD game.
+def create_m3u_files(root_dir, games):
+    created_files = []
+    
+    for game_name, cds in games.items():
+        # Sort by CD number
+        cds_sorted = sorted(cds, key=lambda x: x['cd_number'])
+        
+        # Only create .m3u if there are at least 2 CDs
+        if len(cds_sorted) < 2:
+            continue
+        
+        # Determine where to create the .m3u file
+        # If all CDs are in the same subfolder, create .m3u at root
+        first_cd_dir = cds_sorted[0]['directory']
+        parent_dir = os.path.dirname(first_cd_dir)
+        
+        # If parent directory is root_dir, create at root
+        if parent_dir == root_dir or first_cd_dir == root_dir:
+            m3u_path = os.path.join(root_dir, f"{game_name}.m3u")
+        else:
+            # Otherwise create in the game's parent folder
+            m3u_path = os.path.join(parent_dir, f"{game_name}.m3u")
+        
+        # Create the .m3u file
+        try:
+            with open(m3u_path, 'w', encoding='utf-8') as f:
+                for cd in cds_sorted:
+                    # Calculate relative path from .m3u location
+                    m3u_dir = os.path.dirname(m3u_path)
+                    rel_path = os.path.relpath(cd['full_path'], m3u_dir)
+                    f.write(f"{rel_path}\n")
+            
+            created_files.append(m3u_path)
+            print(f"✓ Created: {os.path.relpath(m3u_path, root_dir)}")
+            print(f"  Contains {len(cds_sorted)} CD(s)")
+            
+        except Exception as e:
+            print(f"✗ Error creating {m3u_path}: {e}")
+    
+    return created_files
+
+def main():
+    # Ask for folder to scan or use first argument as path input
+    if len(sys.argv) != 1:
+        root_dir=str(sys.argv[1])
+    else:
+        root_dir = input("Enter the folder path to scan (or '.' for current folder): ").strip()
+
+    # Use PWD if argument is empty or . entered
+    if not root_dir or root_dir == '.':
+        root_dir = os.getcwd()
+    
+    if not os.path.isdir(root_dir):
+        print(f"Error: Folder '{root_dir}' does not exist.")
+        return
+    
+    print(f"\nScanning folder: {root_dir}")
+    print("-" * 60)
+    
+    # Find multi-CD games
+    games = find_multi_cd_games(root_dir)
+    
+    if not games:
+        print("No multi-CD games found.")
+        return
+    
+    print(f"\n{len(games)} multi-CD game(s) found:\n")
+    
+    for game_name, cds in games.items():
+        if len(cds) >= 2:
+            print(f"• {game_name} ({len(cds)} CDs)")
+    
+    print("\n" + "-" * 60)
+    print("Creating .m3u files...\n")
+    
+    # Create .m3u files
+    created_files = create_m3u_files(root_dir, games)
+    
+    print("\n" + "-" * 60)
+    print(f"Done! {len(created_files)} .m3u file(s) created.")
+
+if __name__ == "__main__":
+    main()
