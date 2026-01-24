@@ -12,8 +12,97 @@ MERGERFS_OPTS="-o cache.files=off,dropcacheonclose=false,category.create=mfs,all
 # --- HELPERS ---
 log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
 
-# Trap to log ALL exits (Success or Failure) with timestamp
-trap 'RET=$?; if [ $RET -eq 0 ]; then log_msg "EXIT: Success."; else log_msg "EXIT: Failed (Code $RET)."; fi' EXIT
+log_initial_info() {
+    local INIT_LOCK_DIR="/tmp/batocera-storage.init.lock"
+
+    # Try to acquire the lock
+    if mkdir "$INIT_LOCK_DIR" 2>/dev/null; then
+        trap 'rmdir "$INIT_LOCK_DIR" 2>/dev/null' EXIT
+        
+        local version=$(batocera-version)
+        log_msg "SYSTEM: Batocera Version: $version"
+        log_msg ""
+        log_msg "---------------------------------------"
+        log_msg "SYSTEM: --- Initial Disk Scan Start ---"
+        
+        # Log disk layout
+        local major_disks=""
+        # Iterate over all non-partition devices (sd[a-z], nvme[0-9]n[0-9], mmcblk[0-9])
+        for dev in /sys/class/block/*; do
+            DEVNAME=$(basename "$dev")
+            # Filter for common disk names
+            if [[ "$DEVNAME" =~ ^sd[a-z]$ ]] || [[ "$DEVNAME" =~ ^nvme[0-9]+n[0-9]+$ ]] || [[ "$DEVNAME" =~ ^mmcblk[0-9]+$ ]]; then
+                [ -b "/dev/$DEVNAME" ] && major_disks="$major_disks $DEVNAME"
+            fi
+        done
+        
+        if [ -n "$major_disks" ]; then
+            for disk in $major_disks; do
+                
+                # Check if the device actually exists as a block device
+                if [ -b "/dev/$disk" ]; then
+                    parted_output=$(parted -s "/dev/$disk" unit MiB print 2>&1)
+                    
+                    if [ $? -eq 0 ]; then
+                        log_msg "SYSTEM: DISK: /dev/$disk"
+                        # Log each line of the parted output
+                        echo "$parted_output" | while IFS= read -r line; do
+                            log_msg "PARTED:   $line"
+                        done
+                    else
+                        # Log the disk but note that parted failed to read it.
+                        log_msg "SYSTEM: DISK: /dev/$disk - WARNING: parted failed to read the disk partition table. Skipping detailed dump."
+                    fi
+                else
+                    log_msg "SYSTEM: DISK: /dev/$disk - WARNING: Device not found (block file missing)."
+                fi
+            done
+        else
+            log_msg "SYSTEM: No major disk devices found to list."
+        fi
+        
+        log_msg "SYSTEM: --- Initial Disk Scan End ---"
+        log_msg "-------------------------------------"
+        log_msg ""
+        
+        # Log mergerfs.roms
+        CURRENT_MERGERFS_SETTING=$(batocera-settings-get -f "$BOOT_CONF_FILE" "$CONFIG_KEY" 2>/dev/null)
+        if [ -n "$CURRENT_MERGERFS_SETTING" ]; then
+            log_msg "CONFIG: $CONFIG_KEY = $CURRENT_MERGERFS_SETTING"
+        else
+            log_msg "CONFIG: $CONFIG_KEY = [EMPTY or NOT FOUND]"
+        fi
+        
+        # Log all sharedevice keys
+        SHAREDEVICE_LINES=$(grep -E '^\s*sharedevice.*=' "$BOOT_CONF_FILE" 2>/dev/null)
+        if [ -n "$SHAREDEVICE_LINES" ]; then
+            log_msg "CONFIG: --- sharedevice keys from boot config ---"
+            echo "$SHAREDEVICE_LINES" | while IFS= read -r line; do
+                # Trim leading/trailing whitespace
+                log_msg "CONFIG: $(echo "$line" | xargs)"
+            done
+            log_msg "CONFIG: ----------------------------------------"
+        else
+            log_msg "CONFIG: sharedevice (any key) = [EMPTY or NOT FOUND]"
+        fi
+
+        # Log ignore.drives
+        CURRENT_IGNORED_DRIVES_SETTING=$(batocera-settings-get -f "$BOOT_CONF_FILE" "ignore.drives" 2>/dev/null)
+        if [ -n "$CURRENT_IGNORED_DRIVES_SETTING" ]; then
+            log_msg "CONFIG: ignore.drives = $CURRENT_IGNORED_DRIVES_SETTING"
+        else
+            log_msg "CONFIG: ignore.drives = [EMPTY or NOT FOUND]"
+        fi
+        log_msg ""
+    fi
+}
+
+# Execute the initial setup function immediately
+# runs only once by the first concurrent call
+log_initial_info
+
+# Trap to log ALL exits (Failure) with timestamp
+trap 'RET=$?; if [ $RET -ne 0 ]; then log_msg "EXIT: Failed (Code $RET)."; fi' EXIT
 
 is_mounted() { grep -q " $1 " /proc/mounts; return $?; }
 
@@ -257,8 +346,8 @@ handle_partition_event() {
     android_regex+="qupfw|dip|vbmeta|keymaster|splash|" # Secure Boot & UI
     android_regex+="mdtp|hyp|connsec|recovery|feat|"    # Recovery & Hypervisor
     android_regex+="imagefv|spunvm|storsec|logdump|"    # Storage Security
-    android_regex+="devinfo|nvdata|super|misc|ssd|"     # System Data
-    android_regex+="keystore|qpdata|userdata|reserve|"  # User Data & Keys
+    android_regex+="devinfo|nvdata|"                    # System Data
+    android_regex+="keystore|qpdata|userdata|"          # User Data & Keys
     android_regex+="rawdump|frp|logfs"                  # Debug & Factory Reset
 
     # Get both the Filesystem Label and the Partition Table Label
