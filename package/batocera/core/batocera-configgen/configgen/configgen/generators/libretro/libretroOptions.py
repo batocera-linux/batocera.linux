@@ -816,6 +816,32 @@ def _dosbox_pure_options(
     _set_from_system(coreSettings, 'dosbox_pure_midi', system, 'pure_midi', default='disabled')
 
 
+# Elektronika BK-0010/0011
+def _bk_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Model: BK-0010, BK-0010.01, BK-0010.01 + FDD, BK-0011M + FDD, Terak 8510/a, Slow BK-0011M
+    _set_from_system(coreSettings, 'bk_model', system, default='BK-0011M + FDD')
+
+    # Peripheral (UP port): none, covox, ay_3_8910, mouse_high, mouse_low, joystick
+    _set_from_system(coreSettings, 'bk_peripheral', system, default='none')
+
+    # Double CPU speed: disabled, enabled
+    _set_from_system(coreSettings, 'bk_doublespeed', system, default='disabled')
+
+    # Use color display: enabled, disabled
+    _set_from_system(coreSettings, 'bk_color', system, default='enabled')
+
+    # Aspect ratio: 1:1, 4:3
+    _set_from_system(coreSettings, 'bk_aspect_ratio', system, default='1:1')
+
+    # Keyboard layout: qwerty, jcuken
+    _set_from_system(coreSettings, 'bk_layout', system, default='qwerty')
+
+    # Keyboard type: poll, callback
+    _set_from_system(coreSettings, 'bk_keyboard_type', system, default='poll')
+
+
 # Microsoft MSX and Colecovision
 def _bluemsx_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2342,6 +2368,7 @@ def _hatarib_options(
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
     'atari800': _atari800_options,
+    'bk': _bk_options,
     'virtualjaguar': _virtualjaguar_options,
     'handy': _handy_options,
     'vice_x64': _vice_x64_options,
