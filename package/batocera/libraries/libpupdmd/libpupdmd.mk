@@ -3,8 +3,8 @@
 # libpupdmd
 #
 ################################################################################
-# Version: Commits on Jul 2, 2024
-LIBPUPDMD_VERSION = 124f45e5ddd59ceb339591de88fcca72f8c54612
+# Version: Commits on Apr 13, 2026
+LIBPUPDMD_VERSION = 1e2becff70450e0dd52dbaef767f89728d7957cd
 LIBPUPDMD_SITE = $(call github,ppuc,LIBPUPDMD,$(LIBPUPDMD_VERSION))
 LIBPUPDMD_LICENSE = GPL-3.0 license
 LIBPUPDMD_LICENSE_FILES = LICENSE
