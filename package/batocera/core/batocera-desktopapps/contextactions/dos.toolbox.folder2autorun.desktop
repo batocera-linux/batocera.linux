@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=DOS: Create dosbox.bat from Folder
+Folders=*/dos*;
+Basenames=*.pc;*.dos;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=inode/directory
+Exec=/usr/share/file-manager/actions/toolbox/dos.toolbox --autorun-from-dir %f
