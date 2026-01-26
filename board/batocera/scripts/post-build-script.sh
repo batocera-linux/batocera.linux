@@ -143,8 +143,7 @@ do
     then
     echo "Already in target2. Continuing..."
     else
-	echo "${TARGET_DIR}/${XDIR} not found."
-	exit 1
+	echo "${TARGET_DIR}/${XDIR} not found. Skipping."
     fi
 done
 
