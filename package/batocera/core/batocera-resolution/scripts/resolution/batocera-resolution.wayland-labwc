@@ -314,14 +314,14 @@ if [ -n "${PSCREEN_ARG}" ]; then
     PSCREEN="${PSCREEN_ARG}"
 else
     PSCREEN=$(_detect_primary_screen_from_configuration)
-    _log "PSCREEN detected: '${PSCREEN}'"
+    #_log "PSCREEN detected: '${PSCREEN}'"
 fi
 
 if [ -z "${PSCREEN}" ]; then
     _log "Error: Could not determine a screen to operate on. PSCREEN is empty."
     exit 1
 fi
-_log "Effective PSCREEN for operations: '${PSCREEN}'"
+#_log "Effective PSCREEN for operations: '${PSCREEN}'"
 
 ACTION=$1
 shift # Remove action from arguments, rest are parameters for the action
