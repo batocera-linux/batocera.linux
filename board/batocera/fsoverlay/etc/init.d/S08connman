@@ -79,7 +79,6 @@ batocera_wifi_configure() {
 wifi_configure_all() {
     for i in 1 2 3 .hidden; do
 	    batocera_wifi_configure $i
-		ret=$?
     done
 }
 
@@ -89,14 +88,17 @@ wifi_enable() {
     while ! grep -q "wlan" /proc/net/dev; do
         sleep 1
         wait_count=$((wait_count+1))
-        # If no wifi card is found after 20s, give up to save resources
-        if [ "$wait_count" -ge 20 ]; then
-            echo "*** Wifi Hardware not detected after 20s. Aborting. ***" > /dev/kmsg
+        # If no wifi card is found after 15s, give up to save resources
+        if [ "$wait_count" -ge 15 ]; then
+            echo "*** Wifi Hardware not detected after 15s. Aborting. ***" > /dev/kmsg
             return
         fi
     done
     echo "*** Wifi Hardware detected. ***" > /dev/kmsg
 
+    # Toggling the interface UP physically helps the certain firmware load cleanly
+    ip link set wlan0 up 2>/dev/null
+    
     # If wifi interface is available then apply the country code if set by the user
     settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
     if [ -n "$settingsCountry" ]; then
@@ -104,31 +106,26 @@ wifi_enable() {
     fi
 
     connmanctl enable wifi 2>/dev/null
-    sleep 2
+    # Allow 3 seconds for the firmware to settle before checking status.
+    sleep 3
 
-    # We attempt to connect for up to 40-60 seconds depending on resets.
-    for i in $(seq 1 40); do
-        # Check if we are already 'ready' (connected) or 'online' (internet access)
+    # Connection Check Loop (30 Seconds Max)
+    for i in $(seq 1 30); do
         state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+        
+        # Check if connected
         if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
             echo "*** Wifi connected successfully. ***" > /dev/kmsg
             break
         fi
 
-        # driver or firmware may have stalled. try different resets if not connected
-        if [ "$i" -eq 2 ] || [ "$i" -eq 6 ]|| [ "$i" -eq 10 ]; then
-            echo "*** Wifi stuck. Toggling radio to clear driver stall. ***" > /dev/kmsg
-            connmanctl disable wifi 2>/dev/null
-            ip link set wlan0 down 2>/dev/null
-            sleep 0.1
-            ip link set wlan0 up 2>/dev/null
-            connmanctl enable wifi 2>/dev/null
-            sleep 2 # Allow extra time for firmware reload
+        # Connman usually auto-scans on enable. We only force a scan if
+        # we still aren't connected after 12 seconds.
+        if [ "$i" -eq 12 ]; then
+            echo "*** Wifi not yet connected. Triggering one passive scan... ***" > /dev/kmsg
+            connmanctl scan wifi 2>/dev/null
         fi
 
-        # Use timeout to prevent script hanging if driver is stalled
-        timeout 2s connmanctl scan wifi 2>/dev/null
-        # If not connected, wait a second before trying again to avoid driver spam.
         sleep 1
     done
 }
