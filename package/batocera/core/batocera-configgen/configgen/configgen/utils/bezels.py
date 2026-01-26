@@ -484,7 +484,10 @@ def generate_gun_help(system, rom, use_guns: bool, guns: dict, gun_help_dir, gun
         "<SUB1>":    "SUB1",
         "<SUB2>":    "SUB2",
         "<SUB3>":    "SUB3",
-        "<D-PAD>":   "D-PAD"
+        "<UP>":      "UP",
+        "<DOWN>":    "DOWN",
+        "<LEFT>":    "LEFT",
+        "<RIGHT>":   "RIGHT",
     }
 
     if not gun_help_dir.exists():
@@ -545,6 +548,23 @@ def generate_gun_help(system, rom, use_guns: bool, guns: dict, gun_help_dir, gun
     if GUN_HELP_INFO.exists():
         with open(GUN_HELP_INFO, "r", encoding="utf-8") as file:
             data = json.load(file)
+
+    # specific rule to not have up/down/left/right, not perfect but should to the job
+    # if in replacements, there are still <up>/<down>/<left>/<right>
+    # and the 4 are on the gun (json)
+    # display only <up> with the d-pad label
+    if "texts" in data:
+        padsval = {}
+        for n, text in enumerate(data["texts"]):
+            padsval[data["texts"][n]["value"]] = { "n": n }
+        if "<UP>" in padsval and "<DOWN>" in padsval and "<LEFT>" in padsval and "<RIGHT>" in padsval:
+            if "<UP>" in replacements and "<DOWN>" in replacements and "<LEFT>" in replacements and "<RIGHT>" in replacements:
+                if replacements["<UP>"] == "UP" and replacements["<DOWN>"] == "DOWN" and replacements["<LEFT>"] == "LEFT" and replacements["<RIGHT>"] == "RIGHT":
+                    replacements["<UP>"] = "D-PAD"
+                    # erase some values
+                    data["texts"][padsval["<DOWN>"]["n"]]["value"] = ""
+                    data["texts"][padsval["<LEFT>"]["n"]]["value"] = ""
+                    data["texts"][padsval["<RIGHT>"]["n"]]["value"] = ""
 
     # replace data in texts
     if "texts" in data:
