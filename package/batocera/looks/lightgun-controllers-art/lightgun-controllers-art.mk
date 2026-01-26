@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Jan 23, 2026
-LIGHTGUN_CONTROLLERS_ART_VERSION = d47d62153ade6d0ae0c35ca67879fcc72893810b
+# Jan 26, 2026
+LIGHTGUN_CONTROLLERS_ART_VERSION = 3a04414d3c9bc4d21206e45c99f875f00377ee30
 LIGHTGUN_CONTROLLERS_ART_SITE = \
     $(call github,batocera-linux,lightgun-controllers-art,$(LIGHTGUN_CONTROLLERS_ART_VERSION))
 #LIGHTGUN_CONTROLLERS_ART_LICENSE = 
