@@ -8,6 +8,37 @@ nvidia_log="/var/log/nvidia.log"
 amd_log="/var/log/amd.log"
 intel_log="/var/log/intel.log"
 
+# Function to find the actual GPU which has a display connection
+find_connected_gpu() {
+    local -a gpu_list=("$@")
+    local selected_pci_id=""
+    
+    for gpu_entry in "${gpu_list[@]}"; do
+        local pci_id_full=$(echo "$gpu_entry" | awk -F ' ' '{print $1}')
+        local drm_card=""
+
+        for card_path in /sys/class/drm/card*; do
+            if readlink -f "$card_path/device" | grep -q "$pci_id_full"; then
+                drm_card=$(basename "$card_path")
+                break
+            fi
+        done
+
+        if [ -n "$drm_card" ]; then
+            for connector_status in /sys/class/drm/"$drm_card"/*-*/status; do
+                if [ -f "$connector_status" ] && [ "$(cat "$connector_status")" = "connected" ]; then
+                    selected_pci_id="$pci_id_full"
+                    echo "$selected_pci_id"
+                    return 0
+                fi
+            done
+        fi
+    done
+
+    echo ""
+    return 1
+}
+
 case "$1" in
   start)
     # Check if there are two (or more) GPUs in the system
@@ -56,11 +87,24 @@ case "$1" in
                     gpu_name="${all_amd_gpus[0]}"
                     echo "Found a single AMD/ATI GPU: $gpu_name" >> "$amd_log"
                 elif [ "$amd_count" -ge 2 ]; then
-                    # Two or more found. Log all and select the second GPU (assumed discrete).
-                    echo "Found $amd_count AMD/ATI GPUs. Selecting the second entry for PRIME." >> "$amd_log"
-                    printf "    - %s\n" "${all_amd_gpus[@]}" >> "$amd_log"
-                    gpu_name="${all_amd_gpus[1]}"
-                    echo "Setting AMD/ATI Prime to use GPU: $gpu_name" >> "$amd_log"
+                    connected_pci_id=$(find_connected_gpu "${all_amd_gpus[@]}")
+                    
+                    if [ -n "$connected_pci_id" ]; then
+                        gpu_entry_index=0
+                        for i in "${!all_amd_gpus[@]}"; do
+                            if echo "${all_amd_gpus[$i]}" | grep -q "$connected_pci_id"; then
+                                gpu_entry_index=$i
+                                break
+                            fi
+                        done
+                        gpu_name="${all_amd_gpus[$gpu_entry_index]}"
+                        echo "Found $amd_count AMD/ATI GPUs. Selecting connected GPU: $gpu_name" >> "$amd_log"
+                    else
+                        echo "Found $amd_count AMD/ATI GPUs. No connected monitor found. Selecting second entry for PRIME." >> "$amd_log"
+                        printf "    - %s\n" "${all_amd_gpus[@]}" >> "$amd_log"
+                        gpu_name="${all_amd_gpus[1]}"
+                        echo "Setting AMD/ATI Prime to use GPU: $gpu_name" >> "$amd_log"
+                    fi
                 fi
                 
                 if [ -n "$gpu_name" ]; then
@@ -89,10 +133,23 @@ case "$1" in
                 gpu_name=""
 
                 if [ "$intel_count" -ge 2 ]; then
-                    # We assume the Integrated is #0 and Discrete (Arc) is #1
-                    echo "Found multiple Intel GPUs ($intel_count). Selecting the second entry for PRIME." >> "$intel_log"
-                    printf "    - %s\n" "${all_intel_gpus[@]}" >> "$intel_log"
-                    gpu_name="${all_intel_gpus[1]}"
+                    connected_pci_id=$(find_connected_gpu "${all_intel_gpus[@]}")
+
+                    if [ -n "$connected_pci_id" ]; then
+                        gpu_entry_index=0
+                        for i in "${!all_intel_gpus[@]}"; do
+                            if echo "${all_intel_gpus[$i]}" | grep -q "$connected_pci_id"; then
+                                gpu_entry_index=$i
+                                break
+                            fi
+                        done
+                        gpu_name="${all_intel_gpus[$gpu_entry_index]}"
+                        echo "Found multiple Intel GPUs ($intel_count). Selecting connected GPU: $gpu_name" >> "$intel_log"
+                    else
+                        echo "Found multiple Intel GPUs ($intel_count). No connected monitor found. Selecting the second entry for PRIME." >> "$intel_log"
+                        printf "    - %s\n" "${all_intel_gpus[@]}" >> "$intel_log"
+                        gpu_name="${all_intel_gpus[1]}"
+                    fi
                 elif [ "$intel_count" -eq 1 ]; then
                     echo "Only one Intel GPU found (Integrated). No PRIME action taken unless forced." >> "$intel_log"
                 fi
