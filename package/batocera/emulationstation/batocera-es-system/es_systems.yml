@@ -1303,12 +1303,14 @@ tic80:
   emulators:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+    tic80:
+      tic80: { requireAnyOf: [BR2_PACKAGE_TIC80] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:tic-80
+    For more info: https://wiki.batocera.org/systems:tic80
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic-80
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic80
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:tic-80
+    Para mais informações: https://wiki.batocera.org/systems:tic80
 
 pico8:
   name:       Pico-8
@@ -1320,11 +1322,11 @@ pico8:
     libretro:
       fake08: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FAKE08] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:pico-8
+    For more info: https://wiki.batocera.org/systems:pico8
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico8
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:pico-8
+    Para mais informações: https://wiki.batocera.org/systems:pico8
 
 lowresnx:
   name:       Lowres NX
