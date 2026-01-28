@@ -364,6 +364,7 @@ class evmapy(AbstractContextManager[None, None]):
                 trigger = self.__trigger_mapper(
                     evmapy_action['trigger'], known_button_aliases, known_button_names, trigger_mapping
                 )
+
                 if 'mode' not in evmapy_action:
                     mode = self.__trigger_mapper_mode(evmapy_action['trigger'])
                     if mode is not None:
@@ -373,13 +374,13 @@ class evmapy(AbstractContextManager[None, None]):
 
                 if isinstance(trigger, list):
                     if all(x in known_button_names or f'ABS_OTHERS_{x}:max' in known_button_names for x in trigger):
-                        # rewrite axis buttons
-                        evmapy_action['trigger'] = [
-                            f'ABS_OTHERS_{val}:max' if f'ABS_OTHERS_{val}:max' in known_button_names else val
-                            for val in trigger
-                        ]
-
-                        evmapy_config['actions'].append(evmapy_action)
+                        if len(trigger) == len(set(trigger)): # because of aliases (hotkeys), a button can be present 2 times => disable this key
+                            # rewrite axis buttons
+                            evmapy_action['trigger'] = [
+                                f'ABS_OTHERS_{val}:max' if f'ABS_OTHERS_{val}:max' in known_button_names else val
+                                for val in trigger
+                            ]
+                            evmapy_config['actions'].append(evmapy_action)
                 else:
                     if trigger in known_button_names:
                         evmapy_config['actions'].append(evmapy_action)
