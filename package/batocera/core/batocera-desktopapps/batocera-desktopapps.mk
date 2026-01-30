@@ -97,7 +97,7 @@ ifeq ($(BR2_PACKAGE_RPCS3),y)
 endif
 
 # cemu
-ifeq ($(BR2_PACKAGE_CEMU),y)
+ifeq ($(BR2_PACKAGE_CEMU)$(BR2_PACKAGE_CEMU_ANDROID),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-cemu
   BATOCERA_DESKTOPAPPS_APPS    += cemu-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
