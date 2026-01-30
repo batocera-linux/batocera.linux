@@ -1,0 +1,29 @@
+config BR2_PACKAGE_CEMU_ANDROID
+    bool "cemu-android"
+    select BR2_PACKAGE_BLUEZ5_UTILS
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_FILESYSTEM
+    select BR2_PACKAGE_BOOST_NOWIDE
+    select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+    select BR2_PACKAGE_GLM
+    select BR2_PACKAGE_GLSLANG
+    select BR2_PACKAGE_HIDAPI
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBGTK3
+    select BR2_PACKAGE_LIBOPENSSL
+    select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_LIBZLIB
+    select BR2_PACKAGE_LIBZIP
+    select BR2_PACKAGE_PUGIXML
+    select BR2_PACKAGE_PULSEAUDIO
+    select BR2_PACKAGE_RAPIDJSON
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SPEEXDSP
+    select BR2_PACKAGE_WXWIDGETS
+    select BR2_PACKAGE_ZSTD
+    help
+      Cemu is a Wii U emulator that now runs natively on Linux.
+      This Andorid version better supports Arm devices.
+
+      https://cemu.info/
+      https://github.com/SSimco/Cemu

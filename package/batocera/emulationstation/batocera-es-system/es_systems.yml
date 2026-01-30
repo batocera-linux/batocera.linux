@@ -2582,7 +2582,7 @@ wiiu:
   theme:      wiiu
   emulators:
     cemu:
-      cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+      cemu:  { requireAnyOf: [ BR2_PACKAGE_CEMU, BR2_PACKAGE_CEMU_ANDROID ] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:wiiu
   comment_fr: |
