@@ -255,7 +255,9 @@ systems = {
                                                            { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/amiga-ext-310-cd32.rom"  }] },
 
     # ---------- NEC PC-6000 ---------- #
-    "pc60":       { "name": "NEC PC-6000", "biosFiles": [  { "md5": "", "file": "bios/mame/pc6001.zip" } ] },
+    "pc60":       { "name": "NEC PC-6000", "biosFiles": [  { "md5": "2a13a60acf99a659144655b6c9e39b92", "zippedFile": "basicrom.60", "file": "bios/pc6001.zip" },
+                                                           { "md5": "9153f89e83f94f5d1cfe0a4e75d03372", "zippedFile": "cgrom60.60", "file": "bios/pc6001.zip" },
+                                                           { "md5": "240738391e23f9b0337ab122df8ed7c0", "zippedFile": "upd8049.ic17", "file": "bios/pc6001.zip" } ] },
 
     # ---------- NEC PC-8800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
@@ -277,9 +279,9 @@ systems = {
                                                             { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
     # ---------- Casio Loopy ---------- #
     "casloopy": { "name": "Casio Loopy", "biosFiles": [
-                                                          { "md5": "0e1d8dc0110ecf8201c0cef11ef4a858", "file": "bios/mame/casloopy.zip" },
-                                                          { "md5": "d527e3ed1bf9bd0661154c202a65c5bd", "zippedFile": "hd6437021.lsi302", "file": "bios/mame/casloopy.zip" },
-                                                          { "md5": "c0f1c899c9ca098663d046d60779711d", "zippedFile": "hn62434fa.lsi352", "file": "bios/mame/casloopy.zip" } ] },
+                                                          { "md5": "0e1d8dc0110ecf8201c0cef11ef4a858", "file": "bios/casloopy.zip" },
+                                                          { "md5": "d527e3ed1bf9bd0661154c202a65c5bd", "zippedFile": "hd6437021.lsi302", "file": "bios/casloopy.zip" },
+                                                          { "md5": "c0f1c899c9ca098663d046d60779711d", "zippedFile": "hn62434fa.lsi352", "file": "bios/casloopy.zip" } ] },
     # ---------- Fairchild ChannelF ---------- #
     # https://github.com/libretro/FreeChaF/blob/master/README.md#bios
     "channelf":  { "name": "Fairchild ChannelF", "biosFiles": [   { "md5": "ac9804d4c0e9d07e33472e3726ed15c3", "file": "bios/sl31253.bin" },
