@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Action
+Name=DOS: Create dosbox.bat from File
+Folders=*/dos*;
+# Matchcase defaults to true, matches basenames
+Matchcase=false
+Basenames=*.exe;*.com;*.bat;!dosbox.bat;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=all/allfiles
+Exec=/usr/share/file-manager/actions/toolbox/dos.toolbox --autorun-from-file %d %b
