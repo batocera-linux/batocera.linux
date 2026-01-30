@@ -435,11 +435,13 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
             nsamepad = double_pads.get(pad.real_name.strip(), 0)
             double_pads[pad.real_name.strip()] = nsamepad+1
 
+            device = f"evdev/{str(nsamepad).strip()}/{pad.real_name.strip()}"
+
             f.write(f"[{anyDefKey}{nplayer}]\n")
-            f.write(f"Device = evdev/{str(nsamepad).strip()}/{pad.real_name.strip()}\n")
+            f.write(f"Device = {device}\n")
 
             if system.config.get_bool("use_pad_profiles"):
-                if not generateControllerConfig_any_from_profiles(f, pad, system):
+                if not generateControllerConfig_any_from_profiles(f, device, system):
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
             else:
                 if pad.device_path in wheels:
@@ -563,7 +565,7 @@ def generateControllerConfig_any_auto(f: codecs.StreamReaderWriter, pad: Control
                 f.write("Main Stick/Gate Size = 95.0\n")
                 f.write("C-Stick/Gate Size = 88.0\n")
 
-def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad: Controller, system: Emulator) -> bool:
+def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, device: str, system: Emulator) -> bool:
     glob_path: Path | None = None
     if system.name == "gamecube":
         glob_path = DOLPHIN_CONFIG / "Profiles" / "GCPad"
@@ -581,8 +583,7 @@ def generateControllerConfig_any_from_profiles(f: codecs.StreamReaderWriter, pad
             profileDevice = profileConfig.get("Profile","Device")
             _logger.debug("Profile device : %s", profileDevice)
 
-            deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
-            if deviceVals is not None and deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.real_name.strip():
+            if profileDevice == device:
                 _logger.debug("Eligible profile device found")
                 for key, val in profileConfig.items("Profile"):
                     if key != "Device":
