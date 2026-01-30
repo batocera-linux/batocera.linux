@@ -1,8 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <systems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gamesgunbuttonsdb.xsd">
+  <system id="3do">
+    <game id="default">
+      <gun trigger="Fire" />
+    </game>
+  </system>
+  <system id="atari2600">
+    <game id="default">
+      <gun trigger="Fire" />
+    </game>
+  </system>
+  <system id="c64">
+    <game id="default">
+      <gun trigger="Fire" />
+    </game>
+  </system>
+  <system id="dreamcast">
+    <game id="default">
+      <gun trigger="Trigger (A)" action="B" start="Start" />
+    </game>
+  </system>
+  <system id="mastersystem">
+    <game id="default">
+      <gun trigger="Fire" />
+    </game>
+  </system>
+  <system id="megadrive">
+    <game id="default">
+      <gun trigger="Trigger" action="1" start="2" select="Pause" />
+    </game>
+  </system>
   <system id="nes">
     <game id="default">
       <gun trigger="Fire" />
+    </game>
+  </system>
+  <system id="ps2">
+    <game id="default">
+      <gun trigger="Trigger" action="C" start="Start" select="B" sub1="Calibration shot" />
+    </game>
+  </system>
+  <system id="psx">
+    <game id="default">
+      <gun trigger="Trigger" action="A" start="B" />
+    </game>
+    <game id="area51">
+      <gun trigger="Trigger" action="Special" start="Start"/>
+    </game>
+    <game id="cryptkiller">
+      <gun trigger="Trigger" action="Auxiliary" start="Start"/>
+    </game>
+    <game id="maximumforce">
+      <gun trigger="Trigger" action="Select" start="Start"/>
+    </game>
+    <game id="lethalenforcers">
+      <gun trigger="Trigger" action="Auxiliary" start="Start"/>
+    </game>
+    <game id="projecthornedowl">
+      <gun trigger="Trigger" action="Grenade" start="Start"/>
+    </game>
+    <game id="mightyhitsspecial">
+      <gun trigger="Trigger" action="Auxiliary" start="Start"/>
+    </game>
+  </system>
+  <system id="saturn">
+    <game id="default">
+      <gun trigger="Trigger" start="Start" />
     </game>
   </system>
 </systems>
