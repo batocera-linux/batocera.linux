@@ -1,10 +1,10 @@
-diff --git a/src/Cafe/HW/Latte/Renderer/Renderer.cpp b/src/Cafe/HW/Latte/Renderer/Renderer.cpp
-index 8f99c06930..7faa605755 100644
---- a/src/Cafe/HW/Latte/Renderer/Renderer.cpp
-+++ b/src/Cafe/HW/Latte/Renderer/Renderer.cpp
-@@ -84,7 +84,7 @@ uint8 Renderer::RGBComponentToSRGB(uint8 cli)
+diff --git a/src/gui/wxgui/input/HotkeySettings.cpp b/src/gui/wxgui/input/HotkeySettings.cpp
+index 0bf5902..399870a 100644
+--- a/src/gui/wxgui/input/HotkeySettings.cpp
++++ b/src/gui/wxgui/input/HotkeySettings.cpp
+@@ -18,7 +18,7 @@
  
- static std::optional<fs::path> GenerateScreenshotFilename(bool isDRC)
+ std::optional<fs::path> GenerateScreenshotFilename(bool isDRC)
  {
 -	fs::path screendir = ActiveSettings::GetUserDataPath("screenshots");
 +	fs::path screendir = "/userdata/screenshots";
@@ -37,10 +37,10 @@ index 565f4f8fc4..00e15c51f3 100644
  	}
  
  	exit(0);
-diff --git a/src/gui/CemuApp.cpp b/src/gui/CemuApp.cpp
+diff --git a/src/gui/wxgui/CemuApp.cpp b/src/gui/wxgui/CemuApp.cpp
 index 2c766f5bab..425a125e5a 100644
---- a/src/gui/CemuApp.cpp
-+++ b/src/gui/CemuApp.cpp
+--- a/src/gui/wxgui/CemuApp.cpp
++++ b/src/gui/wxgui/CemuApp.cpp
 @@ -146,11 +146,10 @@
  			return dir;
  		};
