@@ -591,6 +591,10 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/wtype/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/ryzen-smu/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/mergerfs/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/python-nfcpy/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/python-ndeflib/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/python-pydes/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-nfc/Config.in"
 endmenu
 
 menu "Cases"
