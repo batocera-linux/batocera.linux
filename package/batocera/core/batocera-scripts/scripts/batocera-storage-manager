@@ -261,7 +261,17 @@ mount_partition() {
             return 2
         else
             [ -n "$PENDING_FLAG_PATH" ] && touch "$PENDING_FLAG_PATH"
-            send_notification "REQUEST_MERGE:$MOUNT_POINT"
+            # Gather data for the GUI prompt
+            local PART_NAME=$(basename "$PART_DEV")
+            local PARENT=$(get_parent_disk "$PART_NAME")
+            local MODEL=$(lsblk -d -n -o MODEL "/dev/$PARENT")
+            local SIZE=$(lsblk -d -n -o SIZE "$PART_DEV")
+            # Clean variables
+            local MODEL_CLEAN=$(echo "$MODEL" | tr ':' '_' | xargs)
+            local SIZE_CLEAN=$(echo "$SIZE" | tr ':' '_')
+            [ -z "$MODEL_CLEAN" ] && MODEL_CLEAN="Generic Drive"
+
+            send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT"
             return 2
         fi
     fi
