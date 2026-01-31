@@ -356,7 +356,7 @@ handle_partition_event() {
         exit 0
     fi
 
-    # 3. Label-based filtering
+    # Label-based filtering
     local android_regex=""
     android_regex+="dsp|vm-|modem|bluetooth|qmcs|"      # Connectivity & Virtualization
     android_regex+="persist|metadata|fsc|fsg|cdt|ddr|"  # Hardware & Config
