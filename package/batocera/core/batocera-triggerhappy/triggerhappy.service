@@ -33,10 +33,18 @@ then
     CONFPATH=/userdata/system/configs/multimedia_keys.conf
 fi
 
-NAME=thd
-DAEMON=/usr/sbin/$NAME
-PIDFILE=/var/run/$NAME.pid
-DAEMON_ARGS="--daemon --triggers ${CONFPATH} --socket /var/run/thd.socket --pidfile $PIDFILE /dev/input/event*"
+DAEMON=/usr/sbin/thd
+
+NAME=${0##*/}
+NAME=${NAME#[S][0-9][0-9]}
+
+PIDFILE="/var/run/$NAME.pid"
+SOCKETFILE="/var/run/$NAME.socket"
+WATCH_DIRS_FILE="/var/run/$NAME.watch-dirs"
+WATCH_EVENTS_FILE="/var/run/$NAME.watch-events"
+
+INPUT_DIR="/dev/input"
+DAEMON_ARGS="--daemon --triggers ${CONFPATH} --socket ${SOCKETFILE} --pidfile ${PIDFILE} ${INPUT_DIR}/event*"
 
 # Sanity checks
 test -x $DAEMON || exit 0
@@ -45,12 +53,21 @@ test -x $DAEMON || exit 0
 
 start() {
         printf "Starting $NAME: "
+
+        # Inform the triggerhappy-inotifyrestart service which dirs and events to watch
+        echo "$INPUT_DIR" > "$WATCH_DIRS_FILE"
+        echo "create" > "$WATCH_EVENTS_FILE"
+
         start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS \
                 && echo "OK" || echo "FAIL"
 }
 
 stop() {
         printf "Stopping $NAME: "
+
+        [ -f "$WATCH_DIRS_FILE" ] && rm -f "$WATCH_DIRS_FILE"
+        [ -f "$WATCH_EVENTS_FILE" ] && rm -f "$WATCH_EVENTS_FILE"
+
         start-stop-daemon --stop --quiet --pidfile $PIDFILE \
                 && echo "OK" || echo "FAIL"
 }
