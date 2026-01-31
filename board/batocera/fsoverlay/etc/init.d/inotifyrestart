@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# Generic inotify-based service restarter for BusyBox
+# init systems
+#
+# Usage:
+
+#   Symlink this base script to a specific service
+#   handler script using the target:
+#   [S]##<service>-inotifyrestart Where the link prefix
+#   [S]##<service>- comes from the service that should
+#   be watched and restarted on filesystem changes.
+#
+#   For example:
+#     cd /etc/init.d
+#     ln -s inotifyrestart S32nfsd-inotifyrestart
+#
+#   The monitored service script needs to accept the
+#   restart argument. For example: /etc/init.d/S32nfsd restart
+#
+#   The monitored service script needs to inform which
+#   directories should be monitored via a
+#   /var/run/<service>.watch-dirs file, one directory
+#   per line.
+#
+#   The monitored service script also needs to inform which
+#   events should be monitored via a
+#   /var/run/<service>.watch-events file, as a comma-delimited
+#   list. For example: modify,create,delete,move
+#   For the full list, run "inotifywait --help"
+#
+# Behavior:
+#   - Watches directories listed in /var/run/<service>.watch-dirs
+#     For change events listed in /var/run/<service>.watch-events
+#   - When changes occur, calls: /etc/init.d/<service> restart
+#   - Stops watching if the .watch-dirs or .watch-events files are removed
+#   - Logs all activity to /var/log/<service>-inotifyrestart.log
+
+set -euo pipefail
+
+# Determine the service name from our script name
+INOTIFY_FULLNAME="${0##*/}"
+
+# Service configuration
+SERVICE_NAME="${INOTIFY_FULLNAME#[S][0-9][0-9]}"
+SERVICE_NAME="${SERVICE_NAME%-inotifyrestart}"
+
+WATCH_DIRS_FILE="/var/run/$SERVICE_NAME.watch-dirs"
+WATCH_EVENTS_FILE="/var/run/$SERVICE_NAME.watch-events"
+
+SERVICE_INITSCRIPT="/etc/init.d/${INOTIFY_FULLNAME%-inotifyrestart}"
+
+# Our own (inotifyrestart) configuration
+INOTIFY_PIDFILE="/var/run/$SERVICE_NAME-inotifyrestart.pid"
+INOTIFY_LOGFILE="/var/log/$SERVICE_NAME-inotifyrestart.log"
+
+# Indent subprocess output in logs for readability
+indent_output() {
+    sed 's/^/                      /'
+}
+
+log_msg() {
+    printf '[%(%Y-%m-%d %H:%M:%S)T] %s\n' -1 "$*"
+}
+
+start_service() {
+    [[ -f "$SERVICE_INITSCRIPT" ]] || { echo "$SERVICE_INITSCRIPT not found"; exit 1; }
+    [[ -f "$WATCH_DIRS_FILE" ]]    || { echo "$WATCH_DIRS_FILE not found"; exit 1; }
+    [[ -f "$WATCH_EVENTS_FILE" ]]  || { echo "$WATCH_EVENTS_FILE not found"; exit 1; }
+
+    # Clear log file on start
+    > "$INOTIFY_LOGFILE"
+
+    # Use mapfile (bash builtin) to read directories efficiently
+    mapfile -t WATCH_DIRS < <(grep -v '^[[:space:]]*$' "$WATCH_DIRS_FILE")
+    [[ ${#WATCH_DIRS[@]} -gt 0 ]] || { echo "No directories in $WATCH_DIRS_FILE"; exit 1; }
+
+    WATCH_EVENTS=$(cat "$WATCH_EVENTS_FILE")
+    [[ -n "$WATCH_EVENTS" ]] || { echo "No events in $WATCH_EVENTS_FILE"; exit 1; }
+
+    (
+        # Set up cleanup trap
+        trap 'log_msg "Exiting, cleaning up"; rm -f "$INOTIFY_PIDFILE"; exit 0' EXIT INT TERM
+
+        echo $$ > "$INOTIFY_PIDFILE"
+        log_msg "Starting inotifyrestart for: $SERVICE_NAME"
+        log_msg "Monitoring directories: ${WATCH_DIRS[*]}"
+        log_msg "Monitoring events: $WATCH_EVENTS"
+
+        last_restart=0
+
+        while [[ -f "$WATCH_DIRS_FILE" && -f "$WATCH_EVENTS_FILE" ]]; do
+            # Monitor for events, capture and indent output
+            if ! inotifywait -e "$WATCH_EVENTS" "${WATCH_DIRS[@]}" 2>&1 | indent_output; then
+                log_msg "inotifywait failed, exiting"
+                exit 1
+            fi
+
+            log_msg "Change detected, restarting $SERVICE_NAME"
+
+            # Capture all output and ensure it's indented
+            if ! "$SERVICE_INITSCRIPT" restart 2>&1 | indent_output; then
+                log_msg "$SERVICE_INITSCRIPT restart failed, exiting"
+                exit 1
+            fi
+        done
+
+        log_msg "$WATCH_DIRS_FILE or "$WATCH_EVENTS_FILE" no longer present, exiting"
+    ) >> "$INOTIFY_LOGFILE" 2>&1 &
+}
+
+stop_service() {
+    if [[ -f "$INOTIFY_PIDFILE" ]]; then
+        local pid
+        pid=$(<"$INOTIFY_PIDFILE")
+        kill -- -"$pid" 2>/dev/null
+        rm -f "$INOTIFY_PIDFILE"
+    fi
+}
+
+case "$1" in
+    start)
+        start_service
+        ;;
+    stop)
+        stop_service
+        ;;
+    restart)
+        stop_service
+        start_service
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
