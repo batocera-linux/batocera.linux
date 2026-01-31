@@ -223,6 +223,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
+            self._generateGunConfig(metadata)
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
@@ -279,6 +280,66 @@ class Rpcs3Generator(Generator):
                 "XDG_CACHE_HOME": CACHE
             }
         )
+
+    def _generateGunConfig(self, metadata):
+        """Generate gem_gun.yml for configurable lightgun button mapping"""
+        
+        # PS Move button names as they appear in gem_gun.yml
+        psmoveButtons = ["T", "Move", "Start", "Select", "Triangle", "Circle", "Cross", "Square"]
+        
+        # Default mapping: PS Move button -> virtual gun button
+        psmoveMapping = {
+            "T":        "trigger",
+            "Move":     "action",
+            "Start":    "start",
+            "Select":   "select",
+            "Triangle": "sub1",
+            "Circle":   "sub2",
+            "Cross":    "sub3",
+            "Square":   "up"
+        }
+        
+        # Virtual gun buttons -> Gun Button number
+        gunButtons = {
+            "trigger": 1,
+            "action":  2,
+            "start":   3,
+            "select":  4,
+            "sub1":    5,
+            "sub2":    6,
+            "sub3":    7,
+            "up":      8
+        }
+        
+        # Custom remapping from metadata (e.g. gun_select=cross)
+        # Unlike Dolphin, RPCS3 needs all 8 buttons mapped, so we swap instead of erase
+        if metadata:
+            for vgun in gunButtons:
+                if f"gun_{vgun}" in metadata:
+                    new_psmove = metadata[f"gun_{vgun}"].title()
+                    if new_psmove not in psmoveMapping:
+                        continue
+                    
+                    # Find current PS Move button for this virtual gun
+                    old_psmove = None
+                    for psmove in psmoveMapping:
+                        if psmoveMapping[psmove] == vgun:
+                            old_psmove = psmove
+                            break
+                    
+                    # Swap the mappings
+                    if old_psmove is not None:
+                        old_vgun = psmoveMapping[new_psmove]
+                        psmoveMapping[new_psmove] = vgun
+                        psmoveMapping[old_psmove] = old_vgun
+        
+        # Write gem_gun.yml
+        with (RPCS3_CONFIG_DIR / "gem_gun.yml").open("w") as f:
+            for player in range(1, 5):
+                f.write(f"Player {player}:\n")
+                for psmove in psmoveButtons:
+                    vgun = psmoveMapping[psmove]
+                    f.write(f"  {psmove}: Gun Button {gunButtons[vgun]}\n")
 
     @staticmethod
     def getClosestRatio(gameResolution: Resolution) -> str:
