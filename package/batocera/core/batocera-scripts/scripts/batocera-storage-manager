@@ -185,7 +185,14 @@ mount_partition() {
     else
         local LABEL=$(blkid -s LABEL -o value "$PART_DEV")
         local MOUNT_NAME=""
-        [ -n "$LABEL" ] && MOUNT_NAME=$(echo "$LABEL" | tr -cd '[:alnum:]_-') || MOUNT_NAME="usb_$(basename "$PART_DEV")"
+        
+        if [ -n "$LABEL" ]; then
+            # Use filesystem label if present
+            MOUNT_NAME=$(echo "$LABEL" | tr ' ' '_' | tr -cd '[:alnum:]_-')
+        else
+            # Fallback directly to devname (e.g. nvme0n1p3)
+            MOUNT_NAME=$(basename "$PART_DEV")
+        fi
 
         MOUNT_POINT="/media/$MOUNT_NAME"
         if [ -e "$MOUNT_POINT" ]; then
@@ -322,8 +329,7 @@ handle_partition_event() {
 
     # Skip LUNs we know are likely system. i.e. Android
     if [[ -f "/tmp/is_system_disk_$parent" ]]; then
-        log_msg "SKIP: [$devname] Parent $parent is a known system LUN."
-        exit 0
+        log_msg "INFO: [$devname] Parent $parent is protected. Validating partition attributes..."
     fi
 
     local my_lock="/tmp/storage.runtime.part.$devname"
@@ -335,13 +341,28 @@ handle_partition_event() {
 
     local part_dev="/dev/$devname"
     
-    # This list covers every label found in blkid for dual boot Android devices
+    # Check for 'Hidden' or 'No Automount'
+    local attrs=$(udevadm info --query=property --name="$part_dev" | grep 'ID_PART_ENTRY_ATTRIBUTES=' | cut -d= -f2)
+    if [[ "$attrs" =~ ^0x[456789abcdefABCDEF] ]]; then
+        log_msg "SKIP: [$devname] Hidden or No-Automount attribute detected ($attrs)."
+        exit 0
+    fi
+
+    # Partition Type GUID Check (EFI, MSR, Recovery)
+    local guid_skip="c12a7328-f81f-11d2-ba4b-00a0c93ec93b|e3c9e316-0b5c-4db8-817d-f92df00215ae|de94bba4-06d1-4d40-a16a-bfd50179d6ac"
+    local part_type=$(udevadm info --query=property --name="$part_dev" | grep 'ID_PART_ENTRY_TYPE=' | cut -d= -f2)
+    if [[ "$guid_skip" == *"$part_type"* ]]; then
+        log_msg "SKIP: [$devname] System/Recovery GUID detected ($part_type)."
+        exit 0
+    fi
+
+    # 3. Label-based filtering
     local android_regex=""
     android_regex+="dsp|vm-|modem|bluetooth|qmcs|"      # Connectivity & Virtualization
     android_regex+="persist|metadata|fsc|fsg|cdt|ddr|"  # Hardware & Config
     android_regex+="multiimg|xbl|apdp|secdata|loader|"  # Bootloaders
     android_regex+="devcfg|uefi|dtbo|cpucp|tools|"      # Firmware
-    android_regex+="mdcompress|init_boot|aop|boot|tz|"  # Core Boot
+    android_regex+="mdcompress|init_boot|aop|tz|"       # Core Boot
     android_regex+="limits|vendor|shrm|abl|qwes|rtic|"  # Security & Vendor
     android_regex+="qupfw|dip|vbmeta|keymaster|splash|" # Secure Boot & UI
     android_regex+="mdtp|hyp|connsec|recovery|feat|"    # Recovery & Hypervisor
@@ -406,10 +427,9 @@ handle_disk_event() {
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
     # This prevents prompting for format if we see things like 'abl', 'xbl', 'boot', etc.
-    if lsblk -no PARTLABEL "/dev/$devname" | grep -qiE "abl|xbl|boot|modem|vendor|system|persist|tz|hyp"; then
-        log_msg "SAFETY: [$devname] Critical bootloader/system partitions detected. Aborting format prompt."
+    if lsblk -no PARTLABEL "/dev/$devname" | grep -qiE "abl|xbl|boot|modem|vendor|system|persist|tz|hyp|msftres|msftdata"; then
+        log_msg "SAFETY: [$devname] Critical system partitions detected. Disabling format prompt."
         touch "/tmp/is_system_disk_$devname"
-        exit 0
     fi
 
     local pttype=$(blkid -s PTTYPE -o value "/dev/$devname")
@@ -427,7 +447,14 @@ handle_disk_event() {
         done
 
         if [ "$has_parts" = true ]; then
-            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Deferring to partition events."
+            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Triggering child partition scans..."
+            for p in /sys/class/block/$parent/$parent*; do
+                 [ -e "$p" ] || continue
+                 PNAME=$(basename "$p")
+                 [ "$PNAME" == "$parent" ] && continue
+                 log_msg "TRIGGER: Executing detection for child partition $PNAME"
+                 $0 detect "$PNAME" &
+            done
             exit 0
         fi
         
@@ -443,6 +470,11 @@ handle_disk_event() {
     fi
 
     # Handle Blank/Empty Disk
+    if [ -f "/tmp/is_system_disk_$devname" ]; then
+         log_msg "INFO: [$devname] Protected disk. Skipping format prompt."
+         exit 0
+    fi
+
     if [ "$ignore_auto" = true ]; then
         log_msg "INFO: [$devname] Disk is ignored and empty. Skipping prompt."
         exit 0
