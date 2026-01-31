@@ -3,8 +3,8 @@
 # libaltsound
 #
 ################################################################################
-# Version: Commits on Jul 2, 2024
-LIBALTSOUND_VERSION = b8f397858cbc7a879f7392c14a509f00c8bdc7dd
+# Version: Commits on Jan 27, 2026
+LIBALTSOUND_VERSION = 48f6d51b1f6c8a74b67221302842224d3d61b6b2
 LIBALTSOUND_SITE = $(call github,vpinball,libaltsound,$(LIBALTSOUND_VERSION))
 LIBALTSOUND_LICENSE = BSD-3-Clause
 LIBALTSOUND_LICENSE_FILES = LICENSE
@@ -21,26 +21,8 @@ LIBALTSOUND_CONF_OPTS += -DARCH=$(BUILD_ARCH)
 # handle supported target platforms
 ifeq ($(BR2_aarch64),y)
     BUILD_ARCH = aarch64
-    BASS_ARCH = aarch64
 else ifeq ($(BR2_x86_64),y)
     BUILD_ARCH = x64
-    BASS_ARCH = x86_64
 endif
-
-define LIBALTSOUND_BASS_HACKS
-    ## derived from platforms/linux/$(BUILD_ARCH)/external.sh ##
-    # make tmp
-    rm -rf $(@D)/tmp
-    mkdir $(@D)/tmp
-    # bass24 - this is ugly...
-    cd $(@D)/tmp && $(HOST_DIR)/bin/curl -s \
-        https://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-    cd $(@D)/tmp && unzip -x bass.zip
-    cp $(@D)/tmp/c/bass.h $(@D)/third-party/include
-    cp $(@D)/tmp/libs/$(BASS_ARCH)/libbass.so \
-        $(@D)/third-party/runtime-libs/linux/$(BUILD_ARCH)
-endef
-
-LIBALTSOUND_PRE_CONFIGURE_HOOKS += LIBALTSOUND_BASS_HACKS
 
 $(eval $(cmake-package))
