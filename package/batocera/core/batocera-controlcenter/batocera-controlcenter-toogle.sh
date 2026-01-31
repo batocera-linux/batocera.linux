@@ -21,8 +21,12 @@ test "$1" = "hidden" && FLAGS="--hidden"
 PIDVALUE=$(getCCPID)
 if test "$?" -eq 0
 then
-    # toogle
-    kill -10 "${PIDVALUE}"
+    # don't toogle if the hidden argument is given
+    if test "$1" != "hidden"
+    then
+	# toogle
+	kill -10 "${PIDVALUE}"
+    fi
 else
     # switch on
     export DISPLAY=$(getLocalXDisplay)
