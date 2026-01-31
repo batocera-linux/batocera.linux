@@ -95,6 +95,7 @@
 - Libretro Flycast to 2.6
 - Libretro Genesis Plus GX to 21th of December 2025 build
 - Libretro Genesis Plus GX-Wide to 21th of October 2024 build
+- Libretro Holani to 0.9.9
 - Libretro MAME2003plus to 16th of January 2026 build
 - Libretro MAME to 0.284
 - Libretro MGBA to 17th of January 2026 build
