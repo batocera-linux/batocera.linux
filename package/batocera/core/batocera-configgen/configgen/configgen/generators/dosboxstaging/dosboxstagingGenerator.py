@@ -25,21 +25,24 @@ class DosBoxStagingGenerator(Generator):
     # Returns a populated Command object
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
+        # Handle the single-file ROM case
+        game_dir = rom if rom.is_dir() else rom.parent
+
         # DOSBox Staging common resource data and conf file
         common_resource_dir = CONFIGS / 'dosbox'
         common_resource_conf = _find_iname(common_resource_dir, "dosbox-staging.conf")
 
-        dosbox_cfg =  _find_iname(rom, "dosbox.cfg")
-        dosbox_conf = _find_iname(rom, "dosbox.conf")
-        dosbox_bat = _find_iname(rom, "dosbox.bat")
+        dosbox_cfg  = _find_iname(game_dir, "dosbox.cfg")
+        dosbox_conf = _find_iname(game_dir, "dosbox.conf")
+        dosbox_bat  = _find_iname(game_dir, "dosbox.bat")
 
         is_configured = dosbox_cfg or dosbox_conf or dosbox_bat
 
         commandArray = [
             '/usr/bin/dosbox-staging',
             "--fullscreen",
-            "--working-dir", str(rom),
-            "-c", f"set WORKDIR={rom}",
+            "--working-dir", str(game_dir),
+            "-c", f"set WORKDIR={game_dir}",
         ]
 
         if common_resource_dir.is_dir():
@@ -85,3 +88,6 @@ class DosBoxStagingGenerator(Generator):
             "name": "dosboxstaging",
             "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F9"] }
         }
+
+    def writesToRom(self) -> bool:
+        return True
