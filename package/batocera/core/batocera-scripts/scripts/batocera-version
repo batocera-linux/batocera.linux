@@ -32,6 +32,14 @@ test -n "${FIND_PRO}"              && EXTRA=${EXTRA}p
 test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
 test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
 
+
+# Override EXTRA if debug boot mode
+DEBUGFLAG="/var/run/bootmode.debug"
+
+if [ -f "${DEBUGFLAG}" ]; then
+    EXTRA="debug"
+fi
+
 if test "${1}" = "--extra"
 then
     if test -z "${EXTRA}"
