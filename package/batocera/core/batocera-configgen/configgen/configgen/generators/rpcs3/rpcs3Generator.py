@@ -223,6 +223,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
+            self._generateGunConfig()
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
@@ -279,6 +280,24 @@ class Rpcs3Generator(Generator):
                 "XDG_CACHE_HOME": CACHE
             }
         )
+
+    def _generateGunConfig(self):
+        # D-Pad mapping is face buttons of the PS Move △ =up ✕ =down □ =left ○ =right
+        gunMapping = {
+            "T": 1,
+            "Move": 2,
+            "Start": 3,
+            "Select": 4,
+            "Triangle": 8,
+            "Cross": 9,
+            "Square": 10,
+            "Circle": 11
+        }
+        with (RPCS3_CONFIG_DIR / "gem_gun.yml").open("w") as f:
+            for player in range(1, 5):
+                f.write(f"Player {player}:\n")
+                for psmove, gun_num in gunMapping.items():
+                    f.write(f"  {psmove}: Gun Button {gun_num}\n")
 
     @staticmethod
     def getClosestRatio(gameResolution: Resolution) -> str:

@@ -72,6 +72,7 @@
 - DOSBox Staging will fallback to a C:\> prompt inside the games' folder if its missing dosbox.cfg/.conf/.bat files.
 - Systems like WINE and DOSBOX can now be prepared from PCManFM context menu. Right click on file items inside supported ones.
   to presetup them. This is mostly thought for startup files like dosbox.bat and autorun.cmd and for handling squashed archive files.
+- RPCS3 PS Move (light gun) mapping simplified. D-pad buttons are now PS Move face buttons. Check wiki for more info.
 ### Updated
 - Azahar to 2124
 - BigPEmu to v121
