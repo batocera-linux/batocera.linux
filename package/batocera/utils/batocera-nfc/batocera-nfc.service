@@ -1,0 +1,41 @@
+#!/bin/bash
+
+PIDFILE=/var/run/batocera-nfc.pid
+
+start() {
+  start-stop-daemon -S -b -q -m -p $PIDFILE --exec /usr/bin/batocera-nfc >/dev/null &
+  RETVAL=$?
+
+  echo "done"
+  return $RETVAL
+}
+
+stop() {
+  start-stop-daemon -K -q -p $PIDFILE
+  RETVAL=$?
+	
+  echo "done"
+  return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        ;;
+esac
+
+exit $?
