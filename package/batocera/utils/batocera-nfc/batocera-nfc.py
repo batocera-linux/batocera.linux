@@ -13,6 +13,7 @@ NFC_WRITE_TAG_PATH = Path("/var/run/batocera-nfc-write-tag")
 NFC_WRITE_TIME = 30
 NFC_SCRIPTS_SYSTEM_PATH = Path("/usr/share/batocera/scripts")
 NFC_SCRIPTS_USER_PATH   = Path("/userdata/system/configs/emulationstation/scripts")
+NFC_AVAILABLE           = Path("/var/run/batocera-nfc.running")
 
 def get_any_device(vids_pids):
     device = get_pn532_by_id(vids_pids)
@@ -137,8 +138,10 @@ if device is None:
 while True:
     try:
         with nfc.ContactlessFrontend(device) as clf:
+            NFC_AVAILABLE.touch()  # declare that reading is available
             clf.connect(rdwr={'on-connect': on_connect, 'on-release': on_disconnect})
             clf.connect(rdwr={'on-connect': on_connect, 'on-release': on_disconnect})
+            NFC_AVAILABLE.unlink() # reading is no more available
     except Exception as e:
         print("reader failed with (" + str(e) + ")")
     time.sleep(3) # avoid looping in case of strange behavior
