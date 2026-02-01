@@ -1233,6 +1233,22 @@ systems:
   - plugnplay
   - samcoupe
   - uzebox
+  - name: pv2000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Casio PV-2000 cartridges: pv2000
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
   - name: pc60
     features:
       - padtokeyboard
