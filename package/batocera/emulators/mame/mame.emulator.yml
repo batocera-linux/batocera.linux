@@ -1233,4 +1233,47 @@ systems:
   - plugnplay
   - samcoupe
   - uzebox
-  - pc60
+  - name: pc60
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          PC-6001 Cartridges: pc6001_cart
+          PC-6001 Cassettes: pc6001_cass
+          PC-6001mkII Cassettes: pc6001mk2_cass
+      altmodel:
+        prompt: PC-6001 MODEL
+        description: Select model of PC-6001 to emulate
+        choices:
+          PC-6001 (Japan, Default): pc6001
+          PC-6001A NEC Trek (US): pc6001a
+          PC-6001mkII (Japan): pc6001mk2
+          PC-6001mkIISR (Japan): pc6001mk2sr
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load
+        choices:
+          Cartridge: cart1
+          Cassette: cass
+          Floppy 1 (SR): flop1
+          Floppy 2 (SR): flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0

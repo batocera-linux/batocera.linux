@@ -6030,16 +6030,27 @@ pc60:
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [zip]
+  extensions: [bin, cas, p6, d77, d88, dsk, 1dd, mfi, dfi, mfm, td0, imd, cqm, cqi, xdf, hdm, 2hd, fdi, zip, 7z]
   emulators:
     mame:
       mame:  { requireAnyOf: [BR2_PACKAGE_MAME] }
     libretro:
       mame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
   comment_en: |
-    Requires MAME BIOS file:
-    bios/mame/pc6001.zip
-    
+    Requires MAME BIOS files (depending on model):
+    bios/pc6001.zip (PC-6001)
+    bios/pc6001mk2.zip (PC-6001mkII)
+    bios/pc6001mk2sr.zip (PC-6001mkIISR)
+
+    Models available:
+    - PC-6001 (Japan) - Base model, cartridge and cassette
+    - PC-6001A (US) - NEC Trek version
+    - PC-6001mkII (Japan) - Enhanced version
+    - PC-6001mkIISR (Japan) - With floppy drive support
+
+    Cassette files (.cas, .p6) load via cart2 slot.
+    Floppy disks only work with PC-6001mkIISR model.
+
 enterprise:
   name:       Enterprise
   manufacturer: Enterprise Computers

@@ -255,9 +255,23 @@ systems = {
                                                            { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga/amiga-ext-310-cd32.rom"  }] },
 
     # ---------- NEC PC-6000 ---------- #
+    # PC-6001 (Japan)
     "pc60":       { "name": "NEC PC-6000", "biosFiles": [  { "md5": "2a13a60acf99a659144655b6c9e39b92", "zippedFile": "basicrom.60", "file": "bios/pc6001.zip" },
                                                            { "md5": "9153f89e83f94f5d1cfe0a4e75d03372", "zippedFile": "cgrom60.60", "file": "bios/pc6001.zip" },
-                                                           { "md5": "240738391e23f9b0337ab122df8ed7c0", "zippedFile": "upd8049.ic17", "file": "bios/pc6001.zip" } ] },
+                                                           { "md5": "240738391e23f9b0337ab122df8ed7c0", "zippedFile": "upd8049.ic17", "file": "bios/pc6001.zip" },
+    # PC-6001A (US)
+                                                           { "md5": "8665e123c7d6b167677153f05a2f9c86", "zippedFile": "basicrom.60a", "file": "bios/pc6001a.zip" },
+                                                           { "md5": "7a740d0745e32e171115122442af909c", "zippedFile": "cgrom60.60a", "file": "bios/pc6001a.zip" },
+    # PC-6001mkII (Japan)
+                                                           { "md5": "ec0fced1d7f242a823c6d6ebf9772045", "zippedFile": "basicrom.62", "file": "bios/pc6001mk2.zip" },
+                                                           { "md5": "808a4172c0e9cf2adf7c44fc8c549151", "zippedFile": "cgrom60.62", "file": "bios/pc6001mk2.zip" },
+                                                           { "md5": "21f8cf17035d05e3b6b792f43246b1c0", "zippedFile": "cgrom60m.62", "file": "bios/pc6001mk2.zip" },
+                                                           { "md5": "638ea8e59a73fa4d8c6a6153b500dab9", "zippedFile": "kanjirom.62", "file": "bios/pc6001mk2.zip" },
+                                                           { "md5": "8b2e909ba293170e462057ba932ff57c", "zippedFile": "voicerom.62", "file": "bios/pc6001mk2.zip" },
+    # PC-6001mkIISR (Japan)
+                                                           { "md5": "bef7865bdc29009350e308935a8b2b17", "zippedFile": "systemrom1.64", "file": "bios/pc6001mk2sr.zip" },
+                                                           { "md5": "7eca26109db4c664826018a0d2e1d0d7", "zippedFile": "systemrom2.64", "file": "bios/pc6001mk2sr.zip" },
+                                                           { "md5": "9d61f3cbd47c4a281c5241c4f1d80919", "zippedFile": "cgrom68.64", "file": "bios/pc6001mk2sr.zip" } ] },
 
     # ---------- NEC PC-8800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
