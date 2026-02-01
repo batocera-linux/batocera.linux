@@ -251,6 +251,8 @@ class MameGenerator(Generator):
             pluginsToLoad += [ "coindrop" ]
         if system.config.get_bool("dataplugin"):
             pluginsToLoad += [ "data" ]
+        if system.config.get_bool('offscreenreload'): # new offscreenreload for light guns games
+            pluginsToLoad += [ "offscreenreload" ]
         if pluginsToLoad:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
 
@@ -288,8 +290,6 @@ class MameGenerator(Generator):
             commandArray += [ "-lightgunprovider", "udev" ]
             commandArray += [ "-lightgun_device", "lightgun" ]
             commandArray += [ "-adstick_device", "lightgun" ]
-        if system.config.get_bool('offscreenreload'):
-            commandArray += [ "-offscreen_reload" ]
 
         # wheels
         useWheels = system.config.use_wheels

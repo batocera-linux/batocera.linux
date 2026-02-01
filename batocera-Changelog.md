@@ -83,7 +83,7 @@
 - EDuke32 to Oct 10, 2025
 - Flycast to 2.6
 - FS-UAE to v3.2.35
-- Groovy MAME to 0.284
+- Groovy MAME to 0.285
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
 - Jazz2 to 3.5.0
@@ -99,7 +99,7 @@
 - Libretro Genesis Plus GX-Wide to 21th of October 2024 build
 - Libretro Holani to 0.9.9
 - Libretro MAME2003plus to 16th of January 2026 build
-- Libretro MAME to 0.284
+- Libretro MAME to 0.285
 - Libretro MGBA to 17th of January 2026 build
 - Libretro Mesen to 24th of October 2024 build
 - Libretro Nestopia to 10th of January 2026 build

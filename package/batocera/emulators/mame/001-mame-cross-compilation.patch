@@ -217,3 +217,16 @@ diff -ur ./scripts/toolchain.lua /home/romain/batocera.linux/output/odroidn2/bui
  
  	configuration { "mingw*", "x64" }
  		postbuildcommands {
+diff -ur a/src/devices/cpu/drcfe.h b/src/devices/cpu/drcfe.h
+--- a/src/devices/cpu/drcfe.h	2025-01-01 00:00:00.000000000 +0100
++++ b/src/devices/cpu/drcfe.h	2025-01-31 00:00:00.000000000 +0100
+@@ -32,6 +32,9 @@
+ 
+ #pragma once
+ 
++// Required for MAME types when precompiled headers are disabled (cross-compilation)
++#include "emu.h"
++
+ 
+ //**************************************************************************
+ //  CONSTANTS
