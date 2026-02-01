@@ -43,12 +43,16 @@ NVIDIA470_LEGACY_DRIVER_LIBS_GLES = \
 
 #batocera libnvidia-egl-wayland soname bump
 NVIDIA470_LEGACY_DRIVER_LIBS_MISC = \
+    libnvidia-allocator.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
+	libnvidia-cfg.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
+	libnvidia-egl-wayland.so.1.1.7 \
 	libnvidia-eglcore.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
+	libnvidia-rtcore.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
-	libnvidia-ml.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
+	libnvidia-ml.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
 
 NVIDIA470_LEGACY_DRIVER_LIBS_VDPAU = \
 	libvdpau_nvidia.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
@@ -64,12 +68,13 @@ NVIDIA470_LEGACY_DRIVER_32 = \
 	$(NVIDIA470_LEGACY_DRIVER_LIBS_GL) \
 	$(NVIDIA470_LEGACY_DRIVER_LIBS_EGL) \
 	$(NVIDIA470_LEGACY_DRIVER_LIBS_GLES) \
+	libnvidia-allocator.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	libnvidia-tls.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
-	libnvidia-ml.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
-	libnvidia-glvkspirv.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
+	libnvidia-ml.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
 
 # Install the gl.pc file
 define NVIDIA470_LEGACY_DRIVER_INSTALL_GL_DEV
@@ -202,6 +207,8 @@ define NVIDIA470_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 # batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia470_legacy.json
+	$(INSTALL) -D -m 0644 $(@D)/10_nvidia_wayland.json \
+		$(TARGET_DIR)/usr/share/egl/egl_external_platform.d/10_nvidia_wayland.json
 
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11

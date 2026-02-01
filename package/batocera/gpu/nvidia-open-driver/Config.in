@@ -18,13 +18,9 @@ config BR2_PACKAGE_NVIDIA_OPEN_DRIVER
 
 if BR2_PACKAGE_NVIDIA_OPEN_DRIVER
 
-comment "nvidia-open-driver X.org drivers needs a modular Xorg server"
-	depends on !BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR
-
 config BR2_PACKAGE_NVIDIA_OPEN_DRIVER_XORG
 	bool "X.org drivers"
 	default y
-	depends on BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR
 #batocera mesa3d and nvidia-open-driver must coexist
 	select BR2_PACKAGE_MESA3D
 	select BR2_PACKAGE_XLIB_LIBX11
