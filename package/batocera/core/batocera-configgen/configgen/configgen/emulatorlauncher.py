@@ -17,6 +17,7 @@ import subprocess
 import time
 import threading
 import pyudev
+os.environ["PYSDL2_DLL_PATH"] = "/usr/lib"
 import sdl2
 import sdl2.ext
 import ctypes
