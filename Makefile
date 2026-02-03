@@ -23,41 +23,40 @@ ifdef PARALLEL_BUILD
 endif
 
 # List of packages that are always good to rebuild for versioning/stamps etc
-MANDATORY_REBUILD_PKGS := batocera-es-system batocera-es-system batocera-configgen batocera-system batocera-splash
+MANDATORY_REBUILD_PKGS := batocera-es-system batocera-configgen batocera-system batocera-splash
+
+# Lazily evaluated variable to avoid re-evaluation on each use
+# VAR = $(eval VAR := ...)$(VAR)
 
 # List of out-of-tree kernel modules that must be removed if the kernel is reset
 # This list needs to be maintained if new modules are added or removed
-KERNEL_MODULE_PKGS := rtl88x2bu rtl8852au rtl8852cu rtl8188eu rtl8192eu rtl8189fs rtl8821cu rtl8723bu rtl8812au guncon guncon3 hid-nx hid-tmff2 xpadneo xpad-noone nvidia nvidia470 nvidia580 r8125 rtw89 xone r8168 ayn-platform ayaneo-platform hid-t150 new-lg4ff ryzen-smu aic-8800 rwt88
+KERNEL_MODULE_PKGS = $(eval KERNEL_MODULE_PKGS := $(sort $(patsubst %.mk,%,$(notdir $(shell grep -rl '\$$(eval \$$(kernel-module))' $(PROJECT_DIR)/package 2>/dev/null)))))$(KERNEL_MODULE_PKGS)
+
+define __git_log
+	git -C $(1) log --since="$(DAYS) days ago" --name-only --format=%n -- package/
+endef
 
 # Across all batocera & buildroot packages find any updates and add to a list to rebuild
-GIT_PACKAGES_TO_REBUILD := $(shell ( \
-							  git log --since="$(DAYS) days ago" --name-only --format=%n -- $(PROJECT_DIR)/package/ \
-							; cd $(BR_DIR) && git log --since="$(DAYS) days ago" --name-only --format=%n -- package/ \
-						  ) \
-						| grep -E '^package/' \
-						| sed -r -e 's:package/batocera/(audio|boot|cases|controllers|core|database|emulationstation|emulators|firmwares|fonts|gpu|kodi|leds|libraries|looks|network|ports|screens|toolchain|utils|utils-host|wine)/([^/]+)/.*:\2:' \
-						         -e 's:package/([^/]+)/.*:\1:' \
-						| sort -u)
+GIT_PACKAGES_TO_REBUILD = $(eval GIT_PACKAGES_TO_REBUILD := $(shell \
+	{ git -C $(PROJECT_DIR) log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; \
+	  git -C $(PROJECT_DIR)/buildroot log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; } \
+	| sed -r 's:^package/::; /^batocera\/[^/]*$$/d; s:^batocera/[^/]+/::; s:^([^/]+)/.*:\1:' \
+	| sort -u))$(GIT_PACKAGES_TO_REBUILD)
 
 # Base list of all target packages to be reset
-TARGET_PKGS_BASE := $(GIT_PACKAGES_TO_REBUILD) $(MANDATORY_REBUILD_PKGS)
+TARGET_PKGS_BASE = $(GIT_PACKAGES_TO_REBUILD) $(MANDATORY_REBUILD_PKGS)
 
 # Check if a kernel package is present and conditionally add 'linux' and kernel modules
-ifneq ($(filter linux linux-headers, $(TARGET_PKGS_BASE)),)
-	TARGET_PKGS_BASE += linux
-	KERNEL_MODULES_TO_RESET := $(KERNEL_MODULE_PKGS)
-else
-	KERNEL_MODULES_TO_RESET :=
-endif
+KERNEL_MODULES_TO_RESET = $(if $(filter linux linux-headers,$(TARGET_PKGS_BASE)),linux $(KERNEL_MODULE_PKGS))
 
 # Final list of all target packages to be reset (Base + Conditional Kernel Modules)
-TARGET_PKGS := $(TARGET_PKGS_BASE) $(KERNEL_MODULES_TO_RESET)
+TARGET_PKGS = $(TARGET_PKGS_BASE) $(KERNEL_MODULES_TO_RESET)
 
 # Cheats way, add 'host-' to each target package to ensure we are covered
-HOST_PKGS_TO_RESET := $(addprefix host-,$(TARGET_PKGS))
+HOST_PKGS_TO_RESET = $(addprefix host-,$(TARGET_PKGS))
 
 # Final list is a combination of all target and host packages
-PKGS_TO_RESET := $(sort $(TARGET_PKGS) $(HOST_PKGS_TO_RESET))
+PKGS_TO_RESET = $(sort $(TARGET_PKGS) $(HOST_PKGS_TO_RESET))
 
 TARGETS := $(sort $(patsubst batocera-%.board,%,$(notdir $(wildcard $(PROJECT_DIR)/configs/*.board))))
 
