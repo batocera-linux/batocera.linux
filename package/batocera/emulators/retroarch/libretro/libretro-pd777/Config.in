@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBRETRO_PD777
+	bool "libretro-pd777"
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  PD777 is an Epoch Cassette Vision emulator.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_PD777 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

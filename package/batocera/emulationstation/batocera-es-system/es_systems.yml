@@ -2950,6 +2950,16 @@ ecwolf:
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
 
+cassettevision:
+  name:       Cassette Vision
+  manufacturer: Epoch
+  release: 1981
+  hardware: console
+  extensions: [zip, bin777]
+  emulators:
+    libretro:
+      pd777: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PD777] }
+
 sonicretro:
   name:       Sonic Retro Engine
   manufacturer: Sega
