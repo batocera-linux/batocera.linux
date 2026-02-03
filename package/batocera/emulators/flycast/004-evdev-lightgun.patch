@@ -1,0 +1,282 @@
+diff --git a/core/sdl/evdev_lightgun.h b/core/sdl/evdev_lightgun.h
+new file mode 100644
+--- /dev/null
++++ b/core/sdl/evdev_lightgun.h
+@@ -0,0 +1,31 @@
++#pragma once
++
++#ifdef __linux__
++
++#include <atomic>
++#include <thread>
++#include <vector>
++
++class EvdevLightgun
++{
++public:
++    EvdevLightgun(int port, int fd, int minX, int maxX, int minY, int maxY);
++
++    static void init();
++    static void term();
++
++private:
++    void poll();
++    static void pollAll();
++
++    int port;
++    int fd;
++    int absXMin, absXMax, absYMin, absYMax;
++    int curX, curY;
++
++    static std::vector<EvdevLightgun> lightguns;
++    static std::atomic<bool> running;
++    static std::thread pollThread;
++};
++
++#endif
+diff --git a/core/sdl/evdev_lightgun.cpp b/core/sdl/evdev_lightgun.cpp
+new file mode 100644
+--- /dev/null
++++ b/core/sdl/evdev_lightgun.cpp
+@@ -0,0 +1,196 @@
++#ifdef __linux__
++
++#include "evdev_lightgun.h"
++#include "input/gamepad.h"
++#include "input/mouse.h"
++#include "stdclass.h"
++
++#include <libudev.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <linux/input.h>
++#include <cstring>
++#include <algorithm>
++
++extern u32 kcode[4];
++
++std::vector<EvdevLightgun> EvdevLightgun::lightguns;
++std::atomic<bool> EvdevLightgun::running{false};
++std::thread EvdevLightgun::pollThread;
++
++EvdevLightgun::EvdevLightgun(int port, int fd, int minX, int maxX, int minY, int maxY)
++    : port(port)
++    , fd(fd)
++    , absXMin(minX)
++    , absXMax(maxX)
++    , absYMin(minY)
++    , absYMax(maxY)
++    , curX((minX + maxX) / 2)
++    , curY((minY + maxY) / 2)
++{
++}
++
++void EvdevLightgun::init()
++{
++    struct udev *udev = udev_new();
++    if (!udev)
++        return;
++
++    struct udev_enumerate *enumerate = udev_enumerate_new(udev);
++    if (!enumerate)
++    {
++        udev_unref(udev);
++        return;
++    }
++
++    udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++    udev_enumerate_add_match_subsystem(enumerate, "input");
++    udev_enumerate_scan_devices(enumerate);
++
++    std::vector<std::string> gunDevices;
++    struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
++    struct udev_list_entry *entry;
++
++    udev_list_entry_foreach(entry, devices)
++    {
++        const char *syspath = udev_list_entry_get_name(entry);
++        struct udev_device *dev = udev_device_new_from_syspath(udev, syspath);
++        if (dev)
++        {
++            const char *devnode = udev_device_get_devnode(dev);
++            if (devnode && strstr(devnode, "/dev/input/event"))
++                gunDevices.push_back(devnode);
++            udev_device_unref(dev);
++        }
++    }
++
++    udev_enumerate_unref(enumerate);
++    udev_unref(udev);
++
++    std::sort(gunDevices.begin(), gunDevices.end());
++
++    for (size_t i = 0; i < gunDevices.size() && i < 4; i++)
++    {
++        int fd = open(gunDevices[i].c_str(), O_RDONLY | O_NONBLOCK);
++        if (fd < 0)
++            continue;
++
++        ioctl(fd, EVIOCGRAB, 1);
++
++        struct input_absinfo absX, absY;
++        if (ioctl(fd, EVIOCGABS(ABS_X), &absX) < 0 ||
++            ioctl(fd, EVIOCGABS(ABS_Y), &absY) < 0)
++        {
++            ioctl(fd, EVIOCGRAB, 0);
++            close(fd);
++            continue;
++        }
++
++        lightguns.emplace_back(i, fd, absX.minimum, absX.maximum, absY.minimum, absY.maximum);
++        NOTICE_LOG(INPUT, "Evdev lightgun %zu: %s (port %zu)", i, gunDevices[i].c_str(), i);
++    }
++
++    if (!lightguns.empty())
++    {
++        running = true;
++        pollThread = std::thread(pollAll);
++    }
++}
++
++void EvdevLightgun::term()
++{
++    running = false;
++    if (pollThread.joinable())
++        pollThread.join();
++
++    for (auto& gun : lightguns)
++    {
++        if (gun.fd >= 0)
++        {
++            ioctl(gun.fd, EVIOCGRAB, 0);
++            close(gun.fd);
++        }
++    }
++    lightguns.clear();
++}
++
++void EvdevLightgun::pollAll()
++{
++    while (running)
++    {
++        for (auto& gun : lightguns)
++            gun.poll();
++        usleep(1000);
++    }
++}
++
++void EvdevLightgun::poll()
++{
++    if (fd < 0)
++        return;
++
++    struct input_event ev;
++    while (read(fd, &ev, sizeof(ev)) == sizeof(ev))
++    {
++        if (ev.type == EV_ABS)
++        {
++            if (ev.code == ABS_X)
++                curX = ev.value;
++            else if (ev.code == ABS_Y)
++                curY = ev.value;
++
++            int rangeX = absXMax - absXMin;
++            int rangeY = absYMax - absYMin;
++            if (rangeX <= 0) rangeX = 1;
++            if (rangeY <= 0) rangeY = 1;
++
++            int width = settings.display.width;
++            int height = settings.display.height;
++            int screenX = ((curX - absXMin) * width) / rangeX;
++            int screenY = ((curY - absYMin) * height) / rangeY;
++            SetMousePosition(screenX, screenY, width, height, port);
++        }
++        else if (ev.type == EV_KEY)
++        {
++            bool pressed = (ev.value != 0);
++
++            switch (ev.code)
++            {
++            case BTN_LEFT:
++                if (pressed) kcode[port] &= ~DC_BTN_A;
++                else kcode[port] |= DC_BTN_A;
++                break;
++            case BTN_RIGHT:
++                if (pressed) kcode[port] &= ~DC_BTN_B;
++                else kcode[port] |= DC_BTN_B;
++                break;
++            case BTN_MIDDLE:
++                if (pressed) kcode[port] &= ~DC_BTN_START;
++                else kcode[port] |= DC_BTN_START;
++                break;
++            case BTN_1:
++                if (pressed) kcode[port] &= ~DC_BTN_D;
++                else kcode[port] |= DC_BTN_D;
++                break;
++            case BTN_5:
++                if (pressed) kcode[port] &= ~DC_DPAD_UP;
++                else kcode[port] |= DC_DPAD_UP;
++                break;
++            case BTN_6:
++                if (pressed) kcode[port] &= ~DC_DPAD_DOWN;
++                else kcode[port] |= DC_DPAD_DOWN;
++                break;
++            case BTN_7:
++                if (pressed) kcode[port] &= ~DC_DPAD_LEFT;
++                else kcode[port] |= DC_DPAD_LEFT;
++                break;
++            case BTN_8:
++                if (pressed) kcode[port] &= ~DC_DPAD_RIGHT;
++                else kcode[port] |= DC_DPAD_RIGHT;
++                break;
++            }
++        }
++    }
++}
++
++#endif
+diff --git a/core/sdl/sdl.cpp b/core/sdl/sdl.cpp
+--- a/core/sdl/sdl.cpp
++++ b/core/sdl/sdl.cpp
+@@ -21,6 +21,7 @@
+ #include "hw/naomi/card_reader.h"
+ #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__SWITCH__)
+ #include "linux-dist/icon.h"
++#include "evdev_lightgun.h"
+ #endif
+ #ifdef _WIN32
+ #include "windows/rawinput.h"
+@@ -276,6 +277,9 @@ void input_sdl_init()
+ #elif defined(_WIN32)
+ 	SDL_GameControllerAddMapping("0300000009120000072f000000000000,OrangeFox86 DreamPicoPort,a:b0,b:b1,x:b3,y:b4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,dpdown:h0.4,leftx:a0,lefty:a1,lefttrigger:a2,rightx:a3,righty:a4,righttrigger:a5,start:b11");
+ #endif
++#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__SWITCH__)
++	EvdevLightgun::init();
++#endif
+ }
+ 
+ void input_sdl_quit()
+@@ -284,6 +288,9 @@ void input_sdl_quit()
+ 	EventManager::unlisten(Event::Pause, emuEventCallback);
+ 	EventManager::unlisten(Event::Resume, emuEventCallback);
+ 	SDLGamepad::closeAllGamepads();
++#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__SWITCH__)
++	EvdevLightgun::term();
++#endif
+ 	SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+ }
+ 
+diff --git a/core/sdl/CMakeLists.txt b/core/sdl/CMakeLists.txt
+--- a/core/sdl/CMakeLists.txt
++++ b/core/sdl/CMakeLists.txt
+@@ -7,6 +7,10 @@ target_sources(${PROJECT_NAME} PRIVATE
+         sdl_keyboard_mac.h
+         sdl_mappingparser.h)
+ 
++if(UNIX AND NOT APPLE AND NOT ANDROID)
++    target_sources(${PROJECT_NAME} PRIVATE evdev_lightgun.cpp evdev_lightgun.h)
++endif()
++
+ if (USE_DREAMLINK_DEVICES)
+ target_sources(${PROJECT_NAME} PRIVATE
+         dreamlink.cpp
