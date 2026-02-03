@@ -1,0 +1,56 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  gpgx_region:
+    prompt: REGION
+    description: Games may run faster/slower than normal if the incorrect region is selected.
+    choices:
+      NTSC-U: ntsc-u
+      PAL: pal
+      NTSC-J: ntsc-j
+  gpgx_no_sprite_limit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eighty sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  gx_controller1_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 1 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller2_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 2 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller3_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 3 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller4_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 4 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+systems:
+  - gamegear
+  - mastersystem
+  - megacd
+  - megadrive
+  - msu-md
+  - pico
+  - sg1000

@@ -1,0 +1,221 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  gpgx_region:
+    prompt: REGION
+    description: Games may run faster/slower than normal if the incorrect region is selected.
+    choices:
+      NTSC-U: ntsc-u
+      PAL: pal
+      NTSC-J: ntsc-j
+  gpgx_no_sprite_limit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eighty sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  gx_controller1_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 1 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller2_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 2 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller3_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 3 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  gx_controller4_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 4 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+systems:
+  - name: megadrive
+    shared_features:
+      - use_guns
+    custom_features:
+      gpgx_blargg_filter_md:
+        group: ADVANCED OPTIONS
+        prompt: BLARGG NTSC FILTER
+        description: Core-powered video filter.
+        choices:
+          'Off': false
+          Composite (color bleeding + artifacts): composite
+          SVideo (color bleeding only): svideo
+          RGB (crisp image): rgb
+      gun_cursor_md:
+        group: LIGHT GUN
+        prompt: SHOW LIGHT GUN CROSSHAIRS
+        choices:
+          'Off': disabled
+          'On': enabled
+      controller1_md:
+        submenu: CONTROLLERS
+        prompt: CONTROLLER 1 TYPE
+        choices:
+          Joypad Auto: 1
+          Joypad 3 Button: 257
+          Joypad 6 Button: 513
+          Joypad 3 Button + 4-WayPlay: 1025
+          Joypad 6 Button + 4-WayPlay: 1281
+          Joypad 3 Button + Teamplayer: 1537
+          Joypad 6 Button + Teamplayer: 1793
+          Mouse: 2
+      controller2_md:
+        submenu: CONTROLLERS
+        prompt: CONTROLLER 2 TYPE
+        description: Light guns can only be used in port 2.
+        choices:
+          Joypad Auto: 1
+          Joypad 3 Button: 257
+          Joypad 6 Button: 513
+          Joypad 3 Button + 4-WayPlay: 1025
+          Joypad 6 Button + 4-WayPlay: 1281
+          Joypad 3 Button + Teamplayer: 1537
+          Joypad 6 Button + Teamplayer: 1793
+          Mouse: 2
+          Menacer Light Gun: 516
+          Konami Justifiers: 772
+      gpgx_fm:
+        group: ADVANCED OPTIONS
+        prompt: FM SYNTHESIZER
+        description: Sound generator. MAME is faster and Nuked is cycle accurate. Original model used YM2612 while later revisions used YM3438.
+        choices:
+          MAME (YM2612): mame (ym2612)
+          MAME (ASIC YM3438): mame (asic ym3438)
+          MAME (Enhanced YM3438): mame (enhanced ym3438)
+          Nuked (YM2612): nuked (ym2612)
+          Nuked (YM3438): nuked (ym3438)
+  - name: segacd
+    custom_features:
+      gpgx_cd_add_on:
+        prompt: CD ADD-ON
+        choices:
+          Sega/Mega CD: sega/mega cd
+          MegaSD: megasd
+          None: none
+      gpgx_cdda_volume:
+        prompt: CD-DA VOLUME
+        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+        choices:
+          "100": 100
+          "90": 90
+          "80": 80
+          "70": 70
+          "60": 60
+          "50": 50
+          "40": 40
+          "30": 30
+          "20": 20
+          "10": 10
+          "0": 0
+      gpgx_fm:
+        group: ADVANCED OPTIONS
+        prompt: FM SYNTHESIZER
+        description: Sound generator. MAME is faster and Nuked is cycle accurate. Original model used YM2612 while later revisions used YM3438.
+        choices:
+          MAME (YM2612): mame (ym2612)
+          MAME (ASIC YM3438): mame (asic ym3438)
+          MAME (Enhanced YM3438): mame (enhanced ym3438)
+          Nuked (YM2612): nuked (ym2612)
+          Nuked (YM3438): nuked (ym3438)
+  - name: msu-md
+    disabled: true
+    custom_features:
+      gpgx_cd_add_on:
+        prompt: CD ADD-ON
+        choices:
+          Sega/Mega CD: sega/mega cd
+          MegaSD: megasd
+          None: none
+      gpgx_cdda_volume:
+        prompt: CD-DA VOLUME
+        description: Adjust mixing of CD audio. In MSU-MD, cartridge-sourced sound effects are not affected.
+        choices:
+          "100": 100
+          "90": 90
+          "80": 80
+          "70": 70
+          "60": 60
+          "50": 50
+          "40": 40
+          "30": 30
+          "20": 20
+          "10": 10
+          "0": 0
+  - name: mastersystem
+    disabled: true
+    shared_features:
+      - use_guns
+    custom_features:
+      gpgx_blargg_filter_ms:
+        group: ADVANCED OPTIONS
+        prompt: BLARGG NTSC FILTER
+        description: Core-powered video filter.
+        choices:
+          'Off': false
+          Composite (color bleeding + artifacts): composite
+          SVideo (color bleeding only): svideo
+          RGB (crisp image): rgb
+      ym2413:
+        group: ADVANCED OPTIONS
+        prompt: FM CHIP (YM2413)
+        description: Enhanced sound output support for compatible games.
+        choices:
+          Autodetect: automatic
+          'Off': disabled
+          On (forced): enabled
+      gun_cursor_ms:
+        group: LIGHT GUN
+        prompt: SHOW LIGHT GUN CROSSHAIRS
+        choices:
+          'Off': disabled
+          'On': enabled
+      controller1_ms:
+        prompt: CONTROLLER 1 TYPE
+        choices:
+          Joypad 2 Button: 769
+          Joypad 2 Button + Master Tap: 2049
+          Light Phaser: 260
+          Paddle Control: 261
+      controller2_ms:
+        prompt: CONTROLLER 2 TYPE
+        choices:
+          Joypad 2 Button: 769
+          Joypad 2 Button + Master Tap: 2049
+          Light Phaser: 260
+          Paddle Control: 261
+  - name: gamegear
+    disabled: true
+    custom_features:
+      lcd_filter:
+        group: ADVANCED OPTIONS
+        prompt: LCD GHOSTING FILTER
+        description: Required for certain visual effects.
+        choices:
+          'Off': disabled
+          'On': enabled
+      gg_extra:
+        group: ADVANCED OPTIONS
+        prompt: EXTENDED SCREEN
+        description: Extend the game screen area, similar to the Master System.
+        choices:
+          'Off': disabled
+          'On': enabled

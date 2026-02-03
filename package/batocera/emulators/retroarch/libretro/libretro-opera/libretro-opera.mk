@@ -8,6 +8,7 @@ LIBRETRO_OPERA_VERSION = 67a29e60a4d194b675c9272b21b61eaa022f3ba3
 LIBRETRO_OPERA_SITE = $(call github,libretro,opera-libretro,$(LIBRETRO_OPERA_VERSION))
 LIBRETRO_OPERA_LICENSE = LGPL/Non-commercial
 LIBRETRO_OPERA_DEPENDENCIES += retroarch
+LIBRETRO_OPERA_EMULATOR_INFO = opera.libretro.core.yml
 
 LIBRETRO_OPERA_PLATFORM=$(LIBRETRO_PLATFORM)
 
@@ -30,3 +31,4 @@ define LIBRETRO_OPERA_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

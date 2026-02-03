@@ -8,6 +8,7 @@ LIBRETRO_81_VERSION = ffc99f27f092addc9ddd34dd0e3a3d4d1c053cbf
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 LIBRETRO_81_LICENSE = GPLv3
 LIBRETRO_81_DEPENDENCIES += retroarch
+LIBRETRO_81_EMULATOR_INFO = 81.libretro.core.yml
 
 LIBRETRO_81_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -35,3 +36,4 @@ define LIBRETRO_81_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

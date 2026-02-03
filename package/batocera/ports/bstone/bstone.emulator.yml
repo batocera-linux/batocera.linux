@@ -1,0 +1,35 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  bstone_widescreen:
+    prompt: ENABLE WIDESCREEN
+    description: Enable widescreen support for game rendering.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  bstone_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  bstone_ui_stretched:
+    prompt: STRETCH UI MENU
+    decription: Stretch the menu & game to the full width of the display. Enable widescreen also for better in game rendering.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+systems:
+  - bstone

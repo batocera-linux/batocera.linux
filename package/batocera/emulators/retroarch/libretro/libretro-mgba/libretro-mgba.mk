@@ -9,6 +9,7 @@ LIBRETRO_MGBA_SITE = $(call github,mgba-emu,mgba,$(LIBRETRO_MGBA_VERSION))
 LIBRETRO_MGBA_LICENSE = MPLv2.0
 
 LIBRETRO_MGBA_DEPENDENCIES = libzip libpng zlib retroarch
+LIBRETRO_MGBA_EMULATOR_INFO = mgba.libretro.core.yml
 
 LIBRETRO_MGBA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_MGBA_CONF_OPTS += -DBUILD_LIBRETRO=ON
@@ -40,3 +41,4 @@ define LIBRETRO_MGBA_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

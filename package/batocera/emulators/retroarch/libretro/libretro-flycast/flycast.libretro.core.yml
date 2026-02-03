@@ -1,0 +1,234 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  reicast_synchronous_rendering:
+    group: ADVANCED OPTIONS
+    prompt: SYNCHRONOUS RENDERING
+    description: Can avoid flashing screen issues. Significant performance cost.
+    choices:
+      'Off': disabled
+      'On': enabled
+  reicast_internal_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (640x480): 640x480
+      1.25x (800x600): 800x600
+      1.5x (960x720): 960x720
+      1.6x (1024x768): 1024x768
+      2x (1280x960): 1280x960
+      2.25x (1440x1080): 1440x1080
+      2.5x (1600x1200): 1600x1200
+      3x (1920x1440): 1920x1440
+      4x (2560x1920): 2560x1920
+      5x (3200x2400): 3200x2400
+      6x (3840x2880): 3840x2880
+      7x (4480x3360): 4480x3360
+      8x (5120x3840): 5120x3840
+      9x (5760x4320): 5760x4320
+      10x (6400x4800): 6400x4800
+      11x (7040x5280): 7040x5280
+      12x (7680x5760): 7680x5760
+  reicast_dsp:
+    group: ADVANCED OPTIONS
+    prompt: DIGITAL SOUND PROCESSOR
+    description: Enable the Dreamcast DSP for more accurate audio. Only recommended for fast systems.
+    choices:
+      Disabled (Default): disabled
+      Enabled: enabled
+  reicast_lightgun1_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 1 CROSSHAIR COLOR
+    choices:
+      Red: Red
+      Blue: Blue
+      Green: Green
+      White: White
+      Disabled: disabled
+  reicast_lightgun2_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 2 CROSSHAIR COLOR
+    choices:
+      Red: Red
+      Blue: Blue
+      Green: Green
+      White: White
+      Disabled: disabled
+  reicast_lightgun3_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 3 CROSSHAIR COLOR
+    choices:
+      Red: Red
+      Blue: Blue
+      Green: Green
+      White: White
+      Disabled: disabled
+  reicast_lightgun4_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 4 CROSSHAIR COLOR
+    choices:
+      Red: Red
+      Blue: Blue
+      Green: Green
+      White: White
+      Disabled: disabled
+  reicast_mipmapping:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE MIP-MAPPING (BLUR)
+    description: Smooth textures on distant 3D objects based on angle.
+    choices:
+      'Off': disabled
+      'On': enabled
+  reicast_anisotropic_filtering:
+    group: ADVANCED OPTIONS
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures when mip-mapping is enabled.
+    choices:
+      'Off': false
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  reicast_texupscale:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE UPSCALING (XBRZ)
+    description: Enhancement. Upscales screen textures (2D games only).
+    choices:
+      'Off': 1
+      2x: 2
+      4x: 4
+      6x: 6
+  reicast_native_depth_interpolation:
+    group: ADVANCED OPTIONS
+    prompt: NATIVE DEPTH INTERPOLATION
+    description: Helps with texture corruption and depth issues on AMD GPUs. Can also help Intel GPUs in some cases.
+    choices:
+      'Off': disabled
+      'On': enabled
+  reicast_frame_skipping:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': disabled
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+  reicast_region:
+    prompt: CONSOLE REGION
+    description: Choose the Dreamcast console region.
+    choices:
+      USA: Usa
+      Europe: Europe
+      Japan: Japan
+      Default: Default
+  reicast_language:
+    prompt: BIOS LANGUAGE
+    description: Dreamcast BIOS's language setting. Can change the language of some games. Some games default to Japanese.
+    choices:
+      English: English
+      German: German
+      French: French
+      Spanish: Spanish
+      Italian: Italian
+      Japanese: Japanese
+      Default: Default
+  reicast_force_wince:
+    group: ADVANCED OPTIONS
+    prompt: FORCE WINDOWS CE MODE
+    description: Required for some games.
+    choices:
+      'Off': disabled
+      'On': enabled
+  flycast-autowidescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  reicast_widescreen_cheats:
+    prompt: WIDESCREEN CHEAT (PRIORITY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': disabled
+      'On': enabled
+  reicast_widescreen_hack:
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': disabled
+      'On': enabled
+  controller1_dc:
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      Gamepad: 1
+      Gamepad Using Left Analog Stick: 5
+      Keyboard: 3
+      Mouse: 2
+      Light Gun: 4
+  controller2_dc:
+    prompt: CONTROLLER 2 TYPE
+    choices:
+      Gamepad: 1
+      Gamepad Using Left Analog Stick: 5
+      Keyboard: 3
+      Mouse: 2
+      Light Gun: 4
+  controller3_dc:
+    prompt: CONTROLLER 3 TYPE
+    choices:
+      Gamepad: 1
+      Gamepad Using Left Analog Stick: 5
+      Keyboard: 3
+      Mouse: 2
+      Light Gun: 4
+  controller4_dc:
+    prompt: CONTROLLER 4 TYPE
+    choices:
+      Gamepad: 1
+      Gamepad Using Left Analog Stick: 5
+      Keyboard: 3
+      Mouse: 2
+      Light Gun: 4
+  flycast_offscreen_reload:
+    group: LIGHT GUN
+    prompt: OFF-SCREEN RELOAD BUTTON
+    description: Set gun button 2 to reload.
+    choices:
+      'Off': 0
+      'On': 1
+  altlayout:
+    prompt: SPECIAL CONTROL LAYOUTS
+    description: Controls for 5/6 button games and other unique controls
+    choices:
+      Default Only: default
+      Modern Fightstick Style: fightstick
+systems:
+  - name: atomiswave
+    custom_features:
+      screen_rotation_atomiswave:
+        prompt: SCREEN ORIENTATION
+        description: Useful for certain arcade games.
+        choices:
+          Horizontal: horizontal
+          Vertical: vertical
+  - name: naomi
+    custom_features:
+      screen_rotation_naomi:
+        prompt: SCREEN ORIENTATION
+        description: Useful for certain arcade games.
+        choices:
+          Horizontal: horizontal
+          Vertical: vertical
+  - dreamcast
+  - naomi2
+  - systemsp

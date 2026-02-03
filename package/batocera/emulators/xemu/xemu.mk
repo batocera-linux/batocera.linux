@@ -9,6 +9,7 @@ XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
 XEMU_LICENSE = GPLv2
+XEMU_EMULATOR_INFO = xemu.emulator.yml
 XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl2 libgbm libopenssl
 XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
 XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp
@@ -134,7 +135,7 @@ define XEMU_GET_SUBMODULES
 	    https://github.com/mborgerson/genconfig/archive/$(REVISION).tar.gz
 	$(TAR) -xzf genconfig.tar.gz --strip-components=1 -C $(@D)/subprojects/genconfig
 	rm genconfig.tar.gz
-	
+
     # tomlplusplus
 	mkdir -p $(@D)/subprojects/tomlplusplus
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/tomlplusplus.wrap))
@@ -174,20 +175,20 @@ define XEMU_GET_SUBMODULES
 	    https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/$(REVISION).tar.gz
 	$(TAR) -xzf VulkanMemoryAllocator.tar.gz --strip-components=1 -C $(@D)/subprojects/VulkanMemoryAllocator
 	rm VulkanMemoryAllocator.tar.gz
-	
+
     # xxhash
 	mkdir -p $(@D)/subprojects/xxHash-0.8.3
 	$(HOST_DIR)/bin/curl -L -o xxhash.tar.gz \
 	    http://github.com/mesonbuild/wrapdb/releases/download/xxhash_0.8.3-1/xxHash-0.8.3.tar.gz
 	$(TAR) -xzf xxhash.tar.gz --strip-components=1 -C $(@D)/subprojects/xxHash-0.8.3
 	rm xxhash.tar.gz
-	
+
     # xxhash patch
 	$(HOST_DIR)/bin/curl -L -o xxhash_0.8.3-1_patch.zip \
 	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.3-1/get_patch
 	$(UNZIP) -o xxhash_0.8.3-1_patch.zip -d $(@D)/subprojects
 	rm xxhash_0.8.3-1_patch.zip
-	
+
     # keycodemapdb - revision variation
 	mkdir -p $(@D)/subprojects/keycodemapdb
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/keycodemapdb.wrap))
@@ -195,7 +196,7 @@ define XEMU_GET_SUBMODULES
 	    https://gitlab.com/qemu-project/keycodemapdb/-/archive/$(REVISION)/$(REVISION).tar.gz
 	$(TAR) -xzf keycodemapdb.tar.gz --strip-components=1 -C $(@D)/subprojects/keycodemapdb
 	rm keycodemapdb.tar.gz
-	
+
     # nv2a_vsh_cpu
 	mkdir -p $(@D)/subprojects/nv2a_vsh_cpu
     $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/nv2a_vsh_cpu.wrap))
@@ -203,7 +204,7 @@ define XEMU_GET_SUBMODULES
 	    https://github.com/xemu-project/nv2a_vsh_cpu/archive/$(REVISION).tar.gz
 	$(TAR) -xzf nv2a_vsh_cpu.tar.gz --strip-components=1 -C $(@D)/subprojects/nv2a_vsh_cpu
 	rm nv2a_vsh_cpu.tar.gz
-	
+
     # berkeley-softfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-softfloat-3
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/berkeley-softfloat-3.wrap))
@@ -212,7 +213,7 @@ define XEMU_GET_SUBMODULES
 	$(TAR) -xzf berkeley-softfloat-3.tar.gz --strip-components=1 -C $(@D)/subprojects/berkeley-softfloat-3
 	cp $(@D)/subprojects/packagefiles/berkeley-softfloat-3/* $(@D)/subprojects/berkeley-softfloat-3
 	rm berkeley-softfloat-3.tar.gz
-	
+
     # berkeley-testfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-testfloat-3
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/berkeley-testfloat-3.wrap))
@@ -227,3 +228,4 @@ XEMU_PRE_CONFIGURE_HOOKS = XEMU_VERSION_DETAILS
 XEMU_PRE_CONFIGURE_HOOKS += XEMU_GET_SUBMODULES
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

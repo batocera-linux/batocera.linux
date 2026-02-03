@@ -9,6 +9,7 @@ LIBRETRO_BSNES_SITE = $(call github,libretro,bsnes-libretro,$(LIBRETRO_BSNES_VER
 LIBRETRO_BSNES_LICENSE = GPLv3
 LIBRETRO_BSNES_LICENSE_FILE = LICENSE.txt
 LIBRETRO_BSNES_DEPENDENCIES += retroarch
+LIBRETRO_BSNES_EMULATOR_INFO = bsnes.libretro.core.yml
 
 define LIBRETRO_BSNES_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
@@ -21,3 +22,4 @@ define LIBRETRO_BSNES_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

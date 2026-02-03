@@ -9,6 +9,7 @@ RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
 RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic webp libvpx
 RAZE_SUPPORTS_IN_SOURCE_BUILD = NO
+RAZE_EMULATOR_INFO = raze.emulator.yml
 
 # We need the tools from the host package to build the target package
 HOST_RAZE_DEPENDENCIES = zlib bzip2 host-webp
@@ -70,3 +71,4 @@ endef
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))
+$(eval $(emulator-info-package))

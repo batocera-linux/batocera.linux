@@ -1,0 +1,31 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+systems:
+  - name: amiga1200
+    as_core:
+      - A1200
+      - A4000
+  - name: amiga500
+    as_core:
+      - A1000
+      - A3000
+      - A500
+      - A500+
+      - A600
+  - name: amigacd32
+    as_core: CD32
+  - name: amigacdtv
+    as_core: CDTV

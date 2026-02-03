@@ -1,0 +1,67 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  model:
+    prompt: MODEL
+    choices:
+      520 ST AUTO: 520st_auto
+      520 ST TOS 1.00: 520st_100
+      520 ST TOS 1.02: 520st_102
+      520 ST TOS 1.04: 520st_104
+      520 ST EMUTOS 256k: 520st_etos256
+      1040 STE AUTO: 1040ste_auto
+      1040 STE 1.06: 1040ste_106
+      1040 STE 1.62: 1040ste_162
+      1040 STE ETOS 256k: 1040ste_etos256
+      Mega STE AUTO: megaste_auto
+      Mega STE 2.05: megaste_205
+      Mega STE 2.06: megaste_206
+      Mega STE ETOS 256k: megaste_etos256
+      TT AUTO: tt_auto
+      TT 3.06: tt_306
+      TT ETOS 512k: tt_etos512
+      Falcon AUTO: falcon_auto
+      Falcon 4.0: falcon_400
+      Falcon 4.02: falcon_402
+      Falcon 4.04: falcon_404
+      Falcon ETOS 512k: falcon_etos512
+  language:
+    prompt: LANGUAGE
+    description: TOS languages.
+    choices:
+      German (de): de
+      Spanish (es): es
+      French (fr): fr
+      Italian (it): it
+      Dutch (nl): nl
+      Russian (ru): ru
+      Swedish (se): se
+      British English (uk): uk
+      English (us): us
+  ram:
+    prompt: EMULATED RAM SIZE
+    choices:
+      520K: 0
+      1M: 1
+      2M: 2
+      4M: 4
+  hatari_drive:
+    prompt: ATARI HARD DRIVE TYPE
+    description: Choose your Atari hard drive type for the .hd extension file.
+    choices:
+      IDE (Default): IDE
+      ACSI: ACSI
+systems:
+  - atarist

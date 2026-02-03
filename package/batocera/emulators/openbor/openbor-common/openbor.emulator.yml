@@ -1,0 +1,29 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  openbor_ratio:
+    prompt: SCREEN RATIO
+    description: Stretch games to full-screen, but may distort the aspect ratio
+    choices:
+      Normal: 0
+      Stretch: 1
+  openbor_filter:
+    prompt: VIDEO FILTER
+    description: Apply a post-processing effect.
+    choices:
+      Simple 2x: 0
+      Bilinear: 1
+      2xSaI: 2
+      Super 2xSaI: 3
+      Super Eagle: 4
+      Advance Mame2x: 5
+      Lq2x: 6
+      Hq2x: 7
+      ScanLines: 8
+      ScanLines TV: 9
+      TV 2x: 10
+      Dot Matrix: 11
+systems:
+  - openbor

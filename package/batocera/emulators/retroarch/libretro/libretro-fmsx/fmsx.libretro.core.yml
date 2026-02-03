@@ -1,0 +1,17 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+systems:
+  - name: msx1
+    exclude_extensions:
+      - ogv
+      - openmsx
+  - name: msx2
+    exclude_extensions:
+      - openmsx
+  - name: msx2+
+    exclude_extensions:
+      - openmsx

@@ -8,6 +8,7 @@ LIBRETRO_VECX_VERSION = eacee1f6f029688b043ed802cece29dd3c320e21
 LIBRETRO_VECX_SITE = $(call github,libretro,libretro-vecx,$(LIBRETRO_VECX_VERSION))
 LIBRETRO_VECX_LICENSE = GPLv2|LGPLv2.1
 LIBRETRO_VECX_DEPENDENCIES += retroarch
+LIBRETRO_VECX_EMULATOR_INFO = vecx.libretro.core.yml
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 LIBRETRO_VECX_DEPENDENCIES += libgl
@@ -50,3 +51,4 @@ define LIBRETRO_VECX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -7,6 +7,7 @@
 FLATPAK_VERSION = 1.12.9
 FLATPAK_SOURCE = flatpak-$(FLATPAK_VERSION).tar.xz
 FLATPAK_SITE = https://github.com/flatpak/flatpak/releases/download/$(FLATPAK_VERSION)
+FLATPAK_EMULATOR_INFO = flatpak.emulator.yml
 
 FLATPAK_DEPENDENCIES += appstream-glib glib-networking host-pkgconf host-python3-pyparsing
 FLATPAK_DEPENDENCIES += json-glib libarchive libcap libfuse libglib2 libgpgme libostree
@@ -36,3 +37,4 @@ FLATPAK_POST_INSTALL_TARGET_HOOKS += FLATPAK_INSTALL_SCRIPTS
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
+$(eval $(emulator-info-package))

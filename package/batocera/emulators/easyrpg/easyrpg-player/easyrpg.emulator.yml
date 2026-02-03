@@ -1,0 +1,36 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  testplay:
+    prompt: TEST PLAY
+    description: Enable the debug menu and the walk-through-walls button.
+    choices:
+      'Off': 0
+      'On': 1
+  encoding:
+    prompt: GAME REGION (ENCODING)
+    description: Needed by some games that use special unicode characters.
+    choices:
+      Autodetect (Recommended): autodetect
+      European (Western): 1252
+      European (Cent/East) [W-1250]: 1250
+      Japanese [Shift-JIS]: 932
+      Cyrillic [Windows-1251]: 1251
+      Korean: 949
+      Chinese (Simplified): 936
+      Chinese (Traditional) [Big5]: 950
+      Greek: 1253
+      Turkish: 1254
+      Baltic: 1257
+systems:
+  - easyrpg

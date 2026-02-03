@@ -23,6 +23,7 @@ YMIR_SITE_METHOD = git
 YMIR_GIT_SUBMODULES = ES
 YMIR_LICENSE = GPLv2
 YMIR_LICENSE_FILE = LICENSE
+YMIR_EMULATOR_INFO = ymir.emulator.yml
 YMIR_DEPENDENCIES += catch2 cereal cxxopts date fmt host-clang json-for-modern-cpp
 YMIR_DEPENDENCIES += libcurl nghttp3 ngtcp2 openssl rtmidi sdl3 semver stb tomlplusplus
 
@@ -60,3 +61,4 @@ define YMIR_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

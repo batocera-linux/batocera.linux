@@ -6,6 +6,7 @@
 
 REDREAM_VERSION = 1.5.0-1133-g03c2ae9
 REDREAM_SITE = https://redream.io/download
+REDREAM_EMULATOR_INFO = redream.emulator.yml
 
 ifeq ($(BR2_aarch64),y)
 REDREAM_SOURCE = redream.universal-raspberry-linux-v$(REDREAM_VERSION).tar.gz
@@ -31,3 +32,4 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM271
 endif
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,21 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  bsnes_video_filter:
+    prompt: VIDEO FILTERS
+    description: Apply a video filter to mimic various NTSC TV signals.
+    choices:
+      'Off': None
+      NTSC (RF): NTSC (RF)
+      NTSC (RGB): NTSC (RGB)
+      NTSC (S-Video): NTSC (S-Video)
+      NTSC (Composite): NTSC (Composite)
+systems:
+  - sgb-msu1
+  - snes
+  - snes-msu1

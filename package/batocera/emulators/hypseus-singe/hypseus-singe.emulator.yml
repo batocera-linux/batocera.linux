@@ -1,0 +1,75 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - use_guns
+custom_features:
+  hypseus_ratio:
+    prompt: ASPECT RATIO
+    description: Not all games support stretching, depending on their video files.
+    choices:
+      Original: original
+      Stretch: stretch
+      Force 4:3: force_ratio
+  hypseus_rotate:
+    prompt: SCREEN ROTATION
+    choices:
+      0 degrees: 0
+      90 degrees: 90
+      270 degrees: 270
+  hypseus_bezels:
+    prompt: BEZELS
+    description: Enable or disable bezels being added when content is a 4:3 aspect with a widescreen display.
+    preset: switchauto
+  hypseus_filter:
+    prompt: SMOOTH GAMES (BILINEAR FILTERING)
+    preset: switchauto
+  hypseus_axis:
+    prompt: INVERT AXIS
+    description: Invert the vertical joystick axis on flight games.
+    preset: switchauto
+  hypseus_texturestream:
+    group: ADVANCED OPTIONS
+    prompt: SDL TEXTURE ACCESS STREAMING
+    description: Can improve video performance. Do not use with ActionMax games or scanlines.
+    preset: switchauto
+  hypseus_joy:
+    group: ADVANCED OPTIONS
+    prompt: CUSTOM CONTROLLER
+    description: Use controller settings manually defined in custom.ini.
+    preset: switchauto
+systems:
+  - daphne
+  - name: singe
+    custom_features:
+      singe_sprites:
+        group: ADVANCED OPTIONS
+        prompt: BLEND SPRITES (SINGE)
+        description: Restore BLENDMODE outline on Singe sprites.
+        choices:
+          'Off': 0
+          'On': 1
+      singe_joystick_range:
+        group: ADVANCED OPTIONS
+        prompt: JOYSTICK TO CURSOR SENSITIVITY
+        choices:
+          "5": 5
+          "10": 10
+          "15": 15
+          "20": 20
+      singe_crosshair:
+        group: LIGHT GUN
+        prompt: LIGHT GUN CROSSHAIRS
+        description: Crosshairs in supported games e.g. ActionMax, Maddog II.
+        choices:
+          'Off': 1
+          'On': 0
+      singe_abs:
+        group: ADVANCED OPTIONS
+        prompt: ABSOLUTE MOUSE INPUT
+        description: This option is required for some gun games when playing with a mouse.
+        choices:
+          'Off': 0
+          'On': 1

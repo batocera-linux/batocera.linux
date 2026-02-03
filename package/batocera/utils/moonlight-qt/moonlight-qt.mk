@@ -11,6 +11,7 @@ MOONLIGHT_QT_GIT_SUBMODULES = YES
 MOONLIGHT_QT_LICENSE = GPLv3
 
 MOONLIGHT_QT_DEPENDENCIES = \
+	moonlight-common \
 	qt6base \
 	qt6svg \
 	qt6declarative \

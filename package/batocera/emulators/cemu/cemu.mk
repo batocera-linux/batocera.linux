@@ -9,11 +9,11 @@ CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
 CEMU_GIT_SUBMODULES=YES
-CEMU_DEPENDENCIES = bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
+CEMU_DEPENDENCIES = cemu-common bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
                     libcurl libgtk3 libopenssl libpng libusb libzip libzlib \
-					pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd \
+                    pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd \
                     host-clang host-ninja host-lld
-					
+
 CEMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 CEMU_CMAKE_BACKEND = ninja
@@ -80,3 +80,4 @@ define CEMU_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -10,6 +10,7 @@ LIBRETRO_ZC210_SITE_METHOD=git
 LIBRETRO_ZC210_GIT_SUBMODULES=YES
 LIBRETRO_ZC210_LICENSE = GPLv2
 LIBRETRO_ZC210_DEPENDENCIES += retroarch
+LIBRETRO_ZC210_EMULATOR_INFO = zc210.libretro.core.yml
 
 define LIBRETRO_ZC210_BUILD_CMDS
 	$(ZC210_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="unix" \
@@ -21,3 +22,4 @@ define LIBRETRO_ZC210_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

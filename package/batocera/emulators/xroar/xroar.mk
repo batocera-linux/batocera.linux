@@ -9,6 +9,7 @@ XROAR_SOURCE = xroar-${XROAR_VERSION}.tar.gz
 XROAR_SITE = https://www.6809.org.uk/xroar/dl
 XROAR_LICENSE = GPLv3
 XROAR_LICENSE_FILE = COPYING.GPL
+XROAR_EMULATOR_INFO = xroar.emulator.yml
 
 XROAR_DEPENDENCIES = alsa-lib libevdev libpng sdl2 sdl2_image libzlib
 
@@ -33,3 +34,4 @@ else
 endif
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

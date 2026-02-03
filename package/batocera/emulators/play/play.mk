@@ -9,6 +9,7 @@ PLAY_SITE = https://github.com/jpd002/Play-.git
 PLAY_SITE_METHOD = git
 PLAY_GIT_SUBMODULES = YES
 PLAY_LICENSE = BSD
+PLAY_EMULATOR_INFO = play.emulator.yml
 
 PLAY_DEPENDENCIES = openal qt6base sqlite ecm libevdev
 
@@ -42,3 +43,4 @@ endef
 PLAY_POST_INSTALL_TARGET_HOOKS += PLAY_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

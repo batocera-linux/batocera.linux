@@ -11,6 +11,7 @@ CITRON_GIT_SUBMODULES=YES
 CITRON_LICENSE = GPLv2
 CITRON_DEPENDENCIES += boost catch2 enet ffmpeg fmt json-for-modern-cpp libzip lz4
 CITRON_DEPENDENCIES += opus qt6base qt6tools qt6multimedia sdl2 stb zlib zstd
+CITRON_EMULATOR_INFO = citron.emulator.yml
 
 CITRON_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -40,3 +41,4 @@ define CITRON_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,38 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  x16emu_scale:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution.
+    choices:
+      640x480: 1
+      1280x960 (Default): 2
+      1920x1440: 3
+      2560x1920: 4
+  x16emu_ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      4x3 (Default): 4:3
+      16x9: 16:9
+  x16emu_quality:
+    prompt: IMAGE QUALITY
+    description: Change image scaling algorithm quality.
+    choices:
+      Nearest pixel sampling: nearest
+      Linear filtering: linear
+      Anisotropic filtering: best
+systems:
+  - commanderx16

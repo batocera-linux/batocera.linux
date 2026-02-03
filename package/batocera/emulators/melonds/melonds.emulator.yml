@@ -1,0 +1,127 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  melonds_renderer:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      Software: 0
+      OpenGL (Classic): 1
+      OpenGL (Compute shader): 2
+  melonds_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing. CPU heavy.
+    choices:
+      'Off': false
+      'On': true
+  melonds_framerate:
+    group: ADVANCED OPTIONS
+    prompt: LIMIT FRAME RATE
+    choices:
+      No Limit: false
+      As game specifies: true
+  melonds_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (256x192): 1
+      2x (512x384): 2
+      3x (768x576): 3
+      4x (1024x768): 4
+      5x (1280x960): 5
+      6x (1536x1152): 6
+      7x (1792x1344): 7
+      8x (2048x1536): 8
+      9x (2304x1728): 9
+      10x (2560x1920): 10
+      11x (2816x2112): 11
+      12x (3072x2304): 12
+      13x (3328x2496): 13
+      14x (3584x2688): 14
+      15x (3840x2880): 15
+      16x (4096x3072): 16
+  melonds_polygons:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE POLYGON SPLITTING
+    description: Enhancement. Enables improved polygon splitting.
+    choices:
+      'Off': false
+      'On': true
+  melonds_rotation:
+    prompt: SCREEN ROTATION
+    description: Rotates the screens, to simulate holding the DS sideways.
+    choices:
+      0 degrees: 0
+      90 degrees: 1
+      180 degrees: 2
+      270 degrees: 3
+  melonds_screenswap:
+    prompt: SCREEN SWAP
+    description: Swap the position of the dual displays.
+    choices:
+      'Off': false
+      'On': true
+  melonds_screensize:
+    prompt: SCREEN SIZE
+    description: Sets the window size to an integer size.
+    choices:
+      1x: 0
+      2x: 1
+      3x: 2
+      4x: 3
+  melonds_layout:
+    prompt: SCREEN LAYOUT
+    description: Adjusts the positions of the screens.
+    choices:
+      Original screen positions: 0
+      Always enforce vertical: 1
+      Always enforce horizontal: 2
+      Hybrid: 3
+  melonds_screensizing:
+    prompt: SCREEN SIZING
+    description: How the window space is distributed between the screens.
+    choices:
+      Even: 0
+      Emphasize top: 1
+      Emphasize bottom: 2
+      Automatic: 3
+      Top only: 4
+      Bottom only: 5
+  melonds_scaling:
+    prompt: INTEGER SCALING
+    choices:
+      'Off': false
+      'On': true
+  melonds_dual_screen:
+    prompt: DUAL SCREEN
+    description: Enable MelonDS to display over two screens. Some related screen options will be ignored.
+    choices:
+      'Off': false
+      'On': true
+  melonds_cheats:
+    prompt: ENABLE CHEATS
+    choices:
+      Off (Default): false
+      'On': true
+  melonds_osd:
+    prompt: SHOW ON-SCREEN DISPLAY MESSAGES
+    choices:
+      'Off': false
+      'On': true
+  melonds_console:
+    prompt: CONSOLE TYPE
+    choices:
+      DS: 0
+      DSi (experiemental): 1
+systems:
+  - nds

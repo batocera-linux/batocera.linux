@@ -8,6 +8,7 @@ VKQUAKE3_VERSION = 5300b32803c1c61bc3b6bdf86a084c1db1a217ad
 VKQUAKE3_SITE = $(call github,suijingfeng,vkQuake3,$(VKQUAKE3_VERSION))
 VKQUAKE3_LICENSE = GPL-2.0
 VKQUAKE3_LICENSE_FILE = COPYING.txt
+VKQUAKE3_EMULATOR_INFO = vkquake3.emulator.yml
 
 VKQUAKE3_DEPENDENCIES = glslang opus opusfile sdl2 vulkan-headers vulkan-loader
 
@@ -57,3 +58,4 @@ endef
 VKQUAKE3_POST_INSTALL_TARGET_HOOKS += VKQUAKE3_EVMAPY
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

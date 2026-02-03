@@ -8,6 +8,7 @@ LIBRETRO_PUAE_VERSION = 0043cf9c061bd9b81dbc1869c2761017139cfc63
 LIBRETRO_PUAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_PUAE_VERSION))
 LIBRETRO_PUAE_LICENSE = GPLv2
 LIBRETRO_PUAE_DEPENDENCIES += retroarch
+LIBRETRO_PUAE_EMULATOR_INFO = puae.libretro.core.yml
 
 LIBRETRO_PUAE_PLATFORM=$(LIBRETRO_PLATFORM)
 
@@ -35,3 +36,4 @@ define LIBRETRO_PUAE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

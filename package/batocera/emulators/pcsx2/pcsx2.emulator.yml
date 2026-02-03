@@ -1,0 +1,296 @@
+cores:
+  pcsx2:
+    shared_features:
+      - powermode
+      - tdp
+      - videomode
+      - bezel
+      - bezel_stretch
+      - hud
+      - hud_corner
+      - bezel.tattoo
+      - bezel.tattoo_corner
+      - bezel.tattoo_file
+      - bezel.resize_tattoo
+      - use_guns
+      - use_wheels
+      - wheel_rotation
+      - wheel_deadzone
+      - wheel_midzone
+    features:
+      - cheevos
+    custom_features:
+      pcsx2_shaderset:
+        submenu: RENDERING
+        prompt: SHADER SET
+        description:
+        choices:
+          scanlines: 1
+          diagonal filter: 2
+          triangular filter: 3
+          wave filter: 4
+          lottes crt: 5
+          4xrgss: 6
+          nxagss: 7
+      pcsx2_osd_messages:
+        submenu: DISPLAY
+        prompt: OSD MESSAGES
+        description: Display on screen information like savestate, config warning etc...
+        choices:
+          Enabled (Default): "true"
+          Disabled: "false"
+      pcsx2_osd_messages_position:
+        submenu: DISPLAY
+        prompt: OSD MESSAGES POSITION
+        description: Choose the on-screen position for system messages.
+        choices:
+          Top Left: 1
+          Top Center (Default): 2
+          Top Right: 3
+          Center Left: 4
+          Center: 5
+          Center Right: 6
+          Bottom Left: 7
+          Bottom Center: 8
+          Bottom Right: 9
+      pcsx2_osd_performance_position:
+        submenu: DISPLAY
+        prompt: OSD PERFORMANCE POSITION
+        description: Choose the on-screen position for performance metrics (FPS, CPU usage, etc.).
+        choices:
+          None (Default): 0
+          Top Left: 1
+          Top Center: 2
+          Top Right: 3
+          Center Left: 4
+          Center: 5
+          Center Right: 6
+          Bottom Left: 7
+          Bottom Center: 8
+          Bottom Right: 9
+      pcsx2_ratio:
+        submenu: DISPLAY
+        prompt: GAME ASPECT RATIO
+        description: Force the game to render in this aspect ratio. Not all systems support all ratios.
+        choices:
+          Fit to Window / Fullscreen: Stretch
+          Auto Standard (4:3 interlaced / 3:2 progressive): Auto 4:3/3:2
+          Standard (4:3): 4:3
+          Widescreen (16:9): 16:9
+      pcsx2_fmv_ratio:
+        submenu: DISPLAY
+        prompt: FMV ASPECT RATIO
+        description: Adjusts Full Motion Video movies aspect ratio.
+        choices:
+          Off (Default): "off"
+          Auto Standard (4:3 interlaced / 3:2 progressive): Auto 4:3/3:2
+          Standard (4:3): 4:3
+          Widescreen (16:9): 16:9
+      pcsx2_deinterlacing:
+        submenu: DISPLAY
+        prompt: DEINTERLACING
+        description: FMV movie deinterlacing.
+        choices:
+          None: 1
+          Weave (Top Field First): 2
+          Weave (Bottom Field First): 3
+          Bob (Top Field First): 4
+          Bob (Bottom Field First): 5
+          Blend (Top Field First): 6
+          Blend (Bottom Field First): 7
+          Adaptive (Top Field First): 8
+          Adaptive (Bottom Field First): 9
+      pcsx2_bilinear_filtering:
+        submenu: DISPLAY
+        prompt: BILINEAR FILTERING
+        description: Smooths the overall picture as it is displayed on the screen. Corrects positioning between pixels.
+        choices:
+          None: 0
+          Bilinear (Smooth): 1
+          Bilinear (Sharp): 2
+      pcsx2_EnableWideScreenPatches:
+        submenu: DISPLAY
+        prompt: ENABLE WIDESCREEN PATCHES
+        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_blur:
+        submenu: DISPLAY
+        prompt: ANTI-BLUR
+        description: Enable to improve bluriness.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_vsync:
+        submenu: DISPLAY
+        prompt: VSYNC
+        description: Fix screen tearing. CPU heavy.
+        choices:
+          Disabled: 0
+          Enabled: 1
+      pcsx2_interlacing_patches:
+        submenu: DISPLAY
+        prompt: INTERLACING PATCHES
+        description: Enable No-interlacing Patches.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_scaling:
+        submenu: DISPLAY
+        prompt: INTEGER SCALING
+        description: Can sharpen images in lower resolutions.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_gfxbackend:
+        submenu: RENDERING
+        prompt: GRAPHICS API
+        description: Choose which graphics API library to use.
+        choices:
+          OpenGL: 12
+          Software: 13
+          Vulkan: 14
+      pcsx2_resolution:
+        submenu: RENDERING
+        prompt: RENDERING RESOLUTION
+        description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+        choices:
+          Native (PS2)(Default): 1
+          1.25x Native: 1.25
+          1.5x Native: 1.5
+          1.75x Native: 1.75
+          2x Native (~720p): 2
+          2.25x Native: 2.25
+          2.5x Native: 2.5
+          2.75x Native: 2.75
+          3x Native (~1080p): 3
+          3.5x Native: 3.5
+          4x Native (~1440p/2K): 4
+          5x Native (~1620p): 5
+          6x Native (~2160p/4K): 6
+          7x Native (~2520p): 7
+          8x Native (~2880p/5K): 8
+      pcsx2_mipmapping:
+        submenu: RENDERING
+        prompt: MIPMAPPING
+        description: Choose mipmapping type.
+        choices:
+          "Off": 0
+          Basic (generated Mipmaps): 1
+          Full (PS2 Mipmaps): 2
+      pcsx2_texture_filtering:
+        submenu: RENDERING
+        prompt: TEXTURE FILTERING
+        description: Control the texture filtering of the emulation.
+        choices:
+          Nearest: 0
+          Bilinear (Forced): 1
+          Bilinear (PS2): 2
+          Bilinear (Forced excluding sprite): 3
+      pcsx2_trilinear_filtering:
+        submenu: RENDERING
+        prompt: TRILINEAR FILTERING
+        description: Control the texture's trilinear filtering of the emulation.
+        choices:
+          Off (None): 0
+          Trilinear (PS2): 1
+          Trilinear (Forced): 2
+      pcsx2_anisotropic_filtering:
+        submenu: RENDERING
+        prompt: ANISOTROPIC FILTERING
+        description: Improves clarity of distant textures.
+        choices:
+          "Off": 0
+          2x: 2
+          4x: 4
+          8x: 8
+          16x: 16
+      pcsx2_dithering:
+        submenu: RENDERING
+        prompt: DITHERING
+        description: Reduces banding between colours and improves the preceived colour depth.
+        choices:
+          "Off": 0
+          Unscaled (Default): 1
+          Scaled: 2
+          Force 32bit: 3
+      pcsx2_blending:
+        submenu: RENDERING
+        prompt: BLENDING ACCURACY
+        description: The higher the setting, the more blending is emulated in the shader accurately, and the higher the speed penalty will be.
+        choices:
+          Minimum: 0
+          Basic (Recommended): 1
+          Medium: 2
+          High: 3
+          Full (Slow): 4
+          Maximum (Very Slow): 5
+      pcsx2_texture_loading:
+        submenu: RENDERING
+        prompt: TEXTURE PRELOADING
+        description: Uploads entire textures at once instead of small pieces. Improves performance in most games.
+        choices:
+          None: 0
+          Partial: 1
+          Full (Hash Cache): 2
+      pcsx2_fastboot:
+        prompt: SHOW BIOS BOOTLOGO
+        description: Some games have issues when the animation is shown, others require it.
+        choices:
+          Skip (safer): 0
+          Show (specific games): 1
+      pcsx2_fxaa:
+        submenu: RENDERING
+        prompt: FXAA
+        description: Applies the FXAA anti-aliasing algorithm to improve the visual quality of games.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_cheats:
+        prompt: CHEATS
+        description: Automatically loads and applies cheats on game start.
+        choices:
+          Disabled: "false"
+          Enabled: "true"
+      pcsx2_multitap:
+        prompt: MULTITAP
+        description: Allows up to 8 controllers in supported games.
+        choices:
+          Maximum 2 Players (Default): 2
+          Maximum 4 Players: 4
+          Maximum 8 Players: 8
+      pcsx2_texture_replacements:
+        group: ADVANCED OPTIONS
+        prompt: TEXTURE REPLACEMENTS
+        description: Allows user replaceable textures.
+        choices:
+          "Off": "false"
+          "On": "true"
+      pcsx2_crisis_fog:
+        group: ADVANCED OPTIONS
+        prompt: TIME CRISIS FOG HACK
+        description: Necessary for some guns to replace fog textures as a workaround in Time Crisis - Crisis Zone.
+        choices:
+          "Off": "false"
+          "On": "true"
+      pcsx2_wheel_type:
+        group: WHEELS
+        prompt: WHEEL MODEL
+        description: Playstation 2 wheel type
+        choices:
+          Driving Force: DrivingForce
+          Driving Force Pro: DrivingForcePro
+          GT Force: GTForce
+          Virtual: Virtual
+      pcsx2_crosshairs:
+        group: LIGHT GUN
+        prompt: SHOW LIGHT GUN CROSSHAIRS
+        description:
+        choices:
+          "Off": 0
+          "On": 1
+systems:
+  - name: ps2
+    exclude_extensions:
+      - m3u

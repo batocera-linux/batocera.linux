@@ -1,0 +1,65 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      English: 0
+      French: 1
+      Italian: 2
+      German: 3
+      Spanish: 4
+      Japanese: 5
+  vsync:
+    group: ADVANCED OPTIONS
+    prompt: VSYNC
+    decription: Fix screen tearing.
+    choices:
+      'Off': 0
+      'On': 1
+  scalingmode:
+    group: ADVANCED OPTIONS
+    prompt: SCALING MODE
+    description: Can smooth the image.
+    choices:
+      Nearest Neighbour: 0
+      Integer Scale: 1
+      Sharp Bilinear: 2
+      Regular Bilnear: 3
+  hqmode:
+    group: ADVANCED OPTIONS
+    prompt: HQ MODE
+    description: Enable high quality effects for special stages.
+    choices:
+      'Off': 0
+      'On': 1
+  spindash:
+    group: ADVANCED OPTIONS
+    prompt: SPINDASH TYPE
+    description: Both types require holding D-pad down during initial charge.
+    choices:
+      By Save: -1
+      Sonic 2 (tap jump): 0
+      Sonic CD (hold jump): 1
+  devmenu:
+    group: ADVANCED OPTIONS
+    prompt: DEV MENU
+    description: Access to modding and other advanced options.
+    choices:
+      'Off': 0
+      'On': 1
+systems:
+  - sonicretro

@@ -10,7 +10,7 @@ LIBRETRO_PS2_SITE_METHOD = git
 LIBRETRO_PS2_GIT_SUBMODULES = YES
 LIBRETRO_PS2_LICENSE = GPLv2
 LIBRETRO_PS2_DEPENDENCIES = libaio xz host-xxd retroarch
-
+LIBRETRO_PS2_EMULATOR_INFO = pcsx2.libretro.core.yml
 LIBRETRO_PS2_SUPPORTS_IN_SOURCE_BUILD = NO
 
 LIBRETRO_PS2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -40,3 +40,4 @@ define LIBRETRO_PS2_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

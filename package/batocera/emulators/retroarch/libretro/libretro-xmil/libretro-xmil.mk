@@ -10,6 +10,7 @@ LIBRETRO_XMIL_SITE=https://github.com/libretro/xmil-libretro
 LIBRETRO_XMIL_GIT_SUBMODULES=YES
 LIBRETRO_XMIL_LICENSE = BSD-3
 LIBRETRO_XMIL_DEPENDENCIES += retroarch
+LIBRETRO_XMIL_EMULATOR_INFO = x1.libretro.core.yml
 
 LIBRETRO_XMIL_PLATFORM = unix
 
@@ -35,3 +36,4 @@ define LIBRETRO_XMIL_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

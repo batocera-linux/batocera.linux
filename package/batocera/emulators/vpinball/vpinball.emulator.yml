@@ -1,0 +1,244 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  vpinball_folders:
+    group: EXPERT SETTINGS
+    prompt: PER TABLE FOLDER
+    description: Per Table Folder requires all files to be in the associated rom table folder. If disabled, consult the Wiki for further details.
+    preset: switchauto
+  vpinball_balltrail:
+    group: DISPLAY
+    prompt: BALL TRAIL STRENGTH
+    description: Provides a ball trail to make the ball easier to follow.
+    choices:
+      0% (Default): "0"
+      50%: "0.5"
+      60%: "0.6"
+      70%: "0.7"
+      80%: "0.8"
+      90%: "0.9"
+      100%: "1.0"
+  vpinball_nudgestrength:
+    group: DISPLAY
+    prompt: VISUAL NUDGE STRENGTH
+    description: Affects just the visual effect of nudging.
+    choices:
+      0 (No Visual Effect): "0"
+      1%: "0.01"
+      2%: "0.02"
+      3%: "0.03"
+      4%: "0.04"
+  vpinball_maxframerate:
+    group: DISPLAY
+    prompt: MAXIMUM FRAMERATE
+    description: Framerate limiter to reduce CPU utilisation.
+    choices:
+      0 (Defaults Unlimited): "0"
+      "50": "50"
+      "60": "60"
+      "120": "120"
+      "144": "144"
+  vpinball_vsync:
+    group: DISPLAY
+    prompt: VSYNC
+    description: Fix screen tearing. Adaptive Sync (Default) synchronizes on video sync, except for late frames (below target FPS) which are displayed immediately.
+    choices:
+      None: "0"
+      Vertical Sync: "1"
+      Adaptive Sync (Default): "2"
+  vpinball_presets:
+    group: DISPLAY
+    prompt: PERFORMANCE PRESETS
+    description: Presets which can improve performance without manually editing the VPinballX.ini file to fine tune performance.
+    choices:
+      Default Performance Settings: defaults
+      Low-end Computer: lowend
+      High-end Computer: highend
+      Manual: manual
+  vpinball_altcolor:
+    group: DISPLAY
+    prompt: ALTCOLOR
+    description: Alternative Coloured Dot Matrix Display (needs additional file).
+    preset: switchauto
+  vpinball_playfield:
+    group: WINDOWS POSITIONS
+    prompt: PLAYFIELD
+    description: Playfield configuration
+    choices:
+      Manual: manual
+  vpinball_pinmame:
+    group: WINDOWS POSITIONS
+    prompt: PINMAME DMD
+    description: Extra DMD (Dot Matrix Display) window to display the score for tables with a pinmame rom. By default, settings come from the VPinballX.ini configuration file.
+    choices:
+      Top-Right Position, Small: topright_small
+      Top-Right Position, Medium: topright_medium
+      Top-Right Position, Large: topright_large
+      Top-Left Position, Small: topleft_small
+      Top-Left Position, Medium: topleft_medium
+      Top-Left Position, Large: topleft_large
+      On screen 2 if available: screen2
+      On screen 3 if available: screen3
+      Disabled: disabled
+      Manual: manual
+  vpinball_flexdmd:
+    group: WINDOWS POSITIONS
+    prompt: FLEX DMD
+    description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom. By default, settings come from the VPinballX.ini configuration file.
+    choices:
+      Top-Right Position, Small: topright_small
+      Top-Right Position, Medium: topright_medium
+      Top-Right Position, Large: topright_large
+      Top-Left Position, Small: topleft_small
+      Top-Left Position, Medium: topleft_medium
+      Top-Left Position, Large: topleft_large
+      On screen 2 if available: screen2
+      On screen 3 if available: screen3
+      Disabled: disabled
+      Manual: manual
+  vpinball_b2s:
+    group: WINDOWS POSITIONS
+    prompt: BACKGLASS (B2S)
+    description: Upright glass panel displaying some illuminated artwork. By default, settings come from the VPinballX.ini configuration file.
+    choices:
+      Top-Right Position, Small: topright_small
+      Top-Right Position, Medium: topright_medium
+      Top-Right Position, Large: topright_large
+      Top-Left Position, Small: topleft_small
+      Top-Left Position, Medium: topleft_medium
+      Top-Left Position, Large: topleft_large
+      On screen 2 if available: screen2
+      Disabled: disabled
+      Manual: manual
+  vpinball_b2sdmd:
+    group: WINDOWS POSITIONS
+    prompt: DISPLAY BACKGLASS DMD
+    description: When the Backglass is activated, display the small additional part with the scores.
+    preset: switchauto
+  vpinball_b2sgrill:
+    group: WINDOWS POSITIONS
+    prompt: DISPLAY BACKGLASS GRILL
+    description: When the Backglass is activated, display the grill.
+    preset: switchauto
+  vpinball_dmdsize:
+    group: WINDOWS POSITIONS
+    prompt: DMD SIZE
+    description: DMD window ratio
+    choices:
+      128x16: 128x16
+      128x32: 128x32
+      192x64: 192x64
+      256x64: 256x64
+  vpinball_inverseplayfieldandb2s:
+    group: WINDOWS POSITIONS
+    prompt: INVERSE PLAYFIELD AND B2S
+    description: Inverse the Backglass and the Playfield. Usefull to use the Backglass as main screen for other emulators.
+    choices:
+      'On': 1
+      'Off': 0
+  vpinball_playfieldmode:
+    group: WINDOWS POSITIONS
+    prompt: PLAYFIELD MODE
+    description: FULLSCREEN gives you a top-down view on the playfield. For cabinet use or multi-window on desktop.
+    choices:
+      DESKTOP: 0
+      FULLSCREEN: 1
+      FULL SINGLE SCREEN: 2
+  vpinball_customphysicalsetup:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: ENABLE CUSTOM DISPLAY PHYSICAL SETUP
+    description: Enable the custom values below.
+    preset: switchauto
+  vpinball_screenwidth:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: SCREEN WIDTH
+    description: Long visible screen edge (cm)
+    preset: slider
+    preset_parameters: 20 120 0.5 90
+  vpinball_screenheight:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: SCREEN HEIGHT
+    description: Short visible screen edge (cm)
+    preset: slider
+    preset_parameters: 10 80 0.5 50
+  vpinball_screeninclination:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: SCREEN INCLINATION
+    description: Screen inclination (degree)
+    preset: slider
+    preset_parameters: 0 90 0.5 0
+  vpinball_screenplayery:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: SCREEN PLAYER Y
+    description: Player distance from lower screen edge (cm)
+    preset: slider
+    preset_parameters: -30 50 0.5 0
+  vpinball_screenplayerz:
+    group: DISPLAY PHYSICAL SETUP
+    prompt: SCREEN PLAYER Z
+    description: Player's eyes distance from lower screen edge (cm)
+    preset: slider
+    preset_parameters: 15 120 0.5 70
+  vpinball_musicvolume:
+    group: AUDIO
+    prompt: MUSIC VOLUME
+    description: Adjust the music volume. Some tables may have its own settings.
+    choices:
+      0%: "0"
+      5%: "5"
+      10%: "10"
+      20%: "20"
+      30%: "30"
+      40%: "40"
+      50%: "50"
+      60%: "60"
+      70%: "70"
+      80%: "80"
+      90%: "90"
+      100%: "100"
+  vpinball_soundvolume:
+    group: AUDIO
+    prompt: SOUND VOLUME
+    description: Adjust the mechanical sounds of the table.
+    choices:
+      0%: "0"
+      5%: "5"
+      10%: "10"
+      20%: "20"
+      30%: "30"
+      40%: "40"
+      50%: "50"
+      60%: "60"
+      70%: "70"
+      80%: "80"
+      90%: "90"
+      100%: "100"
+  vpinball_altsound:
+    group: AUDIO
+    prompt: ALTERNATIVE SOUND
+    description: Alternative sounds for the table (needs additional files).
+    preset: switchauto
+  vpinball_pad_add_credit:
+    prompt: USE JOYPAD SOUTH BUTTON TO ADD CREDIT
+    group: EXPERT SETTINGS
+    description: This should not be necessary, unless you are not using the default pad2key mapping.
+    preset: switchauto
+  vpinball_pbw:
+    group: EXPERT SETTINGS
+    prompt: ACCELEROMETER
+    description: Internal accelerometer. Disable if you experience random tilts or unexpected ball behavior.
+    preset: switchauto
+systems:
+  - vpinball

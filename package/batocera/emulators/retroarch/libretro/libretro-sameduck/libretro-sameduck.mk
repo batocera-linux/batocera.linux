@@ -10,6 +10,7 @@ LIBRETRO_SAMEDUCK_VERSION = 5c5cdec7c7d3a489c8414ed04d99ee3c8779639b
 LIBRETRO_SAMEDUCK_SITE = $(call github,LIJI32,SameBoy,$(LIBRETRO_SAMEDUCK_VERSION))
 LIBRETRO_SAMEDUCK_LICENSE = GPL-3.0
 LIBRETRO_SAMEDUCK_DEPENDENCIES += retroarch
+LIBRETRO_SAMEDUCK_EMULATOR_INFO = sameduck.libretro.core.yml
 
 define LIBRETRO_SAMEDUCK_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/libretro -f Makefile platform="unix"
@@ -21,3 +22,4 @@ define LIBRETRO_SAMEDUCK_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

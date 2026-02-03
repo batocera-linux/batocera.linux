@@ -1,0 +1,93 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  xemu_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: OPENGL
+      Vulkan: VULKAN
+  xemu_scaling:
+    prompt: SCALING MODE
+    description: Choose the scaling mode for the game screen.
+    choices:
+      Original resolution: center
+      Scale to best fit: scale
+      Stretch to full: stretch
+  xemu_aspect:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      Native: native
+      4x3: 4x3
+      16x9: 16x9
+  xemu_render:
+    prompt: RENDERING RESOLUTION
+    choices:
+      1x (640x480): 1
+      2x (1280x960): 2
+      3x (1920x1440): 3
+      4x (2560x1920): 4
+      5x (3200x2400): 5
+      6x (3840x2880): 6
+      7x (4480x3360): 7
+      8x (5120x3840): 8
+      9x (5760x4320): 9
+      10x (6400x4800): 10
+  xemu_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      'Off': "false"
+      On (Default): "true"
+  xemu_bootanim:
+    prompt: SHOW BIOS BOOTLOGO
+    description: Enhancement.
+    choices:
+      Show: "false"
+      Skip: "true"
+  xemu_use_dsp:
+    prompt: USE DSP AUDIO
+    description: Improve audio accuracy (experimental).
+    choices:
+      Enabled: "true"
+      Disabled: "false"
+  xemu_memory:
+    prompt: SYSTEM MEMORY
+    description: Increase to 128 MiB for debug or homebrew applications.
+    choices:
+      64MiB (Default): 64
+      128MiB: 128
+  xemu_networktype:
+    group: NETWORK
+    submenu: NETWORK
+    prompt: NETWORK TYPE
+    description: Nat to access internet from xemu machine. Udp for System Link. Default (Auto) disables network access.
+    choices:
+      NAT: nat
+      UDP Tunnel: udp
+  xemu_udpremote:
+    group: NETWORK
+    submenu: NETWORK
+    prompt: UDP REMOTE ADDRESS
+    description: Destination address and port to forward packets to. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
+    preset: input
+  xemu_udpbind:
+    group: NETWORK
+    submenu: NETWORK
+    prompt: UDP BIND ADDRESS
+    description: Local address and port to receive packets on. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
+    preset: input
+systems:
+  - chihiro
+  - xbox

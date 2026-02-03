@@ -9,7 +9,8 @@ DUCKSTATION_LEGACY_SITE = https://github.com/stenzek/duckstation.git
 DUCKSTATION_LEGACY_SITE_METHOD=git
 DUCKSTATION_LEGACY_GIT_SUBMODULES=YES
 DUCKSTATION_LEGACY_LICENSE = GPLv2
-DUCKSTATION_LEGACY_DEPENDENCIES = fmt boost ffmpeg libcurl ecm dbus
+DUCKSTATION_LEGACY_DEPENDENCIES = fmt boost ffmpeg libcurl ecm dbus duckstation-common
+DUCKSTATION_LEGACY_EMULATOR_INFO = duckstation-legacy.duckstation.core.yml
 
 DUCKSTATION_LEGACY_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -84,3 +85,4 @@ ifeq ($(BR2_PACKAGE_QT6)$(BR2_PACKAGE_XORG7),yy)
 endif
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -8,6 +8,7 @@ RYUJINX_VERSION = 1.2.86
 RYUJINX_SITE = https://github.com/Ryubing/Stable-Releases/releases/download/$(RYUJINX_VERSION)
 RYUJINX_LICENSE = MIT
 RYUJINX_DEPENDENCIES = sdl2 openal hicolor-icon-theme adwaita-icon-theme librsvg
+RYUJINX_EMULATOR_INFO = ryujinx.emulator.yml
 
 ifeq ($(BR2_x86_64),y)
 RYUJINX_SOURCE = ryujinx-$(RYUJINX_VERSION)-linux_x64.tar.gz
@@ -26,3 +27,4 @@ define RYUJINX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

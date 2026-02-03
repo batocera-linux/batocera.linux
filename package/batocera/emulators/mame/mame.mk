@@ -6,8 +6,12 @@
 # Version: GroovyMAME 0.285 - Switchres 2.21f
 MAME_VERSION = gm0285sr221f
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
-MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua 
+MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
 MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib
+
+$(eval $(call register,mame.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,bgfxbackend.mame.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,sega-arcade.mame.emulator.yml))
 
 MAME_LICENSE = MAME
 
@@ -273,3 +277,4 @@ define MAME_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

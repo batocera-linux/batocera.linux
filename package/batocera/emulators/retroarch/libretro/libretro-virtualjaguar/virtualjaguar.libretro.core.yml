@@ -1,0 +1,31 @@
+features:
+  - padtokeyboard
+  - cheevos
+shared_features:
+  - autosave
+custom_features:
+  usefastblitter:
+    group: ADVANCED OPTIONS
+    prompt: FAST BLITTER (LESS COMPATIBLE)
+    description: For weak machines. Some games will not work with this.
+    choices:
+      'Off': disabled
+      'On': enabled
+  bios_vj:
+    prompt: SHOW BIOS BOOTLOGO
+    description: Off is safer, On for specific games.
+    choices:
+      Show: enabled
+      Skip: disabled
+  doom_res_hack:
+    group: ADVANCED OPTIONS
+    prompt: DOOM RES HACK
+    description: Enable for Doom to run at its correct resolution.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - name: jaguar
+    exclude_extensions:
+      - 7z
+  - jaguarcd

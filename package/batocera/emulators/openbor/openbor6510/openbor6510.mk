@@ -3,12 +3,12 @@
 # OPENBOR6510
 #
 ################################################################################
-# Version.: 
+# Version.:
 OPENBOR6510_VERSION = v6510-dev
 OPENBOR6510_SITE = $(call github,DCurrent,openbor,$(OPENBOR6510_VERSION))
 OPENBOR6510_LICENSE = BSD
-
-OPENBOR6510_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
+OPENBOR6510_DEPENDENCIES = openbor-common libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
+OPENBOR6510_EMULATOR_INFO = openbor6510.openbor.core.yml
 
 OPENBOR6510_EXTRAOPTS=""
 
@@ -32,3 +32,4 @@ define OPENBOR6510_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

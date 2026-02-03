@@ -1,0 +1,304 @@
+custom_features:
+  powermode:
+    group: POWER OPTIONS
+    prompt: POWER MODE
+    description: Adjust the cpu power frequency profile whilst in-game. Some systems will benefit from improved voltage handling.
+    choices:
+      High Performance: highperformance
+      Balanced: balanced
+      Power Saver: powersaver
+  batterymode:
+    group: POWER OPTIONS
+    prompt: BATTERY MODE
+    description: Adjust the cpu power profile whist on battery. Overwrites previous Power Mode(s).
+    choices:
+      High Performance: highperformance
+      Balanced: balanced
+      Power Saver: powersaver
+  videomode:
+    prompt: VIDEO MODE
+    description: Set the display's resolution. Does not affect the rendering resolution.
+    preset: videomodes
+  ratio:
+    prompt: GAME ASPECT RATIO
+    description: Force the game to render in this aspect ratio. Not all systems support all ratios.
+    choices:
+      4/3: 4/3
+      16/9: 16/9
+      Full: full
+      16/10: 16/10
+      16/15: 16/15
+      21/9: 21/9
+      1/1: 1/1
+      2/1: 2/1
+      3/2: 3/2
+      3/4: 3/4
+      4/1: 4/1
+      9/16: 9/16
+      5/4: 5/4
+      6/5: 6/5
+      7/9: 7/9
+      8/3: 8/3
+      8/7: 8/7
+      19/12: 19/12
+      19/14: 19/14
+      30/17: 30/17
+      32/9: 32/9
+      Config: config
+      Square pixel: squarepixel
+      Core provided: core
+      Custom: custom
+  rewind:
+    prompt: REWIND
+    description: Store past states to rewind to in realtime, if the core supports it.
+    choices:
+      "On": 1
+      "Off": 0
+  autosave:
+    prompt: AUTO SAVE/LOAD ON GAME LAUNCH
+    description: Load latest save state on game launch and save state when exiting game.
+    choices:
+      "On": 1
+      "Off": 0
+  shaderset:
+    prompt: SHADER SET
+    submenu: GAME RENDERING & SHADERS
+    preset: shaderset
+  smooth:
+    prompt: SMOOTH GAMES (BILINEAR FILTERING)
+    description: Disabled if using a shader set or the output display matches the game's resolution.
+    submenu: GAME RENDERING & SHADERS
+    choices:
+      "On": 1
+      "Off": 0
+  integerscale:
+    prompt: INTEGER SCALING (PIXEL PERFECT)
+    description: Only increase the image size in integer multiples.
+    submenu: GAME RENDERING & SHADERS
+    choices:
+      "On": 1
+      "Off": 0
+  bezel:
+    prompt: DECORATION SET
+    submenu: DECORATIONS
+    preset: bezel
+  bezel_stretch:
+    prompt: STRETCH BEZELS (4K & ULTRAWIDE)
+    submenu: DECORATIONS
+    choices:
+      "On": 1
+      "Off": 0
+  bezel.tattoo:
+    prompt: SHOW TATTOO OVER BEZEL
+    submenu: DECORATIONS
+    description: Show an image overlaid on top of the bezel.
+    choices:
+      "NO": "0"
+      SYSTEM CONTROLLERS: system
+      CUSTOM IMAGE: custom
+  bezel.tattoo_corner:
+    prompt: TATTOO CORNER
+    submenu: DECORATIONS
+    choices:
+      TOP LEFT (NW): NW
+      TOP RIGHT (NE): NE
+      BOTTOM RIGHT (SE): SE
+      BOTTOM LEFT (SW): SW
+  bezel.tattoo_file:
+    prompt: CUSTOM .PNG IMAGE PATH
+    submenu: DECORATIONS
+    preset: image
+  bezel.resize_tattoo:
+    prompt: RESIZE TATTOO
+    description: Shrink/expand tattoo to fit within the bezel's border.
+    submenu: DECORATIONS
+    preset: switchauto
+  ai_service_enabled:
+    prompt: ENABLE AI TRANSLATION SERVICE
+    description: During gameplay, press Hotkey + R1 to translate on-screen text. Only on libretro cores.
+    submenu: AI GAME TRANSLATION
+    preset: switchauto
+  ai_target_lang:
+    prompt: TARGET LANGUAGE
+    description: The language to translate into.
+    submenu: AI GAME TRANSLATION
+    choices:
+      ENGLISH: En
+      FRANÇAIS: Fr
+      PORTUGUÊS: Pt
+      DEUTSCH: De
+      GREEK: El
+      ESPAÑOL: Es
+      CZECH: Cs
+      DANISH: Da
+      CROATIAN: Hr
+      HUNGARIAN: Hu
+      ITALIANO: It
+      JAPANESE: Ja
+      KOREAN: Ko
+      DUTCH: Nl
+      NORWEGIAN: Nn
+      POLISH: Po
+      ROMANIAN: Ro
+      РУССКИЙ: Ru
+      SVENSKA: Sv
+      TÜRKÇE: Tr
+      简体中文: Zh
+  ai_service_url:
+    prompt: AI TRANSLATION SERVICE URL
+    description: If nothing is specified, will use ZTranslate by default.
+    submenu: AI GAME TRANSLATION
+    preset: input
+  ai_service_pause:
+    prompt: PAUSE ON TRANSLATED SCREEN
+    submenu: AI GAME TRANSLATION
+    preset: switchauto
+  runahead:
+    submenu: LATENCY REDUCTION
+    prompt: RUN-AHEAD FRAMES
+    description: Enables run-ahead. Doubles CPU requirements. High numbers can result in visible jitter.
+    choices:
+      None: 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+  secondinstance:
+    submenu: LATENCY REDUCTION
+    prompt: USE SECOND INSTANCE FOR RUN-AHEAD
+    description: Can prevent audio skips on button presses when using run-ahead.
+    choices:
+      "On": 1
+      "Off": 0
+  preemptiveframes:
+    submenu: LATENCY REDUCTION
+    prompt: USE PRE-EMPTIVE FRAMES
+    description: Use preemptive frames instead of run-ahead. Only runs ahead when controller state changes.
+    choices:
+      "On": "true"
+      "Off": "false"
+  video_frame_delay_auto:
+    submenu: LATENCY REDUCTION
+    prompt: AUTOMATIC FRAME DELAY
+    description: Automatically decrease frame delay temporarily to prevent frame drops. Can introduce stuttering.
+    choices:
+      "On": 1
+      "Off": 0
+  vrr_runloop_enable:
+    submenu: LATENCY REDUCTION
+    prompt: VARIABLE REFRESH RATE
+    description: Don't deviate from core requested timing. G-Sync, FreeSync, HDMI 2.1 VRR.
+    choices:
+      "On": 1
+      "Off": 0
+  video_threaded:
+    submenu: LATENCY REDUCTION
+    prompt: THREADED VIDEO
+    description: Improves performance at the cost of latency and more video stuttering.
+    choices:
+      "On": 1
+      "Off": 0
+  use_guns:
+    order: 99
+    group: CONTROLS
+    submenu: LIGHT GUNS
+    prompt: USE LIGHT GUNS
+    description: Use light guns instead of pads if light guns are connected.
+    choices:
+      "On": 1
+      "Off": 0
+  use_wheels:
+    order: 100
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: USE WHEELS
+    description: Use wheels instead of pads if wheels are connected.
+    choices:
+      "On": 1
+      "Off": 0
+  wheel_rotation:
+    order: 100
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: WHEEL ROTATION
+    description: Maximum wheel rotation from left to right (in degrees)
+    choices:
+      "150": 150
+      "180": 180
+      "200": 200
+      "240": 240
+      "270": 270
+      "360": 360
+      "720": 720
+      "900": 900
+      "1080": 1080
+  wheel_deadzone:
+    order: 100
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: WHEEL DEADZONE
+    description: Zone for which the game doesn't react to the wheel (in degrees)
+    choices:
+      "5": 5
+      "10": 10
+      "15": 15
+      "20": 20
+      "25": 25
+      "30": 30
+      "35": 35
+      "40": 40
+      "45": 45
+      "50": 50
+  wheel_midzone:
+    order: 100
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: WHEEL MIDZONE
+    description: Reserve a non dead zone at the center of the wheel to go straight ahead (in degrees)
+    choices:
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+      "10": 10
+  rumble_gain:
+    prompt: RUMBLE LEVEL
+    description: For emulators and controllers supporting force feedback.
+    choices:
+      disabled: 1
+      20%: 20
+      40%: 40
+      60%: 60
+      80%: 80
+      100%: 100
+  audio_volume:
+    prompt: AUDIO VOLUME GAIN
+    description: Set game audio level gain in dB.
+    choices:
+      "-12": -12.000000
+      "-10": -10.000000
+      "-8": -8.000000
+      "-6": -6.000000
+      "-4": -4.000000
+      "-2": -2.000000
+      0 (No gain): 0
+      "+2": 2.000000
+      "+4": 4.000000
+      "+6": 6.000000
+      "+8": 8.000000
+      "+10": 10.000000
+      "+12": 12.000000
+  bordersmode:
+    group: LIGHT GUN
+    prompt: BORDER MODE
+    description: Show/Hide guns borders for specific systems
+    choices:
+      normal: normal
+      hidden: hidden

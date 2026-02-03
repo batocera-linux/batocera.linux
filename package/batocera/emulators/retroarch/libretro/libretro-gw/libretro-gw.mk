@@ -8,6 +8,7 @@ LIBRETRO_GW_VERSION = 0ecff52b11c327af52b22ea94b268c90472b6732
 LIBRETRO_GW_SITE = $(call github,libretro,gw-libretro,$(LIBRETRO_GW_VERSION))
 LIBRETRO_GW_LICENSE = GPLv3
 LIBRETRO_GW_DEPENDENCIES += retroarch
+LIBRETRO_GW_EMULATOR_INFO = gw.libretro.core.yml
 
 define LIBRETRO_GW_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
@@ -20,3 +21,4 @@ define LIBRETRO_GW_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

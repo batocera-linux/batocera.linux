@@ -10,6 +10,7 @@ XENIA_CANARY_SITE = \
     https://github.com/xenia-canary/xenia-canary-releases/releases/download/$(XENIA_CANARY_VERSION)
 XENIA_CANARY_LICENSE = BSD
 XENIA_CANARY_LICENSE_FILE = LICENSE
+XENIA_CANARY_EMULATOR_INFO = xenia-canary.emulator.yml
 
 XENIA_CANARY_DEPENDENCIES = python-toml
 
@@ -40,7 +41,7 @@ define XENIA_CANARY_POST_PROCESS
 	  $(GIT) pull --depth=1 origin main && \
 	  mv -f patches/*.toml $(TARGET_DIR)/usr/xenia-canary/patches \
 	)
-	
+
 	# Clean up the temporary directory
 	rm -rf $(@D)/temp
 endef
@@ -49,3 +50,4 @@ XENIA_CANARY_PRE_DOWNLOAD_HOOKS = XENIA_CANARY_CLEAR_DL
 XENIA_CANARY_POST_INSTALL_TARGET_HOOKS = XENIA_CANARY_POST_PROCESS
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

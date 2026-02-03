@@ -8,6 +8,7 @@ LIBRETRO_PC88_VERSION = e3d06c4f34c3643d3ea9248a47cdc6cf60c1e0b1
 LIBRETRO_PC88_SITE = $(call github,libretro,quasi88-libretro,$(LIBRETRO_PC88_VERSION))
 LIBRETRO_PC88_LICENSE = BSD 3-Clause
 LIBRETRO_PC88_DEPENDENCIES += retroarch
+LIBRETRO_PC88_EMULATOR_INFO = quasi88.libretro.core.yml
 
 LIBRETRO_PC88_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -34,3 +35,4 @@ define LIBRETRO_PC88_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

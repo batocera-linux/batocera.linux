@@ -21,6 +21,7 @@ TR2X_SITE = $(call github,LostArtefacts,TRX,$(TR2X_VERSION))
 TR2X_LICENSE = GPL-3.0 license
 TR2X_LICENSE_FILES = COPYING.md
 TR2X_SUPPORTS_IN_SOURCE_BUILD = NO
+TR2X_EMULATOR_INFO = tr2x.emulator.yml
 # meson.build in src/tr2 subfolder
 TR2X_SUBDIR = src/tr2
 
@@ -36,3 +37,4 @@ define TR2X_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(meson-package))
+$(eval $(emulator-info-package))

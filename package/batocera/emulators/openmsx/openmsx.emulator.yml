@@ -1,0 +1,40 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  openmsx_loading:
+    prompt: LOADING SPEED
+    description: This can be convenient if you're using laserdiscs.
+    choices:
+      Realistic Loading: "false"
+      Full Speed (Default): "true"
+  openmsx_disk:
+    prompt: DISK TYPE
+    description: Choose the appropriate media for disk image.
+    choices:
+      Floppy Disk Image: disk
+      Hard Disk Image: hda
+systems:
+  - colecovision
+  - name: msx1
+    exclude_extensions:
+      - m3u
+  - name: msx2
+    exclude_extensions:
+      - m3u
+  - name: msx2+
+    exclude_extensions:
+      - m3u
+  - msxturbor
+  - spectravideo

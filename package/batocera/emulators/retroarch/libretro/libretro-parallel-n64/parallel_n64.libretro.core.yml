@@ -1,0 +1,162 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  parallel-n64-gfxplugin:
+    prompt: GRAPHICS PLUGIN
+    description: Choose the Parallel N64 graphics plugin.
+    choices:
+      Glide64: glide64
+      Gln64: gln64
+      Rice: rice
+      Angrylion: angrylion
+      Parallel: parallel
+  parallel-n64-screensize:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (320x240): 320x240
+      2x (640x480): 640x480
+      3x (960x720): 960x720
+      4x (1280x960): 1280x960
+      4.5x (1440x1080): 1440x1080
+      5x (1600x1200): 1600x1200
+      6x (1920x1440): 1920x1440
+      7x (2240x1680): 2240x1680
+      9x (2880x2160): 2880x2160
+      18x (5760x4320): 5760x4320
+  parallel_n64-widescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  parallel-n64-aspectratiohint:
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': normal
+      'On': widescreen
+  parallel-n64-filtering:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE FILTERING
+    description: Smooth textures on 3D objects.
+    choices:
+      Automatic: automatic
+      N64 3-point: N64 3-point
+      Bilinear: bilinear
+      Nearest: nearest
+  parallel-n64-framerate:
+    group: ADVANCED OPTIONS
+    prompt: FRAME RATE
+    description: Full speed can break some games.
+    choices:
+      Original: original
+      Full speed: fullspeed
+  parallel-n64-controller1:
+    submenu: CONTROLLER 1
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  parallel-n64-controller2:
+    submenu: CONTROLLER 2
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  parallel-n64-controller3:
+    submenu: CONTROLLER 3
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  parallel-n64-controller4:
+    submenu: CONTROLLER 4
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  parallel-n64-pak1:
+    submenu: CONTROLLER 1
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  parallel-n64-pak2:
+    submenu: CONTROLLER 2
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  parallel-n64-pak3:
+    submenu: CONTROLLER 3
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  parallel-n64-pak4:
+    submenu: CONTROLLER 4
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  parallel-n64-deadzone:
+    prompt: JOYSTICK DEADZONE
+    description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
+    choices:
+      0%: 0
+      5%: 5
+      15% (Default): 15
+      20%: 20
+      25%: 25
+      30%: 30
+  parallel-n64-sensitivity:
+    prompt: JOYSTICK SENSITIVITY
+    description: Use to make joystick movement more or less sensitive. Effects all controllers.
+    choices:
+      50%: 50
+      55%: 55
+      60%: 60
+      65%: 65
+      70%: 70
+      75%: 75
+      80%: 80
+      85%: 85
+      90%: 90
+      95%: 95
+      100% (Default): 100
+      105%: 105
+      110%: 110
+      115%: 115
+      120%: 120
+      125%: 125
+      130%: 130
+      135%: 135
+      140%: 140
+      145%: 145
+      150%: 150
+systems:
+  - n64
+  - n64dd

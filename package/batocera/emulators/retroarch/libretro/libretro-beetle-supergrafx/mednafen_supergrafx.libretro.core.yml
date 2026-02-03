@@ -1,0 +1,15 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  sgx_nospritelimit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the sixteen sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - supergrafx

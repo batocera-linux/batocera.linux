@@ -1,0 +1,56 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  high_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (320x240): disabled
+      2x (640x480): enabled
+  cpu_overclock:
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      1.0x (12.50Mhz): 1.0x (12.50Mhz)
+      1.1x (13.75Mhz): 1.1x (13.75Mhz)
+      1.2x (15.00Mhz): 1.2x (15.00Mhz)
+      1.5x (18.75Mhz): 1.5x (18.75Mhz)
+      1.6x (20.00Mhz): 1.6x (20.00Mhz)
+      1.8x (22.50Mhz): 1.8x (22.50Mhz)
+      2.0x (25.00Mhz): 2.0x (25.00Mhz)
+  active_devices:
+    group: ADVANCED OPTIONS
+    prompt: ACTIVE INPUT DEVICES FIX
+    description: Fixes a possible bug with multiple controllers detection.
+    choices:
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+  game_fixes_opera:
+    group: ADVANCED OPTIONS
+    prompt: SPECIFIC GAME FIXES
+    choices:
+      'Off': disabled
+      Alone in the Dark: timing_hack6
+      Crash-n Burn: timing_hack1
+      Dinopark Tycoon: timing_hack3
+      Microcosm: timing_hack5
+  opera_nvram_storage:
+    group: ADVANCED OPTIONS
+    prompt: NVRAM STORAGE
+    description: Enable shared saves for multi-disc games
+    choices:
+      Shared: shared
+      Per Game: per game
+systems:
+  - 3do
