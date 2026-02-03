@@ -14,30 +14,28 @@
 		<tab display="System" target="System" align="right" />
 	</feature>
 	<hgroup name="Game" display="Game">
-		<hgroup>
-                        <feature>
-		                <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".marquee"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG }' height="90" refresh="3" align="left" id="gamemarquee" />
-				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" if="!id(gamemarquee)" />
-				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/\(.*\)/[\1]/'}" align="left" refresh="3" />
-			</feature>
-			<feature>
-				<text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P."}' align="left" refresh="1" id="playtime" />
-			</feature>
-		</hgroup>
-		<vgroup>
-			<feature>
-				<button_confirm display="Quit game" action="hotkeygen --send exit" />
-				<doc display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" refresh="3"/>
-				<doc display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" refresh="3"/>
-			</feature>
-		</vgroup>
-		<vgroup>
-                        <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".thumbnail"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="200" refresh="3" />
-			<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' width="130" height="160" refresh="2" id="cheevos" bg="#141821" style="card" logo="/usr/share/batocera/controlcenter/resources/ra-icon.png" font="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" />
-			<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" refresh="5" align="center" />
-		</vgroup>
-		<hgroup>
-		</hgroup>
+          <hgroup>
+	    <feature>
+	      <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".marquee"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG }' height="90" refresh="3" align="left" id="gamemarquee" />
+	      <text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" if="!id(gamemarquee)" />
+	      <text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/\(.*\)/[\1]/'}" align="left" refresh="3" />
+	    </feature>
+	    <feature>
+	      <text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P."}' align="left" refresh="1" id="playtime" />
+	    </feature>
+	  </hgroup>
+	  <hgroup>
+	    <feature>
+	      <button_confirm display="Quit game" action="hotkeygen --send exit" />
+	      <doc display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" refresh="3"/>
+	      <doc display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" refresh="3"/>
+	    </feature>
+	  </hgroup>
+	      <vgroup>
+		<img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".thumbnail"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="200" refresh="3" />
+		<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' width="130" height="160" refresh="2" id="cheevos" bg="#141821" style="card" logo="/usr/share/batocera/controlcenter/resources/ra-icon.png" font="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" />
+		<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" refresh="5" align="center" />
+	      </vgroup>
 	</hgroup>
         <hgroup name="Gun" display="Gun">
           <img display='${echo /var/run/batocera-overlays/gun_help.png}' refresh="5" align="center" />
