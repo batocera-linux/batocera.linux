@@ -1,0 +1,407 @@
+From 6d897e736916d1e34dac1474225e81d84e7edb64 Mon Sep 17 00:00:00 2001
+From: tiopex <tiopxyz@gmail.com>
+Date: Sun, 9 Nov 2025 22:47:57 +0100
+Subject: [PATCH] Add pin keyboard to specific output
+
+---
+ main.c                           |  83 +++++++++++-
+ proto/xdg-output-unstable-v1.xml | 222 +++++++++++++++++++++++++++++++
+ 2 files changed, 303 insertions(+), 2 deletions(-)
+ create mode 100644 proto/xdg-output-unstable-v1.xml
+
+diff --git a/main.c b/main.c
+index 502d2f5..e85174e 100644
+--- a/main.c
++++ b/main.c
+@@ -3,6 +3,7 @@
+ #include "proto/xdg-shell-client-protocol.h"
+ #include "proto/fractional-scale-v1-client-protocol.h"
+ #include "proto/viewporter-client-protocol.h"
++#include "proto/xdg-output-unstable-v1-client-protocol.h"
+ #include <errno.h>
+ #include <linux/input-event-codes.h>
+ #include <stdio.h>
+@@ -47,7 +48,7 @@ static struct wp_fractional_scale_manager_v1 *wfs_mgr;
+ static struct wp_viewport *draw_surf_viewport, *popup_draw_surf_viewport;
+ static struct wp_viewporter *viewporter;
+ static bool popup_xdg_surface_configured;
+-
++static struct wl_output *preferred_output = NULL;
+ struct Output {
+     uint32_t name;
+     uint32_t w, h;
+@@ -55,6 +56,9 @@ struct Output {
+     struct wl_output *data;
+ };
+ static struct Output *current_output;
++struct zxdg_output_manager_v1 *xdg_output_manager = NULL;
++static char preferred_output_name[64] = {0};
++static bool preferred_output_set = false;
+ 
+ #define WL_OUTPUTS_LIMIT 8
+ static struct Output wl_outputs[WL_OUTPUTS_LIMIT];
+@@ -135,6 +139,24 @@ static void layer_surface_closed(void *data,
+ static void flip_landscape();
+ static void show();
+ 
++static void xdg_output_done(void *data, struct zxdg_output_v1 *xdg_output);
++
++static void xdg_output_name(void *data,
++                struct zxdg_output_v1 *xdg_output,
++                const char *name);
++
++static void xdg_output_logical_position(void *data,
++                            struct zxdg_output_v1 *xdg_output,
++                            int32_t x, int32_t y);
++
++static void xdg_output_logical_size(void *data,
++                        struct zxdg_output_v1 *xdg_output,
++                        int32_t width, int32_t height);
++
++static void xdg_output_description(void *data,
++                       struct zxdg_output_v1 *xdg_output,
++                       const char *desc);
++
+ /* event handlers */
+ static const struct wl_pointer_listener pointer_listener = {
+     .enter = wl_pointer_enter,
+@@ -174,6 +196,14 @@ static const struct zwlr_layer_surface_v1_listener layer_surface_listener = {
+     .closed = layer_surface_closed,
+ };
+ 
++static const struct zxdg_output_v1_listener xdg_output_listener = {
++    .name = xdg_output_name,
++    .done = xdg_output_done,
++    .logical_position = xdg_output_logical_position,
++    .logical_size = xdg_output_logical_size,
++    .description = xdg_output_description,
++};
++
+ /* configuration, allows nested code to access above variables */
+ 
+ char *
+@@ -438,6 +468,33 @@ display_handle_mode(void *data, struct wl_output *wl_output, uint32_t flags,
+ {
+ }
+ 
++static void xdg_output_done(void *data, struct zxdg_output_v1 *xdg_output)
++{
++}
++
++static void xdg_output_name(void *data,
++                struct zxdg_output_v1 *xdg_output,
++                const char *name)
++{
++    struct Output *out = data;
++    if (preferred_output_set && strcmp(name, preferred_output_name) == 0) {
++        preferred_output = out->data;
++        fprintf(stderr, "wvkbd: assigned preferred output to: %s\n", name);
++    }
++}
++
++static void xdg_output_logical_position(void *data,
++                            struct zxdg_output_v1 *xdg_output,
++                            int32_t x, int32_t y) {}
++
++static void xdg_output_logical_size(void *data,
++                        struct zxdg_output_v1 *xdg_output,
++                        int32_t width, int32_t height) {}
++
++static void xdg_output_description(void *data,
++                       struct zxdg_output_v1 *xdg_output,
++                       const char *desc) {}
++
+ static const struct wl_output_listener output_listener = {
+     .geometry = display_handle_geometry,
+     .mode = display_handle_mode,
+@@ -461,6 +518,9 @@ handle_global(void *data, struct wl_registry *registry, uint32_t name,
+     if (strcmp(interface, wl_compositor_interface.name) == 0) {
+         compositor =
+             wl_registry_bind(registry, name, &wl_compositor_interface, 3);
++    } else if (strcmp(interface, zxdg_output_manager_v1_interface.name) == 0) {
++    xdg_output_manager = wl_registry_bind(
++        registry, name, &zxdg_output_manager_v1_interface, 3);
+     } else if (strcmp(interface, wl_shm_interface.name) == 0) {
+         draw_ctx.shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
+     } else if (strcmp(interface, wl_output_interface.name) == 0) {
+@@ -471,6 +531,12 @@ handle_global(void *data, struct wl_registry *registry, uint32_t name,
+             output->name = name;
+             output->scale = 1;
+             wl_output_add_listener(output->data, &output_listener, output);
++            wl_display_roundtrip(display);
++            if (xdg_output_manager) {
++                struct zxdg_output_v1 *xdg_output =
++                    zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output->data);
++                zxdg_output_v1_add_listener(xdg_output, &xdg_output_listener, output);
++            }
+             wl_outputs_size += 1;
+         }
+     } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+@@ -716,6 +782,8 @@ usage(char *argv0)
+             "  -l                     - Comma separated list of layers\n");
+     fprintf(stderr, "  --landscape-layers     - Comma separated list of "
+                     "landscape layers\n");
++    fprintf(stderr,
++            "  --output [name]        - Pin keyboard to specific output (e.g. DSI-1, HDMI-A-1)\n");
+ }
+ 
+ void
+@@ -777,8 +845,9 @@ show()
+     if (current_output)
+         current_output_data = current_output->data;
+ 
++    struct wl_output *target_output = preferred_output ? preferred_output : current_output_data;
+     layer_surface = zwlr_layer_shell_v1_get_layer_surface(
+-        layer_shell, draw_surf.surf, current_output_data, layer, namespace);
++        layer_shell, draw_surf.surf, target_output, layer, namespace);
+ 
+     zwlr_layer_surface_v1_set_size(layer_surface, 0, height);
+     zwlr_layer_surface_v1_set_anchor(layer_surface, anchor);
+@@ -986,6 +1055,16 @@ main(int argc, char **argv)
+                    (!strcmp(argv[i], "--list-layers"))) {
+             list_layers();
+             exit(0);
++        } else if ((!strcmp(argv[i], "-output"))
++                   || (!strcmp(argv[i], "--output"))) {
++            if (i >= argc - 1) {
++                usage(argv[0]);
++                exit(1);
++            }
++            strncpy(preferred_output_name, argv[++i], sizeof(preferred_output_name) - 1);
++            preferred_output_name[sizeof(preferred_output_name) - 1] = '\0';
++            preferred_output_set = true;
++            fprintf(stderr, "wvkbd: preferred output set to: \"%s\"\n", preferred_output_name);
+         } else {
+             fprintf(stderr, "Invalid argument: %s\n", argv[i]);
+             usage(argv[0]);
+diff --git a/proto/xdg-output-unstable-v1.xml b/proto/xdg-output-unstable-v1.xml
+new file mode 100644
+index 0000000..a7306e4
+--- /dev/null
++++ b/proto/xdg-output-unstable-v1.xml
+@@ -0,0 +1,222 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<protocol name="xdg_output_unstable_v1">
++
++  <copyright>
++    Copyright © 2017 Red Hat Inc.
++
++    Permission is hereby granted, free of charge, to any person obtaining a
++    copy of this software and associated documentation files (the "Software"),
++    to deal in the Software without restriction, including without limitation
++    the rights to use, copy, modify, merge, publish, distribute, sublicense,
++    and/or sell copies of the Software, and to permit persons to whom the
++    Software is furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice (including the next
++    paragraph) shall be included in all copies or substantial portions of the
++    Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++    DEALINGS IN THE SOFTWARE.
++  </copyright>
++
++  <description summary="Protocol to describe output regions">
++    This protocol aims at describing outputs in a way which is more in line
++    with the concept of an output on desktop oriented systems.
++
++    Some information are more specific to the concept of an output for
++    a desktop oriented system and may not make sense in other applications,
++    such as IVI systems for example.
++
++    Typically, the global compositor space on a desktop system is made of
++    a contiguous or overlapping set of rectangular regions.
++
++    The logical_position and logical_size events defined in this protocol
++    might provide information identical to their counterparts already
++    available from wl_output, in which case the information provided by this
++    protocol should be preferred to their equivalent in wl_output. The goal is
++    to move the desktop specific concepts (such as output location within the
++    global compositor space, etc.) out of the core wl_output protocol.
++
++    Warning! The protocol described in this file is experimental and
++    backward incompatible changes may be made. Backward compatible
++    changes may be added together with the corresponding interface
++    version bump.
++    Backward incompatible changes are done by bumping the version
++    number in the protocol and interface names and resetting the
++    interface version. Once the protocol is to be declared stable,
++    the 'z' prefix and the version number in the protocol and
++    interface names are removed and the interface version number is
++    reset.
++  </description>
++
++  <interface name="zxdg_output_manager_v1" version="3">
++    <description summary="manage xdg_output objects">
++      A global factory interface for xdg_output objects.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="destroy the xdg_output_manager object">
++	Using this request a client can tell the server that it is not
++	going to use the xdg_output_manager object anymore.
++
++	Any objects already created through this instance are not affected.
++      </description>
++    </request>
++
++    <request name="get_xdg_output">
++      <description summary="create an xdg output from a wl_output">
++	This creates a new xdg_output object for the given wl_output.
++      </description>
++      <arg name="id" type="new_id" interface="zxdg_output_v1"/>
++      <arg name="output" type="object" interface="wl_output"/>
++    </request>
++  </interface>
++
++  <interface name="zxdg_output_v1" version="3">
++    <description summary="compositor logical output region">
++      An xdg_output describes part of the compositor geometry.
++
++      This typically corresponds to a monitor that displays part of the
++      compositor space.
++
++      For objects version 3 onwards, after all xdg_output properties have been
++      sent (when the object is created and when properties are updated), a
++      wl_output.done event is sent. This allows changes to the output
++      properties to be seen as atomic, even if they happen via multiple events.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="destroy the xdg_output object">
++	Using this request a client can tell the server that it is not
++	going to use the xdg_output object anymore.
++      </description>
++    </request>
++
++    <event name="logical_position">
++      <description summary="position of the output within the global compositor space">
++	The position event describes the location of the wl_output within
++	the global compositor space.
++
++	The logical_position event is sent after creating an xdg_output
++	(see xdg_output_manager.get_xdg_output) and whenever the location
++	of the output changes within the global compositor space.
++      </description>
++      <arg name="x" type="int"
++	   summary="x position within the global compositor space"/>
++      <arg name="y" type="int"
++	   summary="y position within the global compositor space"/>
++    </event>
++
++    <event name="logical_size">
++      <description summary="size of the output in the global compositor space">
++	The logical_size event describes the size of the output in the
++	global compositor space.
++
++	Most regular Wayland clients should not pay attention to the
++	logical size and would rather rely on xdg_shell interfaces.
++
++	Some clients such as Xwayland, however, need this to configure
++	their surfaces in the global compositor space as the compositor
++	may apply a different scale from what is advertised by the output
++	scaling property (to achieve fractional scaling, for example).
++
++	For example, for a wl_output mode 3840×2160 and a scale factor 2:
++
++	- A compositor not scaling the monitor viewport in its compositing space
++	  will advertise a logical size of 3840×2160,
++
++	- A compositor scaling the monitor viewport with scale factor 2 will
++	  advertise a logical size of 1920×1080,
++
++	- A compositor scaling the monitor viewport using a fractional scale of
++	  1.5 will advertise a logical size of 2560×1440.
++
++	For example, for a wl_output mode 1920×1080 and a 90 degree rotation,
++	the compositor will advertise a logical size of 1080x1920.
++
++	The logical_size event is sent after creating an xdg_output
++	(see xdg_output_manager.get_xdg_output) and whenever the logical
++	size of the output changes, either as a result of a change in the
++	applied scale or because of a change in the corresponding output
++	mode(see wl_output.mode) or transform (see wl_output.transform).
++      </description>
++      <arg name="width" type="int"
++	   summary="width in global compositor space"/>
++      <arg name="height" type="int"
++	   summary="height in global compositor space"/>
++    </event>
++
++    <event name="done" deprecated-since="3">
++      <description summary="all information about the output have been sent">
++	This event is sent after all other properties of an xdg_output
++	have been sent.
++
++	This allows changes to the xdg_output properties to be seen as
++	atomic, even if they happen via multiple events.
++
++	For objects version 3 onwards, this event is deprecated. Compositors
++	are not required to send it anymore and must send wl_output.done
++	instead.
++      </description>
++    </event>
++
++    <!-- Version 2 additions -->
++
++    <event name="name" since="2">
++      <description summary="name of this output">
++	Many compositors will assign names to their outputs, show them to the
++	user, allow them to be configured by name, etc. The client may wish to
++	know this name as well to offer the user similar behaviors.
++
++	The naming convention is compositor defined, but limited to
++	alphanumeric characters and dashes (-). Each name is unique among all
++	wl_output globals, but if a wl_output global is destroyed the same name
++	may be reused later. The names will also remain consistent across
++	sessions with the same hardware and software configuration.
++
++	Examples of names include 'HDMI-A-1', 'WL-1', 'X11-1', etc. However, do
++	not assume that the name is a reflection of an underlying DRM
++	connector, X11 connection, etc.
++
++	The name event is sent after creating an xdg_output (see
++	xdg_output_manager.get_xdg_output). This event is only sent once per
++	xdg_output, and the name does not change over the lifetime of the
++	wl_output global.
++
++        This event is deprecated, instead clients should use wl_output.name.
++        Compositors must still support this event.
++      </description>
++      <arg name="name" type="string" summary="output name"/>
++    </event>
++
++    <event name="description" since="2">
++      <description summary="human-readable description of this output">
++	Many compositors can produce human-readable descriptions of their
++	outputs.  The client may wish to know this description as well, to
++	communicate the user for various purposes.
++
++	The description is a UTF-8 string with no convention defined for its
++	contents. Examples might include 'Foocorp 11" Display' or 'Virtual X11
++	output via :1'.
++
++	The description event is sent after creating an xdg_output (see
++	xdg_output_manager.get_xdg_output) and whenever the description
++	changes. The description is optional, and may not be sent at all.
++
++	For objects of version 2 and lower, this event is only sent once per
++	xdg_output, and the description does not change over the lifetime of
++	the wl_output global.
++
++	This event is deprecated, instead clients should use
++	wl_output.description. Compositors must still support this event.
++      </description>
++      <arg name="description" type="string" summary="output description"/>
++    </event>
++
++  </interface>
++</protocol>
+-- 
+2.43.0
+

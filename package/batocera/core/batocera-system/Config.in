@@ -239,6 +239,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_TREE				# recursive directory listing (useful for generating documentation on rom directory structure)
 	select BR2_PACKAGE_FAKE_HWCLOCK			# Save/restore system clock on machines without working RTC hardware
 	select BR2_PACKAGE_MERGERFS			# Use FUSE to merge multiple directories into a single one
+	select BR2_PACKAGE_BATOCERA_ONSCREEN_KEYBOARD    if BR2_PACKAGE_BATOCERA_WAYLAND
 
 	# Python and SSL
 	select BR2_PACKAGE_HOST_PYTHON3
@@ -326,8 +327,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX || BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_7 # nintendo switch joycon daemon (requires hid-nx or hid-nintendo in kernel 6.7 or later)
 	select BR2_PACKAGE_KEYBOARDTOPADS
 	select BR2_PACKAGE_NSO_N64              if BR2_PACKAGE_HID_NX
-	
-	select BR2_PACKAGE_ROCKNIX_JOYPAD    if BR2_PACKAGE_BATOCERA_TARGET_RK3326	
+
+	select BR2_PACKAGE_ROCKNIX_JOYPAD    if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 	select BR2_PACKAGE_UPOWER # required by some cemuhook servers
 
@@ -387,15 +388,15 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 							BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
 
 	# wireless drivers
-	
+
 	# RTL8812au & RTL8821au notes...
 	# The 6.13 or greater kernel includes 8812au & 8821au drivers by default
-	
+
 	# use the morrownr RTL8812au & RTL8821au drivers if less than Linux 5.4
 	select BR2_PACKAGE_RTL8812AU    if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_4
-	
+
 	select BR2_PACKAGE_RTL8821AU_MORROWNR    if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_4
-	
+
 	# Use the RTW88 backport driver from Linux 5.4 to 6.12 only
 	select BR2_PACKAGE_RTW88    if BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_4 && !BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_13
 
@@ -480,7 +481,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 													   BR2_PACKAGE_BATOCERA_TARGET_BCM2837 || \
 													   BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
 													   BR2_PACKAGE_BATOCERA_TARGET_BCM2835
-	
+
 	select BR2_PACKAGE_PYTHON_ADAFRUIT_CIRCUITPYTHON_WS2801    if BR2_PACKAGE_BATOCERA_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_BCM2712
 
 	select BR2_PACKAGE_BATOCERA_LED_HANDHELD    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
@@ -494,12 +495,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 									  BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
 									  BR2_PACKAGE_BATOCERA_TARGET_BCM2837 && \
 									  BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_8
-	
+
 	select BR2_PACKAGE_LIBGPIOD_TOOLS    if BR2_PACKAGE_LIBGPIOD
 
 	select BR2_PACKAGE_LIBGPIOD2          if BR2_PACKAGE_BATOCERA_TARGET_RK3326 && BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_10
 	select BR2_PACKAGE_LIBGPIOD2_TOOLS    if BR2_PACKAGE_LIBGPIOD2
-	
+
 	# OrangePi GPIO python library
 	select BR2_PACKAGE_WIRINGOP_PYTHON    if BR2_PACKAGE_BATOCERA_TARGET_RK3588      || \
 	                                  		 BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO || \
@@ -899,7 +900,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 												BR2_PACKAGE_BATOCERA_TARGET_H3	    || \
 												BR2_PACKAGE_BATOCERA_TARGET_H5	    || \
 												BR2_PACKAGE_BATOCERA_TARGET_H6
-	
+
 	# All XWayland boards should have enough pony for Redream
 	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
 	                                   BR2_PACKAGE_BATOCERA_XWAYLAND
@@ -1218,7 +1219,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 											 BR2_PACKAGE_BATOCERA_TARGET_QCS6490    || \
 											 BR2_PACKAGE_BATOCERA_TARGET_SM8250      || \
 											 BR2_PACKAGE_BATOCERA_TARGET_SM8550
-											
+
 
     # CatacombGL
 	select BR2_PACKAGE_CATACOMBGL    if BR2_x86_64
@@ -1310,7 +1311,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 
 	# CLK - Oric Atmos and other old computers (requires OpenGL 3.2 or higher)
 	select BR2_PACKAGE_CLK    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || BR2_PACKAGE_BATOCERA_TARGET_QCS6490 || BR2_PACKAGE_BATOCERA_TARGET_SM8550 || BR2_PACKAGE_BATOCERA_TARGET_SM8250
-	
+
 	# Color Computer (Tandy TRS-80)
 	select BR2_PACKAGE_XROAR		if BR2_PACKAGE_HAS_LIBGL # Xroar requires OpenGL
 
