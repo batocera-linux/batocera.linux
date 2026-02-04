@@ -115,6 +115,9 @@ buildAll() {
 	    return 1
 	fi
 	echo_msg "${NEXTITEM}" "building..."
+
+	# remove the config file to regenerate it in case options like parallelism are changed
+	rm -f "configs/batocera-${NEXTITEM}_defconfig" || return 1
 	if make "${NEXTITEM}-build" > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
 	    do_html "${NEXTITEM}" "${ftptarget}"
