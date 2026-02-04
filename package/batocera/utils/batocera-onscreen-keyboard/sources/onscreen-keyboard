@@ -1,0 +1,139 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+#
+# Batocera On-Screen Keyboard toggle (Wayland only)
+# Control Center–compatible, process-based toggle
+#
+# IMPORTANT:
+# - wvkbd-mobintl does NOT support SIGUSR1
+# - --hidden is NOT used
+# - Toggle = start / stop only
+
+set -eu
+
+PIDFILE="/var/run/onscreen-keyboard.pid"
+LOGFILE="/var/log/onscreen-keyboard.log"
+KEYBOARD_BIN="/usr/libexec/onscreen-keyboard/wvkbd-mobintl"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOGFILE"
+}
+
+# --- Wayland sanity ---
+setup_wayland() {
+    export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/0}"
+
+    if [ -z "${WAYLAND_DISPLAY:-}" ]; then
+        for sock in wayland-1 wayland-0; do
+            if [ -S "$XDG_RUNTIME_DIR/$sock" ]; then
+                export WAYLAND_DISPLAY="$sock"
+                break
+            fi
+        done
+    fi
+
+    [ -n "${WAYLAND_DISPLAY:-}" ] || return 1
+}
+
+# --- PID helpers ---
+get_pid() {
+    if [ -f "$PIDFILE" ]; then
+        pid="$(cat "$PIDFILE" 2>/dev/null || true)"
+        if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
+            echo "$pid"
+            return 0
+        fi
+        rm -f "$PIDFILE"
+    fi
+
+    pid="$(pidof wvkbd-mobintl 2>/dev/null | awk '{print $1}')"
+    if [ -n "$pid" ]; then
+        echo "$pid" > "$PIDFILE"
+        echo "$pid"
+        return 0
+    fi
+
+    return 1
+}
+
+is_running() {
+    get_pid >/dev/null 2>&1
+}
+
+# --- Start keyboard (VISIBLE) ---
+start_keyboard() {
+    if is_running; then
+        echo "running"
+        return 0
+    fi
+
+    setup_wayland || {
+        log "Wayland not detected"
+        echo "stopped"
+        return 1
+    }
+
+    if [ ! -x "$KEYBOARD_BIN" ]; then
+        log "Keyboard binary missing"
+        echo "stopped"
+        return 1
+    fi
+
+    log "Starting on-screen keyboard"
+
+    "$KEYBOARD_BIN" \
+        -L 350 \
+        -l simple \
+        >>"$LOGFILE" 2>&1 &
+
+    pid=$!
+    echo "$pid" > "$PIDFILE"
+
+    sleep 0.2
+    [ -d "/proc/$pid" ] && echo "started" || echo "stopped"
+}
+
+# --- Stop keyboard ---
+stop_keyboard() {
+    pid="$(get_pid || true)"
+
+    if [ -n "${pid:-}" ]; then
+        log "Stopping keyboard (PID $pid)"
+        kill "$pid" 2>/dev/null || true
+        rm -f "$PIDFILE"
+        echo "stopped"
+    else
+        echo "stopped"
+    fi
+}
+
+# --- Toggle (Control Center contract) ---
+toggle_keyboard() {
+    if is_running; then
+        stop_keyboard
+    else
+        start_keyboard
+    fi
+}
+
+# --- Entry point ---
+case "${1:-toggle}" in
+    start)
+        start_keyboard
+        ;;
+    stop)
+        stop_keyboard
+        ;;
+    toggle|"")
+        toggle_keyboard
+        ;;
+    status)
+        is_running && echo "running" || echo "stopped"
+        ;;
+    *)
+        echo "Usage: onscreen-keyboard {start|stop|toggle|status}"
+        exit 1
+        ;;
+esac
+
+exit 0

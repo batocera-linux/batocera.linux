@@ -41,7 +41,8 @@
   - Wifi country selector
   - Ability to add a "sort name" that take precedence over the (scraped) game name in metadata
   - New Keyboard Layout and Keyboard Variant options
-- Batocera Control Center (on-screen interface for global configuration and control, [hotkey][east] by default)
+- Batocera Control Center (on-screen interface for global configuration and control, [hotkey]+[east] by default)
+- Virtual keyboard for devices using Wayland with a touchscreen, launched from Batocera Control Center
 - batocera-xtract for handling archives, systems with PCManFM filemanager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
 - Yamagi Quake II added which support more systems, especially lower-end hardware

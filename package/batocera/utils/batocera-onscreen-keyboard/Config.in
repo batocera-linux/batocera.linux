@@ -1,0 +1,15 @@
+config BR2_PACKAGE_BATOCERA_ONSCREEN_KEYBOARD
+	bool "batocera-onscreen-keyboard"
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_PANGO
+	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_CAIRO
+
+	help
+	  wvkbd - On-screen virtual keyboard for Wayland/wlroots.
+
+	  Provides a touchscreen virtual keyboard for Batocera systems
+	  running Wayland/Sway. Integrates with Control Center for
+	  easy toggling via SIGUSR1.
+
+	  https://github.com/jjsullivan5196/wvkbd

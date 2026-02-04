@@ -6,6 +6,9 @@
 		<feature display="Batocera">
 			<text display="${batocera-version | cut -d' ' -f1}" />
 		</feature>
+		<feature display="Touch keyboard" if='${[ -n "$(getLocalWaylandDisplay)" ] &amp;&amp; [ -n "$(touchscreen-detect)" ] &amp;&amp;  echo 1}' refresh="10">
+			<button display="Toggle" action="onscreen-keyboard-toggle" afterclick="bcc_close"/>
+		</feature>
 	</vgroup>
 
 	<feature name="shortcuts_tabs" display="Quick Access">
@@ -40,7 +43,7 @@
         <hgroup name="Gun" display="Gun">
           <img display='${echo /var/run/batocera-overlays/gun_help.png}' refresh="5" align="center" />
         </hgroup>
-	<hgroup name="System" display="Sound &amp; Power">
+	<hgroup name="System" display="System">
 		<feature>
 				<button display="Vol -" action="batocera-audio setSystemVolume -5" />
 				<progressbar display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" />
