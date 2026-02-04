@@ -5,6 +5,11 @@
       <gun trigger="Fire" />
     </game>
   </system>
+  <system id="arcade">
+    <game id="default">
+      <gun trigger="Shoot" action="Action" start="Start" select="Coins"/>
+    </game>
+  </system>
   <system id="atari2600">
     <game id="default">
       <gun trigger="Fire" />
@@ -71,6 +76,11 @@
   <system id="saturn">
     <game id="default">
       <gun trigger="Trigger" start="Start" />
+    </game>
+  </system>
+  <system id="snes">
+    <game id="default">
+      <gun trigger="Trigger" action="Cursor" start="Turbo" select="Pause" />
     </game>
   </system>
 </systems>
