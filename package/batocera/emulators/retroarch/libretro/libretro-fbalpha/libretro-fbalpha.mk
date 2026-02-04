@@ -8,6 +8,7 @@ LIBRETRO_FBALPHA_VERSION = b7ac554c53561d41640372f23dab15cd6fc4f0c4
 LIBRETRO_FBALPHA_SITE = $(call github,libretro,fbalpha2012,$(LIBRETRO_FBALPHA_VERSION))
 LIBRETRO_FBALPHA_LICENSE = Non-commercial
 LIBRETRO_FBALPHA_DEPENDENCIES += retroarch
+LIBRETRO_FBALPHA_EMULATOR_INFO = fbalpha.libretro.core.yml
 
 LIBRETRO_FBALPHA_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -27,3 +28,4 @@ define LIBRETRO_FBALPHA_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

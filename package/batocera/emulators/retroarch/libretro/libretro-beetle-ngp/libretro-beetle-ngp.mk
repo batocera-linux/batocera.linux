@@ -8,6 +8,7 @@ LIBRETRO_BEETLE_NGP_VERSION = 139fe34c8dfc5585d6ee1793a7902bca79d544de
 LIBRETRO_BEETLE_NGP_SITE = $(call github,libretro,beetle-ngp-libretro,$(LIBRETRO_BEETLE_NGP_VERSION))
 LIBRETRO_BEETLE_NGP_LICENSE = GPLv2
 LIBRETRO_BEETLE_NGP_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_NGP_EMULATOR_INFO = mednafen_ngp.libretro.core.yml
 
 LIBRETRO_BEETLE_NGP_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -35,3 +36,4 @@ define LIBRETRO_BEETLE_NGP_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

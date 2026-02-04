@@ -4,43 +4,33 @@
 #
 ################################################################################
 
-CEMU_MAJOR = 2
-CEMU_MINOR = 6
-CEMU_PATCH = 
-ifneq ($(CEMU_PATCH),)
-CEMU_VERSION = v$(CEMU_MAJOR).$(CEMU_MINOR)-$(CEMU_PATCH)
-else
-CEMU_VERSION = v$(CEMU_MAJOR).$(CEMU_MINOR)
-endif
+CEMU_VERSION = 4fe73a3582187e721619eb728c7c1ae3e28c0375
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
 CEMU_GIT_SUBMODULES=YES
-CEMU_DEPENDENCIES = bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
+CEMU_DEPENDENCIES = cemu-common bluez5_utils boost fmt glslang glm host-doxygen host-nasm \
                     libcurl libgtk3 libopenssl libpng libusb libzip libzlib \
-					pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd
-					
+                    pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd \
+                    host-clang host-ninja host-lld
+
 CEMU_SUPPORTS_IN_SOURCE_BUILD = NO
+
+CEMU_CMAKE_BACKEND = ninja
 
 CEMU_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CEMU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
-CEMU_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/glslang \
-                                     -Wno-changes-meaning"
+CEMU_CONF_OPTS += -DLINUX=ON -DCMAKE_SYSTEM_NAME=Linux
+CEMU_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
+CEMU_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+CEMU_CONF_OPTS += -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+CEMU_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld -no-pie -lm -lstdc++"
 CEMU_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 CEMU_CONF_OPTS += -DENABLE_VCPKG=OFF
 CEMU_CONF_OPTS += -DENABLE_FERAL_GAMEMODE=OFF
 CEMU_CONF_OPTS += -DENABLE_WXWIDGETS=ON
 CEMU_CONF_OPTS += -DENABLE_BLUEZ=ON
 CEMU_CONF_OPTS += -DALLOW_PORTABLE=OFF
-CEMU_CONF_OPTS += -DEMULATOR_VERSION_MAJOR=$(CEMU_MAJOR)
-CEMU_CONF_OPTS += -DEMULATOR_VERSION_MINOR=$(CEMU_MINOR)
-ifneq ($(CEMU_PATCH),)
-CEMU_CONF_OPTS += -DEMULATOR_VERSION_PATCH=$(CEMU_PATCH)
-endif
-
-ifeq ($(BR2_aarch64),y)
-    CEMU_CONF_OPTS += -DCEMU_CXX_FLAGS=-flax-vector-conversions
-endif
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
     CEMU_DEPENDENCIES += xlib_libX11 xlib_libXext
@@ -90,3 +80,4 @@ define CEMU_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

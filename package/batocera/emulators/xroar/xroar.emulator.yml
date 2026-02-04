@@ -1,0 +1,50 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  xroar_machine:
+    prompt: Machine Type
+    description: Select the emulated hardware architecture machine type and architecture.
+    choices:
+      Dragon 32: dragon32
+      Dragon 64: dragon64
+      Tano Dragon (NTSC): tano
+      Dragon Professional (Alpha): dragonpro
+      Dragon 200-E: dragon200e
+      Dragon 64 + SAMx8 (512K): dragonx8
+      Tandy CoCo (PAL): coco
+      Tandy CoCo (NTSC): cocous
+      Tandy CoCo 2B (PAL,T1): coco2b
+      Tandy CoCo 2B (NTSC,T1): coco2bus
+      Tandy Deluxe CoCo: deluxecoco
+      Tandy CoCo 3: coco3
+      Tandy CoCo 3 (6309): coco3h
+      Tandy CoCo 3 (PAL): coco3p
+      Tandy CoCo 3 (PAL, 6309): coco3ph
+      Dynacom MX-1600: mx1600
+      Prologica CP-400: cp400
+      Tandy MC-10: mc10
+      Matra & Hachette Alice: alice
+  xroar_cartauto:
+    prompt: Cartridge Autostart
+    choices:
+      Enabled: True
+      Disabled: False
+  xroar_vsync:
+    prompt: VSYNC
+    choices:
+      Enabled: True
+      Disabled: False
+systems:
+  - coco

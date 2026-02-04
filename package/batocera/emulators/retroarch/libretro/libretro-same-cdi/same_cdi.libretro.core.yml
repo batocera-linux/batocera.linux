@@ -1,0 +1,64 @@
+features:
+  - netplay
+shared_features:
+  - autosave
+custom_features:
+  mame_cpu_overclock:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      default: default
+      "30": 30
+      "35": 35
+      "40": 40
+      "45": 45
+      "50": 50
+      "55": 55
+      "60": 60
+      "65": 65
+      "70": 70
+      "75": 75
+      "80": 80
+      "85": 85
+      "90": 90
+      "95": 95
+      "100": 100
+      "105": 105
+      "110": 110
+      "115": 115
+      "120": 120
+      "125": 125
+      "130": 130
+      "135": 135
+      "140": 140
+      "145": 145
+      "150": 150
+  mame_altres:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      640x480: 640x480
+      800x600: 800x600
+      960x720: 960x720
+      1024x768: 1024x768
+      1280x720: 1280x720
+      1600x800: 1600x800
+      1920x1080: 1920x1080
+      2560x1440: 2560x1440
+      3840x2160: 3840x2160
+  customcfg:
+    group: ADVANCED OPTIONS
+    prompt: CUSTOM CONFIG
+    description: Use a custom MAME config, do not overwrite config on launch.
+    choices:
+      'On': 1
+      Off (Default): 0
+systems:
+  - name: cdi
+    exclude_extensions:
+      - cue
+      - toc
+      - nrg
+      - gdi
+      - cdr

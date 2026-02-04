@@ -11,6 +11,7 @@ ECWOLF_GIT_SUBMODULES=YES
 ECWOLF_LICENSE = Non-commercial
 ECWOLF_DEPENDENCIES = host-ecwolf sdl2 sdl2_mixer sdl2_net zlib bzip2 jpeg
 ECWOLF_SUPPORTS_IN_SOURCE_BUILD = NO
+ECWOLF_EMULATOR_INFO = ecwolf.emulator.yml
 
 # We need the tools from the host package to build the target package
 HOST_ECWOLF_DEPENDENCIES = zlib bzip2
@@ -64,3 +65,4 @@ endef
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))
+$(eval $(emulator-info-package))

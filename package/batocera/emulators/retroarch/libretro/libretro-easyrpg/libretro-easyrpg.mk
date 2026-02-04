@@ -9,6 +9,7 @@ LIBRETRO_EASYRPG_SITE = https://github.com/EasyRPG/Player
 LIBRETRO_EASYRPG_GIT_SUBMODULES=YES
 LIBRETRO_EASYRPG_SITE_METHOD=git
 LIBRETRO_EASYRPG_LICENSE = GPLv3
+LIBRETRO_EASYRPG_EMULATOR_INFO = easyrpg.libretro.core.yml
 LIBRETRO_EASYRPG_SUPPORTS_IN_SOURCE_BUILD = NO
 
 LIBRETRO_EASYRPG_DEPENDENCIES = sdl2 zlib fmt libpng freetype mpg123 libvorbis \
@@ -24,3 +25,4 @@ define LIBRETRO_EASYRPG_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

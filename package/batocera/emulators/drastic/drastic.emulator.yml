@@ -1,0 +1,71 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  drastic_hires:
+    prompt: ENHANCED RENDERING RESOLUTION
+    description: Enhancement. Double the rendering resolution. Makes 3D objects clearer.
+    choices:
+      'Off': 0
+      'On': 1
+  drastic_frameskip_type:
+    prompt: FRAMESKIP TYPE
+    description: Skip frames to improve performance, at the cost of choppy motion. Can cause visual glitches.
+    choices:
+      None: 0
+      Manual: 1
+      Automatic: 2
+  drastic_frameskip_value:
+    prompt: FRAMESKIP VALUE
+    description: When frameskip type is on automatic or manual, skip up to this many frames consecutively.
+    choices:
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+  drastic_threaded:
+    group: ADVANCED OPTIONS
+    prompt: THREADED 3D
+    description: Improves performance in 3D games. Can cause glitches.
+    choices:
+      'Off': 0
+      'On': 1
+  drastic_scaling:
+    group: ADVANCED OPTIONS
+    prompt: IMAGE SCALING
+    description: Switches between smooth (Bilinear) and sharp (Nearest Neighbor) image scaling.
+    choices:
+      Bilinear: bilinear
+      Nearest-neighbor: nearest
+  drastic_fix2d:
+    group: ADVANCED OPTIONS
+    prompt: KEEP MAIN SCREEN ON TOP
+    description: Force 3D geometry to always render on the top screen. Useful for single-screen devices/games.
+    choices:
+      'Off': 0
+      'On': 1
+  drastic_screen_orientation:
+    prompt: SCREEN LAYOUT
+    description: Arrange the dual screen layout.
+    choices:
+      Vertical: 0
+      Horizontal: 1
+      Single: 3
+systems:
+  - name: nds
+    exclude_extensions:
+      - 7z

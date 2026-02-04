@@ -2,11 +2,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -24,6 +24,7 @@ OPENJKDF2_GIT_SUBMODULES = YES
 OPENJKDF2_SUPPORTS_IN_SOURCE_BUILD = NO
 OPENJKDF2_LICENSE = GPLv2 & MIT
 OPENJKDF2_LICENSE_FILE = LICENSE.txt
+OPENJKDF2_EMULATOR_INFO = openjkdf2.emulator.yml
 
 OPENJKDF2_DEPENDENCIES += gamenetworkingsockets host-python-cog libcurl libfreeglut
 OPENJKDF2_DEPENDENCIES += libglew libgtk3 libpng openal physfs protobuf python3
@@ -55,3 +56,4 @@ endef
 OPENJKDF2_POST_INSTALL_TARGET_HOOKS += OPENJKDF2_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

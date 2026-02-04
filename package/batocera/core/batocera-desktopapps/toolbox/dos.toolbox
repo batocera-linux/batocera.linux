@@ -1,0 +1,103 @@
+#!/bin/bash
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# DOS Toolbox is a script integration for PCManFM
+# 25.01.2026 cyperghost aka crcerror
+#
+
+# Works only if PCManFM process is detected and if an argument is setted
+pgrep -x pcmanfm >/dev/null && [[ -n "$1" ]] || { echo "error: No instance of PCManFM found... exit now!"; exit 1; }
+
+Setup_Fonts() {
+  local textarray i
+  textarray=("Text example for extracting/creating archives" "Text example for listing files" "Text example for any info messages")
+  for i in "${!textarray[@]}"; do
+    echo $(yad --font --button="Next Item":0 --fontname="${f[$i]}" --preview="${textarray[$i]}") >> $CONFFILE
+  done
+}
+
+Autorun_From_Dir() {
+  local EXE_FILES FILE i
+  readarray -t EXE_FILES < <(find -type f -iregex ".*\.\(exe\|com\|bat\)" ! -iname dosbox.bat | sort -n)
+  i="${#EXE_FILES[@]}"
+  [[ ${i} -eq 0 ]] && { echo "error: No DOS executables found in '$PWD'" | yad --text-info --wrap --fontname="${f[2]}"; exit; }
+  readarray -t EXE_FILES < <(paste -d'\n' <(printf '%s\n' "${EXE_FILES[@]}") <(printf "${f[1]}"'%.s\n' $(eval echo {1..$i})))
+  FILE=$(yad --list --column="Executable File in $PWD" "${EXE_FILES[@]}" --column=@font@ --separator=)
+  [[ -z "$FILE" ]] && exit || { printf '%s\n%s\n%s\n%s' "@echo off" "REM created with BATOCERA dos.toolbox" "cd $(dirname "$FILE")" "$(basename "$FILE")" > dosbox.bat; }
+}
+
+Autorun_From_File() {
+  local p1 p2
+  p1=$(grep -Po '/dos/.*\.(pc|PC|dos|DOS)\K.*' <<< "$1") || { echo  "error: Path '$1' is an invalid roms/dosbox path" | yad --text-info --wrap --fontname="${f[2]}"; }
+  p2="${1/$p1}" # p1: get dir from first dir inside .pc dir; p2: Substract from path --> path for dosbox.bat
+  printf '%s\n%s\n%s\n%s' "@echo off" "REM created with BATOCERA dos.toolbox" "cd .${p1}" "${2}" > "$p2/dosbox.bat"
+}
+
+Squash_Game() {
+  local gname="${2%.*}.squashfs"
+  cd "$1"
+  [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"
+  mksquashfs "${2}" "${gname}" -comp zstd -percentage | yad --progress --text="<span font='${f[0]}'>Creating $gname${fx}" --auto-close
+}
+
+Extract_Game() {
+  local gname="${2%.*}.pc"
+  cd "$1"
+  [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"  # some unique name
+  unsquashfs -li -d "$gname" "$2" | yad --text-info --tail --fontname="${f[0]}"
+}
+
+#### MAIN
+
+CONFFILE=/userdata/system/.config/pcmanfm/dos.toolbox.conf
+[[ ${1} == --setup-dos-toolboxfonts ]] && [[ -e $CONFFILE ]] && { echo "$CONFFILE already found! Delete and setup again?" | yad --text-info && rm $CONFFILE || exit; }
+# init font: read from conf, or check if dejavu-font is available or fallback to default
+ft="DejaVu Sans Mono"
+if [[ -e $CONFFILE ]]; then
+  readarray -t f < $CONFFILE
+  fx="</span>"
+elif fc-list -q "${ft}"; then
+  f=("${ft} Bold 12" "${ft} Book 16" "${ft} Book 20")
+  fx="</span>"
+fi
+
+
+case ${1} in
+  --autorun-from-dir)
+    #use %f (as single dir)
+    [[ ${#@} -eq 2 ]] && cd "$2" || exit 1
+    Autorun_From_Dir "$2"
+  ;;
+  --autorun-from-file)
+    #use %d for basedir und %b for basename (gamename)
+    [[ ${#@} -eq 3 ]] || exit 1
+    Autorun_From_File "$2" "$3"
+  ;;
+  --extract-game)
+    #use %d for basedir, %b for basename
+    [[ ${#@} -eq 3 ]] || exit 1
+    Extract_Game "$2" "$3"
+  ;;
+  --squash-game)
+    #use %d for basedir and %b for basename (gamename)
+    [[ ${#@} -eq 3 ]] || exit 1
+    Squash_Game "$2" "$3"
+  ;;
+  --setup-dos-toolboxfonts)
+    #setup the toolbox fonts
+    Setup_Fonts
+  ;;
+esac

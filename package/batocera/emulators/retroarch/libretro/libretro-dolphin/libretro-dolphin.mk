@@ -10,6 +10,7 @@ LIBRETRO_DOLPHIN_SITE_METHOD = git
 LIBRETRO_DOLPHIN_GIT_SUBMODULES = YES
 LIBRETRO_DOLPHIN_LICENSE = GPLv2
 LIBRETRO_DOLPHIN_DEPENDENCIES = libevdev fmt bluez5_utils retroarch pugixml libenet libcurl hidapi
+LIBRETRO_DOLPHIN_EMULATOR_INFO = dolphin.libretro.core.yml
 
 LIBRETRO_DOLPHIN_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -45,3 +46,4 @@ endef
 LIBRETRO_DOLPHIN_POST_INSTALL_TARGET_HOOKS += LIBRETRO_DOLPHIN_SYS_FOLDER
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

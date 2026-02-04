@@ -3,12 +3,12 @@
 # OPENBOR4432
 #
 ################################################################################
-# Version.: 
+# Version.:
 OPENBOR4432_VERSION = 38855f23a4637eda3c9ba7dfa057fd2cf8434de1
 OPENBOR4432_SITE = $(call github,Darknior,OpenBORv3b4432,$(OPENBOR4432_VERSION))
 OPENBOR4432_LICENSE = BSD
-
-OPENBOR4432_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis sdl2_gfx host-yasm
+OPENBOR4432_DEPENDENCIES = openbor-common libvpx sdl2 libpng libogg libvorbis sdl2_gfx host-yasm
+OPENBOR4432_EMULATOR_INFO = openbor4432.openbor.core.yml
 
 OPENBOR4432_EXTRAOPTS=""
 
@@ -35,3 +35,4 @@ define OPENBOR4432_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

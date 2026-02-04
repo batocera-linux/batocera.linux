@@ -1,0 +1,97 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  amiberry_linemode:
+    group: ADVANCED OPTIONS
+    prompt: LINE MODE
+    description: Adjust screen line draw mode.
+    choices:
+      SINGLE: none
+      DOUBLE: double
+      SCANLINES: scanlines
+  amiberry_resolution:
+    prompt: VIDEO RESOLUTION
+    description: Manually define which internal resolution to use. AUTO = High.
+    choices:
+      Low: lores
+      High: hires
+      Super high: superhires
+  amiberry_scalingmethod:
+    prompt: SCALING METHOD
+    description: Change pixel scaling and filtering method.
+    choices:
+      Automatic: automatic
+      Pixelated (Nearest): pixelated
+      Smooth (Linear): smooth
+  amiberry_flickerfixer:
+    group: ADVANCED OPTIONS
+    prompt: REMOVE INTERLACE ARTIFACTS
+    description: Fix flickering in a static screen like Workbench.
+    choices:
+      "OFF": false
+      "ON": true
+  amiberry_auto_height:
+    prompt: AUTO HEIGHT
+    description: Resize automatically screen height.
+    choices:
+      "OFF": false
+      "ON": true
+  amiberry_virtual_keyboard:
+    group: KEYBOARD OPTIONS
+    prompt: VIRTUAL KEYBOARD
+    description: Enable the Virtual Keyboard.
+    choices:
+      "OFF": 0
+      "ON": 1
+  amiberry_hires_keyboard:
+    group: KEYBOARD OPTIONS
+    prompt: LARGER KEYBOARD
+    description: High-Resolution Keyboard, which is larger and might be easier to see.
+    choices:
+      "OFF": 0
+      "ON": 1
+  amiberry_vkbd_language:
+    group: KEYBOARD OPTIONS
+    prompt: KEYBOARD LAYOUT
+    description: This setting controls the default language layout for the virtual keyboard.
+    choices:
+      US (Default): US
+      UK: UK
+      FR: FR
+      DE: DE
+  amiberry_vkbd_transparency:
+    group: KEYBOARD OPTIONS
+    prompt: KEYBOARD TRANSPARENCY
+    description: Set the on-screen keyboard transparency (0-100%).
+    preset: slider
+    preset_parameters: 0 100 5 60
+systems:
+  - name: amiga500
+    as_core:
+      - A500
+      - A500+
+    exclude_extensions:
+      - m3u
+  - name: amiga1200
+    as_core:
+      - A1200
+      - A4000
+    exclude_extensions:
+      - m3u
+  - name: amigacd32
+    as_core: CD32
+  - name: amigacdtv
+    as_core: CDTV

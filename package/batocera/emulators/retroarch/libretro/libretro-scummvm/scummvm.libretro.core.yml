@@ -1,0 +1,36 @@
+features:
+  - padtokeyboard
+custom_features:
+  scummvm_analog_deadzone:
+    group: ADVANCED OPTIONS
+    prompt: ANALOG DEADZONE
+    description: Use to eliminate cursor drift/unwanted input.
+    choices:
+      0%: 0
+      5%: 5
+      10%: 10
+      15%: 15
+      20%: 20
+      25%: 25
+      30%: 30
+  scummvm_gamepad_cursor_speed:
+    group: ADVANCED OPTIONS
+    prompt: GAMEPAD CURSOR SPEED
+    choices:
+      "0.25": 0.25
+      "0.5": 0.5
+      "0.75": 0.75
+      1.0 (240p): 1.0
+      "1.5": 1.5
+      2.0 (480p): 2.0
+      "2.5": 2.5
+      "3.0": 3.0
+  scummvm_speed_hack:
+    group: ADVANCED OPTIONS
+    prompt: SPEED HACK (SAFE)
+    description: Improve speed, at a minor cost of accuracy.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - scummvm

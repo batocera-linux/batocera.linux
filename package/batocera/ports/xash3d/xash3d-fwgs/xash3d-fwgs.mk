@@ -11,6 +11,7 @@ XASH3D_FWGS_GIT_SUBMODULES = yes
 XASH3D_LICENSE = GPL-3.0+
 XASH3D_FWGS_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf
 XASH3D_FWGS_DEPENDENCIES += freetype fontconfig hlsdk-xash3d
+XASH3D_FWGS_EMULATOR_INFO = xash3d_fwgs.emulator.yml
 
 XASH3D_FWGS_CONF_OPTS += --build-type=release \
   --enable-packaging \
@@ -29,3 +30,4 @@ XASH3D_FWGS_CONF_OPTS += --disable-gl
 endif
 
 $(eval $(waf-package))
+$(eval $(emulator-info-package))

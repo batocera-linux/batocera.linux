@@ -1,0 +1,51 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  cdrom_speed:
+    group: ADVANCED OPTIONS
+    prompt: CD-ROM SPEED
+    choices:
+      AUTO (DEFAULT): auto
+      1X: 1
+      2X: 2
+      4X: 4
+      8X: 8
+  386dx:
+    group: ADVANCED OPTIONS
+    prompt: FORCE 386DX CPU
+    description: Required by some games.
+    choices:
+      NO (DEFAULT): 0
+      'YES': 1
+systems:
+  - name: fmtowns
+    exclude_extensions:
+      - chd
+      - toc
+      - nrg
+      - gdi
+      - cdr
+      - mfi
+      - dfi
+      - hfe
+      - mfm
+      - td0
+      - imd
+      - 1dd
+      - cqm
+      - cqi
+      - dsk
+      - zip
+      - 7z

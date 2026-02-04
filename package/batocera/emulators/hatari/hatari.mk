@@ -10,6 +10,7 @@ HATARI_SITE = https://github.com/hatari/hatari.git
 HATARI_SITE_METHOD=git
 HATARI_LICENSE = GPLv3
 HATARI_DEPENDENCIES = sdl2 zlib libpng libcapsimage
+HATARI_EMULATOR_INFO = hatari.emulator.yml
 
 HATARI_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 HATARI_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -27,3 +28,4 @@ endef
 HATARI_POST_INSTALL_TARGET_HOOKS = HATARI_INSTALL_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,163 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  force_render_res:
+    submenu: GRAPHICS
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      200p: 200
+      400p: 400
+      480p: 480
+      600p: 600
+      720p: 720
+      768p: 768
+      800p: 800
+      960p: 960
+      1050p: 1050
+      1080p: 1080
+      1200p: 1200
+      1392p: 1392
+      1440p: 1440
+      1536p: 1536
+      2160p: 2160
+  force_widescreen:
+    submenu: GRAPHICS
+    prompt: WIDESCREEN
+    description: Enable widescreen support.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_vsync:
+    submenu: GRAPHICS
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  force_rate:
+    submenu: GRAPHICS
+    prompt: REFRESH RATE
+    description: Set the desired maximum refresh rate when Vsync is off.
+    choices:
+      30 fps: "30"
+      50 fps: "50"
+      60 fps (Default): "60"
+      75 fps: "75"
+      120 fps: "120"
+      144 fps: "144"
+      240 fps: "240"
+  force_api:
+    submenu: GRAPHICS
+    prompt: GRAPHICS RENDERER
+    description: Choose which graphics renderer to use.
+    choices:
+      Classic Software: 0
+      GPU / OpenGL (Default): 1
+  force_colour:
+    submenu: GRAPHICS
+    prompt: COLOUR MODE
+    choices:
+      8-bit (Classic): 0
+      8-bit Interpolated: 1
+      True Colour: 2
+  force_hd:
+    submenu: GRAPHICS
+    prompt: HD TEXTURES
+    description: Choose to render high definition graphics textures. Requires OpenGL, True Colour and the enhanced.gob file.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_bilinear:
+    submenu: GRAPHICS
+    prompt: BILINEAR FILTER
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_mipmapping:
+    submenu: GRAPHICS
+    prompt: MIPMAPPING
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_crosshair:
+    submenu: GRAPHICS
+    prompt: CROSSHAIR
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_postfx:
+    submenu: GRAPHICS
+    prompt: BLOOM
+    description: Choose to use Bloom post processing.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_menu_sound:
+    prompt: MENU SOUNDS
+    description: Enable / Disable sound in menus.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  force_digital_audio:
+    prompt: DIGITAL AUDIO
+    description: Enable 16-channel iMuse Digital Audio.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_fight_music:
+    prompt: FIGHT MUSIC
+    description: Enable / Disable fight music.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  force_auto_aim:
+    prompt: AUTO AIM
+    description: Enable / Disable automatic aiming.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  force_secret_msg:
+    prompt: SHOW SECRET MESSAGES
+    description: Enable / Disable showing secret found messages.
+    choices:
+      Disabled: 0
+      Enabled (Default): 1
+  force_auto_run:
+    prompt: AUTOMATICALLY RUN
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_boba:
+    prompt: BOBBA FETT FIX
+    description: Bobba Fett Face Player Fix
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_smooth_vues:
+    prompt: SMOOTH VUES
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  force_skip_cutscenes:
+    group: ADVANCED OPTIONS
+    prompt: SKIP CUTSCENES
+    description: Choose to enable or disable cutscenes.
+    choices:
+      Show All: show
+      Skip Initial: initial
+      Skip All: skip
+systems:
+  - theforceengine

@@ -9,6 +9,7 @@ LIBRETRO_PLAY_SITE = https://github.com/jpd002/Play-.git
 LIBRETRO_PLAY_SITE_METHOD = git
 LIBRETRO_PLAY_GIT_SUBMODULES = YES
 LIBRETRO_PLAY_LICENSE = BSD
+LIBRETRO_PLAY_EMULATOR_INFO = play.libretro.core.yml
 
 LIBRETRO_PLAY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_PLAY_CONF_OPTS += -DBUILD_STATIC_LIBS=ON
@@ -40,3 +41,4 @@ define LIBRETRO_PLAY_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

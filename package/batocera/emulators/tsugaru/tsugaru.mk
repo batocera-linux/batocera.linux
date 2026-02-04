@@ -8,6 +8,7 @@ TSUGARU_VERSION = v20250513
 TSUGARU_SITE = $(call github,captainys,TOWNSEMU,$(TSUGARU_VERSION))
 TSUGARU_LICENSE = GPLv2
 TSUGARU_SUPPORTS_IN_SOURCE_BUILD = NO
+TSUGARU_EMULATOR_INFO = tsugaru.emulator.yml
 # CMakeLists.txt in src subfolder
 TSUGARU_SUBDIR = src
 
@@ -29,3 +30,4 @@ define TSUGARU_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

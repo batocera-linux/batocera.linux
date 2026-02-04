@@ -8,6 +8,7 @@ CGENIUS_VERSION = v3.5.2
 CGENIUS_SITE = $(call github,gerstrong,Commander-Genius,$(CGENIUS_VERSION))
 CGENIUS_CONF_LICENSE = GPL-2.0
 CGENIUS_CONF_LICENSE_FILES = LICENSE
+CGENIUS_EMULATOR_INFO = cgenius.emulator.yml
 CGENIUS_DEPENDENCIES += sdl2 sdl2_mixer sdl2_image sdl2_ttf
 CGENIUS_DEPENDENCIES += boost libcurl host-xxd python3-configobj
 
@@ -33,3 +34,4 @@ endef
 CGENIUS_POST_EXTRACT_HOOKS += CGENIUS_GET_COSMOS
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

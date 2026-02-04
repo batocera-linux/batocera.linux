@@ -1,0 +1,234 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  mupen64plus-43screensize:
+    prompt: 4:3 RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (320x240): 320x240
+      2x (640x480): 640x480
+      3x (960x720): 960x720
+      4x (1280x960): 1280x960
+      5x (1600x1200): 1600x1200
+      6x (1920x1440): 1920x1440
+      7x (2240x1680): 2240x1680
+      8x (2560x1920): 2560x1920
+      10x (3200x2400): 3200x2400
+      11x (3520x2640): 3520x2640
+      12x (3840x2880): 3840x2880
+  mupen64plus-169screensize:
+    prompt: 16:9 RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D objects clearer.
+    choices:
+      640x360: 640x360
+      960x540: 960x540
+      1280x720: 1280x720
+      1920x1080: 1920x1080
+      2560x1440: 2560x1440
+      3840x2160: 3840x2160
+      7680x4320: 7680x4320
+  mupen64plus-next-autowidescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  mupen64plus-aspect:
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': 243
+      'On': 16:9 adjusted
+  mupen64plus-BilinearMode:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE FILTERING MODE
+    description: Enhancement. 3 point is accurate to N64, standard is better.
+    choices:
+      standard: standard
+      3 point: 3point
+  mupen64plus-MultiSampling:
+    group: ADVANCED OPTIONS
+    prompt: ANTI-ALIASING (MSAA)
+    description: Enhancement. Smooth out jagged edges on 3D objects polygons.
+    choices:
+      'Off': 0
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  mupen64plus-txFilterMode:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE FILTERING
+    description: Smooth textures on 3D objects.
+    choices:
+      'Off': None
+      Smooth 1: Smooth filtering 1
+      Smooth 2: Smooth filtering 2
+      Smooth 3: Smooth filtering 3
+      Smooth 4: Smooth filtering 4
+      Sharp 1: Sharp filtering 1
+      Sharp 2: Sharp filtering 2
+  mupen64plus-txEnhancementMode:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE UPSCALING
+    description: Enhancement. Upscale textures.
+    choices:
+      'Off': None
+      As Is: As Is
+      X2: X2
+      X2SAI: X2SAI
+      HQ2X: HQ2X
+      HQ2XS: HQ2XS
+      LQ2X: LQ2X
+      LQ2XS: LQ2XS
+      HQ4X: HQ4X
+      2xBRZ: 2xBRZ
+      3xBRZ: 3xBRZ
+      4xBRZ: 4xBRZ
+      5xBRZ: 5xBRZ
+      6xBRZ: 6xBRZ
+  mupen64plus-rdpPlugin:
+    group: ADVANCED OPTIONS
+    prompt: RDP PLUGIN
+    choices:
+      GLideN64 (Fastest): gliden64
+      ParaLLEl-RDP: parallel
+      Angrylion (Most Compatible): angrylion
+  mupen64plus-rspPlugin:
+    group: ADVANCED OPTIONS
+    prompt: RSP PLUGIN
+    choices:
+      HLE (Fastest): hle
+      ParaLLEl (Best LLE): parallel
+      CXD4 (LLE Fallback): cxd4
+  mupen64plus-cpuCore:
+    group: ADVANCED OPTIONS
+    prompt: CPU CORE
+    choices:
+      Dynarec (Fastest): dynamic_recompiler
+      Cached Interpreter: cached_interpreter
+      Pure Interpreter (Most Accurate): pure_interpreter
+  mupen64plus-controller1:
+    submenu: CONTROLLER 1
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64plus-controller2:
+    submenu: CONTROLLER 2
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64plus-controller3:
+    submenu: CONTROLLER 3
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64plus-controller4:
+    submenu: CONTROLLER 4
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64plus-pak1:
+    submenu: CONTROLLER 1
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  mupen64plus-pak2:
+    submenu: CONTROLLER 2
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  mupen64plus-pak3:
+    submenu: CONTROLLER 3
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  mupen64plus-pak4:
+    submenu: CONTROLLER 4
+    prompt: CONTROLLER PAK
+    description: Emulate a pak in the controller expansion port.
+    choices:
+      'Off': none
+      Memory Pak: memory
+      Rumble Pak: rumble
+      Rumble Pak (Automatic): auto_rumble
+  mupen64plus-deadzone:
+    prompt: JOYSTICK DEADZONE
+    description: Use to eliminate joystick drift/unwanted input. Effects all controllers.
+    choices:
+      0%: 0
+      5%: 5
+      15% (Default): 15
+      20%: 20
+      25%: 25
+      30%: 30
+  mupen64plus-sensitivity:
+    prompt: JOYSTICK SENSITIVITY
+    description: Use to make joystick movement more or less sensitive. Effects all controllers.
+    choices:
+      50%: 50
+      55%: 55
+      60%: 60
+      65%: 65
+      70%: 70
+      75%: 75
+      80%: 80
+      85%: 85
+      90%: 90
+      95%: 95
+      100% (Default): 100
+      105%: 105
+      110%: 110
+      115%: 115
+      120%: 120
+      125%: 125
+      130%: 130
+      135%: 135
+      140%: 140
+      145%: 145
+      150%: 150
+  mupen64plus-Framerate:
+    group: ADVANCED OPTIONS
+    prompt: FRAME RATE
+    description: Full speed can break some games.
+    choices:
+      Original: Original
+      Full speed: Fullspeed
+  mupen64plus-parallel-rdp-upscaling:
+    group: ADVANCED OPTIONS
+    prompt: PARALLEL-RDP UPSCALER
+    description: Only applies when using Parallel-RDP as the chosen RDP Plugin.
+    choices:
+      1x (Default): 1x
+      2x: 2x
+      4x: 4x
+      8x: 8x
+systems:
+  - n64
+  - n64dd

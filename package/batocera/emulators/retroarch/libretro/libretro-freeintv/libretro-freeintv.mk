@@ -8,6 +8,7 @@ LIBRETRO_FREEINTV_VERSION = 85bf25a39a34bbc39fe36677175d87c2b597dbe7
 LIBRETRO_FREEINTV_SITE = $(call github,libretro,freeintv,$(LIBRETRO_FREEINTV_VERSION))
 LIBRETRO_FREEINTV_LICENSE = GPLv3
 LIBRETRO_FREEINTV_DEPENDENCIES += retroarch
+LIBRETRO_FREEINTV_EMULATOR_INFO = freeintv.libretro.core.yml
 
 LIBRETRO_FREEINTV_PLATFORM = unix
 
@@ -39,3 +40,4 @@ define LIBRETRO_FREEINTV_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

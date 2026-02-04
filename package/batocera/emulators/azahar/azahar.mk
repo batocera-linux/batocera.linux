@@ -13,6 +13,9 @@ AZAHAR_SUPPORTS_IN_SOURCE_BUILD = NO
 
 AZAHAR_DEPENDENCIES += boost fdk-aac ffmpeg fmt openal sdl2
 
+$(eval $(call register,azahar.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,graphics.azahar.emulator.yml))
+
 ifeq ($(BR2_x86_64),y)
 AZAHAR_CMAKE_BACKEND = ninja
 # Use clang for performance
@@ -76,3 +79,4 @@ endef
 AZAHAR_POST_INSTALL_TARGET_HOOKS = AZAHAR_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

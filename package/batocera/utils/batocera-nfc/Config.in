@@ -1,0 +1,5 @@
+config BR2_PACKAGE_BATOCERA_NFC
+	bool "batocera-nfc"
+
+ 	select BR2_PACKAGE_PYTHON_NFCPY
+	select BR2_PACKAGE_PYTHON_NDEFLIB

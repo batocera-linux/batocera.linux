@@ -1,0 +1,84 @@
+features:
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  c64_model:
+    prompt: MODEL TYPE
+    description: Automatic switches region per file path tags
+    choices:
+      C64 PAL Automatic: C64 PAL auto
+      C64 NTSC Automatic: C64 NTSC auto
+      C64 PAL: C64 PAL
+      C64 NTSC: C64 NTSC
+      C64 Games System PAL: C64 GS PAL
+      C64 Japanese NTSC: C64 JAP NTSC
+  vice_external_palette:
+    prompt: COLOR FILTER
+    description: Can be used to simulate colors of particular displays.
+    choices:
+      default: default
+      colodore: colodore
+      pepto-pal: pepto-pal
+      pepto-ntsc: pepto-ntsc
+      pepto-ntsc-sony: pepto-ntsc-sony
+      cjam: cjam
+      c64hq: c64hq
+      c64s: c64s
+      ccs64: ccs64
+      community-colors: community-colors
+      deekay: deekay
+      frodo: frodo
+      godot: godot
+      pc64: pc64
+      ptoing: ptoing
+      rgb: rgb
+      vice: vice
+  vice_aspect_ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      PAL 576x312px: pal
+      NTSC 492x262px: ntsc
+  vice_zoom_mode:
+    group: ADVANCED OPTIONS
+    prompt: ZOOM/CROP (HIDE BORDERS)
+    description: Hides borders on many games. Some games used the borders.
+    choices:
+      Auto-disable zoom: auto_disable
+      Auto zoom: automatic
+      'Off': disabled
+      small: small
+      medium: medium
+      maximum: maximum
+  vice_retropad_options:
+    group: ADVANCED OPTIONS
+    prompt: JUMP ON A
+    description: Makes second fire button press up instead.
+    choices:
+      'Off': disabled
+      'On': jump
+  vice_joyport:
+    prompt: CONTROLLER PORT
+    description: Most games use port 2, some use port 1.
+    choices:
+      Port 1: 1
+      Port 2: 2
+  vice_joyport_type:
+    prompt: CONTROLLER TYPE
+    choices:
+      Joystick: 1
+      Paddles: 2
+      Mouse (1351): 3
+      Trackball (Atari CX-22): 6
+      Koalapad: 10
+  vice_keyboard_pass_through:
+    group: ADVANCED OPTIONS
+    prompt: KEYBOARD PASSTHROUGH
+    description: Keyboard shortcuts unavailable if passing through the keyboard.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - c64

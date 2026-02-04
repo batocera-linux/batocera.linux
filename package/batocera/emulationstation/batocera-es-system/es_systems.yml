@@ -1431,6 +1431,7 @@ vectrex:
   emulators:
     libretro:
       vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -2582,7 +2583,7 @@ wiiu:
   theme:      wiiu
   emulators:
     cemu:
-      cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+      cemu:  { requireAnyOf: [ BR2_PACKAGE_CEMU, BR2_PACKAGE_CEMU_ANDROID ] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:wiiu
   comment_fr: |
@@ -2950,6 +2951,16 @@ ecwolf:
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
 
+cassettevision:
+  name:       Cassette Vision
+  manufacturer: Epoch
+  release: 1981
+  hardware: console
+  extensions: [zip, bin777]
+  emulators:
+    libretro:
+      pd777: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PD777] }
+
 sonicretro:
   name:       Sonic Retro Engine
   manufacturer: Sega
@@ -3201,6 +3212,7 @@ cdi:
   emulators:
     libretro:
       same_cdi: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAME_CDI], incompatible_extensions: [cue, toc, nrg, gdi, cdr] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
@@ -6030,16 +6042,27 @@ pc60:
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [zip]
+  extensions: [bin, cas, p6, d77, d88, dsk, 1dd, mfi, dfi, mfm, td0, imd, cqm, cqi, xdf, hdm, 2hd, fdi, zip, 7z]
   emulators:
     mame:
       mame:  { requireAnyOf: [BR2_PACKAGE_MAME] }
     libretro:
       mame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
   comment_en: |
-    Requires MAME BIOS file:
-    bios/mame/pc6001.zip
-    
+    Requires MAME BIOS files (depending on model):
+    bios/pc6001.zip (PC-6001)
+    bios/pc6001mk2.zip (PC-6001mkII)
+    bios/pc6001mk2sr.zip (PC-6001mkIISR)
+
+    Models available:
+    - PC-6001 (Japan) - Base model, cartridge and cassette
+    - PC-6001A (US) - NEC Trek version
+    - PC-6001mkII (Japan) - Enhanced version
+    - PC-6001mkIISR (Japan) - With floppy drive support
+
+    Cassette files (.cas, .p6) load via cart2 slot.
+    Floppy disks only work with PC-6001mkIISR model.
+
 enterprise:
   name:       Enterprise
   manufacturer: Enterprise Computers

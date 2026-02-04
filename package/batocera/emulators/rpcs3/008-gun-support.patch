@@ -11,3 +11,206 @@ index e506920..293b9cb 100644
  		udev_enumerate_add_match_subsystem(enumerate, "input");
  		udev_enumerate_scan_devices(enumerate);
  		udev_list_entry* devs = udev_enumerate_get_list_entry(enumerate);
+--- a/rpcs3/Emu/Io/pad_types.h	2026-02-01 03:29:10.000000000 +0000
++++ b/rpcs3/Emu/Io/pad_types.h	2026-02-01 05:55:42.385680003 +0000
+@@ -53,6 +53,19 @@
+ 	mouse_button_6,
+ 	mouse_button_7,
+ 	mouse_button_8,
++
++	// Accent gun / lightgun buttons
++	gun_button_1,
++	gun_button_2,
++	gun_button_3,
++	gun_button_4,
++	gun_button_5,
++	gun_button_6,
++	gun_button_7,
++	gun_button_8,
++	gun_button_9,
++	gun_button_10,
++	gun_button_11,
+ };
+ 
+ u32 pad_button_offset(pad_button button);
+--- a/rpcs3/Emu/Io/pad_types.cpp	2026-02-01 03:29:10.000000000 +0000
++++ b/rpcs3/Emu/Io/pad_types.cpp	2026-02-01 05:55:42.386680003 +0000
+@@ -48,6 +48,17 @@
+ 		case pad_button::mouse_button_6: return "Mouse Button 6";
+ 		case pad_button::mouse_button_7: return "Mouse Button 7";
+ 		case pad_button::mouse_button_8: return "Mouse Button 8";
++		case pad_button::gun_button_1: return "Gun Button 1";
++		case pad_button::gun_button_2: return "Gun Button 2";
++		case pad_button::gun_button_3: return "Gun Button 3";
++		case pad_button::gun_button_4: return "Gun Button 4";
++		case pad_button::gun_button_5: return "Gun Button 5";
++		case pad_button::gun_button_6: return "Gun Button 6";
++		case pad_button::gun_button_7: return "Gun Button 7";
++		case pad_button::gun_button_8: return "Gun Button 8";
++		case pad_button::gun_button_9: return "Gun Button 9";
++		case pad_button::gun_button_10: return "Gun Button 10";
++		case pad_button::gun_button_11: return "Gun Button 11";
+ 		}
+ 
+ 		return unknown;
+@@ -96,6 +107,17 @@
+ 	case pad_button::mouse_button_6:
+ 	case pad_button::mouse_button_7:
+ 	case pad_button::mouse_button_8:
++	case pad_button::gun_button_1:
++	case pad_button::gun_button_2:
++	case pad_button::gun_button_3:
++	case pad_button::gun_button_4:
++	case pad_button::gun_button_5:
++	case pad_button::gun_button_6:
++	case pad_button::gun_button_7:
++	case pad_button::gun_button_8:
++	case pad_button::gun_button_9:
++	case pad_button::gun_button_10:
++	case pad_button::gun_button_11:
+ 		return 0;
+ 	}
+ 	return 0;
+@@ -143,6 +165,17 @@
+ 	case pad_button::mouse_button_6: return 6;
+ 	case pad_button::mouse_button_7: return 7;
+ 	case pad_button::mouse_button_8: return 8;
++	case pad_button::gun_button_1: return 1;
++	case pad_button::gun_button_2: return 2;
++	case pad_button::gun_button_3: return 3;
++	case pad_button::gun_button_4: return 4;
++	case pad_button::gun_button_5: return 5;
++	case pad_button::gun_button_6: return 6;
++	case pad_button::gun_button_7: return 7;
++	case pad_button::gun_button_8: return 8;
++	case pad_button::gun_button_9: return 9;
++	case pad_button::gun_button_10: return 10;
++	case pad_button::gun_button_11: return 11;
+ 	}
+ 	return 0;
+ }
+--- a/rpcs3/Emu/Io/gem_config.h	2026-02-01 03:29:10.000000000 +0000
++++ b/rpcs3/Emu/Io/gem_config.h	2026-02-01 05:55:42.387680003 +0000
+@@ -98,6 +98,26 @@
+ 	cfg_gems() : emulated_pads_config<cfg_gem, 4>("gem_real") {};
+ };
+ 
++struct cfg_gun_gem final : public emulated_pad_config<gem_btn>
++{
++	cfg_gun_gem(node* owner, const std::string& name) : emulated_pad_config(owner, name) {}
++
++	cfg_pad_btn<gem_btn> t{ this, "T", gem_btn::t, pad_button::gun_button_1 };
++	cfg_pad_btn<gem_btn> move{ this, "Move", gem_btn::move, pad_button::gun_button_2 };
++	cfg_pad_btn<gem_btn> start{ this, "Start", gem_btn::start, pad_button::gun_button_3 };
++	cfg_pad_btn<gem_btn> select{ this, "Select", gem_btn::select, pad_button::gun_button_4 };
++	cfg_pad_btn<gem_btn> triangle{ this, "Triangle", gem_btn::triangle, pad_button::gun_button_8 };
++	cfg_pad_btn<gem_btn> circle{ this, "Circle", gem_btn::circle, pad_button::gun_button_11 };
++	cfg_pad_btn<gem_btn> cross{ this, "Cross", gem_btn::cross, pad_button::gun_button_9 };
++	cfg_pad_btn<gem_btn> square{ this, "Square", gem_btn::square, pad_button::gun_button_10 };
++};
++
++struct cfg_gun_gems final : public emulated_pads_config<cfg_gun_gem, 4>
++{
++	cfg_gun_gems() : emulated_pads_config<cfg_gun_gem, 4>("gem_gun") {};
++};
++
+ extern cfg_gems g_cfg_gem_real;
+ extern cfg_fake_gems g_cfg_gem_fake;
+ extern cfg_mouse_gems g_cfg_gem_mouse;
++extern cfg_gun_gems g_cfg_gem_gun;
+--- a/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-02-01 03:29:10.000000000 +0000
++++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-02-01 05:55:42.389680002 +0000
+@@ -189,6 +189,7 @@
+ cfg_gems g_cfg_gem_real;
+ cfg_fake_gems g_cfg_gem_fake;
+ cfg_mouse_gems g_cfg_gem_mouse;
++cfg_gun_gems g_cfg_gem_gun;
+ 
+ struct gem_config_data
+ {
+@@ -626,9 +627,15 @@
+ 			cellGem.notice("Could not load mouse gem config. Using defaults.");
+ 		}
+ 
++		if (!g_cfg_gem_gun.load())
++		{
++			cellGem.notice("Could not load gun gem config. Using defaults.");
++		}
++
+ 		cellGem.notice("Real gem config=%s", g_cfg_gem_real.to_string());
+ 		cellGem.notice("Fake gem config=%s", g_cfg_gem_fake.to_string());
+ 		cellGem.notice("Mouse gem config=%s", g_cfg_gem_mouse.to_string());
++		cellGem.notice("Gun gem config=%s", g_cfg_gem_gun.to_string());
+ 	}
+ };
+ 
+@@ -2348,6 +2355,26 @@
+ }
+ 
+ #ifdef HAVE_LIBEVDEV
++static gun_button get_gun_button_for_gem(cfg_gun_gem* cfg, gem_btn gem)
++{
++	const pad_button pad_btn = cfg->get_pad_button(gem);
++	switch (pad_btn)
++	{
++	case pad_button::gun_button_1: return gun_button::btn_left;
++	case pad_button::gun_button_2: return gun_button::btn_right;
++	case pad_button::gun_button_3: return gun_button::btn_middle;
++	case pad_button::gun_button_4: return gun_button::btn_1;
++	case pad_button::gun_button_5: return gun_button::btn_2;
++	case pad_button::gun_button_6: return gun_button::btn_3;
++	case pad_button::gun_button_7: return gun_button::btn_4;
++	case pad_button::gun_button_8: return gun_button::btn_5;
++	case pad_button::gun_button_9: return gun_button::btn_6;
++	case pad_button::gun_button_10: return gun_button::btn_7;
++	case pad_button::gun_button_11: return gun_button::btn_8;
++	default: return gun_button::btn_left;
++	}
++}
++
+ static bool gun_input_to_pad(u32 gem_no, be_t<u16>& digital_buttons, be_t<u16>& analog_t)
+ {
+ 	digital_buttons = 0;
+@@ -2358,29 +2385,30 @@
+ 
+ 	gun_thread& gun = g_fxo->get<gun_thread>();
+ 	std::scoped_lock lock(gun.handler.mutex);
++	auto& cfg = ::at32(g_cfg_gem_gun.players, gem_no);
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_left) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::t)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_T;
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_right) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::move)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_MOVE;
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_middle) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::start)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_START;
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_1) == 1)
+-		digital_buttons |= CELL_GEM_CTRL_CROSS;
+-
+-	if (gun.handler.get_button(gem_no, gun_button::btn_2) == 1)
+-		digital_buttons |= CELL_GEM_CTRL_CIRCLE;
+-
+-	if (gun.handler.get_button(gem_no, gun_button::btn_3) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::select)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_SELECT;
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_5) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::triangle)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_TRIANGLE;
+ 
+-	if (gun.handler.get_button(gem_no, gun_button::btn_6) == 1)
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::circle)) == 1)
++		digital_buttons |= CELL_GEM_CTRL_CIRCLE;
++
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::cross)) == 1)
++		digital_buttons |= CELL_GEM_CTRL_CROSS;
++
++	if (gun.handler.get_button(gem_no, get_gun_button_for_gem(cfg.get(), gem_btn::square)) == 1)
+ 		digital_buttons |= CELL_GEM_CTRL_SQUARE;
+ 
+ 	analog_t = gun.handler.get_button(gem_no, gun_button::btn_left) ? 255 : 0;

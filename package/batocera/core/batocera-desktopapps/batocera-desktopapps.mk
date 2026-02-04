@@ -97,7 +97,7 @@ ifeq ($(BR2_PACKAGE_RPCS3),y)
 endif
 
 # cemu
-ifeq ($(BR2_PACKAGE_CEMU),y)
+ifeq ($(BR2_PACKAGE_CEMU)$(BR2_PACKAGE_CEMU_ANDROID),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-cemu
   BATOCERA_DESKTOPAPPS_APPS    += cemu-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
@@ -193,6 +193,17 @@ ifeq ($(BR2_PACKAGE_WINE_TKG),y)
   BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.file2autorun.desktop
   BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
 endif
+
+# dosbox
+ifeq ($(BR2_PACKAGE_DOSBOX),y)
+  BATOCERA_DESKTOPAPPS_TOOLBOX += dos.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.configit.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.squashfs.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.folder2autorun.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.file2autorun.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.extract.desktop
+endif
+
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts (Install as executable 0755)

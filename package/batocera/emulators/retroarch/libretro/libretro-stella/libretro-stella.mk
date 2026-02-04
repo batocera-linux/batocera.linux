@@ -8,6 +8,7 @@ LIBRETRO_STELLA_VERSION = 7f62c3e1390f629cbd56cbb5172f7e2143b30440
 LIBRETRO_STELLA_SITE = $(call github,stella-emu,stella,$(LIBRETRO_STELLA_VERSION))
 LIBRETRO_STELLA_LICENSE = GPLv2
 LIBRETRO_STELLA_DEPENDENCIES += retroarch
+LIBRETRO_STELLA_EMULATOR_INFO = stella.libretro.core.yml
 
 LIBRETRO_STELLA_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -35,3 +36,4 @@ define LIBRETRO_STELLA_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

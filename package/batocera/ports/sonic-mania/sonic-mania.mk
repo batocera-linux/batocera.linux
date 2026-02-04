@@ -10,6 +10,7 @@ SONIC_MANIA_SITE_METHOD = git
 SONIC_MANIA_GIT_SUBMODULES = YES
 SONIC_MANIA_LICENSE = Proprietary
 SONIC_MANIA_LICENSE_FILE = LICENSE.md
+SONIC_MANIA_EMULATOR_INFO = sonic-mania.emulator.yml
 
 SONIC_MANIA_DEPENDENCIES += libglu libglew libglfw libogg libtheora portaudio
 
@@ -26,3 +27,4 @@ define SONIC_MANIA_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

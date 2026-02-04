@@ -7,8 +7,9 @@
 DOSBOX_STAGING_VERSION = v0.82.2
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
 DOSBOX_STAGING_DEPENDENCIES = iir libpng libogg libvorbis opus opusfile
-DOSBOX_STAGING_DEPENDENCIES += sdl2 sdl2_image speexdsp zlib 
+DOSBOX_STAGING_DEPENDENCIES += sdl2 sdl2_image speexdsp zlib
 DOSBOX_STAGING_LICENSE = GPLv2
+DOSBOX_STAGING_EMULATOR_INFO = dosbox_staging.emulator.yml
 
 DOSBOX_STAGING_CONF_OPTS = \
     -Dtracy=false \
@@ -58,3 +59,4 @@ DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
 
 $(eval $(meson-package))
+$(eval $(emulator-info-package))

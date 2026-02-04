@@ -1,0 +1,49 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+systems:
+  - enterprise
+  - name: amstradcpc
+    exclude_extensions:
+      - m3u
+      - 7z
+  - name: archimedes
+    exclude_extensions:
+      - 7z
+  - name: atarist
+    exclude_extensions:
+      - m3u
+      - 7z
+  - name: colecovision
+    exclude_extensions:
+      - 7z
+  - name: electron
+    exclude_extensions:
+      - 7z
+  - name: macintosh
+    exclude_extensions:
+      - 7z
+  - name: mastersystem
+    exclude_extensions:
+      - 7z
+  - name: msx1
+    exclude_extensions:
+      - 7z
+  - name: msx2
+    exclude_extensions:
+      - 7z
+  - oricatmos
+  - name: zxspectrum
+    exclude_extensions:
+      - 7z

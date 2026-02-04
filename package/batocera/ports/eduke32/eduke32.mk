@@ -8,6 +8,7 @@ EDUKE32_VERSION = 227c11dee0abaa57bbc22b06f0002e064efa7191
 EDUKE32_SITE = https://voidpoint.io/terminx/eduke32/-/archive/$(EDUKE32_VERSION)
 EDUKE32_DEPENDENCIES = sdl2 flac libvpx
 EDUKE32_LICENSE = GPL-2.0
+EDUKE32_EMULATOR_INFO = eduke32.emulator.yml
 
 # Some build options are documented here:
 # https://wiki.eduke32.com/wiki/Building_EDuke32_on_Linux
@@ -30,3 +31,4 @@ define EDUKE32_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,433 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  rpcs3_ppudecoder:
+    submenu: CPU
+    prompt: PPU DECODER
+    description: LLVM is fastest, use the Interpreter settings if there are issues.
+    choices:
+      LLVM Recompiler: Recompiler (LLVM)
+      Dynamic Interpreter: Interpreter (dynamic)
+      Static Interpreter: Interpreter (static)
+  rpcs3_spudecoder:
+    submenu: CPU
+    prompt: SPU DECODER
+    description: If game crashes, try ASMJIT. If still crashing, try Fast Interpreter.
+    choices:
+      LLVM Recompiler: Recompiler (LLVM)
+      ASMJIT Recompiler: Recompiler (ASMJIT)
+      Fast Interpreter: Interpreter (fast)
+      Precise Interpreter: Interpreter (precise)
+  rpcs3_spuxfloataccuracy:
+    submenu: CPU
+    prompt: SPU XFloat Accuracy
+    description: Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder.
+    choices:
+      Accurate XFloat: accurate
+      Approximate XFloat: approximate
+      Relaxed XFloat: relaxed
+  rpcs3_sputhreads:
+    submenu: CPU
+    prompt: PREFERRED SPU THREADS
+    description: Limiting to 1 or 2 may fix audio stuttering on weaker CPUs in some games. Leave on automatic if slowdown occurs.
+    choices:
+      1 thread: 1
+      2 threads: 2
+      3 threads: 3
+      4 threads: 4
+      5 threads: 5
+      6 threads: 6
+  rpcs3_spuloopdetection:
+    submenu: CPU
+    prompt: SPU LOOP DETECTION
+    description: May provide performance gain on CPUs with low core/thread count at the expense of possible broken timings.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_spublocksize:
+    submenu: CPU
+    prompt: SPU BLOCK SIZE
+    description: Mega and Giga modes may improve performance. Use the Safe mode for maximum compatibility.
+    choices:
+      Safe (Default): Safe
+      Mega: Mega
+      Giga: Giga
+  rpcs3_maxcpu_preemptcount:
+    submenu: CPU
+    prompt: MAX POWER SAVING CPU-PREEMPTIONS
+    description: Helps reduce CPU power consumption by throttling the CPU when not needed. Useful for handhelds.
+    choices:
+      Off (Default): "0"
+      Minimum: "50"
+      Moderate: "100"
+      Maximum: "150"
+  rpcs3_sleep_timers_accuracy:
+    submenu: CPU
+    prompt: SLEEP TIMERS ACCURACY
+    description: Changes the sleep period accuracy. Some games need this set to improve performance.
+    choices:
+      As Host (Default): As Host
+      Usleep Only: Usleep Only
+      All Timers: All Timers
+  rpcs3_ratio:
+    submenu: VIDEO
+    prompt: ASPECT RATIO
+    description: PS3's internal ratio setting. Some games only support 16/9.
+    choices:
+      16:9 (default): 16:9
+      4:3: 4:3
+  rpcs3_gfxbackend:
+    submenu: RENDER
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: OpenGL
+      Vulkan: Vulkan
+  rpcs3_framelimit:
+    submenu: VIDEO
+    prompt: ADDITIONAL FRAMELIMIT
+    description: Most games already have an internal framelimit. Minor performance cost.
+    choices:
+      Off (faster, unstable): false
+      "20": 20
+      "25": 25
+      "30": 30
+      "35": 35
+      "40": 40
+      "45": 45
+      "50": 50
+      "55": 55
+      "59.94": 59.94
+      "60": 60
+  rpcs3_anisotropic:
+    submenu: RENDER
+    prompt: ANISOTROPIC FILTER
+    description: Improves clarity of distant textures.
+    choices:
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  rpcs3_aa:
+    submenu: RENDER
+    prompt: ANTI-ALIASING
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      Disabled: Disabled
+  rpcs3_zcull:
+    submenu: RENDER
+    prompt: ZCULL ACCURACY
+    description: Can improve performance at the expense of graphics accuracy.
+    choices:
+      Precise (Slowest)(Default): Precise
+      Approximate (Fast): Approximate
+      Relaxed (Fastest): Relaxed
+  rpcs3_shader:
+    submenu: RENDER
+    prompt: SHADER QUALITY
+    description: Controls precision of generated shaders. Low quality can improved performance.
+    choices:
+      Ultra: Ultra
+      High (Default): High
+      Low: Low
+      Automatic: Auto
+  rpcs3_resolution_scale:
+    submenu: VIDEO
+    prompt: RENDER RESOLUTION (SCALING)
+    description: Choose your preferred render resolution.
+    choices:
+      640x360: 50
+      960x540: 75
+      1280x720 (Default): 100
+      1600x900: 125
+      1920x1080: 150
+      2240x1260: 175
+      2560x1440: 200
+      3200x1800: 225
+      3840x2160: 250
+      4480x2520: 275
+      5120x2880: 300
+  rpcs3_scaling:
+    submenu: RENDER
+    prompt: OUTPUT SCALING
+    description: Final image filtering.
+    choices:
+      Nearest: Nearest
+      Bilinear (Default): Bilinear
+      FidelityFX Super Resolution: FidelityFX Super Resolution
+  rpcs3_shadermode:
+    submenu: RENDER
+    prompt: SHADER MODE
+    description: Only Async (skip draw) avoids freezing while compiling shaders.
+    choices:
+      Legacy (single threaded): Shader Recompiler
+      Async (multi threaded)(Default): Async Shader Recompiler
+      Async with Shader Interpreter: Async with Shader Interpreter
+      Shader Interpreter only: Shader Interpreter only
+  rpcs3_num_compilers:
+    submenu: RENDER
+    prompt: NUMBER OF SHADER COMPILER THREADS
+    description: Only applicable when either Async Shader mode is set.
+    choices:
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+      "10": 10
+      "11": 11
+      "12": 12
+      "13": 13
+      "14": 14
+      "15": 15
+      "16": 16
+  rpcs3_colorbuffers:
+    submenu: RENDER
+    prompt: WRITE COLOR BUFFERS
+    description: May fix missing graphics and broken lighting at the cost of performance.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_write_depth_buffers:
+    submenu: RENDER
+    prompt: WRITE DEPTH BUFFERS
+    description: Writes depth buffer values to VM memory. Some games need this to fix broken graphics.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_strict:
+    submenu: RENDER
+    prompt: STRICT RENDERING MODE
+    description: Straict API specification. Can resolve rare cases of missing graphics and flickering.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_vsync:
+    submenu: VIDEO
+    prompt: VSYNC
+    description: Can fix screen tearing on unorthodox displays (most LCDs don't need this).
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_stretchdisplay:
+    submenu: VIDEO
+    prompt: STRETCH TO DISPLAY AREA
+    description: Distorts the output to fill the display fully Overrides aspect ratio.
+    choices:
+      'Off': false
+      'On': true
+  rpcs3_vertexcache:
+    submenu: RENDER
+    prompt: DISABLE VERTEX CACHE
+    description: Disables the vertex cache. Might resolve missing or flickering graphics output but degrade performance.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_rsx:
+    submenu: RENDER
+    prompt: MULTITHREADED RSX
+    description: Offloads some RSX operations to a secondary thread. Improves performance in high-core processors.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_async_texture:
+    submenu: RENDER
+    prompt: ASYNCHRONOUS TEXTURE STREAMING
+    description: Stream texture to GPU in parrallel. Can improve performance on more powerful GPU's that have spare headroom.
+    choices:
+      Off (Default): false
+      On (Vulkan Only): true
+  rpcs3_audio_format:
+    submenu: AUDIO
+    prompt: AUDIO FORMAT
+    description: Choose number of audio channels.
+    choices:
+      Stereo: Stereo
+      Surround 5.1: Surround 5.1
+      Surround 7.1: Surround 7.1
+  rpcs3_audio_16bit:
+    submenu: AUDIO
+    prompt: CONVERT TO 16-BIT
+    description: Use 16 bit audio samples for audio drivers that don't support 32bit. Only use if you get no audio.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_audiobuffer:
+    submenu: AUDIO
+    prompt: ENABLE AUDIO BUFFERING
+    description: Can reduce crackle and stutter but increases audio latency.
+    choices:
+      'Off': false
+      On (Default): true
+  rpcs3_audiobuffer_duration:
+    submenu: AUDIO
+    prompt: AUDIO BUFFER DURATION
+    description: Duration of audio buffer in milliseconds. Higher numbers may cause audio latency.
+    choices:
+      10ms: 10
+      20ms: 20
+      40ms: 40
+      60ms: 60
+      80ms: 80
+      100ms (Default): 100
+      120ms: 120
+      140ms: 140
+      160ms: 160
+      180ms: 180
+      200ms: 200
+      220ms: 220
+      240ms: 240
+  rpcs3_timestretch:
+    submenu: AUDIO
+    prompt: ENABLE TIME STRETCHING
+    description: Reduces crackle and stutter further, but may cause a very noticeable reduction in audio quality on slower CPUs.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_timestretch_threshold:
+    submenu: AUDIO
+    prompt: TIME STRETCHING THRESHOLD
+    description: Buffer fill level (in percentage) below which time stretching will start.
+    choices:
+      'Off': 0
+      15%: 15
+      30%: 30
+      45%: 45
+      60%: 60
+      75% (Default): 75
+      90%: 90
+      100%: 100
+  rpcs3_gui:
+    group: ADVANCED OPTIONS
+    prompt: GRAPHICAL USER INTERFACE
+    description: Allows Alt+Tab to RPCS3's menu. Useful for manual disc-swapping.
+    choices:
+      'Off': 0
+      'On': 1
+  rpcs3_crosshairs:
+    order: 99
+    group: CONTROLS
+    submenu: LIGHT GUNS
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': false
+      'On': true
+  rpcs3_controller1:
+    group: CONTROLS
+    submenu: CONTROLLER 1
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller2:
+    group: CONTROLS
+    submenu: CONTROLLER 2
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller3:
+    group: CONTROLS
+    submenu: CONTROLLER 3
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller4:
+    group: CONTROLS
+    submenu: CONTROLLER 4
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller5:
+    group: CONTROLS
+    submenu: CONTROLLER 5
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller6:
+    group: CONTROLS
+    submenu: CONTROLLER 6
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_controller7:
+    group: CONTROLS
+    submenu: CONTROLLER 7
+    prompt: PS3 CONTROLLER
+    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    choices:
+      Legacy Evdev: Evdev
+      Sony DS: Sony
+  rpcs3_rumble1:
+    group: CONTROLS
+    submenu: CONTROLLER 1
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble2:
+    group: CONTROLS
+    submenu: CONTROLLER 2
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble3:
+    group: CONTROLS
+    submenu: CONTROLLER 3
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble4:
+    group: CONTROLS
+    submenu: CONTROLLER 4
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble5:
+    group: CONTROLS
+    submenu: CONTROLLER 5
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble6:
+    group: CONTROLS
+    submenu: CONTROLLER 6
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+  rpcs3_rumble7:
+    group: CONTROLS
+    submenu: CONTROLLER 7
+    prompt: RUMBLE
+    description: Enable controller rumble capabilities if supported by the controller.
+    preset: switchon
+systems:
+  - ps3

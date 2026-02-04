@@ -9,6 +9,7 @@ SONIC2013_SITE = https://github.com/RSDKModding/RSDKv4-Decompilation
 SONIC2013_SITE_METHOD = git
 SONIC2013_GIT_SUBMODULES == YES
 SONIC2013_LICENSE = Custom
+SONIC2013_EMULATOR_INFO = sonic2013.emulator.yml
 
 SONIC2013_DEPENDENCIES = sdl2 libogg libvorbis
 
@@ -27,3 +28,4 @@ define SONIC2013_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,32 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+features:
+  - padtokeyboard
+custom_features:
+  vkquake3_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: opengl2
+      Vulkan: vulkan
+  ioquake3_mem:
+    group: ADVANCED OPTIONS
+    prompt: GRAPHICS MEMORY
+    description: Select how much graphics memory is allocated for the GPU, may need modifying for some games / systems.
+    choices:
+      64MB: "64"
+      128MB: "128"
+      256MB (Default): "256"
+      512MB: "512"
+systems:
+  - quake3

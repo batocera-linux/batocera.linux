@@ -626,6 +626,15 @@ def _dolphin_options(
     else:
         _set(coreSettings, 'dolphin_ir_mode', '1')
 
+
+# Epoch - Cassette Vision
+def _pd777_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Course selection switch visual feedback
+    _set_from_system(coreSettings, 'pd777_announce_course_switch', system, 'cassettevision_announce_course_switch', default='enabled')
+
+
 # Magnavox - Odyssey2 / Phillips Videopac+
 def _o2em_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2401,6 +2410,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'pcsx2': _pcsx2_options,
     'pcsx_rearmed': _pcsx_rearmed_options,
     'theodore': _theodore_options,
+    'pd777': _pd777_options,
     'potator': _potator_options,
     'prboom': _prboom_options,
     'tyrquake': _tyrquake_options,

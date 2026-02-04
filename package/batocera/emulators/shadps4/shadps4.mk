@@ -20,6 +20,7 @@
 SHADPS4_VERSION = SHAD_PS4_PLUS_0_12_0_A
 SHADPS4_SITE = https://github.com/AzaharPlus/shadPS4Plus
 SHADPS4_SITE_METHOD = git
+SHADPS4_EMULATOR_INFO = shadps4.emulator.yml
 #SHADPS4_GIT_SUBMODULES = YES
 
 SHADPS4_SOURCE = shadps4-$(SHADPS4_VERSION).tar.gz
@@ -86,3 +87,4 @@ endef
 
 $(eval $(cmake-package))
 $(eval $(host-generic-package))
+$(eval $(emulator-info-package))

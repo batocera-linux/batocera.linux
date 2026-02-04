@@ -1,0 +1,100 @@
+features:
+  - netplay
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  mesen_region:
+    prompt: CONSOLE REGION
+    description: Dendy is a popular Russian clone with unique characteristics.
+    choices:
+      NTSC: NTSC
+      PAL: PAL
+      Dendy: Dendy
+  mesen_screenrotation:
+    prompt: DISPLAY ROTATION
+    description: Rotate the screen, useful for certain vertical gameplay homebrews.
+    choices:
+      None: None
+      90 degrees: 90 degrees
+      180 degrees: 180 degrees
+      270 degrees: 270 degrees
+  mesen_ntsc_filter:
+    prompt: NTSC FILTER
+    description: Core-powered video filter. Bisqwit filters are CPU heavy.
+    choices:
+      Disabled: Disabled
+      Composite (Blargg): Composite (Blargg)
+      S-Video (Blargg): S-Video (Blargg)
+      RGB (Blargg): RGB (Blargg)
+      Monochrome (Blargg): Monochrome (Blargg)
+      Bisqwit 2x: Bisqwit 2x
+      Bisqwit 4x: Bisqwit 4x
+      Bisqwit 8x: Bisqwit 8x
+  mesen_nospritelimit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eight sprite per line limit.
+    choices:
+      'Off': false
+      'On': true
+  mesen_palette:
+    prompt: COLOR PALETTE
+    choices:
+      Default: Default
+      Composite Direct (FirebrandX): Composite Direct (by FirebrandX)
+      Nes Classic: Nes Classic
+      Nestopia (RGB): Nestopia (RGB)
+      Original Hardware (FirebrandX): Original Hardware (by FirebrandX)
+      PVM Style (FirebrandX): PVM Style (by FirebrandX)
+      Sony CXA2025AS: Sony CXA2025AS
+      Unsaturated v6 (FirebrandX): Unsaturated v6 (by FirebrandX)
+      YUV v3 (Firebrand): YUV v3 (by FirebrandX)
+      Custom: Custom
+  mesen_hdpacks:
+    prompt: LOAD CUSTOM TEXTURES
+    description: For use with HD texture packs.
+    choices:
+      'Off': false
+      'On': true
+  mesen_fdsautoinsertdisk:
+    prompt: (FDS) AUTOMATICALLY LOAD DISK SIDE A
+    description: Avoids having to manually load side A every time.
+    choices:
+      'Off': false
+      'On': true
+  mesen_fdsfastforwardload:
+    group: ADVANCED OPTIONS
+    prompt: (FDS) FAST FORWARD DISK LOADING
+    description: Reduce load time at the cost of accuracy.
+    choices:
+      'Off': false
+      'On': true
+  mesen_ramstate:
+    group: ADVANCED OPTIONS
+    prompt: DEFAULT POWER ON RAM STATE
+    description: Useful for speedruns/glitches.
+    choices:
+      All 0s (Default): All 0s (Default)
+      All 1s: All 1s
+      Random Values: Random Values
+  mesen_overclock:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      None: None
+      Low: Low
+      Medium: Medium
+      High: High
+      Very High: Very High
+  mesen_overclock_type:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK TYPE
+    description: Prefer "Before NMI", change to After NMI only if needed by the game.
+    choices:
+      Before NMI: Before NMI (Recommended)
+      After NMI: After NMI
+systems:
+  - fds
+  - nes

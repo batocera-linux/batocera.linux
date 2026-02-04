@@ -9,6 +9,7 @@ FSUAE_SITE = $(call github,FrodeSolheim,fs-uae,$(FSUAE_VERSION))
 FSUAE_LICENSE = GPLv2
 FSUAE_DEPENDENCIES += libpng libmpeg2 libglib2 libcapsimage openal
 FSUAE_DEPENDENCIES += sdl2 sdl2_ttf zlib
+FSUAE_EMULATOR_INFO = fsuae.emulator.yml
 
 FSUAE_AUTORECONF = YES
 
@@ -31,3 +32,4 @@ endef
 FSUAE_POST_INSTALL_TARGET_HOOKS = FSUAE_INSTALL_EVMAPY
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

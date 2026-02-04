@@ -1,0 +1,20 @@
+custom_features:
+  hud:
+    prompt: HEADS UP DISPLAY
+    description: Show context-sensitive info over the game.
+    submenu: DECORATIONS
+    choices:
+      None: none
+      Game info/art: game
+      Performance: perf
+      Custom: custom
+    before: bezel.tattoo
+  hud_corner:
+    prompt: HEADS UP DISPLAY CORNER
+    submenu: DECORATIONS
+    choices:
+      TOP LEFT (NW): NW
+      TOP RIGHT (NE): NE
+      BOTTOM RIGHT (SE): SE
+      BOTTOM LEFT (SW): SW
+    before: bezel.tattoo

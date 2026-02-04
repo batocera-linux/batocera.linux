@@ -8,6 +8,7 @@ IKEMEN_VERSION = 02a078d6bf189ff56bbcbbbc8dbfd81753692c56
 IKEMEN_SITE = https://github.com/ikemen-engine/Ikemen-GO
 IKEMEN_LICENSE = MIT
 IKEMEN_DEPENDENCIES = libgtk3 mesa3d openal libglfw
+IKEMEN_EMULATOR_INFO = ikemen.emulator.yml
 
 IKEMEN_SITE_METHOD = git
 IKEMEN_GIT_SUBMODULES = YES
@@ -37,3 +38,4 @@ define IKEMEN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(golang-package))
+$(eval $(emulator-info-package))

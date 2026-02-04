@@ -11,6 +11,7 @@ VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
 VPINBALL_DEPENDENCIES = host-libcurl libfreeimage libpinmame libaltsound libdmdutil libdof sdl2 sdl2_image sdl2_ttf ffmpeg
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
+VPINBALL_EMULATOR_INFO = vpinball.emulator.yml
 
 # handle supported target platforms
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
@@ -80,3 +81,4 @@ VPINBALL_PRE_CONFIGURE_HOOKS += VPINBALL_CMAKE_HACKS
 VPINBALL_POST_INSTALL_TARGET_HOOKS += VPINBALL_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

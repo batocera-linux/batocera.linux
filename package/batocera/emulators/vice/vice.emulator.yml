@@ -1,0 +1,55 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  noborder:
+    group: ADVANCED OPTIONS
+    prompt: ZOOM (HIDE BORDERS)
+    description: Hides borders on many games. Some games used the borders.
+    choices:
+      NO (DEFAULT): 0
+      'YES': 1
+systems:
+  - name: c128
+    as_core: x128
+    exclude_extensions:
+      - m3u
+      - 7z
+  - name: c20
+    as_core: xvic
+    exclude_extensions:
+      - m3u
+      - 7z
+      - 20
+      - 40
+      - 60
+  - name: c64
+    as_core:
+      - x64
+      - x64dtv
+      - xscpu64
+    exclude_extensions:
+      - m3u
+      - 7z
+  - name: cplus4
+    as_core: xplus4
+    exclude_extensions:
+      - m3u
+      - 7z
+  - name: pet
+    as_core: xpet
+    exclude_extensions:
+      - m3u
+      - 7z

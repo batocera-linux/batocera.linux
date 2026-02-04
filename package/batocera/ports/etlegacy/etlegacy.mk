@@ -10,6 +10,7 @@ ETLEGACY_SITE_METHOD = git
 ETLEGACY_GIT_SUBMODULES = YES
 ETLEGACY_LICENSE = GPL-3.0
 ETLEGACY_LICENSE_FILE = COPYING.txt
+ETLEGACY_EMULATOR_INFO = etlegacy.emulator.yml
 
 ETLEGACY_DEPENDENCIES += freetype libcurl libglew libpng libtheora libglu
 ETLEGACY_DEPENDENCIES += libvorbis lua openal openssl sdl2 sqlite
@@ -60,3 +61,4 @@ define ETLEGACY_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

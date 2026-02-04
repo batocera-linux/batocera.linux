@@ -1,0 +1,30 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  esync:
+    group: ADVANCED OPTIONS
+    prompt: ESYNC
+    description: Can increase performance for games that stress the CPU.
+    choices:
+      "Off": 0
+      "On": 1
+  fsync:
+    group: ADVANCED OPTIONS
+    prompt: FSYNC
+    description: Can improve frame rates and responsiveness.
+    choices:
+      "Off": 0
+      "On": 1
+  pba:
+    group: ADVANCED OPTIONS
+    prompt: PBA
+    description: Vastly improves the speed of buffer maps.
+    choices:
+      "Off": 0
+      "On": 1
+systems:
+  - mugen

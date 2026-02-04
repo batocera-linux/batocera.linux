@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-PCSX2_VERSION = v2.6.2
+PCSX2_VERSION = v2.6.3
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
 PCSX2_LICENSE = GPLv3
 PCSX2_LICENSE_FILE = COPYING.GPLv3
+PCSX2_EMULATOR_INFO = pcsx2.emulator.yml
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -89,3 +90,4 @@ endef
 PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_CROSSHAIRS
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

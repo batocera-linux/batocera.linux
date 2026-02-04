@@ -9,6 +9,7 @@ SONICCD_SITE = https://github.com/RSDKModding/RSDKv3-Decompilation
 SONICCD_SITE_METHOD = git
 SONICCD_GIT_SUBMODULES = YES
 SONICCD_LICENSE = Custom
+SONICCD_EMULATOR_INFO = soniccd.emulator.yml
 
 SONICCD_DEPENDENCIES = sdl2 libogg libvorbis libtheora
 
@@ -26,3 +27,4 @@ define SONICCD_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))
