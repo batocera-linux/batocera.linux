@@ -42,8 +42,22 @@ class FlycastGenerator(Generator):
 
         if not Config.has_section("input"):
             Config.add_section("input")
+
+        # Lightguns - configure before controllers (guns take priority on ports)
+        gun_ports = set()
+        if system.config.use_guns and guns:
+            for nplayer, gun in enumerate(guns[:4], start=1):
+                Config.set("input", f'device{nplayer}', "7")   # MDT_LightGun
+                Config.set("input", f'device{nplayer}.1', "1") # VMU
+                Config.set("input", f'device{nplayer}.2', "10") # None
+                gun_ports.add(nplayer)
+
         # For each pad detected
         for controller in playersControllers:
+            # Skip ports already assigned to guns
+            if controller.player_number in gun_ports:
+                continue
+
             # Write the mapping files for Dreamcast
             if (system.name == "dreamcast"):
                 flycastControllers.generateControllerConfig(controller, "dreamcast")
@@ -123,7 +137,6 @@ class FlycastGenerator(Generator):
         Config.set("config", "PerGameVmu", system.config.get_bool("flycast_per_game_vmu", return_values=("yes", "no")))
         # DSP
         Config.set("config", "aica.DSPEnabled", system.config.get_str("flycast_DSP", "no"))
-        # Guns (WIP)
         # Guns crosshairs
         Config.set("config", "rend.CrossHairColor1", system.config.get_str("flycast_lightgun1_crosshair", "0"))
         Config.set("config", "rend.CrossHairColor2", system.config.get_str("flycast_lightgun2_crosshair", "0"))
