@@ -121,6 +121,7 @@ case ${1,,} in
             NET_VER=$(wget -q -O - "$URL")
             [[ $? -eq 0 ]] || NET_VER="Connection failed!"
             echo "Installed:   $VER"
+            echo "Modified:    $(batocera-version --extra)"
             echo "Webversion:  $NET_VER"
             echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
