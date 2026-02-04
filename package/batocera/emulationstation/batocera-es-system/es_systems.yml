@@ -1431,6 +1431,7 @@ vectrex:
   emulators:
     libretro:
       vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
@@ -3201,6 +3202,7 @@ cdi:
   emulators:
     libretro:
       same_cdi: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAME_CDI], incompatible_extensions: [cue, toc, nrg, gdi, cdr] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
