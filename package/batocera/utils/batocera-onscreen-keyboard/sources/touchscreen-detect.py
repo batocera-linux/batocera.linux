@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 # Generic names of touchscreen devices to look for (lowercase)
-TC_NAME_IDS = [ "touch", "digitizer", "fts3528", "ft5x06" ]
+TC_NAME_IDS = [ "touch", "digitizer", "fts3528", "ft5x06", "td4328" ]
 
 # Other proprietary touchscreens: pairs of [ vendor, product ]
 PROPRIETARY_TC = [ [ "2808" , "1015" ], # SteamDeck LCD
