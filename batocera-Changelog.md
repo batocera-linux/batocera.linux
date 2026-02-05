@@ -84,6 +84,7 @@
 - CLK to 2026-01-06
 - Dolphin-Emu to 2512-99
 - DXX-Rebirth to May 25, 2025
+- EasyRPG to 0.8.1.1
 - EDuke32 to Oct 10, 2025
 - Flycast to 2.6
 - FS-UAE to v3.2.35
