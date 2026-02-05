@@ -1,67 +1,57 @@
 diff -ruN a/src/core/guncon.cpp b/src/core/guncon.cpp
---- a/src/core/guncon.cpp	2026-01-16 00:06:47.000000000 +0000
-+++ b/src/core/guncon.cpp	2026-01-17 15:50:16.709929017 +0000
-@@ -18,6 +18,19 @@
+--- a/src/core/guncon.cpp	2026-02-05 00:46:26.643752251 +0000
++++ b/src/core/guncon.cpp	2026-02-05 00:50:00.227754981 +0000
+@@ -18,6 +18,11 @@
  
  #include <array>
  
 +#ifdef __linux__
-+#include <dirent.h>
-+#include <fcntl.h>
-+#include <unistd.h>
 +#include <linux/input.h>
-+#include <sys/ioctl.h>
-+#include <algorithm>
-+#include <vector>
-+#include <string>
-+#include <cstring>
-+#include <cstdio>
++#include "util/evdev_lightgun.h"
 +#endif
 +
  #ifdef _DEBUG
  #include "common/log.h"
  Log_SetChannel(GunCon);
-@@ -27,10 +40,18 @@
+@@ -27,10 +32,17 @@
  
  GunCon::GunCon(u32 index) : Controller(index)
  {
-+  ScanForLightgun();
++#ifdef __linux__
++  m_evdev = EvdevLightgun::Open(index);
++#endif
  }
  
  GunCon::~GunCon()
  {
 +#ifdef __linux__
-+  if (m_evdev_fd >= 0)
-+  {
-+    ioctl(m_evdev_fd, EVIOCGRAB, 0);
-+    close(m_evdev_fd);
-+  }
++  if (m_evdev.IsValid())
++    EvdevLightgun::Close(m_evdev);
 +#endif
    if (!m_cursor_path.empty())
    {
      const u32 cursor_index = GetSoftwarePointerIndex();
-@@ -206,9 +227,57 @@
+@@ -206,9 +218,56 @@
  
  void GunCon::UpdatePosition()
  {
 +  float window_x, window_y;
 +
 +#ifdef __linux__
-+  if (m_evdev_fd >= 0)
++  if (m_evdev.IsValid())
 +  {
 +    struct input_event ev;
-+    while (read(m_evdev_fd, &ev, sizeof(ev)) == sizeof(ev))
++    while (read(m_evdev.fd, &ev, sizeof(ev)) == sizeof(ev))
 +    {
 +      if (ev.type == EV_ABS)
 +      {
-+        if (ev.code == ABS_X && m_evdev_max_x > m_evdev_min_x)
-+          m_evdev_x = std::clamp(static_cast<float>(ev.value - m_evdev_min_x) / static_cast<float>(m_evdev_max_x - m_evdev_min_x), 0.0f, 1.0f);
-+        else if (ev.code == ABS_Y && m_evdev_max_y > m_evdev_min_y)
-+          m_evdev_y = std::clamp(static_cast<float>(ev.value - m_evdev_min_y) / static_cast<float>(m_evdev_max_y - m_evdev_min_y), 0.0f, 1.0f);
++        if (ev.code == ABS_X && m_evdev.max_x > m_evdev.min_x)
++          m_evdev_x = std::clamp(static_cast<float>(ev.value - m_evdev.min_x) / static_cast<float>(m_evdev.max_x - m_evdev.min_x), 0.0f, 1.0f);
++        else if (ev.code == ABS_Y && m_evdev.max_y > m_evdev.min_y)
++          m_evdev_y = std::clamp(static_cast<float>(ev.value - m_evdev.min_y) / static_cast<float>(m_evdev.max_y - m_evdev.min_y), 0.0f, 1.0f);
 +      }
 +      else if (ev.type == EV_KEY)
 +      {
-+        // BTN_LEFT=Trigger, BTN_RIGHT=A, BTN_MIDDLE=B
 +        const float pressed = (ev.value != 0) ? 1.0f : 0.0f;
 +        if (ev.code == BTN_LEFT)
 +          SetBindState(static_cast<u32>(Binding::Trigger), pressed);
@@ -100,100 +90,7 @@ diff -ruN a/src/core/guncon.cpp b/src/core/guncon.cpp
    g_gpu->ConvertScreenCoordinatesToDisplayCoordinates(window_x, window_y, &display_x, &display_y);
  
    // are we within the active display area?
-@@ -238,6 +307,92 @@
-   return std::make_pair(screen_rel_x * ImGuiManager::GetWindowWidth(), screen_rel_y * ImGuiManager::GetWindowHeight());
- }
- 
-+void GunCon::ScanForLightgun()
-+{
-+#ifdef __linux__
-+  std::vector<std::string> gun_devices;
-+
-+  DIR* dir = opendir("/dev/input");
-+  if (!dir)
-+  {
-+    return;
-+  }
-+
-+  struct dirent* entry;
-+  while ((entry = readdir(dir)) != nullptr)
-+  {
-+    if (strncmp(entry->d_name, "event", 5) != 0)
-+      continue;
-+
-+    std::string devpath = std::string("/dev/input/") + entry->d_name;
-+    std::string devnumpath = std::string("/sys/class/input/") + entry->d_name + "/dev";
-+
-+    FILE* devf = fopen(devnumpath.c_str(), "r");
-+    if (!devf)
-+      continue;
-+
-+    int major = 0, minor = 0;
-+    bool got_devnum = (fscanf(devf, "%d:%d", &major, &minor) == 2);
-+    fclose(devf);
-+
-+    if (!got_devnum)
-+      continue;
-+
-+    char udevpath[128];
-+    snprintf(udevpath, sizeof(udevpath), "/run/udev/data/c%d:%d", major, minor);
-+    FILE* udevf = fopen(udevpath, "r");
-+    if (!udevf)
-+      continue;
-+
-+    char line[256];
-+    bool is_gun = false;
-+    while (fgets(line, sizeof(line), udevf))
-+    {
-+      if (strstr(line, "ID_INPUT_GUN=1"))
-+      {
-+        is_gun = true;
-+        break;
-+      }
-+    }
-+    fclose(udevf);
-+
-+    if (is_gun)
-+    {
-+      gun_devices.push_back(devpath);
-+    }
-+  }
-+  closedir(dir);
-+
-+  std::sort(gun_devices.begin(), gun_devices.end());
-+
-+  if (m_index < gun_devices.size())
-+  {
-+    const char* devnode = gun_devices[m_index].c_str();
-+
-+    int fd = open(devnode, O_RDONLY | O_NONBLOCK);
-+    if (fd >= 0)
-+    {
-+      ioctl(fd, EVIOCGRAB, 1);
-+      struct input_absinfo abs_x, abs_y;
-+      if (ioctl(fd, EVIOCGABS(ABS_X), &abs_x) >= 0 && ioctl(fd, EVIOCGABS(ABS_Y), &abs_y) >= 0)
-+      {
-+        m_evdev_fd = fd;
-+        m_evdev_min_x = abs_x.minimum;
-+        m_evdev_max_x = abs_x.maximum;
-+        m_evdev_min_y = abs_y.minimum;
-+        m_evdev_max_y = abs_y.maximum;
-+      }
-+      else
-+      {
-+        ioctl(fd, EVIOCGRAB, 0);
-+        close(fd);
-+      }
-+    }
-+  }
-+
-+#endif
-+}
-+
- bool GunCon::CanUseSoftwareCursor() const
- {
-   return (InputManager::MAX_POINTER_DEVICES + m_index) < InputManager::MAX_SOFTWARE_CURSORS;
-@@ -245,7 +400,7 @@
+@@ -245,7 +304,7 @@
  
  u32 GunCon::GetSoftwarePointerIndex() const
  {
@@ -203,51 +100,55 @@ diff -ruN a/src/core/guncon.cpp b/src/core/guncon.cpp
  
  void GunCon::UpdateSoftwarePointerPosition()
 diff -ruN a/src/core/guncon.h b/src/core/guncon.h
---- a/src/core/guncon.h	2026-01-16 00:06:47.000000000 +0000
-+++ b/src/core/guncon.h	2026-01-17 15:50:16.714929015 +0000
-@@ -46,6 +46,14 @@
+--- a/src/core/guncon.h	2026-02-05 00:46:48.519752530 +0000
++++ b/src/core/guncon.h	2026-02-05 00:50:20.387755239 +0000
+@@ -5,6 +5,10 @@
+ 
+ #include "controller.h"
+ 
++#ifdef __linux__
++#include "util/evdev_lightgun.h"
++#endif
++
+ #include <memory>
+ 
+ class GunCon final : public Controller
+@@ -46,6 +50,13 @@
    bool Transfer(const u8 data_in, u8* data_out) override;
  
  private:
-+  void ScanForLightgun();
-+  int m_evdev_fd = -1;
++#ifdef __linux__
++  EvdevLightgun::Device m_evdev{};
 +  float m_evdev_x = 0.5f;
 +  float m_evdev_y = 0.5f;
-+  int m_evdev_min_x = 0, m_evdev_max_x = 1;
-+  int m_evdev_min_y = 0, m_evdev_max_y = 1;
 +  bool m_evdev_cursor_init = false;
++#endif
 +
    enum class TransferState : u8
    {
      Idle,
 diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
---- a/src/core/justifier.cpp	2026-01-16 00:35:49.000000000 +0000
-+++ b/src/core/justifier.cpp	2026-01-17 15:50:16.721929012 +0000
-@@ -19,6 +19,19 @@
+--- a/src/core/justifier.cpp	2026-02-05 00:48:17.172753664 +0000
++++ b/src/core/justifier.cpp	2026-02-05 00:52:04.128756565 +0000
+@@ -19,6 +19,11 @@
  #include "IconsPromptFont.h"
  #include <array>
  
 +#ifdef __linux__
-+#include <dirent.h>
-+#include <fcntl.h>
-+#include <unistd.h>
 +#include <linux/input.h>
-+#include <sys/ioctl.h>
-+#include <algorithm>
-+#include <vector>
-+#include <string>
-+#include <cstring>
-+#include <cstdio>
++#include "util/evdev_lightgun.h"
 +#endif
 +
  Log_SetChannel(Justifier);
  
  // #define CHECK_TIMING 1
-@@ -36,12 +49,21 @@
+@@ -36,12 +41,20 @@
                           s_event_names[index], 1, 1,
                           [](void* param, TickCount, TickCount) { static_cast<Justifier*>(param)->IRQEvent(); }, this)
  {
-+  ScanForLightgun();
++#ifdef __linux__
++  m_evdev = EvdevLightgun::Open(index);
++#endif
  }
  
  Justifier::~Justifier()
@@ -255,17 +156,14 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
    m_irq_event.Deactivate();
  
 +#ifdef __linux__
-+  if (m_evdev_fd >= 0)
-+  {
-+    ioctl(m_evdev_fd, EVIOCGRAB, 0);
-+    close(m_evdev_fd);
-+  }
++  if (m_evdev.IsValid())
++    EvdevLightgun::Close(m_evdev);
 +#endif
 +
    if (!m_cursor_path.empty())
    {
      const u32 cursor_index = GetSoftwarePointerIndex();
-@@ -71,6 +93,7 @@
+@@ -71,6 +84,7 @@
    u16 button_state = m_button_state;
    bool shoot_offscreen = m_shoot_offscreen;
    bool position_valid = m_position_valid;
@@ -273,7 +171,7 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
  
    sw.Do(&irq_first_line);
    sw.Do(&irq_last_line);
-@@ -78,6 +101,7 @@
+@@ -78,6 +92,7 @@
    sw.Do(&button_state);
    sw.Do(&shoot_offscreen);
    sw.Do(&position_valid);
@@ -281,7 +179,7 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
  
    if (apply_input_state)
    {
-@@ -87,6 +111,7 @@
+@@ -87,6 +102,7 @@
      m_button_state = button_state;
      m_shoot_offscreen = shoot_offscreen;
      m_position_valid = position_valid;
@@ -289,7 +187,7 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
    }
  
    sw.Do(&m_transfer_state);
-@@ -178,6 +203,14 @@
+@@ -178,6 +194,14 @@
  
      case TransferState::ButtonsLSB:
      {
@@ -304,28 +202,27 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
        *data_out = Truncate8(m_button_state);
        m_transfer_state = TransferState::ButtonsMSB;
        return true;
-@@ -212,9 +245,57 @@
+@@ -212,9 +236,56 @@
      return;
    }
  
 +  float window_x, window_y;
 +
 +#ifdef __linux__
-+  if (m_evdev_fd >= 0)
++  if (m_evdev.IsValid())
 +  {
 +    struct input_event ev;
-+    while (read(m_evdev_fd, &ev, sizeof(ev)) == sizeof(ev))
++    while (read(m_evdev.fd, &ev, sizeof(ev)) == sizeof(ev))
 +    {
 +      if (ev.type == EV_ABS)
 +      {
-+        if (ev.code == ABS_X && m_evdev_max_x > m_evdev_min_x)
-+          m_evdev_x = std::clamp(static_cast<float>(ev.value - m_evdev_min_x) / static_cast<float>(m_evdev_max_x - m_evdev_min_x), 0.0f, 1.0f);
-+        else if (ev.code == ABS_Y && m_evdev_max_y > m_evdev_min_y)
-+          m_evdev_y = std::clamp(static_cast<float>(ev.value - m_evdev_min_y) / static_cast<float>(m_evdev_max_y - m_evdev_min_y), 0.0f, 1.0f);
++        if (ev.code == ABS_X && m_evdev.max_x > m_evdev.min_x)
++          m_evdev_x = std::clamp(static_cast<float>(ev.value - m_evdev.min_x) / static_cast<float>(m_evdev.max_x - m_evdev.min_x), 0.0f, 1.0f);
++        else if (ev.code == ABS_Y && m_evdev.max_y > m_evdev.min_y)
++          m_evdev_y = std::clamp(static_cast<float>(ev.value - m_evdev.min_y) / static_cast<float>(m_evdev.max_y - m_evdev.min_y), 0.0f, 1.0f);
 +      }
 +      else if (ev.type == EV_KEY)
 +      {
-+        // BTN_LEFT=Trigger, BTN_MIDDLE=Start, BTN_RIGHT=Back
 +        const float pressed = (ev.value != 0) ? 1.0f : 0.0f;
 +        if (ev.code == BTN_LEFT)
 +          SetBindState(static_cast<u32>(Binding::Trigger), pressed);
@@ -364,18 +261,17 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
    g_gpu->ConvertScreenCoordinatesToDisplayCoordinates(window_x, window_y, &display_x, &display_y);
  
    // are we within the active display area?
-@@ -251,7 +332,9 @@
+@@ -251,7 +322,8 @@
    // TODO: Avoid deactivate and event sort.
    m_irq_event.Deactivate();
  
 -  if (!m_position_valid)
-+  // Only generate IRQ if position valid AND IRQ enabled by game
 +  // PSX-SPX: Games alternate IRQ enable between guns for 2-player
 +  if (!m_position_valid || !m_irq_enabled)
      return;
  
    u32 current_tick, current_line;
-@@ -308,7 +391,7 @@
+@@ -308,7 +380,7 @@
  
  u32 Justifier::GetSoftwarePointerIndex() const
  {
@@ -384,119 +280,189 @@ diff -ruN a/src/core/justifier.cpp b/src/core/justifier.cpp
  }
  
  void Justifier::UpdateSoftwarePointerPosition()
-@@ -320,6 +403,89 @@
-   ImGuiManager::SetSoftwareCursorPosition(GetSoftwarePointerIndex(), window_x, window_y);
- }
- 
-+void Justifier::ScanForLightgun()
-+{
-+#ifdef __linux__
-+  std::vector<std::string> gun_devices;
-+
-+  DIR* dir = opendir("/dev/input");
-+  if (!dir)
-+  {
-+    return;
-+  }
-+
-+  struct dirent* entry;
-+  while ((entry = readdir(dir)) != nullptr)
-+  {
-+    if (strncmp(entry->d_name, "event", 5) != 0)
-+      continue;
-+
-+    std::string devpath = std::string("/dev/input/") + entry->d_name;
-+    std::string devnumpath = std::string("/sys/class/input/") + entry->d_name + "/dev";
-+
-+    FILE* devf = fopen(devnumpath.c_str(), "r");
-+    if (!devf)
-+      continue;
-+
-+    int major = 0, minor = 0;
-+    bool got_devnum = (fscanf(devf, "%d:%d", &major, &minor) == 2);
-+    fclose(devf);
-+
-+    if (!got_devnum)
-+      continue;
-+
-+    char udevpath[128];
-+    snprintf(udevpath, sizeof(udevpath), "/run/udev/data/c%d:%d", major, minor);
-+    FILE* udevf = fopen(udevpath, "r");
-+    if (!udevf)
-+      continue;
-+
-+    char line[256];
-+    bool is_gun = false;
-+    while (fgets(line, sizeof(line), udevf))
-+    {
-+      if (strstr(line, "ID_INPUT_GUN=1"))
-+      {
-+        is_gun = true;
-+        break;
-+      }
-+    }
-+    fclose(udevf);
-+
-+    if (is_gun)
-+    {
-+      gun_devices.push_back(devpath);
-+    }
-+  }
-+  closedir(dir);
-+
-+  std::sort(gun_devices.begin(), gun_devices.end());
-+
-+  if (m_index < gun_devices.size())
-+  {
-+    int fd = open(gun_devices[m_index].c_str(), O_RDONLY | O_NONBLOCK);
-+    if (fd >= 0)
-+    {
-+      ioctl(fd, EVIOCGRAB, 1);
-+      struct input_absinfo abs_x, abs_y;
-+      if (ioctl(fd, EVIOCGABS(ABS_X), &abs_x) >= 0 && ioctl(fd, EVIOCGABS(ABS_Y), &abs_y) >= 0)
-+      {
-+        m_evdev_fd = fd;
-+        m_evdev_min_x = abs_x.minimum;
-+        m_evdev_max_x = abs_x.maximum;
-+        m_evdev_min_y = abs_y.minimum;
-+        m_evdev_max_y = abs_y.maximum;
-+      }
-+      else
-+      {
-+        ioctl(fd, EVIOCGRAB, 0);
-+        close(fd);
-+      }
-+    }
-+  }
-+#endif
-+}
-+
- std::unique_ptr<Justifier> Justifier::Create(u32 index)
- {
-   return std::make_unique<Justifier>(index);
 diff -ruN a/src/core/justifier.h b/src/core/justifier.h
---- a/src/core/justifier.h	2026-01-16 00:35:34.000000000 +0000
-+++ b/src/core/justifier.h	2026-01-17 15:50:16.727929010 +0000
-@@ -49,6 +49,14 @@
+--- a/src/core/justifier.h	2026-02-05 00:48:54.164754136 +0000
++++ b/src/core/justifier.h	2026-02-05 00:52:24.386756824 +0000
+@@ -6,6 +6,10 @@
+ #include "controller.h"
+ #include "timing_event.h"
+ 
++#ifdef __linux__
++#include "util/evdev_lightgun.h"
++#endif
++
+ #include <memory>
+ 
+ class TimingEvent;
+@@ -49,6 +53,13 @@
    bool Transfer(const u8 data_in, u8* data_out) override;
  
  private:
-+  void ScanForLightgun();
-+  int m_evdev_fd = -1;
++#ifdef __linux__
++  EvdevLightgun::Device m_evdev{};
 +  float m_evdev_x = 0.5f;
 +  float m_evdev_y = 0.5f;
-+  int m_evdev_min_x = 0, m_evdev_max_x = 1;
-+  int m_evdev_min_y = 0, m_evdev_max_y = 1;
 +  bool m_evdev_cursor_init = false;
++#endif
 +
    bool IsTriggerPressed() const;
    void UpdatePosition();
    void UpdateIRQEvent();
-@@ -94,6 +102,7 @@
+@@ -94,6 +105,7 @@
    u16 m_button_state = UINT16_C(0xFFFF);
    u8 m_shoot_offscreen = 0;
    bool m_position_valid = false;
-+  bool m_irq_enabled = false;  // IRQ10 enable flag from controller byte 4 (PSX-SPX: "x0h" byte)
++  bool m_irq_enabled = false;
  
    TransferState m_transfer_state = TransferState::Idle;
  
+diff -ruN a/src/util/evdev_lightgun.cpp b/src/util/evdev_lightgun.cpp
+--- /dev/null
++++ b/src/util/evdev_lightgun.cpp	2026-02-05 00:52:44.575757082 +0000
+@@ -0,0 +1,100 @@
++// SPDX-FileCopyrightText: 2024 Batocera
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++#ifdef __linux__
++
++#include "evdev_lightgun.h"
++
++#include <libudev.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <linux/input.h>
++#include <sys/ioctl.h>
++#include <algorithm>
++#include <vector>
++#include <string>
++#include <cstring>
++
++namespace EvdevLightgun {
++
++Device Open(u32 index)
++{
++  Device result;
++
++  struct udev* udev = udev_new();
++  if (!udev)
++    return result;
++
++  struct udev_enumerate* enumerate = udev_enumerate_new(udev);
++  if (!enumerate)
++  {
++    udev_unref(udev);
++    return result;
++  }
++
++  udev_enumerate_add_match_property(enumerate, "ID_INPUT_GUN", "1");
++  udev_enumerate_add_match_subsystem(enumerate, "input");
++  udev_enumerate_scan_devices(enumerate);
++
++  std::vector<std::string> gun_devices;
++  struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
++  struct udev_list_entry* entry;
++
++  udev_list_entry_foreach(entry, devices)
++  {
++    const char* syspath = udev_list_entry_get_name(entry);
++    struct udev_device* dev = udev_device_new_from_syspath(udev, syspath);
++    if (dev)
++    {
++      const char* devnode = udev_device_get_devnode(dev);
++      if (devnode && strstr(devnode, "/dev/input/event"))
++        gun_devices.push_back(devnode);
++      udev_device_unref(dev);
++    }
++  }
++
++  udev_enumerate_unref(enumerate);
++  udev_unref(udev);
++
++  std::sort(gun_devices.begin(), gun_devices.end());
++
++  if (index >= gun_devices.size())
++    return result;
++
++  int fd = open(gun_devices[index].c_str(), O_RDONLY | O_NONBLOCK);
++  if (fd < 0)
++    return result;
++
++  ioctl(fd, EVIOCGRAB, 1);
++
++  struct input_absinfo abs_x, abs_y;
++  if (ioctl(fd, EVIOCGABS(ABS_X), &abs_x) < 0 ||
++      ioctl(fd, EVIOCGABS(ABS_Y), &abs_y) < 0)
++  {
++    ioctl(fd, EVIOCGRAB, 0);
++    close(fd);
++    return result;
++  }
++
++  result.fd = fd;
++  result.min_x = abs_x.minimum;
++  result.max_x = abs_x.maximum;
++  result.min_y = abs_y.minimum;
++  result.max_y = abs_y.maximum;
++
++  return result;
++}
++
++void Close(Device& dev)
++{
++  if (dev.fd >= 0)
++  {
++    ioctl(dev.fd, EVIOCGRAB, 0);
++    close(dev.fd);
++    dev.fd = -1;
++  }
++}
++
++} // namespace EvdevLightgun
++
++#endif // __linux__
+diff -ruN a/src/util/evdev_lightgun.h b/src/util/evdev_lightgun.h
+--- /dev/null
++++ b/src/util/evdev_lightgun.h	2026-02-05 00:52:31.854756919 +0000
+@@ -0,0 +1,28 @@
++// SPDX-FileCopyrightText: 2024 Batocera
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++#pragma once
++
++#ifdef __linux__
++
++#include "common/types.h"
++
++namespace EvdevLightgun {
++
++struct Device
++{
++  int fd = -1;
++  int min_x = 0;
++  int max_x = 1;
++  int min_y = 0;
++  int max_y = 1;
++
++  bool IsValid() const { return fd >= 0; }
++};
++
++Device Open(u32 index);
++void Close(Device& dev);
++
++} // namespace EvdevLightgun
++
++#endif // __linux__
+diff -ruN a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
+--- a/src/util/CMakeLists.txt
++++ b/src/util/CMakeLists.txt
+@@ -255,6 +255,10 @@
+   target_link_libraries(util PRIVATE ${DBUS_LINK_LIBRARIES})
+ 
+   if(LINUX)
++    target_sources(util PRIVATE
++      evdev_lightgun.cpp
++      evdev_lightgun.h
++    )
+     target_link_libraries(util PRIVATE UDEV::UDEV)
+   endif()
+ endif()
