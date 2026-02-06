@@ -130,6 +130,7 @@
 - RetroArch to 1.22.2
 - RPCS3 to v0.0.39
 - Ruffle to 31th of January 2026 nightly build
+- ScummVM to v2026.1.0
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
 - Sonic 2013 to 1.3.3
 - Sonic CD to 1.3.3

@@ -4,12 +4,12 @@
 #
 ################################################################################
 
-SCUMMVM_VERSION = v2.9.1
+SCUMMVM_VERSION = v2026.1.0
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_EMULATOR_INFO = scummvm.emulator.yml
-SCUMMVM_DEPENDENCIES += sdl2 zlib libmpeg2 libogg libvorbis flac libmad
-SCUMMVM_DEPENDENCIES += libpng libtheora faad2 freetype libjpeg-bato fluidsynth
+SCUMMVM_DEPENDENCIES += faad2 flac fluidsynth freetype giflib libjpeg-bato libmad libmpeg2
+SCUMMVM_DEPENDENCIES += libogg libpng libtheora libvorbis libvpx musepack sdl2 zlib
 
 SCUMMVM_ADDITIONAL_FLAGS += -I$(STAGING_DIR)/usr/include -lpthread -lm
 SCUMMVM_ADDITIONAL_FLAGS += -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
