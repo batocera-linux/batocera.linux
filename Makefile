@@ -17,7 +17,8 @@ BR_DIR         := $(PROJECT_DIR)/buildroot
 -include $(LOCAL_MK)
 
 ifdef PARALLEL_BUILD
-	EXTRA_OPTS +=  BR2_PER_PACKAGE_DIRECTORIES=y
+	EXTRA_OPTS += BR2_PER_PACKAGE_DIRECTORIES=y
+	EXTRA_OPTS += BR2_JLEVEL=$(MAKE_JLEVEL)
 	MAKE_OPTS  += -j$(MAKE_JLEVEL)
 	MAKE_OPTS  += -l$(MAKE_LLEVEL)
 endif
@@ -172,6 +173,10 @@ $(eval $(call __initialize_directory,$(DL_DIR),dl-dir))
 
 %-clean: batocera-docker-image %-output-dir
 	@$(MAKE_BUILDROOT) clean
+	@if [ -f $(PROJECT_DIR)/configs/batocera-$*_defconfig ]; then \
+		echo "Removing config for $*..."; \
+		rm $(PROJECT_DIR)/configs/batocera-$*_defconfig; \
+	fi
 
 $(PROJECT_DIR)/configs/batocera-%_defconfig: $(PROJECT_DIR)/configs/batocera-%.board $(PROJECT_DIR)/configs/batocera-board.common
 	@$(PROJECT_DIR)/configs/createDefconfig.sh $(PROJECT_DIR)/configs/batocera-$*
@@ -229,7 +234,12 @@ $(PROJECT_DIR)/configs/batocera-%_defconfig: $(PROJECT_DIR)/configs/batocera-%.b
 	fi
 
 	@echo "--- Removing Host and Target directories ---"
-	rm -rf $(OUTPUT_DIR)/$*/host
+	@for dir in include share lib/pkgconfig; do \
+		if [ -d "$(OUTPUT_DIR)/$*/host/$$dir" ]; then \
+			echo "Cleaning host staging: $$dir..."; \
+			rm -rf $(OUTPUT_DIR)/$*/host/$$dir; \
+		fi; \
+	done
 	rm -rf $(OUTPUT_DIR)/$*/target
 	rm -rf $(OUTPUT_DIR)/$*/target2
 
