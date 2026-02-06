@@ -3098,67 +3098,6 @@ model2:
     Afterwards you can restore your CFG & NVDATA directories.
 
     *** Enjoy the Sega Model 2 emulator running under Linux !!! ***
-  comment_br: |
-    ----------------------------------
-    ## SEGA MODEL 2 INFORMAÇÕES IMPORTANTES ##
-    ----------------------------------
-
-    Agora você pode jogar jogos da Sega Model 2 usando o Demul & Wine.
-    Roms devem ser armazenados apropriadamente no diretório cave3rd .
-
-    O desempenho depende do hardware do sistema x86_64.
-    Se você tiver falhas de áudio e música lenta, seu sistema não tem desempenho suficiente para executar este emulador.
-
-    -----------
-    Primeiro acesso
-    -----------
-
-    Você precisa executar uma ROM pelo menos uma vez E estar conectado à internet.
-    Isso cria a estrutura de diretórios e instala as bibliotecas Windows DirectX associadas para Wine.
-
-    Nota: Pode levar algum tempo até que o jogo comece na primeira tentativa, isso é NORMAL!
-    *** Por favor, seja paciente, pois pode levar até 10 minutos, dependendo da velocidade da sua conexão com a internet ***
-
-    -----------
-    Configuração dos Controles
-    -----------
-
-     Nota: Um teclado e um mouse são necessários além do(s) seu(s) controle(s).
-
-     Um conjunto de arquivos de entrada é fornecido, no entanto, você pode mapear seus controles para cada um dos jogos que pretende executar.
-     Recomendamos que você faça isso usando a opção de menu 'F1' do Emulation Station e, em seguida, escolha o aplicativo de configuração model2.
-     *** A ROM deve ser carregada antes que você possa configurar os controles. ***
-
-     Pressione Esc no teclado para voltar ao modo 'janela' para definir as opções do controle se o aplicativo for de tela cheia.
-     Uma vez que os controles são definidos, eles são salvos para uso futuro no Batocera através das opções normais do menu.
-
-    ------------
-    Menu de serviço
-    ------------
-
-    Nota: Necessário teclado.
-    Você pode acessar o Menu de Serviço usando o F4 e depois usar o F2 para navegar e o F4 para selecionar.
-
-    -----------------
-    Atualizações do Batocera
-    -----------------
-
-    Em alguns casos, quando você atualiza o Batocera para uma nova versão, ao tentar executar o emulador Sega Model 2, ele pode travar.
-    Verificando o seu arquivo /userdata/system/logs/es_launch_stderr.log você pode ver um erro de incompatibilidade do Wine (Wine mismatch error).
-    Isso ocorre porque o Wine está desatualizada e não está alinhada com a versão instalada com o Batocera mais recente.
-    Se for o caso, você deve fazer backup de suas pastas /userdata/saves/model2/model2emu/CFG & userdata/saves/model2/model2emu/NVDATA.
-    Ao navegar usando o compartilhamento de rede, você não verá o diretório userdata, navegue até a pasta de saves.
-    O backup dessas pastas manterá suas pontuações, configurações de rom e controles.
-
-    É recomendado remover seu diretório /userdata/saves/model2/ somente via ssh!
-    Quando logado via ssh execute:
-    cd /userdata/saves
-    rm -rf modelo2
-
-    Uma vez feito isto, inicie um jogo estando conectado à Internet e ele recriará a os arquivos wine para você.
-    Depois, você pode restaurar seus diretórios CFG e NVDATA.
-
-    *** Desfrute dos jogos Sega Model 2 no Linux! ***
 
 scv:
   name:       Super Cassette Vision
@@ -4007,7 +3946,7 @@ macintosh:
           As imagens de disco só serão carregadas no Mac IIx e não são inicializáveis.
 
 naomi2:
-  name:       Naomi 2
+  name: Naomi 2
   manufacturer: Sega
   release: 2000
   hardware: arcade
@@ -4027,103 +3966,10 @@ naomi2:
     Roms should be stored in the appropriate naomi2 directory.
     You will need a Naomi 2 bios, please add the naomi2.zip file to your bios/dc directory.
 
-    --------------------------------
-    ## DEMUL - CURRENTLY DISABLED ##
-    --------------------------------
-
-    An alternative is to use Demul with Wine.
-    Note: Your graphics card requires Vulkan drivers for Demul to work.
-
-    Performance depends on your x86_64 system hardware.
-    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
-
-    -----------
-    First Start
-    -----------
-
-    You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for Wine.
-
-    Note: It may take some time before the game starts with the first use, this is NORMAL!
-    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
-
-    -----------
-    Controllers
-    -----------
-
-    Currently controllers cannot be configured using the desktop app.
-    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
-
-    Note: Future consideration:
-
-    Demul uses decimal for pad configuration in the padDemul.ini
-    To determine the decimal we have to convert the hexadecimal to decimal.
-    You can edit arcade controls they're under the [JAMMAx_x] headings depending on the number of controllers.
-
-    Controller 1 = 0x100 & 0x200 for the buttons & the 2x analog sticks.
-    Controller 2 = 0x101 & 0x201 etc.
-
-    Device input hex codes are listed in the appropriate linux kernel input.h depending on the controller type.
-    i.e. A gamepad's 'start' button is 0x13b
-    Therefore controller 1's start button is 0100013b in hex or 16777531 in decimal.
-    Controller 2 would be 0101013b / 16843067 accordingly.
-
-    ------------
-    Service Menu
-    ------------
-
-    Note: Keyboard required.
-    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
-
     Enjoy Naomi 2 games under Linux!
-  comment_br: |
-    ----------------------------------
-    ## NAOMI 2 INFORMAÇÕES IMPORTANTES ##
-    ----------------------------------
-
-    Agora você pode jogar jogos da Sega Cave CV1000 usando o Demul & Wine.
-    Roms devem ser armazenados apropriadamente no diretório cave3rd .
-
-    --------------------------------
-    ## DEMUL - ATUALMENTE DESATIVADO ##
-    --------------------------------
-
-    Uma alternativa é usar Demul com Wine.
-    Nota: Sua placa gráfica requer drivers Vulkan para que o Demul funcione.
-
-    O desempenho depende do hardware do sistema x86_64.
-    Se você tiver falhas de áudio e música lenta, seu sistema não tem desempenho suficiente para executar este emulador.
-
-    -----------
-    Primeiro acesso
-    -----------
-
-    Você precisa executar uma ROM pelo menos uma vez E estar conectado à internet.
-    Isso cria a estrutura de diretórios e instala as bibliotecas do Windows associadas para o Wine.
-
-    Nota: Pode levar algum tempo até que o jogo comece na primeira tentativa, isso é NORMAL!
-    *** Por favor, seja paciente, pois pode levar até 2 minutos, dependendo da velocidade da sua conexão com a internet ***
-
-    -----------
-    Controles
-    -----------
-
-    Atualmente, os controles não podem ser configurados usando o aplicativo de desktop.
-    Esta é uma limitação do aplicativo Demul no Wine, mas também uma falha conhecida de conexão com o controle, mesmo no Windows.
-    Atualmente, mapeamos apenas o Jogador 1 usando a configuração de teclado padrão dos emuladores usando o evmapy.
-
-    ------------
-    Menu de serviço
-    ------------
-
-    Nota: Necessário teclado.
-    Você pode acessar o Menu de Serviço usando o F4 e depois usar o F2 para navegar e o F4 para selecionar.
-
-    Desfrute dos jogos Sega Naomi 2 no Linux!
 
 hikaru:
-  name:       Hikaru
+  name: Hikaru
   manufacturer: Sega
   release: 1999
   hardware: arcade
@@ -4137,83 +3983,62 @@ hikaru:
     ## HIKARU IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Hikaru games using Demul with Wine.
-    Roms should be stored in the appropriate hikaru directory.
-    You will need a Hikaru bios, please add the hikaru.zip file to your bios directory.
+    You can now play Sega Hikaru games using Mame or Demul (with WINE).
+    The emulators are still work in progress for Hikaru games so mileage will vary.
+    Zipped roms should be stored in the appropriate hikaru directory compatible with MAME 0.284 or later.
 
     Performance depends on your x86_64 system hardware.
-    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this system.
 
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
-    -----------
-    First Start
-    -----------
+    -----------------
+    Demul First Start
+    -----------------
 
     You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for Wine.
+    This creates the directory structure & installs the associated Windows libraries for WINE.
 
-    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    Note: It may take some minutes before the game starts with the first use, this is NORMAL!
     *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
 
-    -----------
-    Controllers
-    -----------
+    -----------------
+    Demul Controllers
+    -----------------
 
     Currently controllers cannot be configured using the desktop app.
     This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+    Currently we map 2 players using the emulators default keyboard configuration using evmapy.
 
-    ------------
-    Service Menu
-    ------------
+    ------------------
+    Demul Service Menu
+    ------------------
 
     Note: Keyboard required.
     You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
 
+    ---------------------
+    Demul Compatible ROMs
+    ---------------------
+
+    Demul has a specific list of currently compatible roms:
+    
+    airtrix: Air Trix (Rev. A)
+    airtrixo: Air Trix (original)
+    braveff: Brave Firefighters
+    hikcheck: Hikaru Check ROM BD
+    pharrier: Planet Harriers (Rev. A)
+    swracer: Star Wars: Racer Arcade
+    sgnascar: NASCAR Arcade (Rev. A)
+    sgnascaro: NASCAR Arcade (original)
+    von4: Cyber Troopers Virtual-On 4: Force (Rev. E)
+    
+    With both MAME and Demul you should be able to play a good collection of games.
+
     Enjoy Sega Hikaru games under Linux!
-  comment_br: |
-    ----------------------------------
-    ## HIKARU INFORMAÇÕES IMPORTANTES ##
-    ----------------------------------
-
-    Agora você pode jogar jogos da Sega Cave CV1000 usando o Demul com o Wine.
-    Roms devem ser armazenados apropriadamente no diretório cave3rd .
-
-    O desempenho depende do hardware do sistema x86_64.
-    Se você tiver falhas de áudio e música lenta, seu sistema não tem desempenho suficiente para executar este emulador.
-
-    Nota: Sua placa gráfica requer drivers Vulkan para que o Demul funcione.
-
-    -----------
-    Primeiro acesso
-    -----------
-
-    Você precisa executar uma ROM pelo menos uma vez E estar conectado à internet.
-    Isso cria a estrutura de diretórios e instala as bibliotecas do Windows associadas para o Wine.
-
-    Nota: Pode levar algum tempo até que o jogo comece na primeira tentativa, isso é NORMAL!
-    *** Por favor, seja paciente, pois pode levar até 2 minutos, dependendo da velocidade da sua conexão com a internet ***
-
-    -----------
-    Controles
-    -----------
-
-    Atualmente, os controles não podem ser configurados usando o aplicativo de desktop.
-    Esta é uma limitação do aplicativo Demul no Wine, mas também uma falha conhecida de conexão com o controle, mesmo no Windows.
-    Atualmente, mapeamos apenas o Jogador 1 usando a configuração de teclado padrão dos emuladores usando o evmapy.
-
-    ------------
-    Menu de serviço
-    ------------
-
-    Nota: Necessário teclado.
-    Você pode acessar o Menu de Serviço usando o F4 e depois usar o F2 para navegar e o F4 para selecionar.
-
-    Desfrute dos jogos Sega Hiraku no Linux!
 
 gaelco:
-  name:       Gaelco
+  name: Gaelco
   manufacturer: Sega
   release: 1999
   hardware: arcade
@@ -4222,87 +4047,70 @@ gaelco:
   emulators:
     demul:
       demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     ---------------------------------
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Gaelco games using Demul with Wine.
-    Roms should be stored in the appropriate gaelco directory.
+    You can now play Sega Gaelco games using Mame or Demul (with WINE).
+    The emulators are still work in progress for Gaelco games so mileage will vary.
+    Zipped roms should be stored in the appropriate gaelco directory compatible with MAME 0.284 or later.
 
     Performance depends on your x86_64 system hardware.
-    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this system.
 
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
-    -----------
-    First Start
-    -----------
+    -----------------
+    Demul First Start
+    -----------------
 
     You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for Wine.
+    This creates the directory structure & installs the associated Windows libraries for WINE.
 
-    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    Note: It may take some minutes before the game starts with the first use, this is NORMAL!
     *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
 
-    -----------
-    Controllers
-    -----------
+    -----------------
+    Demul Controllers
+    -----------------
 
     Currently controllers cannot be configured using the desktop app.
     This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+    Currently we map 2 players using the emulators default keyboard configuration using evmapy.
 
-    ------------
-    Service Menu
-    ------------
+    ------------------
+    Demul Service Menu
+    ------------------
 
     Note: Keyboard required.
     You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
 
+    ---------------------
+    Demul Compatible ROMs
+    ---------------------
+
+    Demul has a specific list of currently compatible roms:
+    
+    atvtrack: ATV Track (set 1)
+    atvtracka: ATV Track (set 2)
+    gfootbal: Gaelco Football
+    smashdrv: Smashing Drive (World)
+    smashdrvb: Smashing Drive (UK)
+    smashdrvs: Smashing Drive (Spain, Portugal)
+    
+    With both MAME and Demul you should be able to play a good collection of games.
+
     Enjoy Sega Gaelco games under Linux!
-  comment_br: |
-    ----------------------------------
-    ## GAELCO INFORMAÇÕES IMPORTANTES ##
-    ----------------------------------
-
-    Agora você pode jogar jogos da Sega Cave CV1000 usando o Demul com o Wine.
-    Roms devem ser armazenados apropriadamente no diretório cave3rd .
-
-    O desempenho depende do hardware do sistema x86_64.
-    Se você tiver falhas de áudio e música lenta, seu sistema não tem desempenho suficiente para executar este emulador.
-
-    Nota: Sua placa gráfica requer drivers Vulkan para que o Demul funcione.
-
-    -----------
-    Primeiro acesso
-    -----------
-
-    Você precisa executar uma ROM pelo menos uma vez E estar conectado à internet.
-    Isso cria a estrutura de diretórios e instala as bibliotecas do Windows associadas para o Wine.
-
-    Nota: Pode levar algum tempo até que o jogo comece na primeira tentativa, isso é NORMAL!
-    *** Por favor, seja paciente, pois pode levar até 2 minutos, dependendo da velocidade da sua conexão com a internet ***
-
-    -----------
-    Controles
-    -----------
-
-    Atualmente, os controles não podem ser configurados usando o aplicativo de desktop.
-    Esta é uma limitação do aplicativo Demul no Wine, mas também uma falha conhecida de conexão com o controle, mesmo no Windows.
-    Atualmente, mapeamos apenas o Jogador 1 usando a configuração de teclado padrão dos emuladores usando o evmapy.
-
-    ------------
-    Menu de serviço
-    ------------
-
-    Nota: Necessário teclado.
-    Você pode acessar o Menu de Serviço usando o F4 e depois usar o F2 para navegar e o F4 para selecionar.
-
-    Desfrute dos jogos Sega Gaelco no Linux!
 
 cave3rd:
-  name:       Cave CV1000
+  name: Cave CV1000
   manufacturer: Sega
   release: 2004
   hardware: arcade
@@ -4311,84 +4119,90 @@ cave3rd:
   emulators:
     demul:
       demul: { requireAnyOf: [BR2_PACKAGE_DEMUL] }
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     ---------------------------------
     ## CAVE CV1000 IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Cave CV1000 games using Demul with Wine.
-    Roms should be stored in the appropriate cave3rd directory.
+    You can now play Sega Cave CV1000 games using Mame or Demul (with WINE).
+    The emulators are still work in progress for Cave CV1000 games so mileage will vary.
+    Zipped roms should be stored in the appropriate cave3rd directory compatible with MAME 0.284 or later.
 
     Performance depends on your x86_64 system hardware.
-    If you get audio stuttering & slow music, your system isn't performant enough to run this emulator.
+    If you get audio stuttering & slow music, your system isn't performant enough to run this system.
 
     Note: Your graphics card requires Vulkan drivers for Demul to work.
 
-    -----------
-    First Start
-    -----------
+    -----------------
+    Demul First Start
+    -----------------
 
     You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for Wine.
+    This creates the directory structure & installs the associated Windows libraries for WINE.
 
-    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    Note: It may take some minutes before the game starts with the first use, this is NORMAL!
     *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
 
-    -----------
-    Controllers
-    -----------
+    -----------------
+    Demul Controllers
+    -----------------
 
     Currently controllers cannot be configured using the desktop app.
     This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we only map Player 1 using the emulators default keyboard configuration using evmapy.
+    Currently we map 2 players using the emulators default keyboard configuration using evmapy.
 
-    ------------
-    Service Menu
-    ------------
+    ------------------
+    Demul Service Menu
+    ------------------
 
     Note: Keyboard required.
     You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
 
+    ---------------------
+    Demul Compatible ROMs
+    ---------------------
+
+    Demul has a specific list of currently compatible roms:
+    
+    akatana: Akai Katana (2010/ 8/13 MASTER VER.)
+    deathsmil: Deathsmiles (2007/10/09 MASTER VER)
+    dsmbl: Deathsmiles Mega Black Label (2008/10/06 MEGABLACK LABEL VER)
+    ddpdfk: Dodonpachi Daifukkatsu Ver. 1.5 (2008/06/23 MASTER VER 1.5)
+    ddpdfk10: Dodonpachi Daifukkatsu 1.0 (2008/05/16 MASTER VER)
+    dfkbl: Dodonpachi Daifukkatsu Black Label (2010/ 1/18 BLACK LABEL)
+    ddpsdoj: Dodonpachi Saidaioujou (2012/ 4/20)
+    espgal2: Espgaluda II (2005/11/14 MASTER VER, CV1000-C)
+    espgal2a: Espgaluda II (2005/11/14 MASTER VER, CV1000-B)
+    futari10: Mushihime-sama Futari (2006/10/23 MASTER VER.)
+    futari15: Mushihime-sama Futari Ver. 1.5 (2006/12/8.MASTER VER. 1.54.)
+    futari15a: Mushihime-sama Futari Ver. 1.5 (2006/12/8 MASTER VER 1.54)
+    futaribl: Mushihime-sama Futari Black Label - Another Ver (2009/11/27 INTER...)
+    futariblj: Mushihime-sama Futari Black Label (2007/12/11 BLACK LABEL VER)
+    ibara: Ibara (2005/03/22 MASTER VER.., '06. 3. 7 ver.)
+    ibarao: Ibara (2005/03/22 MASTER VER..)
+    ibarablk: Ibara Kuro Black Label (2006/02/06. MASTER VER.)
+    ibarablka: Ibara Kuro Black Label (2006/02/06 MASTER VER.)
+    mmmbanc: Medal Mahjong Moukari Bancho (2007/06/05 MASTER VER.)
+    mmpork: Muchi Muchi Pork! (2007/ 4/17 MASTER VER.)
+    mushisam: Mushihime-sama (2004/10/12.MASTER VER.)
+    mushisama: Mushihime-sama (2004/10/12 MASTER VER.)
+    mushisamb: Mushihime-sama (2004/10/12 MASTER VER.)
+    mushitam: Puzzle! Mushihime-tama (2005/09/09. MASTER VER)
+    mushitama: Puzzle! Mushihime-tama (2005/09/09 MASTER VER)
+    pinkswts: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER....)
+    pinkswtsa: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER...)
+    pinkswtsb: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER.)
+    pinkswtsx: Pink Sweets Ibara Sorekara (2006/XX/XX MASTER VER.)
+    
+    With both MAME and Demul you should be able to play a good collection of games.
+
     Enjoy Sega Cave CV1000 games under Linux!
-  comment_br: |
-    ----------------------------------
-    ## GAELCO INFORMAÇÕES IMPORTANTES ##
-    ----------------------------------
-
-    Agora você pode jogar jogos da Sega Cave CV1000 usando o Demul & Wine.
-    Roms devem ser armazenados apropriadamente no diretório cave3rd .
-
-    O desempenho depende do hardware do sistema x86_64.
-    Se você tiver falhas de áudio e música lenta, seu sistema não tem desempenho suficiente para executar este emulador.
-
-    Nota: Sua placa gráfica requer drivers Vulkan para que o Demul funcione.
-
-    -----------
-    Primeiro acesso
-    -----------
-
-    Você precisa executar uma ROM pelo menos uma vez E estar conectado à internet.
-    Isso cria a estrutura de diretórios e instala as bibliotecas do Windows associadas para o Wine.
-
-    Nota: Pode levar algum tempo até que o jogo comece na primeira tentativa, isso é NORMAL!
-    *** Por favor, seja paciente, pois pode levar até 2 minutos, dependendo da velocidade da sua conexão com a internet ***
-
-    -----------
-    Controles
-    -----------
-
-    Atualmente, os controles não podem ser configurados usando o aplicativo de desktop.
-    Esta é uma limitação do aplicativo Demul no Wine, mas também uma falha conhecida de conexão com o controle, mesmo no Windows.
-    Atualmente, mapeamos apenas o Jogador 1 usando a configuração de teclado padrão dos emuladores usando o evmapy.
-
-    ------------
-    Menu de serviço
-    ------------
-
-    Nota: Necessário teclado.
-    Você pode acessar o Menu de Serviço usando o F4 e depois usar o F2 para navegar e o F4 para selecionar.
-
-    Desfrute dos jogos Sega Cave CV1000 no Linux!
 
 pdp1:
   name:       PDP-1

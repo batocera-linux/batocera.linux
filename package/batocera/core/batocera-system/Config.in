@@ -927,6 +927,9 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	# Naomi and Atomiswave
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
+	# Demul emulator - multiple Sega arcade systems
+	select BR2_PACKAGE_DEMUL		if BR2_PACKAGE_BATOCERA_WINE
+
 	# Laserdic emulation
 	select BR2_PACKAGE_HYPSEUS_SINGE		   # ALL
 	select BR2_PACKAGE_HYPSEUS_SINGE_BEZELS    # ALL
