@@ -121,7 +121,7 @@
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
-- Play! to 0.72
+- Play! to 0.73
 - PCSX2 to v2.6.3
 - RClone to v1.72.1
 - RetroArch to 1.22.2
