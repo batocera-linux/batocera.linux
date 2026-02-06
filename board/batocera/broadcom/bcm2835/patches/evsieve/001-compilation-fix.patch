@@ -1,0 +1,51 @@
+diff --git a/src/bindings/libevdev.rs b/src/bindings/libevdev.rs
+index 6d1c3d6..928ca7d 100644
+--- a/src/bindings/libevdev.rs
++++ b/src/bindings/libevdev.rs
+@@ -56,13 +56,6 @@ pub struct timeval {
+     pub tv_sec: __time_t,
+     pub tv_usec: __suseconds_t,
+ }
+-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+-const _: () = {
+-    ["Size of timeval"][::std::mem::size_of::<timeval>() - 16usize];
+-    ["Alignment of timeval"][::std::mem::align_of::<timeval>() - 8usize];
+-    ["Offset of field: timeval::tv_sec"][::std::mem::offset_of!(timeval, tv_sec) - 0usize];
+-    ["Offset of field: timeval::tv_usec"][::std::mem::offset_of!(timeval, tv_usec) - 8usize];
+-};
+ pub type __u16 = ::std::os::raw::c_ushort;
+ pub type __s32 = ::std::os::raw::c_int;
+ #[repr(C)]
+@@ -73,15 +66,6 @@ pub struct input_event {
+     pub code: __u16,
+     pub value: __s32,
+ }
+-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+-const _: () = {
+-    ["Size of input_event"][::std::mem::size_of::<input_event>() - 24usize];
+-    ["Alignment of input_event"][::std::mem::align_of::<input_event>() - 8usize];
+-    ["Offset of field: input_event::time"][::std::mem::offset_of!(input_event, time) - 0usize];
+-    ["Offset of field: input_event::type_"][::std::mem::offset_of!(input_event, type_) - 16usize];
+-    ["Offset of field: input_event::code"][::std::mem::offset_of!(input_event, code) - 18usize];
+-    ["Offset of field: input_event::value"][::std::mem::offset_of!(input_event, value) - 20usize];
+-};
+ #[repr(C)]
+ #[derive(Debug, Copy, Clone)]
+ pub struct input_absinfo {
+@@ -632,16 +616,3 @@ pub struct __va_list_tag {
+     pub overflow_arg_area: *mut ::std::os::raw::c_void,
+     pub reg_save_area: *mut ::std::os::raw::c_void,
+ }
+-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+-const _: () = {
+-    ["Size of __va_list_tag"][::std::mem::size_of::<__va_list_tag>() - 24usize];
+-    ["Alignment of __va_list_tag"][::std::mem::align_of::<__va_list_tag>() - 8usize];
+-    ["Offset of field: __va_list_tag::gp_offset"]
+-        [::std::mem::offset_of!(__va_list_tag, gp_offset) - 0usize];
+-    ["Offset of field: __va_list_tag::fp_offset"]
+-        [::std::mem::offset_of!(__va_list_tag, fp_offset) - 4usize];
+-    ["Offset of field: __va_list_tag::overflow_arg_area"]
+-        [::std::mem::offset_of!(__va_list_tag, overflow_arg_area) - 8usize];
+-    ["Offset of field: __va_list_tag::reg_save_area"]
+-        [::std::mem::offset_of!(__va_list_tag, reg_save_area) - 16usize];
+-};
