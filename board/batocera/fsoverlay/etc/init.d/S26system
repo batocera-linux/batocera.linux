@@ -7,6 +7,11 @@ ba_keyboard_lang() {
     settings_lang="$(/usr/bin/batocera-settings-get system.language || echo 'en_US')"
     settings_kb="$(/usr/bin/batocera-settings-get system.kblayout || echo 'us')"
     settings_kb_variant="$(/usr/bin/batocera-settings-get system.kbvariant || echo '')"
+
+    if [ "$settings_kb_variant" = "none" ] || [ -z "$settings_kb_variant" ]; then
+        settings_kb_variant=""
+    fi
+
     if [ "$settings_kb" != "" ]; then
         loadkeys "$settings_kb" >> $log
     else
@@ -15,9 +20,13 @@ ba_keyboard_lang() {
             loadkeys "$keyboardmap" >> $log
         fi
     fi
-    # Export variables for graphical sessions (Sway, Xorg)
-    export XKB_LAYOUT="$settings_kb_layout"
+
+    # Export variables for graphical sessions (Sway, labwc, Xorg)
+    export XKB_LAYOUT="$settings_kb"
+    export XKB_DEFAULT_LAYOUT="$settings_kb"
+    
     export XKB_VARIANT="$settings_kb_variant"
+    export XKB_DEFAULT_VARIANT="$settings_kb_variant"
 }
 
 ba_timezone() {
