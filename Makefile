@@ -245,7 +245,9 @@ $(PROJECT_DIR)/configs/batocera-%_defconfig: $(PROJECT_DIR)/configs/batocera-%.b
 
 	@$(MAKE) $*-build
 
-%-cleanbuild: %-clean %-build
+%-cleanbuild:
+	$(MAKE) $*-clean
+	$(MAKE) $*-build
 	@echo
 
 %-pkg:
