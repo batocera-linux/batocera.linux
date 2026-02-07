@@ -3212,6 +3212,22 @@ pv1000:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
+pv2000:
+  name:       PV-2000
+  manufacturer: Casio
+  release: 1983
+  hardware: console
+  extensions: [bin, cas, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file pv2000.zip
+  comment_br: |
+          Requer o arquivo pv2000.zip da BIOS do MAME
+
 gamate:
   name:       Gamate
   manufacturer: Bitcorp
