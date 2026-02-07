@@ -3509,6 +3509,18 @@ arcadia:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
+sv8000:
+  name:       Super Vision 8000
+  manufacturer: Bandai
+  release: 1979
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 gmaster:
   name:       Game Master
   manufacturer: Hartung
@@ -5431,6 +5443,18 @@ rott:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:taradino
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:taradino
+
+rx78:
+  name:       RX-78
+  manufacturer: Bandai
+  release: 1983
+  hardware: computer
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 commanderx16:
   name: Commander X16
