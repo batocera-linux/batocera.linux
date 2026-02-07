@@ -239,7 +239,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_TREE				# recursive directory listing (useful for generating documentation on rom directory structure)
 	select BR2_PACKAGE_FAKE_HWCLOCK			# Save/restore system clock on machines without working RTC hardware
 	select BR2_PACKAGE_MERGERFS			# Use FUSE to merge multiple directories into a single one
-	select BR2_PACKAGE_BATOCERA_ONSCREEN_KEYBOARD    if BR2_PACKAGE_BATOCERA_WAYLAND
+	select BR2_PACKAGE_BATOCERA_ONSCREEN_KEYBOARD   if BR2_PACKAGE_BATOCERA_WAYLAND
+	select BR2_PACKAGE_WLRCTL			if BR2_PACKAGE_BATOCERA_WAYLAND
 
 	# Python and SSL
 	select BR2_PACKAGE_HOST_PYTHON3
@@ -275,11 +276,11 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	select BR2_PACKAGE_LIBDRM				if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_BATOCERA_DRMINFO			if BR2_PACKAGE_LIBDRM
-	
+
 	# remote controls
 	select BR2_PACKAGE_LIRC_TOOLS			if !BR2_PACKAGE_BATOCERA_TARGET_SM8550 || \
 	                                           !BR2_PACKAGE_BATOCERA_TARGET_SM8250 # lirc (remote control)
-	
+
 	select BR2_PACKAGE_LIBCEC				# libcec
 	select BR2_PACKAGE_LIBCEC_LINUX_API			# libcec linux api
 	select BR2_PACKAGE_EDID_DECODE				# edid monitor/tv support
