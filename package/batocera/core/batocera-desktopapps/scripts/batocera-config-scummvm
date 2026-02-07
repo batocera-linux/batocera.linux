@@ -1,6 +1,14 @@
 #!/bin/bash
 
-export DISPLAY=$(getLocalXDisplay)
+# Detect if we are in a Wayland session
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    # SDL should use the Wayland driver
+    export SDL_VIDEODRIVER=wayland
+    # Set the 'app_id' that labwc looks for in rc.xml
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-scummvm"
+else
+    export DISPLAY=$(getLocalXDisplay)
+fi
 
 XDG_CONFIG_HOME=/userdata/system/configs \
 XDG_DATA_HOME=/userdata/saves \
