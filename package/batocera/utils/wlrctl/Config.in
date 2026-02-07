@@ -1,0 +1,7 @@
+config BR2_PACKAGE_WLRCTL
+    bool "wlrctl"
+    select BR2_PACKAGE_WAYLAND
+    help
+      wlrctl is a command line utility for miscellaneous wlroots Wayland
+      extensions (foreign-toplevel-management, virtual-keyboard, virtual-pointer).
+
