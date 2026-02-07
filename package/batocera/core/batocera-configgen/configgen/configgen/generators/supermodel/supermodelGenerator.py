@@ -17,7 +17,7 @@ from ..Generator import Generator
 if TYPE_CHECKING:
     from ...controller import Controllers
     from ...Emulator import Emulator
-    from ...types import HotkeysContext
+    from ...types import DeviceInfoMapping, HotkeysContext
 
 
 SUPERMODEL_SHARE: Final = Path('/usr/share/supermodel')
@@ -65,7 +65,7 @@ class SupermodelGenerator(Generator):
                     commandArray.append("-crosshairs=3")
 
         # force feedback
-        if system.config.get_bool("forceFeedback"):
+        if (system.config.use_wheels and wheels) or system.config.get_bool("forceFeedback"):
             commandArray.append("-force-feedback")
 
         # powerpc frequesncy
