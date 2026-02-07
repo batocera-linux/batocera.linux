@@ -344,8 +344,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
 
     echo "${settings_output}" > "/var/run/switch_screen_current"
-    # DBUS launch is required for the gio/gvfs/trash:///...
-    eval "$(dbus-launch --sh-syntax --exit-with-session)"
 
     ### BACKGLASS ###
     if which batocera-backglass; then
@@ -384,7 +382,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     echo "Standalone: --- Launching EmulationStation ---" >> "$log"
     cd /userdata # ES need a PWD
-    %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
+
+    # DBUS is required for the gio/gvfs/trash:///...
+    %BATOCERA_EMULATIONSTATION_PREFIX% dbus-run-session -- emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
