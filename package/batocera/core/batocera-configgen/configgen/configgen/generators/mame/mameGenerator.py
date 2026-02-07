@@ -575,9 +575,9 @@ class MameGenerator(Generator):
             mameControllers.generatePadsConfig(cfgPath, playersControllers, messModel, buttonLayout, customCfg, specialController, bezelSet, useGuns, guns, useWheels, wheels, useMouse, multiMouse, system)
 
         # If user provided a custom cmd file at the default location, use that as the customized commandArray
-        if (defaultCustomCmdFilepath := Path(f"{rom}.cmd")).is_file():
+        if (defaultCustomCmdFilepath := Path(f"{rom}.mamecmd")).is_file():
             with defaultCustomCmdFilepath.open() as f:
-                commandArray = f.read().splitlines()  # pyright: ignore
+                commandArray = f.read().strip("\n").splitlines()  # pyright: ignore
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
