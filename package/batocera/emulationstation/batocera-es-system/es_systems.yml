@@ -1895,6 +1895,26 @@ zx81:
     Pour activer le support du gamepad, veuillez entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" en "Cursor Joystick"
 
+bk:
+  name:       Elektronika BK
+  manufacturer: Elektronika
+  release: 1985
+  hardware: computer
+  extensions: [bin, img, dsk, bkd, zip, 7z]
+  emulators:
+    libretro:
+      bk:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BK]   }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BK-0010/0011 was a Soviet home computer series from Elektronika.
+    Supports BK-0010, BK-0010.01, BK-0011(M) and Terak 8510/a emulation.
+    https://wiki.batocera.org/systems:bk
+  comment_ru: |
+    БК-0010/0011 - серия советских домашних компьютеров от Электроники.
+    Поддерживает эмуляцию БК-0010, БК-0010.01, БК-0011(М) и Terak 8510/a.
+
 zxspectrum:
   name:       ZX Spectrum
   manufacturer: Sinclair
