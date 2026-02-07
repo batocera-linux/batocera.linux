@@ -1,0 +1,197 @@
+#!/usr/bin/python3
+#######################################################
+# TEMPORARY WORKAROUND FOR SINDEN LIGHTGUN AND RPCS3  #
+# THIS IS A WORKING DRAFT AND GROUNDWORK FOR V44      #
+#######################################################
+#
+# batocera-borders - X11 border overlay for Sinden lightgun calibration
+#
+# Draws colored border rectangles matching ES renderSindenBorders() sizing.
+# Independent of the emulator graphics pipeline (no Vulkan/GL hooks).
+#
+# Usage:
+#  batocera-borders [options] [-- command args...]
+#
+# If a command is given after --, runs it and removes borders on exit.
+# Without a command, draws borders and waits until killed (for testing).
+
+import ctypes
+import ctypes.util
+import math
+import os
+import signal
+import subprocess
+import sys
+
+# X11 libraries loaded via ctypes (available on all Batocera systems)
+libX11 = ctypes.cdll.LoadLibrary(ctypes.util.find_library("X11") or "libX11.so.6")
+libXfixes = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Xfixes") or "libXfixes.so.3")
+
+# XSetWindowAttributes struct - all fields required for correct memory layout
+class XSetWindowAttributes(ctypes.Structure):
+    _fields_ = [
+        ("background_pixmap", ctypes.c_ulong),
+        ("background_pixel", ctypes.c_ulong),
+        ("border_pixmap", ctypes.c_ulong),
+        ("border_pixel", ctypes.c_ulong),
+        ("bit_gravity", ctypes.c_int),
+        ("win_gravity", ctypes.c_int),
+        ("backing_store", ctypes.c_int),
+        ("backing_planes", ctypes.c_ulong),
+        ("backing_pixel", ctypes.c_ulong),
+        ("save_under", ctypes.c_int),
+        ("event_mask", ctypes.c_long),
+        ("do_not_propagate_mask", ctypes.c_long),
+        ("override_redirect", ctypes.c_int),
+        ("colormap", ctypes.c_ulong),
+        ("cursor", ctypes.c_ulong),
+    ]
+
+CW_BACK_PIXEL = 1 << 1
+CW_OVERRIDE_REDIRECT = 1 << 9
+SHAPE_INPUT = 2
+
+# X11 function signatures
+void_p = ctypes.c_void_p
+ulong = ctypes.c_ulong
+int_t = ctypes.c_int
+uint_t = ctypes.c_uint
+
+libX11.XOpenDisplay.restype = void_p
+libX11.XOpenDisplay.argtypes = [ctypes.c_char_p]
+libX11.XDefaultScreen.restype = int_t
+libX11.XDefaultScreen.argtypes = [void_p]
+libX11.XRootWindow.restype = ulong
+libX11.XRootWindow.argtypes = [void_p, int_t]
+libX11.XDisplayWidth.restype = int_t
+libX11.XDisplayWidth.argtypes = [void_p, int_t]
+libX11.XDisplayHeight.restype = int_t
+libX11.XDisplayHeight.argtypes = [void_p, int_t]
+libX11.XCreateWindow.restype = ulong
+libX11.XCreateWindow.argtypes = [void_p, ulong, int_t, int_t, uint_t, uint_t, uint_t, int_t, uint_t, void_p, ulong, ctypes.POINTER(XSetWindowAttributes)]
+libX11.XMapRaised.argtypes = [void_p, ulong]
+libX11.XFlush.argtypes = [void_p]
+libX11.XCloseDisplay.argtypes = [void_p]
+
+libXfixes.XFixesCreateRegion.restype = ulong
+libXfixes.XFixesCreateRegion.argtypes = [void_p, void_p, int_t]
+libXfixes.XFixesSetWindowShapeRegion.argtypes = [void_p, ulong, int_t, int_t, int_t, ulong]
+libXfixes.XFixesDestroyRegion.argtypes = [void_p, ulong]
+
+BORDER_COLORS = {
+    "white": 0xFFFFFF,
+    "red":   0xFF0000,
+    "green": 0x00FF00,
+    "blue":  0x0000FF,
+}
+
+BORDER_PRESETS = {
+    "thin":   (1, 0),
+    "medium": (2, 0),
+    "big":    (2, 1),
+}
+
+
+def create_click_through_rectangle(display, root_window, x, y, width, height, color):
+    if width <= 0 or height <= 0:
+        return
+
+    attributes = XSetWindowAttributes()
+    attributes.background_pixel = color
+    attributes.override_redirect = 1
+
+    window = libX11.XCreateWindow(
+        display, root_window, x, y, width, height,
+        0, 0, 1, None,
+        CW_BACK_PIXEL | CW_OVERRIDE_REDIRECT,
+        ctypes.byref(attributes)
+    )
+
+    empty_region = libXfixes.XFixesCreateRegion(display, None, 0)
+    libXfixes.XFixesSetWindowShapeRegion(display, window, SHAPE_INPUT, 0, 0, empty_region)
+    libXfixes.XFixesDestroyRegion(display, empty_region)
+
+    libX11.XMapRaised(display, window)
+
+
+def draw_border_ring(display, root_window, offset_x, offset_y, width, height, thickness, color):
+    if thickness <= 0:
+        return
+
+    create_click_through_rectangle(display, root_window, offset_x, offset_y, width, thickness, color)
+    create_click_through_rectangle(display, root_window, offset_x, offset_y + height - thickness, width, thickness, color)
+    create_click_through_rectangle(display, root_window, offset_x, offset_y + thickness, thickness, height - 2 * thickness, color)
+    create_click_through_rectangle(display, root_window, offset_x + width - thickness, offset_y + thickness, thickness, height - 2 * thickness, color)
+
+
+def main():
+    border_size = "medium"
+    border_color = "white"
+    border_ratio = "auto"
+    emulator_command = []
+
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == "--":
+            emulator_command = args[i + 1:]
+            break
+        elif args[i] in ("-s", "--size") and i + 1 < len(args):
+            border_size = args[i + 1]
+            i += 2
+        elif args[i] in ("-c", "--color") and i + 1 < len(args):
+            border_color = args[i + 1]
+            i += 2
+        elif args[i] in ("-r", "--ratio") and i + 1 < len(args):
+            border_ratio = args[i + 1]
+            i += 2
+        else:
+            i += 1
+
+    inner_percent, outer_percent = BORDER_PRESETS.get(border_size, (2, 0))
+
+    display = libX11.XOpenDisplay(None)
+    if not display:
+        print("batocera-borders: cannot open display", file=sys.stderr)
+        return 1
+
+    screen = libX11.XDefaultScreen(display)
+    root_window = libX11.XRootWindow(display, screen)
+    screen_width = libX11.XDisplayWidth(display, screen)
+    screen_height = libX11.XDisplayHeight(display, screen)
+
+    region_width = screen_width
+    region_offset_x = 0
+
+    if border_ratio == "4:3":
+        region_width = min(int(screen_height / 3 * 4), screen_width)
+        region_offset_x = (screen_width - region_width) // 2
+
+    outer_thickness = math.ceil(screen_width * outer_percent / 100)
+    inner_thickness = max(math.ceil(screen_width * inner_percent / 100), 1)
+
+    draw_border_ring(display, root_window,
+        region_offset_x, 0,
+        region_width, screen_height,
+        outer_thickness, 0x000000)
+
+    draw_border_ring(display, root_window,
+        region_offset_x + outer_thickness, outer_thickness,
+        region_width - 2 * outer_thickness, screen_height - 2 * outer_thickness,
+        inner_thickness, BORDER_COLORS.get(border_color, 0xFFFFFF))
+
+    libX11.XFlush(display)
+
+    if emulator_command:
+        exit_code = subprocess.call(emulator_command)
+        libX11.XCloseDisplay(display)
+        return exit_code
+    else:
+        signal.signal(signal.SIGTERM, lambda *_: os._exit(0))
+        signal.signal(signal.SIGINT, lambda *_: os._exit(0))
+        while True:
+            signal.pause()
+
+
+if __name__ == "__main__":
+    sys.exit(main() or 0)

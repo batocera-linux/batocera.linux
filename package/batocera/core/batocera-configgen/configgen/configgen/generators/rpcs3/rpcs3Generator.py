@@ -25,6 +25,18 @@ _logger = logging.getLogger(__name__)
 
 class Rpcs3Generator(Generator):
 
+    # Temporary workaround for v43 and Sinden borders
+    def __init__(self):
+        super().__init__()
+        self._gun_borders_active = False
+        self._borders_size = "medium"
+        self._borders_color = "white"
+        self._borders_ratio = "auto"
+
+    # when active (True), MangoHUD is not called by ID_INPUT_GUN_NEED_BORDERS
+    def hasInternalMangoHUDCall(self):
+        return self._gun_borders_active
+
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "rpcs3",
@@ -224,6 +236,15 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
             self._generateGunConfig()
+            # Sinden border temp workaround to avoid MangoHUD,
+            # border settings are from inside batocera-sinden-borders
+            bordersSize = system.guns_borders_size_name(guns)
+            if bordersSize is not None:
+                self._gun_borders_active = True
+                self._borders_size = bordersSize
+                self._borders_color = system.config.get('controllers.guns.borderscolor', 'white')
+                bordersRatio = system.config.get('controllers.guns.bordersratio', '')
+                self._borders_ratio = bordersRatio if bordersRatio else 'auto'
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
@@ -272,6 +293,16 @@ class Rpcs3Generator(Generator):
         # firmware not installed and available : instead of starting the game, install it
         if Rpcs3Generator.getFirmwareVersion() is None and (BIOS / "PS3UPDAT.PUP").exists():
             commandArray = [RPCS3_BIN, "--installfw", BIOS / "PS3UPDAT.PUP"]
+
+        # batocera-sinden-borders before MangoHUD
+        if self._gun_borders_active:
+            commandArray = [
+                "/usr/bin/batocera-sinden-borders",
+                "--size", self._borders_size,
+                "--color", self._borders_color,
+                "--ratio", self._borders_ratio,
+                "--"
+            ] + commandArray
 
         return Command.Command(
             array=commandArray,
