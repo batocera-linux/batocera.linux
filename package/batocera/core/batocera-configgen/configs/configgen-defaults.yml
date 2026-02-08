@@ -137,6 +137,9 @@ cdogs:
 cgenius:
   emulator: cgenius
   core:     cgenius
+cgenie:
+  emulator: libretro
+  core:     mame
 channelf:
   emulator: libretro
   core:     freechaf
@@ -691,8 +694,11 @@ traider2:
   emulator: tr2x
   core:     tr2x
 triforce:
-  emulator: dolphin
-  core:     dolphin
+  emulator: dolphin_triforce
+  core:     dolphin_triforce
+trs80:
+  emulator: libretro
+  core:     mame
 tutor:
   emulator: libretro
   core:     mame
