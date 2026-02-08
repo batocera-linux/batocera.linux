@@ -42,11 +42,27 @@ DIRECT_BUILD   ?=
 DAYS           ?= 1
 SYSTEMS_REPORT_EXCLUDE_TARGETS ?= odin
 
+USER_DEFCONFIG := $(PROJECT_DIR)/configs/.user_defconfig
+
+# Macro to append a line to the user defconfig file
+define add-defconfig
+$(file >>$(USER_DEFCONFIG),$(1))
+endef
+
+# Clear the user defconfig file at the start before including
+# the user's makefile customizations
+$(file >$(USER_DEFCONFIG),)
+
 -include $(LOCAL_MK)
 
+ifdef EXTRA_OPTS
+$(warning EXTRA_OPTS will be removed in the future, please migrate to $$(call add-defconfig,...))
+$(foreach opt,$(EXTRA_OPTS),$(call add-defconfig,$(subst \",",$(opt))))
+endif
+
 ifdef PARALLEL_BUILD
-EXTRA_OPTS += BR2_PER_PACKAGE_DIRECTORIES=y
-EXTRA_OPTS += BR2_JLEVEL=$(MAKE_JLEVEL)
+$(call add-defconfig,BR2_PER_PACKAGE_DIRECTORIES=y)
+$(call add-defconfig,BR2_JLEVEL=$(MAKE_JLEVEL))
 MAKE_OPTS  += -j$(MAKE_JLEVEL)
 MAKE_OPTS  += -l$(MAKE_LLEVEL)
 endif
@@ -154,7 +170,8 @@ vars:
 	@echo "Download directory: $(DL_DIR)"
 	@echo "Build directory:    $(OUTPUT_DIR)"
 	@echo "ccache directory:   $(CCACHE_DIR)"
-	@echo "Extra options:      $(EXTRA_OPTS)"
+	@echo "Extra defconfig:"
+	@sed -e '/^\s*$$/d' -e 's/^/  /' "$(USER_DEFCONFIG)"
 ifndef DIRECT_BUILD
 	@echo "Docker repo/image:  $(DOCKER_REPO)/$(IMAGE_NAME)"
 	@echo "Docker options:     $(DOCKER_OPTS)"
@@ -210,6 +227,7 @@ TARGET_DEFCONFIG_PATTERN = $(call target-defconfig,%)
 
 # Macros for getting the $* equivalent file or directory
 TARGET_OUTPUT_DIR = $(call target-output-dir,$*)
+TARGET_BOARD_FILE = $(call target-board-file,$*)
 TARGET_DEFCONFIG = $(call target-defconfig,$*)
 TARGET_SYSTEMS_REPORT_DIR = $(call target-systems-report-dir,$*)
 TARGET_SYSTEMS_REPORT_MK = $(call target-systems-report-mk,$*)
@@ -229,16 +247,17 @@ TARGET_OUTPUT_DIR_INITIALIZED = $(TARGET_OUTPUT_DIR_PATTERN)/.stamp_initialized
 .PRECIOUS: $(TARGET_DEFCONFIG_PATTERN)
 $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 			     $(PROJECT_DIR)/configs/batocera-board.common \
-			     $(wildcard $(PROJECT_DIR)/configs/batocera-board.local.common)
-	@$(PROJECT_DIR)/configs/createDefconfig.sh '$(PROJECT_DIR)/configs/batocera-$*'
-	@for opt in $(EXTRA_OPTS); do \
-		echo $$opt >> '$@' ; \
-	done
+			     $(wildcard $(PROJECT_DIR)/configs/batocera-board.local.common) \
+			     $(USER_DEFCONFIG)
+	@$(PROJECT_DIR)/configs/createDefconfig.sh \
+		$(TARGET_BOARD_FILE) \
+		$(USER_DEFCONFIG) \
+		$(TARGET_DEFCONFIG)
 
 %-supported:
 	$(if $(filter $*,$(TARGETS)),,$(error $* not supported))
 
-%-clean: | batocera-docker-image  $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-clean: | batocera-docker-image $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(MAKE_BUILDROOT) clean
 	@if [ -f '$(TARGET_DEFCONFIG)' ]; then \
 		echo "Removing config for $*..."; \
@@ -248,7 +267,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 %-defconfig: $(TARGET_DEFCONFIG_PATTERN) | %-supported
 	@:
 
-%-config: %-defconfig | batocera-docker-image  $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-config: %-defconfig | batocera-docker-image $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(MAKE_BUILDROOT) batocera-$*_defconfig
 
 %-build: %-config
