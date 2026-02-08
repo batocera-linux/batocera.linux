@@ -20,6 +20,11 @@ BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
 #file-roller integration for pcmanfm - open/list archives
 BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
 
+#1og Viewer for ES log files for all platforms that use pcmanfm
+BATOCERA_DESKTOPAPPS_SCRIPTS += view-eslog
+BATOCERA_DESKTOPAPPS_APPS    += view-eslog.desktop
+BATOCERA_DESKTOPAPPS_ICONS   += view-eslog.png
+
 ## System depended applets
 
 # wiimote
