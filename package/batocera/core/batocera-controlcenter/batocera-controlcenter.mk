@@ -3,8 +3,8 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Last commit on Feb 5, 2026
-BATOCERA_CONTROLCENTER_VERSION = 78e4c212e85f4f8bb398906be6c4c650a3be524f
+# Last commit on Feb 8, 2026
+BATOCERA_CONTROLCENTER_VERSION = bfba2b54c67636dadec6a82d39d775c350cbaa59
 BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
 BATOCERA_CONTROLCENTER_STE_METHOD = git
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
@@ -17,8 +17,11 @@ BATOCERA_CONTROLCENTER_PATH = \
 
 define BATOCERA_CONTROLCENTER_BUILD_CMDS
 	# update translation files
-	$(HOST_DIR)/bin/python $(BATOCERA_CONTROLCENTER_PATH)/getpot.py $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml $(BATOCERA_CONTROLCENTER_PATH)/locales/controlcenter.pot
-	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh update $(BATOCERA_CONTROLCENTER_PATH)/locales
+	$(HOST_DIR)/bin/python $(BATOCERA_CONTROLCENTER_PATH)/getpot.py \
+	    $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml \
+	        $(BATOCERA_CONTROLCENTER_PATH)/locales/controlcenter.pot
+	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh update \
+	    $(BATOCERA_CONTROLCENTER_PATH)/locales
 endef
 
 define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
@@ -44,7 +47,9 @@ define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter/resources/ra-icon.png
 
 	# install translations
-	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh build $(BATOCERA_CONTROLCENTER_PATH)/locales $(TARGET_DIR)/usr/share/locale
+	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh build \
+	    $(BATOCERA_CONTROLCENTER_PATH)/locales \
+		    $(TARGET_DIR)/usr/share/locale
 endef
 
 $(eval $(generic-package))
