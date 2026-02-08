@@ -1,100 +1,121 @@
 #!/bin/sh
 
-ACTION=$1
-
-PRIMARY_DISPLAY=$(batocera-resolution currentOutput)
-ALL_OUTPUTS=$(wf-recorder -L | awk '/Name:/ {print $3}')
-
-PULSEAUDIO_MONITOR=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1).monitor
-TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
+PID_FILE="/tmp/wf-recorder.pid"
+CONF_FILE="/tmp/rec.conf"
 BASE_DIR="/userdata/recordings"
-mkdir -p $BASE_DIR || exit 1
+mkdir -p "$BASE_DIR"
 
-usage() {
-    echo "Usage: $0 [--ultra-fast | --very-fast | --help]"
-    echo "  --ultra-fast      Record 30fps with the fastest encoding settings (Recommended)"
-    echo "  --very-fast       Record 30fps with very-fast encoding settings"
-    echo "  --high-quality    Record with 60fps high quality settings (Hurt that ARM CPU!)"
-    echo "  -h, --help        Show this help message"
-}
+# Default Values
+DEFAULT_QUALITY="mid"
+DEFAULT_AUDIO="auto"
+DEFAULT_ALL="false"
 
-start_recording_logic() {
-    CRF=$1
-    PRESET=$2
-    FPS=$3
-    
-    echo "Detected Outputs: ${ALL_OUTPUTS}"
-    echo "Primary Display : ${PRIMARY_DISPLAY}"
-    echo
-    echo "  /!\\ HIGH CPU WARNING /!\\"
-    echo "  -----------------------------------------------------"
-    echo "  Recording multiple outputs simultaneously will place "
-    echo "  extreme load on the CPU. Framerates may drop."
-    echo
-    echo "  NOTE: Audio will ONLY be recorded on the Primary Display."
-    echo "        Secondary displays will be video-only."
-    echo "  -----------------------------------------------------"
-    echo
-    echo -n "Do you want to record ALL outputs simultaneously? (y/N): "
-    read -r ANSWER
-
-    if [ "$ANSWER" = "y" ] || [ "$ANSWER" = "Y" ]; then
-        echo "Starting multi-screen recording..."
-        PIDS=""
-        
-        for DISP in $ALL_OUTPUTS; do
-            FILE="${BASE_DIR}/capture-${TIMESTAMP}-${DISP}.mkv"
-            
-            if [ "$DISP" = "$PRIMARY_DISPLAY" ]; then
-                # Primary screen for audio
-                echo "  [PRIMARY] Starting A/V recording on $DISP -> $FILE"
-                wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o $DISP -f "$FILE" &
-            else
-                # Additional screens
-                echo "  [SECONDARY] Starting VIDEO-ONLY recording on $DISP -> $FILE"
-                wf-recorder -c libx264 -p crf=$CRF preset=$PRESET -r $FPS -o $DISP -f "$FILE" &
-            fi
-            
-            # Capture PID(s)
-            PIDS="$PIDS $!"
-        done
-
-        echo
-        echo "+-----------------------------------------+" >&2
-        echo "| Recording ALL screens. Ctrl+c to stop.  |" >&2
-        echo "+-----------------------------------------+" >&2
-
-        trap "kill $PIDS" INT TERM
-        wait
+# Helper to read config
+get_conf() {
+    # Usage: get_conf KEY DEFAULT_VALUE
+    if [ -f "$CONF_FILE" ]; then
+        VAL=$(grep "^$1=" "$CONF_FILE" | cut -d'=' -f2)
+        echo "${VAL:-$2}"
     else
-        # Standard Single Recording (Primary only)
-        FILE="${BASE_DIR}/capture-${TIMESTAMP}.mkv"
-        echo "Recording primary output ($PRIMARY_DISPLAY) to: ${FILE}"
-        echo
-        echo "+-------------------------------+" >&2
-        echo "| Press Ctrl+c to end recording |" >&2
-        echo "+-------------------------------+" >&2
-        
-        wf-recorder -a$PULSEAUDIO_MONITOR -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o $PRIMARY_DISPLAY -f "$FILE"
+        echo "$2"
     fi
 }
 
-case "$ACTION" in
-    --ultra-fast)
-        start_recording_logic 30 ultrafast 30
+# Helper to write config
+set_conf() {
+    # Usage: set_conf KEY VALUE
+    touch "$CONF_FILE"
+    # Remove existing key
+    sed -i "/^$1=/d" "$CONF_FILE"
+    # Append new key
+    echo "$1=$2" >> "$CONF_FILE"
+}
+
+# Helper to resolve audio source
+get_audio_device() {
+    VAL=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
+    case "$VAL" in
+        mic)
+            pactl list short sources | grep -v 'monitor' | head -1 | awk '{print $2}'
+            ;;
+        none)
+            echo "none"
+            ;;
+        *)
+            LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{print $1 ".monitor"}'
+            ;;
+    esac
+}
+
+case "$1" in
+    status)
+        if [ -f "$PID_FILE" ] && kill -0 $(cat "$PID_FILE" | awk '{print $1}') 2>/dev/null; then
+            echo "RECORDING..."
+        else
+            echo "Ready"
+        fi
         ;;
-    --very-fast)
-        start_recording_logic 28 veryfast 30
+    is_running)
+        if [ -f "$PID_FILE" ] && kill -0 $(cat "$PID_FILE" | awk '{print $1}') 2>/dev/null; then
+            echo "true"
+        fi
         ;;
-    --high-quality)
-        start_recording_logic 23 fast 60
+    stop)
+        if [ -f "$PID_FILE" ]; then
+            PIDS=$(cat "$PID_FILE")
+            kill -2 $PIDS 2>/dev/null
+            rm "$PID_FILE"
+        fi
         ;;
-    -h|--help)
-        usage
-        exit 0
-        ;;
-    *)
-        usage
-        exit 1
+    # Getters for BCC UI
+    get-quality) get_conf "QUALITY" "$DEFAULT_QUALITY" ;;
+    get-audio)   get_conf "AUDIO" "$DEFAULT_AUDIO" ;;
+    get-all)     get_conf "ALL" "$DEFAULT_ALL" ;;
+    
+    # Setters for BCC UI
+    set-quality) set_conf "QUALITY" "$2" ;;
+    set-audio)   set_conf "AUDIO" "$2" ;;
+    set-all)     set_conf "ALL" "$2" ;;
+
+    start)
+        # Load current state
+        Q=$(get_conf "QUALITY" "$DEFAULT_QUALITY")
+        A=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
+        ALL=$(get_conf "ALL" "$DEFAULT_ALL")
+
+        case "$Q" in
+            ultra) CRF=20; PRESET="ultrafast"; FPS=60 ;;
+            high)  CRF=23; PRESET="fast";      FPS=60 ;;
+            low)   CRF=35; PRESET="veryfast";  FPS=30 ;;
+            *)     CRF=28; PRESET="veryfast";  FPS=30 ;;
+        esac
+
+        AUDIO_SRC=$(get_audio_device)
+        TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
+        PRIMARY=$(batocera-resolution currentOutput)
+        
+        AUDIO_FLAG="-a$AUDIO_SRC"
+        if [ "$AUDIO_SRC" = "none" ]; then AUDIO_FLAG=""; fi
+
+        if [ "$ALL" = "true" ]; then
+            ALL_OUTPUTS=$(wf-recorder -L | awk '/Name:/ {print $3}')
+            RUNNING_PIDS=""
+            for DISP in $ALL_OUTPUTS; do
+                FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.mkv"
+                if [ "$DISP" = "$PRIMARY" ]; then
+                    wf-recorder $AUDIO_FLAG -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o "$DISP" -f "$FILE" > /dev/null 2>&1 &
+                else
+                    wf-recorder -c libx264 -p crf=$CRF preset=$PRESET -r $FPS -o "$DISP" -f "$FILE" > /dev/null 2>&1 &
+                fi
+                RUNNING_PIDS="$RUNNING_PIDS $!"
+            done
+            echo "$RUNNING_PIDS" > "$PID_FILE"
+        else
+            FILE="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
+            wf-recorder $AUDIO_FLAG -c libx264 -p crf=$CRF preset=$PRESET -C aac -r $FPS -o "$PRIMARY" -f "$FILE" > /dev/null 2>&1 &
+            echo $! > "$PID_FILE"
+        fi
+        # Wait slightly so the PID file exists before the UI refreshes
+        sleep 0.5
         ;;
 esac
