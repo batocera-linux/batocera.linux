@@ -2338,6 +2338,31 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# Enterprise 128 (EP128EMU)
+def _ep128emu_core_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Main thread wait (ms)
+    _set_from_system(coreSettings, 'ep128emu_wait', system, default='0')
+    # High sound quality
+    _set_from_system(coreSettings, 'ep128emu_sdhq', system, default='1')
+    # Use accelerated SW framebuffer
+    _set_from_system(coreSettings, 'ep128emu_swfb', system, default='0')
+    # Enable resolution changes (requires restart)
+    _set_from_system(coreSettings, 'ep128emu_useh', system, default='1')
+    # Border lines to keep when zooming in
+    _set_from_system(coreSettings, 'ep128emu_brds', system, default='0')
+    # System ROM version (EP only)
+    _set_from_system(coreSettings, 'ep128emu_romv', system, default='Original')
+    # User 1 Zoom button
+    _set_from_system(coreSettings, 'ep128emu_zoom', system, default='R3')
+    # User 1 Info button
+    _set_from_system(coreSettings, 'ep128emu_info', system, default='L3')
+    # User 1 Autofire for button
+    _set_from_system(coreSettings, 'ep128emu_afbt', system, default='None')
+    # User 1 Autofire repeat delay
+    _set_from_system(coreSettings, 'ep128emu_afsp', system, default='1')
+
 
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
@@ -2418,6 +2443,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'hatarib': _hatarib_options,
     'mednafen_wswan': _mednafen_wswan_options,
     'stella': _stella_options,
+    'ep128emu-core': _ep128emu_core_options,
 }
 
 

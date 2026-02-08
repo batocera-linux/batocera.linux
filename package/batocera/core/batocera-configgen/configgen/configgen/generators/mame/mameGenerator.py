@@ -327,6 +327,10 @@ class MameGenerator(Generator):
                 commandArray += ["-analogue", sticktype]
                 specialController = sticktype
 
+            # Enterprise
+            if system.name == "enterprise":
+                commandArray += ['-exp', 'exdos']
+
             # Apple II
             if system.name == "apple2":
                 rom_extension = rom.suffix.lower()
