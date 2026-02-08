@@ -78,8 +78,10 @@ test $# -eq 1 && DWD_HTTP_DIR="$1"
 if [ "$1" == "manual" ]; then
     # Check if the local file exists
     if [ -f "/userdata/system/upgrade/boot.tar.xz" ]; then
-        size=$(du -m "/userdata/system/upgrade/boot.tar.xz" | awk '{print $1}')
-        echo "Using local file: /userdata/system/upgrade/boot.tar.xz (${size}MB)"
+        # Get exact uncompressed size
+        size=$(xz --robot -l "/userdata/system/upgrade/boot.tar.xz" | tail -1 | awk '{print $5}')
+        size=$((size / 1024 / 1024))
+        echo "Using local file: /userdata/system/upgrade/boot.tar.xz (${size}MB uncompressed)"
     else
         echo "Error: Local file /userdata/system/upgrade/boot.tar.xz not found."
         exit 1
@@ -95,8 +97,10 @@ else
     test $? -eq 0 || exit 1
     size=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
     size=$((size / 1024 / 1024))
+    # Add 5% overhead estimate to account compression vs extracted data
+    size=$((size * 105 / 100)) 
     test $? -eq 0 || exit 1
-    echo "need to download ${size}mb"
+    echo "need to download and extract ~${size}mb"
 fi
 
 # check free space on fs
@@ -111,9 +115,11 @@ for fs in $filesystems
 do
     freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
     test $? -eq 0 || exit 1
-    if test "${size}" -gt "${freespace}"
+    # Check for required size + 10MB safety buffer to prevent 100% disk usage
+    if test $((size + 10)) -gt "${freespace}"
     then
         echo "Not enough space on ${fs} to perform the update"
+        echo "Required: $((size + 10))MB | Available: ${freespace}MB"
         exit 1
     fi
 done
