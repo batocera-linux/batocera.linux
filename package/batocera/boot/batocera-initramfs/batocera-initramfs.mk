@@ -69,8 +69,13 @@ BATOCERA_INITRAMFS_PRE_INSTALL_TARGET_HOOKS += BATOCERA_INITRAMFS_RISCV_EARLY_FI
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+BATOCERA_INITRAMFS_DEPENDENCIES += alllinuxfirmwares
 define BATOCERA_INITRAMFS_SM8550_EARLY_FIRMWARE
-    mkdir -p $(INITRAMFS_DIR)/lib/firmware/qcom/
+    mkdir -p $(INITRAMFS_DIR)/lib/firmware/qcom/sm8550/
+    cp $(ALLLINUXFIRMWARES_DIR)/qcom/sm8550/* \
+        $(INITRAMFS_DIR)/lib/firmware/qcom/sm8550/
+	cp $(ALLLINUXFIRMWARES_DIR)/qcom/a740_sqe.fw \
+	    $(INITRAMFS_DIR)/lib/firmware/qcom/
     cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/fsoverlay/lib/firmware/qcom/* \
         $(INITRAMFS_DIR)/lib/firmware/qcom/
 endef
