@@ -25,6 +25,8 @@ define SINDEN_GUNS_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -m 0644 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/LightgunMono.exe.config.template $(TARGET_DIR)/usr/share/sinden/LightgunMono.exe.config
 
+	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/guns/sinden-guns/batocera-sinden-borders $(TARGET_DIR)/usr/bin/batocera-sinden-borders
+
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/LightgunMono.exe      $(TARGET_DIR)/usr/share/sinden/LightgunMono.exe
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.Math.dll       $(TARGET_DIR)/usr/share/sinden/AForge.Math.dll
 	$(INSTALL) -m 0644 -D $(@D)/$(SINDEN_GUNS_ARCHIVE_DIR_PLAYER1)/AForge.dll            $(TARGET_DIR)/usr/share/sinden/AForge.dll
