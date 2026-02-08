@@ -51,6 +51,7 @@
   - Duckstation (multi-light guns)
   - Play! emulator for Namco 2x6 gun games (single-light gun only)
   - Flycast standalone (multi-light guns)
+- nfc reader support
 - Casio Loopy as a separate system
 - Enterprise 64/128 (via CLK emulator)
 - Xroar emulator as an option for the Color Computer (Tandy TRS-80)
