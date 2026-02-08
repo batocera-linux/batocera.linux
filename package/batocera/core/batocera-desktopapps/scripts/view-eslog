@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+
+# View ES log files, as yad notebook dialog style
+# 02-2026 v1.0
+# Icon view-eslog.png created with icon.kitchen
+
+
+# user added logs to /userdata/system/user-logs.txt - use absolute pathes
+# strings that contains # will be ignored
+i=/userdata/system/user-logs.txt
+[[ -e "$i" ]] && readarray -t LOGS < <(grep -v -E "^[[:space:]*]|[#]|^[[:space:]]*$" "$i")
+# defaults log
+LOGS+=(
+       /userdata/system/logs/es_launch_stdout.log
+       /userdata/system/logs/es_launch_stderr.log
+       /userdata/system/logs/display.log
+       /userdata/system/logs/language.log
+       /userdata/system/batocera.conf
+      )
+
+# Ensure DISPLAY is set
+if test -z "${DISPLAY}"
+then
+    export DISPLAY=$(getLocalXDisplay || echo :0.0)
+fi
+
+
+# Create notebook subsets per file found
+KEY=$RANDOM
+for i in "${LOGS[@]}"; do
+  if [[ -e "${i}" ]]; then
+    TABS+=( "--tab=$(basename "$i")" )
+    yad --plug=$KEY --tabnum=${#TABS[@]} --text-info < "${i}" &>/dev/null & 
+  fi
+done
+
+# Do nothing if no file is found, use TABS arr as counter
+[[ ${#TABS[@]} -eq 0 ]] && exit
+
+# else show tabs, left sided, close button or create support file
+yad --tab-pos=left --notebook \
+    --button="Create support file...":5 \
+    --button="Close":0 \
+    --key=$KEY "${TABS[@]}" &>/dev/null
+
+# Button handler
+case $? in
+  0) true ;;
+  5) text=$(batocera-support)
+     printf "%s\n\n\t%s" "Finished!" "${text}" | yad --text-info --button="Close":0
+  ;;
+  *) exit 1
+esac
