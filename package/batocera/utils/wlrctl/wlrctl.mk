@@ -10,9 +10,8 @@ WLRCTL_SOURCE = $(WLRCTL_VERSION).tar.gz
 WLRCTL_LICENSE = MIT
 WLRCTL_SITE_METHOD = wget
 
-WLRCTL_DEPENDENCIES = wayland
+WLRCTL_DEPENDENCIES = libxkbcommon wayland
 
 WLRCTL_CONF_OPTS = --prefix=/usr -Dzsh-completions=false
 
 $(eval $(meson-package))
-
