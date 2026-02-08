@@ -1855,6 +1855,81 @@ msxturbor:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
+mz2000:
+  name:       Sharp MZ-2000
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, d88, dsk, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz2000.zip
+          Using software list mode is recommended.
+
+mz2500:
+  name:       Sharp MZ-2500
+  manufacturer: Sharp
+  release: 1985
+  hardware: computer
+  extensions: [d88, dsk, mfi, dfi, hfe, mfm, td0, imd, d77, 1dd, cqm, cqi, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz2500.zip
+          Using software list mode is recommended.
+
+mz700:
+  name:       Sharp MZ-700
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz700.zip
+          Using software list mode is recommended.
+
+mz800:
+  name:       Sharp MZ-800
+  manufacturer: Sharp
+  release: 1984
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz800.zip
+          Using software list mode is recommended.
+
+mz80k:
+  name:       Sharp MZ-80K
+  manufacturer: Sharp
+  release: 1978
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz80k.zip
+          Using software list mode is recommended.
+
 o2em:
   name:       Odyssey2
   manufacturer: Magnavox - Philips
