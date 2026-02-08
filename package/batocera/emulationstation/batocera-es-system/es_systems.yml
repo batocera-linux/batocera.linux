@@ -3614,6 +3614,58 @@ coco:
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
+dragon64:
+  name: Dragon 64
+  manufacturer: Dragon Data
+  release: 1983
+  hardware: computer
+  extensions: [wav, cas, dsk, dmk, ccc, rom, bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
+  comment_en: |
+          MAME requires BIOS file dragon64.zip (or dragon32.zip for Dragon 32)
+
+          The Dragon 64 is a British home computer from 1983, compatible with Tandy CoCo.
+          It features a Motorola 6809E CPU, 64KB RAM, and Microsoft Extended BASIC.
+
+          Default Autoload Behaviors
+          1. Cartridge (.ccc/.rom) files autoload directly
+          2. Cassette (.cas/.wav) files autoload using CLOADM:EXEC
+          3. Disk (.dsk/.dmk) files autoload from boot disk
+
+          Dragon Models supported by MAME:
+          - Dragon 32 (1982) - 32KB RAM version
+          - Dragon 64 (1983) - 64KB RAM with RS-232 serial port
+          - Dragon Alpha (prototype) - Enhanced Dragon 64
+
+          user definable autoload overrides in: `system/configs/mame/autoload/dragon64_{cass,flop}_autoload.csv`
+  comment_br: |
+          Requer o arquivo dragon64.zip da BIOS do MAME
+
+mc10:
+  name: MC-10
+  manufacturer: Tandy Radio Shack
+  release: 1983
+  hardware: computer
+  extensions: [wav, cas, rom, bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
+  comment_en: |
+          MAME requires BIOS file mc10.zip
+
+          Xroar requires BASIC ROMs to be in the /userdata/bios/xroar folder.
+          The required rom files can be obtained from here: https://colorcomputerarchive.com/repo/ROMs/XRoar
+
 vc4000:
   name:       VC 4000
   manufacturer: Interton

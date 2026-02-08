@@ -517,6 +517,85 @@ systems:
         choices:
           'On': 1
           'Off': 0
+  - name: dragon64
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Dragon Cassettes: dragon_cass
+          Dragon Cartridges: dragon_cart
+          Dragon Disk images: dragon_flop
+      altmodel:
+        prompt: DRAGON MODEL
+        description: Select model of Dragon to emulate
+        choices:
+          Dragon 32: dragon32
+          Dragon 64 (Default): dragon64
+          Dragon Alpha: dgnalpha
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load
+        choices:
+          Cassette: cass
+          Cartridge: cart
+          Floppy Disk 1: flop1
+          Floppy Disk 2: flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
+  - name: mc10
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Tandy MC-10 cassettes: mc10_cass
+      altmodel:
+        prompt: MC-10 MODEL
+        description: Select the model to emulate
+        choices:
+          Tandy MC-10 (Default): mc10
+          Matra & Hachette Alice: alice
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Cartridge: cart
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
   - name: crvision
     custom_features:
       softList:
