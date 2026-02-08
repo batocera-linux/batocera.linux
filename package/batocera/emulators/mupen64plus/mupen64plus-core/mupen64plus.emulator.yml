@@ -113,6 +113,11 @@ custom_features:
       Game default: -1
       Disable: 0
       Enable: 1
+  mupen64plus_cheats:
+    group: ADVANCED OPTIONS
+    prompt: CHEATS
+    description: Pass custom cheats argument directly to mupen64plus using --cheats.
+    preset: input
   mupen64-controller1:
     submenu: CONTROLLER 1
     prompt: CONTROLLER TYPE
