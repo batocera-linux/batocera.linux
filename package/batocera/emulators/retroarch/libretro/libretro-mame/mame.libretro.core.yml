@@ -540,6 +540,22 @@ systems:
         choices:
           'On': 1
           'Off': 0
+  - name: ctvboy
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Gakken Compact Vision TV Boy cartridges: ctvboy
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
   - name: electron
     custom_features:
       softList:

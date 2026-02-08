@@ -3245,6 +3245,20 @@ crvision:
   comment_br: |
           Requer o arquivo crvision.zip da BIOS do MAME
 
+ctvboy:
+  name:       Compact Vision TV Boy
+  manufacturer: Gakken
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME 0.262+ required
+
 laser310:
   name:       Laser 310
   manufacturer: VTech
