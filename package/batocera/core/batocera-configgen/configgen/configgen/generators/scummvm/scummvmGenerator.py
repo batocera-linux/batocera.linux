@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import os
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -106,9 +107,13 @@ class ScummVMGenerator(Generator):
             f"{target}"]
         )
 
+        # Determine SDL Video Driver
+        sdl_videodriver = "wayland" if "WAYLAND_DISPLAY" in os.environ else "x11"
+
         return Command.Command(
             array=commandArray,
             env={
+                "SDL_VIDEODRIVER": sdl_videodriver,
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_CACHE_HOME": CACHE,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
