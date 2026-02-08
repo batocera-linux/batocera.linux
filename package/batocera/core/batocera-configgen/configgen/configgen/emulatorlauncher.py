@@ -186,8 +186,24 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                 try:
                     default_gun_help_dir = Path("/var/run/batocera-overlays")
                     bezelsUtil.generate_gun_help(systemName, rom, system.config.use_guns, guns, default_gun_help_dir, "gun_help.png", gameResolution)
-                except:
-                    _logger.debug("Failed to generate the gun help image")
+                except Exception as e:
+                    _logger.error("Failed to generate the gun help image")
+                    _logger.error(e)
+
+                # gun borders
+                try:
+                    if system.config.use_guns and guns:
+                        if generator.supportsInternalBezels() or system.config.get_bool('hud_support'):
+                            _logger.debug("skipping configgen internal gun borders for emulator %s", system.config.emulator)
+                        else:
+                            gun_border_size_name = system.guns_borders_size_name(guns)
+                            if gun_border_size_name is not None:
+                                _logger.debug("using configgen internal gun borders for emulator %s", system.config.emulator)
+                                from .utils.GunBorders import GunBorders
+                                GunBorders.draw_borders(gun_border_size_name, bezelsUtil.gunsBordersColorFomConfig(system.config), system.guns_border_ratio_type(guns))
+                except Exception as e:
+                    _logger.error("Failed to draw_borders for GunBorders")
+                    _logger.error(e)
 
                 with profiler.pause():
                     try:
