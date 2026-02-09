@@ -48,7 +48,6 @@ endif
 DOCKER_IMAGE_STAMP = $(PROJECT_DIR)/.ba-docker-image-available
 DOCKER_IMAGE_AVAILABLE := $(if $(DIRECT_BUILD),,$(DOCKER_IMAGE_STAMP))
 
-$(DOCKER_IMAGE_STAMP): DOCKER_ACTION ?= pull
 $(DOCKER_IMAGE_STAMP): | _check_docker
 	$(if $(filter build,$(DOCKER_ACTION)),\
 		$(DOCKER) build -t $(DOCKER_IMAGE) .,\
