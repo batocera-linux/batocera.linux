@@ -238,7 +238,7 @@ endif
 %-build-cmd: %-supported
 	@echo $(MAKE_BUILDROOT)
 
-%-refresh: | $(DOCKER_IMAGE_AVAILABLE) $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-clean-for-refresh: %-supported | $(TARGET_OUTPUT_DIR_INITIALIZED)
 ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
@@ -262,13 +262,14 @@ endif
 			rm -rf $(TARGET_OUTPUT_DIR)/host/$$dir; \
 		fi; \
 	done
-	rm -rf $(TARGET_OUTPUT_DIR)/target
-	rm -rf $(TARGET_OUTPUT_DIR)/target2
+	@rm -rf $(TARGET_OUTPUT_DIR)/target
+	@rm -rf $(TARGET_OUTPUT_DIR)/target2
 
+%-refresh: %-clean-for-refresh | $(DOCKER_IMAGE_AVAILABLE)
 	@$(MAKE) $*-build
 
 %-cleanbuild: %-clean
-	$(MAKE) $*-build
+	@$(MAKE) $*-build
 
 %-pkg: %-supported
 	$(if $(PKG),,$(error PKG not specified))
