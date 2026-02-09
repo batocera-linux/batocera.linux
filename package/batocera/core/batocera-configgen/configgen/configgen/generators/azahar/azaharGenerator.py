@@ -134,13 +134,13 @@ class AzaharGenerator(Generator):
         # screenshots
         azaharConfig.set("UI", r"Paths\screenshotPath", "/userdata/screenshots")
         azaharConfig.set("UI", r"Paths\screenshotPath\default", "false")
-        
+
         ## [MISCELLANEOUS]
         if not azaharConfig.has_section("Miscellaneous"):
             azaharConfig.add_section("Miscellaneous")
         # Don't check for update at start
         azaharConfig.set("Miscellaneous", "check_for_update_on_start", "false")
-        azaharConfig.set("Miscellaneous", r"check_for_update_on_start\default", "false")        
+        azaharConfig.set("Miscellaneous", r"check_for_update_on_start\default", "false")
 
         ## [RENDERER]
         if not azaharConfig.has_section("Renderer"):

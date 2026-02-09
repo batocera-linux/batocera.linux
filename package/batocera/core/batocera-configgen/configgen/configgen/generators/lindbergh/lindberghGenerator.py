@@ -527,9 +527,9 @@ class LindberghGenerator(Generator):
                                 # reversed axis
                                 if input_name in relaxValues and relaxValues[input_name]["reversed"]:
                                     if minmax_value == "MAX":
-                                        minmax_value == "MIN"
+                                        minmax_value = "MIN"
                                     else:
-                                        minmax_value == "MAX"
+                                        minmax_value = "MAX"
                                 # set
                                 self.setConf(conf, f"PLAYER_{player_input}_{button_name}", f"{controller_name}:{input_value}:{minmax_value}")
                         elif pad.inputs[input_base_name].type == "hat":

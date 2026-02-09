@@ -4,8 +4,8 @@ import logging
 from typing import TYPE_CHECKING
 
 from ...batoceraPaths import ensure_parents_and_open
-from ...utils.configparser import CaseSensitiveConfigParser
 from ...utils import vulkan
+from ...utils.configparser import CaseSensitiveConfigParser
 from .xemuPaths import XEMU_CONFIG
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
     if system.name == "chihiro":
         renderer = "OPENGL"
         _logger.debug("Chihiro system, defaulting to OpenGL due to a Xemu bug")
-    
+
     iniConfig.set("display", "renderer", f'"{renderer}"')
 
     # Vulkan GPU selection
@@ -101,10 +101,10 @@ def createXemuConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, rom
             _logger.debug("A discrete GPU is available on the system. We will use that for performance")
             gpu_name = vulkan.get_discrete_gpu_name()
             if gpu_name:
-                _logger.debug(f"Using Discrete GPU Name: {gpu_name} for Xemu")
+                _logger.debug("Using Discrete GPU Name: %s for Xemu", gpu_name)
             else:
                 _logger.debug("Discrete GPU detected but couldn't get name.")
-        
+
         if not gpu_name:
             _logger.debug("Using default GPU for Xemu")
             gpu_name = vulkan.get_default_gpu_name()

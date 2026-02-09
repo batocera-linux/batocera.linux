@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+
 import pathlib
 import subprocess
+from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
@@ -26,24 +27,24 @@ class XroarGenerator(Generator):
         confFile = xroarConfigDir / "xroar.conf"
 
         # Write the configuration file
-        with open(confFile, "w") as f:
+        with confFile.open("w") as f:
             # BIOS search paths
             f.write("rompath /userdata/bios/xroar\n")
-            
+
             # Machine Selection
             f.write(f"default-machine {system.config.get('xroar_machine', 'coco2bus')}\n")
-            
+
             # Set audio volume to 100
-            f.write(f"ao-volume 100\n")
-            
+            f.write("ao-volume 100\n")
+
             # Cartridge Autostart
             if system.config.get_bool('xroar_cartauto'):
-                f.write(f"cart-autorun\n")
-            
+                f.write("cart-autorun\n")
+
             # VSync
             if system.config.get_bool('xroar_vsync'):
-                f.write(f"vo-vsync\n")
-            
+                f.write("vo-vsync\n")
+
             # Fullscreen
             f.write("fs\n")
 
@@ -58,7 +59,7 @@ class XroarGenerator(Generator):
                             rom_path = "/tmp/" + line
                             break
 
-                if rom_path is rom(str):
+                if rom_path == str(rom):
                     raise Exception("Can't find a matching file in archive")
 
             except Exception as error:
