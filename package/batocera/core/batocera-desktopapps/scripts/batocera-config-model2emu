@@ -1,8 +1,10 @@
 #!/bin/bash
 
-if test -z "${DISPLAY}"
-then
-	export DISPLAY=$(getLocalXDisplay)
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export SDL_VIDEODRIVER=wayland
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-model2"
+else
+    export DISPLAY=$(getLocalXDisplay)
 fi
 
 emulatorlauncher -system model2 -rom config

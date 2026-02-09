@@ -1,7 +1,9 @@
 #!/bin/bash
 
-if test -z "${DISPLAY}"
-then
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export SDL_VIDEODRIVER=wayland
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-vita3k"
+else
     export DISPLAY=$(getLocalXDisplay)
 fi
 
@@ -11,4 +13,4 @@ XDG_CACHE_HOME=/userdata/system/cache \
 XDG_DATA_HOME=/userdata/saves \
 XDG_DATA_DIRS=/userdata/saves \
 # now run the emulator
-/usr/bin/vita3k/Vita3K -F
+/usr/bin/vita3k/Vita3K
