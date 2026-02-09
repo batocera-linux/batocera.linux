@@ -8,4 +8,4 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-XDG_CONFIG_HOME=/userdata/system/configs XDG_DATA_HOME=/userdata/saves QT_QPA_PLATFORM=xcb /usr/bin/dolphin-triforce -u "/userdata/system/configs/dolphin-triforce"
+XDG_CONFIG_HOME=/userdata/system/configs XDG_DATA_HOME=/userdata/saves QT_QPA_PLATFORM=xcb /usr/bin/dolphin-triforce.desktopconfig -u "/userdata/system/configs/dolphin-triforce"

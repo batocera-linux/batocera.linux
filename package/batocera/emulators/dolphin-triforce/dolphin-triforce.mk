@@ -54,6 +54,7 @@ define DOLPHIN_TRIFORCE_INI
     # copy extra ini files
     cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-triforce/*.ini \
 		$(TARGET_DIR)/usr/share/triforce
+    cd $(TARGET_DIR)/usr/bin && ln -sf dolphin-triforce dolphin-triforce.desktopconfig
 endef
 
 DOLPHIN_TRIFORCE_POST_INSTALL_TARGET_HOOKS += DOLPHIN_TRIFORCE_INI

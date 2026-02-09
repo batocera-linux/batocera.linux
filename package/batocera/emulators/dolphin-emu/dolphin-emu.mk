@@ -69,7 +69,12 @@ define DOLPHIN_EMU_PRE_CONFIGURE_HOOK
         $(@D)/CMake/ScmRevGen.cmake
 endef
 
+define DOLPHIN_EMU_LINK
+    cd $(TARGET_DIR)/usr/bin && ln -sf dolphin-emu dolphin-emu.desktopconfig
+endef
+
 DOLPHIN_EMU_PRE_CONFIGURE_HOOKS = DOLPHIN_EMU_PRE_CONFIGURE_HOOK
+DOLPHIN_EMU_POST_INSTALL_TARGET_HOOKS += DOLPHIN_EMU_LINK
 
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
