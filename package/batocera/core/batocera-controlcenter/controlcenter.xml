@@ -2,6 +2,7 @@
 	<vgroup name="Top bar" role="header">
 		<feature>
 			<text display="${batocera-info --short}" refresh="2" />
+			<img display="/usr/share/batocera/controlcenter/bato-record.gif" if='${/usr/bin/batocera-record is_running | grep true}' refresh="2" height="3%" />
 		</feature>
 		<feature display="Batocera">
 			<text display="${batocera-version | cut -d' ' -f1}" />
@@ -15,33 +16,73 @@
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
+		<tab display="Record" target="Record" />
 	</feature>
+
+	<!-- RECORDING TAB -->
+	<hgroup name="Record" display="Record">
+		<!-- Main Controls Row -->
+		<feature display="Status">
+			<text display="${batocera-record status}" refresh="1" />
+			<!-- Define Stop first so its ID 'rec_active' is known to the Start button's 'if' check -->
+			<button id="rec_active" display="Stop Recording" if="${batocera-record is_running}" action="batocera-record stop" afterclick="bcc_refresh" />
+			<button display="Start Recording" if="!id(rec_active)" action="batocera-record start" afterclick="bcc_refresh" />
+		</feature>
+
+		<!-- Quality Row: Clicking 'Select' will open the choice popup -->
+		<feature display="Quality">
+			<text display='${batocera-record get-quality}' refresh="1" />
+			<choice display="Ultra (60fps)" action="batocera-record set-quality ultra" afterclick="bcc_refresh" />
+			<choice display="High (60fps)"  action="batocera-record set-quality high" afterclick="bcc_refresh" />
+			<choice display="Mid (30fps)"   action="batocera-record set-quality mid" afterclick="bcc_refresh" />
+			<choice display="Low (30fps)"   action="batocera-record set-quality low" afterclick="bcc_refresh" />
+		</feature>
+
+		<!-- Audio Row -->
+		<feature display="Audio Source">
+			<text display='${batocera-record get-audio}' refresh="1" />
+			<choice display="System (Default)" action="batocera-record set-audio auto" afterclick="bcc_refresh" />
+			<choice display="Microphone"       action="batocera-record set-audio mic" afterclick="bcc_refresh" />
+			<choice display="No Audio"         action="batocera-record set-audio none" afterclick="bcc_refresh" />
+		</feature>
+
+		<!-- Multi-Screen Row -->
+		<feature display="Record All Screens">
+			<switch value='${[ "$(batocera-record get-all)" = "true" ] &amp;&amp; echo "true"}'
+					action_on="batocera-record set-all true"
+					action_off="batocera-record set-all false"
+					afterclick="bcc_refresh" refresh="1" />
+		</feature>
+	</hgroup>
+
 	<hgroup name="Game" display="Game">
-          <hgroup>
-	    <feature>
-	      <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".marquee"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG }' height="90" refresh="3" align="left" id="gamemarquee" />
-	      <text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" if="!id(gamemarquee)" />
-	      <text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/\(.*\)/[\1]/'}" align="left" refresh="3" />
-	    </feature>
-	    <feature>
-	      <text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P."}' align="left" refresh="1" id="playtime" />
-	    </feature>
-	  </hgroup>
-	  <hgroup>
-	    <feature>
-	      <button_confirm display="Quit game" action="hotkeygen --send exit" />
-	      <doc display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" refresh="3"/>
-	      <doc display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" refresh="3"/>
-	    </feature>
-	  </hgroup>
-	      <vgroup>
-		<img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".thumbnail"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="200" refresh="3" />
-		<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' width="130" height="160" refresh="2" id="cheevos" bg="#141821" style="card" logo="/usr/share/batocera/controlcenter/resources/ra-icon.png" font="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" />
-		<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" refresh="5" align="center" />
-	      </vgroup>
+		<hgroup>
+			<feature>
+				<img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".marquee"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG }' height="10%" refresh="3" align="left" id="gamemarquee" />
+				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" if="!id(gamemarquee)" />
+				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/\(.*\)/[\1]/'}" align="left" refresh="3" />
+			</feature>
+			<feature>
+				<text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P."}' align="left" refresh="1" id="playtime" />
+			</feature>
+		</hgroup>
+		<vgroup>
+			<feature>
+				<button_confirm display="Quit game" action="hotkeygen --send exit" />
+				<doc display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" refresh="3"/>
+				<doc display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" refresh="3"/>
+			</feature>
+		</vgroup>
+		<vgroup>
+                        <img display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".thumbnail"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG || echo "/usr/share/emulationstation/resources/services/logo-tri.png"}' height="30%" refresh="3" />
+			<qrcode display='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r ".cheevosId"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo https://retroachievements.org/game/$IMG}' height="30%" refresh="2" id="cheevos" bg="#141821" style="card" logo="/usr/share/batocera/controlcenter/resources/ra-icon.png" font="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" />
+			<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" height="30%" refresh="5" align="center" />
+		</vgroup>
+		<hgroup>
+		</hgroup>
 	</hgroup>
         <hgroup name="Gun" display="Gun">
-          <img display='${echo /var/run/batocera-overlays/gun_help.png}' refresh="5" align="center" />
+          <img display='${echo /var/run/batocera-overlays/gun_help.png}' height="80%" refresh="5" align="center" />
         </hgroup>
 	<hgroup name="System" display="System">
 		<feature>
@@ -81,6 +122,7 @@
 			<text display="${cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" refresh="1" />
 		</feature>
 	</hgroup>
+
 	<vgroup name="Bottom bar" role="footer">
 		<feature display="CPU:">
 			<progressbar display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}" min="0" max="100" refresh="1" />
@@ -93,4 +135,3 @@
 		</feature>
 	</vgroup>
 </features>
-
