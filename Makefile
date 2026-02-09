@@ -136,6 +136,93 @@ define MAKE_BUILDROOT
 endef
 endif # DIRECT_BUILD
 
+.PHONY: help
+help:
+	@echo 'Information:'
+	@echo '  vars                          - show current build configuration and settings'
+	@echo '  <target>-build-cmd            - show the buildroot make command for <target>'
+	@echo
+	@echo 'Build:'
+	@echo '  <target>-defconfig            - generate the defconfig file for <target>'
+	@echo '  <target>-config               - generate defconfig and configure buildroot for <target>'
+	@echo '  <target>-build                - configure and build <target>'
+	@echo '  <target>-source               - download all sources needed for <target>'
+	@echo '  <target>-show-build-order     - show the package build order for <target>'
+	@echo '  <target>-kernel               - run kernel menuconfig for <target>'
+	@echo '  <target>-graph-depends        - generate dependency graph (SVG) for <target>'
+	@echo '  <target>-shell                - open a shell in the build environment for <target>'
+	@echo '                                  use CMD=<cmd> to run a command (required in BATCH_MODE)'
+	@echo '  <target>-pkg                  - build a single package for <target> (set PKG=<pkg>)'
+	@echo
+	@echo 'Cleaning:'
+	@echo '  <target>-clean                - clean the build output and remove defconfig for <target>'
+	@echo '  <target>-cleanbuild           - clean and rebuild <target> from scratch'
+	@echo
+	@echo 'Incremental rebuild:'
+	@echo '  <target>-refresh              - surgically reset recently changed packages and rebuild'
+	@echo '                                  (requires PARALLEL_BUILD=y, uses DAYS=<n> to control scope)'
+	@echo '  <target>-clean-for-refresh    - reset recently changed packages without rebuilding'
+	@echo
+	@echo 'Deployment:'
+	@echo '  <target>-flash                - flash a built image to a device (set DEV=<device>)'
+	@echo '  <target>-upgrade              - upgrade boot partition on a device (set DEV=<device>)'
+	@echo '  <target>-rsync                - rsync target filesystem to a remote device'
+	@echo '                                  (set <TARGET>_IP=<ip>)'
+	@echo '  <target>-webserver            - serve built images via HTTP (set BOARD=<board> to override)'
+	@echo
+	@echo 'Caching and snapshots:'
+	@echo '  <target>-ccache-stats         - show ccache statistics for <target>'
+	@echo '  <target>-snapshot             - create a btrfs snapshot of the build output'
+	@echo '  <target>-rollback             - restore build output from a btrfs snapshot'
+	@echo '  <target>-toolchain            - build toolchain+llvm and snapshot (requires btrfs)'
+	@echo
+	@echo 'Maintenance:'
+	@echo '  <target>-find-build-dups      - list duplicate packages in the build directory'
+	@echo '  <target>-remove-build-dups    - remove duplicate packages from the build directory'
+	@echo '  find-dl-dups                  - list duplicate downloads in the download directory'
+	@echo '  remove-dl-dups                - remove duplicate downloads from the download directory'
+	@echo '  <target>-tail                 - tail the build-time log for <target>'
+	@echo
+	@echo 'Localization:'
+	@echo '  <target>-update-po-files      - update translation files for <target>'
+	@echo
+	@echo 'Systems report:'
+	@echo '  <target>-systems-report       - generate a systems report the buildroot for <target>'
+	@echo '  <target>-systems-report-clean - remove a previously generated systems report'
+	@echo '  <target>-systems-report-serve - serve a generated systems report via HTTP'
+	@echo
+	@echo 'Docker:'
+	@echo '  pull-docker-image             - pull the build Docker image from the registry'
+	@echo '  build-docker-image            - build the Docker image locally from Dockerfile'
+	@echo '  update-docker-image           - clean stamp and re-pull the Docker image'
+	@echo '  rebuild-docker-image          - clean stamp and rebuild the Docker image locally'
+	@echo '  publish-docker-image          - push the Docker image to the registry'
+	@echo '  clean-for-docker-image        - remove the Docker image availability stamp'
+	@echo
+	@echo 'Serial:'
+	@echo '  uart                          - open a serial console (set SERIAL_DEV and SERIAL_BAUDRATE)'
+	@echo
+	@echo 'Environment variables:'
+	@echo '  DIRECT_BUILD=1                - build natively instead of inside Docker'
+	@echo '  PARALLEL_BUILD=1              - enable per-package directories and parallel build'
+	@echo '  BATCH_MODE=1                  - non-interactive Docker mode'
+	@echo '  EXTRA_OPTS="..."              - extra defconfig options (deprecated, use add-defconfig)'
+	@echo '  PKG=<pkg>                     - package name for <target>-pkg'
+	@echo '  CMD=<cmd>                     - command for <target>-shell or <target>-build'
+	@echo '  DAYS=<n>                      - number of days to look back for <target>-refresh (default: 1)'
+	@echo '  DEV=<device>                  - device path for <target>-flash and <target>-upgrade'
+	@echo '  DOCKER=<cmd>                  - Docker command to use (default: docker)'
+	@echo '  DOCKER_OPTS="..."             - additional Docker run options'
+	@echo '  DOCKER_REPO=<repo>            - Docker image repository (default: batoceralinux)'
+	@echo '  DOCKER_IMAGE_NAME=<name>      - Docker image name (default: batocera.linux-build)'
+	@echo
+	@echo 'Supported targets: $(TARGETS)'
+	@echo
+	@echo 'Example usage:'
+	@echo '  make x86_64-build             - build the x86_64 target'
+	@echo '  make x86_64-pkg PKG=linux     - rebuild only the linux package for x86_64'
+	@echo '  make x86_64-shell CMD=bash    - open a bash shell in the x86_64 build environment'
+
 vars:
 	@echo "Supported targets:  $(TARGETS)"
 	@echo "Project directory:  $(PROJECT_DIR)"
