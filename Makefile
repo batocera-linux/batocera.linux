@@ -17,6 +17,10 @@ endif
 MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
 
+# This is our default rule, so it must come first
+.PHONY: vars
+vars:
+
 OS := $(shell uname)
 
 ifeq ($(OS),Darwin)
@@ -132,7 +136,6 @@ define MAKE_BUILDROOT
 endef
 endif # DIRECT_BUILD
 
-.PHONY: vars
 vars:
 	@echo "Supported targets:  $(TARGETS)"
 	@echo "Project directory:  $(PROJECT_DIR)"
