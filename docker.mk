@@ -49,6 +49,7 @@ DOCKER_IMAGE_STAMP = $(PROJECT_DIR)/.ba-docker-image-available
 DOCKER_IMAGE_AVAILABLE := $(if $(DIRECT_BUILD),,$(DOCKER_IMAGE_STAMP))
 
 $(DOCKER_IMAGE_STAMP): | _check_docker
+	@$(call MESSAGE,$(DOCKER_ACTION_MESSAGE) docker image $(DOCKER_IMAGE))
 	$(if $(filter build,$(DOCKER_ACTION)),\
 		$(DOCKER) build -t $(DOCKER_IMAGE) .,\
 		$(DOCKER) pull $(DOCKER_IMAGE))
@@ -56,10 +57,12 @@ $(DOCKER_IMAGE_STAMP): | _check_docker
 
 .PHONY: pull-docker-image
 pull-docker-image: DOCKER_ACTION = pull
+pull-docker-image: DOCKER_ACTION_MESSAGE = Pulling
 pull-docker-image: $(DOCKER_IMAGE_AVAILABLE)
 
 .PHONY: build-docker-image
 build-docker-image: DOCKER_ACTION = build
+build-docker-image: DOCKER_ACTION_MESSAGE = Building
 build-docker-image: $(DOCKER_IMAGE_AVAILABLE)
 
 .PHONY: clean-for-docker-image
@@ -68,12 +71,13 @@ clean-for-docker-image:
 
 .PHONY: update-docker-image
 update-docker-image: clean-for-docker-image
-	@$(MAKE) pull-docker-image
+	@$(MAKE) pull-docker-image DOCKER_ACTION_MESSAGE=Updating
 
 .PHONY: rebuild-docker-image
 rebuild-docker-image: clean-for-docker-image
-	@$(MAKE) build-docker-image
+	@$(MAKE) build-docker-image DOCKER_ACTION_MESSAGE=Rebuilding
 
 .PHONY: publish-docker-image
 publish-docker-image: | _check_docker
+	@$(call MESSAGE,Publishing docker image $(DOCKER_IMAGE))
 	@$(DOCKER) push $(DOCKER_IMAGE):latest

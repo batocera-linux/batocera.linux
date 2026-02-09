@@ -57,6 +57,11 @@ endef
 REQUIRE = $(if $(shell command -v $(1) 2>/dev/null),,$(error $(1) not found$(if $(2),; $(2))))
 UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 
+TERM_BOLD := $(shell tput smso 2>/dev/null)
+TERM_RESET := $(shell tput rmso 2>/dev/null)
+TERM_URL = \e]8;;$(1)\e\\$(if $(2),$(2),$(1))\e]8;;\e\\
+MESSAGE = printf '$(TERM_BOLD)>>> $(if $*,$*: ,)%b$(TERM_RESET)\n' $$'$(call strip,$(subst ',\',$(1)))'
+
 # END helper macros
 
 # Clear the user defconfig file at the start before including
@@ -288,6 +293,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 	$(if $(filter $*,$(TARGETS)),,$(error $* not supported))
 
 %-clean: | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+	@$(call MESSAGE,Cleaning buildroot)
 	@$(MAKE_BUILDROOT) clean
 	@if [ -f '$(TARGET_DEFCONFIG)' ]; then \
 		echo "Removing config for $*..."; \
@@ -298,12 +304,15 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 	@:
 
 %-config: %-defconfig | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+	@$(call MESSAGE,Generating buildroot makefile)
 	@$(MAKE_BUILDROOT) batocera-$*_defconfig
 
 %-build: %-config
+	@$(call MESSAGE,$(or $(BUILD_MESSAGE),Building $(or $(CMD),image)))
 	@$(MAKE_BUILDROOT) $(CMD)
 
 %-source: %-config
+	@$(call MESSAGE,Fetching source code for all packages)
 	@$(MAKE_BUILDROOT) source
 
 %-show-build-order: %-config
@@ -320,6 +329,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 ifdef BATCH_MODE
 	$(if $(CMD),,$(error CMD is required to use $*-shell in BATCH_MODE))
 endif
+	@$(call MESSAGE,$(if $(CMD),Executing command,Starting interactive shell))
 	@$(RUN_DOCKER) $(CMD)
 
 %-ccache-stats: %-config
@@ -332,7 +342,7 @@ endif
 ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
-	@echo "--- Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)) ---"
+	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)))
 
 	@if [ -n "$(PKGS_TO_RESET)" ]; then \
 		echo "Total packages to reset: $(PKGS_TO_RESET)"; \
@@ -345,7 +355,7 @@ endif
 		echo "No packages to reset."; \
 	fi
 
-	@echo "--- Removing Host and Target directories ---"
+	@$(call MESSAGE,Removing Host and Target directories)
 	@for dir in include share lib/pkgconfig; do \
 		if [ -d "$(TARGET_OUTPUT_DIR)/host/$$dir" ]; then \
 			echo "Cleaning host staging: $$dir..."; \
@@ -364,7 +374,7 @@ endif
 %-pkg: %-supported
 	$(if $(PKG),,$(error PKG not specified))
 
-	@$(MAKE) $*-build CMD=$(PKG)
+	@$(MAKE) $*-build CMD=$(PKG) BUILD_MESSAGE="Building package $(PKG)"
 
 %-webserver: %-supported | $(TARGET_OUTPUT_DIR_INITIALIZED)
 	$(if $(wildcard $(TARGET_OUTPUT_DIR)/images/batocera/*),,$(error $* not built!))
@@ -453,16 +463,19 @@ uart:
 	@picocom $(SERIAL_DEV) -b $(SERIAL_BAUDRATE)
 
 %-update-po-files: %-config
+	@$(call MESSAGE,Updating translation files)
 	@$(MAKE_BUILDROOT) update-po-files
 
 %-systems-report-clean: %-supported
 	-@rm -rf $(TARGET_SYSTEMS_REPORT_DIR)
 
 %-systems-report: $(SYSTEMS_REPORT_DEFCONFIGS) %-config
+	@$(call MESSAGE,Generating systems report)
 	@echo "SYSTEMS_REPORT_TARGETS := $(SYSTEMS_REPORT_TARGETS)" > "$(TARGET_SYSTEMS_REPORT_MK)"
 	@$(MAKE_BUILDROOT) systems-report
 
 %-systems-report-serve: | $(TARGET_OUTPUT_DIR_INITIALIZED)
 	$(call REQUIRE,python3)
 	$(if $(wildcard $(TARGET_SYSTEMS_REPORT_DIR)/*),,$(error $* not built))
+	@$(call MESSAGE,Serving systems report at $(call TERM_URL,http://localhost:8000/batocera_systemsReport.html))
 	python3 -m http.server --directory $(TARGET_SYSTEMS_REPORT_DIR)/
