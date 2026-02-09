@@ -178,7 +178,7 @@
 - Wireless Regdb to 2026.02.04
 - WLRoots to 0.19.2
 - Xpad-noone to Oct 30, 2025 build
-- XOne to v0.5.2
+- Xone to v0.5.5
 - XWayland to 24.1.9
 
 # 2025/10/12 - batocera.linux 42 - Papilio Ulysses
