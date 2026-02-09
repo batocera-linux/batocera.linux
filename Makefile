@@ -33,7 +33,6 @@ OUTPUT_DIR     ?= $(PROJECT_DIR)/output
 CCACHE_DIR     ?= $(PROJECT_DIR)/buildroot-ccache
 LOCAL_MK       ?= $(PROJECT_DIR)/batocera.mk
 EXTRA_OPTS     ?=
-DOCKER_OPTS    ?=
 MAKE_JLEVEL    ?= $(NPROC)
 MAKE_LLEVEL    ?= $(NPROC)
 BATCH_MODE     ?=
@@ -42,6 +41,8 @@ DIRECT_BUILD   ?=
 DAYS           ?= 1
 SYSTEMS_REPORT_EXCLUDE_TARGETS ?= odin
 
+## BEGIN helper macros
+
 USER_DEFCONFIG := $(PROJECT_DIR)/configs/.user_defconfig
 
 # Macro to append a line to the user defconfig file
@@ -49,11 +50,17 @@ define add-defconfig
 $(file >>$(USER_DEFCONFIG),$(1))
 endef
 
+REQUIRE = $(if $(shell command -v $(1) 2>/dev/null),,$(error $(1) not found$(if $(2),; $(2))))
+UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
+
+# END helper macros
+
 # Clear the user defconfig file at the start before including
 # the user's makefile customizations
 $(file >$(USER_DEFCONFIG),)
 
 -include $(LOCAL_MK)
+include $(PROJECT_DIR)/docker.mk
 
 ifdef EXTRA_OPTS
 $(warning EXTRA_OPTS will be removed in the future, please migrate to $$(call add-defconfig,...))
@@ -108,16 +115,8 @@ SYSTEMS_REPORT_TARGETS := $(filter-out $(SYSTEMS_REPORT_EXCLUDE_TARGETS) x86_wow
 # All defconfig files for systems report targets, generated from the board files
 SYSTEMS_REPORT_DEFCONFIGS = $(foreach target,$(SYSTEMS_REPORT_TARGETS),$(call target-defconfig,$(target)))
 
-## BEGIN helper macros
-
-REQUIRE = $(if $(shell command -v $(1) 2>/dev/null),,$(error $(1) not found$(if $(2),; $(2))))
-UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
-
-# END helper macros
-
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
-
 define MAKE_BUILDROOT
 	make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$* \
 		BR2_EXTERNAL=$(PROJECT_DIR) \
@@ -125,42 +124,12 @@ define MAKE_BUILDROOT
 		BR2_CCACHE_DIR=$(CCACHE_DIR) \
 		-C $(PROJECT_DIR)/buildroot
 endef
-
 else # DIRECT_BUILD
-
-UID  := $(shell id -u)
-GID  := $(shell id -g)
-
-DOCKER ?= docker
-
-ifndef BATCH_MODE
-DOCKER_OPTS += -i
-endif
-
-DOCKER_REPO ?= batoceralinux
-IMAGE_NAME ?= batocera.linux-build
-
-define RUN_DOCKER
-	$(DOCKER) run -t --init --rm \
-		-e HOME \
-		-v $(PROJECT_DIR):/build \
-		-v $(DL_DIR):/build/buildroot/dl \
-		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
-		-w /$* \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
-		-u $(UID):$(GID) \
-		$(DOCKER_OPTS) \
-		$(DOCKER_REPO)/$(IMAGE_NAME)
-endef
-
 define MAKE_BUILDROOT
 	$(RUN_DOCKER) make $(MAKE_OPTS) O=/$* \
 			BR2_EXTERNAL=/build \
 			-C /build/buildroot
 endef
-
 endif # DIRECT_BUILD
 
 .PHONY: vars
@@ -173,45 +142,16 @@ vars:
 	@echo "Extra defconfig:"
 	@sed -e '/^\s*$$/d' -e 's/^/  /' "$(USER_DEFCONFIG)"
 ifndef DIRECT_BUILD
-	@echo "Docker repo/image:  $(DOCKER_REPO)/$(IMAGE_NAME)"
+	@echo "Docker repo/image:  $(DOCKER_IMAGE)"
 	@echo "Docker options:     $(DOCKER_OPTS)"
 endif
 	@echo "Make options:       $(MAKE_OPTS)"
-
-.PHONY: _check_docker
-_check_docker:
-ifdef DIRECT_BUILD
-	$(error This is a direct build environment)
-endif
-	$(call REQUIRE,$(DOCKER))
 
 .PHONY: _check_find
 _check_find:
 ifeq ($(OS),Darwin)
 	$(call REQUIRE,gfind,Please install findutils from Homebrew)
 endif
-
-.PHONY: build-docker-image
-build-docker-image: _check_docker
-	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
-	@touch .ba-docker-image-available
-
-.ba-docker-image-available:
-	@$(MAKE) -s _check_docker
-	@$(DOCKER) pull $(DOCKER_REPO)/$(IMAGE_NAME)
-	@touch .ba-docker-image-available
-
-.PHONY: batocera-docker-image
-batocera-docker-image: $(if $(DIRECT_BUILD),,.ba-docker-image-available)
-
-.PHONY: update-docker-image
-update-docker-image: _check_docker
-	-@rm .ba-docker-image-available > /dev/null
-	@$(MAKE) -s batocera-docker-image
-
-.PHONY: publish-docker-image
-publish-docker-image: _check_docker
-	@$(DOCKER) push $(DOCKER_REPO)/$(IMAGE_NAME):latest
 
 # Target macros for files or directories (actual files)
 target-output-dir = $(OUTPUT_DIR)/$(1)
@@ -257,7 +197,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 %-supported:
 	$(if $(filter $*,$(TARGETS)),,$(error $* not supported))
 
-%-clean: | batocera-docker-image $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-clean: | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(MAKE_BUILDROOT) clean
 	@if [ -f '$(TARGET_DEFCONFIG)' ]; then \
 		echo "Removing config for $*..."; \
@@ -267,7 +207,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 %-defconfig: $(TARGET_DEFCONFIG_PATTERN) | %-supported
 	@:
 
-%-config: %-defconfig | batocera-docker-image $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-config: %-defconfig | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(MAKE_BUILDROOT) batocera-$*_defconfig
 
 %-build: %-config
@@ -298,7 +238,7 @@ endif
 %-build-cmd: %-supported
 	@echo $(MAKE_BUILDROOT)
 
-%-refresh: | batocera-docker-image $(TARGET_OUTPUT_DIR_INITIALIZED)
+%-refresh: | $(DOCKER_IMAGE_AVAILABLE) $(TARGET_OUTPUT_DIR_INITIALIZED)
 ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
