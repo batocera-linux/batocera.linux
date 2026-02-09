@@ -36,9 +36,8 @@ LOGS+=(
 # Ensure DISPLAY is set
 if test -z "${DISPLAY}"
 then
-    export DISPLAY=$(getLocalXDisplay || echo :0.0)
+  export DISPLAY=$(getLocalXDisplay || echo :0.0)
 fi
-
 
 # Create notebook subsets per file found
 KEY=$RANDOM
@@ -54,6 +53,7 @@ done
 
 # else show tabs, left sided, close button or create support file
 yad --tab-pos=left --notebook \
+    --text-align=center --text="BATOCERA 1og Viewer\nOS ver. $(batocera-version)" \
     --button="Create support file...":5 \
     --button="Close":0 \
     --key=$KEY "${TABS[@]}" &>/dev/null
