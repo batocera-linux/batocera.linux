@@ -1,26 +1,54 @@
-PROJECT_DIR    := $(shell pwd)
+# We want bash as shell
+SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
+	 else command -v bash 2>/dev/null; \
+	 fi)
+
+ifeq ($(SHELL),)
+$(error Bash shell not found)
+endif
+
+# We want make 4.3+
+ifneq ($(shell echo $$'4.3\n$(MAKE_VERSION)' | sort -V | head -n1),4.3)
+$(error GNU Make 4.3 or higher is required, you are using $(MAKE_VERSION))
+endif
+
+# We don't use any of the default rules (including suffix rules),
+# so disable them
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
+
+OS := $(shell uname)
+
+ifeq ($(OS),Darwin)
+FIND ?= gfind
+NPROC := $(shell sysctl -n hw.ncpu)
+else
+FIND ?= find
+NPROC := $(shell nproc)
+endif
+
+PROJECT_DIR    := $(realpath $(CURDIR))
 DL_DIR         ?= $(PROJECT_DIR)/dl
 OUTPUT_DIR     ?= $(PROJECT_DIR)/output
 CCACHE_DIR     ?= $(PROJECT_DIR)/buildroot-ccache
 LOCAL_MK       ?= $(PROJECT_DIR)/batocera.mk
 EXTRA_OPTS     ?=
 DOCKER_OPTS    ?=
-NPROC          := $(shell nproc)
 MAKE_JLEVEL    ?= $(NPROC)
 MAKE_LLEVEL    ?= $(NPROC)
 BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DIRECT_BUILD   ?=
 DAYS           ?= 1
-BR_DIR         := $(PROJECT_DIR)/buildroot
+SYSTEMS_REPORT_EXCLUDE_TARGETS ?= odin
 
 -include $(LOCAL_MK)
 
 ifdef PARALLEL_BUILD
-	EXTRA_OPTS += BR2_PER_PACKAGE_DIRECTORIES=y
-	EXTRA_OPTS += BR2_JLEVEL=$(MAKE_JLEVEL)
-	MAKE_OPTS  += -j$(MAKE_JLEVEL)
-	MAKE_OPTS  += -l$(MAKE_LLEVEL)
+EXTRA_OPTS += BR2_PER_PACKAGE_DIRECTORIES=y
+EXTRA_OPTS += BR2_JLEVEL=$(MAKE_JLEVEL)
+MAKE_OPTS  += -j$(MAKE_JLEVEL)
+MAKE_OPTS  += -l$(MAKE_LLEVEL)
 endif
 
 # List of packages that are always good to rebuild for versioning/stamps etc
@@ -32,10 +60,6 @@ MANDATORY_REBUILD_PKGS := batocera-es-system batocera-configgen batocera-system 
 # List of out-of-tree kernel modules that must be removed if the kernel is reset
 # This list needs to be maintained if new modules are added or removed
 KERNEL_MODULE_PKGS = $(eval KERNEL_MODULE_PKGS := $(sort $(patsubst %.mk,%,$(notdir $(shell grep -rl '\$$(eval \$$(kernel-module))' $(PROJECT_DIR)/package 2>/dev/null)))))$(KERNEL_MODULE_PKGS)
-
-define __git_log
-	git -C $(1) log --since="$(DAYS) days ago" --name-only --format=%n -- package/
-endef
 
 # Across all batocera & buildroot packages find any updates and add to a list to rebuild
 GIT_PACKAGES_TO_REBUILD = $(eval GIT_PACKAGES_TO_REBUILD := $(shell \
@@ -59,20 +83,21 @@ HOST_PKGS_TO_RESET = $(addprefix host-,$(TARGET_PKGS))
 # Final list is a combination of all target and host packages
 PKGS_TO_RESET = $(sort $(TARGET_PKGS) $(HOST_PKGS_TO_RESET))
 
+# All supported targets based on the board files in configs/, sorted for consistency
 TARGETS := $(sort $(patsubst batocera-%.board,%,$(notdir $(wildcard $(PROJECT_DIR)/configs/*.board))))
 
-UID  := $(shell id -u)
-GID  := $(shell id -g)
-OS := $(shell uname)
+# All supported targets for systems report generation
+SYSTEMS_REPORT_TARGETS := $(filter-out $(SYSTEMS_REPORT_EXCLUDE_TARGETS) x86_wow64,$(TARGETS))
 
-ifeq ($(OS),Darwin)
-$(if $(shell which gfind 2>/dev/null),,$(error "gfind not found! Please install findutils from Homebrew."))
-FIND ?= gfind
-else
-FIND ?= find
-endif
+# All defconfig files for systems report targets, generated from the board files
+SYSTEMS_REPORT_DEFCONFIGS = $(foreach target,$(SYSTEMS_REPORT_TARGETS),$(call target-defconfig,$(target)))
 
+## BEGIN helper macros
+
+REQUIRE = $(if $(shell command -v $(1) 2>/dev/null),,$(error $(1) not found$(if $(2),; $(2))))
 UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
+
+# END helper macros
 
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
@@ -86,14 +111,18 @@ define MAKE_BUILDROOT
 endef
 
 else # DIRECT_BUILD
-	DOCKER         ?= docker
 
-	ifndef BATCH_MODE
-		DOCKER_OPTS += -i
-	endif
+UID  := $(shell id -u)
+GID  := $(shell id -g)
 
-	DOCKER_REPO    ?= batoceralinux
-	IMAGE_NAME     ?= batocera.linux-build
+DOCKER ?= docker
+
+ifndef BATCH_MODE
+DOCKER_OPTS += -i
+endif
+
+DOCKER_REPO ?= batoceralinux
+IMAGE_NAME ?= batocera.linux-build
 
 define RUN_DOCKER
 	$(DOCKER) run -t --init --rm \
@@ -118,6 +147,7 @@ endef
 
 endif # DIRECT_BUILD
 
+.PHONY: vars
 vars:
 	@echo "Supported targets:  $(TARGETS)"
 	@echo "Project directory:  $(PROJECT_DIR)"
@@ -131,10 +161,20 @@ ifndef DIRECT_BUILD
 endif
 	@echo "Make options:       $(MAKE_OPTS)"
 
+.PHONY: _check_docker
 _check_docker:
-	$(if $(DIRECT_BUILD),$(error "This is a direct build environment"))
-	$(if $(shell which $(DOCKER) 2>/dev/null),, $(error "$(DOCKER) not found!"))
+ifdef DIRECT_BUILD
+	$(error This is a direct build environment)
+endif
+	$(call REQUIRE,$(DOCKER))
 
+.PHONY: _check_find
+_check_find:
+ifeq ($(OS),Darwin)
+	$(call REQUIRE,gfind,Please install findutils from Homebrew)
+endif
+
+.PHONY: build-docker-image
 build-docker-image: _check_docker
 	$(DOCKER) build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
@@ -144,90 +184,113 @@ build-docker-image: _check_docker
 	@$(DOCKER) pull $(DOCKER_REPO)/$(IMAGE_NAME)
 	@touch .ba-docker-image-available
 
+.PHONY: batocera-docker-image
 batocera-docker-image: $(if $(DIRECT_BUILD),,.ba-docker-image-available)
 
+.PHONY: update-docker-image
 update-docker-image: _check_docker
 	-@rm .ba-docker-image-available > /dev/null
 	@$(MAKE) -s batocera-docker-image
 
+.PHONY: publish-docker-image
 publish-docker-image: _check_docker
 	@$(DOCKER) push $(DOCKER_REPO)/$(IMAGE_NAME):latest
 
-define __initialize_directory
-$(1)/.stamp_initialized:
-	@mkdir -p $$(@D)
-	@touch $$@
+# Target macros for files or directories (actual files)
+target-output-dir = $(OUTPUT_DIR)/$(1)
+target-board-file = $(PROJECT_DIR)/configs/batocera-$(1).board
+target-defconfig = $(PROJECT_DIR)/configs/batocera-$(1)_defconfig
+target-systems-report-dir = $(OUTPUT_DIR)/$(1)/systems-report
+target-systems-report-mk = $(call target-output-dir,$(1))/.systems_report_targets.mk
 
-$(2): $(1)/.stamp_initialized
-	@:
+# File patterns for generated files based on target macros
+TARGET_OUTPUT_DIR_PATTERN = $(call target-output-dir,%)
+TARGET_BOARD_FILE_PATTERN = $(call target-board-file,%)
+TARGET_DEFCONFIG_PATTERN = $(call target-defconfig,%)
 
-$(if $(findstring %,$(1)),.PRECIOUS: $(1)/.stamp_initialized,)
-endef
+# Macros for getting the $* equivalent file or directory
+TARGET_OUTPUT_DIR = $(call target-output-dir,$*)
+TARGET_DEFCONFIG = $(call target-defconfig,$*)
+TARGET_SYSTEMS_REPORT_DIR = $(call target-systems-report-dir,$*)
+TARGET_SYSTEMS_REPORT_MK = $(call target-systems-report-mk,$*)
 
-$(eval $(call __initialize_directory,$(OUTPUT_DIR)/%,%-output-dir))
-$(eval $(call __initialize_directory,$(CCACHE_DIR),ccache-dir))
-$(eval $(call __initialize_directory,$(DL_DIR),dl-dir))
+# Stamp files (used for sequencing)
+CCACHE_DIR_INITIALIZED = $(CCACHE_DIR)/.stamp_initialized
+DL_DIR_INITIALIZED = $(DL_DIR)/.stamp_initialized
+TARGET_OUTPUT_DIR_INITIALIZED = $(TARGET_OUTPUT_DIR_PATTERN)/.stamp_initialized
 
-%-supported:
-	$(if $(filter $*,$(TARGETS)),,$(error "$* not supported!"))
+# Stamp pattern rules for initializing directories, ensuring they are
+# only created once and can be used as dependencies for sequencing
+.PRECIOUS: %/.stamp_initialized
+%/.stamp_initialized:
+	@mkdir -p $(@D)
+	@touch $@
 
-%-clean: batocera-docker-image %-output-dir
-	@$(MAKE_BUILDROOT) clean
-	@if [ -f $(PROJECT_DIR)/configs/batocera-$*_defconfig ]; then \
-		echo "Removing config for $*..."; \
-		rm $(PROJECT_DIR)/configs/batocera-$*_defconfig; \
-	fi
-
-$(PROJECT_DIR)/configs/batocera-%_defconfig: $(PROJECT_DIR)/configs/batocera-%.board $(PROJECT_DIR)/configs/batocera-board.common
-	@$(PROJECT_DIR)/configs/createDefconfig.sh $(PROJECT_DIR)/configs/batocera-$*
+.PRECIOUS: $(TARGET_DEFCONFIG_PATTERN)
+$(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
+			     $(PROJECT_DIR)/configs/batocera-board.common \
+			     $(wildcard $(PROJECT_DIR)/configs/batocera-board.local.common)
+	@$(PROJECT_DIR)/configs/createDefconfig.sh '$(PROJECT_DIR)/configs/batocera-$*'
 	@for opt in $(EXTRA_OPTS); do \
-		echo $$opt >> $(PROJECT_DIR)/configs/batocera-$*_defconfig ; \
+		echo $$opt >> '$@' ; \
 	done
 
-.PRECIOUS: $(PROJECT_DIR)/configs/batocera-%_defconfig
+%-supported:
+	$(if $(filter $*,$(TARGETS)),,$(error $* not supported))
 
-%-defconfig: $(PROJECT_DIR)/configs/batocera-%_defconfig
+%-clean: | batocera-docker-image  $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
+	@$(MAKE_BUILDROOT) clean
+	@if [ -f '$(TARGET_DEFCONFIG)' ]; then \
+		echo "Removing config for $*..."; \
+		rm -f '$(TARGET_DEFCONFIG)'; \
+	fi
+
+%-defconfig: $(TARGET_DEFCONFIG_PATTERN) | %-supported
 	@:
 
-%-config: batocera-docker-image %-defconfig %-output-dir
+%-config: %-defconfig | batocera-docker-image  $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(MAKE_BUILDROOT) batocera-$*_defconfig
 
-%-build: batocera-docker-image %-config ccache-dir dl-dir
+%-build: %-config
 	@$(MAKE_BUILDROOT) $(CMD)
 
-%-source: batocera-docker-image %-config ccache-dir dl-dir
+%-source: %-config
 	@$(MAKE_BUILDROOT) source
 
-%-show-build-order: batocera-docker-image %-config ccache-dir dl-dir
+%-show-build-order: %-config
 	@$(MAKE_BUILDROOT) show-build-order
 
-%-kernel: batocera-docker-image %-config ccache-dir dl-dir
+%-kernel: %-config
 	@$(MAKE_BUILDROOT) linux-menuconfig
 
 # force -j1 or graph-depends python script will bail
-%-graph-depends: batocera-docker-image %-config ccache-dir dl-dir
+%-graph-depends: %-config
 	@$(MAKE_BUILDROOT) -j1 BR2_GRAPH_OUT=svg graph-depends
 
-%-shell: batocera-docker-image %-output-dir _check_docker
-	$(if $(BATCH_MODE),$(if $(CMD),,$(error "not supported in BATCH_MODE if CMD not specified!")),)
+%-shell: %-config
+ifdef BATCH_MODE
+	$(if $(CMD),,$(error CMD is required to use $*-shell in BATCH_MODE))
+endif
 	@$(RUN_DOCKER) $(CMD)
 
-%-ccache-stats: batocera-docker-image %-config ccache-dir dl-dir
+%-ccache-stats: %-config
 	@$(MAKE_BUILDROOT) ccache-stats
 
-%-build-cmd:
+%-build-cmd: %-supported
 	@echo $(MAKE_BUILDROOT)
 
-%-refresh: batocera-docker-image %-output-dir
-	$(if $(PARALLEL_BUILD),,$(error "PARALLEL_BUILD=y must be set for %-refresh"))
+%-refresh: | batocera-docker-image $(TARGET_OUTPUT_DIR_INITIALIZED)
+ifndef PARALLEL_BUILD
+	$(error PARALLEL_BUILD=y must be set for $*-refresh)
+endif
 	@echo "--- Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)) ---"
 
 	@if [ -n "$(PKGS_TO_RESET)" ]; then \
 		echo "Total packages to reset: $(PKGS_TO_RESET)"; \
 		for pkg in $(PKGS_TO_RESET); do \
 			echo "Surgically removing $$pkg from build and per-package directories..."; \
-			rm -rf $(OUTPUT_DIR)/$*/build/$$pkg-*; \
-			rm -rf $(OUTPUT_DIR)/$*/per-package/$$pkg; \
+			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg-*; \
+			rm -rf $(TARGET_OUTPUT_DIR)/per-package/$$pkg; \
 		done; \
 	else \
 		echo "No packages to reset."; \
@@ -235,64 +298,62 @@ $(PROJECT_DIR)/configs/batocera-%_defconfig: $(PROJECT_DIR)/configs/batocera-%.b
 
 	@echo "--- Removing Host and Target directories ---"
 	@for dir in include share lib/pkgconfig; do \
-		if [ -d "$(OUTPUT_DIR)/$*/host/$$dir" ]; then \
+		if [ -d "$(TARGET_OUTPUT_DIR)/host/$$dir" ]; then \
 			echo "Cleaning host staging: $$dir..."; \
-			rm -rf $(OUTPUT_DIR)/$*/host/$$dir; \
+			rm -rf $(TARGET_OUTPUT_DIR)/host/$$dir; \
 		fi; \
 	done
-	rm -rf $(OUTPUT_DIR)/$*/target
-	rm -rf $(OUTPUT_DIR)/$*/target2
+	rm -rf $(TARGET_OUTPUT_DIR)/target
+	rm -rf $(TARGET_OUTPUT_DIR)/target2
 
 	@$(MAKE) $*-build
 
-%-cleanbuild:
-	$(MAKE) $*-clean
+%-cleanbuild: %-clean
 	$(MAKE) $*-build
-	@echo
 
-%-pkg:
-	$(if $(PKG),,$(error "PKG not specified!"))
+%-pkg: %-supported
+	$(if $(PKG),,$(error PKG not specified))
 
 	@$(MAKE) $*-build CMD=$(PKG)
 
-%-webserver: %-output-dir
-	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
-	$(if $(shell which python3 2>/dev/null),,$(error "python3 not found!"))
+%-webserver: %-supported | $(TARGET_OUTPUT_DIR_INITIALIZED)
+	$(if $(wildcard $(TARGET_OUTPUT_DIR)/images/batocera/*),,$(error $* not built!))
+	$(call REQUIRE,python3)
 ifeq ($(strip $(BOARD)),)
-	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$*/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$*"))
-	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$*/
+	$(if $(wildcard $(TARGET_OUTPUT_DIR)/images/batocera/images/$*),,$(error Directory not found: $(TARGET_OUTPUT_DIR)/images/batocera/images/$*))
+	python3 -m http.server --directory $(TARGET_OUTPUT_DIR)/images/batocera/images/$*/
 else
-	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/.*),,$(error "Directory not found: $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)"))
-	python3 -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera/images/$(BOARD)/
+	$(if $(wildcard $(TARGET_OUTPUT_DIR)/images/batocera/images/$(BOARD)),,$(error Directory not found: $(TARGET_OUTPUT_DIR)/images/batocera/images/$(BOARD)))
+	python3 -m http.server --directory $(TARGET_OUTPUT_DIR)/images/batocera/images/$(BOARD)/
 endif
 
-%-rsync: %-output-dir
+%-rsync: %-supported | $(TARGET_OUTPUT_DIR_INITIALIZED)
 	$(eval TMP := $(call UC, $*)_IP)
-	$(if $(shell which rsync 2>/dev/null),, $(error "rsync not found!"))
-	$(if $($(TMP)),,$(error "$(TMP) not set!"))
-	rsync -e "ssh -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no" -av $(OUTPUT_DIR)/$*/target/ root@$($(TMP)):/
+	$(call REQUIRE,rsync)
+	$(if $($(TMP)),,$(error $(TMP) not set))
+	rsync -e "ssh -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no" -av $(TARGET_OUTPUT_DIR)/target/ root@$($(TMP)):/
 
-%-tail: %-output-dir
-	@tail -F $(OUTPUT_DIR)/$*/build/build-time.log
+%-tail: %-supported
+	@tail -F $(TARGET_OUTPUT_DIR)/build/build-time.log
 
 %-snapshot: %-supported
-	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
+	$(call REQUIRE,btrfs)
 	@mkdir -p $(OUTPUT_DIR)/snapshots
 	-@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
-	@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
+	@btrfs subvolume snapshot -r $(TARGET_OUTPUT_DIR) $(OUTPUT_DIR)/snapshots/$*-toolchain
 
 %-rollback: %-supported
-	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
-	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
-	@btrfs subvolume snapshot $(OUTPUT_DIR)/snapshots/$*-toolchain $(OUTPUT_DIR)/$*
+	$(call REQUIRE,btrfs)
+	-@sudo btrfs sub del $(TARGET_OUTPUT_DIR)
+	@btrfs subvolume snapshot $(OUTPUT_DIR)/snapshots/$*-toolchain $(TARGET_OUTPUT_DIR)
 
 %-flash: %-supported
-	$(if $(DEV),,$(error "DEV not specified!"))
-	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/images/$*/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
+	$(if $(DEV),,$(error DEV not specified))
+	@gzip -dc $(TARGET_OUTPUT_DIR)/images/batocera/images/$*/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
 	@sync
 
 %-upgrade: %-supported
-	$(if $(DEV),,$(error "DEV not specified!"))
+	$(if $(DEV),,$(error DEV not specified))
 	-@sudo umount /tmp/mount
 	-@mkdir -p /tmp/mount
 	@sudo mount $(DEV)1 /tmp/mount
@@ -301,60 +362,57 @@ endif
 	@echo "continue BATOCERA upgrade $(DEV)1 with $* build? [y/N]"
 	@read line; if [ "$$line" != "y" ]; then echo aborting; exit 1 ; fi
 	-@sudo rm /tmp/mount/boot/batocera
-	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/images/$*/boot.tar.xz -C /tmp/mount --no-same-owner --exclude=batocera-boot.conf --exclude=config.txt
+	@sudo tar xvf $(TARGET_OUTPUT_DIR)/images/batocera/images/$*/boot.tar.xz -C /tmp/mount --no-same-owner --exclude=batocera-boot.conf --exclude=config.txt
 	@sudo umount /tmp/mount
 	-@rmdir /tmp/mount
 	@sudo fatlabel $(DEV)1 BATOCERA
 
 %-toolchain: %-supported
-	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
-	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
-	@btrfs subvolume create $(OUTPUT_DIR)/$*
+	$(call REQUIRE,btrfs)
+	-@sudo btrfs sub del $(TARGET_OUTPUT_DIR)
+	@btrfs subvolume create $(TARGET_OUTPUT_DIR)
 	@$(MAKE) $*-config
 	@$(MAKE) $*-build CMD=toolchain
 	@$(MAKE) $*-build CMD=llvm
 	@$(MAKE) $*-snapshot
 
-%-find-build-dups: %-supported
-	@$(FIND) $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
+%-find-build-dups: %-supported _check_find
+	@$(FIND) $(TARGET_OUTPUT_DIR)/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
 
-%-remove-build-dups: %-supported
-	@while [ -n "`$(FIND) $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ]; do \
-		$(FIND) $(OUTPUT_DIR)/$*/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | xargs rm -rf ; \
+%-remove-build-dups: %-supported _check_find
+	@while [ -n "`$(FIND) $(TARGET_OUTPUT_DIR)/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ]; do \
+		$(FIND) $(TARGET_OUTPUT_DIR)/build -maxdepth 1 -type d -printf '%T@ %p %f\n' | sed -r 's:\-[0-9a-f\.]+$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | xargs rm -rf ; \
 	done
 
-find-dl-dups:
+.PHONY: find-dl-dups
+find-dl-dups: _check_find
 	@$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2
 
-remove-dl-dups:
+.PHONY: remove-dl-dups
+remove-dl-dups: _check_find
 	@while [ -n "`$(FIND) $(DL_DIR)/ -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | grep .`" ] ; do \
 		$(FIND) $(DL_DIR) -maxdepth 2 -type f -name "*.zip" -o -name "*.tar.*" -printf '%T@ %p %f\n' | sed -r 's:\-[-_0-9a-fvrgit\.]+(\.zip|\.tar\.[2a-z]+)$$::' | sort -k3 -k1 | uniq -f 2 -d | cut -d' ' -f2 | xargs rm -rf ; \
 	done
 
+.PHONY: uart
 uart:
-	$(if $(shell which picocom 2>/dev/null),, $(error "picocom not found!"))
-	$(if $(SERIAL_DEV),,$(error "SERIAL_DEV not specified!"))
-	$(if $(SERIAL_BAUDRATE),,$(error "SERIAL_BAUDRATE not specified!"))
-	$(if $(wildcard $(SERIAL_DEV)),,$(error "$(SERIAL_DEV) not available!"))
+	$(call REQUIRE,picocom)
+	$(if $(SERIAL_DEV),,$(error SERIAL_DEV not specified))
+	$(if $(SERIAL_BAUDRATE),,$(error SERIAL_BAUDRATE not specified))
+	$(if $(wildcard $(SERIAL_DEV)),,$(error $(SERIAL_DEV) not available))
 	@picocom $(SERIAL_DEV) -b $(SERIAL_BAUDRATE)
 
-%-update-po-files: %-output-dir batocera-docker-image
+%-update-po-files: %-config
 	@$(MAKE_BUILDROOT) update-po-files
 
-SYSTEMS_REPORT_EXCLUDE_TARGETS := odin t527
-SYSTEMS_REPORT_TARGETS := $(filter-out $(SYSTEMS_REPORT_EXCLUDE_TARGETS) x86_wow64,$(TARGETS))
-SYSTEMS_REPORT_TARGET_DEFCONFIGS := $(addsuffix -defconfig,$(SYSTEMS_REPORT_TARGETS))
+%-systems-report-clean: %-supported
+	-@rm -rf $(TARGET_SYSTEMS_REPORT_DIR)
 
-$(OUTPUT_DIR)/%/.systems_report_targets.mk: %-output-dir
-	@echo "SYSTEMS_REPORT_TARGETS := $(SYSTEMS_REPORT_TARGETS)" > $@
+%-systems-report: $(SYSTEMS_REPORT_DEFCONFIGS) %-config
+	@echo "SYSTEMS_REPORT_TARGETS := $(SYSTEMS_REPORT_TARGETS)" > "$(TARGET_SYSTEMS_REPORT_MK)"
+	@$(MAKE_BUILDROOT) systems-report
 
-%-systems-report-targets-mk: $(OUTPUT_DIR)/%/.systems_report_targets.mk
-	@:
-
-%-systems-report: batocera-docker-image %-defconfig %-systems-report-targets-mk
-	$(MAKE_BUILDROOT) systems-report
-
-%-systems-report-serve: %-output-dir
-	$(if $(wildcard $(OUTPUT_DIR)/$*/systems-report/*),,$(error "$* not built!"))
-	$(if $(shell which python3 2>/dev/null),,$(error "python3 not found!"))
-	python3 -m http.server --directory $(OUTPUT_DIR)/$*/systems-report/
+%-systems-report-serve: | $(TARGET_OUTPUT_DIR_INITIALIZED)
+	$(call REQUIRE,python3)
+	$(if $(wildcard $(TARGET_SYSTEMS_REPORT_DIR)/*),,$(error $* not built))
+	python3 -m http.server --directory $(TARGET_SYSTEMS_REPORT_DIR)/
